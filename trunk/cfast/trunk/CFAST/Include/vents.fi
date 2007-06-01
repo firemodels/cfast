@@ -1,0 +1,21 @@
+!	zzvent(1) = sill
+!	zzvent(2) = soffit
+!	zzvent(3) = width
+!	zzvent(4 and 5) = hall offsets
+
+!	izvent(1) = from
+!	izvent(2) = to
+!	izvent(3) = pairwise counter
+!	izvent(4 and 5) = hall (yes or no)
+!	izvent(6) = face (smokeview)
+
+      DIMENSION ZZVENT(MXVENT,6), IZVENT(MXVENT,6)
+      DIMENSION ZZVENTDIST(NR,MXVENT)
+      DIMENSION VSS(2,MXVENT), VSA(2,MXVENT), VAS(2,MXVENT), 
+     +    VAA(2,MXVENT)
+      DIMENSION VSAS(2,MXVENT), VASA(2,MXVENT)
+      DIMENSION IVVENT(MXVENT,2)
+C
+      COMMON /VENTS/ ZZVENT, ZZVENTDIST, VSS, VSA, VAS, VAA, VSAS, VASA, 
+     +               IZVENT, NVENTS, IVVENT, NVVENT
+      SAVE /VENTS/

@@ -1,0 +1,5 @@
+C
+C*** DEFINE INDEXES FOR USE WITH PRODUCT ARRAYS
+C
+      INTEGER L, U, M, Q, O, PP
+      PARAMETER (L = 2,U = 1,M = 1,Q = 2,O = 3,PP = 3)

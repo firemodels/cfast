@@ -1,0 +1,231 @@
+      SUBROUTINE VENT(YFLOR,YLAY,TU,TL,DENL,DENU,PFLOR,YVTOP,YVBOT,
+     +    AVENT,CP,CONL,CONU,NPROD,MXPRD,MXSLAB,EPSP,CSLAB,PSLAB,QSLAB,
+     +    VSS,VSA,VAS,VAA,DIRS12,DPV1M2,RSLAB,TSLAB,YSLAB,YVELEV,XMSLAB,
+     +    NSLAB,NNEUT,VENTVEL)
+C
+C--------------------------------- NIST/BFRL ---------------------------------
+C
+C     Routine:     VENT
+C
+C     Source File: VENT.SOR
+C
+C     Functional Class:  
+C
+C     Description:  Calculation of the flow of mass, enthalpy, oxygen
+C           and other products of combustion through a vertical,
+C           constant-width vent in a wall segment common to two rooms.
+C           The subroutine uses input data describing the two-layer
+C           environment in each of the two rooms and other input data
+C           calculated in subroutine comwl1.
+C
+C   INPUT
+C   -----
+C   YFLOR - HEIGHT OF FLOOR ABOVE DATUM ELEVATION [M]
+C   YLAY  - HEIGHT OF LAYER ABOVE DATUM ELEVATION [M]
+C   TU    - UPPER LAYER TEMPERATURE [K]
+C   TL    - LOWER LAYER TEMPERATURE [K]
+C   DENL  - LOWER LAYER DENSITY [KG/M**3]
+C   DENU  - UPPER LAYER DENSITY [KG/M**3]
+C   PFLOR - PRESSURE AT FLOOR ABOVE DATUM PRESSURE
+C                      [KG/(M*S**2) = PASCAL]
+C   YVTOP - ELEVATION OF TOP OF VENT ABOVE DATUM ELEVATION [M]
+C   YVBOT - ELEVATION OF BOTTOM OF VENT ABOVE DATUM ELEVATION [M]
+C   AVENT - AREA OF THE VENT [M**2]
+C   DP1M2 - PRESSURE IN ROOM 1 - PRESSURE IN ROOM 2 AT
+C                      ELEVATIONS YELEV [KG/(M*S**2) = PASCAL]
+C   CP    - SPECIFIC HEAT [W*S/(KG*K)]
+C   CONL  - CONCENTRATION OF EACH PRODUCT IN LOWER LAYER
+C                      [UNIT OF PRODUCT/(KG LAYER)]
+C   CONU  - CONCENTRATION OF EACH PRODUCT IN UPPER LAYER
+C                      [UNIT OF PRODUCT/(KG LAYER)]
+C   NPROD - NUMBER OF PRODUCTS IN CURRENT SCENARIO
+C   MXPRD - MAXIMUM NUMBER OF PRODUCTS CURRENTLY AVAILABLE
+C   MXSLAB- MAXIMUM NUMBER OF SLABS CURRENTLY AVAILABLE
+C   EPSP  - ERROR TOLERANCE FOR PRESSURES AT FLOOR
+C
+C   OUTPUT
+C   ------
+C   CSLAB  - CONCENTRATION OF OTHER PRODUCTS IN EACH SLAB
+C                       [UNIT PRODUCT/(KG SLAB)]
+C   PSLAB  - AMOUNT OF OTHER PRODUCTS IN EACH SLAB [UNIT OF
+C                       PRODUCT/S]
+C   QSLAB  - ENTHALPY FLOW RATE IN EACH SLAB [W]
+C   DIRS12 - A MEASURE OF THE DIRECTION OF THE ROOM 1 TO ROOM
+C                       2 FLOW IN EACH SLAB
+C   RSLAB  - DENSITY OF THE FLOW IN EACH SLAB [KG/M**3]
+C   TSLAB  - ABSOLUTE TEMPERATURE OF THE FLOW IN EACH SLAB [K]
+C   YSLAB  - ELEVATIONS ABOVE THE DATUM ELEVATION OF THE
+C                       CENTROIDS OF MOMENTUM OF EACH SLAB [M]
+C   YVELEV - ELEVATIONS ABOVE THE DATUM ELEVATIONS OF VENT
+C                       BOUNDARIES, LAYERS, AND NEUTRAL PLANES [M]
+C   XMSLAB - MAGNITUDE OF THE MASS FLOW RATE IN SLABS [KG/S]
+C   NVELEV - NUMBER OF UNIQUE ELEVATIONS DELINEATING SLABS
+C   NSLAB  - NUMBER OF SLABS BETWEEN BOTTOM AND TOP OF THE VENT
+C     Revision History:
+C        Created:  
+C        Modified by GPF 7/22/96
+C                  added vent velocity calculation
+C		Modified by wwj 5/7/03 - move initiazation to hflow
+C
+C
+C---------------------------- ALL RIGHTS RESERVED ----------------------------
+C
+      include "precis.fi"
+      DIMENSION YFLOR(*), YLAY(*), TU(*), TL(*), DENL(*), DENU(*)
+      DIMENSION PFLOR(*)
+      DIMENSION PSLAB(MXSLAB,*)
+      DIMENSION CSLAB(MXSLAB,*), CONL(MXPRD,2), CONU(MXPRD,2)
+      DIMENSION YELEV(10), DP1M2(10), DPV1M2(10)
+      DIMENSION XMSLAB(*), YN(10)
+      DIMENSION RSLAB(*), TSLAB(*), YSLAB(*), YVELEV(*)
+      DIMENSION QSLAB(*)
+      DIMENSION VSS(2), VSA(2), VAS(2), VAA(2)
+      INTEGER DIRS12(*)
+
+      VENTVEL = 0.0D0
+C*** CREATE INITIAL ELEVATION HEIGHT ARRAY (IGNORING NEUTRAL PLANES)
+
+      CALL GETELEV(YVBOT,YVTOP,YLAY,YELEV,NELEV)
+
+C*** FIND PRESSURE DROPS AT ABOVE ELEVATIONS
+
+      CALL DELP(YELEV,NELEV,YFLOR,YLAY,DENL,DENU,PFLOR,EPSP,DP1M2)
+
+C*** FIND NEUTRAL PLANES
+
+      NVELEV = 1
+      NNEUT = 0
+      XX0 = 0.0D0
+      DO 10 I = 1, NELEV - 1
+        YVELEV(NVELEV) = YELEV(I)
+        DPV1M2(NVELEV) = DP1M2(I)
+        NVELEV = NVELEV + 1
+
+C     A NEUTRAL PLANE LIES BETWEEN TWO ELEVATIONS HAVING 
+C     OPPOSITE SIGNED PRESSURE DROPS
+
+        IF (DP1M2(I)*DP1M2(I+1).LT.0.0D0) THEN
+          NNEUT = NNEUT + 1
+          DPP = DP1M2(I) - DP1M2(I+1)
+          YN(NNEUT) = (YELEV(I+1)*DP1M2(I)-YELEV(I)*DP1M2(I+1)) / DPP
+C     FAIL SAFE IN CASE INTERPOLATION CALCULATION FAILS
+
+          IF (YN(NNEUT).LT.YELEV(I).OR.YN(NNEUT).GT.YELEV(I+1)) THEN
+            YN(NNEUT) = (YELEV(I)+YELEV(I+1)) / 2.0D0
+          END IF
+          YVELEV(NVELEV) = YN(NNEUT)
+          DPV1M2(NVELEV) = 0.0D0
+          NVELEV = NVELEV + 1
+        END IF
+   10 CONTINUE
+      YVELEV(NVELEV) = YELEV(NELEV)
+      DPV1M2(NVELEV) = DP1M2(NELEV)
+      NSLAB = NVELEV - 1
+      DO 20 I = 1, NSLAB
+        YSLAB(I) = (YVELEV(I)+YVELEV(I+1)) / 2.0D0
+   20 CONTINUE
+
+C     INITIALIZE CFAST DATA STRUCTURES FOR FLOW STORAGE
+
+      DO 70 N = 1, NSLAB
+
+C     DETERMINE WHETHER TEMPERATURE AND DENSITY PROPERTIES SHOULD COME FROM ROOM 1 OR ROOM 2
+
+        PTEST = DPV1M2(N+1) + DPV1M2(N)
+        IF (PTEST.GT.0.0D0) THEN
+          JROOM = 1
+          DIRS12(N) = 1
+        ELSE IF (PTEST.LT.0.0D0) THEN
+          DIRS12(N) = -1
+          JROOM = 2
+        ELSE
+          DIRS12(N) = 0
+          JROOM = 1
+        END IF
+
+C    DETERMINE WHETHER TEMPERATURE AND DENSITY PROPERTIES
+C    SHOULD COME FROM UPPER OR LOWER LAYER
+
+        IF (YSLAB(N).LE.YLAY(JROOM)) THEN
+          TSLAB(N) = TL(JROOM)
+          RSLAB(N) = DENL(JROOM)
+          DO 30 IPROD = 1, NPROD
+            CSLAB(N,IPROD) = CONL(IPROD,JROOM)
+   30     CONTINUE
+        ELSE
+          TSLAB(N) = TU(JROOM)
+          RSLAB(N) = DENU(JROOM)
+          DO 40 IPROD = 1, NPROD
+            CSLAB(N,IPROD) = CONU(IPROD,JROOM)
+   40     CONTINUE
+        END IF
+
+C    FOR NONZERO-FLOW SLABS DETERMINE XMSLAB(N) AND YSLAB(N)
+
+        XMSLAB(N) = 0.0D0
+        QSLAB(N) = 0.D0
+        DO 50 IPROD = 1, NPROD
+          PSLAB(N,IPROD) = 0.0D0
+   50   CONTINUE
+        P1 = ABS(DPV1M2(N))
+        P2 = ABS(DPV1M2(N+1))
+        P1RT = SQRT(P1)
+        P2RT = SQRT(P2)
+
+C    IF BOTH CROSS PRESSURES ARE 0 THEN THEN THERE IS NO FLOW
+        IF (P1.GT.XX0.OR.P2.GT.XX0) THEN
+          R1 = MAX(RSLAB(N),XX0)
+          Y2 = YVELEV(N+1)
+          Y1 = YVELEV(N)
+          CVENT = .70D0
+
+          AREA = AVENT * (Y2-Y1) / (YVTOP-YVBOT)
+          R1M8 = 8.0D0*R1
+          XMSLAB(N) = CVENT * SQRT(R1M8) * AREA * (P2+P1RT*P2RT+P1) / (
+     +        P2RT+P1RT) / 3.0D0
+          VENTVEL = 0.0D0
+          IF(N.EQ.NSLAB)THEN
+            IF(AREA.NE.0.0D0.AND.R1.NE.0.0D0)THEN
+              VENTVEL = XMSLAB(N)/(AREA*R1)
+	      IF(DIRS12(N).LT.0)VENTVEL = -VENTVEL
+            ENDIF
+          ENDIF
+          QSLAB(N) = CP * XMSLAB(N) * TSLAB(N)
+          SUM = 0.0D0
+          DO 60 IPROD = 1, NPROD
+            PSLAB(N,IPROD) = CSLAB(N,IPROD) * XMSLAB(N)
+            SUM = SUM + PSLAB(N,IPROD)
+   60     CONTINUE
+        END IF
+
+C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
+
+        YS = YSLAB(N)
+        IF (YS.GT.MAX(YLAY(1),YLAY(2))) THEN
+          IF (DIRS12(N).GT.0) THEN
+            VSS(1) = XMSLAB(N)
+          ELSE
+            VSS(2) = XMSLAB(N)
+          END IF
+        ELSE IF (YS.LT.MIN(YLAY(1),YLAY(2))) THEN
+          IF (DIRS12(N).GT.0) THEN
+            VAA(1) = XMSLAB(N)
+          ELSE
+            VAA(2) = XMSLAB(N)
+          END IF
+        ELSE IF (YS.GT.YLAY(1)) THEN
+          IF (DIRS12(N).GT.0) THEN
+            VSA(1) = XMSLAB(N)
+          ELSE
+            VAS(2) = XMSLAB(N)
+          END IF
+        ELSE IF (YS.GT.YLAY(2)) THEN
+          IF (DIRS12(N).GT.0) THEN
+            VAS(1) = XMSLAB(N)
+          ELSE
+            VSA(2) = XMSLAB(N)
+          END IF
+        END IF
+   70 CONTINUE
+      RETURN
+      END

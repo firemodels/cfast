@@ -45,11 +45,7 @@ C
       DIMENSION CONL(MXPRD,2), CONU(MXPRD,2)
       DIMENSION UFLW3(2,MXPRD+2,2)
       DIMENSION VSAS(2), VASA(2)
-#ifdef pp_double
       PARAMETER (XX0 = 0.0D0)
-#else
-      PARAMETER (XX0 = 0.0E0)
-#endif
 C
 C*** INITIALIZE OUTPUTS
 C

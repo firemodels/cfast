@@ -45,14 +45,18 @@ C*RE
         CALL RSLTSPRINK
         CALL RSLTHALL(TIME)
         CALL RSLTSP
-        CALL RSLTFLW
+        if(trace) then
+            CALL RSLTFLWt (time)
+        else
+            call rsltflw (time)
+        endif
 !        IF (INDEX(PSW,'T').NE.0) CALL RSLTTEN
       ELSE IF (outputformat.eq.1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTCMP (iofilo)
       END IF
 
- 5000 FORMAT (/,' Time = ',F8.1,' seconds.')
+ 5000 FORMAT (//,' >>>>>>>>>>>>> Time = ',F8.1,' seconds.')
       END
 
       SUBROUTINE RSLTLAY
@@ -88,12 +92,14 @@ C
         ITARG = NTARG - NM1 + I
         IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
 	IF (IZSHAFT(I).EQ.1) THEN
-        	WRITE (IOFILO,5071) I, ZZTEMP(I,UPPER)-273.15, ZZVOL(I,UPPER),
+        	WRITE (IOFILO,5071) compartmentnames(I), 
+     +		ZZTEMP(I,UPPER)-273.15,
+     +		ZZVOL(I,UPPER),
      +      	ZZABSB(UPPER,I),ZZRELP(I)-PAMB(I),
      +      	ONTARGET(I), XXTARG(TRGNFLUXF,ITARG)
         ELSE
-        	WRITE (IOFILO,5070) I, ZZTEMP(I,UPPER)-273.15, 
-     +                           ZZTEMP(I,LOWER)-273.15,
+        	WRITE (IOFILO,5070) compartmentnames(i), 
+     +		ZZTEMP(I,UPPER)-273.15, ZZTEMP(I,LOWER)-273.15,
      +      	ZZHLAY(I,LOWER), ZZVOL(I,UPPER),
      +      	IZZVOL, ZZABSB(UPPER,I),ZZABSB(LOWER,I),ZZRELP(I)-PAMB(I),
      +      	ONTARGET(I), XXTARG(TRGNFLUXF,ITARG)
@@ -101,7 +107,7 @@ C
    10 CONTINUE
       RETURN
 
- 5000 FORMAT (//,' ')
+ 5000 FORMAT (' ')
  5010 FORMAT (' Compartment',T16,'Upper',T26,'Lower',T36,'Inter.',
      +        T46,'Upper',T62,'Upper',T73,'Lower',T83,'Pressure',
      +        T95,'Ambient',T106,'Floor')
@@ -110,20 +116,17 @@ C
  5030 FORMAT (T17,'(C)',T26,'(C)',T36,'(m)',T46,'(m^3)',T62,'(m^-1)',
      +        T73,'(m^-1)',T85,'(Pa)',T95,'(W/m^2)',T106,'(W/m^2)')
  5040 FORMAT (' ',113('-'))
- 5070 FORMAT (I5,9X,1P2G10.4,1PG10.4,1X,1pg8.2,'(',I3,'%) ',
+ 5070 FORMAT (1x,a13,1P2G10.4,1PG10.4,1X,1pg8.2,'(',I3,'%) ',
      +        1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
- 5071 FORMAT (I5,9X,1PG10.4,10(' '),10(' '),1X,1pg8.2,7(' '),
+ 5071 FORMAT (1x,A13,1PG10.4,10(' '),10(' '),1X,1pg8.2,7(' '),
      +        1PG10.3,1X,10(' '),1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
       END
       SUBROUTINE RSLTFIR(ISW)
 
-C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     RSLTFIR
 C
 C     Source File: RESULT.SOR
-C
-C     Functional Class:
 C
 C     Description:  Output the fire environment at the current time
 C
@@ -132,7 +135,6 @@ C
 C     Revision History:
 C        Created:  7/12/1993 at 12:51 by RDP
 C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       include "precis.fi"
       include "cfast.fi"
@@ -157,11 +159,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
               J = OBJPNT(I)
               WRITE (IOFILO,5010) OBJNIN(J)(1:LENGTH(OBJNIN(J))),
      +            FEMS(I), FEMP(I), FQF(I),
-     +            FHEIGHT, FQFC(I), FQF(I) - FQFC(I)
+     +            FHEIGHT,FQFC(I),FQF(I)-FQFC(I),objmaspy(i),radio(i)
             END IF
           ELSE
             WRITE (IOFILO,5020) I, FEMS(I), FEMP(I), FQF(I),
-     +          FHEIGHT, FQFC(I), FQF(I) - FQFC(I)
+     +          FHEIGHT,FQFC(I),FQF(I)-FQFC(I),objmaspy(i),radio(i)
           END IF
    10   CONTINUE
       END IF
@@ -183,7 +185,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
    20   CONTINUE
         XQF = XQF + FQDJ(IR)
         IF (XEMS+XEMP+XQF+XQUPR+XQLOW+FQDJ(IR).NE.XX0)
-     +      WRITE (IOFILO,5030) IR, XEMS, XEMP, XQF, XQUPR, XQLOW,
+     +      WRITE (IOFILO,5030) compartmentnames(IR), XEMS, XEMP, XQF,
+     +      XQUPR, XQLOW,
      +      FQDJ(IR)
    30 CONTINUE
       IF (FQDJ(N).NE.XX0) WRITE (IOFILO,5040) FQDJ(N)
@@ -191,15 +194,16 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
  5000 FORMAT (//,' Fires',/,
      +    '0Compartment    Fire      Plume     Pyrol     ',
      +    'Fire      Flame     Fire in   Fire in   Vent      ',
-     +    'Convec.   Radiat.',/,
+     +    'Convec.   Radiat.   Pyrolysate  Trace',/,
      +    '                          Flow      Rate      ',
      +    'Size      Height    Upper     Lower     Fire',/,
      +    '                          (kg/s)    (kg/s)    ',
      +    '(W)       (m)       (W)       (W)       (W)       ',
-     +    '(W)       (W)',/,' ',114('-'))
- 5010 FORMAT (' ',14X,A8,2X,1P4G10.3,30X,1P2G10.3)
- 5020 FORMAT (' ',13X,'Object ',I2,2X,1P4G10.3,30X,1P2G10.3)
- 5030 FORMAT (' ',I5,9X,10X,1P3G10.3,10X,1P3G10.3)
+     +    '  (W)       (W)       (kg)      (kg)' ,/,
+     +    ' ',138('-'))
+ 5010 FORMAT (' ',14X,A8,2X,1P4G10.3,30X,1P3G10.3,2x,g10.3)
+ 5020 FORMAT (' ',13X,'Object ',I2,2X,1P4G10.3,30X,1P3G10.3,2x,g10.3)
+ 5030 FORMAT (' ',a14,10X,1P3G10.3,10X,1P3G10.3)
  5040 FORMAT ('  Outside',76X,1PG10.3)
       END
       SUBROUTINE RSLTSP
@@ -207,8 +211,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     RSLTSP
-C
-C     Source File: RESULT.SOR
 C
 C     Functional Class:
 C
@@ -234,9 +236,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DATA IWPTR /1, 3, 4, 2/
       DATA WTYPE /'HCl c', 'HCl f', 'HCl uw', 'HCl lw'/
       DATA SUNITS /'(%)', '(%)', '(%)', '(ppm)', '(ppm)', '(ppm)',
-     +    '(%)', '(%)', '(1/m)', '(g-min/m3)'/
+     +    '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT'/
+     +    'OD', 'CT', ' TS'/
       IF (NLSPCT.NE.0) THEN
         DO 20 I = 1, NWAL
           SWL(I) = .FALSE.
@@ -244,6 +246,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
             SWL(I) = SWL(I) .OR. SWITCH(I,J)
    10     CONTINUE
    20   CONTINUE
+
         DO 80 LAYER = UPPER, LOWER
           WRITE (IOFILO,5050) LNAMES(LAYER)
           CIOUT = 'Compartment'
@@ -253,7 +256,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
             IF (ACTIVS(LSP)) THEN
               WRITE (CIOUT(IC:IC+9),5000) STYPE(LSP)
               WRITE (CJOUT(IC:IC+9),5000) SUNITS(LSP)
-              IC = IC + 10
+              IC = IC + 11
             END IF
    30     CONTINUE
           IF (ACTIVS(6)) THEN
@@ -270,13 +273,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           WRITE (IOFILO,5030) ('-',I = 1,IC)
           WRITE (CIOUT,5010)
           DO 70 I = 1, NM1
-            WRITE (CIOUT,5060) I
-            IC = 15
+            WRITE (CIOUT,5060) compartmentnames(i)
+            IC = 14
             DO 50 LSP = 1, NS
-              IF (ACTIVS(LSP)) THEN
-                WRITE (CIOUT(IC:IC+9),5040) TOXICT(I,LAYER,LSP)
-                IC = IC + 10
-              END IF
+              WRITE (CIOUT(IC:IC+9),5040) TOXICT(I,LAYER,LSP)
+              IC = IC + 11
    50       CONTINUE
             IF (ACTIVS(6)) THEN
               DO 60 IW = 1, 4
@@ -297,16 +298,16 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
  5030 FORMAT (' ',255A1)
  5040 FORMAT (1PG10.3)
  5050 FORMAT (//,' ',A5,' Layer Species',/)
- 5060 FORMAT (' ',I5)
+ 5060 FORMAT (A13)
       END
 
-      SUBROUTINE RSLTFLW
+      SUBROUTINE RSLTFLW (time)
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
-C     Routine:     RSLTFLW
+C     Routine:     RSLTFLW - normal flow field (see rsltflwt for total mass)
 C
-C     Source File: RESULT.SOR
+C     Source File: RESULT
 C
 C     Functional Class:
 C
@@ -336,7 +337,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DO 70 IRM = 1, N
         I = IRM
         FIRST = .TRUE.
-        WRITE (CIOUT,'(I4)') IRM
+        WRITE (CIOUT,'(A8)') compartmentnames(IRM)
         IF (IRM.EQ.N) CIOUT = 'Outside'
 
 C     HORIZONTAL FLOW NATURAL VENTS
@@ -420,8 +421,8 @@ C     MECHANICAL VENTS
             IF (II.EQ.IRM) THEN
               INODE = HVNODE(2,I)
               WRITE (CJOUT,'(A1,1X,A4,I3)') 'M', 'Node', INODE
-              DO 50 II = 1, 4
-                FLOW(II) = XX0
+              DO 50 IIi = 1, 4
+                FLOW(IIi) = XX0
    50         CONTINUE
               IF (HVEFLO(UPPER,I).GE.XX0) FLOW(1) = HVEFLO(UPPER,I)
               IF (HVEFLO(UPPER,I).LT.XX0) FLOW(2) = -HVEFLO(UPPER,I)
@@ -443,32 +444,110 @@ C     MECHANICAL VENTS
 
  5000 FORMAT (//,' Flow Through Vents (kg/s)',/,
      +    '0To             Through        ',
-     +    '    Upper Layer           ','    Lower Layer           ',
-     +    'Mixing       Mixing',/,' Compartment    Vent           ',2(
-     +    'Inflow       Outflow      '),'To Upper     To Lower',/,' ',
+     +    '      Upper Layer           ','    Lower Layer           ',
+     +    'Mixing       Mixing',/,' Compartment    Vent             ',
+     +   2('Inflow       Outflow      '),'To Upper     To Lower',/,' ',
      +    104('-'))
  5010 FORMAT (' ')
  5020 FORMAT (' ',A7,8X,A12,1X,A)
       END
 
+      SUBROUTINE RSLTFLWt (time)
+
+C--------------------------------- NIST/BFRL ---------------------------------
+C
+C     Routine:     RSLTFLWt - total mass through vents
+C
+C     Source File: RESULT
+C
+C     Functional Class:
+C
+C     Description:  Output the vent flow at the current time
+C
+C     Arguments: none
+C
+C     Revision History:
+C        Created:  7/12/1993 at 12:51 by RDP
+C        Modified: 2/10/97 by gpf
+C                  use o(n) vent datastructures instead of o(n**2)
+C
+C---------------------------- ALL RIGHTS RESERVED ----------------------------
+
+      include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "sizes.fi"
+      include "vents.fi"
+      CHARACTER CIOUT*8, CJOUT*12, OUTBUF*90
+      DIMENSION FLOW(6)
+      LOGICAL FIRST
+      XX0 = 0.0D0
+      WRITE (IOFILO,5000)
+
+      DO 70 IRM = 1, N
+        I = IRM
+        FIRST = .TRUE.
+        WRITE (CIOUT,'(A8)') compartmentnames(IRM)
+        IF (IRM.EQ.N) CIOUT = 'Outside'
+
+C     HORIZONTAL FLOW NATURAL VENTS
+
+
+C     VERTICAL FLOW NATURAL VENTS
+
+
+C     MECHANICAL VENTS
+
+        IF (NNODE.NE.0.AND.NEXT.NE.0) THEN
+          DO 60 I = 1, NEXT
+            II = HVNODE(1,I)
+            IF (II.EQ.IRM) THEN
+              INODE = HVNODE(2,I)
+              WRITE (CJOUT,'(A1,1X,A4,I3)') 'M', 'Node', INODE
+              DO 50 IIi = 1, 4
+                FLOW(IIi) = XX0
+   50         CONTINUE
+              IF (HVEFLOt(UPPER,I).GE.XX0) FLOW(1) = HVEFLOt(UPPER,I)
+              IF (HVEFLOt(UPPER,I).LT.XX0) FLOW(2) = -HVEFLOt(UPPER,I)
+              IF (HVEFLOt(LOWER,I).GE.XX0) FLOW(3) = HVEFLOt(LOWER,I)
+              IF (HVEFLOt(LOWER,I).LT.XX0) FLOW(4) = -HVEFLOt(LOWER,I)
+              flow(5) = (abs(tracet(upper,i))+ abs(tracet(lower,i)))
+     +                / tradio
+              CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),
+     +                    flow(5),flow(6))
+              IF (FIRST) THEN
+                IF (I.NE.1) WRITE (IOFILO,5010)
+                WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
+                FIRST = .FALSE.
+              ELSE
+                WRITE (IOFILO,5020) ' ', CJOUT, OUTBUF
+              END IF
+            END IF
+   60     CONTINUE
+        END IF
+   70 CONTINUE
+
+ 5000 FORMAT (//,' Total mass flow through vents (kg)',/,
+     +    '0To             Through        ',
+     +    '      Upper Layer           ','    Lower Layer           ',
+     +    'Trace Species',/,' Compartment    Vent             ',
+     +   2('Inflow       Outflow      '),'Relative to Total Release',/,
+     +    ' ', 104('-'))
+ 5010 FORMAT (' ')
+ 5020 FORMAT (' ',A7,8X,A12,1X,A)
+      END
+      
       SUBROUTINE RSLTCMP (iounit)
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     RSLTCMP
 C
-C     Source File: RESULT.SOR
-C
-C     Functional Class:
-C
 C     Description:  Output a compressed output for 80 column screens
 C
 C     Arguments: none
 C
-C     Revision History:
-C        Created:  7/12/1993 at 12:51 by RDP
-C        Modified: 4/25/1995 by GPF
-C           Removed declaration of CIOUT to eliminate FLINT complaint
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
@@ -497,7 +576,7 @@ C
      +      ONTARGET(IR)
         ELSE
         WRITE (iounit,5030) IR, ZZTEMP(IR,UPPER)-273.15, 
-     +                          ZZTEMP(IR,LOWER)-273.15,
+     +      ZZTEMP(IR,LOWER)-273.15,
      +      ZZHLAY(IR,LOWER), XEMP, XQF, ZZRELP(IR) - PAMB(IR),
      +      ONTARGET(IR)
         ENDIF
@@ -563,12 +642,14 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         GTOTAL = QTGFLUX(ITARG,1)
         CTOTAL = QTCFLUX(ITARG,1)
         IF (RTOTAL.NE.XX0) THEN
-          WRITE (iofilo,5010) I,((TWJ(1,I,IWPTR(IW))-273.15),IW=1,4),
+          WRITE (iofilo,5010) compartmentnames(I),
+     +        ((TWJ(1,I,IWPTR(IW))-273.15),IW=1,4),
      +        TWJ(1,I,2)-273.15,RTOTAL,FTOTAL/RTOTAL*X100,
      +        WTOTAL/RTOTAL*X100,
      +        GTOTAL/RTOTAL*X100,CTOTAL/RTOTAL*X100
         ELSE
-          WRITE (iofilo,5010) I,(TWJ(1,I,IWPTR(IW))-273.15,IW=1,4),
+          WRITE (iofilo,5010) compartmentnames(I),
+     +        (TWJ(1,I,IWPTR(IW))-273.15,IW=1,4),
      +        TWJ(1,I,2)-273.15
         END IF
         IF (NTARG.GT.NM1) THEN
@@ -603,7 +684,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      +    '                (C)       (C)       (C)       ',
      +    '(C)                (C)      (W/m^2)      (%)       ',
      +    '(%)       (%)       (%)',/,1X,124('-'))
-5010  FORMAT (1x,I5,9X,1P4G10.4,1X,'Floor',2X,1PG10.3,1X,1PG10.4,0PF7.1,
+5010  FORMAT (1x,a14,1P4G10.4,1X,'Floor',2X,1PG10.3,1X,1PG10.4,0PF7.1,
      +    3(3X,F7.1))
 5030  FORMAT (55X,I4,4X,1PG10.3,1X,1PG10.4,0PF7.1,3(3X,F7.1))
       END
@@ -729,20 +810,13 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
-C     Routine:     NPUTO
+C     Routine:     outinitial
 C
-C     Source File: NPUTO.SOR
-C
-C     Functional Class:  
+C     Source File: result.f
 C
 C     Description:  Output initial test case description
 C
 C     Arguments: ISW   Print switch for restart option, 1=Print
-C
-C     Revision History:
-C        Recreated:  7/1/1993 at 13:07 by RDP
-C        Modified: 5/16/1988 by WWJ:  fix cvent specification
-C        Modified: 1989 by WWJ:  fix external ambient
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
@@ -754,16 +828,19 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       CHARACTER CHKSUM*8
       EXTERNAL LENGTH
+      integer imajor, iminor, iminorrev
 
       call splitversion(version,imajor,iminor,iminorrev)
-      
+
       IF (.not.HEADER) THEN
         if (iminorrev.ge.10) then
-          WRITE (IOFILO,5001) IMAJOR, IMINOR, IMINORREV
+            WRITE (iofilo,10) imajor, iminor, iminorrev, CRDATE(1), 
+     +      CRDATE(2), CRDATE(3), MPSDAT(1), MPSDAT(2), MPSDAT(3)
         else
-          WRITE (IOFILO,5002) IMAJOR, IMINOR, IMINORREV
+            WRITE (iofilo,20) imajor, iminor, iminorrev, CRDATE(1), 
+     +      CRDATE(2), CRDATE(3), MPSDAT(1), MPSDAT(2), MPSDAT(3)
         end if
-      END IF
+      end if
 
       WRITE (IOFILO,5000) trim(inputfile), trim(title)
       IF (outputformat.gt.1) THEN
@@ -780,28 +857,30 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       RETURN
 C
  5000 FORMAT (' Data file is ',A,'    Title is ',A)
- 5001 FORMAT (' CFAST Version ',I4,'.',I1,'.',I2,/)
- 5002 FORMAT (' CFAST Version ',I4,'.',I1,'.',I1,/)
+ 10   FORMAT (' CFAST Version ',i1,'.',i1,'.',I2,
+     +        ' built ',I4.4,'/',I2.2,
+     +        '/',I2.2,', run ',I4.4,'/',I2.2,'/',I2.2,/)
+ 20   FORMAT (' CFAST Version ',i1,'.',i1,'.',I1,
+     +        ' built ',I4.4,'/',I2.2,
+     +        '/',I2.2,', run ',I4.4,'/',I2.2,'/',I2.2,/)
       END
 
       SUBROUTINE OUTOVER
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     OUTOVER
-C
-C     Source File: NPUTO.SOR
-C
-C     Functional Class:  
-C
-C     Description:  Output initial test case overview
-C
-C     Arguments: none
-C
-C     Revision History:
-C        Created:  7/2/1993 at 14:50 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!
+!     Routine:     OUTOVER
+!
+!     Source File: NPUTO.SOR
+!
+!     Functional Class:  
+!
+!     Description:  Output initial test case overview
+!
+!     Arguments: none
+!
+!     Revision History:
+!        Created:  7/2/1993 at 14:50 by RDP
+!
 
       include "precis.fi"
       include "cfast.fi"
@@ -912,30 +991,20 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "sizes.fi"
       include "vents.fi"
 
-          WRITE (IOFILO,5000)
+      WRITE (IOFILO,5000)
       DO 10 I = 1, NM1
-#ifdef pp_lite
-        WRITE (IOFILO,5010) I, BR(I), DR(I), HR(I), HRP(I), HFLR(I)
-#else
-        WRITE (IOFILO,5010) I, BR(I), DR(I), HR(I), AR(I), VR(I), 
-     +      HRP(I), HFLR(I)
-#endif
+        WRITE (IOFILO,5010) I, compartmentnames(i), BR(I), DR(I),
+     +      HR(I), AR(I), VR(I), HRP(I), HFLR(I)
    10 CONTINUE
       RETURN
-#ifdef pp_lite
- 5000 FORMAT (//,' COMPARTMENTS',//,' Compartment    ','Width     ',
-     +    'Depth     ','Height    ',
-     +    'Ceiling   ','Floor     ',/,' ',45X,'Height    ','Height    ',
-     +    /,' ',15X,3('(m)',7X),2('(m)',7X),/,
-     +    ' ',61('-'))
-#else
- 5000 FORMAT (//,' COMPARTMENTS',//,' Compartment    ','Width     ',
+ 5000 FORMAT (//,' COMPARTMENTS',//,' Compartment  ',
+     +    'Name           ',
+     +    'Width     ',
      +    'Depth     ','Height    ','Area      ','Volume    ',
-     +    'Ceiling   ','Floor     ',/,' ',65X,'Height    ','Height    ',
-     +    /,' ',15X,3('(m)',7X),'(m^2)     ','(m^3)     ',2('(m)',7X),/,
-     +    ' ',81('-'))
-#endif
- 5010 FORMAT (' ',I5,8X,7(F7.2,3X))
+     +    'Ceiling   ','Floor     ',/,' ',78X,'Height    ','Height    ',
+     +    /,' ',29X,3('(m)',7X),'(m^2)     ','(m^3)      ',2('(m)',7X),/,
+     +    ' ',96('-'))
+ 5010 FORMAT (' ',I5,8x,a13,7(F7.2,3X))
       END
 
       SUBROUTINE OUTVENT
@@ -965,7 +1034,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cshell.fi"
       include "sizes.fi"
       include "vents.fi"
-      CHARACTER CIOUT*8, CJOUT*8, CSOUT*6
+      CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
       LOGICAL FIRST
 
 C     HORIZONTAL FLOW VENTS
@@ -977,18 +1046,14 @@ C     HORIZONTAL FLOW VENTS
         DO 30 I = 1, NM1
           DO 20 J = I + 1, N
             DO 10 K = 1, 4
-              WRITE (CJOUT,'(I5,3X)') J
+              WRITE (CJOUT,'(a14)') compartmentnames(J)
               IF (J.EQ.N) CJOUT = ' Outside'
               IF (IAND(1,ISHFT(NW(I,J),-K)).NE.0) THEN
                 IIJK = IJK(I,J,K)
-#ifdef pp_lite
-                WRITE (IOFILO,5020) I, CJOUT, K, BW(IIJK), HL(IIJK), 
-     +              HH(IIJK)
-#else
-                WRITE (IOFILO,5020) I, CJOUT, K, BW(IIJK), HL(IIJK), 
+                WRITE (IOFILO,5020) compartmentnames(I), CJOUT, K,
+     +              BW(IIJK), HL(IIJK), 
      +              HH(IIJK), HLP(IIJK), HHP(IIJK), (HHP(IIJK)-
      +              HLP(IIJK)) * BW(IIJK)
-#endif
               END IF
    10       CONTINUE
    20     CONTINUE
@@ -1026,8 +1091,6 @@ C     VERTICAL FLOW VENTS
 
 C     MECHANICAL VENTS
 
-#ifdef pp_lite
-#else
       IF (NNODE.EQ.0.AND.NEXT.EQ.0) THEN
         WRITE (IOFILO,5060)
       ELSE
@@ -1085,29 +1148,18 @@ C     FANS
    90     CONTINUE
   100   CONTINUE
       END IF
-#endif
       RETURN
 
  5000 FORMAT (//,' VENT CONNECTIONS',//,' There are no horizontal',
      +    ' natural flow connections')
-#ifdef pp_lite
- 5010 FORMAT (//,' VENT CONNECTIONS',//,' Horizontal Natural Flow',
-     +    ' Connections (Doors, Windows, ...)',//,' From           ',
-     +    'To             ','Vent      ','Width     ','Sill      ',
-     +    'Soffit    ',/,' ',
-     +    'Compartment    ','Compartment    ','Number    ',10X,
-     +    'Height    ','Height    ',/,' ',30X,4(
-     +    '(m)       '),/,' ',70('-'))
-#else
  5010 FORMAT (//,' VENT CONNECTIONS',//,' Horizontal Natural Flow',
      +    ' Connections (Doors, Windows, ...)',//,' From           ',
      +    'To             ','Vent      ','Width     ','Sill      ',
      +    'Soffit    ','Abs.      ','Abs.      ','Area',/,' ',
      +    'Compartment    ','Compartment    ','Number    ',10X,
-     +    'Height    ','Height    ','Sill      ','Soffit',/,' ',30X,6(
+     +    'Height    ','Height    ','Sill      ','Soffit',/,' ',40X,5(
      +    '(m)       '),1('(m^2)',5X),/,' ',100('-'))
-#endif
- 5020 FORMAT (' ',I5,10X,A8,4X,3X,I3,4X,6(F7.2,3X))
+ 5020 FORMAT (' ',a14,1X,A14,I3,5X,6(F7.2,3X))
  5030 FORMAT (//,' There are no vertical natural flow connections')
  5040 FORMAT (//,' Vertical Natural Flow Connections (Ceiling, ...)',//,
      +    ' Top            Bottom         Shape     Area      ',
@@ -1116,8 +1168,6 @@ C     FANS
      +    'Height    Height',/,' ',40X,'(m^2)     ',2('(m)       '),/,
      +    ' ',70('-'))
  5050 FORMAT (' ',A8,7X,A8,7X,A6,2X,3(F7.2,3X))
-#ifdef pp_lite
-#else
  5060 FORMAT (//,' There are no mechanical flow connections')
  5070 FORMAT (//' Mechanical Flow Connections (Fans, Ducts, ...)',//,
      +    ' Connections and Ducts',//,' System    ',
@@ -1142,7 +1192,6 @@ C     FANS
  5140 FORMAT (' ',10X,A4,I3,5X,F7.2,6X,A4,I3,5X,F7.2,6X,I3,6X,2(F7.2,3X
      +    ),1P5G10.2)
  5150 FORMAT (' ')
-#endif
       END
 
       SUBROUTINE CHKEXT(IND,IRM,IEXT)
@@ -1224,20 +1273,16 @@ C     SOME SURFACES ARE ON, DO THE PRINTOUT OF THE SURFACES
 
    30 WRITE (IOFILO,5010)
       DO 40 I = 1, NM1
-        WRITE (IOFILO,5020) I, CNAME(1,I), CNAME(3,I), CNAME(2,I)
+        WRITE (IOFILO,5020) compartmentnames(I), CNAME(1,I), CNAME(3,I),
+     +                      CNAME(2,I)
    40 CONTINUE
 
 C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 
    60 WRITE (IOFILO,5030) THRMFILE
       DO 80 I = 1, MAXCT
-#ifdef pp_lite
-         WRITE (IOFILO,5040) NLIST(I), LFKW(1,I), LCW(1,I), LRW(1,I), 
-     +      LFLW(1,I), LEPW(I)
-#else
          WRITE (IOFILO,5040) NLIST(I), LFKW(1,I), LCW(1,I), LRW(1,I), 
      +      LFLW(1,I), LEPW(I), (LHCLBF(K,I),K = 1,5) 
-#endif
          DO 70 J = 2, LNSLB(I)
             WRITE (IOFILO,5050) LFKW(J,I), LCW(J,I), LRW(J,I), 
      +          LFLW(J,I)
@@ -1248,16 +1293,10 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
  5010 FORMAT (//,' THERMAL PROPERTIES',//,' ',
      +    'Compartment    Ceiling      Wall         Floor',/,' ',70('-')
      +    )
- 5020 FORMAT (' ',I5,9X,3(A10,3X))
-#ifdef pp_lite
- 5030 FORMAT (//,' Thermal data base used: ',A20,//,' Name',4X,
-     +    'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',
-     +    3X,'Emissivity')
-#else
+ 5020 FORMAT (' ',a13,3(A10,3X))
  5030 FORMAT (//,' Thermal data base used: ',A20,//,' Name',4X,
      +    'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',
      +    3X,'Emissivity',16X,'HCL B''s (1->5)')
-#endif
  5040 FORMAT (' ',A8,1P5G13.3,5E10.2)
  5050 FORMAT (' ',8X,1P4G13.3)
  5060 FORMAT (' ')
@@ -1292,29 +1331,19 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DATA FTYPE /'Undefined', 'Unconstrained', 'Constrained', 
      +    'Pool Fire', 'Furniture'/
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT'/
+     +    'OD', 'CT', 'TS'/
 
       WRITE (IOFILO,5020)
       IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
-#ifdef pp_lite
-#else
         WRITE (IOFILO,5030) 'Main Fire'
-#endif
         WRITE (IOFILO,5040) LFBO, FTYPE(LFBT), FPOS, RELHUM * 100., 
      +      LIMO2 * 100., TE
         WRITE (CBUF,5050)
         IF (LFBT.EQ.1) THEN
-#ifdef pp_lite
-          IS = 41
-        ELSE
-          WRITE (CBUF(41:71),5060)
-          IS = 71
-#else
           IS = 51
         ELSE
           WRITE (CBUF(51:110),5060)
           IS = 111
-#endif
         END IF
         DO 10 LSP = 1, NS
           IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
@@ -1331,14 +1360,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           IF (LFBT.EQ.1) THEN
             IS = 41
           ELSE
-#ifdef pp_lite
-            WRITE (CBUF(41:71),5080) CCO2(I), COCO2(I), HCRATIO(I)
-            IS = 71
-#else
             WRITE (CBUF(51:110),5080) CCO2(I), COCO2(I), HCRATIO(I), 
      +          OCRATI(I), HCNF(I), HCLF(I)
             IS = 111
-#endif
           END IF
           DO 20 LSP = 1, NS
             IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
@@ -1354,26 +1378,15 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      +    (A7,3X))
  5010 FORMAT (' ',255A1)
  5020 FORMAT (//,' FIRES')
-#ifdef pp_lite
-#else
  5030 FORMAT ('0Name: ',A,//,' Compartment    Fire Type    ',
      +    '   Position (x,y,z)     Relative    Lower O2',
      +    '    Pyrolysis',/,' ',52X,
      +    'Humidity    Limit       Temperature')
-#endif
-#ifdef pp_lite
- 5040 FORMAT  ('0Compartment:',5X,I5,/,' Fire Type: ',10X,A13,/,
-     + ' Position (x,y,z): ',3F7.2,/,' Relative Humidity: ',F5.1,/,
-     + ' Lower O2 Limit: ',2X,F7.2,/,' Pyrolysis Temp.:',F7.0,//)
- 5050 FORMAT ('Time      Fmass     Hcomb     Fqdot     ')
- 5060 FORMAT ('C/CO2     CO/CO2    H/C       ')
-#else
  5040 FORMAT (I5,11X,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.0,//)
  5050 FORMAT ('Time      Fmass     Hcomb     Fqdot     Fhigh     ')
  5060 FORMAT ('C/CO2     CO/CO2    H/C       O/C       HCN       ',
      +    'HCL       ')
-#endif
- 5070 FORMAT (F8.1,2X,1P4G10.2)
+ 5070 FORMAT (F7.0,3X,1P4G10.2)
  5080 FORMAT (1P10G10.2)
       END
 
@@ -1407,7 +1420,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DATA FTYPE /'Undefined', 'Unconstrained', 'Constrained', 
      +    'Pool Fire', 'Furniture'/
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT'/
+     +    'OD', 'CT', 'TS'/
 
       IF (NUMOBJL.GT.0) THEN
         DO 40 IO = 1, MXOIN
@@ -1415,26 +1428,22 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
             J = OBJPNT(IO)
             NNV = OBJLFM(J)
             WRITE (IOFILO,5020) OBJNIN(J)(1:LENGTH(OBJNIN(J))), J
-            WRITE (IOFILO,5030) OBJRM(J), FTYPE(OBJTYP(J)), 
+            WRITE (IOFILO,5030) compartmentnames(OBJRM(J)),
+     +		  FTYPE(OBJTYP(J)), 
      +          OBJPOS(1,J), OBJPOS(2,J), OBJPOS(3,J), RELHUM * 100., 
      +          LIMO2 * 100., OBJVT(J)
             WRITE (CBUF,5040)
-            WRITE (CBUF(51:110),5050)
-            IS = 111
-            DO 10 LSP = 1, NS
-              IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
-                CBUF(IS:IS+9) = STYPE(LSP)
-                IS = IS + 10
-              END IF
-   10       CONTINUE
+            WRITE (CBUF(51:132),5050)
+            IS = 133
             WRITE (IOFILO,'(3X,A)') CBUF(1:LENGTH(CBUF))
             WRITE (IOFILO,5000) ('(kg/kg)',I = 1,(IS-51)/10)
             WRITE (IOFILO,5010) ('-',I = 1,IS-1)
             DO 30 I = 1, NNV
               WRITE (CBUF,5060) OTIME(I,J), OMASS(I,J), OBJHC(I,J), 
      +            OQDOT(I,J), OHIGH(I,J)
-              WRITE (CBUF(51:110),5070) OOD(I,J), OCO(I,J), OHCR(I,J), 
-     +            OOC(I,J), OMPRODR(I,6,J), OMPRODR(I,5,J)
+              WRITE (CBUF(51:132),5070) OOD(I,J), OCO(I,J), OHCR(I,J), 
+     +            OOC(I,J), OMPRODR(I,6,J), OMPRODR(I,5,J),
+     +            omprodr(i,10,j),omprodr(i,11,j)
               IS = 111
               DO 20 LSP = 1, NS
                 IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
@@ -1456,12 +1465,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      +    '   Position (x,y,z)     Relative    Lower O2',
      +    '    Pyrolysis',/,' ',52X,
      +    'Humidity    Limit       Temperature')
- 5030 FORMAT (I5,11X,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.0,//)
+ 5030 FORMAT (1x,a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.0,//)
  5040 FORMAT ('Time      Fmass     Hcomb     Fqdot     Fhigh     ')
  5050 FORMAT ('C/CO2     CO/CO2    H/C       O/C       HCN       ',
-     +    'HCL       ')
- 5060 FORMAT (F8.1,3X,1P4G10.2)
- 5070 FORMAT (1P10G10.2)
+     +    'HCL         CT        TS')
+ 5060 FORMAT (F7.0,3X,1P4G10.2)
+ 5070 FORMAT (1P10G10.2,2x,2g10.2)
       END
 
       CHARACTER*8 FUNCTION CHKSUM(FILE)
@@ -1472,33 +1481,26 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       SUBROUTINE OUTTARG(ISW)
 
-C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     OUTTARG
-C
-C     Source File: NPUTO.SOR
-C
-C     Functional Class:  
 C
 C     Description:  Output initial test case target specifications
 C
 C     Arguments: none
 C
-C     Revision History:
-C        Created:  10/21/1994 by GPF
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "fltarget.fi"
       CHARACTER CBUF*255
+
       IF(NTARG.NE.0)WRITE(IOFILO,5000)
  5000 FORMAT(//,' TARGETS'//
      .         ' Target',T9,'Compartment',T24,'Position (x, y, z)',
      .         T51,'Direction (x, y, z)',T76,'Material'/
      .         1X,82('-'))
+
       DO 10 ITARG = 1, NTARG
         IF (ITARG.LT.NTARG-NM1+1) THEN
           CBUF = CXTARG(ITARG)
@@ -1509,13 +1511,13 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         END IF
 5004  FORMAT ('Floor, compartment ',I2)
 5005  FORMAT (A8,'  Floor, compartment ',I2)
-      IF (ITARG.EQ.NTARG-NM1+1) WRITE (IOFILO,5006)
+!      IF (ITARG.EQ.NTARG-NM1+1) WRITE (IOFILO,5006)
 5006  FORMAT (' ')
-        WRITE(IOFILO,5010)ITARG,IXTARG(TRGROOM,ITARG),
+        WRITE(IOFILO,5010)ITARG,compartmentnames(IXTARG(TRGROOM,ITARG)),
      .      (XXTARG(TRGCENX+J,ITARG),J=0,2),
      .      (XXTARG(TRGNORMX+J,ITARG),J=0,2),
-     .      CBUF
- 5010    FORMAT(T3,I3,T11,I2,T21,6(F7.2,2X),T76,A35)
+     .      CBUF(1:8)
+ 5010    FORMAT(' ',I5,T11,a14,T21,6(F7.2,2X),T76,A8)
    10 CONTINUE
       RETURN
       END

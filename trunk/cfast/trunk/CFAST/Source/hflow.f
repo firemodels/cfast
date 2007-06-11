@@ -55,6 +55,7 @@ C
       DIMENSION UFLW0(NR,NS+2,2)
       LOGICAL VENTFLG(MXVENT), ROOMFLG(NR), anyvents
       SAVE UFLW0
+	double precision factor2, qchfraction, height, width
 
 C    TEMPORARY DECLARATION
 
@@ -103,18 +104,6 @@ c	This code was moved from vent hflow 5/7/2003 so that initialization always occ
           VSA(Ilocal,I) = XX0
           VAS(Ilocal,I) = XX0
 21      CONTINUE
-C	This seems to be a redundant data structure for reporting purposes only;
-C	However, we have to initialize it as well
-        IIJK = IJK(IROOM1,IROOM2,IK)
-        SS1(IIJK) = XX0
-        SS2(IIJK) = XX0
-        SA1(IIJK) = XX0
-        SA2(IIJK) = XX0
-        AS1(IIJK) = XX0
-        AS2(IIJK) = XX0
-        AA1(IIJK) = XX0
-        AA2(IIJK) = XX0
-
 
 C       USE NEW INTERPOLATOR TO FIND VENT OPENING FRACTION
 
@@ -159,7 +148,8 @@ C         COPY NUMBER OF NEUTRAL PLANES TO CFAST DATA STRUCTURES
           NEUTRAL(IROOM1,IROOM2) = NNEUT
           NEUTRAL(IROOM2,IROOM1) = NNEUT
 
-C         COPY FLOWS INTO CFAST DATA STRUCTERS
+C     COPY FLOWS INTO the CFAST DATA STRUCTure
+C	This data structure is for reporting purposes only;
 
           IIJK = IJK(IROOM1,IROOM2,IK)
           SS1(IIJK) = VSS(1,I)

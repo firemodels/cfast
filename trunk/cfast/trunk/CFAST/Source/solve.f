@@ -61,6 +61,7 @@ C                tell dassl about discontinuities using ZZDISC array
 C                defined in DATACOPY .
 C        Modified: 5/11/98 by GPF:
 C                  Implement fast startup option.
+!        Modifies 1/25/07 by wwj to include a calculation of the total pyrolosate
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
@@ -132,16 +133,17 @@ C     update history
      . firstpassforsmokeview
       INTEGER ALL, SOME, IOS, ierror
 	integer*2 filecount
+	double precision ton, toff
       CHARACTER*133 MESSG
       PARAMETER (ALL = 1,SOME = 0)
       EXTERNAL RESID, JAC
       DATA PDZERO /MAXTEQ * 0.0D0/
 
       CALL CPTIME(TOFF)
-	IERROR = 0
       XX0 = 0.0D0
       XX1 = 1.0D0
       X0001 = 0.0001D0
+	IERROR = 0
       TPAWS = TSTOP + XX1
       TSTART = ITMSTP - 1
       TOLD = TSTART
@@ -276,9 +278,14 @@ C    CONSTRUCT INITIAL SOLUTION
         POLD(I) = P(I)
    70 CONTINUE
 
+!     calculate the mass of objects that have been pyrolized
+!     at the moment we do only the total and the radiological species
+!     make sure that the INTEGRATE routine is called before TOXIC
+         call integrate mass (t, dt)
+
 C     moved from initspec to here 2/10/93 - needs to be called after datacopy
       CALL TOXIC(XX0)
-
+      
 !	If we are running only an initialization test then we do not need to solve anything
 	if (initializeonly) then
 		 CALL TARGET(STEADY)
@@ -353,7 +360,7 @@ C	IF WE ACTUALLY USE TARGET TEMPERATURES IN A CALCULATION THEN THIS CALL WILL NE
 
           ITMSTP = TPRINT
           CALL RESULT(T,1)
-		call StatusOutput (T, dT, errorcode)
+		  call StatusOutput (T, dT, errorcode)
           CALL OUTJCNT(T)
           TPRINT = TPRINT + DPRINT
           NUMJAC = 0
@@ -409,7 +416,7 @@ C	IF WE ACTUALLY USE TARGET TEMPERATURES IN A CALCULATION THEN THIS CALL WILL NE
              CALL TARGET(STEADY)
              LTARG = .TRUE.
           ENDIF
-           call SpreadSheetNormal (T, ierror)
+         call SpreadSheetNormal (T, ierror)
 		 call SpreadSheetSpecies (T, ierror)
 		 call SpreadSheetFlow (T, ierror)
 		 call SpreadSheetFlux (T, ierror)
@@ -458,8 +465,7 @@ C*** if there is a discontinuity then tell dassl
         CALL CPTIME(TON)
         CALL DDASSL(RESID,NODES,T,P,PPRIME,TOUT,INFO,VRTOL,VATOL,IDID,
      +      RWORK,LRW,IWORK,LIW,RPAR,IPAR,JAC)
-C*** CALL CPU TIMER AND MEASURE, SOLVER TIME WITHIN DASSL AND
-C    OVERHEAD TIME (EVERYTHING ELSE).
+C*** CALL CPU TIMER AND MEASURE, SOLVER TIME WITHIN DASSL AND OVERHEAD TIME (EVERYTHING ELSE).
         CALL SETDERV(-2)
         IEQMAX = IPAR(3)
         IF (OPTION(FPDASSL).EQ.ON) CALL DEBUGPR (3,T,DT,IEQMAX)
@@ -542,7 +548,7 @@ C       Check to see if we are backing up for detectors going off
            CALL UPDTECT(MDUPDT,TOLD,DT,NDTECT,ZZHLAY,ZZTEMP,
      .                  XDTECT,IXDTECT,IQUENCH,IDSET,IFDTECT,TDTECT)
          END IF
-C     OBJECT IGNITION IS THE FIRST THING THAT TO HAPPEN
+C     OBJECT IGNITION IS THE FIRST THING TO HAPPEN
          IF (IFOBJ.GT.0.AND.TOBJ.LE.TD) THEN
            CALL UPDOBJ(MDSET,TOLD,DT,IFOBJ,TOBJ,IERROR)
            WRITE(IOFILO,5003) IFOBJ,trim(objnin(ifobj)),
@@ -630,10 +636,14 @@ C    UPDTECT SAID THAT A SPRINKLER HAS GONE OFF BUT THE TIME IS WRONG!!
    75       CONTINUE
          ENDIF
 
+!     calculate the mass of objects that have been pyrolized
+!     at the moment we do only the total and the radiological species
+!     It is important to call the routine to integrate the mass before call the toxicology calculatino
+         call integrate mass (t, dt)
+
 C     CALCULATE GAS DOSAGE
-
          CALL TOXIC(DT)
-
+         
          IF (OPTION(FDEBUG).EQ.ON) CALL DEBUGPR(2,T,DT,IEQMAX)
          NUMSTEP = NUMSTEP + 1
          GO TO 80
@@ -649,7 +659,7 @@ C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     UPDREST
 C
-C     Source File: SOLVE.SOR
+C     Source File: SOLVE
 C
 C     Functional Class:
 C
@@ -883,7 +893,7 @@ C
       INTEGER BMAP(MBR)
       LOGICAL FIRSTC
       DATA SPNAME /'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%',
-     +    '  TUH', ' H2O%', '   OD', '   CT'/
+     +    '  TUH', ' H2O%', '   OD', '   CT', 'TS'/
       DATA FIRSTC /.TRUE./
       SAVE BMAP
 

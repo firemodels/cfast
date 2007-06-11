@@ -1,5 +1,5 @@
-	subroutine remapfires (nfires, flocal, fxlocal, fylocal, 
-     . fzlocal, fqlocal, fhlocal)
+	SUBROUTINE REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
+     . FZLOCAL, FQLOCAL, FHLOCAL)
 
 C	This routine is to combine the main fire (in lfbo) and any objects into a single list
 C	There does not have to be a main fire nor any objects, so NFIRES may be zero
@@ -13,31 +13,30 @@ C	There does not have to be a main fire nor any objects, so NFIRES may be zero
 
 C	First, the mainfire if there is one
 
-	if (lfbo.gt.0) then
+	IF (LFBO.GT.0) THEN
 		nfires = 1
-		flocal(1) = froom(0)
-		fxlocal(1) = fposx(0)
-		fylocal(1) = fposy(0)
-		fzlocal(1) = fposz(0)
-		call flamhgt (froom(0),fqf(0),farea(0),fheight)
-		fqlocal(1) = fqf(0)
-		fhlocal(1) = fheight
-	else
-		nfires = 0
-	endif
+		FLOCAL(1) = FROOM(0)
+		FXLOCAL(1) = fopos(1,0)
+		FYLOCAL(1) = fopos(2,0)
+		FZLOCAL(1) = fopos(3,0)
+		CALL FLAMHGT (FROOM(0),FQF(0),FAREA(0),FHEIGHT)
+		FQLOCAL(1) = FQF(0)
+		FHLOCAL(1) = FHEIGHT
+	ELSE
+		NFIRES = 0
+	ENDIF
 	
 C	Now the other objects
 
-	do i = 1, numobjl
-		nfires = nfires + 1
-		fxlocal(nfires) = fposx(i)
-		fylocal(nfires) = fposy(i)
-		fzlocal(nfires) = fposz(i)
-          call flamhgt (froom(i),fqf(i),farea(i),fheight)
-		fqlocal(nfires) = fqf(i)
-		fhlocal(nfires) = fheight
+	DO I = 1, NUMOBJL
+		NFIRES = NFIRES + 1
+		FXLOCAL(NFIRES) = fopos(1,i)
+		FYLOCAL(NFIRES) = fopos(2,i)
+		FZLOCAL(NFIRES) = fopos(3,i)
+          CALL FLAMHGT (FROOM(I),fqf(i),FAREA(I),FHEIGHT)
+		FQLOCAL(NFIRES) = fqf(i)
+		FHLOCAL(NFIRES) = FHEIGHT
 		flocal(nfires) = froom(i)
-	end do
-
-	return
-	end
+	END DO
+	RETURN
+	END

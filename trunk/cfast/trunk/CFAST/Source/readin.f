@@ -212,8 +212,6 @@ C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     READAS
 C
-C     Source File: READAS.SOR
-C
 C     Functional Class:  UTILITY
 C
 C     Description:  Read in a string from the input file, filtering out

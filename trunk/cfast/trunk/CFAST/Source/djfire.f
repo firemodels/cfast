@@ -55,7 +55,7 @@ C
           XMASS(i) = X0
    10   CONTINUE
         CALL CHEMIE(DUMMY,XXNETFL,SAS,ITO,LOWER,HCOMBT,X0,X0,X0,X0,X0,
-     +      X0,QPYROL,XXNETFUE,XMASS)
+     +      X0,x0,QPYROL,XXNETFUE,XMASS)
         DO 20 I = 1, NS
           XNTMS(UPPER,I) = XMASS(I)
           XNTMS(LOWER,I) = X0

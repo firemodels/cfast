@@ -151,9 +151,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       CMDLIN = TEMP
       RETURN
       END
-#ifdef pp_ibmpc
+
       SUBROUTINE GETCL(CMDLIN)
-      use dflib
+      use ifport
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -171,11 +171,6 @@ C     Revision History:
 C        Created:  11/16/1992 at 10:06 by RDP
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-#ifdef pp_ibmpc
-      USE DFPORT
-      USE DFLIB
-      INTEGER*2 I
-#endif
 
       include "cfin.fi"
       CHARACTER CMDLIN*127
@@ -203,49 +198,4 @@ C
       RETURN
       END
 
-#elif unix
-      SUBROUTINE GETCL(CMDLIN)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     GETCL
-C
-C     Source File: CMDLINE.SOR
-C
-C     Functional Class: UTILITY
-C
-C     Description: Get command line as a single string on UNIX machines
-C
-C     Arguments: CMDLIN  Command line
-C
-C     Revision History:
-C        Created:  11/16/1992 at 10:06 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
- 
-      include "cfin.fi"
-      CHARACTER CMDLIN*127
-      INTEGER FIRST, LAST, LPOINT
-      LOGICAL VALID
-C
-      MAXARG = 5 + 2
-      LPOINT = 0
-      IAR = IARGC()
-      IF (IAR.EQ.0) THEN
-        CMDLIN = ' '
-      ELSE
-        CMDLIN = ' '
-        DO 10 I = 1, MIN(IAR,MAXARG)
-          CALL GETARG(I,LBUF)
-          CALL SSTRNG(LBUF,60,1,FIRST,LAST,VALID)
-          IF (VALID) THEN
-            IC = LAST - FIRST + 1
-            LPOINT = LPOINT + 1
-            CMDLIN(LPOINT:LPOINT+IC) = LBUF(FIRST:LAST)
-            LPOINT = LPOINT + IC
-          END IF
-   10   CONTINUE
-      END IF
-      RETURN
-      END
-#endif

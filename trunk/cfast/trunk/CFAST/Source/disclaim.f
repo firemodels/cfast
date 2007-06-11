@@ -1,4 +1,4 @@
-        SUBROUTINE DISCLAIM (NAME)
+      SUBROUTINE DISCLAIM (NAME)
 
       include "precis.fi"
       include "cparams.fi"
@@ -25,8 +25,10 @@ C     NOW THE VERSION
       else
         aminrev = '  '
       end if
-        WRITE (IOFILO,1) NAME, MAJVER,MINVER,AMINREV, OBUF
-      	RETURN
+
+      WRITE (IOFILO,1) NAME, MAJVER,MINVER,AMINREV, OBUF
+      RETURN
+
 1     FORMAT(' **   ',A8,'  Version',3X,2(I1,'.'),A2,2X,A14,4X,'**',/,
      .       ' ** ',46X,' **',/,
      .       ' **             A contribution of the              **',/,

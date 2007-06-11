@@ -226,20 +226,12 @@ C          DUE TO FIRES AND GAS LAYER EMISSION
 C*** CONSTRUCT RIGHT HAND SIDE (RHS) OF LINEAR SYSTEM TO BE SOLVED
 C    I.E. COMPUTE B*E - C
       DO 60 K = 1, 4
-#ifdef pp_double
         RHS(K) = DDOT(4,B(K,1),4,E(1),1) - C(K)
-#else
-        RHS(K) = SDOT(4,B(K,1),4,E(1),1) - C(K)
-#endif
    60 CONTINUE
 
 C*** SOLVE THE LINEAR SYSTEM
 
-#ifdef pp_double
       CALL DGEFA(A,4,4,IPVT,INFO)
-#else
-      CALL SGEFA(A,4,4,IPVT,INFO)
-#endif
       IF(INFO.NE.0) THEN
         CALL XERROR('RAD4 - Singular matrix',0,1,1)
         IERROR = 18
@@ -247,11 +239,7 @@ C*** SOLVE THE LINEAR SYSTEM
           RHS(K) = 0.0D0
    65   CONTINUE
        ELSE
-#ifdef pp_double
         CALL DGESL(A,4,4,IPVT,RHS,0)
-#else
-        CALL SGESL(A,4,4,IPVT,RHS,0)
-#endif
       ENDIF
 
 C*** NOTE: EACH ROW K OF THE A MATRIX, AS DEFINED BY SEIGAL AND HOWELL 
@@ -282,12 +270,4 @@ C*** COMPUTE RADIATION ABSORBED BY EACH LAYER
       QLAY(L) = QLLAY
 
       RETURN
-#ifdef pp_gui
-      ENTRY INRAD4
-      FIRST = .TRUE.
-      DO 2000 I = 1, MXROOM
-        IFLAG(I) = 0
- 2000 CONTINUE
-      RETURN
-#endif
       END

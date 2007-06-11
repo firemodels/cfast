@@ -16,8 +16,8 @@
 	integer layer
       DATA LNAMES /'Upper', 'Lower'/
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT'/
-      logical tooutput(10)/.false.,5*.true.,.false.,3*.true./,
+     +    'OD', 'CT', 'TS'/
+      logical tooutput(11)/.false.,5*.true.,.false.,4*.true./,
      .  firstc/.true./
 	
 	save outarray, firstc

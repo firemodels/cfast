@@ -72,9 +72,4 @@ C*END
       YINT = Y(IMID) + DYDX * (T-X(IMID))
       ILAST = IMID
       RETURN
-#ifdef pp_gui
-      ENTRY ININTERP
-      ILAST = 1
-      RETURN
-#endif
       END

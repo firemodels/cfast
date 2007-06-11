@@ -668,12 +668,8 @@ C
       ANS = (TAB1*(RR2-R)+TAB2*(R-RR1)) / DR
       RETURN
       END
-#ifdef pp_double
       DOUBLE PRECISION FUNCTION QFCLG(R)
-#else
-      FUNCTION QFCLG(R)
-#endif
-C
+
 C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     QFCLG
@@ -691,7 +687,7 @@ C     Revision History:
 C        Created:  5/5/1995 at 14:18 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
       include "precis.fi"
       COMMON /AINTCH/ H, HTCT, THT, THTQHP, C1, C2, C3, XF, YF, TC
       SAVE /AINTCH/

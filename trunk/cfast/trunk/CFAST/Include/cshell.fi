@@ -4,9 +4,10 @@ C     AND IS KEPT IN THE MAIN COMMON BLOCK.  RUNDAT IS COPIED TO MPSDAT
 C     AS SOON AS THE MODEL KERNEL IS STARTED. DONE IN INITFS AND CFAST BODY.
 C     TO PASS INFORMATION BETWEEN MODULES, USE A TEMPORARY FILE AND STORE THE
 C     NAME IN PASSFILE.
+!     trace determines the type of output (print file) for mechanical ventilation - current or total
 
       LOGICAL ADVFEA, SHELL, CSOPEN, CF_EXIST, HEADER, NOKBD, GPAUSE,
-     +    QUICKEST, initializeonly, debugging
+     +    QUICKEST, initializeonly, debugging, trace
       INTEGER VERSION, DLEN, PLEN, RUNDAT(3), RMFILE, UNITS(8), ICHDR, 
      +    ICSUB, ICTXT, ICPRO, ICMSG, ICHLP, ICBG, ICMBG, ICHBG, ICEBG,
      +    ICEMS, IOFILI, IOFILO, REPORTO, OBFILI, AHFILO, WEBFILE,
@@ -25,7 +26,7 @@ C
      +    DLEN, PLEN, RUNDAT, LOGERR, CSOPEN, RMFILE, CF_EXIST, HEADER,
      +    IOFILI, IOFILO, REPORTO, AHFILO, NOKBD, GPAUSE, QUICKEST,
      +    OBFILI, WEBFILE, IGUISLCT, GUISELCT, initializeonly, 
-     +    outputformat, debugging
+     +    outputformat, debugging, trace
       SAVE /CONFG1/
 C
       COMMON /CONFG2/ PATH, DPATH, CURRENT, CONFIG, THRMFILE, DFILE, 

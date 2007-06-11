@@ -1,10 +1,9 @@
       SUBROUTINE GRABKY(ICH,IT)
 
-      USE DFLIB
-
-      CHARACTER*1 CH
-
+      USE ifport
+      CHARACTER*1 CH, getcharqq
       INTEGER*2 ICH, IT
+      logical peekcharqq
       
       ICH = 0
       IT = 0

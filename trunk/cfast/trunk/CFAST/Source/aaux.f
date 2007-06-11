@@ -103,11 +103,6 @@ C the SLATEC error handling package.
 C Written by A. C. Hindmarsh and P. N. Brown at LLNL.
 C Modified 1/8/90 by Clement Ulrich at LLNL.
 C Version of 8 January, 1990.
-#ifdef pp_double
-C This version is in double precision.
-#else
-C This version is in single precision.
-#endif
 C
 C All arguments are input arguments.
 C
@@ -159,18 +154,6 @@ C Write the message. ---------------------------------------------------
         IF (NNR.EQ.1) WRITE (LUNIT,5030) NERR,R1
         IF (NNR.EQ.2) WRITE (LUNIT,5040) NERR,R1, R2
       END IF
-#ifdef pp_gui
-      ELSE
-      DO 100 I = 1, NMES
-         CC = MSG(I)
-         IMESSG(I) = ICHAR(CC)
-  100 CONTINUE
-      DO 150 I = NMES+1, 2048
-         IMESSG(I) = 0
-  150 CONTINUE
-      CALL XERRWND_C(IMESSG,NMES,NERR,LEVEL,N1,I1,I2,NNR,R1,R2) 
-      END IF
-#endif
 C Abort the run if LEVEL = 2. ------------------------------------------
       IF (LEVEL.NE.2) RETURN
       STOP
@@ -182,7 +165,7 @@ C Abort the run if LEVEL = 2. ------------------------------------------
 C----------------------- End of Subroutine XERRWV ----------------------
       END
       INTEGER FUNCTION LENG(C)
-C*RB
+
 C     Routine:  LENG
 C
 C     Function: Determines the length (last non-blank character)
@@ -193,7 +176,7 @@ C     Outputs:  LENG    last non-blank character in C
 C
 C     Revision History:
 C        Created: 10/14/93 by GPF:
-C*RE
+
       CHARACTER*(*) C
       NC = LEN(C)
       LENG = 0

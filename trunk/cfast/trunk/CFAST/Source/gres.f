@@ -39,11 +39,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       DIMENSION HVPSOLV(*), DELTAMV(*), P2(MAXTEQ), DELTA(MAXTEQ), 
      +    PDZERO(MAXTEQ)
-#ifdef pp_double
       DATA PDZERO /MAXTEQ * 0.0D0/
-#else
-      DATA PDZERO /MAXTEQ * 0.0E0/
-#endif
       NALG = NM1 + NHVPVAR + NHVTVAR
       DO 10 I = 1, NALG
         P2(I) = HVPSOLV(I)
@@ -90,11 +86,4 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         PAUSE
       ENDIF
       RETURN
-#ifdef pp_gui
-      ENTRY INGRES
-      DO 1000 I = 1, MAXTEQ
-        PDZERO(I) = 0.0D0
- 1000 CONTINUE
-      RETURN
-#endif
       END

@@ -78,9 +78,7 @@ C     COUNT THE OF NODES (LARGEST OF NS AND NE)
         NNODE = MAX(NNODE,NA(IB),NE(IB))
    50 CONTINUE
       IF (NNODE.GT.MNODE) THEN
-#ifndef pp_dll
         CALL XERROR('OFFSET - Node range exceeded for HVAC',0,1,1)
-#endif
         IERROR = 16
         RETURN
       END IF

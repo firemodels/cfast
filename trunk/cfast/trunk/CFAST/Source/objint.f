@@ -1,6 +1,6 @@
       SUBROUTINE OBJINT (OBJN, TIME, IROOM, OMASST, OAREAT, 
      . OHIGHT, OQDOTT, OBJHCT, CCO2T, COCO2T, HCRATT, ZMFIRE, OCRATT,
-     . CLFRAT, CNFRAT,UPDATE)
+     . CLFRAT, CNFRAT,crfrat,UPDATE)
 
 C
 C--------------------------------- NIST/BFRL ---------------------------------
@@ -30,6 +30,7 @@ C                ZMFIRE
 C                OCRATT Oxygen to Carbon ration of fuel
 C                CLFRAT HCl production rate
 C                CNFRAT HCN production rate
+C                crFRAT trace gase production rate
 C                UPDATE Update varible
 C
 C     Revision History:
@@ -131,6 +132,8 @@ C
      +  			 CLFRAT)
 	CALL INTERP(OTIME(1,OBJN),OMPRODR(1,5,OBJN),LOBJLFM,XXTIME,1,
      +					 CNFRAT)
+      call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,
+     +                   crfrat)
 
 C*** ATTENUATE MASS AND ENERGY RELEASE RATES IF THERE IS AN ACTIVE SPRINKLER
 C    IN THIS ROOM
@@ -153,7 +156,6 @@ C    IN THIS ROOM
 	CALL INTERP(OTIME(1,OBJN),OOC(1,OBJN),LOBJLFM,XXTIME,1,OCRATT)
 	CALL INTERP(OTIME(1,OBJN),OBJHC(1,OBJN),LOBJLFM,XXTIME,1,OBJHCT)
 	DO 15 J = 1, NS
-	    IF(.NOT.ACTIVS(J)) GO TO 15
 	    CALL INTERP(OTIME(1,OBJN),OMPRODR(1,J,OBJN),LOBJLFM,
      .  		XXTIME,1,XPROD)
 	    ZMFIRE(J) = XPROD * OMASST

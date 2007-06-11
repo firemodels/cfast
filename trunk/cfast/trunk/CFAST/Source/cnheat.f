@@ -213,12 +213,4 @@ C    LAW, Q = -K DT/DX, IS SATISFIED AT THE WALL SURFACE
       ENDIF
 
       RETURN
-#ifdef pp_gui
-        ENTRY INCNHEAT
-         IREVWC(1) = 2
-         IREVWC(2) = 1
-         IREVWC(3) = 3
-         IREVWC(4) = 4
-        RETURN
-#endif
       END

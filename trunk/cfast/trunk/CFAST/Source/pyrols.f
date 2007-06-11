@@ -1,5 +1,5 @@
       SUBROUTINE PYROLS(TIME,IROOM,BFIRET,AFIRET,HFIRET,QFIRET,HCOMBT,
-     .                  CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,ZMFIRE)
+     .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,ZMFIRE)
 C
 C*RB
 C     Routine:  PYROLS
@@ -19,6 +19,7 @@ C               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
 C               HCOMBT  - current heat of combustion (J/kg)
 C               CLFRAT  - current HCl production rate (kg/kg burned)
 C               CNFRAT  - current HCN production rate (kg/kg burned)
+C               crFRAT  - current trace gas production rate (kg/kg burned)
 C               ZMFIRE  - current species production rates (kg/s)
 C     Commons:  
 C      PASSED:  Afired   Bfired   Cco2     Coco2    Hcratio  Hfired
@@ -74,6 +75,7 @@ C
       CALL INTERP(TFIRED,QFIRED,LFMAX,XXTIME,1,QFIRET)
       CALL INTERP(TFIRED,HCLF,LFMAX,XXTIME,1,CLFRAT)
       CALL INTERP(TFIRED,HCNF,LFMAX,XXTIME,1,CNFRAT)
+      call interp(tfired,hcrf,lfmax,xxtime,1,crfrat)
  
 C*** ATTENUATE MASS AND ENERGY RELEASE RATES IF THERE IS AN ACTIVE SPRINKLER
 C    IN THIS ROOM

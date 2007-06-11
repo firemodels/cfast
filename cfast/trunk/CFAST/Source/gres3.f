@@ -144,11 +144,4 @@ c*** copy wall temperatures
         PAUSE
       ENDIF
       RETURN
-#ifdef pp_lite
-      ENTRY INGRES3
-      DO 1000 I = 1, MAXTEQ
-        PDZERO(I) = 0.0D0
- 1000 CONTINUE
-      RETURN
-#endif
       END

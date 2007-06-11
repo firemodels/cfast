@@ -137,11 +137,15 @@ C     DO HORIZONTAL VENTS (HVENT,...)
         ASL1(IVENT) = XX0
         ASL2(IVENT) = XX0
    60 CONTINUE
+   
+      do i = 1, mext
+        hveflot(upper,i) = xx0
+        hveflot(lower,i) = xx0
+      end do
 
 C     INITIALIZE THE FORCING FUNCTIONS
 
       DO 100 I = 1, NR
-        P(I) = XX0
         EMP(I) = XX0
         EMS(I) = XX0
         EME(I) = XX0
@@ -155,6 +159,9 @@ C     INITIALIZE THE FORCING FUNCTIONS
       DO 110 I = 1, MXFIRE
         QFR(I) = XX0
   110 CONTINUE
+      do i = 1, maxteq
+        p(i) = xx0
+      end do
 
 C     DEFINE THE OUTSIDE WORLD AS INFINITY
 
@@ -221,8 +228,12 @@ C     DEFINE ALL THE "UNIVERSAL CONSTANTS
       WINDV = XX0
       WINDRF = 10.D0
       WINDPW = 0.16D0
-	do 160 i = 0, mxfire
-  160	radconsplit(i) = 0.15d0
+	do i = 0, mxfire
+	  objmaspy(i) = xx0
+	  radio(i) = xx0
+  	  radconsplit(i) = 0.15d0
+  	end do
+  	tradio = xx0
       QRADRL = 0.15D0
 
 C     NORMAL AIR
@@ -280,9 +291,16 @@ C     DEFINE THE VENTS AS BEING OPEN
 	qcvv(1,i) = xx0
 	qcvv(2,i) = xx1
 	qcvv(3,i) = xx0
-  193	qcvv(4,i) = xx1
+  193 qcvv(4,i) = xx1
 
+!	Note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering
+!	Since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
+!		way to have an intial value other than 0 (no filtering).
 	do 194 i = 1, mfan
+	qcvf(1,i) = xx0
+	qcvf(2,i) = xx0
+	qcvf(3,i) = xx0
+	qcvf(4,i) = xx0
 	qcvm(1,i) = xx0
 	qcvm(2,i) = xx1
 	qcvm(3,i) = xx0
@@ -296,6 +314,7 @@ C     TURN HVAC OFF INITIALLY
       NNODE = 0
       NFT = 0
       NFAN = 0
+	nfilter = 0
       NBR = 0
       NEXT = 0
       HVGRAV = G
@@ -413,6 +432,15 @@ C*** initialize inter-compartment heat transfer fractions
           izhtfrac(i,j) = 0
   330   continue
   320 continue
+  
+      do lsp = 1, ns
+        do j = upper, lower
+            do i = 1, nr
+            zzgspec(i,j,lsp) = xx0
+            zzcspec(i,j,lsp) = xx0            
+            end do
+        end do
+      end do
 
       RETURN
       END

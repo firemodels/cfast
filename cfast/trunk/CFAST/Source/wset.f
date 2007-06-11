@@ -157,9 +157,9 @@ C*** calculate wall positions for last slab (bunched near right)
 C
         IF (NSLAB.GE.2) THEN
           IBEG = CUMPTS(NSLAB)
-C
-C*** include last point for last slab
-C
+
+!*** include last point for last slab
+
           IEND = CUMPTS(NSLAB+1)
           XXI3 = IEND - IBEG
           DO 100 I = IBEG, IEND

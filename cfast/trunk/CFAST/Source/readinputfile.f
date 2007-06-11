@@ -14,7 +14,7 @@
 
 !	Pretty pedestrian to use these names, but...
 	integer numr, numc
-      LOGICAL LACTIVS(NS), EXISTS
+      LOGICAL EXISTS
       CHARACTER*133 MESSG
       CHARACTER AVERSION*5
       DIMENSION YINTER(NR)
@@ -42,6 +42,7 @@
 
       IFAIL = 0
       XX0 = 0.0D0
+	xx1 = 1.0d0
 
 !	Deal with opening the data file and assuring ourselves that it is compatible
 
@@ -61,8 +62,12 @@
 
 	aversion = carray(1,1)
 	ivers = rarray(1,2)
-	iversion = version / 100
-	if (version.ge.1000) iversion = version / 1000
+!new version numbering 600->6000, so current version is 6100
+	if (version.ge.1000) then
+            iversion = version / 1000
+      else
+      	iversion = version / 100
+      endif
 	if (aversion.eq.heading.and.ivers.eq.iversion) then
 		 write (logerr,5001) ivers
 	else
@@ -103,20 +108,12 @@ C     WE COME HERE FOR ANY CALL TO the keywordcases statement
 
 !	Get the mainfire and set the species
 
-	if (objnin(0).ne.' ') call inputmainfire (iofili,ierror)
-	if (ierror.ne.0) return
-!!!!!!!!!!!!!!!!!!!!!diagnostic
-	if (debugging) call printfireparameters
+	if (objnin(0).ne.' ') then
+		call inputmainfire (iofili,ierror)
+		if (debugging) call printfireparameters
+		if (ierror.ne.0) return
+	endif
 	
-      NLSPCT = 0
-!	Note that we cannot reset the CT parameter
-      DO 90 I = 1, NS-1
-		 NLSPCT = NLSPCT + 1
-          DO 80 J = 1, LFMAX
-            MPRODR(J,I) = 0.0D0
-   80     CONTINUE
-   90 CONTINUE
-
       IF(LFBT.LT.0.OR.LFBT.GT.2) THEN
 	   write(logerr,5101) lfbt
 		IERROR = 201
@@ -137,7 +134,7 @@ C        IF (ACTIVS(9)) SMKAGL = 1
 			do 19 i = 1, numobjl
 			   CALL inputobject (objnin(i), i, iofili, ierror)
 			   if (debugging) call printobjectparameters(i)
-               IF (IERROR.NE.0) RETURN
+			   IF (IERROR.NE.0) RETURN
    19			continue
          END IF
 
@@ -321,18 +318,18 @@ C    THE UPPER ROOM
 
             IWALL1 = IZSWAL(II,2)
             IWALL2 = IZSWAL(II,4)
-            IF(.NOT.SWITCH(IWALL1,IROOM1).OR.
-     .         .NOT.SWITCH(IWALL2,IROOM2))THEN
+            IF(.NOT.SWITCH(iwall1,IROOM1).OR.
+     .         .NOT.SWITCH(iwall2,IROOM2))THEN
                WRITE (MESSG,203)
   203          FORMAT(' INVALID CFCON SPECIFICATION:')
                CALL XERROR(MESSG,0,1,1)
-               IF(.NOT.SWITCH(IWALL1,IROOM1))THEN
-                  WRITE(MESSG,204)IWALL1, IROOM1
+               IF(.NOT.SWITCH(iwall1,IROOM1))THEN
+                  WRITE(MESSG,204)iwall1,IROOM1
   204             FORMAT(' WALL ',I2,' OF ROOM ',I2,' IS NOT TURNED ON')
                   CALL XERROR(MESSG,0,1,1)
                ENDIF
-               IF(.NOT.SWITCH(IWALL2,IROOM2))THEN
-                  WRITE(MESSG,204)IWALL2,IROOM2
+               IF(.NOT.SWITCH(iwall2,IROOM2))THEN
+                  WRITE(MESSG,204)iwall2,IROOM2
                   CALL XERROR(MESSG,0,1,1)
                ENDIF
                IFAIL = 41

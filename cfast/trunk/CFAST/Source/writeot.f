@@ -25,27 +25,21 @@ C
       PARAMETER (MXDMP = 36000)
       INTEGER INPUT(LEN), PARRAY(MXDMP)
       CHARACTER HEADER*6
-#ifdef pp_ibmpc
       DATA HEADER /'$$CFL$'/
-#else
-      DATA HEADER /'$$CFH$'/
-#endif
  
       IERR = 0
       CALL PACKOT(LEN,MXDMP,INPUT,PARRAY)
       WRITE (IOUNIT,IOSTAT=IOS) HEADER, IVERS0
       WRITE (IOUNIT,IOSTAT=IOS) PARRAY(1), (PARRAY(I),I = 2,PARRAY(1))
-#ifdef pp_unix
-      IF (IOS.NE.0.AND.IOS.NE.2) THEN
-#else
-        IF (IOS.NE.0) THEN
-#endif
-          IERR = IOS
-        ELSE
-          IERR = 0
-        END IF
-        RETURN
-        END
+
+      IF (IOS.NE.0) THEN
+        IERR = IOS
+      ELSE
+        IERR = 0
+      END IF
+      RETURN
+      END
+
       SUBROUTINE PACKOT(ITIN,MXDMP,DOIT,RETBUF)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
@@ -217,6 +211,7 @@ C     IF NEXT NUMBER = MARKER THEN STORE WHAT YOU HAVE
       RETBUF(1) = RIDX
       RETURN
       END
+
       SUBROUTINE OPUT(IC,COUNT,ITIN,MXDMP,RIDX,RETBUF)
 C
 C--------------------------------- NIST/BFRL ---------------------------------

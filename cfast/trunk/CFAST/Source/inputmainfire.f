@@ -4,7 +4,7 @@
 !  or the directory for the executable. If it does not exist in either place, then
 !  we quit
 
-!  The order of species is 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT'
+!  The order of species is 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', 'TS'
 
       include "precis.fi"
       include "cfast.fi"
@@ -70,6 +70,13 @@
 
 	HCOMBA = rarray(11,1)
 
+! This should not be important, but just in case
+
+      do 300 i = 1, nv
+      DO 300 II = 1, ns
+      	MPRODR(I,II) = xx0
+  300 CONTINUE
+	
       DO 400 I = 1, NV
         HOCBMB(I) = HCOMBA
   400 CONTINUE
@@ -86,9 +93,11 @@
       CCO2(I) = rarray(i,10)
       HCNF(I) = rarray(i,11)
       HCLF(I) = rarray(i,12)
-!	Note that CT and TUHC are carried in the mprodr array - all other species have their own array
+      hcrf(i) = rarray(i,14)
+!	Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
 	mprodr(i,7) = xx1
 	mprodr(i,10) = rarray(i,13)
+	mprodr(i,11) = rarray(i,14)
 
     1	continue
 

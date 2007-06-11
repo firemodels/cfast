@@ -213,13 +213,8 @@ C*** CONSTRUCT RIGHT HAND SIDE (RHS) OF LINEAR SYSTEM TO BE SOLVED
 
       RHS(1) = B(1,1) * E(1) + B(1,2) * E(2) - C(1)
       RHS(2) = B(2,1) * E(1) + B(2,2) * E(2) - C(2)
-#ifdef pp_double
       CALL DGEFA(A,2,2,IPVT,INFO)
       CALL DGESL(A,2,2,IPVT,RHS,0)
-#else
-      CALL SGEFA(A,2,2,IPVT,INFO)
-      CALL SGESL(A,2,2,IPVT,RHS,0)
-#endif
       IF(INFO.NE.0) THEN
         CALL XERROR('RAD2 - Singular matrix',0,1,1)
         IERROR = 17
@@ -259,9 +254,4 @@ C*** COMPUTE RADIATION ABSORBED BY EACH LAYER
       QLAY(L) = QLLAY
 
       RETURN
-#ifdef pp_gui
-      ENTRY INRAD2
-      FIRST = .TRUE.
-      RETURN
-#endif
       END

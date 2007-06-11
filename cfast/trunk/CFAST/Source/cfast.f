@@ -1,4 +1,4 @@
-      program CFAST
+            program cfast
 
       include "precis.fi"
       include "cfast.fi"
@@ -14,39 +14,41 @@
 	integer errorcode
       errorcode = 0
 
-! Initialize the basic memory configuration
+c     initialize the basic memory configuration
 
       call initmm
       call initob
       call readop
-     
+c     
 	call readcf1 (errorcode)
-     
+c     
 	write (logerr, 5000) mpsdatc
 	if (errorcode.gt.0) then
 		write (*, 5001) errorcode
 		stop 
+	else
+		write (logerr, 5002) project
 	endif
-      write (logerr, 5002) project
 
-! Creation date
+c     creation date
 
       mpsdat(1) = rundat(1)
       mpsdat(2) = rundat(2)
       mpsdat(3) = rundat(3)
 
+!	version information to the log file
 	call versionout (version)
 
       call initslv
-      
-! Call the input routine for a normal start
+c     call the input routine for a normal start
 
       call readinputfile (errorcode)
 	if (errorcode.gt.0) go to 10
 
+!	version information to the output file
       if (header) call disclaim('CFAST')
 
-! Initialize variables associated with species 
+c     initialize variables associated with species 
 
       call initspec
 
@@ -54,7 +56,7 @@
       itmmax = xdelt + 1
       tstop = itmmax - 1
 
-! Read the the databases
+c     read the the databases
 
 	call inputtpp (thrmfile, errorcode)
 	if (errorcode.ne.0) go to 10
@@ -62,7 +64,7 @@
       call initwall(tstop,errorcode)
       if (errorcode.gt.0) go to 10
 
-C Time step criterion
+c     time step criterion
 
       stime = 0.0d0
       itmstp = 1
@@ -81,26 +83,22 @@ C Time step criterion
 	call cfastexit ('CFAST', 0)
       stop
 
-! Errors end up here
+c     errors
 
    10 call cfastexit ('CFAST', errorcode)
 
- 5000 format ('Date stamp from CFAST initialization ',A14)
- 5001 format ('Error encountered in opening data files; code = ',I4)
+ 5000 format ('Date stamp from CFAST initialization ',a14)
+ 5001 format ('Error encountered in opening data files; code = ',i4)
  5002 format ('The project files are based on the root: ',a64)
  5003 format ('Total execution time = ',1pg10.3,' seconds')
  5020 format ('Error exit during initialization from CFAST main')
-      end
+      END
 
       SUBROUTINE F_RCOUNT (LN)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
 C     Routine:     F_RCOUNT
-C
-C     Source File: CFAST.SOR
-C
-C     Functional Class:  CFAST
 C
 C     Description:  This is an entry to fake out INIPAR.  Therin is a call to
 C                   get the compartment count on the fly.  Although we do not
@@ -116,23 +114,23 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       include "precis.fi"
       include "cfast.fi"
-      LN = N
-      RETURN
-      END
+      ln = n
+      return
+      end
 
-      BLOCK DATA INITCS
+      block data initcs
 
-C     DEFINE THE BASIC PARAMETERS
+c     define the basic parameters
 
       include "cparams.fi"
       include "cshell.fi"
       include "cplotd.fi"
 
-      DATA THRMFILE/'thermal'/, GFILE/'GEOMETRY.DAT'/, 
-     . PFILE/'PARTITIN.DAT'/, OFILE/'OBJECTS.DAT'/, DPATH/' '/, 
-     . DFILE/'DATA.DAT'/, PATH/' '/, DLEN/0/, PLEN/0/, ADVFEA/.FALSE./,
-     . CONFIG/'HV6.CF'/, SHELL/.FALSE./, CSOPEN/.FALSE./,
-     . LOGERR/0/, NNFILE/' '/, CURRENT/' '/,OUTFILE/'<stdout>'/,
+      data thrmfile/'thermal'/, gfile/'GEOMETRY.DAT'/, 
+     . pfile/'PARTITIN.DAT'/, ofile/'OBJECTS.DAT'/, dpath/' '/, 
+     . dfile/'DATA.DAT'/, path/' '/, dlen/0/, plen/0/, advfea/.false./,
+     . config/'HV6.CF'/, shell/.false./, csopen/.false./,
+     . logerr/0/, nnfile/' '/, current/' '/,outfile/'<stdout>'/,
      . ICBG,ICTXT,ICHDR,ICSUB,ICPRO,ICMSG,ICMBG,ICHLP,ICHBG,ICEBG,
      . ICEMS/0,15,14,10,7,15,3,15,2,1,10/, DUMPF/' '/,RFILE/' '/,
      . RMFILE/1/, HEADER/.FALSE./, UNITS/0,5,12,18,31,37,24,27/,
@@ -171,11 +169,11 @@ C     DEFINE THE BASIC PARAMETERS
      . WCOLOR/.TRUE./, WDASH/.TRUE./, SETCFP/.FALSE./
       
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC',
-     . 'H2O', 'OD', 'CT'/
+     . 'H2O', 'OD', 'CT', 'TS'/
        
       END
 
-      BLOCK DATA INITCF
+      block data initcf
 
       include "precis.fi"
       include "cfast.fi"

@@ -43,9 +43,13 @@ C                             (qdot terms in ode's use convective not total
 C                              heat release, radiative contribution to
 C                              layers is handled in rdheat.)
 C                  5/11/98 by GPF:
-C                  Implement fast startup option.  Execute this routine only if this 
-C                  modeling feature is being used (rather than zeroing out the flow vector.)
-C
+C                               Implement fast startup option.  Execute this routine only if this 
+C                               modeling feature is being used (rather than zeroing out the flow vector.)
+!                  03/07 modify chemistry to include radiological species. Note that the knockdown from sprinklers is 
+!                               applied in CHEMIE to the pyrolysis rate AS WELL AS cnfrat and clfrat, BUT NOT TO
+!                               crfrat. Rather since knockdown is applied to pyrolysis rate, in FIRES (see notes below)
+!                               the radiological production is the reduced pyrolysis rate times the bare crfrat
+
 
       include "precis.fi"
       include "cfast.fi"
@@ -70,6 +74,7 @@ C     INITIALIZE SUMMATIONS AND LOCAL DATA
    20   CONTINUE
    30 CONTINUE
       NFIRE = 0
+
       IF (OPTION(FFIRE).NE.FCFAST) RETURN
 
 !	Start with the main fire (it is object 0)
@@ -79,14 +84,15 @@ C     INITIALIZE SUMMATIONS AND LOCAL DATA
 C       CALCULATE THE FIRE OUTPUTS FOR THE MAIN FIRE
 
         CALL PYROLS(TSEC,LFBO,EMP(LFBO),APS(LFBO),HF0T,QPYROL,HCOMBT,
-     +      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,MFIRET)
+     +      CCO2T,COCO2T,HCRATT,OCRATT,
+     +      CLFRAT,CNFRAT,crfrat,MFIRET)
         DO 40 LSP = 1, NS
           STMASS(UPPER,LSP) = ZZGSPEC(LFBO,UPPER,LSP)
           STMASS(LOWER,LSP) = ZZGSPEC(LFBO,LOWER,LSP)
    40   CONTINUE
 
         CALL DOFIRE(0,LFBO,EMP(LFBO),HR(LFBO),BR(LFBO),DR(LFBO),HCOMBT,
-     +      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,MFIRET,
+     +      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,MFIRET,
      +      STMASS,FPOS(1),FPOS(2),FPOS(3)+HF0T,EME(LFBO),EMS(LFBO),
      +      QPYROL,XNTMS,QF(LFBO),QFC(1,LFBO),XQFR,HEATLP(LFBO),
      +      HEATUP(LFBO))
@@ -134,14 +140,14 @@ C       MAKE UP IFROOM AND XFIRE FOR THE MAIN FIRE
         FROOM(0) = LFBO
         FEMP(0) = EMP(LFBO)
         FEMS(0) = EMS(LFBO)
+! note that cnfrat is not reduced by sprinklers, but emp is so femr is
+! (see code in chemie and pyrols)
+        femr(0) = emp(lfbo) * cnfrat
         FQF(0) = HEATLP(LFBO) + HEATUP(LFBO)
         FQFC(0) = QFC(1,LFBO)
         FQLOW(0) = HEATLP(LFBO)
         FQUPR(0) = HEATUP(LFBO)
         FAREA(0) = APS(LFBO)
-        FPOSX(0) = FPOS(1)
-        FPOSY(0) = FPOS(2)
-        FPOSZ(0) = FPOS(3)
 
 C*** update HALL data structures for rooms that are halls and have a main
 C    fire
@@ -197,7 +203,7 @@ C     OTHER FIRES COME FROM THE OBJECT DATABASE
           IOBJ = OBJPNT(I)
           CALL OBJINT(I,TSEC,IROOM,OMASST,OAREAT,HF0T,
      +        QPYROL,HCOMBT,CCO2T,COCO2T,HCRATT,MFIRET,OCRATT,
-     +        CLFRAT,CNFRAT,UPDATE)
+     +        CLFRAT,CNFRAT,crfrat,UPDATE)
           OPLUME(1,IOBJ) = OMASST
 
           DO 60 LSP = 1, NS
@@ -207,7 +213,7 @@ C     OTHER FIRES COME FROM THE OBJECT DATABASE
 
           CALL DOFIRE(I,IROOM,OPLUME(1,IOBJ),HR(IROOM),BR(IROOM),
      +        DR(IROOM),HCOMBT,CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,
-     +        MFIRET,STMASS,OBJPOS(1,IOBJ),OBJPOS(2,IOBJ),
+     +        crfrat,MFIRET,STMASS,OBJPOS(1,IOBJ),OBJPOS(2,IOBJ),
      +        OBJPOS(3,IOBJ)+HF0T,OPLUME(2,IOBJ),OPLUME(3,IOBJ),QPYROL,
      +        XNTMS,QF(IROOM),QFC(1,IROOM),XQFR,HEATLP(IROOM),
      +        HEATUP(IROOM))
@@ -229,7 +235,10 @@ C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
      +          XNTMS(LOWER,LSP)
    70     CONTINUE
 
-C         MAKE UP IFROOM AND XFIRE FOR THIS OBJECT FIRE
+!     Put the object information to arrays - xfire and froom, ...
+!	Note that we are carrying parallel data structures for the fire information
+!	Output uses the unsorted arrays, froom, ..., ordered by object
+!	Fire physics uses the sorted arrays, sorted by compartment
 
           NFIRE = NFIRE + 1
           IFROOM(NFIRE) = IROOM
@@ -256,14 +265,18 @@ C         MAKE UP IFROOM AND XFIRE FOR THIS OBJECT FIRE
           FROOM(NOBJ) = IROOM
           FEMP(NOBJ) = OPLUME(1,IOBJ)
           FEMS(NOBJ) = OPLUME(3,IOBJ)
+! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is
+! (see code in chemie and pyrols)
+          femr(nobj) = oplume(1,iobj)* crfrat
           FQF(NOBJ) = HEATLP(IROOM) + HEATUP(IROOM)
           FQFC(NOBJ) = QFC(1,IROOM)
           FQLOW(NOBJ) = HEATLP(IROOM)
           FQUPR(NOBJ) = HEATUP(IROOM)
           FAREA(NOBJ) = OAREAT
-          FPOSX(NOBJ) = OBJPOS(1,IOBJ)
-          FPOSY(NOBJ) = OBJPOS(2,IOBJ)
-          FPOSZ(NOBJ) = OBJPOS(3,IOBJ)
+		do j = 1,3
+			fopos (j,nobj) = objpos(j,iobj)
+		end do
+
         END IF
    80 CONTINUE
       RETURN

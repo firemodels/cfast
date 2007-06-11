@@ -6,7 +6,7 @@
 
 !  The object name is objname.  iobj is the counter in the main list of objects
 
-!  The order of species is 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT'
+!  The order of species is 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', 'TS'
 
 !  The minimum separation between an object an a wall is 1mm (minimumseparation)
 !  The maximum heat release rate (see reference in the UG and TR) is 4 MW/m^3 (the actual value should be 2, 
@@ -63,6 +63,9 @@
 		 write(logerr,5004) objname, carray(1,1)
 		 return
 	endif
+	if(numc.lt.14) then
+		write(logerr,5108) numc
+	endif
 
 ! Copy the data into the appropriate arrays
 !!!!!! Note, we assume that there cannot be more objects to initialize than there are objects in a calculation 
@@ -105,7 +108,7 @@
 		errorcode = 220
 		return
 	endif
-	objcl(iobj) = objcl(iobj)**0.333
+	objcl(iobj) = objcl(iobj)**0.333d0
 
       OTIME(1,IOBJ) = xx0
 
@@ -118,8 +121,8 @@
 ! This should not be important, but just in case
 
       do 300 i = 1, nv
-      DO 300 II = 1, 10
-      	OMPRODR(I,II,IOBJ) = 0.0D0
+      DO 300 II = 1, ns
+      	OMPRODR(I,II,IOBJ) = xx0
   300 CONTINUE
 
 ! Move the array data into the object arrays
@@ -142,6 +145,7 @@
          OMPRODR(II,6,IOBJ) = rarray(ii+1,12)
 	   omprodr(ii,7,iobj) = xx1
          OMPRODR(II,10,IOBJ) = rarray(ii+1,13)
+	   omprodr(ii,11,iobj) = rarray(ii+1,14)
   400 CONTINUE
 
 	OTFMAXT(IOBJ) = OTIME(OBJLFM(IOBJ),IOBJ)
@@ -205,6 +209,7 @@
  5103 format (
      . 'Radiation fraction for object fire is outside of a normal range'
      . f7.3)
+ 5108 format ('>>>Old fire object format - please update, count =',i3)
 
 
 	end subroutine inputobject

@@ -1,9 +1,7 @@
       SUBROUTINE SORTBRM(
      I                   X,LX,IX,LIX,NROW,NCOLX,NCOLIX,ISORT,LDP,NROOM,
      O                   IPOINT)
-C*RB
-C     Routine:  SORTBRM
-C
+
 C     Function: Sort the two arrays X and IX by the ISORT'th column of
 C               IX which contains room data.  This routine is based on the
 C               now obsolete routine SORTFR.  This routine is used
@@ -30,13 +28,17 @@ C                               and X for fire or detector in room r
 C
 C     Revision History:
 C        Created: 9/3/93 by GPF:
+!	   Modified 10/31/2006 by WWJ
+!
+!				 SORTBRM is used to sort the detector information.
+!
 C                  This routine was created using SORTFR as a template.
 C                  SORTFR was designed specifically to sort fire data 
 C                  structures.  This routine is more general.  It is designed
 C                  to sort any floating point and integer data structures
 C                  by the data given in the ISORT'th colum of IX (usually
 C                  room numbers).
-C*RE
+
       include "precis.fi"
       DIMENSION X(LX,NCOLX), IX(LIX,NCOLIX)
 C  

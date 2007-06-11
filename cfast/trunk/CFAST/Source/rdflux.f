@@ -141,9 +141,4 @@ C
    70   CONTINUE
    80 CONTINUE
       RETURN
-#ifdef pp_gui
-        ENTRY INRDFLUX
-        FIRST = .TRUE.
-        RETURN
-#endif
       END

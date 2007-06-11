@@ -1,6 +1,6 @@
       SUBROUTINE MVENT (tsec, HVPSOLV, HVTSOLV, TPRIME,
      .                  FLWMV, DELTPMV, DELTTMV, PRPRIME, NPROD,IERROR,
-     .                  HVACFLG)
+     .                  HVACFLG, filtered)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -21,7 +21,11 @@ C                NPROD
 C                IERROR   Returns error codes
 C
 C     Revision History:
-C        Created:  9/5/1995 at 9:59 by PAR
+C        June 14, 1992 Made modifications to allow HVAC node
+C                  pressures and HVAC duct temperatures to be
+C                  be solved by DASSL instead of by time splitting.
+C        July 13. 1995 Reduced the number of calcuations performed when
+C                   computing the Jacobian.
 C        Modified: 6/14/1992 at 10:00 by GPF:
 C                  Made modifications to allow HVAC node pressures and HVAC
 C                  duct temperatures to be solved by DASSL instead of by time
@@ -37,19 +41,8 @@ C        Modified: 5/11/98 by GPF:
 C                  Implement fast startup option.  Execute this routine only if this 
 C                  modeling feature is being used (rather than zeroing out 
 C                  the flow vector.)
+!        04/19/2007 calculate a filtered amount to remove in RESID
 C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-
-C     Physical interface routine for the HVAC model
-
-C     Update History
-
-C     June 14, 1992 Made modifications to allow HVAC node
-C                  pressures and HVAC duct temperatures to be
-C                  be solved by DASSL instead of by time splitting.
-C     July 13. 1995 Reduced the number of calcuations performed when
-C                   computing the Jacobian.
 
       include "precis.fi"
       include "cfast.fi"
@@ -63,7 +56,8 @@ C                   computing the Jacobian.
       DIMENSION TPRIME(*), PRPRIME(*)
       DIMENSION FLWMV0(NR,NS+2,2),DELTPMV0(MNODE),DELTTMV0(MBR)
       LOGICAL FIRST, DOIT, HVACFLG
-	double precision tsec
+	double precision filter, qcifraction, tsec, xx0, xx1, filterm1,
+     . filtered(nr,ns+2,2)
       SAVE FIRST,FLWMV0,DELTPMV0,DELTTMV0
 
       DATA FIRST/.TRUE./
@@ -76,17 +70,27 @@ C     elsewhere.
       IF (.NOT.MVCALC.OR.OPTION(FMVENT).NE.ON.OR.
      .    (NHVPVAR.EQ.0.AND.NHVTVAR.EQ.0)) RETURN
       HVACFLG = .TRUE.
+      XX0 = 0.0D0
+	xx1 = 1.0d0      
       IF (FIRST) THEN
          FIRST = .FALSE.
          DO 1 I = 1, NBR
          CHV(I) = DUCTCV
     1    CONTINUE
+         do i = 1, n
+            do j = 1, ns+2
+                flwmv0(i,j,upper) = xx0
+                flwmv0(i,j,lower) = xx0
+            end do
+         end do
       ENDIF
-      XX0 = 0.0D0
+
       DO 15 I = 1, N
          DO 10 J = 1, NS+2
             FLWMV(I,J,UPPER) = XX0
             FLWMV(I,J,LOWER) = XX0
+            filtered(i,j,upper) = xx0
+            filtered(i,j,lower) = xx0
 10       CONTINUE
    15 CONTINUE
       DO 30 I = 1, NHVPVAR
@@ -154,13 +158,15 @@ C    previously saved vectors
         ENDIF
       ENDIF
 
-      CALL HVFREX (HVPSOLV,HVTSOLV)
+      CALL HVFREX (tsec, HVPSOLV,HVTSOLV)
       CALL HVMFLO (tsec, DELTPMV,IERROR)
       IF (IERROR.NE.0) RETURN
       CALL HVSFLO (TPRIME,DELTTMV)
-      CALL HVTOEX (PRPRIME,NPROD)
+      CALL HVTOEX (tsec, PRPRIME,NPROD)
       DO 20 II = 1, NEXT
             I = HVNODE(1,II)
+            J = HVNODE(2,II)
+            ISYS = IZHVSYS(J)
             IF(I.LT.1.OR.I.GT.NM1) GO TO 20
             FLWMV(I,M,UPPER) = FLWMV(I,M,UPPER) + HVEFLO(UPPER,II)
             FLWMV(I,M,LOWER) = FLWMV(I,M,LOWER) + HVEFLO(LOWER,II)
@@ -171,11 +177,18 @@ C    previously saved vectors
             DO 40 K = 1, NS
                IF (ACTIVS(K)) THEN
                   FLWMV(I,2+K,LOWER) = FLWMV(I,2+K,LOWER) +
-     .                              HVEXCN(II,K,LOWER)*HVEFLO(LOWER,II)
+     .                     HVEXCN(II,K,LOWER)*HVEFLO(LOWER,II)
                   FLWMV(I,2+K,UPPER) = FLWMV(I,2+K,UPPER) +
-     .                              HVEXCN(II,K,UPPER)*HVEFLO(UPPER,II)
+     .                     HVEXCN(II,K,UPPER)*HVEFLO(UPPER,II)
                ENDIF
-   40        CONTINUE
+   40       CONTINUE
+!	Filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction
+!     Note that filtering is always negative. Same as agglomeration and settling
+	      filter = qcifraction(qcvf,isys,tsec)
+            filtered(i,13,upper) = max(xx0,filter*flwmv(i,13,upper))
+            filtered(i,13,lower) = max(xx0,filter*flwmv(i,13,lower))
+            filtered(i,11,upper) = max(xx0,filter*flwmv(i,11,upper))
+            filtered(i,11,lower) = max(xx0,filter*flwmv(i,11,lower))
 20    CONTINUE
 
       IF(OPTION(FMODJAC).EQ.ON)THEN

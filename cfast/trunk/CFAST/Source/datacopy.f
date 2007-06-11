@@ -1,13 +1,8 @@
       SUBROUTINE DATACOPY(PDIF,IFLAG)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
+
 C     Routine:     DATACOPY
-C
-C     Source File: DATACOPY.SOR
-C
-C     Functional Class:  CFAST
-C
+
 C     Description:  Calculate environment variables from the solver vector
 C
 C     Arguments: PDIF   Solver vector
@@ -174,6 +169,8 @@ C*** DEFINE WALL CENTERS
         DO 30 LSP = 3, NS
           ZZCSPEC(N,UPPER,LSP) = XX0
           ZZCSPEC(N,LOWER,LSP) = XX0
+          zzgspec(n,lower,lsp) = xx0
+          zzgspec(n,upper,lsp) = xx0
    30   CONTINUE
         ZZCSPEC(N,UPPER,1) = 0.770D0
         ZZCSPEC(N,LOWER,1) = 0.770D0
@@ -300,6 +297,12 @@ C*** define discontinuity array.  first we look at vent openings
 		 iii = iii + 1
 		 zzdisc(iii) = qcvm(3,i)
 	  enddo
+	  do i = 1, nfilter
+		 iii = iii + 1
+		 zzdisc(iii) = qcvf(1,i)
+		 iii = iii + 1
+	     zzdisc(iii) = qcvf(3,i)
+	  end do
         IZNDISC = III
 
 !	Put the discontinuity array into order
@@ -576,7 +579,6 @@ C*** DEFINE SPECIES amounts
                 PPGAS = PDIF(ISOF)
               END IF
               ZZGSPEC(IROOM,UPPER,LSP) = MAX(PPGAS,XX0)
-
               ISOF = ISOF + 1
               IF (IFLAG.EQ.ODEVARB) THEN
                 PPGAS = POLD(ISOF) + DT * PDOLD(ISOF)

@@ -9,9 +9,6 @@
      + fpos(2),fpos(3),fplume(0)
 1	format('room,type,int,pos,plume ',3i3,3f5.1,i3)
 
-	write(*,4) nlspct,activs
-4	format('nlspct,activs ',i3,10l5)
-
 	write(*,2) 'time ',(tfired(i),i=1,lfmax)
 2	format(a5,11f10.0)
 	write(*,2) 'qfir ',(qfired(i),i=1,lfmax)
@@ -27,7 +24,9 @@
       write(*,3) 'hclf ',(HCLF(I),i=1,lfmax)
 	write(*,3) 'mpr5 ',(mprodr(i,5),i=1,lfmax)
 	write(*,3) 'mpr6 ',(mprodr(i,6),i=1,lfmax)
+	write(*,3) 'mpr7 ',(mprodr(i,7),i=1,lfmax)
 	write(*,3) 'mpr10',(mprodr(i,10),i=1,lfmax)
+	write(*,3) 'mpr11',(mprodr(i,11),i=1,lfmax)
 	write(*,2) 'hocb ',(hocbmb(i),i=1,lfmax)
 	write(*,*)
 

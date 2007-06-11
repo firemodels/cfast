@@ -99,11 +99,11 @@ C
      +             560,670,620,200,
      +             630,230, 42,710,
      +              40,770,780,225,
-     +				 805,815, 42,835,
+     +			 805,815, 42,835,
      +             910, 42,940,950,
      +             960,970,990,1010,
      +             825,240,470,660,
-     +				 552,1240,250,260), I
+     +			 552,1240,250,260), I
         END IF
    50 CONTINUE
 
@@ -203,7 +203,7 @@ C     Rename the THERMAL or object DATA FILE
 	fplume(0) = lrarray(5)
 	go to 810
 
-!	Set the gaseous ignition temperature - this is a global parameter
+!	Set the gaseous ignition temperature - this is a global parameter DJIGN
 
   250 if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
 		return
@@ -212,7 +212,7 @@ C     Rename the THERMAL or object DATA FILE
 	tgignt = lrarray(2)
 	go to 810
 
-!	Set global parameters - this is redundant with DJIGN (250) and LIMO2 (210)
+!	Set global parameters - CHEMI is redundant with DJIGN (250) and LIMO2 (210)
 
   260	if (.not.countargs(label,2,lcarray,xnumc-1, nret)) then
 		return
@@ -368,6 +368,7 @@ C     ASSURE OURSELVES THAT THE CONNECTIONS ARE SYMMETRICAL
 !	EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
 !	EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time
 !	EVENT - M Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time
+!	EVENT - F Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time
 
   552	if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
 		 ierror = 11
@@ -413,6 +414,21 @@ C     ASSURE OURSELVES THAT THE CONNECTIONS ARE SYMMETRICAL
 		 qcvm(1,fannumber) = lrarray(5)
 		 qcvm(3,fannumber) = lrarray(5) + lrarray(7)
 		 qcvm(4,fannumber) = lrarray(6)
+	case ('F')
+		 if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+			  ierror = 11
+			  return
+		 endif
+		 fannumber = lrarray(4)
+		 if (fannumber.gt.nfan) then
+			ierror = 82
+			write(logerr,5196) fannumber
+			return
+		 endif
+		 nfilter = nfilter + 1
+		 qcvf(1,fannumber) = lrarray(5)
+		 qcvf(3,fannumber) = lrarray(5) + lrarray(7)
+		 qcvf(4,fannumber) = lrarray(6)
 	case default
 		 ierror = 71
 		 return
@@ -504,7 +520,7 @@ C     INTER - SET THE INITIAL INTERFACE HEIGHT ONLY IF IT DIFFERENT THAN THE DEF
 		 return
 	endif
 
-!!!!!!!! This only the case for a vent which has not been previously defined
+!!!!!!!! This is only the case for a vent which has not been previously defined
 
       mid = lrarray(3)
       iecfrom = lrarray(1)
@@ -544,8 +560,6 @@ C     INTER - SET THE INITIAL INTERFACE HEIGHT ONLY IF IT DIFFERENT THAN THE DEF
       HVNODE(2,next) = nnode
       HVELXT(next) = HEIGHTfrom
       AREXT(next) = AREAfrom
-!	Commented out - set in hvinit
-!     HVGHT(HVNODE(2,next)) = HVELXT(next)
 
 ! 	second compartment/node opening
       next = next + 1
@@ -565,9 +579,6 @@ C     INTER - SET THE INITIAL INTERFACE HEIGHT ONLY IF IT DIFFERENT THAN THE DEF
       hvelxt(next) = heightto
       arext(next) = areato
 
-!	Commented out - set in hvinit
-!     hvght(hvnode(2,next)) = hvelxt(next)
-
 !     now connect nodes 1 and 2 with a fan
 
       IF (minpres.gt.maxpres) THEN
@@ -577,6 +588,12 @@ C     INTER - SET THE INITIAL INTERFACE HEIGHT ONLY IF IT DIFFERENT THAN THE DEF
       END IF
 
       NFAN = NFAN + 1
+	if (mid.ne.nfan) then
+		write(logerr,5193) mid,nfan
+		ierror = 68
+		return
+	endif
+
       NBR = NBR + 1
       IF (NFAN.GT.MFAN.or.nbr.gt.mbr) THEN
 		 WRITE (IOFILO,5195) MFAN
@@ -795,8 +812,8 @@ C*** NO, SO UPDATE COUNTERS
           OBJCRI(3,OBPNT) = 1.0D30
         ELSE
           write(logerr,5358) objign(obpnt)
-		  IERROR = 13
-		  RETURN
+		IERROR = 13
+		RETURN
         END IF
 	ELSE
         OBJON(OBPNT) = .TRUE.
@@ -947,11 +964,11 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 
       iroom = lrarray(1)
       IF(iroom.LT.1.OR.iroom.GT.n)THEN
-		 write(logerr, 5001) iroom
+		 write(logerr, 5001) i1
 		 ierror = 40
 		 return
 	endif
-      IZSHAFT(iroom) = 1
+      IZSHAFT(IROOM) = 1
       GO TO 810
 
 !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
@@ -1293,9 +1310,11 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
  5191 format ('Compartments specified in MVENT have not been defined ',
      .        2i3)
  5192 format ('Exceeded maximum number of nodes/openings in MVENT ',2i3)
+ 5193 format ('MVENT(MID) is not consistent ',2i3)
  5194 format ('Pressure for zero flow must exceed the lower limit',
      .        f10.2)
  5195 format ('Too many fan systems',i3)
+ 5196 format ('Fan (MID) has not been defined for this filter ',i3)
  5200 FORMAT ('Redefinition for node ',2I3)
  5210 FORMAT ('Exceed max external connections',I3)
  5220 FORMAT ('Only ',I2,' specified for an mv duct, 5 required')

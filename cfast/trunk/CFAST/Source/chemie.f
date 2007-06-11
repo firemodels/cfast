@@ -1,5 +1,5 @@
       SUBROUTINE CHEMIE(QQSPRAY,PYROL,ENTRAIN,SOURCE,LAYER,HCOMBT,CCO2T,
-     +    COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,QPYROL,NETFUEL,XMASS)
+     + COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,QPYROL,NETFUEL,XMASS)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -29,8 +29,9 @@ C                CCO2T   current carbon/CO2 production ratio (kg/kg)
 C                COCO2T  current CO/CO2 production ratio (kg/kg)
 C                HCRATT  current Hydrogen/Carbon ratio in fuel (kg/kg)
 C                OCRATT  current Oxygen/Carbon ratio in fuel (kg/kg)
-C                CLFRAT  current HCl production rate (kg/kg burned)
-C                CNFRAT  current HCN production rate (kg/kg burned)
+C                CLFRAT  current HCl production rate (kg/kg pyrolized )
+C                CNFRAT  current HCN production rate (kg/kg pyrolized)
+!                crfrat  current trace species production (kg/kg pyrolized)
 C                QPYROL  net heat release rate constrained by available
 C                        oxygen (W)
 C                NETFUEL net burning rate of fuel constrained by
@@ -39,8 +40,9 @@ C                XMASS   net rate of production of species into layers
 C                        in the room containing the fire (kg/s)
 C
 C     Revision History:
-C	WWJ	  03/08/04  Fixed oxygen and hydrogen accounting. The way o/c was being used was as a mass ratio
-C					of oxygen to fuel, but the manual specifies mass of oxygen to mass of carbon
+!     WWJ     03/07   added trace species tracking
+C	WWJ	  03/04   Fixed oxygen and hydrogen accounting. The way o/c was being used was as a mass ratio
+C					   of oxygen to fuel, but the manual specifies mass of oxygen to mass of carbon
 C     RDP   4/8/94    moved summing of species production rates to calling
 C                     routine so CHEMIE can be called multiple times.
 C                     Removed EQUIVALENCE to XMASS, now an argument.
@@ -66,15 +68,9 @@ C*RE
 
       DIMENSION XMASS(NS)
       INTEGER SOURCE
-#ifdef pp_double
       DOUBLE PRECISION NETFUEL, NETFUL
       DOUBLE PRECISION NETH2O, NETCO2, NETCO, NETC, NETO2, NETCL, NETCN
 	double precision mdotnet, mdotnetactual
-#else
-      REAL NETFUEL, NETFUL
-      REAL NETH2O, NETCO2, NETCO, NETC, NETO2, NETCL, NETCN
-#endif
-
       LOGICAL FIRST
       SAVE FIRST, O2F, O2FI, O2RANGE, XX0, XXFOUR, XXHALF, XXRANGE
       DATA FIRST /.TRUE./

@@ -16,8 +16,7 @@
 12    format('Characteristic volume = ',f10.3)
 	write(*,*) 'targ#,targname ',obtarg(iobj),cxtarg(obtarg(iobj))
 	write(*,4) nlspct,activs
-4	format('nlspct,activs ',i3,10l5)
-
+4	format('nlspct,activs ',i3,11l5)
 	write(*,8) (otime(i,iobj),i=1,OBJLFM(IOBJ))
 8	format('time ',11f10.0)
 	write(*,1) (oqdot(i,iobj),i=1,OBJLFM(IOBJ))
@@ -35,6 +34,7 @@
       write(*,9) 'hcnf ',(omprodr(i,5,iobj),i=1,OBJLFM(IOBJ))
       write(*,9) 'hclf ',(omprodr(i,6,iobj),i=1,OBJLFM(IOBJ))
       write(*,9) 'ct   ',(omprodr(i,10,iobj),i=1,OBJLFM(IOBJ))
+      write(*,9) 'fC   ',(omprodr(i,11,iobj),i=1,OBJLFM(IOBJ))
 	write(*,10) 'hocb ',(objhc(i,iobj),i=1,OBJLFM(IOBJ))
 10	format(a5,11f10.0)
 	write(*,*)

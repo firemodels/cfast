@@ -1,7 +1,5 @@
       SUBROUTINE SORTFR(NFIRE,IFROOM,XFIRE,IFRPNT,NM1)
-C*RB
-C     Routine:  SORTFR
-C
+
 C     Function: Sort the two arrays IFROOM and XFIRE into increasing
 C               room number in IFROOM.  These are used in this order
 C               by the ceiling jet and radiation algorithms
@@ -20,15 +18,15 @@ C        Modified: 2/7/93 by GPF:
 C                  The radiation routines expect to receive info for each
 C                  fire in a room.  Therefore, XFIRE a 2-d array must have 
 C                  the number of fires as the first subscript.
-C*RE
+
       include "precis.fi"
       include "cparams.fi"
       DIMENSION IFROOM(MXFIRE), XFIRE(MXFIRE,MXFIRP), IPERM(MXFIRE), 
      +    IWORK(MXFIRE), WORK(MXFIRE), IFRPNT(NR,2)
-C
+
 C     CREATE A PERMUTATION VECTOR FROM THE LIST OF FIRE ROOMS WHICH IS 
 C     ORDERED BY INCREASING ROOM NUMBER
-C
+
       DO 2 I = 1, NFIRE
     2    IPERM(I) = I
       CALL INDEXI(NFIRE,IFROOM,IPERM)

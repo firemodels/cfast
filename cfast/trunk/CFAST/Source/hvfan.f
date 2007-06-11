@@ -65,7 +65,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       END IF
 	
 	openfraction = max (minimumflow, qcffraction (qcvm, k, tsec))
-	WRITE (*,*) K, TESEC, QCFFRACTION(QCVM,K,TSEC), OPENFRACTION
 	hvfan = hvfanl * openfraction
 
       RETURN

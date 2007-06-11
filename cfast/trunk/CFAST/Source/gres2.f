@@ -36,11 +36,7 @@ C
 
       DIMENSION HVSOLV(*), DELTAMV(*), P2(MAXTEQ), DELTA(MAXTEQ)
       DIMENSION PDZERO(MAXTEQ)
-#ifdef pp_double
       DATA PDZERO /MAXTEQ * 0.0D0/
-#else
-      DATA PDZERO /MAXTEQ * 0.0E0/
-#endif
       DO 10 I = 1, NEQUALS
         P2(I) = PINIT(I)
    10 CONTINUE
@@ -82,11 +78,4 @@ C
         PAUSE
       END IF
       RETURN
-#ifdef pp_gui
-        ENTRY INGRES2
-        DO 1000 I = 1, MAXTEQ
-          PDZERO(I) = 0.D0
- 1000 CONTINUE
-        RETURN
-#endif
       END

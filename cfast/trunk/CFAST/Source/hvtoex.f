@@ -1,4 +1,4 @@
-      SUBROUTINE HVTOEX(PRPRIME,NPROD)
+      SUBROUTINE HVTOEX(tsec,PRPRIME,NPROD)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -30,10 +30,12 @@ C
       include "cenviro.fi"
 
       DIMENSION PRPRIME(*)
+	double precision tsec, xx1, xx0
 
 C    SUM PRODUCT FLOWS ENTERING SYSTEM
 
       XX0 = 0.0D0
+	xx1 = 1.0d0
       NHVPR = NLSPCT*NHVSYS
       IF(NPROD.NE.0)THEN
          DO 3 I = 1, NHVPR
@@ -60,7 +62,7 @@ C     FLOW INTO THE ISYS SYSTEM
         IF (HVFLOW(J,1).LT.XX0) THEN
           HVMFSYS(ISYS) = HVMFSYS(ISYS) + HVFLOW(J,1)
           IF(NPROD.NE.0)THEN
-             DO 10 K = 1, NS
+             DO 10 K = 1, ns
                IF (ACTIVS(K)) DHVPRSYS(ISYS,K) = DHVPRSYS(ISYS,K) + 
      .                      ABS(HVEFLO(UPPER,II))*HVEXCN(II,K,UPPER) +
      .                      ABS(HVEFLO(LOWER,II))*HVEXCN(II,K,LOWER)
@@ -82,6 +84,16 @@ C     FLOW OUT OF THE ISYS SYSTEM
    25          CONTINUE
             ENDIF
    24    CONTINUE
+!	Do a special case for the non-reacting gas(es)
+		  k = 11
+            IF(ACTIVS(K))THEN
+               DO 255 ISYS = 1, NHVSYS
+                  IF (ZZHVM(ISYS).NE.XX0)THEN
+                     DHVPRSYS(ISYS,k) = DHVPRSYS(ISYS,k) -
+     .                   ABS(HVMFSYS(ISYS))*ZZHVPR(ISYS,k)/ZZHVM(ISYS)
+                  ENDIF
+  255          CONTINUE
+            ENDIF
  
 C     PACK THE SPECIES CHANGE FOR DASSL (ACTUALLY RESID)
 
@@ -93,11 +105,23 @@ C     PACK THE SPECIES CHANGE FOR DASSL (ACTUALLY RESID)
                   IF (ZZHVM(ISYS).NE.XX0)THEN
                      PRPRIME(ISOF) = DHVPRSYS(ISYS,K)
                    ELSE
-	             PRPRIME(ISOF) = XX0
+	               PRPRIME(ISOF) = XX0
                    ENDIF
    27          CONTINUE
             ENDIF
    26    CONTINUE
+!	Do a special case for the non-reacting gas(es)
+            k = 11
+            IF(ACTIVS(K))THEN
+               DO 277 ISYS = 1, NHVSYS
+                  ISOF = ISOF + 1
+                  IF (ZZHVM(ISYS).NE.XX0)THEN
+                     PRPRIME(ISOF) = DHVPRSYS(ISYS,k)
+                   ELSE
+	               PRPRIME(ISOF) = XX0
+                   ENDIF
+  277          CONTINUE
+            ENDIF
       ENDIF           
 
 C    DEFINE FLOWS OR TEMPERATURE LEAVING SYSTEM
@@ -125,7 +149,7 @@ C        WE ALLOW ONLY ONE CONNECTION FROM A NODE TO AN EXTERNAL DUCT
                     HVEXCN(II,K,UPPER) = XX0
                     HVEXCN(II,K,LOWER) = XX0
                  ENDIF
-              ENDIF 
+               ENDIF
    40       CONTINUE
          END IF
    30 CONTINUE

@@ -1,8 +1,4 @@
-#ifdef pp_double
       DOUBLE PRECISION FUNCTION RDPARFIG(X,Y,Z)
-#else
-      FUNCTION RDPARFIG(X,Y,Z)
-#endif
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -49,17 +45,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       F5 = YY * ATAN(YY)
       RDPARFIG = 2.0D0 * (F1+F2+F3-F4-F5) / (PI*XX*YY)
       RETURN
-#ifdef pp_gui
-        ENTRY INRDPAR
-        IFIRST = 0
-        RETURN
-#endif
       END
-#ifdef pp_double
       DOUBLE PRECISION FUNCTION RDPRPFIG(X,Y,Z)
-#else
-      FUNCTION RDPRPFIG(X,Y,Z)
-#endif
  
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -112,12 +99,8 @@ C
       F4 = 0.25D0*(LOG(F4A)+LOG(F4B)*W**2+LOG(F4C)*H**2) 
       RDPRPFIG = (F1+F2-F3+F4) / PI / W
       RETURN
-#ifdef pp_gui
-        ENTRY INRDPRP
-        FIRST = .TRUE.
-        RETURN
-#endif
       END
+
       SUBROUTINE RDFANG(MXFIRE,XROOM,YROOM,ZROOM,HLAY,NFIRE,XFIRE,YFIRE,
      +    ZFIRE,FIRANG)
  
@@ -184,17 +167,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         END IF
    10 CONTINUE
       RETURN
-#ifdef pp_gui
-        ENTRY INRDFANG
-        FIRST = .TRUE.
-        RETURN
-#endif
       END
-#ifdef pp_double
       DOUBLE PRECISION FUNCTION RDSANG(X1,X2,Y1,Y2,R)
-#else
-      FUNCTION RDSANG(X1,X2,Y1,Y2,R)
-#endif
  
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -225,11 +199,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       RDSANG = F1 - F2 - F3 + F4
       RETURN
       END
-#ifdef pp_double
       DOUBLE PRECISION FUNCTION RDSANG1(X,Y,R)
-#else
-      FUNCTION RDSANG1(X,Y,R)
-#endif
  
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -280,9 +250,4 @@ C
         RDSANG1 = (ASIN(F1)+ASIN(F2)-PIO2)
       END IF
       RETURN
-#ifdef pp_gui
-        ENTRY INRDSANG1
-        FIRST = .TRUE.
-        RETURN
-#endif
       END

@@ -12,12 +12,12 @@ c     c      = character array of same dimenaion as x for character values in sp
 c     numr   = # of rows of array x
 c     numc   = # of columns of array x
 c     nstart = starting row of spreadsheet to read
-c     nr     = actual number of rows read
-c     nc     = actual number of columns read
+c     maxr     = actual number of rows read
+c     maxcc    = actual number of columns read
 c
 
-      include	 "cparams.fi"
-      include	 "cshell.fi"
+      include "cparams.fi"
+      include "cshell.fi"
 
 	double precision x(numr,numc)
 	character in*10000,token*128, c(numr,numc)*(*)

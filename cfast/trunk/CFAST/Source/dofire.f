@@ -1,6 +1,6 @@
       SUBROUTINE DOFIRE(IFIRE,IROOM,XEMP,XHR,XBR,XDR,HCOMBT,CCO2T,
-     .    COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,XMFIR,STMASS,XFX,XFY,
-     .    XFZ,XEME,XEMS,XQPYRL,XNTMS,XQF,XQFC,XQFR,XQLP,XQUP)
+     .   COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,XMFIR,STMASS,
+     .   XFX,XFY,XFZ,XEME,XEMS,XQPYRL,XNTMS,XQF,XQFC,XQFR,XQLP,XQUP)
 
 C
 C     Routine:     DOFIRE
@@ -18,8 +18,9 @@ C               CCO2T   - current carbon/CO2 production ratio (kg/kg)
 C               COCO2T  - current CO/CO2 production ratio (kg/kg)
 C               HCRATT  - current Hydrogen/Carbon ratio in fuel (kg/kg)
 C               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
-C               CLFRAT  - current HCl production rate (kg/kg burned)
-C               CNFRAT  - current HCN production rate (kg/kg burned)
+C               CLFRAT  - current HCl production rate (kg/kg pyrolized)
+C               CNFRAT  - current HCN production rate (kg/kg pyrolized)
+!               crfrat  - current trace species production rate (kg/kg pyrolized)
 C               XMFIR   - production rate of a species in fire (kg/s)
 C               STMASS   - mass of a species in a layer in the room (kg)
 C               XFX     - position of the fire in x direction
@@ -36,6 +37,7 @@ C               XQLP    - heat release in the lower plume (W)
 C               XQUP    - heat release rate in the upper plume (W)
 C
 C     Revision History:
+!     wwj   03/07 add trace species (ns = 11)
 C     wwj   4/10/98 fixed upper/lower layer separation (depends on where the fire is)
 C     gpf    4/9/98 added some more initializations for when the fire
 C                   is only in the upper layer
@@ -151,7 +153,8 @@ C     Only do the upper layer (the fire is not in the lower layer)
         XEMS = XEMP + XEME
 
         CALL CHEMIE(QSPRAY(IFIRE,LOWER),XEMP,XEME,IROOM,LOWER,HCOMBT,
-     .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,XQPYRL,XNTFL,XMASS)
+     .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,
+     .      XQPYRL,XNTFL,XMASS)
 
 C       LIMIT THE AMOUNT ENTRAINED TO THAT ACTUALLY ENTRAINED BY THE
 C       FUEL BURNED
@@ -192,6 +195,7 @@ C       ADD IN THE FUEL AND CT.  EVERYTHING ELSE IS DONE BY CHEMIE.
 
         XNTMS(UPPER,7) = XNTMS(UPPER,7) + XMFIR(7)
         XNTMS(UPPER,10) = XNTMS(UPPER,10) + XMFIR(10)
+	  xntms(upper,11) = xntms(upper,11) + xmfir(11)
         XQFR = XQPYRL * CHIRAD
         XQFC(UPPER) = XQPYRL * (X1-CHIRAD)
         XQLP = XQPYRL
@@ -214,8 +218,8 @@ C       UMPLM{EP},{ES},AND {EE} ARE EQUIVALENT TO EMP, EMS AND EME
           CALL FIRPLM(QHEATU,HEIGHT,UPLMEP,UPLMES,UPLMEE,
      .        MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
           CALL CHEMIE(QSPRAY(IFIRE,UPPER),UPLMEP,UPLMEE,IROOM,UPPER,
-     .        HCOMBT,CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,XQPYRL,
-     .        XNTFL,XMASS)
+     .        HCOMBT,CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,
+     .        XQPYRL,XNTFL,XMASS)
           XQFR = XQPYRL * CHIRAD + XQFR
           XQFC(UPPER) = XQPYRL * (X1-CHIRAD) + XQFC(UPPER)
           XQUP = XQPYRL

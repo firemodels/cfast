@@ -40,11 +40,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       include "precis.fi"
-#ifdef pp_double     
       DOUBLE PRECISION NUOVERL, K
-#else
-      REAL NUOVERL, K
-#endif
       LOGICAL FIRST
       SAVE FIRST, G, X1DEL, XTHIRD, TDEL, XXHALF
       DATA FIRST /.TRUE./

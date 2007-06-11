@@ -1,6 +1,9 @@
 !	The following functions are to implement the open/close function for vents.
 !	This is done with a really simple, linear interpolation
-!	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr) and qcvm(4,mfan). 
+!	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mfan),
+!         and qcvi(4,mfan). 
+
+!	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
 
 !   The qcv{x} arrays are of the form
 !		(1,...) Is start of time to change
@@ -72,3 +75,24 @@
 		return
 	endif
 	end function qcffraction
+
+	double precision function qcifraction (points, index, time)
+
+!	This is the open/close function for filtering
+
+	double precision points(4,*), time, dt, dy, dydt
+
+	if (time.lt.points(1,index)) then
+		qcifraction = points(2,index)
+		return
+	else if (time.gt.points(3,index)) then
+		qcifraction = points(4,index)
+		return
+	else
+	    dt = max(points(3,index) - points(1,index),1.0d-3)
+		dy = points(4,index) - points(2,index)
+		dydt = dy / dt
+		qcifraction = points(2,index) + dydt
+		return
+	endif
+	end function qcifraction

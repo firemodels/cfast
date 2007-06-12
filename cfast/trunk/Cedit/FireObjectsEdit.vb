@@ -337,7 +337,7 @@ Public Class FireObjectsEdit
         Me.FireData.Rows.Count = 101
         Me.FireData.Rows.DefaultSize = 17
         Me.FireData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.FireData.Size = New System.Drawing.Size(960, 112)
+        Me.FireData.Size = New System.Drawing.Size(945, 112)
         Me.FireData.TabIndex = 18
         '
         'FireObjectSummary
@@ -495,7 +495,7 @@ Public Class FireObjectsEdit
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)
         Dim aFireObject As New Fire
-        Dim aFireData(11, 0) As Single, numPoints As Integer
+        Dim aFireData(12, 0) As Single, numPoints As Integer
         Dim x() As Single, y() As Single, j As Integer, iSelectedColumn As Integer
         aFireObject = TempFireObjects(index)
         Me.FireObjectPlot.Clear()
@@ -514,7 +514,7 @@ Public Class FireObjectsEdit
     End Sub
     Private Sub UpdateFireObjects(ByVal index As Integer)
         Dim aFireObject As New Fire
-        Dim aFireTimeSeries(11, 0) As Single, numPoints As Integer
+        Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
         Dim i As Integer, j As Integer, ir As Integer, ic As Integer
         Dim PeakHRR As Single, PeakCO As Single, PeakC As Single, PeakHCN As Single, PeakHCl As Single
 
@@ -541,7 +541,7 @@ Public Class FireObjectsEdit
 
         If numPoints >= 0 Then
             For ir = 0 To numPoints
-                For ic = 0 To 11
+                For ic = 0 To 12
                     Me.FireData(ir + 1, ic) = aFireTimeSeries(ic, ir)
                 Next
             Next
@@ -668,9 +668,9 @@ Public Class FireObjectsEdit
         Dim numPoints As Integer, ir As Integer, ic As Integer
         numPoints = CountGridPoints(Me.FireData)
         If numPoints > 0 Then
-            Dim aFireTimeSeries(11, numPoints - 1) As Single
+            Dim aFireTimeSeries(12, numPoints - 1) As Single
             For ir = 0 To numPoints - 1
-                For ic = 0 To 11
+                For ic = 0 To 12
                     aFireTimeSeries(ic, ir) = Val(Me.FireData(ir + 1, ic))
                 Next
             Next

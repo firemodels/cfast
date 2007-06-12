@@ -58,9 +58,9 @@ Module IO
          csv.Num(rowidx(10), 1), csv.Num(rowidx(2), 1), csv.Num(rowidx(7), 1), csv.Num(rowidx(3), 1), _
          csv.Num(rowidx(4), 1), csv.Num(rowidx(11), 1), csv.Num(rowidx(5), 1), csv.Num(rowidx(6), 1)))
         myFireObjects(myFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
-        Dim firedata(11, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
+        Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
         For i = 0 To csv.Num(rowidx(1), 1) - 1
-            For j = 0 To 11
+            For j = 0 To 12
                 firedata(j, i) = csv.Num(rowidx(1 + i), firefile(j))
             Next
         Next
@@ -102,10 +102,10 @@ Module IO
         csv.Num(12, 1) = aFire.HeatofCombustion
         csv.str(13, 1) = aFire.Material
 
-        Dim firedata(11, 0) As Single, i, j As Integer
+        Dim firedata(12, 0) As Single, i, j As Integer
         aFire.GetFireData(firedata, csv.Num(2, 1))
         For i = 0 To csv.Num(2, 1)
-            For j = 0 To 11
+            For j = 0 To 12
                 csv.Num(i + 2, firefile(j)) = firedata(j, i)
             Next
         Next
@@ -394,6 +394,7 @@ Module IO
         Next
         For j = 0 To myMVents.Count - 1
             aVent = myMVents.Item(j)
+            ' Mechanical ventilation vent opening fraction and time
             If aVent.FinalOpeningTime > 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "M"
@@ -406,6 +407,22 @@ Module IO
                 csv.Num(i, eventNum.ventNumber) = j + 1
                 csv.Num(i, eventNum.time) = aVent.FinalOpeningTime
                 csv.Num(i, eventNum.finalFraction) = aVent.FinalOpening
+                csv.Num(i, eventNum.decaytime) = 1.0
+                i += 1
+            End If
+            ' Mechanical ventilation filtering fraction and time
+            If aVent.FilterTransmission <> 1 Then
+                csv.str(i, CFASTlnNum.keyWord) = "EVENT"
+                csv.str(i, eventNum.ventType) = "F"
+                csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
+                If csv.Num(i, eventNum.firstCompartment) = 0 Then _
+                    csv.Num(i, eventNum.firstCompartment) = myCompartments.Count + 1
+                csv.Num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
+                If csv.Num(i, eventNum.secondCompartment) = 0 Then _
+                    csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
+                csv.Num(i, eventNum.ventNumber) = myMVents.VentNumber(j)
+                csv.Num(i, eventNum.time) = aVent.FilterTime
+                csv.Num(i, eventNum.finalFraction) = aVent.FilterTransmission
                 csv.Num(i, eventNum.decaytime) = 1.0
                 i += 1
             End If
@@ -904,6 +921,20 @@ Module IO
                         Else
                             'error handling vent doesn't exist
                             myErrors.Add("Keyword EVENT Mvent " + csv.str(i, eventNum.ventNumber) + " between compartments " + csv.str(i, eventNum.firstCompartment) + " and " + csv.str(i, eventNum.secondCompartment) + " does not exist", ErrorMessages.TypeError)
+                        End If
+                    ElseIf csv.str(i, eventNum.ventType).Trim = "F" Then
+                        If csv.Num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.Num(i, eventNum.firstCompartment) = 0
+                        If csv.Num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.Num(i, eventNum.secondCompartment) = 0
+                        Dim index As Integer = myMVents.GetIndex(csv.Num(i, eventNum.firstCompartment) - 1, _
+                            csv.Num(i, eventNum.secondCompartment) - 1, csv.Num(i, eventNum.ventNumber))
+                        If index > -1 Then
+                            Dim aVent As Vent = myMVents.Item(index)
+                            aVent.FilterTime = csv.Num(i, eventNum.time)
+                            aVent.FilterTransmission = csv.Num(i, eventNum.finalFraction)
+                            aVent.Changed = False
+                        Else
+                            'error handling vent doesn't exist
+                            myErrors.Add("Keyword EVENT Mvent Filter " + csv.str(i, eventNum.ventNumber) + " between compartments " + csv.str(i, eventNum.firstCompartment) + " and " + csv.str(i, eventNum.secondCompartment) + " does not exist", ErrorMessages.TypeError)
                         End If
                     Else
                         'error handling wrong vent types

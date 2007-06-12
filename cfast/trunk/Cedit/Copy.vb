@@ -25,7 +25,7 @@ Module Copy
         ToFire.HeatofGasification = FromFire.HeatofGasification
         ToFire.VolitilTemp = FromFire.VolitilTemp
         ToFire.RadiativeFraction = FromFire.RadiativeFraction
-        Dim aFireData(11, 0) As Single
+        Dim aFireData(12, 0) As Single
         FromFire.GetFireData(aFireData, NumDataPoints)
         ToFire.SetFireData(aFireData)
         ToFire.Changed = FromFire.Changed

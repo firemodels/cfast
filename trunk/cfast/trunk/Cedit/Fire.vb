@@ -16,6 +16,7 @@ Public Class Fire
     Friend Const FireHCN As Integer = 9
     Friend Const FireHCl As Integer = 10
     Friend Const FireCt As Integer = 11
+    Friend Const FireLPF As Integer = 12
     Friend Const MaximumFires As Integer = 100
     Friend Const MaximumFireObjects As Integer = 100
 
@@ -35,6 +36,7 @@ Public Class Fire
     Private Const MaxHCN As Single = 0.1
     Private Const MaxHCl As Single = 0.1
     Private Const MaxCt As Single = 100.0
+    Private Const maxLPF As Single = 1.0
 
     Public Const TypeUnconstrained As Integer = 1
     Public Const TypeConstrained As Integer = 0
@@ -74,7 +76,7 @@ Public Class Fire
     Private aHeatofGasification As Single           ' Heat of gasification
     Private aVolitilTemp As Single                  ' Volitilization temperature, default is ambient
     Private aRadiativeFraction As Single            ' Radiative fraction
-    Private aFireTimeSeries(11, 0) As Single        ' Time series values for time, Mdot, HRR, and species
+    Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
     Public Sub New()
         Me.New(TypeConstrained)
@@ -130,7 +132,7 @@ Public Class Fire
         ' New to define a t^2 fire object
         Me.New(TypeFireObject)
         Dim ir As Integer
-        Dim FireTimeSeries(11, 22) As Single, AlphaGrowth As Single, AlphaDecay As Single, TimetoPeakHRR As Single
+        Dim FireTimeSeries(12, 22) As Single, AlphaGrowth As Single, AlphaDecay As Single, TimetoPeakHRR As Single
         Dim aTimeto1MW As Single, aPeakHRR As Single, aSteadyBurningTime As Single, aDecayTime As Single
         aTimeto1MW = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(Timeto1MW)
         aPeakHRR = myUnits.ConvertFireData(UnitsNum.FireQdot).ToSI(PeakHRR)
@@ -146,6 +148,7 @@ Public Class Fire
             FireTimeSeries(FireHCN, ir) = 0.0
             FireTimeSeries(FireHCl, ir) = 0.0
             FireTimeSeries(FireCt, ir) = 1.0
+            FireTimeSeries(FireLPF, ir) = 0.0
         Next
         FireTimeSeries(FireTime, 0) = 0.0
         FireTimeSeries(FireMdot, 0) = 0.0
@@ -484,14 +487,14 @@ Public Class Fire
     End Property
     Property FireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Single
         Get
-            If i <= 11 And i > 0 And j > 0 And j <= aFireTimeSeries.GetUpperBound(1) Then
+            If i <= 12 And i > 0 And j > 0 And j <= aFireTimeSeries.GetUpperBound(1) Then
                 Return myUnits.ConvertFireData(i).FromSI(aFireTimeSeries(i, j))
             Else
                 Return -1.0
             End If
         End Get
         Set(ByVal Value As Single)
-            If i <= 11 And i > 0 And j > 0 And j < aFireTimeSeries.GetUpperBound(1) Then
+            If i <= 12 And i > 0 And j > 0 And j < aFireTimeSeries.GetUpperBound(1) Then
                 If aFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(Value) Then
                     aFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(Value)
                     aChanged = True
@@ -644,9 +647,9 @@ Public Class Fire
                         HasErrors += 1
                     End If
                     If aFireTimeSeries.GetUpperBound(1) > 0 Then
-                        Dim FireCurveErrors() As Boolean = {False, False, False, False, False, False, False, False, False, False, False, False}
+                        Dim FireCurveErrors() As Boolean = {False, False, False, False, False, False, False, False, False, False, False, False, False}
                         For ir = 0 To aFireTimeSeries.GetUpperBound(1)
-                            For ic = 0 To 11
+                            For ic = 0 To 12
                                 Select Case ic
                                     Case FireTime
                                         If aFireTimeSeries(FireTime, ir) < 0.0 Then
@@ -717,6 +720,11 @@ Public Class Fire
                                             FireCurveErrors(FireCt) = True
                                             HasErrors += 1
                                         End If
+                                    Case FireLPF
+                                        If aFireTimeSeries(FireLPF, ir) < 0.0 Or aFireTimeSeries(FireLPF, ir) > maxLPF Then
+                                            FireCurveErrors(FireLPF) = True
+                                            HasErrors += 1
+                                        End If
                                 End Select
                             Next
                         Next
@@ -732,6 +740,7 @@ Public Class Fire
                         If FireCurveErrors(FireHCN) Then myErrors.Add("Fire object " + aName + ". One or more HCN yields are less than 0 or greater than" + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
                         If FireCurveErrors(FireHCl) Then myErrors.Add("Fire object " + aName + ". One or more HCl yields are less than 0 or greater than" + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
                         If FireCurveErrors(FireCt) Then myErrors.Add("Fire object " + aName + ". One or more Ct values are less than 0 or greater than" + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
+                        If FireCurveErrors(FireLPF) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxLPF.ToString + ".", ErrorMessages.TypeWarning)
                     End If
                 Case TypeUnconstrained, TypeConstrained
                     If myEnvironment.LowerOxygenLimit <= 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then

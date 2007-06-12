@@ -37,7 +37,7 @@ Friend Module Data
     Friend Const IgnitionNames As String = "Time       TemperatureHeat Flux  "
     Friend Const FireTypeNames As String = "ConstrainedHeat Source"
     Friend Const CJetNames As String = "OFF    CEILINGWALLS  ALL    "
-    Friend firefile() As Integer = {2, 4, 3, 5, 6, 9, 10, 8, 7, 11, 12, 13}
+    Friend firefile() As Integer = {2, 4, 3, 5, 6, 9, 10, 8, 7, 11, 12, 13, 14}
 
     Friend myThermalProperties As New ThermalPropertiesCollection
     Friend TempThermalProperties As New ThermalPropertiesCollection

@@ -349,6 +349,9 @@ Public Class UpdateGUI
             MainWin.MVentFinalFraction.Text = aVent.FinalOpening.ToString
             MainWin.MVentFractionTime.Text = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
 
+            MainWin.MVentFilterTransmission.Text = aVent.FilterTransmission.ToString
+            MainWin.MVentFilterTime.Text = aVent.FilterTime.ToString + myUnits.Convert(UnitsNum.Time).Units
+
             numMVents = myMVents.Count
             ClearGrid(MainWin.MVentSummary)
             If numMVents > 0 Then
@@ -578,7 +581,7 @@ Public Class UpdateGUI
     End Sub
     Public Sub Fires(ByVal index As Integer)
         Me.General()
-        Dim afireTimeSeries(11, 0) As Single, NumPoints As Integer
+        Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
         Dim PeakHRR As Single
         Dim IgnitionTypeLabel As String = ""
         If index < 0 Or index >= myFires.Count Then
@@ -683,7 +686,7 @@ Public Class UpdateGUI
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)
         Dim aFireObject As New Fire
-        Dim aFireData(11, 0) As Single, numPoints As Integer
+        Dim aFireData(12, 0) As Single, numPoints As Integer
         Dim x() As Single, y() As Single, j As Integer
         aFireObject = myFireObjects(index)
         MainWin.FireObjectPlot.Clear()

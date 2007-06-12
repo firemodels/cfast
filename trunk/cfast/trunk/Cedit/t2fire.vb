@@ -87,7 +87,7 @@ Public Class t2Fire
     End Sub
     Private Sub Updatet2Plot()
         Dim aFireObject As New Fire
-        Dim aFireData(11, 0) As Single, numPoints As Integer
+        Dim aFireData(12, 0) As Single, numPoints As Integer
         Dim x() As Single, y() As Single, j As Integer, iSelectedColumn As Integer
         aFireObject = New Fire(GrowthTime, PeakHRR, SteadyTime, DecayTime)
         Me.FireObjectPlot.Clear()

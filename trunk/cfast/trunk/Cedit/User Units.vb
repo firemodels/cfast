@@ -298,7 +298,7 @@ End Class
 Public Class EngineeringUnits
     Public BaseUnits(5) As Conversions
     Public Convert(17) As Conversion
-    Public ConvertFireData(11) As Conversion
+    Public ConvertFireData(12) As Conversion
     Private aSI As Boolean = False, aSITemp As Boolean, SIStack As New Stack
     Private aValue As Single
     Private i As Integer
@@ -496,7 +496,7 @@ Public Class EngineeringUnits
         ' Conversions for fire time series data
         ' Fire time conversion
         Dim One As New Conversion(1.0, 0.0, " ")
-        For i = 0 To 11
+        For i = 0 To 12
             ConvertFireData(i) = One
         Next
         ConvertFireData(UnitsNum.FireTime) = aTimeConversion

@@ -11,6 +11,10 @@ Public Class CeditMain
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0
 
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
+    Friend WithEvents Label38 As System.Windows.Forms.Label
+    Friend WithEvents MVentFilterTransmission As System.Windows.Forms.TextBox
+    Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
 
@@ -563,6 +567,10 @@ Public Class CeditMain
         Me.MVentAdd = New System.Windows.Forms.Button
         Me.MVentDup = New System.Windows.Forms.Button
         Me.GroupMVents = New System.Windows.Forms.GroupBox
+        Me.MVentFilterTime = New System.Windows.Forms.TextBox
+        Me.Label38 = New System.Windows.Forms.Label
+        Me.MVentFilterTransmission = New System.Windows.Forms.TextBox
+        Me.Label54 = New System.Windows.Forms.Label
         Me.MVentFractionTime = New System.Windows.Forms.TextBox
         Me.Label99 = New System.Windows.Forms.Label
         Me.MVentFinalFraction = New System.Windows.Forms.TextBox
@@ -2362,6 +2370,10 @@ Public Class CeditMain
         '
         'GroupMVents
         '
+        Me.GroupMVents.Controls.Add(Me.MVentFilterTime)
+        Me.GroupMVents.Controls.Add(Me.Label38)
+        Me.GroupMVents.Controls.Add(Me.MVentFilterTransmission)
+        Me.GroupMVents.Controls.Add(Me.Label54)
         Me.GroupMVents.Controls.Add(Me.MVentFractionTime)
         Me.GroupMVents.Controls.Add(Me.Label99)
         Me.GroupMVents.Controls.Add(Me.MVentFinalFraction)
@@ -2384,9 +2396,44 @@ Public Class CeditMain
         Me.GroupMVents.TabStop = False
         Me.GroupMVents.Text = "Vent 1 Geometry"
         '
+        'MVentFilterTime
+        '
+        Me.MVentFilterTime.Location = New System.Drawing.Point(591, 215)
+        Me.MVentFilterTime.Name = "MVentFilterTime"
+        Me.MVentFilterTime.Size = New System.Drawing.Size(96, 20)
+        Me.MVentFilterTime.TabIndex = 23
+        '
+        'Label38
+        '
+        Me.Label38.AutoSize = True
+        Me.Label38.Location = New System.Drawing.Point(510, 218)
+        Me.Label38.Name = "Label38"
+        Me.Label38.Size = New System.Drawing.Size(75, 13)
+        Me.Label38.TabIndex = 62
+        Me.Label38.Text = "Begin Filter At:"
+        Me.Label38.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'MVentFilterTransmission
+        '
+        Me.MVentFilterTransmission.Location = New System.Drawing.Point(591, 183)
+        Me.MVentFilterTransmission.Name = "MVentFilterTransmission"
+        Me.MVentFilterTransmission.Size = New System.Drawing.Size(96, 20)
+        Me.MVentFilterTransmission.TabIndex = 22
+        Me.MVentFilterTransmission.Text = "1"
+        '
+        'Label54
+        '
+        Me.Label54.AutoSize = True
+        Me.Label54.Location = New System.Drawing.Point(504, 186)
+        Me.Label54.Name = "Label54"
+        Me.Label54.Size = New System.Drawing.Size(81, 13)
+        Me.Label54.TabIndex = 61
+        Me.Label54.Text = "Filter Efficiency:"
+        Me.Label54.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'MVentFractionTime
         '
-        Me.MVentFractionTime.Location = New System.Drawing.Point(536, 200)
+        Me.MVentFractionTime.Location = New System.Drawing.Point(380, 200)
         Me.MVentFractionTime.Name = "MVentFractionTime"
         Me.MVentFractionTime.Size = New System.Drawing.Size(96, 20)
         Me.MVentFractionTime.TabIndex = 20
@@ -2394,7 +2441,7 @@ Public Class CeditMain
         'Label99
         '
         Me.Label99.AutoSize = True
-        Me.Label99.Location = New System.Drawing.Point(424, 200)
+        Me.Label99.Location = New System.Drawing.Point(268, 204)
         Me.Label99.Name = "Label99"
         Me.Label99.Size = New System.Drawing.Size(101, 13)
         Me.Label99.TabIndex = 58
@@ -2403,14 +2450,14 @@ Public Class CeditMain
         '
         'MVentFinalFraction
         '
-        Me.MVentFinalFraction.Location = New System.Drawing.Point(536, 232)
+        Me.MVentFinalFraction.Location = New System.Drawing.Point(380, 232)
         Me.MVentFinalFraction.Name = "MVentFinalFraction"
         Me.MVentFinalFraction.Size = New System.Drawing.Size(96, 20)
         Me.MVentFinalFraction.TabIndex = 21
         '
         'Label100
         '
-        Me.Label100.Location = New System.Drawing.Point(400, 232)
+        Me.Label100.Location = New System.Drawing.Point(244, 230)
         Me.Label100.Name = "Label100"
         Me.Label100.Size = New System.Drawing.Size(128, 24)
         Me.Label100.TabIndex = 56
@@ -2419,7 +2466,7 @@ Public Class CeditMain
         '
         'MVentInitialFraction
         '
-        Me.MVentInitialFraction.Location = New System.Drawing.Point(536, 168)
+        Me.MVentInitialFraction.Location = New System.Drawing.Point(380, 168)
         Me.MVentInitialFraction.Name = "MVentInitialFraction"
         Me.MVentInitialFraction.Size = New System.Drawing.Size(96, 20)
         Me.MVentInitialFraction.TabIndex = 19
@@ -2427,7 +2474,7 @@ Public Class CeditMain
         '
         'Label101
         '
-        Me.Label101.Location = New System.Drawing.Point(400, 168)
+        Me.Label101.Location = New System.Drawing.Point(244, 166)
         Me.Label101.Name = "Label101"
         Me.Label101.Size = New System.Drawing.Size(128, 24)
         Me.Label101.TabIndex = 54
@@ -2436,7 +2483,7 @@ Public Class CeditMain
         '
         'MVentZero
         '
-        Me.MVentZero.Location = New System.Drawing.Point(128, 232)
+        Me.MVentZero.Location = New System.Drawing.Point(129, 232)
         Me.MVentZero.Name = "MVentZero"
         Me.MVentZero.Size = New System.Drawing.Size(96, 20)
         Me.MVentZero.TabIndex = 18
@@ -2445,7 +2492,7 @@ Public Class CeditMain
         'Label41
         '
         Me.Label41.AutoSize = True
-        Me.Label41.Location = New System.Drawing.Point(48, 234)
+        Me.Label41.Location = New System.Drawing.Point(49, 234)
         Me.Label41.Name = "Label41"
         Me.Label41.Size = New System.Drawing.Size(70, 13)
         Me.Label41.TabIndex = 33
@@ -2530,7 +2577,7 @@ Public Class CeditMain
         '
         'MVentDropoff
         '
-        Me.MVentDropoff.Location = New System.Drawing.Point(128, 200)
+        Me.MVentDropoff.Location = New System.Drawing.Point(129, 200)
         Me.MVentDropoff.Name = "MVentDropoff"
         Me.MVentDropoff.Size = New System.Drawing.Size(96, 20)
         Me.MVentDropoff.TabIndex = 17
@@ -2539,7 +2586,7 @@ Public Class CeditMain
         'Label42
         '
         Me.Label42.AutoSize = True
-        Me.Label42.Location = New System.Drawing.Point(32, 202)
+        Me.Label42.Location = New System.Drawing.Point(33, 202)
         Me.Label42.Name = "Label42"
         Me.Label42.Size = New System.Drawing.Size(88, 13)
         Me.Label42.TabIndex = 28
@@ -2624,7 +2671,7 @@ Public Class CeditMain
         '
         'MVentFlow
         '
-        Me.MVentFlow.Location = New System.Drawing.Point(128, 168)
+        Me.MVentFlow.Location = New System.Drawing.Point(129, 168)
         Me.MVentFlow.Name = "MVentFlow"
         Me.MVentFlow.Size = New System.Drawing.Size(96, 20)
         Me.MVentFlow.TabIndex = 16
@@ -2632,7 +2679,7 @@ Public Class CeditMain
         '
         'Label45
         '
-        Me.Label45.Location = New System.Drawing.Point(48, 166)
+        Me.Label45.Location = New System.Drawing.Point(49, 166)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(72, 24)
         Me.Label45.TabIndex = 21
@@ -4570,7 +4617,7 @@ Public Class CeditMain
             UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
-    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentInitialFraction.Leave, MVentFractionTime.Leave, MVentFinalFraction.Leave
+    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentInitialFraction.Leave, MVentFractionTime.Leave, MVentFinalFraction.Leave, MVentFilterTransmission.Leave, MVentFilterTime.Leave
         Dim aVent As New Vent
         If CurrentMVent >= 0 And myMVents.Count > 0 Then
             aVent = myMVents.Item(CurrentMVent)
@@ -4591,6 +4638,8 @@ Public Class CeditMain
             If sender Is Me.MVentInitialFraction Then aVent.InitialOpening = Val(Me.MVentInitialFraction.Text)
             If sender Is Me.MVentFractionTime Then aVent.FinalOpeningTime = Val(Me.MVentFractionTime.Text)
             If sender Is Me.MVentFinalFraction Then aVent.FinalOpening = Val(Me.MVentFinalFraction.Text)
+            If sender Is Me.MVentFilterTransmission Then aVent.FilterTransmission = Val(Me.MVentFilterTransmission.Text)
+            If sender Is Me.MVentFilterTime Then aVent.FilterTime = Val(Me.MVentFilterTime.Text)
 
             myMVents(CurrentMVent) = aVent
             UpdateGUI.MVents(CurrentMVent)

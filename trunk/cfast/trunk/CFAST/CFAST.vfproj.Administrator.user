@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioUserFile ProjectCreator="Intel Fortran" Keyword="Console Application" Version="9.10" ProjectIdGuid="{5B8BF04C-0BF0-41CD-94D4-40BB0FEE09E4}">
+	<Configurations>
+		<Configuration Name="Debug|Win32" CommandArguments="globallow" WorkingDirectory="..\bin"/>
+		<Configuration Name="Release|Win32" CommandArguments="globallow"/></Configurations></VisualStudioUserFile>

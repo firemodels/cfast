@@ -5415,5 +5415,4 @@ Public Class CeditMain
         Me.MenuDetailedOutput.Checked = True
         UpdateAll()
     End Sub
-
 End Class

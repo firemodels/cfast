@@ -38,6 +38,8 @@ Public Class Vent
     Private aFlowRate As Single                 ' Fan flow rate for mechanical flow vents
     Private aBeginFlowDropoff As Single         ' Beginning backward pressure for flow dropoff in mechanical vents
     Private aZeroFlow As Single                 ' Backward pressure for zero flow in mechanical vents
+    Private aFilterTransmission As Single       ' EVENT Fraction of smoke and user-specified species that gets through filter
+    Private aFilterTime As Single               ' EVENT begin filter operation time
     Private aChanged As Boolean = False         ' True once compartment information has changed
     Private HasErrors As Integer = 0            ' Temporary variable to indicate whether there are errors in the specification
 
@@ -55,6 +57,7 @@ Public Class Vent
         aZeroFlow = 300.0
         aFace = 1
         aInitialOpening = 1.0
+        aFilterTransmission = 1.0
     End Sub
     Public Property VentType() As Integer
         Get
@@ -331,6 +334,27 @@ Public Class Vent
             End If
         End Set
     End Property
+    Public Property FilterTransmission() As Single
+        Get
+            Return aFilterTransmission
+        End Get
+        Set(ByVal Value As Single)
+            If Value <> aFilterTransmission Then
+                aFilterTransmission = Value
+            End If
+        End Set
+    End Property
+    Public Property FilterTime() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.Time).FromSI(aFilterTime)
+        End Get
+        Set(ByVal Value As Single)
+            If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aFilterTime Then
+                aFilterTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
     Public Property Changed() As Boolean
         Get
             Return aChanged
@@ -573,6 +597,14 @@ Public Class Vent
                             HasErrors += 1
                         End If
                         myUnits.SI = False
+                    End If
+                    If aFilterTransmission < 0.0 Or aFilterTransmission > 1.0 Then
+                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Filter transmission fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
+                    If aFilterTime < 0.0 Or aFilterTime > myEnvironment.SimulationTime Then
+                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Filter operation time is less than 0 or greater than simulation time.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
                     End If
                 Case TypeVHeat, TypeHHeat
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then

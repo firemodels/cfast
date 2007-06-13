@@ -48,22 +48,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 ! changed from  HVFAN = QMAX(K) to:
          HVFANl = QMAX(K) * ROH
       ELSE
-         F = HVBCO(K,1)
-         DF = XX0
-         XX = 1.0D0
-         DO 10 J = 2, NFC(K)
-            XXJM1 = J - 1
-            DF = DF + XXJM1 * HVBCO(K,J) * XX
-            XX = XX * DP
-            F = F + HVBCO(K,J) * XX
-   10    CONTINUE
-
+         call interp(dpmm,qfmm,2,dp,1,f)
 ! prevent negative flow
-
          F = MAX(XX0, F)
          HVFANl = F * ROH
       END IF
-	
+
 	openfraction = max (minimumflow, qcffraction (qcvm, k, tsec))
 	hvfan = hvfanl * openfraction
 

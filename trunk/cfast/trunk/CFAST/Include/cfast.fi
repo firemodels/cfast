@@ -8,6 +8,7 @@ C	  Jan 28, 2002 added vface for smokeview orientation
 !     New fire variable - objmaspy is the object mass pyrolized - both of these start at 0 to include the mainfire
 !     New variable - femr: radiological flow from the fire (similar to fems and femp); radio is the radiological equivalent to objmaspy
 !     Add hvac flow summation table (hveflot)
+!     Add hvac interpolation points qfmm and dpmm
 
       include "cparams.fi"
       include "dsize.fi"
@@ -66,7 +67,8 @@ C
      +    HVEXCN(MEXT,NS,2),OBJPOS(3,0:MXOIN),FPOS(3),HCNF(NV),hcrf(nv),
      +    HCLF(NV),FEMP(0:MXFIRE),FEMS(0:MXFIRE),FQF(0:MXFIRE),
      +    FQFC(0:MXFIRE), FQLOW(0:MXFIRE), FQUPR(0:MXFIRE),FQDJ(NR),
-     +    FAREA(0:MXFIRE),XXTARG(TRGXROW,MXTARG),CXABS(NR),CYABS(NR)
+     +    FAREA(0:MXFIRE),XXTARG(TRGXROW,MXTARG),CXABS(NR),CYABS(NR),
+     +    qfmm(2,mfan), dpmm(2,mfan)
 
       DOUBLE PRECISION CP, DELTAT, heatfq, tracet(2,mext)
       DOUBLE PRECISION G, GAMMA, GMWF, HCOMBA, HVDELT
@@ -94,7 +96,7 @@ C
      .    OBJMA1,OPLUME,HMFNET,FPOS,HCNF,HCLF,FEMP,FEMS,FQF,FQFC,FQLOW,
      .    FQUPR,FAREA,FQDJ,XDTECT,QSPRAY,VMFLO,XXTARG,XFIRE,RDQOUT,
      .    CXABS,CYABS,radconsplit,heatfp,qcvh,qcvv,qcvm,heatfq,
-     .    qcvpp,fopos,qcvf,TERMXX,
+     .    qcvpp,fopos,qcvf,qfmm,dpmm,TERMXX,
      .    NEUTRAL,NLSPCT,IVERS,LFMAX, NUMNODE,NSLB,HVORIEN,IBRF,
      .    LFBO,LFBT,SWITCH,IFIRED,NOPMX,NRFLOW,LPRINT,NSMAX,LDIAGP,
      .    LDIAGO,ITMMAX,MAXINR,IDIAG,NM1,N,N2,N3,N4,ITMSTP,ACTIVS,

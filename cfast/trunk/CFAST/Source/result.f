@@ -56,7 +56,7 @@ C*RE
         CALL RSLTCMP (iofilo)
       END IF
 
- 5000 FORMAT (//,' >>>>>>>>>>>>> Time = ',F8.1,' seconds.')
+ 5000 FORMAT (//,' Time = ',F8.1,' seconds.')
       END
 
       SUBROUTINE RSLTLAY

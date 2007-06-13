@@ -218,6 +218,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TimeStep.resx">
       <DependentUpon>TimeStep.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="User Units.resx">
       <DependentUpon>User Units.vb</DependentUpon>

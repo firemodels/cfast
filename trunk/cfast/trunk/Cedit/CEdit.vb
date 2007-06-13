@@ -14,6 +14,7 @@ Public Class CeditMain
     Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents MVentFilterTransmission As System.Windows.Forms.TextBox
+    Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -737,6 +738,7 @@ Public Class CeditMain
         Me.MainSave = New System.Windows.Forms.Button
         Me.MainRun = New System.Windows.Forms.Button
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -888,7 +890,7 @@ Public Class CeditMain
         'MenuRun
         '
         Me.MenuRun.Index = 1
-        Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuShowCFAST, Me.MenuDetailedOutput})
+        Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuShowCFAST, Me.MenuDetailedOutput, Me.MenuTotalMassOutput})
         Me.MenuRun.Text = "Run!"
         '
         'MenuSMVGeometry
@@ -4074,6 +4076,11 @@ Public Class CeditMain
         Me.MainRun.TabIndex = 10
         Me.MainRun.Text = "Run"
         '
+        'MenuTotalMassOutput
+        '
+        Me.MenuTotalMassOutput.Index = 6
+        Me.MenuTotalMassOutput.Text = "Total Mass Output File"
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -4188,6 +4195,14 @@ Public Class CeditMain
         ' Main entry point for the program ... handles initialization needed at startup
         Dim Argument As String
         myRecentFiles = New RecentFiles("CFAST")
+        Dim RegistryOptions(,) As String
+        RegistryOptions = GetAllSettings("CFAST", "Options")
+        Try
+            If RegistryOptions.GetUpperBound(0) >= 0 Then
+                TotalMassCFASTOutput = CType(RegistryOptions(0, 1), Boolean)
+            End If
+        Catch ex As Exception
+        End Try
         UpdateGUI.Menu()
         InitNew()
         Argument = GetCommandLineArg()
@@ -5333,6 +5348,16 @@ Public Class CeditMain
         Me.MenuDetailedOutput.Checked = DetailedCFASTOutput
         myEnvironment.Changed = True
     End Sub
+    Private Sub MenuTotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTotalMassOutput.Click
+        If Me.MenuTotalMassOutput.Checked Then
+            TotalMassCFASTOutput = False
+        Else
+            TotalMassCFASTOutput = True
+        End If
+        Me.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
+        SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
+    End Sub
+
     Private Sub MenuExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuExit.Click
         Application.Exit()
     End Sub

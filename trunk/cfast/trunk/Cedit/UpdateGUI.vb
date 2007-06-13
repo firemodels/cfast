@@ -32,6 +32,7 @@ Public Class UpdateGUI
         If System.IO.File.Exists(FileName) Then MainWin.MenuViewLog.Enabled = True
 
         MainWin.MenuDetailedOutput.Checked = DetailedCFASTOutput
+        MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
     End Sub
     Public Sub General()
         If myEnvironment.InputFileName = Nothing Then

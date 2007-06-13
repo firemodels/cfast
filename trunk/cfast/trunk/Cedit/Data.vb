@@ -49,6 +49,7 @@ Friend Module Data
     Friend fireFilesComments As New Collection                      'comments in the fire file
 
     Friend DetailedCFASTOutput As Boolean = True                    ' True if detailed output file is desired (makes print interval negative
+    Friend TotalMassCFASTOutput As Boolean = False                  ' True if species output is to be in total mass rather than concenration (adds /T option to CFAST execution command
 
     Friend Enum BaseUnitsNum    ' Provides an index into the array of base units conversion by type of conversion
         Length = 0

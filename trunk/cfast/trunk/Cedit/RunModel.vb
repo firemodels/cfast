@@ -204,6 +204,7 @@ Public Class RunModel
         Else
             CommandString = Application.StartupPath + "\CFAST.exe " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """"
         End If
+        If TotalMassCFASTOutput Then CommandString += " /T"
         Me.RunOK.Enabled = False
         Me.RunStop.Enabled = True
         Me.RunUpdate.Enabled = True

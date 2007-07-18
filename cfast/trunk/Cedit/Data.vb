@@ -263,5 +263,6 @@ Friend Module Data
         time
         finalFraction
         decaytime
+        filterEfficiency = 7
     End Enum
 End Module

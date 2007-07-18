@@ -350,7 +350,7 @@ Public Class UpdateGUI
             MainWin.MVentFinalFraction.Text = aVent.FinalOpening.ToString
             MainWin.MVentFractionTime.Text = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
 
-            MainWin.MVentFilterTransmission.Text = aVent.FilterTransmission.ToString
+            MainWin.MVentFilterEfficiency.Text = aVent.FilterEfficiency.ToString + " %"
             MainWin.MVentFilterTime.Text = aVent.FilterTime.ToString + myUnits.Convert(UnitsNum.Time).Units
 
             numMVents = myMVents.Count

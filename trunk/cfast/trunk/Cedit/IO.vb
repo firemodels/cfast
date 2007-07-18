@@ -411,7 +411,7 @@ Module IO
                 i += 1
             End If
             ' Mechanical ventilation filtering fraction and time
-            If aVent.FilterTransmission <> 1 Then
+            If aVent.FilterEfficiency <> 1 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "F"
                 csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
@@ -422,7 +422,7 @@ Module IO
                     csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
                 csv.Num(i, eventNum.ventNumber) = myMVents.VentNumber(j)
                 csv.Num(i, eventNum.time) = aVent.FilterTime
-                csv.Num(i, eventNum.finalFraction) = aVent.FilterTransmission
+                csv.Num(i, eventNum.filterEfficiency) = aVent.FilterEfficiency / 100.0
                 csv.Num(i, eventNum.decaytime) = 1.0
                 i += 1
             End If
@@ -930,7 +930,7 @@ Module IO
                         If index > -1 Then
                             Dim aVent As Vent = myMVents.Item(index)
                             aVent.FilterTime = csv.Num(i, eventNum.time)
-                            aVent.FilterTransmission = csv.Num(i, eventNum.finalFraction)
+                            aVent.FilterEfficiency = csv.Num(i, eventNum.finalFraction) * 100.0
                             aVent.Changed = False
                         Else
                             'error handling vent doesn't exist

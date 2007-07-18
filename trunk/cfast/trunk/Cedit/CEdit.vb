@@ -13,7 +13,7 @@ Public Class CeditMain
     Private Const OK As Integer = 1, Cancel As Integer = 2
     Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
     Friend WithEvents Label38 As System.Windows.Forms.Label
-    Friend WithEvents MVentFilterTransmission As System.Windows.Forms.TextBox
+    Friend WithEvents MVentFilterEfficiency As System.Windows.Forms.TextBox
     Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
@@ -570,7 +570,7 @@ Public Class CeditMain
         Me.GroupMVents = New System.Windows.Forms.GroupBox
         Me.MVentFilterTime = New System.Windows.Forms.TextBox
         Me.Label38 = New System.Windows.Forms.Label
-        Me.MVentFilterTransmission = New System.Windows.Forms.TextBox
+        Me.MVentFilterEfficiency = New System.Windows.Forms.TextBox
         Me.Label54 = New System.Windows.Forms.Label
         Me.MVentFractionTime = New System.Windows.Forms.TextBox
         Me.Label99 = New System.Windows.Forms.Label
@@ -2374,7 +2374,7 @@ Public Class CeditMain
         '
         Me.GroupMVents.Controls.Add(Me.MVentFilterTime)
         Me.GroupMVents.Controls.Add(Me.Label38)
-        Me.GroupMVents.Controls.Add(Me.MVentFilterTransmission)
+        Me.GroupMVents.Controls.Add(Me.MVentFilterEfficiency)
         Me.GroupMVents.Controls.Add(Me.Label54)
         Me.GroupMVents.Controls.Add(Me.MVentFractionTime)
         Me.GroupMVents.Controls.Add(Me.Label99)
@@ -2415,13 +2415,13 @@ Public Class CeditMain
         Me.Label38.Text = "Begin Filter At:"
         Me.Label38.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'MVentFilterTransmission
+        'MVentFilterEfficiency
         '
-        Me.MVentFilterTransmission.Location = New System.Drawing.Point(591, 183)
-        Me.MVentFilterTransmission.Name = "MVentFilterTransmission"
-        Me.MVentFilterTransmission.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFilterTransmission.TabIndex = 22
-        Me.MVentFilterTransmission.Text = "1"
+        Me.MVentFilterEfficiency.Location = New System.Drawing.Point(591, 183)
+        Me.MVentFilterEfficiency.Name = "MVentFilterEfficiency"
+        Me.MVentFilterEfficiency.Size = New System.Drawing.Size(96, 20)
+        Me.MVentFilterEfficiency.TabIndex = 22
+        Me.MVentFilterEfficiency.Text = "1"
         '
         'Label54
         '
@@ -4632,7 +4632,7 @@ Public Class CeditMain
             UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
-    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentInitialFraction.Leave, MVentFractionTime.Leave, MVentFinalFraction.Leave, MVentFilterTransmission.Leave, MVentFilterTime.Leave
+    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentInitialFraction.Leave, MVentFractionTime.Leave, MVentFinalFraction.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave
         Dim aVent As New Vent
         If CurrentMVent >= 0 And myMVents.Count > 0 Then
             aVent = myMVents.Item(CurrentMVent)
@@ -4653,7 +4653,7 @@ Public Class CeditMain
             If sender Is Me.MVentInitialFraction Then aVent.InitialOpening = Val(Me.MVentInitialFraction.Text)
             If sender Is Me.MVentFractionTime Then aVent.FinalOpeningTime = Val(Me.MVentFractionTime.Text)
             If sender Is Me.MVentFinalFraction Then aVent.FinalOpening = Val(Me.MVentFinalFraction.Text)
-            If sender Is Me.MVentFilterTransmission Then aVent.FilterTransmission = Val(Me.MVentFilterTransmission.Text)
+            If sender Is Me.MVentFilterEfficiency Then aVent.FilterEfficiency = Val(Me.MVentFilterEfficiency.Text)
             If sender Is Me.MVentFilterTime Then aVent.FilterTime = Val(Me.MVentFilterTime.Text)
 
             myMVents(CurrentMVent) = aVent

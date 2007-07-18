@@ -375,7 +375,7 @@ C     ASSURE OURSELVES THAT THE CONNECTIONS ARE SYMMETRICAL
 		 return
 	endif
 
-!	Sort by event type, h, v or m
+!	Sort by event type, h, v, m, or f
 	venttype = lcarray(1)
 		
 	select case (venttype)

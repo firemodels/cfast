@@ -411,7 +411,7 @@ Module IO
                 i += 1
             End If
             ' Mechanical ventilation filtering fraction and time
-            If aVent.FilterEfficiency <> 1 Then
+            If aVent.FilterEfficiency <> 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "F"
                 csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1

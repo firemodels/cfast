@@ -141,6 +141,8 @@ C     DO HORIZONTAL VENTS (HVENT,...)
       do i = 1, mext
         hveflot(upper,i) = xx0
         hveflot(lower,i) = xx0
+        tracet(upper,i) = xx0
+        tracet(lower,i) = xx0
       end do
 
 C     INITIALIZE THE FORCING FUNCTIONS

@@ -9,6 +9,12 @@ C
 C     Functional Class:
 C
 C     Description:  Output the results of the simulation at the current time
+!                RSLTLAY is the basic environment
+!                RSLTFIR information on fires
+!                RSLTTAR targets and walls - temperature, radiation and convective flux
+!                RSLTSPRINK sprinkler and detector information
+!                RSLTHALL track the nose of the gravity wave
+!                RSLTSP species
 C
 C     Arguments: TIME  Current time (s)
 C                PSW   What to output:  N=Normal printout, S=Species,
@@ -208,20 +214,19 @@ C
       END
       SUBROUTINE RSLTSP
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RSLTSP
-C
-C     Functional Class:
-C
-C     Description:  Output the layer and wall species at the current time
-C
-C     Arguments: none
-C
-C     Revision History:
-C        Created:  7/12/1993 at 12:51 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!
+!     Routine:     RSLTSP
+!
+!     Functional Class:
+!
+!     Description:  Output the layer and wall species at the current time
+!
+!     Arguments: none
+!
+!     Revision History:
+!        Created:  7/12/1993 at 12:51 by RDP
+!        Modified May, 2007 to output trace species
+!
 
       include "precis.fi"
       include "cfast.fi"
@@ -515,7 +520,7 @@ C     MECHANICAL VENTS
               flow(5) = (abs(tracet(upper,i))+ abs(tracet(lower,i)))
      +                / tradio
               CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),
-     +                    flow(5),flow(6))
+     +                    flow(5),xx0)
               IF (FIRST) THEN
                 IF (I.NE.1) WRITE (IOFILO,5010)
                 WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF

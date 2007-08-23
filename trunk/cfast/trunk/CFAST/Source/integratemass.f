@@ -35,12 +35,12 @@
             ISYS = IZHVSYS(J)       
 	      filter = (xx1-qcifraction(qcvf,isys,time)) 
 	      if (irm.eq.i) then
-	          hveflot(upper,ii) = hveflot(upper,ii) + hveflo(upper,ii)
-	          hveflot(lower,ii) = hveflot(lower,ii) + hveflo(lower,ii)	  	 
+	          hveflot(upper,ii) = hveflot(upper,ii)+hveflo(upper,ii)*deltt
+	          hveflot(lower,ii) = hveflot(lower,ii)+hveflo(lower,ii)*deltt 
 	          tracet(upper,ii)  = tracet(upper,ii) + 
-     .                       hveflo(upper,ii)*hvexcn(ii,11,upper)*filter
+     .                 hveflo(upper,ii)*hvexcn(ii,11,upper)*filter*deltt
 	          tracet(lower,ii)  = tracet(lower,ii) + 
-     .                       hveflo(lower,ii)*hvexcn(ii,11,lower)*filter
+     .                 hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
 	      endif 
         end do
       end do

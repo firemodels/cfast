@@ -10,10 +10,10 @@
       include "objects1.fi"
       include "iofiles77.fi"
 
-	parameter (maxhead = 1+7*nr+5+5*mxfire)
+	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)
 	character*16 compartmentlabel(7)
-	character*16 firelabel(5)
+	character*16 firelabel(7)
 	double precision time, outarray(maxhead)
 	logical firstc
 	integer position
@@ -22,7 +22,7 @@
      . 'Layer Height','Volume','Pressure','Ambient Target',
      . 'Floor Target'/
 	data firelabel/'Plume','Pyrolysis','Fire Size','Flame Height',
-     . 'Convective flow'/
+     . 'Convective flow','Pyrolosate','Total Trace'/
 	data firstc/.true./
 	save firstc
 
@@ -45,7 +45,7 @@
 
 	nfires = 0
 	if (lfbo.gt.0) then
-		 do 20 i = 1, 5
+		 do 20 i = 1, 7
 		 headline(3,i+7*nm1+1) = firelabel(i)
 		 headline(2,i+7*nm1+1) = compartmentnames(froom(0))
    20		 headline(1,i+7*nm1+1) = 'Mainfire'
@@ -53,15 +53,15 @@
 	endif
 
 	do 30 j = 1, numobjl
-	do 30 i = 1, 5
+	do 30 i = 1, 7
 	headline(3,i+7*nm1+1+5*nfires+5*(j-1)) = firelabel(i)
 	headline(2,i+7*nm1+1+5*nfires+5*(j-1)) = compartmentnames(froom(j))
    30 headline(1,i+7*nm1+1+5*nfires+5*(j-1)) = objnin(j)
 
 	nfires = nfires + numobjl
 
-	nheadings = 1+7*nm1+5*nfires
-	if(nheadings.gt.maxhead.or.nheadings.gt.1024) then
+	nheadings = 1+7*nm1+7*nfires
+	if(nheadings.gt.maxhead.or.nheadings.gt.16000) then
 		 errorcode = 211
 		 return
 	endif
@@ -103,6 +103,8 @@
         CALL SSaddtolist (position,FQF(0),outarray)
         CALL SSaddtolist (position,FHEIGHT,outarray)
         CALL SSaddtolist (position,FQFC(0),outarray)
+        CALL SSaddtolist (position,objmaspy(0),outarray)
+        CALL SSaddtolist (position,radio(0),outarray)
       END IF
 
       IF (NUMOBJL.NE.0) THEN
@@ -113,6 +115,8 @@
           CALL SSaddtolist (position,FQF(I),outarray)
           CALL SSaddtolist (position,FHEIGHT,outarray)
           CALL SSaddtolist (position,FQFC(I),outarray)
+          CALL SSaddtolist (position,objmaspy(i),outarray)
+          CALL SSaddtolist (position,radio(i),outarray)          
   200   CONTINUE
       END IF
 
@@ -132,8 +136,8 @@
 	double precision array(*), value
 
       IC = IC + 1
-!	We are imposing an arbitrary limit of 512 columns
-	if (ic.gt.512) return
+!	We are imposing an arbitrary limit of 32000 columns
+	if (ic.gt.32000) return
       array(IC) = VALUE
       RETURN
       

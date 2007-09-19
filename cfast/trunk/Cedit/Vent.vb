@@ -341,6 +341,7 @@ Public Class Vent
         Set(ByVal Value As Single)
             If Value <> aFilterEfficiency Then
                 aFilterEfficiency = Value / 100.0
+                aChanged = True
             End If
         End Set
     End Property

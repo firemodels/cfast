@@ -50,7 +50,7 @@ Public Class RunModel
     Friend WithEvents RunUpdate As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
-        Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(RunModel))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RunModel))
         Me.RunSummary = New C1.Win.C1FlexGrid.C1FlexGrid
         Me.RunOK = New System.Windows.Forms.Button
         Me.Label1 = New System.Windows.Forms.Label
@@ -68,18 +68,7 @@ Public Class RunModel
         'RunSummary
         '
         Me.RunSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.RunSummary.ColumnInfo = "8,1,0,0,0,85,Columns:0{Width:80;Caption:""Compartment"";TextAlign:CenterCenter;Text" & _
-        "AlignFixed:CenterCenter;}" & Microsoft.VisualBasic.ChrW(9) & "1{Width:120;Caption:""Upper Layer Temperature"";AllowRes" & _
-        "izing:False;TextAlign:CenterCenter;TextAlignFixed:CenterCenter;}" & Microsoft.VisualBasic.ChrW(9) & "2{Width:120;Cap" & _
-        "tion:""Lower Layer Temperature"";AllowResizing:False;TextAlign:CenterCenter;TextAl" & _
-        "ignFixed:CenterCenter;}" & Microsoft.VisualBasic.ChrW(9) & "3{Width:120;Caption:""Interface Height"";AllowResizing:Fal" & _
-        "se;TextAlign:CenterCenter;TextAlignFixed:CenterCenter;}" & Microsoft.VisualBasic.ChrW(9) & "4{Width:120;Caption:""Pyr" & _
-        "olysis Rate"";AllowResizing:False;TextAlign:CenterCenter;TextAlignFixed:CenterCen" & _
-        "ter;}" & Microsoft.VisualBasic.ChrW(9) & "5{Width:120;Caption:""Fire Size"";AllowResizing:False;TextAlign:CenterCenter" & _
-        ";TextAlignFixed:CenterCenter;}" & Microsoft.VisualBasic.ChrW(9) & "6{Width:120;Caption:""Pressure"";AllowResizing:Fals" & _
-        "e;TextAlign:CenterCenter;TextAlignFixed:CenterCenter;}" & Microsoft.VisualBasic.ChrW(9) & "7{Width:120;Caption:""Ambi" & _
-        "ent Target Flux"";AllowResizing:False;TextAlign:CenterCenter;TextAlignFixed:Cente" & _
-        "rCenter;}" & Microsoft.VisualBasic.ChrW(9)
+        Me.RunSummary.ColumnInfo = resources.GetString("RunSummary.ColumnInfo")
         Me.RunSummary.ExtendLastCol = True
         Me.RunSummary.Location = New System.Drawing.Point(24, 80)
         Me.RunSummary.Name = "RunSummary"
@@ -91,6 +80,7 @@ Public Class RunModel
         '
         Me.RunOK.Location = New System.Drawing.Point(311, 464)
         Me.RunOK.Name = "RunOK"
+        Me.RunOK.Size = New System.Drawing.Size(75, 23)
         Me.RunOK.TabIndex = 4
         Me.RunOK.Text = "Close"
         '
@@ -99,7 +89,7 @@ Public Class RunModel
         Me.Label1.AutoSize = True
         Me.Label1.Location = New System.Drawing.Point(296, 34)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(89, 16)
+        Me.Label1.Size = New System.Drawing.Size(84, 13)
         Me.Label1.TabIndex = 3
         Me.Label1.Text = "Simulation Time:"
         '
@@ -108,6 +98,7 @@ Public Class RunModel
         Me.Label2.AutoSize = True
         Me.Label2.Location = New System.Drawing.Point(32, 34)
         Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(95, 13)
         Me.Label2.TabIndex = 4
         Me.Label2.Text = "Current Time Step:"
         '
@@ -115,6 +106,7 @@ Public Class RunModel
         '
         Me.RunTime.Location = New System.Drawing.Point(400, 32)
         Me.RunTime.Name = "RunTime"
+        Me.RunTime.Size = New System.Drawing.Size(100, 20)
         Me.RunTime.TabIndex = 2
         Me.RunTime.Text = "0 s"
         '
@@ -122,6 +114,7 @@ Public Class RunModel
         '
         Me.RunDT.Location = New System.Drawing.Point(144, 32)
         Me.RunDT.Name = "RunDT"
+        Me.RunDT.Size = New System.Drawing.Size(100, 20)
         Me.RunDT.TabIndex = 1
         Me.RunDT.Text = "0.1 s"
         '
@@ -133,6 +126,7 @@ Public Class RunModel
         '
         Me.RunStop.Location = New System.Drawing.Point(458, 464)
         Me.RunStop.Name = "RunStop"
+        Me.RunStop.Size = New System.Drawing.Size(75, 23)
         Me.RunStop.TabIndex = 5
         Me.RunStop.Text = "Stop"
         '
@@ -149,7 +143,7 @@ Public Class RunModel
         Me.Label3.AutoSize = True
         Me.Label3.Location = New System.Drawing.Point(536, 34)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(53, 16)
+        Me.Label3.Size = New System.Drawing.Size(51, 13)
         Me.Label3.TabIndex = 9
         Me.Label3.Text = "Progress:"
         '
@@ -157,6 +151,7 @@ Public Class RunModel
         '
         Me.RunUpdate.Location = New System.Drawing.Point(607, 464)
         Me.RunUpdate.Name = "RunUpdate"
+        Me.RunUpdate.Size = New System.Drawing.Size(75, 23)
         Me.RunUpdate.TabIndex = 6
         Me.RunUpdate.Text = "Update"
         '
@@ -179,10 +174,11 @@ Public Class RunModel
         Me.MaximumSize = New System.Drawing.Size(1000, 600)
         Me.Name = "RunModel"
         Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "RunModel"
         CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 

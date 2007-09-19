@@ -57,6 +57,7 @@ Partial Class ViewFile
         'C1PrintPreviewControl1.OutlineView
         '
         Me.C1PrintPreviewControl1.PreviewOutlineView.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.C1PrintPreviewControl1.PreviewOutlineView.LineColor = System.Drawing.Color.Empty
         Me.C1PrintPreviewControl1.PreviewOutlineView.Location = New System.Drawing.Point(0, 0)
         Me.C1PrintPreviewControl1.PreviewOutlineView.Name = "OutlineView"
         Me.C1PrintPreviewControl1.PreviewOutlineView.Size = New System.Drawing.Size(165, 427)
@@ -108,6 +109,7 @@ Partial Class ViewFile
         Me.Controls.Add(Me.C1PrintPreviewControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "ViewFile"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "ViewFile"
         CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).EndInit()
         Me.C1PrintPreviewControl1.ResumeLayout(False)

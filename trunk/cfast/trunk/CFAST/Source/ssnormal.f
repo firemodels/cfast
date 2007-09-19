@@ -54,9 +54,9 @@
 
 	do 30 j = 1, numobjl
 	do 30 i = 1, 7
-	headline(3,i+7*nm1+1+5*nfires+5*(j-1)) = firelabel(i)
-	headline(2,i+7*nm1+1+5*nfires+5*(j-1)) = compartmentnames(froom(j))
-   30 headline(1,i+7*nm1+1+5*nfires+5*(j-1)) = objnin(j)
+	headline(3,i+7*nm1+1+7*nfires+7*(j-1)) = firelabel(i)
+	headline(2,i+7*nm1+1+7*nfires+7*(j-1)) = compartmentnames(froom(j))
+   30 headline(1,i+7*nm1+1+7*nfires+7*(j-1)) = objnin(j)
 
 	nfires = nfires + numobjl
 

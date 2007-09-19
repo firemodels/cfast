@@ -458,7 +458,7 @@ Public Class Thermal_Properties_Edit
         Me.MinimumSize = New System.Drawing.Size(800, 490)
         Me.Name = "Thermal_Properties_Edit"
         Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Thermal Properties"
         CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()

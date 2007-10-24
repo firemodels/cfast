@@ -19,46 +19,27 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      LOGICAL ERRORL, ERRORH, firstc
+      LOGICAL firstc
 	double precision hvfanl, openfraction, qcffraction, tsec,
-     . minimumflow
-      DATA ERRORL, ERRORH /2 * .TRUE./, firstc/.true./
-      SAVE ERRORL, ERRORH, firstc
+     . minimumopen
+      DATA firstc/.true./
+      SAVE firstc
       PARAMETER (XX0 = 0.0D0)
 
       ROH = ROHB(ICMV(II,JJ))
 
 	if (firstc) then
-		minimumflow = sqrt(d1mach(1))
+		minimumopen = sqrt(d1mach(1))
 		firstc = .false.
 	endif
 
-      IF (DP.LT.HMIN(K)) THEN
-         IF (ERRORL) THEN
-            WRITE (LOGERR,5000) DP,tsec
-            ERRORL = .FALSE.
-         END IF
-! changed from   HVFAN = QMIN(K) to:
-         HVFANl = QMIN(K)*ROH
-      ELSE IF (DP.GT.HMAX(K)) THEN
-         IF (ERRORH) THEN
-            WRITE (LOGERR,5000) DP,tsec
-            ERRORH = .FALSE.
-         END IF
-! changed from  HVFAN = QMAX(K) to:
-         HVFANl = QMAX(K) * ROH
-      ELSE
-         call interp(dpmm,qfmm,2,dp,1,f)
-! prevent negative flow
-         F = MAX(XX0, F)
-         HVFANl = F * ROH
-      END IF
-
-	openfraction = max (minimumflow, qcffraction (qcvm, k, tsec))
+! The hyperbolic tangent allows for smooth transition from full flow to no flow
+! within the fan cuttoff pressure range
+	F = 0.5 - tanh(8.0/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0)/2.0
+	F = MAX(XX0, F)
+	HVFANl = F * qmax(k) * ROH
+      openfraction = max (minimumopen, qcffraction (qcvm, k, tsec))
 	hvfan = hvfanl * openfraction
+	RETURN
 
-      RETURN
-
- 5000 FORMAT (5('*'),' Flow outside fan curve, DP = ',1PG12.3,
-     . ' at T = ',f10.3)
       END

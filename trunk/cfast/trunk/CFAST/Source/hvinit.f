@@ -78,14 +78,6 @@ C  ----- PREVENT NEGATIVE FLOW
         DFMAX(K) = DF
    40 CONTINUE
    
-!     Set up interpolating values for hvfan
-      do k = 1, nfan
-        qfmm(1,k) = qmin(k)
-        qfmm(2,k) = x0 ! note that we are not using qmax
-        dpmm(1,k) = hmin(k)
-        dpmm(2,k) = hmax(k)
-      end do
-   
 C
 C     IF THERE ARE NO CONNECTIONS BETWEEN THE HVAC SYSTEM AND THE
 C     OUTSIDE WORLD, WE DO NOT NEED TO GO ANY FURTHER

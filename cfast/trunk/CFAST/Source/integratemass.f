@@ -28,6 +28,9 @@
 
 ! sum the hvac flow
 
+! tracet is the trace species which gets through the vent, traces is the mass stopped. Has to be calculated here since
+! there is no equivalent to 1-... 
+
       do irm = 1, n
         DO II = 1, NEXT
             I = HVNODE(1,II)
@@ -35,12 +38,16 @@
             ISYS = IZHVSYS(J)       
 	      filter = (xx1-qcifraction(qcvf,isys,time)) 
 	      if (irm.eq.i) then
-	          hveflot(upper,ii) = hveflot(upper,ii)+hveflo(upper,ii)*deltt
-	          hveflot(lower,ii) = hveflot(lower,ii)+hveflo(lower,ii)*deltt 
-	          tracet(upper,ii)  = tracet(upper,ii) + 
-     .                 hveflo(upper,ii)*hvexcn(ii,11,upper)*filter*deltt
-	          tracet(lower,ii)  = tracet(lower,ii) + 
-     .                 hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
+	         hveflot(upper,ii) = hveflot(upper,ii)+hveflo(upper,ii)*deltt
+	         hveflot(lower,ii) = hveflot(lower,ii)+hveflo(lower,ii)*deltt 
+	         tracet(upper,ii)  = tracet(upper,ii) + 
+     .           hveflo(upper,ii)*hvexcn(ii,11,upper)*filter*deltt
+	         tracet(lower,ii)  = tracet(lower,ii) + 
+     .           hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
+	         traces(upper,ii)  = traces(upper,ii) + 
+     .           hveflo(upper,ii)*hvexcn(ii,11,upper)*(xx1-filter)*deltt
+	         traces(lower,ii)  = traces(lower,ii) + 
+     .           hveflo(lower,ii)*hvexcn(ii,11,lower)*(xx1-filter)*deltt
 	      endif 
         end do
       end do

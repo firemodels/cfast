@@ -7,7 +7,7 @@ C	  Jan 28, 2002 added vface for smokeview orientation
 !     New fire variable - radio, tradio are the total radiological mass released - this could be expanded to all species
 !     New fire variable - objmaspy is the object mass pyrolized - both of these start at 0 to include the mainfire
 !     New variable - femr: radiological flow from the fire (similar to fems and femp); radio is the radiological equivalent to objmaspy
-!     Add hvac flow summation table (hveflot)
+!     Add hvac flow summation table (hveflot): tracet is trace through a vent, traces is flow stopped by a vent
 
       include "cparams.fi"
       include "dsize.fi"
@@ -69,7 +69,7 @@ C
      +    FAREA(0:MXFIRE),XXTARG(TRGXROW,MXTARG),CXABS(NR),CYABS(NR)
 
       DOUBLE PRECISION CP, DELTAT, heatfq, tracet(2,mext)
-      DOUBLE PRECISION G, GAMMA, GMWF, HCOMBA, HVDELT
+      DOUBLE PRECISION G, GAMMA, GMWF, HCOMBA, HVDELT, traces(2,mext)
       DOUBLE PRECISION HVGRAV, HVRGAS, PA, POFSET, PREF, QRADRL
       DOUBLE PRECISION RA, RELHUM, RGAS, SAL, SAL2, SIGM, STIME, TA, TE
       DOUBLE PRECISION TERMXX, TFIRET, TFMAXT, TGIGNT
@@ -111,5 +111,6 @@ C
       COMMON /MOCO1B/ TITLE, compartmentnames
       SAVE /MOCO1B/
       
-      common /moco1c/ tradio, femr, radio, objmaspy, hveflot,tracet
+      common /moco1c/ tradio, femr, radio, objmaspy, hveflot,tracet,
+     . traces
       save /moco1c/

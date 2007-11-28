@@ -333,8 +333,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cshell.fi"
       include "sizes.fi"
       include "vents.fi"
-      CHARACTER CIOUT*8, CJOUT*12, OUTBUF*90
-      DIMENSION FLOW(4)
+      CHARACTER CIOUT*8, CJOUT*12, OUTBUF*105
+      DIMENSION FLOW(6)
       LOGICAL FIRST
       XX0 = 0.0D0
       WRITE (IOFILO,5000)
@@ -369,7 +369,7 @@ C     HORIZONTAL FLOW NATURAL VENTS
                 SUM4 = AA2(IIJK) + AS2(IIJK)
               ENDIF
               IF (I.EQ.N) THEN
-                CALL FLWOUT(OUTBUF,SUM1,SUM2,SUM3,SUM4,XX0,XX0)
+                CALL FLWOUT(OUTBUF,SUM1,SUM2,SUM3,SUM4,XX0,XX0,xx0,xx0)
               ELSE
                 IF(I.LT.J)THEN
                   SUM5 = SAU2(IIJK)
@@ -378,7 +378,8 @@ C     HORIZONTAL FLOW NATURAL VENTS
                   SUM5 = SAU1(IIJK)
                   SUM6 = ASL1(IIJK)
                 ENDIF
-                CALL FLWOUT(OUTBUF,SUM1,SUM2,SUM3,SUM4,SUM5,SUM6)
+                CALL FLWOUT(OUTBUF,SUM1,SUM2,SUM3,SUM4,SUM5,SUM6,
+     .                      xx0,xx0)
               END IF
               IF (FIRST) THEN
                 IF (I.NE.1) WRITE (IOFILO,5010)
@@ -407,7 +408,8 @@ C     VERTICAL FLOW NATURAL VENTS
             IF (VMFLO(J,I,UPPER).LT.XX0) FLOW(2) = -VMFLO(J,I,UPPER)
             IF (VMFLO(J,I,LOWER).GE.XX0) FLOW(3) = VMFLO(J,I,LOWER)
             IF (VMFLO(J,I,LOWER).LT.XX0) FLOW(4) = -VMFLO(J,I,LOWER)
-            CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),XX0,XX0)
+            CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),XX0,XX0,
+     .                  xx0,xx0)
             IF (FIRST) THEN
               IF (I.NE.1) WRITE (IOFILO,5010)
               WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
@@ -426,15 +428,17 @@ C     MECHANICAL VENTS
             IF (II.EQ.IRM) THEN
               INODE = HVNODE(2,I)
               WRITE (CJOUT,'(A1,1X,A4,I3)') 'M', 'Node', INODE
-              DO 50 IIi = 1, 4
+              DO 50 IIi = 1, 6
                 FLOW(IIi) = XX0
    50         CONTINUE
               IF (HVEFLO(UPPER,I).GE.XX0) FLOW(1) = HVEFLO(UPPER,I)
               IF (HVEFLO(UPPER,I).LT.XX0) FLOW(2) = -HVEFLO(UPPER,I)
               IF (HVEFLO(LOWER,I).GE.XX0) FLOW(3) = HVEFLO(LOWER,I)
               IF (HVEFLO(LOWER,I).LT.XX0) FLOW(4) = -HVEFLO(LOWER,I)
-              CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),XX0,XX0
-     +            )
+              flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
+              flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
+              CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),
+     .                    XX0,XX0,flow(5),flow(6))
               IF (FIRST) THEN
                 IF (I.NE.1) WRITE (IOFILO,5010)
                 WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
@@ -448,11 +452,12 @@ C     MECHANICAL VENTS
    70 CONTINUE
 
  5000 FORMAT (//,' Flow Through Vents (kg/s)',/,
-     +    '0To             Through        ',
-     +    '      Upper Layer           ','    Lower Layer           ',
-     +    'Mixing       Mixing',/,' Compartment    Vent             ',
-     +   2('Inflow       Outflow      '),'To Upper     To Lower',/,' ',
-     +    104('-'))
+     +   '0To             Through        ',
+     +   '      Upper Layer           ','    Lower Layer           ',
+     +   'Mixing       Mixing','       Trace Species (kg)'/,
+     .   ' Compartment    Vent             ',
+     +   2('Inflow       Outflow      '),'To Upper     To Lower',
+     +   '     Vented     Filtered',/,134('-'))
  5010 FORMAT (' ')
  5020 FORMAT (' ',A7,8X,A12,1X,A)
       END
@@ -484,7 +489,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cshell.fi"
       include "sizes.fi"
       include "vents.fi"
-      CHARACTER CIOUT*8, CJOUT*12, OUTBUF*90
+      CHARACTER CIOUT*14, CJOUT*12, OUTBUF*80
       DIMENSION FLOW(6)
       LOGICAL FIRST
       XX0 = 0.0D0
@@ -493,7 +498,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DO 70 IRM = 1, N
         I = IRM
         FIRST = .TRUE.
-        WRITE (CIOUT,'(A8)') compartmentnames(IRM)
+        WRITE (CIOUT,'(A14)') compartmentnames(IRM)
         IF (IRM.EQ.N) CIOUT = 'Outside'
 
 C     HORIZONTAL FLOW NATURAL VENTS
@@ -517,10 +522,10 @@ C     MECHANICAL VENTS
               IF (HVEFLOt(UPPER,I).LT.XX0) FLOW(2) = -HVEFLOt(UPPER,I)
               IF (HVEFLOt(LOWER,I).GE.XX0) FLOW(3) = HVEFLOt(LOWER,I)
               IF (HVEFLOt(LOWER,I).LT.XX0) FLOW(4) = -HVEFLOt(LOWER,I)
-              flow(5) = (abs(tracet(upper,i))+ abs(tracet(lower,i)))
-     +                / tradio
+              flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
+              flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
               CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),
-     +                    flow(5),xx0)
+     +                    flow(5),flow(6),xx0,xx0)
               IF (FIRST) THEN
                 IF (I.NE.1) WRITE (IOFILO,5010)
                 WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
@@ -536,11 +541,11 @@ C     MECHANICAL VENTS
  5000 FORMAT (//,' Total mass flow through vents (kg)',/,
      +    '0To             Through        ',
      +    '      Upper Layer           ','    Lower Layer           ',
-     +    'Trace Species',/,' Compartment    Vent             ',
-     +   2('Inflow       Outflow      '),'Relative to Total Release',/,
+     +    '   Trace Species',/,' Compartment    Vent             ',
+     +   2('Inflow       Outflow      '),' Vented ', '   Filtered',/,
      +    ' ', 104('-'))
  5010 FORMAT (' ')
- 5020 FORMAT (' ',A7,8X,A12,1X,A)
+ 5020 FORMAT (' ',A14,1X,A12,1X,A)
       END
       
       SUBROUTINE RSLTCMP (iounit)

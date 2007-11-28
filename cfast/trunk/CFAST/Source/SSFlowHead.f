@@ -87,6 +87,10 @@ C     Natural flow through vertical vents (horizontal flow)
 			  call SSFlowAtoH (position, maxoutput, heading, ostring)
 			  ostring = "MV Outflow from "//cnum
 			  call SSFlowAtoH (position, maxoutput, heading, ostring)
+			  ostring = "Trace Species through node "//cnum2
+			  call SSFlowAtoH (position, maxoutput, heading, ostring)
+			  ostring = "Trace captured at node "//cnum2
+			  call SSFlowAtoH (position, maxoutput, heading, ostring)			  
             END IF
    60     CONTINUE
         END IF

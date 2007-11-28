@@ -136,7 +136,7 @@
 	double precision array(*), value
 
       IC = IC + 1
-!	We are imposing an arbitrary limit of 32000 columns
+!	We are imposing an arbitrary limit of 512 columns
 	if (ic.gt.32000) return
       array(IC) = VALUE
       RETURN

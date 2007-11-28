@@ -1,4 +1,5 @@
-      SUBROUTINE FLWOUT(OUTBUF,FLOW1,FLOW2,FLOW3,FLOW4,FLOW5,FLOW6)
+      SUBROUTINE FLWOUT(OUTBUF,FLOW1,FLOW2,FLOW3,FLOW4,FLOW5,FLOW6,
+     . flow7,flow8)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -17,7 +18,7 @@ C
       include "precis.fi"
       include "cparams.fi"
       include "solvprm.fi"
-      DIMENSION FLOW(6)
+      DIMENSION FLOW(8)
       CHARACTER OUTBUF*(*)
 
       OUTBUF = ' '
@@ -27,12 +28,14 @@ C
       FLOW(4) = FLOW4
       FLOW(5) = FLOW5
       FLOW(6) = FLOW6
+      flow(7) = flow7
+      flow(8) = flow8
       X1000 = 1000.0D0
       X100 = 100.0D0
       X10 = 10.0D0
       X1 = 1.0D0
       X01 = 0.1D0
-      DO 10 I = 1, 6
+      DO 10 I = 1, 8
         IF (FLOW(I).GE.X1000) THEN
           WRITE (OUTBUF(13*(I-1)+1:13*I),5000) FLOW(I)
         ELSE IF (FLOW(I).GE.X100) THEN

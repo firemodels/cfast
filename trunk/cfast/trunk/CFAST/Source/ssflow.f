@@ -11,7 +11,7 @@
 
 	parameter (maxoutput = 512)
 	double precision time, outarray(maxoutput),sum1,sum2,sum3,sum4,
-     . sum5,sum6, flow(4), sumin, sumout
+     . sum5,sum6, flow(6), sumin, sumout
 	logical firstc/.true./
 	integer position, errorcode
 	save firstc
@@ -77,7 +77,7 @@
 
         DO 40 J = 1, N
           IF (NWV(I,J).NE.0.OR.NWV(J,I).NE.0) THEN
-            DO 30 II = 1, 4
+            DO 30 II = 1, 6
               FLOW(II) = XX0
    30       CONTINUE
             IF (VMFLO(J,I,UPPER).GE.XX0) FLOW(1) = VMFLO(J,I,UPPER)
@@ -85,7 +85,7 @@
             IF (VMFLO(J,I,LOWER).GE.XX0) FLOW(3) = VMFLO(J,I,LOWER)
             IF (VMFLO(J,I,LOWER).LT.XX0) FLOW(4) = -VMFLO(J,I,LOWER)
 !	We show only net flow in the spreadsheets
-		   sumin = flow(1) + flow(3)
+		    sumin = flow(1) + flow(3)
 			sumout = flow(2) + flow(4)
             CALL SSAddtolist (position,sumin,outarray)
             CALL SSAddtolist (position,sumout,outarray)
@@ -99,7 +99,7 @@
             II = HVNODE(1,I)
             IF (II.EQ.IRM) THEN
               INODE = HVNODE(2,I)
-              DO 50 III = 1, 4
+              DO 50 III = 1, 6
                 FLOW(III) = XX0
    50         CONTINUE
               IF (HVEFLO(UPPER,I).GE.XX0) FLOW(1) = HVEFLO(UPPER,I)
@@ -108,8 +108,12 @@
               IF (HVEFLO(LOWER,I).LT.XX0) FLOW(4) = -HVEFLO(LOWER,I)
 			  sumin = flow(1) + flow(3)
 			  sumout = flow(2) + flow(4)
+              flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
+              flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))			  
 			  call SSAddtolist (position, sumin, outarray)
 			  call SSAddtolist (position, sumout, outarray)
+			  call SSAddtolist (position, flow(5), outarray)
+			  call SSAddtolist (position, flow(6), outarray)
             END IF
    60     CONTINUE
         END IF

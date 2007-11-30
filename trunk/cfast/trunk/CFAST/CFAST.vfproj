@@ -62,13 +62,12 @@
 		<File RelativePath="Source\cfastexit.f"/>
 		<File RelativePath="Source\chemie.f"/>
 		<File RelativePath="Source\cjet.f"/>
-		<File RelativePath="Source\ckdup.f"/>
 		<File RelativePath="Source\cmdline.f"/>
 		<File RelativePath="Source\cnduct.f"/>
 		<File RelativePath="Source\cnheat.f"/>
 		<File RelativePath="Source\convec.f"/>
 		<File RelativePath="Source\convrt.f"/>
-		<File RelativePath="Source\countargs.for"/>
+		<File RelativePath=".\Source\countargs.f"/>
 		<File RelativePath="Source\cptime.f"/>
 		<File RelativePath="Source\cvheat.f"/>
 		<File RelativePath="Source\dassl.f"/>
@@ -82,7 +81,6 @@
 		<File RelativePath="Source\djfire.f"/>
 		<File RelativePath="Source\doesthefileexist.f"/>
 		<File RelativePath="Source\dofire.f"/>
-		<File RelativePath="Source\dotenab.f"/>
 		<File RelativePath="Source\dreadin.f"/>
 		<File RelativePath="Source\dumper.f"/>
 		<File RelativePath="Source\entrain.f"/>
@@ -149,7 +147,6 @@
 		<File RelativePath="Source\rdfigsol.f"/>
 		<File RelativePath="Source\rdflux.f"/>
 		<File RelativePath="Source\rdheat.f"/>
-		<File RelativePath="Source\rdprsn.f"/>
 		<File RelativePath="Source\rdtran.f"/>
 		<File RelativePath="Source\Read Comma Delimited File.f"/>
 		<File RelativePath="Source\readastu.f"/>

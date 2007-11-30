@@ -161,7 +161,7 @@ c     define the basic parameters
 ! Error in printout routine for units of HCN and HCL; igntion time off by 1 s if igntion specified as t=0 s
 !     . VERSION/609/
 ! Error in readinputfile ... subscripts were backwards for SWITCH array for ceiling-floor conduction check     
-     . VERSION/6010/
+     . VERSION/6100/
 ! 
       DATA IDEF /1/, ITODEF /2/, LAYDEF /1/, ISPDEF /3/, ICHRS /4/,
      . IDEVO /6/, IDEVC /1/, SETAXP /.FALSE./, OPENPC /.FALSE./,
@@ -178,5 +178,5 @@ c     define the basic parameters
       include "precis.fi"
       include "cfast.fi"
 
-      DATA CRDATE/2007,1,11/
+      DATA CRDATE/2007,11,29/
       END

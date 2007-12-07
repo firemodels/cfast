@@ -1,4 +1,4 @@
-            program cfast
+      program cfast
 
       include "precis.fi"
       include "cfast.fi"
@@ -11,7 +11,7 @@
       include "iofiles77.fi"
 
       logical error
-	integer errorcode
+	integer errorcode, rev_cfast
       errorcode = 0
 
 c     initialize the basic memory configuration
@@ -38,7 +38,7 @@ c     creation date
 
 !	version information to the log file
 	call versionout (version)
-
+      irev = rev_cfast()
       call initslv
 c     call the input routine for a normal start
 
@@ -92,7 +92,7 @@ c     errors
  5002 format ('The project files are based on the root: ',a64)
  5003 format ('Total execution time = ',1pg10.3,' seconds')
  5020 format ('Error exit during initialization from CFAST main')
-      END
+      end program cfast
 
       block data initcs
 
@@ -2512,20 +2512,19 @@ C
       RETURN
       END
       
-      SUBROUTINE Get_rev_cfast (rev_number, rev_date)
-     
-     
-      INTEGER,INTENT(INOUT) :: REV_NUMBER
-      CHARACTER(255),INTENT(INOUT) :: REV_DATE
-      INTEGER :: MODULE_REV
+      integer function rev_cfast
+          
+      INTEGER :: MODULE_REV, rev_auxilliary,rev_conduction
       CHARACTER(255) :: MODULE_DATE 
-      CHARACTER(255), PARAMETER :: mainid='$Id$'
-      CHARACTER(255), PARAMETER :: mainrev='$Revision$'
-      CHARACTER(255), PARAMETER :: maindate='$Date$'
+      CHARACTER(255), PARAMETER :: 
+     * mainrev='$Revision$'
+      CHARACTER(255), PARAMETER :: 
+     * maindate='$Date$'
       
       WRITE(module_date,'(A)') 
      *    mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
       READ (MODULE_DATE,'(I5)') MODULE_REV
+      rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction())
       WRITE(MODULE_DATE,'(A)') maindate
-      
-      end subroutine Get_rev_cfast
+      return
+      end function rev_cfast

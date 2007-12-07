@@ -1132,3 +1132,19 @@ C     if (.not.(ceiling jet in fire room)) then flux to IWALL = 0.
    30 CONTINUE
       RETURN
       END
+      integer function rev_convection
+          
+      INTEGER :: MODULE_REV
+      CHARACTER(255) :: MODULE_DATE 
+      CHARACTER(255), PARAMETER :: 
+     * mainrev='$Revision$'
+      CHARACTER(255), PARAMETER :: 
+     * maindate='$Date$'
+      
+      WRITE(module_date,'(A)') 
+     *    mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
+      READ (MODULE_DATE,'(I5)') MODULE_REV
+      rev_convection = module_rev
+      WRITE(MODULE_DATE,'(A)') maindate
+      return
+      end function rev_convection

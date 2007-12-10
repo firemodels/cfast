@@ -845,9 +845,9 @@ C*** MAKE SURE DASSL IS HAPPY
             IF(IZDTNUM.GT.IZDTMAX)THEN
 C*** model has hung (IZDTMAX consective time step sizes were below ZZDTCRIT)
               WRITE(MESSG,103)IZDTMAX,ZZDTCRIT,T
-  103         FORMAT(1x,I4,'consecutive time steps with size below',
+  103         FORMAT(I3,' consecutive time steps with size below',
      .               E11.4,' at t=',E11.4)
-              CALL XERROR(MESSG,0,1,1)
+              CALL XERROR(MESSG,0,1,2)
               IZDTNUM = 0
             ENDIF
            ELSE
@@ -2512,9 +2512,13 @@ C
       RETURN
       END
       
-      integer function rev_cfast
+      integer function rev_cfast(itype)
           
-      INTEGER :: MODULE_REV, rev_auxilliary,rev_conduction
+      INTEGER :: MODULE_REV, rev_auxilliary,rev_conduction,
+     * rev_convection, rev_fire, rev_flowfan, rev_flowhall,
+     * rev_flowhorizontal, rev_flowvertical, rev_initialization, 
+     * rev_input, rev_numerics, rev_output, rev_outputsmv,
+     * rev_outputspreadsheet, rev_radiation, rev_target
       CHARACTER(255) :: MODULE_DATE 
       CHARACTER(255), PARAMETER :: 
      * mainrev='$Revision$'
@@ -2524,7 +2528,11 @@ C
       WRITE(module_date,'(A)') 
      *    mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
       READ (MODULE_DATE,'(I5)') MODULE_REV
-      rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction())
+      rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),
+     * rev_convection(),rev_fire(),rev_flowfan(),rev_flowhall(),
+     * rev_flowhorizontal(), rev_flowvertical(),rev_initialization(),
+     * rev_input(),rev_numerics(),rev_output(),rev_outputsmv(),
+     * rev_outputspreadsheet(),rev_radiation(),rev_target())
       WRITE(MODULE_DATE,'(A)') maindate
       return
       end function rev_cfast

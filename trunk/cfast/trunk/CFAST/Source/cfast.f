@@ -1,5 +1,31 @@
       program cfast
 
+!     Routine: cfast (main program)
+!     Purpose: main program for the model
+!     Revision: $Revision$
+!     Revision Date: $Date$
+
+!     Permission is hereby granted, free of charge, to any person
+!     obtaining a copy of this software and associated documentation
+!     files (the "Software"), to deal in the Software without
+!     restriction, including without limitation the rights to use,
+!     copy, modify, merge, publish, distribute, sublicense, and/or sell
+!     copies of the Software, and to permit persons to whom the
+!     Software is furnished to do so, subject to the following
+!     conditions:
+
+!     The above copyright notice and this permission notice shall be
+!     included in all copies or substantial portions of the Software.
+
+!     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+!     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+!     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+!     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+!     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+!     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+!     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+!     OTHER DEALINGS IN THE SOFTWARE.
+
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -14,14 +40,15 @@
 	integer errorcode, rev_cfast
       errorcode = 0
 
-c     initialize the basic memory configuration
+!     initialize the basic memory configuration
 
       call initmm
       call initob
-      call readop
-c     
+      call readop     
 	call readcf1 (errorcode)
-c     
+
+!     initial output
+
 	write (logerr, 5000) mpsdatc
 	if (errorcode.gt.0) then
 		write (*, 5001) errorcode
@@ -30,60 +57,53 @@ c
 		write (logerr, 5002) project
 	endif
 
-c     creation date
-
       mpsdat(1) = rundat(1)
       mpsdat(2) = rundat(2)
       mpsdat(3) = rundat(3)
 
-!	version information to the log file
 	call versionout (version)
       irev = rev_cfast()
+
       call initslv
-c     call the input routine for a normal start
 
       call readinputfile (errorcode)
-	if (errorcode.gt.0) go to 10
+      if (errorcide.le.0) then
+	
+        if (header) call disclaim('CFAST')
 
-!	version information to the output file
-      if (header) call disclaim('CFAST')
+        call initspec
 
-c     initialize variables associated with species 
+        xdelt = nsmax / deltat
+        itmmax = xdelt + 1
+        tstop = itmmax - 1
 
-      call initspec
+	  call inputtpp (thrmfile, errorcode)
+	  if (errorcode.eq.0) then
+	
+	    call initwall(tstop,errorcode)
+          if (errorcode.le.0) then
 
-      xdelt = nsmax / deltat
-      itmmax = xdelt + 1
-      tstop = itmmax - 1
+            stime = 0.0d0
+            itmstp = 1
+            ih = -1
+            xdelt = nsmax / deltat
+            itmmax = xdelt + 1
+            tstop = itmmax - 1
 
-c     read the the databases
+            call outinitial(1)
 
-	call inputtpp (thrmfile, errorcode)
-	if (errorcode.ne.0) go to 10
+	      call cptime(tbeg)
+	      call solve(tstop,errorcode)
+	      call cptime(tend)
 
-      call initwall(tstop,errorcode)
-      if (errorcode.gt.0) go to 10
+	      write (logerr,5003) tend - tbeg
+	      errorcode = 0
+	                  
+          end if
+        end if
+      end if
 
-c     time step criterion
-
-      stime = 0.0d0
-      itmstp = 1
-
-      ih = -1
-
-      xdelt = nsmax / deltat
-      itmmax = xdelt + 1
-      tstop = itmmax - 1
-
-      call outinitial(1)
-	call cptime(tbeg)
-	call solve(tstop,errorcode)
-	call cptime(tend)
-	write (logerr,5003) tend - tbeg
-	call cfastexit ('CFAST', 0)
-      stop
-
-c     errors
+!     errors
 
    10 call cfastexit ('CFAST', errorcode)
 
@@ -96,7 +116,10 @@ c     errors
 
       block data initcs
 
-c     define the basic parameters
+!     Routine: initcs
+!     Purpose: data structure to define basic parameters for cfast
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
       include "cparams.fi"
       include "cshell.fi"
@@ -138,47 +161,17 @@ c     define the basic parameters
       END
       
       SUBROUTINE INITSOLN(T,PDOLD,PDZERO,RPAR,IPAR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITSOLN
-C
-C     Source File: INITSOLN.SOR
-C
-C     Functional Class:
-C
-C     Description:  This routine determines an initial solution to
-C                   the zone fire modeling equations.  A non-linear
-C                   algebraic solver (SNSQE) is used to calculate initial
-C                   room pressures that make dP/dt zero.  If an HVAC system
-C                   is modeled then HVAC node pressures and hvac duct
-C                   temperatures are also determined to force mass and energy
-C                   conservation.
-C
-C     Arguments: T
-C                PDOLD
-C                PDZERO
-C                RPAR
-C                IPAR
-C
-C     Revision History:
-C        Created:  06/14/1992 at 12:43 by GPF
-C        Modified: 12/1/1992 at 12:45 by PAR
-C                  RESYNC was added so that species mass adds up to total mass
-C                  at new pressure
-C        Modified: 8/15/1995 at 11:13 by PAR
-C                    Added initalization for flame spread dif eqs if we have a
-C                    flame spread object
-C        Modified: 2/5/95: GPF
-C                    Ignore pressure solution for rooms that are isolated from outside.
-C        Modified: 10/20/97: GPF
-C                    retry solution solve if the first try used the "steady"
-C                    option and it failed.
-C        Modified: 5/11/98 by GPF:
-C                  Implement fast startup option.
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      
+!     Routine: initsoln
+!     Purpose: This routine determines an initial solution to
+!              the zone fire modeling equations.  A non-linear
+!              algebraic solver (SNSQE) is used to calculate initial
+!              room pressures that make dP/dt zero.  If an HVAC system
+!              is modeled then HVAC node pressures and hvac duct
+!              temperatures are also determined to force mass and energy
+!              conservation.
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
       include "precis.fi"
       include "cfast.fi"
@@ -349,107 +342,48 @@ C
 
       SUBROUTINE SOLVE(TSTOP,IERROR)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     SOLVE
-C
-C     Source File: SOLVE.SOR
-C
-C     Functional Class:
-C
-C     Description:
-C
-C     Arguments: TSTOP   The final time to which CFAST should run to
-C                IERROR  Returns error codes
-C
-C     Revision History:
-C        Created:  11/28/1992 at 9:57 by WWJ
-C        April 10, 1992 change offsets to those shown below
-C        Modified by GPF 6/14/92
-C             Defined error tolerance arrays used by HVAC.  Changed
-C             initial solution to speed up calculation at start
-C        Modified by GPF and PAR
-C             Added code in support of the reduced Jacobian option.
-C        Modified 10/14/93 by GPF, added detection/suppression
-C        Modified 10/10/94 by GPF, added target flux/temperature calculation option
-C        Modified: 4/26/1995 gpf:
-C                  added argument to TARGET, added calls to TRHEAT to update explicit
-C                  and implicit TARGET temperatures.  Defined error tolerances for
-C                  implicit targets.
-C        Modified: 6/30/1995 gpf:
-C                  added surface wall temperatures to dassl debug print.
-C                  added code to implement dassl's solution of oxygen
-C        Modified: 7/13/1995 gpf:
-C                  added calls to SETDERV to define the how RESID is being
-C                  called (for use by the Jacobian speedup option)
-C        Modified: 8/15/1995 par:
-C              modified detection/suppression and added to it object
-C                  ignition.
-C        Modified: 9/5/1995 at 10:27 by PAR:
-C                  Added support for IERROR and returning stops to main
-C        Modified: 1/24/1996 at 14:36 by RWP:
-C                  New support for ADUMP keyword
-C        Modified: 2/5/96 by GPF:
-C                  changed calls to SETDERV
-C        Modified: 7/22/96 by GPF:
-C                  Set and unset UPDATEHALL flag around calls to
-C                  resid (the resid call that occurs after the call
-C                  to DASSL).
-C        Modified:  4/28/1997 by gpf
-C                   added DTCHECK command to prevent CFAST from hanging.
-C                   If III consecutive time steps are less than XXX then
-C                   SOLVE sigals that CFAST is hanging.  Format of command
-C                   is
-C                   DTCHECK XXX III
-C                   Default values are XXX=1.0D-09 and III=100
-C        MODIFIED: 10/9/97 by GPF:
-C                return sensor number instead of "1" in IFDTECT
-C                if a sensor has activated.
-C        Modified: 10/20/97 by gpf:
-C                tell dassl about discontinuities using ZZDISC array
-C                defined in DATACOPY .
-C        Modified: 5/11/98 by GPF:
-C                  Implement fast startup option.
-!        Modifies 1/25/07 by wwj to include a calculation of the total pyrolosate
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     Routine: solve
+!     Purpose: main solution loop for the model
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
-C     Offset in the following context is the beginning of the vector for
-C     that particular variable minus one.  Thus, the actual pressure array
-C     goes from NOFP+1 to NOFP+nm1.  The total number of equations to be
-C     considered is NEQUALS, and is the last element in the last vector.
-C     Each physical interface routine is responsible for the COUNT of the
-C     number of elements in the vector for which it is resonsible.
+!     Arguments: TSTOP   The final time to which CFAST should run to
+!                IERROR  Returns error codes
 
-C     This set of parameters is set by NPUTP and is kept in the environment
-C     common block CFAST.INC.  To index a variable, the list is something
-C     like (for temperature in this case)
+!     Offset in the following context is the beginning of the vector for
+!     that particular variable minus one.  Thus, the actual pressure array
+!     goes from NOFP+1 to NOFP+nm1.  The total number of equations to be
+!     considered is NEQUALS, and is the last element in the last vector.
+!     Each physical interface routine is responsible for the COUNT of the
+!     number of elements in the vector for which it is resonsible.
 
-C     NOFTU+1, NOFTU+NM1
+!     This set of parameters is set by NPUTP and is kept in the environment
+!     common block CFAST.INC.  To index a variable, the list is something
+!     like (for temperature in this case)
 
-C     The structure of the solver array is
+!     NOFTU+1, NOFTU+NM1
 
-C     NOFP = offset for the main pressure; the array of base pressures for each compartment
-C     NOFPMV = offset for HVAC node pressuers
-C     NOFTMV = offset for HVAC branch temperatures
-C     NOFTU = upper layer temperature
-C     NOFVU = upper layer volume
-C     NOFTL = lower layer temperature
-C     NOFWT = wall surface temperatures (equivalent to the number of profiles)
-C     NOFPRD = species
-C     NOFHCL = surface deposition of hydrogen chloride
-C     NOFSMKW = surface deposition of soot
-C     NOFSMK = gas phase agglomeration of soot
-C     NEQUALS = last element in the array.
+!     The structure of the solver array is
 
-C     The arrays which use this structure are VATOL, VRTOL, P, PDOLD, PPRIME and PDZERO
+!     NOFP = offset for the main pressure; the array of base pressures for each compartment
+!     NOFPMV = offset for HVAC node pressuers
+!     NOFTMV = offset for HVAC branch temperatures
+!     NOFTU = upper layer temperature
+!     NOFVU = upper layer volume
+!     NOFTL = lower layer temperature
+!     NOFWT = wall surface temperatures (equivalent to the number of profiles)
+!     NOFPRD = species
+!     NOFHCL = surface deposition of hydrogen chloride
+!     NOFSMKW = surface deposition of soot
+!     NOFSMK = gas phase agglomeration of soot
+!     NEQUALS = last element in the array.
 
-C     An important note - solve sets the last variable to be solved to NOFPRD
-C     which is the beginning of the species (-1) and the end of the array which
-C     is presently used by DASSL. The important point is that NODES is set to
-C     NOFPRD which is the equivalent to NOFWT+NWALLS
+!     The arrays which use this structure are VATOL, VRTOL, P, PDOLD, PPRIME and PDZERO
 
-C     update history
+!     An important note - solve sets the last variable to be solved to NOFPRD
+!     which is the beginning of the species (-1) and the end of the array which
+!     is presently used by DASSL. The important point is that NODES is set to
+!     NOFPRD which is the equivalent to NOFWT+NWALLS
 
       include "precis.fi"
       include "cfast.fi"
@@ -1004,32 +938,11 @@ C     CALCULATE GAS DOSAGE
       SUBROUTINE UPDREST(NODES, NEQUALS, NLSPCT,  T, TOLD, P, POLD,
      .                   PDNEW, PDOLD, PDZERO)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     UPDREST
-C
-C     Source File: SOLVE
-C
-C     Functional Class:
-C
-C     Description:
-C
-C     Arguments: NODES
-C                NEQUALS
-C                NLSPCT
-C                T
-C                TOLD
-C                P
-C                POLD
-C                PDNEW
-C                PDOLD
-C                PDZERO
-C
-C     Revision History:
-C        Created:  05/31/1995 at 9:57 by PAR
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+!     Routine: updrest
+!     Purpose: update solution returned by dassl
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
       include "precis.fi"
       include "cparams.fi"
@@ -1064,27 +977,12 @@ c
       END
 
       SUBROUTINE NTRACT(T,ICODE,TPAWS,TOUT,IEQMAX)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     NTRACT
-C
-C     Source File: SOLVE.SOR
-C
-C     Functional Class:
-C
-C     Description:
-C
-C     Arguments: T
-C                ICODE
-C                TPAWS
-C                TOUT
-C
-C     Revision History:
-C        Created:  11/28/1992 at 9:57 by PAR
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      
+
+!     Routine: ntract
+!     Purpose: keyboard routine for user interaction during simulation
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
       include "precis.fi"
       include "cfast.fi"
@@ -1148,24 +1046,12 @@ C
       END
 
       LOGICAL FUNCTION SLVHELP()
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     SLVHELP
-C
-C     Source File: SOLVE.SOR
-C
-C     Functional Class:
-C
-C     Description:
-C
-C     Arguments:
-C
-C     Revision History:
-C        Created:  11/28/1992 at 9:57 by PAR
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      
+      
+!     Routine: slvhelp
+!     Purpose: quick output of keyboard shortcuts available during simulaiton
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
       include "precis.fi"
       include "cfast.fi"
@@ -1201,6 +1087,13 @@ C
       END
 
       SUBROUTINE SETINFO(INFO,RWORK)
+      
+      
+!     Routine: setinfo
+!     Purpose: update solution flags for dassl solver
+!     Revision: $Revision$
+!     Revision Date: $Date$
+
       include "precis.fi"
       include "cparams.fi"
       include "solvprm.fi"
@@ -1232,96 +1125,43 @@ C     SETTING JACOBIAN FLAG
       END
 
       SUBROUTINE RESID (TSEC,X,XPSOLVE,DELTA,IRES,RPAR,IPAR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RESID
-C
-C     Functional Class:
-C
-C     Description:  Calculates the residual F(t,y,dy/dt) for CFAST
-C                   differential and algebraic equations.  For the gas
-C                   differential equations (pressure, layer volume,
-C                   upper/lower layer temperature) F(t,y,dy/dt) takes
-C                   the form F(t,y,dy/dt) = dy/dt - f(t,y) where f(t,y) is
-C                   related to the conservation of mass and and energy.
-C                   For the wall temperature equations, F is just Fourier's
-C                   law taking the form of
-C                   F(t,y,dy/dt) = q''(t,y) + K dT/dx
-C                   where q'' is the flux striking the wall, K is the wall's
-C                   thermal conductivity and dT/dx is the surface wall
-C                   temperature gradient.
-C
-C     Arguments: TSEC    Current simulation time (T above in s)
-C                X       Current guess at solution vector (Y above)
-C                XPSOLVE XPSOLVE Current guess at derivative of solution
-C                        vector (Y' above)
-C                DELTA   Residual or value of F(t,y,dy/dt)
-C                IRES    Outputs:  IRES    Integer flag which is always equal to
-C                        zero on input. RESID should alter IRES
-C                        only if it encounters an illegal value of Y or
-C                        a stop condition. Set IRES = -1 if an input
-C                        value is illegal, and DDASSL will try to solve
-C                        the problem without getting IRES = -1. If
-C                        IRES = -2, DASSL return control to the calling
-C                        program with IDID = -11.
-C                RPAR    real parameter arrays
-C                        are used for communication between SOLVE and
-C                        RESID via DASSL. They are not altered by DASSL.
-C                        Currently, only IPAR is used in RESID to pass
-C                        a partial / total flag for solution of the
-C                        species equations.
-C                IPAR
-C
-C     Revision History:
-C        Created:  11/28/1992 at 9:57 by WWJ
-C        Modified: 06/14/1992 at 10:07 by GPF:
-C                  Installed HVAC (solved by DASSL instead of by time splitting)
-C        Modified: 2/7/93 by GPF:
-C                  The radiation routines expect to receive info for each
-C                  fire in a room.  Therefore, XFIRE a 2-d array must have
-C                  the number of fires as the first subscript.
-C        Modified: 10/14/93 by GPF:
-C                  added detection/suppression
-C                  Defined STIME
-C        Modified: 6/10/1994 by GPF:
-C                  added shaft option (combine two layers into one)
-C        Modified: 10/10/94 & 3/10/95
-C                  the array xfire was formerly a local variable in
-C                  resid.  the target calculation routines are not
-C                  called by resid and needed access to xfire.
-C                  therefor xfire was moved to main common block.
-C        Modified: 4/26/1995 gpf:
-C                  added call to TRHEAT to calculate TARGET residuals for targets
-C                  temperatures computed by DASSL
-C        Modified: 6/30/1995 gpf:
-C                  added equations for oxygen
-C        Modified: 7/13/1995 gpf:
-C                  changed MXIRM to NR in several dimension statements
-C          Modified: 8/15/1995 par:
-C                    changed the argument list for FIRES to match the changed
-C                    FIRES subroutine.  Added calculating the residuals for
-C                    flame spread objects.  Added OBJECTS2.INC to get resid.
-C        Modified: 9/5/1995 at 10:23 by PAR:
-C                  Added support for IERROR and returning error codes to DASSL
-C        Modified: 7/22/1996 by GPF
-C                  changed product reference from IP to M.  (product
-C                  flow logic depends on where mass is flowing, IP was not
-C                  correct)
-C        Modified: 5/11/98 by GPF:
-C                  Implement fast startup option.
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-C     Commons:
+      
 
-C     WRITTEN:  Dt       Qc       Qf       Qscnv
-C      PASSED:  Dt
-C        USED:  Activs   Ar       Cp       Gamma    Hr       Izpmap
-C               N        Nlspct   Nm1      Option   Qf       Switch
-C               Told     Zzhlay   Zzmass   Zzpabs   Zzrho    Zztemp
-C               Zzvol
-
+!     Routine: cfast resid
+!     Purpose: Calculates the residual F(t,y,dy/dt) for CFAST
+!              differential and algebraic equations.  For the gas
+!              differential equations (pressure, layer volume,
+!              upper/lower layer temperature) F(t,y,dy/dt) takes
+!              the form F(t,y,dy/dt) = dy/dt - f(t,y) where f(t,y) is
+!              related to the conservation of mass and and energy.
+!              For the wall temperature equations, F is just Fourier's
+!              law taking the form of
+!              F(t,y,dy/dt) = q''(t,y) + K dT/dx
+!              where q'' is the flux striking the wall, K is the wall's
+!              thermal conductivity and dT/dx is the surface wall
+!              temperature gradient.
+!     Revision: $Revision$
+!     Revision Date: $Date$
+!     Arguments: TSEC    Current simulation time (T above in s)
+!                X       Current guess at solution vector (Y above)
+!                XPSOLVE XPSOLVE Current guess at derivative of solution
+!                        vector (Y' above)
+!                DELTA   Residual or value of F(t,y,dy/dt)
+!                IRES    Outputs:  IRES    Integer flag which is always equal to
+!                        zero on input. RESID should alter IRES
+!                        only if it encounters an illegal value of Y or
+!                        a stop condition. Set IRES = -1 if an input
+!                        value is illegal, and DDASSL will try to solve
+!                        the problem without getting IRES = -1. If
+!                        IRES = -2, DASSL return control to the calling
+!                        program with IDID = -11.
+!                RPAR    real parameter arrays
+!                IPAR    integer parameter arrays
+!                        These are used for communication between SOLVE and
+!                        RESID via DASSL. They are not altered by DASSL.
+!                        Currently, only IPAR is used in RESID to pass
+!                        a partial / total flag for solution of the
+!                        species equations.
 
       include "precis.fi"
       include "cfast.fi"
@@ -1754,89 +1594,21 @@ C       RESIDUAL FOR hvac SPECIES
 
       SUBROUTINE DATACOPY(PDIF,IFLAG)
 
+!     Routine: cfast (main program)
+!     Purpose: Calculate environment variables from the solver vector
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
-C     Routine:     DATACOPY
-
-C     Description:  Calculate environment variables from the solver vector
-C
-C     Arguments: PDIF   Solver vector
-C                IFLAG  Action flag:
-C
-C     IFLAG = CONSTVAR ==> Constant data (data that does not change 
-C                          with time)
-C     IFLAG = ODEVARA  ==> ODE variables: pressure, temperature and upper 
-C                          layer volume
-C     IFLAG = ODEVARB  ==> Species data and wall temperature profile.  
-C                          Use pold and pdold to estimate species
-C     IFLAG = ODEVARC  ==> Species data and wall temperature profile.
-C                          Use pdif array for species
-C
-C     Revision History:
-C        Created:  06/21/1990 by WWJ
-C        Modified: 07/26/1990 by WWJ:
-C                  Changed mapping to eliminate outside room fixed index in 
-C                  wall species do loop
-C        Modified: 03/23/1991 by WWJ:
-C                  Fixed initialization error
-C        Modified: 06/14/1992 by GPF:
-C                  Add HVAC environment varibles for species and mass
-C        Modified: 11/28/1992 by PAR:
-C                  Changed th calculation of ZZCSPEC so that it is always 
-C                  calculated
-C        Modified: 11/28/1992 by PAR:
-C                  Changed the manner in which VOLFRAC is calculated for
-C                  VFLOW
-C        Modified: 12/22/1992 by RDP:
-C                  Added calculation of a "mass fraction" for CT for flow 
-C                  calculation
-C        Modified: 2/5/1993 by GPF and PAR:
-C                  Added wall area environment variables and pointers
-C                  into the Jacobian matrix in support of the reduced
-C                  Jacobian option
-C        Modified: 3/19/1993 by RDP:
-C                  Added flag value ODEVARC to use pdif array directly for 
-C                  species data.
-C        Modified: 2/25/1994 by GPF:
-C                  defined data structures for the room to room heat transfer
-C                  option
-C        Modified: 6/10/1994 by GPF:
-C                  added shaft option (combine two layers into one)
-C        Modified: 10/10/1994 by GPF:
-C                  define data structures used by target calculation
-C        Modified: 4/25/95 by GPF:
-C                  Remove ZZ variables no longer used (ZZxMIN, ZZxMAX where x=P,G,W).
-C                  Added definition of iztarg,  For implicit targets defined temperature
-C                  in xxtarg every iteration
-C        Modified: 6/30/95 by GPF:
-C                  if dassl oxygen option is active (OPTION(FOXYGEN).eq.ON) then
-C                  get oxygen mass and concentration info from DASSL solver array
-C                  rather than portion of array solved explicitly 
-C        Modified: 7/13/95 by GPF:
-C                  defined IZEQMAP and IZHVAC, two mapping arrays used for the new
-C                  Jacobian speed up option
-C        Modified: 8/15/95 by PAR:
-C	             added setting the enviromental varibles for a flame spread
-C	             type object.
-C        Modified: 2/5/96 by GPF:  removed reduced jacobian option added on 2/5/93.
-C        Modified: 2/9/96 by GPF:  fixed problems with flow withdrawel from a layer
-C                                  when the layer is very small.
-C        Modified: 3/19/96 by GPF:  fixed defn of lower layer product concentrations
-C                                   when using shaft option
-C        Modified: 7/22/96 by GPF: added data structure definitions for use by
-C                                  the hall option
-C        Modified:11/25/96 by GPF: added non-rectangular room option
-C        Modified:2/14/97  by GPF: made memory requirements smaller by changing
-C                                  several o(n**2) data structures to o(n)
-C                                  Also, associated added wind pressure rise calculation
-C                                  to vents instead of rooms (now we can have wind come in
-C                                  one window of a room and go out another.
-C        Modified:10/23/97 by GPF: defined ZZDISC array.  This array contains
-C                                  discontinuity time points (now where vents
-C                                  change opening areas.
-!	   Modified: 8/05 by wwj; extend compartment pairwise connections to 25
-C        
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     Arguments: PDIF   Solver vector
+!                IFLAG  Action flag:
+!     IFLAG = CONSTVAR ==> Constant data (data that does not change 
+!                          with time)
+!     IFLAG = ODEVARA  ==> ODE variables: pressure, temperature and upper 
+!                          layer volume
+!     IFLAG = ODEVARB  ==> Species data and wall temperature profile.  
+!                          Use pold and pdold to estimate species
+!     IFLAG = ODEVARC  ==> Species data and wall temperature profile.
+!                          Use pdif array for species
 
       include "precis.fi"
       include "cfast.fi"
@@ -2436,27 +2208,15 @@ C     copy hvac product values for each hvac system
       END
 
       SUBROUTINE RESYNC(PDIF,IBEG)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RESYNC
-C
-C     Source File: RESYNC.SOR
-C
-C     Functional Class:   
-C                        
-C
-C     Description:  Routine to resyncronize the total mass of the
-C                   species with that of the total mass
-C
-C     Arguments: PDIF   The P array to resync
-C                IBEG   The point at which species are started in P array
-C
-C     Revision History:
-C        Created:  12/1/1992 at 12:39 by GPF
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
+!     Routine: resync
+!     Purpose: resyncronize the total mass of the
+!              species with that of the total mass in insure mass balance
+!     Revision: $Revision$
+!     Revision Date: $Date$
+
+!     Arguments: PDIF   The P array to resync
+!                IBEG   The point at which species are started in P array
 
       include "precis.fi"
       include "cfast.fi"
@@ -2513,6 +2273,11 @@ C
       END
       
       integer function rev_cfast(itype)
+
+!     Routine: rev_cfast
+!     Purpose: return current SVN revision or date
+!     Revision: $Revision$
+!     Revision Date: $Date$
           
       INTEGER :: MODULE_REV, rev_auxilliary,rev_conduction,
      * rev_convection, rev_fire, rev_flowfan, rev_flowhall,

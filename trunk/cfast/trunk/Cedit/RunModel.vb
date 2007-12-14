@@ -226,7 +226,7 @@ Public Class RunModel
             Me.RunOK.Enabled = True
             Me.RunStop.Enabled = False
             Me.RunUpdate.Enabled = False
-            Me.RunDT.Text = "Stopped"
+            Me.RunDT.Text = "CFAST finished"
         End If
         FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".status"
         StatusFileExists = System.IO.File.Exists(FileName)
@@ -246,7 +246,7 @@ Public Class RunModel
                             CurrentTime = myUnits.Convert(UnitsNum.Time).FromSI(ln.Substring(16, 10))
                             Me.RunTime.Text = CurrentTime.ToString + myUnits.Convert(UnitsNum.Time).Units
                             If Me.RunOK.Enabled Then
-                                Me.RunDT.Text = "Stopped"
+                                Me.RunDT.Text = "CFAST finished"
                             Else
                                 Me.RunDT.Text = myUnits.Convert(UnitsNum.Time).FromSI(ln.Substring(32, 10)).ToString + myUnits.Convert(UnitsNum.Time).Units
                             End If

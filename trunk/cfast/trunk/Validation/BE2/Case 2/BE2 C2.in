@@ -1,0 +1,27 @@
+VERSN,6,ICFMP 2 Test 2 Leakage vents only
+!!
+!!Environmental Keywords
+!!
+TIMES,600,-10,0,10,1
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+LIMO2,10
+WIND,0,10,0.16
+CJET,WALLS
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,13.8,27,19,0,0,0,SteelBE2,ConcreteBE2,SteelBE2
+ROOMA,1,4,372.6,372.6,51.3,51.3
+ROOMH,1,4,0,12,17.1,19
+!!
+!!vent keywords
+!!
+HVENT,1,2,1,0.71,0.71,0,1,6.55,0,4,1
+HVENT,1,2,2,0.71,0.71,0,1,6.55,0,2,1
+HVENT,1,2,3,0.71,12.71,12,1,6.55,0,4,1
+HVENT,1,2,4,0.71,12.71,12,1,6.55,0,2,1
+!!
+!!fire keywords
+!!
+OBJECT,NRC BE2 2,1,7.2,16,0,1,1,0,0,0,1

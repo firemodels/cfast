@@ -15,6 +15,7 @@ Public Class CeditMain
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents MVentFilterEfficiency As System.Windows.Forms.TextBox
     Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
+    Friend WithEvents MainGeometry As System.Windows.Forms.Button
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -413,6 +414,7 @@ Public Class CeditMain
         Me.MenuItem1 = New System.Windows.Forms.MenuItem
         Me.MenuShowCFAST = New System.Windows.Forms.MenuItem
         Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem
+        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem
         Me.MenuTools = New System.Windows.Forms.MenuItem
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem
@@ -738,7 +740,7 @@ Public Class CeditMain
         Me.MainSave = New System.Windows.Forms.Button
         Me.MainRun = New System.Windows.Forms.Button
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem
+        Me.MainGeometry = New System.Windows.Forms.Button
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -924,6 +926,11 @@ Public Class CeditMain
         Me.MenuDetailedOutput.Checked = True
         Me.MenuDetailedOutput.Index = 5
         Me.MenuDetailedOutput.Text = "Detailed Output File"
+        '
+        'MenuTotalMassOutput
+        '
+        Me.MenuTotalMassOutput.Index = 6
+        Me.MenuTotalMassOutput.Text = "Total Mass Output File"
         '
         'MenuTools
         '
@@ -2313,10 +2320,10 @@ Public Class CeditMain
         '
         'MainView
         '
-        Me.MainView.Location = New System.Drawing.Point(602, 608)
+        Me.MainView.Location = New System.Drawing.Point(659, 608)
         Me.MainView.Name = "MainView"
         Me.MainView.Size = New System.Drawing.Size(75, 23)
-        Me.MainView.TabIndex = 8
+        Me.MainView.TabIndex = 11
         Me.MainView.Text = "View"
         '
         'TabMechanicalFlow
@@ -4062,24 +4069,27 @@ Public Class CeditMain
         '
         'MainSave
         '
-        Me.MainSave.Location = New System.Drawing.Point(332, 608)
+        Me.MainSave.Location = New System.Drawing.Point(275, 608)
         Me.MainSave.Name = "MainSave"
         Me.MainSave.Size = New System.Drawing.Size(75, 23)
-        Me.MainSave.TabIndex = 9
+        Me.MainSave.TabIndex = 8
         Me.MainSave.Text = "Save"
         '
         'MainRun
         '
-        Me.MainRun.Location = New System.Drawing.Point(467, 608)
+        Me.MainRun.Location = New System.Drawing.Point(510, 608)
         Me.MainRun.Name = "MainRun"
         Me.MainRun.Size = New System.Drawing.Size(75, 23)
         Me.MainRun.TabIndex = 10
         Me.MainRun.Text = "Run"
         '
-        'MenuTotalMassOutput
+        'MainGeometry
         '
-        Me.MenuTotalMassOutput.Index = 6
-        Me.MenuTotalMassOutput.Text = "Total Mass Output File"
+        Me.MainGeometry.Location = New System.Drawing.Point(424, 608)
+        Me.MainGeometry.Name = "MainGeometry"
+        Me.MainGeometry.Size = New System.Drawing.Size(75, 23)
+        Me.MainGeometry.TabIndex = 9
+        Me.MainGeometry.Text = "Geometry"
         '
         'CeditMain
         '
@@ -4087,6 +4097,7 @@ Public Class CeditMain
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1008, 665)
+        Me.Controls.Add(Me.MainGeometry)
         Me.Controls.Add(Me.MainRun)
         Me.Controls.Add(Me.MainSave)
         Me.Controls.Add(Me.StatusBar)
@@ -5081,6 +5092,12 @@ Public Class CeditMain
         UpdateGUI.DoErrorCheck = False
         UpdateAll()
         UpdateGUI.DoErrorCheck = True
+    End Sub
+
+    Private Sub MainGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainGeometry.Click
+        MainGeometry.Enabled = False
+        RunSMVGeometry()
+        MainGeometry.Enabled = True
     End Sub
     Private Sub MainRun_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainRun.Click
         RunCFAST()

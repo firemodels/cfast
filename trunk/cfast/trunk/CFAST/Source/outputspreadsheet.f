@@ -32,43 +32,49 @@
 !! is sufficiently short to make that more work than this simple approach
 
 	If (firstc) then
-
+      
 	headline(1,1)= 'NORMAL'
 	headline(2,1) = 'Time'
 	headline(3,1) = ' '
-
+      ins = 1
 	do 10 j = 1, nm1
 	do 10 i = 1, 7
-	headline(2,i+1+(j-1)*7) = compartmentlabel(i)
-	headline(3,i+1+(j-1)*7) = ' '
-   10	headline(1,i+1+(j-1)*7) = compartmentnames(j)
-
+	if (i.ne.2.or.izshaft(j).eq.0) then
+	  if (i.ne.3.or.izshaft(j).eq.0) then
+	  ins = ins + 1
+	    headline(2,ins) = compartmentlabel(i)
+	    headline(3,ins) = ' '
+   	    headline(1,ins) = compartmentnames(j)
+   	  end if
+      end if
+   10 continue
 	nfires = 0
 	if (lfbo.gt.0) then
 		 do 20 i = 1, 7
-		 headline(3,i+7*nm1+1) = firelabel(i)
-		 headline(2,i+7*nm1+1) = compartmentnames(froom(0))
-   20		 headline(1,i+7*nm1+1) = 'Mainfire'
+		 ins = ins + 1
+		 headline(3,ins) = firelabel(i)
+		 headline(2,ins) = compartmentnames(froom(0))
+   20		 headline(1,ins) = 'Mainfire'
 		 nfires = 1
 	endif
 
 	do 30 j = 1, numobjl
 	do 30 i = 1, 7
-	headline(3,i+7*nm1+1+7*nfires+7*(j-1)) = firelabel(i)
-	headline(2,i+7*nm1+1+7*nfires+7*(j-1)) = compartmentnames(froom(j))
-   30 headline(1,i+7*nm1+1+7*nfires+7*(j-1)) = objnin(j)
+	ins = ins + 1
+	headline(3,ins) = firelabel(i)
+	headline(2,ins) = compartmentnames(froom(j))
+   30 headline(1,ins) = objnin(j)
 
 	nfires = nfires + numobjl
 
-	nheadings = 1+7*nm1+7*nfires
-	if(nheadings.gt.maxhead.or.nheadings.gt.16000) then
+	if(ins.gt.maxhead.or.ins.gt.16000) then
 		 errorcode = 211
 		 return
 	endif
 
-	write(15,"(1024(a,','))") (trim(headline(1,i)),i=1,nheadings)
-	write(15,"(1024(a,','))") (trim(headline(2,i)),i=1,nheadings)
-	write(15,"(1024(a,','))") (trim(headline(3,i)),i=1,nheadings)
+	write(15,"(1024(a,','))") (trim(headline(1,i)),i=1,ins)
+	write(15,"(1024(a,','))") (trim(headline(2,i)),i=1,ins)
+	write(15,"(1024(a,','))") (trim(headline(3,i)),i=1,ins)
 	firstc = .false.
 
 	endif
@@ -85,8 +91,10 @@
         ITARG = NTARG - NM1 + I
         IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
         CALL SSaddtolist (position,ZZTEMP(I,UPPER)-273.15,outarray)
-        CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
-        CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
+        if (izshaft(i).eq.0) then
+          CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
+          CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
+        end if
         CALL SSaddtolist (position,ZZVOL(I,UPPER),outarray)
         CALL SSaddtolist (position,ZZRELP(I) - PAMB(I),outarray)
         CALL SSaddtolist (position,ONTARGET(I),outarray)
@@ -649,25 +657,26 @@ c   40 CONTINUE
 		 maxsize = 2 * nls * nm1 + 1
 		 if (maxsize.gt.maxhead) then
 ! We can only output to the maximum array size; this is not deemed to be a fatal error!
-			  write(logerr,11) maxsize
+			  write(logerr,110) maxsize
 			  maxsize = min (maxsize, maxhead)
 		 endif
 
 		 heading(1,1)='SPECIES'
 		 heading(2,1) = 'Time'
 		 heading(3,1) = ' '
-
+         ins = 1
 		 do 10 i = 1, nm1
-		 do 10 j = UPPER, LOWER
-		 ins = 0
-		 do 10 lsp = 1, NS
-		 if(tooutput(lsp)) then
-			  ins = ins + 1
-			  IJKs = (ins-1)*2+(i-1)*2*nls+j+1
-			  heading(3,ijks) = stype(lsp)
-			  heading(2,ijks) = lnames(j)
-   			  heading(1,ijks) = compartmentnames(i)
-		 endif
+		   do 10 j = UPPER, LOWER
+		     if (j.eq.upper.or.IZSHAFT(I).EQ.0) then
+		     do 11 lsp = 1, NS
+		     if(tooutput(lsp)) then
+			   ins = ins + 1
+			   heading(3,ins) = stype(lsp)
+			   heading(2,ins) = lnames(j)
+   			   heading(1,ins) = compartmentnames(i)
+		     end if
+   11        continue
+           end if
    10		 continue
 		 write(17,"(1024(a,','))") (trim(heading(1,i)),i=1,maxsize)
 		 write(17,"(1024(a,','))") (trim(heading(2,i)),i=1,maxsize)
@@ -684,11 +693,13 @@ c   40 CONTINUE
       DO 70 I = 1, NM1
         DO 50 LSP = 1, NS
 	    DO 80 LAYER = UPPER, LOWER
-            IF (tooutput(LSP)) THEN
-	        CALL SSaddtolist (position,TOXICT(I,LAYER,LSP),outarray)
+	      if (layer.eq.upper.or.IZSHAFT(I).EQ.0) then
+              IF (tooutput(LSP)) THEN
+	          CALL SSaddtolist (position,TOXICT(I,LAYER,LSP),outarray)
 ! We can only output to the maximum array size; this is not deemed to be a fatal error!
-			  if (position.ge.maxhead) go to 90
-            END IF
+			    if (position.ge.maxhead) go to 90
+              END IF
+            end if
    80	    CONTINUE
    50   CONTINUE
    70 CONTINUE
@@ -697,7 +708,7 @@ c   40 CONTINUE
 
       RETURN
 
-   11	format('Exceeded size of output files in species spread sheet')
+  110	format('Exceeded size of output files in species spread sheet')
       END
 
       integer function rev_outputspreadsheet

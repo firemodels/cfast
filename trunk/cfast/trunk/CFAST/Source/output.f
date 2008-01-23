@@ -442,17 +442,19 @@ C
           DO 70 I = 1, NM1
             WRITE (CIOUT,5060) compartmentnames(i)
             IC = 14
-            DO 50 LSP = 1, NS
-              WRITE (CIOUT(IC:IC+9),5040) TOXICT(I,LAYER,LSP)
-              IC = IC + 11
-   50       CONTINUE
-            IF (ACTIVS(6)) THEN
-              DO 60 IW = 1, 4
-                IF (SWL(IWPTR(IW))) THEN
-                  WRITE (CIOUT(IC:IC+9),5040) ZZWSPEC(I,IWPTR(IW))
-                  IC = IC + 10
-                END IF
-   60         CONTINUE
+            if (LAYER.EQ.UPPER.OR.IZSHAFT(I).EQ.0) THEN
+              DO 50 LSP = 1, NS
+                WRITE (CIOUT(IC:IC+9),5040) TOXICT(I,LAYER,LSP)
+                IC = IC + 11
+   50         CONTINUE
+              IF (ACTIVS(6)) THEN
+                DO 60 IW = 1, 4
+                  IF (SWL(IWPTR(IW))) THEN
+                    WRITE (CIOUT(IC:IC+9),5040) ZZWSPEC(I,IWPTR(IW))
+                    IC = IC + 10
+                  END IF
+   60           CONTINUE
+              END IF
             END IF
             WRITE (IOFILO,5020) CIOUT(1:LENGTH(CIOUT))
    70     CONTINUE

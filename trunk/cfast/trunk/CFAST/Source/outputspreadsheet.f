@@ -691,8 +691,8 @@ c   40 CONTINUE
       CALL SSaddtolist (position,TIME,outarray)
 
       DO 70 I = 1, NM1
-        DO 50 LSP = 1, NS
-	    DO 80 LAYER = UPPER, LOWER
+        DO 50 LAYER = UPPER, LOWER
+	    DO 80 LSP = 1, NS
 	      if (layer.eq.upper.or.IZSHAFT(I).EQ.0) then
               IF (tooutput(LSP)) THEN
 	          CALL SSaddtolist (position,TOXICT(I,LAYER,LSP),outarray)

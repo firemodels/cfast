@@ -142,7 +142,7 @@ C       MAKE UP IFROOM AND XFIRE FOR THE MAIN FIRE
         FEMS(0) = EMS(LFBO)
 ! note that cnfrat is not reduced by sprinklers, but emp is so femr is
 ! (see code in chemie and pyrols)
-        femr(0) = emp(lfbo) * cnfrat
+        femr(0) = emp(lfbo) * crfrat
         FQF(0) = HEATLP(LFBO) + HEATUP(LFBO)
         FQFC(0) = QFC(1,LFBO)
         FQLOW(0) = HEATLP(LFBO)

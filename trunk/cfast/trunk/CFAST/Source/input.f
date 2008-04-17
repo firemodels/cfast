@@ -1446,8 +1446,8 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 			  CJETON(1) = .TRUE.
 			  CJETON(5) = .TRUE.
 		 ELSE IF (cjtype.EQ.'W') THEN
+		      CJETON(1) = .TRUE.
 			  CJETON(3) = .TRUE.
-			  CJETON(4) = .TRUE.
 			  CJETON(5) = .TRUE.
 		 ELSE IF (cjtype.EQ.'A') THEN
 			  CJETON(1) = .TRUE.

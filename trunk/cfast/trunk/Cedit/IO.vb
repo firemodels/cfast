@@ -621,6 +621,7 @@ Module IO
                         Dim iCjet As Integer
                         iCjet = InStr(CJetNames, csv.str(i, cjetNum.type)) / 7
                         If iCjet >= 0 And iCjet <= 3 Then
+                            If iCjet = 3 Then iCjet = 2
                             myEnvironment.CeilingJet = iCjet
                         End If
                     Case "COMPA"        'Done in first loop

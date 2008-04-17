@@ -241,7 +241,7 @@ Public Class Environment
             Return aCeilingJet
         End Get
         Set(ByVal Value As Integer)
-            If Value <> aCeilingJet And Value >= 0 And Value <= 3 Then
+            If Value <> aCeilingJet And Value >= 0 And Value <= 2 Then
                 aChanged = True
                 aCeilingJet = Value
             End If

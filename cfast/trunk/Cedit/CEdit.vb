@@ -3020,7 +3020,7 @@ Public Class CeditMain
         'FireCeilingJet
         '
         Me.FireCeilingJet.ItemHeight = 13
-        Me.FireCeilingJet.Items.AddRange(New Object() {"Off", "Ceiling", "Ceiling & Walls", "All"})
+        Me.FireCeilingJet.Items.AddRange(New Object() {"Off", "Ceiling", "Ceiling & Walls"})
         Me.FireCeilingJet.Location = New System.Drawing.Point(832, 40)
         Me.FireCeilingJet.Name = "FireCeilingJet"
         Me.FireCeilingJet.Size = New System.Drawing.Size(96, 21)

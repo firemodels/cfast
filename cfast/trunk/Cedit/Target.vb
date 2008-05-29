@@ -76,7 +76,7 @@ Public Class Target
         End Get
         Set(ByVal Value As Single)
             If Value >= 0 Then
-                If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aXPosition Then
+                If aXPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                     aChanged = True
                 End If
@@ -84,7 +84,7 @@ Public Class Target
                 If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
                     Dim tmpCompartment As New Compartment
                     tmpCompartment = myCompartments.Item(aCompartment)
-                    aXPosition = tmpCompartment.RoomWidth / 2
+                    aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth / 2)
                     aChanged = True
                 Else
                     aXPosition = Value
@@ -99,7 +99,7 @@ Public Class Target
         End Get
         Set(ByVal Value As Single)
             If Value >= 0 Then
-                If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aYPosition Then
+                If aYPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                     aChanged = True
                 End If
@@ -107,7 +107,7 @@ Public Class Target
                 If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
                     Dim tmpCompartment As New Compartment
                     tmpCompartment = myCompartments.Item(aCompartment)
-                    aYPosition = tmpCompartment.RoomDepth / 2
+                    aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth / 2)
                     aChanged = True
                 Else
                     aYPosition = Value
@@ -132,7 +132,7 @@ Public Class Target
                     If aType = TypeDetector Then
                         Dim tmpCompartment As New Compartment
                         tmpCompartment = myCompartments.Item(aCompartment)
-                        aZPosition = tmpCompartment.RoomHeight * 0.99
+                        aZPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomHeight) * 0.99
                     Else
                         aZPosition = 0.0
                     End If

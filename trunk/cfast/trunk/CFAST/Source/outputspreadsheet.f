@@ -163,7 +163,6 @@
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
 
 	parameter (maxoutput = 512)
@@ -290,7 +289,6 @@
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
 
 	parameter (maxoutput = 512)

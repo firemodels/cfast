@@ -106,7 +106,6 @@ C    so, use regular layer temperatures and densities
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "vents.fi"
       include "dervs.fi"
 

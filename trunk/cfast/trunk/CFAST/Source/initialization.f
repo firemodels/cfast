@@ -1009,7 +1009,6 @@ C
       include "params.fi"
       include "thermp.fi"
       include "fltarget.fi"
-      include "sizes.fi"
       include "vents.fi"
 
 C     SET SOME INITIALIZATION - SIMPLE CONTROL STUFF
@@ -2305,7 +2304,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "vents.fi"
 
       DIMENSION VNTOPN(NV)

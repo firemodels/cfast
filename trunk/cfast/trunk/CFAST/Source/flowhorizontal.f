@@ -36,7 +36,6 @@ C
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "prods.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
@@ -255,7 +254,6 @@ C    that are not affected by perturbed solution variable
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "prods.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
@@ -593,7 +591,6 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "vents.fi"
 C*BEG
 C

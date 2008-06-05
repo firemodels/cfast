@@ -1200,7 +1200,6 @@ C*RE
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "flwptrs.fi"
       include "opt.fi"
       include "vents.fi"

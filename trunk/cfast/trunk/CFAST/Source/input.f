@@ -623,7 +623,6 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       include "precis.fi"
-      include "sizes.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cfin.fi"

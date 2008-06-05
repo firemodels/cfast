@@ -495,7 +495,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*105
       DIMENSION FLOW(6)
@@ -651,7 +650,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*80
       DIMENSION FLOW(6)
@@ -948,7 +946,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
 
 
@@ -1060,7 +1057,6 @@ C
       include "cfast.fi"
       include "params.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
       CHARACTER CHJET(4)*7, CJBUF*51
       DATA CHJET /'off', 'ceiling', 'wall', 'all'/
@@ -1120,7 +1116,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "params.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
 
       WRITE (IOFILO,5000) TA-273.15, PA + POFSET, EXTA-273.15, 
@@ -1162,7 +1157,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "params.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
 
       WRITE (IOFILO,5000)
@@ -1206,7 +1200,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "params.fi"
       include "cshell.fi"
-      include "sizes.fi"
       include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
       LOGICAL FIRST

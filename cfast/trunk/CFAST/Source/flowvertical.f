@@ -38,7 +38,6 @@ C
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-      include "sizes.fi"
       include "prods.fi"
       include "flwptrs.fi"
       include "vntslb.fi"

@@ -3004,7 +3004,7 @@ C ERROR PROCESSING
 	
 	subroutine deleteoutputfiles (outputfile)
 
-      use dflib
+      !use IFPORT
 
       character (*) outputfile
       logical exists, doesthefileexist

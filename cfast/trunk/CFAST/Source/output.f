@@ -3004,7 +3004,7 @@ C ERROR PROCESSING
 	
 	subroutine deleteoutputfiles (outputfile)
 
-      !use IFPORT
+      use IFPORT
 
       character (*) outputfile
       logical exists, doesthefileexist

@@ -2,7 +2,7 @@ VERSN,6,Single room with wall burn (Test 2)
 !!
 !!Environmental Keywords
 !!
-TIMES,530,-50,0,10,10
+TIMES,600,-50,0,10,10
 EAMB,295.15,101300,0
 TAMB,295.15,101300,0,50
 CJET,WALLS

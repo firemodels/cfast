@@ -2,21 +2,21 @@ program Compare
     implicit none
 
     ! Variables
-    integer, parameter :: nrow = 20000, ncol = 1000, list_nrow = 1000, list_ncol = 25
-    integer, parameter :: icKeyword = 1, icFilename = 2, icQuantity = 3, icExptime = 4, icExpvalue = 5, &
+    integer, parameter :: nrow = 10000, ncol = 1000, list_nrow = 1000, list_ncol = 25
+    integer, parameter :: icKeyword = 1, icFilename = 2, icFirstRow = 3, icQuantity = 3, icExptime = 4, icExpvalue = 5, &
                           icModtime = 6, icModvalue = 7, icTimebegin = 8, icTimeend = 9, &
                           icMaxMin = 10, icCLosed = 11, icExpZero = 13, icModZero = 16
 
     integer, parameter :: icExpPeak = 14, icExpPeakTime = 15, icModPeak = 17, icModPeakTime = 18, icDeltaE = 19, icDeltaM = 20, icRelDiff = 21
 
-    integer test_numr, test_numc, list_numr, list_numc
-    integer ir, ic, num_to_compare
+    integer exp_numr, exp_numc, mod_numr, mod_numc, list_numr, list_numc
+    integer ir, ic, exp_ifirstrow, mod_ifirstrow
     integer x_exp_column, x_exp_length, y_exp_column, y_exp_length, exp_length
     integer x_mod_column, x_mod_length, y_mod_column, y_mod_length, mod_length
-    character comparelist_file*128, test_file*128, print_file*128
+    character comparelist_file*128, mod_file*128, exp_file*128, print_file*128
     
-    character list_carray(list_nrow, list_ncol)*50, test_carray(nrow,ncol)*50
-    real list_rarray(list_nrow, list_ncol), test_rarray(nrow, ncol)
+    character list_carray(list_nrow, list_ncol)*50, exp_carray(nrow,ncol)*50, mod_carray(nrow,ncol)*50
+    real list_rarray(list_nrow, list_ncol), exp_rarray(nrow, ncol), mod_rarray(nrow,ncol)
     real x_exp(nrow), y_exp(nrow), x_mod(nrow), y_mod(nrow), x_exp_value, y_exp_value, x_mod_value, y_mod_value
     real time, end_time
     real exp_zero, min_exp_value, min_exp_time, max_exp_value, max_exp_time
@@ -36,31 +36,43 @@ program Compare
     ir=0
 10  ir = ir + 1
 
-    ! each set of comparisons begins with a file name specification
-    if (list_carray(ir,icKeyword).eq.'Test') then
-	    test_file = '..\' // trim(list_carray(ir,2)) // '.csv'
-	    print_file = test_file
-	    open (unit=8,file=test_file,form='formatted', action='read')
-	    call readcsv (8,test_rarray,test_carray,nrow,ncol,1,test_numr,test_numc)
-	    write (*,'(a,a,a,2i5)') 'Data read, ',trim(test_file),', rows and columns=',test_numr,test_numc
+    ! each set of comparisons begins with file name specifications
+    if (list_carray(ir,icKeyword).eq.'Experiment') then
+	    exp_file = '..\' // trim(list_carray(ir,2)) // '.csv'
+	    print_file = exp_file
+	    exp_ifirstrow = list_rarray(ir,icFirstRow)
+	    open (unit=8,file=exp_file,form='formatted')
+	    call readcsv (8,exp_rarray,exp_carray,nrow,ncol,exp_ifirstrow,exp_numr,exp_numc)
+	    write (*,'(a,a,a,2i5)') 'Experiment read, ',trim(exp_file),', rows and columns=',exp_numr,exp_numc
+	    close (unit=8)
+    end if
+    if (list_carray(ir,icKeyword).eq.'Model') then
+	    mod_file = '..\' // trim(list_carray(ir,2)) // '.csv'
+	    mod_ifirstrow = list_rarray(ir,icFirstRow)
+	    open (unit=8,file=mod_file,form='formatted')
+	    call readcsv (8,mod_rarray,mod_carray,nrow,ncol,mod_ifirstrow,mod_numr,mod_numc)
+	    write (*,'(a,a,a,2i5)') 'Model read, ',trim(mod_file),', rows and columns=',mod_numr,mod_numc
 	    close (unit=8)
     end if
     if (list_carray(ir,icKeyword).eq.'Compare') then
-        num_to_compare = list_rarray(ir,icFilename)
-        
         
         ! get data into individual x and y vectors
         x_exp_column = int(list_rarray(ir,icExptime))
-        call load_vector (test_rarray, test_carray, nrow, test_numr, x_exp_column, x_exp, x_exp_length)
+        call load_vector (exp_rarray, exp_carray, nrow, exp_numr, x_exp_column, x_exp, x_exp_length)
         y_exp_column = int(list_rarray(ir,icExpvalue))
-        call load_vector (test_rarray, test_carray, nrow, test_numr, y_exp_column, y_exp, y_exp_length)
+        call load_vector (exp_rarray, exp_carray, nrow, exp_numr, y_exp_column, y_exp, y_exp_length)
         x_mod_column = int(list_rarray(ir,icModtime))
-        call load_vector (test_rarray, test_carray, nrow, test_numr, x_mod_column, x_mod, x_mod_length)
+        call load_vector (mod_rarray, mod_carray, nrow, mod_numr, x_mod_column, x_mod, x_mod_length)
         y_mod_column = int(list_rarray(ir,icModvalue))
-        call load_vector (test_rarray, test_carray, nrow, test_numr, y_mod_column, y_mod, y_mod_length)
+        call load_vector (mod_rarray, mod_carray, nrow, mod_numr, y_mod_column, y_mod, y_mod_length)
             
-        if (x_exp_length.eq.0 .or. y_exp_length.eq.0 .or. x_mod_length.eq.0 .or. y_mod_length.eq.0) then
-            write (*,*) 'No data points in file ',trim(test_file),' for values of ', trim(list_carray(ir,icFilename))
+        if (x_exp_length.eq.0 .or. y_exp_length.eq.0) then
+            write (*,*) 'No data points in file ',trim(exp_file),' for values of ', trim(list_carray(ir,icFilename))
+           stop
+        end if
+        
+        if (x_mod_length.eq.0 .or. y_mod_length.eq.0) then
+            write (*,*) 'No data points in file ',trim(mod_file),' for values of ', trim(list_carray(ir,icFilename))
            stop
         end if
             
@@ -144,7 +156,7 @@ program Compare
         end if
     end if
     write (9,'(30a25)') (list_carray(ir,ic), ic=1, list_numc)
-    if (ir.le.list_numr) go to 10
+    if (ir.le.list_numr.and.list_carray(ir,1).ne.'End') go to 10
 
 end program Compare
 

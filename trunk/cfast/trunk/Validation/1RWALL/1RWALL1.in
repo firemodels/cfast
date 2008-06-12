@@ -2,7 +2,7 @@ VERSN,6,CFAST Simulation
 !!
 !!Environmental Keywords
 !!
-TIMES,1500,-50,0,10,10
+TIMES,1800,-50,0,10,10
 EAMB,295.15,101300,0
 TAMB,295.15,101300,0,50
 CJET,WALLS
@@ -19,4 +19,4 @@ HVENT,1,2,1,0.76,2.03,0,1,0.84,0,1,1
 !!
 !!fire keywords
 !!
-OBJECT,1RWALL1,1,-1,-1,-1,1,1,0,0,0,1
+OBJECT,1RWALL1,1,1.22,1.83,0,1,1,0,0,0,1

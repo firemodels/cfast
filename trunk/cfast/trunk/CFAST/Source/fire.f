@@ -24,32 +24,23 @@ C                       (I,11) = Total heat into upper layer by fire i
 C                       (I,12 to 18) = Heat of combustion, C/CO2,
 C                                CO/CO2, H/C, O/C, HCl, HCN yields for
 C                                fire i
-C					  (I,19) characteristic length of the burning volume
+C					   (I,19) characteristic length of the burning volume
 C
-C     Revision History:
-C        Created:  7/8/1993   at 15:36 by RDP
-C        Modified  10/14/1993 added detection/suppression by GPF
-C                  4/24/1995  removed references to TMASS to eliminate FLINT
-C                             complaint
-C                  8/15/1995  at 13:39 by PAR
-C                             added UPDATE to argument list for FIRES and
-C                               OBJINT.  Fixed so LFBT = 0 means no main fire.
-C                  7/22/1996  gpf
-C                             update hall data structures for rooms that are
-C                             halls and have a main fire.
-C                  9/10/1996  by PAR
-C                             changed qf to qfc in fire flow computation
-C                             (qdot terms in ode's use convective not total
-C                              heat release, radiative contribution to
-C                              layers is handled in rdheat.)
-C                  5/11/98 by GPF:
-C                               Implement fast startup option.  Execute this routine only if this 
-C                               modeling feature is being used (rather than zeroing out the flow vector.)
-!                  03/07 modify chemistry to include radiological species. Note that the knockdown from sprinklers is 
-!                               applied in CHEMIE to the pyrolysis rate AS WELL AS cnfrat and clfrat, BUT NOT TO
-!                               crfrat. Rather since knockdown is applied to pyrolysis rate, in FIRES (see notes below)
-!                               the radiological production is the reduced pyrolysis rate times the bare crfrat
-
+!     Revision History:
+!          7/93 Created
+!         10/93 added detection/suppression
+!          4/95 removed references to TMASS to eliminate FLINT complaint
+!          8/95 added UPDATE to argument list for FIRES and OBJINT.  Fixed so LFBT = 0 means no main fire.
+!          7/96 update hall data structures for rooms that are halls and have a main fire.
+!          9/96 changed qf to qfc in fire flow computation (qdot terms in ode's use convective not total
+!               heat release, radiative contribution to layers is handled in rdheat.)
+!          5/98 Implement fast startup option.  Execute this routine only if this 
+!               modeling feature is being used (rather than zeroing out the flow vector.)
+!          3/07 modify chemistry to include radiological species. Note that the knockdown from sprinklers is 
+!               applied in CHEMIE to the pyrolysis rate and in the interpreter to mass. Since knockdown is 
+!               applied to pyrolysis rate, (see notes below) the radiological production is the reduced 
+!               pyrolysis rate times the bare crfrat
+!          5/08 separate pyrolysis and kinetics to correct error in upper layer burning species generation
 
       include "precis.fi"
       include "cfast.fi"
@@ -289,63 +280,58 @@ C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
 C
 C     Routine:     DOFIRE
 
-C     Description:  Do heat release from a fire for both main fire and
-C               objects
-C
-C     Inputs:   IFIRE   - fire number (ifire=0 is the main fire)
-C               IROOM   - room containing the fire
-C               XEMP    - pyrolysis rate of the fire (kg/s)
-C               XHR     - height of the room (m)
-C               XBR     - breadth of the room (m)
-C               HCOMBT  - current heat of combustion (J/kg)
-C               CCO2T   - current carbon/CO2 production ratio (kg/kg)
-C               COCO2T  - current CO/CO2 production ratio (kg/kg)
-C               HCRATT  - current Hydrogen/Carbon ratio in fuel (kg/kg)
-C               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
-C               CLFRAT  - current HCl production rate (kg/kg pyrolized)
-C               CNFRAT  - current HCN production rate (kg/kg pyrolized)
+!     Description:  Do heat release from a fire for both main fire and objects. Pyrolysis 
+!     and kinetics are separate operations.  Pyrolysis: TUHC, HCL, HCN, CT and TS - source 
+!     is from pyrol and objint; plume to UL is done below. Combustion kinetics applies to O2, CO2, CO, OD - chemie
+
+!     Inputs:   IFIRE   - fire number (ifire=0 is the main fire)
+!               IROOM   - room containing the fire
+!               XEMP    - pyrolysis rate of the fire (kg/s)
+!               XHR     - height of the room (m)
+!               XBR     - breadth of the room (m)
+!               HCOMBT  - current heat of combustion (J/kg)
+!               CCO2T   - current carbon/CO2 production ratio (kg/kg)
+!               COCO2T  - current CO/CO2 production ratio (kg/kg)
+!               HCRATT  - current Hydrogen/Carbon ratio in fuel (kg/kg)
+!               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
+!               CLFRAT  - current HCl production rate (kg/kg pyrolized)
+!               CNFRAT  - current HCN production rate (kg/kg pyrolized)
 !               crfrat  - current trace species production rate (kg/kg pyrolized)
-C               XMFIR   - production rate of a species in fire (kg/s)
-C               STMASS   - mass of a species in a layer in the room (kg)
-C               XFX     - position of the fire in x direction
-C               XFY     - position of the fire in y direction
-C               XFZ     - position of the fire in z direction
-C     Outputs:  XEME    - plume entrainment rate (kg/s)
-C               XEMS    - plume flow rate into the upper layer (kg/s)
-C               XQPYRL  - actual heat release rate of the fire (W)
-C               XNTMS   - net change in mass of a species in a layer
-C               XQF     - net heat generation rate into upper layer (W)
-C               XQFC    - net convection into layers (W)
-C               XQFR    - net radiation from fire (W)
-C               XQLP    - heat release in the lower plume (W)
-C               XQUP    - heat release rate in the upper plume (W)
-C
-C     Revision History:
-!     wwj   03/07 add trace species (ns = 11)
-C     wwj   4/10/98 fixed upper/lower layer separation (depends on where the fire is)
-C     gpf    4/9/98 added some more initializations for when the fire
-C                   is only in the upper layer
-C     gpf  10/19/97 added initialization to XQFC, error only showed when
-C                   there was upper but not lower layer burning
-C     gpf   2/27/96 fixed definition of XXFIREU (was missing XZ term)
-C     gpf   2/5/96  added missing initialization to XQFR
-C     gpf   6/30/95 commented out species specific code from a 'type 1' fire
-C                   calculation
-C     gpf   4/24/95  removed reference to tmass to remove flint complaint
-C     RDP   4/8/94    Added multiple pass through fire "chemistry" for
-C                     oxygen limited fires so that plume entrainment is
-C                     consistent with actual fire size.
-C     gpf   10/14/93 added detection/suppression
-C     RDP   11/10/91 Modified call to firplm for entrainment type.
-C                    Modified so NETMAS returns just amount for this
-C                    fire.  Accumulation must be done by calling
-C                    routine.  Note new definition of NETMAS.
-C                    Standardized calling sequence.
-C     WWJ   5/15/91  eliminate general contribution from plume
-C                    done in chemie, add in just ct and tuhc
-C     WWJ   2/9/91   changed limit on plume entrainment
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!               XMFIR   - production rate of a species in fire (kg/s)
+!               STMASS   - mass of a species in a layer in the room (kg)
+!               XFX     - position of the fire in x direction
+!               XFY     - position of the fire in y direction
+!               XFZ     - position of the fire in z direction
+!     Outputs:  XEME    - plume entrainment rate (kg/s)
+!               XEMS    - plume flow rate into the upper layer (kg/s)
+!               XQPYRL  - actual heat release rate of the fire (W)
+!               XNTMS   - net change in mass of a species in a layer
+!               XQF     - net heat generation rate into upper layer (W)
+!               XQFC    - net convection into layers (W)
+!               XQFR    - net radiation from fire (W)
+!               XQLP    - heat release in the lower plume (W)
+!               XQUP    - heat release rate in the upper plume (W)
+!
+!     Revision History:
+!     
+!          5/08 separate pyrolisys and kinetics so that the the plume model for heat realease can be 
+!               modified to a dynamic model.
+!          3/07 add trace species (ns = 11)
+!          4/98 fixed upper/lower layer separation (depends on where the fire is)
+!          9/98 added some more initializations for when the fire is only in the upper layer
+!         10/97 added initialization to XQFC, error only showed when there was upper but not lower layer burning
+!          2/96 fixed definition of XXFIREU (was missing XZ term)
+!          2/96 added missing initialization to XQFR
+!          6/95 commented out species specific code from a 'type 1' fire calculation
+!          4/95 removed reference to tmass to remove flint complaint
+!          4/94 added multiple pass through fire "chemistry" for oxygen limited fires so that plume entrainment is
+!               consistent with actual fire size.
+!         10/93 added detection/suppression
+!         11/91 modified call to firplm for entrainment type so NETMAS returns just amount for this
+!               fire.  Accumulation must be done by calling routine.  Note new definition of NETMAS.
+!               Standardized calling sequence.
+!          5/91 eliminate general contribution from plume done in chemie, add in just ct and tuhc
+!          2/91 changed limit on plume entrainment
 
       include "precis.fi"
       include "cfast.fi"
@@ -385,35 +371,28 @@ C     IF IT IS NEGATIVE, THEN THE FIRE IS NOT IN THAT LAYER
         XNTMS(LOWER,LSP) = X0
         XMASS(LSP) = X0
    10 CONTINUE
+   
+!     Deposit pyrolysis material into the upper layer. These are the species which are not affected by combustion.
+!     Any combustion related stuff is done by chemie. TUHC is a pyrolysis material whose concentration can be 
+!     modified by combustion.
 
+      xntms(upper,5) = xmfir(5)
+      xntms(upper,6) = xmfir(6)
+      xntms(upper,7) = xmfir(7)
+      xntms(upper,10)= xmfir(10)
+      xntms(upper,11) = xmfir(11)
+      
+!     Now do the kinetics scheme
+	
 C     DIVVY UP THE PLUME OUTPUT INTO RADIATION AND CONVECTIVE ENERGY.
 C     CONVECTION DRIVES THE PLUME ENTRAINMENT
 
       CHIRAD = MAX(MIN(radconsplit(ifire),X1),X0)
       QHEATL = MAX((XQPYRL+CP*(TE-XTL)*XEMP)*(X1-CHIRAD),X0)
 
-C     CALCULATE THE SPECIES MASS FLOW IN THE PLUME FOR TYPE 1 FIRE,
-C     NO KINETICS (UNCONSTRAINED BURNING)
-
       IF (LFBT.EQ.FREE) THEN
 !	We have eliminated unconstrained fires, if we reach this point, the input parser has failed!
 	  stop 101
-
-C     CALCULATE THE ENTRAINMENT RATE BUT CONSTRAIN THE ACTUAL AMOUNT
-C     OF AIR ENTRAINED TO THAT REQUIRED TO PRODUCE STABLE STRATIFICATION
-
-        CALL FIRPLM(QHEATL,MAX(X0,XXFIREL),XEMP,XEMS,XEME,
-     .      MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
-        XEME = MIN(XEME,QHEATL/(MAX((XTU-XTL),X1)*CP))
-        XEMS = XEMP + XEME
-
-        XQPYRL = QHEATL / (X1-CHIRAD)
-
-        XQFR = XQPYRL * CHIRAD
-        XQFC(UPPER) = XQPYRL * (X1-CHIRAD)
-        XQFC(LOWER) = X0
-        XQLP = XQPYRL
-        XQF = XQPYRL
       ELSE
 
 C     NOTE THAT THE COMBINATION OF FIRPLM AND CHEMIE CAN BE CALLED TWICE
@@ -453,9 +432,10 @@ C       FUEL BURNED
             GO TO 40
           END IF
         END IF
-        XQPYRL = XQPYRL/(X1-CHIRAD)
 
+        XQPYRL = XQPYRL/(X1-CHIRAD)
         XEMS = XEMP + XEME
+
         DO 50 I = 1, NS
           XNTMS(UPPER,I) = XMASS(I) + XNTMS(UPPER,I)
    50   CONTINUE
@@ -466,6 +446,8 @@ C
         DO 60 LSP = 1, 9
           XTEMP = XTEMP + STMASS(LOWER,LSP)
    60   CONTINUE
+!       include the trace species in mass balance
+        xtemp = xtemp + stmass(lower,11)
         IF(XTEMP.EQ.0.0D0)XTEMP = 1.0D0
         DO 70 LSP = 1, NS
           IF (ACTIVS(LSP)) THEN
@@ -474,12 +456,6 @@ C
             XNTMS(LOWER,LSP) = XNTMS(LOWER,LSP) - XNET
           END IF
    70   CONTINUE
-
-C       ADD IN THE FUEL AND CT.  EVERYTHING ELSE IS DONE BY CHEMIE.
-
-        XNTMS(UPPER,7) = XNTMS(UPPER,7) + XMFIR(7)
-        XNTMS(UPPER,10) = XNTMS(UPPER,10) + XMFIR(10)
-	  xntms(upper,11) = xntms(upper,11) + xmfir(11)
         XQFR = XQPYRL * CHIRAD
         XQFC(UPPER) = XQPYRL * (X1-CHIRAD)
         XQLP = XQPYRL
@@ -519,68 +495,51 @@ C       UMPLM{EP},{ES},AND {EE} ARE EQUIVALENT TO EMP, EMS AND EME
 
       SUBROUTINE CHEMIE(QQSPRAY,PYROL,ENTRAIN,SOURCE,LAYER,HCOMBT,CCO2T,
      + COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,QPYROL,NETFUEL,XMASS)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     CHEMIE
-C
-C     Source File: CHEMIE.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  Do the combustion chemistry - for plumes in both the
-C                   upper and lower layers.  Note that the kinetics scheme
-C                   is implemented here.  However, applying it to the
-C                   various pieces, namely the lower layer plume, the 
-C                   upper layer plume, and the door jet fires, is 
-C                   somewhat complex.
-C                     
-C                   Care should be exercised in making changes either 
-C                   here or in the source interface routine.
-C
-C     Arguments: QQSPRAY  heat release rate at sprinkler activation time
-C                PYROL   pyrolysis rate of the fuel (kg/s)
-C                ENTRAIN plume entrainment rate (kg/s)
-C                SOURCE  room number from which the mass flux comes
-C                LAYER   layer mass is coming from (1=lower, 2=upper)
-C                HCOMBT  current heat of combustion (J/kg)
-C                CCO2T   current carbon/CO2 production ratio (kg/kg)
-C                COCO2T  current CO/CO2 production ratio (kg/kg)
-C                HCRATT  current Hydrogen/Carbon ratio in fuel (kg/kg)
-C                OCRATT  current Oxygen/Carbon ratio in fuel (kg/kg)
-C                CLFRAT  current HCl production rate (kg/kg pyrolized )
-C                CNFRAT  current HCN production rate (kg/kg pyrolized)
+
+!     Routine:     CHEMIE
+
+!     Description:  Do the combustion chemistry - for plumes in both the upper and lower layers.
+!     Note that the kinetics scheme is implemented here.  However, applying it to the
+!     various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is 
+!     somewhat complex.
+
+!     Care should be exercised in making changes either here or in the source interface routine.
+
+!     Arguments: QQSPRAY  heat release rate at sprinkler activation time
+!                PYROL   pyrolysis rate of the fuel (kg/s)
+!                ENTRAIN plume entrainment rate (kg/s)
+!                SOURCE  room number from which the mass flux comes
+!                LAYER   layer mass is coming from (1=lower, 2=upper)
+!                HCOMBT  current heat of combustion (J/kg)
+!                CCO2T   current carbon/CO2 production ratio (kg/kg)
+!                COCO2T  current CO/CO2 production ratio (kg/kg)
+!                HCRATT  current Hydrogen/Carbon ratio in fuel (kg/kg)
+!                OCRATT  current Oxygen/Carbon ratio in fuel (kg/kg)
+!                CLFRAT  current HCl production rate (kg/kg pyrolized )
+!                CNFRAT  current HCN production rate (kg/kg pyrolized)
 !                crfrat  current trace species production (kg/kg pyrolized)
-C                QPYROL  net heat release rate constrained by available
-C                        oxygen (W)
-C                NETFUEL net burning rate of fuel constrained by
-C                        available oxygen (kg/s)
-C                XMASS   net rate of production of species into layers
-C                        in the room containing the fire (kg/s)
-C
-C     Revision History:
-!     WWJ     03/07   added trace species tracking
-C	WWJ	  03/04   Fixed oxygen and hydrogen accounting. The way o/c was being used was as a mass ratio
-C					   of oxygen to fuel, but the manual specifies mass of oxygen to mass of carbon
-C     RDP   4/8/94    moved summing of species production rates to calling
-C                     routine so CHEMIE can be called multiple times.
-C                     Removed EQUIVALENCE to XMASS, now an argument.
-C     GPF   10/14/93  added sprinkler attenuation
-C     RDP   12/18/92  modified oxygen limit to TANH for smooth cutoff
-C                     independent of the limit
-C     RDP   11/10/91  modified so NETMAS returns just amount for this
-C                     fire.  Accumulation must be done by calling 
-C                     routine.  Note new definition of NETMAS.
-C                     Standardized calling sequence.
-C     WWJ   8/6/90    remove entrainment calculation. Done by caller
-C           3/3/90    procedure call modified to pass all changed
-C                     arguments
-C           2/1/90    more complete combustion scheme, account for H, O,
-C                     HCL, and HCN
-C           9/28/89   correct coefficients - FACTOR and NETCO2
-C           11/14/88  smooth falloff of kinetics near oxygen limit
-C           11/25/87  generalize for upper layer, lower layer, and plume
-C*RE
+!                QPYROL  net heat release rate constrained by available oxygen (W)
+!                NETFUEL net burning rate of fuel constrained by available oxygen (kg/s)
+!                XMASS   net rate of production of species into layers in the room containing the fire (kg/s)
+
+!     Revision History:
+!          5/08 remove pyrolysis calculations 
+!          3/07 added trace species tracking
+!          3/04 fixed oxygen and hydrogen accounting. The way o/c was being used was as a mass ratio
+!               of oxygen to fuel, but the manual specifies mass of oxygen to mass of carbon
+!          4/94 moved summing of species production rates to calling routine so CHEMIE can be 
+!               called multiple times. Removed EQUIVALENCE to XMASS, now an argument.
+!         10/93 added sprinkler attenuation
+!         12/92 modified oxygen limit to TANH for smooth cutoff independent of the limit
+!         11/91 modified so NETMAS returns just amount for this fire.  Accumulation must be done by calling 
+!               routine.  Note new definition of NETMAS. Standardized calling sequence.
+!          8/90 remove entrainment calculation. Done by caller
+!          3/90 procedure call modified to pass all changed arguments
+!          2/90 more complete combustion scheme, account for H, O, HCL, and HCN
+!          9/89 correct coefficients - FACTOR and NETCO2
+!         11/88 smooth falloff of kinetics near oxygen limit
+!         11/87 generalize for upper layer, lower layer, and plume
+
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -607,9 +566,9 @@ C*RE
 
 C     CALCULATE THE ACTUAL BURNING RATE CONSTRAINED BY AVAILABLE O2.
  
-C     NOTE THE SCALING IN THE TANH FUNCTION.  TANH APPROACHES Ò2 AT
-C     ABOUT Ò4. THE FUNCTION INSIDE THE TANH SCALES THE ORDINATE TO
-C     ÒO2RANGE.  THE REMAINDER OF THE FUNCTION SCALES THE ABSCISSA 
+C     NOTE THE SCALING IN THE TANH FUNCTION.  TANH APPROACHES ~2 AT
+C     ABOUT ~4. THE FUNCTION INSIDE THE TANH SCALES THE ORDINATE TO
+C     ~O2RANGE.  THE REMAINDER OF THE FUNCTION SCALES THE ABSCISSA 
 C     TO 0-1 FOR O2INDEX.
  
       O2FRAC = ZZCSPEC(SOURCE,LAYER,2)
@@ -669,14 +628,13 @@ C     NOW DO THE "KINETICS SCHEME"
       XMASS(2) = NETO2
       XMASS(3) = NETCO2
       XMASS(4) = NETCO2 * COCO2T
-      XMASS(5) = CNFRAT * NETFUEL
-      XMASS(6) = CLFRAT * NETFUEL
-      XMASS(7) = -netfuel
+      XMASS(7) = -netfuel ! note that this subtracts TUHC when combustion occurs
       XMASS(8) = 9.0D0 * NETFUEL * HCRATT / FCRATT
       XMASS(9) = NETCO2 * CCO2T
 
       RETURN
       END
+
 
       SUBROUTINE ENTRAIN(DIRS12,YSLAB,XMSLAB,NSLAB,TU,TL,CP,YLAY,CONL,
      +    CONU,PMIX,MXPRD,NPROD,YVBOT,YVTOP,UFLW3,VSAS,VASA)
@@ -1004,37 +962,32 @@ C
 
       SUBROUTINE PYROLS(TIME,IROOM,BFIRET,AFIRET,HFIRET,QFIRET,HCOMBT,
      .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,ZMFIRE)
-C
-C*RB
-C     Routine:  PYROLS
-C
-C     Function: Calculate pyrolysis rate of the fuel for the specified
-C               main fire
-C     Inputs:   TIME    - current time (s)
-C               IROOM   - room number containing fire
-C     Outputs:  BFIRET  - current pyrolysis rate (kg/s)
-C               AFIRET  - current area of the fire (m^2)
-C               HFIRET  - current height of the fire (m)
-C               QFIRET  - current heat release rate of the fire (W)
-C               HCRATT  - current hydrogen/carbon ratio in fuel (kg/kg)
-C               CCO2T   - current carbon/CO2 production ratio (kg/kg)
-C               COCO2T  - current CO/CO2 production ratio (kg/kg)
-C               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
-C               HCOMBT  - current heat of combustion (J/kg)
-C               CLFRAT  - current HCl production rate (kg/kg burned)
-C               CNFRAT  - current HCN production rate (kg/kg burned)
-C               crFRAT  - current trace gas production rate (kg/kg burned)
-C               ZMFIRE  - current species production rates (kg/s)
-C     Commons:  
-C      PASSED:  Afired   Bfired   Cco2     Coco2    Hcratio  Hfired
-C               Hocbmb   Lfmax    Mprodr   Ocrati   Qfired   Tfired  
-C        USED:  Activs  
-C
-C     Revision History
-C     RDP   11/11/91  modified to use new "interpolator" subroutine
-C     WWJ   3/3/90    changed the procedure call to pass variables that
-C                     are changed
-C     gpf 10/14/93 added detection/suppression
+
+!     Routine:  PYROLS
+
+!     Description: Calculate pyrolysis rate of the fuel for the specified main fire
+!     Inputs:   TIME    - current time (s)
+!               IROOM   - room number containing fire
+!     Outputs:  BFIRET  - current pyrolysis rate (kg/s)
+!               AFIRET  - current area of the fire (m^2)
+!               HFIRET  - current height of the fire (m)
+!               QFIRET  - current heat release rate of the fire (W)
+!               HCRATT  - current hydrogen/carbon ratio in fuel (kg/kg)
+!               CCO2T   - current carbon/CO2 production ratio (kg/kg)
+!               COCO2T  - current CO/CO2 production ratio (kg/kg)
+!               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
+!               HCOMBT  - current heat of combustion (J/kg)
+!               CLFRAT  - current HCl production rate (kg/kg burned)
+!               CNFRAT  - current HCN production rate (kg/kg burned)
+!               crFRAT  - current trace gas production rate (kg/kg burned)
+!               ZMFIRE  - current species production rates (kg/s)
+
+!     Revision History
+!         11/91 modified to use new interpolation subroutine
+!          3/90 changed the procedure call to pass variables that are changed
+!         10/93 added detection/suppression
+!          5/08 added initialization for trace species, separated kinetics and chemistry
+
 
       include "precis.fi"
       include "cfast.fi"
@@ -1087,8 +1040,6 @@ C    IN THIS ROOM
       IF(ID.NE.0.AND.IFACT.EQ.1)THEN
         BFIRET = BFIRET*TFACT
         QFIRET = QFIRET*TFACT
-        CLFRAT = CLFRAT*TFACT
-        CNFRAT = CNFRAT*TFACT
       ENDIF
       CALL INTERP(TFIRED,HOCBMB,LFMAX,XXTIME,1,HCOMBT)
       CALL INTERP(TFIRED,AFIRED,LFMAX,XXTIME,1,AFIRET)
@@ -1436,50 +1387,37 @@ C
      . OHIGHT, OQDOTT, OBJHCT, CCO2T, COCO2T, HCRATT, ZMFIRE, OCRATT,
      . CLFRAT, CNFRAT,crfrat,UPDATE)
 
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     OBJINT
-C
-C     Source File: OBJINT.SOR
-C
-C     Functional Class:  
-C
-C     Description:  Returns  
-C
-C     Arguments: OBJN   The object pointer number, 
-C                TIME   Current simulation time (s)
-C                IROOM  Room object is in
-C                FLUX   The normal radiative flux to the object
-C                SURFT  Surfice temp of object
-C                OMASST Pyrolysis rate of object (returned)
-C                OAREAT Area of pyrolysis of object (returned)
-C                OHIGHT Height of fire (returned)
-C                OQDOTT Heat release rate of object
-C                OBJHCT Object heat of combustion
-C                CCO2T  Carbon to CO2 ratio
-C                COCO2T CO to CO2 ration
-C                HCRATT Hydrogen to Carbon ratio of fuel
-C                ZMFIRE 
-C                OCRATT Oxygen to Carbon ration of fuel
-C                CLFRAT HCl production rate
-C                CNFRAT HCN production rate
-C                crFRAT trace gase production rate
-C                UPDATE Update varible
-C
-C     Revision History:
-C        Modified  8/21/1990  calculate the pyrolysis rate, ... 
-C                             for other objects at this time, this 
-C                             code is identical to PYROLS, but the
-C                             intent is to be able to change it.
-C                  10/14/1993 added detection/suppression by GPF
-C                  8/15/1995  added code to handle type three fires.
-C                               Also fixed objects so they can properly
-C                             ignite by conditions and added header
-C                             by PAR
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     Routine:     OBJINT
 
+!     Description:  Returns yields for object fires interpolated from user input  
+
+!     Arguments: OBJN   The object pointer number, 
+!                TIME   Current simulation time (s)
+!                IROOM  Room object is in
+!                FLUX   The normal radiative flux to the object
+!                SURFT  Surfice temp of object
+!                OMASST Pyrolysis rate of object (returned)
+!                OAREAT Area of pyrolysis of object (returned)
+!                OHIGHT Height of fire (returned)
+!                OQDOTT Heat release rate of object
+!                OBJHCT Object heat of combustion
+!                CCO2T  Carbon to CO2 ratio
+!                COCO2T CO to CO2 ration
+!                HCRATT Hydrogen to Carbon ratio of fuel
+!                ZMFIRE 
+!                OCRATT Oxygen to Carbon ration of fuel
+!                CLFRAT HCl production rate
+!                CNFRAT HCN production rate
+!                crFRAT trace gase production rate
+!                UPDATE Update varible
+!
+!     Revision History:
+!          8/90 calculate the pyrolysis rate, ... for other objects at this time, this 
+!               code is identical to PYROLS, but the intent is to be able to change it.
+!         10/93 added detection/suppression by GPF
+!          8/95 added code to handle type three fires. Also fixed objects so they can properly
+!               ignite by conditions and added header
+!          5/08 added initialization for trace species, separated kinetics and chemistry
 
 C     PYROLYSIS RATE OF THE FUEL - HCRATT IS IN COMMON (PARAMS.INC) SINCE
 C     IT IS USED IN SEVERAL PLACES
@@ -1511,6 +1449,7 @@ C     IT IS USED IN SEVERAL PLACES
    14     ZMFIRE(J) = XX0
         CLFRAT = XX0
         CNFRAT = XX0
+        crfrat = xx0
         IF (FSMTYPE.GT.0) THEN
           DYPDT = XX0
           DXPDT = XX0
@@ -1566,17 +1505,15 @@ C
      +  			 CLFRAT)
 	CALL INTERP(OTIME(1,OBJN),OMPRODR(1,5,OBJN),LOBJLFM,XXTIME,1,
      +					 CNFRAT)
+!     crfrat is no longer used -  probably can eliminate the following code
       call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,
      +                   crfrat)
 
-C*** ATTENUATE MASS AND ENERGY RELEASE RATES IF THERE IS AN ACTIVE SPRINKLER
-C    IN THIS ROOM
+!     ATTENUATE MASS AND ENERGY RELEASE RATES IF THERE IS AN ACTIVE SPRINKLER IN THIS ROOM
 
 	IF(ID.NE.0.AND.IFACT.EQ.1)THEN
 	    OMASST = OMASST*TFACT
 	    OQDOTT = OQDOTT*TFACT
-	    CLFRAT = CLFRAT*TFACT
-	    CNFRAT = CNFRAT*TFACT
 	ENDIF
 	CALL INTERP(OTIME(1,OBJN),OAREA(1,OBJN),LOBJLFM,XXTIME,1,
      .        OAREAT)

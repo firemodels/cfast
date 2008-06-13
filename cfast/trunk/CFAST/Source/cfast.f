@@ -140,7 +140,7 @@
      . outputformat /0/, IOFILO/6/, REPORTO/0/, IOFILI/1/, LOGERR/3/,
      . OBFILI/99/, AHFILO/98/,WEBFILE/97/,
     
-     . VERSION/6100/
+     . VERSION/6101/
 ! 
       DATA IDEF /1/, ITODEF /2/, LAYDEF /1/, ISPDEF /3/, ICHRS /4/,
      . IDEVO /6/, IDEVC /1/, SETAXP /.FALSE./, OPENPC /.FALSE./,
@@ -157,7 +157,7 @@
       include "precis.fi"
       include "cfast.fi"
 
-      DATA CRDATE/2008,2,11/
+      DATA CRDATE/2008,6,1/
       END
       
       SUBROUTINE INITSOLN(T,PDOLD,PDZERO,RPAR,IPAR)

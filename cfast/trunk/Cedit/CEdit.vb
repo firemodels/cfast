@@ -16,6 +16,7 @@ Public Class CeditMain
     Friend WithEvents MVentFilterEfficiency As System.Windows.Forms.TextBox
     Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MainGeometry As System.Windows.Forms.Button
+    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -388,7 +389,6 @@ Public Class CeditMain
     Friend WithEvents MainView As System.Windows.Forms.Button
     Friend WithEvents MainSave As System.Windows.Forms.Button
     Friend WithEvents MainRun As System.Windows.Forms.Button
-    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(CeditMain))
@@ -739,8 +739,8 @@ Public Class CeditMain
         Me.ErrorProvider1 = New System.Windows.Forms.ErrorProvider(Me.components)
         Me.MainSave = New System.Windows.Forms.Button
         Me.MainRun = New System.Windows.Forms.Button
-        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.MainGeometry = New System.Windows.Forms.Button
+        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -4967,8 +4967,7 @@ Public Class CeditMain
             End If
         End If
     End Sub
-    Private Sub Heat_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HHeatComp1.SelectedIndexChanged, HHeatComp2.SelectedIndexChanged, HHeatFraction.Leave, _
-        VHeatComp1.SelectedIndexChanged, VHeatComp2.SelectedIndexChanged
+    Private Sub Heat_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HHeatComp1.SelectedIndexChanged, HHeatComp2.SelectedIndexChanged, HHeatFraction.Leave, VHeatComp1.SelectedIndexChanged, VHeatComp2.SelectedIndexChanged
         Dim aVent As New Vent
         If sender Is HHeatComp1 Or sender Is HHeatComp2 Or sender Is HHeatFraction Then
             If CurrentHHeat >= 0 And myHHeats.Count > 0 Then

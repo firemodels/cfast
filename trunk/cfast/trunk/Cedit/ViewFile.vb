@@ -17,7 +17,7 @@ Public Class ViewFile
                     If ln = "" Then
                         PreviewDocument.Body.Children.Add(New C1.C1Preview.RenderText(vbCr))
                     Else
-                        PreviewDocument.Body.Children.Add(New C1.C1Preview.RenderText(ln, New Font("Courier New", 10)))
+                        PreviewDocument.Body.Children.Add(New C1.C1Preview.RenderText(ln, New Font("Courier New", 8, FontStyle.Regular, GraphicsUnit.Point)))
                     End If
                 Loop
                 FileClose(io)

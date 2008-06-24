@@ -6,7 +6,28 @@
 		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
 	</head>
 	<body>
-		<H3>Version 6.1</H3>
+		<H3>Version 6.1.1 (June 24, 2008)</H3>
+        <blockquote>
+            Added a new species, labeled TS, to track flow through compartments. TS is a trace
+            species produce during pyrolysis and is not affected by combustion. The assumption
+            is that molecules are large enough to be filtered, but that mass is small compared
+            to the overall pyrolysis. See NISTIR 7498 for an example of its use.
+        </blockquote>
+        <blockquote>
+            Added the ability to specify filtering for mechanical ventilation systems which
+            applies to soot and the trace species. For the user, it is implemented wtih the
+            EVENT,F command and available through the GUI. See the User’s Guide, NIST Special
+            Publication 1041 (May 2008 Revision) for details.
+        </blockquote>
+        <blockquote>
+            Separated pyrolysis and combustion kinetics. The original purpose was to fix a bug
+            related to pyrolysis products not being transported to the upper layer when a fire
+            is only in the upper layer. The code was structured so that a consistent combustion
+            model for a plume could be implemented. Species affected only by pyrolysis are hydrogren
+            choloride, hydrogen cyanide, trace species and the concentration time product. Species
+            affected only by kinetics are carbon-dioxide, carbon-monoxide, and soot. Species
+            affected by both are oxygen and fuel. Nitrogen is inert and only transported.
+        </blockquote>
         <blockquote>
             Corrected error in mechanical ventilation that prevented flow from dropping off
             at high pressures like it was supposed too. Added calculation of an additional species,
@@ -23,9 +44,6 @@
             The impact was that opening and closing of vents would not work when there were
             mechanical ventilation fans in more than one compartment.&nbsp; Calculation was
             correct for fully-opened mechanical vents.</blockquote>
-        <blockquote>
-            Added the ability to specify filtering for mechanical ventilation and to specify
-            the production rate of the new trace species.</blockquote>
         <blockquote>
         </blockquote>
         <h3>

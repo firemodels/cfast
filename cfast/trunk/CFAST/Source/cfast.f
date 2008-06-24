@@ -67,7 +67,7 @@
       call initslv
 
       call readinputfile (errorcode)
-      if (errorcide.le.0) then
+      if (errorcode.le.0) then
 	
         if (header) call disclaim('CFAST')
 
@@ -157,7 +157,7 @@
       include "precis.fi"
       include "cfast.fi"
 
-      DATA CRDATE/2008,6,1/
+      DATA CRDATE/2008,6,24/
       END
       
       SUBROUTINE INITSOLN(T,PDOLD,PDZERO,RPAR,IPAR)

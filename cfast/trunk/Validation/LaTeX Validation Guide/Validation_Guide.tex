@@ -1,0 +1,277 @@
+\documentclass[12pt]{book}
+\usepackage{mathptm,times,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref}
+\usepackage{multirow}
+
+%\usepackage{eso-pic}
+%\usepackage{graphicx}
+%\usepackage{color}
+%\usepackage{type1cm}
+
+
+%\makeatletter
+%   \AddToShipoutPicture{%
+%     \setlength{\@tempdimb}{.5\paperwidth}%
+%    \setlength{\@tempdimc}{.5\paperheight}%
+%   \setlength{\unitlength}{1pt}%
+%  \put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){%
+%     \makebox(0,0){\rotatebox{45}{\textcolor[gray]{0.75}{\fontsize{8cm}{8cm}\selectfont{DRAFT}}}}}}
+%\makeatother
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\topmargin}{0.in}
+\setlength{\headheight}{0.in}
+\setlength{\headsep}{0.in}
+\setlength{\parindent}{0.25in}
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\evensidemargin}{0.0in}
+
+
+%\includeonly{Overview_Chapter, SQA_Chapter, Structure_Chapter, Survey_Chapter, Experiment_Chapter, HGL_Chapter, Plume_Chapter, Species_Chapter, Pressure_Chapter, Heat_Flux_Chapter, Summary_Chapter}
+
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\newcommand{\asqh}{$A_T/A\sqrt{h}$}
+\newcommand{\degc}{$^{\circ}$C }
+
+\newcommand{\dod}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\DoD}[2]{\frac{D #1}{D #2}}
+\newcommand{\dsods}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\dx}{\delta x}
+\newcommand{\dy}{\delta y}
+\newcommand{\dz}{\delta z}
+\newcommand{\x}{x}
+\newcommand{\y}{y}
+\newcommand{\z}{z}
+\newcommand{\dt}{\delta t}
+\newcommand{\dn}{\delta n}
+\newcommand{\cH}{{\cal H}}
+\newcommand{\hu}{u}
+\newcommand{\hv}{v}
+\newcommand{\hw}{w}
+\newcommand{\la}{\lambda}
+%\newcommand{\bO}{\mbox{\boldmath $\Omega$}}
+\newcommand{\bO}{{\Omega}}
+\newcommand{\bo}{{\bf \omega}}
+%\newcommand{\btau}{\mbox{\boldmath $\tau$}}
+\newcommand{\btau}{{\bf \tau}}
+\newcommand{\bdelta}{{\bf \delta}}
+\newcommand{\sumym}{\sum (Y_i/W_i)}
+\newcommand{\oW}{\overline{W}}
+\newcommand{\om}{\omega}
+\newcommand{\omx}{\omega_x}
+\newcommand{\omy}{\omega_y}
+\newcommand{\omz}{\omega_z}
+\newcommand{\erf}{\hbox{erf}}
+\newcommand{\bF}{{\bf F}}
+\newcommand{\bof}{{\bf f}}
+\newcommand{\bq}{{\bf q}}
+\newcommand{\br}{{\bf r}}
+\newcommand{\bu}{{\bf u}}
+\newcommand{\bx}{{\bf x}}
+\newcommand{\bk}{{\bf k}}
+\newcommand{\bv}{{\bf v}}
+\newcommand{\bg}{{\bf g}}
+\newcommand{\bn}{{\bf n}}
+\newcommand{\bS}{{\bf S}}
+\newcommand{\dS}{d{\bf S}}
+\newcommand{\bs}{{\bf s}}
+\newcommand{\bI}{{\bf I}}
+\newcommand{\hp}{{\cal H}}
+\newcommand{\trho}{\tilde{\rho}}
+\newcommand{\dph}{{\delta\phi}}
+\newcommand{\dth}{{\delta\theta}}
+\newcommand{\tp}{\tilde{p}}
+\newcommand{\dQ}{\dot{Q}}
+\newcommand{\dq}{\dot{q}}
+\newcommand{\dm}{\dot{m}}
+\newcommand{\ha}{\frac{1}{2}}
+\newcommand{\ft}{\frac{4}{3}}
+\newcommand{\ot}{\frac{1}{3}}
+\newcommand{\fofi}{\frac{4}{5}}
+\newcommand{\of}{\frac{1}{4}}
+\newcommand{\twth}{\frac{2}{3}}
+\newcommand{\R}{{\cal R}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\RE}{\hbox{Re}}
+\newcommand{\LE}{\hbox{Le}}
+\newcommand{\PR}{\hbox{Pr}}
+\newcommand{\PE}{\hbox{Pe}}
+\newcommand{\NU}{\hbox{Nu}}
+\newcommand{\SC}{\hbox{Sc}}
+\newcommand{\SH}{\hbox{Sh}}
+\newcommand{\WE}{\hbox{We}}
+\newcommand{\COTWO}{{\tiny \hbox{CO}_2}}
+\newcommand{\OTWO}{{\tiny \hbox{O}_2}}
+\newcommand{\CO}{{\tiny \hbox{CO}}}
+\newcommand{\F}{{\tiny \hbox{F}}}
+
+\pagestyle{empty}
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\huge
+\flushright{NIST Special Publication xxxx}
+
+\vspace{1in}
+
+\Huge
+\flushright{CFAST -- Consolidated Model of Fire Growth and Smoke Transport (Version 6) \\
+\LARGE Software Development and Model Evaluation Guide }
+
+\vspace{.5in}
+
+\large
+\flushright{
+Richard D. Peacock \\
+Kevin McGrattan \\
+Bryan Klein \\
+Walter W. Jones \\
+Paul A. Reneke }
+
+\vfill
+
+\center{\includegraphics[width=5.5in]{figures/nistident}}
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\huge
+\flushright{NIST Special Publication xxxx}
+
+\vspace{1.in}
+
+\Huge
+\flushright{CFAST -- Consolidated Model of Fire Growth and Smoke Transport (Version 6) \\
+\LARGE Software Development and Model Evaluation Guide }
+
+\vspace{.5in}
+
+\normalsize
+\flushright{
+Richard D. Peacock \\
+Kevin McGrattan \\
+Bryan Klein \\
+Walter W. Jones \\
+Paul A. Reneke \\
+{\em Fire Research Division} \\
+{\em Building and Fire Research Laboratory}  \\
+ }
+
+\vspace{.25in}
+
+\flushright{\today \\
+$SVN Repository$~$Revision: 34 $}
+
+
+\vfill
+
+\flushright{\includegraphics[width=1in]{FIGURES/doc} }
+
+\small
+\flushright{U.S. Department of Commerce \\
+{\em Carlos M. Gutierrez, Secretary} \\
+\hspace{1in} \\
+National Institute of Standards and Technology \\
+{\em James M. Turner, Deputy Director} }
+
+\end{minipage}
+
+
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+
+\chapter{Disclaimer}
+
+The U. S. Department of Commerce makes no warranty, expressed or implied, to users of 
+CFAST and associated computer programs, and accepts no responsibility for its use.  Users of 
+CFAST assume sole responsibility under Federal law for determining the appropriateness of its 
+use in any particular application; for any conclusions drawn from the results of its use; and for 
+any actions taken or not taken as a result of analyses performed using these tools. 
+CFAST is intended for use only by those competent in the field of fire safety and is intended 
+only to supplement the informed judgment of a qualified user. The software package is a 
+computer model which may or may not have predictive value when applied to a specific set of 
+factual circumstances. Lack of accurate predictions by the model could lead to erroneous 
+conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+\chapter{Intent and Use}
+
+The algorithms, procedures, and computer programs described in this report constitute a 
+methodology for predicting some of the consequences resulting from a prescribed fire.  They 
+have been compiled from the best knowledge and understanding currently available, but have 
+important limitations that must be understood and considered by the user.  The program is 
+intended for use by persons competent in the field of fire safety and with some familiarity with 
+personal computers. It is intended as an aid in the fire safety decision-making process.
+
+\chapter{Preface}
+
+This supplement to the CFAST Technical Reference Guide provides details of the software development process for CFAST and accompanying experimental evaluation of the model. It is based in part on the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{ASTM:E1355}. ASTM~E~1355 defines {\em model evaluation} as ``the process of quantifying the accuracy of chosen results from a model when applied for a specific use.'' The model evaluation process consists of two main components: verification and validation. {\em Verification} is a process to check the correctness of the solution of the governing equations. Verification does not imply that the governing equations are appropriate; only that the equations are being solved correctly. {\em Validation} is a process to determine the appropriateness of the governing equations as a mathematical model of the physical phenomena of interest. Typically, validation involves comparing model results with experimental measurement. Differences that cannot be explained in terms of numerical errors in the model or uncertainty in the measurements are attributed to the assumptions and simplifications of the physical model.
+
+Evaluation is critical to establishing both the acceptable uses and limitations of a model. Throughout its development, CFAST has undergone various forms of evaluation, both at the National Institute of Standards and Technology and beyond. This Supplement provides a survey of validation work conducted to date to evaluate CFAST. Documentation of CFAST Verification is contained in the CFAST Technical Reference Guide~\cite{CFAST_Tech_Guide_6}.
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+Support for validation experiments and the preparation of the CFAST and FDS manuals has been provided by the Office of Nuclear Regulatory Research of the U.S. Nuclear Regulatory Commission (US NRC). Thanks to Mark Salley and Jason Dreisbach for their efforts.
+
+Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged.  Thanks are also due to Allan Coutts, Washington Safety Management Solutions for his insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
+
+For the NIST/NRC tests, Alex Maranghides was in charge of the Large Fire Laboratory at NIST where these tests were conducted, and helped to design the experiments. Thanks also to technicians Laurean Delauter, Jay McElroy, and Jack Lee who constructed and conducted these validation experiments
+at NIST.
+
+Finally, thanks to VTT, Finland, for their contribution of experimental data,
+referred to in this document as the ``VTT Large Hall Experiments.''
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+\mainmatter
+
+\include{Overview_Chapter}
+\include{SQA_Chapter}
+\include{Structure_Chapter}
+\include{Survey_Chapter}
+\include{Experiment_Chapter}
+\include{HGL_Chapter}
+\include{Plume_Chapter}
+%\include{Velocity_Chapter}
+\include{Species_Chapter}
+\include{Pressure_Chapter}
+\include{Heat_Flux_Chapter}
+\include{Summary_Chapter}
+
+\appendix
+
+\include{Appendix_Layer_Calculations}
+
+\include{Appendix_Graphs}
+
+\backmatter
+
+\bibliography{Bibliography/CFAST_refs}
+
+\addcontentsline{toc}{chapter}{References}
+
+\end{document}

@@ -103,6 +103,15 @@ c	This code was moved from vent hflow 5/7/2003 so that initialization always occ
           VSA(Ilocal,I) = XX0
           VAS(Ilocal,I) = XX0
 21      CONTINUE
+        IIJK = IJK(IROOM1,IROOM2,IK)
+        SS1(IIJK) = VSS(1,I)
+        SS2(IIJK) = VSS(2,I)
+        SA1(IIJK) = VSA(1,I)
+        SA2(IIJK) = VSA(2,I)
+        AS1(IIJK) = VAS(1,I)
+        AS2(IIJK) = VAS(2,I)
+        AA1(IIJK) = VAA(1,I)
+        AA2(IIJK) = VAA(2,I)
 
 C       USE NEW INTERPOLATOR TO FIND VENT OPENING FRACTION
 
@@ -934,12 +943,12 @@ C
 		return
 	else if (time.gt.points(3,index)) then
 		qchfraction = points(4,index)
-		return
+	  return
 	else
 	   dt = max(points(3,index) - points(1,index),1.0d-3)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qchfraction = points(2,index) + dydt
+		qchfraction = points(2,index) + dydt * (time - points(1,index))
 		return
 	endif
 	end function qchfraction
@@ -960,7 +969,7 @@ C
 	   dt = max(points(3,index) - points(1,index),1.0d-3)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qcvfraction = points(2,index) + dydt
+		qcvfraction = points(2,index) + dydt * (time - points(1,index))
 		return
 	endif
 	end function qcvfraction
@@ -981,7 +990,7 @@ C
 	   dt = max(points(3,index) - points(1,index),1.0d-3)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qcffraction = points(2,index) + dydt
+		qcffraction = points(2,index) + dydt * (time - points(1,index))
 		return
 	endif
 	end function qcffraction
@@ -1002,7 +1011,7 @@ C
 	    dt = max(points(3,index) - points(1,index),1.0d-3)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qcifraction = points(2,index) + dydt
+		qcifraction = points(2,index) + dydt * (time - points(1,index))
 		return
 	endif
 	end function qcifraction

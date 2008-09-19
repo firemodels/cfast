@@ -4833,6 +4833,30 @@ Public Class CeditMain
             UpdateGUI.Detectors(CurrentDetector)
         End If
     End Sub
+    Private Sub DetectorMoveUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorMoveUp.Click
+        ' Move the currently selected detector up one in the list of hvents
+        If CurrentDetector >= 1 And myDetectors.Count > 1 Then
+            Dim aDetector As New Target
+            aDetector = myDetectors(CurrentDetector)
+            myDetectors(CurrentDetector) = myDetectors(CurrentDetector - 1)
+            myDetectors(CurrentDetector - 1) = aDetector
+            CurrentDetector -= 1
+            myEnvironment.Changed = True
+            UpdateGUI.Detectors(CurrentDetector)
+        End If
+    End Sub
+    Private Sub DetectorMoveDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorMoveDown.Click
+        ' Move the current detector down one in the list of hvents
+        If CurrentDetector >= 0 And CurrentDetector < myDetectors.Count - 1 Then
+            Dim aDetector As New Target
+            aDetector = myDetectors(CurrentDetector)
+            myDetectors(CurrentDetector) = myDetectors(CurrentDetector + 1)
+            myDetectors(CurrentDetector + 1) = aDetector
+            CurrentDetector += 1
+            myEnvironment.Changed = True
+            UpdateGUI.Detectors(CurrentDetector)
+        End If
+    End Sub
     Private Sub DetectorSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorSummary.Click
         ' The currently selected Detector has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer

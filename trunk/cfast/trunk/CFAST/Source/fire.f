@@ -86,7 +86,7 @@ C       CALCULATE THE FIRE OUTPUTS FOR THE MAIN FIRE
      +      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,MFIRET,
      +      STMASS,FPOS(1),FPOS(2),FPOS(3)+HF0T,EME(LFBO),EMS(LFBO),
      +      QPYROL,XNTMS,QF(LFBO),QFC(1,LFBO),XQFR,HEATLP(LFBO),
-     +      HEATUP(LFBO))
+     +      HEATUP(LFBO),objcl(0))
 
 !     SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
 
@@ -127,7 +127,7 @@ C       MAKE UP IFROOM AND XFIRE FOR THE MAIN FIRE
         XFIRE(NFIRE,16) = OCRATT
         XFIRE(NFIRE,17) = CLFRAT
         XFIRE(NFIRE,18) = CNFRAT
-	  xfire(nfire,19) = 1.0d-1
+	  xfire(nfire,19) = objcl(0)
         FROOM(0) = LFBO
         FEMP(0) = EMP(LFBO)
         FEMS(0) = EMS(LFBO)
@@ -207,7 +207,7 @@ C     OTHER FIRES COME FROM THE OBJECT DATABASE
      +        crfrat,MFIRET,STMASS,OBJPOS(1,IOBJ),OBJPOS(2,IOBJ),
      +        OBJPOS(3,IOBJ)+HF0T,OPLUME(2,IOBJ),OPLUME(3,IOBJ),QPYROL,
      +        XNTMS,QF(IROOM),QFC(1,IROOM),XQFR,HEATLP(IROOM),
-     +        HEATUP(IROOM))
+     +        HEATUP(IROOM),objcl(i))
 
 C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
 
@@ -275,7 +275,8 @@ C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
 
       SUBROUTINE DOFIRE(IFIRE,IROOM,XEMP,XHR,XBR,XDR,HCOMBT,CCO2T,
      .   COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,XMFIR,STMASS,
-     .   XFX,XFY,XFZ,XEME,XEMS,XQPYRL,XNTMS,XQF,XQFC,XQFR,XQLP,XQUP)
+     .   XFX,XFY,XFZ,XEME,XEMS,XQPYRL,XNTMS,XQF,XQFC,XQFR,XQLP,XQUP,
+     .   objectsize)
 
 C
 C     Routine:     DOFIRE
@@ -302,6 +303,7 @@ C     Routine:     DOFIRE
 !               XFX     - position of the fire in x direction
 !               XFY     - position of the fire in y direction
 !               XFZ     - position of the fire in z direction
+!               objectsize - characteristic object diameter for plume models
 !     Outputs:  XEME    - plume entrainment rate (kg/s)
 !               XEMS    - plume flow rate into the upper layer (kg/s)
 !               XQPYRL  - actual heat release rate of the fire (W)
@@ -406,8 +408,8 @@ C     SECOND PASS
 C     CALCULATE THE ENTRAINMENT RATE BUT CONSTRAIN THE ACTUAL AMOUNT
 C     OF AIR ENTRAINED TO THAT REQUIRED TO PRODUCE STABLE STRATIFICATION
 
-   40   CALL FIRPLM(QHEATL,XXFIREL,XEMP,XEMS,XEME,
-     .      MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
+   40   CALL FIRPLM(fplume(ifire), ifire, objectsize, 
+     .  QHEATL,XXFIREL,XEMP,XEMS,XEME,MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
 
 C     Only do the upper layer (the fire is not in the lower layer)
 
@@ -475,7 +477,8 @@ C       UMPLM{EP},{ES},AND {EE} ARE EQUIVALENT TO EMP, EMS AND EME
         IF (UPLMEP.GT.X0) THEN
           QHEATU = HCOMBT * UPLMEP + QHEATL
           HEIGHT = MAX (X0, MIN(XZ,XXFIREU))
-          CALL FIRPLM(QHEATU,HEIGHT,UPLMEP,UPLMES,UPLMEE,
+          CALL FIRPLM(fplume(ifire), ifire, objectsize,
+     .        QHEATU,HEIGHT,UPLMEP,UPLMES,UPLMEE,
      .        MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
           CALL CHEMIE(QSPRAY(IFIRE,UPPER),UPLMEP,UPLMEE,IROOM,UPPER,
      .        HCOMBT,CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,
@@ -800,9 +803,10 @@ C     For the reference for this correlation, see the comments
 C     in the routine "firplm."  The offset for the formulation of
 C     an equivalent door jet is provided by requiring the plume
 C     be long enough to be the appropriate plume for the fire of size
-C     QJ.  Note that McCaffrey's units are kilojoules.  Also this should
+C     QJ.  Note that McCaffrey's units are kilojoules.  Also we assume
+C     that the plume is round as in McCaffrey's plume.  This should
 C     be modified to account for the flat plume verus the round
-C     plume in the theory.  What else can we do?
+C     plume in the theory.
 C
 C     update history
 C
@@ -885,28 +889,43 @@ C
       RETURN
       END
 
-      SUBROUTINE FIRPLM(QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY)
-C*RB
-C     Routine:   FIRPLM
-C     Function:  Calculates plume entrainment for a fire from 
-C                McCaffrey's correlation
-C     Inputs:    QJL    fire size (W)
-C                ZZ      plume height (m)
-C                XEMP  mass loss rate of the fire (kg/s)
-C                XFX   position of the fire in x direction (m)
-C                XFY   position of the fire in y direction (m)
-C     Outputs:   XEMS  total mass transfer rate at height z (kg/s)
-C                XEME  net entrainment rate at height z (kg/s)
-C     Algorithm: "Momentum Implications for Buoyant Diffusion Flames"
-C                 Combustion and Flame 52, 149 (1983)
-C     Revision History:
-C     WWJ   3/9/87   modified to allow zero heat release rate
-C     GPF   7/24/90  modified coefficients so that correlation is
-C                    continuous.
-C     RDP   10/15/91 modified so fire position in x&y determines
-C                    entrainment type.  x=0 or y=0 means center wall,
-C                    x=0 and y=0 means corner.
-C*RE
+      SUBROUTINE FIRPLM(plumetype, objectnumber, objectsize, 
+     .                  QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY)
+
+!     Physical interface between DOFIRE and the plume models
+!     July 30, 2008 supports two plume models
+!     1) McCaffrey and
+!     2) Heskestad's modified version of Zukoski's model
+
+      include "precis.fi"
+      include "cfast.fi"
+      integer plumetype, objectnumber
+      
+      select case (plumetype)
+      case (1) !    McCaffrey
+        call mccaffrey(QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY,objectsize)
+        RETURN        
+      case (2) !    Heskestad
+        call heskestad (qjl, zz, xemp, xems, xeme, xfx, xfy, objectsize)
+        RETURN        
+      end select
+      stop 'bad case in firplm'
+      END
+
+      SUBROUTINE mccaffrey(QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY,od)
+
+!     Function:  Calculates plume entrainment for a fire from 
+!                McCaffrey's correlation
+!     Inputs:    QJL    fire size (W)
+!                ZZ      plume height (m)
+!                XEMP  mass loss rate of the fire (kg/s)
+!                XFX   position of the fire in x direction (m)
+!                XFY   position of the fire in y direction (m)
+!                od is the object diameter
+!     Outputs:   XEMS  total mass transfer rate at height z (kg/s)
+!                XEME  net entrainment rate at height z (kg/s)
+!     Algorithm: "Momentum Implications for Buoyant Diffusion Flames", Combustion and Flame 52, 149 (1983)
+
       include "precis.fi"
       LOGICAL FIRST
       SAVE FIRST, A1, A2, A3, T1, T2
@@ -959,6 +978,31 @@ C
       END IF
       RETURN
       END
+
+      subroutine heskestad (q, z, emp, ems, eme, x, y, od)
+
+!     Function:  Calculates plume entrainment for a fire from Heskestad's variant of Zukoski's correlation
+!     Inputs:    Q    fire size (W)
+!                Z      plume height (m)
+!                EMP  mass loss rate of the fire (kg/s)
+!                XFX   position of the fire in x direction (m)
+!                XFY   position of the fire in y direction (m)
+!                od is the characteristic size of the object (diameter)
+!     Outputs:   EMS  total mass transfer rate at height z (kg/s)
+!                EME  net entrainment rate at height z (kg/s)
+    
+      include "precis.fi"
+    
+      double precision q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
+    
+      qj = 0.001d0 * q
+      z0 = -1.02d0 * od + 0.083d0 * qj**0.4
+      deltaz = max(0.0001d0, z-z0)
+      eme = 0.071 * qj**0.333 * deltaz**1.67 * (1+0.026d0*qj**0.67
+     .      * deltaz**(-1.67))
+      ems = emp + eme    
+
+      end subroutine heskestad
 
       SUBROUTINE PYROLS(TIME,IROOM,BFIRET,AFIRET,HFIRET,QFIRET,HCOMBT,
      .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,ZMFIRE)

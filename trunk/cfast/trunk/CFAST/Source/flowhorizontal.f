@@ -94,25 +94,6 @@ C       convert vent dimensions to absolute dimensions
         YLAY(1) = YLAY(1) + YFLOR(1)
         YLAY(2) = YLAY(2) + YFLOR(2)
 
-C     INITIALIZE CFAST DATA STRUCTURES FOR FLOW STORAGE
-c	This code was moved from vent hflow 5/7/2003 so that initialization always occurs.
-
-        DO 21 Ilocal = 1, 2
-          VSS(Ilocal,I) = XX0
-          VAA(Ilocal,I) = XX0
-          VSA(Ilocal,I) = XX0
-          VAS(Ilocal,I) = XX0
-21      CONTINUE
-        IIJK = IJK(IROOM1,IROOM2,IK)
-        SS1(IIJK) = VSS(1,I)
-        SS2(IIJK) = VSS(2,I)
-        SA1(IIJK) = VSA(1,I)
-        SA2(IIJK) = VSA(2,I)
-        AS1(IIJK) = VAS(1,I)
-        AS2(IIJK) = VAS(2,I)
-        AA1(IIJK) = VAA(1,I)
-        AA2(IIJK) = VAA(2,I)
-
 C       USE NEW INTERPOLATOR TO FIND VENT OPENING FRACTION
 
         IM = MIN(IROOM1,IROOM2)
@@ -149,7 +130,6 @@ C*** UPDATE HALL INFO FOR VENTS CONNECTED FROM FIRE ROOM TO HALL
      .               TSLAB(NSLAB),VENTVEL,VLAYERDEPTH)
             ENDIF
           ENDIF
-
 
 C         COPY NUMBER OF NEUTRAL PLANES TO CFAST DATA STRUCTURES
 
@@ -917,6 +897,7 @@ C
    30   CONTINUE
         RETURN
         END
+
 !	The following functions are to implement the open/close function for vents.
 !	This is done with a really simple, linear interpolation
 !	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mfan),
@@ -936,36 +917,40 @@ C
 
 !	This is the open/close function for buoyancy driven horizontal flow
 
-	double precision points(4,*), time, dt, dy, dydt
+	double precision points(4,*), time, dt, dy, dydt, mintime
+	data mintime/1.0e-6/
 
 	if (time.lt.points(1,index)) then
 		qchfraction = points(2,index)
 	else if (time.gt.points(3,index)) then
 		qchfraction = points(4,index)
 	else
-	  dt = max(points(3,index) - points(1,index),1.0d-3)
+	    dt = max(points(3,index) - points(1,index),mintime)
+	    deltat = max(time - points(1,index),mintime)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qchfraction = points(2,index) + dydt * (time - points(1,index))
+		qchfraction = points(2,index) + dydt * deltat
 	endif
-      return
+	return
 	end function qchfraction
 
 	double precision function qcvfraction (points, index, time)
 
 !	This is the open/close function for buoyancy driven vertical flow
 
-	double precision points(4,*), time, dt, dy, dydt
+	double precision points(4,*), time, dt, dy, dydt, mintime
+	data mintime/1.0e-6/
 
 	if (time.lt.points(1,index)) then
 		qcvfraction = points(2,index)
 	else if (time.gt.points(3,index)) then
 		qcvfraction = points(4,index)
 	else
-	  dt = max(points(3,index) - points(1,index),1.0d-3)
+	    dt = max(points(3,index) - points(1,index),mintime)
+	    deltat = max(time - points(1,index),mintime)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qcvfraction = points(2,index) + dydt * (time - points(1,index))
+		qcvfraction = points(2,index) + dydt * deltat
 	endif
 	return
 	end function qcvfraction
@@ -974,36 +959,40 @@ C
 
 !	This is the open/close function for mechanical ventilation
 
-	double precision points(4,*), time, dt, dy, dydt
+	double precision points(4,*), time, dt, dy, dydt, mintime
+	data mintime/1.0d-6/
 
 	if (time.lt.points(1,index)) then
 		qcffraction = points(2,index)
 	else if (time.gt.points(3,index)) then
 		qcffraction = points(4,index)
 	else
-	  dt = max(points(3,index) - points(1,index),1.0d-3)
+	    dt = max(points(3,index) - points(1,index), mintime)
+	    deltat = max(time - points(1,index), mintime)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qcffraction = points(2,index) + dydt * (time - points(1,index))
+		qcffraction = points(2,index) + dydt * deltat
 	endif
-      return
+	return
 	end function qcffraction
 
 	double precision function qcifraction (points, index, time)
 
 !	This is the open/close function for filtering
 
-	double precision points(4,*), time, dt, dy, dydt
+	double precision points(4,*), time, dt, dy, dydt, mintime
+	data mintime/1.0d-6/
 
 	if (time.lt.points(1,index)) then
 		qcifraction = points(2,index)
 	else if (time.gt.points(3,index)) then
 		qcifraction = points(4,index)
 	else
-	  dt = max(points(3,index) - points(1,index),1.0d-3)
+	    dt = max(points(3,index) - points(1,index),mintime)
+	    deltat = max(time - points(1,index), mintime)
 		dy = points(4,index) - points(2,index)
 		dydt = dy / dt
-		qcifraction = points(2,index) + dydt * (time - points(1,index))
+		qcifraction = points(2,index) + dydt * deltat
 	endif
 	return
 	end function qcifraction

@@ -135,6 +135,9 @@
   <metadata name="CompFlow.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <metadata name="CompFlow.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="MVentSummary.ColumnInfo" xml:space="preserve">
     <value>12,1,0,0,0,85,Columns:0{Width:40;Caption:"Num";Style:"TextAlign:CenterTop;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:120;Caption:"From Compartment";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	2{Width:60;Caption:"From Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	3{Width:70;Caption:"From Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	4{Width:60;Caption:"From Type";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	5{Width:120;Caption:"To Compartment";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	6{Width:60;Caption:"To Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	7{Width:70;Caption:"To Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	8{Width:60;Caption:"To Type";}	9{Width:60;Caption:"Flow";}	10{Width:60;Caption:"Dropoff";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	11{Width:60;Caption:"Zero Flow";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
   </data>

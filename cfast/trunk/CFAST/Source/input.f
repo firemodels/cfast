@@ -648,6 +648,7 @@ C
       CHARACTER ORIENTYP*1, MESSG*133, lcarray*128(ncol), cjtype*1,
      + LABEL*5, C(MAXIN)*5, TCNAME*64, METHOD*8, EQTYPE*3, venttype,
      + orientypefrom*1, orientypeto*1, compfrom*128, compto*128
+      character*10 plumemodel(2)/'McCaffrey','Heskestad'/
 
       EQUIVALENCE (INTER,QFR)
 
@@ -804,6 +805,12 @@ C     Rename the THERMAL or object DATA FILE
 	fpos(2) =   lrarray(3)
 	fpos(3) =   lrarray(4)
 	fplume(0) = lrarray(5)
+	if(fplume(0).lt.1.or.fplume(0).gt.2) then
+	  write(logerr,5402) fplume(0)
+	  ierror = 78
+	  return 
+	end if
+	write(logerr,5403) plumemodel(fplume(0))
 	go to 810
 
 !	Set the gaseous ignition temperature - this is a global parameter DJIGN
@@ -1379,6 +1386,12 @@ C*** NO, SO UPDATE COUNTERS
 	endif
 
 	fplume(numobjl) = lrarray(6)
+	if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
+	  write(logerr,5402) fplume(numobjl)
+	  ierror = 78
+	  return 
+	end if
+	write(logerr,5403) plumemodel(fplume(numobjl))	
       OBJIGN(OBPNT) =   lrarray(7)
       TMPCOND =         lrarray(8)
       OBJORT(1,OBPNT) = lrarray(9)
@@ -1961,8 +1974,10 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
  5358 FORMAT ('Not a valid ignition criterion ',I5)
  5400 format ('xdtect = ',15f8.1)
  5401 format ('ixdtect = ',4i5)
+ 5402 format ('Plume index out of range ',i3)
+ 5403 format ('Plume model for this fire: ',a10)
 
-      END
+      END SUBROUTINE keywordcases
 
 	subroutine inputmainfire (iounit,errorcode)
 

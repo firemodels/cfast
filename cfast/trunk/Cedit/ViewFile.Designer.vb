@@ -25,6 +25,7 @@ Partial Class ViewFile
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ViewFile))
         Me.C1PrintPreviewControl1 = New C1.Win.C1Preview.C1PrintPreviewControl
         Me.PreviewDocument = New C1.C1Preview.C1PrintDocument
+        CType(Me.C1PrintPreviewControl1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.C1PrintPreviewControl1.SuspendLayout()
         Me.SuspendLayout()
@@ -57,7 +58,6 @@ Partial Class ViewFile
         'C1PrintPreviewControl1.OutlineView
         '
         Me.C1PrintPreviewControl1.PreviewOutlineView.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.C1PrintPreviewControl1.PreviewOutlineView.LineColor = System.Drawing.Color.Empty
         Me.C1PrintPreviewControl1.PreviewOutlineView.Location = New System.Drawing.Point(0, 0)
         Me.C1PrintPreviewControl1.PreviewOutlineView.Name = "OutlineView"
         Me.C1PrintPreviewControl1.PreviewOutlineView.Size = New System.Drawing.Size(165, 427)
@@ -84,22 +84,71 @@ Partial Class ViewFile
         'C1PrintPreviewControl1.ThumbnailView
         '
         Me.C1PrintPreviewControl1.PreviewThumbnailView.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.C1PrintPreviewControl1.PreviewThumbnailView.HideSelection = False
         Me.C1PrintPreviewControl1.PreviewThumbnailView.Location = New System.Drawing.Point(0, 0)
         Me.C1PrintPreviewControl1.PreviewThumbnailView.Name = "ThumbnailView"
-        Me.C1PrintPreviewControl1.PreviewThumbnailView.OwnerDraw = True
         Me.C1PrintPreviewControl1.PreviewThumbnailView.Size = New System.Drawing.Size(165, 427)
         Me.C1PrintPreviewControl1.PreviewThumbnailView.TabIndex = 0
-        Me.C1PrintPreviewControl1.PreviewThumbnailView.ThumbnailSize = New System.Drawing.Size(96, 96)
         Me.C1PrintPreviewControl1.PreviewThumbnailView.UseImageAsThumbnail = False
         Me.C1PrintPreviewControl1.Size = New System.Drawing.Size(749, 524)
         Me.C1PrintPreviewControl1.StatusBarVisible = False
         Me.C1PrintPreviewControl1.TabIndex = 0
         Me.C1PrintPreviewControl1.Text = "C1PrintPreviewControl1"
         '
+        '
+        '
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.Image = CType(resources.GetObject("C1PrintPreviewControl1.ToolBars.File.Open.Image"), System.Drawing.Image)
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.Name = "btnFileOpen"
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.Size = New System.Drawing.Size(32, 22)
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.Tag = "C1PreviewActionEnum.FileOpen"
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.ToolTipText = "Open File"
+        Me.C1PrintPreviewControl1.ToolBars.File.Open.Visible = False
+        '
+        '
+        '
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.Image = CType(resources.GetObject("C1PrintPreviewControl1.ToolBars.File.Save.Image"), System.Drawing.Image)
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.Name = "btnFileSave"
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.Size = New System.Drawing.Size(23, 22)
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.Tag = "C1PreviewActionEnum.FileSave"
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.ToolTipText = "Save File"
+        Me.C1PrintPreviewControl1.ToolBars.File.Save.Visible = False
+        '
+        '
+        '
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.Image = CType(resources.GetObject("C1PrintPreviewControl1.ToolBars.Text.Find.Image"), System.Drawing.Image)
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.Name = "btnFind"
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.Size = New System.Drawing.Size(23, 22)
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.Tag = "C1PreviewActionEnum.Find"
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.ToolTipText = "Find Text"
+        Me.C1PrintPreviewControl1.ToolBars.Text.Find.Visible = False
+        '
+        '
+        '
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.Checked = True
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.Image = CType(resources.GetObject("C1PrintPreviewControl1.ToolBars.Text.Hand.Image"), System.Drawing.Image)
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.Name = "btnHandTool"
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.Size = New System.Drawing.Size(23, 22)
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.Tag = "C1PreviewActionEnum.HandTool"
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.ToolTipText = "Hand Tool"
+        Me.C1PrintPreviewControl1.ToolBars.Text.Hand.Visible = False
+        '
+        '
+        '
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.Image = CType(resources.GetObject("C1PrintPreviewControl1.ToolBars.Text.SelectText.Image"), System.Drawing.Image)
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.Name = "btnSelectTextTool"
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.Size = New System.Drawing.Size(23, 22)
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.Tag = "C1PreviewActionEnum.SelectTextTool"
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.ToolTipText = "Text Select Tool"
+        Me.C1PrintPreviewControl1.ToolBars.Text.SelectText.Visible = False
+        '
         'PreviewDocument
         '
-        Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in")
+        Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in")
         '
         'ViewFile
         '
@@ -112,6 +161,7 @@ Partial Class ViewFile
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "ViewFile"
         CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.C1PrintPreviewControl1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.C1PrintPreviewControl1.ResumeLayout(False)
         Me.C1PrintPreviewControl1.PerformLayout()
         Me.ResumeLayout(False)

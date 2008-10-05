@@ -474,7 +474,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 ! The hyperbolic tangent allows for smooth transition from full flow to no flow
 ! within the fan cuttoff pressure range
 	F = 0.5 - tanh(8.0/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0)/2.0
-	F = MAX(XX0, F)
+	F = MAX(minimumopen, F)
 	HVFANl = F * qmax(k) * ROH
       openfraction = max (minimumopen, qcffraction (qcvm, k, tsec))
 	hvfan = hvfanl * openfraction

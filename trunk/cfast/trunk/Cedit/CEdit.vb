@@ -2835,7 +2835,7 @@ Public Class CeditMain
         'FirePlumeType
         '
         Me.FirePlumeType.ItemHeight = 13
-        Me.FirePlumeType.Items.AddRange(New Object() {"McCaffrey"})
+        Me.FirePlumeType.Items.AddRange(New Object() {"McCaffrey", "Heskestad"})
         Me.FirePlumeType.Location = New System.Drawing.Point(576, 86)
         Me.FirePlumeType.Name = "FirePlumeType"
         Me.FirePlumeType.Size = New System.Drawing.Size(80, 21)
@@ -5088,7 +5088,7 @@ Public Class CeditMain
             If sender Is Me.FireXNormal Then aFire.XNormal = Val(Me.FireXNormal.Text)
             If sender Is Me.FireYNormal Then aFire.YNormal = Val(Me.FireYNormal.Text)
             If sender Is Me.FireZNormal Then aFire.ZNormal = Val(Me.FireZNormal.Text)
-            If sender Is Me.FirePlumeType Then aFire.FireType = Me.FirePlumeType.SelectedIndex
+            If sender Is Me.FirePlumeType Then aFire.PlumeType = Me.FirePlumeType.SelectedIndex
             If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
             If sender Is Me.FireName And Me.FireName.SelectedIndex >= 0 Then
                 ' Here they just selected an existing fire object

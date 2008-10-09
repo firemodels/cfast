@@ -138,7 +138,7 @@
      . CPFLSYNCH/'Synchronize gui and base models - do not edit'/,
      . GUIPROJ/' '/, GUIREF/' '/,GUILIC/' '/, initializeonly/.false./,
      . outputformat /0/, IOFILO/6/, REPORTO/0/, IOFILI/1/, LOGERR/3/,
-     . OBFILI/99/, AHFILO/98/,WEBFILE/97/,
+     . OBFILI/99/, AHFILO/98/, WEBFILE/97/, trace/.false./
     
      . VERSION/6101/
 ! 
@@ -157,7 +157,7 @@
       include "precis.fi"
       include "cfast.fi"
 
-      DATA CRDATE/2008,6,24/
+      DATA CRDATE/2008,10,01/
       END
       
       SUBROUTINE INITSOLN(T,PDOLD,PDZERO,RPAR,IPAR)

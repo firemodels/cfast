@@ -42,7 +42,7 @@ Public Class Fire
     Public Const TypeConstrained As Integer = 0
     Public Const TypeFireObject As Integer = -1
 
-    Private aFireType As Integer                    ' Fire type, -1 for object definition, 0 for unCOnstrained and 1 for COnstrained
+    Private aFireType As Integer                    ' Fire type, -1 for object definition, 0 for unConstrained and 1 for Constrained
     Private aChanged As Boolean = False
     Private HasErrors As Integer                    ' Temp variable that holds error COunt during error check
     Private ir As Integer, ic As Integer
@@ -52,16 +52,16 @@ Public Class Fire
     Private aXPosition As Single                    ' X (width) position of the fire in the COmpartment
     Private aYPosition As Single                    ' Y (depth) position of the fire in the COmpartment
     Private aZPosition As Single                    ' Z (height) position of the fire in the COmpartment
-    Private aXNormal As Single                      ' X COmponent of normal vector from chosen surface of target
-    Private aYNormal As Single                      ' Y COmponent of normal vector from chosen surface of target
-    Private aZNormal As Single                      ' Z COmponent of normal vector from chosen surface of target
+    Private aXNormal As Single                      ' X Component of normal vector from chosen surface of target
+    Private aYNormal As Single                      ' Y Component of normal vector from chosen surface of target
+    Private aZNormal As Single                      ' Z Component of normal vector from chosen surface of target
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
-    Private minValueIgnType As Integer = 0
-    Private maxValueIgnType As Integer = 2
+    Private Const minValueIgnType As Integer = 0
+    Private Const maxValueIgnType As Integer = 2
     Private aIgnitionValue As Single                ' Value at ignition for chosen igntion criterion
-    Private aPlumeType As Integer                   ' Plume for this fire, 0 for McCaffrey
+    Private aPlumeType As Integer                   ' Plume for this fire, 0 for McCaffrey, 1 for Heskestad
     Private Const minValuePlumes As Integer = 0
-    Private Const maxValuePlumes As Integer = 0
+    Private Const maxValuePlumes As Integer = 1
     Private aFireObject As Integer                  ' index pointer to the selected fire object for this instance
 
     ' Object Definition for FireType = -1
@@ -300,7 +300,7 @@ Public Class Fire
             Return aIgnitionType
         End Get
         Set(ByVal Value As Integer)
-            If Value >= Me.minValueIgnType And Value <= Me.maxValueIgnType Then
+            If Value >= Fire.minValueIgnType And Value <= Fire.maxValueIgnType Then
                 If aIgnitionType <> Value Then
                     aIgnitionType = Value
                     aChanged = True
@@ -345,7 +345,7 @@ Public Class Fire
             Return aPlumeType
         End Get
         Set(ByVal Value As Integer)
-            If Value >= Fire.minValuePlumes And Value <= Me.maxValueIgnType Then
+            If Value >= Fire.minValuePlumes And Value <= Fire.maxValuePlumes Then
                 If aPlumeType <> Value Then
                     aPlumeType = Value
                     aChanged = True

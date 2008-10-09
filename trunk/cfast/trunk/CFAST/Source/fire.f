@@ -631,7 +631,7 @@ C     NOW DO THE "KINETICS SCHEME"
       XMASS(2) = NETO2
       XMASS(3) = NETCO2
       XMASS(4) = NETCO2 * COCO2T
-      XMASS(7) = -netfuel ! note that this subtracts TUHC when combustion occurs
+      XMASS(7) = -netfuel ! this adjusts TUHC when combustion occurs
       XMASS(8) = 9.0D0 * NETFUEL * HCRATT / FCRATT
       XMASS(9) = NETCO2 * CCO2T
 
@@ -1426,6 +1426,58 @@ C
       fheight = max (zero, fheight)
       RETURN
       END
+      
+      subroutine PlumeTemp (qdot, xrad, dfire, tu, tl, rhoamb, zfire, 
+     *    zlayer, z, tplume)
+    
+! Calculates plume centerline temperature at a specified height above
+! the fire
+!
+! Using Heskestad's correlation for the lower layer and Evan's modification
+! when position is in the upper layer
+
+! Inputs:
+!
+! qdot    total heat release rate of the fire (W)
+! xrad    fraction of fire HRR released as radiation
+! dfire   fire diamater (m)
+! tu      upper layer gas temperature (K)
+! tl      lower layer gas temperature (K)
+! rhoamb  density of the ambient air (kg/m^3)
+! zfire   height of the base of the fire (m)
+! zlayer  height of the hot/cold gas layer interface (m)
+! z       position to calculate plume centerline temperature (m)
+
+! Output:
+!
+! tplume  plume centerline temperature
+
+      implicit none
+      real*8 qdot, xrad, dfire, tu, tl, rhoamb, zfire, zlayer, z
+      real*8 tplume
+      real*8, parameter :: g = 9.8d0, C_T = 9.115d0, Beta = 0.955d0, 
+     *    cp = 1.012d0
+      real*8 z0, qdot_c, z_i1, q_i1star, xi, q_i2star, z_i2, z_eff
+
+      z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
+      qdot_c = qdot*(1.0d0 - xrad)/1000.d0
+      if (z.le.zlayer) then
+        tplume = 9.1d0*(tl/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0) + tl
+      else
+        z_i1 = zlayer - zfire
+        q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
+        xi = tu/tl
+        q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/
+     *      (xi*C_T)-1.d0/C_T)**(3.d0/2.d0)
+        z_i2 = (xi*q_i1star*C_T/(q_i2star**(1.d0/3.d0)*((xi-1.d0)*
+     *      (Beta**2+1.d0)+xi*C_T*q_i2star**(2./3.))))**(2.d0/5.d0)*z_i1
+        z_eff = z-z_i1+z_i2
+        tplume = 9.28d0*tu*q_i2star**(2.d0/3.d0)*
+     *      (z_i2/z_eff)**(5.d0/3.d0) + tu
+      end if
+      return
+      end subroutine PlumeTemp
 
       SUBROUTINE OBJINT (OBJN, TIME, IROOM, OMASST, OAREAT, 
      . OHIGHT, OQDOTT, OBJHCT, CCO2T, COCO2T, HCRATT, ZMFIRE, OCRATT,

@@ -827,6 +827,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         IF (NTARG.GT.NM1) THEN
           DO 20 ITARG = 1, NTARG-NM1
             IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
+              ILAY = IXTARG(TRGLAYER,ITARG)
+              TG = ZZTEMP(I,ILAY)
               TTTEMP = XXTARG(TRGTEMPF,ITARG)
               RTOTAL = XXTARG(TRGTFLUXF,ITARG)
               FTOTAL = QTFFLUX(ITARG,1)
@@ -834,12 +836,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
               GTOTAL = QTGFLUX(ITARG,1)
               CTOTAL = QTCFLUX(ITARG,1)
               IF (RTOTAL.NE.XX0) THEN
-                WRITE(IOFILO,5030)ITARG,TTTEMP-273.15,RTOTAL,
+                WRITE(IOFILO,5030)ITARG,TG-273.15,TTTEMP-273.15,RTOTAL,
      +              FTOTAL/RTOTAL*X100,
      +              WTOTAL/RTOTAL*X100,GTOTAL/RTOTAL*X100,
      +              CTOTAL/RTOTAL*X100
               ELSE
-                WRITE(IOFILO,5030)ITARG,TTTEMP-273.15
+                WRITE(IOFILO,5030)ITARG,TG-273.15,TTTEMP-273.15
               END IF
             END IF
    20     CONTINUE
@@ -847,18 +849,18 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
    10 CONTINUE
       RETURN
 5000  FORMAT (//,' Surfaces and Targets',/,
-     +    '0Compartment    Ceiling   Up wall   Low wall  '
-     +    'Floor    Target    Target   Flux To      Fire      '
-     +    'Surface   Gas',/,
-     +    '                Temp.     Temp.     Temp.     ',
-     +    'Temp.              Temp.    Target       Rad.      ',
-     +    'Rad.      Rad.      Convect.',/,
-     +    '                (C)       (C)       (C)       ',
-     +    '(C)                (C)      (W/m^2)      (%)       ',
-     +    '(%)       (%)       (%)',/,1X,124('-'))
-5010  FORMAT (1x,a14,1P4G10.4,1X,'Floor',2X,1PG10.3,1X,1PG10.4,0PF7.1,
+     +  '0Compartment    Ceiling   Up wall   Low wall  '
+     +  'Floor    Target    Gas       Target   Flux To      Fire      '
+     +  'Surface   Gas',/,
+     +  '                Temp.     Temp.     Temp.     ',
+     +  'Temp.              Temp.     Temp.    Target       Rad.      ',
+     +  'Rad.      Rad.      Convect.',/,
+     +  '                (C)       (C)       (C)       ',
+     +  '(C)                (C)       (C)      (W/m^2)      (%)       ',
+     +  '(%)       (%)       (%)',/,1X,134('-'))
+5010  FORMAT (1x,a14,1P4G10.4,1X,'Floor',12X,1PG10.3,1X,1PG10.4,0PF7.1,
      +    3(3X,F7.1))
-5030  FORMAT (55X,I4,4X,1PG10.3,1X,1PG10.4,0PF7.1,3(3X,F7.1))
+5030  FORMAT (55X,I4,4X,1P2G10.3,1X,1PG10.4,0PF7.1,3(3X,F7.1))
       END
       SUBROUTINE RSLTSPRINK
 

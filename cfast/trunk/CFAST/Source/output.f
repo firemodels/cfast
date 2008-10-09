@@ -827,8 +827,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         IF (NTARG.GT.NM1) THEN
           DO 20 ITARG = 1, NTARG-NM1
             IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
-              ILAY = IXTARG(TRGLAYER,ITARG)
-              TG = ZZTEMP(I,ILAY)
+              TG = TGTARG(ITARG)
               TTTEMP = XXTARG(TRGTEMPF,ITARG)
               RTOTAL = XXTARG(TRGTFLUXF,ITARG)
               FTOTAL = QTFFLUX(ITARG,1)

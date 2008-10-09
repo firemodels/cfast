@@ -6,7 +6,7 @@
 		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
 	</head>
 	<body>
-		<H3>Version 6.1.1 (June 24, 2008)</H3>
+		<H3>Version 6.1.1 (October 1, 2008)</H3>
         <blockquote>
             Added a new species, labeled TS, to track flow through compartments. TS is a trace
             species produce during pyrolysis and is not affected by combustion. The assumption
@@ -30,12 +30,22 @@
         </blockquote>
         <blockquote>
             Corrected error in mechanical ventilation that prevented flow from dropping off
-            at high pressures like it was supposed too. Added calculation of an additional species,
-            intended to be a trace species that is small compared to the total mass flow in
-            the simulation.&nbsp; Reporting of species can now be done by concentration or by
-            total mass in compartments.&nbsp; Corrected error in exehandle routine that caused
+            at high pressures like it was supposed too. An additional error casued DASSL to
+            fail at times when the mechanical ventilatino system shut off due to (the now corrected)
+            high pressure cutoff.&nbsp; The solution was to not totally close the vent (the
+            vent is left open at an extremely small value, machine epsilson for double precision)&nbsp; Corrected error in exehandle routine that caused
             model to fail with path names longer than 128 characters (windows limit is 255 characters
-            for whole file name).</blockquote>
+            for whole file name).&nbsp;
+            Corrected error in interpolation routines for opening and closing vents that did
+            not smoothly transistion from open to closed (Since the GUI did this over 1 s, the
+            impact should not be noticeable for previously run cases).</blockquote>
+        <blockquote>
+            Incorporated Heskestad plume model as an alternative to the McCaffrey plume model
+            (type 2).&nbsp; There is a small difference in the calculated results for a range
+            of test cases (on the order of 2% to 4%).&nbsp; The plan is to add plume temperature
+            to the calculation as well.</blockquote>
+        <blockquote>
+        </blockquote>
         <blockquote>
             Corrected error in the GUI that incorrectly outputs the mechanical ventilation specification
             for the CFAST model.&nbsp; The fifth parameter on the line specifies a "system number"

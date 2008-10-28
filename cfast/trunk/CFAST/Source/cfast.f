@@ -157,7 +157,7 @@
       include "precis.fi"
       include "cfast.fi"
 
-      DATA CRDATE/2008,10,01/
+      DATA CRDATE/2008,10,28/
       END
       
       SUBROUTINE INITSOLN(T,PDOLD,PDZERO,RPAR,IPAR)

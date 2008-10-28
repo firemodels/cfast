@@ -1773,6 +1773,8 @@ C
       DATA MAP6/1,3,3,3,3,2/
 
       IFAIL = 0
+      xm1 = -1.0d0
+      x0 = 0.0d0
       DO 210 ITARG = 1, NTARG
 
 C*** ROOM NUMBER MUST BE BETWEEN 1 AND NM1
@@ -1793,6 +1795,10 @@ C*** ROOM NUMBER MUST BE BETWEEN 1 AND NM1
         XSIZE = BR(IROOM)
         YSIZE = DR(IROOM)
         ZSIZE = HRP(IROOM)
+        !*** If the locator is -1, then set to center of room on the floor
+        if(xloc.eq.xm1) xloc = 0.5 * xsize
+        if(yloc.eq.xm1) yloc = 0.5 * ysize
+        if(zloc.eq.xm1) zloc = x0
         IF(IWALL.NE.0)THEN
           XXNORM = 0.0D0
           YYNORM = 0.0D0
@@ -1870,12 +1876,12 @@ C*** put a target in the center of the floor of each room
          IXTARG(TRGBACK,ITARG) = EXT
          XX = BR(IROOM)*0.50D0
          YY = DR(IROOM)*0.50D0
-         ZZ = 0.D0
+         ZZ = x0
          XXTARG(TRGCENX,NTARG) = XX
          XXTARG(TRGCENY,NTARG) = YY
          XXTARG(TRGCENZ,NTARG) = ZZ
-         XXTARG(TRGNORMX,NTARG) = 0.0D0
-         XXTARG(TRGNORMY,NTARG) = 0.0D0
+         XXTARG(TRGNORMX,NTARG) = x0
+         XXTARG(TRGNORMY,NTARG) = x0
          XXTARG(TRGNORMZ,NTARG) = 1.0D0
          IF(SWITCH(2,IROOM))THEN
            CXTARG(NTARG) = CNAME(2,IROOM)

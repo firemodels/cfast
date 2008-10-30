@@ -5,7 +5,7 @@ This chapter describes the processes used during the development and deployment 
 
 CFAST is intended for use only by those competent in the field of fire safety and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model which has limitations based on the way it is used, and the data used for calculations. All results should be evaluated by a qualified user.
 
-The SQA process and requirements outlined in this chapter apply specifically to the CFAST and is focused on ensuring the quality of the numerical predictions of the model.  The user interface that may be used to develop input for the model is not included in this process.  Rather, users must ensure that the input files developed for the simulations accurately reflect the desired model inputs, whether developed using the supplied user interface, another third-party interface, or manually input with a spreadsheet or text editor program.  Documentation of these inputs is included as part of the model documentation outlined below.
+The SQA process and requirements outlined in this chapter apply specifically to the CFAST and is focused on ensuring the quality of the numerical predictions of the model.  The user interface that may be used to develop input for the model is included in this process to insure that changes to the model are reflected in the user interface and in the data files created by the user interface for use by the model.  Of course, users must ensure that the input files developed for the simulations accurately reflect the desired model inputs, whether developed using the supplied user interface, another third-party interface, or manually input with a spreadsheet or text editor program.  Documentation of these inputs is included as part of the model documentation outlined below.
 
 \section{Relevant Publications}
 
@@ -19,27 +19,35 @@ In addition, numerous related documents available at http://cfast.nist.gov provi
 
 \section{Model Management}
 
-CFAST is developed and maintained by the Building and Fire Research Laboratory (BFRL) at the National Institute of Standards and Technology (NIST). Like all projects at BFRL, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development. 
+CFAST is developed and maintained by the Building and Fire Research Laboratory (BFRL) at the National Institute of Standards and Technology (NIST). Like all projects at BFRL, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST
 
-Review of software and documentation is part of the standard review process for any report or other product developed by NIST. It consists of two independent technical peer reviews, two technical and management reviews at the technical workgroup and division level, and a policy review at the NIST-wide level.  This review is documented and recorded on the NIST standard form NIST 114 along with official approval notification provided to the primary author of the product.
+\begin{figure}
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/OrgChart.pdf}\\
+\end{center}
+\caption{CFAST SQA Organization Structure.}
+ \label{figOrgChart}
+\end{figure}
+
+Review and approval of software and documentation is part of the standard review process for any report or other product developed by NIST. A minimum of five reviews are required prior to release of reports or software, including two independent technical peer reviews, two technical and management reviews at the technical workgroup and division level, and a policy review at the NIST-wide level.  This review is documented and recorded on the NIST standard form NIST 114 along with official approval notification provided to the primary author of the product.
 
 CFAST is distributed exclusively through a NIST website dedicated to the CFAST model (http://cfast.nist.gov).  Content of the website is the responsibility of the CFAST project leader and the BFRL webmaster. Additions and changes to the website are made only with the approval of the CFAST project leader after any required NIST reviews.
 
 \section{SQA Documentation}
 
-The released version of CFAST is documented by three primary publications, the Technical Reference Guide, the User’s Guide, and this Software and Experimental Validation Guide. The technical reference guide and the user’s guide apply to the newest version of the model available on the NIST website. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
+The released version of CFAST is documented by three primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_6}, the User’s Guide \cite{CFAST_Users_Guide_6}, and this Software and Model Evaluation Guide. The documents apply to the newest version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
 
 During development of new or corrected features for the model, the following documents are developed:
 
 \begin{itemize}
-\item {\em Software Requirements and Design Specifications:}  This is an internal memorandum that documents the intended function of a new or enhanced feature, describes its implementation in sufficient detail to allow an independent review of the feature, and identifies any new or existing testing and validation required prior to acceptance of the feature in a release version of the model.  This document forms the basis for necessary changes to the technical reference guide and user’s guide for the model once the new feature is ready for general release. As defined in IEEE 730-2002, this document includes the software requirements specification, software design description, and software verification and validation plan. The level of detail in this document depends on the complexity of the change to the model. 
+\item {\em Software Requirements and Design Specifications:}  This is an internal memorandum that documents the intended function of a new or enhanced feature, describes its implementation in sufficient detail to allow an independent review of the feature, and identifies any new or existing testing and validation required prior to acceptance of the feature in a release version of the model.  This document forms the basis for necessary changes to the technical reference guide and user’s guide for the model once the new feature is ready for general release. As defined in IEEE 730-2002 \cite{IEEE:730}, this document includes the software requirements specification, software design description, and software verification and validation plan. The level of detail in this document depends on the complexity of the change to the model. 
 
-\item {\em Software Validation and Testing Results:}  This is an internal memorandum that demonstrates the use of the new feature through appropriate test cases and describes validation and verification tests performed to ensure the new feature is implemented properly without unexpected changes in other features. This document forms the basis for the model verification and validation documentation included as part of this Software and Experimental Validation guide. As defined in IEEE 730-2002, this document includes the software verification and validation report. The level of detail in this document depends on the complexity of the change to the model.
+\item {\em Software Validation and Testing Results:}  This is an internal memorandum that demonstrates the use of the new feature through appropriate test cases and describes validation and verification tests performed to ensure the new feature is implemented properly without unexpected changes in other features. This document forms the basis for the model verification and validation documentation included as part of this Software and Experimental Validation guide. As defined in IEEE 730-2002 \cite{IEEE:730}, this document includes the software verification and validation report. The level of detail in this document depends on the complexity of the change to the model.
 \end{itemize}
 
-In addition, the NIST review process documents the review and approval of released versions of the model as described above.
+Both of these documents are reviewed internally to NIST by group staff not directly involved with model development. In addition, the NIST review process documents the review and approval of released versions of the model as described above.
 
-Source code for released versions of the model is maintained with version control software that allows tracking of specific changes to the model from version to version.  In addition, archived versions of the model are kept in separate folders and include both source code as well as released versions of the model as made publicly available. Each version of the model released includes a unique version number that identifies the major and minor version numbers of the release as well as the date of release. Differences with prior versions are documented and provided as part of the release and on the CFAST website so that users can ascertain what effect these changes will have on prior calculations.
+Source code for released versions of the model is maintained with version control software that allows tracking of specific changes to the model from version to version.   Each version of the model released includes a unique version number that identifies the major and minor version numbers of the release as well as the date of release. Differences with prior versions are documented and provided as part of the release and on the CFAST website so that users can ascertain what effect these changes will have on prior calculations.
 
 \section{Standards, Practices, Conventions, and Metrics}
 
@@ -53,7 +61,7 @@ Software reviews are outlined as part of the standard practices described above.
 
 \section{Model Testing}
 
-Testing of the model prior to release includes the following:
+Individual testing of model algorithms are made by the developers during any revision of the model. Often, this testing forms the basis for any new standard test cases included with future model releases. System release testing of the model prior to release includes the following:
 
 \begin{itemize}
 \item Examination of results of test cases specific to any model modifications made as appropriate.  Comparison with analytic solutions to simplified problems is desirable when available.
@@ -67,11 +75,11 @@ Testing of the model prior to release includes the following:
 
 NIST maintains an e-mail address specifically for inquiries and problem reporting for the CFAST model (cfast@nist.gov).  These e-mails are directed to the CFAST project leader for response and resolution as appropriate.  Inquiries and responses are catalogued and retained by the project leader.
 
-NIST is developing an automated reporting and resolution tracking website for use with the CFAST model to facilitate tracking and cataloging of inquires and problems.
+NIST has developed an automated reporting and resolution tracking website for use with the CFAST model to facilitate tracking and cataloging of inquires, problems, and model enhancements / revisions. This is included as part of the CFAST website at http://cfast.nist.gov
 
 \section{Tools, Techniques, and Methodologies}
 
-NIST is developing software specifically to automate comparison of CFAST predictions between different versions of the model and with experimental data to simplify testing and validation for the CFAST model.
+NIST will use an automated comparison tool (under development) to compare CFAST predictions between different versions of the model and with experimental data to simplify testing and validation for the CFAST model.
 
 \section{Media Control}
 
@@ -83,7 +91,7 @@ Both of these computer systems are available only to specified personnel, includ
 
 \section{Supplier Control}
 
-CFAST is entirely a product of BFRL / NIST and as such does not include any commercial software libraries. The differential equation solver used by CFAST, DASSL, is a publicly available software package.  Full source code for the solver as used by CFAST is maintained under versions control with the rest of the model code.
+CFAST is entirely a product of BFRL / NIST and as such does not include any commercial software libraries. The differential equation solver used by CFAST, DASSL, is a publicly available software package.  Full source code for the solver as used by CFAST is maintained under version control with the rest of the model code.
 
 BFRL currently uses Microsoft Visual Studio 2005 and Intel Visual Fortran 10.1 for development\footnote{Certain commercial entities, equipment, or materials may be identified in this document 
 in order to describe an experimental procedure or concept adequately. Such identification 
@@ -93,7 +101,9 @@ equipment are necessarily the best available for the purpose.}.  Prior to any ch
 
 \section{Records Collection, Maintenance, and Retention}
 
-All software, documentation, and SQA documents are retained by the CFAST project leader, typically in electronic form. BFRL management approval is required prior to destruction of old or out-of-date records.
+All software, documentation, and SQA documents are retained by the CFAST project leader, typically in electronic form. Software and documentation is also maintained and archived on the NIST CFAST website as part of the version control software for the model. 
+
+BFRL management approval is required prior to destruction of old or out-of-date records. Records are typically maintained for a minimum of 25 years.
 
 \section{Training}
 

@@ -22,9 +22,11 @@ Comparisons of the model predictions with experimental measurements are presente
 
 where $\Delta M$ is the difference between the peak value ($M_P$) of the evaluated parameter and its original value ($M_0$), and $\Delta E$ is the difference between the experimental observation ($E_P$) and its original value ($E_0$).  
 
+The measure of model “accuracy” used throughout this study is related to experimental uncertainty. Reference \cite{NRCNUREG1824Experimental}  discusses this issue in detail. In brief, the accuracy of a measurement, for example, a gas temperature, is related to the measurement device, a thermocouple. In addition, the accuracy of the model prediction of the gas temperature is related to the simplified physical description of the fire and the accuracy of the input parameters, especially the specified heat release rate. Ideally, the purpose of a validation study is to determine the accuracy of the model in the absence of any errors related to the measurement of both its inputs and outputs. Because it is impossible to eliminate experimental uncertainty, at the very least a combination of the uncertainty in the measurement of model inputs and output can be used as a yardstick. Dotted lines in figure \ref{fig:HGL_Scatter}  show this combined uncertainty estimate for HGL temperature and layer depth. Corresponding estimates are included for other quantities in later sections. If the numerical prediction falls within the range of uncertainty attributable to both the measurement of the input parameters and the output quantities, it is not possible to further quantify its accuracy. At this stage, it is said that the prediction is within experimental uncertainty.
+
 Note that the calculation of relative difference is based on the temperature rise above ambient, and the layer depth, that is, the distance from the ceiling to where the hot gas layer descends.  Where the model over-predicts the HGL temperature or the depth of the HGL, the relative difference is a positive number. This convention is used throughout this report where the model over-predicts the severity of the fire, the relative difference is positive; where it under-predicts, the difference is negative.
 
-Arguably the most frequent question asked about a fire is, “How hot did it become?”  Temperature in the upper layer of a compartment is an obvious indicator to answer this question.  Peak temperature, time to peak temperature, or time to reach a chosen temperature tenability limit are typical values of interest.  Quality of the prediction (or measurement) of layer interface position is more difficult to quantify.  Although observed in a range of experiments, the two-layer assumption is in many ways just a convenience for modeling.  In experimental measurements, temperature is typically measured with an array of thermocouples from floor to ceiling.  This floor to ceiling temperature profile can then used to estimate a hot gas layer height and the temperature of the upper and lower gas layers \cite{Janssens:1992} \cite{McGrattan:2003} consistent with the two-zone assumption. Appendix \ref{Appendix_layerheight} provides details of the calculation.
+Arguably the most frequent question asked about a fire is, “How hot did it become?”  Temperature in the upper layer of a compartment is an obvious indicator to answer this question.  Peak temperature, time to peak temperature, or time to reach a chosen temperature tenability limit are typical values of interest.  Quality of the prediction (or measurement) of layer interface position is more difficult to quantify.  Although observed in a range of experiments, the two-layer assumption is in many ways just a convenience for modeling.  In experimental measurements, temperature is typically measured with an array of thermocouples from floor to ceiling.  This floor to ceiling temperature profile can then used to estimate a hot gas layer height and the temperature of the upper and lower gas layers \cite{Janssens:1992} \cite{McGrattan:2003} consistent with the two-zone assumption. Appendix A provides details of the calculation.
 
 From a standpoint of hazard, time of descent to a chosen level may be a reasonable criterion (assuming some in the room will then either be forced to crawl beneath the interface to breathe the “clean” atmosphere near the floor or be forced to breath the upper layer gases).  Minimum values may also be used to indicate general agreement.  For the single-room tests with furniture or wall-burning, these are appropriate indicators to judge the comparisons between model and experiment.  For the more-closely steady-state three- and four-room tests with corridor or the multiple-story building tests, a steady-state average may better characterizes the nature of the experiment.
 
@@ -32,7 +34,7 @@ A good prediction of the HGL height is largely a consequence of a good predictio
 
 \section{Model / Experiment Comparisons}
 
-Figure \ref{fig:HGL_Scatter} shows a comparison of predicted and measured values for HGL temperature and depth. Appendix A provides individual graphs of model and experimental values and tables of peak values and relative differences. 
+Figure \ref{fig:HGL_Scatter} shows a comparison of predicted and measured values for HGL temperature and depth. Appendix A provides individual graphs of model and experimental values and tables of peak values and relative differences.  
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -56,9 +58,9 @@ notable exception. Unlike the model prediction, the experimental measurement did
 rise and fall in concert with the temperature measurement. Peak values were typically higher for
 upper layer temperature and lower for lower layer temperature and layer interface position.
 
-For the furniture tests, the agreement ranges from a relative difference of -30 \% to 8 \%.  The agreement is quite different for the two arrays in each test. Table \ref{tab:NBS_HGL} shows the relative differences for tests F1 and F6.  For both the layer temperature and layer depth, the difference between the model and experiment changes depending on the measurement location. In the same tests (F1) the values are well within experimental uncertainty at one location and outside for the other.   For test F6, this varies from -30~\% to 8~\% for the temperature and from -19~\% to 26~\% for the layer depth.   For these tests with a post-flashover fire in a small compartment, clearly the assumption of a uniform  upper layer is questionable. Curve shape for the experimental data and model predictions is quite similar.d
+For the furniture tests, the agreement ranges from a relative difference of -30 \% to 8 \%.  The agreement is quite different for the two arrays in each test. Table \ref{tab:NBS_HGL} shows the relative differences for tests F1 and F6.  For both the layer temperature and layer depth, the difference between the model and experiment changes depending on the measurement location. In the same tests (F1) the values are well within experimental uncertainty at one location and outside for the other.   For test F6, this varies from -30~\% to 8~\% for the temperature and from -19~\% to 26~\% for the layer depth.   For these tests with a post-flashover fire in a small compartment, clearly the assumption of a uniform  upper layer is questionable. Curve shape for the experimental data and model predictions is quite similar.
 
-\begin{table}[t]
+\begin{table}[h!]
 \begin{center}
 \caption{Relative Difference for HGL Temperature and Depth for Two Measurement Locations in Two Single-Room Tests}
 \label{tab:NBS_HGL}
@@ -80,7 +82,7 @@ Test & Location & Temperature & Layer Depth\\
 
 \subsubsection{VTT Large Hall Test Series}
 
-The HGL temperature and depth were calculated from the averaged gas temperatures from three vertical thermocouple arrays.  10 thermocouples in each vertical array, spaced 2 m (6.6 ft) apart in the lower two-thirds of the hall, and 1 m apart near the ceiling were used to determine layer temperatures and depth.  
+The HGL temperature and depth were calculated from the averaged gas temperatures from three vertical thermocouple arrays.  Ten thermocouples in each vertical array, spaced 2 m (6.6 ft) apart in the lower two-thirds of the hall, and 1 m apart near the ceiling were used to determine layer temperatures and depth.  
 
 CFAST predicts the HGL temperature and height near experimental uncertainty for all three tests, with relative differences ranging from 10 \% to 15 \%, depending on the test. Relative differences are shown in figure \ref{fig:HGL_Scatter}.
 
@@ -90,7 +92,7 @@ The NIST/NRC series consisted of 15 liquid spray fire tests with different heat 
 
 A few observations about the simulations:
 \begin{itemize}
-\item In the closed-door tests, the HGL layer descended all the way to the floor.  However, the reduction method used on the measured temperatures (see reference \cite{McGrattan:2003}) does not account for the formation of a single layer and, therefore, does not indicate that the layer dropped all the way to the floor.  This is not a flaw in the measurements, but rather in the data reduction method.
+\item In the closed-door tests, the HGL layer descended all the way to the floor.  However, the reduction method used on the measured temperatures (see reference \cite{McGrattan:2003}) does not account for the formation of a single layer and, therefore, does not indicate that the layer dropped all the way to the floor, rather just to the position of the lowest temperature measurement point.  This is not a flaw in the measurements, but rather that the data reduction method only applies to tests where two distinct layers are present, i.e., in the open door tests.
 \item The HGL reduction method produces spurious results in the first few minutes of each test because no clear layer has yet formed.
 \end{itemize}
 

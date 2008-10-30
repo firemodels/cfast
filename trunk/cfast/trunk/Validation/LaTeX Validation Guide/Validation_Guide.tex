@@ -4,6 +4,8 @@
 \usepackage{hyperref}
 \usepackage{multirow}
 
+\renewcommand{\bibname}{References}
+
 %\usepackage{eso-pic}
 %\usepackage{graphicx}
 %\usepackage{color}
@@ -38,6 +40,10 @@
 
 \newcommand{\asqh}{$A_T/A\sqrt{h}$}
 \newcommand{\degc}{$^{\circ}$C }
+\newcommand{\degf}{$^{\circ}$F }
+
+\newcommand{\superscript}[1]{\ensuremath{^{\textnormal{#1}}}}
+\newcommand{\subscript}[1]{\ensuremath{_{\textnormal{#1}}}}
 
 \newcommand{\dod}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\DoD}[2]{\frac{D #1}{D #2}}
@@ -231,15 +237,10 @@ Evaluation is critical to establishing both the acceptable uses and limitations 
 
 \label{acksection}
 
-Support for validation experiments and the preparation of the CFAST and FDS manuals has been provided by the Office of Nuclear Regulatory Research of the U.S. Nuclear Regulatory Commission (US NRC). Thanks to Mark Salley and Jason Dreisbach for their efforts.
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission Office of Research and the U.S. Department of Energy. The U.S. NRC Office of Research has funded key validation experiments, the preparation
+of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and Jason Dreisbach for their efforts and support. Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged.  Thanks are also due to Allan Coutts, Washington Safety Management Solutions for his insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
 
-Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged.  Thanks are also due to Allan Coutts, Washington Safety Management Solutions for his insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
-
-For the NIST/NRC tests, Alex Maranghides was in charge of the Large Fire Laboratory at NIST where these tests were conducted, and helped to design the experiments. Thanks also to technicians Laurean Delauter, Jay McElroy, and Jack Lee who constructed and conducted these validation experiments
-at NIST.
-
-Finally, thanks to VTT, Finland, for their contribution of experimental data,
-referred to in this document as the ``VTT Large Hall Experiments.''
+For the NIST/NRC tests, Alex Maranghides was in charge of the Large Fire Laboratory at NIST where these tests were conducted, and helped to design the experiments. Thanks also to technicians Laurean Delauter, Jay McElroy, and Jack Lee who constructed and conducted these validation experiments at NIST. Steve Nowlen at Sandia National Laboratories provided data, documentation and further information for the NRC-sponsored experiments referred to in this document and the "FM/SNL Test Series" (Factory Mutual and Sandia National Laboratories conducted these experiments). Finally, thanks to VTT, Finland, for their contribution of experimental data, referred to in this document as the ``VTT Large Hall Experiments.''
 
 \tableofcontents
 
@@ -264,8 +265,8 @@ referred to in this document as the ``VTT Large Hall Experiments.''
 
 \backmatter
 
-\bibliography{Bibliography/CFAST_refs}
 
+\bibliography{Bibliography/CFAST_refs}
 \addcontentsline{toc}{chapter}{References}
 
 \appendix

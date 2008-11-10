@@ -1,0 +1,61 @@
+\chapter{Summary and Conclusions}
+
+How to best quantify the comparisons between model predictions and experiments is not obvious. The necessary and perceived level of agreement for any variable is dependent upon both the typical use of the variable in a given simulation , the nature of the experiment , and the context of the comparison in relation to other comparisons being made. For instance, the user may be interested in the time it takes to reach a certain temperature in the room, but have little or no interest in peak temperature for experiments that quickly reach a steady-state value. Insufficient experimental data and understanding of how to compare the numerous variables in a complex fire model prevent a complete validation of the model. 
+
+A true validation of a model would involve proper statistical treatment of all the inputs and outputs of the model with appropriate experimental data to allow comparisons over the full range of the model. Thus, the comparisons of the differences between model predictions and experimental data discussed here are intentionally simple and vary from test to test and from variable to variable due to the changing nature of the tests and typical use of different variables.
+
+Table \ref{tab:Summary_Relative_Diffs} summarizes the comparisons in this report.
+
+\begin{table}
+\begin{center}
+\caption{Summary of Model Comparisons}
+\label{tab:Summary_Relative_Diffs}
+\vspace{0.1in}
+\begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}} | l | c | c | c | c |}
+\hline
+Quantity & Average & Median & Within & 90th \\
+& Difference$^{a}$ &Difference$^b$ & Experimental & Percentile$^d$ \\
+& & & Uncertainty$^c$ & \\
+& (\%) & (\%) & (\%) & (\%) \\
+\hline
+HGL Temperature & 6 &  14 &  52 &  30  \\ \hline
+HGL Depth & 3 & 15 & 40 & 28 \\ \hline
+Ceiling Jet Temperature & 16 & 5 & 70 & 61 \\ \hline
+Oxygen Concentration & -6 & 18 & 12 & 32 \\ \hline
+Carbon Dioxide Concentration & -16 & 16 & 21 & 52 \\ \hline
+Smoke Obscuration$^e$ & 272/22 & 227/18 & 0/82 & 499/40 \\ \hline
+Pressure & 43 & 13 & 77 & 206$^f$ \\ \hline
+Target Flux (Total) & -23 & 27 & 42 & 51 \\ \hline
+Target Temperature & 0 & 18 & 38 & 34 \\ \hline
+Surface Flux (Total) & 5 & 25 & 40 & 61 \\ \hline
+Surface Temperature & 24 & 35 & 17 & 76 \\ \hline
+\end{tabular*}  
+\end{center}
+a - average difference includes both the sign and magnitude of the relative differences in order to show any general trend to over- or under-prediction. \\
+b - median difference is based only on the magnitude of the relative differences and ignores the sign of the relative differences so that values with opposing signs do not cancel and make the comparison appear closer than individual magnitudes would indicate. \\
+c - the percentage of model predictions that are within experimental uncertainty. \\
+d - 90 \% of the model predictions are within the stated percentage of experimental values. For reference, a difference of 100~\% is a factor of 2 larger or smaller than experimental values. \\
+e - the first number is for the closed door NIST/NRC tests and the second number if for the open door NIST/NRC tests. \\
+f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa.
+\end{table}
+
+For four of the quantities,  the physics of the model is appropriate to represent the experimental conditions, and the calculated relative differences comparing the model and the experimental values are consistent with the combined experimental and input uncertainty.  A few notes on the comparisons are appropriate:
+
+\begin{itemize}
+\item The CFAST predictions of the HGL temperature and height are, with a few exceptions, within or close to experimental uncertainty.  The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements.  Still, predictions are mostly within 10~\% to 20~\% of experimental measurements.  Calculation of HGL temperature and height has higher uncertainty in rooms remote from the fire (compared to those in the fire compartment).
+\item For most of the comparisons, CFAST predicts ceiling jet temperature well within experimental uncertainty.  For cases where the HGL temperature is below 70 \degc, significant and consistent over-prediction was observed.
+\item CFAST predicts the flame height consistent with visual observations of flame height for the experiments.  This is not surprising, given that CFAST simply uses a well-characterized experimental correlation to calculate flame height.
+\item Gas concentrations are typically under-predicted by CFAST, with an average difference of -6~\% for oxygen concentration and -16~\% for carbon dioxide concentration. 
+\item Compartment pressure predicted by CFAST are within or close to experimental uncertainty for most tests.
+\end{itemize}
+
+
+Three of the quantities were seen to require additional care when using the model to evaluate the given quantity.  This typically indicates limitations in the use of the model.  A few notes on the comparisons are appropriate:
+
+\begin{itemize}
+\item CFAST typically over-predicts smoke concentration.  Predicted concentrations for open-door tests are within experimental uncertainties, but those for closed-door tests are far higher.
+\item With exceptions, CFAST predicts cable surface temperatures within experimental uncertainties.  Total heat flux to targets is typically predicted to within about 30~\%, and often under-predicted.  Radiative heat flux to targets is typically over-predicted compared to experimental measurements, with higher relative difference values for closed-door tests.  Care should be taken in predicting localized conditions (such as target temperature and heat flux) because of inherent limitations in all zone fire models.
+\item Predictions of compartment surface temperature and heat flux are typically within 10~\% to 30~\%.  Generally, CFAST over-predicts the far-field fluxes and temperatures and under-predicts the near-field measurements.  This is consistent with the single representative layer temperature assumed by zone fire models.
+\end{itemize}
+
+CFAST predictions in this validation study were consistent with numerous earlier studies, which show that the use of the model is appropriate in a range of fire scenarios.  The CFAST model has been subjected to extensive evaluation studies by NIST and others.  Although differences between the model and the experiments were evident in these studies, most differences can be explained by limitations of the model as well as of the experiments.  Like all predictive models, the best predictions come with a clear understanding of the limitations of the model and the inputs provided to perform the calculations.

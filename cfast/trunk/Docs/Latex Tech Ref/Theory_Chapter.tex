@@ -187,15 +187,103 @@ $(L/H)_{max}$ &  $L/H < 3$ & $3 < L/H < 6$ & $L/H > 6$ \\ \hline
 \end{table}
 
 \section{Source Terms for the Model}
-This section discusses each of the sub-models in CFAST. In general, the sections are similar tothe way the model itself is structured. The sub-sections which follow discuss the way the actualphenomena are implemented numerically. For each of the phenomena discussed below, thephysical basis for the model is discussed first, followed by a brief presentation of theimplementation within CFAST. For all of the phenomena, there are basically two parts to theimplementation: the physical interface routine (which is the interface between the CFASTmodel and the algorithm) and the actual physical routine(s) which implement the physics. Thisimplementation allows the physics to remain independent of the structure of CFAST and allowseasier insertion of new phenomena.
+
+This section discusses each of the sub-models in CFAST. In general, the sections are similar to
+the way the model itself is structured. The sub-sections which follow discuss the way the actual
+phenomena are implemented numerically. For each of the phenomena discussed below, the
+physical basis for the model is discussed first, followed by a brief presentation of the
+implementation within CFAST. For all of the phenomena, there are basically two parts to the
+implementation: the physical interface routine (which is the interface between the CFAST
+model and the algorithm) and the actual physical routine(s) which implement the physics. This
+implementation allows the physics to remain independent of the structure of CFAST and allows
+easier insertion of new phenomena.
 
 \subsection{The Fire}
-A fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate(the pyrolysis rate). Energy is released by the fuel and combustion products are created as itburns.
 
-The model can simulate multiple fires in one or more compartments of the building. These firesare treated as totally separate entities, with no interaction of the plumes. These fires are generallyreferred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
+A fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate
+(the pyrolysis rate). Energy is released by the fuel and combustion products are created as it
+burns.
 
-CFAST does not include a pyrolysis model to predict fire growth. Rather, pyrolysis rates foreach fire are prescribed by the user. While this approach does not directly account for increasedpyrolysis due to radiative feedback from the flame or compartment, in theory these effects couldbe prescribed by the user. In an actual fire, this is an important consideration, and thespecification used should consider the experimental conditions as closely as possible.
+The model can simulate multiple fires in one or more compartments of the building. These fires
+are treated as totally separate entities, with no interaction of the plumes. These fires are generally
+referred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
+
+CFAST does not include a pyrolysis model to predict fire growth. Rather, pyrolysis rates for
+each fire are prescribed by the user. While this approach does not directly account for increased
+pyrolysis due to radiative feedback from the flame or compartment, in theory these effects could
+be prescribed by the user. In an actual fire, this is an important consideration, and the
+specification used should consider the experimental conditions as closely as possible.
 
 \subsubsection{Constrained Fire}
 
-A fire releases energy based on the pyrolysis of fuel, but may be constrained by the oxygenavailable for combustion depending on the compartment conditions. Complete burning will takeplace only where there is sufficient oxygen. When insufficient oxygen is entrained into the fireplume, unburned fuel will be transported from zone to zone until there is sufficient oxygen and ahigh enough temperature to support combustion. In general, CFAST uses a simple definition ofa combustion reaction that includes major products of combustion for hydrocarbon fuels:
+A fire releases energy based on the pyrolysis of fuel, but may be constrained by the oxygen
+available for combustion depending on the compartment conditions. Complete burning will take
+place only where there is sufficient oxygen. When insufficient oxygen is entrained into the fire
+plume, unburned fuel will be transported from zone to zone until there is sufficient oxygen and a
+high enough temperature to support combustion. In general, CFAST uses a simple definition of
+a combustion reaction that includes major products of combustion for hydrocarbon fuels:
+
+\be  \mathrm{C_xH_yO_zN_aCl_b} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
+     \nu_\So \, \mathrm{Soot}  + \nu_\NTWO \, \mathrm{N_2} + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee     
+where the stoichiometric coefficients $\nu\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation.  For example, for soot, it is related to the
+{\em soot yield}, $y_\So$, via the relation:
+\be
+   \nu_\So = \frac{W_\F}{W_\So} \; y_\So \label{soot_yield}
+\ee
+
+For complete combustion of the simplest hydrocarbon fuel, methane reacts with 
+oxygen to form carbon dioxide and water. The only input required is the pyrolysis rate and the 
+heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes 
+more complex. In this case, production yields for the species are prescribed by the user. 
+Stoichiometry is used to insure conservation of mass and elements in the reaction. The species 
+which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons.
+
+As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
+
+\begin{eqnarray} Q_{f,R} &=& \chi_R Q_f \\
+Q_{f,R} &=& \brackets{1-\chi_R} Q_f
+\end{eqnarray}
+where, $\chi_R$ is the fraction  of the fire’s heat release rate given off as radiation.  The convective 
+enthalpy, $Q_{f,C}$ then becomes the driving term in the plume flow.  For a constrained fire there is 
+radiation to both the upper and lower layers, whereas the convective part contributes only to the 
+upper layer.
+
+\subsubsection{Limiting Combustion by Available Oxygen}
+
+For any individual fire, the heat release rate is limited by available oxygen in the layer where the fire is located. This limit is applied in three 
+places, which are shown schematically in figure 3. The first is burning in the portion of the 
+plume which (at least initially) is typically in the lower layer of the room of fire origin (region \# 1).  The second is the portion of the plume in the upper layer, also in the room of origin (region \# 2).  The third is in the 
+vent flow which entrains air from a lower layer into an upper layer in an adjacent compartment 
+(region \# 3). The unburned hydrocarbons are tracked in this model.  Further combustion of CO to 
+$\mathrm{CO_2}$ is not included in the model.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=4.0in]{FIGURES/Theory/Control_Volumes}\\
+\end{center}
+\caption{Entrainment and burning in a two-layer, multi-compartment model.}
+ \label{fig:Burning_Regions}
+\end{figure}
+
+Initially, $\dot{m_f}$ is just the pyrolysis rate of the source fire in kg/s (region \# 1). For subsequent regions, the burning rate $\dot{m_f}$ is the unburned fuel from a previous region, $\dot{m_{tuhc}} = \dot{m_f} - \dot{m_b}$ where the subscript $tuhc$ is total unburned hydrocarbons, $f$ is the fire source, and $b$ is the amount burned.
+
+The first step is to limit the actual burning which takes place in the combustion zone.  In each 
+combustion zone, there is a quantity of fuel available.  At the source this results from the 
+pyrolysis of the material, $\dot{m}_f$ .  In other situations such as a plume or door jet, it is the net 
+unburned fuel available, $\dot{m}_{tuhc}$.  In each case, the fuel which is available but not burned is then 
+deposited into the ``$\dot{m}_{tuhc}$ '' category.  This provides a consistent notation.  In the discussion below, 
+$\dot{m}_f$  is the amount of fuel burned.  This value is initially specified as to the available fuel, and then 
+reduced if there is insufficient oxygen to support complete combustion.  Subsequently, the 
+available fuel, $\dot{m}_{tuhc}$, is reduced by the final value of $\dot{m}_f$ burned or $\dot{m}_b$.  Thus we have a consistent description in each burning region, with an algorithm that is invoked independent of the region being analyzed.
+
+\be Q = \dot{m}_f H_c \ee
+with the mass of oxygen required to achieve this energy release rate of
+\be \dot{m}_O = \frac{Q}{E} = \dot{m}_f \frac{H_c}{E} \ee
+where $E$ is the heat release per mass unit of oxygen consumed, taken to be 1.31 x $10^7$ J/kg\footnote{The units for oxygen consumption calorimetry are J/kg. The value 1.31 x $10^7$ J/kg is representative of typical fuels such as furniture (see reference \cite{Morehart:1991}) and implies these units. The variation or uncertainty (2$\sigma$) associated with this value is on the order of $\pm$ 5 \%} (based 
+on oxygen consumption calorimetry for typical fuels \cite{Morehart:1991, Thornton:1917, Huggett:1980}). If the fuel contains oxygen (available for combustion), the oxygen needed to achieve full combustion is less:
+
+\be \dot{m}_{O,needed} = \dot{m}_O - \dot{m}_{O, in the fuel} \ee
+
+If sufficient oxygen is available, then it is fully burned.  However, if the oxygen concentration is 
+low enough, it will constrain the burning and impose a limit on the amount of fuel actually 
+burned, as opposed to the amount pyrolyzed.  The actual limitation is discussed below and is:

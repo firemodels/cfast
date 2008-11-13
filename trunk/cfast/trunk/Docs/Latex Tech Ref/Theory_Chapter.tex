@@ -23,14 +23,10 @@ vent exchanges mass and enthalpy between zones in connected rooms, a fire plume 
 adds heat to the upper layer and transfers entrained mass and enthalpy from the lower to the
 upper layer, and convection transfers enthalpy from the gas layers to the surrounding walls.
 
-As discussed in references \cite{Forney:1992} and \cite{Rehm:1992}, the zone fire modeling ordinary differential equations (ODEs) are stiff. The term stiff means that large variations in time scales are present in the ODE
-solution. In our problem, pressures adjust to changing conditions more quickly than other
-to solve zone fire modeling ODEs because of this stiffness. Runge-Kutta methods or predictorcorrector
-methods such as Adams-Bashforth require prohibitively small time steps in order to
+As discussed in references \cite{Forney:1994} and \cite{Rehm:1992}, the zone fire modeling ordinary differential equations (ODEs) are stiff. The term stiff means that large variations in time scales are present in the ODE solution. In our problem, pressures adjust to changing conditions more quickly than other to solve zone fire modeling ODEs because of this stiffness. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to
 track the short-time scale phenomena (pressure in our case). Methods that calculate the Jacobian
 (or at least approximate it) have a much larger stability region for stiff problems and are thus
 more successful at their solution.
-
 
 \section{Derivation of Equations for a Two-Layer Model}
 
@@ -446,3 +442,61 @@ given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of 
 \textnormal{intermittent:} & \frac{\dot{m}_e}{Q_f} = 0.026 \brackets{\ZQf}^{0.909} & 0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\
 \textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber \\
 \end{eqnarray}
+McCaffrey's correlation is an extension of the common point source plume model, with a 
+different set of coefficients for each region. These coefficients are experimental correlations. 
+
+Within CFAST, the radiative fraction defaults to 0.30 \cite{Drysdale:1985}; i.e., 30 \% of the fireÕs energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:1978}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
+ 
+In CFAST, there is a constraint on the quantity of gas which can be entrained by a plume arising 
+from a fire.  The constraint arises from the physical fact that a plume can rise only so high for a given size of a heat source.  Early in a fire, when the energy flux is very small, the plume may 
+not have sufficient energy to reach the compartment ceiling. The correct sequence of events is 
+for a small fire to generate a plume which does not reach the ceiling or upper layer initially.  The 
+plume entrains enough cool gas to decrease the buoyancy to the point where it no longer rises. 
+When there is sufficient energy present in the plume, it will penetrate the upper layer.  To this 
+end the following prescription has been incorporated:  for a given size fire, a limit is placed on 
+the amount of mass which can be entrained, such that no more is entrained than would allow the 
+plume to reach the layer interface.  The result is that the interface falls at about the correct rate, 
+although it starts a little too soon, and the upper layer temperature is over predicted, but follows 
+experimental data after the initial phase. 
+
+For the plume to be able to penetrate the inversion formed by a hot gas layer over a cooler gas 
+layer, the density of the gas in the plume at the point of intersection must be less than the density 
+of the gas in the upper layer. In practice, this places a maximum on the air entrained into the 
+plume. From conservation of mass and enthalpy
+
+\be \dm_p = \dm_f + \dm_e \label{eq:plume_mass} \ee
+
+\be \dm_pc_pT_p = \dm_fc_pT_f + \dm_ec_pT_l \label{eq:plume_energy} \ee
+where the subscripts $p$, $f$, $e$, and $l$ refer to the plume, fire, entrained air, and lower layer, 
+respectively.
+
+The criterion that the density in the plume region be lower than the upper layer implies that $T_u~<~T_p$. Solving eq \ref{eq:plume_energy} for $T_p$ and substituting for $\dm_p$ from \ref{eq:plume_mass} yields
+
+\be T_p = \frac{T_f\dm_f + T_l\dm_e}{\dm_f + \dm_e} > T_u \ee
+or
+\be \dm_e < \brackets{\frac{T_f - T_u}{T_u - T_l}}\dm_f < \frac{T_f}{T_u - T_l} \dm_f \label{eq:entrainment_limit} \ee
+ Substituting the convective energy released by the fire, $Q_{f,c} = \dm_fc_pT_f$, into eq \ref {eq:entrainment_limit} yields the form of the  entrainment limit use in the CFAST model:
+ 
+ \be \dm_e < \frac{Q_{f,c}}{c_p\brackets{T_u - T_l}} \ee
+ which is incorporated into the model.  It should be noted that both the plume and layers are 
+assumed to be well mixed with negligible mixing and transport time for the plume and layers. 
+
+\subsubsection{Limitation of the Plume Algorithm }
+
+The entrainment coefficients are empirically determined values from the work of McCaffrey \cite{McCaffrey:1983}. Small errors in these values will have a small effect on the fire plume or the flow in the plume of gases exiting the door of that compartment.  In a multi-compartment model such as 
+CFAST, however, small errors in each door plume are multiplicative as the flow proceeds 
+through many compartments, possibly resulting in a significant error in the furthest 
+compartments.  The data available from validation experiments \cite{Peacock:1988} discussed in the CFAST Validation Guide \cite{CFAST_Valid_Guide_6} indicate that the values for entrainment coefficients currently used in most zone models produce good agreement for a 
+three-compartment configuration.  More data are needed for larger numbers of compartments to 
+study this further. 
+
+In real fires, smoke and gases are introduced into the lower layer of each compartment primarily 
+due to mixing at connections between compartments and from the downward flows along walls 
+(where contact with the wall cools the gas and reduces its buoyancy).  Doorway mixing has been 
+included in CFAST, using the same empirically derived mixing coefficients as used for 
+calculating fire plume entrainment. Downward wall flow has not been included. This could 
+result in underestimates of lower layer temperatures and species concentration. 
+Entrainment at a vent (doors, windows, ...) yields mixing into the lower and upper layers. The 
+latter has been studied more extensively than the former. The door jets are not symmetric for 
+these mixing phenomena, however.  We have constrained the phenomenon for CFAST to be in 
+the range as predicted by Zukoski et al. \cite{Zukoski:1985}. 

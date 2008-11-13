@@ -287,3 +287,162 @@ on oxygen consumption calorimetry for typical fuels \cite{Morehart:1991, Thornto
 If sufficient oxygen is available, then it is fully burned.  However, if the oxygen concentration is 
 low enough, it will constrain the burning and impose a limit on the amount of fuel actually 
 burned, as opposed to the amount pyrolyzed.  The actual limitation is discussed below and is:
+
+\be \dot{m}_{O.actual} = min \brackets{\dot{m}_{O,available} , \dot{m}_{O,needed}} \ee
+
+\be \dot{m}_{f,actual} = \dot{m}_{O,actual} \frac{E}{H_c}  \ee
+The relationship between oxygen and fuel concentration defines a range in which burning will 
+take place.  In the CFAST model, a limit is incorporated by limiting the burning rate as the 
+oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is 
+incorporated through a smooth decrease in the burning rate near the limit:
+
+\be \dot{m}_{O,available} = \dot{m}_eY_{O_2}C_{LOL} \ee
+where $\dot{m}_e$ is the mass entrainment flow rate, $Y_{O_2}$ is the mass fraction of oxygen, and the lower oxygen limit coefficient, $C_{LOL}$  
+, is the fraction of the available fuel which can be burned with the 
+available oxygen and varies from 0 at the limit to 1 above the limit.  The functional form that 
+utilizes the hyperbolic tangent was determined empirically to provide a smooth cutoff of the 
+burning over a narrow range above the limit.
+
+\be C_{LOL} = \frac{\tanh\brackets{{800 \brackets{Y_{O_2} - Y_{LOL}} - 400}} + 1}{2} \ee
+A temperature criterion is also imposed so that no burning will take place when the temperature 
+is below a user prescribed temperature.
+
+In summary, it is possible to follow the formation of the major products of combustion (carbon 
+dioxide, carbon monoxide, soot, water, hydrogen cyanide, and hydrogen chloride) using 
+appropriate measured product yields (e.g., \cite{Morehart:1991}) to define product yields for eq (33). Actual 
+combustion chemistry is not considered in CFAST due to the complexities associated with 
+detailed kinetics and transport. 
+
+\subsubsection{Flame Height}
+
+CFAST includes a calculation of average flame height based on the work of Heskestad \cite{Heskestad:2002}. 
+Valid for a wide range of hydrocarbon and gaseous fuels, the correlation is given by
+
+\be H = -1.02 D + 0.235 \brackets{\frac{Q_f}{1000}} \ee
+where $H$ is the average flame height, $D$ the diameter of the fire and $Q_f$ is the fire size. The mean 
+flame height is defined as the distance from the fuel source to the top of the visible flame where 
+the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the 
+mean 50 \% of the time and below the mean 50 \% of the time.  This average flame height is 
+ included in the printed output from CFAST. Note that $Q_f$ in Eq. (8) in Ref. \cite{Heskestad:2002} is in kW.
+ 
+ \subsubsection{Limitation of the Algorithm for Fires and Mass Balance }
+ 
+CFAST depends on pyrolysis data for the source term for a fire. The usual way to obtain this 
+data is a large-scale calorimeter, e.g., reference [\cite{Bryant:2003}. Generally, a product (e.g., chair, table, 
+bookcase) is placed under a large collection hood and ignited by a burner ($\approx 50$ kW simulating a wastebasket) placed adjacent to the item.  The combustion process then proceeds under assumed 
+“free-burning” conditions, and the heat release rate is measured.  Potential sources of uncertainty 
+include measurement errors related to the instrumentation and the degree to which “free-burn- 
+ing” conditions are not achieved (e.g., radiation from the gases under the hood or from the hood 
+itself, and restrictions in the air entrained by the object causing locally reduced oxygen 
+concentrations affecting the combustion chemistry).  There are limited experimental data for 
+upholstered furniture which suggest that prior to the onset of flashover in a compartment, the 
+influence of the compartment on the burning behavior of the item is small.  The differences 
+obtained from the use of different types or locations of ignition sources have not been explored. 
+These factors are discussed in reference~\cite{Babrauskas:1982}. 
+
+Where small-scale calorimeter data are used, procedures are available to extrapolate to the 
+behavior of a full-size item.  These procedures are based on empirical correlations of data which 
+exhibit significant scatter, thus limiting their accuracy.  For example, for upholstered furniture, 
+the peak heat release rates estimated by the “triangular approximation” method averaged 91 \% 
+(range 46 \% to 103 \%) of values measured for a group of 26 chairs with noncombustible frames, 
+but only 63 \% (range 46 \% to 83 \%) of values measured for a group of 11 chairs with 
+combustible frames \cite{Babrauskas:1985}.  Also, the triangle neglects the “tails” of the curve; these are the initial time from ignition to significant burning of the item, and the region of burning of the combusti- 
+ble frame, after the fabric and filler are consumed. 
+
+The provided data and procedures only relate directly to burning of items initiated by relatively 
+large flaming sources.  Little data are currently available for release rates under smoldering 
+combustion, or for the high external flux and low oxygen conditions characteristic of post- 
+flashover burning.  While the model allows multiple items burning simultaneously, it does not 
+account for the synergy of such multiple fires.  Thus, for other ignition scenarios, multiple items 
+burning simultaneously (which exchange energy by radiation and convection), combustible 
+interior finish, and post-flashover conditions, the model can give estimates which are often non- 
+conservative (the actual release rates would be greater than estimated).  At present, the only sure 
+way to account for all of these complex phenomena is to conduct a full-scale compartment burn 
+and use the pyrolysis rates directly. 
+
+Burning can be constrained by the available oxygen.  However, this “constrained fire” is not 
+subject to the influences of radiation to enhance its burning rate, but is influenced by the oxygen 
+available in the compartment.  If a large mass loss rate is entered, the model will follow this 
+input until there is insufficient oxygen available for that quantity of fuel to burn in the 
+compartment.  The unburned fuel (sometimes called excess pyrolysate) is tracked as it flows out 
+in the door jet, where it can entrain more oxygen.  If this mixture is within the user-constrained 
+flammable range, it burns in the door plume.  If not, it will be tracked throughout the building 
+until it eventually collects as unburned fuel or burns in a vent.  The enthalpy released in the fire 
+compartment and in each vent, as well as the total enthalpy released, is detailed in the output of 
+the model.  Since mass and enthalpy are conserved, the total will be correct.  However, since 
+combustion did not take place adjacent to the burning object, the actual mass burned could be 
+lower than that specified by the user.  The difference will be the unburned fuel. 
+
+An oxygen combustion chemistry scheme is employed only in constrained fires.  Here user- 
+constrained hydrocarbon ratios and species yields are used by the model to predict concentra- 
+tions.  A balance among hydrogen, carbon, and oxygen molecules is maintained.  Under some 
+conditions, low oxygen can change the combustion chemistry, with a resulting increase in the 
+yields of products of incomplete combustion such as carbon monoxide. However, not enough is 
+known about these chemical processes to build this relationship into the model at the present 
+time.  Some data exist in reports of full-scale experiments (e.g., reference \cite{Lee:1982}) which can assist in making such determinations.
+
+\subsection{Plumes} 
+
+A plume is formed above any burning object.  It acts as a pump transferring mass and enthalpy 
+from the lower layer into the upper layer.  A correlation is used to predict the amount of mass 
+and enthalpy that is transferred.  A more complete plume model would predict plume 
+entrainment by creating a separate zone and solving the appropriate equations.
+
+Two sources exist for moving enthalpy and mass between the layers within and between 
+compartments.  Within the compartment, the fire plume provides one source.  The other source 
+of mixing between the layers occurs at vents such as doors or windows.  Here, there is mixing at 
+the boundary of the opposing flows moving into and out of the compartment.  The degree of 
+mixing is based on an empirically-derived mixing relation.  Both the outflow and inflow entrain 
+air from the surrounding layers.  The flow at vents is also modeled as a plume (called the door 
+plume or jet), and uses the same equations as the fire plume, with two differences.  First, an 
+offset is calculated to account for entrainment within the doorway and second, the equations are 
+modified to account for the rectangular geometry of vents compared to the round geometry of 
+fire plumes.  All plumes within the simulation entrain air from their surroundings according to 
+an empirically-derived entrainment relation.  Entrainment of relatively cool, non-smoke laden air 
+adds oxygen to the plume and allows burning of the fuel.  It also causes it to expand as the plume 
+moves upward in the shape of an inverted cone.  The entrainment in a vent is caused by bi- 
+directional flow and results from vortices formed near a shear layer.  This phenomenon is called 
+the Kelvin-Helmholtz instability \cite{Alterman:1961}.  It is not exactly the same as a normal plume, so some error (not measured) arises when this entrainment is approximated by a normal plume 
+entrainment algorithm. 
+
+While experiments show that there is very little mixing between the layers at their interface, 
+sources of convection such as radiators or diffusers of heating and air conditioning systems, and 
+the downward flows of gases caused by cooling at walls, will cause such mixing.  These are 
+examples of phenomena which are inconsistent with the two-zone approximation.  Also, the 
+plumes are assumed not to be affected by other flows which may occur.  For example, if the 
+burning object is near the door the strong inflow of air will cause the plume axis to lean away 
+from the door and affect entrainment of gases into the plume.  Such effects are not included in 
+the model. 
+
+As discussed above, each compartment is divided into an upper and lower layer.  At the start of 
+the simulation, the layers in each compartment are initialized at ambient conditions and by 
+default, the upper layer volume set to 0.001 of the compartment volume (an arbitrary, small 
+value set to avoid the potential mathematical problems associated with dividing by zero).  Other 
+values can be set.  As enthalpy and mass are pumped into the upper layer by the fire plume, the 
+upper layer expands in volume causing the lower layer to decrease in volume and the interface to 
+move downward.  If the door to the next compartment has a soffit, there can be no flow through 
+the vent from the upper layer until the interface reaches the bottom of that soffit.  Thus in the 
+early stages the expanding upper layer will push down on the lower layer air and force it into the 
+next compartment through the vent by expansion.  
+
+Once the interface reaches the soffit level, a door plume forms and flow from the fire connecting doorway compartment to the next compartment is initiated.  As smoke flow from the fire compartment 
+fills the second compartment, the lower layer of air in the second compartment is pushed down. 
+As a result, some of this air flows into the fire compartment through the lower part of the (or vent).  Thus, a vent between the fire compartment and connecting compartments can have simultaneous, opposing flows of air.  All flows are driven by pressure and density differences that result from temperature differences and layer depths. The key to getting the correct flow is to distribute correctly the fire and plume’s mass and enthalpy between the layers. 
+
+Buoyancy generated by the combustion processes in a fire causes the formation of a plume. 
+Such a plume can transport mass and enthalpy from the fire into the lower or upper layer of a 
+compartment.  In the present implementation, we assume that both mass and enthalpy from the 
+fire are deposited only into the upper layer.  In addition the plume entrains mass from the lower 
+layer and transports it into the upper layer.  This yields a net enthalpy transfer between the two 
+layers. 
+
+A fire generates energy at a rate $Q_f$.  Some fraction, $\chi_R$, will exit the fire as radiation.  The 
+remainder, $\chi_C$, will then be deposited in the layers as convective energy or heat additional fuel 
+which may then pyrolyze. McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as 
+given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of Cetegen et al. \cite{Cetegen:1982, Cetegen:1984} in the intermittent regions but yields greater entrainment in the other two regions.  This difference is particularly important for the initial fire since the upper layer is far removed from the fire.
+
+\begin{eqnarray}
+\textnormal{flaming:} & \frac{\dot{m}_e}{Q_f} = 0.011 \brackets{\ZQf}^{0.566} & 0.00 \leq \brackets{\ZQf}<0.08 \nonumber \\
+\textnormal{intermittent:} & \frac{\dot{m}_e}{Q_f} = 0.026 \brackets{\ZQf}^{0.909} & 0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\
+\textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber \\
+\end{eqnarray}

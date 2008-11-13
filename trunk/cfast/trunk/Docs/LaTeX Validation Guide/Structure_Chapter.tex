@@ -65,10 +65,8 @@ then checks for convergence. Once DASSL reaches an error limit (defined as conve
 the equations) for the solution at $t+\dt$, SOLVE then advances the solution of species concentration,
 wall temperature profiles, and mechanical ventilation for the same time interval.
 Note that there are several distinct time scales that are involved in the solution of this type of
-problem. The fastest will be chemical kinetics. This scale by assuming that the
-chemistry is infinitely fast. The next larger time scale is that associated with the flow field.
-These are the equations which are cast into the form of ordinary differential equations. Then
-there is the time scale for mechanical ventilation, and finally, heat conduction through objects.
+problem. The fastest will be chemical kinetics. In CFAST, chemical reactions are assume to be instantaneous so we ignore the impact of chemical kinetics.  The next larger time scale is that associated with the flow field. These are the equations which are cast into the form of ordinary differential equations. Then there is the time scale for mechanical ventilation, and finally, heat conduction through objects.
+
 Chemical kinetic times are typically on the order of milliseconds. The transport time scale are
 on the order of 0.1 s. The mechanical ventilation and conduction time scales are typically
 several seconds, or even longer. The time step is dynamically adjusted to a value appropriate for

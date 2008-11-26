@@ -440,7 +440,7 @@ given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of 
 \begin{eqnarray}
 \textnormal{flaming:} & \frac{\dot{m}_e}{Q_f} = 0.011 \brackets{\ZQf}^{0.566} & 0.00 \leq \brackets{\ZQf}<0.08 \nonumber \\
 \textnormal{intermittent:} & \frac{\dot{m}_e}{Q_f} = 0.026 \brackets{\ZQf}^{0.909} & 0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\
-\textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber \\
+\textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber
 \end{eqnarray}
 McCaffrey's correlation is an extension of the common point source plume model, with a 
 different set of coefficients for each region. These coefficients are experimental correlations. 
@@ -500,3 +500,325 @@ Entrainment at a vent (doors, windows, ...) yields mixing into the lower and upp
 latter has been studied more extensively than the former. The door jets are not symmetric for 
 these mixing phenomena, however.  We have constrained the phenomenon for CFAST to be in 
 the range as predicted by Zukoski et al. \cite{Zukoski:1985}. 
+
+\subsection{Vent Flow}
+
+Flow through vents is a dominant component of any fire model because it is sensitive to small changes in pressure and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course for the fire and plume).  Its sensitivity to environmental changes arises through its dependence on the pressure difference between compartments which can change rapidly.  
+
+CFAST models two types of vent flow, vertical flow through horizontal vents (such as ceiling holes or hatches) and horizontal flow through vertical vents (such as doors or windows).  Horizontal flow is the flow which is normally thought of when discussing fires.  Vertical flow is particularly important in two disparate situations: a ship, and the role of fire fighters doing roof venting.
+
+Horizontal vent flow is determined using the pressure difference across a vent.  Flow at a given elevation may be computed using Bernoulli’s law by first computing the pressure difference at that elevation.  The pressure on each side of the vent is computed using the pressure at the floor, the height of the floor and the density. 
+
+Atmospheric pressure is about 100~000 Pa. Fires produce pressure changes from 1~Pa to 1~000~Pa and mechanical ventilation systems typically involve pressure differentials of about 1~Pa to 100~Pa.  The pressure variables are solved to a higher accuracy than other solution variables because of the subtraction (with resulting loss of precision) needed to calculate vent flows from pressure differences.
+
+Mass flow (in the remainder of this section, the term ``flow'' will be used to mean mass flow) is the dominant source term for the predictive equations because it fluctuates most rapidly and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course the fire).  Also, it is most sensitive to changes in the environment.  Horizontal flow encompasses flow through doors, windows and so on. Horizontal flow is discussed in section 3.4.3.1. Vertical flow occurs in ceiling vents.  It is important in two separate situations: on a ship with open hatches and in house fires with roof venting.  Vertical flow is discussed in section 3.4.3.2.
+
+Flow through vents can be forced (mechanical) or natural (convective). Force flow can occur through either vertical or horizontal vents. The differences are primarily the selection rules for the source of the gases or whether the resultant plume enters the lower or upper layer of each compartment.
+
+There is a special case of horizontal flow for long corridors. A corridor flow algorithm is incorporated to calculate the time delay from when a plume enters a compartment to when the effluent is available for flow into adjacent compartments.
+
+Flow through vents can be modified, that is turned on or off. This applies to the three types of vents discussed below, horizontal flow through vertical vents (HVENT), vertical flow through horizontal vents (VVENT) and forced flow (MVENT). For each key word, there is a an initial opening fraction which is reflected in the first region in figure \ref{fig:Opening_Fraction}. This initial opening fraction can be modified by by the EVENT key word to change the fraction. This change occurs over a transition time which defaults to one second. The final fraction is the third region depicted in figure \ref{fig:Opening_Fraction}. There can be only a single transition per vent.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=4.0in]{FIGURES/Theory/Opening_Fraction}\\
+\end{center}
+\caption{Vent opening size fraction as a function of time.}
+ \label{fig:Opening_Fraction}
+\end{figure}
+
+\subsubsection{Horizontal Flow Through Vertical Vents}
+
+Flow through normal vents such as windows and doors is governed by the pressure difference across a vent.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using an integrated form of Euler's equation, namely Bernoulli's solution for the velocity equation.  This solution is augmented for restricted openings by using flow coefficients \cite{Quintiere:1984} to allow for constriction from finite size doors.  The flow (or orifice) coefficient is an empirical term which addresses the problem of constriction of velocity streamlines at an orifice.
+
+Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.  The general form for the velocity of the mass flow is given by
+
+\be v = C \sqrt{\frac{2 \Delta P}{\rho}} \ee
+
+
+where $C$ is the constriction (or flow) coefficient (≈0.7), $\rho$ is the gas density on the source side, and $\Delta P$ is the pressure across the interface.  (Note: at present we use a constant value for $C$ for all gas temperatures).
+
+The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  By breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, the flow equation can be integrated piecewise analytically and then summed.  
+
+The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in figure \ref{Fig:Flow_Notation}.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/Flow_Notation}\\
+\end{center}
+\caption{Vent opening size fraction as a function of time.}
+ \label{fig:Flow_Notation}
+\end{figure}
+
+The mass flow for each slab can be determined from
+
+\be \dm_{io} = \frac{1}{3} C \brackets{8 \rho} A_{slab} \brackets{\frac{x^2+xy+y2}{x+y}} \ee
+where $x = \sqrt{|P_t|}$ and $y = \sqrt{|P_b|}$. $P_t$ and $P_b$ are the cross-vent pressure differential at the top and bottom of the slab respectively and $A_{slab}$ is the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
+
+A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in figure \ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an extended point source.  The estimate for the point source extension is given by Cetegen et al. \cite{Cetegen:1984}.  This virtual point source is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/Flow_Patterns}\\
+\end{center}
+\caption{Flow patterns and layer number conventions for horizontal flow through a vertical vent.}
+ \label{fig:Flow_Patterns}
+\end{figure}
+
+\be Q_{f,eq} = c_p \brackets{T_l-T_4} \dm_{13} \ee
+where $Q_{f,eq}$ is the heat release rate of the doorway fire. The concept of the virtual source is that the enthalpy flux from the virtual point source should equal the actual enthalpy flux in the door jet at the point of exit from the vent using the same prescription.  Thus the entrainment is calculated the same way as was done for a normal plume.  The reduced height of the plume, $z_p$, is
+
+\be z_p = \frac{z_13}{Q_{f,eq}^{2/5}}+ v_p \ee
+where $v_p$ the virtual point source, is defined by inverting the entrainment process to yield
+
+\begin{eqnarray} 
+v_P = \brackets{\frac{90.9 \dm}{Q_{f,eq}}}^{1.76} & 0.00 < v_p \leq 0.08 \nonumber \\
+v_P = \brackets{\frac{38.5 \dm}{Q_{f,eq}}}^{1.001} & 0.08 < v_p \leq 0.20 \label{eq:McCaffreyPlume} \\
+v_P = \brackets{\frac{8.10 \dm}{Q_{f,eq}}}^{0.528} & 0.20 < v_p \nonumber \nopagebreak
+\end{eqnarray}
+
+Although outside of the normal range of validity of the plume model, a level of agreement with experiment is apparent (section 6 includes discussion of validation experiments for the plume model).  Since a door jet forms a flat plume whereas a normal fire plume will be approximately circular, strong agreement is not expected.
+
+The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
+
+\subsubsection{Vertical Flow Through Horizontal Vents}
+
+Flow through a ceiling or floor vent can be somewhat more complicated than through door or window vents.  The simplest form is uni-directional flow, driven solely by a pressure difference.  This is analogous to flow in the horizontal direction driven by a piston effect of expanding gases.  Once again, it can be calculated based on the Bernoulli equation, and presents little difficulty.  However, in general we must deal with more complex situations that must be modeled in order to have a proper understanding of smoke movement.  The first is an occurrence of puffing.  When a fire exists in a compartment in which there is only one hole in the ceiling, the fire will burn until the oxygen has been depleted, pushing gas out the hole.  Eventually the fire will die down.  At this point ambient air will rush back in, enable combustion to increase, and the process will be repeated.  Combustion is thus tightly coupled to the flow.  The other case is exchange flow which occurs when the fluid configuration across the vent is unstable (such as a hotter gas layer underneath a cooler gas layer).  Both of these pressure regimes require a calculation of the onset of the flow reversal mechanism.
+
+Normally a non-zero cross vent pressure difference tends to drive unidirectional flow from the higher to the lower pressure side.  An unstable fluid density configuration occurs when the pressure alone would dictate stable stratification, but the fluid densities are reversed.  That is, the hotter gas is underneath the cooler gas.  Flow induced by such an unstable fluid density configuration tends to lead to bi-directional flow, with the fluid in the lower compartment rising into the upper compartment.  This situation might arise in a real fire if the room of origin suddenly had a hole punched in the ceiling. No pretense is made of being able to do this instability calculation analytically. Cooper's algorithm \cite{Cooper:1989} is used for computing mass flow through ceiling and floor vents. It is based on correlations to model the unsteady component of the flow.  What is surprising is that we can find a correlation at all for such a complex phenomenon. There are two components to the flow.  The first is a net flow dictated by a pressure difference. The second is an exchange flow based on the relative densities of the gases.  The overall flow is given by \cite{Cooper:1989, Cooper:1990, Cooper:1995}
+
+\be \dm = C f\brackets{\gamma, \epsilon} \sqrt{\frac{\Delta P}{\overline{\rho}}} A_v \ee
+where $\gamma = c_p/c_v$ is the ratio of specific heats, $C = 0.68 + 0.17 \epsilon$, $\epsilon = \frac{\Delta P}{P}$, and $f$ us a weak function of both $\gamma$ and $\epsilon$ \cite{Cooper:1989}. In the situation where we have an instability, we use Cooper's correlations for the function $f$.  The resulting exchange flow is given by
+
+\be \dm_{ex} = 0.1 \brackets{\frac{g \Delta \rho A_v^{5/2}}{\rho_{av}}} \brackets{1.0 - \frac{2 A_v^2 \Delta P}{S^2 g \Delta \rho D^5}} \ee
+where $D = 2 \sqrt{A_v / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively \cite{Cooper:1989}. Vertical flow through horizontal vents is governed by the VFLOW routines. VENTCF is the module which calculates the mass flow from one compartment to another. The values returned are $\dm_{incoming}$ and $\dm_{outgoing}$ through each vent. These terms are symmetric: the outgoing flow from compartment 1 to 2 is the same as incoming flow from compartment 2 to 1, though source and destination layers may be different. 
+
+The energy flux into a compartment is then determined by the relative size and temperature of the layers of the compartment from which the mass is flowing (incoming, u and l):
+
+\be \dq_{incoming} = c_p \dm_u T_u + c_p \dm_l T_l \ee
+
+\be \dm_u = \dm_{incoming} \frac{V_u}{V} \ee
+
+\be \dm_l = \dm_{incoming} \frac{V_l}{V} \ee
+
+
+The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow relative to the upper and lower layers of the receiving compartment. If the temperature of the incoming flow is higher than the temperature of the lower layer, then the flow is deposited into the upper layer. This is similar to the usual plume from a fire or a doorway jet. These rules are implemented in VFLOW.
+
+\subsubsection{Forced Flow}
+
+Forced flow in this version of CFAST is a supply (or exhaust) system based on constant flow through a opening/fan/opening triplet . These systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Figure \ref{fig:Fans_and_Ducts}(a) shows smoke management by an exhaust fan at the top of an atrium, and figure \ref{fig:Fans_and_Ducts}(b) illustrates a kitchen exhaust.  Cross ventilation, shown in figure \ref{fig:Fans_and_Ducts}(c), is occasionally used without heating or cooling.  Generally systems that maintain comfort conditions have either one or two fans.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/HVAC_Fans_and_Ducts}\\
+\end{center}
+\caption{Some simple fan-duct systems.}
+ \label{fig:Fans_and_Ducts}
+\end{figure}
+
+Further information about these systems is presented in Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers (ASHRAE) \cite{ASHRAE:2001}.
+
+This version of the model does not include duct work or variable fans. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution.
+
+The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks flow of these two species.
+
+\subsubsection{Corridor Flow}
+
+A standard assumption in zone fire modeling is that once hot smoke enters a compartment, a well defined upper layer forms instantly throughout the compartment. This assumption breaks down in large compartments and long corridors due to the time required to fill these spaces.  A simple procedure is described for accounting for the formation delay of an upper layer in a long corridor by using correlations developed from numerical experiments generated with the NIST fire model Large Eddy Simulation Model (LES) , which is now the Fire Dynamic Simulation Model (FDS) \cite{FDS_Tech_Guide_5}.  FDS is a computational fluid dynamics model capable of simulating fire flow velocities and temperatures with high ($\approx$0.1 m) resolution.  Two parameters related to corridor flow are then estimated: the time required for a ceiling jet to travel in a corridor and the temperature distribution down the corridor.  These estimates are then used in CFAST by delaying flow into compartments connected to corridors until the ceiling jet has passed these compartments.
+
+FDS was used to estimate ceiling jet characteristics by running a number of cases for various inlet layer depths and temperatures. The vent flow algorithm in CFAST then uses this information to compute mass and enthalpy flow between the corridor and adjacent compartments. This is accomplished by presenting the vent algorithm with a one layer environment (the lower layer) before the ceiling jet reaches the vent and a two layer environment afterwards. Estimated ceiling jet temperatures and depths are used to define upper layer properties.
+
+The problem is to estimate the ceiling jet temperature and depth as a function of time until it reaches the end of the corridor.  The approach used here is to run a field model as a pre-processing step and to summarize the results as correlations describing the ceiling jet's temperatures and velocities. The steps used in this process are as follows:
+
+\begin{enumerate}
+\item Model corridor flow for a range of inlet ceiling jet temperatures and depths. Inlet velocities are derived from the inlet temperatures and depths.
+
+\item For each model run calculate average ceiling jet temperature and velocity as a function of distance down the corridor.
+
+\item Correlate the temperature and velocity distribution down the hall.
+\end{enumerate}
+
+
+The zone fire model then uses these correlations to estimate conditions in the corridor as follows:
+
+\begin{enumerate}
+\item Estimate the inlet temperature, depth and velocity of the ceiling jet. If the corridor is the fire room then use a standard correlation.  If the source of the ceiling jet is another room then calculate the inlet ceiling jet flow using Bernoulli's law for the vent connecting the source room and the corridor.
+
+\item Use correlations in 3. above to estimate the ceiling jet arrival time at each vent.
+
+\item For each vent in the corridor use lower layer properties to compute vent flow before the ceiling jet arrives at the vent and lower/upper layer properties afterwards.
+\end{enumerate}
+
+
+{\bf Assumptions:} The assumptions made in order to develop the correlations are:
+
+\begin{itemize}
+\item The time scale of interest is the time required for a ceiling jet to traverse the length of the corridor. For example, for a 100~m corridor with 1 m/s flow, the characteristic time would be 100~s.
+
+\item Cooling of the ceiling jet due to mixing with adjacent cool air is large compared to cooling due to heat loss to walls. Equivalently, we assume that walls are adiabatic.  This assumption is conservative. An adiabatic corridor model predicts more severe conditions downstream in a corridor than a model that accounts for heat transfer to walls, since cooler ceiling jets travel slower and not as far.
+
+\item We do not account for the fact that ceiling jets that are sufficiently cooled will stagnate. Similar to the previous assumption, this assumption is conservative and results in over predictions of conditions in compartments connected to corridors (since the model predicts that a ceiling jet may arrive at a compartment when in fact it may have stagnated before reaching it).
+
+\item Ceiling jet flow is buoyancy driven and behaves like a gravity current.  The inlet velocity of the ceiling jet is related to its temperature and depth.
+
+\item Ceiling jet flow lost to compartments adjacent to the corridor is not considered when estimating ceiling jet temperatures and depths. Similarly, a ceiling jet in a corridor is assumed to have only one source.
+
+\item The temperature and velocity at the corridor inlet is constant in time.
+
+\item The corridor height and width do not effect a ceiling jet's characteristics. Two ceiling jets with the same inlet temperature, depth and velocity behave the same when flowing in corridors with different widths or heights as long as the ratio of inlet widths to corridor width are equal.
+
+\item Flow entering the corridor enters at or near the ceiling. The inlet ceiling jet velocity is reduced from the vent inlet velocity by a factor of wvent/wroom where wvent and wroom  are the width of the vent and room, respectively.
+\end{itemize}
+
+{\bf Corridor Jet Flow Characteristics:} Ceiling jet flow in a corridor can be characterized as a one dimensional gravity current. To a first approximation, the velocity of the current depends on the difference between the density of the gas located at the leading edge of the current and the gas in the adjacent ambient air.  The velocity also depends on the depth of the current below the ceiling. A simple formula for the gravity current velocity may be derived by equating the potential energy of the current, $mgd_0/2$, measured at the half-height $d_0/2$ with its kinetic energy, $mV^2/2$ to obtain
+
+\be V = \sqrt{g d_0} \ee
+where $m$ is mass, $g$ is the acceleration of gravity, $d_0$ is the height of the gravity current and $V$ is the velocity. When the density difference, between the current and the ambient fluid is small, the velocity, $V$, is proportional to $\sqrt{g d_0 \Delta \rho / \rho_{cj}}$ = $\sqrt{g d_0 \Delta T / T_{amb}}$ where $\rho_{amb}$ and $T_{amb}$ are the ambient density and temperature and $\rho_{cj}$ and $T_{cj}$ are the density and temperature of the ceiling jet and  $\Delta T = T_{cj} - T_{amb}$ is the temperature difference. Here use has been made of the ideal gas law, $\rho_{amb} T_{amb} \approx \rho_{cj} T_{cj}$.  This can be shown using an integrated form of Bernoulli's law noting that the pressure drop at the bottom of the ceiling jet is $P_b = 0$, the pressure drop at the top is $P_t = gd_0(\rho_{cj} - \rho_{amb})$ and using a vent coefficient cvent of 0.74, to obtain
+
+\begin{eqnarray} 
+V_0 & = & c_{vent} \frac{\sqrt{8}}{3} \frac{1}{\sqrt{\rho_{cj}}} \frac{P_t + \sqrt{P_tP_b}+P_b}{\sqrt{P_t} + \sqrt{P_b}} \nonumber \\
+ & = & c_{vent} \frac{\sqrt{8}}{3} \sqrt{\frac{P_t}{\rho_{cj}}} \nonumber \\
+ & = & c_{vent} \frac{\sqrt{8}}{3} \sqrt{g d_0 \frac{\rho_{amb} - \rho_{cj}}{\rho_{cj}}} \nonumber \\
+ & \approx & 0.7 \sqrt{g d_0 \frac{\Delta T}{T_{amb}}} \label{eq:Corridor_Flow}
+ \end{eqnarray}
+ 
+Formulas of the form of the above equation lead one to conclude that a ceiling jet's characteristics in a corridor depend on its depth, $d_0$, and relative temperature difference, $\Delta T/T_{amb}$. Therefore, as the jet cools, it slows down. If no heat transfer occurs between the ceiling jet and the surrounding walls, then the only mechanism for cooling is mixing with surrounding cool air.
+
+Twenty numerical experiments were performed using FDS in order to better understand the effects of the inlet ceiling jet temperature and depth on ceiling jet characteristics downstream in a corridor.  These cases were run with five different inlet depths and four different inlet temperatures.  The inlet ceiling jet temperature rise, $\Delta T_0$, and depth, $d_0$, were used to define an inlet velocity, $V_0$ using eq (\ref{eq:Corridor_Flow}).  The inlet ceiling jet depths, $d_0$, used in the parameter study are 0.15 m, 0.30 m, 0.45 m, 0.60 m and 0.75 m. The inlet ceiling jet temperature rises, $T_0$, used in the parameter study are 100 \degc, 200 \degc, 300 \degc and 400 \degc.
+
+{\bf Correlations:} Ceiling jet functions were plotted as a function of distance down a corridor for each of the 20 test cases.  These results are shown in figure \ref{fig:Corr_Flow}.  Note that all but the 0.15 m ceiling jet data lie on essentially the same line. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/Corr_Flow}\\
+\end{center}
+\caption{Relative excess downstream temperature in a corridor using an adiabatic temperature boundary condition for several inlet depths and inlet temperature boundary conditions. The inlet velocity is given by eq (\ref{eq:Corridor_Flow}).}
+ \label{fig:Corr_Flow}
+\end{figure}
+
+The best fit line is given in the form of $\log{\frac{\Delta T}{\Delta T_0}} = a + bx$. This is equivalent to 
+
+\be \frac{\Delta T}{\Delta T_0} = C_1 10^{bx}  = C_1 \brackets{\frac{1}{2}}^{x/h_{1/2}} \ee
+where $C_1 = 10^a$ and $h_{1/2} = - \log{2}/b$. The parameter $h_{1/2}$ has a physical interpretation.  It is the distance down the corridor where the temperature rise $\Delta T$ , falls off to 50 \% of its original value or equivalently, $T(x + h_{1/2}) = T (x)/2$.
+
+The half-distance, $h_{1/2}$, can be approximated by $h_{1/2} = \log{2}/0.018 = 16.7$~m where $b = -0.018$ is given in figure \ref{fig:Corr_Flow}. Similarly, the coefficient $C_1$ is approximated by $C_1 = 10^a = 10^{-0.003} \approx 1$ where $a$ is determined from figure \ref{fig:Corr_Flow}. Therefore, the temperature rise, $\Delta T$, may be approximated by
+
+\be \Delta T = \Delta T_0 \brackets{\frac{1}{2}}^{x/16.7} \ee
+
+The numerical experiments with FDS  demonstrated that for the cases simulated, ceiling jet characteristics depend on the relative inlet temperature rise and not the inlet depth.  Flow in long corridors (greater than 10 m) need to be better characterized due to the flow stagnation which may occur because of the ceiling jet's temperature decay.
+
+\subsection{Heat Transfer}
+
+This section discusses radiation, convection and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls.  This section also discusses heat transfer algorithms for calculating target temperatures.
+
+Gas layers exchange energy with their surroundings via convective and radiative heat transfer.  Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, CFAST allows each surface to be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant, although we know that they actually vary with temperature. The user should also recognize that the mechanical properties of some materials may change with temperature, but these effects are not modeled.						
+
+Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.  Thus errors in the species concentrations can give rise to errors in the distribution of enthalpy among the layers, which results in errors in temperatures, resulting in errors in the flows.  This illustrates just how tightly coupled the predictions made by CFAST can be.
+
+subsubsection{Radiation}
+
+Radiation heat transfer forms a significant portion of the energy balance in a zone fire model, especially in the fire room.  Radiative heat transfer is computed from wall and gas temperatures, emisivities and fire heat release rates.  To calculate the radiation absorbed in a zone, a heat balance must be done accounting for all surfaces that radiate to and absorb radiation from a zone.  
+
+A radiation heat transfer calculation can easily dominate the computational requirements of any fire model.  Approximations are then required to perform these calculations in a time consistent with other zone fire model sources terms.  For example, it is assumed that all zones and surfaces radiate and absorb like a gray body, that the fires radiate as point sources and that the plume does not radiate at all.  Radiative heat transfer is approximated using a limited number of radiating wall surfaces, four in the fire room and two everywhere else.  The use of these and other approximations allows CFAST to perform the radiation computation in a reasonably efficient manner \cite{Forney_radiation}. 
+
+{ \bf Modeling Assumptions:}  The following assumptions are made in order to simplify the radiation heat exchange model used in CFAST and to make its calculation tractable.
+
+\begin{itemize}
+\item Iso-thermal - Each gas layer and each wall segment is assumed to be at a uniform temperature. 
+
+\item Equilibrium - The wall segments and gas layers are assumed to be in a quasi-steady state.  In other words, the wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the associated differential equation.
+
+\item Point Soure Fires - The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_R$, of the total energy release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
+
+\item Diffuse and gray surfaces - The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength.  These assumptions allow us to infer that the emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$. 
+
+\item Geometry - Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
+\end{itemize}
+
+{\bf 4-Wall and 2-Wall Radiation Exchange:} When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface.  The radiation algorithm then computes a heat flux striking each wall segment using the surface temperature and emissivity. 
+
+The four wall algorithm used in CFAST for computing radiative heat exchange is based upon the equations developed in Siegel and Howell \cite{SiegelandHowell:1981} which in turn is based on the work of Hottel \cite{Hottel:1954}. Siegel and Howell model an enclosure with N wall segments and a homogeneous gas. A radiation algorithm for a two layer zone fire model requires treatment of an enclosure with two uniform gases.  Hottel and Cohen \cite{Hottel:1958} developed a method where the enclosure is divided into a number of wall and gas volume elements. An energy balance is written for each element. Each balance includes interactions with all other elements.  Treatment of the fire and the interaction of the fire and gas layers with the walls is based upon the work of Yamada and Cooper \cite{Yamada:1990}.  They model fires as point heat sources radiating uniformly in all directions and use the Lambert-Beer law to model the interaction between heat emitting elements (fires, walls, gas layers) and the gas layers. By implementing a four wall rather than an N wall model, significant algorithmic speed increases are achieved.  This is done by exploiting the simple structure and symmetry of the four wall problem.
+
+The nomenclature used in this section follows that of Siegel and Howell \cite{SiegelandHowell:1981}.  The radiation exchange at the k'th surface is shown schematically in figure \ref{fig:Rad_Exchange}.  For each wall segment k from 1 to N, a net heat flux, $\Delta \hat{q}_k"$, must be found such that the energy balance,
+
+\be \sigma A_k \epsilon_k T_k^4 + \brackets{1 - \epsilon_k}q_k^{in} = q_k^{in} + A_k \Delta q_k" \ee
+
+at each wall segment $k$ is satisfied, where $\sigma$ is the Stefan-Boltzman constant, $A_k$ is the area of the k’th wall segment , $\epsilon_k$ is the emissivity of the k’th wall segment, $T_k$ is the temperature of the k’th wall segment and $q_k^{in}$ is the energy arriving at the k’th wall segment from all other wall segments and heat sources.
+
+Radiation exchange at each wall segment considers the emitted, reflected, incoming and net radiation terms.  The unknown net radiative fluxes, $\Delta q_k"$ , are found by solving the modified net radiation equation
+
+\be \Delta \hat{q}_k" - \displaystyle\sum_{j=1}^N \brackets{1 - \epsilon_j} \Delta \hat{q}_j" F_{k-j} \tau_{j-k} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_k^4 F_{k-j} \tau_{k-j}} - \frac{c_k}{A_k} \ee
+where $\Delta \hat{q}_k" = \Delta q_k / \epsilon$, $F_{k-j}$ is the configuration factor, $\tau$ is the transmittance and other terms are previously defined.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/Radiation_Exchange}\\
+\end{center}
+\caption{Radiation Exchange in a two-zone fire model.}
+ \label{fig:Rad_Exchange}
+\end{figure}
+
+The walls can be modeled using two surfaces or four.  The four wall model is necessary for fire rooms because the temperatures of the ceiling and upper walls differ significantly.  The two wall model is used for compartments that contain no fires.
+
+To simplify the comparison between the two and four wall segment models, assume that the emissivities of all wall segments are one and that the gas absorptivities are zero.  Let the room dimensions be 4 m ? 4 m ? 4 m, the temperature of the floor and the lower and upper walls be 300 K, and the ceiling temperature vary from 300 K to 600 K. Figure \ref{fig:Rad_2vs4} shows a plot of the heat flux to the ceiling and upper wall as a function of the ceiling temperature \cite{Forney_radiation, Jones:1993}. The two wall model predicts that the extended ceiling (a surface formed by combining the ceiling and upper wall into one wall segment) cools, while the four wall model predicts that the ceiling cools and the upper wall warms.  The four-wall model moderates temperature differences that may exist between the ceiling and upper wall (or floor and lower wall) by allowing heat transfer to occur between the ceiling and upper wall. This problem does not arise when a fire is not present.
+
+Reference \cite{Forney_radiation} documents how to minimize the work required to compute the 16 configuration factors, $F_{k-j}$, required in a 4 wall model.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/Radiation_2vs4}\\
+\end{center}
+\caption{An example of the calculated two-wall (RAD2) and four-wall (RAD4) contributions to radiation exchange on a ceiling and wall surface.}
+ \label{fig:Rad_2vs4}
+\end{figure}
+
+{\bf Configuration Factors:}  A configuration factor between two finite areas denoted $F_{1-2}$ is the fraction of radiant energy given off by surface 1 that is intercepted by  surface 2 and is given by
+
+\be F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \theta_2}{\pi L^2} dA_1 dA_2 \label{eq:config_factor} \ee
+where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  These terms are illustrated in figure \ref{fig:Rad_Config_Factor}.  When the surfaces $A_1$ and $A_2$ are far apart relative to their surface area, eq (\ref{eq:config_factor}) can be approximated by assuming that $\theta_1$, $theta_2$ and $L$ are constant over the region of integration to obtain
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=3.0in]{FIGURES/Theory/Radiation_Config_Factor}\\
+\end{center}
+\caption{Setup for a configuration factor calculation between two arbitrarily oriented finite areas.}
+ \label{fig:Rad_Config_Factor}
+\end{figure}
+
+\be F_{1-2} = \frac{\cos \theta_1 \theta_2}{\pi L^2} A_2 \ee
+
+{\bf Transmittance and Absorptance:} The transmittance of a gas volume is the fraction of radiant energy that will pass through it unimpeded and is given by
+
+\be \tau (L) = e^{-aL} \ee
+where $a$ is the absorption coefficient of the gas volume and $L$ is a characteristic path length.
+
+The absorptance, $\alpha$, of a gas volume is the fraction of radiant energy absorbed by that volume.  For a gray gas, $\alpha + \tau = 1$.
+
+{\bf Calculating absorption for broad band gas layer radiation:}  In general, the transmittance and absorptance are a function of wavelength.   This is an important factor to consider for the major gaseous products ($\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$); however soot has a continuous absorption spectrum which allows the transmittance and absorptance to be approximated as ``gray" \cite{SiegelandHowell:1981} across the entire spectrum.
+
+The gas absorptance, $\alpha_G$, is due to the combination of the $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$ and is given by
+
+\be \alpha_G = \alpha_{H_2O} + \alpha_{CO} - C\ee
+where $C$ is a correction for band overlap.  For typical fire conditions, the overlap amounts to about half of the $\textnormal{CO}_2$ absorptance \cite{Tien:2002} so the gas transmittance is approximated by
+
+\be \tau_G = 1 - \alpha_{H_2O} - 0.5 \alpha_{CO_2} \ee
+
+The total transmittance of a gas-soot mixture is the product of the gas and soot transmittances, $\tau_T = \tau_S \tau_G$ so that
+
+\be \tau_T = e^{-al} \brackets{1 - \alpha_{H_2O} - 0.5 \alpha_{CO_2}} \ee
+
+In the optically thin limit the absorption coefficient, a, may be replaced by the Planck mean absorption coefficient and in the optically thick limit, it  may be replaced by the Rosseland mean absorption coefficient. For the entire range of optical thicknesses, Tien et al. \cite{Tien:2002} report that a reasonable approximation is $\alpha = k f_v T$ where $k$ is a constant that depends on the optical properties of the soot particles, $f_v$ is the soot volume fraction and $T$ is the soot temperature in Kelvin. Values of $a$, have been found to be about constant for a wide range of fuels \cite{Tien:1978}.   The soot volume fraction, $f_v$, is calculated from the soot mass, soot density and layer volume.  The soot is assumed to be in thermal equilibrium with the gas layer.
+
+Edwards' absorptance data for $\textnormal{H}_2 \textnormal{O}$ and $\textnormal{CO}_2$ are reported \cite{Edwards:1985} as log(emissivity) versus log(pressure-pathlength), with  log(gas concentration) as a parameter. For each gas, these data were incorporated into a look-up table, implemented as a two-dimensional array of log(emissivity) values, with indices based on temperature and gas concentration.  It is assumed that absorptance and emittance are equivalent for the gaseous species as well as for soot.
+
+An effective path length ( mean beam length, L) treats an emitting volume as if it were a hemisphere of a radius such that the flux impinging on the center of the circular base is equal to the average boundary flux produced by the real volume. The value of this radius is approximated as \cite{Tien:1978, Hottel:1942} $L = c 4 V / A$ where $L$ is the mean beam length in meters, $c$ is a constant (approximately 0.9, for typical geometries), $V$ is the emitting gas volume m$^3$ and $A$ is the surface area (m$^2$) of the gas volume. The volume and surface area are calculated from the dimensions of the layer.
+
+For each gas, the log(absorptance) is estimated from the look-up table for that gas  by  interpolating both the log(temperature) and log(concentration) domains. In the event that the required absorptance lies outside the temperature or concentration range of the look-up table, the nearest acceptable value is returned. Error flags are also returned, indicating whether each parameter was in or out of range and, in the latter case, whether it was high or low.  This entire process is carried out for both $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$.
+
+\subsubsection{Computing Target Heat Flux and Temperature}
+
+The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor not interacting with the modeled environment.  
+
+The net flux striking a target can be used as a boundary condition in order to compute the temperature of the target.  If the target is thin, then its temperature quickly rises to a level where the heat flux to and from the target are in equilibrium.
+
+There are four components of heat flux to a target: fires, walls (including the ceiling and floor), gas layer radiation and gas layer convection.

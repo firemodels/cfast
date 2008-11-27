@@ -739,16 +739,16 @@ A radiation heat transfer calculation can easily dominate the computational requ
 
 The four wall algorithm used in CFAST for computing radiative heat exchange is based upon the equations developed in Siegel and Howell \cite{SiegelandHowell:1981} which in turn is based on the work of Hottel \cite{Hottel:1954}. Siegel and Howell model an enclosure with N wall segments and a homogeneous gas. A radiation algorithm for a two layer zone fire model requires treatment of an enclosure with two uniform gases.  Hottel and Cohen \cite{Hottel:1958} developed a method where the enclosure is divided into a number of wall and gas volume elements. An energy balance is written for each element. Each balance includes interactions with all other elements.  Treatment of the fire and the interaction of the fire and gas layers with the walls is based upon the work of Yamada and Cooper \cite{Yamada:1990}.  They model fires as point heat sources radiating uniformly in all directions and use the Lambert-Beer law to model the interaction between heat emitting elements (fires, walls, gas layers) and the gas layers. By implementing a four wall rather than an N wall model, significant algorithmic speed increases are achieved.  This is done by exploiting the simple structure and symmetry of the four wall problem.
 
-The nomenclature used in this section follows that of Siegel and Howell \cite{SiegelandHowell:1981}.  The radiation exchange at the k'th surface is shown schematically in figure \ref{fig:Rad_Exchange}.  For each wall segment k from 1 to N, a net heat flux, $\Delta \hat{q}_k"$, must be found such that the energy balance,
+The nomenclature used in this section follows that of Siegel and Howell \cite{SiegelandHowell:1981}.  The radiation exchange at the k'th surface is shown schematically in figure \ref{fig:Rad_Exchange}.  For each wall segment k from 1 to N, a net heat flux, $\Delta \hat{q}_k\dprime$, must be found such that the energy balance,
 
-\be \sigma A_k \epsilon_k T_k^4 + \brackets{1 - \epsilon_k}q_k^{in} = q_k^{in} + A_k \Delta q_k" \ee
+\be \sigma A_k \epsilon_k T_k^4 + \brackets{1 - \epsilon_k}q_k^{in} = q_k^{in} + A_k \Delta q_k\dprime \ee
 
 at each wall segment $k$ is satisfied, where $\sigma$ is the Stefan-Boltzman constant, $A_k$ is the area of the k’th wall segment , $\epsilon_k$ is the emissivity of the k’th wall segment, $T_k$ is the temperature of the k’th wall segment and $q_k^{in}$ is the energy arriving at the k’th wall segment from all other wall segments and heat sources.
 
-Radiation exchange at each wall segment considers the emitted, reflected, incoming and net radiation terms.  The unknown net radiative fluxes, $\Delta q_k"$ , are found by solving the modified net radiation equation
+Radiation exchange at each wall segment considers the emitted, reflected, incoming and net radiation terms.  The unknown net radiative fluxes, $\Delta q_k\dprime$ , are found by solving the modified net radiation equation
 
-\be \Delta \hat{q}_k" - \displaystyle\sum_{j=1}^N \brackets{1 - \epsilon_j} \Delta \hat{q}_j" F_{k-j} \tau_{j-k} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_k^4 F_{k-j} \tau_{k-j}} - \frac{c_k}{A_k} \ee
-where $\Delta \hat{q}_k" = \Delta q_k / \epsilon$, $F_{k-j}$ is the configuration factor, $\tau$ is the transmittance and other terms are previously defined.
+\be \Delta \hat{q}_k\dprime - \displaystyle\sum_{j=1}^N \brackets{1 - \epsilon_j} \Delta \hat{q}_j\dprime F_{k-j} \tau_{j-k} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_k^4 F_{k-j} \tau_{k-j}} - \frac{c_k}{A_k} \ee
+where $\Delta \hat{q}_k\dprime = \Delta q_k / \epsilon$, $F_{k-j}$ is the configuration factor, $\tau$ is the transmittance and other terms are previously defined.
 
 \begin{figure}
 \begin{center}
@@ -822,3 +822,40 @@ The calculation of the radiative heat flux to a target is similar to the radiati
 The net flux striking a target can be used as a boundary condition in order to compute the temperature of the target.  If the target is thin, then its temperature quickly rises to a level where the heat flux to and from the target are in equilibrium.
 
 There are four components of heat flux to a target: fires, walls (including the ceiling and floor), gas layer radiation and gas layer convection.
+
+{\bf Heat Flux from a Fire to a Target:} Figure \ref{fig:Radiation_Fire} illustrates terms used to compute heat flux from a fire to a target. Let $n_t$ be a unit vector perpendicular to the target and $\theta_t$ be the angle between the vectors $\overline{L}$ and $n_t$.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=3.0in]{FIGURES/Theory/Radiation_Fire}\\
+\end{center}
+\caption{Radiative heat transfer from a point source fire to a target.}
+ \label{fig:Rad_Fire}
+\end{figure}
+
+Using the definition that $q_{f,r}$ is the radiative portion of the energy release rate of the fire, then the heat flux on a sphere of radius $L$ due to this fire is $q_{f,r} / \brackets{4 \pi L^2}$. Correcting for the orientation of the target and accounting for heat transfer through the gas layers, the heat flux to the target is
+
+\be q_{f,r}\dprime = \frac{q_{f,r}}{4 \pi L^2} \cos \brackets{\theta_t} \tau_U (L_U) \tau_L (L_L) - q_{f,r} \frac{n_t \overline{L}}{4 \pi L^3} \tau_U (L_U) \tau_L (L_L) \ee
+
+{\bf Radiative Heat Flux from a Wall Segment to a Target:} Figure \ref{fig:Rad_Gases} illustrates terms used to compute heat flux from a wall segment to a target. The flux, $q\dprime_{w,t}$, from a wall segment to a target can then be computed using
+
+\be q_{w,t}\dprime = \frac{A_w q_{w,out}\dprime F_{w-t}}{A_t} \tau_U (L_U) \tau_L (L_L) \label{eq:wall_target_flux} \ee
+where $q_{w,t}\dprime$  is the flux leaving the wall segment, $A_w$, $A_t$ are the areas of the wall segment and target respectively, $F_{w-t}$  is the fraction of radiant energy given off by the wall segment that is 
+intercepted by the target (i.e., a configuration factor) and $\tau_U (L_U)$ and $\tau_L (L_L)$ are defined as before. Equation (\ref{eq:wall_target_flux})  can be simplified using the symmetry relation $A_w F_{w-t}  = A_t F_{t-w}$ to obtain
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/Radiation_Gases}\\
+\end{center}
+\caption{Radiative heat transfer from the uper and lower layer gas to a target in the lower layer.}
+ \label{fig:Rad_Gases}
+\end{figure}
+
+\be q_{w,t}\dprime = q_{w,out}\dprime F_{t-w} \tau_U (L_U) \tau_L (L_L) \ee
+where
+
+\be q_{w,out}\dprime = \sigma T_w^4 - \brackets{1 - \epsilon_w} \frac{\Delta q_w\dprime}{\epsilon_w}, \ee
+$T_w$ is the temperature of the wall segment, $\epsilon_w$ is the emissivity of the wall segment and $\Delta q_w\dprime$ is the net flux striking the wall segment.
+
+{\bf Radiation from the Gas Layer to the Target:} Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptances are non-zero. 
+

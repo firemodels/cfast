@@ -774,7 +774,7 @@ Reference \cite{Forney_radiation} documents how to minimize the work required to
 
 {\bf Configuration Factors:}  A configuration factor between two finite areas denoted $F_{1-2}$ is the fraction of radiant energy given off by surface 1 that is intercepted by  surface 2 and is given by
 
-\be F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \theta_2}{\pi L^2} dA_1 dA_2 \label{eq:config_factor} \ee
+\be F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \theta_2}{\pi L^2} dA_2 dA_1 \label{eq:config_factor} \ee
 where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  These terms are illustrated in figure \ref{fig:Rad_Config_Factor}.  When the surfaces $A_1$ and $A_2$ are far apart relative to their surface area, eq (\ref{eq:config_factor}) can be approximated by assuming that $\theta_1$, $theta_2$ and $L$ are constant over the region of integration to obtain
 
 \begin{figure}
@@ -823,7 +823,7 @@ The net flux striking a target can be used as a boundary condition in order to c
 
 There are four components of heat flux to a target: fires, walls (including the ceiling and floor), gas layer radiation and gas layer convection.
 
-{\bf Heat Flux from a Fire to a Target:} Figure \ref{fig:Radiation_Fire} illustrates terms used to compute heat flux from a fire to a target. Let $n_t$ be a unit vector perpendicular to the target and $\theta_t$ be the angle between the vectors $\overline{L}$ and $n_t$.
+{\bf Heat Flux from a Fire to a Target:} Figure \ref{fig:Rad_Fire} illustrates terms used to compute heat flux from a fire to a target. Let $n_t$ be a unit vector perpendicular to the target and $\theta_t$ be the angle between the vectors $\overline{L}$ and $n_t$.
 
 \begin{figure}
 \begin{center}
@@ -859,3 +859,90 @@ $T_w$ is the temperature of the wall segment, $\epsilon_w$ is the emissivity of 
 
 {\bf Radiation from the Gas Layer to the Target:} Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptances are non-zero. 
 
+Let $q_{w,t,gas}\dprime$ denote the flux striking the target due to the gas g in the direction of wall segment w. Then
+
+\be q_{w,t,gas}\dprime = 
+\left\{
+\begin{array}{ll}
+\sigma F_{t-w} \brackets{T_L^4 \alpha_L \tau_U + T_U^4 \alpha_U} & w \textnormal{ is in the lower layer}\\
+\sigma F_{t-w} \brackets{T_U^4 \alpha_U \tau_L + T_L^4 \alpha_L} & w \textnormal{ is in the upper layer}
+\end{array}
+\right. \label{eq:Rad_Gases} \ee
+
+The total target flux due to the gas (upper or lower layer) is obtained by summing eq (\ref{Rad_Gases} over each wall segment or
+
+\be q_{g,t}\dprime = \sum_w = q_{w,t,gas}\dprime  \ee
+
+{\bf Computing the Target Temperature:} The steady state target temperature, $T_t$ can be found by solving an energy balance on the target; namely
+
+\be \epsilon_t \sigma T_t^4 = \epsilon_t q_{r,in} + h \brackets{T_g - T_t} \label{eq:Target_Temp} \ee
+
+Let $f(T_t)$ be the difference between the left and right hand side of equation (\ref{eq:Target_Temp}).  Then this equation may be solved using the Newton iteration 
+
+\be T_{new} = T_{old} - \frac{f(T_{old})}{f^\prime(T_{old})} \label{eq:Target_Newton} \ee
+
+Equation (\ref{eq:Target_Newton}) is iterated until the difference $T_{new} - T_{old}$ is sufficiently small.
+
+\subsubsection{Convection}
+
+In general, convective heat transfer, $q\dprime$, across a surface of area $A_S$, is defined as
+
+\be q\dprime = h a_S \brackets{T_g - T_s} \ee
+
+The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. The Nusselt number is defined as $Nu_L = h L / k$, which for natural convection is related to the Rayleigh number, $Ra_L = g \beta \brackets{T_s - T_g}L^3 / \nu \alpha$ where $L$ is a characteristic length of the geometry, $g$ is the gravitational constant (m/s\superscript{2}), $k$ is the thermal conductivity (W/m\superscript{2} K), $\beta$ is a volumetric expansion coefficient (K\superscript{-1}), $T_s$ and $T_g$ are the temperatures of the surface and gas, respectively (K), $\nu$ is the kinematic viscosity (m\superscript{2}/s), and $\alpha$ is the thermal diffusivity (m\superscript{2}/s).  All properties are evaluated at the film temperature, $T_f = \brackets{T_s + T_g}/2$.  The typical correlations applicable to the problem at hand are available in the literature  \cite{Atreya:2003}. The table below gives the correlations used in CFAST.
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{| p{1.5in} | c | c |}
+\hline
+Geometry & Correlation & Restrictions \\
+ \hline
+ Walls & {$\begin{array}{lll} Nu_L &=& \brackets{0.825 + \frac{0.387 Ra_L^{1/6}}{\brackets{1 + \brackets{0.492/Pr}^{9/16}}^{8/27}}}^2  \\ &=&0.12 \end{array}$}  & none \\
+Ceilings and floors (hot surface up or cold surface down & {$Nu_L = 0.13 Ra_L^{1/3}$} & $2 x 10^8 \le Ra_L \le 10^{11}$ \\
+
+ Ceilings and floors (cold surface up or hot surface down & {$Nu_L = 0.16 Ra_L^{1/3}$} & $2 x 10^8 \le Ra_L \le 10^{10}$ \\
+ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal diffusivity. The thermal diffusivity, ?, and thermal conductivity, k, of air are defined as a function of the film temperature from data in reference \cite{Atreya:2003} as
+
+\be \alpha = 1.0 x 10^{-9} T_f^{7/4} \ee
+
+\be k = \frac{0.0209 + 1.33 x 10^{-5} T_f}{1 - 0.000267 T_f} \ee
+ 
+ \subsubsection{Conduction}
+ 
+ Procedures for solving 1-d heat conduction problems are well known, (e.g., backward difference (fully implicit), forward difference (fully explicit) or Crank-Nicolson \cite{Golub:1989}).  A finite difference approach  using a non-uniform spatial mesh is used to advance the wall temperature solution.  The heat equation is discretized using a second order central difference for the spatial derivative and a backward differences for the time derivative.  The resulting tri-diagonal system of equations is then solved to advance the temperature solution to time $t+\Delta T$.  This process is repeated , using the work of Moss and Forney \cite{Moss:1992},  until  the heat flux striking the wall (calculated from the convection and radiation algorithms) is consistent with the flux conducted into the wall calculated via Fourier’s law
+ 
+ \be q\dprime = -k \frac{dT}{dx} \ee
+where $k$ is the thermal conductivity.  This solution strategy requires a differential algebraic (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved.  Wall segment temperature profiles, however, still have to be stored so there is no decrease in storage requirements.  Conduction is then coupled to the room conditions by temperatures supplied at the interior boundary by the differential equation solver.  The exterior boundary condition types (constant flux, insulated, or constant temperature) are specified in the configuration of CFAST.
+
+A non-uniform mesh scheme was chosen to allow breakpoints to cluster near the interior and exterior wall segment surfaces.  This is where the temperature gradients are the steepest.  A breakpoint  $x_b$ was defined by $x_b = MIN(x_p, W/2)$ where $x_p = 2 \sqrt{\alpha t_{final}} erfc^{-1} \brackets{.05}$ and $erfc^{-1}$ denotes the inverse of the complementary error function.  The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{final}$ seconds and is sometimes called the penetration depth.  Eighty percent of the breakpoints were placed on the interior side of $x_b$ and the remaining 20~\% were placed on the exterior side.
+
+To illustrate the method, consider a one room case with one active wall.  There are four gas equations (pressure, upper layer volume, upper layer temperature, and lower layer temperature) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profile at the previous time, t, and at the next time, $t + \delta t$.  Given the profile at time t and values for the five unknowns at time $t + \delta t$ (initial guess by the solver), the temperature profile is advanced from time t to time $t + \delta t$.  The temperature profile gradient at $x = 0$ is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
+
+\subsubsection{Inter-compartment Heat Transfer}
+
+Heat transfer between vertically connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.  
+
+For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiative configuration factors.    For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 1/2.   Once these fractions are determined, an average flux, $q_{avg}\dprime$, is calculated using
+
+\be q_{avg}\dprime = \sum_{walls} F_{ij} q_{wall_j}\dprime \ee
+where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $q_{wall_j}\dprime$ is the flux striking wall $j$.
+
+subsection{Ceiling Jet}
+
+Relatively early in the development of a fire, fire-driven ceiling jets and gas-to-ceiling convective heat transfer can play a significant role in room-to-room smoke spread and in the response of near-ceiling mounted detection hardware.  Cooper \cite{Cooper:1991} details a model and computer algorithm to predict the instantaneous rate of convective heat transfer from fire plume gases to the overhead ceiling surface in a room of fire origin.  The room is assumed to be a rectangular parallelepiped and, at times of interest, ceiling temperatures are simulated as being uniform.  Also presented is an estimate of the convective heat transfer due to ceiling-jet driven wall flows.  The effect on the heat transfer of the location of the fire within the room is taken into account.  This algorithm has been incorporated into the CFAST model.  In this section, we provide an overview of the model.  Complete details are available in reference [\cite{Cooper:1991}.
+
+A schematic of a fire, fire plume, and ceiling jet is shown in figure 14. The buoyant fire plume rises from the height $Z_{fire}$ toward the ceiling.  When the fire is below the layer interface, its mass and enthalpy flow are assumed to be deposited into the upper layer at height $Z_{layer}$.  Having penetrated the interface, a portion of the plume typically continues to rise toward the ceiling.  As it impinges on the ceiling surface, the plume gases turn and form a relatively high temperature, high velocity, turbulent ceiling jet which flows radially outward along the ceiling and transfers heat to the relatively cool ceiling surface.  The convective heat transfer rate is a strong function of the radial distance from the point of impingement, reducing rapidly with increasing radius.  Eventually, the relatively high temperature ceiling jet is blocked by the relatively cool wall surfaces \cite{Cooper:1990a}.  The ceiling jet then turns downward and outward in a complicated flow along the vertical wall surfaces \cite{Cooper:1988, Jaluria:1989} .  The descent of the wall flows and the heat transfer from them are eventually stopped by upward buoyant forces.  They are then buoyed back upward and mix with the upper layer.
+
+The average convective heat transfer from the ceiling jet gases to the ceiling surface, $Q_{ceil}$, can be expressed in integral form as
+
+\be Q_{ceil} = \int_0^{X_{wall}} \int_0^{Y_{wall}} q_{ceil}\dprime (x,y) dx dy \ee
+
+The instantaneous convective heat flux, $q_{ceil}\dprime (x,y)$ can be determined as derived by Cooper \cite{Cooper:1991} as
+
+\be q_{ceil}\dprime (x,y) = h \brackets{T_{ad} - T_{ceil}} \ee
+where $T_{ad}$ is a characteristic ceiling jet temperature that would be measured adjacent to an adiabatic lower ceiling surface, and $h$ is a heat transfer coefficient.  $h$ and $T_{ad}$ are given by

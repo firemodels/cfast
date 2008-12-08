@@ -651,7 +651,9 @@ The zone fire model then uses these correlations to estimate conditions in the c
 \end{enumerate}
 
 
-{\bf Assumptions:} The assumptions made in order to develop the correlations are:
+\subsubsection{Assumptions} 
+
+The assumptions made in order to develop the correlations are:
 
 \begin{itemize}
 \item The time scale of interest is the time required for a ceiling jet to traverse the length of the corridor. For example, for a 100~m corridor with 1 m/s flow, the characteristic time would be 100~s.
@@ -671,7 +673,9 @@ The zone fire model then uses these correlations to estimate conditions in the c
 \item Flow entering the corridor enters at or near the ceiling. The inlet ceiling jet velocity is reduced from the vent inlet velocity by a factor of wvent/wroom where wvent and wroom  are the width of the vent and room, respectively.
 \end{itemize}
 
-{\bf Corridor Jet Flow Characteristics:} Ceiling jet flow in a corridor can be characterized as a one dimensional gravity current. To a first approximation, the velocity of the current depends on the difference between the density of the gas located at the leading edge of the current and the gas in the adjacent ambient air.  The velocity also depends on the depth of the current below the ceiling. A simple formula for the gravity current velocity may be derived by equating the potential energy of the current, $mgd_0/2$, measured at the half-height $d_0/2$ with its kinetic energy, $mV^2/2$ to obtain
+\subsubsection{Corridor Jet Flow Characteristics}
+
+Ceiling jet flow in a corridor can be characterized as a one dimensional gravity current. To a first approximation, the velocity of the current depends on the difference between the density of the gas located at the leading edge of the current and the gas in the adjacent ambient air.  The velocity also depends on the depth of the current below the ceiling. A simple formula for the gravity current velocity may be derived by equating the potential energy of the current, $mgd_0/2$, measured at the half-height $d_0/2$ with its kinetic energy, $mV^2/2$ to obtain
 
 \be V = \sqrt{g d_0} \ee
 where $m$ is mass, $g$ is the acceleration of gravity, $d_0$ is the height of the gravity current and $V$ is the velocity. When the density difference, between the current and the ambient fluid is small, the velocity, $V$, is proportional to $\sqrt{g d_0 \Delta \rho / \rho_{cj}}$ = $\sqrt{g d_0 \Delta T / T_{amb}}$ where $\rho_{amb}$ and $T_{amb}$ are the ambient density and temperature and $\rho_{cj}$ and $T_{cj}$ are the density and temperature of the ceiling jet and  $\Delta T = T_{cj} - T_{amb}$ is the temperature difference. Here use has been made of the ideal gas law, $\rho_{amb} T_{amb} \approx \rho_{cj} T_{cj}$.  This can be shown using an integrated form of Bernoulli's law noting that the pressure drop at the bottom of the ceiling jet is $P_b = 0$, the pressure drop at the top is $P_t = gd_0(\rho_{cj} - \rho_{amb})$ and using a vent coefficient cvent of 0.74, to obtain
@@ -687,7 +691,9 @@ Formulas of the form of the above equation lead one to conclude that a ceiling j
 
 Twenty numerical experiments were performed using FDS in order to better understand the effects of the inlet ceiling jet temperature and depth on ceiling jet characteristics downstream in a corridor.  These cases were run with five different inlet depths and four different inlet temperatures.  The inlet ceiling jet temperature rise, $\Delta T_0$, and depth, $d_0$, were used to define an inlet velocity, $V_0$ using eq (\ref{eq:Corridor_Flow}).  The inlet ceiling jet depths, $d_0$, used in the parameter study are 0.15 m, 0.30 m, 0.45 m, 0.60 m and 0.75 m. The inlet ceiling jet temperature rises, $T_0$, used in the parameter study are 100 \degc, 200 \degc, 300 \degc and 400 \degc.
 
-{\bf Correlations:} Ceiling jet functions were plotted as a function of distance down a corridor for each of the 20 test cases.  These results are shown in figure \ref{fig:Corr_Flow}.  Note that all but the 0.15 m ceiling jet data lie on essentially the same line. 
+\subsubsection{Correlations} 
+
+Ceiling jet functions were plotted as a function of distance down a corridor for each of the 20 test cases.  These results are shown in figure \ref{fig:Corr_Flow}.  Note that all but the 0.15 m ceiling jet data lie on essentially the same line. 
 
 \begin{figure}
 \begin{center}

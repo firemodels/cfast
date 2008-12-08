@@ -59,11 +59,7 @@ small increment of time, $\dt$? The differential equations are of the form
 \end{eqnarray}
 
 where $y$ is a vector representing pressure, layer height, mass and such, and $f$ is a vector function that represents changes in these values with respect to time. The term $y_0$ is an initial condition at
-the initial time $t_0$. The time increment is determined dynamically by the
-program to ensure convergence of the solution at t + $\dt$. The subroutine RESID computes the right hand side of eq \ref{eqdiffeqform} and returns a set of residuals of that calculation to be compared to the values expected by DASSL. DASSL
-then checks for convergence. Once DASSL reaches an error limit (defined as convergence of
-the equations) for the solution at $t+\dt$, SOLVE then advances the solution of species concentration,
-wall temperature profiles, and mechanical ventilation for the same time interval.
+the initial time $t_0$. The time increment is determined dynamically by the program to ensure convergence of the solution at $t + \Delta t$. The subroutine RESID computes the right hand side of eq \ref{eqdiffeqform} and returns a set of residuals of that calculation to be compared to the values expected by DASSL. DASSL then checks for convergence. Once DASSL reaches an error limit (defined as convergence of the equations) for the solution at $t + \Delta t$, SOLVE then advances the solution of species concentration, wall temperature profiles, and mechanical ventilation for the same time interval.
 Note that there are several distinct time scales that are involved in the solution of this type of
 problem. The fastest will be chemical kinetics. In CFAST, chemical reactions are assume to be instantaneous so we ignore the impact of chemical kinetics.  The next larger time scale is that associated with the flow field. These are the equations which are cast into the form of ordinary differential equations. Then there is the time scale for mechanical ventilation, and finally, heat conduction through objects.
 

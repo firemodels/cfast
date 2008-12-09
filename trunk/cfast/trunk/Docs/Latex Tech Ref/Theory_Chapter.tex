@@ -144,7 +144,7 @@ volume, and pressure as shown below.
 In these equations, the pressure is actually modeled with the pressure difference relative to an
 ambient reference pressure to minimize numerical instability.
 
-\section{Limitations of the Zone Model Assumptions}
+\section{Limitations of the Zone Model Assumptions} \label{sec:ZoneModelAssumptions}
 
 The basic assumption of all zone fire models is that each compartment can be divided into a
 small number of control volumes, each of which is uniform in temperature and composition. In
@@ -195,7 +195,7 @@ model and the algorithm) and the actual physical routine(s) which implement the 
 implementation allows the physics to remain independent of the structure of CFAST and allows
 easier insertion of new phenomena.
 
-\subsection{The Fire}
+\subsection{The Fire}\label{sec:TheFire}
 
 A fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate
 (the pyrolysis rate). Energy is released by the fuel and combustion products are created as it
@@ -233,7 +233,9 @@ oxygen to form carbon dioxide and water. The only input required is the pyrolysi
 heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes 
 more complex. In this case, production yields for the species are prescribed by the user. 
 Stoichiometry is used to insure conservation of mass and elements in the reaction. The species 
-which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons.
+which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
+
+The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons.
 
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
 
@@ -322,7 +324,7 @@ the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible f
 mean 50 \% of the time and below the mean 50 \% of the time.  This average flame height is 
  included in the printed output from CFAST. Note that $Q_f$ in Eq. (8) in Ref. \cite{Heskestad:2002} is in kW.
  
- \subsubsection{Limitation of the Algorithm for Fires and Mass Balance }
+ \subsubsection{Limitation of the Algorithm for Fires and Mass Balance }\label{sec:firemassbalance}
  
 CFAST depends on pyrolysis data for the source term for a fire. The usual way to obtain this 
 data is a large-scale calorimeter, e.g., reference [\cite{Bryant:2003}. Generally, a product (e.g., chair, table, 
@@ -435,7 +437,11 @@ layers.
 
 A fire generates energy at a rate $Q_f$.  Some fraction, $\chi_R$, will exit the fire as radiation.  The 
 remainder, $\chi_C$, will then be deposited in the layers as convective energy or heat additional fuel 
-which may then pyrolyze. McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as 
+which may then pyrolyze. A buoyant plume carries this energy into the upper layer.
+
+All plume models used to date are based on the seminal work of Morton et al. \cite{Morton:1956}. For an extended source such as a fire, the prescription needs modification. Several studies have devised such modifications. Two of these are included in CFAST, the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}.
+
+McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as 
 given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of Cetegen et al. \cite{Cetegen:1982, Cetegen:1984} in the intermittent regions but yields greater entrainment in the other two regions.  This difference is particularly important for the initial fire since the upper layer is far removed from the fire.
 
 \begin{eqnarray}
@@ -444,7 +450,12 @@ given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of 
 \textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber
 \end{eqnarray}
 McCaffrey's correlation is an extension of the common point source plume model, with a 
-different set of coefficients for each region. These coefficients are experimental correlations. 
+different set of coefficients for each region. These coefficients are based on experimental correlations. 
+
+Heskestad  analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation 
+
+\be \dot{m}_e = 0.071 Q_{f,c}^{1/3} \brackets{z - z_0}^{5/3} \brackets{1 + 0.026 Q_{f,c}^{2/3} \brackets{z-z_0}^{-5/3}} \ee
+where $Q_{f,c}$ is the convective heat release rate of the fire and $z_0$ is a virtual origin for the fire plume defined as $z_0/D = -1.02 + 0.083 Q_f^{2/5} / D$, here based on the total heat release rate of the fire.  Both correlations provide similar results in CFAST calculations.
 
 Within CFAST, the radiative fraction defaults to 0.30 \cite{Drysdale:1985}; i.e., 30 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:1978}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
  
@@ -482,11 +493,9 @@ or
  which is incorporated into the model.  It should be noted that both the plume and layers are 
 assumed to be well mixed with negligible mixing and transport time for the plume and layers. 
 
-\subsubsection{Limitation of the Plume Algorithm }
+\subsubsection{Limitation of the Plume Algorithm } \label{sec:plumelimits}
 
-The entrainment coefficients are empirically determined values from the work of McCaffrey \cite{McCaffrey:1983}. Small errors in these values will have a small effect on the fire plume or the flow in the plume of gases exiting the door of that compartment.  In a multi-compartment model such as 
-CFAST, however, small errors in each door plume are multiplicative as the flow proceeds 
-through many compartments, possibly resulting in a significant error in the furthest 
+The entrainment coefficients are empirically determined values from the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}. Small errors in these values will have a small effect on the fire plume or the flow in the plume of gases exiting the door of that compartment.  In a multi-compartment model such as CFAST, however, small errors in each door plume are multiplicative as the flow proceeds through many compartments, possibly resulting in a significant error in the furthest 
 compartments.  The data available from validation experiments \cite{Peacock:1988} discussed in the CFAST Validation Guide \cite{CFAST_Valid_Guide_6} indicate that the values for entrainment coefficients currently used in most zone models produce good agreement for a 
 three-compartment configuration.  More data are needed for larger numbers of compartments to 
 study this further. 
@@ -623,7 +632,7 @@ This version of the model does not include duct work or variable fans. These equ
 
 The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks flow of these two species.
 
-\subsection{Corridor Flow}
+\subsection{Corridor Flow}\label{sec:corridorflow}
 
 A standard assumption in zone fire modeling is that once hot smoke enters a compartment, a well defined upper layer forms instantly throughout the compartment. This assumption breaks down in large compartments and long corridors due to the time required to fill these spaces.  A simple procedure is described for accounting for the formation delay of an upper layer in a long corridor by using correlations developed from numerical experiments generated with the NIST fire model Large Eddy Simulation Model (LES) , which is now the Fire Dynamic Simulation Model (FDS) \cite{FDS_Tech_Guide_5}.  FDS is a computational fluid dynamics model capable of simulating fire flow velocities and temperatures with high ($\approx$0.1 m) resolution.  Two parameters related to corridor flow are then estimated: the time required for a ceiling jet to travel in a corridor and the temperature distribution down the corridor.  These estimates are then used in CFAST by delaying flow into compartments connected to corridors until the ceiling jet has passed these compartments.
 
@@ -1050,7 +1059,7 @@ Equation (\ref{eq:RTI_solution1}) reduces to the trapezoidal rule for integratio
 \be T(t) = \frac{a}{b} + \frac{e^{-b(t-t_0)}\brackets{b T_0 - a}}{b} = T_g + e^{\frac{-\sqrt{V(t)}(t-t_0)}{RTI}}\brackets{T_0 - T_g}
  \ee
  
-\section{Sprinkler Activation and Fire Attenuation}
+\section{Sprinkler Activation and Fire Attenuation} \label{sec:suppression}
 
 For suppression, the sprinkler is modeled using a simple model \cite{Madrzykowski:1992} generalized for varying sprinkler spray densities \cite{Evans:1993}. It is then modeled by attenuating all fires in the room where the sensor activated by a term of the form $e^{-(t-t_{act})/t_{rate}}$ where $T_{act}$ is the time when the sensor activated and $t_{rate}$ is a constant determining how quickly the fire attenuates. The term $t_{rate}$ can be related to spray density of a sprinkler using a correlation developed in \cite{Evans:1993}. The suppression correlation was developed by modifying the heat release rate of a fire. For $t > t_{act}$ the heat release is given by 
 
@@ -1070,11 +1079,11 @@ CFAST uses a combustion chemistry scheme based on a carbon-hydrogen-oxygen balan
 
 The species transport in CFAST is primarily a matter of bookkeeping to track individual species mass as it is generated by a fire, transported through vents, or mixed between layers in a compartment.  When the layers are initialized at the start of the simulation, they are set to ambient conditions.  These are the initial temperature prescribed by the user, and 23 \% by mass fraction (21 \% by volume fraction) oxygen, 77 \% by mass fraction (79 \% by volume fraction) nitrogen, a mass concentration of water prescribed by the user as a relative humidity, and a zero concentration of all other species.  As fuel is burned, the various species are produced in direct relation to the mass of fuel burned (this relation is the species yields prescribed by the user for the fuel burning).  Since oxygen is consumed rather than produced by the burning, the “yield” of oxygen is negative, and is set internally to correspond to the amount of oxygen used to burn the fuel (within the constraint of available oxygen limits discussed in sec. \ref{sec:Oxygen_Limit}). Two special separate species calculations are included in the model, a time-integrated value for a generic toxic species, Ct, and an arbitrary trace species, TS.  Both are assumed not to be part of the overall mass balance, but are rather generated by a fire and transported through a structure in a manner identical to other species.
 
-Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers.  The model keeps track of the mass of each species in each layer, and knows the volume of each layer as a function of time.  The mass divided by the volume is the mass concentration, which along with the relative molecular mass gives the concentration in volume percent or parts per million as appropriate.
+Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers.  The model keeps track of the mass of each species in each layer, and knows the volume of each layer as a function of time.  The mass divided by the volume is the mass concentration, which along with the relative molecular mass gives the concentration in volume percent or parts per million as appropriate. Filters can be used in mechanical ventilation systems to remove species. The phenomenon has been implemented in CFAST to remove trace species and soot. It is implemented by modifying the source terms which describe gas flow. Mass that is filtered remains on the filter and is removed from the air stream. Both the resulting species density and total species removed can be analyzed. See reference \cite{Jones:2008} for an example on the use of filtering.
 
-There are two separate radiation calculations done by CFAST. The first is for broadband radiation transfer for energy balance. The way this calculation is done is discussed in section \ref{sec:Radiation}. The second is a visible light calculation to answer the question of whether exit signs will be visible. The absorption of broadband radiation depends on the concentration of water, carbon dioxide and soot. The visibility calculation depends solely on the soot concentration For soot, the input for C/CO2 is used to calculate a “soot” yield from the fire (assuming all the excess carbon goes to soot). This soot generation is then transported as a species to yield a soot mass concentration to use in the optical density calculation based originally on the work of Seader and Einhorn \cite{Seader:1976}. The most recent work is by Mulholland and Croakin\cite{Mullholland:2000}. Based on their experimental measurements, the soot mass density is multiplied by 3,817 m\superscript{2}/kg (formerly 3,500 m\superscript{2}/kg) to obtain an optical density (in units of m\superscript{-1}) which is the value reported by the model.
+The calculation of radiation exchange in CFAST also depends in part on the species concentrations calculated by the model (and thus the user inputs for species yields). There are two separate radiation calculations done by CFAST. The first is for broadband radiation transfer for energy balance. The way this calculation is done is discussed in section \ref{sec:Radiation}. The second is a visible light calculation to answer the question of whether exit signs will be visible. The absorption of broadband radiation depends on the concentration of water, carbon dioxide and soot. The visibility calculation depends solely on the soot concentration For soot, the input for C/CO2 is used to calculate a “soot” yield from the fire (assuming all the excess carbon goes to soot). This soot generation is then transported as a species to yield a soot mass concentration to use in the optical density calculation based originally on the work of Seader and Einhorn \cite{Seader:1976}. The most recent work is by Mulholland and Croakin\cite{Mullholland:2000}. Based on their experimental measurements, the soot mass density is multiplied by 3,817 m\superscript{2}/kg (formerly 3,500 m\superscript{2}/kg) to obtain an optical density (in units of m\superscript{-1}) which is the value reported by the model.
 
-\subsection{HCl Deposition}
+\subsection{HCl Deposition}\label{HClDeposition}
 
 Hydrogen chloride produced in a fire can produce a strong irritant reaction that can impair escape from the fire.  It has been shown \cite{Galloway:1989} that significant amounts of the substance may be removed by adsorption by surfaces which contact smoke.  In our model, HCl production is treated in a manner similar to other species.  However, an additional term is required to allow for deposition on, and subsequent absorption into, material surfaces.
 

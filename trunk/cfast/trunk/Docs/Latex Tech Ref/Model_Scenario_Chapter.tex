@@ -127,7 +127,7 @@ a building subjected to a fire. Once the simulation is complete, CFAST produces 
 There is more extensive discussion of the output in chapter 6 of this technical
 reference manual and the user’s guide. The output is always in the metric system of units.
 
-\subsection{Uses and Limitations of the Model}
+\subsection{Uses and Limitations of the Model} \label{sec:limitssummary}
 
 CFAST has been developed for use in solving practical fire problems in fire protection engineering.  It is intended for use in system modeling of building and building components.  A priori prediction of flame spread or fire growth on objects is not modeled. Rather, the consequences of a specified fire is estimated. It is not intended for detailed study of flow within a compartment, such as is needed for smoke detector siting.  It includes the activation of sprinklers and fire suppression by water droplets.
 
@@ -142,7 +142,7 @@ The most extensive use of the model is in fire and smoke spread in complex build
 
 \item Radiation:  Because the model includes a sophisticated radiation model and ventilation algorithms, it has further use for studying building contamination through the ventilation system, as well as the stack effect and the effect of wind on air circulation in buildings.  Radiation from fires is modeled with a simple point source approximation.  This limits the accuracy of the model near fire sources. Calculation of radiative exchange between compartments is not modeled.
 
-\item Ventilation and Leakage:  In a single compartment, the ratio of the area of vents connecting one compartment to another to the volume of the compartment should not exceed roughly 1/2 m.  This is a limitation on the plug flow assumption for vents.  An important limitation arises from the uncertainty in the scenario specification.  For example, leakage in buildings is significant, and this affects flow calculations especially when wind is present and for tall buildings.  These effects can overwhelm limitations on accuracy of the implementation of the model.  The overall accuracy of the model is closely tied to the specificity, care, and completeness with which the data are provided.
+\item Ventilation and Leakage:  In a single compartment, the ratio of the area of vents connecting one compartment to another to the volume of the compartment should not exceed roughly 2 m.  This is a limitation on the plug flow assumption for vents.  An important limitation arises from the uncertainty in the scenario specification.  For example, leakage in buildings is significant, and this affects flow calculations especially when wind is present and for tall buildings.  These effects can overwhelm limitations on accuracy of the implementation of the model.  The overall accuracy of the model is closely tied to the specificity, care, and completeness with which the data are provided.
 
 \item Thermal Properties:  The accuracy of the model predictions is limited by how well the user can specify the thermophysical properties.  For example, the fraction of fuel which ends up as soot has an important effect on the radiation absorption of the gas layer and, therefore, the relative convective versus radiative heating of the layers and walls, which in turn affects the buoyancy and flow.  There is a higher level of uncertainty of the predictions if the properties of real materials and real fuels are unknown or difficult to obtain, or the physical processes of combustion, radiation, and heat transfer are more complicated than their mathematical representations in CFAST.
 \end{itemize}
@@ -162,15 +162,14 @@ In addition, there are specific limitations and assumptions made in the developm
 algorithms. These are detailed in the discussion of each of these sub-models:
 
 \begin{itemize}
-\item section 3.3 on zone model assumptions,
-\item section 3.4.1 on prescribed fires,
-\item section 3.4.1.3 on the relationship between fires and mass balance,
-\item section 3.4.2.1 on the plume entrainment model,
-\item section 3.4.3.1 on doorway flows and entrainment at vents,
-\item section 3.4.4 on the assumptions made for corridor flow correlations,
-\item section 3.4.5.1 on the assumptions made for radiation heat transfer,
-\item section 3.6 on the suppression model, and
-\item section 3.7.2 on HCl deposition.
+\item section \ref{sec:ZoneModelAssumptions} on zone model assumptions,
+\item section \ref{sec:TheFire} on prescribed fires,
+\item section \ref{sec:firemassbalance} on the relationship between fires and mass balance,
+\item section \ref{sec:plumelimits} on the plume entrainment model,
+\item section \ref{sec:corridorflow} on the assumptions made for corridor flow correlations,
+\item section \ref{sec:Radiation} on the assumptions made for radiation heat transfer,
+\item section \ref{sec:suppression} on the suppression model, and
+\item section \ref{HClDeposition} on HCl deposition.
 \end{itemize}
 
 \section{Scenarios for which the Model is Evaluated in this Document}
@@ -187,8 +186,7 @@ guide rather than a single, specific scenario of interest for a validation exerc
 
 CFAST is designed primarily to predict the environment within compartmented structures which
 results from unwanted fires. These can range from very small containment vessels, on the order
-of 1 m\superscript{3} to large spaces on the order of 1000 m\superscript{3}. As discussed in the section on limitations and use (2.1.9), the appropriate size fire depends on the size of the compartment being modeled. A
-range of such validation exercises is discussed in chapter 6.
+of 1 m\superscript{3} to large spaces on the order of 1000 m\superscript{3}. As discussed in the section on limitations and use (see section \ref{sec:limitssummary}), the appropriate size fire depends on the size of the compartment being modeled. A range of such validation exercises is discussed in chapter \ref{sec:validationsummary}.
 
 \subsection{List of Quantities Predicted by the Model}
 

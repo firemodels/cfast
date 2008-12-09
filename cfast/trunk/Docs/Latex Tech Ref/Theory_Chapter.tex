@@ -222,7 +222,7 @@ a combustion reaction that includes major products of combustion for hydrocarbon
 
 \be  \mathrm{C_xH_yO_zN_aCl_b} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
      \nu_\So \, \mathrm{Soot}  + \nu_\NTWO \, \mathrm{N_2} + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee     
-where the stoichiometric coefficients $\nu\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation.  For example, for soot, it is related to the
+where the stoichiometric coefficients $\nu_\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation.  For example, for soot, it is related to the
 {\em soot yield}, $y_\So$, via the relation:
 \be
    \nu_\So = \frac{W_\F}{W_\So} \; y_\So \label{soot_yield}
@@ -240,7 +240,7 @@ The heat release rate for a constrained fire may be reduced below its prescribed
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
 
 \begin{eqnarray} Q_{f,R} &=& \chi_R Q_f \\
-Q_{f,R} &=& \brackets{1-\chi_R} Q_f
+Q_{f,C} &=& \brackets{1-\chi_R} Q_f
 \end{eqnarray}
 where, $\chi_R$ is the fraction  of the fireÕs heat release rate given off as radiation.  The convective 
 enthalpy, $Q_{f,C}$ then becomes the driving term in the plume flow.  For a constrained fire there is 
@@ -275,9 +275,9 @@ $\dot{m}_f$  is the amount of fuel burned.  This value is initially specified as
 reduced if there is insufficient oxygen to support complete combustion.  Subsequently, the 
 available fuel, $\dot{m}_{tuhc}$, is reduced by the final value of $\dot{m}_f$ burned or $\dot{m}_b$.  Thus we have a consistent description in each burning region, with an algorithm that is invoked independent of the region being analyzed.
 
-\be Q = \dot{m}_f H_c \ee
+\be Q_f = \dot{m}_f H_c \ee
 with the mass of oxygen required to achieve this energy release rate of
-\be \dot{m}_O = \frac{Q}{E} = \dot{m}_f \frac{H_c}{E} \ee
+\be \dot{m}_O = \frac{Q_f}{E} = \dot{m}_f \frac{H_c}{E} \ee
 where $E$ is the heat release per mass unit of oxygen consumed, taken to be 1.31 x $10^7$ J/kg\footnote{The units for oxygen consumption calorimetry are J/kg. The value 1.31 x $10^7$ J/kg is representative of typical fuels such as furniture (see reference \cite{Morehart:1991}) and implies these units. The variation or uncertainty (2$\sigma$) associated with this value is on the order of $\pm$ 5 \%} (based 
 on oxygen consumption calorimetry for typical fuels \cite{Morehart:1991, Thornton:1917, Huggett:1980}). If the fuel contains oxygen (available for combustion), the oxygen needed to achieve full combustion is less:
 
@@ -454,8 +454,8 @@ different set of coefficients for each region. These coefficients are based on e
 
 Heskestad  analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation 
 
-\be \dot{m}_e = 0.071 Q_{f,c}^{1/3} \brackets{z - z_0}^{5/3} \brackets{1 + 0.026 Q_{f,c}^{2/3} \brackets{z-z_0}^{-5/3}} \ee
-where $Q_{f,c}$ is the convective heat release rate of the fire and $z_0$ is a virtual origin for the fire plume defined as $z_0/D = -1.02 + 0.083 Q_f^{2/5} / D$, here based on the total heat release rate of the fire.  Both correlations provide similar results in CFAST calculations.
+\be \dot{m}_e = 0.071 Q_{f,C}^{1/3} \brackets{z - z_0}^{5/3} \brackets{1 + 0.026 Q_{f,C}^{2/3} \brackets{z-z_0}^{-5/3}} \ee
+where $Q_{f,C}$ is the convective heat release rate of the fire and $z_0$ is a virtual origin for the fire plume defined as $z_0/D = -1.02 + 0.083 Q_f^{2/5} / D$, here based on the total heat release rate of the fire.  Both correlations provide similar results in CFAST calculations.
 
 Within CFAST, the radiative fraction defaults to 0.30 \cite{Drysdale:1985}; i.e., 30 \% of the fireÕs energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:1978}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
  
@@ -487,9 +487,9 @@ The criterion that the density in the plume region be lower than the upper layer
 \be T_p = \frac{T_f\dm_f + T_l\dm_e}{\dm_f + \dm_e} > T_u \ee
 or
 \be \dm_e < \brackets{\frac{T_f - T_u}{T_u - T_l}}\dm_f < \frac{T_f}{T_u - T_l} \dm_f \label{eq:entrainment_limit} \ee
- Substituting the convective energy released by the fire, $Q_{f,c} = \dm_fc_pT_f$, into eq \ref {eq:entrainment_limit} yields the form of the  entrainment limit use in the CFAST model:
+ Substituting the convective energy released by the fire, $Q_{f,C} = \dm_fc_pT_f$, into eq \ref {eq:entrainment_limit} yields the form of the  entrainment limit use in the CFAST model:
  
- \be \dm_e < \frac{Q_{f,c}}{c_p\brackets{T_u - T_l}} \ee
+ \be \dm_e < \frac{Q_{f,C}}{c_p\brackets{T_u - T_l}} \ee
  which is incorporated into the model.  It should be noted that both the plume and layers are 
 assumed to be well mixed with negligible mixing and transport time for the plume and layers. 
 

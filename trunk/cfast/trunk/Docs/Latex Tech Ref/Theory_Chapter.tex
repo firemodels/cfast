@@ -777,7 +777,7 @@ where $\Delta \hat{q}_k\dprime = \Delta q_k / \epsilon$, $F_{k-j}$ is the config
 
 The walls can be modeled using two surfaces or four.  The four wall model is necessary for fire rooms because the temperatures of the ceiling and upper walls differ significantly.  The two wall model is used for compartments that contain no fires.
 
-To simplify the comparison between the two and four wall segment models, assume that the emissivities of all wall segments are one and that the gas absorptivities are zero.  Let the room dimensions be 4 m ? 4 m ? 4 m, the temperature of the floor and the lower and upper walls be 300 K, and the ceiling temperature vary from 300 K to 600 K. Figure \ref{fig:Rad_2vs4} shows a plot of the heat flux to the ceiling and upper wall as a function of the ceiling temperature \cite{Forney_radiation, Jones:1993}. The two wall model predicts that the extended ceiling (a surface formed by combining the ceiling and upper wall into one wall segment) cools, while the four wall model predicts that the ceiling cools and the upper wall warms.  The four-wall model moderates temperature differences that may exist between the ceiling and upper wall (or floor and lower wall) by allowing heat transfer to occur between the ceiling and upper wall. This problem does not arise when a fire is not present.
+To simplify the comparison between the two and four wall segment models, assume that the emissivities of all wall segments are one and that the gas absorptivities are zero.  Let the room dimensions be 4 m by 4 m by 4 m, the temperature of the floor and the lower and upper walls be 300 K, and the ceiling temperature vary from 300 K to 600 K. Figure \ref{fig:Rad_2vs4} shows a plot of the heat flux to the ceiling and upper wall as a function of the ceiling temperature \cite{Forney_radiation, Jones:1993}. The two wall model predicts that the extended ceiling (a surface formed by combining the ceiling and upper wall into one wall segment) cools, while the four wall model predicts that the ceiling cools and the upper wall warms.  The four-wall model moderates temperature differences that may exist between the ceiling and upper wall (or floor and lower wall) by allowing heat transfer to occur between the ceiling and upper wall. This problem does not arise when a fire is not present.
 
 Reference \cite{Forney_radiation} documents how to minimize the work required to compute the 16 configuration factors, $F_{k-j}$, required in a 4 wall model.
 
@@ -923,7 +923,7 @@ Ceilings and floors (hot surface up or cold surface down & {$Nu_L = 0.13 Ra_L^{1
 \end{center}
 \end{table}
 
-The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal diffusivity. The thermal diffusivity, ?, and thermal conductivity, k, of air are defined as a function of the film temperature from data in reference \cite{Atreya:2003} as
+The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal diffusivity. The thermal diffusivity, $\alpha$, and thermal conductivity, $k$, of air are defined as a function of the film temperature from data in reference \cite{Atreya:2003} as
 
 \be \alpha = 1.0 x 10^{-9} T_f^{7/4} \ee
 
@@ -1005,9 +1005,9 @@ Q_H^* = \frac{Q}{\rho_u c_p T_u g^{1/2} H^{5/2} } \ee
 \be Q = 
 \left\{
 \begin{array}{cc}
-Q_{fc} \brackets{\frac{\sigma \dot{M}^*}{1 + \sigma}}& Z_{fire} < Z_{layer} < Z_{ceil} \\
+Q_{f,C} \brackets{\frac{\sigma \dot{M}^*}{1 + \sigma}}& Z_{fire} < Z_{layer} < Z_{ceil} \\
 \\
-Q_{fc} & {\begin{array}{c}
+Q_{f,C} & {\begin{array}{c}
 Z_{fire} \ge Z_{layer} \\
 Z_{layer} = Z_{ceil}
 \end{array} } 
@@ -1038,7 +1038,7 @@ increases.  Reference \cite{Cooper:1991} provides details of the calculation of 
 
 \section{Heat Detection}
 
-Heat detection is modeled using temperatures obtained from the ceiling jet \ref{Cooper:1991}. Rooms without fires do not have ceiling jets. Sensors in these types of rooms use gas layer temperatures instead of ceiling jet temperatures. The characteristic detector temperature is simply the temperature of the ceiling jet (at the location of the detector). The characteristic heat detector temperature is modeled using the differential equation \cite{Heskestad:1976}
+Heat detection is modeled using temperatures obtained from the ceiling jet \cite{Cooper:1991}. Rooms without fires do not have ceiling jets. Sensors in these types of rooms use gas layer temperatures instead of ceiling jet temperatures. The characteristic detector temperature is simply the temperature of the ceiling jet (at the location of the detector). The characteristic heat detector temperature is modeled using the differential equation \cite{Heskestad:1976}
 
 \be \frac{dT_L}{dt} = \frac{\sqrt{V(t)}}{RTI} \brackets{T_g(t) - T_L(t)} \; , \; T_L(0) = T_g(0)\label{eq:RTI} \ee
 where $T_L$ and $T_g$ are the link and gas temperatures, $V$ is the gas velocity, and $RTI$ (response time index) is a measure of the sensor's sensitivity to temperature change (thermal inertia).  The heat detector differential eq (\ref{eq:RTI}) may be rewritten to

@@ -92,7 +92,7 @@ A differential equation for density can be derived by applying the quotient rule
 
 Temperature differential equations can be obtained from the equation of state by applying the quotient rule to $\dbydt{T_i} = \dbydt{} \brackets{\frac{P}{R \rho_i}}$ and using eq \ref{eq:layer_density} to eliminate $\dbydt{\rho_i}$ to obtain
 
-\be \dbydt{T_i} = \frac{1}{c_p rho_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i}+ V_i \dbydt{P}} \ee
+\be \dbydt{T_i} = \frac{1}{c_p \rho_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i}+ V_i \dbydt{P}} \ee
 
 These equations for each of the 11 variables are summarized in table \ref{tab:zone_model_equations}. The time evolution of
 these solution variables can be computed by solving the corresponding differential equations
@@ -277,8 +277,8 @@ available fuel, $\dot{m}_{tuhc}$, is reduced by the final value of $\dot{m}_f$ b
 
 \be Q_f = \dot{m}_f H_c \ee
 with the mass of oxygen required to achieve this energy release rate of
-\be \dot{m}_O = \frac{Q_f}{E} = \dot{m}_f \frac{H_c}{E} \ee
-where $E$ is the heat release per mass unit of oxygen consumed, taken to be 1.31 x $10^7$ J/kg\footnote{The units for oxygen consumption calorimetry are J/kg. The value 1.31 x $10^7$ J/kg is representative of typical fuels such as furniture (see reference \cite{Morehart:1991}) and implies these units. The variation or uncertainty (2$\sigma$) associated with this value is on the order of $\pm$ 5 \%} (based 
+\be \dot{m}_O = \frac{Q_f}{E_O} = \dot{m}_f \frac{H_c}{E} \ee
+where $E_O$ is the heat release per mass unit of oxygen consumed, taken to be 1.31 x $10^7$ J/kg\footnote{The units for oxygen consumption calorimetry are J/kg. The value 1.31 x $10^7$ J/kg is representative of typical fuels such as furniture (see reference \cite{Morehart:1991}) and implies these units. The variation or uncertainty (2$\sigma$) associated with this value is on the order of $\pm$ 5 \%} (based 
 on oxygen consumption calorimetry for typical fuels \cite{Morehart:1991, Thornton:1917, Huggett:1980}). If the fuel contains oxygen (available for combustion), the oxygen needed to achieve full combustion is less:
 
 \be \dot{m}_{O,needed} = \dot{m}_O - \dot{m}_{O, in the fuel} \ee
@@ -289,7 +289,7 @@ burned, as opposed to the amount pyrolyzed.  The actual limitation is discussed 
 
 \be \dot{m}_{O.actual} = min \brackets{\dot{m}_{O,available} , \dot{m}_{O,needed}} \ee
 
-\be \dot{m}_{f,actual} = \dot{m}_{O,actual} \frac{E}{H_c}  \ee
+\be \dot{m}_{f,actual} = \dot{m}_{O,actual} \frac{E_O}{H_c}  \ee
 The relationship between oxygen and fuel concentration defines a range in which burning will 
 take place.  In the CFAST model, a limit is incorporated by limiting the burning rate as the 
 oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is 
@@ -550,7 +550,7 @@ where $C$ is the constriction (or flow) coefficient (Å0.7), $\rho$ is the gas de
 
 The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  By breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, the flow equation can be integrated piecewise analytically and then summed.  
 
-The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in figure \ref{Fig:Flow_Notation}.
+The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in figure \ref{fig:Flow_Notation}.
 
 \begin{figure}[t]
 \begin{center}
@@ -690,15 +690,15 @@ Ceiling jet flow in a corridor can be characterized as a one dimensional gravity
 where $m$ is mass, $g$ is the acceleration of gravity, $d_0$ is the height of the gravity current and $V$ is the velocity. When the density difference, between the current and the ambient fluid is small, the velocity, $V$, is proportional to $\sqrt{g d_0 \Delta \rho / \rho_{cj}}$ = $\sqrt{g d_0 \Delta T / T_{amb}}$ where $\rho_{amb}$ and $T_{amb}$ are the ambient density and temperature and $\rho_{cj}$ and $T_{cj}$ are the density and temperature of the ceiling jet and  $\Delta T = T_{cj} - T_{amb}$ is the temperature difference. Here use has been made of the ideal gas law, $\rho_{amb} T_{amb} \approx \rho_{cj} T_{cj}$.  This can be shown using an integrated form of Bernoulli's law noting that the pressure drop at the bottom of the ceiling jet is $P_b = 0$, the pressure drop at the top is $P_t = gd_0(\rho_{cj} - \rho_{amb})$ and using a vent coefficient cvent of 0.74, to obtain
 
 \begin{eqnarray} 
-V_0 & = & c_{vent} \frac{\sqrt{8}}{3} \frac{1}{\sqrt{\rho_{cj}}} \frac{P_t + \sqrt{P_tP_b}+P_b}{\sqrt{P_t} + \sqrt{P_b}} \nonumber \\
- & = & c_{vent} \frac{\sqrt{8}}{3} \sqrt{\frac{P_t}{\rho_{cj}}} \nonumber \\
- & = & c_{vent} \frac{\sqrt{8}}{3} \sqrt{g d_0 \frac{\rho_{amb} - \rho_{cj}}{\rho_{cj}}} \nonumber \\
+v_0 & = & C \frac{\sqrt{8}}{3} \frac{1}{\sqrt{\rho_{cj}}} \frac{P_t + \sqrt{P_tP_b}+P_b}{\sqrt{P_t} + \sqrt{P_b}} \nonumber \\
+ & = & C \frac{\sqrt{8}}{3} \sqrt{\frac{P_t}{\rho_{cj}}} \nonumber \\
+ & = & C \frac{\sqrt{8}}{3} \sqrt{g d_0 \frac{\rho_{amb} - \rho_{cj}}{\rho_{cj}}} \nonumber \\
  & \approx & 0.7 \sqrt{g d_0 \frac{\Delta T}{T_{amb}}} \label{eq:Corridor_Flow}
  \end{eqnarray}
  
 Formulas of the form of the above equation lead one to conclude that a ceiling jet's characteristics in a corridor depend on its depth, $d_0$, and relative temperature difference, $\Delta T/T_{amb}$. Therefore, as the jet cools, it slows down. If no heat transfer occurs between the ceiling jet and the surrounding walls, then the only mechanism for cooling is mixing with surrounding cool air.
 
-Twenty numerical experiments were performed using FDS in order to better understand the effects of the inlet ceiling jet temperature and depth on ceiling jet characteristics downstream in a corridor.  These cases were run with five different inlet depths and four different inlet temperatures.  The inlet ceiling jet temperature rise, $\Delta T_0$, and depth, $d_0$, were used to define an inlet velocity, $V_0$ using eq (\ref{eq:Corridor_Flow}).  The inlet ceiling jet depths, $d_0$, used in the parameter study are 0.15 m, 0.30 m, 0.45 m, 0.60 m and 0.75 m. The inlet ceiling jet temperature rises, $T_0$, used in the parameter study are 100 \degc, 200 \degc, 300 \degc and 400 \degc.
+Twenty numerical experiments were performed using FDS in order to better understand the effects of the inlet ceiling jet temperature and depth on ceiling jet characteristics downstream in a corridor.  These cases were run with five different inlet depths and four different inlet temperatures.  The inlet ceiling jet temperature rise, $\Delta T_0$, and depth, $d_0$, were used to define an inlet velocity, $v_0$ using eq (\ref{eq:Corridor_Flow}).  The inlet ceiling jet depths, $d_0$, used in the parameter study are 0.15 m, 0.30 m, 0.45 m, 0.60 m and 0.75 m. The inlet ceiling jet temperature rises, $T_0$, used in the parameter study are 100 \degc, 200 \degc, 300 \degc and 400 \degc.
 
 \subsubsection{Correlations} 
 
@@ -806,8 +806,8 @@ where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta
 
 {\bf Transmittance and Absorptance:} The transmittance of a gas volume is the fraction of radiant energy that will pass through it unimpeded and is given by
 
-\be \tau (L) = e^{-aL} \ee
-where $a$ is the absorption coefficient of the gas volume and $L$ is a characteristic path length.
+\be \tau (L) = e^{-\alpha L} \ee
+where $\alpha$ is the absorptance of the gas volume and $L$ is a characteristic path length.
 
 The absorptance, $\alpha$, of a gas volume is the fraction of radiant energy absorbed by that volume.  For a gray gas, $\alpha + \tau = 1$.
 
@@ -864,7 +864,7 @@ intercepted by the target (i.e., a configuration factor) and $\tau_U (L_U)$ and 
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/Theory/Radiation_Gases}\\
 \end{center}
-\caption{Radiative heat transfer from the uper and lower layer gas to a target in the lower layer.}
+\caption{Radiative heat transfer from the upper and lower layer gas to a target in the lower layer.}
  \label{fig:Rad_Gases}
 \end{figure}
 
@@ -886,7 +886,7 @@ Let $q_{w,t,gas}\dprime$ denote the flux striking the target due to the gas g in
 \end{array}
 \right. \label{eq:Rad_Gases} \ee
 
-The total target flux due to the gas (upper or lower layer) is obtained by summing eq (\ref{Rad_Gases} over each wall segment or
+The total target flux due to the gas (upper or lower layer) is obtained by summing eq (\ref{eq:Rad_Gases} over each wall segment or
 
 \be q_{g,t}\dprime = \sum_w = q_{w,t,gas}\dprime  \ee
 
@@ -904,7 +904,7 @@ Equation (\ref{eq:Target_Newton}) is iterated until the difference $T_{new} - T_
 
 In general, convective heat transfer, $q\dprime$, across a surface of area $A_S$, is defined as
 
-\be q\dprime = h a_S \brackets{T_g - T_s} \ee
+\be q\dprime = h A_S \brackets{T_g - T_s} \ee
 
 The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. The Nusselt number is defined as $Nu_L = h L / k$, which for natural convection is related to the Rayleigh number, $Ra_L = g \beta \brackets{T_s - T_g}L^3 / \nu \alpha$ where $L$ is a characteristic length of the geometry, $g$ is the gravitational constant (m/s\superscript{2}), $k$ is the thermal conductivity (W/m\superscript{2} K), $\beta$ is a volumetric expansion coefficient (K\superscript{-1}), $T_s$ and $T_g$ are the temperatures of the surface and gas, respectively (K), $\nu$ is the kinematic viscosity (m\superscript{2}/s), and $\alpha$ is the thermal diffusivity (m\superscript{2}/s).  All properties are evaluated at the film temperature, $T_f = \brackets{T_s + T_g}/2$.  The typical correlations applicable to the problem at hand are available in the literature  \cite{Atreya:2003}. The table below gives the correlations used in CFAST.
 
@@ -1040,8 +1040,8 @@ increases.  Reference \cite{Cooper:1991} provides details of the calculation of 
 
 Heat detection is modeled using temperatures obtained from the ceiling jet \cite{Cooper:1991}. Rooms without fires do not have ceiling jets. Sensors in these types of rooms use gas layer temperatures instead of ceiling jet temperatures. The characteristic detector temperature is simply the temperature of the ceiling jet (at the location of the detector). The characteristic heat detector temperature is modeled using the differential equation \cite{Heskestad:1976}
 
-\be \frac{dT_L}{dt} = \frac{\sqrt{V(t)}}{RTI} \brackets{T_g(t) - T_L(t)} \; , \; T_L(0) = T_g(0)\label{eq:RTI} \ee
-where $T_L$ and $T_g$ are the link and gas temperatures, $V$ is the gas velocity, and $RTI$ (response time index) is a measure of the sensor's sensitivity to temperature change (thermal inertia).  The heat detector differential eq (\ref{eq:RTI}) may be rewritten to
+\be \frac{dT_L}{dt} = \frac{\sqrt{v(t)}}{RTI} \brackets{T_g(t) - T_L(t)} \; , \; T_L(0) = T_g(0)\label{eq:RTI} \ee
+where $T_L$ and $T_g$ are the link and gas temperatures, $v$ is the gas velocity, and $RTI$ (response time index) is a measure of the sensor's sensitivity to temperature change (thermal inertia).  The heat detector differential eq (\ref{eq:RTI}) may be rewritten to
 
 \be \frac{dT(t)}{dt} = a(t) - b(t)T(t) \; , \; T(t_0) = T_0 \label{eq:RTI_rewritten} \ee
 where $a(t) = \frac{\sqrt{V(t)}T(t)}{RTI}$ and $b(t) = \frac{\sqrt{V(t)}}{RTI}$. Equation (\ref{eq:RTI_rewritten}) may be solved using the trapezoidal rule to obtain
@@ -1061,13 +1061,13 @@ Equation (\ref{eq:RTI_solution1}) reduces to the trapezoidal rule for integratio
  
 \section{Sprinkler Activation and Fire Attenuation} \label{sec:suppression}
 
-For suppression, the sprinkler is modeled using a simple model \cite{Madrzykowski:1992} generalized for varying sprinkler spray densities \cite{Evans:1993}. It is then modeled by attenuating all fires in the room where the sensor activated by a term of the form $e^{-(t-t_{act})/t_{rate}}$ where $T_{act}$ is the time when the sensor activated and $t_{rate}$ is a constant determining how quickly the fire attenuates. The term $t_{rate}$ can be related to spray density of a sprinkler using a correlation developed in \cite{Evans:1993}. The suppression correlation was developed by modifying the heat release rate of a fire. For $t > t_{act}$ the heat release is given by 
+For suppression, the sprinkler is modeled using a simple model \cite{Madrzykowski:1992} generalized for varying sprinkler spray densities \cite{Evans:1993}. It is then modeled by attenuating all fires in the room where the sensor activated by a term of the form $e^{-(t-t_{act})/t_{rate}}$ where $t_{act}$ is the time when the sensor activated and $t_{rate}$ is a constant determining how quickly the fire attenuates. The term $t_{rate}$ can be related to spray density of a sprinkler using a correlation developed in \cite{Evans:1993}. The suppression correlation was developed by modifying the heat release rate of a fire. For $t > t_{act}$ the heat release is given by 
 
-\be q_f(t) = e^{-\brackets{t-t_{act}} / \brackets{3 Q_{spray}^{-1.8}}} Q(t_{act}) \ee
+\be Q_f(t) = e^{-\brackets{t-t_{act}} / \brackets{3 Q_{spray}^{-1.8}}} Q_f(t_{act}) \ee
 where $Q_{spray}$ is the spray density of a sprinkler. Note that decay rate can be formulated in terms of either the attenuation rate or the spray density. $t_{rate}$ can be expressed in terms of $Q_{spray}$ as $t_{rate} = 3Q_{spray}^{-1.8}$. A calculation is done to make sure that the fuel burned is consistent with the available oxygen. Once detection has occurred, then the mass and energy release rates are attenuated by
 
-\be \dot{m}_{pyrols}(t) = e^{-\brackets{t-t_{act}} / t_{rate}} \dot{m}_{pyrols}(t_{act}) \ee
-\be \dot{q}_{pyrols}(t) = e^{-\brackets{t-t_{act}} / t_{rate}} \dot{q}_{pyrols}(t_{act}) \ee
+\be \dot{m}_f(t) = e^{-\brackets{t-t_{act}} / t_{rate}} \dot{m}_f(t_{act}) \ee
+\be Q_f(t) = e^{-\brackets{t-t_{act}} / t_{rate}} Q_f(t_{act}) \ee
 
 There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers are noted but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how this should be handled, i.e.,how two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the worst conditions (usually the closest fire) in order to calculate the fire sensor temperatures.  Finally, the ceiling jet algorithm that we use results in temperature predictions that are warmer (for a given heat release rate) than those used in the correlation developed by Madrzykowski \cite{Madrzykowski:1995}, which will cause activation sooner than expected.
 
@@ -1158,7 +1158,7 @@ CFAST has been subjected to independent review in two ways, internal and externa
 In addition to the formal review, procedures were in place during the development of CFAST to assure the quality of the model.  These procedures included several components:
 
 \begin{itemize}
-\item Review of proposed changes to the code by at least two others involved in the development process to insure that a proposed change was consistent with the rest of the CFAST code and was implemented correctly. These reviews, while informal in nature, provided a comprehensive review of the changes to the model during its development.  Significant changes were documented in internal memorandums covering such areas as the numerics and structure of the model \cite{Peacock:1992}, improvements in the chemistry \cite{Peacock:1994}, convection \cite{Peacock:1993a}, HCl deposition \cite{Peacock:1993b} algorithms, and output formats for the model \cite{Peacock:1993c}. Comparisons of the impact of the changes on the output results were often described in internal memorandums (see, for example, reference \ref{Peacock:1992}).
+\item Review of proposed changes to the code by at least two others involved in the development process to insure that a proposed change was consistent with the rest of the CFAST code and was implemented correctly. These reviews, while informal in nature, provided a comprehensive review of the changes to the model during its development.  Significant changes were documented in internal memorandums covering such areas as the numerics and structure of the model \cite{Peacock:1992}, improvements in the chemistry \cite{Peacock:1994}, convection \cite{Peacock:1993a}, HCl deposition \cite{Peacock:1993b} algorithms, and output formats for the model \cite{Peacock:1993c}. Comparisons of the impact of the changes on the output results were often described in internal memorandums (see, for example, reference \cite{Peacock:1992}).
 
 \item Internal review of the model prior to public release.  In addition to the normal NIST document review process, the CFAST software was circulated internally to Fire Research Division Staff to allow interested staff members to test the model \cite{Jones:1996b, Jones:1997, Jones:2000}. These memorandums detail changes to the model since the last public release of the model and provide documentation of the history of the model development.
 

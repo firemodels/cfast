@@ -63,7 +63,7 @@ form
 \ee
 where $y$ is a vector representing pressure, layer height, mass and such, and $f$ is a vector function
 that represents changes in these values with respect to time.  The term $y_0$ is an initial condition at 
-the initial time $t_0$ .  The subroutine RESID computes the right hand side of eq (\ref{eq:basicsoultion}) and returns a set of residuals of that calculation to be compared to the values expected by DASSL.  DASSL then checks for convergence.  Once DASSL reaches an error limit (defined as convergence of 
+the initial time $t_0$ .  The subroutine RESID computes the right hand side of eq (\ref{eq:basicsolution}) and returns a set of residuals of that calculation to be compared to the values expected by DASSL.  DASSL then checks for convergence.  Once DASSL reaches an error limit (defined as convergence of 
 the equations) for the solution at $t + \Delta t$,  SOLVE then advances the solution of species concentra- 
 tion, wall temperature profiles, and mechanical ventilation for the same time interval. 
 Note that there are several distinct time scales that are involved in the solution of this type of 

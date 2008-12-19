@@ -411,7 +411,7 @@ C     Natural flow through vertical vents (horizontal flow)
 	parameter (maxoutput=512)
 	double precision outarray(maxoutput), time, xiroom, zdetect,
      . tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal,
-     . ctotal, tttemp, tlay
+     . ctotal, tttemp, tctemp, tlay
       INTEGER IWPTR(4), errocode
       EXTERNAL LENGTH
       DATA IWPTR /1, 3, 4, 2/
@@ -457,13 +457,18 @@ C     Natural flow through vertical vents (horizontal flow)
         IF (NTARG.GT.NM1) THEN
           DO 20 ITARG = 1, NTARG-NM1
             IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
-			TTTEMP = XXTARG(TRGTEMPF,ITARG)
-			RTOTAL = XXTARG(TRGTFLUXF,ITARG)
+			  TTTEMP = XXTARG(TRGTEMPF,ITARG)
+              ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
+              TCTEMP = XXTARG(ITCTEMP,ITARG)
+              IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
+              IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
+			  RTOTAL = XXTARG(TRGTFLUXF,ITARG)
               FTOTAL = QTFFLUX(ITARG,1)
               WTOTAL = QTWFLUX(ITARG,1)
               GTOTAL = QTGFLUX(ITARG,1)
               CTOTAL = QTCFLUX(ITARG,1)
-			call SSaddtolist (position, tttemp-273.15, outarray)
+			  call SSaddtolist (position, tttemp-273.15, outarray)
+			  call SSaddtolist (position, tctemp-273.15, outarray)
               call SSaddtolist (position, rtotal, outarray)
               call SSaddtolist (position, ftotal, outarray)
               call SSaddtolist (position, wtotal, outarray)
@@ -529,7 +534,7 @@ c   40 CONTINUE
        
 
 !.....  target number
-!.....  compartment name, flux, fire, surface, gas, convect
+!.....  surface temp, center temp, flux, fire, surface, gas, convect
 
 
 !.....  sensor number
@@ -544,15 +549,15 @@ c   40 CONTINUE
 
       parameter (maxoutput=512)
 	integer position
-      character heading*30(maxoutput,2), clabels*30(9), tlables*30(6),
+      character heading*30(maxoutput,2), clabels*30(9), tlables*30(7),
      . tnum*2, ostring*30, slables*30(5), xtype*5, blank
 
       data clabels/"ceiling","upper wall","lower wall","floor",
      . "flux to target","total fire rad.","surface rad.","gas rad.",
      . "convective flux"/, blank/''/
 
-      data tlables/"compartment","total flux","fire flux",
-     . "surface flux","gas flux","convective flux"/
+      data tlables/"surface temp","center temp","total flux",
+     . "fire flux","boundary flux","gas flux","convective flux"/
 
 	data slables/"compartment","sensor temp.", "activated",
      . "smoke temp.","smoke velocity"/
@@ -578,11 +583,10 @@ c   40 CONTINUE
         DO 30 ITARG = 1, NTARG-NM1
           IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
 			  write(tnum,"(i2)") itarg
-			  do 31 j = 1, 6
+			  do 31 j = 1, 7
 			  heading(position+j,1) = "Target "//tnum
    31			  heading(position+j,2) = tlables(j)
-			  heading(position+1,2) = compartmentnames(i)
-			  position = position + 6
+			  position = position + 7
           END IF
    30   CONTINUE
       END IF

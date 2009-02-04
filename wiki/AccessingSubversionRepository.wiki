@@ -1,0 +1,93 @@
+#summary Instruction on using SmartSVN to Connect to the cfast SVN repository.
+
+=Introduction=
+
+[http://code.google.com Google Code] uses [http://subversion.tigris.org Subversion] (SVN) for version control.  Subversion is widely considered as an improved versioning method over CVS.  This Wiki page provides instructions on using a browser called _SmartSVN_ or the command line to obtain files from the cfast SVN Repository.
+
+=Using SVN via the Browser SmartSVN=
+
+[http://smartsvn.com SmartSVN] is available as freeware.  A for-purchase version of _SmartSVN_ is available that has additional capabilities, but for most users the free version will suffice.  Note that other programs are available (list of some found [http://subversion.tigris.org/links.html#clients here]).  
+
+==Adding the Repository to SVN==
+
+  * After installing _SmartSVN_, launch the program.  
+  * The program will open with a _Welcome to SmartSVN_ window.  Select *Check out project from repository*.
+  * A _Check Out Project_ window will open.  Select *Manage*
+  * A _Repository Profiles_ window will open.  Select *Add*
+  * An _Add Repository Profile_ window will open.
+    * Select *HTTP* for the protocol
+    * In the *Server Name* box type fds-smv.googlecode.com 
+    * In the *Repository Path* box type /svn/trunk/cfast/trunk
+    * Click *Next*
+    * Select *Anonymous* for the SVN Login
+    * Click *Next*
+    * If you desire to see something other than the URL in _Check Out Project_ window select *Use This Profile Name* and enter a name.  'cfast' would be suitable here.
+    * To check out the code follow the instructions in the next section.
+
+==Obtaining Files==
+
+===The First Time===
+Once a project has been added to the repository it can then be checked out.
+
+  * After launching _SmartSVN_, select *Check out project from repository*
+  * A _Check Out Project_ window will open.  Using the drop down box select the cfast repository.
+  * Click *Next*
+  * _SmartSVN_ will scan the repository in display a directory tree.  The folders in the tree can be opened and closed with the *plus/minus* buttons.
+  * Expand the _cfast_ folder, then select the 'trunk' folder under it.
+  * Click *Next*
+  * Type in or browse a *Local directory* where the files will be stored on your computer.
+  * Click *Next*
+  
+At this point, the entire cfast project will be copied from the repository to your computer.
+
+===After the First Time===
+
+  * After launching _SmartSVN_, select *Open Existing project(s):*
+  * Select the *Project Name* you wish update
+  * Click *OK*
+  * You can now select either a file or a subdirectory and click the green arrow to update your local files from the repository.
+
+
+
+=Using SVN at the Command Line, without using SmartSVN client=
+
+If you have SVN command line client installed, you can check out the cfast repository using the command line version of SVN. 
+
+You can download the command line client for your platform here:
+http://subversion.tigris.org/project_packages.html
+
+Open a terminal/shell session and change to the directory that you want the cfast project folder to be placed within.  NOTE: the distinction between "https" and "http" below.
+
+==Anonymous Checkout==
+If you are not a member of the cfast development team, then type:
+
+{{{svn co http://fds-smv.googlecode.com/svn/trunk/cfast/trunk cfast}}}
+
+==Developer Checkout==
+NOTE: Replace 'my_name' in the string below with your google account username.  This is the same username that has been given Project Member status in Google Code.
+
+As a member of the FDS-SMV development team with commit privileges, type:
+
+{{{svn co https://fds-smv.googlecode.com/svn/trunk/cfast/trunk cfast --username my_name}}}
+
+You might be prompted for your password, but this is _*NOT* the password for your Google Account_, this is a special Google Code password that you can find through a link under the "Source" tab of the Google Code cfast project site.  It will be a random bunch of numbers and letters and nothing that you can specify. NOTE: the link will not be available unless you are a Project Member or Owner.  
+
+
+Either way, a directory called cfast will appear in the directory where you executed the checkout command (the 'co' part of the string), with the contents of the FDS-SMV repository contained within.
+
+==Updates==
+
+To update your local copy of the repository, go to the sub-directory that you want to update (cfast in the example above) and type:
+
+{{{svn update}}}
+
+NOTE: This could be used to update any of the sub-directories under cfast.  If you change down to a subdirectory, like 'SOURCE_FDS5' and execute the svn update command, only that directory will be updated.
+
+==Change or Commit Log==
+
+To obtain a log of transactions for that particular sub-directory, type:
+
+{{{svn log -r N:M > text_file.txt}}}
+
+Which will record all transactions from SVN revision N to M in the file text_file.txt
+By switching the order of the revision numbers you can sort the log in ascending or descending order by revision number.

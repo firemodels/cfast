@@ -1,0 +1,239 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CB26F40A-5B87-473B-805B-5392B6D0FE8C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>BFRL.ICO</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>CEdit</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyMode>None</AssemblyOriginatorKeyMode>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>Off</OptionStrict>
+    <RootNamespace>CEdit</RootNamespace>
+    <StartupObject>CEdit.CeditMain</StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\Bin\</OutputPath>
+    <DocumentationFile>CEdit.xml</DocumentationFile>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>
+    </DefineConstants>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <NoWarn>42016,42017,42018,42019,42032</NoWarn>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\Bin\</OutputPath>
+    <DocumentationFile>CEdit.xml</DocumentationFile>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>
+    </DefineConstants>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <NoWarn>42016,42017,42018,42019,42032</NoWarn>
+    <DebugType>none</DebugType>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="C1.C1Preview.2, Version=2.0.20082.50035, Culture=neutral, PublicKeyToken=594a0605db190bb9, processorArchitecture=MSIL" />
+    <Reference Include="C1.Win.C1FlexGrid.2, Version=2.6.20083.387, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
+    <Reference Include="C1.Win.C1Preview.2, Version=2.0.20082.50035, Culture=neutral, PublicKeyToken=41780e2fc605e636, processorArchitecture=MSIL" />
+    <Reference Include="C1.Win.C1Sizer.2, Version=2.1.20083.36, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualBasic">
+      <Name>Microsoft.VisualBasic</Name>
+    </Reference>
+    <Reference Include="NPlot, Version=0.9.10.0, Culture=neutral, PublicKeyToken=4eda430eb4395eb1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\nplot-0.9.10.0\bin\net\2.0\release\NPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Design">
+      <Name>System.Design</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Web">
+      <Name>System.Web</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="About.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CEdit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compartment.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Copy.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CSVsheet.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Environment.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Errors.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Fire.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FireObjectsEdit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IO.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecentFiles.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RunModel.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="t2fire.Designer.vb">
+      <DependentUpon>t2fire.vb</DependentUpon>
+    </Compile>
+    <Compile Include="t2fire.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Target.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Thermal Properties Edit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thermal Properties.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TimeStep.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UpdateGUI.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="User Units.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vent.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ViewFile.Designer.vb">
+      <DependentUpon>ViewFile.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ViewFile.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CEdit.resx">
+      <DependentUpon>CEdit.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FireObjectsEdit.resx">
+      <DependentUpon>FireObjectsEdit.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\licenses.licx" />
+    <EmbeddedResource Include="RunModel.resx">
+      <DependentUpon>RunModel.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="t2fire.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>t2fire.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thermal Properties Edit.resx">
+      <DependentUpon>Thermal Properties Edit.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimeStep.resx">
+      <DependentUpon>TimeStep.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Units.resx">
+      <DependentUpon>User Units.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewFile.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ViewFile.vb</DependentUpon>
+    </EmbeddedResource>
+    <Content Include="BFRL.ICO" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

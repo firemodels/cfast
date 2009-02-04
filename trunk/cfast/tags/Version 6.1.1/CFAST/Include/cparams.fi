@@ -1,0 +1,40 @@
+C	Aug 15,1995 added parameters MDCHK,MDSET,MDUPDT for 
+C	            use in SOLVE by updating routines (PAR)
+C   May 1, 2004 - increased the number of fires from mxoin+1 to 2*mxoin
+C   May 1, 2004 - increased the maximum number of vents from 4*NR to NR*NR
+!	July, 2005 For the fire parameters (mxfirp), see notation in FIRES
+
+      INTEGER UPPER, LOWER
+
+      PARAMETER (NR=31, NN=61, NV=199, NS=11, MXOIN=NR,
+     +    MXFIRP = 19, mxccv = 25)
+      PARAMETER (MXFIRE = 2*MXOIN)
+C     NT = 4*NR(MAIN EQU) + 2*NR*NS(SPECIES) * 4*NR(HCL) + 4*NR(SMOKE)
+      PARAMETER (NT = 12*NR+2*NR*NS,MXSLB = 6,NWAL = 4,MOPT = 6,MARG = 3
+     +    )
+      PARAMETER (UPPER = 1,LOWER = 2,NTHMX = 125,NVAR = 21)
+      PARAMETER (MFAN = 15,MFCOE = 5,MCON = 3,MDT = NR+2,MNODE = 2*MDT,
+     +    MFT = 2*MDT,MEXT = 2*NR,MBR = MFAN+MDT)
+
+      PARAMETER (VFMAXDZ=0.01)
+
+      PARAMETER (MXHVSYS=60)
+      PARAMETER (NVAL = 500, NVM = 40, MAXFIL = 10,NOPTN = 23)
+      PARAMETER (MAXJEQ = 6*NR + MNODE + MBR)
+      PARAMETER (MAXEQ = MAXJEQ + NWAL*NR)
+      PARAMETER (MAXTEQ = MAXEQ+2*NR*NS+MXHVSYS*NS+4*NR*3)
+
+      INTEGER MXTARG, TRGXROW,TRGIROW,TRGTEMPF,TRGTNUM,TRGTEMPB
+      PARAMETER (TRGTEMPF=16,TRGTNUM=20,TRGTEMPB=TRGTEMPF+TRGTNUM-1)
+      PARAMETER (MXTARG=3*NR,TRGXROW=TRGTEMPB,TRGIROW=6)
+
+      PARAMETER (MDCHK = 0, MDSET = 1, MDUPDT = 2)
+      PARAMETER (MXVENTS=mxccv*NR)
+      PARAMETER (MAXCOL=3)
+
+      INTEGER MXIRM, MXORM, MXPRD, MXSLAB, MXELEV, MXVENT
+      PARAMETER (MXIRM = 20,MXORM = 4,MXPRD = 11,MXSLAB = 10)
+      PARAMETER (MXELEV = 10,MXVENT = 100)
+
+      CHARACTER*1 FILSEP
+      PARAMETER (FILSEP = '\')

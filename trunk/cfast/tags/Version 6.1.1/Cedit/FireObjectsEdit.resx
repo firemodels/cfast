@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FireData.ColumnInfo" xml:space="preserve">
+    <value>13,1,0,0,0,85,Columns:0{Width:60;Caption:"Time";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:72;Caption:"Mdot";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	2{Width:72;Caption:"Qdot";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	3{Width:72;Caption:"Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	4{Width:72;Caption:"Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	5{Width:72;Caption:"CO/CO2";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	6{Width:72;Caption:"C/CO2";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	7{Width:72;Caption:"H/C";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	8{Width:72;Caption:"O/C";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	9{Width:72;Caption:"HCN";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	10{Width:72;Caption:"HCl";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	11{Width:72;Caption:"Ct";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	12{Width:72;Caption:"TS";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
+  </data>
+  <data name="FireObjectSummary.ColumnInfo" xml:space="preserve">
+    <value>12,1,0,0,0,85,Columns:0{Width:40;Caption:"Num";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:120;Caption:"Object Name";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	2{Width:60;Caption:"Length";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	3{Width:60;Caption:"Width";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	4{Width:60;Caption:"Thickness";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	5{Width:70;Caption:"Peak QDot";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	6{Width:70;Caption:"Peak CO/CO2";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	7{Width:70;Caption:"Peak C/CO2";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	8{Width:70;Caption:"Peak HCN";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	9{Width:70;Caption:"Peak HCl";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	10{Width:60;Caption:"HoC";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	11{Width:120;Caption:"Material";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
+  </data>
+  <metadata name="C1SizerLight1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAICAQAAAAAADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAwMDAAICAgAAAAP8AAP8AAAD//wD/AAAA/wD/AP//
+        AAD///8AAAAAAAAAAACZmZAAAAAAAAAAAAAAAAAJmZmQAAAAAAAAAAAAAAAAmZmZmZAAAAAAAAAAAAAA
+        AJmZmZmZkAAAAAAAAAAAAACZmZmZmZkAAAAAAAAAAAAAmZmZmZmZkAAAAAAAAAAAAAmZmZmZmZkAAAAA
+        AAAAAAAJmZmZmZmZAAAAAAAAAAAACZkJmZCZmQAAAAAAAAAAAACZCZmQmZkAAAAAAAAAAAAAkAmZkAmZ
+        AAAAAAAAAAAAAJAJmZAJkAAAAAAAAAAAAAAAAJmQCZAAAAAAAAAAAAAAAACZkAmQAAAAAAAAAAAAAAAA
+        mQAJAAAAAAAAAAAAAAAAAJkACQAAAAAAAAAAAAAAAACZAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAA
+        AAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wf//74B//48AH/8PAA/+rwAH/A8
+        AA/qvgAHwD4AC8q+IQugPyENqr9hjaA/YZ1qv/GeYD/xnmq/875gP/O+ar/z/mA/+/5qv/v+YD///qr/
+        //2gwP/9v+3//d/z//vf8AAD7/u7V/f9bq/7/gAf/f//v/5//n//j/H///AP/w==
+</value>
+  </data>
+</root>

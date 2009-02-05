@@ -1,7 +1,7 @@
+#summary Documentation of target data structures for CFAST.
 #labels Phase-Implementation
-#Data Structures for target calculations in CFAST.
 
-= Introduction =
+=Introduction=
 
 As one of hopefully several articles on the internal data structures in CFAST, this wiki page describes the content of the data structures used to calculate target temperature and incident heat flux in CFAST.  These are of use largely to developers of the model.
 
@@ -50,4 +50,3 @@ first index: index of values for each target as follows (names in parentheses ar
 4 (TRGMETH): calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)<br>
 5 (TRGEQ): equation type for calculation (ODE, PDE) (user input from input data file)<br>
 6 (TRGBACK): INT=1 or EXT=2 whether back face of target is internal to the compartment or outside the compartment
-

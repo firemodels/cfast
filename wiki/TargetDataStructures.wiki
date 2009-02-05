@@ -49,4 +49,4 @@ first index: index of values for each target as follows (names in parentheses ar
 3 (TRGWALL): compartment surface if target is located on a surface (currently unused and set to zero)<br>
 4 (TRGMETH): calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)<br>
 5 (TRGEQ): equation type for calculation (ODE, PDE) (user input from input data file)<br>
-6 (TRGBACK): INT=1 or EXT=2 whether back face of target is internal to the compartment or outside the compartment
+6 (TRGBACK): INT=1 or EXT=2 whether back face of target is internal to the compartment or outside the compartment (calculated)

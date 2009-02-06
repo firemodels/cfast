@@ -429,8 +429,11 @@ C  ASSUME TARGET IS A 'FLOOR', 'CEILING' OR 'WALL' DEPENDING ON HOW MUCH THE TAR
         IW = 3
         IWB = 3
       ENDIF
-      ILAY = IXTARG(TRGLAYER,ITARG)
-      TG = ZZTEMP(IROOM,ILAY)
+      IRTARG = IXTARG(TRGROOM,ITARG)
+      XTARG = XXTARG(TRGCENX,ITARG)
+      YTARG = XXTARG(TRGCENY,ITARG)
+      ZTARG = XXTARG(TRGCENZ,ITARG)
+      CALL GETTGAS(IRTARG,XTARG,YTARG,ZTARG,TG)
       TGTARG(ITARG) = TG
       IF(IXTARG(TRGBACK,ITARG).EQ.INT)THEN
          TGB = TG
@@ -443,7 +446,7 @@ C  ASSUME TARGET IS A 'FLOOR', 'CEILING' OR 'WALL' DEPENDING ON HOW MUCH THE TAR
 
       TEMIS = XXTARG(TRGEMIS,ITARG)
 
-C*** CONNECTION FOR THE FRONT
+C*** CONVECTION FOR THE FRONT
 
       CALL CONVEC(IW,TG,TTARG(1),Q1)
       CALL CONVEC(IW,TG,TTARG(1)+DTTARG,Q2)
@@ -455,7 +458,7 @@ C*** CONNECTION FOR THE FRONT
      .       TEMIS*SIGMA*TTARG(1)**4
       DFLUX(1) = -4.0D0*TEMIS*SIGMA*TTARG(1)**3 + DQDTARG
 
-C*** CONNECTION FOR THE BACK
+C*** CONVECTION FOR THE BACK
 
       CALL CONVEC(IWB,TGB,TTARGB,Q1B)
       CALL CONVEC(IWB,TGB,TTARGB+DTTARGB,Q2B)
@@ -469,7 +472,52 @@ C*** CONNECTION FOR THE BACK
 
       RETURN
       END
-  
+      SUBROUTINE GETTGAS(IRTARG,XTARG,YTARG,ZTARG,TG)
+
+      include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "fltarget.fi"
+      include "objects2.fi"
+
+      LOGICAL FIRST
+      SAVE FIRST, PI, FOUR
+
+      DATA FIRST/.TRUE./
+
+      IF(FIRST)THEN
+         FIRST = .FALSE.
+         XX1 = 1.0D0
+         FOUR = 4.0D0
+         PI = FOUR*ATAN(XX1)
+      ENDIF
+      
+      do i = 1,NFIRE
+        if (ifroom(i).eq.irtarg) then
+            if (xtarg.eq.xfire(i,1).and.ytarg.eq.xfire(i,2).and.
+     *          ztarg.gt.xfire(i,3)) then
+                qdot = FQF(i)
+                xrad = radconsplit(i)
+                dfire = dsqrt(farea(i)*four/pi)
+                tu = zztemp(irtarg,upper)
+                tl = zztemp(irtarg,lower)
+                rhoamb = RAMB(irtarg)
+                zfire = xfire(i,3)
+                zlayer = ZZHLAY(irtarg,lower)
+                z = ztarg
+                call PlumeTemp (qdot, xrad, dfire, tu, tl, rhoamb, 
+     *                          zfire, zlayer, z, tplume)
+                TG = tplume
+            else
+                if (ztarg.ge.ZZHLAY(IRTARG,LOWER)) then
+                    TG = ZZTEMP(IRTARG,UPPER)
+                else
+                    TG = ZZTEMP(IRTARG,LOWER)
+                end if
+            end if
+        end if
+      end do 
+      END SUBROUTINE GETTGAS 
 
       SUBROUTINE GETYLYU(YO,Y,YT,S,YL,YU)
 C

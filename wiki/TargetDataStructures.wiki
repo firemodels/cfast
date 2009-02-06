@@ -14,8 +14,8 @@ Two-dimension array (1:TRGXROW, 1:MXTRG)<br>
 first index: index of values for each target as follows (names in parentheses are defined name for parameter in fltarget.fi):
 
 1  (TRGCENX): position of target center in X direction (user input from input data file)<br>
-2  (TRGCENY): position of target center in X direction (user input from input data file)<br>
-3  (TRGCENZ): position of target center in X direction (user input from input data file)<br>
+2  (TRGCENY): position of target center in Y direction (user input from input data file)<br>
+3  (TRGCENZ): position of target center in Z direction (user input from input data file)<br>
 4  (TRGNORMX): target normal vector, X component (user input from input data file)<br>
 5  (TRGNORMY): target normal vector, Y component (user input from input data file)<br>
 6  (TRGNORMZ): target normal vector, Z component (user input from input data file)<br>

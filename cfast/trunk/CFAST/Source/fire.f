@@ -1461,21 +1461,29 @@ C
 
       z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
       qdot_c = qdot*(1.0d0 - xrad)/1000.d0
-      if (z.le.zlayer) then
-        tplume = 9.1d0*(tl/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+      if (qdot.gt.0.0d0.and.tu.ge.tl) then
+        if (z.le.zlayer) then
+            tplume = 9.1d0*(tl/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
      *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0) + tl
-      else
-        z_i1 = zlayer - zfire
-        q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
-        xi = tu/tl
-        q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/
+        else
+            z_i1 = zlayer - zfire
+            q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
+            xi = tu/tl
+            q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/
      *      (xi*C_T)-1.d0/C_T)**(3.d0/2.d0)
-        z_i2 = (xi*q_i1star*C_T/(q_i2star**(1.d0/3.d0)*((xi-1.d0)*
+            z_i2 = (xi*q_i1star*C_T/(q_i2star**(1.d0/3.d0)*((xi-1.d0)*
      *      (Beta**2+1.d0)+xi*C_T*q_i2star**(2./3.))))**(2.d0/5.d0)*z_i1
-        z_eff = z-z_i1+z_i2
-        tplume = 9.28d0*tu*q_i2star**(2.d0/3.d0)*
+            z_eff = z-z_i1+z_i2
+            tplume = 9.28d0*tu*q_i2star**(2.d0/3.d0)*
      *      (z_i2/z_eff)**(5.d0/3.d0) + tu
-      end if
+        end if
+      else
+        if (z.le.zlayer) then
+            tplume = tl
+        else
+            tplume = tu
+        end if
+      end if  
       return
       end subroutine PlumeTemp
 

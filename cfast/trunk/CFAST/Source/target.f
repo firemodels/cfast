@@ -300,12 +300,12 @@ C*** INITIALIZE FLUX COUNTERS: TOTAL, FIRE, WALL, GAS
           QTWFLUX(ITARG,I) = 0.0D0
    10   CONTINUE
 
-        NFIRE = IFRPNT(IROOM,1)
+        NFIRERM = IFRPNT(IROOM,1)
         ISTART = IFRPNT(IROOM,2)
 
 C*** COMPUTE RADIATIVE FLUX FROM FIRE
 
-        DO 210 IFIRE = ISTART, ISTART + NFIRE - 1
+        DO 210 IFIRE = ISTART, ISTART + NFIRERM - 1
           SVECT(1) = XXTARG(TRGCENX,ITARG) - XFIRE(IFIRE,1)
           SVECT(2) = XXTARG(TRGCENY,ITARG) - XFIRE(IFIRE,2)
           SVECT(3) = XXTARG(TRGCENZ,ITARG) - XFIRE(IFIRE,3)
@@ -501,12 +501,11 @@ C*** CONVECTION FOR THE BACK
                 dfire = dsqrt(farea(i)*four/pi)
                 tu = zztemp(irtarg,upper)
                 tl = zztemp(irtarg,lower)
-                rhoamb = RAMB(irtarg)
                 zfire = xfire(i,3)
                 zlayer = ZZHLAY(irtarg,lower)
                 z = ztarg
-                call PlumeTemp (qdot, xrad, dfire, tu, tl, rhoamb, 
-     *                          zfire, zlayer, z, tplume)
+                call PlumeTemp (qdot, xrad, dfire, tu, tl, zfire, 
+     *                          zlayer, z, tplume)
                 TG = tplume
             else
                 if (ztarg.ge.ZZHLAY(IRTARG,LOWER)) then
@@ -514,6 +513,12 @@ C*** CONVECTION FOR THE BACK
                 else
                     TG = ZZTEMP(IRTARG,LOWER)
                 end if
+            end if
+        else
+            if (ztarg.ge.ZZHLAY(IRTARG,LOWER)) then
+                TG = ZZTEMP(IRTARG,UPPER)
+            else
+                TG = ZZTEMP(IRTARG,LOWER)
             end if
         end if
       end do 

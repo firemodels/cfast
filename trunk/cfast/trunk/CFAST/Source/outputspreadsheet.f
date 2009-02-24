@@ -105,7 +105,7 @@
 
       XX0 = 0.0D0
       IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
-        CALL FLAMHGT (FROOM(0),FQF(0),FAREA(0),FHEIGHT)
+        CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
         CALL SSaddtolist (position,FEMS(0),outarray)
         CALL SSaddtolist (position,FEMP(0),outarray)
         CALL SSaddtolist (position,FQF(0),outarray)
@@ -117,7 +117,7 @@
 
       IF (NUMOBJL.NE.0) THEN
         DO 200 I = 1, NUMOBJL
-          CALL FLAMHGT (FROOM(I),FQF(I),FAREA(I),FHEIGHT)
+          CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
           CALL SSaddtolist (position,FEMS(I),outarray)
           CALL SSaddtolist (position,FEMP(I),outarray)
           CALL SSaddtolist (position,FQF(I),outarray)

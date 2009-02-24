@@ -8,6 +8,7 @@ C	  Jan 28, 2002 added vface for smokeview orientation
 !     New fire variable - objmaspy is the object mass pyrolized - both of these start at 0 to include the mainfire
 !     New variable - femr: radiological flow from the fire (similar to fems and femp); radio is the radiological equivalent to objmaspy
 !     Add hvac flow summation table (hveflot): tracet is trace through a vent, traces is flow stopped by a vent
+!     Add hvac interpolation points qfmm and dpmm
 
       include "cparams.fi"
       include "dsize.fi"
@@ -43,7 +44,7 @@ C
      +    HWJ(NWAL,NR), HOCBMB(NV), HVEFLO(2,MEXT), hveflot(2,mext),
      +    BFIRED(NV), AFIRED(NV), HFIRED(NV), TFIRED(NV), HHP(MXVENTS),
      +    BW(MXVENTS), HH(MXVENTS), HL(MXVENTS), WINDC(MXVENTS),
-     +    HALLDIST(MXVENTS,2),qcvh(4,mxvents),qcvv(4,nr),qcvm(4,mfan),
+     +    HALLDIST(MXVENTS,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan),
      +    OPLUME(3,MXOIN), BR(NR), DR(NR), HR(NR), AR(NR), HRP(NR),
      +    VR(NR), HRL(NR), OTFIRET(0:MXOIN), VMFLO(NR,NR,2),
      +    XDTECT(MXDTECT,DTXCOL), QSPRAY(0:mxfire,2), radio(0:mxfire),

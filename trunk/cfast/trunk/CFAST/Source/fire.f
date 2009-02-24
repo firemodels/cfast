@@ -1389,46 +1389,34 @@ C
       RETURN
       END
 
-      SUBROUTINE FLAMHGT (IROOM, XFQF, XFAREA, FHEIGHT)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     FLAMHGT
-C
-C     Description:  Calculates flame height for a given fire size and area
-C
-C     Arguments: IROOM   Compartment number where fire is located
-C                XFQF    Fire Size (W)
-C                XFAREA  Area of the base of the fire (m^2)
-C                FHEIGHT Calculated flame height (m)
-C
-C     Source: SFPE handbook, Section 2, Chapter 1
-C
-C     Revision History:
-C        Created:  3/6/1997 at 13:45 by RDP
-!        Modified  7/11/2005 by wwj to change from Heskestaad equation 2 to equation 8 in the third edition
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      include "precis.fi"
-      include "cfast.fi"
-      include "cenviro.fi"
-      CHARACTER STR*10
-      ZERO = 0.0D0
-      FOUR = 4.0D0
-      PI = 3.14159
-      IF (XFAREA.LE.0) THEN
-        D = 0.3
-      ELSE
-        D = SQRT(FOUR*XFAREA/PI)
-      END IF
-	fheight = -1.02*d + 0.235*(xfqf/1.0d+3)**0.4
+      subroutine flamhgt (qdot, area, fheight)
+
+!     Description:  Calculates flame height for a given fire size and area
+!
+!     Arguments: qdot    Fire Size (W)
+!                area    Area of the base of the fire (m^2)
+!                fheight Calculated flame height (m)
+!
+!     Source: SFPE handbook, Section 2, Chapter 1
+
+      implicit none
+      character str*10
+      real*8, parameter :: zero = 0.0d0, four = 4.0d0, pi = 3.14159d0
+      real*8 qdot, area
+      real*8 fheight
+      real*8 d
+      if (area.le.0d0) THEN
+        d = 0.3d0
+      else
+        d = SQRT(four*area/pi)
+      end if
+	fheight = -1.02*d + 0.235*(qdot/1.0d3)**0.4d0
       fheight = max (zero, fheight)
-      RETURN
-      END
+      return
+      end subroutine flamhgt
       
-      subroutine PlumeTemp (qdot, xrad, dfire, tu, tl, rhoamb, zfire, 
-     *    zlayer, z, tplume)
+      subroutine PlumeTemp (qdot, xrad, dfire, tu, tl, zfire, zlayer,
+     *                      zin, tplume)
     
 ! Calculates plume centerline temperature at a specified height above
 ! the fire
@@ -1443,7 +1431,6 @@ C
 ! dfire   fire diamater (m)
 ! tu      upper layer gas temperature (K)
 ! tl      lower layer gas temperature (K)
-! rhoamb  density of the ambient air (kg/m^3)
 ! zfire   height of the base of the fire (m)
 ! zlayer  height of the hot/cold gas layer interface (m)
 ! z       position to calculate plume centerline temperature (m)
@@ -1453,19 +1440,47 @@ C
 ! tplume  plume centerline temperature
 
       implicit none
-      real*8 qdot, xrad, dfire, tu, tl, rhoamb, zfire, zlayer, z
+      real*8 qdot, xrad, dfire, tu, tl, zfire, zlayer, zin
       real*8 tplume
-      real*8, parameter :: g = 9.8d0, C_T = 9.115d0, Beta = 0.955d0, 
-     *    cp = 1.012d0
-      real*8 z0, qdot_c, z_i1, q_i1star, xi, q_i2star, z_i2, z_eff
+      real*8, parameter :: g = 9.8d0, C_T = 9.115d0, Beta = 0.955d0,
+     *                     piov4 = (3.14159d0/4.0d0)
+      real*8 cp,  rhoamb, z0, qdot_c, z_i1, q_i1star, xi, fheight, z,
+     *       q_i2star, z_i2, z_eff, dt
 
-      z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
+!     z0 = virtual origin, qdot_c = convective HRR
+      z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0 + zfire
       qdot_c = qdot*(1.0d0 - xrad)/1000.d0
-      if (qdot.gt.0.0d0.and.tu.ge.tl) then
+
+!     plume temperature correlation is only valid above the mean flame height      
+      call flamhgt (qdot,piov4*dfire**2,fheight)
+      if (fheight + zfire.lt.zin) then 
+        z = zin
+      else
+        z = fheight + zfire
+      end if
+!     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
+      if (qdot.gt.0.0d0.and.tu.ge.tl.and.z.gt.zfire) then
+
+!       fire and target are both in the lower layer
         if (z.le.zlayer) then
-            tplume = 9.1d0*(tl/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
-     *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0) + tl
+            rhoamb = 352.981915d0/tl
+            cp = 3.019d-7*tl**2 - 1.217d-4*tl + 1.014d0
+            dt = 9.1d0*(tl/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0)
+            tplume = tl + dt
+     
+!       fire and target are both in the upper layer
+        else if (zfire.gt.zlayer) then
+            rhoamb = 352.981915d0/tu
+            cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014d0
+            dt = 9.1d0*(tu/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0)
+            tplume = tu + dt
+     
+!       fire is in lower layer and target is in upper layer
         else
+            rhoamb = 352.981915d0/tl
+            cp = 3.019d-7*tl**2 - 1.217d-4*tl + 1.014d0
             z_i1 = zlayer - zfire
             q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
             xi = tu/tl
@@ -1473,9 +1488,10 @@ C
      *      (xi*C_T)-1.d0/C_T)**(3.d0/2.d0)
             z_i2 = (xi*q_i1star*C_T/(q_i2star**(1.d0/3.d0)*((xi-1.d0)*
      *      (Beta**2+1.d0)+xi*C_T*q_i2star**(2./3.))))**(2.d0/5.d0)*z_i1
-            z_eff = z-z_i1+z_i2
-            tplume = 9.28d0*tu*q_i2star**(2.d0/3.d0)*
-     *      (z_i2/z_eff)**(5.d0/3.d0) + tu
+            z_eff = (z-zfire)-z_i1+z_i2
+            dt = 9.28d0*tu*q_i2star**(2.d0/3.d0)* 
+     *      (z_i2/z_eff)**(5.d0/3.d0)
+            tplume = tu + dt
         end if
       else
         if (z.le.zlayer) then
@@ -1788,7 +1804,7 @@ C	First, the mainfire if there is one
 		FXLOCAL(1) = fopos(1,0)
 		FYLOCAL(1) = fopos(2,0)
 		FZLOCAL(1) = fopos(3,0)
-		CALL FLAMHGT (FROOM(0),FQF(0),FAREA(0),FHEIGHT)
+		CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
 		FQLOCAL(1) = FQF(0)
 		FHLOCAL(1) = FHEIGHT
 	ELSE
@@ -1802,7 +1818,7 @@ C	Now the other objects
 		FXLOCAL(NFIRES) = fopos(1,i)
 		FYLOCAL(NFIRES) = fopos(2,i)
 		FZLOCAL(NFIRES) = fopos(3,i)
-          CALL FLAMHGT (FROOM(I),fqf(i),FAREA(I),FHEIGHT)
+        CALL FLAMHGT (fqf(i),FAREA(I),FHEIGHT)
 		FQLOCAL(NFIRES) = fqf(i)
 		FHLOCAL(NFIRES) = FHEIGHT
 		flocal(nfires) = froom(i)

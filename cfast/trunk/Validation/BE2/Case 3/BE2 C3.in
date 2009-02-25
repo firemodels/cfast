@@ -28,3 +28,9 @@ MVENT,1,2,1,H,12,3.14,H,12,3.14,11,200,300,1
 !!fire keywords
 !!
 OBJECT,NRC BE2 3,1,7.2,16,0,1,1,0,0,0,1
+!!
+!!target and detector keywords
+!!
+TARGET,1,7.2,16,6,0,0,-1,TC,IMPLICIT,ODE
+TARGET,1,7.2,16,12,0,0,-1,TC,IMPLICIT,ODE
+

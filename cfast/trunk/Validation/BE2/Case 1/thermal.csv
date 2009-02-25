@@ -21,3 +21,4 @@ CeramicNBS,0.09,1040,128,0.05,0.97,0,0,0,0,0,0,0,Ceramic Fiber NBS
 MariniteNBS,0.12,1250,720,0.0127,0.83,0,0,0,0,0,0,0,Marinite NBS
 GypsumNBS,0.17,1090,930,0.0127,0.95,0,0,0,0,0,0,0,Gypsum NBS
 ConcreteNBS,1.8,1040,2280,0.102,0.95,0,0,0,0,0,0,0,Concrete NBS
+TC,54,425,7850,0.001,0.95,0,0,0,0,0,0,0,Thermocouple (small steel target for plume temp)

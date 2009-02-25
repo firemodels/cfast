@@ -1484,13 +1484,19 @@ C
             z_i1 = zlayer - zfire
             q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
             xi = tu/tl
-            q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/
-     *      (xi*C_T)-1.d0/C_T)**(3.d0/2.d0)
-            z_i2 = (xi*q_i1star*C_T/(q_i2star**(1.d0/3.d0)*((xi-1.d0)*
-     *      (Beta**2+1.d0)+xi*C_T*q_i2star**(2./3.))))**(2.d0/5.d0)*z_i1
-            z_eff = (z-zfire)-z_i1+z_i2
-            dt = 9.28d0*tu*q_i2star**(2.d0/3.d0)* 
-     *      (z_i2/z_eff)**(5.d0/3.d0)
+!           the effective fire source (qi2star) must be a positive number
+            if (1.d0+C_T*q_i1star**(2.d0/3.d0).gt.xi) then
+                q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/
+     *                     (xi*C_T)-1.d0/C_T)**(3.d0/2.d0)
+                z_i2 = (xi*q_i1star*C_T/
+     *                 (q_i2star**(1.d0/3.d0)*((xi-1.d0)*(Beta**2+1.d0)+
+     *                 xi*C_T*q_i2star**(2./3.))))**(2.d0/5.d0)*z_i1
+                z_eff = (z-zfire)-z_i1+z_i2
+                dt = 9.28d0*tu*q_i2star**(2.d0/3.d0)* 
+     *               (z_i2/z_eff)**(5.d0/3.d0)
+            else
+                dt = 0
+            end if
             tplume = tu + dt
         end if
       else

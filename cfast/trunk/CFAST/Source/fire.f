@@ -1419,10 +1419,13 @@ C
      *                      zin, tplume)
     
 ! Calculates plume centerline temperature at a specified height above
-! the fire
+! the fire.
 !
-! Using Heskestad's correlation for the lower layer and Evan's modification
+! Uses Heskestad's correlation for the lower layer and Evan's modification
 ! when position is in the upper layer
+
+! Uses Evan's method to determine virtual fire size and fire origin when fire
+! is in the lower layer and position is in the upper layer
 
 ! Inputs:
 !
@@ -1445,7 +1448,7 @@ C
       real*8, parameter :: g = 9.8d0, C_T = 9.115d0, Beta = 0.955d0,
      *                     piov4 = (3.14159d0/4.0d0)
       real*8 cp,  rhoamb, z0, qdot_c, z_i1, q_i1star, xi, fheight, z,
-     *       q_i2star, z_i2, z_eff, dt
+     *       q_i2star, z_i2, z_eff, q_eff, dt
 
 !     z0 = virtual origin, qdot_c = convective HRR
       z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0 + zfire
@@ -1466,7 +1469,7 @@ C
             rhoamb = 352.981915d0/tl
             cp = 3.019d-7*tl**2 - 1.217d-4*tl + 1.014d0
             dt = 9.1d0*(tl/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
-     *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0)
+     *      qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
             tplume = tl + dt
      
 !       fire and target are both in the upper layer
@@ -1474,7 +1477,7 @@ C
             rhoamb = 352.981915d0/tu
             cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014d0
             dt = 9.1d0*(tu/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
-     *      qdot_c**(2.d0/3.d0)/(z-z0)**(5.d0/3.d0)
+     *      qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
             tplume = tu + dt
      
 !       fire is in lower layer and target is in upper layer
@@ -1486,14 +1489,17 @@ C
             xi = tu/tl
 !           the effective fire source (qi2star) must be a positive number
             if (1.d0+C_T*q_i1star**(2.d0/3.d0).gt.xi) then
-                q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/
-     *                     (xi*C_T)-1.d0/C_T)**(3.d0/2.d0)
+                q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/(xi*C_T)
+     *                      -1.d0/C_T)**(3.d0/2.d0)
                 z_i2 = (xi*q_i1star*C_T/
-     *                 (q_i2star**(1.d0/3.d0)*((xi-1.d0)*(Beta**2+1.d0)+
-     *                 xi*C_T*q_i2star**(2./3.))))**(2.d0/5.d0)*z_i1
-                z_eff = (z-zfire)-z_i1+z_i2
-                dt = 9.28d0*tu*q_i2star**(2.d0/3.d0)* 
-     *               (z_i2/z_eff)**(5.d0/3.d0)
+     *                 (q_i2star**(1.d0/3.d0)*((xi-1.d0)*(Beta+1.d0)+
+     *                 xi*C_T*q_i2star**(2.d0/3.d0))))**(2.d0/5.d0)*z_i1
+                rhoamb = 352.981915d0/tu
+                cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014d0
+                q_eff = q_i2star*rhoamb*tu*sqrt(g)*z_i2**(5.d0/2.d0)
+                z_eff = z-z_i1+z_i2
+                dt = 9.1d0*(tu/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *               q_eff**(2.d0/3.d0)*(z_eff-z0)**(-5.d0/3.d0)
             else
                 dt = 0
             end if

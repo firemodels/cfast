@@ -26,19 +26,19 @@ program Compare
     
     ! Body of NRC Compare
 
-    comparelist_file = '..\CompareList.csv'
+    comparelist_file = '..\CSVData\CompareList.csv'
     open (unit=8,file=comparelist_file,form='formatted')
 	call readcsv (8,list_rarray,list_carray,list_nrow,list_ncol,1,list_numr,list_numc)
 	! write (*,*) 'List read, rows and columns=',list_numr,list_numc
 	close (unit=8)
-	open (unit=9, file='..\list.txt',form='formatted')
+	open (unit=9, file='..\CSVData\list.txt',form='formatted')
 
     ir=0
 10  ir = ir + 1
 
     ! each set of comparisons begins with file name specifications
     if (list_carray(ir,icKeyword).eq.'Experiment') then
-	    exp_file = '..\' // trim(list_carray(ir,2)) // '.csv'
+	    exp_file = '..\CSVData\' // trim(list_carray(ir,2)) // '.csv'
 	    print_file = exp_file
 	    exp_ifirstrow = list_rarray(ir,icFirstRow)
 	    open (unit=8,file=exp_file,form='formatted')
@@ -47,7 +47,7 @@ program Compare
 	    close (unit=8)
     end if
     if (list_carray(ir,icKeyword).eq.'Model') then
-	    mod_file = '..\' // trim(list_carray(ir,2)) // '.csv'
+	    mod_file = '..\CSVData\' // trim(list_carray(ir,2)) // '.csv'
 	    mod_ifirstrow = list_rarray(ir,icFirstRow)
 	    open (unit=8,file=mod_file,form='formatted')
 	    call readcsv (8,mod_rarray,mod_carray,nrow,ncol,mod_ifirstrow,mod_numr,mod_numc)

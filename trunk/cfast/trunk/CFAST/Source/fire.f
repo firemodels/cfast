@@ -1455,13 +1455,14 @@ C
 
 !       fire and target are both in the lower layer
         if (z.le.zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
-            call PlumeTemp_M (qdot, tl, z, tplume)
+            call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
+            !We do have the ability to use McCaffrey's correlation, but comparison to validation data for Heskestad's is better
+            !call PlumeTemp_M (qdot, tl, z, tplume)
      
 !       fire and target are both in the upper layer
         else if (zfire.ge.zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
-            call PlumeTemp_M (qdot, tu, z, tplume)
+            call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
+            !call PlumeTemp_M (qdot, tu, z, tplume)
                 
 !       fire is in lower layer and target is in upper layer
         else
@@ -1483,8 +1484,8 @@ C
                 q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*
      *                  z_i2**(5.d0/2.d0)/(1.0d0-xrad)*1000.d0
                 z_eff = z-z_i1+z_i2
-                !call PlumeTemp_H (q_eff, xrad, dfire, tu, z_eff, tplume)
-                call PlumeTemp_M (q_eff, tu, z_eff, tplume)
+                call PlumeTemp_H (q_eff, xrad, dfire, tu, z_eff, tplume)
+                !call PlumeTemp_M (q_eff, tu, z_eff, tplume)
             else
                 tplume = tu
             end if

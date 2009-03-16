@@ -54,6 +54,8 @@ included in the CFAST Software Development and Experimental Evaluation Guide for
 
 Davis compared predictions by CFAST version 5 (and other models) for high ceiling spaces \cite{Valid:Davis_Plumes}. In this paper, the predictive capability of two algorithms designed to calculate plume centerline temperature and maximum ceiling jet temperature in the presence of a hot upper layer were compared to measurements from experiments and to predictions using CFASTÕs ceiling jet algorithm. The experiments included ceiling heights of 0.58 m to 22 m and heat release rates of 0.62 kW to 33 MW. When compared to the experimental results CFASTÕs ceiling jet algorithm tended to over-predict the upper layer temperature by 20 \%. With proper adjustment for radiation effects in the thermocouple measurements, some of this difference disappears. The effect of entrainment of the upper layer gases was identified for improvement.
 
+CFAST includes the calculation of plume centerline temperature from Davis' work.
+
 \subsection{Multiple Compartments}
 \label{secMultipleCompartments}
 
@@ -221,6 +223,7 @@ Quantity & Average & Median & Within & 90th \\
 HGL Temperature & 6 &  14 &  52 &  30  \\ \hline
 HGL Depth & 3 & 15 & 40 & 28 \\ \hline
 Ceiling Jet Temperature & 16 & 5 & 70 & 61 \\ \hline
+Plume Temperature & 14 & 12 & 61 & 24 \\ \hline
 Oxygen Concentration & -6 & 18 & 12 & 32 \\ \hline
 Carbon Dioxide Concentration & -16 & 16 & 21 & 52 \\ \hline
 Smoke Obscuration$^e$ & 272/22 & 227/18 & 0/82 & 499/40 \\ \hline

@@ -138,7 +138,7 @@
 \huge
 \flushright{NIST Special Publication 1026}
 \large
-\flushright{December 2008 Revision}
+\flushright{March 2009 Revision}
 
 \vspace{1in}
 
@@ -172,7 +172,7 @@ Paul A. Reneke }
 \huge
 \flushright{NIST Special Publication 1026}
 \large
-\flushright{December 2008 Revision}
+\flushright{March 2009 Revision}
 
 \vspace{1.in}
 
@@ -195,7 +195,7 @@ Paul A. Reneke \\
 \vspace{.25in}
 
 \flushright{\today \\
-$SVN Repository$~$Revision: 81 $}
+{\em SVN Repository~Revision: 100}}
 
 
 \vfill
@@ -308,13 +308,14 @@ provided to the calculations.
 \chapter{Nomenclature}
 
 \begin{center}
-\begin{longtable}{p{2in}  p{4.5 in}}
+\begin{longtable}{p{1in}  p{5.5 in}}
  
  $A$ & area, m\superscript{2} \\
  $A_{slab}$ & cross-sectional area of vent slab in horizontal vent flow, m\superscript{2} \\
  $A_v$ & cross-sectional area of a vent, m\superscript{2} \\
  $C$ & vent constriction (or flow) coefficient, dimensionless \\
  $C_{LOL}$ & lower oxygen limit coefficient, fraction of the available fuel which can be burned with the available oxygen, dimensionless \\
+ $C_T$ & constant from plume centerline temperature calculation, 9.115 \\
  $c_p$ & heat capacity of air at constant pressure, J/kg K \\
  $c_v$ & heat capacity of air at constant volume, J/kg K \\
  $D$ & fire diameter, m \\
@@ -330,6 +331,8 @@ provided to the calculations.
  $\dot{h}_U$ & rate of addition of enthalpy into upper layer in a compartment, J/s \\
  $H$ & height of a compartment, m \\
           & flame height, m \\
+ $H_1$ & distance from fire source to target location in plume centerline temperature calculation, m \\
+ $H_2$ & distance from virtual fire source to target location in plume centerline temperature calculation, m \\
  $H_c$ & heat of combustion of the fuel, J/kg \\
  $k$ & equivalent thermal conductivity of air, W/m K, with subscripts c,e and s \\
  $k$ & equilibrium coefficient for HCl transport and deposition \\
@@ -354,12 +357,15 @@ provided to the calculations.
  $Q_{f,eq}$ & effective heat release rate of a vent fire, kW \\
  $Q_{f,R}$ & heat release rate of the fire released as radiation, W \\
  $Q_{spray}$ & spread density of a sprinkler \\
+ $Q_{I,1}^*$ & original fire strength for plume temperature calculation, dimensionless \\
+ $Q_{I,2}^*$ & modified fire strength for plume temperature calculation when target location is in the upper layer, dimensionless \\
  $\Delta \hat{q}_k\dprime$ & net radiative flux at wall segment $k$ \\
  $q\dprime$ & heat flux, W/m\superscript{2} \\
  $R$ & universal gas conference, J/kg K \\
  $RTI$ & thermal characteristic response time index of a sprinkler or heat detector (m\superscript{1/2} s\superscript{1/2}) \\
  $r$ & radial distance from the fire, m \\
  $S$ & vent coefficient for vertical flow vents, dimensionless \\
+ $T_\infty$ & ambient gas temperature in compartment well removed from a target, K \\
  $T_{amb}$ & ambient temperature, K \\
  $T_i$ & gas temperature of layer $i$, K \\
  $T_L$ & gas temperature of lower layer in a compartment, K \\
@@ -379,6 +385,8 @@ provided to the calculations.
  $Y_{LOL}$ & mass fraction of oxygen below which combustion will no longer occur, dimensionless \\
  $Y_{O_2}$ & mass fraction of oxygen in a gas layer, dimensionless \\
  $y_s$ &  soot yield, mass of soot produced by the fire per unit mass of fuel, kg/kg \\
+ $Z_{I,1}$ & distance from fire source to the interface between upper and lower layers, m \\
+ $Z_{I,2}$ & distance from virtual fire source to the interface between upper and lower layers, m \\
  $z$ & height above the base of the fire, m \\
  $z_{\nu}$ & height of the virtual origin of a vent fire, m \\
   & kinematic viscosity, m\superscript{2}/s \\
@@ -388,18 +396,21 @@ provided to the calculations.
   
  $\alpha$ & gas absorptance, dimensionless \\
   & thermal diffusivity in conduction (m\superscript{2}/s) \\
+  $\beta$ & experimentally-determined constant in plume centerline temperature calculation, $\beta^2 = 0.913$ \\
  $\gamma$ & ratio of $c_p / c_v$, dimensionless \\
  $\Delta T$ & temperature rise, K \\
  $\epsilon$ & emissivity \\
  $\nu$ & stoichiometric coefficients for combustion reaction, dimensionless \\
             & kinematic viscosity, m\superscript{2}/s \\
  $\rho$ & density, kg/m\superscript{3} \\
+ $\rho_\infty$ & density of gas well removed from a target, kg/m\superscript{3} \\
  $\rho_{cj}$ & density of the ceiling jet gas, kg/m\superscript{3}  \\
  $\rho_i$ & density of gas layer $i$, kg/m\superscript{3}  \\ 
  $\sigma$ & Stefan-Boltzman constant (5.67 x 10\superscript{-8} W/m\superscript{2}K\superscript{4}) \\
  $\tau$ & transmittance, dimensionless \\
  $\chi_C$ & fraction of the fire's heat release rate released as convective energy, dimensionless \\ 
  $\chi_R$ & fraction of the fire's heat release rate released as radiation, dimensionless \\
+ $\xi$ & ratio of upper layer gas temperature to lower layer gas temperature, dimensionless \\
 
 \end{longtable}
 

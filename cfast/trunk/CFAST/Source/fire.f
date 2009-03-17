@@ -1451,18 +1451,17 @@ C
 
 !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
       z = zin - zfire
-      if (qdot.gt.0.0d0.and.tu.ge.tl.and.z.gt.0.0d0) then
+      if (qdot.gt.0.0d0.and.tu.ge.tl.and.z.ge.0.0d0) then
 
 !       fire and target are both in the lower layer
         if (z.le.zlayer) then
-            call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
-            !We do have the ability to use McCaffrey's correlation, but comparison to validation data for Heskestad's is better
-            !call PlumeTemp_M (qdot, tl, z, tplume)
+            !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
+            call PlumeTemp_M (qdot, tl, z, tplume)
      
 !       fire and target are both in the upper layer
         else if (zfire.ge.zlayer) then
-            call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
-            !call PlumeTemp_M (qdot, tu, z, tplume)
+            !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
+            call PlumeTemp_M (qdot, tu, z, tplume)
                 
 !       fire is in lower layer and target is in upper layer
         else
@@ -1484,14 +1483,14 @@ C
                 q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*
      *                  z_i2**(5.d0/2.d0)/(1.0d0-xrad)*1000.d0
                 z_eff = z-z_i1+z_i2
-                call PlumeTemp_H (q_eff, xrad, dfire, tu, z_eff, tplume)
-                !call PlumeTemp_M (q_eff, tu, z_eff, tplume)
+                !call PlumeTemp_H (q_eff, xrad, dfire, tu, z_eff, tplume)
+                call PlumeTemp_M (q_eff, tu, z_eff, tplume)
             else
                 tplume = tu
             end if
         end if
       else
-        if (z.le.zlayer) then
+        if (zin.le.zlayer) then
             tplume = tl
         else
             tplume = tu
@@ -1522,11 +1521,11 @@ C
       real*8 tplume
       real*8, parameter :: g = 9.81d0, piov4 = (3.14159d0/4.0d0)
       real*8 cp, fheight, rhoamb, z0, qdot_c, dt
+      real*8 dstar, zp1, zp2, tp1, tp2, a, b
       
 !     plume temperature correlation is only valid above the mean flame height      
       call flamhgt (qdot,piov4*dfire**2,fheight)
-      if (fheight.gt.z) z = fheight
-
+      
 !     z0 = virtual origin, qdot_c = convective HRR
       if (dfire.gt.0.d0) then
         z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
@@ -1537,9 +1536,24 @@ C
       
       rhoamb = 352.981915d0/tgas
       cp = 3.019d-7*tgas**2 - 1.217d-4*tgas + 1.014d0
-      dt = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
-     *     qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
-            tplume = tgas + dt
+      dstar = (qdot/1000.d0/(rhoamb*cp*tgas*sqrt(g)))**0.4d0
+      
+      if ((z-z0)/dstar.lt.1.32) then
+        dt = 2.91d0*tgas
+      else if ((z-z0).lt.fheight) then
+        zp1 = 1.32*dstar
+        tp1 = 2.91*tgas
+        zp2 = fheight
+        tp2 = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *     qdot_c**(2.d0/3.d0)*(zp2)**(-5.d0/3.d0)
+        a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
+        b = tp1-a/zp1
+        dt = a/(z-z0) + b
+      else
+        dt = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *       qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
+      end if
+      tplume = tgas + dt
       
       end subroutine PlumeTemp_H
 

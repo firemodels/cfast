@@ -500,7 +500,28 @@ Used to calculate convective heat transfer to targets located directly above a f
 The virtual origin, $z_0$, is given by
 
 \be z_0 = -1.02 D + 0.083 Q_f^{2/5} \ee
-where $Q_f$ and $Q_{f,C}$ are the total and convective heat release rates, $D$ is the fire diameter, $z$ is the height above the base of the fire, and $T_\infty$, $c_p$, and $\rho_\infty$ are the temperature, heat capacity, and density of the ambient gas at height $z$. Depending on the location $z$, this may be either the lower gas layer temperature or upper gas layer temperature. Heskestad's correlation is used in CFAST whenever both the fire and point of interest are within a single layer. When a hot layer forms so that the fire source and target location are not in the same gas layer, the correlation must be modified since the plume now includes added enthalpy by entraining hot layer gas as it moves through the upper layer to the ceiling. Evans \cite{Evans:1984} defines a virtual source and heat release rate  to extend the plume into the upper layer. Evans' method defines the strength, $Q_{I,2}$ and location, $Z_{I,2}$ of the substitute source with respect to the interface between the upper and lower layers by
+where $Q_f$ and $Q_{f,C}$ are the total and convective heat release rates, $D$ is the fire diameter, $z$ is the height above the base of the fire, and $T_\infty$, $c_p$, and $\rho_\infty$ are the temperature, heat capacity, and density of the ambient gas at height $z$. Depending on the location $z$, this may be either the lower gas layer temperature or upper gas layer temperature. Heskestad's correlations are only valid above the mean flame height \cite{Heskestad:2002}. When the target position is below the mean flame height, CFAST uses a functional form consistent with the plume characteristics of Baum and McCaffery \cite{Baum:1989}. Directly above the burning fire source is a region of continuous flaming.  In this region, they define the excess temperature as
+
+\be \Delta T_p = 2.91 T_\infty \ee
+
+Above the continuous flaming region is a region of intermittent flaming up to the mean flame height. In this region, the excess temperature is proportional to $\frac{1}{z-z_0}$. To be consistent with the flaming region and plume region, the excess temperature in this intermittent region is
+
+\be \Delta T_p = \frac{a}{z-z_0} + b \ee
+where
+\be a = \frac{\brackets{T_{p,2}^*-T_{p,1}^*}z_{p,2}^* z_{p,1}^*}{z_{p,1}^*-z_{p,2}^*} , b = T_{p,1}^* - \frac{a}{z_{p,1}^*} \ee
+\be z_{p,1}^* = 1.32 D^* ,  T_{p,1}^* = 2.91 T_\infty \ee
+\be z_{p,2}^* = -1.02 D + 2.35 Q_f^{2/5} , T_{p,2}^* = 9.1 \brackets{\frac{T_\infty}{g c_p^2 \rho_\infty^2}}^{1/3} Q_{f,C}^{2/3} \brackets{z_{p,2}^*}^{-5/3} \ee
+\be D^* = \brackets{\frac{Q_f}{\rho_\infty c_p T_\infty \sqrt{g}}}^{2/5} \ee
+
+The overall correlation is thus
+
+\begin{eqnarray}
+\textnormal{flaming:} & \Delta T_p = 2.91 T_\infty  & 0.00 \leq z-z_0 <1.32 D^*\nonumber \\
+\textnormal{intermittent:} & \Delta T_p = \frac{a}{z-z_0} + b  & 1.32 D^* \leq z-z_0 <  -1.02 D + 2.35 Q_f^{2/5} \nonumber \\
+\textnormal{plume} & \Delta T_p = 9.1 \brackets{\frac{T_\infty}{g c_p^2 \rho_\infty^2}}^{1/3} Q_{f,C}^{2/3} \brackets{z - z_0}^{-5/3} &  -1.02 D + 2.35 Q_f^{2/5} \leq z-z_0 \nonumber
+\end{eqnarray}
+
+This correlation is used in CFAST whenever both the fire and point of interest are within a single layer. When a hot layer forms so that the fire source and target location are not in the same gas layer, the correlation must be modified since the plume now includes added enthalpy by entraining hot layer gas as it moves through the upper layer to the ceiling. Evans \cite{Evans:1984} defines a virtual source and heat release rate  to extend the plume into the upper layer. Evans' method defines the strength and location of the substitute source with respect to the interface between the upper and lower layers by
 
 \be Q_{I,2}^* = \brackets{\frac{1 + C_T {Q_{I,1}^*}^{2/3}}{\xi C_T} - \frac{1}{C_T}}^{3/2} \ee
 
@@ -521,8 +542,6 @@ where $Z_{I,1}$ is the distance from the fire to the interface between the upper
 \caption{Geometry for plume centerline temperature calculation.}
  \label{fig:Plume_Centerline_Temperature}
 \end{figure}
-
-Heskestad's correlations are only valid above the mean flame height \cite{Heskestad:2002}. When the target position is below the mean flame height, CFAST uses the value calculated at the mean flame height as an estimate.  This is likely to underestimate the temperature within the flaming region.
 
 \subsubsection{Limitations of the Plume Algorithms} \label{sec:plumelimits}
 

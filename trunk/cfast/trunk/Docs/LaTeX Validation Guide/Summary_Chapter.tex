@@ -20,6 +20,7 @@ Quantity & Average & Median & Within & 90th \\
 \hline
 HGL Temperature & 6 &  14 &  52 &  30  \\ \hline
 HGL Depth & 3 & 15 & 40 & 28 \\ \hline
+Plume Temperature & 17 & 11 & 39 & 29 \\ \hline
 Ceiling Jet Temperature & 16 & 5 & 70 & 61 \\ \hline
 Oxygen Concentration & -6 & 18 & 12 & 32 \\ \hline
 Carbon Dioxide Concentration & -16 & 16 & 21 & 52 \\ \hline
@@ -39,7 +40,7 @@ e - the first number is for the closed door NIST/NRC tests and the second number
 f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa.
 \end{table}
 
-For four of the quantities,  the physics of the model is appropriate to represent the experimental conditions, and the calculated relative differences comparing the model and the experimental values are consistent with the combined experimental and input uncertainty.  A few notes on the comparisons are appropriate:
+For five of the quantities,  the physics of the model is appropriate to represent the experimental conditions, and the calculated relative differences comparing the model and the experimental values are consistent with the combined experimental and input uncertainty.  A few notes on the comparisons are appropriate:
 
 \begin{itemize}
 \item The CFAST predictions of the HGL temperature and height are, with a few exceptions, within or close to experimental uncertainty.  The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements.  Still, predictions are mostly within 10~\% to 20~\% of experimental measurements.  Calculation of HGL temperature and height has higher uncertainty in rooms remote from the fire (compared to those in the fire compartment).
@@ -50,9 +51,10 @@ For four of the quantities,  the physics of the model is appropriate to represen
 \end{itemize}
 
 
-Three of the quantities were seen to require additional care when using the model to evaluate the given quantity.  This typically indicates limitations in the use of the model.  A few notes on the comparisons are appropriate:
+Four of the quantities were seen to require additional care when using the model to evaluate the given quantity.  This typically indicates limitations in the use of the model.  A few notes on the comparisons are appropriate:
 
 \begin{itemize}
+\item CFAST typically predicts plume temperature near to experimental uncertainty, but tends to under-predict temperatures nearer to the fire source and over-predict temperatures farther away.
 \item CFAST typically over-predicts smoke concentration.  Predicted concentrations for open-door tests are within experimental uncertainties, but those for closed-door tests are far higher.
 \item With exceptions, CFAST predicts cable surface temperatures within experimental uncertainties.  Total heat flux to targets is typically predicted to within about 30~\%, and often under-predicted.  Radiative heat flux to targets is typically over-predicted compared to experimental measurements, with higher relative difference values for closed-door tests.  Care should be taken in predicting localized conditions (such as target temperature and heat flux) because of inherent limitations in all zone fire models.
 \item Predictions of compartment surface temperature and heat flux are typically within 10~\% to 30~\%.  Generally, CFAST over-predicts the far-field fluxes and temperatures and under-predicts the near-field measurements.  This is consistent with the single representative layer temperature assumed by zone fire models.

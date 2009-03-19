@@ -1421,8 +1421,7 @@ C
 ! Calculates plume centerline temperature at a specified height above
 ! the fire.
 !
-! Uses Heskestad's correlation for the lower layer and Evan's modification
-! when position is in the upper layer
+! Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
 
 ! Uses Evan's method to determine virtual fire size and fire origin when fire
 ! is in the lower layer and position is in the upper layer

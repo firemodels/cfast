@@ -34,6 +34,8 @@ TRGTEMPB (TRGTEMPF+TRGTNUM-1): back surface temperature of target (calculated)<b
 
 second index: index of targets beginning with a value of 1
 
+*TGTARG*: local gas temperature surrounding the target.  Use to calculate convective heat transfer to the target.
+
 *CXTARG*: Character name of each target material that corresponds to short material name in thermal properties 
 
 Vector dimensioned (1:MXTRG)<br>

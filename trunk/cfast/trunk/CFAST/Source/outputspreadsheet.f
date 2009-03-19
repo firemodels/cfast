@@ -457,6 +457,7 @@ C     Natural flow through vertical vents (horizontal flow)
         IF (NTARG.GT.NM1) THEN
           DO 20 ITARG = 1, NTARG-NM1
             IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
+              TGTEMP = TGTARG(ITARG)
 			  TTTEMP = XXTARG(TRGTEMPF,ITARG)
               ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
               TCTEMP = XXTARG(ITCTEMP,ITARG)
@@ -467,6 +468,7 @@ C     Natural flow through vertical vents (horizontal flow)
               WTOTAL = QTWFLUX(ITARG,1)
               GTOTAL = QTGFLUX(ITARG,1)
               CTOTAL = QTCFLUX(ITARG,1)
+              call SSaddtolist (position, tgtemp-273.15, outarray)
 			  call SSaddtolist (position, tttemp-273.15, outarray)
 			  call SSaddtolist (position, tctemp-273.15, outarray)
               call SSaddtolist (position, rtotal, outarray)
@@ -534,7 +536,7 @@ c   40 CONTINUE
        
 
 !.....  target number
-!.....  surface temp, center temp, flux, fire, surface, gas, convect
+!.....  gas temp, surface temp, center temp, flux, fire, surface, gas, convect
 
 
 !.....  sensor number
@@ -549,14 +551,14 @@ c   40 CONTINUE
 
       parameter (maxoutput=512)
 	integer position
-      character heading*30(maxoutput,2), clabels*30(9), tlables*30(7),
+      character heading*30(maxoutput,2), clabels*30(9), tlables*30(8),
      . tnum*2, ostring*30, slables*30(5), xtype*5, blank
 
       data clabels/"ceiling","upper wall","lower wall","floor",
      . "flux to target","total fire rad.","surface rad.","gas rad.",
      . "convective flux"/, blank/''/
 
-      data tlables/"surface temp","center temp","total flux",
+      data tlables/"gas temp","surface temp","center temp","total flux",
      . "fire flux","boundary flux","gas flux","convective flux"/
 
 	data slables/"compartment","sensor temp.", "activated",
@@ -583,10 +585,10 @@ c   40 CONTINUE
         DO 30 ITARG = 1, NTARG-NM1
           IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
 			  write(tnum,"(i2)") itarg
-			  do 31 j = 1, 7
+			  do 31 j = 1, 8
 			  heading(position+j,1) = "Target "//tnum
    31			  heading(position+j,2) = tlables(j)
-			  position = position + 7
+			  position = position + 8
           END IF
    30   CONTINUE
       END IF

@@ -12,11 +12,15 @@ The height of the visible flame in the photographs has been estimated to be betw
 
 CFAST estimates the peak flame height to be 2.8 m, consistent with the roughly 3 m flame height observed through the doorway during the test.  The test series was not designed to record accurate measurements of flame height.
 
+\subsubsection{NIST/Navy High Bay Hangar Test Series}
+
+For the 9 Iceland tests, CFAST predicts flame height within 25~\% of the experimentally reported values, with the largest relative differences for the smaller heat release rate fires. Uncertainty in the flame height measurements for the experiments was reported to be $\pm$ 0.5 m, approaching 30~\% of the experimental values for the lower heat release rate fires.
+
 \section{Plume Temperature}
 
 As with the ceiling jet, CFAST includes a specific plume temperature model based on the McCaffrey plume \cite{Baum:1989, McCaffrey:1983} to account for presence of higher gas temperatures near a target located at the centerline of the fire plume. the correlation has been subjected to extensive validation efforts by McCaffrey \cite{Baum:1989} and others \cite{Valid:Davis_Plumes} and shown to provide predictions within about 30 \% of a wide range of experimental results \cite{Valid:Davis_Plumes}. In the model, this increased temperature has the effect of increasing the convective heat transfer to the target. Only two of the six test series (VTT and FM/SNL) included measurements of plume centerline temperature.
 
-Figure \ref{fig:Plume_Temp_Scatter} shows a comparison of predicted and measured values for ceiling jet temperature. Appendix A provides individual graphs of model and experimental values. Withone exception, the predictions average within 17 \% of experimental measurements. Following is a summary of the accuracy assessment for the ceiling jet predictions in the two test series:
+Figure \ref{fig:Plume_Temp_Scatter} shows a comparison of predicted and measured values for ceiling jet temperature. Appendix A provides individual graphs of model and experimental values. With one exception, the predictions average within 15 \% of experimental measurements. Following is a summary of the accuracy assessment for the ceiling jet predictions in the two test series:
 
 \begin{figure}
 \begin{center}
@@ -33,6 +37,10 @@ CFAST predicts plume temperature within or near experimental uncertainty for the
 \subsubsection{FM/SNL Test Series}
 
 For two of the tests in this test series, predictions are near experimental uncertainty (both within 20~\% of experimental measurements). The third test included a fire source within a closed cabinet.  The resulting flow of hot gases from the cabinet does not follow the simple vertical symmetric plume assumed by the plume algorithm.  While obviously not a simple fire source applicable to the plume correlation included in CFAST, this comparison does point out the need to understand the limitations of the physical algorithms included in the model and the details of a given simulation that may significantly impact the results of the calculation.
+
+\subsubsection{NIST / Navy High Bay Hangar Test Series}
+
+For all but two of the tests, predictions are within experimental uncertainty.  With a wide range of fire sizes (from 1.4~MW to 33~MW), this test series provides a broad validation of the underlying correlations used in the model.  The remaining two tests that are within 25~\% are the lowest heat release rate tests.  With all plume temperature measurements made at a height of more than 22~m, a higher uncertainty for the lowest heat release rate tests is understandable.
 
 \section{Ceiling Jets}
 
@@ -71,8 +79,7 @@ Based on the model physics and comparisons of model predictions with experimenta
 \begin{itemize}
 \item The correlation used in CFAST to predict plume temperature is well-suited for this application and has been subjected to extensive validation efforts.
 \item CFAST tends to over-predict plume temperatures well above the fire and somewhat under-predict plume temperatures nearer to the fire source.  This is understandable due to the point source radiation routine included for radiative heat transfer from the fire source to surrounding targets and surfaces.
-\item 90 \% of the predictions by CFAST are within 29 \% of experimental measurements, higher than the estimated experimental uncertainty in this validation exercise.  User's should take this higher uncertainty into account when using predictions from the model.
-\item There are a limited number of plume temperature measurements in the data set. A more definitive conclusion about the accuracy of CFAST in predicting plume temperature would require more experimental data.
+\item 90 \% of the predictions by CFAST are within 25 \% of experimental measurements, higher than the estimated experimental uncertainty in this validation exercise.  User's should take this higher uncertainty into account when using predictions from the model.
 \end{itemize}
 
 Based on the model physics and comparisons of model predictions with experimental measurements, CFAST provides appropriate calculations of ceiling jet temperature for the following reasons:

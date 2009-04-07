@@ -808,11 +808,19 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       WRITE (IOFILO,5000)
       DO 10 I=1,NM1
         ITARG = NTARG-NM1+I
-        RTOTAL = XXTARG(TRGTFLUXF,ITARG)
-        FTOTAL = QTFFLUX(ITARG,1)
-        WTOTAL = QTWFLUX(ITARG,1)
-        GTOTAL = QTGFLUX(ITARG,1)
-        CTOTAL = QTCFLUX(ITARG,1)
+        if (gaugeflux) then
+          RTOTAL = GTFLUX(ITARG,1)
+          FTOTAL = GTFLUX(ITARG,2)
+          WTOTAL = GTFLUX(ITARG,3)
+          GTOTAL = GTFLUX(ITARG,4)
+          CTOTAL = GTFLUX(itarg,5)
+        else
+          RTOTAL = XXTARG(TRGTFLUXF,ITARG)
+          FTOTAL = QTFFLUX(ITARG,1)
+          WTOTAL = QTWFLUX(ITARG,1)
+          GTOTAL = QTGFLUX(ITARG,1)
+          CTOTAL = QTCFLUX(ITARG,1)
+        end if
         IF (RTOTAL.NE.XX0) THEN
           WRITE (iofilo,5010) compartmentnames(I),
      +        ((TWJ(1,I,IWPTR(IW))-273.15),IW=1,4),
@@ -833,11 +841,19 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
               TCTEMP = XXTARG(ITCTEMP,ITARG)
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
-              RTOTAL = XXTARG(TRGTFLUXF,ITARG)
-              FTOTAL = QTFFLUX(ITARG,1)
-              WTOTAL = QTWFLUX(ITARG,1)
-              GTOTAL = QTGFLUX(ITARG,1)
-              CTOTAL = QTCFLUX(ITARG,1)
+              if (gaugeflux) then
+                RTOTAL = GTFLUX(ITARG,1)
+                FTOTAL = GTFLUX(ITARG,2)
+                WTOTAL = GTFLUX(ITARG,3)
+                GTOTAL = GTFLUX(ITARG,4)
+                CTOTAL = GTFLUX(itarg,5)
+              else
+                RTOTAL = XXTARG(TRGTFLUXF,ITARG)
+                FTOTAL = QTFFLUX(ITARG,1)
+                WTOTAL = QTWFLUX(ITARG,1)
+                GTOTAL = QTGFLUX(ITARG,1)
+                CTOTAL = QTCFLUX(ITARG,1)
+              end if
               IF (RTOTAL.NE.XX0) THEN
                 WRITE(IOFILO,5030)ITARG,TG-273.15,TTTEMP-273.15,
      +              TCTEMP-273.15,

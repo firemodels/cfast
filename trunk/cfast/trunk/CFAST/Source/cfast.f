@@ -138,7 +138,8 @@
      . CPFLSYNCH/'Synchronize gui and base models - do not edit'/,
      . GUIPROJ/' '/, GUIREF/' '/,GUILIC/' '/, initializeonly/.false./,
      . outputformat /0/, IOFILO/6/, REPORTO/0/, IOFILI/1/, LOGERR/3/,
-     . OBFILI/99/, AHFILO/98/, WEBFILE/97/, trace/.false./
+     . OBFILI/99/, AHFILO/98/, WEBFILE/97/, trace/.false./,
+     . gaugeflux/.false./
     
      . VERSION/6200/
 ! 

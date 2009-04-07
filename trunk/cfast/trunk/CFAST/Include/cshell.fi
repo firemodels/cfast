@@ -7,7 +7,7 @@ C     NAME IN PASSFILE.
 !     trace determines the type of output (print file) for mechanical ventilation - current or total
 
       LOGICAL ADVFEA, SHELL, CSOPEN, CF_EXIST, HEADER, NOKBD, GPAUSE,
-     +    QUICKEST, initializeonly, debugging, trace
+     +    QUICKEST, initializeonly, debugging, trace, gaugeflux
       INTEGER VERSION, DLEN, PLEN, RUNDAT(3), RMFILE, UNITS(8), ICHDR, 
      +    ICSUB, ICTXT, ICPRO, ICMSG, ICHLP, ICBG, ICMBG, ICHBG, ICEBG,
      +    ICEMS, IOFILI, IOFILO, REPORTO, OBFILI, AHFILO, WEBFILE,
@@ -26,7 +26,7 @@ C
      +    DLEN, PLEN, RUNDAT, LOGERR, CSOPEN, RMFILE, CF_EXIST, HEADER,
      +    IOFILI, IOFILO, REPORTO, AHFILO, NOKBD, GPAUSE, QUICKEST,
      +    OBFILI, WEBFILE, IGUISLCT, GUISELCT, initializeonly, 
-     +    outputformat, debugging, trace
+     +    outputformat, debugging, trace, gaugeflux
       SAVE /CONFG1/
 C
       COMMON /CONFG2/ PATH, DPATH, CURRENT, CONFIG, THRMFILE, DFILE, 

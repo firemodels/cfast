@@ -457,6 +457,16 @@ C*** CONVECTION FOR THE FRONT
      .       QTGFLUX(ITARG,1)) + QTCFLUX(ITARG,1) - 
      .       TEMIS*SIGMA*TTARG(1)**4
       DFLUX(1) = -4.0D0*TEMIS*SIGMA*TTARG(1)**3 + DQDTARG
+      
+      ! This is for "gauge" heat flux output ... it assumes an ambient temperature target
+      GTFLUX(ITARG,2) = TEMIS*QTFFLUX(ITARG,1)
+      GTFLUX(ITARG,3) = TEMIS*QTWFLUX(ITARG,1)
+      GTFLUX(ITARG,4) = TEMIS*QTGFLUX(ITARG,1)
+      CALL CONVEC(IW,TG,TAMB(IROOM),Q1G)
+      GTFLUX(ITARG,5) = Q1G
+      GTFLUX(ITARG,1) = GTFLUX(ITARG,2) + GTFLUX(ITARG,3) + 
+     *                  GTFLUX(ITARG,4) + GTFLUX(ITARG,5) -
+     *                  TEMIS*SIGMA*TAMB(IROOM)**4
 
 C*** CONVECTION FOR THE BACK
 

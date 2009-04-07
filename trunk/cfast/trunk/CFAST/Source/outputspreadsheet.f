@@ -437,11 +437,19 @@ C     Natural flow through vertical vents (horizontal flow)
 
       DO 10 I=1,NM1
         ITARG = NTARG-NM1+I
-        RTOTAL = XXTARG(TRGTFLUXF,ITARG)
-        FTOTAL = QTFFLUX(ITARG,1)
-        WTOTAL = QTWFLUX(ITARG,1)
-        GTOTAL = QTGFLUX(ITARG,1)
-        CTOTAL = QTCFLUX(ITARG,1)
+        if (gaugeflux) then
+          RTOTAL = GTFLUX(ITARG,1)
+          FTOTAL = GTFLUX(ITARG,2)
+          WTOTAL = GTFLUX(ITARG,3)
+          GTOTAL = GTFLUX(ITARG,4)
+          CTOTAL = GTFLUX(itarg,5)
+        else
+          RTOTAL = XXTARG(TRGTFLUXF,ITARG)
+          FTOTAL = QTFFLUX(ITARG,1)
+          WTOTAL = QTWFLUX(ITARG,1)
+          GTOTAL = QTGFLUX(ITARG,1)
+          CTOTAL = QTCFLUX(ITARG,1)
+        end if
 	  do 11 iw = 1, 4
    11   call SSaddtolist (position,twj(1,i,iwptr(iw))-273.15,outarray)
 ! a target 0 is the floor
@@ -463,11 +471,19 @@ C     Natural flow through vertical vents (horizontal flow)
               TCTEMP = XXTARG(ITCTEMP,ITARG)
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
-			  RTOTAL = XXTARG(TRGTFLUXF,ITARG)
-              FTOTAL = QTFFLUX(ITARG,1)
-              WTOTAL = QTWFLUX(ITARG,1)
-              GTOTAL = QTGFLUX(ITARG,1)
-              CTOTAL = QTCFLUX(ITARG,1)
+			  if (gaugeflux) then
+                RTOTAL = GTFLUX(ITARG,1)
+                FTOTAL = GTFLUX(ITARG,2)
+                WTOTAL = GTFLUX(ITARG,3)
+                GTOTAL = GTFLUX(ITARG,4)
+                CTOTAL = GTFLUX(itarg,5)
+              else
+                RTOTAL = XXTARG(TRGTFLUXF,ITARG)
+                FTOTAL = QTFFLUX(ITARG,1)
+                WTOTAL = QTWFLUX(ITARG,1)
+                GTOTAL = QTGFLUX(ITARG,1)
+                CTOTAL = QTCFLUX(ITARG,1)
+              end if
               call SSaddtolist (position, tgtemp-273.15, outarray)
 			  call SSaddtolist (position, tttemp-273.15, outarray)
 			  call SSaddtolist (position, tctemp-273.15, outarray)

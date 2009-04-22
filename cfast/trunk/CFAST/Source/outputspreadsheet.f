@@ -27,62 +27,12 @@
 	save firstc
 
 ! Headers
-
-!! Note: this more properly belongs in a separate routine as is done with the flow and species spreadsheets, but this one
-!! is sufficiently short to make that more work than this simple approach
-
-	If (firstc) then
-      
-	headline(1,1)= 'NORMAL'
-	headline(2,1) = 'Time'
-	headline(3,1) = ' '
-      ins = 1
-	do 10 j = 1, nm1
-	do 10 i = 1, 7
-	if (i.ne.2.or.izshaft(j).eq.0) then
-	  if (i.ne.3.or.izshaft(j).eq.0) then
-	  ins = ins + 1
-	    headline(2,ins) = compartmentlabel(i)
-	    headline(3,ins) = ' '
-   	    headline(1,ins) = compartmentnames(j)
-   	  end if
-      end if
-   10 continue
-	nfires = 0
-	if (lfbo.gt.0) then
-		 do 20 i = 1, 7
-		 ins = ins + 1
-		 headline(3,ins) = firelabel(i)
-		 headline(2,ins) = compartmentnames(froom(0))
-   20		 headline(1,ins) = 'Mainfire'
-		 nfires = 1
+	if (firstc) then
+        call ssHeaders(1)
+	  firstc = .false.
 	endif
 
-	do 30 j = 1, numobjl
-	do 30 i = 1, 7
-	ins = ins + 1
-	headline(3,ins) = firelabel(i)
-	headline(2,ins) = compartmentnames(froom(j))
-   30 headline(1,ins) = objnin(j)
-
-	nfires = nfires + numobjl
-
-	if(ins.gt.maxhead.or.ins.gt.16000) then
-		 errorcode = 211
-		 return
-	endif
-
-	write(15,"(1024(a,','))") (trim(headline(1,i)),i=1,ins)
-	write(15,"(1024(a,','))") (trim(headline(2,i)),i=1,ins)
-	write(15,"(1024(a,','))") (trim(headline(3,i)),i=1,ins)
-	firstc = .false.
-
-	endif
-
-! End of header information
- 
 	position = 0
-
       CALL SSaddtolist (position,TIME,outarray)
 
 ! Compartment information
@@ -437,7 +387,7 @@ C     Natural flow through vertical vents (horizontal flow)
 
       DO 10 I=1,NM1
         ITARG = NTARG-NM1+I
-        if (gaugeflux) then
+        if (validation) then
           RTOTAL = GTFLUX(ITARG,1)
           FTOTAL = GTFLUX(ITARG,2)
           WTOTAL = GTFLUX(ITARG,3)
@@ -471,7 +421,7 @@ C     Natural flow through vertical vents (horizontal flow)
               TCTEMP = XXTARG(ITCTEMP,ITARG)
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
-			  if (gaugeflux) then
+			  if (validation) then
                 RTOTAL = GTFLUX(ITARG,1)
                 FTOTAL = GTFLUX(ITARG,2)
                 WTOTAL = GTFLUX(ITARG,3)

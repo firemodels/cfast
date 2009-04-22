@@ -808,7 +808,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       WRITE (IOFILO,5000)
       DO 10 I=1,NM1
         ITARG = NTARG-NM1+I
-        if (gaugeflux) then
+        if (validation) then
           RTOTAL = GTFLUX(ITARG,1)
           FTOTAL = GTFLUX(ITARG,2)
           WTOTAL = GTFLUX(ITARG,3)
@@ -841,7 +841,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
               TCTEMP = XXTARG(ITCTEMP,ITARG)
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
-              if (gaugeflux) then
+              if (validation) then
                 RTOTAL = GTFLUX(ITARG,1)
                 FTOTAL = GTFLUX(ITARG,2)
                 WTOTAL = GTFLUX(ITARG,3)

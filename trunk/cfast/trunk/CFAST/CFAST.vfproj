@@ -68,6 +68,7 @@
 		<File RelativePath=".\Source\outputsmv.f90"/>
 		<File RelativePath=".\Source\outputspreadsheet.f"/>
 		<File RelativePath=".\Source\radation.f"/>
+		<File RelativePath=".\Source\ssHeaders.f"/>
 		<File RelativePath=".\Source\target.f"/></Filter>
 		<File RelativePath="ReadMe.txt"/></Files>
 	<Globals/></VisualStudioProject>

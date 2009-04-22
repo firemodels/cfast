@@ -139,7 +139,7 @@
      . GUIPROJ/' '/, GUIREF/' '/,GUILIC/' '/, initializeonly/.false./,
      . outputformat /0/, IOFILO/6/, REPORTO/0/, IOFILI/1/, LOGERR/3/,
      . OBFILI/99/, AHFILO/98/, WEBFILE/97/, trace/.false./,
-     . gaugeflux/.false./
+     . validation/.false./
     
      . VERSION/6200/
 ! 

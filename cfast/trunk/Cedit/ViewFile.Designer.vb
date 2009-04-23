@@ -148,6 +148,7 @@ Partial Class ViewFile
         '
         'PreviewDocument
         '
+        Me.PreviewDocument.FontHandling = C1.C1Preview.FontHandling.None
         Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in")
         '
         'ViewFile

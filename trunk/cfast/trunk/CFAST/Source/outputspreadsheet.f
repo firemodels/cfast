@@ -28,7 +28,7 @@
 
 ! Headers
 	if (firstc) then
-        call ssHeaders(1)
+        call ssHeadersNormal
 	  firstc = .false.
 	endif
 
@@ -123,7 +123,7 @@
 	save firstc
 
 	if (firstc) then
-		 call SpreadSheetFlowHeader
+		 call ssHeadersFlow
 		 firstc = .false.
 	endif
 		 
@@ -230,124 +230,6 @@
 
 	END
 
-      SUBROUTINE SpreadSheetFlowHeader
-
-!	This is the header information for the flow spreadsheet and is called once
-!	The logic is identical to SpreadSheetFlow so the output should be parallel
-
-      include "precis.fi"
-      include "cfast.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "vents.fi"
-
-	parameter (maxoutput = 512)
-	character*30 heading(maxoutput)
-      CHARACTER ostring*30, CNUM*3, CNUM2*3
-	integer position
-
-	do 5 i = 1, maxoutput
-    5 heading(i) = ' '
-
-	position = 1
-
-	ostring = 'Time'
-	call SSFlowAtoH (position, maxoutput, heading, ostring)
-
-!	Do the output by compartments
-
-      DO 70 IRM = 1, N
-
-C     Natural flow through vertical vents (horizontal flow)
-
-      DO 20 J = 1, N
-          DO 10 K = 1, mxccv
-            I = IRM
-            IF (IAND(1,ISHFT(NW(I,J),-K)).NE.0) THEN
-              IIJK = IJK(I,J,K)
-              IF (J.EQ.N) THEN
-                 WRITE (CNUM,'(I2)') I
-                 ostring = 'Inflow from outside to'//CNUM
-				  call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Outflow to outside from'//CNUM
-	           call SSFlowAtoH (position, maxoutput, heading, ostring)
-              ELSE
-                 WRITE (CNUM,'(I2)') I
-                 WRITE (CNUM2,'(I2)') J
-!	We show only net flow in the spreadsheets
-                 ostring = 'Inflow from '//cnum2//' to'//CNUM
-				  call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Outflow to '//cnum2//' from'//CNUM
-	           call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Mixing to Upper'//CNUM//' ('//CNUM2//')'
-			     call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Mixing to Lower'//CNUM//' ('//CNUM2//')'
-			     call SSFlowAtoH (position, maxoutput, heading, ostring)
-              END IF
-            END IF
-   10     CONTINUE
-   20   CONTINUE
-
-!	Natural flow through horizontal vents (vertical flow)
-
-        DO 40 J = 1, N
-          IF (NWV(I,J).NE.0.OR.NWV(J,I).NE.0) THEN
-            WRITE (CNUM,'(I2)') I
-            WRITE (CNUM2,'(I2)') J
-            IF (J.EQ.N) CNUM2 = 'Out'
-			if (i.eq.n) cnum = 'Out'
-!	We show only net flow in the spreadsheets
-		   ostring = 'V Outflow from '//cnum//' to '//cnum2
-			call SSFlowAtoH (position, maxoutput, heading, ostring)
-		   ostring = 'V Inflow from '//cnum//' to '//cnum2
-			call SSFlowAtoH (position, maxoutput, heading, ostring)
-          END IF
-   40   CONTINUE
-
-!	Mechanical ventilation
-
-        IF (NNODE.NE.0.AND.NEXT.NE.0) THEN
-          DO 60 I = 1, NEXT
-            II = HVNODE(1,I)
-            IF (II.EQ.IRM) THEN
-              INODE = HVNODE(2,I)
-	        WRITE (CNUM,'(I2)') II
-              IF (II.EQ.N) CNUM = 'Out'
-              WRITE (CNUM2,'(I2)') INODE
-			  ostring = "MV Inflow to "//cnum
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)
-			  ostring = "MV Outflow from "//cnum
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)
-			  ostring = "Trace Species through node "//cnum2
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)
-			  ostring = "Trace captured at node "//cnum2
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)			  
-            END IF
-   60     CONTINUE
-        END IF
-   70 CONTINUE
-
-	write(16,80) 'FLOW'
-	write(16,80) (trim(heading(i)),i=1,position)
-	write(16,80) ' '
-   80	format(512a)
-	return
-
-	end
-
-	subroutine SSFlowAtoH (position, maxoutput, heading, ostring)
-
-	character heading*30(maxoutput), ostring*30
-	integer position, length
-
-	if (position.gt.maxoutput) return
-
-	position = position + 1
-	heading(position) = trim (ostring) // ','
-	return
-	
-	END
-
 	subroutine SpreadSheetFlux (Time, errorcode)
 	
 !     Output the temperatures and fluxes on surfaces and targets at the current time
@@ -370,7 +252,7 @@ C     Natural flow through vertical vents (horizontal flow)
 	save firstc
 
 	if (firstc) then
-		 call SpreadSheetFluxHeader
+		 call ssHeadersFlux
 		 firstc = .false.
 	endif
 
@@ -461,28 +343,24 @@ c   40 CONTINUE
 
 !    Detectors (including sprinklers)
 
-      CJETMIN = 0.10D0
-      DO 60 I = 1, NDTECT
-		 IROOM = IXDTECT(I,DROOM)
-		 xiroom = iroom
-
-		 ZDETECT = XDTECT(I,DZLOC)
-		 IF(ZDETECT.GT.ZZHLAY(IROOM,LOWER))THEN
-			  TLAY = ZZTEMP(IROOM,UPPER)
-		 ELSE	
-			  TLAY = ZZTEMP(IROOM,LOWER)
-		 ENDIF
-
-		 xact = IXDTECT(I,DACT)
-		 TJET = MAX(XDTECT(I,DTJET),TLAY)
-		 VEL = MAX(XDTECT(I,DVEL),CJETMIN)
-		 TLINK =  XDTECT(I,DTEMP)
-		 call SSaddtolist(position, xiroom, outarray)
-		 call SSaddtolist(position, tlink-273.15, outarray)
-		 call SSaddtolist(position, xact, outarray)
-		 call SSaddtolist(position, tjet-273.15, outarray)
-		 call SSaddtolist(position, vel, outarray)
-   60 CONTINUE
+      cjetmin = 0.10d0
+      do 60 i = 1, ndtect
+		 iroom = ixdtect(i,droom)
+		 zdetect = xdtect(i,dzloc)
+		 if(zdetect.gt.zzhlay(iroom,lower))then
+			  tlay = zztemp(iroom,upper)
+		 else	
+			  tlay = zztemp(iroom,lower)
+		 endif
+		 xact = ixdtect(i,dact)
+		 tjet = max(xdtect(i,dtjet),tlay)
+		 vel = max(xdtect(i,dvel),cjetmin)
+		 tlink =  xdtect(i,dtemp)
+		 call ssaddtolist(position, tlink-273.15, outarray)
+		 call ssaddtolist(position, xact, outarray)
+		 call ssaddtolist(position, tjet-273.15, outarray)
+		 call ssaddtolist(position, vel, outarray)
+   60 continue
 
 	call SSPrintResults (18, position, outarray)
 
@@ -490,106 +368,7 @@ c   40 CONTINUE
 
  5050 FORMAT(4x,I2,7x,1PG10.3,5x,1PG10.3,3x,1PG10.3,5x,1PG10.3)
       END
-
-	subroutine SpreadSheetFluxHeader
-
-! This routine spools the headers for the surface temperature and flux results.
-
-! Format
-
-!blank     c1     c1      c1    c1      c1   c1    c1      c1   c1         c2     c2      c2    c2       c2   c2   c2     c2   c2       ....
-!time   ceiling	u-wall  l-wall floor  flux  fire surface gas convect   ceiling u-wall  l-wall floor  flux  fire surface gas convect    ....
-       
-
-!.....  target number
-!.....  gas temp, surface temp, center temp, flux, fire, surface, gas, convect
-
-
-!.....  sensor number
-!.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
-
-
-      include "precis.fi"
-      include "cfast.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "fltarget.fi"
-
-      parameter (maxoutput=512)
-	integer position
-      character heading*30(maxoutput,2), clabels*30(9), tlables*30(8),
-     . tnum*2, ostring*30, slables*30(5), xtype*5, blank
-
-      data clabels/"ceiling","upper wall","lower wall","floor",
-     . "flux to target","total fire rad.","surface rad.","gas rad.",
-     . "convective flux"/, blank/''/
-
-      data tlables/"gas temp","surface temp","center temp","total flux",
-     . "fire flux","boundary flux","gas flux","convective flux"/
-
-	data slables/"compartment","sensor temp.", "activated",
-     . "smoke temp.","smoke velocity"/
-
-	heading(1,1) = 'WALL'
-	heading(1,2) = 'Time '
-	position = 1
-
-!	Compartment surfaces and the floor target
-
-      do 10 i = 1, nm1
-	do 20 j = 1, 9
-	position = position + 1
-	heading(position,1) = compartmentnames(i)
-	heading(position,2) = clabels(j)
-   20 continue
-   10 continue
-
-!	All the additional targets
-
-      do 40 i = 1, nm1
-      IF (NTARG.GT.NM1) THEN
-        DO 30 ITARG = 1, NTARG-NM1
-          IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
-			  write(tnum,"(i2)") itarg
-			  do 31 j = 1, 8
-			  heading(position+j,1) = "Target "//tnum
-   31			  heading(position+j,2) = tlables(j)
-			  position = position + 8
-          END IF
-   30   CONTINUE
-      END IF
-   40 continue
-
-!	Hall flow needs to go here
-
-!	Detectors
-
-	do 50 i = 1, ndtect
-		 IROOM = IXDTECT(I,DROOM)
-          ITYPE = IXDTECT(I,DTYPE)
-		 write(tnum,"(i2)") i
-		 if (itype.eq.smoked) then
-			  xtype = 'Smoke'
-		 elseif (itype.eq.heatd) then
-		 	  xtype = 'Heat'
-		 else
-			  xtype = 'Other'
-		 endif
-		 do 51 j = 1, 5
-		 heading(position+j,1) = 
-     .         "Sensor "//tnum//' is a '//xtype//' detector'
-   51		 heading(position+j,2) = slables(j)
-		 heading(position+1,2) = compartmentnames(iroom)
-		 position = position + 5
-   50 continue
-
-   	write(18,"(512(a,','))") (trim(heading(j,1)),j=1,position)
-	write(18,"(512(a,','))") (trim(heading(j,2)),j=1,position)
-	write(18,"(512(a,','))") (blank,j=1,position)
-
-      return
-      end
-
+	
       SUBROUTINE SpreadSheetSpecies (time, errorcode)
 
 !	Write out the species to the spread sheet file
@@ -599,18 +378,14 @@ c   40 CONTINUE
       include "cenviro.fi"
       include "cshell.fi"
 
-	parameter (maxhead = 1+18*nr)
+	parameter (maxhead = 1+22*nr)
 	character*16 heading(3,maxhead)
 	double precision time, outarray(maxhead)
 	integer position
 
-      CHARACTER STYPE(NS)*10, LNAMES(2)*5
 	integer layer
-      DATA LNAMES /'Upper', 'Lower'/
-      DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT', 'TS'/
-      logical tooutput(11)/.false.,5*.true.,.false.,4*.true./,
-     .  firstc/.true./
+      logical tooutput(11)/.false.,5*.true.,.false.,4*.true. /,
+     *        firstc/.true./
 	
 	save outarray, firstc
 
@@ -619,39 +394,8 @@ c   40 CONTINUE
 
 ! Set up the headings
 	if (firstc) then
-! Count species	nls is then the offset
-		 nls = 0
-		 do 9 i = 1, ns
-			  if(tooutput(i)) nls = nls + 1
-    9		 continue
-		 maxsize = 2 * nls * nm1 + 1
-		 if (maxsize.gt.maxhead) then
-! We can only output to the maximum array size; this is not deemed to be a fatal error!
-			  write(logerr,110) maxsize
-			  maxsize = min (maxsize, maxhead)
-		 endif
-
-		 heading(1,1)='SPECIES'
-		 heading(2,1) = 'Time'
-		 heading(3,1) = ' '
-         ins = 1
-		 do 10 i = 1, nm1
-		   do 10 j = UPPER, LOWER
-		     if (j.eq.upper.or.IZSHAFT(I).EQ.0) then
-		     do 11 lsp = 1, NS
-		     if(tooutput(lsp)) then
-			   ins = ins + 1
-			   heading(3,ins) = stype(lsp)
-			   heading(2,ins) = lnames(j)
-   			   heading(1,ins) = compartmentnames(i)
-		     end if
-   11        continue
-           end if
-   10		 continue
-		 write(17,"(1024(a,','))") (trim(heading(1,i)),i=1,maxsize)
-		 write(17,"(1024(a,','))") (trim(heading(2,i)),i=1,maxsize)
-		 write(17,"(1024(a,','))") (trim(heading(3,i)),i=1,maxsize)
-		 firstc = .false.
+	  call ssHeadersSpecies
+		firstc = .false.
 	endif
 
 !	From now on, just the data, please

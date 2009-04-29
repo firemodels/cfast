@@ -49,7 +49,7 @@ A compartment is divided into two control volumes, a relatively hot upper layer 
  \label{fig:Control_Volumes}
 \end{figure}
 
-The specific heat at constant volume and at constant pressure $c_v$ and cp, the universal gas constant, R, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$.  For ambient air, $c_p \approx 1$ kJ/kg K and $\gamma = 1.4$.  Four additional equations obtained from conservation of mass and energy for each layer are required to complete the equation set.  The differential equations for mass in each layer are 
+The specific heat at constant volume and at constant pressure $c_v$ and cp, the universal gas constant, R, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$.  For ambient air, $c_p \approx 1$ kJ/kg K and $\gamma = 1.4$.  Four additional equations obtained from conservation of mass and energy for each layer are required to complete the equation set.  The differential equations for mass in each layer are
 
 \be \frac{{dm_L }}{{dt}} = \dot m_L \ee
 
@@ -113,7 +113,7 @@ i'th layer energy & $\displaystyle {\dbydt{E_i} = \frac{1}{\gamma} \brackets{\do
 i'th layer volume & $\displaystyle {\dbydt{V_i} = \frac{1}{P \gamma} \brackets{\brackets{\gamma -1} \dot h_i - V_i \dbydt{P}} }$ \\ \hline
 i'th layer density & $\displaystyle {\dbydt{\rho_i} = \frac{-1}{c_p T_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i} - \frac{V_i}{\gamma - 1}\dbydt{P}}}$ \\ \hline
 i'th layer temperature & $\displaystyle {\dbydt{T_i} = \frac{1}{c_p rho_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i}+ V_i \dbydt{P}}}$ \\ \hline
-\end{tabular}  
+\end{tabular}
 \end{center}
 \end{table}
 
@@ -174,12 +174,12 @@ to characteristic floor length of about 10. The following quantitative limits ar
 \vspace{0.1in}
 \begin{tabular}{|c|c|c|c|}
 \hline
-Group & Acceptable & Special consideration & Corridor flow \\ 
+Group & Acceptable & Special consideration & Corridor flow \\
  & & required & algorithm \\ \hline
 $(L/W)_{max}$ & $L/W < 3$ & $3 < L/W < 5$ & $L/W > 5$ \\ \hline
 $(L/H)_{max}$ &  $L/H < 3$ & $3 < L/H < 6$ & $L/H > 6$ \\ \hline
  $(W/H)_{max}$ & $W/H > 0.4$ & $0.2 < L/W < 0.4$ & $L/W < 0.2$ \\ \hline
-\end{tabular}  
+\end{tabular}
 \end{center}
 \end{table}
 
@@ -221,18 +221,18 @@ high enough temperature to support combustion. In general, CFAST uses a simple d
 a combustion reaction that includes major products of combustion for hydrocarbon fuels:
 
 \be  \mathrm{C_xH_yO_zN_aCl_b} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
-     \nu_\So \, \mathrm{Soot}  + \nu_\NTWO \, \mathrm{N_2} + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee     
+     \nu_\So \, \mathrm{Soot}  + \nu_\NTWO \, \mathrm{N_2} + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee
 where the stoichiometric coefficients $\nu_\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation.  For example, for soot, it is related to the
 {\em soot yield}, $y_\So$, via the relation:
 \be
    \nu_\So = \frac{W_\F}{W_\So} \; y_\So \label{soot_yield}
 \ee
 
-For complete combustion of the simplest hydrocarbon fuel, methane reacts with 
-oxygen to form carbon dioxide and water. The only input required is the pyrolysis rate and the 
-heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes 
-more complex. In this case, production yields for the species are prescribed by the user. 
-Stoichiometry is used to insure conservation of mass and elements in the reaction. The species 
+For complete combustion of the simplest hydrocarbon fuel, methane reacts with
+oxygen to form carbon dioxide and water. The only input required is the pyrolysis rate and the
+heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes
+more complex. In this case, production yields for the species are prescribed by the user.
+Stoichiometry is used to insure conservation of mass and elements in the reaction. The species
 which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
 The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons.
@@ -242,18 +242,18 @@ As fuel and oxygen are consumed, heat is released and various products of combus
 \begin{eqnarray} Q_{f,R} &=& \chi_R Q_f \\
 Q_{f,C} &=& \brackets{1-\chi_R} Q_f
 \end{eqnarray}
-where, $\chi_R$ is the fraction  of the fireÕs heat release rate given off as radiation.  The convective 
-enthalpy, $Q_{f,C}$ then becomes the driving term in the plume flow.  For a constrained fire there is 
-radiation to both the upper and lower layers, whereas the convective part contributes only to the 
+where, $\chi_R$ is the fraction  of the fireÕs heat release rate given off as radiation.  The convective
+enthalpy, $Q_{f,C}$ then becomes the driving term in the plume flow.  For a constrained fire there is
+radiation to both the upper and lower layers, whereas the convective part contributes only to the
 upper layer.
 
 \subsubsection{Limiting Combustion by Available Oxygen \label{sec:Oxygen_Limit}}
 
-For any individual fire, the heat release rate is limited by available oxygen in the layer where the fire is located. This limit is applied in three 
-places, which are shown schematically in figure 3. The first is burning in the portion of the 
-plume which (at least initially) is typically in the lower layer of the room of fire origin (region \# 1).  The second is the portion of the plume in the upper layer, also in the room of origin (region \# 2).  The third is in the 
-vent flow which entrains air from a lower layer into an upper layer in an adjacent compartment 
-(region \# 3). The unburned hydrocarbons are tracked in this model.  Further combustion of CO to 
+For any individual fire, the heat release rate is limited by available oxygen in the layer where the fire is located. This limit is applied in three
+places, which are shown schematically in figure 3. The first is burning in the portion of the
+plume which (at least initially) is typically in the lower layer of the room of fire origin (region \# 1).  The second is the portion of the plume in the upper layer, also in the room of origin (region \# 2).  The third is in the
+vent flow which entrains air from a lower layer into an upper layer in an adjacent compartment
+(region \# 3). The unburned hydrocarbons are tracked in this model.  Further combustion of CO to
 $\mathrm{CO_2}$ is not included in the model.
 
 \begin{figure}[h]
@@ -266,172 +266,172 @@ $\mathrm{CO_2}$ is not included in the model.
 
 Initially, $\dot{m_f}$ is just the pyrolysis rate of the source fire in kg/s (region \# 1). For subsequent regions, the burning rate $\dot{m_f}$ is the unburned fuel from a previous region, $\dot{m_{tuhc}} = \dot{m_f} - \dot{m_b}$ where the subscript $tuhc$ is total unburned hydrocarbons, $f$ is the fire source, and $b$ is the amount burned.
 
-The first step is to limit the actual burning which takes place in the combustion zone.  In each 
-combustion zone, there is a quantity of fuel available.  At the source this results from the 
-pyrolysis of the material, $\dot{m}_f$ .  In other situations such as a plume or door jet, it is the net 
-unburned fuel available, $\dot{m}_{tuhc}$.  In each case, the fuel which is available but not burned is then 
-deposited into the ``$\dot{m}_{tuhc}$ '' category.  This provides a consistent notation.  In the discussion below, 
-$\dot{m}_f$  is the amount of fuel burned.  This value is initially specified as to the available fuel, and then 
-reduced if there is insufficient oxygen to support complete combustion.  Subsequently, the 
+The first step is to limit the actual burning which takes place in the combustion zone.  In each
+combustion zone, there is a quantity of fuel available.  At the source this results from the
+pyrolysis of the material, $\dot{m}_f$ .  In other situations such as a plume or door jet, it is the net
+unburned fuel available, $\dot{m}_{tuhc}$.  In each case, the fuel which is available but not burned is then
+deposited into the ``$\dot{m}_{tuhc}$ '' category.  This provides a consistent notation.  In the discussion below,
+$\dot{m}_f$  is the amount of fuel burned.  This value is initially specified as to the available fuel, and then
+reduced if there is insufficient oxygen to support complete combustion.  Subsequently, the
 available fuel, $\dot{m}_{tuhc}$, is reduced by the final value of $\dot{m}_f$ burned or $\dot{m}_b$.  Thus we have a consistent description in each burning region, with an algorithm that is invoked independent of the region being analyzed.
 
 \be Q_f = \dot{m}_f H_c \ee
 with the mass of oxygen required to achieve this energy release rate of
 \be \dot{m}_O = \frac{Q_f}{E_O} = \dot{m}_f \frac{H_c}{E} \ee
-where $E_O$ is the heat release per mass unit of oxygen consumed, taken to be 1.31 x $10^7$ J/kg\footnote{The units for oxygen consumption calorimetry are J/kg. The value 1.31 x $10^7$ J/kg is representative of typical fuels such as furniture (see reference \cite{Morehart:1991}) and implies these units. The variation or uncertainty (2$\sigma$) associated with this value is on the order of $\pm$ 5 \%} (based 
+where $E_O$ is the heat release per mass unit of oxygen consumed, taken to be 1.31 x $10^7$ J/kg\footnote{The units for oxygen consumption calorimetry are J/kg. The value 1.31 x $10^7$ J/kg is representative of typical fuels such as furniture (see reference \cite{Morehart:1991}) and implies these units. The variation or uncertainty (2$\sigma$) associated with this value is on the order of $\pm$ 5 \%} (based
 on oxygen consumption calorimetry for typical fuels \cite{Morehart:1991, Thornton:1917, Huggett:1980}). If the fuel contains oxygen (available for combustion), the oxygen needed to achieve full combustion is less:
 
 \be \dot{m}_{O,needed} = \dot{m}_O - \dot{m}_{O, in the fuel} \ee
 
-If sufficient oxygen is available, then it is fully burned.  However, if the oxygen concentration is 
-low enough, it will constrain the burning and impose a limit on the amount of fuel actually 
+If sufficient oxygen is available, then it is fully burned.  However, if the oxygen concentration is
+low enough, it will constrain the burning and impose a limit on the amount of fuel actually
 burned, as opposed to the amount pyrolyzed.  The actual limitation is discussed below and is:
 
 \be \dot{m}_{O.actual} = min \brackets{\dot{m}_{O,available} , \dot{m}_{O,needed}} \ee
 
 \be \dot{m}_{f,actual} = \dot{m}_{O,actual} \frac{E_O}{H_c}  \ee
-The relationship between oxygen and fuel concentration defines a range in which burning will 
-take place.  In the CFAST model, a limit is incorporated by limiting the burning rate as the 
-oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is 
+The relationship between oxygen and fuel concentration defines a range in which burning will
+take place.  In the CFAST model, a limit is incorporated by limiting the burning rate as the
+oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is
 incorporated through a smooth decrease in the burning rate near the limit:
 
 \be \dot{m}_{O,available} = \dot{m}_eY_{O_2}C_{LOL} \ee
-where $\dot{m}_e$ is the mass entrainment flow rate, $Y_{O_2}$ is the mass fraction of oxygen, and the lower oxygen limit coefficient, $C_{LOL}$  
-, is the fraction of the available fuel which can be burned with the 
-available oxygen and varies from 0 at the limit to 1 above the limit.  The functional form that 
-utilizes the hyperbolic tangent was determined empirically to provide a smooth cutoff of the 
+where $\dot{m}_e$ is the mass entrainment flow rate, $Y_{O_2}$ is the mass fraction of oxygen, and the lower oxygen limit coefficient, $C_{LOL}$
+, is the fraction of the available fuel which can be burned with the
+available oxygen and varies from 0 at the limit to 1 above the limit.  The functional form that
+utilizes the hyperbolic tangent was determined empirically to provide a smooth cutoff of the
 burning over a narrow range above the limit.
 
 \be C_{LOL} = \frac{\tanh\brackets{{800 \brackets{Y_{O_2} - Y_{LOL}} - 400}} + 1}{2} \ee
-A temperature criterion is also imposed so that no burning will take place when the temperature 
+A temperature criterion is also imposed so that no burning will take place when the temperature
 is below a user prescribed temperature.
 
-In summary, it is possible to follow the formation of the major products of combustion (carbon 
-dioxide, carbon monoxide, soot, water, hydrogen cyanide, and hydrogen chloride) using 
-appropriate measured product yields (e.g., \cite{Morehart:1991}) to define product yields for eq (33). Actual 
-combustion chemistry is not considered in CFAST due to the complexities associated with 
-detailed kinetics and transport. 
+In summary, it is possible to follow the formation of the major products of combustion (carbon
+dioxide, carbon monoxide, soot, water, hydrogen cyanide, and hydrogen chloride) using
+appropriate measured product yields (e.g., \cite{Morehart:1991}) to define product yields for eq (33). Actual
+combustion chemistry is not considered in CFAST due to the complexities associated with
+detailed kinetics and transport.
 
 \subsubsection{Flame Height}
 
-CFAST includes a calculation of average flame height based on the work of Heskestad \cite{Heskestad:2002}. 
+CFAST includes a calculation of average flame height based on the work of Heskestad \cite{Heskestad:2002}.
 Valid for a wide range of hydrocarbon and gaseous fuels, the correlation is given by
 
 \be H = -1.02 D + 0.235 \brackets{\frac{Q_f}{1000}} \ee
-where $H$ is the average flame height, $D$ the diameter of the fire and $Q_f$ is the fire size. The mean 
-flame height is defined as the distance from the fuel source to the top of the visible flame where 
-the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the 
-mean 50 \% of the time and below the mean 50 \% of the time.  This average flame height is 
+where $H$ is the average flame height, $D$ the diameter of the fire and $Q_f$ is the fire size. The mean
+flame height is defined as the distance from the fuel source to the top of the visible flame where
+the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the
+mean 50 \% of the time and below the mean 50 \% of the time.  This average flame height is
  included in the printed output from CFAST. Note that $Q_f$ in Eq. (8) in Ref. \cite{Heskestad:2002} is in kW.
- 
+
  \subsubsection{Limitation of the Algorithm for Fires and Mass Balance }\label{sec:firemassbalance}
- 
-CFAST depends on pyrolysis data for the source term for a fire. The usual way to obtain this 
-data is a large-scale calorimeter, e.g., reference [\cite{Bryant:2003}. Generally, a product (e.g., chair, table, 
-bookcase) is placed under a large collection hood and ignited by a burner ($\approx 50$ kW simulating a wastebasket) placed adjacent to the item.  The combustion process then proceeds under assumed 
-Òfree-burningÓ conditions, and the heat release rate is measured.  Potential sources of uncertainty 
-include measurement errors related to the instrumentation and the degree to which Òfree-burn- 
-ingÓ conditions are not achieved (e.g., radiation from the gases under the hood or from the hood 
-itself, and restrictions in the air entrained by the object causing locally reduced oxygen 
-concentrations affecting the combustion chemistry).  There are limited experimental data for 
-upholstered furniture which suggest that prior to the onset of flashover in a compartment, the 
-influence of the compartment on the burning behavior of the item is small.  The differences 
-obtained from the use of different types or locations of ignition sources have not been explored. 
-These factors are discussed in reference~\cite{Babrauskas:1982}. 
 
-Where small-scale calorimeter data are used, procedures are available to extrapolate to the 
-behavior of a full-size item.  These procedures are based on empirical correlations of data which 
-exhibit significant scatter, thus limiting their accuracy.  For example, for upholstered furniture, 
-the peak heat release rates estimated by the Òtriangular approximationÓ method averaged 91 \% 
-(range 46 \% to 103 \%) of values measured for a group of 26 chairs with noncombustible frames, 
-but only 63 \% (range 46 \% to 83 \%) of values measured for a group of 11 chairs with 
-combustible frames \cite{Babrauskas:1985}.  Also, the triangle neglects the ÒtailsÓ of the curve; these are the initial time from ignition to significant burning of the item, and the region of burning of the combusti- 
-ble frame, after the fabric and filler are consumed. 
+CFAST depends on pyrolysis data for the source term for a fire. The usual way to obtain this
+data is a large-scale calorimeter, e.g., reference [\cite{Bryant:2003}. Generally, a product (e.g., chair, table,
+bookcase) is placed under a large collection hood and ignited by a burner ($\approx 50$ kW simulating a wastebasket) placed adjacent to the item.  The combustion process then proceeds under assumed
+Òfree-burningÓ conditions, and the heat release rate is measured.  Potential sources of uncertainty
+include measurement errors related to the instrumentation and the degree to which Òfree-burn-
+ingÓ conditions are not achieved (e.g., radiation from the gases under the hood or from the hood
+itself, and restrictions in the air entrained by the object causing locally reduced oxygen
+concentrations affecting the combustion chemistry).  There are limited experimental data for
+upholstered furniture which suggest that prior to the onset of flashover in a compartment, the
+influence of the compartment on the burning behavior of the item is small.  The differences
+obtained from the use of different types or locations of ignition sources have not been explored.
+These factors are discussed in reference~\cite{Babrauskas:1982}.
 
-The provided data and procedures only relate directly to burning of items initiated by relatively 
-large flaming sources.  Little data are currently available for release rates under smoldering 
-combustion, or for the high external flux and low oxygen conditions characteristic of post- 
-flashover burning.  While the model allows multiple items burning simultaneously, it does not 
-account for the synergy of such multiple fires.  Thus, for other ignition scenarios, multiple items 
-burning simultaneously (which exchange energy by radiation and convection), combustible 
-interior finish, and post-flashover conditions, the model can give estimates which are often non- 
-conservative (the actual release rates would be greater than estimated).  At present, the only sure 
-way to account for all of these complex phenomena is to conduct a full-scale compartment burn 
-and use the pyrolysis rates directly. 
+Where small-scale calorimeter data are used, procedures are available to extrapolate to the
+behavior of a full-size item.  These procedures are based on empirical correlations of data which
+exhibit significant scatter, thus limiting their accuracy.  For example, for upholstered furniture,
+the peak heat release rates estimated by the Òtriangular approximationÓ method averaged 91 \%
+(range 46 \% to 103 \%) of values measured for a group of 26 chairs with noncombustible frames,
+but only 63 \% (range 46 \% to 83 \%) of values measured for a group of 11 chairs with
+combustible frames \cite{Babrauskas:1985}.  Also, the triangle neglects the ÒtailsÓ of the curve; these are the initial time from ignition to significant burning of the item, and the region of burning of the combusti-
+ble frame, after the fabric and filler are consumed.
 
-Burning can be constrained by the available oxygen.  However, this Òconstrained fireÓ is not 
-subject to the influences of radiation to enhance its burning rate, but is influenced by the oxygen 
-available in the compartment.  If a large mass loss rate is entered, the model will follow this 
-input until there is insufficient oxygen available for that quantity of fuel to burn in the 
-compartment.  The unburned fuel (sometimes called excess pyrolysate) is tracked as it flows out 
-in the door jet, where it can entrain more oxygen.  If this mixture is within the user-constrained 
-flammable range, it burns in the door plume.  If not, it will be tracked throughout the building 
-until it eventually collects as unburned fuel or burns in a vent.  The enthalpy released in the fire 
-compartment and in each vent, as well as the total enthalpy released, is detailed in the output of 
-the model.  Since mass and enthalpy are conserved, the total will be correct.  However, since 
-combustion did not take place adjacent to the burning object, the actual mass burned could be 
-lower than that specified by the user.  The difference will be the unburned fuel. 
+The provided data and procedures only relate directly to burning of items initiated by relatively
+large flaming sources.  Little data are currently available for release rates under smoldering
+combustion, or for the high external flux and low oxygen conditions characteristic of post-
+flashover burning.  While the model allows multiple items burning simultaneously, it does not
+account for the synergy of such multiple fires.  Thus, for other ignition scenarios, multiple items
+burning simultaneously (which exchange energy by radiation and convection), combustible
+interior finish, and post-flashover conditions, the model can give estimates which are often non-
+conservative (the actual release rates would be greater than estimated).  At present, the only sure
+way to account for all of these complex phenomena is to conduct a full-scale compartment burn
+and use the pyrolysis rates directly.
 
-An oxygen combustion chemistry scheme is employed only in constrained fires.  Here user- 
-constrained hydrocarbon ratios and species yields are used by the model to predict concentra- 
-tions.  A balance among hydrogen, carbon, and oxygen molecules is maintained.  Under some 
-conditions, low oxygen can change the combustion chemistry, with a resulting increase in the 
-yields of products of incomplete combustion such as carbon monoxide. However, not enough is 
-known about these chemical processes to build this relationship into the model at the present 
+Burning can be constrained by the available oxygen.  However, this Òconstrained fireÓ is not
+subject to the influences of radiation to enhance its burning rate, but is influenced by the oxygen
+available in the compartment.  If a large mass loss rate is entered, the model will follow this
+input until there is insufficient oxygen available for that quantity of fuel to burn in the
+compartment.  The unburned fuel (sometimes called excess pyrolysate) is tracked as it flows out
+in the door jet, where it can entrain more oxygen.  If this mixture is within the user-constrained
+flammable range, it burns in the door plume.  If not, it will be tracked throughout the building
+until it eventually collects as unburned fuel or burns in a vent.  The enthalpy released in the fire
+compartment and in each vent, as well as the total enthalpy released, is detailed in the output of
+the model.  Since mass and enthalpy are conserved, the total will be correct.  However, since
+combustion did not take place adjacent to the burning object, the actual mass burned could be
+lower than that specified by the user.  The difference will be the unburned fuel.
+
+An oxygen combustion chemistry scheme is employed only in constrained fires.  Here user-
+constrained hydrocarbon ratios and species yields are used by the model to predict concentra-
+tions.  A balance among hydrogen, carbon, and oxygen molecules is maintained.  Under some
+conditions, low oxygen can change the combustion chemistry, with a resulting increase in the
+yields of products of incomplete combustion such as carbon monoxide. However, not enough is
+known about these chemical processes to build this relationship into the model at the present
 time.  Some data exist in reports of full-scale experiments (e.g., reference \cite{Lee:1982}) which can assist in making such determinations.
 
-\subsection{Plumes} 
+\subsection{Plumes}
 
-A plume is formed above any burning object.  It acts as a pump transferring mass and enthalpy 
-from the lower layer into the upper layer.  A correlation is used to predict the amount of mass 
-and enthalpy that is transferred.  A more complete plume model would predict plume 
+A plume is formed above any burning object.  It acts as a pump transferring mass and enthalpy
+from the lower layer into the upper layer.  A correlation is used to predict the amount of mass
+and enthalpy that is transferred.  A more complete plume model would predict plume
 entrainment by creating a separate zone and solving the appropriate equations.
 
-Two sources exist for moving enthalpy and mass between the layers within and between 
-compartments.  Within the compartment, the fire plume provides one source.  The other source 
-of mixing between the layers occurs at vents such as doors or windows.  Here, there is mixing at 
-the boundary of the opposing flows moving into and out of the compartment.  The degree of 
-mixing is based on an empirically-derived mixing relation.  Both the outflow and inflow entrain 
-air from the surrounding layers.  The flow at vents is also modeled as a plume (called the door 
-plume or jet), and uses the same equations as the fire plume, with two differences.  First, an 
-offset is calculated to account for entrainment within the doorway and second, the equations are 
-modified to account for the rectangular geometry of vents compared to the round geometry of 
-fire plumes.  All plumes within the simulation entrain air from their surroundings according to 
-an empirically-derived entrainment relation.  Entrainment of relatively cool, non-smoke laden air 
-adds oxygen to the plume and allows burning of the fuel.  It also causes it to expand as the plume 
-moves upward in the shape of an inverted cone.  The entrainment in a vent is caused by bi- 
-directional flow and results from vortices formed near a shear layer.  This phenomenon is called 
-the Kelvin-Helmholtz instability \cite{Alterman:1961}.  It is not exactly the same as a normal plume, so some error (not measured) arises when this entrainment is approximated by a normal plume 
-entrainment algorithm. 
+Two sources exist for moving enthalpy and mass between the layers within and between
+compartments.  Within the compartment, the fire plume provides one source.  The other source
+of mixing between the layers occurs at vents such as doors or windows.  Here, there is mixing at
+the boundary of the opposing flows moving into and out of the compartment.  The degree of
+mixing is based on an empirically-derived mixing relation.  Both the outflow and inflow entrain
+air from the surrounding layers.  The flow at vents is also modeled as a plume (called the door
+plume or jet), and uses the same equations as the fire plume, with two differences.  First, an
+offset is calculated to account for entrainment within the doorway and second, the equations are
+modified to account for the rectangular geometry of vents compared to the round geometry of
+fire plumes.  All plumes within the simulation entrain air from their surroundings according to
+an empirically-derived entrainment relation.  Entrainment of relatively cool, non-smoke laden air
+adds oxygen to the plume and allows burning of the fuel.  It also causes it to expand as the plume
+moves upward in the shape of an inverted cone.  The entrainment in a vent is caused by bi-
+directional flow and results from vortices formed near a shear layer.  This phenomenon is called
+the Kelvin-Helmholtz instability \cite{Alterman:1961}.  It is not exactly the same as a normal plume, so some error (not measured) arises when this entrainment is approximated by a normal plume
+entrainment algorithm.
 
-While experiments show that there is very little mixing between the layers at their interface, 
-sources of convection such as radiators or diffusers of heating and air conditioning systems, and 
-the downward flows of gases caused by cooling at walls, will cause such mixing.  These are 
-examples of phenomena which are inconsistent with the two-zone approximation.  Also, the 
-plumes are assumed not to be affected by other flows which may occur.  For example, if the 
-burning object is near the door the strong inflow of air will cause the plume axis to lean away 
-from the door and affect entrainment of gases into the plume.  Such effects are not included in 
-the model. 
+While experiments show that there is very little mixing between the layers at their interface,
+sources of convection such as radiators or diffusers of heating and air conditioning systems, and
+the downward flows of gases caused by cooling at walls, will cause such mixing.  These are
+examples of phenomena which are inconsistent with the two-zone approximation.  Also, the
+plumes are assumed not to be affected by other flows which may occur.  For example, if the
+burning object is near the door the strong inflow of air will cause the plume axis to lean away
+from the door and affect entrainment of gases into the plume.  Such effects are not included in
+the model.
 
-As discussed above, each compartment is divided into an upper and lower layer.  At the start of 
-the simulation, the layers in each compartment are initialized at ambient conditions and by 
-default, the upper layer volume set to 0.001 of the compartment volume (an arbitrary, small 
-value set to avoid the potential mathematical problems associated with dividing by zero).  Other 
-values can be set.  As enthalpy and mass are pumped into the upper layer by the fire plume, the 
-upper layer expands in volume causing the lower layer to decrease in volume and the interface to 
-move downward.  If the door to the next compartment has a soffit, there can be no flow through 
-the vent from the upper layer until the interface reaches the bottom of that soffit.  Thus in the 
-early stages the expanding upper layer will push down on the lower layer air and force it into the 
-next compartment through the vent by expansion.  
+As discussed above, each compartment is divided into an upper and lower layer.  At the start of
+the simulation, the layers in each compartment are initialized at ambient conditions and by
+default, the upper layer volume set to 0.001 of the compartment volume (an arbitrary, small
+value set to avoid the potential mathematical problems associated with dividing by zero).  Other
+values can be set.  As enthalpy and mass are pumped into the upper layer by the fire plume, the
+upper layer expands in volume causing the lower layer to decrease in volume and the interface to
+move downward.  If the door to the next compartment has a soffit, there can be no flow through
+the vent from the upper layer until the interface reaches the bottom of that soffit.  Thus in the
+early stages the expanding upper layer will push down on the lower layer air and force it into the
+next compartment through the vent by expansion.
 
-Once the interface reaches the soffit level, a door plume forms and flow from the fire connecting doorway compartment to the next compartment is initiated.  As smoke flow from the fire compartment fills the second compartment, the lower layer of air in the second compartment is pushed down. As a result, some of this air flows into the fire compartment through the lower part of the (or vent).  Thus, a vent between the fire compartment and connecting compartments can have simultaneous, opposing flows of air.  All flows are driven by pressure and density differences that result from temperature differences and layer depths. The key to getting the correct flow is to distribute correctly the fire and plumeÕs mass and enthalpy between the layers. 
+Once the interface reaches the soffit level, a door plume forms and flow from the fire connecting doorway compartment to the next compartment is initiated.  As smoke flow from the fire compartment fills the second compartment, the lower layer of air in the second compartment is pushed down. As a result, some of this air flows into the fire compartment through the lower part of the (or vent).  Thus, a vent between the fire compartment and connecting compartments can have simultaneous, opposing flows of air.  All flows are driven by pressure and density differences that result from temperature differences and layer depths. The key to getting the correct flow is to distribute correctly the fire and plumeÕs mass and enthalpy between the layers.
 
-Buoyancy generated by the combustion processes in a fire causes the formation of a plume. 
-Such a plume can transport mass and enthalpy from the fire into the lower or upper layer of a 
-compartment.  In the present implementation, we assume that both mass and enthalpy from the 
-fire are deposited only into the upper layer.  In addition the plume entrains mass from the lower 
-layer and transports it into the upper layer.  This yields a net enthalpy transfer between the two 
-layers. 
+Buoyancy generated by the combustion processes in a fire causes the formation of a plume.
+Such a plume can transport mass and enthalpy from the fire into the lower or upper layer of a
+compartment.  In the present implementation, we assume that both mass and enthalpy from the
+fire are deposited only into the upper layer.  In addition the plume entrains mass from the lower
+layer and transports it into the upper layer.  This yields a net enthalpy transfer between the two
+layers.
 
 A fire generates energy at a rate $Q_f$.  Some fraction, $\chi_R$, will exit the fire as radiation.  The remainder, $\chi_C$, will then be deposited in the layers as convective energy or heat additional fuel which may then pyrolyze. A buoyant plume carries this energy into the upper layer. Within CFAST, the radiative fraction, $\chi_R$, defaults to 0.30 \cite{Drysdale:1985}; i.e., 30 \% of the fireÕs energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:1978}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
 
@@ -439,7 +439,7 @@ A fire generates energy at a rate $Q_f$.  Some fraction, $\chi_R$, will exit the
 
 All plume models used to date are based on the seminal work of Morton et al. \cite{Morton:1956}. For an extended source such as a fire, the prescription needs modification. Several studies have devised such modifications. Two of these are included in CFAST, the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}.
 
-McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as 
+McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as
 given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of Cetegen et al. \cite{Cetegen:1982, Cetegen:1984} in the intermittent regions but yields greater entrainment in the other two regions.  This difference is particularly important for the initial fire since the upper layer is far removed from the fire.
 
 \begin{eqnarray}
@@ -447,37 +447,37 @@ given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of 
 \textnormal{intermittent:} & \frac{\dot{m}_e}{Q_f} = 0.026 \brackets{\ZQf}^{0.909} & 0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\
 \textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber
 \end{eqnarray}
-McCaffrey's correlation is an extension of the common point source plume model, with a 
-different set of coefficients for each region. These coefficients are based on experimental correlations. 
+McCaffrey's correlation is an extension of the common point source plume model, with a
+different set of coefficients for each region. These coefficients are based on experimental correlations.
 
-Heskestad  analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation 
+Heskestad  analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation
 
 \be \dot{m}_e = 0.071 Q_{f,C}^{1/3} \brackets{z - z_0}^{5/3} \brackets{1 + 0.026 Q_{f,C}^{2/3} \brackets{z-z_0}^{-5/3}} \ee
 where $Q_{f,C}$ is the convective heat release rate of the fire and $z_0$ is a virtual origin for the fire plume defined as $z_0/D = -1.02 + 0.083 Q_f^{2/5} / D$, here based on the total heat release rate of the fire.  Both correlations provide similar results in CFAST calculations.
- 
+
 \subsubsection{Entrainment Limits}
 
-In CFAST, there is a constraint on the quantity of gas which can be entrained by a plume arising 
-from a fire.  The constraint arises from the physical fact that a plume can rise only so high for a given size of a heat source.  Early in a fire, when the energy flux is very small, the plume may 
-not have sufficient energy to reach the compartment ceiling. The correct sequence of events is 
-for a small fire to generate a plume which does not reach the ceiling or upper layer initially.  The 
-plume entrains enough cool gas to decrease the buoyancy to the point where it no longer rises. 
-When there is sufficient energy present in the plume, it will penetrate the upper layer.  To this 
-end the following prescription has been incorporated:  for a given size fire, a limit is placed on 
-the amount of mass which can be entrained, such that no more is entrained than would allow the 
-plume to reach the layer interface.  The result is that the interface falls at about the correct rate, 
-although it starts a little too soon, and the upper layer temperature is over predicted, but follows 
-experimental data after the initial phase. 
+In CFAST, there is a constraint on the quantity of gas which can be entrained by a plume arising
+from a fire.  The constraint arises from the physical fact that a plume can rise only so high for a given size of a heat source.  Early in a fire, when the energy flux is very small, the plume may
+not have sufficient energy to reach the compartment ceiling. The correct sequence of events is
+for a small fire to generate a plume which does not reach the ceiling or upper layer initially.  The
+plume entrains enough cool gas to decrease the buoyancy to the point where it no longer rises.
+When there is sufficient energy present in the plume, it will penetrate the upper layer.  To this
+end the following prescription has been incorporated:  for a given size fire, a limit is placed on
+the amount of mass which can be entrained, such that no more is entrained than would allow the
+plume to reach the layer interface.  The result is that the interface falls at about the correct rate,
+although it starts a little too soon, and the upper layer temperature is over predicted, but follows
+experimental data after the initial phase.
 
-For the plume to be able to penetrate the inversion formed by a hot gas layer over a cooler gas 
-layer, the density of the gas in the plume at the point of intersection must be less than the density 
-of the gas in the upper layer. In practice, this places a maximum on the air entrained into the 
+For the plume to be able to penetrate the inversion formed by a hot gas layer over a cooler gas
+layer, the density of the gas in the plume at the point of intersection must be less than the density
+of the gas in the upper layer. In practice, this places a maximum on the air entrained into the
 plume. From conservation of mass and enthalpy
 
 \be \dm_p = \dm_f + \dm_e \label{eq:plume_mass} \ee
 
 \be \dm_pc_pT_p = \dm_fc_pT_f + \dm_ec_pT_l \label{eq:plume_energy} \ee
-where the subscripts $p$, $f$, $e$, and $l$ refer to the plume, fire, entrained air, and lower layer, 
+where the subscripts $p$, $f$, $e$, and $l$ refer to the plume, fire, entrained air, and lower layer,
 respectively.
 
 The criterion that the density in the plume region be lower than the upper layer implies that $T_u~<~T_p$. Solving eq \ref{eq:plume_energy} for $T_p$ and substituting for $\dm_p$ from \ref{eq:plume_mass} yields
@@ -486,10 +486,10 @@ The criterion that the density in the plume region be lower than the upper layer
 or
 \be \dm_e < \brackets{\frac{T_f - T_u}{T_u - T_l}}\dm_f < \frac{T_f}{T_u - T_l} \dm_f \label{eq:entrainment_limit} \ee
  Substituting the convective energy released by the fire, $Q_{f,C} = \dm_fc_pT_f$, into eq \ref {eq:entrainment_limit} yields the form of the  entrainment limit use in the CFAST model:
- 
+
  \be \dm_e < \frac{Q_{f,C}}{c_p\brackets{T_u - T_l}} \ee
- which is incorporated into the model.  It should be noted that both the plume and layers are 
-assumed to be well mixed with negligible mixing and transport time for the plume and layers. 
+ which is incorporated into the model.  It should be noted that both the plume and layers are
+assumed to be well mixed with negligible mixing and transport time for the plume and layers.
 
 \subsubsection{Plume Centerline Temperature}
 
@@ -523,8 +523,8 @@ where $Z_{I,1}$ is the distance from the fire to the interface between the upper
 
 \be Q_{f,C,eff} = Q_{I,2}^* \rho_\infty c_{p\infty} T_\infty \sqrt{g} Z_{I,2}^{5/2}  \ee
 
-\be z_{eff} = z - Z_{I,1} + Z_{I,2} \ee 
-(see figure \ref{fig:Plume_Temp_Notation}). The new values of the fire source and  target location are then used in the standard plume correlation where the ambient conditions are now those of the upper layer.  
+\be z_{eff} = z - Z_{I,1} + Z_{I,2} \ee
+(see figure \ref{fig:Plume_Temp_Notation}). The new values of the fire source and  target location are then used in the standard plume correlation where the ambient conditions are now those of the upper layer.
 \begin{figure}
 \begin{center}
 \includegraphics[width=4.0in]{FIGURES/Theory/Plume_Temp_Notation}\\
@@ -535,28 +535,28 @@ where $Z_{I,1}$ is the distance from the fire to the interface between the upper
 
 \subsubsection{Limitations of the Plume Algorithms} \label{sec:plumelimits}
 
-The entrainment coefficients are empirically determined values from the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}. Small errors in these values will have a small effect on the fire plume or the flow in the plume of gases exiting the door of that compartment.  In a multi-compartment model such as CFAST, however, small errors in each door plume are multiplicative as the flow proceeds through many compartments, possibly resulting in a significant error in the furthest compartments.  The data available from validation experiments \cite{Peacock:1988} discussed in the CFAST Validation Guide \cite{CFAST_Valid_Guide_6} indicate that the values for entrainment coefficients currently used in most zone models produce good agreement for a three-compartment configuration.  More data are needed for larger numbers of compartments to study this further. 
+The entrainment coefficients are empirically determined values from the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}. Small errors in these values will have a small effect on the fire plume or the flow in the plume of gases exiting the door of that compartment.  In a multi-compartment model such as CFAST, however, small errors in each door plume are multiplicative as the flow proceeds through many compartments, possibly resulting in a significant error in the furthest compartments.  The data available from validation experiments \cite{Peacock:1988} discussed in the CFAST Validation Guide \cite{CFAST_Valid_Guide_6} indicate that the values for entrainment coefficients currently used in most zone models produce good agreement for a three-compartment configuration.  More data are needed for larger numbers of compartments to study this further.
 
-In real fires, smoke and gases are introduced into the lower layer of each compartment primarily 
-due to mixing at connections between compartments and from the downward flows along walls 
-(where contact with the wall cools the gas and reduces its buoyancy).  Doorway mixing has been 
-included in CFAST, using the same empirically derived mixing coefficients as used for 
-calculating fire plume entrainment. Downward wall flow has not been included. This could 
-result in underestimates of lower layer temperatures and species concentration. 
-Entrainment at a vent (doors, windows, ...) yields mixing into the lower and upper layers. The 
-latter has been studied more extensively than the former. The door jets are not symmetric for 
-these mixing phenomena, however.  We have constrained the phenomenon for CFAST to be in 
-the range as predicted by Zukoski et al. \cite{Zukoski:1985}. 
+In real fires, smoke and gases are introduced into the lower layer of each compartment primarily
+due to mixing at connections between compartments and from the downward flows along walls
+(where contact with the wall cools the gas and reduces its buoyancy).  Doorway mixing has been
+included in CFAST, using the same empirically derived mixing coefficients as used for
+calculating fire plume entrainment. Downward wall flow has not been included. This could
+result in underestimates of lower layer temperatures and species concentration.
+Entrainment at a vent (doors, windows, ...) yields mixing into the lower and upper layers. The
+latter has been studied more extensively than the former. The door jets are not symmetric for
+these mixing phenomena, however.  We have constrained the phenomenon for CFAST to be in
+the range as predicted by Zukoski et al. \cite{Zukoski:1985}.
 
 The plume centerline temperature is based on an experimental correlation that has been subjected to considerable validation \cite{Valid:Davis_Plumes}. When the desired location of the plume centerline temperature is within the flaming region of the fire, the temperature is likely to be underestimated.
 
 \subsection{Vent Flow}
 
-Flow through vents is a dominant component of any fire model because it is sensitive to small changes in pressure and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course for the fire and plume).  Its sensitivity to environmental changes arises through its dependence on the pressure difference between compartments which can change rapidly.  
+Flow through vents is a dominant component of any fire model because it is sensitive to small changes in pressure and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course for the fire and plume).  Its sensitivity to environmental changes arises through its dependence on the pressure difference between compartments which can change rapidly.
 
 CFAST models two types of vent flow, vertical flow through horizontal vents (such as ceiling holes or hatches) and horizontal flow through vertical vents (such as doors or windows).  Horizontal flow is the flow which is normally thought of when discussing fires.  Vertical flow is particularly important in two disparate situations: a ship, and the role of fire fighters doing roof venting.
 
-Horizontal vent flow is determined using the pressure difference across a vent.  Flow at a given elevation may be computed using BernoulliÕs law by first computing the pressure difference at that elevation.  The pressure on each side of the vent is computed using the pressure at the floor, the height of the floor and the density. 
+Horizontal vent flow is determined using the pressure difference across a vent.  Flow at a given elevation may be computed using BernoulliÕs law by first computing the pressure difference at that elevation.  The pressure on each side of the vent is computed using the pressure at the floor, the height of the floor and the density.
 
 Atmospheric pressure is about 100~000 Pa. Fires produce pressure changes from 1~Pa to 1~000~Pa and mechanical ventilation systems typically involve pressure differentials of about 1~Pa to 100~Pa.  The pressure variables are solved to a higher accuracy than other solution variables because of the subtraction (with resulting loss of precision) needed to calculate vent flows from pressure differences.
 
@@ -587,7 +587,7 @@ Bernoulli's equation is the integral of the Euler equation and applies to genera
 
 where $C$ is the constriction (or flow) coefficient (Å0.7), $\rho$ is the gas density on the source side, and $\Delta P$ is the pressure across the interface.  (Note: at present we use a constant value for $C$ for all gas temperatures).
 
-The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  By breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, the flow equation can be integrated piecewise analytically and then summed.  
+The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  By breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, the flow equation can be integrated piecewise analytically and then summed.
 
 The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in figure \ref{fig:Flow_Notation}.
 
@@ -620,7 +620,7 @@ where $Q_{f,eq}$ is the heat release rate of the doorway fire. The concept of th
 \be z_p = \frac{z_13}{Q_{f,eq}^{2/5}}+ v_p \ee
 where $v_p$ the virtual point source, is defined by inverting the entrainment process to yield
 
-\begin{eqnarray} 
+\begin{eqnarray}
 v_P = \brackets{\frac{90.9 \dm}{Q_{f,eq}}}^{1.76} & 0.00 < v_p \leq 0.08 \nonumber \\
 v_P = \brackets{\frac{38.5 \dm}{Q_{f,eq}}}^{1.001} & 0.08 < v_p \leq 0.20 \label{eq:McCaffreyPlume} \\
 v_P = \brackets{\frac{8.10 \dm}{Q_{f,eq}}}^{0.528} & 0.20 < v_p \nonumber \nopagebreak
@@ -640,7 +640,7 @@ Normally a non-zero cross vent pressure difference tends to drive unidirectional
 where $\gamma = c_p/c_v$ is the ratio of specific heats, $C = 0.68 + 0.17 \epsilon$, $\epsilon = \frac{\Delta P}{P}$, and $f$ us a weak function of both $\gamma$ and $\epsilon$ \cite{Cooper:1989}. In the situation where we have an instability, we use Cooper's correlations for the function $f$.  The resulting exchange flow is given by
 
 \be \dm_{ex} = 0.1 \brackets{\frac{g \Delta \rho A_v^{5/2}}{\rho_{av}}} \brackets{1.0 - \frac{2 A_v^2 \Delta P}{S^2 g \Delta \rho D^5}} \ee
-where $D = 2 \sqrt{A_v / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively \cite{Cooper:1989}. Vertical flow through horizontal vents is governed by the VFLOW routines. VENTCF is the module which calculates the mass flow from one compartment to another. The values returned are $\dm_{incoming}$ and $\dm_{outgoing}$ through each vent. These terms are symmetric: the outgoing flow from compartment 1 to 2 is the same as incoming flow from compartment 2 to 1, though source and destination layers may be different. 
+where $D = 2 \sqrt{A_v / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively \cite{Cooper:1989}. Vertical flow through horizontal vents is governed by the VFLOW routines. VENTCF is the module which calculates the mass flow from one compartment to another. The values returned are $\dm_{incoming}$ and $\dm_{outgoing}$ through each vent. These terms are symmetric: the outgoing flow from compartment 1 to 2 is the same as incoming flow from compartment 2 to 1, though source and destination layers may be different.
 
 The energy flux into a compartment is then determined by the relative size and temperature of the layers of the compartment from which the mass is flowing (incoming, u and l):
 
@@ -699,7 +699,7 @@ The zone fire model then uses these correlations to estimate conditions in the c
 \end{enumerate}
 
 
-\subsubsection{Assumptions} 
+\subsubsection{Assumptions}
 
 The assumptions made in order to develop the correlations are:
 
@@ -728,20 +728,20 @@ Ceiling jet flow in a corridor can be characterized as a one dimensional gravity
 \be v = \sqrt{g d_0} \ee
 where $m$ is mass, $g$ is the acceleration of gravity, $d_0$ is the height of the gravity current and $V$ is the velocity. When the density difference, between the current and the ambient fluid is small, the velocity, $V$, is proportional to $\sqrt{g d_0 \Delta \rho / \rho_{cj}}$ = $\sqrt{g d_0 \Delta T / T_{amb}}$ where $\rho_{amb}$ and $T_{amb}$ are the ambient density and temperature and $\rho_{cj}$ and $T_{cj}$ are the density and temperature of the ceiling jet and  $\Delta T = T_{cj} - T_{amb}$ is the temperature difference. Here use has been made of the ideal gas law, $\rho_{amb} T_{amb} \approx \rho_{cj} T_{cj}$.  This can be shown using an integrated form of Bernoulli's law noting that the pressure drop at the bottom of the ceiling jet is $P_b = 0$, the pressure drop at the top is $P_t = gd_0(\rho_{cj} - \rho_{amb})$ and using a vent coefficient cvent of 0.74, to obtain
 
-\begin{eqnarray} 
+\begin{eqnarray}
 v_0 & = & C \frac{\sqrt{8}}{3} \frac{1}{\sqrt{\rho_{cj}}} \frac{P_t + \sqrt{P_tP_b}+P_b}{\sqrt{P_t} + \sqrt{P_b}} \nonumber \\
  & = & C \frac{\sqrt{8}}{3} \sqrt{\frac{P_t}{\rho_{cj}}} \nonumber \\
  & = & C \frac{\sqrt{8}}{3} \sqrt{g d_0 \frac{\rho_{amb} - \rho_{cj}}{\rho_{cj}}} \nonumber \\
  & \approx & 0.7 \sqrt{g d_0 \frac{\Delta T}{T_{amb}}} \label{eq:Corridor_Flow}
  \end{eqnarray}
- 
+
 Formulas of the form of the above equation lead one to conclude that a ceiling jet's characteristics in a corridor depend on its depth, $d_0$, and relative temperature difference, $\Delta T/T_{amb}$. Therefore, as the jet cools, it slows down. If no heat transfer occurs between the ceiling jet and the surrounding walls, then the only mechanism for cooling is mixing with surrounding cool air.
 
 Twenty numerical experiments were performed using FDS in order to better understand the effects of the inlet ceiling jet temperature and depth on ceiling jet characteristics downstream in a corridor.  These cases were run with five different inlet depths and four different inlet temperatures.  The inlet ceiling jet temperature rise, $\Delta T_0$, and depth, $d_0$, were used to define an inlet velocity, $v_0$ using eq (\ref{eq:Corridor_Flow}).  The inlet ceiling jet depths, $d_0$, used in the parameter study are 0.15 m, 0.30 m, 0.45 m, 0.60 m and 0.75 m. The inlet ceiling jet temperature rises, $T_0$, used in the parameter study are 100 \degc, 200 \degc, 300 \degc and 400 \degc.
 
-\subsubsection{Correlations} 
+\subsubsection{Correlations}
 
-Ceiling jet functions were plotted as a function of distance down a corridor for each of the 20 test cases.  These results are shown in figure \ref{fig:Corr_Flow}.  Note that all but the 0.15 m ceiling jet data lie on essentially the same line. 
+Ceiling jet functions were plotted as a function of distance down a corridor for each of the 20 test cases.  These results are shown in figure \ref{fig:Corr_Flow}.  Note that all but the 0.15 m ceiling jet data lie on essentially the same line.
 
 \begin{figure}
 \begin{center}
@@ -751,7 +751,7 @@ Ceiling jet functions were plotted as a function of distance down a corridor for
  \label{fig:Corr_Flow}
 \end{figure}
 
-The best fit line is given in the form of $\log{\frac{\Delta T}{\Delta T_0}} = a + bx$. This is equivalent to 
+The best fit line is given in the form of $\log{\frac{\Delta T}{\Delta T_0}} = a + bx$. This is equivalent to
 
 \be \frac{\Delta T}{\Delta T_0} = C_1 10^{bx}  = C_1 \brackets{\frac{1}{2}}^{x/h_{1/2}} \ee
 where $C_1 = 10^a$ and $h_{1/2} = - \log{2}/b$. The parameter $h_{1/2}$ has a physical interpretation.  It is the distance down the corridor where the temperature rise $\Delta T$ , falls off to 50 \% of its original value or equivalently, $T(x + h_{1/2}) = T (x)/2$.
@@ -773,25 +773,25 @@ Radiative transfer occurs among the fire(s), gas layers and compartment surfaces
 \subsubsection{Radiation}
 \label{sec:Radiation}
 
-Radiation heat transfer forms a significant portion of the energy balance in a zone fire model, especially in the fire room.  Radiative heat transfer is computed from wall and gas temperatures, emisivities and fire heat release rates.  To calculate the radiation absorbed in a zone, a heat balance must be done accounting for all surfaces that radiate to and absorb radiation from a zone.  
+Radiation heat transfer forms a significant portion of the energy balance in a zone fire model, especially in the fire room.  Radiative heat transfer is computed from wall and gas temperatures, emisivities and fire heat release rates.  To calculate the radiation absorbed in a zone, a heat balance must be done accounting for all surfaces that radiate to and absorb radiation from a zone.
 
-A radiation heat transfer calculation can easily dominate the computational requirements of any fire model.  Approximations are then required to perform these calculations in a time consistent with other zone fire model sources terms.  For example, it is assumed that all zones and surfaces radiate and absorb like a gray body, that the fires radiate as point sources and that the plume does not radiate at all.  Radiative heat transfer is approximated using a limited number of radiating wall surfaces, four in the fire room and two everywhere else.  The use of these and other approximations allows CFAST to perform the radiation computation in a reasonably efficient manner \cite{Forney_radiation}. 
+A radiation heat transfer calculation can easily dominate the computational requirements of any fire model.  Approximations are then required to perform these calculations in a time consistent with other zone fire model sources terms.  For example, it is assumed that all zones and surfaces radiate and absorb like a gray body, that the fires radiate as point sources and that the plume does not radiate at all.  Radiative heat transfer is approximated using a limited number of radiating wall surfaces, four in the fire room and two everywhere else.  The use of these and other approximations allows CFAST to perform the radiation computation in a reasonably efficient manner \cite{Forney_radiation}.
 
 { \bf Modeling Assumptions:}  The following assumptions are made in order to simplify the radiation heat exchange model used in CFAST and to make its calculation tractable.
 
 \begin{itemize}
-\item Iso-thermal - Each gas layer and each wall segment is assumed to be at a uniform temperature. 
+\item Iso-thermal - Each gas layer and each wall segment is assumed to be at a uniform temperature.
 
 \item Equilibrium - The wall segments and gas layers are assumed to be in a quasi-steady state.  In other words, the wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the associated differential equation.
 
 \item Point Soure Fires - The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_R$, of the total energy release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
 
-\item Diffuse and gray surfaces - The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength.  These assumptions allow us to infer that the emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$. 
+\item Diffuse and gray surfaces - The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength.  These assumptions allow us to infer that the emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$.
 
 \item Geometry - Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
 
-{\bf 4-Wall and 2-Wall Radiation Exchange:} When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface.  The radiation algorithm then computes a heat flux striking each wall segment using the surface temperature and emissivity. 
+{\bf 4-Wall and 2-Wall Radiation Exchange:} When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface.  The radiation algorithm then computes a heat flux striking each wall segment using the surface temperature and emissivity.
 
 The four wall algorithm used in CFAST for computing radiative heat exchange is based upon the equations developed in Siegel and Howell \cite{SiegelandHowell:1981} which in turn is based on the work of Hottel \cite{Hottel:1954}. Siegel and Howell model an enclosure with N wall segments and a homogeneous gas. A radiation algorithm for a two layer zone fire model requires treatment of an enclosure with two uniform gases.  Hottel and Cohen \cite{Hottel:1958} developed a method where the enclosure is divided into a number of wall and gas volume elements. An energy balance is written for each element. Each balance includes interactions with all other elements.  Treatment of the fire and the interaction of the fire and gas layers with the walls is based upon the work of Yamada and Cooper \cite{Yamada:1990}.  They model fires as point heat sources radiating uniformly in all directions and use the Lambert-Beer law to model the interaction between heat emitting elements (fires, walls, gas layers) and the gas layers. By implementing a four wall rather than an N wall model, significant algorithmic speed increases are achieved.  This is done by exploiting the simple structure and symmetry of the four wall problem.
 
@@ -873,7 +873,7 @@ For each gas, the log(absorptance) is estimated from the look-up table for that 
 
 \subsubsection{Computing Target Heat Flux and Temperature}
 
-The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor not interacting with the modeled environment.  
+The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor not interacting with the modeled environment.
 
 The net flux striking a target can be used as a boundary condition in order to compute the temperature of the target.  If the target is thin, then its temperature quickly rises to a level where the heat flux to and from the target are in equilibrium.
 
@@ -896,7 +896,7 @@ Using the definition that $q_{f,r}$ is the radiative portion of the energy relea
 {\bf Radiative Heat Flux from a Wall Segment to a Target:} Figure \ref{fig:Rad_Gases} illustrates terms used to compute heat flux from a wall segment to a target. The flux, $q\dprime_{w,t}$, from a wall segment to a target can then be computed using
 
 \be q_{w,t}\dprime = \frac{A_w q_{w,out}\dprime F_{w-t}}{A_t} \tau_U (L_U) \tau_L (L_L) \label{eq:wall_target_flux} \ee
-where $q_{w,t}\dprime$  is the flux leaving the wall segment, $A_w$, $A_t$ are the areas of the wall segment and target respectively, $F_{w-t}$  is the fraction of radiant energy given off by the wall segment that is 
+where $q_{w,t}\dprime$  is the flux leaving the wall segment, $A_w$, $A_t$ are the areas of the wall segment and target respectively, $F_{w-t}$  is the fraction of radiant energy given off by the wall segment that is
 intercepted by the target (i.e., a configuration factor) and $\tau_U (L_U)$ and $\tau_L (L_L)$ are defined as before. Equation (\ref{eq:wall_target_flux})  can be simplified using the symmetry relation $A_w F_{w-t}  = A_t F_{t-w}$ to obtain
 
 \begin{figure}
@@ -913,11 +913,11 @@ where
 \be q_{w,out}\dprime = \sigma T_w^4 - \brackets{1 - \epsilon_w} \frac{\Delta q_w\dprime}{\epsilon_w}, \ee
 $T_w$ is the temperature of the wall segment, $\epsilon_w$ is the emissivity of the wall segment and $\Delta q_w\dprime$ is the net flux striking the wall segment.
 
-{\bf Radiation from the Gas Layer to the Target:} Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptances are non-zero. 
+{\bf Radiation from the Gas Layer to the Target:} Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptances are non-zero.
 
 Let $q_{w,t,gas}\dprime$ denote the flux striking the target due to the gas g in the direction of wall segment w. Then
 
-\be q_{w,t,gas}\dprime = 
+\be q_{w,t,gas}\dprime =
 \left\{
 \begin{array}{ll}
 \sigma F_{t-w} \brackets{T_L^4 \alpha_L \tau_U + T_U^4 \alpha_U} & w \textnormal{ is in the lower layer}\\
@@ -929,16 +929,45 @@ The total target flux due to the gas (upper or lower layer) is obtained by summi
 
 \be q_{g,t}\dprime = \sum_w = q_{w,t,gas}\dprime  \ee
 
-{\bf Computing the Target Temperature:} The steady state target temperature, $T_t$ can be found by solving an energy balance on the target; namely
+{\bf Computing the Steady State Target Temperature:} The steady state target temperature, $T_t$ can be found by solving an energy balance on the target; namely
 
 \be \epsilon_t \sigma T_t^4 = \epsilon_t q_{r,in} + h \brackets{T_g - T_t} \label{eq:Target_Temp} \ee
-Note that the local gas temperature, $T_g$, in the convection calculation, $h \brackets{T_g - T_t}$, is taken to be either the upper layer temperature if the target is located in the upper layer, the lower layer temperature if the target is located in the lower layer, or the plume centerline temperature if the target is located directly above a fire source. 
+Note that the local gas temperature, $T_g$, in the convection calculation, $h \brackets{T_g - T_t}$, is taken to be either the upper layer temperature if the target is located in the upper layer, the lower layer temperature if the target is located in the lower layer, or the plume centerline temperature if the target is located directly above a fire source.
 
-Let $f(T_t)$ be the difference between the left and right hand side of equation (\ref{eq:Target_Temp}).  Then this equation may be solved using the Newton iteration 
+Let $f(T_t)$ be the difference between the left and right hand side of equation (\ref{eq:Target_Temp}).  Then this equation may be solved using the Newton iteration
 
 \be T_{new} = T_{old} - \frac{f(T_{old})}{f^\prime(T_{old})} \label{eq:Target_Newton} \ee
 
 Equation (\ref{eq:Target_Newton}) is iterated until the difference $T_{new} - T_{old}$ is sufficiently small.
+
+{\bf Computing the Transient Target Temperature:}
+A transient target temperature may be computed using two different methods
+depending on whether the target is assumed to be thin or thick.  A thin target
+is presumed to have a constant interior temperature profile. A differential equation model may then be used to estimate the
+temperature rise (or fall) based upon the thermal properties of the target and the 
+heat flux striking the front and back sides; namely
+
+\be c \rho V \frac{dT}{dt} = A(q''_f+q''_b) \label{eq:Target_ODE} \ee
+
+where $c$, $\rho$ and $V$ are the the specific heat, density and volume of the target, $A$ is the cross-sectional area of the target and the two $q''$ terms are the heat flux (due to all sources) striking the front and back sides of the target.
+
+Equation (\ref{eq:Target_ODE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_ODE}) is added to the equation set solved by DASSL.
+When solved explicitly, equation (\ref{eq:Target_ODE}) is solved as a stand-alone equation advancing the target temperature in time.
+
+
+If the target is thick then it is presumed that the temperature profile within the target varies as a function of depth and therefore a partial differential equation model must be used to estimate the changing profile; namely the heat equation 
+
+\be \frac{\partial T}{\partial t} = \frac{k}{\rho C}\frac{\partial^2T}{\partial x^2} 
+\label{eq:Target_PDE} \ee
+where $k$, $\rho$ and $C$ are the thermal conductivity, density and heat capasity of the target.  As with the standard heat conduction model discussed later, the target heat conduction model in CFAST couples the solid to the gas phase using the relation
+
+\be q''=-k\frac{dT}{dx} \label{eq:Target_Fourier}\ee
+
+where $q''$ is the heat flux striking the target (again due to all sources).  This equation is the statment that the flux striking the target must be consistent with the temperature gradient at the surface.
+
+Equation (\ref{eq:Target_PDE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_Fourier}) (not equation (\ref{eq:Target_PDE}) is added to the equation set solved by DASSL.  
+When solved explicitly, equation (\ref{eq:Target_PDE}) is solved as a stand-alone equation advancing the temperature profile in time.
+
 
 \subsubsection{Convection}
 
@@ -968,11 +997,11 @@ The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal 
 \be \alpha = 1.0 x 10^{-9} T_f^{7/4} \ee
 
 \be k = \frac{0.0209 + 1.33 x 10^{-5} T_f}{1 - 0.000267 T_f} \ee
- 
+
  \subsubsection{Conduction}
- 
+
  Procedures for solving 1-d heat conduction problems are well known, (e.g., backward difference (fully implicit), forward difference (fully explicit) or Crank-Nicolson \cite{Golub:1989}).  A finite difference approach  using a non-uniform spatial mesh is used to advance the wall temperature solution.  The heat equation is discretized using a second order central difference for the spatial derivative and a backward differences for the time derivative.  The resulting tri-diagonal system of equations is then solved to advance the temperature solution to time $t+\Delta T$.  This process is repeated , using the work of Moss and Forney \cite{Moss:1992},  until  the heat flux striking the wall (calculated from the convection and radiation algorithms) is consistent with the flux conducted into the wall calculated via FourierÕs law
- 
+
  \be q\dprime = -k \frac{dT}{dx} \ee
 where $k$ is the thermal conductivity.  This solution strategy requires a differential algebraic (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved.  Wall segment temperature profiles, however, still have to be stored so there is no decrease in storage requirements.  Conduction is then coupled to the room conditions by temperatures supplied at the interior boundary by the differential equation solver.  The exterior boundary condition types (constant flux, insulated, or constant temperature) are specified in the configuration of CFAST.
 
@@ -982,7 +1011,7 @@ To illustrate the method, consider a one room case with one active wall.  There 
 
 \subsubsection{Inter-compartment Heat Transfer}
 
-Heat transfer between vertically connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.  
+Heat transfer between vertically connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
 
 For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiative configuration factors.    For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 1/2.   Once these fractions are determined, an average flux, $q_{avg}\dprime$, is calculated using
 
@@ -1012,22 +1041,22 @@ The instantaneous convective heat flux, $q_{ceil}\dprime (x,y)$ can be determine
 \be q_{ceil}\dprime (x,y) = h \brackets{T_{ad} - T_{ceil}} \ee
 where $T_{ad}$ is a characteristic ceiling jet temperature that would be measured adjacent to an adiabatic lower ceiling surface, and $h$ is a heat transfer coefficient.  $h$ and $T_{ad}$ are given by
 
-\be \frac{h}{\tilde{h}} = 
+\be \frac{h}{\tilde{h}} =
 \left\{
 \begin{array}{cc}
 8.82 Re_H^{-1/2} Pr^{-2/3} \brackets{1 - \brackets{5 - 0.284 Re_H^{2/5}}\rH} & 0 \le \rH < 0.2 \\
 \\
-0.283 Re_H^{0.3} Pr^{-2/3} \brackets{\rH}^{-1.2} \frac{\rH - 0.0771}{\rH + 0.279} & 0.2 \le \rH 
+0.283 Re_H^{0.3} Pr^{-2/3} \brackets{\rH}^{-1.2} \frac{\rH - 0.0771}{\rH + 0.279} & 0.2 \le \rH
 \end{array}
 \right.
 \ee
 
-\be \frac{T_{ad} - T_u}{T_u {Q_H^*}^{2/3}} = 
+\be \frac{T_{ad} - T_u}{T_u {Q_H^*}^{2/3}} =
 \left\{
 \begin{array}{cc}
 10.22 - 14.9 \rH & 0 \le \rH < 0.2 \\
 \\
-8.39 f\brackets{\rH} & 0.2 \le \rH 
+8.39 f\brackets{\rH} & 0.2 \le \rH
 \end{array}
 \right.
 \ee
@@ -1042,7 +1071,7 @@ where
 Re_H = \frac{g^{1/2} H^{3/2} {Q_H^*}^{1/3}}{\nu_u}  \; , \;
 Q_H^* = \frac{Q}{\rho_u c_p T_u g^{1/2} H^{5/2} } \ee
 
-\be Q = 
+\be Q =
 \left\{
 \begin{array}{cc}
 Q_{f,C} \brackets{\frac{\sigma \dot{M}^*}{1 + \sigma}}& Z_{fire} < Z_{layer} < Z_{ceil} \\
@@ -1050,31 +1079,31 @@ Q_{f,C} \brackets{\frac{\sigma \dot{M}^*}{1 + \sigma}}& Z_{fire} < Z_{layer} < Z
 Q_{f,C} & {\begin{array}{c}
 Z_{fire} \ge Z_{layer} \\
 Z_{layer} = Z_{ceil}
-\end{array} } 
+\end{array} }
 \end{array}
 \right.
 \; , \;
- \dot{M}^* = 
+ \dot{M}^* =
 \left\{
 \begin{array}{cc}
 0 & -1 < \sigma \le 0 < 0.2 \\
 \\
-\frac{1.04599 \sigma + 0.360391 \sigma^2}{1 + 1.37748 \sigma + 0.360391 \sigma^2} & \sigma > 0 
+\frac{1.04599 \sigma + 0.360391 \sigma^2}{1 + 1.37748 \sigma + 0.360391 \sigma^2} & \sigma > 0
 \end{array}
 \right.
 \ee
 
-\be \sigma = \frac{1 - \frac{T_u}{T_l}+C_T {Q_{EQ}^*}^{2/3}}{\frac{T_u}{t_l}} 
+\be \sigma = \frac{1 - \frac{T_u}{T_l}+C_T {Q_{EQ}^*}^{2/3}}{\frac{T_u}{t_l}}
 \; , \;
 C_T = 9.115
 \; , \;
 Q_{EQ}^* = \brackets{\frac{0.21 Q_{fc}}{c_p T_l \dot{m}_p}} \ee
 
-In the above, $H$ is the distance from the (presumed) point source fire and the ceiling, $X_{fire}$  and $Y_{fire}$ are the position of the fire in the room, $Pr$ is the Prandtl number (taken to be 0.7) and $\nu$ is the kinematic viscosity of the upper layer gas which is assumed to have the properties of air and can 
+In the above, $H$ is the distance from the (presumed) point source fire and the ceiling, $X_{fire}$  and $Y_{fire}$ are the position of the fire in the room, $Pr$ is the Prandtl number (taken to be 0.7) and $\nu$ is the kinematic viscosity of the upper layer gas which is assumed to have the properties of air and can
 be estimated from $\nu = 0.04128 x 10^7 T_u^{5/2} /\brackets{T_u + 110.4}$. $Q_H^*$ and $Q_{EQ}^*$ are dimensionless numbers and are measures of the strength of the plume at the ceiling and the layer interface, respectively.
 
-When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer to the surface 
-increases.  Reference \cite{Cooper:1991} provides details of the calculation of wall surface area and convective heat flux for the wall surfaces. 
+When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer to the surface
+increases.  Reference \cite{Cooper:1991} provides details of the calculation of wall surface area and convective heat flux for the wall surfaces.
 
 \section{Heat Detection}
 
@@ -1094,14 +1123,14 @@ where $A_{i+1} = T_i + \Dttwo \brackets{a_i - b_iT_i + a_{i+1}}$ and $B_{i+1} = 
 
 \be T_{i+1} = \frac{A_{i+1}}{1+B_{i+1}} = \frac{1 - \Dttwo b_i}{1 + \Dttwo b_{i+1}} T_i  + \frac{\Delta T}{1 + \Dttwo b_{i+1}}\brackets{\frac{a_i + a_{i+1}}{2}} \label{eq:RTI_solution1} \ee
 
-Equation (\ref{eq:RTI_solution1}) reduces to the trapezoidal rule for integration when $b(t) = 0$. When $a(t)$ and $b(t)$ are constant (the gas temperature, $T_g$, and gas velocity, $V$ are not changing), eq (\ref{eq:RTI}) has the solution 
+Equation (\ref{eq:RTI_solution1}) reduces to the trapezoidal rule for integration when $b(t) = 0$. When $a(t)$ and $b(t)$ are constant (the gas temperature, $T_g$, and gas velocity, $V$ are not changing), eq (\ref{eq:RTI}) has the solution
 
 \be T(t) = \frac{a}{b} + \frac{e^{-b(t-t_0)}\brackets{b T_0 - a}}{b} = T_g + e^{\frac{-\sqrt{V(t)}(t-t_0)}{RTI}}\brackets{T_0 - T_g}
  \ee
- 
+
 \section{Sprinkler Activation and Fire Attenuation} \label{sec:suppression}
 
-For suppression, the sprinkler is modeled using a simple model \cite{Madrzykowski:1992} generalized for varying sprinkler spray densities \cite{Evans:1993}. It is then modeled by attenuating all fires in the room where the sensor activated by a term of the form $e^{-(t-t_{act})/t_{rate}}$ where $t_{act}$ is the time when the sensor activated and $t_{rate}$ is a constant determining how quickly the fire attenuates. The term $t_{rate}$ can be related to spray density of a sprinkler using a correlation developed in \cite{Evans:1993}. The suppression correlation was developed by modifying the heat release rate of a fire. For $t > t_{act}$ the heat release is given by 
+For suppression, the sprinkler is modeled using a simple model \cite{Madrzykowski:1992} generalized for varying sprinkler spray densities \cite{Evans:1993}. It is then modeled by attenuating all fires in the room where the sensor activated by a term of the form $e^{-(t-t_{act})/t_{rate}}$ where $t_{act}$ is the time when the sensor activated and $t_{rate}$ is a constant determining how quickly the fire attenuates. The term $t_{rate}$ can be related to spray density of a sprinkler using a correlation developed in \cite{Evans:1993}. The suppression correlation was developed by modifying the heat release rate of a fire. For $t > t_{act}$ the heat release is given by
 
 \be Q_f(t) = e^{-\brackets{t-t_{act}} / \brackets{3 Q_{spray}^{-1.8}}} Q_f(t_{act}) \ee
 where $Q_{spray}$ is the spray density of a sprinkler. Note that decay rate can be formulated in terms of either the attenuation rate or the spray density. $t_{rate}$ can be expressed in terms of $Q_{spray}$ as $t_{rate} = 3Q_{spray}^{-1.8}$. A calculation is done to make sure that the fuel burned is consistent with the available oxygen. Once detection has occurred, then the mass and energy release rates are attenuated by
@@ -1158,7 +1187,7 @@ The only values currently available  for these quantities are shown in table \re
 \begin{tabular}{| c | c | c | c | c | c | c | c |}
 \hline
 \multirow{2}{*}{Surface} & $b_1$ & $b_2$ & $b_3$ & $b_4$ & $b_5$ & $b_6$ & $b_7$ \\
- & (m) & (m\superscript{3}/kg) & (s\superscript{-1}) & (J/g mol) & (m\superscript{3}/kg)\superscript{$b_7 - b_6$} & (note a) & (note b) \\ 
+ & (m) & (m\superscript{3}/kg) & (s\superscript{-1}) & (J/g mol) & (m\superscript{3}/kg)\superscript{$b_7 - b_6$} & (note a) & (note b) \\
  \hline
  Painted Gypsum & 0.0063 & 191.8 & 0.0587 & 7476 & 193 & 1.021 & 0.431 \\ \hline
  PMMA & $9.6 x 10^{-5}$ & 0.0137 & 0.0205 & 7476 & 29 & 1.0 & 0.431 \\ \hline
@@ -1217,7 +1246,7 @@ The extensive formal review process for all NIST publications in part insures th
 
 \subsection{Assessment of Justification of Approaches and Assumptions}
 
-The technical approach and assumptions of the model have been presented in the peer reviewed scientific literature and at technical conferences. Also, all documents released by NIST are required to go through an internal editorial review and approval process. This process is designed to ensure compliance with the technical requirements, policy, and editorial quality required by NIST. The technical review includes a critical evaluation of the technical content and methodology, statistical treatment of data, uncertainty analysis, use of appropriate reference data and units, and bibliographic references. CFAST manuals are always first reviewed by a member of the Fire Research Division, then by the immediate supervisor of the author of the document, then by the chief of the Fire Research Division, and finally by a reader from outside the division. Both the immediate supervisor and the division chief are technical experts in the field. Once the document has been reviewed, it is then brought before the Editorial Review Board (ERB), a body of representatives from all the NIST laboratories. At least one reader is designated by the Board for each document that it accepts for review. This last reader is selected based on technical competence and impartiality. The reader is usually from outside the division producing the document and is responsible for checking that the document conforms with NIST policy on units, uncertainty and scope. This reader does not need to be a technical expert in fire or combustion. 
+The technical approach and assumptions of the model have been presented in the peer reviewed scientific literature and at technical conferences. Also, all documents released by NIST are required to go through an internal editorial review and approval process. This process is designed to ensure compliance with the technical requirements, policy, and editorial quality required by NIST. The technical review includes a critical evaluation of the technical content and methodology, statistical treatment of data, uncertainty analysis, use of appropriate reference data and units, and bibliographic references. CFAST manuals are always first reviewed by a member of the Fire Research Division, then by the immediate supervisor of the author of the document, then by the chief of the Fire Research Division, and finally by a reader from outside the division. Both the immediate supervisor and the division chief are technical experts in the field. Once the document has been reviewed, it is then brought before the Editorial Review Board (ERB), a body of representatives from all the NIST laboratories. At least one reader is designated by the Board for each document that it accepts for review. This last reader is selected based on technical competence and impartiality. The reader is usually from outside the division producing the document and is responsible for checking that the document conforms with NIST policy on units, uncertainty and scope. This reader does not need to be a technical expert in fire or combustion.
 
 Besides formal internal and peer review, CFAST is subjected to continuous scrutiny because it is available to the general public and is used internationally by those involved in fire safety design and postfire reconstruction. The source code for CFAST is also released publicly, and has been used at various universities worldwide, both in the classroom as a teaching tool as well as for research. As a result, flaws in the theoretical development and the computer program itself have been identified and fixed. The user base continues to serve as a means to evaluate the model, which is as important to its development as the formal internal and external peer review processes.
 

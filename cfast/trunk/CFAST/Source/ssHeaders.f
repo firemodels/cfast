@@ -131,6 +131,7 @@
       character*35 headertext(3,maxhead), cTemp,
      *  Labels(23), LabelsShort(23), LabelUnits(23)
       logical tooutput(11)/.false.,5*.true.,.false.,4*.true./
+      integer position
      
       data Labels / 'Time', 
      *              'N2 Upper Layer',
@@ -238,11 +239,11 @@
       include "cshell.fi"
       include "fltarget.fi"
       
-            ! local variables     
+      ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
       character*35 headertext(3,maxhead), cTemp, cType,
      *  Labels(22), LabelsShort(22), LabelUnits(22)
-     *  
+      integer position 
      
       data Labels / 'Time', 
      *              'Ceiling Temperature',
@@ -385,96 +386,143 @@
       include "cshell.fi"
       include "vents.fi"
 
-	parameter (maxoutput = 512)
-	character*30 heading(maxoutput)
-      CHARACTER ostring*30, CNUM*3, CNUM2*3
-	integer position
+      ! local variables     
+      parameter (maxhead = mxvents+2*mxvv+2*mxhvsys+mfan)
+      character*35 headertext(3,maxhead), cTemp, cFrom, cTo,
+     *  Labels(11), LabelsShort(11), LabelUnits(11)
+      integer position  
+     
+      data Labels / 'Time', 
+     *              'HVENT Inflow',
+     *              'HVENT Outflow',
+     *              'HVENT Mixing to Upper Layer', 
+     *              'HVENT Mixing to Lower Layer',
+     *              'VVENT Inflow',
+     *              'VVENT Outflow',
+     *              'MVENT Inflow',
+     *              'MVENT Outflow',
+     *              'MVENT Trace Species Flow',
+     *              'MVENT Trace Species Filtered' /
+     
+      data LabelsShort /'Time', 'H_IN_', 'H_OUT_', 'H_MIXUP_', 
+     *                  'H_MIXLOW_', 'V_IN_', 'V_OUT_', 'MV_IN_',
+     *                  'MV_OUT_', 'MV_TRACE_', 'MV_FILTERED_' /
+     
+      data LabelUnits / 9*'kg/s', 2*'kg' /
 
-	do 5 i = 1, maxoutput
-    5 heading(i) = ' '
+      !  spreadsheet header
+      if (validation) then
+        headertext(1,1) = LabelsShort(1)
+        headertext(2,1) = LabelUnits(1)
+        headertext(3,1) = ' '
+      else
+        headertext(1,1) = Labels(1)
+        headertext(2,1) = ' '
+        headertext(3,1) = LabelUnits(1)
+      end if
+      position = 1
 
-	position = 1
+      !	Do the output by compartments
 
-	ostring = 'Time'
-	call SSFlowAtoH (position, maxoutput, heading, ostring)
-
-!	Do the output by compartments
-
-      DO 70 IRM = 1, N
+      do irm = 1, n
+        i = irm
 
 C     Natural flow through vertical vents (horizontal flow)
 
-      DO 20 J = 1, N
-          DO 10 K = 1, mxccv
-            I = IRM
-            IF (IAND(1,ISHFT(NW(I,J),-K)).NE.0) THEN
-              IIJK = IJK(I,J,K)
-              IF (J.EQ.N) THEN
-                 WRITE (CNUM,'(I2)') I
-                 ostring = 'Inflow from outside to'//CNUM
-				  call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Outflow to outside from'//CNUM
-	           call SSFlowAtoH (position, maxoutput, heading, ostring)
-              ELSE
-                 WRITE (CNUM,'(I2)') I
-                 WRITE (CNUM2,'(I2)') J
-!	We show only net flow in the spreadsheets
-                 ostring = 'Inflow from '//cnum2//' to'//CNUM
-				  call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Outflow to '//cnum2//' from'//CNUM
-	           call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Mixing to Upper'//CNUM//' ('//CNUM2//')'
-			     call SSFlowAtoH (position, maxoutput, heading, ostring)
-                 ostring = 'Mixing to Lower'//CNUM//' ('//CNUM2//')'
-			     call SSFlowAtoH (position, maxoutput, heading, ostring)
-              END IF
-            END IF
-   10     CONTINUE
-   20   CONTINUE
+        do j = 1, n
+          do k = 1, mxccv
+            if (iand(1,ishft(nw(i,j),-k)).ne.0) then
+              iijk = ijk(i,j,k)
+              if (j.eq.n) then
+                cFrom = 'Outside'
+              else
+                if (j.lt.10) then
+                  write (cFrom,'(i1)') j
+                else
+                  write (cFrom,'(i2)') j
+                end if
+              end if
+              if (validation) then
+              else
+                do ih = 1, 4
+                  if (j.ne.n.or.ih.lt.3) then
+                    position = position + 1
+                    headertext(1,position) = Labels(ih+1)
+                    write (ctemp,'(a,i2,1x,2a,i2)') 
+     *                    'Vent #',k,trim(cFrom),'-',i
+                    headertext(2,position) = ctemp
+                    headertext(3,position) = LabelUnits(ih+1)
+                  end if
+                end do
+              end if
+            end if
+          end do
+        end do
 
 !	Natural flow through horizontal vents (vertical flow)
 
-        DO 40 J = 1, N
-          IF (NWV(I,J).NE.0.OR.NWV(J,I).NE.0) THEN
-            WRITE (CNUM,'(I2)') I
-            WRITE (CNUM2,'(I2)') J
-            IF (J.EQ.N) CNUM2 = 'Out'
-			if (i.eq.n) cnum = 'Out'
-!	We show only net flow in the spreadsheets
-		   ostring = 'V Outflow from '//cnum//' to '//cnum2
-			call SSFlowAtoH (position, maxoutput, heading, ostring)
-		   ostring = 'V Inflow from '//cnum//' to '//cnum2
-			call SSFlowAtoH (position, maxoutput, heading, ostring)
-          END IF
-   40   CONTINUE
+        do j = 1, n
+          if (nwv(i,j).ne.0.or.nwv(j,i).ne.0) then
+            if (i.lt.10) then
+              write (cFrom,'(i1)') i
+            else
+              write (cFrom,'(i2)') i
+            end if
+            if (i.eq.n) cFrom = 'Outside'
+            if (j.lt.10) then
+              write (cTo,'(i1)') j
+            else
+              write (cTo,'(i2)') j
+            end if
+			if (j.eq.n) cTo = 'Outside'
+		    if (validation) then
+		    else
+		      do ih = 1,2
+		        position = position + 1
+		        headertext(1,position) = Labels(ih+5)
+		        write (ctemp,'(a,1x,3a)') 
+     *                'Vent #',trim(cFrom),'-',trim(cTo)
+		        headertext(2,position) = cTemp
+		        headertext(3,position) = LabelUnits(ih+5)
+		      end do
+		    end if 
+          end if
+        end do
 
 !	Mechanical ventilation
 
-        IF (NNODE.NE.0.AND.NEXT.NE.0) THEN
-          DO 60 I = 1, NEXT
-            II = HVNODE(1,I)
-            IF (II.EQ.IRM) THEN
-              INODE = HVNODE(2,I)
-	        WRITE (CNUM,'(I2)') II
-              IF (II.EQ.N) CNUM = 'Out'
-              WRITE (CNUM2,'(I2)') INODE
-			  ostring = "MV Inflow to "//cnum
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)
-			  ostring = "MV Outflow from "//cnum
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)
-			  ostring = "Trace Species through node "//cnum2
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)
-			  ostring = "Trace captured at node "//cnum2
-			  call SSFlowAtoH (position, maxoutput, heading, ostring)			  
-            END IF
-   60     CONTINUE
-        END IF
-   70 CONTINUE
+        if (nnode.ne.0.and.next.ne.0) then
+          do i = 1, next
+            ii = hvnode(1,i)
+            if (ii.eq.irm) then
+              inode = hvnode(2,i)
+	        write (cFrom,'(i2)') ii
+              if (ii.eq.n) cnum = 'Outside'
+              write (cTo,'(i2)') inode
+              do ih = 1,4
+                position = position + 1
+                if (validation) then
+                else
+                  headertext(1,position) = Labels(ih+7)
+                  if (ih.le.2) then
+                    headertext(2,position) = 'Vent Connection at Node '
+     *                                // trim(cFrom) // '-' // trim(cTo)
+                  else
+                    headertext(2,position) = 'Fan at Node ' // cTo
+                  end if
+                  headertext(3,position) = LabelUnits(ih+7)
+                end if
+              end do
+            end if
+          end do
+        end if
+   70 end do
+            
+      ! write out header
+      write(16,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+      write(16,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+      write(16,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
-	write(16,80) 'FLOW'
-	write(16,80) (trim(heading(i)),i=1,position)
-	write(16,80) ' '
-   80	format(512a)
 	return
 
 	end subroutine ssHeadersFlow

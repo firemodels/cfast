@@ -420,7 +420,7 @@ Module IO
                 csv.Num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
                 If csv.Num(i, eventNum.secondCompartment) = 0 Then _
                     csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.ventNumber) = myMVents.VentNumber(j)
+                csv.Num(i, eventNum.ventNumber) = j + 1
                 csv.Num(i, eventNum.time) = aVent.FilterTime
                 csv.Num(i, eventNum.filterEfficiency) = aVent.FilterEfficiency / 100.0
                 csv.Num(i, eventNum.decaytime) = 1.0

@@ -388,8 +388,8 @@
 
       ! local variables     
       parameter (maxhead = mxvents+2*mxvv+2*mxhvsys+mfan)
-      character*35 headertext(3,maxhead), cTemp, cFrom, cTo,
-     *  Labels(11), LabelsShort(11), LabelUnits(11)
+      character*35 headertext(3,maxhead), cTemp, cFrom, cTo, cVent,
+     *  Labels(11), LabelsShort(11), LabelUnits(11), toIntString
       integer position  
      
       data Labels / 'Time', 
@@ -436,25 +436,29 @@ C     Natural flow through vertical vents (horizontal flow)
               if (j.eq.n) then
                 cFrom = 'Outside'
               else
-                if (j.lt.10) then
-                  write (cFrom,'(i1)') j
-                else
-                  write (cFrom,'(i2)') j
-                end if
+                cFrom = toIntString(j)
               end if
-              if (validation) then
-              else
-                do ih = 1, 4
-                  if (j.ne.n.or.ih.lt.3) then
-                    position = position + 1
-                    headertext(1,position) = Labels(ih+1)
-                    write (ctemp,'(a,i2,1x,2a,i2)') 
-     *                    'Vent #',k,trim(cFrom),'-',i
+              do ih = 1, 4
+                if (j.ne.n.or.ih.lt.3) then
+                  position = position + 1
+                  cVent = toIntString(k)
+                  cTo = toIntString(i)
+                  headertext(1,position) = Labels(ih+1)
+                  if (validation) then
+                    write (ctemp,'(6a)') 
+     *                trim(LabelsShort(ih+1)),trim(cVent),'_',
+     *                trim(cFrom),'-',trim(cTo)
+                    headertext(1,position) = ctemp
+                    headertext(2,position) = LabelUnits(ih+1)
+                    headertext(3,position) = ' '
+                  else
+                    write (ctemp,'(a,1x,a,1x,3a)') 
+     *                    'Vent #',trim(cVent),trim(cFrom),'-',trim(cTo)
                     headertext(2,position) = ctemp
                     headertext(3,position) = LabelUnits(ih+1)
                   end if
-                end do
-              end if
+                end if
+              end do
             end if
           end do
         end do
@@ -463,29 +467,26 @@ C     Natural flow through vertical vents (horizontal flow)
 
         do j = 1, n
           if (nwv(i,j).ne.0.or.nwv(j,i).ne.0) then
-            if (i.lt.10) then
-              write (cFrom,'(i1)') i
-            else
-              write (cFrom,'(i2)') i
-            end if
+            cFrom = toIntString(i)
             if (i.eq.n) cFrom = 'Outside'
-            if (j.lt.10) then
-              write (cTo,'(i1)') j
-            else
-              write (cTo,'(i2)') j
-            end if
+            cTo = toIntString(j)
 			if (j.eq.n) cTo = 'Outside'
-		    if (validation) then
-		    else
-		      do ih = 1,2
-		        position = position + 1
+		    do ih = 1,2
+		      position = position + 1
+		      if (validation) then
+		        write (ctemp,'(5a)') 
+     *            trim(LabelsShort(ih+5)),'_',trim(cFrom),'-',trim(cTo)
+		        headertext(1,position) = cTemp
+		        headertext(2,position) = LabelUnits(ih+5)
+		        headertext(3,position) = ' '
+		      else
 		        headertext(1,position) = Labels(ih+5)
 		        write (ctemp,'(a,1x,3a)') 
      *                'Vent #',trim(cFrom),'-',trim(cTo)
 		        headertext(2,position) = cTemp
 		        headertext(3,position) = LabelUnits(ih+5)
-		      end do
-		    end if 
+		      end if
+		    end do
           end if
         end do
 
@@ -496,19 +497,28 @@ C     Natural flow through vertical vents (horizontal flow)
             ii = hvnode(1,i)
             if (ii.eq.irm) then
               inode = hvnode(2,i)
-	        write (cFrom,'(i2)') ii
+	        cFrom = toIntString(ii)
               if (ii.eq.n) cnum = 'Outside'
-              write (cTo,'(i2)') inode
+              cTo = toIntString(inode)
               do ih = 1,4
                 position = position + 1
                 if (validation) then
+                  if (ih.le.2) then
+                    headertext(1,position) = trim(LabelsShort(ih+7)) 
+     *                //'Vent_' // trim(cFrom) // '-' // trim(cTo)
+                  else
+                    headertext(1,position) = trim(LabelsShort(ih+7)) //
+     *               'Fan_' // trim(cTo)
+                  end if
+                  headertext(2,position) = LabelUnits(ih+7)
+                  headertext(3,position) = ' '
                 else
                   headertext(1,position) = Labels(ih+7)
                   if (ih.le.2) then
                     headertext(2,position) = 'Vent Connection at Node '
      *                                // trim(cFrom) // '-' // trim(cTo)
                   else
-                    headertext(2,position) = 'Fan at Node ' // cTo
+                    headertext(2,position) = 'Fan at Node ' // trim(cTo)
                   end if
                   headertext(3,position) = LabelUnits(ih+7)
                 end if
@@ -516,7 +526,7 @@ C     Natural flow through vertical vents (horizontal flow)
             end if
           end do
         end if
-   70 end do
+      end do
             
       ! write out header
       write(16,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
@@ -527,16 +537,25 @@ C     Natural flow through vertical vents (horizontal flow)
 
 	end subroutine ssHeadersFlow
 
-	subroutine SSFlowAtoH (position, maxoutput, heading, ostring)
-
-	character heading*30(maxoutput), ostring*30
-	integer position, length
-
-	if (position.gt.maxoutput) return
-
-	position = position + 1
-	heading(position) = trim (ostring) // ','
-	return
-	
-	END
-
+      character*(*) function toIntString(i)
+      integer i
+      character string*256
+      if (i.lt.10) then
+        write (string,'(i1)') i
+      else if (i.lt.100) then
+        write (string,'(i2)') i
+      else if (i.lt.1000) then
+        write (string,'(i3)') i
+      else if (i.lt.10000) then
+        write (string,'(i4)') i
+      else if (i.lt.100000) then
+        write (string,'(i5)') i
+      else if (i.lt.1000000) then
+        write (string,'(i6)') i
+      else
+        string = 'error'
+      end if
+      toIntString = trim(string)
+      return
+      end function to IntString
+      

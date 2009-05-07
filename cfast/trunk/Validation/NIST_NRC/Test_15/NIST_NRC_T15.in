@@ -19,7 +19,7 @@ HVENT,1,2,1,2,2,0,1,2.58,0,4,1
 !!
 !!fire keywords
 !!
-OBJECT,NRC BE3 15,1,10.83,5.21,0,1,1,0,0,0,1
+OBJECT,NIST_NRC_T15,1,10.83,5.21,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!

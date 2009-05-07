@@ -21,7 +21,7 @@ MVENT,1,2,2,V,2.4,0.49,V,2.4,0.49,1.7,200,300,1
 !!
 !!fire keywords
 !!
-OBJECT,NRC BE3 16,1,10.85,3.52,0,1,1,0,0,0,1
+OBJECT,NIST_NRC_T16,1,10.85,3.52,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!

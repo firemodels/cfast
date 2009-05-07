@@ -24,7 +24,7 @@ HVENT,1,2,4,0.71,12.71,12,1,6.55,0,2,1
 !!
 !!fire keywords
 !!
-OBJECT,NRC BE2 2,1,7.2,16,0,1,1,0,0,0,1
+OBJECT,VTT_C2,1,7.2,16,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!

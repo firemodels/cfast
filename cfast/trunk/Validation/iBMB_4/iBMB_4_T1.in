@@ -21,7 +21,7 @@ MVENT,1,2,2,H,5.7,1.46,H,5.7,1.46,1.1,200,300,1
 !!
 !!fire keywords
 !!
-OBJECT,NRC BE4 1,1,1.8,1.8,0,1,1,0,0,0,1
+OBJECT,iBMB_4_1,1,1.8,1.8,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!

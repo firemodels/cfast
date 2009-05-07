@@ -85,14 +85,14 @@ cd "iBMB_5\"
 ..\..\bin\cfast "iBMB_5_T4" /V
 cd ..\
 echo FM SNL Tests 4, 5, 21
-cd "FMSNL\Test 4"
-..\..\..\bin\cfast "FMSNL 4" /V
+cd "FMSNL\Test_4"
+..\..\..\bin\cfast "FMSNL_4" /V
 cd ..\..\
-cd "FMSNL\Test 5"
-..\..\..\bin\cfast "FMSNL 5" /V
+cd "FMSNL\Test_5"
+..\..\..\bin\cfast "FMSNL)_5" /V
 cd ..\..\
-cd "FMSNL\Test 21"
-..\..\..\bin\cfast "FMSNL 21" /V
+cd "FMSNL\Test_21"
+..\..\..\bin\cfast "FMSNL_21" /V
 cd ..\..\
 echo NBS Tests MV100A, MV100O, MV100Z
 cd "NBS\MV100A"

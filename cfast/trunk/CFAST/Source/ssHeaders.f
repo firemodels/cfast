@@ -10,9 +10,8 @@
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
-      character*35 headertext(3,maxhead), cTemp,
-     *  Labels(15), LabelsShort(15), LabelUnits(15)
-     *  
+      character*35 headertext(3,maxhead), cTemp, cRoom, cFire,
+     *  Labels(15), LabelsShort(15), LabelUnits(15), toIntString
      
       data Labels / 'Time', 
      *              'Upper Layer Temperature', 
@@ -56,12 +55,9 @@
             if (i.ne.3.or.izshaft(j).eq.0) then
               position = position + 1
               if (validation) then
-                if (j.lt.10) then
-                  write (cTemp,'(a,i1)') trim(LabelsShort(i+1)), j
-                else
-                  write (cTemp,'(a,i2)') trim(LabelsShort(i+1)), j
-                end if
-                headertext(1,position) = cTemp
+                cRoom = toIntString(j)
+                headertext(1,position) = trim(LabelsShort(i+1)) // 
+     *                                   trim(cRoom)
                 headertext(2,position) = LabelUnits(i+1)
                 headertext(3,1) = ' '
               else
@@ -94,12 +90,8 @@
         do i = 1, 7
           position = position + 1
           if (validation) then
-            if (j.lt.10) then
-              write (cTemp,'(a,i1)') trim(LabelsShort(i+8)), j
-            else
-              write (cTemp,'(a,i2)') trim(LabelsShort(i+8)), j
-            end if
-            headertext(1,position) = cTemp
+            cFire = toIntString(j)
+            headertext(1,position) = trim(LabelsShort(i+8))//trim(cFire)
             headertext(2,position) = LabelUnits(i+8)
             headertext(3,1) = ' '
           else
@@ -128,8 +120,8 @@
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
-      character*35 headertext(3,maxhead), cTemp,
-     *  Labels(23), LabelsShort(23), LabelUnits(23)
+      character*35 headertext(3,maxhead), cTemp, cRoom,
+     *  Labels(23), LabelsShort(23), LabelUnits(23), toIntString
       logical tooutput(11)/.false.,5*.true.,.false.,4*.true./
       integer position
      
@@ -187,14 +179,9 @@
               if(tooutput(lsp)) then
                 position = position + 1
                 if (validation) then
-                  if (j.lt.10) then
-                    write (cTemp,'(a,i1)') 
-     *                     trim(LabelsShort((j-1)*11+lsp+1)), i
-                  else
-                    write (cTemp,'(a,i2)')  
-     *                     trim(LabelsShort((j-1)*11+lsp+1)), i
-                  end if
-                  headertext(1,position) = cTemp
+                  cRoom = toIntString(i)
+                  headertext(1,position) = 
+     *              trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
                   headertext(2,position) = LabelUnits((j-1)*11+lsp+1)
                   headertext(3,1) = ' '
                 else
@@ -241,8 +228,8 @@
       
       ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
-      character*35 headertext(3,maxhead), cTemp, cType,
-     *  Labels(22), LabelsShort(22), LabelUnits(22)
+      character*35 headertext(3,maxhead), cTemp, cType, cDet, cRoom,
+     *  Labels(22), LabelsShort(22), LabelUnits(22), toIntString
       integer position 
      
       data Labels / 'Time', 
@@ -296,12 +283,8 @@
 	  do j = 1, 9
 	    position = position + 1
 	    if (validation) then
-	      if (i.lt.10) then
-               write (cTemp,'(a,i1)') trim(LabelsShort(j+1)), i
-            else
-               write (cTemp,'(a,i2)') trim(LabelsShort(j+1)), i
-            end if
-            headertext(1,position) = cTemp
+	      cRoom = toIntString(i)
+            headertext(1,position) = trim(LabelsShort(j+1))//trim(cRoom)
             headertext(2,position) = LabelUnits(j+1)
             headertext(3,position) = ' '
 	    else
@@ -318,21 +301,17 @@
         IF (NTARG.GT.NM1) then
           DO ITARG = 1, NTARG-NM1
             if (IXTARG(TRGROOM,ITARG).EQ.I) then
+			  cDet = toIntString(itarg)
 			  do j = 1, 8
 			    position = position + 1
 			    if (validation) then
-	            if (itarg.lt.10) then
-                    write (cTemp,'(a,i1)') trim(LabelsShort(j+10)),itarg
-                  else
-                    write (cTemp,'(a,i2)') trim(LabelsShort(j+10)),itarg
-                  end if
-                  headertext(1,position) = cTemp
+                  headertext(1,position) = trim(LabelsShort(j+10)) // 
+     *                                     trim(cDet)
                   headertext(2,position) = LabelUnits(j+10)
                   headertext(3,position) = ' '
 	          else
 	            headertext(1,position) = Labels(j+10)
-	            write (cTemp,'(a,i2)') 'Target ',itarg
-	            headertext(2,position) = cTemp
+	            headertext(2,position) = 'Target ' // trim(cDet)
 	            headertext(3,position) = LabelUnits(j+10)
 	          end if
 			  end do  
@@ -346,8 +325,8 @@
 !	Detectors
 
 	do i = 1, ndtect
+		cDet = toIntString(i)
         itype = ixdtect(i,dtype)
-		write(tnum,"(i2)") i
 		if (itype.eq.smoked) then
 		  cType = 'Smoke'
 		elseif (itype.eq.heatd) then
@@ -358,9 +337,12 @@
 	  do j = 1, 4
 	    position = position + 1
 	    if (validation) then
+	      headertext(1,position) = trim(LabelsShort(j+18)) // trim(cDet)
+	      headertext(2,position) = LabelUnits(j+18)
+	      headertext(3,position) = ' '
 	    else
 	      headertext(1,position) = Labels(j+18)
-	      write (cTemp,'(a,1x,a,1x,i2)') trim(cType), 'Sensor', i
+	      write (cTemp,'(a,1x,a,1x,a)') trim(cType), 'Sensor', trim(cDet)
 	      headertext(2,position) = cTemp
 	      headertext(3,position) = LabelUnits(j+18)
 	    end if

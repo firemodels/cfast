@@ -20,69 +20,69 @@ echo NBS Plaza Hotel test 7
 cd multi
 ..\..\bin\cfast multi /V
 cd ..\
-echo BE2 Cases 1, 2, 3
-cd "BE2\Case 1"
-..\..\..\bin\cfast "BE2 C1" /V
+echo VTT Cases 1, 2, 3
+cd "VTT\Case 1"
+..\..\..\bin\cfast "VTT C1" /V
 cd ..\..
-cd "BE2\Case 2"
-..\..\..\bin\cfast "BE2 C2" /V
+cd "VTT\Case 2"
+..\..\..\bin\cfast "VTT C2" /V
 cd ..\..
-cd "BE2\Case 3"
-..\..\..\bin\cfast "BE2 C3" /V
+cd "VTT\Case 3"
+..\..\..\bin\cfast "VTT C3" /V
 cd ..\..
-echo BE3 tests 1-5, 7-10, 13-18
-cd "BE3\Test 1\"
-..\..\..\bin\cfast "BE3 T1" /V
+echo NIST_NRC tests 1-5, 7-10, 13-18
+cd "NIST_NRC\Test 1\"
+..\..\..\bin\cfast "NIST_NRC T1" /V
 cd ..\..
-cd "BE3\Test 2\"
-..\..\..\bin\cfast "BE3 T2" /V
+cd "NIST_NRC\Test 2\"
+..\..\..\bin\cfast "NIST_NRC T2" /V
 cd ..\..
-cd "BE3\Test 3\"
-..\..\..\bin\cfast "BE3 T3" /V
+cd "NIST_NRC\Test 3\"
+..\..\..\bin\cfast "NIST_NRC T3" /V
 cd ..\..
-cd "BE3\Test 4\"
-..\..\..\bin\cfast "BE3 T4" /V
+cd "NIST_NRC\Test 4\"
+..\..\..\bin\cfast "NIST_NRC T4" /V
 cd ..\..
-cd "BE3\Test 5\"
-..\..\..\bin\cfast "BE3 T5" /V
+cd "NIST_NRC\Test 5\"
+..\..\..\bin\cfast "NIST_NRC T5" /V
 cd ..\..
-cd "BE3\Test 7\"
-..\..\..\bin\cfast "BE3 T7" /V
+cd "NIST_NRC\Test 7\"
+..\..\..\bin\cfast "NIST_NRC T7" /V
 cd ..\..
-cd "BE3\Test 8\"
-..\..\..\bin\cfast "BE3 T8" /V
+cd "NIST_NRC\Test 8\"
+..\..\..\bin\cfast "NIST_NRC T8" /V
 cd ..\..
-cd "BE3\Test 9\"
-..\..\..\bin\cfast "BE3 T9" /V
+cd "NIST_NRC\Test 9\"
+..\..\..\bin\cfast "NIST_NRC T9" /V
 cd ..\..
-cd "BE3\Test 10\"
-..\..\..\bin\cfast "BE3 T10" /V
+cd "NIST_NRC\Test 10\"
+..\..\..\bin\cfast "NIST_NRC T10" /V
 cd ..\..
-cd "BE3\Test 13\"
-..\..\..\bin\cfast "BE3 T13" /V
+cd "NIST_NRC\Test 13\"
+..\..\..\bin\cfast "NIST_NRC T13" /V
 cd ..\..
-cd "BE3\Test 14\"
-..\..\..\bin\cfast "BE3 T14" /V
+cd "NIST_NRC\Test 14\"
+..\..\..\bin\cfast "NIST_NRC T14" /V
 cd ..\..
-cd "BE3\Test 15\"
-..\..\..\bin\cfast "BE3 T15" /V
+cd "NIST_NRC\Test 15\"
+..\..\..\bin\cfast "NIST_NRC T15" /V
 cd ..\..
-cd "BE3\Test 16\"
-..\..\..\bin\cfast "BE3 T16" /V
+cd "NIST_NRC\Test 16\"
+..\..\..\bin\cfast "NIST_NRC T16" /V
 cd ..\..
-cd "BE3\Test 17\"
-..\..\..\bin\cfast "BE3 T17" /V
+cd "NIST_NRC\Test 17\"
+..\..\..\bin\cfast "NIST_NRC T17" /V
 cd ..\..
-cd "BE3\Test 18\"
-..\..\..\bin\cfast "BE3 T18" /V
+cd "NIST_NRC\Test 18\"
+..\..\..\bin\cfast "NIST_NRC T18" /V
 cd ..\..
-echo BE4 Test 1
-cd "BE4\"
-..\..\bin\cfast "BE4 T1" /V
+echo iBMB_4 Test 1
+cd "iBMB_4\"
+..\..\bin\cfast "iBMB_4 T1" /V
 cd ..\
-echo BE5 Test 4
-cd "BE5\"
-..\..\bin\cfast "BE5 T4" /V
+echo iBMB_5 Test 4
+cd "iBMB_5\"
+..\..\bin\cfast "iBMB_5 T4" /V
 cd ..\
 echo FM SNL Tests 4, 5, 21
 cd "FMSNL\Test 4"

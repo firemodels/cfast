@@ -1,0 +1,9 @@
+VERSN,6,"Test installation - no fire
+! This should run very quickly
+TIMES,1800,900,0,0,0,
+TAMB,300,101300,0,5
+EAMB,300,101300,0,
+COMPA,C1,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+HVENT,1,2,1,2.4,1.00,0.,0.,0.,0.,1,0.9
+CJET,ALL
+LIMO2,10

@@ -1,0 +1,25 @@
+VERSN,6,Test vent types  Flows should all match
+!!
+!!Environmental Keywords
+!!
+TIMES,900,-50,0,10,10
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+CHEMI,10,393.15
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,1 Lower,4,4,4,0,0,0,GYPSUM,OFF,GYPSUM
+COMPA,2 Lower,4,4,4,4,0,0,GYPSUM,OFF,GYPSUM
+COMPA,3 Upper,4,4,4,0,0,4,GYPSUM,OFF,GYPSUM
+!!
+!!vent keywords
+!!
+HVENT,1,2,1,1,2,1,1,0,0,2,1
+HVENT,2,4,1,2,1,0,1,0,0,1,1
+VVENT,3,1,0.25,1,1
+MVENT,4,3,1,V,1,0.25,V,1,0.25,0.01,200,300,1
+MVENT,1,2,2,V,1,0.25,V,1,0.25,0.01,200,300,1
+MVENT,2,4,3,V,1,0.25,V,1,0.25,0.01,200,300,1

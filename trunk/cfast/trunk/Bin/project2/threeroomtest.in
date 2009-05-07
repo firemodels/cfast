@@ -1,0 +1,19 @@
+VERSN,6,CFAST Simulation
+!!
+!!Environmental Keywords
+!!
+TIMES,1800,-60,0,60,60
+EAMB,300,101300,0
+TAMB,300,101300,0,50
+LIMO2,10
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,Bedroom,3.6,2.4,2.4,0,0,0,GYPSUM,OFF,GYPSUM
+COMPA,Hallway,3.6,6.4,2.4,0,0,0,GYPSUM,OFF,GYPSUM
+COMPA,Upstairs Bedroom,3.6,2.4,2.4,0,0,2.4,GYPSUM,OFF,GYPSUM
+MAINF,1,1.8,1.2,0,1
+!!
+!!end of input file
+!!

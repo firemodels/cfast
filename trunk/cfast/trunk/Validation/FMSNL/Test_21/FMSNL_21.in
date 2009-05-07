@@ -20,7 +20,7 @@ MVENT,2,1,1,H,4.9,0.66,H,4.9,0.66,0.38,200,300,1
 !!
 !!fire keywords
 !!
-OBJECT,FM SNL 21,1,12,6.1,0,1,1,0,0,0,1
+OBJECT,FMSNL_21,1,12,6.1,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!

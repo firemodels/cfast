@@ -1,0 +1,25 @@
+VERSN,6,"Test installation, check for most key words"
+! Every output interval is the same, and we create an output file
+TIMES,360,-120,0,120,120,
+TAMB,300,101300,0,5,
+EAMB,300,101300,0,
+! Four compartments
+COMPA,burn_room,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+COMPA,second_compartment,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+COMPA,anteroom,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+! HVENT (normal) output 4 vents
+HVENT,1,2,1,1.1,2.20,0.25,0.,2.,2.,1,0.9
+HVENT,2,3,1,1.1,2.20,0.25,0.,2.,2.,1,0.9
+HVENT,3,4,1,1.1,2.20,0.25,0.,2.,2.,1,0.9
+HVENT,4,5,1,1.1,2.20,0.25,0.,2.,2.,1,0.9
+! VVENT (vertical flow) output
+VVENT,5,1,0.5,1,1
+! A main fire 
+MAINF,1,1.,1.7,0.,1
+! And one object
+OBJECT,Upholstered_Chair,2,4.,2.7,0.,1,1,60.0,0,0,1
+HALL,2,-1,-1,-1,
+TARGET,1,2.20,1.88,2.34,0.00,0.00,1.00,CONCRETE,IMPLICIT,PDE
+DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
+

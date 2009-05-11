@@ -42,26 +42,34 @@ if diagnostic_level >= 1:
 
 data_set = int(user_config['data_set'])
 
-## Validation Data
+## FDS Validation Data
 if data_set == 1:
     data_directory = "../../Validation/"
     output_directory = "../../Manuals/FDS_5_Validation_Guide/FIGURES/"
     config_file_name = "validation_data_config"
     print "\n** Processing Validation Data Set\n"
 
-## Verification Data
+## FDS Verification Data
 if data_set == 2:
     data_directory = "../../Verification/"
     output_directory = "../../Manuals/"
     config_file_name = "verification_data_config"
     print "\n** Processing Verification Data Set\n"
 
-## Trainier Data
+## FDS Trainier Data
 if data_set == 4:
     data_directory = "../../Training/"
     output_directory = "../../Manuals/FDS_SMV_Training_Guide/datafigures/"
     config_file_name = "Training_Examples_Data_Config_File.csv"
     print "\n** Processing Training Data Set\n"
+
+## CFAST Validation Data
+if data_set == 5:
+    data_directory = "../../Validation/"
+    output_directory = "../../Docs/Validation_Guide/FIGURES/"
+    config_file_name = "validation_data_config"
+    print "\n** Processing Validation Data Set\n"
+
 
 
 ### Start of Main Code

@@ -11,7 +11,7 @@ cd 1rwall
 ..\..\bin\cfast 1rwall2 /V
 cd ..\
 echo FM NBS 4 room tests 19, 21
-cd fmnbs
+cd fm_nbs
 ..\..\bin\cfast fm19 /V
 ..\..\bin\cfast fm21 /V
 cd ..\
@@ -84,13 +84,13 @@ cd iBMB_5\
 ..\..\bin\cfast iBMB_5_T4 /V
 cd ..\
 echo FM SNL Tests 4, 5, 21
-cd FMSNL\Test_4
+cd FM_SNL\Test_4
 ..\..\..\bin\cfast FMSNL_4 /V
 cd ..\..\
-cd FMSNL\Test_5
+cd FM_SNL\Test_5
 ..\..\..\bin\cfast FMSNL_5 /V
 cd ..\..\
-cd FMSNL\Test_21
+cd FM_SNL\Test_21
 ..\..\..\bin\cfast FMSNL_21 /V
 cd ..\..\
 echo NBS Tests MV100A, MV100O, MV100Z

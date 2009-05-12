@@ -103,4 +103,15 @@ cd ..\..\
 cd NBS\MV100Z
 ..\..\..\bin\cfast MV100Z /V
 cd ..\..\
+echo High Bay Tests
+cd High_Bay
+..\..\bin\cfast Keflavik_14
+..\..\bin\cfast Keflavik_15
+..\..\bin\cfast Keflavik_17
+..\..\bin\cfast Keflavik_18
+..\..\bin\cfast Keflavik_20
+..\..\bin\cfast Keflavik_21
+..\..\bin\cfast Keflavik_5
+..\..\bin\cfast Keflavik_6
+..\..\bin\cfast Keflavik_7
 echo.| time

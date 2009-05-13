@@ -123,7 +123,8 @@
       parameter (maxhead = 1+7*nr+5+7*mxfire)
       character*35 headertext(3,maxhead), cTemp, cRoom,
      *  Labels(23), LabelsShort(23), LabelUnits(23), toIntString
-      logical tooutput(11)/.false.,5*.true.,.false.,4*.true./
+      logical tooutput(NS)/.false.,5*.true.,.false.,4*.true./
+      logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./
       integer position
      
       data Labels / 'Time', 
@@ -184,6 +185,8 @@
                   headertext(1,position) = 
      *              trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
                   headertext(2,position) = LabelUnits((j-1)*11+lsp+1)
+                  if (molfrac(lsp)) headertext(2,position) = 'mol frac'
+                  if (lsp.eq.9) headertext(2,position) = 'mg/m^3'
                   headertext(3,1) = ' '
                 else
                   headertext(1,position) = Labels((j-1)*11+lsp+1)

@@ -384,8 +384,9 @@ c   40 CONTINUE
 	integer position
 
 	integer layer
-      logical tooutput(11)/.false.,5*.true.,.false.,4*.true. /,
+      logical tooutput(NS)/.false.,5*.true.,.false.,4*.true. /,
      *        firstc/.true./
+      logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./
 	
 	save outarray, firstc
 
@@ -409,7 +410,10 @@ c   40 CONTINUE
 	    DO 80 LSP = 1, NS
 	      if (layer.eq.upper.or.IZSHAFT(I).EQ.0) then
               IF (tooutput(LSP)) THEN
-	          CALL SSaddtolist (position,TOXICT(I,LAYER,LSP),outarray)
+                ssvalue = TOXICT(I,LAYER,LSP)
+                if (validation.and.molfrac(LSP))ssvalue = ssvalue*0.01D0
+                if (validation.and.lsp.eq.9) ssvalue = ssvalue *261.959
+	          CALL SSaddtolist (position,ssvalue,outarray)
 ! We can only output to the maximum array size; this is not deemed to be a fatal error!
 			    if (position.ge.maxhead) go to 90
               END IF

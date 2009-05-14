@@ -484,7 +484,7 @@ C*** CONVECTION FOR THE BACK
 
       RETURN
       END
-      SUBROUTINE GETTGAS(IRTARG,XTARG,YTARG,ZTARG,TG)
+      subroutine gettgas(irtarg,xtarg,ytarg,ztarg,tg)
 
       include "precis.fi"
       include "cfast.fi"
@@ -492,49 +492,45 @@ C*** CONVECTION FOR THE BACK
       include "fltarget.fi"
       include "objects2.fi"
 
-      LOGICAL FIRST
-      SAVE FIRST, PI, FOUR
+      logical first
+      save first, pi, four
 
-      DATA FIRST/.TRUE./
+      data first/.true./
 
-      IF(FIRST)THEN
-         FIRST = .FALSE.
-         XX1 = 1.0D0
-         FOUR = 4.0D0
-         PI = FOUR*ATAN(XX1)
-      ENDIF
+      if(first)then
+         first = .false.
+         xx1 = 1.0d0
+         four = 4.0d0
+         pi = four*atan(xx1)
+      endif
       
-      do i = 1,NFIRE
+      ! default is the appropriate layer temperature
+      if (ztarg.ge.zzhlay(irtarg,lower)) then
+        tg = zztemp(irtarg,upper)
+      else
+        tg = zztemp(irtarg,lower)
+      end if
+      
+      ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
+      do i = 1,nfire
         if (ifroom(i).eq.irtarg) then
             if (xtarg.eq.xfire(i,1).and.ytarg.eq.xfire(i,2).and.
      *          ztarg.gt.xfire(i,3)) then
-                qdot = FQF(i)
+                qdot = fqf(i)
                 xrad = radconsplit(i)
                 dfire = dsqrt(farea(i)*four/pi)
                 tu = zztemp(irtarg,upper)
                 tl = zztemp(irtarg,lower)
                 zfire = xfire(i,3)
-                zlayer = ZZHLAY(irtarg,lower)
+                zlayer = zzhlay(irtarg,lower)
                 z = ztarg
-                call PlumeTemp (qdot, xrad, dfire, tu, tl, zfire, 
+                call plumetemp (qdot, xrad, dfire, tu, tl, zfire, 
      *                          zlayer, z, tplume)
-                TG = tplume
-            else
-                if (ztarg.ge.ZZHLAY(IRTARG,LOWER)) then
-                    TG = ZZTEMP(IRTARG,UPPER)
-                else
-                    TG = ZZTEMP(IRTARG,LOWER)
-                end if
-            end if
-        else
-            if (ztarg.ge.ZZHLAY(IRTARG,LOWER)) then
-                TG = ZZTEMP(IRTARG,UPPER)
-            else
-                TG = ZZTEMP(IRTARG,LOWER)
+                tg = tplume
             end if
         end if
       end do 
-      END SUBROUTINE GETTGAS 
+      end subroutine gettgas 
 
       SUBROUTINE GETYLYU(YO,Y,YT,S,YL,YU)
 C

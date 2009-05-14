@@ -94,7 +94,7 @@
 	double precision array(*), value
 
       IC = IC + 1
-!	We are imposing an arbitrary limit of 512 columns
+!	We are imposing an arbitrary limit of 32000 columns
 	if (ic.gt.32000) return
       array(IC) = VALUE
       RETURN
@@ -265,32 +265,13 @@
 
       CALL SSaddtolist (position,TIME,outarray)
 
-!     First the temperature and fluxes for each compartment
+!     First the temperatures for each compartment
 
-      DO 10 I=1,NM1
-        ITARG = NTARG-NM1+I
-        if (validation) then
-          RTOTAL = GTFLUX(ITARG,1)
-          FTOTAL = GTFLUX(ITARG,2)
-          WTOTAL = GTFLUX(ITARG,3)
-          GTOTAL = GTFLUX(ITARG,4)
-          CTOTAL = GTFLUX(itarg,5)
-        else
-          RTOTAL = XXTARG(TRGTFLUXF,ITARG)
-          FTOTAL = QTFFLUX(ITARG,1)
-          WTOTAL = QTWFLUX(ITARG,1)
-          GTOTAL = QTGFLUX(ITARG,1)
-          CTOTAL = QTCFLUX(ITARG,1)
-        end if
-	  do 11 iw = 1, 4
-   11   call SSaddtolist (position,twj(1,i,iwptr(iw))-273.15,outarray)
-! a target 0 is the floor
-	  call SSaddtolist (position,rtotal,outarray)
-	  call SSaddtolist (position,FTOTAL,outarray)
-	  call SSaddtolist (position,WTOTAL,outarray)
-	  call SSaddtolist (position,GTOTAL,outarray)
-	  call SSaddtolist (position,ctotal,outarray)
-   10 CONTINUE
+      do i=1,nm1
+        do iw = 1, 4
+          call ssaddtolist (position,twj(1,i,iwptr(iw))-273.15,outarray)
+        end do
+      end do
 
 ! Now do the additional targets if defined
 	do 40 i = 1, nm1
@@ -304,26 +285,29 @@
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
 			  if (validation) then
-                RTOTAL = GTFLUX(ITARG,1)
-                FTOTAL = GTFLUX(ITARG,2)
-                WTOTAL = GTFLUX(ITARG,3)
-                GTOTAL = GTFLUX(ITARG,4)
-                CTOTAL = GTFLUX(itarg,5)
+                TOTAL = GTFLUX(ITARG,1) /1000.d0
+                FTOTAL = GTFLUX(ITARG,2) /1000.d0
+                WTOTAL = GTFLUX(ITARG,3) /1000.d0
+                GTOTAL = GTFLUX(ITARG,4) /1000.d0
+                CTOTAL = GTFLUX(itarg,5) /1000.d0
+                RTOTAL = TOTAL - CTOTAL
               else
-                RTOTAL = XXTARG(TRGTFLUXF,ITARG)
+                TOTAL = XXTARG(TRGTFLUXF,ITARG)
                 FTOTAL = QTFFLUX(ITARG,1)
                 WTOTAL = QTWFLUX(ITARG,1)
                 GTOTAL = QTGFLUX(ITARG,1)
                 CTOTAL = QTCFLUX(ITARG,1)
+                RTOTAL = TOTAL - CTOTAL
               end if
               call SSaddtolist (position, tgtemp-273.15, outarray)
 			  call SSaddtolist (position, tttemp-273.15, outarray)
 			  call SSaddtolist (position, tctemp-273.15, outarray)
+              call SSaddtolist (position, total, outarray)
+              call SSaddtolist (position, ctotal, outarray)
               call SSaddtolist (position, rtotal, outarray)
               call SSaddtolist (position, ftotal, outarray)
               call SSaddtolist (position, wtotal, outarray)
               call SSaddtolist (position, gtotal, outarray)
-              call SSaddtolist (position, ctotal, outarray)
             END IF
    20     CONTINUE
         END IF

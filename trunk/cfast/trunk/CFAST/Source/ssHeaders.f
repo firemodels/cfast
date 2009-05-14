@@ -234,7 +234,7 @@
       ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
       character*35 headertext(3,maxhead), cTemp, cType, cDet, cRoom,
-     *  Labels(22), LabelsShort(22), LabelUnits(22), toIntString
+     *  Labels(18), LabelsShort(18), LabelUnits(18), toIntString
       integer position 
      
       data Labels / 'Time', 
@@ -242,33 +242,28 @@
      *              'Upper Wall Temperature',
      *              'Lower Wall Temperature', 
      *              'Floor Temperature',
-     *              'Floor Target Total Flux',
-     *              'Floor Target Fire Radiative Flux',
-     *              'Floor Target Surface Radiative Flux',
-     *              'Floor Target Gas Radiative Flux',
-     *              'Floor Target Convective Flux',
      *              'Target Surrounding Gas Temperature',
      *              'Target Surface Temperature',
      *              'Target Center Temperature',
      *              'Target Total Flux',
+     *              'Target Convective Flux',
+     *              'Target Radiative Flux',
      *              'Target Fire Radiative Flux',
      *              'Target Surface Radiative Flux',
      *              'Target Gas Radiative Flux',
-     *              'Target Convective Flux',
      *              'Sensor Temperature',
      *              'Sensor Activation',
      *              'Sensor Surrounding Gas Temperature',
      *              'Sensor Surrounding Gas Velocity' /
      
       data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 
-     *                  'FLOORT_', 'FFLUXT_', 'FFLUXF_',
-     *                  'FFLUXS_', 'FFLUXG_', 'FFLUXC_',
-     *                  'TARGGAST_', 'TARGSURT_', 'TARGCENT_',
-     *                  'TARGFLUXT_', 'TARGFLUXF_', 'TARGFLUXS_',
-     *                  'TARGFLUXG_', 'TARGFLUXC_', 'SENST_',
-     *                  'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
+     *                  'FLOORT_', 'TARGGAST_', 'TARGSURT_', 
+     *                  'TARGCENT_', 'TARGFLUXT_', 'TARGFLUXC_', 
+     *                  'TARGFLUXR_','TARGFLUXF_', 'TARGFLUXS_',
+     *                  'TARGFLUXG_',  'SENST_', 'SENSACT_', 
+     *                  'SENSGAST_', 'SENSGASVEL_' /
      
-      data LabelUnits / 's', 4*'C', 5*'W', 3*'C', 5*'W', 'C', '1=yes',
+      data LabelUnits / 's', 7*'C', 6*'W', 'C', '1=yes',
      *                  'C', 'm/s' /
 
       !  spreadsheet header
@@ -285,7 +280,7 @@
 
       ! Compartment surfaces and the floor target
       do i = 1, nm1
-	  do j = 1, 9
+	  do j = 1, 4
 	    position = position + 1
 	    if (validation) then
 	      cRoom = toIntString(i)
@@ -307,17 +302,18 @@
           DO ITARG = 1, NTARG-NM1
             if (IXTARG(TRGROOM,ITARG).EQ.I) then
 			  cDet = toIntString(itarg)
-			  do j = 1, 8
+			  do j = 1, 9
 			    position = position + 1
 			    if (validation) then
-                  headertext(1,position) = trim(LabelsShort(j+10)) // 
+                  headertext(1,position) = trim(LabelsShort(j+5)) // 
      *                                     trim(cDet)
-                  headertext(2,position) = LabelUnits(j+10)
+                  headertext(2,position) = LabelUnits(j+5)
+                  if (LabelUnits(j+1).eq.'W') LabelUnits(j+1) = 'kW'
                   headertext(3,position) = ' '
 	          else
-	            headertext(1,position) = Labels(j+10)
+	            headertext(1,position) = Labels(j+5)
 	            headertext(2,position) = 'Target ' // trim(cDet)
-	            headertext(3,position) = LabelUnits(j+10)
+	            headertext(3,position) = LabelUnits(j+5)
 	          end if
 			  end do  
             end if
@@ -342,14 +338,14 @@
 	  do j = 1, 4
 	    position = position + 1
 	    if (validation) then
-	      headertext(1,position) = trim(LabelsShort(j+18)) // trim(cDet)
-	      headertext(2,position) = LabelUnits(j+18)
+	      headertext(1,position) = trim(LabelsShort(j+14)) // trim(cDet)
+	      headertext(2,position) = LabelUnits(j+14)
 	      headertext(3,position) = ' '
 	    else
-	      headertext(1,position) = Labels(j+18)
+	      headertext(1,position) = Labels(j+14)
 	      write (cTemp,'(a,1x,a,1x,a)') trim(cType), 'Sensor', trim(cDet)
 	      headertext(2,position) = cTemp
-	      headertext(3,position) = LabelUnits(j+18)
+	      headertext(3,position) = LabelUnits(j+14)
 	    end if
         end do
       end do

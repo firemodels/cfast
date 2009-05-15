@@ -4,14 +4,14 @@ diagnostic_level = 2
 
 # Set what plots to create: 
 # BOTH (1), Comparison Only (2), Scatter Only (3)
-process_set = 1
+process_set = 3
 
 # Set the character to be used for indicating 
 # the data rows to process in the data config files.
 # The default character is 'd' if you change the 
 # value below to something else then only the lines starting
 # with that character will be read in for processing.
-data_line_char = t
+data_line_char = d
 
 # Set the data set to process.
 # FDS Validation Data Set (1)

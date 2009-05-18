@@ -5,7 +5,7 @@ Index,Quantity_Label,Scatter_Plot_Title,Ind_Title,Dep_Title,Plot_Min,Plot_Max,Si
 4,Plume_Temperature,Plume Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,500,14,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Plume_Temperature
 5,Flame_Height,Flame Height,Measured Flame Height (m),Predicted Flame Height (m),0,8,20,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Flame_Height
 6,Oxygen_Concentration,Oxygen Concentration,Measured Drop in Volume Fraction,Predicted Drop in Volume Fraction,0,0.15,9,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Oxygen_Concentration
-7,Carbon_Dioxide_Concentration,Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.15,9,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Carbon_Dioxide_Concentration
+7,Carbon_Dioxide_Concentration,Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.1,9,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Carbon_Dioxide_Concentration
 8,Compartment_Pressure,Compartment Over-Pressure,Measured Pressure Rise(Pa),Predicted Pressure Rise (Pa),0,400,40,"[0.015,0.94]",lower right,4,43,0,0,ScatterPlots/Compartment_Pressure
 9,Heat_Flux,NIST/NRC Heat Flux near Cables,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,20,20,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/NIST_NRC_Heat_Flux
 10,Heat_Flux,WTC Heat Flux,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,120,20,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/WTC_Heat_Flux

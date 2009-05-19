@@ -15,7 +15,7 @@ Index,Quantity_Label,Scatter_Plot_Title,Ind_Title,Dep_Title,Plot_Min,Plot_Max,Si
 14,Smoke_Concentration,Smoke Concentration,Measured Density (mg/m$^3$),Predicted Density (mg/m$^3$),0,400,33,"[0.015,0.94]",lower right,4,43,0,0,ScatterPlots/Smoke_Concentration
 15,Carbon_Monoxide_Concentration,Carbon Monoxide Concentration,Measured Change in Volume Fraction,Predicted Change in Volume Fraction,0,0.1,9,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Carbon_Monoxide_Concentration
 16,Velocity,Velocity,Measured Velocity (m/s),Predicted Velocity (m/s),0,5,10,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Velocity
-17,Compartment_Pressure,Open Compartment Over-Pressure,Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,5,40,"[0.015,0.94]",lower right,4,43,0,0,ScatterPlots/Open_Compartment_Pressure
+17,Compartment_Pressure,Open Compartment Over-Pressure,Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,10,40,"[0.015,0.94]",lower right,4,43,0,0,ScatterPlots/Open_Compartment_Pressure
 18,Target_Temperature,WTC Steel Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,800,14,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/Steel_Temperature
 19,Wall_Temperature,WTC Wall and Ceiling Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,14,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/WTC_Surface_Temperature
 20,HGL_Temperature,"HGL Temperature, Steckler Compartment",Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,300,14,"[0.015,0.94]",lower right,4,43,33,39,ScatterPlots/HGL_Temperature_Steckler

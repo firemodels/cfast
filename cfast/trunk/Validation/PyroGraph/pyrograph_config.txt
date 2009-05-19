@@ -4,7 +4,7 @@ diagnostic_level = 2
 
 # Set what plots to create: 
 # BOTH (1), Comparison Only (2), Scatter Only (3)
-process_set = 3
+process_set = 1
 
 # Set the character to be used for indicating 
 # the data rows to process in the data config files.

@@ -30,28 +30,11 @@ Figure \ref{fig:Plume_Temp_Scatter} shows a comparison of predicted and measured
 \caption{Comparison of Measured and Predicted Plume Centerline Temperature.} \label{fig:Plume_Temp_Scatter}
 \end{figure}
 
-\subsubsection{VTT Test Series (see Figure \ref{fig:VTT_Plume})}
-
-\begin{figure}[p]
-\begin{center}
-\includegraphics[width=2.6in]{FIGURES/VTT/VTT_01_Plume_Temperature} \\
-\includegraphics[width=2.6in]{FIGURES/VTT/VTT_02_Plume_Temperature} \\
-\includegraphics[width=2.6in]{FIGURES/VTT/VTT_03_Plume_Temperature} 
-\end{center}
-\caption{Predicted Plume Centerline Temperature for the VTT Large Hall Tests.} \label{fig:VTT_Plume}
-\end{figure}
+\subsubsection{VTT Test Series}
 
 CFAST predicts plume temperature within or near experimental uncertainty for the experiments in this test series, tending to under-predict the lower thermocouples and over-predict the upper thermocouples. For the lower thermocouples, the radiation from the fire is certainly under-predicted due to the assumption of a point source fire in the radiation calculation.	Still, the predictions average within 16~\% of the experimental measurements.
 
-\subsubsection{FM/SNL Test Series (see Figure \ref{fig:FM_SNL_Plume})}
-
-\begin{figure}[p]
-\begin{center}
-\includegraphics[width=2.6in]{FIGURES/FM_SNL/FM_SNL_04_Plume_Temperature} \\
-\includegraphics[width=2.6in]{FIGURES/FM_SNL/FM_SNL_05_Plume_Temperature} 
-\end{center}
-\caption{Predicted Plume Centerline Temperature for the FM/SNL Tests.} \label{fig:FM_SNL_Plume}
-\end{figure}
+\subsubsection{FM/SNL Test Series}
 
 For two of the tests in this test series, predictions are near experimental uncertainty (both within 20~\% of experimental measurements). The third test included a fire source within a closed cabinet.  The resulting flow of hot gases from the cabinet does not follow the simple vertical symmetric plume assumed by the plume algorithm.  While obviously not a simple fire source applicable to the plume correlation included in CFAST, this comparison does point out the need to understand the limitations of the physical algorithms included in the model and the details of a given simulation that may significantly impact the results of the calculation.
 
@@ -75,48 +58,9 @@ Figure \ref{fig:Ceiling_Jet_Scatter} shows a comparison of predicted and measure
 
 \subsubsection{NIST/NRC Test Series}
 
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_01_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_07_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_02_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_08_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_04_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_10_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_13_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_16_Ceiling_Jet}
-\end{tabular*}
-\caption{Ceiling Jet Temperature for the NIST/NRC Series, closed door tests.}
-\label{NIST_NRC_Jet_Closed}
-\end{figure}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_17_Ceiling_Jet} &
- \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_03_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_09_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_05_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_14_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_15_Ceiling_Jet} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_18_Ceiling_Jet}
-\end{tabular*}
-\caption{Ceiling Jet Temperature for the NIST/NRC Series, open door tests.}
-\label{NIST_NRC_Jet_Open}
-\end{figure}
-
 The thermocouple nearest the ceiling in Tree 7, located towards the back of the compartment, has been chosen as a surrogate for the ceiling jet temperature. This location was well removed from the fire plume so that plume effects would not be evident, but closer to the wall surfaces so that the assumption of an unconfined ceiling inherent in the typical ceiling jet correlations that wall effects may impact the comparison. Still, CFAST predicts ceiling jet temperature well within experimental uncertainty for all of the tests in the series, with an average relative difference of 5~\%.  For these tests, the fire source was sufficiently large (relative to the compartment size) such that a well-defined ceiling jet was evident in temperature measurements near ceiling level.
 
 \subsubsection{FM/SNL Test Series}
-
-\begin{figure}[p]
-\begin{center}
-\includegraphics[width=2.6in]{FIGURES/FM_SNL/FM_SNL_04_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/FM_SNL/FM_SNL_05_Ceiling_Jet} \\
-\includegraphics[width=2.6in]{FIGURES/FM_SNL/FM_SNL_21_Ceiling_Jet} 
-\end{center}
-\caption{Ceiling Jet Temperature for the FM/SNL Tests.} \label{FM_SNL_HGL}
-\end{figure}
 
 With fire sizes comparable to the smaller fire sizes used in the tests in NIST/NRC test series and compartment volumes significantly larger, measured temperature rise near the ceiling in the FM/SNL tests was below 100~\degc in all three tests.  Hot gas layer temperatures for these tests were below 70~\degc.  CFAST consistently predicts higher ceiling jet temperatures in the FM/SNL tests compared to experimental measurements.  With a larger compartment relative to the fire size, the ceiling jet for the FM/SNL tests is not nearly as well-developed as those in the NIST/NRC tests.  The difference between the experimental ceiling jet temperature and HGL temperature for the FM/SNL tests is less than half that observed in the NIST/NRC tests.  While the over-prediction of ceiling jet temperature could be considered conservative for some applications, for scenarios involving sprinkler or heat detector activation, the increased temperature in the ceiling jet would lead to shorter estimates of activation times for the simulated sprinkler or heat detector.
 
@@ -128,7 +72,6 @@ Based on the model physics and comparisons of model predictions with experimenta
 \item The correlation used in CFAST to predict plume temperature is well-suited for this application and has been subjected to extensive comparisons with experimental results.
 \item CFAST provides predictions consistent with visual observation for available data in this validation exercise.
 \end{itemize}
-
 
 Based on the model physics and comparisons of model predictions with experimental measurements, the use of CFAST to predict plume temperature requires caution for the following reasons:
 

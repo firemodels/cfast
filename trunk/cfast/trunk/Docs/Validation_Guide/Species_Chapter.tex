@@ -24,121 +24,22 @@ Gas sampling data are available from a number of the experimental tests.  Figure
 
 CFAST predicts the upper-layer concentrations of oxygen and carbon dioxide within an average of 20~\% of experimental values. Details for individual test series are discussed below. 
 
-\subsubsection{NBS Single Room Tests with Furniture (see Figure \ref{fig:1Room_Gases})}
-
-\begin{figure}[p]
-\begin{center}
-\includegraphics[width=2.6in]{FIGURES/NBS/1rfurn1_Oxygen} \\
-\includegraphics[width=2.6in]{FIGURES/NBS/1rfurn6_Oxygen} 
-\end{center}
-\caption{Predicted Oxygen Concentration for the NBS Single Compartment Tests.} \label{fig:1Room_Gases}
-\end{figure}
+\subsubsection{NBS Single Room Tests with Furniture}
 
 For the single-room tests with furniture, the predicted concentrations are lower than those 
 measured experimentally (with relative differences of 23 \% for oxygen and 62~\% for carbon dioxide).  This is probably due to the treatment of oxygen limited burning.  In CFAST, the burning rate simply decreases as the oxygen level decreases.  A user prescribed lower limit determines the point below which burning will not take place.  This parameter could be finessed to provide better agreement with the experiment.  For the present comparisons, it was always left at the default value. Since this parameter impacts the overall combustion chemistry in CFAST and the generation of all species, it would impact both oxygen and carbon dioxide.
 
 In addition, species concentrations measured for large fires in small spaces can show considerable spatial variation within the upper layer of the fire compartment \cite{Bundy:2007}. For such under-ventliated fires, the representation of the species concentration in a hot gas layer by a single representative average value may not be valid.
 
-\subsubsection{NIST/NRC Tests (see Figures \ref{fig:NIST_NRC_Gases_Closed_1} to \ref{fig:NIST_NRC_Gases_Open_2}}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_01_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_01_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_07_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_07_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_02_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_02_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_08_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_08_CO2}
-\end{tabular*}
-\caption{Predicted Oxygen and Carbon Dioxide for the NIST/NRC Tests 1, 7, 2 and 8.} \label{fig:NIST_NRC_Gases_Closed_1}
-\end{figure}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_04_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_04_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_10_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_10_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_13_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_13_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_16_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_16_CO2}
-\end{tabular*}
-\caption{Predicted Oxygen and Carbon Dioxide for the NIST/NRC Tests 4, 10, 13 and 16.} \label{fig:NIST_NRC_Gases_Closed_2}
-\end{figure}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_17_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_17_CO2} \\
-\multicolumn{2}{c}{Open door tests to follow} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_03_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_03_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_09_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_09_CO2}
-\end{tabular*}
-\caption{Predicted Oxygen and Carbon Dioxide for the NIST/NRC Tests 17, 3, and 9.} \label{fig:NIST_NRC_Gases_Open_1}
-\end{figure}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_05_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_05_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_14_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_14_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_15_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_15_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_18_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/NIST_NRC/NIST_NRC_18_CO2}
-\end{tabular*}
-\caption{Predicted Oxygen and Carbon Dioxide for the NIST/NRC Tests 5, 14, 15 and 18.} \label{fig:NIST_NRC_Gases_Open_2}
-\end{figure}
+\subsubsection{NIST/NRC Tests}
 
 For the closed-door tests 4 and 10 and open-door Tests 9 and 14, the magnitude of relative difference is higher, under-predicting by 22~\% to 25~\%.  Tests 4, 10, and 16 were closed-door tests with the mechanical ventilation system on.  The higher relative differences for these tests are likely because of a non-uniform gas layer in the experiments with higher oxygen concentration near the mechanical ventilation inlet and lower concentrations remote from the inlet.  In CFAST, the flow from the mechanical ventilation system is assumed to completely mix with the gases in the appropriate gas layer of a compartment.  CFAST consistently under-predicts the drop in oxygen concentration, with Tests 9 and 14 showing a higher relative uncertainty than other closed-door tests.  The cause of a higher-than-average difference is not clear.
 
 \subsubsection{iBMB Cable Fire Test}
 
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/iBMB/iBMB_Cable_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/iBMB/iBMB_Cable_CO2} \\
-\end{tabular*}
-\caption{Predicted Oxygen and Carbon Dioxide for the iBMB Cable Test 5.} \label{fig:iBMB_Gases}
-\end{figure}
-
 CFAST under predicts oxygen and carbon dioxide concentrations by 15~\% and 9~\%, respectively.
 
 \subsubsection{FM Four Room Including Corridor Test Series}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM19_1_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM19_1_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM19_2_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM19_2_CO2} \\
- &
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM19_3_CO2} \\
-&
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM19_4_CO2} 
-\end{tabular*}
-\caption{Oxygen and Carbon Dioxide Concentration for the FM/NBS Test 19.} \label{fig:FM_SNL_4_Gases}
-\end{figure}
-
-\begin{figure}[p]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM21_1_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM21_1_CO2} \\
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM21_2_Oxygen} &
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM21_2_CO2} \\
- &
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM21_3_CO2} \\
-&
-\includegraphics[width=2.6in]{FIGURES/FM_NBS/FM21_4_CO2} 
-\end{tabular*}
-\caption{Oxygen and Carbon Dioxide Concentration for the FM/NBS Test 21.} \label{fig:FM21_Gases}
-\end{figure}
 
 For these four compartment tests, the end of test values of the gas concentrations agree far better than the peak values. With the underlying assumption of all zone fire models of a uniform concentration of gas species throughout a control volume,  it is assumed than the point measurement is the bulk concentration of the entire upper layer.  In reality, some vertical distribution not unlike the temperature profile exists for the gas concentration as well. 
 

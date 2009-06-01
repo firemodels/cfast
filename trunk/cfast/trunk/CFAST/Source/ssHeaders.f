@@ -203,7 +203,7 @@
       write(17,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(17,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validation)
-     *  write(15,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(17,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       end subroutine ssHeadersSpecies
       
@@ -354,7 +354,7 @@
       write(18,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(18,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validation)
-     *  write(15,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(18,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       return
       end subroutine ssHeadersFlux
@@ -516,7 +516,7 @@ C     Natural flow through vertical vents (horizontal flow)
       write(16,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(16,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validation)
-     *  write(15,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(16,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
 	return
 

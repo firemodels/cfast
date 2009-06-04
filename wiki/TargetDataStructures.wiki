@@ -25,9 +25,9 @@ first index: index of values for each target as follows (names in parentheses ar
 10 (TRGL): target thickness (from thermal properties database)<br>
 11: (TRGEMIS): target emissivity (from thermal properties database)<br>
 12: (TRGTFLUXF): incident heat flux to front surface of target (calculated)<br>
-13: (TRGTFLUXB): incident heat flux to front surface of target (calculated)<br>
+13: (TRGTFLUXB): incident heat flux to back surface of target (calculated)<br>
 14: (TRGNFLUXF): net heat flux to front surface of target (calculated)<br>
-15: (TRGNFLUXB): net heat flux to front surface of target (calculated)<br>
+15: (TRGNFLUXB): net heat flux to back surface of target (calculated)<br>
 16: (TRGTEMPF): front surface temperature of target (calculated)<br>
 17 ... TRGTEMPF+TRGTNUM-2: internal temperatures within target (calculated)<br>
 TRGTEMPB (TRGTEMPF+TRGTNUM-1): back surface temperature of target (calculated)<br>

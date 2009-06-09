@@ -1,6 +1,6 @@
 # Set Diagnostic Output Level
 # 1 = Minimal, 2 = Normal, 3 = Maximum.
-diagnostic_level = 2
+diagnostic_level = 3
 
 # Set what plots to create: 
 # BOTH (1), Comparison Only (2), Scatter Only (3)

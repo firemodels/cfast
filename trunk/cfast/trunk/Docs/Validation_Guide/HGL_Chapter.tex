@@ -58,7 +58,7 @@ notable exception. Unlike the model prediction, the experimental measurement did
 rise and fall in concert with the temperature measurement. Peak values were typically higher for
 upper layer temperature and lower for lower layer temperature and layer interface position.
 
-For the furniture tests, the agreement ranges from a relative difference of -30 \% to 8 \%.  The agreement is quite different for the two arrays in each test. Table \ref{tab:NBS_HGL} shows the relative differences for tests F1 and F6.  For both the layer temperature and layer depth, the difference between the model and experiment changes depending on the measurement location. In the same tests (F1) the values are well within experimental uncertainty at one location and outside for the other.   For test F6, this varies from -30~\% to 8~\% for the temperature and from -19~\% to 26~\% for the layer depth.   For these tests with a post-flashover fire in a small compartment, clearly the assumption of a uniform  upper layer is questionable. Curve shape for the experimental data and model predictions is quite similar.
+For the furniture tests, the agreement ranges from a relative difference of -30 \% to 4 \%.  The agreement is quite different for the two arrays in each test. Table \ref{tab:NBS_HGL} shows the relative differences for tests F1 and F6.  For both the layer temperature and layer depth, the difference between the model and experiment changes depending on the measurement location. In the same tests (F1) the values are well within experimental uncertainty at one location and outside for the other.   For test F6, this varies from -30~\% to 16~\% for the temperature and from -7~\% to 43~\% for the layer depth.   For these tests with a post-flashover fire in a small compartment, clearly the assumption of a uniform  upper layer is questionable. Curve shape for the experimental data and model predictions is quite similar.
 
 \begin{table}[h!]
 \begin{center}
@@ -85,7 +85,7 @@ Test & Location & Temperature & Layer Depth\\
 
 The HGL temperature and depth were calculated from the averaged gas temperatures from three vertical thermocouple arrays.  Ten thermocouples in each vertical array, spaced 2 m apart in the lower two-thirds of the hall, and 1 m apart near the ceiling were used to determine layer temperatures and depth.  
 
-CFAST predicts the HGL temperature and height near experimental uncertainty for all three tests, with relative differences ranging from 10 \% to 15 \%, depending on the test. Relative differences are shown in figure \ref{fig:HGL_Scatter}.
+CFAST predicts the HGL temperature and height near experimental uncertainty for all three tests, with relative differences ranging from 6~\% to 10~\%, depending on the test. Relative differences are shown in figure \ref{fig:HGL_Scatter}.
 
 \subsubsection{NIST/NRC Test Series}
 
@@ -97,7 +97,7 @@ A few observations about the simulations:
 \item The HGL reduction method produces spurious results in the first few minutes of each test because no clear layer has yet formed.
 \end{itemize}
 
-CFAST predicts the HGL temperature to within experimental uncertainty for all of the closed-door tests except Test 17.  Test 17 was a rapidly growing toluene pool fire, which was stopped for safety reasons after 273 seconds.  CFAST predicts an initial temperature rise starting somewhat earlier and peaking somewhat higher than the experimental values, but curve shapes match in all tests.  Relative difference for the open-door tests is somewhat higher, ranging from 13~\% for Test 5 to 26~\% for Test 18.  CFAST predicts HGL height to within experimental uncertainty for the open-door tests.  
+CFAST predicts the HGL temperature to within experimental uncertainty for all of the closed-door tests except Test 17.  Test 17 was a rapidly growing toluene pool fire, which was stopped for safety reasons after 273 seconds.  CFAST predicts an initial temperature rise starting somewhat earlier and peaking somewhat higher than the experimental values, but curve shapes match in all tests.  Relative difference for the open-door tests is somewhat higher, ranging from 9~\% for Test 15 to 24~\% for Test 18.  CFAST predicts HGL height to within experimental uncertainty for the open-door tests.  
 
 \subsubsection{FM/SNL Test Series}
 
@@ -109,7 +109,7 @@ Note the following:
 \item The ventilation was turned off after 9 minutes in Test 5, the effect of which was a slight increase in the measured HGL temperature.
 \end{itemize}
 
-CFAST predicts the HGL temperature to within experimental uncertainty for Tests 4 and 5.  For Test 21, there is a 33~\% over-prediction.  This is likely because of the configuration of the fire in the test, with the fire inside a cabinet in the fire compartment.  This complex geometry leads to an interaction between the fire and the confining cabinet that a zone model cannot simulate.
+CFAST predicts the HGL temperature to within experimental uncertainty for Tests 4 and 5.  For Test 21, there is a 16~\% over-prediction.  This is likely because of the configuration of the fire in the test, with the fire inside a cabinet in the fire compartment.  This complex geometry leads to an interaction between the fire and the confining cabinet that a zone model cannot simulate.
 
 \subsubsection{iBMB Compartment Tests}
 
@@ -121,12 +121,10 @@ CFAST predicts the HGL temperature to within experimental uncertainty for the ca
 
 This series of experiments consists of two relatively small rooms connected by a long corridor. The fire is located in one of the rooms.  Eight vertical arrays of thermocouples are positioned throughout the test space: one in the burn room, one near the door of the burn room, three in the corridor, one in the exit to the outside at the far end of the corridor, one near the door of the other or ``target'' room, and one inside the target room.  Four of the eight arrays have been selected for comparison with model prediction: the array in the burn room (BR), the array in the middle of the corridor (5.5 m from the BR), the array at the far end of the corridor (11.6 m from the BR), and the array in the target room (TR).  In Tests 100A and 100O, the target room is closed, in which case the array in the exit (EXI) doorway is used. The test director reduced the layer information individually for the eight thermocouple arrays using an alternative method. These results are included in the original data sets. However, for the current validation study, the selected TC trees were reduced using the method common to all the experiments considered.  
 
-CFAST predicts the HGL temperature and depth to within experimental uncertainty for many of the measurement locations in the three tests considered, averaging 13 \%\footnote{For average relative differences reported in this paper, the sign of the difference is ignored so that two values with opposing signs do not cancel and make the average comparison appear closer than individual magnitudes would indicate.} for the HGL temperature and 15 \% for the HGL depth.  The discrepancies in various locations appear to be attributable to experimental, rather than model, error.  In particular, the calculation of HGL temperature and height are quite sensitive to the measured temperature profile, which in these tests was determined with bare-bead thermocouples that are subject to quite high uncertainties.  Wide spacing of the thermocouples also leads to higher uncertainty in HGL height.
+CFAST predicts the HGL temperature and depth to within experimental uncertainty for many of the measurement locations in the three tests considered, averaging 14 \%\footnote{For average relative differences reported in this paper, the sign of the difference is ignored so that two values with opposing signs do not cancel and make the average comparison appear closer than individual magnitudes would indicate.} for the HGL temperature and 21 \% for the HGL depth.  The discrepancies in various locations appear to be attributable to experimental, rather than model, error.  In particular, the calculation of HGL temperature and height are quite sensitive to the measured temperature profile, which in these tests was determined with bare-bead thermocouples that are subject to quite high uncertainties.  Wide spacing of the thermocouples also leads to higher uncertainty in HGL height.
 
 Calculations of HGL temperature and depth in rooms remote from the fire tend to higher
-relative differences than those closer to the fire, ranging from -48 \% to 29 \%, but the average relative difference is 13~\% for HGL temperature and 19~\% for HGL depth. This is likely a combination of the simplified single representative layer temperature inherent in zone models (temperature in the long corridor
-of this test series varied from one end of the compartment to the other) and the calculation of
-flow though doorways based on a correlation based on the pressure difference between the connected compartments.
+relative differences than those closer to the fire, ranging from -16 \% to 33 \%, but the average relative difference is 14~\% for HGL temperature and 21~\% for HGL depth. This is likely a combination of the simplified single representative layer temperature inherent in zone models (temperature in the long corridor of this test series varied from one end of the compartment to the other) and the calculation of flow though doorways based on a correlation based on the pressure difference between the connected compartments.
 
 \subsubsection{FM Four Room Including Corridor Test Series (see Figures \ref{fig:FM_NBS_19_HGL} and \ref{fig:FM_NBS_21_HGL})}
 
@@ -141,7 +139,7 @@ These tests were conducted in a seven story hotel with multiple rooms on each fl
 Following is a summary of the accuracy assessment for the HGL predictions. The two-zone assumption inherent in CFAST, modeled as a series of ordinary differential equations that describe mass and energy conservation of flows in a multiple-compartment structure typically provide appropriate prediction of gas layer temperature and layer height for the applications studied. 
 
 \begin{itemize}
-\item The CFAST predictions of the HGL temperature and height are, with a few exceptions, within or close to experimental uncertainty. On average, predicted HGL temperature is within 16~\% and HGL depth is within 15~\% of experimental measurements. The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements. These differences are likely attributable to simplifications in the model dealing with mixing between the layers, entrainment in the fire plume, and flow through vents. 
+\item The CFAST predictions of the HGL temperature and height are, with a few exceptions, within or close to experimental uncertainty. On average, predicted HGL temperature is within 14~\% and HGL depth is within 21~\% of experimental measurements. The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements. These differences are likely attributable to simplifications in the model dealing with mixing between the layers, entrainment in the fire plume, and flow through vents. 
 \item Calculation of HGL temperature and height has higher uncertainty in rooms remote from the fire compared to those in the fire compartment.  Most likely, this is due to a combination of the simplified vent flow predictions (based on idealized Bernoulli flow) and the assumption of constant compartment surface thermal properties that are assumed independent of temperature.
 \end{itemize}
 

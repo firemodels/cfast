@@ -8,9 +8,9 @@ program PyroProcess
     ! Variables
     integer, parameter :: max_diff = 1, min_diff = 2
     
-    character fname*128, in*128, pyrograph_file*128
+    character fname*128, in*128, pyrograph_file*128, quantity*128, achar
     real exp_0, exp_drop, exp_rise, mod_0, mod_drop, mod_rise, exp_peak, mod_peak, relative_difference
-    integer read_status, min_or_max, ic, ir
+    integer read_status, min_or_max, ic, ir, i
     
 
     ! Body of PyroProcess
@@ -26,6 +26,28 @@ program PyroProcess
         if (index(in,'Processing Data for: ').ne.0) then
             ic = index(in,'Processing Data for: ') + 21
             fname = in(ic:len(in))
+            quantity = ' '
+            if (index(fname,'iBMB_Pool').ne.0) then
+                ic = index(fname,'iBMB_Pool')+9
+                quantity = fname(ic+1:len(fname))
+                fname(ic:len(fname)) = ' '
+            else if (index(fname,'iBMB_Cable').ne.0) then
+                ic = index(fname,'iBMB_Cable')+10
+                quantity = fname(ic+1:len(fname))
+                fname(ic:len(fname)) = ' '
+            else
+                do i = 1, len(fname)-1
+                    ic = len(fname)-i
+                    achar = fname(ic:ic)
+                    if (achar.ge.'0'.and.achar.le.'9') then
+                        if(fname(ic+1:ic+1).eq.'_') then
+                            quantity = fname(ic+2:len(fname))
+                            fname(ic+1:len(fname)) = ' '
+                            exit
+                        end if
+                    end if
+                end do
+            end if
         end if
         if (index(in,'*** Compute Rise ***').ne.0) then
             min_or_max = max_diff
@@ -47,8 +69,8 @@ program PyroProcess
         end if
         if (min_or_max.ne.0) then
             ir = ir + 1
-            relative_difference = ((mod_peak - mod_0) - (exp_peak - exp_0)) / (exp_peak - exp_0)
-            write (9,'(i3,2x,a40,4f12.4,3x,f12.5)') ir, trim(fname), exp_0, exp_peak, mod_0, mod_peak, relative_difference
+            relative_difference = 100.*((mod_peak - mod_0) - (exp_peak - exp_0)) / (exp_peak - exp_0)
+            write (9,'(i3,2x,a40,2x,a20,2x,4f12.4,3x,f12.5)') ir, trim(fname), trim(quantity), exp_0, exp_peak, mod_0, mod_peak, relative_difference
             min_or_max = 0
         end if
         go to 10

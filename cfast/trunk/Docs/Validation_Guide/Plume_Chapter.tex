@@ -32,15 +32,15 @@ Figure \ref{fig:Plume_Temp_Scatter} shows a comparison of predicted and measured
 
 \subsubsection{VTT Test Series}
 
-CFAST predicts plume temperature within or near experimental uncertainty for the experiments in this test series, tending to under-predict the lower thermocouples and over-predict the upper thermocouples. For the lower thermocouples, the radiation from the fire is certainly under-predicted due to the assumption of a point source fire in the radiation calculation.	Still, the predictions average within 16~\% of the experimental measurements.
+CFAST predicts plume temperature within or near experimental uncertainty for the experiments in this test series, tending to under-predict the lower thermocouples and over-predict the upper thermocouples. For the lower thermocouples, the radiation from the fire is certainly under-predicted due to the assumption of a point source fire in the radiation calculation.	The predictions average within 27~\% of the experimental measurements.
 
 \subsubsection{FM/SNL Test Series}
 
-For two of the tests in this test series, predictions are near experimental uncertainty (both within 20~\% of experimental measurements). The third test included a fire source within a closed cabinet.  The resulting flow of hot gases from the cabinet does not follow the simple vertical symmetric plume assumed by the plume algorithm.  While obviously not a simple fire source applicable to the plume correlation included in CFAST, this comparison does point out the need to understand the limitations of the physical algorithms included in the model and the details of a given simulation that may significantly impact the results of the calculation.
+For the tests in this test series, predictions are near experimental uncertainty (all within 20~\% of experimental measurements). 
 
 \subsubsection{NIST / Navy High Bay Hangar Test Series}
 
-For all but two of the tests, predictions are within experimental uncertainty.  With a wide range of fire sizes (from 1.4~MW to 33~MW), this test series provides a broad validation of the underlying correlations used in the model.  The remaining two tests that are within 25~\% are the lowest heat release rate tests.  With all plume temperature measurements made at a height of more than 22~m, a higher uncertainty for the lowest heat release rate tests is understandable.
+For all but two of the tests, predictions are within experimental uncertainty.  With a wide range of fire sizes (from 1.4~MW to 33~MW), this test series provides a broad validation of the underlying correlations used in the model.  The remaining two tests that are within are the lowest heat release rate tests.  With all plume temperature measurements made at a height of more than 22~m, a higher uncertainty for the lowest heat release rate tests is understandable.
 
 \section{Ceiling Jets}
 
@@ -58,7 +58,7 @@ Figure \ref{fig:Ceiling_Jet_Scatter} shows a comparison of predicted and measure
 
 \subsubsection{NIST/NRC Test Series}
 
-The thermocouple nearest the ceiling in Tree 7, located towards the back of the compartment, has been chosen as a surrogate for the ceiling jet temperature. This location was well removed from the fire plume so that plume effects would not be evident, but closer to the wall surfaces so that the assumption of an unconfined ceiling inherent in the typical ceiling jet correlations that wall effects may impact the comparison. Still, CFAST predicts ceiling jet temperature well within experimental uncertainty for all of the tests in the series, with an average relative difference of 5~\%.  For these tests, the fire source was sufficiently large (relative to the compartment size) such that a well-defined ceiling jet was evident in temperature measurements near ceiling level.
+The thermocouple nearest the ceiling in Tree 7, located towards the back of the compartment, has been chosen as a surrogate for the ceiling jet temperature. This location was well removed from the fire plume so that plume effects would not be evident, but closer to the wall surfaces so that the assumption of an unconfined ceiling inherent in the typical ceiling jet correlations that wall effects may impact the comparison. Still, CFAST predicts ceiling jet temperature well within experimental uncertainty for all but one of the tests in the series, with an average relative difference of 5~\%.  For these tests, the fire source was sufficiently large (relative to the compartment size) such that a well-defined ceiling jet was evident in temperature measurements near ceiling level.
 
 \subsubsection{FM/SNL Test Series}
 
@@ -78,7 +78,7 @@ Based on the model physics and comparisons of model predictions with experimenta
 \begin{itemize}
 \item The correlation used in CFAST to predict plume temperature is well-suited for this application and has been subjected to extensive validation efforts.
 \item CFAST tends to over-predict plume temperatures well above the fire and somewhat under-predict plume temperatures nearer to the fire source.  This is understandable due to the point source radiation routine included for radiative heat transfer from the fire source to surrounding targets and surfaces.
-\item 90 \% of the predictions by CFAST are within 25 \% of experimental measurements, higher than the estimated experimental uncertainty in this validation exercise.  User's should take this higher uncertainty into account when using predictions from the model.
+\item 90 \% of the predictions by CFAST are within 35 \% of experimental measurements, higher than the estimated experimental uncertainty in this validation exercise, but this is largely driven by two individual tests.  User's should take this higher uncertainty into account when using predictions from the model.
 \end{itemize}
 
 Based on the model physics and comparisons of model predictions with experimental measurements, CFAST provides appropriate calculations of ceiling jet temperature for the following reasons:

@@ -18,18 +18,18 @@ Quantity & Average & Median & Within & 90th \\
 & & & Uncertainty$^c$ & \\
 & (\%) & (\%) & (\%) & (\%) \\
 \hline
-HGL Temperature & 6 &  14 &  52 &  30  \\ \hline
-HGL Depth & 3 & 15 & 40 & 28 \\ \hline
-Plume Temperature & 15 & 12 & 54 & 25 \\ \hline
-Ceiling Jet Temperature & 16 & 5 & 70 & 61 \\ \hline
-Oxygen Concentration & -6 & 18 & 12 & 32 \\ \hline
-Carbon Dioxide Concentration & -16 & 16 & 21 & 52 \\ \hline
-Smoke Obscuration$^e$ & 272/22 & 227/18 & 0/82 & 499/40 \\ \hline
-Pressure & 43 & 13 & 77 & 206$^f$ \\ \hline
-Target Flux (Total) & -23 & 27 & 42 & 51 \\ \hline
-Target Temperature & 0 & 18 & 38 & 34 \\ \hline
-Surface Flux (Total) & 5 & 25 & 40 & 61 \\ \hline
-Surface Temperature & 24 & 35 & 17 & 76 \\ \hline
+HGL Temperature & 2 &  11 &  56 &  31  \\ \hline
+HGL Depth & -1 & 14 & 38 & 38 \\ \hline
+Plume Temperature & 27 & 24 & 21 & 41 \\ \hline
+Ceiling Jet Temperature & 15 & 4 & 84 & 35 \\ \hline
+Oxygen Concentration & 7 & 18 & 24 & 48 \\ \hline
+Carbon Dioxide Concentration & -12 & 14 & 24 & 35 \\ \hline
+Smoke Obscuration$^e$ & 278/24 & 242/20 & 0/81 & 501/42 \\ \hline
+Pressure & 35 & 13 & 82 & 163$^f$ \\ \hline
+Target Flux (Total) & 2 & 17 & 58 & 46 \\ \hline
+Target Temperature & 2 & 19 & 41 & 43 \\ \hline
+Surface Flux (Total)$^g$ & 121 & 121 & 0 &174 \\ \hline
+Surface Temperature & 21 & 27 & 12 & 51 \\ \hline
 \end{tabular*}  
 \end{center}
 a - average difference includes both the sign and magnitude of the relative differences in order to show any general trend to over- or under-prediction. \\
@@ -37,7 +37,8 @@ b - median difference is based only on the magnitude of the relative differences
 c - the percentage of model predictions that are within experimental uncertainty. \\
 d - 90 \% of the model predictions are within the stated percentage of experimental values. For reference, a difference of 100~\% is a factor of 2 larger or smaller than experimental values. \\
 e - the first number is for the closed door NIST/NRC tests and the second number if for the open door NIST/NRC tests. \\
-f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa.
+f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa. If these two tests are not included, the 90th percentile value drops to 33 \%
+g - reflects only flux to the front surface of the target.  CFAST calculates flux to the front surface and rear surface separately.  For surface targets, the rear surface is assumed at ambient temperature so this comparison to only the front surface overestimates the actual flux to the entire target.
 \end{table}
 
 For five of the quantities,  the physics of the model is appropriate to represent the experimental conditions, and the calculated relative differences comparing the model and the experimental values are consistent with the combined experimental and input uncertainty.  A few notes on the comparisons are appropriate:

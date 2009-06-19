@@ -304,7 +304,9 @@ C*** INITIALIZE FLUX COUNTERS: TOTAL, FIRE, WALL, GAS
         ISTART = IFRPNT(IROOM,2)
 
 C*** COMPUTE RADIATIVE FLUX FROM FIRE
-
+        if (stime.ge.1200.) then
+            continue
+        end if
         DO 210 IFIRE = ISTART, ISTART + NFIRERM - 1
           SVECT(1) = XXTARG(TRGCENX,ITARG) - XFIRE(IFIRE,1)
           SVECT(2) = XXTARG(TRGCENY,ITARG) - XFIRE(IFIRE,2)

@@ -1,4 +1,4 @@
-\chapter{Summary and Conclusions}
+	\chapter{Summary and Conclusions}
 
 How to best quantify the comparisons between model predictions and experiments is not obvious. The necessary and perceived level of agreement for any variable is dependent upon both the typical use of the variable in a given simulation, the nature of the experiment, and the context of the comparison in relation to other comparisons being made. For instance, the user may be interested in the time it takes to reach a certain temperature in the room, but have little or no interest in peak temperature for experiments that quickly reach a steady-state value. Insufficient experimental data and understanding of how to compare the numerous variables in a complex fire model prevent a complete validation of the model. 
 
@@ -20,8 +20,8 @@ Quantity & Average & Median & Within & 90th \\
 \hline
 HGL Temperature & 2 &  11 &  56 &  31  \\ \hline
 HGL Depth & -1 & 14 & 38 & 38 \\ \hline
-Plume Temperature & 27 & 24 & 21 & 41 \\ \hline
-Ceiling Jet Temperature & 15 & 4 & 84 & 35 \\ \hline
+Plume Temperature & 30 & 29 & 15 & 43 \\ \hline
+Ceiling Jet Temperature & 4 & 4 & 89 & 17 \\ \hline
 Oxygen Concentration & 7 & 18 & 24 & 48 \\ \hline
 Carbon Dioxide Concentration & -12 & 14 & 24 & 35 \\ \hline
 Smoke Obscuration$^e$ & 278/24 & 242/20 & 0/81 & 501/42 \\ \hline
@@ -37,8 +37,8 @@ b - median difference is based only on the magnitude of the relative differences
 c - the percentage of model predictions that are within experimental uncertainty. \\
 d - 90 \% of the model predictions are within the stated percentage of experimental values. For reference, a difference of 100~\% is a factor of 2 larger or smaller than experimental values. \\
 e - the first number is for the closed door NIST/NRC tests and the second number if for the open door NIST/NRC tests. \\
-f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa. If these two tests are not included, the 90th percentile value drops to 33 \%
-g - reflects only flux to the front surface of the target.  CFAST calculates flux to the front surface and rear surface separately.  For surface targets, the rear surface is assumed at ambient temperature so this comparison to only the front surface overestimates the actual flux to the entire target.
+f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa. If these two tests are not included, the 90th percentile value drops to 33 \%. \\
+g - reflects only flux to the front surface of the target.  CFAST calculates flux to the front surface and rear surface separately.  For surface targets, the rear surface is assumed at ambient temperature so this comparison to only the front surface is expected to significantly overestimate the actual flux to the entire target.
 \end{table}
 
 For five of the quantities,  the physics of the model is appropriate to represent the experimental conditions, and the calculated relative differences comparing the model and the experimental values are consistent with the combined experimental and input uncertainty.  A few notes on the comparisons are appropriate:

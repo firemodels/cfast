@@ -16,7 +16,7 @@
   * A _Repository Profiles_ window will open.  Select *Add*
   * An _Add Repository Profile_ window will open.
     * Select *HTTP* for the protocol
-    * In the *Server Name* box type fds-smv.googlecode.com 
+    * In the *Server Name* box type cfast.googlecode.com 
     * In the *Repository Path* box type /svn/trunk/cfast/trunk
     * Click *Next*
     * Select *Anonymous* for the SVN Login

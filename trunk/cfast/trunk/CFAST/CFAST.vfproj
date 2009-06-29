@@ -11,7 +11,8 @@
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
 				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool"/></Configuration>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32" OutputDirectory="..\bin" IntermediateDirectory="..\Temp" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" OmitFramePointers="false" Preprocess="preprocessYes" AdditionalIncludeDirectories="..\CFAST\Include" PreprocessorDefinitions="pp_dll=false;pp_ibmpc=true;pp_unix=false;pp_mac=false;pp_double=true" LocalVariableStorage="localStorageSave" LocalSavedScalarsZero="true" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true"/>
 				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/CFAST.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>

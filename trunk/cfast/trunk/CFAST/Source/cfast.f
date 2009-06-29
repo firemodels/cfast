@@ -37,7 +37,7 @@
       include "iofiles77.fi"
 
       logical error
-	integer errorcode, rev_cfast
+	  integer errorcode, rev_cfast
       errorcode = 0
 
 !     initialize the basic memory configuration
@@ -61,7 +61,7 @@
       mpsdat(2) = rundat(2)
       mpsdat(3) = rundat(3)
 
-	call versionout (version)
+	  call versionout (version)
       irev = rev_cfast()
 
       call initslv
@@ -2271,7 +2271,7 @@ C
       RETURN
       END
       
-      integer function rev_cfast(itype)
+      integer function rev_cfast
 
 !     Routine: rev_cfast
 !     Purpose: return current SVN revision or date

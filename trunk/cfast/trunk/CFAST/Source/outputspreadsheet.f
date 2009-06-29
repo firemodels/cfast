@@ -16,7 +16,7 @@
 	character*16 firelabel(7)
 	double precision time, outarray(maxhead)
 	logical firstc
-	integer position
+	integer position, errorcode
 
 	data compartmentlabel/'Upper Layer Temp','Lower Layer Temp',
      . 'Layer Height','Volume','Pressure','Ambient Target',

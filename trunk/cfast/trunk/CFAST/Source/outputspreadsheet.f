@@ -83,7 +83,7 @@
       RETURN
       END
 
-      SUBROUTINE SSaddtolist (ic, VALUE, array)
+      subroutine SSaddtolist (ic, valu, array)
 
       include "precis.fi"
       include "cfast.fi"
@@ -91,19 +91,20 @@
       include "cshell.fi"
       include "cfin.fi"
 
-	double precision array(*), value
+	double precision array(*), valu
+	integer ic
 
       IC = IC + 1
 !	We are imposing an arbitrary limit of 32000 columns
 	if (ic.gt.32000) return
-      array(IC) = VALUE
-      RETURN
+      array(IC) = valu
+      return
       
-      ENTRY SSprintresults (iounit,ic,array)
+      entry SSprintresults (iounit,ic,array)
       
-      WRITE (iounit,"(1024(e12.6,','))" ) (array(i),i=1,ic)
-      RETURN
-      END
+      write (iounit,"(1024(e12.6,','))" ) (array(i),i=1,ic)
+      return
+      end subroutine SSaddtolist
 
       SUBROUTINE SpreadSheetFlow (Time, errorcode)
 
@@ -244,7 +245,7 @@
 	double precision outarray(maxoutput), time, xiroom, zdetect,
      . tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal,
      . ctotal, tttemp, tctemp, tlay
-      INTEGER IWPTR(4), errocode
+      INTEGER IWPTR(4), errorcode, position
       EXTERNAL LENGTH
       DATA IWPTR /1, 3, 4, 2/
       CHARACTER CTYPE*5, cact*3
@@ -365,7 +366,7 @@ c   40 CONTINUE
 	parameter (maxhead = 1+22*nr)
 	character*16 heading(3,maxhead)
 	double precision time, outarray(maxhead)
-	integer position
+	integer position, errorcode
 
 	integer layer
       logical tooutput(NS)/.false.,5*.true.,.false.,4*.true. /,

@@ -121,7 +121,7 @@
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
-      character*35 headertext(3,maxhead), cTemp, cRoom,
+      character*35 headertext(3,maxhead), cRoom,
      *  Labels(23), LabelsShort(23), LabelUnits(23), toIntString
       logical tooutput(NS)/.false.,5*.true.,.false.,4*.true./
       logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./

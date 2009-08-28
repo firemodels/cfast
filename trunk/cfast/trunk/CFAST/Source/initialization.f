@@ -756,7 +756,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "fltarget.fi"
       include "opt.fi"
 C
-      DIMENSION YINTER(*)
+      DIMENSION YINTER(*), DUMMY(1)
 C
 C     INITIAL CONDITIONS FOR THE VARIABLES FOR WHICH WE KEEP TIME HISTORIES
 C

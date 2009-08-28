@@ -69,7 +69,9 @@
 		<File RelativePath=".\Source\outputsmv.f90"/>
 		<File RelativePath=".\Source\outputspreadsheet.f"/>
 		<File RelativePath=".\Source\radation.f"/>
-		<File RelativePath=".\Source\ssHeaders.f"/>
+		<File RelativePath=".\Source\ssHeaders.f">
+			<FileConfiguration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" Diagnostics="diagnosticsShowAll" WarnUnusedVariables="true"/></FileConfiguration></File>
 		<File RelativePath=".\Source\target.f"/></Filter>
 		<File RelativePath="ReadMe.txt"/></Files>
 	<Globals/></VisualStudioProject>

@@ -578,9 +578,8 @@ C     moved from initspec to here 2/10/93 - needs to be called after datacopy
      .		  FZLOCAL, FQLOCAL, FHLOCAL)
 	    CALL SVOUT(smvdata, PREF, PA, TA, 
      .		  NM1, CXABS, CYABS, HRL, BR, DR, HR,
-     .		  NVENTS,IZVENT(1,1),IZVENT(1,2),izvent(1,6),
-     .          zzvent(1,3),zzvent(1,4),zzvent(1,1),zzvent(1,2),
-     .          nvvent,
+     .		  NVENTS,
+     .        nvvent,
      .		  NFIRES, FLOCAL, FXLOCAL, FYLOCAL, FZLOCAL, 
      .          ntarg, 0.0D0, 1)
 		 icode = 0
@@ -676,8 +675,7 @@ C	IF WE ACTUALLY USE TARGET TEMPERATURES IN A CALCULATION THEN THIS CALL WILL NE
 	    CALL REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
      .		               FZLOCAL, FQLOCAL, FHLOCAL)
 	    CALL SVOUT(smvdata, PREF, PA, TA, NM1, CXABS, CYABS, HRL, BR,
-     .               DR, HR, NVENTS,IZVENT(1,1),IZVENT(1,2),izvent(1,6),
-     .               zzvent(1,3),zzvent(1,4),zzvent(1,1),zzvent(1,2),
+     .               DR, HR, NVENTS,
      .               nvvent,
      .               NFIRES, FLOCAL, FXLOCAL, FYLOCAL,FZLOCAL,
      .			   ntarg,T,itmstp)

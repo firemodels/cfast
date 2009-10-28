@@ -1,5 +1,5 @@
 subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
-                          nvents,vfrom,vto,vface,vwidth,voffset,vrelbot,vreltop, &
+                          nvents, &
 						  nvvent, &
                           nfires,froom_number,fx0,fy0,fz0, &
 						  ntarg, stime, nscount)
@@ -35,11 +35,10 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
   DOUBLE PRECISION, intent(in) :: pabs_ref, pamb, tamb, stime
   integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
   DOUBLE PRECISION, dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
-  integer, intent(in), dimension(nvents) :: vfrom, vto, vface
-  DOUBLE PRECISION, intent(in), dimension(nvents) :: vwidth, voffset, vrelbot, vreltop
   integer, intent(in), dimension(nfires) :: froom_number
   DOUBLE PRECISION, intent(in), dimension(nfires) :: fx0, fy0, fz0
   character(len=*), intent(in) :: plotfile
+  double precision ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
   double precision  harea, targetvector(6)
   integer i, hface, ibot, itop, hshape
   character(128) dir
@@ -77,8 +76,10 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
   
   do i = 1, nvents
     write(13,"(a)")"VENTGEOM"
-    write(13,20) vfrom(i),vto(i),vface(i),vwidth(i),voffset(i),vrelbot(i),vreltop(i)
-20  format(i3,1x,i3,1x,i3,1x,3(e11.4,1x),e11.4)
+    call getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
+    write(13,20) ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
+    !write(13,20) vfrom(i),vto(i),vface(i),vwidth(i),voffset(i),vrelbot(i),vreltop(i),1.0,0.0,1.0
+20  format(i3,1x,i3,1x,i3,1x,6(e11.4,1x),e11.4)
   end do
   do i = 1, nfires
     write(13,"(a)")"FIRE"

@@ -996,6 +996,29 @@ C
 	endif
 	return
 	end function qcifraction
+	
+	subroutine getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, 
+     *    voffset, vred, vgreen, vblue)
+
+!       This is a routine to get the shape data for horizontal flow vents
+
+      include "precis.fi"
+      include "cfast.fi"
+      include "vents.fi"
+      
+      ifrom =IZVENT(1,1)
+      ito = IZVENT(1,2)
+      iface = izvent(1,6)
+      vwidth = zzvent(1,3)
+      voffset = zzvent(1,4)
+      vbottom = zzvent(1,1)
+      vtop = zzvent(1,2)
+      vred = 1.0d0
+      vgreen = 0.0d0
+      vblue = 1.0d0
+
+      RETURN
+      END
 
       integer function rev_flowhorizontal
           

@@ -580,14 +580,31 @@ Flow through vents can be modified, that is turned on or off. This applies to th
 
 Flow through normal vents such as windows and doors is governed by the pressure difference across a vent.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using an integrated form of Euler's equation, namely Bernoulli's solution for the velocity equation.  This solution is augmented for restricted openings by using flow coefficients \cite{Quintiere:1984} to allow for constriction from finite size doors.  The flow (or orifice) coefficient is an empirical term which addresses the problem of constriction of velocity streamlines at an orifice.
 
-Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.  The general form for the velocity of the mass flow is given by
+Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.  
 
-\be v = C \sqrt{\frac{2 \Delta P}{\rho}} \ee
+The mass flow through a region is found by first noting that the
+velocity of the flow at an elevation $h$ is given by
 
+\newcommand{\dmass}{d\dot{m}}
+\be 
+v(h) = C \sqrt{\frac{2 \Delta P(h)}{\rho}}
+\label{eq:vent_velocity} 
+\ee
 
-where $C$ is the constriction (or flow) coefficient (Å0.7), $\rho$ is the gas density on the source side, and $\Delta P$ is the pressure across the interface.  (Note: at present we use a constant value for $C$ for all gas temperatures).
+\noindent where $C$ is the constriction (or flow) coefficient (0.7), $\rho$ is the gas density on the source side, and $\Delta P(h)$ is the pressure across the interface
+at elevation $h$.  At present we use a constant value for $C$ for all gas temperatures.
 
-The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  By breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, the flow equation can be integrated piecewise analytically and then summed.
+The differential mass flow, $\dmass(h)$, at elevation $h$ through a region of width $w$ and differential height $dh$ is found using equation \ref{eq:vent_velocity} after noting that $\dmass(h)=v(h)\rho wdh$
+to obtain
+
+\be
+\dmass(h)=C \sqrt{2 \rho\Delta P(h)}w dh
+\label{eq:vent_massflow}
+\ee
+
+The total mass flow rate through a slab is found by integrating $\dmass(h)$ vertically over
+that slab.
+The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  The mass flow equation can be integrated piecewise analytically and then summed by breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, .
 
 The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in figure \ref{fig:Flow_Notation}.
 
@@ -599,10 +616,29 @@ The approach to calculating the flow field is of some interest.  The flow calcul
  \label{fig:Flow_Notation}
 \end{figure}
 
-The mass flow for each slab can be determined from
+Let $b$ and $t$ denote the bottom and top slab elevations and $P_b$ and $P_t$
+denote the cross-vent pressures at those elevations.  Because of the way that 
+slabs are defined, the two cross pressures $P_b$ and $P_t$ will have the same sign.
+The mass flow through the slab can then be computed by integrating equation \ref{eq:vent_massflow} vertically from $b$ to $t$ to obtain
 
-\be \dm_{io} = \frac{1}{3} C \brackets{8 \rho} A_{slab} \brackets{\frac{x^2+xy+y2}{x+y}} \ee
-where $x = \sqrt{|P_t|}$ and $y = \sqrt{|P_b|}$. $P_t$ and $P_b$ are the cross-vent pressure differential at the top and bottom of the slab respectively and $A_{slab}$ is the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
+\begin{eqnarray}
+\dm&=&\int_b^t \dmass(h)\\
+&=&C\sqrt{2\rho}w\int_b^t\sqrt{\frac{|P_b(t-h)+P_t(h-b)|}{t-b}}dh\\
+&=&C\sqrt{2\rho}w\frac{2}{3}\frac{t-b}{|P_t|-|P_b|}(|P_t|^{3/2}-|P_b|^{3/2})
+\label{eq:massflowone}
+\end{eqnarray}
+
+\noindent after noting that 
+\begin{eqnarray*}
+\int \sqrt{A+Bh}dh=\frac{2}{3B}(A+Bh)^{3/2}+\mbox{constant}
+\end{eqnarray*}
+
+\noindent where $B=(|P_t|-|P_b|)/(t-b)$, $A+Bt=|P_t|$ and $A+Bb=|P_b|$.
+Equation \ref{eq:massflowone} can be simplified 
+
+\be \dm_{io} = \frac{2}{3} C \sqrt{2 \rho} A_{slab} \brackets{\frac{x^2+xy+y2}{x+y}} \ee
+
+where $x = \sqrt{|P_t|}$ and $y = \sqrt{|P_b|}$ and $A_{slab}=w(t-b)$. $P_t$ and $P_b$ are the cross-vent pressure differential at the top and bottom of the slab respectively and $A_{slab}$ is the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
 
 A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in figure \ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an extended point source.  The estimate for the point source extension is given by Cetegen et al. \cite{Cetegen:1984}.  This virtual point source is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
 
@@ -944,7 +980,7 @@ Equation (\ref{eq:Target_Newton}) is iterated until the difference $T_{new} - T_
 A transient target temperature may be computed using two different methods
 depending on whether the target is assumed to be thin or thick.  A thin target
 is presumed to have a constant interior temperature profile. A differential equation model may then be used to estimate the
-temperature rise (or fall) based upon the thermal properties of the target and the 
+temperature rise (or fall) based upon the thermal properties of the target and the
 heat flux striking the front and back sides; namely
 
 \be c \rho V \frac{dT}{dt} = A(q''_f+q''_b) \label{eq:Target_ODE} \ee
@@ -955,9 +991,9 @@ Equation (\ref{eq:Target_ODE}) may be solved implicitly or explicitly.  When sol
 When solved explicitly, equation (\ref{eq:Target_ODE}) is solved as a stand-alone equation advancing the target temperature in time.
 
 
-If the target is thick then it is presumed that the temperature profile within the target varies as a function of depth and therefore a partial differential equation model must be used to estimate the changing profile; namely the heat equation 
+If the target is thick then it is presumed that the temperature profile within the target varies as a function of depth and therefore a partial differential equation model must be used to estimate the changing profile; namely the heat equation
 
-\be \frac{\partial T}{\partial t} = \frac{k}{\rho C}\frac{\partial^2T}{\partial x^2} 
+\be \frac{\partial T}{\partial t} = \frac{k}{\rho C}\frac{\partial^2T}{\partial x^2}
 \label{eq:Target_PDE} \ee
 where $k$, $\rho$ and $C$ are the thermal conductivity, density and heat capasity of the target.  As with the standard heat conduction model discussed later, the target heat conduction model in CFAST couples the solid to the gas phase using the relation
 
@@ -965,7 +1001,7 @@ where $k$, $\rho$ and $C$ are the thermal conductivity, density and heat capasit
 
 where $q''$ is the heat flux striking the target (again due to all sources).  This equation is the statment that the flux striking the target must be consistent with the temperature gradient at the surface.
 
-Equation (\ref{eq:Target_PDE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_Fourier}) (not equation (\ref{eq:Target_PDE}) is added to the equation set solved by DASSL.  
+Equation (\ref{eq:Target_PDE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_Fourier}) (not equation (\ref{eq:Target_PDE}) is added to the equation set solved by DASSL.
 When solved explicitly, equation (\ref{eq:Target_PDE}) is solved as a stand-alone equation advancing the temperature profile in time.
 
 

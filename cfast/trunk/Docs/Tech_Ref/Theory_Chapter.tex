@@ -580,15 +580,15 @@ Flow through vents can be modified, that is turned on or off. This applies to th
 
 Flow through normal vents such as windows and doors is governed by the pressure difference across a vent.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using an integrated form of Euler's equation, namely Bernoulli's solution for the velocity equation.  This solution is augmented for restricted openings by using flow coefficients \cite{Quintiere:1984} to allow for constriction from finite size doors.  The flow (or orifice) coefficient is an empirical term which addresses the problem of constriction of velocity streamlines at an orifice.
 
-Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.  
+Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.
 
 The mass flow through a region is found by first noting that the
 velocity of the flow at an elevation $h$ is given by
 
 \newcommand{\dmass}{d\dot{m}}
-\be 
+\be
 v(h) = C \sqrt{\frac{2 \Delta P(h)}{\rho}}
-\label{eq:vent_velocity} 
+\label{eq:vent_velocity}
 \ee
 
 \noindent where $C$ is the constriction (or flow) coefficient (0.7), $\rho$ is the gas density on the source side, and $\Delta P(h)$ is the pressure across the interface
@@ -617,28 +617,28 @@ The approach to calculating the flow field is of some interest.  The flow calcul
 \end{figure}
 
 Let $b$ and $t$ denote the bottom and top slab elevations and $P_b$ and $P_t$
-denote the cross-vent pressures at those elevations.  Because of the way that 
+denote the cross-vent pressures at those elevations.  Because of the way that
 slabs are defined, the two cross pressures $P_b$ and $P_t$ will have the same sign.
 The mass flow through the slab can then be computed by integrating equation \ref{eq:vent_massflow} vertically from $b$ to $t$ to obtain
 
 \begin{eqnarray}
 \dm&=&\int_b^t \dmass(h)\\
 &=&C\sqrt{2\rho}w\int_b^t\sqrt{\frac{|P_b(t-h)+P_t(h-b)|}{t-b}}dh\\
-&=&C\sqrt{2\rho}w\frac{2}{3}\frac{t-b}{|P_t|-|P_b|}(|P_t|^{3/2}-|P_b|^{3/2})
+&=&\frac{2}{3}C\sqrt{2\rho}w(t-b)\frac{|P_t|^{3/2}-|P_b|^{3/2}}{|P_t|-|P_b|}
 \label{eq:massflowone}
 \end{eqnarray}
 
-\noindent after noting that 
+\noindent after noting that
 \begin{eqnarray*}
 \int \sqrt{A+Bh}dh=\frac{2}{3B}(A+Bh)^{3/2}+\mbox{constant}
 \end{eqnarray*}
 
 \noindent where $B=(|P_t|-|P_b|)/(t-b)$, $A+Bt=|P_t|$ and $A+Bb=|P_b|$.
-Equation \ref{eq:massflowone} can be simplified 
+Equation \ref{eq:massflowone} can be simplified to
 
 \be \dm_{io} = \frac{2}{3} C \sqrt{2 \rho} A_{slab} \brackets{\frac{x^2+xy+y2}{x+y}} \ee
 
-where $x = \sqrt{|P_t|}$ and $y = \sqrt{|P_b|}$ and $A_{slab}=w(t-b)$. $P_t$ and $P_b$ are the cross-vent pressure differential at the top and bottom of the slab respectively and $A_{slab}$ is the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
+\noindent where $x = \sqrt{|P_t|}$, $y = \sqrt{|P_b|}$, $A_{slab}=w(t-b)$ the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
 
 A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in figure \ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an extended point source.  The estimate for the point source extension is given by Cetegen et al. \cite{Cetegen:1984}.  This virtual point source is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
 

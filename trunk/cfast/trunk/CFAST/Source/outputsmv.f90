@@ -38,12 +38,13 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
   integer, intent(in), dimension(nfires) :: froom_number
   DOUBLE PRECISION, intent(in), dimension(nfires) :: fx0, fy0, fz0
   character(len=*), intent(in) :: plotfile
-  double precision ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
+  double precision vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
   double precision  harea, targetvector(6)
   integer i, hface, ibot, itop, hshape
   character(128) dir
   CHARACTER(64) smokeviewplotfilename, drive, ext, name ! the extension is .plt
   INTEGER(4) length, splitpathqq
+  integer :: ifrom, ito, iface
 
 ! This code is to trim the file name to the name itself along with the extension
 ! for compatibility with version 4 and later of smokeview

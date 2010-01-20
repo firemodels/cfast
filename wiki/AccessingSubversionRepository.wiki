@@ -61,19 +61,19 @@ Open a terminal/shell session and change to the directory that you want the cfas
 ==Anonymous Checkout==
 If you are not a member of the cfast development team, then type:
 
-{{{svn co http://fds-smv.googlecode.com/svn/trunk/cfast/trunk cfast}}}
+{{{svn co http://cfast.googlecode.com/svn/trunk/cfast/trunk cfast}}}
 
 ==Developer Checkout==
 NOTE: Replace 'my_name' in the string below with your google account username.  This is the same username that has been given Project Member status in Google Code.
 
-As a member of the FDS-SMV development team with commit privileges, type:
+As a member of the CFAST development team with commit privileges, type:
 
-{{{svn co https://fds-smv.googlecode.com/svn/trunk/cfast/trunk cfast --username my_name}}}
+{{{svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk cfast --username my_name}}}
 
 You might be prompted for your password, but this is _*NOT* the password for your Google Account_, this is a special Google Code password that you can find through a link under the "Source" tab of the Google Code cfast project site.  It will be a random bunch of numbers and letters and nothing that you can specify. NOTE: the link will not be available unless you are a Project Member or Owner.  
 
 
-Either way, a directory called cfast will appear in the directory where you executed the checkout command (the 'co' part of the string), with the contents of the FDS-SMV repository contained within.
+Either way, a directory called cfast will appear in the directory where you executed the checkout command (the 'co' part of the string), with the contents of the CFAST repository contained within.
 
 ==Updates==
 
@@ -81,7 +81,7 @@ To update your local copy of the repository, go to the sub-directory that you wa
 
 {{{svn update}}}
 
-NOTE: This could be used to update any of the sub-directories under cfast.  If you change down to a subdirectory, like 'SOURCE_FDS5' and execute the svn update command, only that directory will be updated.
+NOTE: This could be used to update any of the sub-directories under cfast.  If you change down to a subdirectory, like 'CFAST' and execute the svn update command, only that directory will be updated.
 
 ==Change or Commit Log==
 

@@ -60,7 +60,7 @@ C
 C*RB
 C
 C     Routine:    CFRAD
-C     Function:   Interface between DSUORC and RAD2 or RAD4.  Loops over
+C     Function:   Interface between DSOURC and RAD2 or RAD4.  Loops over
 C                 rooms setting up varibles to pass.  If one or more fires
 C                 are in a room calls RAD4 otherwise RAD2.
 C     Output:     FLWRAD      Net enthalphy into each layer

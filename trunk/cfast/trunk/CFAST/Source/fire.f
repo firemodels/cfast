@@ -53,6 +53,8 @@ C
       include "fltarget.fi"
 
       DIMENSION FLWF(NR,NS+2,2), XNTMS(2,NS), STMASS(2,NS)
+      DIMENSION XXFIRE(1), YYFIRE(1), ZZFIRE(1), ZZLOC(1)
+      DIMENSION FTEMP(1), FVEL(1)
       INTEGER CJETOPT
       INTEGER UPDATE
 
@@ -161,19 +163,19 @@ C*** don't calculate heat transfer
 
           CJETOPT = 2
 
-          XXFIRE = XFIRE(NFIRE,1)
-          YYFIRE = XFIRE(NFIRE,2)
-          ZZFIRE = XFIRE(NFIRE,3)
+          XXFIRE(1) = XFIRE(NFIRE,1)
+          YYFIRE(1) = XFIRE(NFIRE,2)
+          ZZFIRE(1) = XFIRE(NFIRE,3)
 
 C*** it doesn't matter what ZZLOC is since we are not using the
 C    temperature or velocity of the ceiling jet.  we are just interested
 C    in the maximum value
 
-          ZZLOC = HR(I) - 0.1D0
+          ZZLOC(1) = HR(I) - 0.1D0
 
           CALL CEILHT(XFIRE(NFIRE,4),XFIRE(NFIRE,7),TCEIL,
      +        ZZTEMP(I,LOWER),ZZTEMP(I,UPPER),TUWALL,bR(I),dR(I),
-     +        HR(I),XXFIRE,YYFIRE,ZZFIRE,
+     +        HR(I),XXFIRE(1),YYFIRE(1),ZZFIRE(1),
      +        ZZHLAY(I,LOWER),ZZRHO(I,LOWER),ZZRHO(I,UPPER),CJETOPT,
      +        XXFIRE,YYFIRE,ZZLOC,
      +        1,QCEIL,QFCLGA,QFWLA,QFWUA,

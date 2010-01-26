@@ -1650,6 +1650,8 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 			  IXTARG(TRGEQ,NTARG) = ODE
 		 ELSEIF (EQTYPE(1:3).EQ.'PDE') THEN
 	        IXTARG(TRGEQ,NTARG) = PDE
+		 ELSEIF (EQTYPE(1:3).EQ.'CYL') THEN
+	        IXTARG(TRGEQ,NTARG) = CYLPDE
 		 ELSE
 	        WRITE(logerr,913) EQTYPE
 			  ierror = 45
@@ -1900,7 +1902,7 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
   912 FORMAT ('Invalid TARGET METHOD:',A8,'. Valid choices are: ',
      +         'STEADY, IMPLICIT OR EXPLICIT')
   913 FORMAT('Invalid equation type specified in TARGET:',A3,
-     +          ' Valid choices are:ODE OR PDE')
+     +          ' Valid choices are:ODE, PDE or CYL')
  5000 FORMAT ('Keyword ',A5)
  5001	FORMAT ('ONEZ requires a defined compartment ',i3)
  5002 FORMAT ('Too many targets are being defined')

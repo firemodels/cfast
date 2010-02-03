@@ -572,7 +572,7 @@ Public Class Vent
                         Dim aComp1 As New Compartment
                         aComp1 = myCompartments(aFirstCompartment)
                         If aFirstOrientation = 1 Then
-                            If aFirstCenterHeight - Math.Sqrt(aFirstArea) / 2 < 0.0 Or Math.Sqrt(aFirstArea) + aFirstCenterHeight > aComp1.RoomHeight Then
+                            If aFirstCenterHeight - Math.Sqrt(aFirstArea) / 2 < 0.0 Or Math.Sqrt(aFirstArea) / 2 + aFirstCenterHeight > aComp1.RoomHeight Then
                                 myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is below floor level or above ceiling level in from compartment.", ErrorMessages.TypeWarning)
                                 HasErrors += 1
                             End If

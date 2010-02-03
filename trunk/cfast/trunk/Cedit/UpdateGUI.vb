@@ -46,7 +46,7 @@ Public Class UpdateGUI
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
         ErrorCount = myEnvironment.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
-            myTargets.IsValid + myFires.IsValid + myFireObjects.IsValid
+            myTargets.IsValid + myFires.IsValid + myFireObjects.IsValid + myHHeats.IsValid + myVHeats.IsValid
         If ErrorCount > 0 Then
             myErrors.Break()
             MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages"

@@ -72,10 +72,10 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C1.C1Report.2, Version=2.6.20092.52106, Culture=neutral, PublicKeyToken=594a0605db190bb9, processorArchitecture=MSIL" />
-    <Reference Include="C1.Win.C1FlexGrid.2, Version=2.6.20092.416, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
-    <Reference Include="C1.Win.C1Report.2, Version=2.6.20092.52106, Culture=neutral, PublicKeyToken=41780e2fc605e636, processorArchitecture=MSIL" />
-    <Reference Include="C1.Win.C1Sizer.2, Version=2.1.20093.46, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
+    <Reference Include="C1.C1Report.2, Version=2.6.20093.53218, Culture=neutral, PublicKeyToken=594a0605db190bb9, processorArchitecture=MSIL" />
+    <Reference Include="C1.Win.C1FlexGrid.2, Version=2.6.20093.429, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
+    <Reference Include="C1.Win.C1Report.2, Version=2.6.20093.53218, Culture=neutral, PublicKeyToken=41780e2fc605e636, processorArchitecture=MSIL" />
+    <Reference Include="C1.Win.C1Sizer.2, Version=2.1.20101.48, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualBasic">
       <Name>Microsoft.VisualBasic</Name>
     </Reference>

@@ -5,6 +5,7 @@ Public Class Target
     Friend Const SmokeDetectorActivationTemperature As Single = 25.0 ' Smoke detector simulated as a heat detector with 5 °C rise trigger
     Friend Const Implicit As Integer = 0
     Friend Const Explicit As Integer = 1
+    Friend Const Steady As Integer = 2
     Friend Const ThermallyThick As Integer = 0
     Friend Const ThermallyThin As Integer = 1
     Friend Const TypeHeatDetector As Integer = 1                    ' Type 0 is a normal target (type from above), 1 is a heat detector, 2 is a smoke detector and 3 is a sprinkler
@@ -290,6 +291,8 @@ Public Class Target
             End If
             If SolutionMethod = Explicit Then
                 Me.SolutionMethod = Explicit
+            ElseIf SolutionMethod = Steady Then
+                Me.SolutionMethod = Steady
             Else
                 Me.SolutionMethod = Implicit
             End If

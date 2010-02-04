@@ -8,6 +8,7 @@ Public Class Target
     Friend Const Steady As Integer = 2
     Friend Const ThermallyThick As Integer = 0
     Friend Const ThermallyThin As Integer = 1
+    Friend Const Cylindrical As Integer = 2
     Friend Const TypeHeatDetector As Integer = 1                    ' Type 0 is a normal target (type from above), 1 is a heat detector, 2 is a smoke detector and 3 is a sprinkler
     Friend Const TypeSmokeDetector As Integer = 0
     Friend Const TypeSprinkler As Integer = 2
@@ -284,7 +285,9 @@ Public Class Target
             Me.Compartment = index
             Me.DetectorType = TypeTarget
             Me.Material = Material
-            If SolutionThickness = ThermallyThick Then
+            If SolutionThickness = Cylindrical Then
+                Me.SolutionThickness = Cylindrical
+            ElseIf SolutionThickness = ThermallyThick Then
                 Me.SolutionThickness = ThermallyThick
             Else
                 Me.SolutionThickness = ThermallyThin

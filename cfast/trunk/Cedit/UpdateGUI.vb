@@ -413,6 +413,19 @@ Public Class UpdateGUI
             MainWin.TargetMaterial.Text = myThermalProperties.GetLongName(aTarget.Material)
             MainWin.TargetSolutionMethod.SelectedIndex = aTarget.SolutionMethod
             MainWin.TargetSolutionThickness.SelectedIndex = aTarget.SolutionThickness
+            If aTarget.SolutionThickness = 2 Then
+                MainWin.TargetNormalCalc.Enabled = False
+                MainWin.TargetXNormal.Enabled = False
+                MainWin.TargetYNormal.Enabled = False
+                MainWin.TargetZNormal.Enabled = False
+                MainWin.TargetSolutionMethod.Enabled = False
+            Else
+                MainWin.TargetNormalCalc.Enabled = True
+                MainWin.TargetXNormal.Enabled = True
+                MainWin.TargetYNormal.Enabled = True
+                MainWin.TargetZNormal.Enabled = True
+                MainWin.TargetSolutionMethod.Enabled = True
+            End If
             numTargets = myTargets.Count
             ClearGrid(MainWin.TargetSummary)
             If numTargets > 0 Then
@@ -434,7 +447,7 @@ Public Class UpdateGUI
                     MainWin.TargetSummary(i, 7) = aTarget.ZNormal.ToString
                     MainWin.TargetSummary(i, 8) = aTarget.Material
                     MainWin.TargetSummary(i, 9) = SolutionMethodNames.Substring((aTarget.SolutionMethod) * 8, 8)
-                    MainWin.TargetSummary(i, 10) = SolutionThicknessNames.Substring((aTarget.SolutionThickness) * 5, 5)
+                    MainWin.TargetSummary(i, 10) = SolutionThicknessNames.Substring((aTarget.SolutionThickness) * 11, 11)
                 Next
                 MainWin.TargetSummary.Select(index + 1, 0, index + 1, MainWin.TargetSummary.Cols.Count - 1, True)
             End If

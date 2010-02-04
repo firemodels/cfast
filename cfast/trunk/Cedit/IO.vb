@@ -532,7 +532,9 @@ Module IO
             csv.Num(i, targetNum.yNormal) = aDetect.YNormal
             csv.Num(i, targetNum.zNormal) = aDetect.ZNormal
             csv.str(i, targetNum.material) = aDetect.Material
-            If aDetect.SolutionThickness = 1 Then
+            If aDetect.SolutionThickness = 2 Then
+                csv.str(i, targetNum.equationType) = "CYL"
+            ElseIf aDetect.SolutionThickness = 1 Then
                 csv.str(i, targetNum.equationType) = "ODE"
             Else
                 csv.str(i, targetNum.equationType) = "PDE"
@@ -807,16 +809,18 @@ Module IO
                             csv.Num(i, targetNum.zPosition), csv.Num(i, targetNum.xNormal), csv.Num(i, targetNum.yNormal), _
                             csv.Num(i, targetNum.zNormal))
                         Dim thickness, method As Integer
-                        If csv.str(i, targetNum.equationType) = "ODE" Then
+                        If csv.str(i, targetNum.equationType) = "CYL" Then
+                            thickness = 2
+                        ElseIf csv.str(i, targetNum.equationType) = "ODE" Then
                             thickness = 1
-                        Else
+                        Else ' PDE
                             thickness = 0
                         End If
                         If csv.str(i, targetNum.method) = "STEADY" Then
                             method = 2
                         ElseIf csv.str(i, targetNum.method) = "EXPLICIT" Then
                             method = 1
-                        Else
+                        Else ' IMPLICIT
                             method = 0
                         End If
                         aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), thickness, _

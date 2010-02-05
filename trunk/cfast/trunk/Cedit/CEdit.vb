@@ -799,11 +799,11 @@ Public Class CeditMain
         '
         'StatusBar
         '
-        Me.StatusBar.Location = New System.Drawing.Point(0, 636)
+        Me.StatusBar.Location = New System.Drawing.Point(0, 634)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.Errors, Me.Message})
         Me.StatusBar.ShowPanels = True
-        Me.StatusBar.Size = New System.Drawing.Size(1008, 22)
+        Me.StatusBar.Size = New System.Drawing.Size(1006, 22)
         Me.StatusBar.TabIndex = 2
         '
         'Errors
@@ -1437,6 +1437,7 @@ Public Class CeditMain
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
         Me.HVentSummary.ShowSort = False
         Me.HVentSummary.Size = New System.Drawing.Size(782, 192)
+        Me.HVentSummary.StyleInfo = resources.GetString("HVentSummary.StyleInfo")
         Me.HVentSummary.TabIndex = 1
         '
         'GroupHVentGeometry
@@ -1735,12 +1736,13 @@ Public Class CeditMain
         Me.VVentSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.VVentSummary.ColumnInfo = resources.GetString("VVentSummary.ColumnInfo")
         Me.VVentSummary.ExtendLastCol = True
-        Me.VVentSummary.Location = New System.Drawing.Point(297, 64)
+        Me.VVentSummary.Location = New System.Drawing.Point(278, 64)
         Me.VVentSummary.Name = "VVentSummary"
         Me.VVentSummary.Rows.Count = 101
         Me.VVentSummary.Rows.DefaultSize = 17
         Me.VVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VVentSummary.Size = New System.Drawing.Size(421, 114)
+        Me.VVentSummary.StyleInfo = resources.GetString("VVentSummary.StyleInfo")
         Me.VVentSummary.TabIndex = 1
         '
         'VVentRemove
@@ -1947,12 +1949,13 @@ Public Class CeditMain
         Me.CompSummary.Rows.DefaultSize = 17
         Me.CompSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.CompSummary.Size = New System.Drawing.Size(902, 96)
+        Me.CompSummary.StyleInfo = resources.GetString("CompSummary.StyleInfo")
         Me.CompSummary.TabIndex = 1
         Me.CompSummary.TabStop = False
         '
         'CompRemove
         '
-        Me.CompRemove.Location = New System.Drawing.Point(594, 128)
+        Me.CompRemove.Location = New System.Drawing.Point(675, 128)
         Me.CompRemove.Name = "CompRemove"
         Me.CompRemove.Size = New System.Drawing.Size(75, 23)
         Me.CompRemove.TabIndex = 6
@@ -1960,7 +1963,7 @@ Public Class CeditMain
         '
         'CompAdd
         '
-        Me.CompAdd.Location = New System.Drawing.Point(146, 128)
+        Me.CompAdd.Location = New System.Drawing.Point(227, 128)
         Me.CompAdd.Name = "CompAdd"
         Me.CompAdd.Size = New System.Drawing.Size(75, 23)
         Me.CompAdd.TabIndex = 2
@@ -1968,7 +1971,7 @@ Public Class CeditMain
         '
         'CompMoveDown
         '
-        Me.CompMoveDown.Location = New System.Drawing.Point(434, 128)
+        Me.CompMoveDown.Location = New System.Drawing.Point(515, 128)
         Me.CompMoveDown.Name = "CompMoveDown"
         Me.CompMoveDown.Size = New System.Drawing.Size(75, 23)
         Me.CompMoveDown.TabIndex = 5
@@ -1976,7 +1979,7 @@ Public Class CeditMain
         '
         'CompMoveUp
         '
-        Me.CompMoveUp.Location = New System.Drawing.Point(338, 128)
+        Me.CompMoveUp.Location = New System.Drawing.Point(419, 128)
         Me.CompMoveUp.Name = "CompMoveUp"
         Me.CompMoveUp.Size = New System.Drawing.Size(75, 23)
         Me.CompMoveUp.TabIndex = 4
@@ -1984,7 +1987,7 @@ Public Class CeditMain
         '
         'CompDup
         '
-        Me.CompDup.Location = New System.Drawing.Point(242, 128)
+        Me.CompDup.Location = New System.Drawing.Point(323, 128)
         Me.CompDup.Name = "CompDup"
         Me.CompDup.Size = New System.Drawing.Size(75, 23)
         Me.CompDup.TabIndex = 3
@@ -2027,6 +2030,7 @@ Public Class CeditMain
         Me.CompVariableArea.Rows.DefaultSize = 17
         Me.CompVariableArea.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.CompVariableArea.Size = New System.Drawing.Size(190, 96)
+        Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
         Me.CompVariableArea.TabIndex = 26
         '
         'CompName
@@ -2321,7 +2325,7 @@ Public Class CeditMain
         Me.MainView.Location = New System.Drawing.Point(659, 608)
         Me.MainView.Name = "MainView"
         Me.MainView.Size = New System.Drawing.Size(75, 23)
-        Me.MainView.TabIndex = 11
+        Me.MainView.TabIndex = 104
         Me.MainView.Text = "View"
         '
         'TabMechanicalFlow
@@ -2349,11 +2353,12 @@ Public Class CeditMain
         Me.MVentSummary.Rows.Count = 101
         Me.MVentSummary.Rows.DefaultSize = 17
         Me.MVentSummary.Size = New System.Drawing.Size(862, 120)
+        Me.MVentSummary.StyleInfo = resources.GetString("MVentSummary.StyleInfo")
         Me.MVentSummary.TabIndex = 1
         '
         'MVentRemove
         '
-        Me.MVentRemove.Location = New System.Drawing.Point(660, 199)
+        Me.MVentRemove.Location = New System.Drawing.Point(675, 199)
         Me.MVentRemove.Name = "MVentRemove"
         Me.MVentRemove.Size = New System.Drawing.Size(75, 23)
         Me.MVentRemove.TabIndex = 4
@@ -2361,7 +2366,7 @@ Public Class CeditMain
         '
         'MVentAdd
         '
-        Me.MVentAdd.Location = New System.Drawing.Point(212, 199)
+        Me.MVentAdd.Location = New System.Drawing.Point(227, 199)
         Me.MVentAdd.Name = "MVentAdd"
         Me.MVentAdd.Size = New System.Drawing.Size(75, 23)
         Me.MVentAdd.TabIndex = 2
@@ -2369,7 +2374,7 @@ Public Class CeditMain
         '
         'MVentDup
         '
-        Me.MVentDup.Location = New System.Drawing.Point(308, 199)
+        Me.MVentDup.Location = New System.Drawing.Point(323, 199)
         Me.MVentDup.Name = "MVentDup"
         Me.MVentDup.Size = New System.Drawing.Size(75, 23)
         Me.MVentDup.TabIndex = 3
@@ -2396,7 +2401,7 @@ Public Class CeditMain
         Me.GroupMVents.Controls.Add(Me.MVentFlow)
         Me.GroupMVents.Controls.Add(Me.Label45)
         Me.GroupMVents.Controls.Add(Me.Label47)
-        Me.GroupMVents.Location = New System.Drawing.Point(124, 247)
+        Me.GroupMVents.Location = New System.Drawing.Point(128, 247)
         Me.GroupMVents.Name = "GroupMVents"
         Me.GroupMVents.Size = New System.Drawing.Size(720, 291)
         Me.GroupMVents.TabIndex = 5
@@ -2725,7 +2730,7 @@ Public Class CeditMain
         '
         'FireIgnitionTemperature
         '
-        Me.FireIgnitionTemperature.Location = New System.Drawing.Point(832, 104)
+        Me.FireIgnitionTemperature.Location = New System.Drawing.Point(844, 104)
         Me.FireIgnitionTemperature.Name = "FireIgnitionTemperature"
         Me.FireIgnitionTemperature.Size = New System.Drawing.Size(80, 20)
         Me.FireIgnitionTemperature.TabIndex = 70
@@ -2733,7 +2738,7 @@ Public Class CeditMain
         '
         'Label17
         '
-        Me.Label17.Location = New System.Drawing.Point(720, 98)
+        Me.Label17.Location = New System.Drawing.Point(732, 98)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(107, 32)
         Me.Label17.TabIndex = 71
@@ -2748,16 +2753,17 @@ Public Class CeditMain
         Me.FireSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.FireSummary.ColumnInfo = resources.GetString("FireSummary.ColumnInfo")
         Me.FireSummary.ExtendLastCol = True
-        Me.FireSummary.Location = New System.Drawing.Point(24, 16)
+        Me.FireSummary.Location = New System.Drawing.Point(36, 16)
         Me.FireSummary.Name = "FireSummary"
         Me.FireSummary.Rows.Count = 101
         Me.FireSummary.Rows.DefaultSize = 17
         Me.FireSummary.Size = New System.Drawing.Size(682, 104)
+        Me.FireSummary.StyleInfo = resources.GetString("FireSummary.StyleInfo")
         Me.FireSummary.TabIndex = 1
         '
         'FireRemove
         '
-        Me.FireRemove.Location = New System.Drawing.Point(440, 136)
+        Me.FireRemove.Location = New System.Drawing.Point(452, 136)
         Me.FireRemove.Name = "FireRemove"
         Me.FireRemove.Size = New System.Drawing.Size(75, 23)
         Me.FireRemove.TabIndex = 4
@@ -2765,7 +2771,7 @@ Public Class CeditMain
         '
         'FireAdd
         '
-        Me.FireAdd.Location = New System.Drawing.Point(208, 136)
+        Me.FireAdd.Location = New System.Drawing.Point(220, 136)
         Me.FireAdd.Name = "FireAdd"
         Me.FireAdd.Size = New System.Drawing.Size(75, 23)
         Me.FireAdd.TabIndex = 2
@@ -2773,7 +2779,7 @@ Public Class CeditMain
         '
         'FireDup
         '
-        Me.FireDup.Location = New System.Drawing.Point(304, 136)
+        Me.FireDup.Location = New System.Drawing.Point(316, 136)
         Me.FireDup.Name = "FireDup"
         Me.FireDup.Size = New System.Drawing.Size(75, 23)
         Me.FireDup.TabIndex = 3
@@ -3019,7 +3025,7 @@ Public Class CeditMain
         '
         Me.FireCeilingJet.ItemHeight = 13
         Me.FireCeilingJet.Items.AddRange(New Object() {"Off", "Ceiling", "Ceiling & Walls"})
-        Me.FireCeilingJet.Location = New System.Drawing.Point(832, 40)
+        Me.FireCeilingJet.Location = New System.Drawing.Point(844, 40)
         Me.FireCeilingJet.Name = "FireCeilingJet"
         Me.FireCeilingJet.Size = New System.Drawing.Size(96, 21)
         Me.FireCeilingJet.TabIndex = 20
@@ -3028,7 +3034,7 @@ Public Class CeditMain
         'Label62
         '
         Me.Label62.AutoSize = True
-        Me.Label62.Location = New System.Drawing.Point(768, 40)
+        Me.Label62.Location = New System.Drawing.Point(780, 40)
         Me.Label62.Name = "Label62"
         Me.Label62.Size = New System.Drawing.Size(58, 13)
         Me.Label62.TabIndex = 69
@@ -3037,7 +3043,7 @@ Public Class CeditMain
         '
         'FireLOL
         '
-        Me.FireLOL.Location = New System.Drawing.Point(832, 72)
+        Me.FireLOL.Location = New System.Drawing.Point(844, 72)
         Me.FireLOL.Name = "FireLOL"
         Me.FireLOL.Size = New System.Drawing.Size(80, 20)
         Me.FireLOL.TabIndex = 21
@@ -3046,7 +3052,7 @@ Public Class CeditMain
         'Label55
         '
         Me.Label55.AutoSize = True
-        Me.Label55.Location = New System.Drawing.Point(720, 72)
+        Me.Label55.Location = New System.Drawing.Point(732, 72)
         Me.Label55.Name = "Label55"
         Me.Label55.Size = New System.Drawing.Size(102, 13)
         Me.Label55.TabIndex = 59
@@ -3256,6 +3262,7 @@ Public Class CeditMain
         Me.DetectorSummary.Rows.DefaultSize = 17
         Me.DetectorSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.DetectorSummary.Size = New System.Drawing.Size(742, 136)
+        Me.DetectorSummary.StyleInfo = resources.GetString("DetectorSummary.StyleInfo")
         Me.DetectorSummary.TabIndex = 1
         '
         'GroupDetectors
@@ -3271,16 +3278,16 @@ Public Class CeditMain
         Me.GroupDetectors.Controls.Add(Me.DetectorComp)
         Me.GroupDetectors.Controls.Add(Me.Label87)
         Me.GroupDetectors.Controls.Add(Me.GroupBox33)
-        Me.GroupDetectors.Location = New System.Drawing.Point(16, 275)
+        Me.GroupDetectors.Location = New System.Drawing.Point(79, 275)
         Me.GroupDetectors.Name = "GroupDetectors"
-        Me.GroupDetectors.Size = New System.Drawing.Size(944, 232)
+        Me.GroupDetectors.Size = New System.Drawing.Size(819, 226)
         Me.GroupDetectors.TabIndex = 7
         Me.GroupDetectors.TabStop = False
         Me.GroupDetectors.Text = "Smoke Alarm 1"
         '
         'DetectorSprayDensity
         '
-        Me.DetectorSprayDensity.Location = New System.Drawing.Point(640, 136)
+        Me.DetectorSprayDensity.Location = New System.Drawing.Point(593, 136)
         Me.DetectorSprayDensity.Name = "DetectorSprayDensity"
         Me.DetectorSprayDensity.Size = New System.Drawing.Size(96, 20)
         Me.DetectorSprayDensity.TabIndex = 16
@@ -3289,7 +3296,7 @@ Public Class CeditMain
         'Label81
         '
         Me.Label81.AutoSize = True
-        Me.Label81.Location = New System.Drawing.Point(552, 136)
+        Me.Label81.Location = New System.Drawing.Point(505, 136)
         Me.Label81.Name = "Label81"
         Me.Label81.Size = New System.Drawing.Size(75, 13)
         Me.Label81.TabIndex = 48
@@ -3298,7 +3305,7 @@ Public Class CeditMain
         '
         'DetectorRTI
         '
-        Me.DetectorRTI.Location = New System.Drawing.Point(640, 104)
+        Me.DetectorRTI.Location = New System.Drawing.Point(593, 104)
         Me.DetectorRTI.Name = "DetectorRTI"
         Me.DetectorRTI.Size = New System.Drawing.Size(96, 20)
         Me.DetectorRTI.TabIndex = 15
@@ -3307,7 +3314,7 @@ Public Class CeditMain
         'Label83
         '
         Me.Label83.AutoSize = True
-        Me.Label83.Location = New System.Drawing.Point(600, 104)
+        Me.Label83.Location = New System.Drawing.Point(553, 104)
         Me.Label83.Name = "Label83"
         Me.Label83.Size = New System.Drawing.Size(28, 13)
         Me.Label83.TabIndex = 46
@@ -3316,7 +3323,7 @@ Public Class CeditMain
         '
         'DetectorActivation
         '
-        Me.DetectorActivation.Location = New System.Drawing.Point(744, 24)
+        Me.DetectorActivation.Location = New System.Drawing.Point(697, 24)
         Me.DetectorActivation.Name = "DetectorActivation"
         Me.DetectorActivation.Size = New System.Drawing.Size(96, 20)
         Me.DetectorActivation.TabIndex = 10
@@ -3325,7 +3332,7 @@ Public Class CeditMain
         'Label92
         '
         Me.Label92.AutoSize = True
-        Me.Label92.Location = New System.Drawing.Point(616, 24)
+        Me.Label92.Location = New System.Drawing.Point(569, 24)
         Me.Label92.Name = "Label92"
         Me.Label92.Size = New System.Drawing.Size(120, 13)
         Me.Label92.TabIndex = 44
@@ -3336,7 +3343,7 @@ Public Class CeditMain
         '
         Me.DetectorType.ItemHeight = 13
         Me.DetectorType.Items.AddRange(New Object() {"Smoke Alarm", "Heat Alarm", "Sprinkler"})
-        Me.DetectorType.Location = New System.Drawing.Point(112, 24)
+        Me.DetectorType.Location = New System.Drawing.Point(65, 24)
         Me.DetectorType.Name = "DetectorType"
         Me.DetectorType.Size = New System.Drawing.Size(112, 21)
         Me.DetectorType.TabIndex = 8
@@ -3345,7 +3352,7 @@ Public Class CeditMain
         'Label91
         '
         Me.Label91.AutoSize = True
-        Me.Label91.Location = New System.Drawing.Point(72, 24)
+        Me.Label91.Location = New System.Drawing.Point(25, 24)
         Me.Label91.Name = "Label91"
         Me.Label91.Size = New System.Drawing.Size(34, 13)
         Me.Label91.TabIndex = 42
@@ -3356,7 +3363,7 @@ Public Class CeditMain
         '
         Me.DetectorComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.DetectorComp.ItemHeight = 13
-        Me.DetectorComp.Location = New System.Drawing.Point(368, 24)
+        Me.DetectorComp.Location = New System.Drawing.Point(321, 24)
         Me.DetectorComp.Name = "DetectorComp"
         Me.DetectorComp.Size = New System.Drawing.Size(208, 21)
         Me.DetectorComp.TabIndex = 9
@@ -3364,7 +3371,7 @@ Public Class CeditMain
         'Label87
         '
         Me.Label87.AutoSize = True
-        Me.Label87.Location = New System.Drawing.Point(280, 24)
+        Me.Label87.Location = New System.Drawing.Point(233, 24)
         Me.Label87.Name = "Label87"
         Me.Label87.Size = New System.Drawing.Size(72, 13)
         Me.Label87.TabIndex = 34
@@ -3379,7 +3386,7 @@ Public Class CeditMain
         Me.GroupBox33.Controls.Add(Me.Label89)
         Me.GroupBox33.Controls.Add(Me.DetectorXPosition)
         Me.GroupBox33.Controls.Add(Me.Label90)
-        Me.GroupBox33.Location = New System.Drawing.Point(200, 72)
+        Me.GroupBox33.Location = New System.Drawing.Point(153, 72)
         Me.GroupBox33.Name = "GroupBox33"
         Me.GroupBox33.Size = New System.Drawing.Size(200, 136)
         Me.GroupBox33.TabIndex = 11
@@ -3503,6 +3510,7 @@ Public Class CeditMain
         Me.TargetSummary.Rows.DefaultSize = 17
         Me.TargetSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.TargetSummary.Size = New System.Drawing.Size(722, 136)
+        Me.TargetSummary.StyleInfo = resources.GetString("TargetSummary.StyleInfo")
         Me.TargetSummary.TabIndex = 1
         '
         'GroupTargets
@@ -3621,7 +3629,7 @@ Public Class CeditMain
         Me.GroupBox28.Location = New System.Drawing.Point(391, 48)
         Me.GroupBox28.Name = "GroupBox28"
         Me.GroupBox28.Size = New System.Drawing.Size(378, 175)
-        Me.GroupBox28.TabIndex = 9
+        Me.GroupBox28.TabIndex = 55
         Me.GroupBox28.TabStop = False
         Me.GroupBox28.Text = "Geometry"
         '
@@ -3828,6 +3836,7 @@ Public Class CeditMain
         Me.VHeatSummary.Rows.Count = 181
         Me.VHeatSummary.Rows.DefaultSize = 17
         Me.VHeatSummary.Size = New System.Drawing.Size(364, 168)
+        Me.VHeatSummary.StyleInfo = resources.GetString("VHeatSummary.StyleInfo")
         Me.VHeatSummary.TabIndex = 1
         '
         'GroupVHeats
@@ -3929,6 +3938,7 @@ Public Class CeditMain
         Me.HHeatSummary.Rows.Count = 181
         Me.HHeatSummary.Rows.DefaultSize = 17
         Me.HHeatSummary.Size = New System.Drawing.Size(423, 168)
+        Me.HHeatSummary.StyleInfo = resources.GetString("HHeatSummary.StyleInfo")
         Me.HHeatSummary.TabIndex = 1
         '
         'GroupHHeats
@@ -4039,7 +4049,7 @@ Public Class CeditMain
         Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
-        Me.TabMain.Location = New System.Drawing.Point(13, 14)
+        Me.TabMain.Location = New System.Drawing.Point(12, 14)
         Me.TabMain.Name = "TabMain"
         Me.TabMain.SelectedIndex = 0
         Me.TabMain.Size = New System.Drawing.Size(984, 584)
@@ -4070,7 +4080,7 @@ Public Class CeditMain
         Me.MainSave.Location = New System.Drawing.Point(275, 608)
         Me.MainSave.Name = "MainSave"
         Me.MainSave.Size = New System.Drawing.Size(75, 23)
-        Me.MainSave.TabIndex = 8
+        Me.MainSave.TabIndex = 101
         Me.MainSave.Text = "Save"
         '
         'MainRun
@@ -4078,7 +4088,7 @@ Public Class CeditMain
         Me.MainRun.Location = New System.Drawing.Point(510, 608)
         Me.MainRun.Name = "MainRun"
         Me.MainRun.Size = New System.Drawing.Size(75, 23)
-        Me.MainRun.TabIndex = 10
+        Me.MainRun.TabIndex = 103
         Me.MainRun.Text = "Run"
         '
         'MainGeometry
@@ -4086,7 +4096,7 @@ Public Class CeditMain
         Me.MainGeometry.Location = New System.Drawing.Point(424, 608)
         Me.MainGeometry.Name = "MainGeometry"
         Me.MainGeometry.Size = New System.Drawing.Size(75, 23)
-        Me.MainGeometry.TabIndex = 9
+        Me.MainGeometry.TabIndex = 102
         Me.MainGeometry.Text = "Geometry"
         '
         'CeditMain
@@ -4094,7 +4104,7 @@ Public Class CeditMain
         Me.C1SizerLight1.SetAutoResize(Me, True)
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(1008, 658)
+        Me.ClientSize = New System.Drawing.Size(1006, 656)
         Me.Controls.Add(Me.MainView)
         Me.Controls.Add(Me.MainGeometry)
         Me.Controls.Add(Me.MainRun)

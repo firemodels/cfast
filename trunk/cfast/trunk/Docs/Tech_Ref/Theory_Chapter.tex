@@ -976,7 +976,7 @@ Let $f(T_t)$ be the difference between the left and right hand side of equation 
 
 Equation (\ref{eq:Target_Newton}) is iterated until the difference $T_{new} - T_{old}$ is sufficiently small.
 
-{\bf Computing the Transient Target Temperature:}
+{\bf Computing the Transient Rectangular Target Temperature:}
 A transient target temperature may be computed using two different methods
 depending on whether the target is assumed to be thin or thick.  A thin target
 is presumed to have a constant interior temperature profile. A differential equation model may then be used to estimate the
@@ -1004,10 +1004,203 @@ where $q''$ is the heat flux striking the target (again due to all sources).  Th
 Equation (\ref{eq:Target_PDE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_Fourier}) (not equation (\ref{eq:Target_PDE}) is added to the equation set solved by DASSL.
 When solved explicitly, equation (\ref{eq:Target_PDE}) is solved as a stand-alone equation advancing the temperature profile in time.
 
+\newpage
+{\bf Computing Transient Cable Target Heat Transfer:}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/cylheat}\\
+\end{center}
+\caption{Schematic of a control volume for heat transfer in a cylindrical object.}
+ \label{fig:cylheat}
+\end{figure}
+
+\newcommand{\Dt}{\Delta t}
+\newcommand{\Dr}{\Delta r}
+\newcommand{\Tipo}{T_{i+1}^{n+1}}
+\newcommand{\Ti}{T_{i}^{n+1}}
+\newcommand{\Timo}{T_{i-1}^{n+1}}
+
+This section describes a CFAST implementation of a model for 
+predicting electrical cable failure first proposed
+by Andersson and Van Hees \cite{Andersson:2005} 
+and later implemented by McGrattan
+in FDS\cite{CAROLFIRE} .  This model uses a simple one-dimensional heat 
+transfer calculation, under the assumption that the cable can
+be treated as a homogenous cylinder\cite{Andersson:2005}.
+
+The heat flux used to generate the heat transfer in the cable is provided 
+by CFAST which models the thermal environment of the compartment where
+the cable is located.  In most realistic fire  scenarios, the heat flux
+to the cable is not axially-symmetric.  CFAST therefore uses the maximum
+heat flux value when modeling cable failure.
+
+1D heat transfer may be computed within a cylindrically symmetric target
+by splitting it into $N$ concentric control volumes and performing
+an energy balance on each.  The energy balance for the $i$'th control
+volume for $i=1\cdots N-1$, is
+
+\begin{equation}
+c\rho V_i\Delta T_i=(\dot{q}_i-\dot{q}_{i-1})\Dt
+\label{eq:cylheat1}
+\end{equation}
+
+\noindent where $c\rho V_i\Delta T_i$ represents the change in internal
+energy
+and $(\dot{q}_i-\dot{q}_{i-1})\Dt$ represents the net heat flow across the
+control volume's inner and outer boundary surface over a $\Dt$ time period.
+The energy balance for the outermost or $N$'th control volume is similar
+\begin{equation}
+c\rho V_N\Delta T_N=(\dot{q}_{ext}''A_N-\dot{q}_{N-1})\Dt
+\label{eq:cylheat2}
+\end{equation}
+with $\dot{q}_{ext}''A_N$ specified as a boundary condition, 
+the combined net radiative and convective heat flux incident
+on the the cylindrical target's outer surface.
+
+As illustrated in Figure \ref{fig:cylheat}, the $i$'th control volume has
+volume $V_i$, temperature $T_i$ and heat flow at the inner
+and outer boundaries of $\dot{q}_{i-1}$ and $\dot{q}_i$ respectively.
+The $i$'th control volume has length $L$ and inner and outer radius
+$r_{i-1}$ and $r_i$ where $r_i=i\Dr$ and $\Dr=R/N$.
+The density and specific heat of material in all control volumes is
+$c$ and $\rho$.
+
+The right hand sides of equations \ref{eq:cylheat1} and (\ref{eq:cylheat2}) may be expressed in terms of temperature using
+Fourier's law and noting that $\dot{q}_i=\dot{q}''_iA_i$ to obtain
+\begin{equation}
+c\rho V_i\Delta T_i=(\dot{q}''_iA_i-\dot{q}''_{i-1}A_{i-1})\Dt
+=
+\left[
+\left(\frac{T_{i+1}-T_i}{\Dr}\right)A_i-\left(\frac{T_{i}-T_{i-1}}{\Dr}\right)A_{i-1}
+\right]
+\label{eq:cylheat2a}
+\end{equation}
+
+\noindent The volume of the $i$'th control volume is given by
+\begin{eqnarray*}
+V_i&=&\pi(r_i^2-r_{i-1}^2)L
+=\pi\Dr(r_i+r_{i-1})L
+=2\pi\Dr(i-0.5) L
+\label{eq:cylheat3}
+\end{eqnarray*}
+
+\noindent The area, $A_i$, of the outer boundary surface of the $i$'th
+control volume is given by
+\begin{eqnarray*}
+A_i=2\pi r_iL
+=2\pi \Dr iL
+\label{eq:cylheat4}
+\end{eqnarray*}
+
+\noindent Using the ratio $A_i/V_i=i/(\Dr(i-0.5))$
+and $\Delta T_i=\Ti-T_i^n$,
+equation (\ref{eq:cylheat2a}) may be simplified to
+\begin{eqnarray}
+\Ti-T_i^n&=&\frac{\Dt}{\rho c}
+\left[
+\left(\frac{\Tipo-\Ti}{\Dr}\right)
+\frac{A_i}{V_i}-
+\left(\frac{\Ti-\Timo}{\Dr}\right)
+\left(\frac{A_{i-1}}{V_i}\right)
+\right]
+\nonumber\\
+&=&\frac{\Dt}{\Dr^2}\frac{k}{\rho c}
+\left[
+\left(\Tipo-\Ti\right)
+\left(\frac{i}{i-0.5}\right)-
+\left(\Ti-\Timo\right)
+\left(\frac{i-1}{i-0.5}\right)
+\right]\nonumber\\
+&=&\frac{\alpha\Dt}{\Dr^2(i-0.5)}
+\left[
+\left(\Tipo-\Ti\right)
+i-
+\left(\Ti-\Timo\right)
+(i-1)
+\right]
+\label{eq:cylheat6}
+\end{eqnarray}
+
+\noindent Defining $C_i$ and $D_i$ as
+\begin{eqnarray*}
+C_i&=&\frac{\alpha\Dt}{\Dr^2}\left(\frac{i-1}{i-0.5}\right)\\
+D_i&=&\frac{\alpha\Dt}{\Dr^2}\left(\frac{i}{i-0.5}\right),\\
+\end{eqnarray*}
+\noindent noting that $C_i+D_i=2\frac{\alpha\Dt}{\Dr^2}$
+for $i=1\cdots N-1$ and
+substituting into (\ref{eq:cylheat6}) results in
+
+\begin{equation}
+-C_i\Timo+(1+2\frac{\alpha\Dt}{\Dr^2})\Ti-D_i\Tipo=T_i^n
+\label{eq:cylheat8}
+\end{equation}
+
+\noindent The energy balance for the $N$'th control volume may be obtained
+by substituting $\Dr q''_{ext}/k$ for $\Tipo-\Ti$ in
+equation (\ref{eq:cylheat6}) and substituting $C_N$ and $D_N$ 
+to obtain
+
+\begin{equation}
+-C_NT_{N-1}^{n+1}+(1+C_N)T_N^{n+1}=T_N^n+D_N\frac{\Dr}{k}q''_{ext}
+\label{eq:cylheat10}
+\end{equation}
+
+Equations (\ref{eq:cylheat8}) and (\ref{eq:cylheat10}) represent a
+ tri-diagonal system of equations which when written in matrix form
+are given by 
+\begin{equation}
+\left(
+\begin{array}{ccccccccc}
+  1+D_1 & -D_1 &  &  &  &  &  &  &  \\
+   &  &  &  &  &  &  &  &  \\
+   &  &\ddots  &  &  &  &  &  &  \\
+   &  &  &  &  &  &  &  &  \\
+   &  &  & -C_i &1+2\frac{\alpha\Dt}{\Dr^2}  &D_i  &  &  &  \\
+   &  &  &  &  &  &  &  &  \\
+   &  &  &  &  & \ddots &  &  &  \\
+   &  &  &  &  &  &  &  &  \\
+   &  &  &  &  &  &-C_N  &1+C_N  &
+\end{array}
+\right)
+\left(
+  \begin{array}{c}
+    T_1^{n+1}\\
+    T_2^{n+1}\\
+    \vdots\\
+    T_{i-1}^{n+1} \\
+    T_i^{n+1} \\
+    T_{i+1}^{n+1}\\
+    \vdots\\
+    T_{N-1}^{n+1}\\
+    T_N^{n+1}
+  \end{array}
+\right)
+=
+\left(
+  \begin{array}{c}
+    T_1^{n}\\
+    T_2^{n}\\
+    \vdots\\
+    T_{i-1}^{n} \\
+    T_i^{n} \\
+    T_{i+1}^{n}\\
+    \vdots\\
+    T_{N-1}^{n}\\
+    T_N^{n}+D_N\frac{\Dr}{k}\dot{q}''_{ext}
+  \end{array}
+\right)
+\end{equation}
+
+and are used to
+advance the cable's temperature profile by $\Delta t$.
+
+\newpage
 
 \subsubsection{Convection}
 
-In general, convective heat transfer, $q\dprime$, across a surface of area $A_S$, is defined as
+In general, convective heat transfer, $q\dprime$, across a surface of area
+$A_S$, is defined as
 
 \be q\dprime = h A_S \brackets{T_g - T_s} \ee
 

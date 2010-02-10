@@ -53,9 +53,8 @@ C*** INITIALIZE NON-DIMENSIONAL TARGET NODE LOCATIONS THE FIRST TIME TRHEAT IS C
         DO 20 I = 1, NNN
           SUM = SUM + TMP(I)
    20   CONTINUE
-        XFACT = 1.0D0/SUM
         DO 30 I = 1, NNN
-          TMP(I) = TMP(I)*XFACT
+          TMP(I) = TMP(I)/SUM
    30   CONTINUE
       ENDIF
 
@@ -86,24 +85,25 @@ C*** COMPUTE THE PDE RESIDUAL
             ELSE
              IWBOUND = 4
            ENDIF
-           DO 60 I = 1, TRGTNUM - 1
-             WALLDX(I) = XL*TMP(I)
-   60      CONTINUE
            NMNODE(1) = TRGTNUM
            NMNODE(2) = TRGTNUM - 2
            NSLAB = 1
            IF(IIEQ.EQ.PDE)THEN
+             DO 60 I = 1, TRGTNUM - 1
+               WALLDX(I) = XL*TMP(I)
+   60        CONTINUE
+   
              CALL CNDUCT(UPDATE,TEMPIN,TEMPOUT,DT,WK,WSPEC,WRHO,
      +        XXTARG(TRGTEMPF,ITARG),WALLDX,NMNODE,NSLAB,
      +        WFLUXIN,WFLUXOUT,IWBOUND,TGRAD,TDERV)
-           ELSE
-             CALL CYLCNDUCT(UPDATE,TEMPIN,TEMPOUT,DT,WK,WSPEC,WRHO,
-     +        XXTARG(TRGTEMPF,ITARG),WALLDX,NMNODE,NSLAB,
-     +        WFLUXIN,WFLUXOUT,IWBOUND,TGRAD,TDERV)
-           ENDIF
-           IF(IIMETH.EQ.MPLICIT)THEN
-             IEQ = IZTARG(ITARG)
-             DELTA(NOFTT+IEQ) = XXTARG(TRGNFLUXF,ITARG)+WK(1)*TGRAD(1)
+             IF(IIMETH.EQ.MPLICIT)THEN
+               IEQ = IZTARG(ITARG)
+               DELTA(NOFTT+IEQ) = XXTARG(TRGNFLUXF,ITARG)+WK(1)*TGRAD(1)
+             ENDIF
+           ELSE IF(IIEQ.EQ.CYL)THEN
+             WRHO(1) = 2538.0
+             CALL CYLCNDUCT(XXTARG(TRGTEMPF,ITARG),NMNODE(1),
+     +                      WFLUXIN,DT,WRHO(1),XL)
            ENDIF
 
 C*** COMPUTE THE ODE RESIDUAL

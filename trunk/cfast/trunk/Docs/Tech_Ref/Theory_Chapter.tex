@@ -1021,15 +1021,15 @@ When solved explicitly, equation (\ref{eq:Target_PDE}) is solved as a stand-alon
 \newcommand{\Ti}{T_{i}^{n+1}}
 \newcommand{\Timo}{T_{i-1}^{n+1}}
 
-This section describes a CFAST implementation of a model for 
+This section describes a CFAST implementation of a model for
 predicting electrical cable failure first proposed
-by Andersson and Van Hees \cite{Andersson:2005} 
+by Andersson and Van Hees Ref.~\cite{Andersson:2005}
 and later implemented by McGrattan
-in FDS\cite{CAROLFIRE} .  This model uses a simple one-dimensional heat 
+in FDS~\cite{CAROLFIRE} .  This model uses a simple one-dimensional heat
 transfer calculation, under the assumption that the cable can
-be treated as a homogenous cylinder\cite{Andersson:2005}.
+be treated as a homogenous cylinder~\cite{Andersson:2005}.
 
-The heat flux used to generate the heat transfer in the cable is provided 
+The heat flux used to generate the heat transfer in the cable is provided
 by CFAST which models the thermal environment of the compartment where
 the cable is located.  In most realistic fire  scenarios, the heat flux
 to the cable is not axially-symmetric.  CFAST therefore uses the maximum
@@ -1054,7 +1054,7 @@ The energy balance for the outermost or $N$'th control volume is similar
 c\rho V_N\Delta T_N=(\dot{q}_{ext}''A_N-\dot{q}_{N-1})\Dt
 \label{eq:cylheat2}
 \end{equation}
-with $\dot{q}_{ext}''A_N$ specified as a boundary condition, 
+with $\dot{q}_{ext}''A_N$ used to specify a boundary condition,
 the combined net radiative and convective heat flux incident
 on the the cylindrical target's outer surface.
 
@@ -1072,7 +1072,7 @@ Fourier's law and noting that $\dot{q}_i=\dot{q}''_iA_i$ to obtain
 c\rho V_i\Delta T_i=(\dot{q}''_iA_i-\dot{q}''_{i-1}A_{i-1})\Dt
 =
 \left[
-\left(\frac{T_{i+1}-T_i}{\Dr}\right)A_i-\left(\frac{T_{i}-T_{i-1}}{\Dr}\right)A_{i-1}
+k\left(\frac{T_{i+1}-T_i}{\Dr}\right)A_i-k\left(\frac{T_{i}-T_{i-1}}{\Dr}\right)A_{i-1}
 \right]
 \label{eq:cylheat2a}
 \end{equation}
@@ -1122,7 +1122,7 @@ i-
 \label{eq:cylheat6}
 \end{eqnarray}
 
-\noindent Defining $C_i$ and $D_i$ as
+\noindent where $\alpha-k/(\rho c)$.  Defining $C_i$ and $D_i$ as
 \begin{eqnarray*}
 C_i&=&\frac{\alpha\Dt}{\Dr^2}\left(\frac{i-1}{i-0.5}\right)\\
 D_i&=&\frac{\alpha\Dt}{\Dr^2}\left(\frac{i}{i-0.5}\right),\\
@@ -1136,9 +1136,15 @@ substituting into (\ref{eq:cylheat6}) results in
 \label{eq:cylheat8}
 \end{equation}
 
-\noindent The energy balance for the $N$'th control volume may be obtained
-by substituting $\Dr q''_{ext}/k$ for $\Tipo-\Ti$ in
-equation (\ref{eq:cylheat6}) and substituting $C_N$ and $D_N$ 
+\noindent The energy balance for the $N$'th (outermost) control volume may
+be obtained by substituting $\Dr q''_{ext}/k$ for $\Tipo-\Ti$ in
+equation (\ref{eq:cylheat6}) to obtain
+\begin{eqnarray*}
+T_N^{n+1}-T_N^n=\frac{\alpha\Dt}{\Dr^2(N-0.5)}
+\left[\frac{\Dr\dot{q}''_{ext}}{k}N-(T_N^{n+1}-T_{N-1}^{n+1})(N-1)\right]
+\end{eqnarray*}
+
+\noindent then substituting $C_N$ and $D_N$ and simplifying
 to obtain
 
 \begin{equation}
@@ -1147,8 +1153,8 @@ to obtain
 \end{equation}
 
 Equations (\ref{eq:cylheat8}) and (\ref{eq:cylheat10}) represent a
- tri-diagonal system of equations which when written in matrix form
-are given by 
+ tri-diagonal linear system of equations which when written in matrix form
+are given by
 \begin{equation}
 \left(
 \begin{array}{ccccccccc}

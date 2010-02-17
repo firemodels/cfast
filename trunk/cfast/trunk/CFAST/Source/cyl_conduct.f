@@ -94,6 +94,8 @@ C*** BACKWARD SUBSTITION
       DO I = 1, NX
         WTEMP(I) = TNEW(I)
       END DO
+C      write(6,101)(wtemp(i),i=50,41,-1)
+c  101 format(10(e11.4,1x))      
 
       RETURN
       END

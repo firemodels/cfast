@@ -280,9 +280,14 @@
           DO 20 ITARG = 1, NTARG-NM1
             IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
               TGTEMP = TGTARG(ITARG)
-			  TTTEMP = XXTARG(TRGTEMPF,ITARG)
-              ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
-              TCTEMP = XXTARG(ITCTEMP,ITARG)
+              if (IXTARG(TRGEQ,ITARG).eq.'CYLPDE') then
+                tttemp = xxtarg(trgtempb,itarg)
+                tctemp = xxtarg(trgtempf,itarg)
+              else
+			    TTTEMP = XXTARG(TRGTEMPF,ITARG)
+                ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
+                TCTEMP = XXTARG(ITCTEMP,ITARG)
+              end if
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
 			  if (validation) then

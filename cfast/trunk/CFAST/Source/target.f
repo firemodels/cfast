@@ -101,9 +101,8 @@ C*** COMPUTE THE PDE RESIDUAL
                DELTA(NOFTT+IEQ) = XXTARG(TRGNFLUXF,ITARG)+WK(1)*TGRAD(1)
              ENDIF
            ELSE IF(IIEQ.EQ.CYLPDE)THEN
-             WRHO(1) = 2538.0
              CALL CYLCNDUCT(XXTARG(TRGTEMPF,ITARG),NMNODE(1),
-     +                      WFLUXIN,DT,WRHO(1),XL)
+     +                      WFLUXIN,DT,WK(1),WRHO(1),WSPEC(1),XL)
            ENDIF
 
 C*** COMPUTE THE ODE RESIDUAL

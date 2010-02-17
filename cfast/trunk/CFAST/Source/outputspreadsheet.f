@@ -280,7 +280,10 @@
           DO 20 ITARG = 1, NTARG-NM1
             IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
               TGTEMP = TGTARG(ITARG)
-              if (IXTARG(TRGEQ,ITARG).eq.'CYLPDE') then
+              if (stime.ge.800.) then
+                continue
+              end if
+              if (IXTARG(TRGEQ,ITARG).eq.CYLPDE) then
                 tttemp = xxtarg(trgtempb,itarg)
                 tctemp = xxtarg(trgtempf,itarg)
               else

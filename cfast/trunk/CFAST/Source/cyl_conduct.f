@@ -1,3 +1,33 @@
+      SUBROUTINE GETCYLTEMP(X,WTEMP,NX,RAD,TEMPX)
+      IMPLICIT NONE
+      DOUBLE PRECISION, INTENT(IN) :: X, RAD
+      INTEGER, INTENT(IN) :: NX
+      DOUBLE PRECISION, INTENT(IN), DIMENSION(NX) :: WTEMP
+      DOUBLE PRECISION, INTENT(OUT) :: TEMPX
+      
+      DOUBLE PRECISION :: DR, R, RINT, FACTOR
+      INTEGER :: LEFT, RIGHT
+      
+      DR = RAD/NX
+      R = RAD-X
+      IF(R.LE.DR/2.0)THEN
+        TEMPX = WTEMP(1)
+        RETURN
+      ENDIF
+      IF(R.GE.RAD-DR/2.0)THEN
+        TEMPX = WTEMP(NX)
+        RETURN
+      ENDIF
+      RINT = R/DR-0.5
+      LEFT = INT(RINT)+1
+      LEFT=MAX(MIN(LEFT,NX),1)
+      RIGHT = LEFT + 1
+      RIGHT=MAX(MIN(RIGHT,NX),1)
+      FACTOR = (RINT-INT(RINT))
+      TEMPX = FACTOR*WTEMP(RIGHT) + (1.0-FACTOR)*WTEMP(LEFT)
+      
+      END SUBROUTINE GETCYLTEMP
+      
       SUBROUTINE CYLCNDUCT(WTEMP,NX,WFLUXIN,DT,WK,WRHO,WSPEC,DIAM)
 C
 C--------------------------------- NIST/BFRL ---------------------------------

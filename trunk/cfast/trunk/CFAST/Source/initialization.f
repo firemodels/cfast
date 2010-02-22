@@ -1392,6 +1392,10 @@ C*** initialize inter-compartment heat transfer fractions
         end do
       end do
 
+C     initialize number of furnace temperature nodes
+      
+      nfurn=0
+
       RETURN
       END
 

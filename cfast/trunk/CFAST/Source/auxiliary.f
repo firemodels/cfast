@@ -853,7 +853,7 @@ C
       END
 	logical function countargs (label,tocount,lcarray,numc,nret)
 
-!	Count the number of arguements on the input line. 
+!	Count the number of arguments on the input line. 
 !	Should be tocount. If not, then return an error (logical false)
 
       include "precis.fi"

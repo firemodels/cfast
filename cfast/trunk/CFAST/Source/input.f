@@ -636,9 +636,9 @@ C
       include "opt.fi"
       include "vents.fi"
       include "iofiles77.fi"
-
+      include "wnodes.fi"
      
-      PARAMETER (MAXIN = 36)
+      PARAMETER (MAXIN = 37)
       LOGICAL LFUPDAT, eof, countargs
       INTEGER OBPNT,compartment,lrowcount,xnumr,xnumc,nx, i1, i2,
      + fannumber, iecfrom, iecto, mid
@@ -660,7 +660,8 @@ C
      +        'TARGE', 'TARG',  'HALL',  'ROOMA', 
      +        'ROOMH', 'DTCHE', 'SETP',  'HHEAT',
      +        'VHEAT', 'MAINF', 'COMPA', 'MVENT',
-     +        'EVENT', 'HEATF', 'DJIGN', 'CHEMI'/
+     +        'EVENT', 'HEATF', 'DJIGN', 'CHEMI',
+     +        'FURN'/
 
 !	Start with a clean slate
       XX0 = 0.0D0
@@ -707,7 +708,7 @@ C
      +             910, 42,940,950,
      +             960,970,990,1010,
      +             825,240,470,660,
-     +			 552,1240,250,260), I
+     +			 552,1240,250,260,1100), I
         END IF
    50 CONTINUE
 
@@ -1877,6 +1878,16 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 		 ZZHTFRAC(IFROM,ITO) = FRAC
  1011 CONTINUE
       GO TO 810
+
+!	FURN - no fire, heat walls according to a prescribed time temperature curve
+
+ 1100 continue
+      nfurn=lrarray(1)+0.5
+      do i = 1, nfurn
+        furn_time(i)=lrarray(2*i-1)
+        furn_temp(i)=lrarray(2*i)
+      end do
+      go to 810      
 
 !	HEATF Special fire - heat source only; no mass
 

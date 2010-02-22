@@ -2087,6 +2087,13 @@ c
               ZZWTEMP(IROOM,IWALL,1) = ZZTEMP(IROOM,ILAY)
             ENDIF
   140     CONTINUE
+          if(nfurn.gt.0)then
+            call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
+            do iwall=1,nwall
+              zzwtemp(iroom,iwall,1)=wtemp
+              zzwtemp(iroom,iwall,2)=wtemp
+            end do
+          endif
   150   CONTINUE
 
 C*** DEFINE SPECIES amounts

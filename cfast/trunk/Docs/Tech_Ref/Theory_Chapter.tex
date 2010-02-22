@@ -1007,14 +1007,6 @@ When solved explicitly, equation (\ref{eq:Target_PDE}) is solved as a stand-alon
 \newpage
 {\bf Computing Transient Cable Target Heat Transfer:}
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/cylheat}\\
-\end{center}
-\caption{Schematic of a control volume for heat transfer in a cylindrical object.}
- \label{fig:cylheat}
-\end{figure}
-
 \newcommand{\Dt}{\Delta t}
 \newcommand{\Dr}{\Delta r}
 \newcommand{\Tipo}{T_{i+1}^{n+1}}
@@ -1058,6 +1050,13 @@ with $\dot{q}_{ext}''A_N$ used to specify a boundary condition,
 the combined net radiative and convective heat flux incident
 on the the cylindrical target's outer surface.
 
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=5.0in]{FIGURES/Theory/cylheat}\\
+\end{center}
+\caption{Schematic of a control volume for heat transfer in a cylindrical object.}
+ \label{fig:cylheat}
+\end{figure}
 As illustrated in Figure \ref{fig:cylheat}, the $i$'th control volume has
 volume $V_i$, temperature $T_i$ and heat flow at the inner
 and outer boundaries of $\dot{q}_{i-1}$ and $\dot{q}_i$ respectively.
@@ -1196,9 +1195,10 @@ are given by
     T_N^{n}+D_N\frac{\Dr}{k}\dot{q}''_{ext}
   \end{array}
 \right)
+\label{eq:matrix}
 \end{equation}
 
-and are used to
+\noindent Equation (\ref{eq:matrix}) is then used to
 advance the cable's temperature profile by $\Delta t$.
 
 \newpage

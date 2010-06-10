@@ -58,18 +58,25 @@ C
 
 C*** DECLARE LOCAL VARIABLES
 
-      INTEGER :: NN, I, II, NR
+      INTEGER :: NN, I, II, NR, NITER, ITER
       PARAMETER (NN = 50)
       DOUBLE PRECISION, DIMENSION(NN) :: AIM1, AI, AIP1, TNEW
       DOUBLE PRECISION, DIMENSION(NN) :: CC, DD
-      DOUBLE PRECISION :: ALPHA, DR, FACTOR
+      DOUBLE PRECISION :: ALPHA, DR, FACTOR, DT_ITER
       
       
       NR = NN
       DR = (DIAM/2.0D0)/NR
       ALPHA = WK / (WSPEC*WRHO)
-      FACTOR = 2.0*ALPHA*DT/DR**2
+      DT_ITER = MIN(DT,0.1)
+      NITER = DT/DT_ITER + 0.5
+      DT_ITER=DT/NITER
+      FACTOR = 2.0*ALPHA*DT_ITER/DR**2
+      IF(NITER.GT.1)THEN
+        WRITE(6,*)" NITER=",NITER,DT_ITER,DT
+      ENDIF
 
+      DO ITER=1,NITER     
       DO I = 1, NR
         CC(I)=FACTOR*(I-1.0D0)/(2.0D0*I-1.0D0)
         DD(I)=FACTOR*(I-0.0D0)/(2.0D0*I-1.0D0)
@@ -77,7 +84,7 @@ C*** DECLARE LOCAL VARIABLES
         
       DO I = 1, NR-1
         AIM1(I) = -CC(I)
-        AI(I) = 1.0D0 + 2.0*ALPHA*DT/DR**2
+        AI(I) = 1.0D0 + FACTOR
         AIP1(I) = -DD(I)
         TNEW(I) = WTEMP(I)
       END DO
@@ -122,9 +129,7 @@ C*** BACKWARD SUBSTITION
       DO I = 1, NX
         WTEMP(I) = TNEW(I)
       END DO
-C      write(6,101)(wtemp(i),i=50,41,-1)
-c  101 format(10(e11.4,1x))      
-
+      end do
       RETURN
       END
       subroutine get_flux(t,temp_cable,temp_amb,temp_shroud,flux_out)

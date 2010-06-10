@@ -27,6 +27,7 @@ C
       include "cfast.fi"
       include "fltarget.fi"
       include "cenviro.fi"
+      
       DIMENSION TMP(TRGTNUM), WALLDX(TRGTNUM), NMNODE(2), DELTA(*)
       DIMENSION XPSOLVE(*), TGRAD(2)
       LOGICAL FIRST
@@ -103,6 +104,8 @@ C*** COMPUTE THE PDE RESIDUAL
            ELSE IF(IIEQ.EQ.CYLPDE)THEN
              CALL CYLCNDUCT(XXTARG(TRGTEMPF,ITARG),NMNODE(1),
      +                      WFLUXIN,DT,WK(1),WRHO(1),WSPEC(1),XL)
+             write(33,61)stime,xxtarg(trgtempf,itarg),wfluxin
+   61        format(" stime,",e13.6,",",e13.6,",",e13.6)            
            ENDIF
 
 C*** COMPUTE THE ODE RESIDUAL
@@ -272,6 +275,7 @@ C
       include "cenviro.fi"
       include "fltarget.fi"
       include "objects2.fi"
+      include "wnodes.fi"
 
       DIMENSION MAP10(10), SVECT(3), FLUX(2), DFLUX(2)
       DIMENSION TTARG(2),QWTSUM(2),AWALLSUM(2),QGASSUM(2)
@@ -326,11 +330,19 @@ C*** COMPUTE RADIATIVE FLUX FROM FIRE
 C*** COMPUTE PORTION OF PATH IN LOWER AND UPPER LAYERS
 
           CALL GETYLYU(ZFIRE,ZLAY,ZTARG,S,ZL,ZU)
-          ABSL = ABSORB(IROOM, LOWER)
-          ABSU = ABSORB(IROOM, UPPER)
-          TAUL = EXP(-ABSL*ZL)
-          TAUU = EXP(-ABSU*ZU)
-          QFIRE = XFIRE(IFIRE,8)
+          IF(nfurn.gt.0)THEN
+            ABSL=0.0
+            ABSU=0.0
+            TAUL = 1.0D0
+            TAUU = 1.0D0
+            QFIRE = 0.0D0
+           ELSE
+            ABSL = ABSORB(IROOM, LOWER)
+            ABSU = ABSORB(IROOM, UPPER)
+            TAUL = EXP(-ABSL*ZL)
+            TAUU = EXP(-ABSU*ZU)
+            QFIRE = XFIRE(IFIRE,8)
+          ENDIF
           IF(S.NE.0.0D0)THEN
             QFT = QFIRE*ABS(COSANG)*TAUU*TAUL/(4.0D0*PI*S**2)
            ELSE
@@ -359,7 +371,11 @@ C    IS INTERIOR TO THE ROOM
           QGASSUM(I) = 0.0D0
   215   CONTINUE
         DO 220 IWALL = 1, 10
-          QOUT = RDQOUT(MAP10(IWALL),IROOM)
+          if(nfurn.gt.0)then
+             qout=qfurnout
+            ELSE
+             QOUT = RDQOUT(MAP10(IWALL),IROOM)
+          endif
           SVECT(1) = XXTARG(TRGCENX,ITARG) - ZZWCEN(IROOM,IWALL,1)
           SVECT(2) = XXTARG(TRGCENY,ITARG) - ZZWCEN(IROOM,IWALL,2)
           SVECT(3) = XXTARG(TRGCENZ,ITARG) - ZZWCEN(IROOM,IWALL,3)

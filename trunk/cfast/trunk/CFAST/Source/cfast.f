@@ -42,6 +42,8 @@
 
 !     initialize the basic memory configuration
 
+      open(unit=33,file="test.csv")
+
       call initmm
       call initob
       call readop     
@@ -1626,6 +1628,13 @@ C     ORDER OF VARIABLES IS DEFINED IN THE ROUTINE OFFSET
       DIMENSION PDIF(*)
       INTEGER FRMASK(mxccv)
 
+      if(nfurn.gt.0)then
+        call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
+        qfurnout=5.67*(273.3+wtemp)**4/10**8
+        write(6,141)stime,wtemp,qfurnout
+  141   format(" wall temps",3(e13.6,1x))            
+      endif
+
       XX0 = 0.0D0
       XX2 = 2.0D0
       XX1 = 1.0D0
@@ -2087,13 +2096,6 @@ c
               ZZWTEMP(IROOM,IWALL,1) = ZZTEMP(IROOM,ILAY)
             ENDIF
   140     CONTINUE
-          if(nfurn.gt.0)then
-            call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
-            do iwall=1,nwall
-              zzwtemp(iroom,iwall,1)=wtemp
-              zzwtemp(iroom,iwall,2)=wtemp
-            end do
-          endif
   150   CONTINUE
 
 C*** DEFINE SPECIES amounts

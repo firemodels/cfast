@@ -3,7 +3,7 @@ VERSN,6,CFAST Simulation
 !!Environmental Keywords
 !!
 FURN, 3, 0.0, 23.0, 70.0, 480.0, 810.0, 480.0
-TIMES,900,-50,0,10,10
+TIMES,900,10,0,10,10
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
 CJET,WALLS
@@ -24,4 +24,4 @@ OBJECT,kiosk,1,1.8,1.2,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!
-TARGET,1,1.8,1.2,0,0,0,1,Cable,EXPLICIT,CYL
+TARGET,1,1.8,1.2,0,0,0,1,Cable,EXPLICIT,CYLPDE

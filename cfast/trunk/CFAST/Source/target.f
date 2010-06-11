@@ -104,8 +104,8 @@ C*** COMPUTE THE PDE RESIDUAL
            ELSE IF(IIEQ.EQ.CYLPDE)THEN
              CALL CYLCNDUCT(XXTARG(TRGTEMPF,ITARG),NMNODE(1),
      +                      WFLUXIN,DT,WK(1),WRHO(1),WSPEC(1),XL)
-             write(33,61)stime,xxtarg(trgtempf,itarg),wfluxin
-   61        format(" stime,",e13.6,",",e13.6,",",e13.6)            
+!             write(33,61)stime,xxtarg(trgtempf,itarg),wfluxin
+!   61        format(" stime,",e13.6,",",e13.6,",",e13.6)            
            ENDIF
 
 C*** COMPUTE THE ODE RESIDUAL

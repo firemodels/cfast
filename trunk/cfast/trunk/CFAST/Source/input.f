@@ -1884,8 +1884,8 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
  1100 continue
       nfurn=lrarray(1)+0.5
       do i = 1, nfurn
-        furn_time(i)=lrarray(2*i-1)
-        furn_temp(i)=lrarray(2*i)
+        furn_time(i)=lrarray(2*i)
+        furn_temp(i)=lrarray(2*i+1)
       end do
       go to 810      
 

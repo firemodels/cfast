@@ -375,7 +375,7 @@ C    IS INTERIOR TO THE ROOM
              qout=qfurnout
             ELSE
              QOUT = RDQOUT(MAP10(IWALL),IROOM)
-          endif
+          ENDIF
           SVECT(1) = XXTARG(TRGCENX,ITARG) - ZZWCEN(IROOM,IWALL,1)
           SVECT(2) = XXTARG(TRGCENY,ITARG) - ZZWCEN(IROOM,IWALL,2)
           SVECT(3) = XXTARG(TRGCENZ,ITARG) - ZZWCEN(IROOM,IWALL,3)

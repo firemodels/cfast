@@ -42,7 +42,7 @@
 
 !     initialize the basic memory configuration
 
-      !open(unit=33,file="test.csv")
+!      open(unit=33,file="test.csv")
 
       call initmm
       call initob
@@ -1631,8 +1631,8 @@ C     ORDER OF VARIABLES IS DEFINED IN THE ROUTINE OFFSET
       if(nfurn.gt.0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
         qfurnout=5.67*(273.3+wtemp)**4/10**8
-        write(6,141)stime,wtemp,qfurnout
-  141   format(" wall temps",3(e13.6,1x))            
+!        write(33,141)stime,wtemp,qfurnout
+!  141   format(" wall temp/flux,",e13.6,",",e13.6,",",e13.6)            
       endif
 
       XX0 = 0.0D0

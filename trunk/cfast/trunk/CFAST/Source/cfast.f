@@ -42,7 +42,7 @@
 
 !     initialize the basic memory configuration
 
-      open(unit=33,file="test.csv")
+      !open(unit=33,file="test.csv")
 
       call initmm
       call initob

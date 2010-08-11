@@ -2480,10 +2480,8 @@ C
      +      INPUT(1))
       END IF
       IF (INPUT(1).GT.MXDMP) THEN
-#ifndef pp_dll
          CALL XERROR('DREADIN - overwrite input buffer; fatal error',
      .               0,1,1)
-#endif
          IERR = 7
          RETURN
       END IF
@@ -2493,7 +2491,6 @@ C
    10   CONTINUE
       END IF
       CALL UNPACK(INPUT,OUTPUT)
-#ifdef pp_double
       IF (CNVRT) THEN
         CALL LENOCO(((IVERS0-1800)/10),ITOT,IFLT,IINT)
         DO 20 I = 1, IFLT / 2
@@ -2502,7 +2499,6 @@ C
           OUTPUT(2*I) = ITEMP
    20   CONTINUE
       END IF
-#endif
    30 IF (IOS.NE.0) THEN
         IERR = IOS
       ELSE

@@ -4,7 +4,7 @@
 		<Platform Name="Win32"/></Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32" OutputDirectory="..\bin" IntermediateDirectory="..\Temp" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" AdditionalIncludeDirectories="..\CFAST\Include" PreprocessorDefinitions="pp_dll=false;pp_ibmpc=true;pp_unix=false;pp_mac=false;pp_double=true" WarnTruncateSource="true" LocalVariableStorage="localStorageSave" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" AdditionalIncludeDirectories="..\CFAST\Include" PreprocessorDefinitions="pp_ibmpc=true" WarnTruncateSource="true" LocalVariableStorage="localStorageSave" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
 				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/CFAST.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" ProgramDatabaseFile="$(OUTDIR)/CFAST6.0.6.51220.pdb" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" HeaderFileName="$(InputName).h" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>

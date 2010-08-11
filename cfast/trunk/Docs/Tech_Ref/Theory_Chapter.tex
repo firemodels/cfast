@@ -610,7 +610,7 @@ The approach to calculating the flow field is of some interest.  The flow calcul
 
 \begin{figure}[t]
 \begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/Flow_Notation}\\
+\includegraphics[width=6.0in]{FIGURES/Theory/Flow_Notation}\\
 \end{center}
 \caption{Geometry and notation for horizontal flow vents in a two-zone fire model.}
  \label{fig:Flow_Notation}
@@ -640,7 +640,7 @@ Equation \ref{eq:massflowone} can be simplified to
 
 \noindent where $x = \sqrt{|P_t|}$, $y = \sqrt{|P_b|}$, $A_{slab}=w(t-b)$ the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
 
-A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in figure \ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an extended point source.  The estimate for the point source extension is given by Cetegen et al. \cite{Cetegen:1984}.  This virtual point source is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
+A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in figure \ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an virtual origin.  The estimate for the virtual origin is given by Cetegen et al. \cite{Cetegen:1984}.  This  is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
 
 \begin{figure}[t]
 \begin{center}
@@ -651,20 +651,20 @@ A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  
 \end{figure}
 
 \be Q_{f,eq} = c_p \brackets{T_1-T_4} \dm_{13} \ee
-where $Q_{f,eq}$ is the heat release rate of the doorway fire. The concept of the virtual source is that the enthalpy flux from the virtual point source should equal the actual enthalpy flux in the door jet at the point of exit from the vent using the same prescription.  Thus the entrainment is calculated the same way as was done for a normal plume.  The reduced height of the plume, $z_p$, is
+where $Q_{f,eq}$ is the heat release rate of the doorway fire. The concept of the virtual origin is that the enthalpy flux from the virtual point source should equal the actual enthalpy flux in the door jet at the point of exit from the vent using the same prescription.  Thus the entrainment is calculated the same way as was done for a normal plume.  The reduced height of the plume, $z_p$, (in units of m/kW$^{2/5}$) is
 
 \be z_p = \frac{z_{13}}{Q_{f,eq}^{2/5}}+ v_p \ee
 where $v_p$ the virtual point source, is defined by inverting the entrainment process to yield
 
 \begin{eqnarray}
-v_P = \brackets{\frac{90.9 \dm}{Q_{f,eq}}}^{1.76} & 0.00 < v_p \leq 0.08 \nonumber \\
-v_P = \brackets{\frac{38.5 \dm}{Q_{f,eq}}}^{1.001} & 0.08 < v_p \leq 0.20 \label{eq:McCaffreyPlume} \\
-v_P = \brackets{\frac{8.10 \dm}{Q_{f,eq}}}^{0.528} & 0.20 < v_p \nonumber \nopagebreak
+v_P = \brackets{\frac{8.10 \dm}{Q_{f,eq}}}^{0.528} &   0 < \brackets{\frac{\dm}{Q_{f,eq}}} < 0.0061 \nonumber \\
+v_P = \brackets{\frac{38.5 \dm}{Q_{f,eq}}}^{1.1001} & 0.0061 < \brackets{\frac{\dm}{Q_{f,eq}}} \leq 0.026 \label{eq:McCaffreyPlume} \\
+ v_P = \brackets{\frac{90.9 \dm}{Q_{f,eq}}}^{1.76} & \brackets{\frac{\dm}{Q_{f,eq}}} > 0.026  \nonumber   \nopagebreak
 \end{eqnarray}
 
 Although outside of the normal range of validity of the plume model, a level of agreement with experiment is apparent (section 6 includes discussion of validation experiments for the plume model).  Since a door jet forms a flat plume whereas a normal fire plume will be approximately circular, strong agreement is not expected.
 
-The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
+The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
 
 \subsubsection{Vertical Flow Through Horizontal Vents}
 

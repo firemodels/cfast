@@ -1809,7 +1809,7 @@ C     COMMAND LINE ARGUMENTS
 	IF (OPTION('I').NE.0) INITIALIZEONLY = .TRUE.
 	IF (OPTION('D').NE.0) DEBUGGING = .TRUE.
 	if (option('T').ne.0) trace = .true.
-	if (option('V').ne.0) validation = .true.
+	if (option('V').ne.0) validate = .true.
       LOGERR = 3
 
       IF (OPTION('F').ne.0.and.option('C').ne.0) stop 107

@@ -123,7 +123,6 @@
 
       include "cparams.fi"
       include "cshell.fi"
-      include "cplotd.fi"
 
       data thrmfile/'thermal'/,  
 
@@ -133,17 +132,9 @@
      .  initializeonly/.false./,
      . outputformat /0/, IOFILO/6/,IOFILI/1/, LOGERR/3/,
      . trace/.false./,
-     . validation/.false./
+     . validate/.false./
     
      . VERSION/6200/
-! 
-      DATA IDEF /1/, ITODEF /2/, LAYDEF /1/, ISPDEF /3/, ICHRS /4/,
-     . IDEVO /6/, IDEVC /1/, SETAXP /.FALSE./, OPENPC /.FALSE./,
-     . LSABCI /999/, LAFRAM /1/, IDTYPE /2/, SETPLT /.FALSE./,
-     . WCOLOR/.TRUE./, WDASH/.TRUE./, SETCFP/.FALSE./
-      
-      DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC',
-     . 'H2O', 'OD', 'CT', 'TS'/
        
       END
 

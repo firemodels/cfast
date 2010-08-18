@@ -29,7 +29,6 @@
 		<File RelativePath="Include\cfin.fi"/>
 		<File RelativePath="Include\cfio.fi"/>
 		<File RelativePath="Include\cparams.fi"/>
-		<File RelativePath="Include\cplotd.fi"/>
 		<File RelativePath="Include\cshell.fi"/>
 		<File RelativePath="Include\dervs.fi"/>
 		<File RelativePath="Include\dsize.fi"/>

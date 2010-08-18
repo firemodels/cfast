@@ -4,24 +4,14 @@ C     AND IS KEPT IN THE MAIN COMMON BLOCK.  RUNDAT IS COPIED TO MPSDAT
 C     AS SOON AS THE MODEL KERNEL IS STARTED. DONE IN INITFS AND CFAST BODY.
 !     trace determines the type of output (print file) for mechanical ventilation - current or total
 
-      LOGICAL HEADER, NOKBD,
-     +    initializeonly, debugging, trace, validation
-      INTEGER VERSION, RUNDAT(3),
-     +    IOFILI, IOFILO,
-     +    outputformat
+      LOGICAL HEADER, NOKBD,initializeonly, debugging, trace, validate
+      INTEGER VERSION, RUNDAT(3), IOFILI, IOFILO, outputformat
 C
-      CHARACTER THRMFILE*128,NNFILE*60,
-     +    OPTIONS(MOPT)*4, 
-     +    MPSDATC*32,DUMPF*60,  
+      CHARACTER THRMFILE*128,NNFILE*60,MPSDATC*32,DUMPF*60,  
      +    SETPFILE*128, DATAFILE*60
 C
       COMMON /CONFIG/ VERSION, 
-     +    RUNDAT, LOGERR, HEADER,
-     +    IOFILI, IOFILO, NOKBD,
-     +    initializeonly, 
-     +    outputformat, debugging, trace, validation,
-     +    THRMFILE, 
-     +    NNFILE, OPTIONS, 
-     +    MPSDATC, DUMPF,  
-     +    SETPFILE, DATAFILE
+     +    RUNDAT, LOGERR, HEADER, IOFILI, IOFILO, NOKBD,
+     +    initializeonly, outputformat, debugging, trace, validate,
+     +    THRMFILE, NNFILE, MPSDATC, DUMPF, SETPFILE, DATAFILE
       SAVE /CONFIG/

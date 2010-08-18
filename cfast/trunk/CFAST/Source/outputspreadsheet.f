@@ -293,7 +293,7 @@
               end if
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
-			  if (validation) then
+			  if (validate) then
                 TOTAL = GTFLUX(ITARG,1) /1000.d0
                 FTOTAL = GTFLUX(ITARG,2) /1000.d0
                 WTOTAL = GTFLUX(ITARG,3) /1000.d0
@@ -404,8 +404,8 @@ c   40 CONTINUE
 	      if (layer.eq.upper.or.IZSHAFT(I).EQ.0) then
               IF (tooutput(LSP)) THEN
                 ssvalue = TOXICT(I,LAYER,LSP)
-                if (validation.and.molfrac(LSP))ssvalue = ssvalue*0.01D0
-                if (validation.and.lsp.eq.9) ssvalue = ssvalue *261.959
+                if (validate.and.molfrac(LSP))ssvalue = ssvalue*0.01D0
+                if (validate.and.lsp.eq.9) ssvalue = ssvalue *261.959
 	          CALL SSaddtolist (position,ssvalue,outarray)
 ! We can only output to the maximum array size; this is not deemed to be a fatal error!
 			    if (position.ge.maxhead) go to 90

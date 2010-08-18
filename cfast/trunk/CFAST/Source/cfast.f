@@ -42,8 +42,6 @@
 
 !     initialize the basic memory configuration
 
-!      open(unit=33,file="test.csv")
-
       call initmm
       call initob
       call readop     
@@ -127,20 +125,14 @@
       include "cshell.fi"
       include "cplotd.fi"
 
-      data thrmfile/'thermal'/, gfile/'GEOMETRY.DAT'/, 
-     . pfile/'PARTITIN.DAT'/, ofile/'OBJECTS.DAT'/, dpath/' '/, 
-     . dfile/'DATA.DAT'/, path/' '/, dlen/0/, plen/0/, advfea/.false./,
-     . config/'HV6.CF'/, shell/.false./, csopen/.false./,
-     . logerr/0/, nnfile/' '/, current/' '/,outfile/'<stdout>'/,
-     . ICBG,ICTXT,ICHDR,ICSUB,ICPRO,ICMSG,ICMBG,ICHLP,ICHBG,ICEBG,
-     . ICEMS/0,15,14,10,7,15,3,15,2,1,10/, DUMPF/' '/,RFILE/' '/,
-     . RMFILE/1/, HEADER/.FALSE./, UNITS/0,5,12,18,31,37,24,27/,
-     . ADUMPF/' '/, NOKBD/.FALSE./, GPAUSE/.FALSE./,QUICKEST/.FALSE./,
-     . WEBPAGE/' '/, GUISURF/'DEFAULT'/, GUIOBJ/'DEFAULT'/,
-     . CPFLSYNCH/'Synchronize gui and base models - do not edit'/,
-     . GUIPROJ/' '/, GUIREF/' '/,GUILIC/' '/, initializeonly/.false./,
-     . outputformat /0/, IOFILO/6/, REPORTO/0/, IOFILI/1/, LOGERR/3/,
-     . OBFILI/99/, AHFILO/98/, WEBFILE/97/, trace/.false./,
+      data thrmfile/'thermal'/,  
+
+     . logerr/0/, nnfile/' '/,
+     . DUMPF/' '/,HEADER/.FALSE./, 
+     . NOKBD/.FALSE./, 
+     .  initializeonly/.false./,
+     . outputformat /0/, IOFILO/6/,IOFILI/1/, LOGERR/3/,
+     . trace/.false./,
      . validation/.false./
     
      . VERSION/6200/

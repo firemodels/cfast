@@ -41,7 +41,6 @@
 		<File RelativePath="Include\objects1.fi"/>
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
-		<File RelativePath="Include\params.fi"/>
 		<File RelativePath="Include\precis.fi"/>
 		<File RelativePath="Include\prods.fi"/>
 		<File RelativePath="Include\smkview.fi"/>
@@ -57,6 +56,7 @@
 		<File RelativePath=".\Source\cfast.f"/>
 		<File RelativePath=".\Source\conduction.f"/>
 		<File RelativePath=".\Source\convection.f"/>
+		<File RelativePath=".\Source\cyl_conduct.f"/>
 		<File RelativePath=".\Source\fire.f"/>
 		<File RelativePath=".\Source\flowfan.f"/>
 		<File RelativePath=".\Source\flowhall.f"/>
@@ -69,9 +69,7 @@
 		<File RelativePath=".\Source\outputsmv.f90"/>
 		<File RelativePath=".\Source\outputspreadsheet.f"/>
 		<File RelativePath=".\Source\radiation.f"/>
-		<File RelativePath=".\Source\ssHeaders.f">
-			<FileConfiguration Name="Debug|Win32">
-				<Tool Name="VFFortranCompilerTool" Diagnostics="diagnosticsShowAll" WarnUnusedVariables="true"/></FileConfiguration></File>
+		<File RelativePath=".\Source\ssHeaders.f"/>
 		<File RelativePath=".\Source\target.f"/></Filter>
 		<File RelativePath="ReadMe.txt"/></Files>
 	<Globals/></VisualStudioProject>

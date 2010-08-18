@@ -179,11 +179,6 @@ C     Description:  Output the results of the simulation at the current time
 !                RSLTSP species
 C
 C     Arguments: TIME  Current time (s)
-C                PSW   What to output:  N=Normal printout, S=Species,
-C                      F=vent Flows, P=Wall temp profiles, T=Tenability,
-C                      W=Wall and target fluxes, C=compact printout,
-C                      O=original format.
-C                      These may be combined in a single call
 C                ISW   1 if called from CFAST, 0 otherwise (only effects
 C                      printout of object names -- only CFAST knows actual
 C                      names, others just do it by numbers
@@ -218,7 +213,6 @@ C*RE
         else
             call rsltflw (time)
         endif
-!        IF (INDEX(PSW,'T').NE.0) CALL RSLTTEN
       ELSE IF (outputformat.eq.1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTCMP (iofilo)

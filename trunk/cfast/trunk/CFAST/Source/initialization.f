@@ -1362,12 +1362,6 @@ C*** initialzie time step checking
       IZDTMAX = 100
       IZDTFLAG = .TRUE.
 
-C***  initialize GUISELCT
-
-      DO 290 I = 1, MAXCOL
-        GUISELCT(I) = 0
-  290 CONTINUE
-
 C*** initialize inter-compartment heat transfer fractions
 
       DO 300 I = 1, NR
@@ -1800,7 +1794,7 @@ C*** ROOM NUMBER MUST BE BETWEEN 1 AND NM1
         XSIZE = BR(IROOM)
         YSIZE = DR(IROOM)
         ZSIZE = HRP(IROOM)
-        !*** If the locator is -1, then set to center of room on the floor
+        !*** If the locator is -1, set to center of room on the floor
         if(xloc.eq.xm1) xloc = 0.5 * xsize
         if(yloc.eq.xm1) yloc = 0.5 * ysize
         if(zloc.eq.xm1) zloc = x0

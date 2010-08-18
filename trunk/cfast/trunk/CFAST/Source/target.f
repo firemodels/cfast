@@ -481,7 +481,8 @@ C*** CONVECTION FOR THE FRONT
      .       TEMIS*SIGMA*TTARG(1)**4
       DFLUX(1) = -4.0D0*TEMIS*SIGMA*TTARG(1)**3 + DQDTARG
       
-      ! This is for "gauge" heat flux output ... it assumes an ambient temperature target
+      ! This is for "gauge" heat flux output ... 
+      ! it assumes an ambient temperature target
       GTFLUX(ITARG,2) = QTFFLUX(ITARG,1)
       GTFLUX(ITARG,3) = QTWFLUX(ITARG,1)
       GTFLUX(ITARG,4) = QTGFLUX(ITARG,1)
@@ -532,7 +533,8 @@ C*** CONVECTION FOR THE BACK
         tg = zztemp(irtarg,lower)
       end if
       
-      ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
+      ! if there is a fire in the room and the target is 
+      ! DIRECTLY above the fire, use plume temperature
       do i = 1,nfire
         if (ifroom(i).eq.irtarg) then
             if (xtarg.eq.xfire(i,1).and.ytarg.eq.xfire(i,2).and.

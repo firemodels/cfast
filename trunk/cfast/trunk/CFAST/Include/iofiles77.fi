@@ -1,6 +1,5 @@
 !	File descriptors for cfast in fixed format mode - must mimic iofiles.inc
 
-      character*1   separator
       character*6   extensions (8), heading/'VERSN'/
       character*64  project
       character*256 datapath, exepath
@@ -15,7 +14,6 @@
 
 	   data extensions /'.in','.out','.smv','.plt','.f.csv',
      . '.n.csv','.s.csv', '.w.csv'/
-	   data separator /'\'/
 
 !     Work arrays for the csv input routines
 

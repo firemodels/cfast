@@ -405,31 +405,6 @@ C     FIRE TYPE AND PARAMETERS: COME HERE DIRECTLY IF THIS IS A RESTART
         TFMAXT = MAX(TFMAXT,TFIRED(I))
    60 CONTINUE
 
-C     CHECK GUISELCT MAKE SURE IT HAS ONLY LEGAL ROOMS
-
-      IGUISLCT = 0
-      DO 140 I = 1, MAXCOL
-        IF (GUISELCT(I).LE.0.OR.GUISELCT(I).GT.NM1) THEN
-          GUISELCT(I) = 0
-        ELSE
-          IGUISLCT = IGUISLCT + 1
-        END IF
-  140 CONTINUE
-      DO 150 I = MAXCOL-1, 1, -1
-        IF (GUISELCT(I).EQ.0) THEN
-          DO 155 J = I+1,MAXCOL
-            GUISELCT(J-1) = GUISELCT(J)
-  155     CONTINUE
-          GUISELCT(MAXCOL) = 0
-        END IF
-  150 CONTINUE
-      IF (GUISELCT(1).EQ.0) THEN
-        IGUISLCT = MIN(MAXCOL,NM1)
-        DO 157 I = 1, IGUISLCT
-          GUISELCT(I) = I
-  157   CONTINUE
-      END IF
-
 C*** check room area specs and convert to volume
 
       DO 300 I = 1, NM1
@@ -774,11 +749,8 @@ C
 	  
 C     Rename the THERMAL or object DATA FILE
 
-  225	if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		 ierror = 5
-		 return
-	endif
-	ofile = lcarray(1)
+  225	ierror = 5
+	return
       GO TO 810
 
   230	if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then

@@ -37,7 +37,7 @@
      *                  'kg', 'kg' /
 
       !  spreadsheet header
-      if (validation) then
+      if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
         headertext(3,1) = ' '
@@ -54,7 +54,7 @@
           if (i.ne.2.or.izshaft(j).eq.0) then
             if (i.ne.3.or.izshaft(j).eq.0) then
               position = position + 1
-              if (validation) then
+              if (validate) then
                 cRoom = toIntString(j)
                 headertext(1,position) = trim(LabelsShort(i+1)) // 
      *                                   trim(cRoom)
@@ -74,7 +74,7 @@
       if (lfbo.gt.0) then
         do i = 1, 7
           position = position + 1
-          if (validation) then
+          if (validate) then
             write (cTemp,'(a,i1)') trim(LabelsShort(i+8)), 0
             headertext(1,position) = cTemp
             headertext(2,position) = LabelUnits(i+8)
@@ -89,7 +89,7 @@
         do j = 1, numobjl
         do i = 1, 7
           position = position + 1
-          if (validation) then
+          if (validate) then
             cFire = toIntString(j)
             headertext(1,position) = trim(LabelsShort(i+8))//trim(cFire)
             headertext(2,position) = LabelUnits(i+8)
@@ -105,7 +105,7 @@
       ! write out header
       write(15,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(15,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-      if (.not.validation)
+      if (.not.validate)
      *  write(15,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       end subroutine ssHeadersNormal
@@ -162,7 +162,7 @@
      *                  'kg' /
 
       !  spreadsheet header
-      if (validation) then
+      if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
         headertext(3,1) = ' '
@@ -180,7 +180,7 @@
             do lsp = 1, NS
               if(tooutput(lsp)) then
                 position = position + 1
-                if (validation) then
+                if (validate) then
                   cRoom = toIntString(i)
                   headertext(1,position) = 
      *              trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
@@ -202,7 +202,7 @@
       ! write out header
       write(17,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(17,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-      if (.not.validation)
+      if (.not.validate)
      *  write(17,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       end subroutine ssHeadersSpecies
@@ -267,7 +267,7 @@
      *                  'C', 'm/s' /
 
       !  spreadsheet header
-      if (validation) then
+      if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
         headertext(3,1) = ' '
@@ -282,7 +282,7 @@
       do i = 1, nm1
 	  do j = 1, 4
 	    position = position + 1
-	    if (validation) then
+	    if (validate) then
 	      cRoom = toIntString(i)
             headertext(1,position) = trim(LabelsShort(j+1))//trim(cRoom)
             headertext(2,position) = LabelUnits(j+1)
@@ -304,7 +304,7 @@
 			  cDet = toIntString(itarg)
 			  do j = 1, 9
 			    position = position + 1
-			    if (validation) then
+			    if (validate) then
                   headertext(1,position) = trim(LabelsShort(j+5)) // 
      *                                     trim(cDet)
                   headertext(2,position) = LabelUnits(j+5)
@@ -337,7 +337,7 @@
 		endif
 	  do j = 1, 4
 	    position = position + 1
-	    if (validation) then
+	    if (validate) then
 	      headertext(1,position) = trim(LabelsShort(j+14)) // trim(cDet)
 	      headertext(2,position) = LabelUnits(j+14)
 	      headertext(3,position) = ' '
@@ -353,7 +353,7 @@
       ! write out header
       write(18,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(18,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-      if (.not.validation)
+      if (.not.validate)
      *  write(18,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       return
@@ -395,7 +395,7 @@
       data LabelUnits / 9*'kg/s', 2*'kg' /
 
       !  spreadsheet header
-      if (validation) then
+      if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
         headertext(3,1) = ' '
@@ -428,7 +428,7 @@ C     Natural flow through vertical vents (horizontal flow)
                   cVent = toIntString(k)
                   cTo = toIntString(i)
                   headertext(1,position) = Labels(ih+1)
-                  if (validation) then
+                  if (validate) then
                     write (ctemp,'(6a)') 
      *                trim(LabelsShort(ih+1)),trim(cVent),'_',
      *                trim(cFrom),'-',trim(cTo)
@@ -457,7 +457,7 @@ C     Natural flow through vertical vents (horizontal flow)
 			if (j.eq.n) cTo = 'Outside'
 		    do ih = 1,2
 		      position = position + 1
-		      if (validation) then
+		      if (validate) then
 		        write (ctemp,'(5a)') 
      *            trim(LabelsShort(ih+5)),'_',trim(cFrom),'-',trim(cTo)
 		        headertext(1,position) = cTemp
@@ -486,7 +486,7 @@ C     Natural flow through vertical vents (horizontal flow)
               cTo = toIntString(inode)
               do ih = 1,4
                 position = position + 1
-                if (validation) then
+                if (validate) then
                   if (ih.le.2) then
                     headertext(1,position) = trim(LabelsShort(ih+7)) 
      *                //'Vent_' // trim(cFrom) // '-' // trim(cTo)
@@ -515,7 +515,7 @@ C     Natural flow through vertical vents (horizontal flow)
       ! write out header
       write(16,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
       write(16,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-      if (.not.validation)
+      if (.not.validate)
      *  write(16,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
 	return

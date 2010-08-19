@@ -295,17 +295,6 @@ C    use the original pressure solution that was based on rho*g*h.
           P(IEQ2) = HHVP(II+IOFF0+1)
         ENDIF
       ENDIF
-      IF (FSMTYPE.GT.0) THEN
-        DO 75 I = 1, NUMOBJL
-          IF (OBJTYP(I).EQ.3) THEN
-            P(NOFFSM+1+(I-1)*5) = 0.0D0
-            P(NOFFSM+2+(I-1)*5) = 0.0D0
-            P(NOFFSM+3+(I-1)*5) = 0.0D0
-            P(NOFFSM+4+(I-1)*5) = 0.0D0
-            P(NOFFSM+5+(I-1)*5) = objqarea
-          END IF
-   75   CONTINUE
-      END IF
       CALL RESID(T,P,PDZERO,PDOLD,IRES,RPAR,IPAR)
 
 C     Added to resync the species mass with the total mass of each layer at
@@ -499,11 +488,6 @@ C    CHANGED IN THE SOLVER ARRAY THEN THE FOLLOWING CODE HAS TO BE CHANGED
         VATOL(I+NOFTT) = AWTOL
         VRTOL(I+NOFTT) = RWTOL
    55 CONTINUE
-      DO 57 I = 1, FSMTYPE
-      DO 57 J = 1, 5
-         VATOL((I-1)*5+J+NOFFSM) = ATOL
-         VRTOL((I-1)*5+J+NOFFSM) = RTOL
-   57 CONTINUE
 
       OVTIME = XX0
       TOTTIME = XX0
@@ -1514,16 +1498,6 @@ C     RESIDUALS FOR PRESSURE
       DO 100 I = NOFP + 1, NOFP + NM1
          DELTA(I) = XPRIME(I) - XPSOLVE(I)
   100 CONTINUE
-
-C       RESIDUALS FOR FLAME SPREAD
-
-      IF (FSMTYPE.NE.0) THEN
-         DELTA(NOFFSM+1) = DYPDT - XPSOLVE(NOFFSM+1)
-         DELTA(NOFFSM+2) = DXPDT - XPSOLVE(NOFFSM+2)
-         DELTA(NOFFSM+3) = DYBDT - XPSOLVE(NOFFSM+3)
-         DELTA(NOFFSM+4) = DXBDT - XPSOLVE(NOFFSM+4)
-         DELTA(NOFFSM+5) = DQDT -  XPSOLVE(NOFFSM+5)
-      END IF
 
 C     RESIDUALS FOR LAYER VOLUME, AND LAYER TEMPERATURES
 

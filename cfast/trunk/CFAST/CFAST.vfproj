@@ -41,7 +41,6 @@
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
 		<File RelativePath="Include\precis.fi"/>
-		<File RelativePath="Include\prods.fi"/>
 		<File RelativePath="Include\smkview.fi"/>
 		<File RelativePath="Include\solvprm.fi"/>
 		<File RelativePath="Include\thermp.fi"/>

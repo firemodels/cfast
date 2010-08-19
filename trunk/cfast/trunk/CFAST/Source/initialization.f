@@ -2241,14 +2241,6 @@ C*** note we never let dassl solve for oxygen when we have a type 1 fire
         ELSE
          NOXYGEN = 0
       ENDIF
-
-C	SET NUMBER OF FLAMESPREAD EQAATIONS
-
-	IF (FSMTYPE.GT.0) THEN
-	  NFSM = FSMTYPE*5
-	ELSE
-	  NFSM = 0
-	END IF
       
 C     NOW DO ALL THE EQUATION OFFSETS
 
@@ -2258,7 +2250,7 @@ C     NOW DO ALL THE EQUATION OFFSETS
       NOFPMV = NOFP + NM1
       NOFTMV = NOFPMV + NHVPVAR
 	NOFFSM = NOFTMV + NHVTVAR
-	NOFTU = NOFFSM + NFSM
+	NOFTU = NOFFSM
       NOFVU = NOFTU + NM1
       NOFTL = NOFVU + NM1
       NOFOXYL = NOFTL + NM1

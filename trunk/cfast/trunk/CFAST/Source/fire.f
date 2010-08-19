@@ -1666,13 +1666,6 @@ C     IT IS USED IN SEVERAL PLACES
         CLFRAT = XX0
         CNFRAT = XX0
         crfrat = xx0
-        IF (FSMTYPE.GT.0) THEN
-          DYPDT = XX0
-          DXPDT = XX0
-          DYBDT = XX0
-          DXBDT = XX0
-          DQDT  = XX0
-        END IF
         RETURN
       ENDIF
 

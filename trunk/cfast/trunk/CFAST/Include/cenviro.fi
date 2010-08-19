@@ -3,13 +3,11 @@ C        Apr  6,1992 add the equation offsets for the solver
 C        Feb 11,1993 added wall area and wall map variables
 C	   Aug 15,1995 added enviroment varibles for fsm (PAR)
 
-      INTEGER ODETIM, CNDTIM, HVACTIM, TOXTIM, OVRTIM
       INTEGER EQP, EQPMV, EQTMV, EQTU, EQVU, EQTL
       INTEGER EQOXYL, EQOXYU, EQTT, EQWT
       INTEGER JACCOL, NEQOFF
       INTEGER CONSTVAR, ODEVARA, ODEVARB, ODEVARC
 
-      PARAMETER (ODETIM=1, CNDTIM=2, HVACTIM=3, TOXTIM=4,OVRTIM=5)
       PARAMETER (CONSTVAR = 1,ODEVARA = 2,ODEVARB = 4, ODEVARC = 8)
       PARAMETER (EQP=1, EQPMV=2, EQTMV=3, EQTU=4, EQVU=5)
       PARAMETER (EQTL=6, EQOXYL=7, EQOXYU=8, EQTT=9, EQWT=10)

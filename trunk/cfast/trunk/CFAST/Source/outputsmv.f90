@@ -28,9 +28,8 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
 !    froom_number - room containing fire
 !    fx0,fy0,fz0 - location of fire base
 
+      use iofiles
   implicit none
-
-      include "iofiles.fi"
 
   DOUBLE PRECISION, intent(in) :: pabs_ref, pamb, tamb, stime
   integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg

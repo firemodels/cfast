@@ -1,7 +1,7 @@
-C	Aug 15,1995 added parameters MDCHK,MDSET,MDUPDT for 
-C	            use in SOLVE by updating routines (PAR)
-C   May 1, 2004 - increased the number of fires from mxoin+1 to 2*mxoin
-C   May 1, 2004 - increased the maximum number of vents from 4*NR to NR*NR
+!	Aug 15,1995 added parameters MDCHK,MDSET,MDUPDT for 
+!	            use in SOLVE by updating routines (PAR)
+!   May 1, 2004 - increased the number of fires from mxoin+1 to 2*mxoin
+!   May 1, 2004 - increased the maximum number of vents from 4*NR to NR*NR
 !	July, 2005 For the fire parameters (mxfirp), see notation in FIRES
 
       INTEGER UPPER, LOWER

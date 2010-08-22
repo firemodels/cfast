@@ -2,6 +2,7 @@
 
 !	Read the input file and set up the data for processing
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -10,7 +11,6 @@
       include "cfin.fi"
       include "objects1.fi"
       include "thermp.fi"
-      include "iofiles77.fi"
 
 !	Pretty pedestrian to use these names, but...
 	integer numr, numc
@@ -597,6 +597,7 @@ C	Modified: 10/20/04 : assume default values for hvac expansion coefficient and 
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -610,7 +611,6 @@ C
       include "fltarget.fi"
       include "opt.fi"
       include "vents.fi"
-      include "iofiles77.fi"
       include "wnodes.fi"
      
       PARAMETER (MAXIN = 37)
@@ -1972,9 +1972,9 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 
 !  The order of species is 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', 'TS'
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
-      include "iofiles77.fi"
 
 	character*10 data_file /'mainfire.o' /, testpath*256 
 	integer numr, numc, i, j, iounit, logerr/3/, errorcode
@@ -2095,9 +2095,9 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 !  The maximum heat release rate (see reference in the UG and TR) is 4 MW/m^3 (the actual value should be 2, 
 !     but where we cut the user some slack
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
-      include "iofiles77.fi"
       include "objects2.fi"
       include "fltarget.fi"
 
@@ -2303,9 +2303,9 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 !  or the directory for the executable. If it does not exist in either place, then we quit
 
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
-      include "iofiles77.fi"
       include "objects2.fi"
       include "fltarget.fi"
       include "thermp.fi"
@@ -2583,13 +2583,13 @@ C
 ! 	open the log file (3)
 ! 	call the input routines
 
+      use iofiles
+      
       integer errorcode , lp, ld, lf, ios
       integer(2) filecount
       logical exists
 
       character*256 testpath, testproj 
-
-      include "iofiles77.fi"
 
 ! get the path and project names
 
@@ -2675,12 +2675,12 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
       include "opt.fi"
-      include "iofiles77.fi"
 
       DIMENSION P0(*), IP0(0:*)
       DIMENSION PMXMN(MAXTEQ,2), IPMXMN(0:MAXTEQ,2)

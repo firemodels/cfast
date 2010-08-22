@@ -26,7 +26,9 @@
 !     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 !     OTHER DEALINGS IN THE SOFTWARE.
 
-      include "precis.fi"
+ 
+      use iofiles
+      !include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
@@ -34,10 +36,9 @@
       include "thermp.fi"
       include "objects1.fi"
       include "cenviro.fi"
-      include "iofiles77.fi"
 
       logical error
-	  integer errorcode, rev_cfast
+	integer errorcode, rev_cfast
       errorcode = 0
 
 !     initialize the basic memory configuration
@@ -360,6 +361,7 @@ C
 !     is presently used by DASSL. The important point is that NODES is set to
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -373,7 +375,6 @@ C
       include "objects1.fi"
       include "objects2.fi"
       include "cfin.fi"
-      include "iofiles77.fi"
       include "vents.fi"
       include "smkview.fi"
 

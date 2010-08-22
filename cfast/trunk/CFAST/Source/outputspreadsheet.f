@@ -2,13 +2,13 @@
 
 ! This routine writes to the {project}.n.csv file, the compartment information and the fires
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "fltarget.fi"
       include "objects1.fi"
-      include "iofiles77.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)

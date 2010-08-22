@@ -1008,11 +1008,11 @@ C     Arguments: ISW   Print switch for restart option, 1=Print
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
       include "cshell.fi"
-      include "iofiles77.fi"
 
       CHARACTER CHKSUM*8
       EXTERNAL LENGTH
@@ -2458,11 +2458,11 @@ C                  main
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
-      include "iofiles77.fi"
 
       INTEGER IOUNIT, ITOT, OUTPUT(4096), ld
       LOGICAL FIRSTC, EXISTS
@@ -2944,7 +2944,7 @@ C
 
 !!!! Note that we assume that the default carraigecontrol for formatted files is of type LIST (no fortran controls)
 
-      include "iofiles77.fi"
+      use iofiles
       include "cfast.fi"
       include "cshell.fi"
 

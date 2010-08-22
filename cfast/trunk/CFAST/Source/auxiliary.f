@@ -466,9 +466,9 @@ C
       END
 	SUBROUTINE CFASTEXIT (NAME, errorcode)
 	
+      use iofiles
       include "cparams.fi"
       include "cshell.fi"
-      include "iofiles77.fi"
 
 	CHARACTER NAME*(*)
 	integer errorcode

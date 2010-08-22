@@ -1473,6 +1473,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
+      use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "opt.fi"
@@ -1481,7 +1482,6 @@ C
       include "cfin.fi"
       include "cshell.fi"
       include "params.fi"
-      include "iofiles77.fi"
 
       LOGICAL EXISTED
 

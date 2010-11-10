@@ -72,9 +72,6 @@ C*** DECLARE LOCAL VARIABLES
       NITER = DT/DT_ITER + 0.5
       DT_ITER=DT/NITER
       FACTOR = 2.0*ALPHA*DT_ITER/DR**2
-      IF(NITER.GT.1)THEN
-        WRITE(6,*)" NITER=",NITER,DT_ITER,DT
-      ENDIF
 
       DO ITER=1,NITER     
       DO I = 1, NR

@@ -399,7 +399,6 @@ C*** CHECK DETECTOR STUFF
 
 C     FIRE TYPE AND PARAMETERS: COME HERE DIRECTLY IF THIS IS A RESTART
 
-      IFIRED = 1
       TFMAXT = 0.0D0
       DO 60 I = 1, LFMAX
         TFMAXT = MAX(TFMAXT,TFIRED(I))
@@ -1562,75 +1561,82 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 
 !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
 
-  910 if (.not.countargs(label,10,lcarray, xnumc-1, nret)) then
+  910 if (countargs(label,10,lcarray, xnumc-1, nret).or.
+     +    countargs(label,11,lcarray, xnumc-1, nret)) then
+        if(ntarg+1.gt.mxtarg)then
+		  write(logerr,5002) 
+		  ierror = 42
+		  return
+	  else
+		  ntarg = ntarg + 1
+        endif
+        
+!	  The target can exist, now for the compartment
+        IROOM = lrarray(1)
+        IF(IROOM.LT.1.OR.IROOM.GT.N)THEN
+		  write(logerr,5003) iroom
+		  ierror = 43
+		  return
+	  endif
+
+!	  position and normal
+        ixtarg(trgroom,ntarg)=iroom
+        do i = 0, 2
+          xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
+          xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
+        end do
+        if (countargs(label,11,lcarray, xnumc-1, nret)) then
+          xxtarg(trginterior,ntarg) = lrarray(11)
+        else
+          xxtarg(trginterior,ntarg) = 0.5
+        end if
+
+!	  material type
+	  tcname = lcarray(8)
+	  if(tcname.eq.' ') tcname='DEFAULT'
+        cxtarg(ntarg) = tcname
+        ixtarg(trgwall,ntarg) = 0
+
+!	  solution method
+        method = ' '
+        method = lcarray(9)
+        call upperall(method,method)
+        if(method.ne.' ')then
+		  if(method(1:3).eq.'STE') then
+			ixtarg(trgmeth,ntarg) = STEADY
+			method = ' '
+		  elseif (method(1:3).eq.'IMP') then
+		    ixtarg(trgmeth,ntarg) = MPLICIT
+		  elseif (method(1:3).eq.'EXP') then
+		    ixtarg(trgmeth,ntarg) = XPLICIT
+		  else
+		    write(logerr,912) method
+			ierror = 44
+			return
+		  endif
+        endif
+
+!	  equation type
+        eqtype = ' '
+        eqtype = lcarray(10)
+        call upperall(eqtype,eqtype)
+        if(eqtype.ne.' '.and.method.ne.' ')then
+		  if (eqtype(1:3).eq.'ODE') then
+			ixtarg(trgeq,ntarg) = ODE
+		  elseif (eqtype(1:3).eq.'PDE') then
+	      ixtarg(trgeq,ntarg) = PDE
+		  elseif (eqtype(1:3).eq.'CYL') then
+	      ixtarg(trgeq,ntarg) = CYLPDE
+		  else
+	      write(logerr,913) eqtype
+		    ierror = 45
+			return
+		  endif
+        endif
+      else
 		 ierror = 41
 		 return
 	endif
-
-      IF(NTARG+1.GT.MXTARG)THEN
-		 write(logerr,5002) 
-		 ierror = 42
-		 return
-	else
-		 NTARG = NTARG + 1
-      ENDIF
-!	The target can exist, now for the compartment
-      IROOM = lrarray(1)
-      IF(IROOM.LT.1.OR.IROOM.GT.N)THEN
-		 write(logerr,5003) iroom
-		 ierror = 43
-		 return
-	endif
-
-!	position and normal
-      IXTARG(TRGROOM,NTARG)=IROOM
-      DO 911 I = 0, 2
-        XXTARG(TRGCENX+I,NTARG) = lrarray(2+I)
-        XXTARG(TRGNORMX+I,NTARG) = lrarray(5+I)
-  911 CONTINUE
-
-!	material type
-	tcname = lcarray(8)
-	IF(TCNAME.EQ.' ')TCNAME='DEFAULT'
-      CXTARG(NTARG) = TCNAME
-      IXTARG(TRGWALL,NTARG) = 0
-
-!	solution method
-      METHOD = ' '
-      method = lcarray(9)
-      CALL UPPERALL(METHOD,METHOD)
-      IF(METHOD.NE.' ')THEN
-		 IF(METHOD(1:3).EQ.'STE') THEN
-			  IXTARG(TRGMETH,NTARG) = STEADY
-			  METHOD = ' '
-		 ELSEIF (METHOD(1:3).EQ.'IMP') THEN
-			  IXTARG(TRGMETH,NTARG) = MPLICIT
-		 ELSEIF (METHOD(1:3).EQ.'EXP') THEN
-			  IXTARG(TRGMETH,NTARG) = XPLICIT
-		 ELSE
-		     WRITE(logerr,912) METHOD
-			  ierror = 44
-			  return
-		 ENDIF
-      ENDIF
-
-!	equation type
-      EQTYPE = ' '
-      eqtype = lcarray(10)
-      CALL UPPERALL(EQTYPE,EQTYPE)
-      IF(EQTYPE.NE.' '.AND.METHOD.NE.' ')THEN
-		 IF (EQTYPE(1:3).EQ.'ODE') THEN
-			  IXTARG(TRGEQ,NTARG) = ODE
-		 ELSEIF (EQTYPE(1:3).EQ.'PDE') THEN
-	        IXTARG(TRGEQ,NTARG) = PDE
-		 ELSEIF (EQTYPE(1:3).EQ.'CYL') THEN
-	        IXTARG(TRGEQ,NTARG) = CYLPDE
-		 ELSE
-	        WRITE(logerr,913) EQTYPE
-			  ierror = 45
-			  return
-		 ENDIF
-      ENDIF
       GO TO 810
 
 !	HALL Compartment Velocity Depth Decay_Distance
@@ -2684,7 +2690,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       DIMENSION P0(*), IP0(0:*)
       DIMENSION PMXMN(MAXTEQ,2), IPMXMN(0:MAXTEQ,2)
-      INTEGER FUNIT, iounit
+      INTEGER iounit
       CHARACTER LABEL*5, TESTFILE*128, PLACE*1, MXMN*1, TOUPPER*1
 	character testpath*256
       INTEGER ILOCAL(2)

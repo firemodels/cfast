@@ -432,11 +432,11 @@ C
           IF (I.EQ.NA(IB)) THEN
             K = K + 1
             ICMV(I,K) = IB
-            IN(I,K) = NE(IB)
+            MVINTNODE(I,K) = NE(IB)
           ELSE IF (I.EQ.NE(IB)) THEN
             K = K + 1
             ICMV(I,K) = IB
-            IN(I,K) = NA(IB)
+            MVINTNODE(I,K) = NA(IB)
           END IF
    60   CONTINUE
         NCNODE(I) = K
@@ -659,7 +659,7 @@ C    number to which they belong
         IPTR = IPTR - 1
         IZHVSYS(ICURNOD) = ICURSYS
         Do 130 J = 1, NCNODE(ICURNOD)
-          NXTNODE = IN(ICURNOD,J)
+          NXTNODE = MVINTNODE(ICURNOD,J)
           If (IZHVSYS(NXTNODE).EQ.0) Then
             IPTR = IPTR + 1
             ISTACK(IPTR) = NXTNODE
@@ -1149,7 +1149,6 @@ C     SET THE TIME STEP AND INNER STEP DIVISION FOR TIME SPLITTING
 C     WE DO NOT LET THE USER CHOOSE THESE
 
       DELTAT = 1.0D0
-      MAXINR = 5
 
 C     DEFINE ALL THE "UNIVERSAL CONSTANTS
 
@@ -1421,7 +1420,6 @@ C     TURN OFF OBJECTS
 C
       NUMOBJL = 0
 	DO 10 I = 0, MXOIN
-        OTFIRET(I) = 0.0
         OBJON(I) = .FALSE.
         OBJPOS(1,I) = -1.0
         OBJPOS(2,I) = -1.0
@@ -1872,7 +1870,8 @@ C*** put a target in the center of the floor of each room
          NTARG = NTARG + 1
          IXTARG(TRGROOM,NTARG) = IROOM
          IXTARG(TRGMETH,NTARG) = STEADY
-         IXTARG(TRGBACK,ITARG) = EXT
+         IXTARG(TRGBACK,NTARG) = EXT
+
          XX = BR(IROOM)*0.50D0
          YY = DR(IROOM)*0.50D0
          ZZ = x0
@@ -1882,6 +1881,8 @@ C*** put a target in the center of the floor of each room
          XXTARG(TRGNORMX,NTARG) = x0
          XXTARG(TRGNORMY,NTARG) = x0
          XXTARG(TRGNORMZ,NTARG) = 1.0D0
+         XXTARG(TRGINTERIOR,NTARG) = 0.5
+         
          IF(SWITCH(2,IROOM))THEN
            CXTARG(NTARG) = CNAME(2,IROOM)
           ELSE

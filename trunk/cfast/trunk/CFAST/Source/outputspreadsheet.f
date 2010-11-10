@@ -285,7 +285,9 @@
               end if
               if (IXTARG(TRGEQ,ITARG).eq.CYLPDE) then
                 tttemp = xxtarg(trgtempb,itarg)
-                tctemp = xxtarg(trgtempf,itarg)
+                ITCTEMP = TRGTEMPF+ xxtarg(trginterior,itarg)*
+     +              (TRGTEMPB-TRGTEMPF)
+                tctemp = xxtarg(itctemp,itarg)
               else
 			    TTTEMP = XXTARG(TRGTEMPF,ITARG)
                 ITCTEMP = (TRGTEMPF+TRGTEMPB)/2

@@ -414,18 +414,25 @@ Public Class UpdateGUI
             MainWin.TargetSolutionMethod.SelectedIndex = aTarget.SolutionMethod
             MainWin.TargetSolutionThickness.SelectedIndex = aTarget.SolutionThickness
             If aTarget.SolutionThickness = 2 Then
-                MainWin.TargetNormalCalc.Enabled = False
-                MainWin.TargetXNormal.Enabled = False
-                MainWin.TargetYNormal.Enabled = False
-                MainWin.TargetZNormal.Enabled = False
                 MainWin.TargetSolutionMethod.Enabled = False
             Else
-                MainWin.TargetNormalCalc.Enabled = True
-                MainWin.TargetXNormal.Enabled = True
-                MainWin.TargetYNormal.Enabled = True
-                MainWin.TargetZNormal.Enabled = True
                 MainWin.TargetSolutionMethod.Enabled = True
             End If
+            MainWin.TargetInternalLocation.Text = aTarget.InternalLocation.ToString
+            If aTarget.Material <> "Default" And aTarget.Material <> "Off" Then
+                Dim aThermalProperty As New ThermalProperty
+                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aTarget.Material))
+                MainWin.TargetConduct.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
+                MainWin.TargetSpecHeat.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
+                MainWin.TargetDensity.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
+                MainWin.TargetThickness.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            Else
+                MainWin.TargetConduct.Text = "Conductivity:"
+                MainWin.TargetSpecHeat.Text = "Specific Heat: "
+                MainWin.TargetDensity.Text = "Density: "
+                MainWin.TargetThickness.Text = "Thickness: "
+            End If
+
             numTargets = myTargets.Count
             ClearGrid(MainWin.TargetSummary)
             If numTargets > 0 Then

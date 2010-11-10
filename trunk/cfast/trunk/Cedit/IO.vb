@@ -532,6 +532,7 @@ Module IO
             csv.Num(i, targetNum.yNormal) = aDetect.YNormal
             csv.Num(i, targetNum.zNormal) = aDetect.ZNormal
             csv.str(i, targetNum.material) = aDetect.Material
+            csv.Num(i, targetNum.internalLocation) = aDetect.InternalLocation
             If aDetect.SolutionThickness = 2 Then
                 csv.str(i, targetNum.equationType) = "CYL"
             ElseIf aDetect.SolutionThickness = 1 Then
@@ -825,6 +826,11 @@ Module IO
                         End If
                         aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), thickness, _
                             method)
+                        If (csv.str(i, targetNum.internalLocation) <> "") Then
+                            aDetect.InternalLocation = csv.Num(i, targetNum.internalLocation)
+                        Else
+                            aDetect.InternalLocation = 0.5
+                        End If
                         aDetect.Changed = False
                         myTargets.Add(aDetect)
                     Case "THRMF"

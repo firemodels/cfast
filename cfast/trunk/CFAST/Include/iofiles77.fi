@@ -1,23 +1,20 @@
 !	File descriptors for cfast in fixed format mode - must mimic iofiles.inc
 
-      character*6   extensions (8), heading/'VERSN'/
+      character*6   heading/'VERSN'/
       character*64  project
       character*256 datapath, exepath
       character*256 inputfile, outputfile, smvhead, smvdata, 
-     . ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, 
-     . solverini, historyfile, queryfile, statusfile, kernelisrunning
+     .  ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, 
+     .  solverini, historyfile, queryfile, statusfile, kernelisrunning
 
-	   common/datafiles/datapath, exepath, inputfile, outputfile, 
-     . smvhead, smvdata, ssflow, ssnormal, ssspecies, sswall, 
-     . errorlogging, stopfile, solverini, project, historyfile,
-     . queryfile, statusfile, kernelisrunning
-
-	   data extensions /'.in','.out','.smv','.plt','.f.csv',
-     . '.n.csv','.s.csv', '.w.csv'/
+	common /datafiles/ datapath, exepath, inputfile, outputfile, 
+     .  smvhead, smvdata, ssflow, ssnormal, ssspecies, sswall, 
+     .  errorlogging, stopfile, solverini, project, historyfile,
+     .  queryfile, statusfile, kernelisrunning
 
 !     Work arrays for the csv input routines
 
-	   integer, parameter :: nrow=200, ncol=20
-	   double precision rarray(nrow,ncol)
-	   character carray(nrow,ncol)*128
-      common/iofilearrays/rarray,carray
+	integer, parameter :: nrow=200, ncol=20
+	double precision rarray(nrow,ncol)
+	character carray(nrow,ncol)*128
+      common /iofilearrays/ rarray, carray

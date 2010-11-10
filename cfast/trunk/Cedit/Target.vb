@@ -23,6 +23,7 @@ Public Class Target
     Private aXNormal As Single                  ' X component of normal vector from chosen surface of target
     Private aYNormal As Single                  ' Y component of normal vector from chosen surface of target
     Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
+    Private aInternalLocation As Single         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
     Private aMaterial As String                 ' Target material from material database
     Private aSolutionThickness As Integer       ' 0 for thermally thick which is the PDE option or 1 for thermally thin which is the ODE option
     Private aSolutionMethod As Integer          ' 0 for implicit solution or 1 for explicit solution or 2 for steady solution
@@ -42,6 +43,7 @@ Public Class Target
         aXNormal = 0.0
         aYNormal = 0.0
         aZNormal = 1.0
+        aInternalLocation = 0.5
         aMaterial = "GYPSUM"
         aSolutionThickness = 0
         aSolutionMethod = 0
@@ -175,6 +177,17 @@ Public Class Target
         Set(ByVal Value As Single)
             If Value <> aZNormal Then
                 aZNormal = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property InternalLocation() As Single
+        Get
+            Return aInternalLocation
+        End Get
+        Set(ByVal Value As Single)
+            If Value <> aInternalLocation Then
+                aInternalLocation = Value
                 aChanged = True
             End If
         End Set

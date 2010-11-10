@@ -28,7 +28,7 @@
 
  
       use iofiles
-      !include "precis.fi"
+      include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"

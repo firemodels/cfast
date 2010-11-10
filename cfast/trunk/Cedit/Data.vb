@@ -229,6 +229,7 @@ Friend Module Data
         material
         method
         equationType
+        internalLocation
     End Enum
 
     Friend Enum hheatNum

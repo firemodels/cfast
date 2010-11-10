@@ -832,6 +832,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
               TG = TGTARG(ITARG)
               TTTEMP = XXTARG(TRGTEMPF,ITARG)
               ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
+              if (IXTARG(TRGEQ,ITARG).EQ.CYLPDE) 
+     +            ITCTEMP = TRGTEMPF+ xxtarg(trginterior,itarg)*
+     +              (TRGTEMPB-TRGTEMPF)
               TCTEMP = XXTARG(ITCTEMP,ITARG)
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
@@ -2369,9 +2372,9 @@ C     DEBUG PRINTING
         IF(NNODE.GT.0)WRITE(*,6040)
         DO 210 I = 1, NNODE
           DO 220 J = 1, NCNODE(I)
-             DP = HVP(IN(I,J)) - HVP(I) + DPZ(I,J)
-             WRITE(*,6050)I,IN(I,J),DP,HVP(I),HVP(IN(I,J)),
-     .                         HVGHT(I)
+             DP = HVP(MVINTNODE(I,J)) - HVP(I) + DPZ(I,J)
+             WRITE(*,6050) I,MVINTNODE(I,J),DP,HVP(I),
+     .          HVP(MVINTNODE(I,J)), HVGHT(I)
   220     CONTINUE
   210   CONTINUE
         WRITE(*,6070)

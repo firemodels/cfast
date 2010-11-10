@@ -50,16 +50,17 @@
 		<File RelativePath="Include\cfio.fi"/>
 		<File RelativePath="Include\cparams.fi"/>
 		<File RelativePath="Include\cshell.fi"/>
+		<File RelativePath=".\Include\datamodules.f90"/>
 		<File RelativePath="Include\dervs.fi"/>
 		<File RelativePath="Include\dsize.fi"/>
 		<File RelativePath="Include\fireptrs.fi"/>
 		<File RelativePath="Include\fltarget.fi"/>
 		<File RelativePath="Include\flwptrs.fi"/>
-		<File RelativePath=".\Include\DataModules.f90"/>
 		<File RelativePath="Include\iofiles77.fi"/>
 		<File RelativePath="Include\objects1.fi"/>
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
+		<File RelativePath=".\Include\params.fi"/>
 		<File RelativePath="Include\precis.fi"/>
 		<File RelativePath="Include\smkview.fi"/>
 		<File RelativePath="Include\solvprm.fi"/>
@@ -75,7 +76,6 @@
 		<File RelativePath=".\Source\conduction.f"/>
 		<File RelativePath=".\Source\convection.f"/>
 		<File RelativePath=".\Source\cyl_conduct.f"/>
-		<File RelativePath=".\datamodules.f90"/>
 		<File RelativePath=".\Source\fire.f"/>
 		<File RelativePath=".\Source\flowfan.f"/>
 		<File RelativePath=".\Source\flowhall.f"/>

@@ -299,7 +299,8 @@ C     CALCULATE HYDROSTATIC PRESSURE DIFFERENCE TERMS
 
       DO 70 I = 1, NNODE
       DO 70 J = 1, NCNODE(I)
-         DPZ(I,J) = ROHB(ICMV(I,J))*HVGRAV*(HVGHT(IN(I,J)) - HVGHT(I))
+         DPZ(I,J) = ROHB(ICMV(I,J))*HVGRAV*(HVGHT(MVINTNODE(I,J)) 
+     +   - HVGHT(I))
    70 CONTINUE
 
 C     Find mass flow for each branch and mass residual at each node
@@ -307,7 +308,7 @@ C     Find mass flow for each branch and mass residual at each node
       DO 30 I = 1, NNODE
          F = 0.0D0
             DO 25 J = 1, NCNODE(I)
-               DP = HVP(IN(I,J)) - HVP(I) + DPZ(I,J)
+               DP = HVP(MVINTNODE(I,J)) - HVP(I) + DPZ(I,J)
                IF (NF(ICMV(I,J)).EQ.0) THEN
 
 C        RESISTIVE BRANCH CONNECTION 
@@ -329,8 +330,8 @@ C*** FLOW IS AT FAN EXIT
                   ENDIF
                ENDIF
                F = F + HVFLOW(I,J)
-               II = IZHVIE(IN(I,J))
-               IF(II.NE.0)HVFLOW(IN(I,J),1) = -HVFLOW(I,J)
+               II = IZHVIE(MVINTNODE(I,J))
+               IF(II.NE.0)HVFLOW(MVINTNODE(I,J),1) = -HVFLOW(I,J)
    25       CONTINUE
          ii = IZHVMAPE(I)
          IF(II.GT.0) DELTPMV(ii) = F
@@ -421,7 +422,7 @@ C
      .                       CHV(IB)*(TBR(IB)-TAMB(1))*HVDARA(IB)
             ENDIF
          ENDIF
-         II = IZHVIE(IN(I,J))
+         II = IZHVIE(MVINTNODE(I,J))
          IF(II.NE.0.AND.HVFLOW(I,J).GT.XX0) THEN
             IB = ICMV(I,J)
             HVTA = HVEXTT(II,UPPER)

@@ -6,7 +6,8 @@ Plume Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature R
 Oxygen Concentration,Measured Drop in Volume Fraction,Predicted Drop in Volume Fraction,0,0.15,0.015 0.94,SouthEast,4,9,yes,ScatterPlots/Oxygen_Concentration
 Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.15,0.015 0.94,SouthEast,4,9,yes,ScatterPlots/Carbon_Dioxide_Concentration
 Compartment Over-Pressure,Measured Pressure Rise(Pa),Predicted Pressure Rise (Pa),0,400,0.015 0.94,SouthEast,4,40,no,ScatterPlots/Compartment_Pressure
-NIST/NRC Heat Flux near Cables,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,20,0.015 0.94,SouthEast,4,20,yes,ScatterPlots/NIST_NRC_Heat_Flux
+NIST/NRC Heat Flux near Cables,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,20,0.015 0.94,SouthEast,4,20,yes,ScatterPlots/Cable Heat_Flux
+NIST/NRC Wall Heat Flux,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,20,0.015 0.94,SouthEast,4,20,yes,ScatterPlots/Wall_Heat_Flux
 WTC Heat Flux,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,120,0.015 0.94,SouthEast,4,20,yes,ScatterPlots/WTC_Heat_Flux
 NIST/NRC Cable Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,400,0.015 0.94,SouthEast,4,14,yes,ScatterPlots/Cable_Temperature
 NIST/NRC Wall Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,500,0.015 0.94,SouthEast,4,14,yes,ScatterPlots/Wall_Temperature

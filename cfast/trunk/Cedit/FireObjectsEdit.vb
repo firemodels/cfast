@@ -65,41 +65,41 @@ Public Class FireObjectsEdit
     Friend WithEvents FireNewt2 As System.Windows.Forms.Button
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FireObjectsEdit))
-        Me.GroupFireObject = New System.Windows.Forms.GroupBox
-        Me.FireMaterial = New System.Windows.Forms.ComboBox
-        Me.Label84 = New System.Windows.Forms.Label
-        Me.FireHoG = New System.Windows.Forms.TextBox
-        Me.Label17 = New System.Windows.Forms.Label
-        Me.FireHoC = New System.Windows.Forms.TextBox
-        Me.Label56 = New System.Windows.Forms.Label
-        Me.FireTotalMass = New System.Windows.Forms.TextBox
-        Me.FireWidth = New System.Windows.Forms.TextBox
-        Me.Label64 = New System.Windows.Forms.Label
-        Me.FireLength = New System.Windows.Forms.TextBox
-        Me.FireThickness = New System.Windows.Forms.TextBox
-        Me.Label65 = New System.Windows.Forms.Label
-        Me.Label39 = New System.Windows.Forms.Label
-        Me.Label38 = New System.Windows.Forms.Label
-        Me.FireVolitilizationTemp = New System.Windows.Forms.TextBox
-        Me.Label59 = New System.Windows.Forms.Label
-        Me.Label57 = New System.Windows.Forms.Label
-        Me.FireMolarMass = New System.Windows.Forms.TextBox
-        Me.Label94 = New System.Windows.Forms.Label
-        Me.FireRadiativeFraction = New System.Windows.Forms.TextBox
-        Me.FireNewObject = New System.Windows.Forms.Button
-        Me.FireDupObject = New System.Windows.Forms.Button
-        Me.FireData = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.FireObjectSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.FireName = New System.Windows.Forms.TextBox
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.FireRemoveObject = New System.Windows.Forms.Button
-        Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D
-        Me.FireObjectsOK = New System.Windows.Forms.Button
-        Me.FireObjectsCancel = New System.Windows.Forms.Button
+        Me.GroupFireObject = New System.Windows.Forms.GroupBox()
+        Me.FireMaterial = New System.Windows.Forms.ComboBox()
+        Me.Label84 = New System.Windows.Forms.Label()
+        Me.FireHoG = New System.Windows.Forms.TextBox()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.FireHoC = New System.Windows.Forms.TextBox()
+        Me.Label56 = New System.Windows.Forms.Label()
+        Me.FireTotalMass = New System.Windows.Forms.TextBox()
+        Me.FireWidth = New System.Windows.Forms.TextBox()
+        Me.Label64 = New System.Windows.Forms.Label()
+        Me.FireLength = New System.Windows.Forms.TextBox()
+        Me.FireThickness = New System.Windows.Forms.TextBox()
+        Me.Label65 = New System.Windows.Forms.Label()
+        Me.Label39 = New System.Windows.Forms.Label()
+        Me.Label38 = New System.Windows.Forms.Label()
+        Me.FireVolitilizationTemp = New System.Windows.Forms.TextBox()
+        Me.Label59 = New System.Windows.Forms.Label()
+        Me.Label57 = New System.Windows.Forms.Label()
+        Me.FireMolarMass = New System.Windows.Forms.TextBox()
+        Me.Label94 = New System.Windows.Forms.Label()
+        Me.FireRadiativeFraction = New System.Windows.Forms.TextBox()
+        Me.FireNewObject = New System.Windows.Forms.Button()
+        Me.FireDupObject = New System.Windows.Forms.Button()
+        Me.FireData = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.FireObjectSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.FireName = New System.Windows.Forms.TextBox()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.FireRemoveObject = New System.Windows.Forms.Button()
+        Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D()
+        Me.FireObjectsOK = New System.Windows.Forms.Button()
+        Me.FireObjectsCancel = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.FireNewt2 = New System.Windows.Forms.Button
+        Me.FireNewt2 = New System.Windows.Forms.Button()
         Me.GroupFireObject.SuspendLayout()
         CType(Me.FireData, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.FireObjectSummary, System.ComponentModel.ISupportInitialize).BeginInit()

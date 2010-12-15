@@ -23,10 +23,9 @@ Partial Class ViewFile
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ViewFile))
-        Me.C1PrintPreviewControl1 = New C1.Win.C1Preview.C1PrintPreviewControl
-        Me.PreviewDocument = New C1.C1Preview.C1PrintDocument
+        Me.C1PrintPreviewControl1 = New C1.Win.C1Preview.C1PrintPreviewControl()
+        Me.PreviewDocument = New C1.C1Preview.C1PrintDocument()
         CType(Me.C1PrintPreviewControl1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.C1PrintPreviewControl1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -66,7 +65,7 @@ Partial Class ViewFile
         'C1PrintPreviewControl1.PreviewPane
         '
         Me.C1PrintPreviewControl1.PreviewPane.Document = Me.PreviewDocument
-        Me.C1PrintPreviewControl1.PreviewPane.ExportOptions.Content = New C1.Win.C1Preview.ExporterOptions() {New C1.Win.C1Preview.ExporterOptions("C1dExportProvider", "", False, False, False), New C1.Win.C1Preview.ExporterOptions("PdfExportProvider", "C1.C1Preview.Export.PdfOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("RtfExportProvider", "C1.C1Preview.Export.RtfOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("DocxExportProvider", "C1.C1Preview.Export.DocxOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("XlsExportProvider", "C1.C1Preview.Export.XlsOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("XlsxExportProvider", "C1.C1Preview.Export.XlsxOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("EmfExportProvider", "C1.C1Preview.Export.EmfOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("TiffExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("PngExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("JpegExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("GifExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("BmpExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("HtmlExportProvider", "C1.C1Preview.Export.HtmlOptionsForm", False, True, True)}
+        Me.C1PrintPreviewControl1.PreviewPane.ExportOptions.Content = New C1.Win.C1Preview.ExporterOptions() {New C1.Win.C1Preview.ExporterOptions("C1dExportProvider", "C1.C1Preview.Export.C1dOptionsForm", False, False, False), New C1.Win.C1Preview.ExporterOptions("PdfExportProvider", "C1.C1Preview.Export.PdfOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("RtfExportProvider", "C1.C1Preview.Export.RtfOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("DocxExportProvider", "C1.C1Preview.Export.DocxOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("XlsExportProvider", "C1.C1Preview.Export.XlsOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("XlsxExportProvider", "C1.C1Preview.Export.XlsxOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("EmfExportProvider", "C1.C1Preview.Export.EmfOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("TiffExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("PngExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("JpegExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("GifExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("BmpExportProvider", "C1.C1Preview.Export.ImagesOptionsForm", False, True, True), New C1.Win.C1Preview.ExporterOptions("HtmlExportProvider", "C1.C1Preview.Export.HtmlOptionsForm", False, True, True)}
         Me.C1PrintPreviewControl1.PreviewPane.HideMargins = C1.Win.C1Preview.HideMarginsFlags.None
         Me.C1PrintPreviewControl1.PreviewPane.IntegrateExternalTools = True
         Me.C1PrintPreviewControl1.PreviewPane.TabIndex = 0
@@ -148,8 +147,8 @@ Partial Class ViewFile
         '
         'PreviewDocument
         '
-        Me.PreviewDocument.FontHandling = C1.C1Preview.FontHandling.None
-        Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in")
+        Me.PreviewDocument.DocumentInfo.Creator = "C1Reports Engine version 2.6.20103.54202"
+        Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in", System.Drawing.Printing.PaperSourceKind.Upper, 0, Nothing, System.Drawing.Printing.PrinterResolutionKind.Custom, 0, 0)
         '
         'ViewFile
         '
@@ -161,7 +160,6 @@ Partial Class ViewFile
         Me.Name = "ViewFile"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "ViewFile"
-        CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1PrintPreviewControl1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.C1PrintPreviewControl1.ResumeLayout(False)
         Me.C1PrintPreviewControl1.PerformLayout()

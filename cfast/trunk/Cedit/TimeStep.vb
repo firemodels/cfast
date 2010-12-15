@@ -35,12 +35,12 @@ Public Class TimeStep
     Friend WithEvents TimeStepOK As System.Windows.Forms.Button
     Friend WithEvents TimeStepValue As System.Windows.Forms.TextBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(TimeStep))
-        Me.TimeStepCancel = New System.Windows.Forms.Button
-        Me.TimeStepOK = New System.Windows.Forms.Button
-        Me.Label64 = New System.Windows.Forms.Label
-        Me.TimeStepValue = New System.Windows.Forms.TextBox
-        Me.TextBox1 = New System.Windows.Forms.TextBox
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(TimeStep))
+        Me.TimeStepCancel = New System.Windows.Forms.Button()
+        Me.TimeStepOK = New System.Windows.Forms.Button()
+        Me.Label64 = New System.Windows.Forms.Label()
+        Me.TimeStepValue = New System.Windows.Forms.TextBox()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.SuspendLayout()
         '
         'TimeStepCancel
@@ -48,6 +48,7 @@ Public Class TimeStep
         Me.TimeStepCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.TimeStepCancel.Location = New System.Drawing.Point(171, 148)
         Me.TimeStepCancel.Name = "TimeStepCancel"
+        Me.TimeStepCancel.Size = New System.Drawing.Size(75, 23)
         Me.TimeStepCancel.TabIndex = 3
         Me.TimeStepCancel.Text = "Cancel"
         '
@@ -56,6 +57,7 @@ Public Class TimeStep
         Me.TimeStepOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.TimeStepOK.Location = New System.Drawing.Point(43, 148)
         Me.TimeStepOK.Name = "TimeStepOK"
+        Me.TimeStepOK.Size = New System.Drawing.Size(75, 23)
         Me.TimeStepOK.TabIndex = 2
         Me.TimeStepOK.Text = "OK"
         '
@@ -64,7 +66,7 @@ Public Class TimeStep
         Me.Label64.AutoSize = True
         Me.Label64.Location = New System.Drawing.Point(20, 108)
         Me.Label64.Name = "Label64"
-        Me.Label64.Size = New System.Drawing.Size(165, 16)
+        Me.Label64.Size = New System.Drawing.Size(154, 13)
         Me.Label64.TabIndex = 120
         Me.Label64.Text = "Maximum Simulation Timestep::"
         Me.Label64.TextAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -75,7 +77,6 @@ Public Class TimeStep
         Me.TimeStepValue.Name = "TimeStepValue"
         Me.TimeStepValue.Size = New System.Drawing.Size(80, 20)
         Me.TimeStepValue.TabIndex = 1
-        Me.TimeStepValue.Text = ""
         '
         'TextBox1
         '
@@ -88,10 +89,7 @@ Public Class TimeStep
         Me.TextBox1.Size = New System.Drawing.Size(272, 80)
         Me.TextBox1.TabIndex = 121
         Me.TextBox1.TabStop = False
-        Me.TextBox1.Text = "The timestep should be changed with care. Usually the default value is appropriat" & _
-        "e. Values smaller than 0.2 s will increase simulation time, sometimes dramatical" & _
-        "ly.  Values larger than 2 s will reduce the accuracy of the calculation, sometim" & _
-        "es dramatically."
+        Me.TextBox1.Text = resources.GetString("TextBox1.Text")
         '
         'TimeStep
         '
@@ -113,6 +111,7 @@ Public Class TimeStep
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "TimeStep"
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 

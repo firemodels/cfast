@@ -20,21 +20,21 @@ Partial Class t2Fire
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(t2Fire))
-        Me.t2OK = New System.Windows.Forms.Button
-        Me.t2Cancel = New System.Windows.Forms.Button
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.t2GrowthType = New System.Windows.Forms.ComboBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.t2GrowthTime = New System.Windows.Forms.TextBox
-        Me.t2DecayTime = New System.Windows.Forms.TextBox
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.t2SteadyTime = New System.Windows.Forms.TextBox
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.t2PeakHRR = New System.Windows.Forms.TextBox
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D
-        Me.t2StatusStrip = New System.Windows.Forms.StatusStrip
-        Me.t2StripStatusLabel = New System.Windows.Forms.ToolStripStatusLabel
+        Me.t2OK = New System.Windows.Forms.Button()
+        Me.t2Cancel = New System.Windows.Forms.Button()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.t2GrowthType = New System.Windows.Forms.ComboBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.t2GrowthTime = New System.Windows.Forms.TextBox()
+        Me.t2DecayTime = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.t2SteadyTime = New System.Windows.Forms.TextBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.t2PeakHRR = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D()
+        Me.t2StatusStrip = New System.Windows.Forms.StatusStrip()
+        Me.t2StripStatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.t2StatusStrip.SuspendLayout()
         Me.SuspendLayout()
         '

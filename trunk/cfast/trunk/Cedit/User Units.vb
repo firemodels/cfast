@@ -48,21 +48,21 @@ Public Class User_Units
     Friend WithEvents UnitsCancel As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(User_Units))
-        Me.Time = New System.Windows.Forms.Label
-        Me.UnitsTime = New System.Windows.Forms.ComboBox
-        Me.UnitsTemperature = New System.Windows.Forms.ComboBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.UnitsPressure = New System.Windows.Forms.ComboBox
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.UnitsEnergy = New System.Windows.Forms.ComboBox
-        Me.Label18 = New System.Windows.Forms.Label
-        Me.UnitsMass = New System.Windows.Forms.ComboBox
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.UnitsOK = New System.Windows.Forms.Button
-        Me.UnitsDefault = New System.Windows.Forms.Button
-        Me.UnitsCancel = New System.Windows.Forms.Button
-        Me.UnitsLength = New System.Windows.Forms.ComboBox
-        Me.Label4 = New System.Windows.Forms.Label
+        Me.Time = New System.Windows.Forms.Label()
+        Me.UnitsTime = New System.Windows.Forms.ComboBox()
+        Me.UnitsTemperature = New System.Windows.Forms.ComboBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.UnitsPressure = New System.Windows.Forms.ComboBox()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.UnitsEnergy = New System.Windows.Forms.ComboBox()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.UnitsMass = New System.Windows.Forms.ComboBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.UnitsOK = New System.Windows.Forms.Button()
+        Me.UnitsDefault = New System.Windows.Forms.Button()
+        Me.UnitsCancel = New System.Windows.Forms.Button()
+        Me.UnitsLength = New System.Windows.Forms.ComboBox()
+        Me.Label4 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'Time

@@ -39,16 +39,17 @@ Public Class About
     Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
     Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(About))
-        Me.TextBox1 = New System.Windows.Forms.TextBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.AboutVersion = New System.Windows.Forms.Label
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox
-        Me.LinkLabel1 = New System.Windows.Forms.LinkLabel
-        Me.TextBox2 = New System.Windows.Forms.TextBox
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(About))
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.AboutVersion = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.LinkLabel1 = New System.Windows.Forms.LinkLabel()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -62,18 +63,7 @@ Public Class About
         Me.TextBox1.Size = New System.Drawing.Size(504, 152)
         Me.TextBox1.TabIndex = 0
         Me.TextBox1.TabStop = False
-        Me.TextBox1.Text = "The US Department of Commerce makes no warranty, expressed or implied, to users o" & _
-        "f CFAST, and accepts no responsibility for its use. Users of CFAST assume sole r" & _
-        "esponsibility under Federal law for determining the appropriateness of its use i" & _
-        "n any particular application; for any conclusions drawn from the results of its " & _
-        "use; and for any actions taken or not taken as a result of analysis performed us" & _
-        "ing this tools." & Microsoft.VisualBasic.ChrW(13) & Microsoft.VisualBasic.ChrW(10) & Microsoft.VisualBasic.ChrW(13) & Microsoft.VisualBasic.ChrW(10) & "CEdit and the companion program CFAST are intended for use on" & _
-        "ly by those competent in the fields of fluid dynamics, thermodynamics, combustio" & _
-        "n, and heat transfer, and is intended only to supplement the informed judgment o" & _
-        "f the qualified user. These software packages may or may not have predictive cap" & _
-        "ability when applied to a specific set of factual circumstances.  Lack of accura" & _
-        "te predictions could lead to erroneous conclusions with regard to fire safety.  " & _
-        "All results should be evaluated by an informed user."
+        Me.TextBox1.Text = resources.GetString("TextBox1.Text")
         '
         'Label1
         '
@@ -81,7 +71,7 @@ Public Class About
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.Location = New System.Drawing.Point(16, 24)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(42, 16)
+        Me.Label1.Size = New System.Drawing.Size(46, 13)
         Me.Label1.TabIndex = 1
         Me.Label1.Text = "CFAST"
         '
@@ -90,7 +80,7 @@ Public Class About
         Me.AboutVersion.AutoSize = True
         Me.AboutVersion.Location = New System.Drawing.Point(80, 24)
         Me.AboutVersion.Name = "AboutVersion"
-        Me.AboutVersion.Size = New System.Drawing.Size(0, 16)
+        Me.AboutVersion.Size = New System.Drawing.Size(0, 13)
         Me.AboutVersion.TabIndex = 2
         '
         'Label2
@@ -98,16 +88,16 @@ Public Class About
         Me.Label2.AutoSize = True
         Me.Label2.Location = New System.Drawing.Point(16, 48)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(198, 16)
+        Me.Label2.Size = New System.Drawing.Size(116, 13)
         Me.Label2.TabIndex = 3
-        Me.Label2.Text = "Building and Fire Research Laboratory"
+        Me.Label2.Text = "Engineering Laboratory"
         '
         'Label3
         '
         Me.Label3.AutoSize = True
         Me.Label3.Location = New System.Drawing.Point(16, 64)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(239, 16)
+        Me.Label3.Size = New System.Drawing.Size(229, 13)
         Me.Label3.TabIndex = 4
         Me.Label3.Text = "National Institute of Standards and Technology"
         '
@@ -148,7 +138,7 @@ Public Class About
         Me.TextBox2.TabIndex = 8
         Me.TextBox2.TabStop = False
         Me.TextBox2.Text = "CEdit includes software developed as part of the NPlot library project available " & _
-        "from: http://www.nplot.com/"
+            "from: http://www.nplot.com/"
         '
         'About
         '
@@ -169,7 +159,9 @@ Public Class About
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "About"
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 

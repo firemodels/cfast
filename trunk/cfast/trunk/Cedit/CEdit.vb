@@ -26,6 +26,8 @@ Public Class CeditMain
     Friend WithEvents TargetThickness As System.Windows.Forms.Label
     Friend WithEvents TargetInternalLocation As System.Windows.Forms.TextBox
     Friend WithEvents Label59 As System.Windows.Forms.Label
+    Friend WithEvents Label65 As System.Windows.Forms.Label
+    Friend WithEvents Label64 As System.Windows.Forms.Label
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -75,7 +77,6 @@ Public Class CeditMain
     Friend WithEvents GroupBox18 As System.Windows.Forms.GroupBox
     Friend WithEvents Label46 As System.Windows.Forms.Label
     Friend WithEvents TabGeometry As System.Windows.Forms.TabPage
-    Friend WithEvents GroupBox26 As System.Windows.Forms.GroupBox
     Friend WithEvents Label9 As System.Windows.Forms.Label
     Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
     Friend WithEvents Label15 As System.Windows.Forms.Label
@@ -397,364 +398,365 @@ Public Class CeditMain
     Friend WithEvents MainSave As System.Windows.Forms.Button
     Friend WithEvents MainRun As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(CeditMain))
-        Me.StatusBar = New System.Windows.Forms.StatusBar
-        Me.Errors = New System.Windows.Forms.StatusBarPanel
-        Me.Message = New System.Windows.Forms.StatusBarPanel
+        Me.StatusBar = New System.Windows.Forms.StatusBar()
+        Me.Errors = New System.Windows.Forms.StatusBarPanel()
+        Me.Message = New System.Windows.Forms.StatusBarPanel()
         Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
-        Me.MenuFile = New System.Windows.Forms.MenuItem
-        Me.MenuNew = New System.Windows.Forms.MenuItem
-        Me.MenuOpen = New System.Windows.Forms.MenuItem
-        Me.MenuSave = New System.Windows.Forms.MenuItem
-        Me.MenuSaveAs = New System.Windows.Forms.MenuItem
-        Me.MenuExit = New System.Windows.Forms.MenuItem
-        Me.MenuRecentSeparator = New System.Windows.Forms.MenuItem
-        Me.MenuRecent1 = New System.Windows.Forms.MenuItem
-        Me.MenuRecent2 = New System.Windows.Forms.MenuItem
-        Me.MenuRecent3 = New System.Windows.Forms.MenuItem
-        Me.MenuRecent4 = New System.Windows.Forms.MenuItem
-        Me.MenuRun = New System.Windows.Forms.MenuItem
-        Me.MenuSMVGeometry = New System.Windows.Forms.MenuItem
-        Me.MenuRunCFast = New System.Windows.Forms.MenuItem
-        Me.MenuSMVSimulation = New System.Windows.Forms.MenuItem
-        Me.MenuItem1 = New System.Windows.Forms.MenuItem
-        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem
-        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem
-        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem
-        Me.MenuTools = New System.Windows.Forms.MenuItem
-        Me.MenuThermalProperties = New System.Windows.Forms.MenuItem
-        Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem
-        Me.MenuItem3 = New System.Windows.Forms.MenuItem
-        Me.MenuUnits = New System.Windows.Forms.MenuItem
-        Me.MenuTimeStep = New System.Windows.Forms.MenuItem
-        Me.MenuView = New System.Windows.Forms.MenuItem
-        Me.MenuViewInput = New System.Windows.Forms.MenuItem
-        Me.MenuViewOutput = New System.Windows.Forms.MenuItem
-        Me.MenuViewLog = New System.Windows.Forms.MenuItem
-        Me.MenuHelp = New System.Windows.Forms.MenuItem
-        Me.MenuShowHelp = New System.Windows.Forms.MenuItem
-        Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem
-        Me.MenuAbout = New System.Windows.Forms.MenuItem
-        Me.TabEnvironment = New System.Windows.Forms.TabPage
-        Me.EnvTitle = New System.Windows.Forms.TextBox
-        Me.Label28 = New System.Windows.Forms.Label
-        Me.GroupBox9 = New System.Windows.Forms.GroupBox
-        Me.EnvTPFLookup = New System.Windows.Forms.Button
-        Me.EnvTPFileName = New System.Windows.Forms.TextBox
-        Me.GroupBox8 = New System.Windows.Forms.GroupBox
-        Me.GroupBox12 = New System.Windows.Forms.GroupBox
-        Me.Label29 = New System.Windows.Forms.Label
-        Me.EnvPowerLaw = New System.Windows.Forms.TextBox
-        Me.Label30 = New System.Windows.Forms.Label
-        Me.EnvWindHeight = New System.Windows.Forms.TextBox
-        Me.Label32 = New System.Windows.Forms.Label
-        Me.EnvWindSpeed = New System.Windows.Forms.TextBox
-        Me.Label24 = New System.Windows.Forms.Label
-        Me.EnvExtAmbElevation = New System.Windows.Forms.TextBox
-        Me.Label26 = New System.Windows.Forms.Label
-        Me.EnvExtAmbPress = New System.Windows.Forms.TextBox
-        Me.Label27 = New System.Windows.Forms.Label
-        Me.EnvExtAmbTemp = New System.Windows.Forms.TextBox
-        Me.GroupBox11 = New System.Windows.Forms.GroupBox
-        Me.Label8 = New System.Windows.Forms.Label
-        Me.EnvIntAmbElevation = New System.Windows.Forms.TextBox
-        Me.Label7 = New System.Windows.Forms.Label
-        Me.EnvIntAmbRH = New System.Windows.Forms.TextBox
-        Me.Label6 = New System.Windows.Forms.Label
-        Me.EnvIntAmbPress = New System.Windows.Forms.TextBox
-        Me.Label5 = New System.Windows.Forms.Label
-        Me.EnvIntAmbTemp = New System.Windows.Forms.TextBox
-        Me.GroupBox7 = New System.Windows.Forms.GroupBox
-        Me.Label25 = New System.Windows.Forms.Label
-        Me.EnvSmokeviewInterval = New System.Windows.Forms.TextBox
-        Me.Label4 = New System.Windows.Forms.Label
-        Me.EnvSpreadOutInterval = New System.Windows.Forms.TextBox
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.EnvBinaryOutInterval = New System.Windows.Forms.TextBox
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.EnvTextOutInterval = New System.Windows.Forms.TextBox
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.EnvSimTime = New System.Windows.Forms.TextBox
-        Me.EnvGroupErrors = New System.Windows.Forms.GroupBox
-        Me.EnvErrors = New System.Windows.Forms.TextBox
-        Me.TabHorizontalFlow = New System.Windows.Forms.TabPage
-        Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox
-        Me.HVentFractionTime = New System.Windows.Forms.TextBox
-        Me.Label82 = New System.Windows.Forms.Label
-        Me.HVentFinalFraction = New System.Windows.Forms.TextBox
-        Me.Label67 = New System.Windows.Forms.Label
-        Me.HVentFace = New System.Windows.Forms.ComboBox
-        Me.Label37 = New System.Windows.Forms.Label
-        Me.HVentInitialFraction = New System.Windows.Forms.TextBox
-        Me.Label36 = New System.Windows.Forms.Label
-        Me.GroupBox14 = New System.Windows.Forms.GroupBox
-        Me.Label31 = New System.Windows.Forms.Label
-        Me.HVentOffset2 = New System.Windows.Forms.TextBox
-        Me.HVentComp2 = New System.Windows.Forms.ComboBox
-        Me.GroupBox13 = New System.Windows.Forms.GroupBox
-        Me.Label19 = New System.Windows.Forms.Label
-        Me.HVentOffset1 = New System.Windows.Forms.TextBox
-        Me.HVentComp1 = New System.Windows.Forms.ComboBox
-        Me.HVentWindAngle = New System.Windows.Forms.TextBox
-        Me.Label35 = New System.Windows.Forms.Label
-        Me.HVentSoffit = New System.Windows.Forms.TextBox
-        Me.Label34 = New System.Windows.Forms.Label
-        Me.HVentSill = New System.Windows.Forms.TextBox
-        Me.Label33 = New System.Windows.Forms.Label
-        Me.HVentWidth = New System.Windows.Forms.TextBox
-        Me.Label23 = New System.Windows.Forms.Label
-        Me.HVentRemove = New System.Windows.Forms.Button
-        Me.HVentAdd = New System.Windows.Forms.Button
-        Me.HVentMoveDown = New System.Windows.Forms.Button
-        Me.HVentMoveUp = New System.Windows.Forms.Button
-        Me.HVentDup = New System.Windows.Forms.Button
-        Me.TabVerticalFlow = New System.Windows.Forms.TabPage
-        Me.VVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.VVentRemove = New System.Windows.Forms.Button
-        Me.VVentAdd = New System.Windows.Forms.Button
-        Me.VVentDup = New System.Windows.Forms.Button
-        Me.GroupVVents = New System.Windows.Forms.GroupBox
-        Me.VVentFractionTime = New System.Windows.Forms.TextBox
-        Me.Label96 = New System.Windows.Forms.Label
-        Me.VVentFinalFraction = New System.Windows.Forms.TextBox
-        Me.Label97 = New System.Windows.Forms.Label
-        Me.VVentInitialFraction = New System.Windows.Forms.TextBox
-        Me.Label98 = New System.Windows.Forms.Label
-        Me.VVentShape = New System.Windows.Forms.ComboBox
-        Me.Label40 = New System.Windows.Forms.Label
-        Me.GroupBox17 = New System.Windows.Forms.GroupBox
-        Me.VVentCompBottom = New System.Windows.Forms.ComboBox
-        Me.GroupBox18 = New System.Windows.Forms.GroupBox
-        Me.VVentCompTop = New System.Windows.Forms.ComboBox
-        Me.VVentArea = New System.Windows.Forms.TextBox
-        Me.Label46 = New System.Windows.Forms.Label
-        Me.TabGeometry = New System.Windows.Forms.TabPage
-        Me.CompSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.CompRemove = New System.Windows.Forms.Button
-        Me.CompAdd = New System.Windows.Forms.Button
-        Me.CompMoveDown = New System.Windows.Forms.Button
-        Me.CompMoveUp = New System.Windows.Forms.Button
-        Me.CompDup = New System.Windows.Forms.Button
-        Me.GroupCompartments = New System.Windows.Forms.GroupBox
-        Me.GroupBox26 = New System.Windows.Forms.GroupBox
-        Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.CompName = New System.Windows.Forms.TextBox
-        Me.Label9 = New System.Windows.Forms.Label
-        Me.GroupBox5 = New System.Windows.Forms.GroupBox
-        Me.CompWidth = New System.Windows.Forms.TextBox
-        Me.CompZPosition = New System.Windows.Forms.TextBox
-        Me.Label15 = New System.Windows.Forms.Label
-        Me.CompYPosition = New System.Windows.Forms.TextBox
-        Me.Label14 = New System.Windows.Forms.Label
-        Me.CompXPosition = New System.Windows.Forms.TextBox
-        Me.Label13 = New System.Windows.Forms.Label
-        Me.CompHeight = New System.Windows.Forms.TextBox
-        Me.Label12 = New System.Windows.Forms.Label
-        Me.CompDepth = New System.Windows.Forms.TextBox
-        Me.Label11 = New System.Windows.Forms.Label
-        Me.Label10 = New System.Windows.Forms.Label
-        Me.GroupFlowCharacteristics = New System.Windows.Forms.GroupBox
-        Me.CompFlow = New System.Windows.Forms.ComboBox
-        Me.CompDecayDepth = New System.Windows.Forms.TextBox
-        Me.CompDepthLabel = New System.Windows.Forms.Label
-        Me.CompDecayVelocity = New System.Windows.Forms.TextBox
-        Me.CompVelocityLabel = New System.Windows.Forms.Label
-        Me.CompDecayDistance = New System.Windows.Forms.TextBox
-        Me.CompDistanceLabel = New System.Windows.Forms.Label
-        Me.GroupBox34 = New System.Windows.Forms.GroupBox
-        Me.CompFloor = New System.Windows.Forms.ComboBox
-        Me.CompWalls = New System.Windows.Forms.ComboBox
-        Me.CompCeiling = New System.Windows.Forms.ComboBox
-        Me.Label21 = New System.Windows.Forms.Label
-        Me.Label22 = New System.Windows.Forms.Label
-        Me.Label20 = New System.Windows.Forms.Label
-        Me.MainView = New System.Windows.Forms.Button
-        Me.TabMechanicalFlow = New System.Windows.Forms.TabPage
-        Me.MVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.MVentRemove = New System.Windows.Forms.Button
-        Me.MVentAdd = New System.Windows.Forms.Button
-        Me.MVentDup = New System.Windows.Forms.Button
-        Me.GroupMVents = New System.Windows.Forms.GroupBox
-        Me.MVentFilterTime = New System.Windows.Forms.TextBox
-        Me.Label38 = New System.Windows.Forms.Label
-        Me.MVentFilterEfficiency = New System.Windows.Forms.TextBox
-        Me.Label54 = New System.Windows.Forms.Label
-        Me.MVentFractionTime = New System.Windows.Forms.TextBox
-        Me.Label99 = New System.Windows.Forms.Label
-        Me.MVentFinalFraction = New System.Windows.Forms.TextBox
-        Me.Label100 = New System.Windows.Forms.Label
-        Me.MVentInitialFraction = New System.Windows.Forms.TextBox
-        Me.Label101 = New System.Windows.Forms.Label
-        Me.MVentZero = New System.Windows.Forms.TextBox
-        Me.Label41 = New System.Windows.Forms.Label
-        Me.GroupBox20 = New System.Windows.Forms.GroupBox
-        Me.MVentToOrientation = New System.Windows.Forms.ComboBox
-        Me.Label43 = New System.Windows.Forms.Label
-        Me.MVentToHeight = New System.Windows.Forms.TextBox
-        Me.Label48 = New System.Windows.Forms.Label
-        Me.MVentToArea = New System.Windows.Forms.TextBox
-        Me.Label49 = New System.Windows.Forms.Label
-        Me.MventToComp = New System.Windows.Forms.ComboBox
-        Me.MVentDropoff = New System.Windows.Forms.TextBox
-        Me.Label42 = New System.Windows.Forms.Label
-        Me.GroupBox21 = New System.Windows.Forms.GroupBox
-        Me.MVentFromOrientation = New System.Windows.Forms.ComboBox
-        Me.Label44 = New System.Windows.Forms.Label
-        Me.MVentFromHeight = New System.Windows.Forms.TextBox
-        Me.Label50 = New System.Windows.Forms.Label
-        Me.MVentFromArea = New System.Windows.Forms.TextBox
-        Me.Label51 = New System.Windows.Forms.Label
-        Me.MVentFromComp = New System.Windows.Forms.ComboBox
-        Me.MVentFlow = New System.Windows.Forms.TextBox
-        Me.Label45 = New System.Windows.Forms.Label
-        Me.Label47 = New System.Windows.Forms.Label
-        Me.TabFires = New System.Windows.Forms.TabPage
-        Me.FireIgnitionTemperature = New System.Windows.Forms.TextBox
-        Me.Label17 = New System.Windows.Forms.Label
-        Me.FireSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.FireRemove = New System.Windows.Forms.Button
-        Me.FireAdd = New System.Windows.Forms.Button
-        Me.FireDup = New System.Windows.Forms.Button
-        Me.GroupFire = New System.Windows.Forms.GroupBox
-        Me.Label66 = New System.Windows.Forms.Label
-        Me.Label18 = New System.Windows.Forms.Label
-        Me.FirePlumeType = New System.Windows.Forms.ComboBox
-        Me.Label95 = New System.Windows.Forms.Label
-        Me.Label60 = New System.Windows.Forms.Label
-        Me.FireYPosition = New System.Windows.Forms.TextBox
-        Me.Label69 = New System.Windows.Forms.Label
-        Me.FireXPosition = New System.Windows.Forms.TextBox
-        Me.Label70 = New System.Windows.Forms.Label
-        Me.FireZPosition = New System.Windows.Forms.TextBox
-        Me.FireComp = New System.Windows.Forms.ComboBox
-        Me.Label52 = New System.Windows.Forms.Label
-        Me.FireType = New System.Windows.Forms.ComboBox
-        Me.Label53 = New System.Windows.Forms.Label
-        Me.FireIgnitionCriteria = New System.Windows.Forms.ComboBox
-        Me.FireIgnitionValue = New System.Windows.Forms.TextBox
-        Me.Label63 = New System.Windows.Forms.Label
-        Me.Label58 = New System.Windows.Forms.Label
-        Me.FireXNormal = New System.Windows.Forms.TextBox
-        Me.FireYNormal = New System.Windows.Forms.TextBox
-        Me.FireZNormal = New System.Windows.Forms.TextBox
-        Me.Label68 = New System.Windows.Forms.Label
-        Me.FireCeilingJet = New System.Windows.Forms.ComboBox
-        Me.Label62 = New System.Windows.Forms.Label
-        Me.FireLOL = New System.Windows.Forms.TextBox
-        Me.Label55 = New System.Windows.Forms.Label
-        Me.GroupFireObject = New System.Windows.Forms.GroupBox
-        Me.FireObjectEdit = New System.Windows.Forms.Button
-        Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D
-        Me.FireMaterial = New System.Windows.Forms.Label
-        Me.FireName = New System.Windows.Forms.ComboBox
-        Me.FireHoG = New System.Windows.Forms.Label
-        Me.FireHoC = New System.Windows.Forms.Label
-        Me.Label71 = New System.Windows.Forms.Label
-        Me.FireLength = New System.Windows.Forms.Label
-        Me.FireThickness = New System.Windows.Forms.Label
-        Me.FireWidth = New System.Windows.Forms.Label
-        Me.FireTotalMass = New System.Windows.Forms.Label
-        Me.FireRadiativeFraction = New System.Windows.Forms.Label
-        Me.FireVolitilizationTemp = New System.Windows.Forms.Label
-        Me.FireMolarMass = New System.Windows.Forms.Label
-        Me.TabDetection = New System.Windows.Forms.TabPage
-        Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.GroupDetectors = New System.Windows.Forms.GroupBox
-        Me.DetectorSprayDensity = New System.Windows.Forms.TextBox
-        Me.Label81 = New System.Windows.Forms.Label
-        Me.DetectorRTI = New System.Windows.Forms.TextBox
-        Me.Label83 = New System.Windows.Forms.Label
-        Me.DetectorActivation = New System.Windows.Forms.TextBox
-        Me.Label92 = New System.Windows.Forms.Label
-        Me.DetectorType = New System.Windows.Forms.ComboBox
-        Me.Label91 = New System.Windows.Forms.Label
-        Me.DetectorComp = New System.Windows.Forms.ComboBox
-        Me.Label87 = New System.Windows.Forms.Label
-        Me.GroupBox33 = New System.Windows.Forms.GroupBox
-        Me.DetectorZPosition = New System.Windows.Forms.TextBox
-        Me.Label88 = New System.Windows.Forms.Label
-        Me.DetectorYPosition = New System.Windows.Forms.TextBox
-        Me.Label89 = New System.Windows.Forms.Label
-        Me.DetectorXPosition = New System.Windows.Forms.TextBox
-        Me.Label90 = New System.Windows.Forms.Label
-        Me.DetectorRemove = New System.Windows.Forms.Button
-        Me.DetectorAdd = New System.Windows.Forms.Button
-        Me.DetectorMoveDown = New System.Windows.Forms.Button
-        Me.DetectorMoveUp = New System.Windows.Forms.Button
-        Me.DetectorDup = New System.Windows.Forms.Button
-        Me.TabTargets = New System.Windows.Forms.TabPage
-        Me.TargetSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.GroupTargets = New System.Windows.Forms.GroupBox
-        Me.Label80 = New System.Windows.Forms.Label
-        Me.Label79 = New System.Windows.Forms.Label
-        Me.TargetSolutionMethod = New System.Windows.Forms.ComboBox
-        Me.TargetMaterial = New System.Windows.Forms.ComboBox
-        Me.TargetSolutionThickness = New System.Windows.Forms.ComboBox
-        Me.Label78 = New System.Windows.Forms.Label
-        Me.TargetComp = New System.Windows.Forms.ComboBox
-        Me.Label74 = New System.Windows.Forms.Label
-        Me.GroupBox28 = New System.Windows.Forms.GroupBox
-        Me.Label57 = New System.Windows.Forms.Label
-        Me.Label56 = New System.Windows.Forms.Label
-        Me.TargetNormalCalc = New System.Windows.Forms.ComboBox
-        Me.TargetZPosition = New System.Windows.Forms.TextBox
-        Me.TargetZNormal = New System.Windows.Forms.TextBox
-        Me.Label75 = New System.Windows.Forms.Label
-        Me.Label61 = New System.Windows.Forms.Label
-        Me.TargetYPosition = New System.Windows.Forms.TextBox
-        Me.TargetYNormal = New System.Windows.Forms.TextBox
-        Me.Label72 = New System.Windows.Forms.Label
-        Me.Label76 = New System.Windows.Forms.Label
-        Me.TargetXNormal = New System.Windows.Forms.TextBox
-        Me.TargetXPosition = New System.Windows.Forms.TextBox
-        Me.Label73 = New System.Windows.Forms.Label
-        Me.Label77 = New System.Windows.Forms.Label
-        Me.TargetRemove = New System.Windows.Forms.Button
-        Me.TargetMoveDown = New System.Windows.Forms.Button
-        Me.TargetAdd = New System.Windows.Forms.Button
-        Me.TargetMoveUp = New System.Windows.Forms.Button
-        Me.TargetDup = New System.Windows.Forms.Button
-        Me.TabHeatTransfer = New System.Windows.Forms.TabPage
-        Me.GroupBox2 = New System.Windows.Forms.GroupBox
-        Me.VHeatSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.GroupVHeats = New System.Windows.Forms.GroupBox
-        Me.VHeatComp2 = New System.Windows.Forms.ComboBox
-        Me.Label16 = New System.Windows.Forms.Label
-        Me.VHeatComp1 = New System.Windows.Forms.ComboBox
-        Me.Label39 = New System.Windows.Forms.Label
-        Me.VHeatDup = New System.Windows.Forms.Button
-        Me.VHeatRemove = New System.Windows.Forms.Button
-        Me.VHeatAdd = New System.Windows.Forms.Button
-        Me.GroupBox1 = New System.Windows.Forms.GroupBox
-        Me.HHeatSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.GroupHHeats = New System.Windows.Forms.GroupBox
-        Me.HHeatComp2 = New System.Windows.Forms.ComboBox
-        Me.Label86 = New System.Windows.Forms.Label
-        Me.HHeatFraction = New System.Windows.Forms.TextBox
-        Me.HHeatComp1 = New System.Windows.Forms.ComboBox
-        Me.Label93 = New System.Windows.Forms.Label
-        Me.Label85 = New System.Windows.Forms.Label
-        Me.HHeatDup = New System.Windows.Forms.Button
-        Me.HHeatRemove = New System.Windows.Forms.Button
-        Me.HHeatAdd = New System.Windows.Forms.Button
-        Me.TabMain = New System.Windows.Forms.TabControl
-        Me.OpenDataFileDialog = New System.Windows.Forms.OpenFileDialog
-        Me.SaveDataFileDialog = New System.Windows.Forms.SaveFileDialog
-        Me.HelpProvider = New System.Windows.Forms.HelpProvider
+        Me.MenuFile = New System.Windows.Forms.MenuItem()
+        Me.MenuNew = New System.Windows.Forms.MenuItem()
+        Me.MenuOpen = New System.Windows.Forms.MenuItem()
+        Me.MenuSave = New System.Windows.Forms.MenuItem()
+        Me.MenuSaveAs = New System.Windows.Forms.MenuItem()
+        Me.MenuExit = New System.Windows.Forms.MenuItem()
+        Me.MenuRecentSeparator = New System.Windows.Forms.MenuItem()
+        Me.MenuRecent1 = New System.Windows.Forms.MenuItem()
+        Me.MenuRecent2 = New System.Windows.Forms.MenuItem()
+        Me.MenuRecent3 = New System.Windows.Forms.MenuItem()
+        Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
+        Me.MenuRun = New System.Windows.Forms.MenuItem()
+        Me.MenuSMVGeometry = New System.Windows.Forms.MenuItem()
+        Me.MenuRunCFast = New System.Windows.Forms.MenuItem()
+        Me.MenuSMVSimulation = New System.Windows.Forms.MenuItem()
+        Me.MenuItem1 = New System.Windows.Forms.MenuItem()
+        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
+        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuTools = New System.Windows.Forms.MenuItem()
+        Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
+        Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
+        Me.MenuItem3 = New System.Windows.Forms.MenuItem()
+        Me.MenuUnits = New System.Windows.Forms.MenuItem()
+        Me.MenuTimeStep = New System.Windows.Forms.MenuItem()
+        Me.MenuView = New System.Windows.Forms.MenuItem()
+        Me.MenuViewInput = New System.Windows.Forms.MenuItem()
+        Me.MenuViewOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuViewLog = New System.Windows.Forms.MenuItem()
+        Me.MenuHelp = New System.Windows.Forms.MenuItem()
+        Me.MenuShowHelp = New System.Windows.Forms.MenuItem()
+        Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
+        Me.MenuAbout = New System.Windows.Forms.MenuItem()
+        Me.TabEnvironment = New System.Windows.Forms.TabPage()
+        Me.EnvTitle = New System.Windows.Forms.TextBox()
+        Me.Label28 = New System.Windows.Forms.Label()
+        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
+        Me.EnvTPFLookup = New System.Windows.Forms.Button()
+        Me.EnvTPFileName = New System.Windows.Forms.TextBox()
+        Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.GroupBox12 = New System.Windows.Forms.GroupBox()
+        Me.Label29 = New System.Windows.Forms.Label()
+        Me.EnvPowerLaw = New System.Windows.Forms.TextBox()
+        Me.Label30 = New System.Windows.Forms.Label()
+        Me.EnvWindHeight = New System.Windows.Forms.TextBox()
+        Me.Label32 = New System.Windows.Forms.Label()
+        Me.EnvWindSpeed = New System.Windows.Forms.TextBox()
+        Me.Label24 = New System.Windows.Forms.Label()
+        Me.EnvExtAmbElevation = New System.Windows.Forms.TextBox()
+        Me.Label26 = New System.Windows.Forms.Label()
+        Me.EnvExtAmbPress = New System.Windows.Forms.TextBox()
+        Me.Label27 = New System.Windows.Forms.Label()
+        Me.EnvExtAmbTemp = New System.Windows.Forms.TextBox()
+        Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.EnvIntAmbElevation = New System.Windows.Forms.TextBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.EnvIntAmbRH = New System.Windows.Forms.TextBox()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.EnvIntAmbPress = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.EnvIntAmbTemp = New System.Windows.Forms.TextBox()
+        Me.GroupBox7 = New System.Windows.Forms.GroupBox()
+        Me.Label25 = New System.Windows.Forms.Label()
+        Me.EnvSmokeviewInterval = New System.Windows.Forms.TextBox()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.EnvSpreadOutInterval = New System.Windows.Forms.TextBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.EnvBinaryOutInterval = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.EnvTextOutInterval = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.EnvSimTime = New System.Windows.Forms.TextBox()
+        Me.EnvGroupErrors = New System.Windows.Forms.GroupBox()
+        Me.EnvErrors = New System.Windows.Forms.TextBox()
+        Me.TabHorizontalFlow = New System.Windows.Forms.TabPage()
+        Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
+        Me.HVentFractionTime = New System.Windows.Forms.TextBox()
+        Me.Label82 = New System.Windows.Forms.Label()
+        Me.HVentFinalFraction = New System.Windows.Forms.TextBox()
+        Me.Label67 = New System.Windows.Forms.Label()
+        Me.HVentFace = New System.Windows.Forms.ComboBox()
+        Me.Label37 = New System.Windows.Forms.Label()
+        Me.HVentInitialFraction = New System.Windows.Forms.TextBox()
+        Me.Label36 = New System.Windows.Forms.Label()
+        Me.GroupBox14 = New System.Windows.Forms.GroupBox()
+        Me.Label31 = New System.Windows.Forms.Label()
+        Me.HVentOffset2 = New System.Windows.Forms.TextBox()
+        Me.HVentComp2 = New System.Windows.Forms.ComboBox()
+        Me.GroupBox13 = New System.Windows.Forms.GroupBox()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.HVentOffset1 = New System.Windows.Forms.TextBox()
+        Me.HVentComp1 = New System.Windows.Forms.ComboBox()
+        Me.HVentWindAngle = New System.Windows.Forms.TextBox()
+        Me.Label35 = New System.Windows.Forms.Label()
+        Me.HVentSoffit = New System.Windows.Forms.TextBox()
+        Me.Label34 = New System.Windows.Forms.Label()
+        Me.HVentSill = New System.Windows.Forms.TextBox()
+        Me.Label33 = New System.Windows.Forms.Label()
+        Me.HVentWidth = New System.Windows.Forms.TextBox()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.HVentRemove = New System.Windows.Forms.Button()
+        Me.HVentAdd = New System.Windows.Forms.Button()
+        Me.HVentMoveDown = New System.Windows.Forms.Button()
+        Me.HVentMoveUp = New System.Windows.Forms.Button()
+        Me.HVentDup = New System.Windows.Forms.Button()
+        Me.TabVerticalFlow = New System.Windows.Forms.TabPage()
+        Me.VVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.VVentRemove = New System.Windows.Forms.Button()
+        Me.VVentAdd = New System.Windows.Forms.Button()
+        Me.VVentDup = New System.Windows.Forms.Button()
+        Me.GroupVVents = New System.Windows.Forms.GroupBox()
+        Me.VVentFractionTime = New System.Windows.Forms.TextBox()
+        Me.Label96 = New System.Windows.Forms.Label()
+        Me.VVentFinalFraction = New System.Windows.Forms.TextBox()
+        Me.Label97 = New System.Windows.Forms.Label()
+        Me.VVentInitialFraction = New System.Windows.Forms.TextBox()
+        Me.Label98 = New System.Windows.Forms.Label()
+        Me.VVentShape = New System.Windows.Forms.ComboBox()
+        Me.Label40 = New System.Windows.Forms.Label()
+        Me.GroupBox17 = New System.Windows.Forms.GroupBox()
+        Me.VVentCompBottom = New System.Windows.Forms.ComboBox()
+        Me.GroupBox18 = New System.Windows.Forms.GroupBox()
+        Me.VVentCompTop = New System.Windows.Forms.ComboBox()
+        Me.VVentArea = New System.Windows.Forms.TextBox()
+        Me.Label46 = New System.Windows.Forms.Label()
+        Me.TabGeometry = New System.Windows.Forms.TabPage()
+        Me.CompSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.CompRemove = New System.Windows.Forms.Button()
+        Me.CompAdd = New System.Windows.Forms.Button()
+        Me.CompMoveDown = New System.Windows.Forms.Button()
+        Me.CompMoveUp = New System.Windows.Forms.Button()
+        Me.CompDup = New System.Windows.Forms.Button()
+        Me.GroupCompartments = New System.Windows.Forms.GroupBox()
+        Me.CompName = New System.Windows.Forms.TextBox()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.GroupBox5 = New System.Windows.Forms.GroupBox()
+        Me.CompWidth = New System.Windows.Forms.TextBox()
+        Me.CompZPosition = New System.Windows.Forms.TextBox()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.CompYPosition = New System.Windows.Forms.TextBox()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.CompXPosition = New System.Windows.Forms.TextBox()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.CompHeight = New System.Windows.Forms.TextBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.CompDepth = New System.Windows.Forms.TextBox()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.GroupFlowCharacteristics = New System.Windows.Forms.GroupBox()
+        Me.Label65 = New System.Windows.Forms.Label()
+        Me.Label64 = New System.Windows.Forms.Label()
+        Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.CompFlow = New System.Windows.Forms.ComboBox()
+        Me.CompDecayDepth = New System.Windows.Forms.TextBox()
+        Me.CompDepthLabel = New System.Windows.Forms.Label()
+        Me.CompDecayVelocity = New System.Windows.Forms.TextBox()
+        Me.CompVelocityLabel = New System.Windows.Forms.Label()
+        Me.CompDecayDistance = New System.Windows.Forms.TextBox()
+        Me.CompDistanceLabel = New System.Windows.Forms.Label()
+        Me.GroupBox34 = New System.Windows.Forms.GroupBox()
+        Me.CompFloor = New System.Windows.Forms.ComboBox()
+        Me.CompWalls = New System.Windows.Forms.ComboBox()
+        Me.CompCeiling = New System.Windows.Forms.ComboBox()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.MainView = New System.Windows.Forms.Button()
+        Me.TabMechanicalFlow = New System.Windows.Forms.TabPage()
+        Me.MVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.MVentRemove = New System.Windows.Forms.Button()
+        Me.MVentAdd = New System.Windows.Forms.Button()
+        Me.MVentDup = New System.Windows.Forms.Button()
+        Me.GroupMVents = New System.Windows.Forms.GroupBox()
+        Me.MVentFilterTime = New System.Windows.Forms.TextBox()
+        Me.Label38 = New System.Windows.Forms.Label()
+        Me.MVentFilterEfficiency = New System.Windows.Forms.TextBox()
+        Me.Label54 = New System.Windows.Forms.Label()
+        Me.MVentFractionTime = New System.Windows.Forms.TextBox()
+        Me.Label99 = New System.Windows.Forms.Label()
+        Me.MVentFinalFraction = New System.Windows.Forms.TextBox()
+        Me.Label100 = New System.Windows.Forms.Label()
+        Me.MVentInitialFraction = New System.Windows.Forms.TextBox()
+        Me.Label101 = New System.Windows.Forms.Label()
+        Me.MVentZero = New System.Windows.Forms.TextBox()
+        Me.Label41 = New System.Windows.Forms.Label()
+        Me.GroupBox20 = New System.Windows.Forms.GroupBox()
+        Me.MVentToOrientation = New System.Windows.Forms.ComboBox()
+        Me.Label43 = New System.Windows.Forms.Label()
+        Me.MVentToHeight = New System.Windows.Forms.TextBox()
+        Me.Label48 = New System.Windows.Forms.Label()
+        Me.MVentToArea = New System.Windows.Forms.TextBox()
+        Me.Label49 = New System.Windows.Forms.Label()
+        Me.MventToComp = New System.Windows.Forms.ComboBox()
+        Me.MVentDropoff = New System.Windows.Forms.TextBox()
+        Me.Label42 = New System.Windows.Forms.Label()
+        Me.GroupBox21 = New System.Windows.Forms.GroupBox()
+        Me.MVentFromOrientation = New System.Windows.Forms.ComboBox()
+        Me.Label44 = New System.Windows.Forms.Label()
+        Me.MVentFromHeight = New System.Windows.Forms.TextBox()
+        Me.Label50 = New System.Windows.Forms.Label()
+        Me.MVentFromArea = New System.Windows.Forms.TextBox()
+        Me.Label51 = New System.Windows.Forms.Label()
+        Me.MVentFromComp = New System.Windows.Forms.ComboBox()
+        Me.MVentFlow = New System.Windows.Forms.TextBox()
+        Me.Label45 = New System.Windows.Forms.Label()
+        Me.Label47 = New System.Windows.Forms.Label()
+        Me.TabFires = New System.Windows.Forms.TabPage()
+        Me.FireIgnitionTemperature = New System.Windows.Forms.TextBox()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.FireSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.FireRemove = New System.Windows.Forms.Button()
+        Me.FireAdd = New System.Windows.Forms.Button()
+        Me.FireDup = New System.Windows.Forms.Button()
+        Me.GroupFire = New System.Windows.Forms.GroupBox()
+        Me.Label66 = New System.Windows.Forms.Label()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.FirePlumeType = New System.Windows.Forms.ComboBox()
+        Me.Label95 = New System.Windows.Forms.Label()
+        Me.Label60 = New System.Windows.Forms.Label()
+        Me.FireYPosition = New System.Windows.Forms.TextBox()
+        Me.Label69 = New System.Windows.Forms.Label()
+        Me.FireXPosition = New System.Windows.Forms.TextBox()
+        Me.Label70 = New System.Windows.Forms.Label()
+        Me.FireZPosition = New System.Windows.Forms.TextBox()
+        Me.FireComp = New System.Windows.Forms.ComboBox()
+        Me.Label52 = New System.Windows.Forms.Label()
+        Me.FireType = New System.Windows.Forms.ComboBox()
+        Me.Label53 = New System.Windows.Forms.Label()
+        Me.FireIgnitionCriteria = New System.Windows.Forms.ComboBox()
+        Me.FireIgnitionValue = New System.Windows.Forms.TextBox()
+        Me.Label63 = New System.Windows.Forms.Label()
+        Me.Label58 = New System.Windows.Forms.Label()
+        Me.FireXNormal = New System.Windows.Forms.TextBox()
+        Me.FireYNormal = New System.Windows.Forms.TextBox()
+        Me.FireZNormal = New System.Windows.Forms.TextBox()
+        Me.Label68 = New System.Windows.Forms.Label()
+        Me.FireCeilingJet = New System.Windows.Forms.ComboBox()
+        Me.Label62 = New System.Windows.Forms.Label()
+        Me.FireLOL = New System.Windows.Forms.TextBox()
+        Me.Label55 = New System.Windows.Forms.Label()
+        Me.GroupFireObject = New System.Windows.Forms.GroupBox()
+        Me.FireObjectEdit = New System.Windows.Forms.Button()
+        Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D()
+        Me.FireMaterial = New System.Windows.Forms.Label()
+        Me.FireName = New System.Windows.Forms.ComboBox()
+        Me.FireHoG = New System.Windows.Forms.Label()
+        Me.FireHoC = New System.Windows.Forms.Label()
+        Me.Label71 = New System.Windows.Forms.Label()
+        Me.FireLength = New System.Windows.Forms.Label()
+        Me.FireThickness = New System.Windows.Forms.Label()
+        Me.FireWidth = New System.Windows.Forms.Label()
+        Me.FireTotalMass = New System.Windows.Forms.Label()
+        Me.FireRadiativeFraction = New System.Windows.Forms.Label()
+        Me.FireVolitilizationTemp = New System.Windows.Forms.Label()
+        Me.FireMolarMass = New System.Windows.Forms.Label()
+        Me.TabDetection = New System.Windows.Forms.TabPage()
+        Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupDetectors = New System.Windows.Forms.GroupBox()
+        Me.DetectorSprayDensity = New System.Windows.Forms.TextBox()
+        Me.Label81 = New System.Windows.Forms.Label()
+        Me.DetectorRTI = New System.Windows.Forms.TextBox()
+        Me.Label83 = New System.Windows.Forms.Label()
+        Me.DetectorActivation = New System.Windows.Forms.TextBox()
+        Me.Label92 = New System.Windows.Forms.Label()
+        Me.DetectorType = New System.Windows.Forms.ComboBox()
+        Me.Label91 = New System.Windows.Forms.Label()
+        Me.DetectorComp = New System.Windows.Forms.ComboBox()
+        Me.Label87 = New System.Windows.Forms.Label()
+        Me.GroupBox33 = New System.Windows.Forms.GroupBox()
+        Me.DetectorZPosition = New System.Windows.Forms.TextBox()
+        Me.Label88 = New System.Windows.Forms.Label()
+        Me.DetectorYPosition = New System.Windows.Forms.TextBox()
+        Me.Label89 = New System.Windows.Forms.Label()
+        Me.DetectorXPosition = New System.Windows.Forms.TextBox()
+        Me.Label90 = New System.Windows.Forms.Label()
+        Me.DetectorRemove = New System.Windows.Forms.Button()
+        Me.DetectorAdd = New System.Windows.Forms.Button()
+        Me.DetectorMoveDown = New System.Windows.Forms.Button()
+        Me.DetectorMoveUp = New System.Windows.Forms.Button()
+        Me.DetectorDup = New System.Windows.Forms.Button()
+        Me.TabTargets = New System.Windows.Forms.TabPage()
+        Me.TargetSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupTargets = New System.Windows.Forms.GroupBox()
+        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.TargetInternalLocation = New System.Windows.Forms.TextBox()
+        Me.Label59 = New System.Windows.Forms.Label()
+        Me.TargetSpecHeat = New System.Windows.Forms.Label()
+        Me.TargetDensity = New System.Windows.Forms.Label()
+        Me.TargetThickness = New System.Windows.Forms.Label()
+        Me.TargetConduct = New System.Windows.Forms.Label()
+        Me.TargetMaterial = New System.Windows.Forms.ComboBox()
+        Me.Label78 = New System.Windows.Forms.Label()
+        Me.Label80 = New System.Windows.Forms.Label()
+        Me.Label79 = New System.Windows.Forms.Label()
+        Me.TargetSolutionMethod = New System.Windows.Forms.ComboBox()
+        Me.TargetSolutionThickness = New System.Windows.Forms.ComboBox()
+        Me.TargetComp = New System.Windows.Forms.ComboBox()
+        Me.Label74 = New System.Windows.Forms.Label()
+        Me.GroupBox28 = New System.Windows.Forms.GroupBox()
+        Me.Label57 = New System.Windows.Forms.Label()
+        Me.Label56 = New System.Windows.Forms.Label()
+        Me.TargetNormalCalc = New System.Windows.Forms.ComboBox()
+        Me.TargetZPosition = New System.Windows.Forms.TextBox()
+        Me.TargetZNormal = New System.Windows.Forms.TextBox()
+        Me.Label75 = New System.Windows.Forms.Label()
+        Me.Label61 = New System.Windows.Forms.Label()
+        Me.TargetYPosition = New System.Windows.Forms.TextBox()
+        Me.TargetYNormal = New System.Windows.Forms.TextBox()
+        Me.Label72 = New System.Windows.Forms.Label()
+        Me.Label76 = New System.Windows.Forms.Label()
+        Me.TargetXNormal = New System.Windows.Forms.TextBox()
+        Me.TargetXPosition = New System.Windows.Forms.TextBox()
+        Me.Label73 = New System.Windows.Forms.Label()
+        Me.Label77 = New System.Windows.Forms.Label()
+        Me.TargetRemove = New System.Windows.Forms.Button()
+        Me.TargetMoveDown = New System.Windows.Forms.Button()
+        Me.TargetAdd = New System.Windows.Forms.Button()
+        Me.TargetMoveUp = New System.Windows.Forms.Button()
+        Me.TargetDup = New System.Windows.Forms.Button()
+        Me.TabHeatTransfer = New System.Windows.Forms.TabPage()
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.VHeatSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupVHeats = New System.Windows.Forms.GroupBox()
+        Me.VHeatComp2 = New System.Windows.Forms.ComboBox()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.VHeatComp1 = New System.Windows.Forms.ComboBox()
+        Me.Label39 = New System.Windows.Forms.Label()
+        Me.VHeatDup = New System.Windows.Forms.Button()
+        Me.VHeatRemove = New System.Windows.Forms.Button()
+        Me.VHeatAdd = New System.Windows.Forms.Button()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.HHeatSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupHHeats = New System.Windows.Forms.GroupBox()
+        Me.HHeatComp2 = New System.Windows.Forms.ComboBox()
+        Me.Label86 = New System.Windows.Forms.Label()
+        Me.HHeatFraction = New System.Windows.Forms.TextBox()
+        Me.HHeatComp1 = New System.Windows.Forms.ComboBox()
+        Me.Label93 = New System.Windows.Forms.Label()
+        Me.Label85 = New System.Windows.Forms.Label()
+        Me.HHeatDup = New System.Windows.Forms.Button()
+        Me.HHeatRemove = New System.Windows.Forms.Button()
+        Me.HHeatAdd = New System.Windows.Forms.Button()
+        Me.TabMain = New System.Windows.Forms.TabControl()
+        Me.OpenDataFileDialog = New System.Windows.Forms.OpenFileDialog()
+        Me.SaveDataFileDialog = New System.Windows.Forms.SaveFileDialog()
+        Me.HelpProvider = New System.Windows.Forms.HelpProvider()
         Me.ErrorProvider1 = New System.Windows.Forms.ErrorProvider(Me.components)
-        Me.MainSave = New System.Windows.Forms.Button
-        Me.MainRun = New System.Windows.Forms.Button
-        Me.MainGeometry = New System.Windows.Forms.Button
+        Me.MainSave = New System.Windows.Forms.Button()
+        Me.MainRun = New System.Windows.Forms.Button()
+        Me.MainGeometry = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox
-        Me.TargetConduct = New System.Windows.Forms.Label
-        Me.TargetThickness = New System.Windows.Forms.Label
-        Me.TargetDensity = New System.Windows.Forms.Label
-        Me.TargetSpecHeat = New System.Windows.Forms.Label
-        Me.Label59 = New System.Windows.Forms.Label
-        Me.TargetInternalLocation = New System.Windows.Forms.TextBox
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -777,10 +779,9 @@ Public Class CeditMain
         Me.TabGeometry.SuspendLayout()
         CType(Me.CompSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupCompartments.SuspendLayout()
-        Me.GroupBox26.SuspendLayout()
-        CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox5.SuspendLayout()
         Me.GroupFlowCharacteristics.SuspendLayout()
+        CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox34.SuspendLayout()
         Me.TabMechanicalFlow.SuspendLayout()
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -798,6 +799,7 @@ Public Class CeditMain
         Me.TabTargets.SuspendLayout()
         CType(Me.TargetSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupTargets.SuspendLayout()
+        Me.GroupBox3.SuspendLayout()
         Me.GroupBox28.SuspendLayout()
         Me.TabHeatTransfer.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -809,7 +811,6 @@ Public Class CeditMain
         Me.TabMain.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox3.SuspendLayout()
         Me.SuspendLayout()
         '
         'StatusBar
@@ -1450,7 +1451,7 @@ Public Class CeditMain
         Me.HVentSummary.Rows.DefaultSize = 17
         Me.HVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
-        Me.HVentSummary.ShowSort = False
+        Me.HVentSummary.ShowSortPosition = C1.Win.C1FlexGrid.ShowSortPositionEnum.None
         Me.HVentSummary.Size = New System.Drawing.Size(782, 192)
         Me.HVentSummary.StyleInfo = resources.GetString("HVentSummary.StyleInfo")
         Me.HVentSummary.TabIndex = 1
@@ -2009,7 +2010,6 @@ Public Class CeditMain
         '
         'GroupCompartments
         '
-        Me.GroupCompartments.Controls.Add(Me.GroupBox26)
         Me.GroupCompartments.Controls.Add(Me.CompName)
         Me.GroupCompartments.Controls.Add(Me.Label9)
         Me.GroupCompartments.Controls.Add(Me.GroupBox5)
@@ -2021,31 +2021,6 @@ Public Class CeditMain
         Me.GroupCompartments.TabIndex = 7
         Me.GroupCompartments.TabStop = False
         Me.GroupCompartments.Text = "Compartment 1"
-        '
-        'GroupBox26
-        '
-        Me.GroupBox26.Controls.Add(Me.CompVariableArea)
-        Me.GroupBox26.Location = New System.Drawing.Point(480, 200)
-        Me.GroupBox26.Name = "GroupBox26"
-        Me.GroupBox26.Size = New System.Drawing.Size(432, 144)
-        Me.GroupBox26.TabIndex = 25
-        Me.GroupBox26.TabStop = False
-        Me.GroupBox26.Text = "Variable Cross-Sectional Area"
-        '
-        'CompVariableArea
-        '
-        Me.CompVariableArea.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
-        Me.CompVariableArea.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.CompVariableArea.AutoClipboard = True
-        Me.CompVariableArea.ColumnInfo = resources.GetString("CompVariableArea.ColumnInfo")
-        Me.CompVariableArea.ExtendLastCol = True
-        Me.CompVariableArea.Location = New System.Drawing.Point(122, 24)
-        Me.CompVariableArea.Name = "CompVariableArea"
-        Me.CompVariableArea.Rows.DefaultSize = 17
-        Me.CompVariableArea.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.CompVariableArea.Size = New System.Drawing.Size(190, 96)
-        Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
-        Me.CompVariableArea.TabIndex = 26
         '
         'CompName
         '
@@ -2081,21 +2056,21 @@ Public Class CeditMain
         Me.GroupBox5.Controls.Add(Me.Label10)
         Me.GroupBox5.Location = New System.Drawing.Point(32, 48)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(368, 136)
+        Me.GroupBox5.Size = New System.Drawing.Size(368, 166)
         Me.GroupBox5.TabIndex = 9
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Geometry"
         '
         'CompWidth
         '
-        Me.CompWidth.Location = New System.Drawing.Point(64, 32)
+        Me.CompWidth.Location = New System.Drawing.Point(69, 31)
         Me.CompWidth.Name = "CompWidth"
         Me.CompWidth.Size = New System.Drawing.Size(96, 20)
         Me.CompWidth.TabIndex = 10
         '
         'CompZPosition
         '
-        Me.CompZPosition.Location = New System.Drawing.Point(256, 96)
+        Me.CompZPosition.Location = New System.Drawing.Point(261, 95)
         Me.CompZPosition.Name = "CompZPosition"
         Me.CompZPosition.Size = New System.Drawing.Size(96, 20)
         Me.CompZPosition.TabIndex = 15
@@ -2104,7 +2079,7 @@ Public Class CeditMain
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(232, 96)
+        Me.Label15.Location = New System.Drawing.Point(237, 99)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(17, 13)
         Me.Label15.TabIndex = 37
@@ -2113,7 +2088,7 @@ Public Class CeditMain
         '
         'CompYPosition
         '
-        Me.CompYPosition.Location = New System.Drawing.Point(256, 64)
+        Me.CompYPosition.Location = New System.Drawing.Point(261, 63)
         Me.CompYPosition.Name = "CompYPosition"
         Me.CompYPosition.Size = New System.Drawing.Size(96, 20)
         Me.CompYPosition.TabIndex = 14
@@ -2122,7 +2097,7 @@ Public Class CeditMain
         'Label14
         '
         Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(231, 64)
+        Me.Label14.Location = New System.Drawing.Point(236, 67)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(17, 13)
         Me.Label14.TabIndex = 35
@@ -2131,7 +2106,7 @@ Public Class CeditMain
         '
         'CompXPosition
         '
-        Me.CompXPosition.Location = New System.Drawing.Point(256, 32)
+        Me.CompXPosition.Location = New System.Drawing.Point(261, 31)
         Me.CompXPosition.Name = "CompXPosition"
         Me.CompXPosition.Size = New System.Drawing.Size(96, 20)
         Me.CompXPosition.TabIndex = 13
@@ -2140,7 +2115,7 @@ Public Class CeditMain
         'Label13
         '
         Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(185, 32)
+        Me.Label13.Location = New System.Drawing.Point(190, 35)
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(60, 13)
         Me.Label13.TabIndex = 33
@@ -2149,7 +2124,7 @@ Public Class CeditMain
         '
         'CompHeight
         '
-        Me.CompHeight.Location = New System.Drawing.Point(64, 96)
+        Me.CompHeight.Location = New System.Drawing.Point(69, 95)
         Me.CompHeight.Name = "CompHeight"
         Me.CompHeight.Size = New System.Drawing.Size(96, 20)
         Me.CompHeight.TabIndex = 12
@@ -2157,7 +2132,7 @@ Public Class CeditMain
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(6, 96)
+        Me.Label12.Location = New System.Drawing.Point(11, 99)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(57, 13)
         Me.Label12.TabIndex = 31
@@ -2166,7 +2141,7 @@ Public Class CeditMain
         '
         'CompDepth
         '
-        Me.CompDepth.Location = New System.Drawing.Point(64, 64)
+        Me.CompDepth.Location = New System.Drawing.Point(69, 63)
         Me.CompDepth.Name = "CompDepth"
         Me.CompDepth.Size = New System.Drawing.Size(96, 20)
         Me.CompDepth.TabIndex = 11
@@ -2174,7 +2149,7 @@ Public Class CeditMain
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(8, 64)
+        Me.Label11.Location = New System.Drawing.Point(13, 67)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(55, 13)
         Me.Label11.TabIndex = 209
@@ -2184,7 +2159,7 @@ Public Class CeditMain
         'Label10
         '
         Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(10, 32)
+        Me.Label10.Location = New System.Drawing.Point(15, 35)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(54, 13)
         Me.Label10.TabIndex = 27
@@ -2193,6 +2168,9 @@ Public Class CeditMain
         '
         'GroupFlowCharacteristics
         '
+        Me.GroupFlowCharacteristics.Controls.Add(Me.Label65)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.Label64)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.CompVariableArea)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompFlow)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompDecayDepth)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompDepthLabel)
@@ -2202,15 +2180,48 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompDistanceLabel)
         Me.GroupFlowCharacteristics.Location = New System.Drawing.Point(480, 48)
         Me.GroupFlowCharacteristics.Name = "GroupFlowCharacteristics"
-        Me.GroupFlowCharacteristics.Size = New System.Drawing.Size(432, 136)
+        Me.GroupFlowCharacteristics.Size = New System.Drawing.Size(432, 166)
         Me.GroupFlowCharacteristics.TabIndex = 20
         Me.GroupFlowCharacteristics.TabStop = False
-        Me.GroupFlowCharacteristics.Text = "Flow Characteristics"
+        Me.GroupFlowCharacteristics.Text = "Advanced"
+        '
+        'Label65
+        '
+        Me.Label65.AutoSize = True
+        Me.Label65.Location = New System.Drawing.Point(260, 16)
+        Me.Label65.Name = "Label65"
+        Me.Label65.Size = New System.Drawing.Size(144, 13)
+        Me.Label65.TabIndex = 47
+        Me.Label65.Text = "Variable Cross-sectional Area"
+        '
+        'Label64
+        '
+        Me.Label64.AutoSize = True
+        Me.Label64.Location = New System.Drawing.Point(73, 16)
+        Me.Label64.Name = "Label64"
+        Me.Label64.Size = New System.Drawing.Size(101, 13)
+        Me.Label64.TabIndex = 46
+        Me.Label64.Text = "Flow Characteristics"
+        '
+        'CompVariableArea
+        '
+        Me.CompVariableArea.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.CompVariableArea.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.CompVariableArea.AutoClipboard = True
+        Me.CompVariableArea.ColumnInfo = resources.GetString("CompVariableArea.ColumnInfo")
+        Me.CompVariableArea.ExtendLastCol = True
+        Me.CompVariableArea.Location = New System.Drawing.Point(236, 49)
+        Me.CompVariableArea.Name = "CompVariableArea"
+        Me.CompVariableArea.Rows.DefaultSize = 17
+        Me.CompVariableArea.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.CompVariableArea.Size = New System.Drawing.Size(190, 111)
+        Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
+        Me.CompVariableArea.TabIndex = 26
         '
         'CompFlow
         '
         Me.CompFlow.Items.AddRange(New Object() {"Normal", "Shaft", "Corridor"})
-        Me.CompFlow.Location = New System.Drawing.Point(51, 57)
+        Me.CompFlow.Location = New System.Drawing.Point(62, 49)
         Me.CompFlow.MaxDropDownItems = 3
         Me.CompFlow.Name = "CompFlow"
         Me.CompFlow.Size = New System.Drawing.Size(121, 21)
@@ -2219,14 +2230,14 @@ Public Class CeditMain
         '
         'CompDecayDepth
         '
-        Me.CompDecayDepth.Location = New System.Drawing.Point(317, 63)
+        Me.CompDecayDepth.Location = New System.Drawing.Point(126, 108)
         Me.CompDecayDepth.Name = "CompDecayDepth"
         Me.CompDecayDepth.Size = New System.Drawing.Size(96, 20)
         Me.CompDecayDepth.TabIndex = 23
         '
         'CompDepthLabel
         '
-        Me.CompDepthLabel.Location = New System.Drawing.Point(221, 55)
+        Me.CompDepthLabel.Location = New System.Drawing.Point(32, 106)
         Me.CompDepthLabel.Name = "CompDepthLabel"
         Me.CompDepthLabel.Size = New System.Drawing.Size(88, 23)
         Me.CompDepthLabel.TabIndex = 43
@@ -2235,30 +2246,31 @@ Public Class CeditMain
         '
         'CompDecayVelocity
         '
-        Me.CompDecayVelocity.Location = New System.Drawing.Point(317, 31)
+        Me.CompDecayVelocity.Location = New System.Drawing.Point(126, 76)
         Me.CompDecayVelocity.Name = "CompDecayVelocity"
         Me.CompDecayVelocity.Size = New System.Drawing.Size(96, 20)
         Me.CompDecayVelocity.TabIndex = 22
         '
         'CompVelocityLabel
         '
-        Me.CompVelocityLabel.Location = New System.Drawing.Point(189, 31)
+        Me.CompVelocityLabel.AutoSize = True
+        Me.CompVelocityLabel.Location = New System.Drawing.Point(10, 79)
         Me.CompVelocityLabel.Name = "CompVelocityLabel"
-        Me.CompVelocityLabel.Size = New System.Drawing.Size(120, 23)
+        Me.CompVelocityLabel.Size = New System.Drawing.Size(110, 13)
         Me.CompVelocityLabel.TabIndex = 41
         Me.CompVelocityLabel.Text = "50 % Decay, Velocity:"
         Me.CompVelocityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'CompDecayDistance
         '
-        Me.CompDecayDistance.Location = New System.Drawing.Point(317, 95)
+        Me.CompDecayDistance.Location = New System.Drawing.Point(126, 140)
         Me.CompDecayDistance.Name = "CompDecayDistance"
         Me.CompDecayDistance.Size = New System.Drawing.Size(96, 20)
         Me.CompDecayDistance.TabIndex = 24
         '
         'CompDistanceLabel
         '
-        Me.CompDistanceLabel.Location = New System.Drawing.Point(221, 87)
+        Me.CompDistanceLabel.Location = New System.Drawing.Point(32, 138)
         Me.CompDistanceLabel.Name = "CompDistanceLabel"
         Me.CompDistanceLabel.Size = New System.Drawing.Size(88, 23)
         Me.CompDistanceLabel.TabIndex = 45
@@ -2273,9 +2285,9 @@ Public Class CeditMain
         Me.GroupBox34.Controls.Add(Me.Label21)
         Me.GroupBox34.Controls.Add(Me.Label22)
         Me.GroupBox34.Controls.Add(Me.Label20)
-        Me.GroupBox34.Location = New System.Drawing.Point(32, 201)
+        Me.GroupBox34.Location = New System.Drawing.Point(32, 220)
         Me.GroupBox34.Name = "GroupBox34"
-        Me.GroupBox34.Size = New System.Drawing.Size(368, 144)
+        Me.GroupBox34.Size = New System.Drawing.Size(880, 125)
         Me.GroupBox34.TabIndex = 16
         Me.GroupBox34.TabStop = False
         Me.GroupBox34.Text = "Materials"
@@ -2283,7 +2295,7 @@ Public Class CeditMain
         'CompFloor
         '
         Me.CompFloor.ItemHeight = 13
-        Me.CompFloor.Location = New System.Drawing.Point(116, 94)
+        Me.CompFloor.Location = New System.Drawing.Point(645, 21)
         Me.CompFloor.Name = "CompFloor"
         Me.CompFloor.Size = New System.Drawing.Size(192, 21)
         Me.CompFloor.TabIndex = 19
@@ -2291,7 +2303,7 @@ Public Class CeditMain
         'CompWalls
         '
         Me.CompWalls.ItemHeight = 13
-        Me.CompWalls.Location = New System.Drawing.Point(116, 62)
+        Me.CompWalls.Location = New System.Drawing.Point(350, 20)
         Me.CompWalls.Name = "CompWalls"
         Me.CompWalls.Size = New System.Drawing.Size(192, 21)
         Me.CompWalls.TabIndex = 18
@@ -2299,7 +2311,7 @@ Public Class CeditMain
         'CompCeiling
         '
         Me.CompCeiling.ItemHeight = 13
-        Me.CompCeiling.Location = New System.Drawing.Point(116, 30)
+        Me.CompCeiling.Location = New System.Drawing.Point(61, 19)
         Me.CompCeiling.Name = "CompCeiling"
         Me.CompCeiling.Size = New System.Drawing.Size(192, 21)
         Me.CompCeiling.TabIndex = 17
@@ -2307,7 +2319,7 @@ Public Class CeditMain
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(68, 63)
+        Me.Label21.Location = New System.Drawing.Point(302, 21)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(36, 13)
         Me.Label21.TabIndex = 39
@@ -2317,7 +2329,7 @@ Public Class CeditMain
         'Label22
         '
         Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(60, 31)
+        Me.Label22.Location = New System.Drawing.Point(5, 20)
         Me.Label22.Name = "Label22"
         Me.Label22.Size = New System.Drawing.Size(41, 13)
         Me.Label22.TabIndex = 38
@@ -2327,7 +2339,7 @@ Public Class CeditMain
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(68, 95)
+        Me.Label20.Location = New System.Drawing.Point(597, 22)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(33, 13)
         Me.Label20.TabIndex = 40
@@ -3543,6 +3555,95 @@ Public Class CeditMain
         Me.GroupTargets.TabStop = False
         Me.GroupTargets.Text = "Target 1"
         '
+        'GroupBox3
+        '
+        Me.GroupBox3.Controls.Add(Me.TargetInternalLocation)
+        Me.GroupBox3.Controls.Add(Me.Label59)
+        Me.GroupBox3.Controls.Add(Me.TargetSpecHeat)
+        Me.GroupBox3.Controls.Add(Me.TargetDensity)
+        Me.GroupBox3.Controls.Add(Me.TargetThickness)
+        Me.GroupBox3.Controls.Add(Me.TargetConduct)
+        Me.GroupBox3.Controls.Add(Me.TargetMaterial)
+        Me.GroupBox3.Controls.Add(Me.Label78)
+        Me.GroupBox3.Location = New System.Drawing.Point(66, 75)
+        Me.GroupBox3.Name = "GroupBox3"
+        Me.GroupBox3.Size = New System.Drawing.Size(267, 175)
+        Me.GroupBox3.TabIndex = 56
+        Me.GroupBox3.TabStop = False
+        Me.GroupBox3.Text = "Target Construction"
+        '
+        'TargetInternalLocation
+        '
+        Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 140)
+        Me.TargetInternalLocation.Name = "TargetInternalLocation"
+        Me.TargetInternalLocation.Size = New System.Drawing.Size(96, 20)
+        Me.TargetInternalLocation.TabIndex = 41
+        Me.TargetInternalLocation.Text = "0.5"
+        '
+        'Label59
+        '
+        Me.Label59.AutoSize = True
+        Me.Label59.Location = New System.Drawing.Point(7, 144)
+        Me.Label59.Name = "Label59"
+        Me.Label59.Size = New System.Drawing.Size(120, 13)
+        Me.Label59.TabIndex = 40
+        Me.Label59.Text = "Internal Temperature at:"
+        '
+        'TargetSpecHeat
+        '
+        Me.TargetSpecHeat.AutoSize = True
+        Me.TargetSpecHeat.Location = New System.Drawing.Point(7, 75)
+        Me.TargetSpecHeat.Name = "TargetSpecHeat"
+        Me.TargetSpecHeat.Size = New System.Drawing.Size(74, 13)
+        Me.TargetSpecHeat.TabIndex = 39
+        Me.TargetSpecHeat.Text = "Specific Heat:"
+        '
+        'TargetDensity
+        '
+        Me.TargetDensity.AutoSize = True
+        Me.TargetDensity.Location = New System.Drawing.Point(7, 98)
+        Me.TargetDensity.Name = "TargetDensity"
+        Me.TargetDensity.Size = New System.Drawing.Size(45, 13)
+        Me.TargetDensity.TabIndex = 38
+        Me.TargetDensity.Text = "Density:"
+        '
+        'TargetThickness
+        '
+        Me.TargetThickness.AutoSize = True
+        Me.TargetThickness.Location = New System.Drawing.Point(7, 121)
+        Me.TargetThickness.Name = "TargetThickness"
+        Me.TargetThickness.Size = New System.Drawing.Size(59, 13)
+        Me.TargetThickness.TabIndex = 37
+        Me.TargetThickness.Text = "Thickness:"
+        '
+        'TargetConduct
+        '
+        Me.TargetConduct.AutoSize = True
+        Me.TargetConduct.Location = New System.Drawing.Point(7, 52)
+        Me.TargetConduct.Name = "TargetConduct"
+        Me.TargetConduct.Size = New System.Drawing.Size(68, 13)
+        Me.TargetConduct.TabIndex = 36
+        Me.TargetConduct.Text = "Conductivity:"
+        '
+        'TargetMaterial
+        '
+        Me.TargetMaterial.ItemHeight = 13
+        Me.TargetMaterial.Location = New System.Drawing.Point(60, 19)
+        Me.TargetMaterial.Name = "TargetMaterial"
+        Me.TargetMaterial.Size = New System.Drawing.Size(192, 21)
+        Me.TargetMaterial.TabIndex = 9
+        Me.TargetMaterial.Text = "GYPSUM"
+        '
+        'Label78
+        '
+        Me.Label78.AutoSize = True
+        Me.Label78.Location = New System.Drawing.Point(7, 22)
+        Me.Label78.Name = "Label78"
+        Me.Label78.Size = New System.Drawing.Size(47, 13)
+        Me.Label78.TabIndex = 35
+        Me.Label78.Text = "Material:"
+        Me.Label78.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'Label80
         '
         Me.Label80.AutoSize = True
@@ -3573,15 +3674,6 @@ Public Class CeditMain
         Me.TargetSolutionMethod.TabIndex = 10
         Me.TargetSolutionMethod.Text = "Implicit"
         '
-        'TargetMaterial
-        '
-        Me.TargetMaterial.ItemHeight = 13
-        Me.TargetMaterial.Location = New System.Drawing.Point(60, 19)
-        Me.TargetMaterial.Name = "TargetMaterial"
-        Me.TargetMaterial.Size = New System.Drawing.Size(192, 21)
-        Me.TargetMaterial.TabIndex = 9
-        Me.TargetMaterial.Text = "GYPSUM"
-        '
         'TargetSolutionThickness
         '
         Me.TargetSolutionThickness.ItemHeight = 13
@@ -3591,16 +3683,6 @@ Public Class CeditMain
         Me.TargetSolutionThickness.Size = New System.Drawing.Size(104, 21)
         Me.TargetSolutionThickness.TabIndex = 8
         Me.TargetSolutionThickness.Text = "Thermally Thick"
-        '
-        'Label78
-        '
-        Me.Label78.AutoSize = True
-        Me.Label78.Location = New System.Drawing.Point(7, 22)
-        Me.Label78.Name = "Label78"
-        Me.Label78.Size = New System.Drawing.Size(47, 13)
-        Me.Label78.TabIndex = 35
-        Me.Label78.Text = "Material:"
-        Me.Label78.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'TargetComp
         '
@@ -4111,76 +4193,6 @@ Public Class CeditMain
         Me.MainGeometry.TabIndex = 102
         Me.MainGeometry.Text = "Geometry"
         '
-        'GroupBox3
-        '
-        Me.GroupBox3.Controls.Add(Me.TargetInternalLocation)
-        Me.GroupBox3.Controls.Add(Me.Label59)
-        Me.GroupBox3.Controls.Add(Me.TargetSpecHeat)
-        Me.GroupBox3.Controls.Add(Me.TargetDensity)
-        Me.GroupBox3.Controls.Add(Me.TargetThickness)
-        Me.GroupBox3.Controls.Add(Me.TargetConduct)
-        Me.GroupBox3.Controls.Add(Me.TargetMaterial)
-        Me.GroupBox3.Controls.Add(Me.Label78)
-        Me.GroupBox3.Location = New System.Drawing.Point(66, 75)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(267, 175)
-        Me.GroupBox3.TabIndex = 56
-        Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "Target Construction"
-        '
-        'TargetConduct
-        '
-        Me.TargetConduct.AutoSize = True
-        Me.TargetConduct.Location = New System.Drawing.Point(7, 52)
-        Me.TargetConduct.Name = "TargetConduct"
-        Me.TargetConduct.Size = New System.Drawing.Size(68, 13)
-        Me.TargetConduct.TabIndex = 36
-        Me.TargetConduct.Text = "Conductivity:"
-        '
-        'TargetThickness
-        '
-        Me.TargetThickness.AutoSize = True
-        Me.TargetThickness.Location = New System.Drawing.Point(7, 121)
-        Me.TargetThickness.Name = "TargetThickness"
-        Me.TargetThickness.Size = New System.Drawing.Size(59, 13)
-        Me.TargetThickness.TabIndex = 37
-        Me.TargetThickness.Text = "Thickness:"
-        '
-        'TargetDensity
-        '
-        Me.TargetDensity.AutoSize = True
-        Me.TargetDensity.Location = New System.Drawing.Point(7, 98)
-        Me.TargetDensity.Name = "TargetDensity"
-        Me.TargetDensity.Size = New System.Drawing.Size(45, 13)
-        Me.TargetDensity.TabIndex = 38
-        Me.TargetDensity.Text = "Density:"
-        '
-        'TargetSpecHeat
-        '
-        Me.TargetSpecHeat.AutoSize = True
-        Me.TargetSpecHeat.Location = New System.Drawing.Point(7, 75)
-        Me.TargetSpecHeat.Name = "TargetSpecHeat"
-        Me.TargetSpecHeat.Size = New System.Drawing.Size(74, 13)
-        Me.TargetSpecHeat.TabIndex = 39
-        Me.TargetSpecHeat.Text = "Specific Heat:"
-        '
-        'Label59
-        '
-        Me.Label59.AutoSize = True
-        Me.Label59.Location = New System.Drawing.Point(7, 144)
-        Me.Label59.Name = "Label59"
-        Me.Label59.Size = New System.Drawing.Size(120, 13)
-        Me.Label59.TabIndex = 40
-        Me.Label59.Text = "Internal Temperature at:"
-        '
-        'TargetInternalLocation
-        '
-        Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 140)
-        Me.TargetInternalLocation.Name = "TargetInternalLocation"
-        Me.TargetInternalLocation.Size = New System.Drawing.Size(96, 20)
-        Me.TargetInternalLocation.TabIndex = 41
-        Me.TargetInternalLocation.Text = "0.5"
-        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -4235,12 +4247,11 @@ Public Class CeditMain
         CType(Me.CompSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupCompartments.ResumeLayout(False)
         Me.GroupCompartments.PerformLayout()
-        Me.GroupBox26.ResumeLayout(False)
-        CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
         Me.GroupFlowCharacteristics.ResumeLayout(False)
         Me.GroupFlowCharacteristics.PerformLayout()
+        CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox34.ResumeLayout(False)
         Me.GroupBox34.PerformLayout()
         Me.TabMechanicalFlow.ResumeLayout(False)
@@ -4268,6 +4279,8 @@ Public Class CeditMain
         CType(Me.TargetSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupTargets.ResumeLayout(False)
         Me.GroupTargets.PerformLayout()
+        Me.GroupBox3.ResumeLayout(False)
+        Me.GroupBox3.PerformLayout()
         Me.GroupBox28.ResumeLayout(False)
         Me.GroupBox28.PerformLayout()
         Me.TabHeatTransfer.ResumeLayout(False)
@@ -4282,8 +4295,6 @@ Public Class CeditMain
         Me.TabMain.ResumeLayout(False)
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub

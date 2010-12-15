@@ -49,19 +49,19 @@ Public Class RunModel
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents RunUpdate As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RunModel))
-        Me.RunSummary = New C1.Win.C1FlexGrid.C1FlexGrid
-        Me.RunOK = New System.Windows.Forms.Button
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.RunTime = New System.Windows.Forms.TextBox
-        Me.RunDT = New System.Windows.Forms.TextBox
+        Me.RunSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.RunOK = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.RunTime = New System.Windows.Forms.TextBox()
+        Me.RunDT = New System.Windows.Forms.TextBox()
         Me.RunTimer = New System.Windows.Forms.Timer(Me.components)
-        Me.RunStop = New System.Windows.Forms.Button
-        Me.RunProgress = New System.Windows.Forms.ProgressBar
-        Me.Label3 = New System.Windows.Forms.Label
-        Me.RunUpdate = New System.Windows.Forms.Button
+        Me.RunStop = New System.Windows.Forms.Button()
+        Me.RunProgress = New System.Windows.Forms.ProgressBar()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.RunUpdate = New System.Windows.Forms.Button()
         CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -159,7 +159,7 @@ Public Class RunModel
         '
         Me.AcceptButton = Me.RunOK
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.ClientSize = New System.Drawing.Size(992, 534)
+        Me.ClientSize = New System.Drawing.Size(984, 534)
         Me.Controls.Add(Me.RunUpdate)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.RunProgress)

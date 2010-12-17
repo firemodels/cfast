@@ -28,6 +28,18 @@ Public Class CeditMain
     Friend WithEvents Label59 As System.Windows.Forms.Label
     Friend WithEvents Label65 As System.Windows.Forms.Label
     Friend WithEvents Label64 As System.Windows.Forms.Label
+    Friend WithEvents CompSpecHeatFloor As System.Windows.Forms.Label
+    Friend WithEvents CompDensityFloor As System.Windows.Forms.Label
+    Friend WithEvents CompThicknessFloor As System.Windows.Forms.Label
+    Friend WithEvents CompConductFloor As System.Windows.Forms.Label
+    Friend WithEvents CompSpecHeatWalls As System.Windows.Forms.Label
+    Friend WithEvents CompDensityWalls As System.Windows.Forms.Label
+    Friend WithEvents CompThicknessWalls As System.Windows.Forms.Label
+    Friend WithEvents CompConductWalls As System.Windows.Forms.Label
+    Friend WithEvents CompSpecHeatCeiling As System.Windows.Forms.Label
+    Friend WithEvents CompDensityCeiling As System.Windows.Forms.Label
+    Friend WithEvents CompThicknessCeiling As System.Windows.Forms.Label
+    Friend WithEvents CompConductCeiling As System.Windows.Forms.Label
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -757,6 +769,18 @@ Public Class CeditMain
         Me.MainRun = New System.Windows.Forms.Button()
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.CompSpecHeatCeiling = New System.Windows.Forms.Label()
+        Me.CompDensityCeiling = New System.Windows.Forms.Label()
+        Me.CompThicknessCeiling = New System.Windows.Forms.Label()
+        Me.CompConductCeiling = New System.Windows.Forms.Label()
+        Me.CompSpecHeatWalls = New System.Windows.Forms.Label()
+        Me.CompDensityWalls = New System.Windows.Forms.Label()
+        Me.CompThicknessWalls = New System.Windows.Forms.Label()
+        Me.CompConductWalls = New System.Windows.Forms.Label()
+        Me.CompSpecHeatFloor = New System.Windows.Forms.Label()
+        Me.CompDensityFloor = New System.Windows.Forms.Label()
+        Me.CompThicknessFloor = New System.Windows.Forms.Label()
+        Me.CompConductFloor = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -2188,7 +2212,7 @@ Public Class CeditMain
         'Label65
         '
         Me.Label65.AutoSize = True
-        Me.Label65.Location = New System.Drawing.Point(260, 16)
+        Me.Label65.Location = New System.Drawing.Point(259, 16)
         Me.Label65.Name = "Label65"
         Me.Label65.Size = New System.Drawing.Size(144, 13)
         Me.Label65.TabIndex = 47
@@ -2197,7 +2221,7 @@ Public Class CeditMain
         'Label64
         '
         Me.Label64.AutoSize = True
-        Me.Label64.Location = New System.Drawing.Point(73, 16)
+        Me.Label64.Location = New System.Drawing.Point(67, 16)
         Me.Label64.Name = "Label64"
         Me.Label64.Size = New System.Drawing.Size(101, 13)
         Me.Label64.TabIndex = 46
@@ -2210,7 +2234,7 @@ Public Class CeditMain
         Me.CompVariableArea.AutoClipboard = True
         Me.CompVariableArea.ColumnInfo = resources.GetString("CompVariableArea.ColumnInfo")
         Me.CompVariableArea.ExtendLastCol = True
-        Me.CompVariableArea.Location = New System.Drawing.Point(236, 49)
+        Me.CompVariableArea.Location = New System.Drawing.Point(236, 35)
         Me.CompVariableArea.Name = "CompVariableArea"
         Me.CompVariableArea.Rows.DefaultSize = 17
         Me.CompVariableArea.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -2220,13 +2244,13 @@ Public Class CeditMain
         '
         'CompFlow
         '
-        Me.CompFlow.Items.AddRange(New Object() {"Normal", "Shaft", "Corridor"})
-        Me.CompFlow.Location = New System.Drawing.Point(62, 49)
+        Me.CompFlow.Items.AddRange(New Object() {"Normal (Standard two-zone model)", "Shaft (Single zone model)", "Corridor (Two-zone with delayed flow)"})
+        Me.CompFlow.Location = New System.Drawing.Point(13, 35)
         Me.CompFlow.MaxDropDownItems = 3
         Me.CompFlow.Name = "CompFlow"
-        Me.CompFlow.Size = New System.Drawing.Size(121, 21)
+        Me.CompFlow.Size = New System.Drawing.Size(209, 21)
         Me.CompFlow.TabIndex = 21
-        Me.CompFlow.Text = "Normal"
+        Me.CompFlow.Text = "Normal two-zone model"
         '
         'CompDecayDepth
         '
@@ -2279,6 +2303,18 @@ Public Class CeditMain
         '
         'GroupBox34
         '
+        Me.GroupBox34.Controls.Add(Me.CompSpecHeatFloor)
+        Me.GroupBox34.Controls.Add(Me.CompDensityFloor)
+        Me.GroupBox34.Controls.Add(Me.CompThicknessFloor)
+        Me.GroupBox34.Controls.Add(Me.CompConductFloor)
+        Me.GroupBox34.Controls.Add(Me.CompSpecHeatWalls)
+        Me.GroupBox34.Controls.Add(Me.CompDensityWalls)
+        Me.GroupBox34.Controls.Add(Me.CompThicknessWalls)
+        Me.GroupBox34.Controls.Add(Me.CompConductWalls)
+        Me.GroupBox34.Controls.Add(Me.CompSpecHeatCeiling)
+        Me.GroupBox34.Controls.Add(Me.CompDensityCeiling)
+        Me.GroupBox34.Controls.Add(Me.CompThicknessCeiling)
+        Me.GroupBox34.Controls.Add(Me.CompConductCeiling)
         Me.GroupBox34.Controls.Add(Me.CompFloor)
         Me.GroupBox34.Controls.Add(Me.CompWalls)
         Me.GroupBox34.Controls.Add(Me.CompCeiling)
@@ -2287,7 +2323,7 @@ Public Class CeditMain
         Me.GroupBox34.Controls.Add(Me.Label20)
         Me.GroupBox34.Location = New System.Drawing.Point(32, 220)
         Me.GroupBox34.Name = "GroupBox34"
-        Me.GroupBox34.Size = New System.Drawing.Size(880, 125)
+        Me.GroupBox34.Size = New System.Drawing.Size(880, 133)
         Me.GroupBox34.TabIndex = 16
         Me.GroupBox34.TabStop = False
         Me.GroupBox34.Text = "Materials"
@@ -4193,6 +4229,114 @@ Public Class CeditMain
         Me.MainGeometry.TabIndex = 102
         Me.MainGeometry.Text = "Geometry"
         '
+        'CompSpecHeatCeiling
+        '
+        Me.CompSpecHeatCeiling.AutoSize = True
+        Me.CompSpecHeatCeiling.Location = New System.Drawing.Point(58, 65)
+        Me.CompSpecHeatCeiling.Name = "CompSpecHeatCeiling"
+        Me.CompSpecHeatCeiling.Size = New System.Drawing.Size(74, 13)
+        Me.CompSpecHeatCeiling.TabIndex = 44
+        Me.CompSpecHeatCeiling.Text = "Specific Heat:"
+        '
+        'CompDensityCeiling
+        '
+        Me.CompDensityCeiling.AutoSize = True
+        Me.CompDensityCeiling.Location = New System.Drawing.Point(58, 86)
+        Me.CompDensityCeiling.Name = "CompDensityCeiling"
+        Me.CompDensityCeiling.Size = New System.Drawing.Size(45, 13)
+        Me.CompDensityCeiling.TabIndex = 43
+        Me.CompDensityCeiling.Text = "Density:"
+        '
+        'CompThicknessCeiling
+        '
+        Me.CompThicknessCeiling.AutoSize = True
+        Me.CompThicknessCeiling.Location = New System.Drawing.Point(58, 107)
+        Me.CompThicknessCeiling.Name = "CompThicknessCeiling"
+        Me.CompThicknessCeiling.Size = New System.Drawing.Size(59, 13)
+        Me.CompThicknessCeiling.TabIndex = 42
+        Me.CompThicknessCeiling.Text = "Thickness:"
+        '
+        'CompConductCeiling
+        '
+        Me.CompConductCeiling.AutoSize = True
+        Me.CompConductCeiling.Location = New System.Drawing.Point(58, 44)
+        Me.CompConductCeiling.Name = "CompConductCeiling"
+        Me.CompConductCeiling.Size = New System.Drawing.Size(68, 13)
+        Me.CompConductCeiling.TabIndex = 41
+        Me.CompConductCeiling.Text = "Conductivity:"
+        '
+        'CompSpecHeatWalls
+        '
+        Me.CompSpecHeatWalls.AutoSize = True
+        Me.CompSpecHeatWalls.Location = New System.Drawing.Point(349, 65)
+        Me.CompSpecHeatWalls.Name = "CompSpecHeatWalls"
+        Me.CompSpecHeatWalls.Size = New System.Drawing.Size(74, 13)
+        Me.CompSpecHeatWalls.TabIndex = 48
+        Me.CompSpecHeatWalls.Text = "Specific Heat:"
+        '
+        'CompDensityWalls
+        '
+        Me.CompDensityWalls.AutoSize = True
+        Me.CompDensityWalls.Location = New System.Drawing.Point(349, 86)
+        Me.CompDensityWalls.Name = "CompDensityWalls"
+        Me.CompDensityWalls.Size = New System.Drawing.Size(45, 13)
+        Me.CompDensityWalls.TabIndex = 47
+        Me.CompDensityWalls.Text = "Density:"
+        '
+        'CompThicknessWalls
+        '
+        Me.CompThicknessWalls.AutoSize = True
+        Me.CompThicknessWalls.Location = New System.Drawing.Point(349, 107)
+        Me.CompThicknessWalls.Name = "CompThicknessWalls"
+        Me.CompThicknessWalls.Size = New System.Drawing.Size(59, 13)
+        Me.CompThicknessWalls.TabIndex = 46
+        Me.CompThicknessWalls.Text = "Thickness:"
+        '
+        'CompConductWalls
+        '
+        Me.CompConductWalls.AutoSize = True
+        Me.CompConductWalls.Location = New System.Drawing.Point(349, 44)
+        Me.CompConductWalls.Name = "CompConductWalls"
+        Me.CompConductWalls.Size = New System.Drawing.Size(68, 13)
+        Me.CompConductWalls.TabIndex = 45
+        Me.CompConductWalls.Text = "Conductivity:"
+        '
+        'CompSpecHeatFloor
+        '
+        Me.CompSpecHeatFloor.AutoSize = True
+        Me.CompSpecHeatFloor.Location = New System.Drawing.Point(642, 66)
+        Me.CompSpecHeatFloor.Name = "CompSpecHeatFloor"
+        Me.CompSpecHeatFloor.Size = New System.Drawing.Size(74, 13)
+        Me.CompSpecHeatFloor.TabIndex = 52
+        Me.CompSpecHeatFloor.Text = "Specific Heat:"
+        '
+        'CompDensityFloor
+        '
+        Me.CompDensityFloor.AutoSize = True
+        Me.CompDensityFloor.Location = New System.Drawing.Point(642, 87)
+        Me.CompDensityFloor.Name = "CompDensityFloor"
+        Me.CompDensityFloor.Size = New System.Drawing.Size(45, 13)
+        Me.CompDensityFloor.TabIndex = 51
+        Me.CompDensityFloor.Text = "Density:"
+        '
+        'CompThicknessFloor
+        '
+        Me.CompThicknessFloor.AutoSize = True
+        Me.CompThicknessFloor.Location = New System.Drawing.Point(642, 108)
+        Me.CompThicknessFloor.Name = "CompThicknessFloor"
+        Me.CompThicknessFloor.Size = New System.Drawing.Size(59, 13)
+        Me.CompThicknessFloor.TabIndex = 50
+        Me.CompThicknessFloor.Text = "Thickness:"
+        '
+        'CompConductFloor
+        '
+        Me.CompConductFloor.AutoSize = True
+        Me.CompConductFloor.Location = New System.Drawing.Point(642, 45)
+        Me.CompConductFloor.Name = "CompConductFloor"
+        Me.CompConductFloor.Size = New System.Drawing.Size(68, 13)
+        Me.CompConductFloor.TabIndex = 49
+        Me.CompConductFloor.Text = "Conductivity:"
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -4475,10 +4619,10 @@ Public Class CeditMain
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             aCompartment = myCompartments.Item(CurrentCompartment)
             If sender Is Me.CompFlow Then
-                If CompFlow.Text = "Shaft" Then
+                If Microsoft.VisualBasic.Left(CompFlow.Text, 5) = "Shaft" Then
                     aCompartment.Shaft = True
                     aCompartment.Hall = False
-                ElseIf CompFlow.Text = "Corridor" Then
+                ElseIf Microsoft.VisualBasic.Left(CompFlow.Text, 8) = "Corridor" Then
                     aCompartment.Hall = True
                     aCompartment.Shaft = False
                 Else

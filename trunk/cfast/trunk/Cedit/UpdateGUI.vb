@@ -115,9 +115,49 @@ Public Class UpdateGUI
             MainWin.CompXPosition.Text = aCompartment.RoomOriginX.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.CompYPosition.Text = aCompartment.RoomOriginY.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.CompZPosition.Text = aCompartment.RoomOriginZ.ToString + myUnits.Convert(UnitsNum.Length).Units
+
             MainWin.CompCeiling.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial)
+            If MainWin.CompCeiling.Text <> "Default" And MainWin.CompCeiling.Text <> "Off" Then
+                Dim aThermalProperty As New ThermalProperty
+                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aCompartment.CeilingMaterial))
+                MainWin.CompConductCeiling.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
+                MainWin.CompSpecHeatCeiling.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
+                MainWin.CompDensityCeiling.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
+                MainWin.CompThicknessCeiling.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            Else
+                MainWin.CompConductCeiling.Text = "Conductivity:"
+                MainWin.CompSpecHeatCeiling.Text = "Specific Heat: "
+                MainWin.CompDensityCeiling.Text = "Density: "
+                MainWin.CompThicknessCeiling.Text = "Thickness: "
+            End If
             MainWin.CompWalls.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial)
+            If MainWin.CompWalls.Text <> "Default" And MainWin.CompWalls.Text <> "Off" Then
+                Dim aThermalProperty As New ThermalProperty
+                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aCompartment.WallMaterial))
+                MainWin.CompConductWalls.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
+                MainWin.CompSpecHeatWalls.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
+                MainWin.CompDensityWalls.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
+                MainWin.CompThicknessWalls.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            Else
+                MainWin.CompConductWalls.Text = "Conductivity:"
+                MainWin.CompSpecHeatWalls.Text = "Specific Heat: "
+                MainWin.CompDensityWalls.Text = "Density: "
+                MainWin.CompThicknessWalls.Text = "Thickness: "
+            End If
             MainWin.CompFloor.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial)
+            If MainWin.CompFloor.Text <> "Default" And MainWin.CompFloor.Text <> "Off" Then
+                Dim aThermalProperty As New ThermalProperty
+                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aCompartment.FloorMaterial))
+                MainWin.CompConductFloor.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
+                MainWin.CompSpecHeatFloor.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
+                MainWin.CompDensityFloor.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
+                MainWin.CompThicknessFloor.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            Else
+                MainWin.CompConductFloor.Text = "Conductivity:"
+                MainWin.CompSpecHeatFloor.Text = "Specific Heat: "
+                MainWin.CompDensityFloor.Text = "Density: "
+                MainWin.CompThicknessFloor.Text = "Thickness: "
+            End If
             If aCompartment.Shaft = True Then
                 MainWin.CompFlow.SelectedIndex = Compartment.TypeShaft
                 MainWin.CompDecayVelocity.Text = " "

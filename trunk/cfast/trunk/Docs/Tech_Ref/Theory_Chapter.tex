@@ -220,13 +220,36 @@ plume, unburned fuel will be transported from zone to zone until there is suffic
 high enough temperature to support combustion. In general, CFAST uses a simple definition of
 a combustion reaction that includes major products of combustion for hydrocarbon fuels:
 
-\be  \mathrm{C_xH_yO_zN_aCl_b} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
+\be  \mathrm{C_vH_wO_xN_yCl_z} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
      \nu_\So \, \mathrm{Soot}  + \nu_\NTWO \, \mathrm{N_2} + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee
-where the stoichiometric coefficients $\nu_\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation.  For example, for soot, it is related to the
-{\em soot yield}, $y_\So$, via the relation:
+where the stoichiometric coefficients $\nu_\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation and are defined as
+
 \be
-   \nu_\So = \frac{W_\F}{W_\So} \; y_\So \label{soot_yield}
+   \nu_\So = \frac{M_\F}{M_\So} \; y_\So \label{soot_yield}
 \ee
+\be
+   \nu_\HCN = \frac{M_\F}{M_\HCN} \; y_\HCN \label{HCN_yield}
+\ee
+\be
+   \nu_\HCl = \frac{M_\F}{M_\HCl} \; y_\HCl \label{HCl_yield}
+\ee
+\be
+   \nu_\CO = \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield}
+\ee
+which are defined by user input of the yields as appropriate.  The remaining stoichioimetry falls directly from the chemical balance as
+
+\be
+  \nu_\HTWOO = \frac{w}{2} - \frac{M_\F}{M_\HCl} \; y_\HCl -  \frac{M_\F}{M_\HCN} \; y_\HCN \label{HTWOO_yield}
+\ee
+  
+\be
+  \nu_\COTWO = v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN -\frac{M_\F}{M_\So} \; y_\So 
+\ee  
+
+\begin{eqnarray} \nu_\OTWO &=& \nu_\COTWO + \frac{\nu_\HTWOO}{2} + \frac{\nu_\CO}{2} - \frac{x}{2}  \nonumber \\
+ &=& \brackets{v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \brackets{\frac{w}{4} - \frac{M_\F}{2 M_\HCl} \; y_\HCl -  \frac{M_\F}{2 M_\HCN} \; y_\HCN} + \brackets{\frac{M_\F}{2 M_\CO} \; y_\CO} - \frac{x}{2} \nonumber \\
+ &=& \brackets{v - \frac{M_\F}{2 M_\CO} \; y_\CO - \frac{M_\F}{2 M_\HCl} \; y_\HCl - \frac{3 M_\F}{2 M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \frac{w}{4} - \frac{x}{2} 
+\end{eqnarray}
 
 For complete combustion of the simplest hydrocarbon fuel, methane reacts with
 oxygen to form carbon dioxide and water. The only input required is the pyrolysis rate and the
@@ -345,8 +368,7 @@ exhibit significant scatter, thus limiting their accuracy.  For example, for uph
 the peak heat release rates estimated by the “triangular approximation” method averaged 91 \%
 (range 46 \% to 103 \%) of values measured for a group of 26 chairs with noncombustible frames,
 but only 63 \% (range 46 \% to 83 \%) of values measured for a group of 11 chairs with
-combustible frames \cite{Babrauskas:1985}.  Also, the triangle neglects the “tails” of the curve; these are the initial time from ignition to significant burning of the item, and the region of burning of the combusti-
-ble frame, after the fabric and filler are consumed.
+combustible frames \cite{Babrauskas:1985}.  Also, the triangle neglects the “tails” of the curve; these are the initial time from ignition to significant burning of the item, and the region of burning of the combustible frame, after the fabric and filler are consumed.
 
 The provided data and procedures only relate directly to burning of items initiated by relatively
 large flaming sources.  Little data are currently available for release rates under smoldering

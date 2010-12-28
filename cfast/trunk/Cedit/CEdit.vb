@@ -14,7 +14,6 @@ Public Class CeditMain
     Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents MVentFilterEfficiency As System.Windows.Forms.TextBox
-    Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MainGeometry As System.Windows.Forms.Button
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents Label56 As System.Windows.Forms.Label
@@ -40,6 +39,11 @@ Public Class CeditMain
     Friend WithEvents CompDensityCeiling As System.Windows.Forms.Label
     Friend WithEvents CompThicknessCeiling As System.Windows.Forms.Label
     Friend WithEvents CompConductCeiling As System.Windows.Forms.Label
+    Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuDetailedOutput As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuNetHeatFluxOutput As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -383,10 +387,8 @@ Public Class CeditMain
     Friend WithEvents Label100 As System.Windows.Forms.Label
     Friend WithEvents MVentInitialFraction As System.Windows.Forms.TextBox
     Friend WithEvents Label101 As System.Windows.Forms.Label
-    Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
     Friend WithEvents MenuSMVSimulation As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuDetailedOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuEditFireObjects As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
     Friend WithEvents ErrorProvider1 As System.Windows.Forms.ErrorProvider
@@ -432,9 +434,6 @@ Public Class CeditMain
         Me.MenuRunCFast = New System.Windows.Forms.MenuItem()
         Me.MenuSMVSimulation = New System.Windows.Forms.MenuItem()
         Me.MenuItem1 = New System.Windows.Forms.MenuItem()
-        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
-        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
         Me.MenuTools = New System.Windows.Forms.MenuItem()
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
@@ -578,6 +577,18 @@ Public Class CeditMain
         Me.CompDecayDistance = New System.Windows.Forms.TextBox()
         Me.CompDistanceLabel = New System.Windows.Forms.Label()
         Me.GroupBox34 = New System.Windows.Forms.GroupBox()
+        Me.CompSpecHeatFloor = New System.Windows.Forms.Label()
+        Me.CompDensityFloor = New System.Windows.Forms.Label()
+        Me.CompThicknessFloor = New System.Windows.Forms.Label()
+        Me.CompConductFloor = New System.Windows.Forms.Label()
+        Me.CompSpecHeatWalls = New System.Windows.Forms.Label()
+        Me.CompDensityWalls = New System.Windows.Forms.Label()
+        Me.CompThicknessWalls = New System.Windows.Forms.Label()
+        Me.CompConductWalls = New System.Windows.Forms.Label()
+        Me.CompSpecHeatCeiling = New System.Windows.Forms.Label()
+        Me.CompDensityCeiling = New System.Windows.Forms.Label()
+        Me.CompThicknessCeiling = New System.Windows.Forms.Label()
+        Me.CompConductCeiling = New System.Windows.Forms.Label()
         Me.CompFloor = New System.Windows.Forms.ComboBox()
         Me.CompWalls = New System.Windows.Forms.ComboBox()
         Me.CompCeiling = New System.Windows.Forms.ComboBox()
@@ -769,18 +780,11 @@ Public Class CeditMain
         Me.MainRun = New System.Windows.Forms.Button()
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.CompSpecHeatCeiling = New System.Windows.Forms.Label()
-        Me.CompDensityCeiling = New System.Windows.Forms.Label()
-        Me.CompThicknessCeiling = New System.Windows.Forms.Label()
-        Me.CompConductCeiling = New System.Windows.Forms.Label()
-        Me.CompSpecHeatWalls = New System.Windows.Forms.Label()
-        Me.CompDensityWalls = New System.Windows.Forms.Label()
-        Me.CompThicknessWalls = New System.Windows.Forms.Label()
-        Me.CompConductWalls = New System.Windows.Forms.Label()
-        Me.CompSpecHeatFloor = New System.Windows.Forms.Label()
-        Me.CompDensityFloor = New System.Windows.Forms.Label()
-        Me.CompThicknessFloor = New System.Windows.Forms.Label()
-        Me.CompConductFloor = New System.Windows.Forms.Label()
+        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
+        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
+        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -930,7 +934,7 @@ Public Class CeditMain
         'MenuRun
         '
         Me.MenuRun.Index = 1
-        Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuShowCFAST, Me.MenuDetailedOutput, Me.MenuTotalMassOutput})
+        Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuItem2})
         Me.MenuRun.Text = "Run!"
         '
         'MenuSMVGeometry
@@ -953,22 +957,6 @@ Public Class CeditMain
         '
         Me.MenuItem1.Index = 3
         Me.MenuItem1.Text = "-"
-        '
-        'MenuShowCFAST
-        '
-        Me.MenuShowCFAST.Index = 4
-        Me.MenuShowCFAST.Text = "Show CFAST Window"
-        '
-        'MenuDetailedOutput
-        '
-        Me.MenuDetailedOutput.Checked = True
-        Me.MenuDetailedOutput.Index = 5
-        Me.MenuDetailedOutput.Text = "Detailed Output File"
-        '
-        'MenuTotalMassOutput
-        '
-        Me.MenuTotalMassOutput.Index = 6
-        Me.MenuTotalMassOutput.Text = "Total Mass Output File"
         '
         'MenuTools
         '
@@ -2327,6 +2315,114 @@ Public Class CeditMain
         Me.GroupBox34.TabIndex = 16
         Me.GroupBox34.TabStop = False
         Me.GroupBox34.Text = "Materials"
+        '
+        'CompSpecHeatFloor
+        '
+        Me.CompSpecHeatFloor.AutoSize = True
+        Me.CompSpecHeatFloor.Location = New System.Drawing.Point(642, 66)
+        Me.CompSpecHeatFloor.Name = "CompSpecHeatFloor"
+        Me.CompSpecHeatFloor.Size = New System.Drawing.Size(74, 13)
+        Me.CompSpecHeatFloor.TabIndex = 52
+        Me.CompSpecHeatFloor.Text = "Specific Heat:"
+        '
+        'CompDensityFloor
+        '
+        Me.CompDensityFloor.AutoSize = True
+        Me.CompDensityFloor.Location = New System.Drawing.Point(642, 87)
+        Me.CompDensityFloor.Name = "CompDensityFloor"
+        Me.CompDensityFloor.Size = New System.Drawing.Size(45, 13)
+        Me.CompDensityFloor.TabIndex = 51
+        Me.CompDensityFloor.Text = "Density:"
+        '
+        'CompThicknessFloor
+        '
+        Me.CompThicknessFloor.AutoSize = True
+        Me.CompThicknessFloor.Location = New System.Drawing.Point(642, 108)
+        Me.CompThicknessFloor.Name = "CompThicknessFloor"
+        Me.CompThicknessFloor.Size = New System.Drawing.Size(59, 13)
+        Me.CompThicknessFloor.TabIndex = 50
+        Me.CompThicknessFloor.Text = "Thickness:"
+        '
+        'CompConductFloor
+        '
+        Me.CompConductFloor.AutoSize = True
+        Me.CompConductFloor.Location = New System.Drawing.Point(642, 45)
+        Me.CompConductFloor.Name = "CompConductFloor"
+        Me.CompConductFloor.Size = New System.Drawing.Size(68, 13)
+        Me.CompConductFloor.TabIndex = 49
+        Me.CompConductFloor.Text = "Conductivity:"
+        '
+        'CompSpecHeatWalls
+        '
+        Me.CompSpecHeatWalls.AutoSize = True
+        Me.CompSpecHeatWalls.Location = New System.Drawing.Point(349, 65)
+        Me.CompSpecHeatWalls.Name = "CompSpecHeatWalls"
+        Me.CompSpecHeatWalls.Size = New System.Drawing.Size(74, 13)
+        Me.CompSpecHeatWalls.TabIndex = 48
+        Me.CompSpecHeatWalls.Text = "Specific Heat:"
+        '
+        'CompDensityWalls
+        '
+        Me.CompDensityWalls.AutoSize = True
+        Me.CompDensityWalls.Location = New System.Drawing.Point(349, 86)
+        Me.CompDensityWalls.Name = "CompDensityWalls"
+        Me.CompDensityWalls.Size = New System.Drawing.Size(45, 13)
+        Me.CompDensityWalls.TabIndex = 47
+        Me.CompDensityWalls.Text = "Density:"
+        '
+        'CompThicknessWalls
+        '
+        Me.CompThicknessWalls.AutoSize = True
+        Me.CompThicknessWalls.Location = New System.Drawing.Point(349, 107)
+        Me.CompThicknessWalls.Name = "CompThicknessWalls"
+        Me.CompThicknessWalls.Size = New System.Drawing.Size(59, 13)
+        Me.CompThicknessWalls.TabIndex = 46
+        Me.CompThicknessWalls.Text = "Thickness:"
+        '
+        'CompConductWalls
+        '
+        Me.CompConductWalls.AutoSize = True
+        Me.CompConductWalls.Location = New System.Drawing.Point(349, 44)
+        Me.CompConductWalls.Name = "CompConductWalls"
+        Me.CompConductWalls.Size = New System.Drawing.Size(68, 13)
+        Me.CompConductWalls.TabIndex = 45
+        Me.CompConductWalls.Text = "Conductivity:"
+        '
+        'CompSpecHeatCeiling
+        '
+        Me.CompSpecHeatCeiling.AutoSize = True
+        Me.CompSpecHeatCeiling.Location = New System.Drawing.Point(58, 65)
+        Me.CompSpecHeatCeiling.Name = "CompSpecHeatCeiling"
+        Me.CompSpecHeatCeiling.Size = New System.Drawing.Size(74, 13)
+        Me.CompSpecHeatCeiling.TabIndex = 44
+        Me.CompSpecHeatCeiling.Text = "Specific Heat:"
+        '
+        'CompDensityCeiling
+        '
+        Me.CompDensityCeiling.AutoSize = True
+        Me.CompDensityCeiling.Location = New System.Drawing.Point(58, 86)
+        Me.CompDensityCeiling.Name = "CompDensityCeiling"
+        Me.CompDensityCeiling.Size = New System.Drawing.Size(45, 13)
+        Me.CompDensityCeiling.TabIndex = 43
+        Me.CompDensityCeiling.Text = "Density:"
+        '
+        'CompThicknessCeiling
+        '
+        Me.CompThicknessCeiling.AutoSize = True
+        Me.CompThicknessCeiling.Location = New System.Drawing.Point(58, 107)
+        Me.CompThicknessCeiling.Name = "CompThicknessCeiling"
+        Me.CompThicknessCeiling.Size = New System.Drawing.Size(59, 13)
+        Me.CompThicknessCeiling.TabIndex = 42
+        Me.CompThicknessCeiling.Text = "Thickness:"
+        '
+        'CompConductCeiling
+        '
+        Me.CompConductCeiling.AutoSize = True
+        Me.CompConductCeiling.Location = New System.Drawing.Point(58, 44)
+        Me.CompConductCeiling.Name = "CompConductCeiling"
+        Me.CompConductCeiling.Size = New System.Drawing.Size(68, 13)
+        Me.CompConductCeiling.TabIndex = 41
+        Me.CompConductCeiling.Text = "Conductivity:"
         '
         'CompFloor
         '
@@ -4229,113 +4325,32 @@ Public Class CeditMain
         Me.MainGeometry.TabIndex = 102
         Me.MainGeometry.Text = "Geometry"
         '
-        'CompSpecHeatCeiling
+        'MenuItem2
         '
-        Me.CompSpecHeatCeiling.AutoSize = True
-        Me.CompSpecHeatCeiling.Location = New System.Drawing.Point(58, 65)
-        Me.CompSpecHeatCeiling.Name = "CompSpecHeatCeiling"
-        Me.CompSpecHeatCeiling.Size = New System.Drawing.Size(74, 13)
-        Me.CompSpecHeatCeiling.TabIndex = 44
-        Me.CompSpecHeatCeiling.Text = "Specific Heat:"
+        Me.MenuItem2.Index = 4
+        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuShowCFAST})
+        Me.MenuItem2.Text = "Output Options"
         '
-        'CompDensityCeiling
+        'MenuShowCFAST
         '
-        Me.CompDensityCeiling.AutoSize = True
-        Me.CompDensityCeiling.Location = New System.Drawing.Point(58, 86)
-        Me.CompDensityCeiling.Name = "CompDensityCeiling"
-        Me.CompDensityCeiling.Size = New System.Drawing.Size(45, 13)
-        Me.CompDensityCeiling.TabIndex = 43
-        Me.CompDensityCeiling.Text = "Density:"
+        Me.MenuShowCFAST.Index = 3
+        Me.MenuShowCFAST.Text = "Show CFAST Window"
         '
-        'CompThicknessCeiling
+        'MenuTotalMassOutput
         '
-        Me.CompThicknessCeiling.AutoSize = True
-        Me.CompThicknessCeiling.Location = New System.Drawing.Point(58, 107)
-        Me.CompThicknessCeiling.Name = "CompThicknessCeiling"
-        Me.CompThicknessCeiling.Size = New System.Drawing.Size(59, 13)
-        Me.CompThicknessCeiling.TabIndex = 42
-        Me.CompThicknessCeiling.Text = "Thickness:"
+        Me.MenuTotalMassOutput.Index = 1
+        Me.MenuTotalMassOutput.Text = "Total Mass"
         '
-        'CompConductCeiling
+        'MenuNetHeatFluxOutput
         '
-        Me.CompConductCeiling.AutoSize = True
-        Me.CompConductCeiling.Location = New System.Drawing.Point(58, 44)
-        Me.CompConductCeiling.Name = "CompConductCeiling"
-        Me.CompConductCeiling.Size = New System.Drawing.Size(68, 13)
-        Me.CompConductCeiling.TabIndex = 41
-        Me.CompConductCeiling.Text = "Conductivity:"
+        Me.MenuNetHeatFluxOutput.Index = 2
+        Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
         '
-        'CompSpecHeatWalls
+        'MenuDetailedOutput
         '
-        Me.CompSpecHeatWalls.AutoSize = True
-        Me.CompSpecHeatWalls.Location = New System.Drawing.Point(349, 65)
-        Me.CompSpecHeatWalls.Name = "CompSpecHeatWalls"
-        Me.CompSpecHeatWalls.Size = New System.Drawing.Size(74, 13)
-        Me.CompSpecHeatWalls.TabIndex = 48
-        Me.CompSpecHeatWalls.Text = "Specific Heat:"
-        '
-        'CompDensityWalls
-        '
-        Me.CompDensityWalls.AutoSize = True
-        Me.CompDensityWalls.Location = New System.Drawing.Point(349, 86)
-        Me.CompDensityWalls.Name = "CompDensityWalls"
-        Me.CompDensityWalls.Size = New System.Drawing.Size(45, 13)
-        Me.CompDensityWalls.TabIndex = 47
-        Me.CompDensityWalls.Text = "Density:"
-        '
-        'CompThicknessWalls
-        '
-        Me.CompThicknessWalls.AutoSize = True
-        Me.CompThicknessWalls.Location = New System.Drawing.Point(349, 107)
-        Me.CompThicknessWalls.Name = "CompThicknessWalls"
-        Me.CompThicknessWalls.Size = New System.Drawing.Size(59, 13)
-        Me.CompThicknessWalls.TabIndex = 46
-        Me.CompThicknessWalls.Text = "Thickness:"
-        '
-        'CompConductWalls
-        '
-        Me.CompConductWalls.AutoSize = True
-        Me.CompConductWalls.Location = New System.Drawing.Point(349, 44)
-        Me.CompConductWalls.Name = "CompConductWalls"
-        Me.CompConductWalls.Size = New System.Drawing.Size(68, 13)
-        Me.CompConductWalls.TabIndex = 45
-        Me.CompConductWalls.Text = "Conductivity:"
-        '
-        'CompSpecHeatFloor
-        '
-        Me.CompSpecHeatFloor.AutoSize = True
-        Me.CompSpecHeatFloor.Location = New System.Drawing.Point(642, 66)
-        Me.CompSpecHeatFloor.Name = "CompSpecHeatFloor"
-        Me.CompSpecHeatFloor.Size = New System.Drawing.Size(74, 13)
-        Me.CompSpecHeatFloor.TabIndex = 52
-        Me.CompSpecHeatFloor.Text = "Specific Heat:"
-        '
-        'CompDensityFloor
-        '
-        Me.CompDensityFloor.AutoSize = True
-        Me.CompDensityFloor.Location = New System.Drawing.Point(642, 87)
-        Me.CompDensityFloor.Name = "CompDensityFloor"
-        Me.CompDensityFloor.Size = New System.Drawing.Size(45, 13)
-        Me.CompDensityFloor.TabIndex = 51
-        Me.CompDensityFloor.Text = "Density:"
-        '
-        'CompThicknessFloor
-        '
-        Me.CompThicknessFloor.AutoSize = True
-        Me.CompThicknessFloor.Location = New System.Drawing.Point(642, 108)
-        Me.CompThicknessFloor.Name = "CompThicknessFloor"
-        Me.CompThicknessFloor.Size = New System.Drawing.Size(59, 13)
-        Me.CompThicknessFloor.TabIndex = 50
-        Me.CompThicknessFloor.Text = "Thickness:"
-        '
-        'CompConductFloor
-        '
-        Me.CompConductFloor.AutoSize = True
-        Me.CompConductFloor.Location = New System.Drawing.Point(642, 45)
-        Me.CompConductFloor.Name = "CompConductFloor"
-        Me.CompConductFloor.Size = New System.Drawing.Size(68, 13)
-        Me.CompConductFloor.TabIndex = 49
-        Me.CompConductFloor.Text = "Conductivity:"
+        Me.MenuDetailedOutput.Checked = True
+        Me.MenuDetailedOutput.Index = 0
+        Me.MenuDetailedOutput.Text = "Detailed Output File"
         '
         'CeditMain
         '
@@ -4447,13 +4462,27 @@ Public Class CeditMain
 
     Private Sub Cedit_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         ' Main entry point for the program ... handles initialization needed at startup
-        Dim Argument As String
+        Dim Argument As String, SettingsSize, iSet As Integer, CSet As String
         myRecentFiles = New RecentFiles("CFAST")
         Dim RegistryOptions(,) As String
         RegistryOptions = GetAllSettings("CFAST", "Options")
+
         Try
-            If RegistryOptions.GetUpperBound(0) >= 0 Then
-                TotalMassCFASTOutput = CType(RegistryOptions(0, 1), Boolean)
+            SettingsSize = RegistryOptions.GetUpperBound(0)
+            If SettingsSize >= 0 Then
+                For iSet = 0 To SettingsSize
+                    CSet = CType(RegistryOptions(iSet, 0), String)
+                    Select Case CSet
+                        Case "DetailedOutput"
+                            DetailedCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
+                        Case "ShowCFASTOutput"
+                            CommandWindowVisible = CType(RegistryOptions(iSet, 1), Boolean)
+                        Case "MassOutput"
+                            TotalMassCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
+                        Case "NetHeatFlux"
+                            NetHeatFluxCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
+                    End Select
+                Next
             End If
         Catch ex As Exception
         End Try
@@ -5625,6 +5654,7 @@ Public Class CeditMain
             Me.MenuShowCFAST.Checked = True
             CommandWindowVisible = True
         End If
+        SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
     End Sub
     Private Sub MenuDetailedOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuDetailedOutput.Click
         If Me.MenuDetailedOutput.Checked Then
@@ -5633,7 +5663,7 @@ Public Class CeditMain
             DetailedCFASTOutput = True
         End If
         Me.MenuDetailedOutput.Checked = DetailedCFASTOutput
-        myEnvironment.Changed = True
+        SaveSetting("CFAST", "Options", "DetailedOutput", TotalMassCFASTOutput.ToString)
     End Sub
     Private Sub MenuTotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTotalMassOutput.Click
         If Me.MenuTotalMassOutput.Checked Then
@@ -5644,7 +5674,15 @@ Public Class CeditMain
         Me.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
         SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
     End Sub
-
+    Private Sub MenuNetHeatFluxOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNetHeatFluxOutput.Click
+        If Me.MenuNetHeatFluxOutput.Checked Then
+            NetHeatFluxCFASTOutput = False
+        Else
+            NetHeatFluxCFASTOutput = True
+        End If
+        Me.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
+        SaveSetting("CFAST", "Options", "NetHeatFlux", NetHeatFluxCFASTOutput.ToString)
+    End Sub
     Private Sub MenuExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuExit.Click
         Application.Exit()
     End Sub

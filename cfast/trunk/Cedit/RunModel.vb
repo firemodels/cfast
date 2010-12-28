@@ -201,6 +201,7 @@ Public Class RunModel
             CommandString = Application.StartupPath + "\CFAST.exe " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """"
         End If
         If TotalMassCFASTOutput Then CommandString += " /T"
+        If NetHeatFluxCFASTOutput Then CommandString += " /V"
         Me.RunOK.Enabled = False
         Me.RunStop.Enabled = True
         Me.RunUpdate.Enabled = True

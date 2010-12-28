@@ -33,6 +33,8 @@ Public Class UpdateGUI
 
         MainWin.MenuDetailedOutput.Checked = DetailedCFASTOutput
         MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
+        MainWin.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
+        MainWin.MenuShowCFAST.Checked = CommandWindowVisible
     End Sub
     Public Sub General()
         If myEnvironment.InputFileName = Nothing Then

@@ -7,6 +7,7 @@ Public Class RunModel
     Private ProcessID As Integer
     Private localById As Process
     Private FileName As String, IO As Integer = 1
+    Friend WithEvents RunOptions As System.Windows.Forms.Label
     Private CurrentTime As Single
 
 #Region " Windows Form Designer generated code "
@@ -62,6 +63,7 @@ Public Class RunModel
         Me.RunProgress = New System.Windows.Forms.ProgressBar()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.RunUpdate = New System.Windows.Forms.Button()
+        Me.RunOptions = New System.Windows.Forms.Label()
         CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -78,7 +80,7 @@ Public Class RunModel
         '
         'RunOK
         '
-        Me.RunOK.Location = New System.Drawing.Point(311, 464)
+        Me.RunOK.Location = New System.Drawing.Point(307, 445)
         Me.RunOK.Name = "RunOK"
         Me.RunOK.Size = New System.Drawing.Size(75, 23)
         Me.RunOK.TabIndex = 4
@@ -124,7 +126,7 @@ Public Class RunModel
         '
         'RunStop
         '
-        Me.RunStop.Location = New System.Drawing.Point(458, 464)
+        Me.RunStop.Location = New System.Drawing.Point(454, 445)
         Me.RunStop.Name = "RunStop"
         Me.RunStop.Size = New System.Drawing.Size(75, 23)
         Me.RunStop.TabIndex = 5
@@ -149,17 +151,27 @@ Public Class RunModel
         '
         'RunUpdate
         '
-        Me.RunUpdate.Location = New System.Drawing.Point(607, 464)
+        Me.RunUpdate.Location = New System.Drawing.Point(603, 445)
         Me.RunUpdate.Name = "RunUpdate"
         Me.RunUpdate.Size = New System.Drawing.Size(75, 23)
         Me.RunUpdate.TabIndex = 6
         Me.RunUpdate.Text = "Update"
+        '
+        'RunOptions
+        '
+        Me.RunOptions.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.RunOptions.AutoSize = True
+        Me.RunOptions.Location = New System.Drawing.Point(12, 502)
+        Me.RunOptions.Name = "RunOptions"
+        Me.RunOptions.Size = New System.Drawing.Size(0, 13)
+        Me.RunOptions.TabIndex = 10
         '
         'RunModel
         '
         Me.AcceptButton = Me.RunOK
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.ClientSize = New System.Drawing.Size(984, 534)
+        Me.Controls.Add(Me.RunOptions)
         Me.Controls.Add(Me.RunUpdate)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.RunProgress)
@@ -200,8 +212,16 @@ Public Class RunModel
         Else
             CommandString = Application.StartupPath + "\CFAST.exe " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """"
         End If
-        If TotalMassCFASTOutput Then CommandString += " /T"
-        If NetHeatFluxCFASTOutput Then CommandString += " /V"
+        RunOptions.Text = "RunOptions: "
+        If TotalMassCFASTOutput Then
+            CommandString += " /T"
+            RunOptions.Text += "Total Mass Output"
+        End If
+        If NetHeatFluxCFASTOutput Then
+            CommandString += " /V"
+            If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
+            RunOptions.Text += "Net Heat Flux Output"
+        End If
         Me.RunOK.Enabled = False
         Me.RunStop.Enabled = True
         Me.RunUpdate.Enabled = True

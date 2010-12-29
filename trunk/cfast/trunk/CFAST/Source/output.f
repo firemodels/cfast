@@ -490,7 +490,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cenviro.fi"
       include "cshell.fi"
       include "vents.fi"
-      CHARACTER CIOUT*8, CJOUT*12, OUTBUF*105
+      CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
       XX0 = 0.0D0
@@ -645,7 +645,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cenviro.fi"
       include "cshell.fi"
       include "vents.fi"
-      CHARACTER CIOUT*14, CJOUT*12, OUTBUF*80
+      CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
       XX0 = 0.0D0

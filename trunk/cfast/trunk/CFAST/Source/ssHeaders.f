@@ -266,7 +266,7 @@
       data LabelUnits / 's', 7*'C', 6*'W', 'C', '1=yes',
      *                  'C', 'm/s' /
 
-      !  spreadsheet header
+      !  spreadsheet header.  Add time first
       if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
@@ -278,7 +278,7 @@
       end if
       position = 1
 
-      ! Compartment surfaces and the floor target
+      ! Compartment surfaces temperatures
       do i = 1, nm1
 	  do j = 1, 4
 	    position = position + 1
@@ -307,8 +307,8 @@
 			    if (validate) then
                   headertext(1,position) = trim(LabelsShort(j+5)) // 
      *                                     trim(cDet)
+                  if (LabelUnits(j+5).eq.'W') LabelUnits(j+5) = 'kW'
                   headertext(2,position) = LabelUnits(j+5)
-                  if (LabelUnits(j+1).eq.'W') LabelUnits(j+1) = 'kW'
                   headertext(3,position) = ' '
 	          else
 	            headertext(1,position) = Labels(j+5)

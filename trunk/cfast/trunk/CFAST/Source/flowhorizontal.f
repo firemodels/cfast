@@ -1004,13 +1004,13 @@ C
       include "cfast.fi"
       include "vents.fi"
       
-      ifrom =IZVENT(1,1)
-      ito = IZVENT(1,2)
-      iface = izvent(1,6)
-      vwidth = zzvent(1,3)
-      voffset = zzvent(1,4)
-      vbottom = zzvent(1,1)
-      vtop = zzvent(1,2)
+      ifrom =IZVENT(i,1)
+      ito = IZVENT(i,2)
+      iface = izvent(i,6)
+      vwidth = zzvent(i,3)
+      voffset = zzvent(i,4)
+      vbottom = zzvent(i,1)
+      vtop = zzvent(i,2)
       vred = 1.0d0
       vgreen = 0.0d0
       vblue = 1.0d0

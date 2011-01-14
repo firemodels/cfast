@@ -27,4 +27,6 @@
 		</TaggedOutputs> -->
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath32)\InstallShield\2011Express\InstallShield.targets"/>
+	<ItemGroup>
+	</ItemGroup>
 </Project>

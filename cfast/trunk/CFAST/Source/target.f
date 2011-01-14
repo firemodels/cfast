@@ -103,7 +103,7 @@ C*** COMPUTE THE PDE RESIDUAL
              ENDIF
            ELSE IF(IIEQ.EQ.CYLPDE)THEN
              CALL CYLCNDUCT(XXTARG(TRGTEMPF,ITARG),NMNODE(1),
-     +                      WFLUXIN,DT,WK(1),WRHO(1),WSPEC(1),XL)
+     +                  (WFLUXIN+WFLUXOUT),DT,WK(1),WRHO(1),WSPEC(1),XL)
 !             write(33,61)stime,xxtarg(trgtempf,itarg),wfluxin
 !   61        format(" stime,",e13.6,",",e13.6,",",e13.6)            
            ENDIF

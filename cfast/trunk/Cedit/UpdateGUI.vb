@@ -467,7 +467,11 @@ Public Class UpdateGUI
                 MainWin.TargetConduct.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
                 MainWin.TargetSpecHeat.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
                 MainWin.TargetDensity.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
-                MainWin.TargetThickness.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+                If MainWin.TargetSolutionThickness.SelectedIndex = Target.Cylindrical Then
+                    MainWin.TargetThickness.Text = "Diameter: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+                Else
+                    MainWin.TargetThickness.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+                End If
             Else
                 MainWin.TargetConduct.Text = "Conductivity:"
                 MainWin.TargetSpecHeat.Text = "Specific Heat: "

@@ -44,6 +44,7 @@ Public Class CeditMain
     Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuNetHeatFluxOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
+    Friend WithEvents MainOpen As System.Windows.Forms.Button
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -434,6 +435,11 @@ Public Class CeditMain
         Me.MenuRunCFast = New System.Windows.Forms.MenuItem()
         Me.MenuSMVSimulation = New System.Windows.Forms.MenuItem()
         Me.MenuItem1 = New System.Windows.Forms.MenuItem()
+        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
+        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
         Me.MenuTools = New System.Windows.Forms.MenuItem()
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
@@ -780,11 +786,7 @@ Public Class CeditMain
         Me.MainRun = New System.Windows.Forms.Button()
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
-        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
-        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
+        Me.MainOpen = New System.Windows.Forms.Button()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -957,6 +959,33 @@ Public Class CeditMain
         '
         Me.MenuItem1.Index = 3
         Me.MenuItem1.Text = "-"
+        '
+        'MenuItem2
+        '
+        Me.MenuItem2.Index = 4
+        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuShowCFAST})
+        Me.MenuItem2.Text = "Output Options"
+        '
+        'MenuDetailedOutput
+        '
+        Me.MenuDetailedOutput.Checked = True
+        Me.MenuDetailedOutput.Index = 0
+        Me.MenuDetailedOutput.Text = "Detailed Output File"
+        '
+        'MenuTotalMassOutput
+        '
+        Me.MenuTotalMassOutput.Index = 1
+        Me.MenuTotalMassOutput.Text = "Total Mass"
+        '
+        'MenuNetHeatFluxOutput
+        '
+        Me.MenuNetHeatFluxOutput.Index = 2
+        Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
+        '
+        'MenuShowCFAST
+        '
+        Me.MenuShowCFAST.Index = 3
+        Me.MenuShowCFAST.Text = "Show CFAST Window"
         '
         'MenuTools
         '
@@ -2480,7 +2509,7 @@ Public Class CeditMain
         '
         'MainView
         '
-        Me.MainView.Location = New System.Drawing.Point(659, 608)
+        Me.MainView.Location = New System.Drawing.Point(698, 608)
         Me.MainView.Name = "MainView"
         Me.MainView.Size = New System.Drawing.Size(75, 23)
         Me.MainView.TabIndex = 104
@@ -4303,7 +4332,7 @@ Public Class CeditMain
         '
         'MainSave
         '
-        Me.MainSave.Location = New System.Drawing.Point(275, 608)
+        Me.MainSave.Location = New System.Drawing.Point(314, 608)
         Me.MainSave.Name = "MainSave"
         Me.MainSave.Size = New System.Drawing.Size(75, 23)
         Me.MainSave.TabIndex = 101
@@ -4311,7 +4340,7 @@ Public Class CeditMain
         '
         'MainRun
         '
-        Me.MainRun.Location = New System.Drawing.Point(510, 608)
+        Me.MainRun.Location = New System.Drawing.Point(544, 608)
         Me.MainRun.Name = "MainRun"
         Me.MainRun.Size = New System.Drawing.Size(75, 23)
         Me.MainRun.TabIndex = 103
@@ -4319,38 +4348,19 @@ Public Class CeditMain
         '
         'MainGeometry
         '
-        Me.MainGeometry.Location = New System.Drawing.Point(424, 608)
+        Me.MainGeometry.Location = New System.Drawing.Point(463, 608)
         Me.MainGeometry.Name = "MainGeometry"
         Me.MainGeometry.Size = New System.Drawing.Size(75, 23)
         Me.MainGeometry.TabIndex = 102
         Me.MainGeometry.Text = "Geometry"
         '
-        'MenuItem2
+        'MainOpen
         '
-        Me.MenuItem2.Index = 4
-        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuShowCFAST})
-        Me.MenuItem2.Text = "Output Options"
-        '
-        'MenuShowCFAST
-        '
-        Me.MenuShowCFAST.Index = 3
-        Me.MenuShowCFAST.Text = "Show CFAST Window"
-        '
-        'MenuTotalMassOutput
-        '
-        Me.MenuTotalMassOutput.Index = 1
-        Me.MenuTotalMassOutput.Text = "Total Mass"
-        '
-        'MenuNetHeatFluxOutput
-        '
-        Me.MenuNetHeatFluxOutput.Index = 2
-        Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
-        '
-        'MenuDetailedOutput
-        '
-        Me.MenuDetailedOutput.Checked = True
-        Me.MenuDetailedOutput.Index = 0
-        Me.MenuDetailedOutput.Text = "Detailed Output File"
+        Me.MainOpen.Location = New System.Drawing.Point(233, 608)
+        Me.MainOpen.Name = "MainOpen"
+        Me.MainOpen.Size = New System.Drawing.Size(75, 23)
+        Me.MainOpen.TabIndex = 105
+        Me.MainOpen.Text = "Open"
         '
         'CeditMain
         '
@@ -4358,6 +4368,7 @@ Public Class CeditMain
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1006, 656)
+        Me.Controls.Add(Me.MainOpen)
         Me.Controls.Add(Me.MainView)
         Me.Controls.Add(Me.MainGeometry)
         Me.Controls.Add(Me.MainRun)
@@ -5411,6 +5422,17 @@ Public Class CeditMain
         End If
         RunSmokeView()
     End Sub
+    Private Sub MainOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainOpen.Click
+        Me.OpenDataFileDialog.FilterIndex = 1
+        Me.OpenDataFileDialog.ShowDialog()
+        If OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim FileName As String
+            For Each FileName In OpenDataFileDialog.FileNames
+                OpenDataFile(FileName)
+            Next
+        End If
+        UpdateAll()
+    End Sub
     Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click
         SaveDataFile(False)
     End Sub
@@ -5552,6 +5574,9 @@ Public Class CeditMain
         myUnits.SI = False
         UpdateGUI.Menu()
         UpdateGUI.General()
+    End Sub
+    Private Sub OpenDataFile()
+
     End Sub
     Private Sub SaveDataFile(ByVal Prompt As Boolean)
         Dim Filename As String

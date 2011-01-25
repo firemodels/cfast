@@ -842,7 +842,7 @@ A radiation heat transfer calculation can easily dominate the computational requ
 
 \item Equilibrium - The wall segments and gas layers are assumed to be in a quasi-steady state.  In other words, the wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the associated differential equation.
 
-\item Point Soure Fires - The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_R$, of the total energy release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
+\item Point Source Fires - The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_R$, of the total energy release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
 
 \item Diffuse and gray surfaces - The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength.  These assumptions allow us to infer that the emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$.
 
@@ -1250,7 +1250,7 @@ The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal 
 
 \be \alpha = 1.0 x 10^{-9} T_f^{7/4} \ee
 
-\be k = \frac{0.0209 + 1.33 x 10^{-5} T_f}{1 - 0.000267 T_f} \ee
+\be k = \frac{0.0209 + 2.33 x 10^{-5} T_f}{1 - 0.000267 T_f} \ee
 
  \subsubsection{Conduction}
 

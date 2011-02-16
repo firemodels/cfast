@@ -112,7 +112,7 @@ pressure & $\displaystyle {\dbydt{P} = \frac{{\gamma -1}}{{V}} \brackets{\dot h_
 i'th layer energy & $\displaystyle {\dbydt{E_i} = \frac{1}{\gamma} \brackets{\dot h_i + V \dbydt{P}}}$ \\ \hline
 i'th layer volume & $\displaystyle {\dbydt{V_i} = \frac{1}{P \gamma} \brackets{\brackets{\gamma -1} \dot h_i - V_i \dbydt{P}} }$ \\ \hline
 i'th layer density & $\displaystyle {\dbydt{\rho_i} = \frac{-1}{c_p T_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i} - \frac{V_i}{\gamma - 1}\dbydt{P}}}$ \\ \hline
-i'th layer temperature & $\displaystyle {\dbydt{T_i} = \frac{1}{c_p rho_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i}+ V_i \dbydt{P}}}$ \\ \hline
+i'th layer temperature & $\displaystyle {\dbydt{T_i} = \frac{1}{c_p \rho_i V_i} \brackets{\brackets{\dot h_i - c_p \dot m_i T_i}+ V_i \dbydt{P}}}$ \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
@@ -135,11 +135,11 @@ volume, and pressure as shown below.
 
 \be \dbydt{P} = \frac{{\gamma -1}}{{V}} \brackets{\dot h_L + \dot h_U}  \ee
 
-\be \dbydt{V_U} = \frac{1}{P \gamma} \brackets{\brackets{\gamma -1} \dot h_i - V_U \dbydt{P}} \ee
+\be \dbydt{V_U} = \frac{1}{P \gamma} \brackets{\brackets{\gamma -1} \dot h_U - V_U \dbydt{P}} \ee
 
-\be \dbydt{T_U} = \frac{1}{c_p \rho_i V_U} \brackets{\brackets{\dot h_U - c_p \dot m_U T_U}+ V_U \dbydt{P}} \ee
+\be \dbydt{T_U} = \frac{1}{c_p \rho_U V_U} \brackets{\brackets{\dot h_U - c_p \dot m_U T_U}+ V_U \dbydt{P}} \ee
 
-\be \dbydt{T_L} = \frac{1}{c_p \rho_i V_L} \brackets{\brackets{\dot h_L - c_p \dot m_L T_L}+ V_L \dbydt{P}} \ee
+\be \dbydt{T_L} = \frac{1}{c_p \rho_L V_L} \brackets{\brackets{\dot h_L - c_p \dot m_L T_L}+ V_L \dbydt{P}} \ee
 
 In these equations, the pressure is actually modeled with the pressure difference relative to an
 ambient reference pressure to minimize numerical instability.
@@ -241,14 +241,14 @@ which are defined by user input of the yields as appropriate.  The remaining sto
 \be
   \nu_\HTWOO = \frac{w}{2} - \frac{M_\F}{M_\HCl} \; y_\HCl -  \frac{M_\F}{M_\HCN} \; y_\HCN \label{HTWOO_yield}
 \ee
-  
+
 \be
-  \nu_\COTWO = v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN -\frac{M_\F}{M_\So} \; y_\So 
-\ee  
+  \nu_\COTWO = v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN -\frac{M_\F}{M_\So} \; y_\So
+\ee
 
 \begin{eqnarray} \nu_\OTWO &=& \nu_\COTWO + \frac{\nu_\HTWOO}{2} + \frac{\nu_\CO}{2} - \frac{x}{2}  \nonumber \\
  &=& \brackets{v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \brackets{\frac{w}{4} - \frac{M_\F}{2 M_\HCl} \; y_\HCl -  \frac{M_\F}{2 M_\HCN} \; y_\HCN} + \brackets{\frac{M_\F}{2 M_\CO} \; y_\CO} - \frac{x}{2} \nonumber \\
- &=& \brackets{v - \frac{M_\F}{2 M_\CO} \; y_\CO - \frac{M_\F}{2 M_\HCl} \; y_\HCl - \frac{3 M_\F}{2 M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \frac{w}{4} - \frac{x}{2} 
+ &=& \brackets{v - \frac{M_\F}{2 M_\CO} \; y_\CO - \frac{M_\F}{2 M_\HCl} \; y_\HCl - \frac{3 M_\F}{2 M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \frac{w}{4} - \frac{x}{2}
 \end{eqnarray}
 
 For complete combustion of the simplest hydrocarbon fuel, methane reacts with

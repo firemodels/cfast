@@ -1490,7 +1490,7 @@ C     THIS GUY IS IN UNLABELED COMMON SO WE CAN NOT PUT IT INTO A DATA STATEMENT
       IF (.NOT.EXISTED) return
       CLOSE (IOFILI)
 	write (logerr, 1) solverini
-	OPEN (IOFILI,FILE=solverini)
+	open (unit=iofili,file=solverini)
 
 C*** READ IN SOLVER ERROR TOLERANCES
 

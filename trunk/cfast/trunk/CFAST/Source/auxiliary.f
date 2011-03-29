@@ -1779,7 +1779,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       CHARACTER STRS(8)*60, IC, TOUPPER*1, LOGFILE*60
       CHARACTER*60 SOLVEINI
       INTEGER IARG(8), IOPT(26), OPTION
-      OPTION(IC) = IOPT(ICHAR(IC)-ICHAR('A')+1)
+      cmdflag(IC) = IOPT(ICHAR(IC)-ICHAR('A')+1)
 
 C     CURRENT DATE
 
@@ -1804,21 +1804,21 @@ C     COMMAND LINE ARGUMENTS
 !     T to output trace species mass
 !     G to output target fluxes relative to an ambient target (incident flux - sigma*eps*Tamb**4)
 
-      IF (OPTION('H').NE.0) HEADER = .TRUE.
-      IF (OPTION('K').NE.0) NOKBD = .TRUE.
-	IF (OPTION('I').NE.0) INITIALIZEONLY = .TRUE.
-	IF (OPTION('D').NE.0) DEBUGGING = .TRUE.
-	if (option('T').ne.0) trace = .true.
-	if (option('V').ne.0) validate = .true.
+      IF (cmdflag('H').NE.0) HEADER = .TRUE.
+      IF (cmdflag('K').NE.0) NOKBD = .TRUE.
+	IF (cmdflag('I').NE.0) INITIALIZEONLY = .TRUE.
+	IF (cmdflag('D').NE.0) DEBUGGING = .TRUE.
+	if (cmdflag('T').ne.0) trace = .true.
+	if (cmdflag('V').ne.0) validate = .true.
       LOGERR = 3
 
-      IF (OPTION('F').ne.0.and.option('C').ne.0) stop 107
-	if (option('C').ne.0) outputformat = 1
-	if (option('F').ne.0) outputformat = 2
+      IF (cmdflag('F').ne.0.and.cmdflag('C').ne.0) stop 107
+	if (cmdflag('C').ne.0) outputformat = 1
+	if (cmdflag('F').ne.0) outputformat = 2
 
-      IF (OPTION('S').NE.0) THEN
-         IF (STRS(OPTION('S')).NE.' ') THEN
-            SOLVEINI = STRS(OPTION('S'))
+      IF (cmdflag('S').NE.0) THEN
+         IF (STRS(cmdflag('S')).NE.' ') THEN
+            SOLVEINI = STRS(cmdflag('S'))
          ELSE
             SOLVEINI = 'SOLVE.INI'
          ENDIF

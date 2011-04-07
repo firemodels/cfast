@@ -778,6 +778,10 @@ C    A POSTIVE FLUX MEANS THAT HEAT IS FLOWING TO THE WALL
       DO 80 I = 1, 4
         QFLUX(I) = -DQ(I)
    80 CONTINUE
+      if (hlay.lt.0.001) then
+      write (*,*) (qflux(i),i=1,4)
+      stop
+      end if
 
 C*** COMPUTE RADIATION ABSORBED BY EACH LAYER
 

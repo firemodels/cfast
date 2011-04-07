@@ -33,6 +33,6 @@ C     NT = 4*NR(MAIN EQU) + 2*NR*NS(SPECIES) * 4*NR(HCL) + 4*NR(SMOKE)
 !     limit the pairs of vertical flow vents to 2 times the number of compartments
       parameter (mxvv=2*nr)
 
-      INTEGER MXIRM, MXORM, MXPRD, MXSLAB, MXELEV, MXVENT
-      PARAMETER (MXIRM = 20,MXORM = 4,MXPRD = 11,MXSLAB = 10)
-      PARAMETER (MXELEV = 10,MXVENT = mxvents*2)
+      INTEGER MXPRD, MXSLAB, MXVENT
+      PARAMETER (MXPRD = 11,MXSLAB = 10)
+      PARAMETER (MXVENT = mxvents*2)

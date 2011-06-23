@@ -127,7 +127,7 @@
 
       data thrmfile/'thermal'/,  
 
-     . logerr/0/, nnfile/' '/,
+     . nnfile/' '/,
      . DUMPF/' '/,HEADER/.FALSE./, 
      . NOKBD/.FALSE./, 
      .  initializeonly/.false./,

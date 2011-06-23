@@ -338,12 +338,12 @@
 	  do j = 1, 4
 	    position = position + 1
 	    if (validate) then
-	      headertext(1,position) = trim(LabelsShort(j+14)) // trim(cDet)
+	      headertext(1,position) = trim(LabelsShort(j+14))//trim(cDet)
 	      headertext(2,position) = LabelUnits(j+14)
 	      headertext(3,position) = ' '
 	    else
 	      headertext(1,position) = Labels(j+14)
-	      write (cTemp,'(a,1x,a,1x,a)') trim(cType), 'Sensor', trim(cDet)
+	      write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
 	      headertext(2,position) = cTemp
 	      headertext(3,position) = LabelUnits(j+14)
 	    end if

@@ -1930,7 +1930,7 @@ C	Now the other objects
 	    if (mdot(i)*qdot(i).le.0.d0) then
 	  		hdot(i) = hinitial
 	    else					
-	  		Hdot(I) = min(hcmax,max(Qdot(I)/(mdot(I)),hcmin))
+	  		Hdot(I) = min(hcmax,max(Qdot(I)/mdot(I),hcmin))
 	  		mdot(I) = Qdot(I)/Hdot(I)
 	    endif
 	else

@@ -3929,9 +3929,9 @@
 		<row><td>IDS__TargetReq_DESC_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
-		<row><td>ID_STRING1</td><td>1033</td><td>http://www.nist.gov/el</td><td>0</td><td/><td>-165747030</td></row>
+		<row><td>ID_STRING1</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-618681749</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>National Insitute of Standards and Technology</td><td>0</td><td/><td>-568408945</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-165800246</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-618681749</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>in</td><td>0</td><td/><td>-165767414</td></row>
 		<row><td>NEW_STRING2</td><td>1033</td><td>smv</td><td>0</td><td/><td>-165769366</td></row>
@@ -4573,7 +4573,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{8C3CB364-5BC9-4067-8F9A-C54D3ED8506A}</td><td/></row>
 		<row><td>ProductName</td><td>CFAST</td><td/></row>
-		<row><td>ProductVersion</td><td>6.2.0.251</td><td/></row>
+		<row><td>ProductVersion</td><td>6.2.0.266</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>

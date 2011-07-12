@@ -325,7 +325,7 @@ Public Class EngineeringUnits
         ' All the conversions are of the form y=(x+b)*m, though usually b is 0.0
 
         ' Length conversions
-        Dim mLength() As Single = {1.0, 0.01, 0.001, 0.3028, 0.0254}
+        Dim mLength() As Single = {1.0, 0.01, 0.001, 0.3048, 0.0254}
         Dim LLength() As String = {"m", "cm", "mm", "ft", "in"}
         Dim aLengthConversion As New Conversions(mLength, Zero, LLength)
         BaseUnits(BaseUnitsNum.Length) = aLengthConversion

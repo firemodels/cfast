@@ -1,4 +1,5 @@
 echo off
+path C:\Documents and Settings\Administrator\My Documents\Visual Studio 2005\Projects\cfast\Bin\; %PATH%
 del *.n.csv /s/q
 del *.s.csv /s/q
 del *.f.csv /s/q

@@ -16,8 +16,8 @@ TurbineConcrete,1.6,750,2400,1,0.9,0,0,0,0,0,0,0,Turbine Building Concrete (user
 TurbineSteel,54,465,7850,0.028,0.9,0,0,0,0,0,0,0,Turbine Building Steel (user's guide)
 TurbineOil,145,1909,880,0.3,0.9,0,0,0,0,0,0,0,Turbine Building Oil
 SwMCCConcrete,1.6,750,2400,1,0.9,0,0,0,0,0,0,0,Switchgear MCC Concrete (user's guide)
-SwMCCSteel,54,465,7850,0.028,0.9,0,0,0,0,0,0,0,Switchgear MCC Steel (user's guide)
-SwMCCXPE,0.21,1560,1375,0.015,0.9,0,0,0,0,0,0,0,Switchgear MCC XPE Cable (NUREG 1824)
+SwMCCSteel,54,465,7850,0.0015,0.9,0,0,0,0,0,0,0,Switchgear MCC Steel (user's guide)
+SwMCCXPE,0.2,1500,2538,0.015,0.9,0,0,0,0,0,0,0,Switchgear MCC XPE Cable (NUREG 1824)
 CorConcrete,1.6,750,2400,0.5,0.9,0,0,0,0,0,0,0,Switchgear MCC Concrete (user's guide)
 CorXPE,0.21,1560,1375,0.015,0.9,0,0,0,0,0,0,0,Switchgear MCC XPE Cable (NUREG 1824)
 CorWood,0.12,1380,510,0.9,0.9,0,0,0,0,0,0,0,"Wood, Softwoods (CFAST default value)"

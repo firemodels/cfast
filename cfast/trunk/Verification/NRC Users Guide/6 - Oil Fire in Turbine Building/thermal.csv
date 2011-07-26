@@ -13,7 +13,7 @@ PumpERFBS,0.06,1070,128,0.1016,0.9,0,0,0,0,0,0,0,Pump Room ERFBS Insulation (use
 PumpSteel,48,559,7854,0.0015,0.9,0,0,0,0,0,0,0,Pump Room Steel (user's guide)
 PumpOil,145,1909,880,0.0762,0.9,0,0,0,0,0,0,0,Pump Room Oil
 TurbineConcrete,1.6,750,2400,1,0.9,0,0,0,0,0,0,0,Turbine Building Concrete (user's guide)
-TurbineSteel,54,465,7850,0.028,0.9,0,0,0,0,0,0,0,Turbine Building Steel (user's guide)
+TurbineSteel,54,465,7850,0.017,0.9,0,0,0,0,0,0,0,Turbine Building Steel (user's guide)
 TurbineOil,145,1909,880,0.3,0.9,0,0,0,0,0,0,0,Turbine Building Oil
 SwMCCConcrete,1.6,750,2400,1,0.9,0,0,0,0,0,0,0,Switchgear MCC Concrete (user's guide)
 SwMCCSteel,54,465,7850,0.028,0.9,0,0,0,0,0,0,0,Switchgear MCC Steel (user's guide)

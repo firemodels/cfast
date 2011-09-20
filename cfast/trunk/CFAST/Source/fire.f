@@ -1831,13 +1831,14 @@ C
    60   CONTINUE
 C
 C     OPACITY IS CALCULATED FROM SEDER'S WORK
-C	Note: this value was change 2/15/2 from 3500 to 3817 to reflect the new value as reported yb
-C     Mulholland in Fire and Materials, 24, 2227(2000)
+C	Note: this value was change 2/15/2 from 3500 to 3778 to reflect the new value as reported by
+C     Mulholland in Fire and Materials, 24, 227(2000) with recommended value of extinction coefficient
+C     of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
 C
         LSP = 9
         IF (ACTIVS(LSP)) THEN
           DO 70 K = UPPER, LOWER
-            TOXICT(I,K,LSP) = PPMDV(K,I,LSP) * 3817.0D0
+            TOXICT(I,K,LSP) = PPMDV(K,I,LSP) * 3778.0D0
    70     CONTINUE
         END IF
 

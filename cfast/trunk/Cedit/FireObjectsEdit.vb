@@ -567,7 +567,7 @@ Public Class FireObjectsEdit
                 If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
                 If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
                 If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
-                If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCN = aFireTimeSeries(Fire.FireHCl, j)
+                If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
             Next
             Me.FireObjectSummary(i, 5) = PeakHRR.ToString
             Me.FireObjectSummary(i, 6) = PeakCO.ToString

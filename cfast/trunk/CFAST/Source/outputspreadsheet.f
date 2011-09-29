@@ -403,8 +403,8 @@ c   40 CONTINUE
 	      if (layer.eq.upper.or.IZSHAFT(I).EQ.0) then
               IF (tooutput(LSP)) THEN
                 ssvalue = TOXICT(I,LAYER,LSP)
-                if (validate.and.molfrac(LSP))ssvalue = ssvalue*0.01D0
-                if (validate.and.lsp.eq.9) ssvalue = ssvalue *261.959
+                if (validate.and.molfrac(LSP))ssvalue = ssvalue*0.01D0 ! Converts PPM to  molar fraction
+                if (validate.and.lsp.eq.9) ssvalue = ssvalue *264.6903 ! Converts OD to mg/m^3 (see TOXICT OD calculation)
 	          CALL SSaddtolist (position,ssvalue,outarray)
 ! We can only output to the maximum array size; this is not deemed to be a fatal error!
 			    if (position.ge.maxhead) go to 90

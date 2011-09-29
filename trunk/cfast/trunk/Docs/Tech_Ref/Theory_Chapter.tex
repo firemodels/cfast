@@ -258,6 +258,15 @@ more complex. In this case, production yields for the species are prescribed by 
 Stoichiometry is used to insure conservation of mass and elements in the reaction. The species
 which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
+In CFAST, the calculation of combustion chemistry is implemented on a carbon-basis rather than a fuel-basis since the actual composition of the fuel is typically not precisely known. For this, the mass balance inherent in eq \ref{stoich} is used as follows
+
+\be  \dm_f +  \dm_\OTWO =    \dm_\COTWO \, + \dm_\CO + \dm_\So + \dm_\HTWOO \
+      + \dm_\HCl + \dm_\HCN \label{eqCFASTfiremassbalance} 
+ \ee
+      
+ \be   \dm_f +  \dm_\OTWO =  \dm_\COTWO \, + \frac{ \mathrm{CO}}{\mathrm{CO_2}}
+ \ee
+
 The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons.
 
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:

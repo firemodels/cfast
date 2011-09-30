@@ -276,13 +276,13 @@ In CFAST, the calculation of combustion chemistry is implemented on a carbon-bas
         \brackets{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}}
  \ee
 
-Since $f_\C$ is just the mass ratio of hydrogen to carbon in the fuel, we can solve for $\dm_\COTWO$ as
+Since $f_\C$ is just the mass ratio of fuel to carbon, we can solve for $\dm_\COTWO$ as
 
 \begin{eqnarray} \dm_\COTWO &=& \frac{\dm_f \brackets{\brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \nicefrac{\brackets{\frac{9 H}{C} +  y_\HCl f_\C  + y_\HCN f_\C}}{f_\C}}}{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}} \nonumber \\
 	&=& \frac{\dm_f \brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \nicefrac{\brackets{\frac{9 H}{C} +  \frac{HCl}{C}  + \frac{HCN}{C}}}{f_\C}}{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}} \label{eqCFASTcarbonbalance}
 \end{eqnarray}
 
-Since $y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $H$/$C$, $O$/$C$, $y_\HCl$, and $y_\HCN$ are direct CAST inputs, production rates for these follow from eq \ref{eqCFASTcarbonbalance}. $y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $y_\HCl$, and $y_\HCN$ are typically available from material test data. $H$/$C$ and $O$/$C$ are properties of the fuel.   
+$y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $H$/$C$, $O$/$C$, $y_\HCl$, and $y_\HCN$ are direct CAST inputs, so production species rates follow from eq \ref{eqCFASTcarbonbalance}. $y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $y_\HCl$, and $y_\HCN$ are typically available from material test data. $H$/$C$ and $O$/$C$ are properties of the fuel.   
 
 The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons, reducing the effective $\dm_f$ for a given fire.
 

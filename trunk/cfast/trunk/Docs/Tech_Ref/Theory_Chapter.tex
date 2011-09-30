@@ -264,10 +264,27 @@ In CFAST, the calculation of combustion chemistry is implemented on a carbon-bas
       + \dm_\HCl + \dm_\HCN \label{eqCFASTfiremassbalance} 
  \ee
       
- \be   \dm_f +  \dm_\OTWO =  \dm_\COTWO \, + \frac{ \mathrm{CO}}{\mathrm{CO_2}}
+ \be   \dm_f +  \dm_\OTWO =  \dm_\COTWO \, + \frac{y_\CO}{y_\COTWO}\dm_\COTWO \
+       + \frac{y_\So}{y_\COTWO}\dm_\COTWO + 9\frac{H}{C}\frac{\dm_f}{f_\C} + y_\HCl\dm_f \
+       + y_\HCN\dm_f
+ \ee
+ 
+ where  $f_\C = 1+\frac{H}{C}+\frac{HCl}{C}+\frac{HCN}{C}+\frac{O}{C}$. Noting that for most hydrocarbon fuels, $\dm_\OTWO \approx \dm_f\frac{H_\C}{1.32x10^7}$ or $\dm_f\frac{H_\C}{1.32x10^7} -\frac{\dm_f}{f_\C}\frac{O}{C}$ for fuels with oxidizer in the fuel,
+ 
+ \be \dm_f \brackets{\brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \  
+        \brackets{\frac{9 H}{C}\frac{1}{f_\C} + y_\HCl  + y_\HCN}}= \dm_\COTWO \
+        \brackets{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}}
  \ee
 
-The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons.
+Since $f_\C$ is just the mass ratio of hydrogen to carbon in the fuel, we can solve for $\dm_\COTWO$ as
+
+\begin{eqnarray} \dm_\COTWO &=& \frac{\dm_f \brackets{\brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \nicefrac{\brackets{\frac{9 H}{C} +  y_\HCl f_\C  + y_\HCN f_\C}}{f_\C}}}{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}} \nonumber \\
+	&=& \frac{\dm_f \brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \nicefrac{\brackets{\frac{9 H}{C} +  \frac{HCl}{C}  + \frac{HCN}{C}}}{f_\C}}{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}} \label{eqCFASTcarbonbalance}
+\end{eqnarray}
+
+Since $y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $H$/$C$, $O$/$C$, $y_\HCl$, and $y_\HCN$ are direct CAST inputs, production rates for these follow from eq \ref{eqCFASTcarbonbalance}. $y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $y_\HCl$, and $y_\HCN$ are typically available from material test data. $H$/$C$ and $O$/$C$ are properties of the fuel.   
+
+The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons, reducing the effective $\dm_f$ for a given fire.
 
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
 

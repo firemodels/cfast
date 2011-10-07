@@ -26,15 +26,15 @@ Public Class Fire
     Private Const MaxMolarMass As Single = 292.0
     Private Const MaxTotalMass As Single = 10000.0
     Private Const MinHeatofCombustion As Single = 10000000.0
-    Private Const MaxHeatofCombustion As Single = 500000000.0
+    Private Const MaxHeatofCombustion As Single = 1000000000.0
     Private Const MaxHRR As Single = 10000000000.0
     Private Const MaxMdot As Single = 1500.0
     Private Const MaxCO As Single = 0.4
     Private Const MaxSoot As Single = 99.0
     Private Const MaxHC As Single = 1.0 / 3.0
     Private Const MaxO2 As Single = 99.0
-    Private Const MaxHCN As Single = 0.1
-    Private Const MaxHCl As Single = 0.1
+    Private Const MaxHCN As Single = 1.0
+    Private Const MaxHCl As Single = 1.0
     Private Const MaxCt As Single = 100.0
     Private Const maxLPF As Single = 1.0
 

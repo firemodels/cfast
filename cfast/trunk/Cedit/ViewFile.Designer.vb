@@ -149,6 +149,7 @@ Partial Class ViewFile
         '
         Me.PreviewDocument.DocumentInfo.Creator = "C1Reports Engine version 2.6.20103.54202"
         Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in", System.Drawing.Printing.PaperSourceKind.Upper, 0, Nothing, System.Drawing.Printing.PrinterResolutionKind.Custom, 0, 0)
+        Me.PreviewDocument.TagsInputDialogClass = Nothing
         '
         'ViewFile
         '

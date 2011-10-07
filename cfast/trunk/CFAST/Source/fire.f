@@ -1924,7 +1924,7 @@ C	Now the other objects
 
 	double precision mdot(maxint), qdot(maxint), hdot(maxint)
 
-      data hcmax /5.0D7/, hcmin /0.5D+7/
+      data hcmax /1.0D8/, hcmin /1.0D+6/
 	
 	do 600 i = 1, maxint
 	if(i.gt.1) then

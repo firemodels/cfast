@@ -83,12 +83,63 @@ echo iBMB_5 Test 4
 cd iBMB_5\
 ..\..\bin\cfast iBMB_5_T4 /V
 cd ..\
-echo FM SNL Tests 4, 5, 21
+echo FM SNL Tests
+cd FM_SNL\Test_1
+..\..\..\bin\cfast FMSNL_1 /V
+cd ..\..\
+cd FM_SNL\Test_3
+..\..\..\bin\cfast FMSNL_3 /V
+cd ..\..\
 cd FM_SNL\Test_4
 ..\..\..\bin\cfast FMSNL_4 /V
 cd ..\..\
 cd FM_SNL\Test_5
 ..\..\..\bin\cfast FMSNL_5 /V
+cd ..\..\
+cd FM_SNL\Test_6
+..\..\..\bin\cfast FMSNL_6 /V
+cd ..\..\
+cd FM_SNL\Test_7
+..\..\..\bin\cfast FMSNL_7 /V
+cd ..\..\
+cd FM_SNL\Test_8
+..\..\..\bin\cfast FMSNL_8 /V
+cd ..\..\
+cd FM_SNL\Test_9
+..\..\..\bin\cfast FMSNL_9 /V
+cd ..\..\
+cd FM_SNL\Test_10
+..\..\..\bin\cfast FMSNL_10 /V
+cd ..\..\
+cd FM_SNL\Test_11
+..\..\..\bin\cfast FMSNL_11 /V
+cd ..\..\
+cd FM_SNL\Test_12
+..\..\..\bin\cfast FMSNL_12 /V
+cd ..\..\
+cd FM_SNL\Test_13
+..\..\..\bin\cfast FMSNL_13 /V
+cd ..\..\
+cd FM_SNL\Test_14
+..\..\..\bin\cfast FMSNL_14 /V
+cd ..\..\
+cd FM_SNL\Test_15
+..\..\..\bin\cfast FMSNL_15 /V
+cd ..\..\
+cd FM_SNL\Test_16
+..\..\..\bin\cfast FMSNL_16 /V
+cd ..\..\
+cd FM_SNL\Test_17
+..\..\..\bin\cfast FMSNL_17 /V
+cd ..\..\
+cd FM_SNL\Test_18
+..\..\..\bin\cfast FMSNL_18 /V
+cd ..\..\
+cd FM_SNL\Test_19
+..\..\..\bin\cfast FMSNL_19 /V
+cd ..\..\
+cd FM_SNL\Test_20
+..\..\..\bin\cfast FMSNL_20 /V
 cd ..\..\
 cd FM_SNL\Test_21
 ..\..\..\bin\cfast FMSNL_21 /V

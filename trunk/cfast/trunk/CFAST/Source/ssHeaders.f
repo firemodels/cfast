@@ -30,7 +30,7 @@
      *              'Total Trace Species Released' /
       data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_',
      *                   'PRS_', 'ATARG_', 'FTARG_', 'PLUM_', 
-     *                   'PYROL_', 'HRR_', 'FHGT_', 'HRR_C_',
+     *                   'PYROL_', 'HRR_', 'FLHGT_', 'HRR_C_',
      *                   'PYROL_T_', 'TRACE_T_' /
       data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W/m^2', 
      *                  'W/m^2', 'kg/s', 'kg/s', 'W', 'm', 'W',
@@ -103,10 +103,10 @@
       end do
         
       ! write out header
-      write(15,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-      write(15,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+      write(21,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+      write(21,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validate)
-     *  write(15,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(21,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       end subroutine ssHeadersNormal
       
@@ -200,10 +200,10 @@
       end do
             
       ! write out header
-      write(17,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-      write(17,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+      write(23,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+      write(23,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validate)
-     *  write(17,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(23,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       end subroutine ssHeadersSpecies
       
@@ -351,10 +351,10 @@
       end do
             
       ! write out header
-      write(18,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-      write(18,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+      write(24,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+      write(24,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validate)
-     *  write(18,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(24,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
       
       return
       end subroutine ssHeadersFlux
@@ -513,14 +513,105 @@ C     Natural flow through vertical vents (horizontal flow)
       end do
             
       ! write out header
-      write(16,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-      write(16,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+      write(22,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+      write(22,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
       if (.not.validate)
-     *  write(16,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+     *  write(22,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
 	return
 
 	end subroutine ssHeadersFlow
+
+      subroutine ssHeadersSMV(lMode)
+      
+      ! This is the header information for the normal spreadsheet output
+      
+      include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "objects1.fi"
+      include "vents.fi"
+      
+      ! local variables     
+      parameter (maxhead = 1+6*nr+5+2*mxfire)
+      character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent,
+     *  LabelsShort(12), LabelUnits(12), toIntString
+     
+      data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_',
+     *                   'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_',
+     *                   'FBASE_', 'FAREA_', 'HVENT_' /
+      data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m',
+     *                  'kW', 'm', 'm', 'm^2', 'm^2' /
+
+      !  spreadsheet header
+      headertext(1,1) = LabelUnits(1)
+      headertext(2,1) = LabelsShort(1)
+      call smvDeviceTag('TIME')
+      position = 1
+        
+      ! Compartment variables
+      do j = 1, nm1
+        do i = 1, 6
+          if (i.ne.2.or.izshaft(j).eq.0) then
+            if (i.ne.3.or.izshaft(j).eq.0) then
+              position = position + 1
+              cRoom = toIntString(j)
+              headertext(1,position) = LabelUnits(i+1)
+              headertext(2,position) = trim(LabelsShort(i+1)) // 
+     *                                 trim(cRoom)
+              call smvDeviceTag(headertext(2,position))
+            end if
+          end if
+        end do
+      end do
+        
+      ! Fire variables. Main fire first, then object fires
+      if (lfbo.gt.0) then
+        do i = 1, 4
+          position = position + 1
+          write (cTemp,'(a,i1)') trim(LabelsShort(i+7)), 0
+          headertext(1,position) = LabelUnits(i+7)
+          headertext(2,position) = cTemp
+          call smvDeviceTag(headertext(2,position))
+        end do
+      endif
+        do j = 1, numobjl
+        do i = 1, 4
+          position = position + 1
+          cFire = toIntString(j)
+          headertext(1,position) = LabelUnits(i+7)
+          headertext(2,position) = trim(LabelsShort(i+7))//trim(cFire)
+          call smvDeviceTag(headertext(2,position))
+        end do
+      end do
+
+      ! Vent variables
+      do i = 1, nvents
+        position = position + 1
+        cVent = toIntString(i)
+        headertext(1,position) = LabelUnits(12)
+        headertext(2,position) = trim(LabelsShort(12))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+      end do
+        
+      ! write out header if called from outputspreadsheet 
+      ! (this is only one once, but smokeview device tags are done each time)
+      if(lMode) then
+        write(15,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+        write(15,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+      end if
+
+      end subroutine ssHeadersSMV
+
+      subroutine smvDeviceTag(string)
+      character string*(*)
+      write (13,'(a)') 'DEVICE'
+      write (13,'(4x,a)') trim(string)
+      write (13,'(1x,3f6.1)') 0.,0.,0.
+      return
+      end subroutine smvDeviceTag
+
 
       character*(*) function toIntString(i)
       integer i

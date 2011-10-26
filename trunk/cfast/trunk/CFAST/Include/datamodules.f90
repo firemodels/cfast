@@ -6,8 +6,8 @@ module  iofiles
 
     character(6), parameter :: heading="VERSN"
 	character(64) ::  project
-	character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, ssflow,   &
-	      ssnormal, ssspecies, sswall, errorlogging, stopfile, solverini, &
+	character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
+	      ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, solverini, &
 	      historyfile, queryfile, statusfile, kernelisrunning
 
 ! Work arrays for the csv input routines

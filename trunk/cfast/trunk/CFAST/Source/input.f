@@ -2605,30 +2605,32 @@ C
 
 ! form the file names
 
-! datafiles: inputfile, outputfile, smvhead, smvdata, ssflow, ssnormal, ssspecies, sswall
+! datafiles: inputfile, outputfile, smvhead, smvdata, smvcsv, ssflow, ssnormal, ssspecies, sswall
 
-	testpath = trim (datapath)
-	lp = len_trim (testpath)
-	testproj = trim (project)
-	ld = len_trim (testproj)
-	inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
-	outputfile = testpath(1:lp) // testproj(1:ld) // '.out'
-	smvhead = testpath(1:lp) // testproj(1:ld) // '.smv'
-	smvdata = testpath(1:lp) // testproj(1:ld) // '.plt'
-	ssflow = testpath(1:lp) // testproj(1:ld) // '.f.csv'
-	ssnormal = testpath(1:lp) // testproj(1:ld) // '.n.csv'
-	ssspecies = testpath(1:lp) // testproj(1:ld) // '.s.csv'
-	sswall = testpath(1:lp) // testproj(1:ld) // '.w.csv'
-	errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
-	stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
-	historyfile = testpath(1:lp) // testproj(1:ld) // '.hi'
-	queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
-	statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
-	kernelisrunning = testpath(1:lp) // testproj(1:ld) //'.kernelisrunning'
+      testpath = trim (datapath)
+      lp = len_trim (testpath)
+      testproj = trim (project)
+      ld = len_trim (testproj)
+      inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
+      outputfile = testpath(1:lp) // testproj(1:ld) // '.out'
+      smvhead = testpath(1:lp) // testproj(1:ld) // '.smv'
+      smvdata = testpath(1:lp) // testproj(1:ld) // '.plt'
+      smvcsv = testpath(1:lp) // testproj(1:ld) // '_zone.csv'
+      ssflow = testpath(1:lp) // testproj(1:ld) // '_f.csv'
+      ssnormal = testpath(1:lp) // testproj(1:ld) // '_n.csv'
+      ssspecies = testpath(1:lp) // testproj(1:ld) // '_s.csv'
+      sswall = testpath(1:lp) // testproj(1:ld) // '_w.csv'
+      errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
+      stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
+      historyfile = testpath(1:lp) // testproj(1:ld) // '.hi'
+      queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
+      statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
+      kernelisrunning = testpath(1:lp) // testproj(1:ld) //
+     * '.kernelisrunning'
 
-	testpath = trim (exepath)
-	lp = len_trim (testpath)
-	solverini = testpath(1:lp) // 'solver.ini'
+      testpath = trim (exepath)
+      lp = len_trim (testpath)
+      solverini = testpath(1:lp) // 'solver.ini'
 
       open (unit=1, file=inputfile, action='read', status='old', 
      *      iostat=ios)
@@ -2636,6 +2638,7 @@ C
       call deleteoutputfiles (outputfile)
       call deleteoutputfiles (smvhead)	
       call deleteoutputfiles (smvdata)
+      call deleteoutputfiles (smvcsv)
       call deleteoutputfiles (ssflow)
       call deleteoutputfiles (ssnormal)
       call deleteoutputfiles (ssspecies)

@@ -2940,10 +2940,11 @@ C
 !     12 is used to write the status file (project.status)
 !     13 smokeview output (header) - note this is rewound each time the plot data is written)
 !     14 smokeview output (plot data)
-!     15 spreadsheet output (normal)
-!     16 spreadsheet output (flow field)
-!     17 spreadsheet output (species)
-!     18 spreadsheet output (walls and targets)
+!     15 smokeview spreadsheet output
+!     21 spreadsheet output (normal)
+!     22 spreadsheet output (flow field)
+!     23 spreadsheet output (species)
+!     24 spreadsheet output (walls and targets)
 
 !!!! Note that we assume that the default carraigecontrol for formatted files is of type LIST (no fortran controls)
 
@@ -2981,16 +2982,17 @@ C
      .          iostat=ios)
 		 OPEN (UNIT=14,FILE=smvdata,FORM="UNFORMATTED",err=11,
      .          iostat=ios)
+          open (unit=15, file=smvcsv,form='formatted')
 	endif
  
 ! Next the spread sheet files
 	if (lcopyss.gt.0) then
 		 write(logerr,5005) trim(ssnormal),trim(ssflow),
      .                       trim(ssspecies),trim(sswall)
-		 open (unit=15, file=ssnormal,form='formatted')
-		 open (unit=16, file=ssflow,form='formatted')
-		 open (unit=17, file=ssspecies,form='formatted')
-		 open (unit=18, file=sswall,form='formatted')
+		 open (unit=21, file=ssnormal,form='formatted')
+		 open (unit=22, file=ssflow,form='formatted')
+		 open (unit=23, file=ssspecies,form='formatted')
+		 open (unit=24, file=sswall,form='formatted')
 	endif
 
 ! And finally we create a file to indicate that the model is running.

@@ -8,7 +8,7 @@
      .  solverini, historyfile, queryfile, statusfile, kernelisrunning
 
 	common /datafiles/ datapath, exepath, inputfile, outputfile, 
-     .  smvhead, smvdata, ssflow, ssnormal, ssspecies, sswall, 
+     .  smvhead, smvdata, smvcsv, ssflow, ssnormal, ssspecies, sswall, 
      .  errorlogging, stopfile, solverini, project, historyfile,
      .  queryfile, statusfile, kernelisrunning
 

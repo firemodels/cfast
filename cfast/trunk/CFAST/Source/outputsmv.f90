@@ -47,31 +47,31 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
 
 ! This code is to trim the file name to the name itself along with the extension
 ! for compatibility with version 4 and later of smokeview
-  length = SPLITPATHQQ(smvdata, drive, dir, name, ext)
+  length = SPLITPATHQQ(smvcsv, drive, dir, name, ext)
   smokeviewplotfilename = trim(name) // trim(ext)
   
   rewind (13)
   write(13,"(a)") "ZONE"
-  write(13,"(a)") trim(smokeviewplotfilename)
-  write(13,"(a)") "P"
-  write(13,"(a)") "Pa"
-  write(13,"(a)") "Layer Height"
-  write(13,"(a)") "ylay"
-  write(13,"(a)") "m"
-  write(13,"(a)") "TEMPERATURE"                   
-  write(13,"(a)") "TEMP"                          
-  write(13,"(a)") "K"                             
-  write(13,"(a)") "TEMPERATURE"
-  write(13,"(a)") "TEMP"
-  write(13,"(a)") "K"
+  write(13,"(1x,a)") trim(smokeviewplotfilename)
+  write(13,"(1x,a)") "P"
+  write(13,"(1x,a)") "Pa"
+  write(13,"(1x,a)") "Layer Height"
+  write(13,"(1x,a)") "ylay"
+  write(13,"(1x,a)") "m"
+  write(13,"(1x,a)") "TEMPERATURE"                   
+  write(13,"(1x,a)") "TEMP"                          
+  write(13,"(1x,a)") "C"                             
+  write(13,"(1x,a)") "TEMPERATURE"
+  write(13,"(1x,a)") "TEMP"
+  write(13,"(1x,a)") "C"
   write(13,"(a)") "AMBIENT"
-  write(13,"(e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
+  write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
   do i = 1, nrooms
     write(13,"(a,1x,i3)")"ROOM",i
-    write(13,10)dx(i), dy(i), dz(i)
-    write(13,10)x0(i), y0(i), z0(i)
-10  format(e11.4,1x,e11.4,1x,e11.4)
+    write(13,10) dx(i), dy(i), dz(i)
+    write(13,10) x0(i), y0(i), z0(i)
+10  format(1x,e11.4,1x,e11.4,1x,e11.4)
   end do
   
   do i = 1, nvents
@@ -79,34 +79,36 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
     call getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
     write(13,20) ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
     !write(13,20) vfrom(i),vto(i),vface(i),vwidth(i),voffset(i),vrelbot(i),vreltop(i),1.0,0.0,1.0
-20  format(i3,1x,i3,1x,i3,1x,6(e11.4,1x),e11.4)
+20  format(1x,i3,1x,i3,1x,i3,1x,6(e11.4,1x),e11.4)
   end do
   do i = 1, nfires
     write(13,"(a)")"FIRE"
     write(13,30) froom_number(i),fx0(i),fy0(i),fz0(i)
-30  format(i3,1x,e11.4,1x,e11.4,1x,e11.4)
+30  format(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)
   end do
 
   do i = 1, nvvent
 	write(13,"(a)") "VFLOWGEOM"
 	call getvventinfo(i,itop,ibot,harea,hshape,hface)
 	write(13,35) itop,ibot,hface,harea,hshape
-35  format(3i3,1x,e11.4,1x,i3)
+35  format(1x,3i3,1x,e11.4,1x,i3)
   end do
 
-  if (ntarg.gt.nrooms) then
-    write(13,"(a)") "THCP"
-    write(13,"(i3)") ntarg-nrooms
-      do i = 1, ntarg-nrooms
-	  call getabstarget(i,targetvector)
-	  write(13,36) targetvector
-36    format(6f10.2)
-    end do
-  endif
+  !if (ntarg.gt.nrooms) then
+  !  write(13,"(a)") "THCP"
+  !  write(13,"(1x,i3)") ntarg-nrooms
+  !    do i = 1, ntarg-nrooms
+  !	  call getabstarget(i,targetvector)
+  !	  write(13,36) targetvector
+!36    format(1x,6f10.2)
+!    end do
+!  endif
 
     write(13,"(a)") "TIME"
     write(13,40) nscount, stime
-40  format(i6,1x,f11.0)
+40  format(1x,i6,1x,f11.0)
+
+  call ssHeadersSMV(.false.)
 
   return
 end subroutine svout

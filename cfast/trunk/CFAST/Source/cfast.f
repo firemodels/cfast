@@ -658,7 +658,8 @@ C	IF WE ACTUALLY USE TARGET TEMPERATURES IN A CALCULATION THEN THIS CALL WILL NE
 		 call svplotdata(T,NM1,ZZRELP,ZZHLAY(1,LOWER),
      .	                 ZZTEMP(1,2),ZZTEMP(1,1),NFIRES, FQLOCAL,
      .					     FHLOCAL)
-           TPLOT = TPLOT + DPLOT
+         call SpreadSheetSMV(T,ierror)
+         TPLOT = TPLOT + DPLOT
 		 call StatusOutput (T, dT, errorcode)
         END IF
 

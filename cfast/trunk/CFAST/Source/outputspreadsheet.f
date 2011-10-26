@@ -1,6 +1,6 @@
       SUBROUTINE SpreadSheetNormal (time, errorcode)
 
-! This routine writes to the {project}.n.csv file, the compartment information and the fires
+! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
       use iofiles
       include "precis.fi"
@@ -18,11 +18,6 @@
 	logical firstc
 	integer position, errorcode
 
-	data compartmentlabel/'Upper Layer Temp','Lower Layer Temp',
-     . 'Layer Height','Volume','Pressure','Ambient Target',
-     . 'Floor Target'/
-	data firelabel/'Plume','Pyrolysis','Fire Size','Flame Height',
-     . 'Convective flow','Pyrolosate','Total Trace'/
 	data firstc/.true./
 	save firstc
 
@@ -78,7 +73,7 @@
   200   CONTINUE
       END IF
 
-      CALL SSprintresults (15, position, outarray)
+      CALL SSprintresults (21, position, outarray)
 
       RETURN
       END
@@ -108,7 +103,7 @@
 
       SUBROUTINE SpreadSheetFlow (Time, errorcode)
 
-!	Routine to output the flow data to the flow spreadsheet {project}.f.csv
+!	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
       include "precis.fi"
       include "cfast.fi"
@@ -226,7 +221,7 @@
         END IF
    70 CONTINUE
 
-	call ssprintresults(16, position, outarray)
+	call ssprintresults(22, position, outarray)
 	return
 
 	END
@@ -354,7 +349,7 @@ c   40 CONTINUE
 		 call ssaddtolist(position, vel, outarray)
    60 continue
 
-	call SSPrintResults (18, position, outarray)
+	call SSPrintResults (24, position, outarray)
 
       RETURN
 
@@ -414,11 +409,96 @@ c   40 CONTINUE
    50   CONTINUE
    70 CONTINUE
 
-   90	call SSprintresults (17,position, outarray)
+   90	call SSprintresults (23,position, outarray)
 
       RETURN
 
   110	format('Exceeded size of output files in species spread sheet')
+      END
+      SUBROUTINE SpreadSheetSMV (time, errorcode)
+
+! This routine writes to the {project}_zone.csv file, the smokeview information
+
+      use iofiles
+      include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "fltarget.fi"
+      include "objects1.fi"
+      include "vents.fi"
+
+	parameter (maxhead = 1+7*nr+5+7*mxfire)
+	character*16 headline(3,maxhead)
+	double precision time, outarray(maxhead)
+	logical firstc
+	integer position, errorcode
+
+	data firstc/.true./
+	save firstc
+
+! Headers
+	if (firstc) then
+        call ssHeadersSMV(.true.)
+	  firstc = .false.
+	endif
+
+	position = 0
+      CALL SSaddtolist (position,TIME,outarray)
+
+! Compartment information
+
+        DO 100 I = 1, NM1
+        ITARG = NTARG - NM1 + I
+        IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
+        CALL SSaddtolist (position,ZZTEMP(I,UPPER)-273.15,outarray)
+        if (izshaft(i).eq.0) then
+          CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
+          CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
+          CALL SSaddtolist (position,ZZRELP(I) - PAMB(I),outarray)
+          CALL SSaddtolist (position,TOXICT(I,UPPER,9),outarray)
+          CALL SSaddtolist (position,TOXICT(I,LOWER,9),outarray)
+        end if
+  100 CONTINUE
+
+! Fires
+
+      XX0 = 0.0D0
+      IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
+        CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
+        CALL SSaddtolist (position,FQF(0)/1000.,outarray)
+        CALL SSaddtolist (position,FHEIGHT,outarray)
+        CALL SSaddtolist (position,XFIRE(1,3),outarray)
+        CALL SSaddtolist (position,FAREA(0),outarray)
+      END IF
+
+      IF (NUMOBJL.NE.0) THEN
+        DO 200 I = 1, NUMOBJL
+          CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
+          CALL SSaddtolist (position,FQF(I)/1000.,outarray)
+          CALL SSaddtolist (position,FHEIGHT,outarray)
+          CALL SSaddtolist (position,XFIRE(I+1,3),outarray)
+          CALL SSaddtolist (position,FAREA(I),outarray)          
+  200   CONTINUE
+      END IF
+
+! Vents
+      DO 300 I = 1, NVENTS
+        IROOM1 = IZVENT(I,1)
+        IROOM2 = IZVENT(I,2)
+        IK = IZVENT(I,3)
+        IM = MIN(IROOM1,IROOM2)
+        IX = MAX(IROOM1,IROOM2)
+	  factor2 = qchfraction (qcvh, ijk(im,ix,ik),time)
+        HEIGHT = ZZVENT(I,2) - ZZVENT(I,1)
+        WIDTH = ZZVENT(I,3)
+	  avent = factor2 * height * width
+        call SSaddtolist (position,avent,outarray)       
+  300 CONTINUE
+
+      CALL SSprintresults (15, position, outarray)
+
+      RETURN
       END
 
       integer function rev_outputspreadsheet

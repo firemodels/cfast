@@ -94,15 +94,15 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
 35  format(1x,3i3,1x,e11.4,1x,i3)
   end do
 
-  !if (ntarg.gt.nrooms) then
-  !  write(13,"(a)") "THCP"
-  !  write(13,"(1x,i3)") ntarg-nrooms
-  !    do i = 1, ntarg-nrooms
-  !	  call getabstarget(i,targetvector)
-  !	  write(13,36) targetvector
-!36    format(1x,6f10.2)
-!    end do
-!  endif
+  if (ntarg.gt.nrooms) then
+    write(13,"(a)") "THCP"
+    write(13,"(1x,i3)") ntarg-nrooms
+      do i = 1, ntarg-nrooms
+  	  call getabstarget(i,targetvector)
+  	  write(13,36) targetvector
+36    format(1x,6f10.2)
+    end do
+  endif
 
     write(13,"(a)") "TIME"
     write(13,40) nscount, stime

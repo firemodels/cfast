@@ -536,13 +536,13 @@ C     Natural flow through vertical vents (horizontal flow)
       ! local variables     
       parameter (maxhead = 1+6*nr+5+2*mxfire)
       character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent,
-     *  LabelsShort(12), LabelUnits(12), toIntString
+     *  LabelsShort(13), LabelUnits(13), toIntString
      
       data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_',
      *                   'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_',
-     *                   'FBASE_', 'FAREA_', 'HVENT_' /
+     *                   'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_' /
       data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m',
-     *                  'kW', 'm', 'm', 'm^2', 'm^2' /
+     *                  'kW', 'm', 'm', 'm^2', 'm^2', 'm^2' /
 
       !  spreadsheet header
       headertext(1,1) = LabelUnits(1)
@@ -592,6 +592,13 @@ C     Natural flow through vertical vents (horizontal flow)
         cVent = toIntString(i)
         headertext(1,position) = LabelUnits(12)
         headertext(2,position) = trim(LabelsShort(12))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+      end do
+      do i = 1, nvvent
+        position = position + 1
+        cVent = toIntString(i)
+        headertext(1,position) = LabelUnits(13)
+        headertext(2,position) = trim(LabelsShort(13))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
       end do
         

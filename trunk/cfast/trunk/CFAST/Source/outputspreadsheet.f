@@ -433,6 +433,8 @@ c   40 CONTINUE
 	double precision time, outarray(maxhead)
 	logical firstc
 	integer position, errorcode
+      integer toprm, botrm
+      data toprm /1/, botrm /2/
 
 	data firstc/.true./
 	save firstc
@@ -464,7 +466,9 @@ c   40 CONTINUE
 ! Fires
 
       XX0 = 0.0D0
+      nfire = 0
       IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
+        nfire = nfire + 1
         CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
         CALL SSaddtolist (position,FQF(0)/1000.,outarray)
         CALL SSaddtolist (position,FHEIGHT,outarray)
@@ -474,10 +478,11 @@ c   40 CONTINUE
 
       IF (NUMOBJL.NE.0) THEN
         DO 200 I = 1, NUMOBJL
+          nfire = nfire + 1
           CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
           CALL SSaddtolist (position,FQF(I)/1000.,outarray)
           CALL SSaddtolist (position,FHEIGHT,outarray)
-          CALL SSaddtolist (position,XFIRE(I+1,3),outarray)
+          CALL SSaddtolist (position,XFIRE(nfire,3),outarray)
           CALL SSaddtolist (position,FAREA(I),outarray)          
   200   CONTINUE
       END IF
@@ -495,6 +500,13 @@ c   40 CONTINUE
 	  avent = factor2 * height * width
         call SSaddtolist (position,avent,outarray)       
   300 CONTINUE
+
+      DO 400 i = 1, nvvent
+        ITOP = IVVENT(I,TOPRM)
+        IBOT = IVVENT(I,BOTRM)
+	  avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
+        call SSaddtolist (position,avent,outarray)
+  400 CONTINUE
 
       CALL SSprintresults (15, position, outarray)
 

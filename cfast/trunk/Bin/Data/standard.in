@@ -24,4 +24,4 @@ OBJECT,Wood_Wall,1,4.55,2.5,0,1,1,0,0,0,1
 !!
 !!target and detector keywords
 !!
-TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE
+TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5

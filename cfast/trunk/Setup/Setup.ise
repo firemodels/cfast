@@ -352,10 +352,12 @@
 		<row><td>CFAST6.chm</td><td>{A66723CA-5F5E-4AD7-B5C7-1695C59B1075}</td><td>INSTALLDIR</td><td>2</td><td/><td>cfast6.chm</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{13D71563-8AEA-45A5-A79E-0140D45B42B8}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NPlot.dll</td><td>{9CB7290E-D249-48B1-9F31-1FEFD700697F}</td><td>INSTALLDIR</td><td>2</td><td/><td>nplot.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>background.exe</td><td>{15C18888-88AE-401D-9E04-55A250539E6E}</td><td>INSTALLDIR</td><td>2</td><td/><td>background.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>glew32.dll</td><td>{4F7380F1-EFB3-4DC0-B126-B51E7ABA5DD2}</td><td>INSTALLDIR</td><td>2</td><td/><td>glew32.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>pthreadVC.dll</td><td>{84A1340B-A768-4B7D-BAEF-1A8BC1E19888}</td><td>INSTALLDIR</td><td>2</td><td/><td>pthreadvc.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>smokediff_win_32.exe</td><td>{3708EDAE-9CE1-444B-8A2C-339B308BBC4F}</td><td>INSTALLDIR</td><td>2</td><td/><td>smokediff_win_32.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>smokeview.exe</td><td>{2F4FAAEB-FF56-42A2-AA23-069D362B9464}</td><td>INSTALLDIR</td><td>2</td><td/><td>smokeview.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>smokezip.exe</td><td>{60B556E0-2082-4658-B784-FFCE91E8AD73}</td><td>INSTALLDIR</td><td>2</td><td/><td>smokezip.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>smokezip_win_32.exe</td><td>{231596F2-37EC-4A08-A56D-91D8D956EC8C}</td><td>INSTALLDIR</td><td>2</td><td/><td>smokezip_win_32.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -1855,6 +1857,8 @@
 		<col def="S255">ProgId_</col>
 		<col def="S64">MIME_</col>
 		<col def="s38">Feature_</col>
+		<row><td>.in</td><td>CEdit.exe</td><td>.in.file</td><td/><td>AlwaysInstall</td></row>
+		<row><td>.smv</td><td>smokeview.exe</td><td>ext1.File</td><td/><td>AlwaysInstall</td></row>
 	</table>
 
 	<table name="Feature">
@@ -1885,10 +1889,12 @@
 		<row><td>AlwaysInstall</td><td>CFAST6.chm</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>NPlot.dll</td></row>
+		<row><td>AlwaysInstall</td><td>background.exe</td></row>
 		<row><td>AlwaysInstall</td><td>glew32.dll</td></row>
 		<row><td>AlwaysInstall</td><td>pthreadVC.dll</td></row>
+		<row><td>AlwaysInstall</td><td>smokediff_win_32.exe</td></row>
 		<row><td>AlwaysInstall</td><td>smokeview.exe</td></row>
-		<row><td>AlwaysInstall</td><td>smokezip.exe</td></row>
+		<row><td>AlwaysInstall</td><td>smokezip_win_32.exe</td></row>
 	</table>
 
 	<table name="File">
@@ -1904,6 +1910,7 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>__panel_workstation.o</td><td>ISX_DEFAULTCOMPONENT</td><td>3 panel workstation.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\3 panel workstation.o</td><td>1</td><td/></row>
+		<row><td>background.exe</td><td>background.exe</td><td>background.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\background.exe</td><td>1</td><td/></row>
 		<row><td>bunkbed.o</td><td>ISX_DEFAULTCOMPONENT</td><td>bunkbed.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\bunkbed.o</td><td>1</td><td/></row>
 		<row><td>bunsen.o</td><td>ISX_DEFAULTCOMPONENT</td><td>bunsen.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\bunsen.o</td><td>1</td><td/></row>
 		<row><td>c1.c1report.4.dll</td><td>C1.C1Report.4.dll</td><td>C1.C1Report.4.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\C1.C1Report.4.dll</td><td>1</td><td/></row>
@@ -1921,8 +1928,9 @@
 		<row><td>mattress_and_boxspring.o</td><td>ISX_DEFAULTCOMPONENT</td><td>mattress and boxspring.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\mattress and boxspring.o</td><td>1</td><td/></row>
 		<row><td>nplot.dll</td><td>NPlot.dll</td><td>NPlot.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\NPlot.dll</td><td>1</td><td/></row>
 		<row><td>pthreadvc.dll</td><td>pthreadVC.dll</td><td>pthreadVC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\pthreadVC.dll</td><td>1</td><td/></row>
+		<row><td>smokediff_win_32.exe</td><td>smokediff_win_32.exe</td><td>smokediff_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokediff_win_32.exe</td><td>1</td><td/></row>
 		<row><td>smokeview.exe</td><td>smokeview.exe</td><td>smokeview.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\smokeview.exe</td><td>1</td><td/></row>
-		<row><td>smokezip.exe</td><td>smokezip.exe</td><td>smokezip.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\smokezip.exe</td><td>1</td><td/></row>
+		<row><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokezip_win_32.exe</td><td>1</td><td/></row>
 		<row><td>sofa.o</td><td>ISX_DEFAULTCOMPONENT</td><td>sofa.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\sofa.o</td><td>1</td><td/></row>
 		<row><td>thermal.csv</td><td>ISX_DEFAULTCOMPONENT</td><td>thermal.csv</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\thermal.csv</td><td>1</td><td/></row>
 		<row><td>tv_set.o</td><td>ISX_DEFAULTCOMPONENT</td><td>TV Set.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\TV Set.o</td><td>1</td><td/></row>
@@ -2198,10 +2206,12 @@
 		<row><td>CFAST6.chm</td><td/><td/><td>_230CCA70_8E23_4116_998E_3DF9D5F9F1D6_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_05674F59_4054_4B03_A0C6_0AF4664D1A46_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NPlot.dll</td><td/><td/><td>_2A4E0135_1E4E_4DFE_AE2E_9F8B65E0C453_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>background.exe</td><td/><td/><td>_41C7D75B_644C_4F4C_88A7_B3B625B58D63_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>glew32.dll</td><td/><td/><td>_B4249909_662B_438E_B137_CA83FB9AFAFF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>pthreadVC.dll</td><td/><td/><td>_34F65D85_EB9F_40CD_995C_ADCA33654179_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>smokediff_win_32.exe</td><td/><td/><td>_9C6DBE75_CB93_4930_A7A8_8DA18F253BC2_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>smokeview.exe</td><td/><td/><td>_B408687E_375C_4EC6_A825_E6DD376BA0C0_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>smokezip.exe</td><td/><td/><td>_E44D2784_E578_4B98_A6DF_F9D85EFA8143_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>smokezip_win_32.exe</td><td/><td/><td>_FD8AEC9F_76ED_4D6E_8AB4_7D0DF2924495_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -3638,6 +3648,7 @@
 		<row><td>IDS_PROGMSG_XML_ROLLBACK_FILES</td><td>1033</td><td>Rolling back XML file changes...</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS_PROGMSG_XML_UPDATE_FILE</td><td>1033</td><td>Updating XML file %s...</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS_SETUPEXE_EXPIRE_MSG</td><td>1033</td><td>This setup works until %s. The setup will now exit.</td><td>0</td><td/><td>-1910591346</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>CFAST 6</td><td>0</td><td/><td>-341855927</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME3</td><td>1033</td><td>Launch smokeview.exe</td><td>0</td><td/><td>-1910578802</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME4</td><td>1033</td><td>Launch smokezip.exe</td><td>0</td><td/><td>-1910578802</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME5</td><td>1033</td><td>Launch CEdit</td><td>0</td><td/><td>-1910615538</td></row>
@@ -3936,6 +3947,7 @@
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>in</td><td>0</td><td/><td>-165767414</td></row>
 		<row><td>NEW_STRING2</td><td>1033</td><td>smv</td><td>0</td><td/><td>-165769366</td></row>
+		<row><td>NEW_STRING3</td><td>1033</td><td>.smv</td><td>0</td><td/><td>1562335403</td></row>
 	</table>
 
 	<table name="ISTargetImage">
@@ -4038,9 +4050,11 @@
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Cedit\ellogob.ico</td><td>0</td></row>
 		<row><td>CEdit.exe_491B3C913EFF409EB8D70C2F006ABD90.exe</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Bin\CEdit.exe</td><td>0</td></row>
+		<row><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\CEdit.exe</td><td>0</td></row>
 		<row><td>_53D97906_C18A_43EB_A82E_576350D19A29</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
 		<row><td>_5C9F1F4B_D64F_4E7E_802C_E603A3CE3F14</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\sv5_icon.ico</td><td>0</td></row>
 		<row><td>_9E6B9ECD_636B_427C_BCF3_D2C5A795F86C</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
+		<row><td>_F87D79E8_E2CE_421A_866D_2F0A87B51958</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\CEdit.exe</td><td>0</td></row>
 	</table>
 
 	<table name="IniFile">
@@ -4230,7 +4244,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col key="yes" def="s255">Condition</col>
 		<col def="l255">Description</col>
 		<row><td>(Not Version9X) And (Not VersionNT=400) And (Not VersionNT=500) And (Not VersionNT=502) And (Not (VersionNT=600 And Not (MsiNTProductType=1))) And (Not (VersionNT=601 And Not (MsiNTProductType=1)))</td><td>##IDPROP_EXPRESS_LAUNCH_CONDITION_OS##</td></row>
+		<row><td>ColorBits &gt;= 16</td><td>##IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR##</td></row>
 		<row><td>DOTNETVERSION40CLIENT&gt;="#1"</td><td>##IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40CLIENT##</td></row>
+		<row><td>PhysicalMemory &gt;= 512</td><td>##IDPROP_EXPRESS_LAUNCH_CONDITION_RAM##</td></row>
 		<row><td>ScreenX &gt;= 1024 AND ScreenY &gt;= 768</td><td>##IDPROP_EXPRESS_LAUNCH_CONDITION_SCREEN##</td></row>
 	</table>
 
@@ -4496,6 +4512,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S72">Icon_</col>
 		<col def="I2">IconIndex</col>
 		<col def="I4">ISAttributes</col>
+		<row><td>.in.file</td><td/><td/><td/><td>_F87D79E8_E2CE_421A_866D_2F0A87B51958</td><td>1</td><td/></row>
+		<row><td>ext1.File</td><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Property">
@@ -4650,6 +4668,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="L255">FileName</col>
 		<col def="s72">DirProperty</col>
 		<col def="i2">InstallMode</col>
+		<row><td>CEdit.exe</td><td>CEdit.exe</td><td/><td>cfast</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4735,6 +4754,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
+		<row><td>CEdit.exe</td><td>cfast</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td>1</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">
@@ -4865,6 +4885,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="I2">Sequence</col>
 		<col def="L255">Command</col>
 		<col def="L255">Argument</col>
+		<row><td>.in</td><td>Open</td><td/><td/><td>"%1"</td></row>
+		<row><td>.smv</td><td>open</td><td/><td/><td>"%1"</td></row>
 	</table>
 
 	<table name="_Validation">

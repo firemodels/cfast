@@ -1,0 +1,1437 @@
+CFAST Version 6.2.0 built 2011/10/31, run 2011/11/01
+
+Data file is C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_20\FMSNL_20.in    Title is FM Test 5
+
+
+OVERVIEW
+
+
+Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
+
+   1               0             1                    2
+
+Simulation     Output     History     Smokeview  Spreadsheet
+   Time       Interval    Interval    Interval    Interval    
+   (s)          (s)         (s)         (s)         (s)         
+
+   900          50           0           0           1
+
+Ceiling jet is on for all                                         
+
+
+AMBIENT CONDITIONS
+
+Interior       Interior       Exterior       Exterior       Station        Wind           Wind           Wind           
+Temperature    Pressure       Temperature    Pressure       Elevation      Speed          Ref. Height    Power
+(C)            (Pa)           (C)             (Pa)          (m)            (m/s)           (m)
+
+    20.          101300.          20.          101300.         0.00          0.0           10.0           0.16
+
+
+COMPARTMENTS
+
+Compartment  Name           Width     Depth     Height    Area      Volume    Ceiling   Floor     
+                                                                              Height    Height    
+                             (m)       (m)       (m)       (m^2)     (m^3)      (m)       (m)
+------------------------------------------------------------------------------------------------
+    1        Compartment 1  18.30     12.20      6.10    223.26   1361.89      6.10      0.00
+
+
+VENT CONNECTIONS
+
+There are no horizontal natural flow connections
+
+
+Vertical Natural Flow Connections (Ceiling, ...)
+
+Top            Bottom         Shape     Area      Relative  Absolute
+Compartment    Compartment                        Height    Height
+                                        (m^2)     (m)       (m)       
+----------------------------------------------------------------------
+ Outside           1          Square     1.08      6.10      6.10
+
+
+Fans
+
+System    From           From      To             To        Fan       Minimum   Maximum    Fan Curve
+                         Elev.                    Elev.     Number
+                         (m)                      (m)                 (Pa)      (Pa)
+----------------------------------------------------------------------------------------------------
+   1      Outside        4.90      Node  1        4.90                0.66
+          Node  1        4.90      Node  2        4.90        1       200.00    300.00      3.8    
+          Node  2        4.90      Comp  1        4.90                0.66
+
+
+THERMAL PROPERTIES
+
+Compartment    Ceiling      Wall         Floor
+----------------------------------------------------------------------
+Compartment 1  Marinite     Marinite     Concrete
+
+
+Thermal data base used: thermal             
+
+Name    Conductivity Specific heat     Density     Thickness   Emissivity                HCL B's (1->5)
+METHANE     7.000E-02    1.090E+03     930.        1.270E-02    4.000E-02  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+MineralB    0.200         150.         500.        5.000E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+SteelBE2     54.0         425.        7.850E+03    1.000E-03    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+Concrete     2.00         900.        2.300E+03    0.150        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+MARIBE3     0.120        1.250E+03     737.        2.540E-02    0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GYPBE3      0.160         900.         790.        2.540E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+XLP_C_BE    0.210        1.560E+03    1.375E+03    1.000E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PVC_C_BE    0.147        1.469E+03    1.380E+03    1.000E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+XLP_P_BE    0.210        1.560E+03    1.375E+03    0.191        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PVC_P_BE    0.147        1.469E+03    1.380E+03    0.191        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+SteelBE4     44.5         480.        7.743E+03    2.000E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+Concrete     2.10         880.        2.400E+03    0.250        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+LiteConc    0.110        1.350E+03     420.        0.300        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PVC_P_BE    0.134        1.586E+03    1.380E+03    1.500E-02    0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PVC_C_BE    0.134        1.586E+03    1.380E+03    7.000E-03    0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+Marinite    0.120        1.250E+03     720.        2.500E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+Concrete     1.80        1.040E+03    2.280E+03    0.150        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+FireBric    0.360        1.040E+03     750.        0.113        0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+CeramicN    9.000E-02    1.040E+03     128.        5.000E-02    0.970      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+Marinite    0.120        1.250E+03     720.        1.270E-02    0.830      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GypsumNB    0.170        1.090E+03     930.        1.270E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+Concrete     1.80        1.040E+03    2.280E+03    0.102        0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+TC           54.0         425.        7.850E+03    1.000E-03    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+DEFAULT     0.120         900.         800.        1.200E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+
+
+
+TARGETS
+
+Target Compartment    Position (x, y, z)         Direction (x, y, z)      Material
+----------------------------------------------------------------------------------
+    1    Compartmen  12.00     6.10     5.66     0.00     0.00    -1.00   TC      
+    2    Compartmen  17.55    11.45     0.00     0.00     0.00     1.00   METHANE 
+    3    Compartmen   9.15     6.10     0.00     0.00     0.00     1.00   Concrete
+
+
+FIRES
+
+
+Name: FMSNL20   Referenced as object #  1
+
+Compartment    Fire Type       Position (x,y,z)     Relative    Lower O2    Pyrolysis
+                                                    Humidity    Limit       Temperature
+Compartment 1  Constrained    17.55  11.45   0.00   50.0        10.00        293.
+
+
+  Time      Fmass     Hcomb     Fqdot     Fhigh     C/CO2     CO/CO2    H/C       O/C       HCN       HCL         CT        TS
+  (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
+------------------------------------------------------------------------------------------------------------------------------------
+     0.      0.0      5.00E+07   0.0       0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+    47.     2.00E-04  5.00E+07  1.00E+04   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+    94.     8.00E-04  5.00E+07  4.00E+04   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   140.     1.80E-03  5.00E+07  9.00E+04   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   187.     3.20E-03  5.00E+07  1.60E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   234.     5.00E-03  5.00E+07  2.50E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   281.     7.20E-03  5.00E+07  3.60E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   327.     9.80E-03  5.00E+07  4.90E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   374.     1.28E-02  5.00E+07  6.40E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   421.     1.62E-02  5.00E+07  8.10E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+   468.     2.00E-02  5.00E+07  1.00E+06   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1068.     2.00E-02  5.00E+07  1.00E+06   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1098.     1.62E-02  5.00E+07  8.10E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1128.     1.28E-02  5.00E+07  6.40E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1158.     9.80E-03  5.00E+07  4.90E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1188.     7.20E-03  5.00E+07  3.60E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1218.     5.00E-03  5.00E+07  2.50E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1248.     3.20E-03  5.00E+07  1.60E+05   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1278.     1.80E-03  5.00E+07  9.00E+04   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1308.     8.00E-04  5.00E+07  4.00E+04   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1338.     2.00E-04  5.00E+07  1.00E+04   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1368.     2.07E-16  5.00E+07  1.03E-08   0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+  1378.      0.0      5.00E+07   0.0       0.0      1.00E-02  1.00E-02  0.33       0.0       0.0       0.0       1.0       0.0
+
+
+Time =      0.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 20.00     20.00     6.099     0.14    (  0%)  1.000E-02  3.716E-02   15.8      5.684E-14  5.684E-14
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    0.00      0.00      0.00      0.00                                    0.00      0.00      0.00        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   20.0      20.0      20.0      20.0     Floor              20.0               5.6843E-14    0.0   *******   *******       0.0
+                                                         1      20.0      20.0      20.0     **********    0.0   *******   *******       0.0
+                                                         2      20.0      20.0      20.0     5.6843E-14    0.0   *******   *******       0.0
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   2.000E+01 NO               2.000E+01  1.000E-01
+ 2        1           SMOKE   2.000E+01 NO               2.000E+01  1.000E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                                               4.52                                                                                     
+               M Node  2                                  4.52                                                                                                  
+
+Outside        V Comp  1                                  4.52                                                                                                  
+               M Node  1                                               4.52                                                                                     
+
+
+Time =     50.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 20.93     20.01     5.517     1.30E+02( 10%)  0.119      3.876E-02   16.0      0.537      0.372    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    5.45     2.417E-04 1.208E+04  0.00                                   8.457E+03 3.624E+03 5.452E-03    0.00    
+
+Compartment 1             5.45     2.417E-04 1.208E+04            0.00     1.208E+04  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   20.1      20.1      20.0      20.0     Floor              20.0               0.5366        0.0   63371.6   14757.0       2.8
+                                                         1      20.9      20.0      20.0      4.488       28.2    6839.2    2501.9      60.0
+                                                         2      20.0      20.0      20.0     0.6058        0.0   42502.6   26711.6       2.5
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   2.117E+01 NO               2.117E+01  1.000E-01
+ 2        1           SMOKE   2.230E+01 NO               2.230E+01  3.062E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5      5.201E-03  0.817       0.00       0.00       0.00       1.17      3.589E-03  2.713E-02   0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.866                     3.68                                                                                     
+               M Node  2                                  4.52                                                                                                  
+
+Outside        V Comp  1                                  4.54                                                                                                  
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    100.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 22.16     20.04     4.520     3.53E+02( 26%)  6.742E-02  4.237E-02   16.4       2.04       1.23    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    5.19     9.388E-04 4.694E+04  0.00                                   3.286E+04 1.408E+04 3.393E-02    0.00    
+
+Compartment 1             5.19     9.388E-04 4.694E+04            0.00     4.694E+04  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   20.2      20.2      20.2      20.1     Floor              20.1                2.041        0.0   16414.0    4200.0       5.1
+                                                         1      22.2      20.3      20.3      14.24       32.4    2003.0     960.9      45.0
+                                                         2      20.0      20.0      20.0      2.455        0.0   10096.5    7055.0       4.2
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   2.290E+01 NO               2.290E+01  1.613E-01
+ 2        1           SMOKE   2.598E+01 NO               2.598E+01  4.994E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.3       20.5      1.106E-02   1.74       0.00       0.00       0.00       1.18      7.610E-03  7.778E-02   0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     2.39                      2.22                                                                                     
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1                                  4.61                                                                                                  
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    150.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 23.96     20.14     3.441     5.94E+02( 44%)  5.585E-02  4.840E-02   16.9       5.40       3.26    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    3.76     2.092E-03 1.046E+05 0.359                                   7.320E+04 3.137E+04 0.108        0.00    
+
+Compartment 1             3.76     2.092E-03 1.046E+05            0.00     1.046E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   20.5      20.4      20.8      20.2     Floor              20.2                5.395        0.0    6100.2    1753.7       7.3
+                                                         1      24.0      20.7      20.7      29.95       33.0     951.9     473.1      40.0
+                                                         2      20.1      20.0      20.0      6.747        0.0    3502.9    2797.2       5.8
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   2.542E+01 NO               2.542E+01  2.081E-01
+ 2        1           SMOKE   3.133E+01 NO               3.133E+01  6.439E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.3       20.4      1.943E-02   3.05       0.00       0.00       0.00       1.20      1.329E-02  0.170       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     4.10                      0.605                                                                                    
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1                                  4.70                                                                                                  
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    200.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 27.04     20.37     2.795     7.38E+02( 54%)  5.328E-02  5.398E-02   17.5       11.9       7.55    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    2.91     3.700E-03 1.850E+05 0.745                                   1.295E+05 5.549E+04 0.252        0.00    
+
+Compartment 1             2.91     3.700E-03 1.850E+05            0.00     1.850E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   21.0      20.9      21.9      20.5     Floor              20.5                11.87        0.0    2756.0     861.9       8.9
+                                                         1      27.0      21.5      21.5      58.18       29.4     495.1     253.5      41.6
+                                                         2      20.4      20.0      20.0      15.07        0.0    1526.9    1343.9       7.0
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   2.942E+01 NO               2.942E+01  2.467E-01
+ 2        1           SMOKE   3.919E+01 NO               3.919E+01  7.629E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.3       20.4      3.446E-02   5.42       0.00       0.00       0.00       1.24      2.331E-02  0.336       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     4.82                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        4.82                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    250.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 31.47     20.80     2.317     8.45E+02( 62%)  5.159E-02  5.256E-02   18.0       23.2       15.7    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    2.27     5.764E-03 2.881E+05  1.11                                   2.017E+05 8.644E+04 0.486        0.00    
+
+Compartment 1             2.27     5.764E-03 2.881E+05            0.00     2.881E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   21.9      21.7      23.9      20.9     Floor              20.9                23.22        0.0    1447.2     446.3       9.7
+                                                         1      31.5      23.0      23.0      104.8       25.8     284.9     144.6      44.3
+                                                         2      20.8      20.0      20.0      29.60        0.0     810.3     696.7       7.6
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   3.497E+01 NO               3.497E+01  2.824E-01
+ 2        1           SMOKE   4.962E+01 NO               4.962E+01  8.732E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.3       20.3      5.667E-02   8.91       0.00       0.00       0.00       1.28      3.777E-02  0.615       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     4.95                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        4.95                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    300.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 37.37     21.53     1.945     9.28E+02( 68%)  5.132E-02  5.845E-02   18.5       40.9       29.0    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    1.78     8.283E-03 4.141E+05  1.47                                   2.899E+05 1.242E+05 0.836        0.00    
+
+Compartment 1             1.78     8.283E-03 4.141E+05            0.00     4.141E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   23.2      22.9      27.0      21.4     Floor              21.4                40.86        0.0     835.6     278.9      10.3
+                                                         1      37.4      25.4      25.4      171.2       22.3     179.7      95.8      46.7
+                                                         2      21.5      20.1      20.1      52.03        0.0     462.7     434.0       8.1
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   4.221E+01 NO               4.221E+01  3.165E-01
+ 2        1           SMOKE   6.279E+01 NO               6.279E+01  9.786E-01
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.3       20.3      8.703E-02   13.7       0.00       0.00       0.00       1.35      5.691E-02   1.05       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     5.10                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        5.10                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    350.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 44.68     22.72     1.615     1.00E+03( 74%)  5.172E-02  6.560E-02   18.9       67.6       50.1    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    1.81     1.126E-02 5.628E+05  1.81                                   3.940E+05 1.688E+05  1.32        0.00    
+
+Compartment 1             1.81     1.126E-02 5.628E+05            0.00     5.628E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   25.1      24.7      31.5      22.1     Floor              22.1                67.58        0.0     520.2     188.7      10.8
+                                                         1      44.7      29.1      29.1      261.9       19.5     122.9      69.4      48.1
+                                                         2      22.7      20.1      20.1      85.84        0.0     286.1     293.2       8.5
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   5.077E+01 NO               5.077E+01  3.607E-01
+ 2        1           SMOKE   7.758E+01 YES              7.758E+01  1.115E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.2       20.2      0.126       19.7       0.00       0.00       0.00       1.43      8.030E-02   1.69       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     5.25                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        5.25                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    400.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 53.32     24.61     1.287     1.07E+03( 79%)  5.254E-02  7.575E-02   19.2       107.       82.7    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    1.75     1.469E-02 7.343E+05  2.14                                   5.140E+05 2.203E+05  1.97        0.00    
+
+Compartment 1             1.75     1.469E-02 7.343E+05            0.00     7.343E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   27.6      27.2      38.1      22.9     Floor              22.9                107.0        0.0     343.6     136.4      11.2
+                                                         1      53.3      34.4      34.4      380.7       17.1      90.3      53.9      48.6
+                                                         2      24.6      20.2      20.2      135.6        0.0     188.3     211.6       8.9
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   6.081E+01 NO               6.081E+01  4.039E-01
+ 2        1           SMOKE   9.469E+01 YES              9.469E+01  1.249E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.2       20.1      0.172       27.1       0.00       0.00       0.00       1.53      0.107       2.56       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     5.40                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        5.40                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    450.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 63.46     27.53    0.9810     1.14E+03( 84%)  5.384E-02  8.807E-02   19.3       168.       132.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    1.63     1.857E-02 9.285E+05  2.46                                   6.499E+05 2.785E+05  2.80        0.00    
+
+Compartment 1             1.63     1.857E-02 9.285E+05            0.00     9.285E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   30.8      30.5      47.3      24.0     Floor              24.0                168.0        0.0     235.0     101.2      13.1
+                                                         1      63.5      41.5      41.5      535.8       15.1      70.5      44.2      48.3
+                                                         2      27.5      20.4      20.4      211.4        0.0     130.1     157.6      10.4
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   7.249E+01 NO               7.249E+01  4.464E-01
+ 2        1           SMOKE   1.143E+02 YES              1.143E+02  1.381E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.2       20.0      0.228       35.8       0.00       0.00       0.00       1.66      0.138       3.69       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     5.53                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        5.53                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    500.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 73.91     31.60    0.6948     1.21E+03( 89%)  5.741E-02  0.103       16.4       250.       200.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    1.42     2.000E-02 9.997E+05  2.57                                   6.998E+05 2.999E+05  3.79        0.00    
+
+Compartment 1             1.42     2.000E-02 9.997E+05            0.00     9.997E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   34.6      34.7      58.4      25.1     Floor              25.1                250.5        0.0     170.8      81.0      15.3
+                                                         1      73.9      50.7      50.7      701.3       12.1      59.2      40.2      48.3
+                                                         2      31.6      20.7      20.7      313.5        0.0      95.2     126.1      12.3
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   8.387E+01 YES              8.387E+01  4.654E-01
+ 2        1           SMOKE   1.319E+02 YES              1.319E+02  1.440E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.1       19.8      0.288       45.2       0.00       0.00       0.00       1.79      0.168       5.13       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     5.38                                                                                                               
+               M Node  2        4.52                                                                                                                            
+
+Outside        V Comp  1        5.38                                                                                                                            
+               M Node  1                                               4.52                                                                                     
+
+
+Time =    550.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 83.54     36.00    0.4581     1.26E+03( 92%)  5.951E-02  0.125      -10.2       340.       277.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20    1.12     2.000E-02 9.996E+05  2.57                                   6.997E+05 2.999E+05  4.79        0.00    
+
+Compartment 1             1.12     2.000E-02 9.996E+05            0.00     9.996E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   38.4      39.2      68.8      26.0     Floor              26.0                340.3        0.0     136.6      69.3      17.2
+                                                         1      83.5      61.2      61.2      859.6        9.7      53.1      37.8      48.2
+                                                         2      36.0      21.1      21.1      423.3        0.0      77.1     108.0      13.8
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   9.410E+01 YES              9.410E+01  4.688E-01
+ 2        1           SMOKE   1.469E+02 YES              1.469E+02  1.451E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.0       19.7      0.350       55.0       0.00       0.00       0.00       1.92      0.199       6.84       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     1.39                                                                                                               
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        1.39                                                                                                                            
+               M Node  1                                                                                                                                        
+
+
+Time =    600.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 99.09     39.99    0.2725     1.30E+03( 96%)  6.432E-02  0.161      -13.6       459.       382.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.835     2.000E-02 9.995E+05  2.57                                   6.996E+05 2.998E+05  5.79        0.00    
+
+Compartment 1            0.835     2.000E-02 9.995E+05            0.00     9.995E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   43.4      45.0      78.6      27.1     Floor              27.1                458.6        0.0     109.6      64.7      17.0
+                                                         1      99.1      74.0      74.0      1101.        7.2      44.6      37.2      49.0
+                                                         2      40.0      21.8      21.8      578.7        0.0      60.2      98.7      13.5
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.108E+02 YES              1.108E+02  4.684E-01
+ 2        1           SMOKE   1.723E+02 YES              1.723E+02  1.450E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.9       19.4      0.466       73.3       0.00       0.00       0.00       2.17      0.255       8.95       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     1.09                                                                                                               
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        1.09                                                                                                                            
+               M Node  1                                                                                                                                        
+
+
+Time =    650.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 111.8     41.43    0.1457     1.33E+03( 98%)  6.939E-02  0.208      -16.0       567.       477.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.585     2.000E-02 9.995E+05  2.57                                   6.996E+05 2.998E+05  6.79        0.00    
+
+Compartment 1            0.585     2.000E-02 9.995E+05            0.00     9.995E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   48.9      51.6      87.2      28.2     Floor              28.2                567.3        0.0      95.6      63.2      15.0
+                                                         1      112.      88.8      88.8      1321.        5.8      39.5      37.6      48.8
+                                                         2      41.4      22.6      22.6      721.9        0.0      51.2      95.0      11.8
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.244E+02 YES              1.244E+02  4.653E-01
+ 2        1           SMOKE   1.924E+02 YES              1.924E+02  1.440E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.8       19.1      0.585       92.0       0.00       0.00       0.00       2.43      0.310       11.5       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.10       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.923        9.096E-02                                                                                             
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        0.923                                  9.096E-02                                                                                
+               M Node  1                                                                                                                                        
+
+
+Time =    700.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 122.3     39.06    7.5608E-02 1.35E+03( 99%)  7.476E-02  0.233      -17.8       653.       553.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.402     2.000E-02 9.995E+05  2.57                                   6.997E+05 2.999E+05  7.79        0.00    
+
+Compartment 1            0.402     2.000E-02 9.995E+05            0.00     9.995E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   54.7      58.2      94.2      29.3     Floor              29.3                653.0        0.0      88.6      64.3      11.2
+                                                         1      122.      105.      105.      1517.        4.9      35.9      38.6      48.3
+                                                         2      39.1      23.3      23.3      838.1        0.0      46.2      95.0       8.7
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.357E+02 YES              1.357E+02  4.605E-01
+ 2        1           SMOKE   2.080E+02 YES              2.080E+02  1.424E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.7       18.8      0.708       111.       0.00       0.00       0.00       2.70      0.365       14.6       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.864       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.786        0.148                                                                                                 
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        0.786                                  0.148                                                                                    
+               M Node  1                                                                                                                                        
+
+
+Time =    750.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 131.0     30.44    4.7903E-02 1.35E+03( 99%)  8.162E-02  1.000E-02  -19.2       710.       613.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.249     2.000E-02 9.997E+05  2.57                                   6.998E+05 2.999E+05  8.79        0.00    
+
+Compartment 1            0.249     2.000E-02 9.997E+05           2.274E+05 7.723E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   60.4      64.8      99.7      30.5     Floor              30.5                709.9        0.0      86.5      67.8       4.7
+                                                         1      131.      121.      121.      1692.        4.2      32.8      40.2      47.5
+                                                         2      30.4      23.9      23.9      922.7        0.0      43.7      98.1       3.6
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.449E+02 YES              1.449E+02  4.532E-01
+ 2        1           SMOKE   2.204E+02 YES              2.204E+02  1.402E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.6       18.5      0.836       131.       0.00       0.00       0.00       2.97      0.421       18.1       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.9       20.6       0.00       0.00       0.00       0.00       0.00      0.481       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.667        0.185                                                                                                 
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        0.667                                  0.185                                                                                    
+               M Node  1                                                                                                                                        
+
+
+Time =    800.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 137.9     30.15    4.5002E-02 1.35E+03( 99%)  8.805E-02  1.000E-02  -20.2       790.       683.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.227     2.000E-02 9.997E+05  2.57                                   6.998E+05 2.999E+05  9.79        0.00    
+
+Compartment 1            0.227     2.000E-02 9.997E+05           2.784E+05 7.213E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   66.0      71.0      104.      31.7     Floor              31.7                790.4        0.0      80.0      68.9       4.1
+                                                         1      138.      137.      137.      1839.        3.6      30.4      41.8      46.9
+                                                         2      30.1      24.3      24.3      1023.        0.0      38.7      99.0       3.2
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.521E+02 YES              1.521E+02  4.519E-01
+ 2        1           SMOKE   2.292E+02 YES              2.292E+02  1.398E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.5       18.2      0.967       152.       0.00       0.00       0.00       3.24      0.480       22.2       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  79.1       20.7       0.00       0.00       0.00       0.00       0.00      0.208       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.574        0.208                                                                                                 
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        0.574                                  0.208                                                                                    
+               M Node  1                                                                                                                                        
+
+
+Time =    850.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 143.4     30.94    4.6173E-02 1.35E+03( 99%)  9.481E-02  1.000E-02  -20.9       869.       749.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.236     2.000E-02 9.997E+05  2.57                                   6.998E+05 2.999E+05  10.8        0.00    
+
+Compartment 1            0.236     2.000E-02 9.997E+05           2.558E+05 7.439E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   71.2      76.7      109.      32.9     Floor              32.9                868.8        0.0      74.5      69.6       4.1
+                                                         1      143.      152.      152.      1965.        3.2      28.5      43.4      46.2
+                                                         2      30.9      24.7      24.7      1115.        0.0      34.7      99.6       3.2
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.576E+02 YES              1.576E+02  4.525E-01
+ 2        1           SMOKE   2.351E+02 YES              2.351E+02  1.399E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.4       17.9       1.10       173.       0.00       0.00       0.00       3.52      0.538       26.7       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  79.2       20.7       0.00       0.00       0.00       0.00       0.00      8.225E-02   0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.502        0.223                                                                                                 
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        0.502                                  0.223                                                                                    
+               M Node  1                                                                                                                                        
+
+
+Time =    900.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 147.6     31.84    4.7535E-02 1.35E+03( 99%)  0.101      1.000E-02  -21.4       940.       807.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+               FMSNL20   0.247     2.000E-02 9.997E+05  2.57                                   6.998E+05 2.999E+05  11.8        0.00    
+
+Compartment 1            0.247     2.000E-02 9.997E+05           2.302E+05 7.694E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   76.0      82.0      113.      34.2     Floor              34.2                940.0        0.0      70.4      70.0       4.2
+                                                         1      148.      165.      165.      2071.        2.9      27.0      44.8      45.6
+                                                         2      31.8      25.2      25.2      1196.        0.0      31.6     100.1       3.3
+
+
+Sensors
+
+                             Sensor                           Smoke
+Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)
+----------------------------------------------------------------------------
+ 1        1           SMOKE   1.618E+02 YES              1.618E+02  4.530E-01
+ 2        1           SMOKE   2.390E+02 YES              2.390E+02  1.401E+00
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.3       17.6       1.23       193.       0.00       0.00       0.00       3.80      0.597       31.8       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  79.3       20.7       0.00       0.00       0.00       0.00       0.00      3.172E-02   0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        V Outside                     0.452        0.232                                                                                                 
+               M Node  2                                                                                                                                        
+
+Outside        V Comp  1        0.452                                  0.232                                                                                    
+               M Node  1                                                                                                                                        

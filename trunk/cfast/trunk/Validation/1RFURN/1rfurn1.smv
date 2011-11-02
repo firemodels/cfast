@@ -1,0 +1,63 @@
+ZONE
+ 1rfurn1_zone.csv
+ P
+ Pa
+ Layer Height
+ ylay
+ m
+ TEMPERATURE
+ TEMP
+ C
+ TEMPERATURE
+ TEMP
+ C
+AMBIENT
+  0.101300E+06  0.000000E+00  0.300150E+03
+ROOM   1
+  0.2260E+01  0.3940E+01  0.2310E+01
+  0.0000E+00  0.0000E+00  0.0000E+00
+VENTGEOM
+   1   2   1  0.2000E+01  0.1300E+00  0.8700E+00  0.2000E+01  0.1000E+01  0.0000E+00  0.1000E+01
+FIRE
+   1  0.1130E+01  0.1970E+01  0.1000E-02
+THCP
+   1
+       1.13      1.97      0.00      0.00      0.00      1.00
+TIME
+   2000       2000.
+DEVICE
+    TIME
+    0.0   0.0   0.0
+DEVICE
+    ULT_1
+    0.0   0.0   0.0
+DEVICE
+    LLT_1
+    0.0   0.0   0.0
+DEVICE
+    HGT_1
+    0.0   0.0   0.0
+DEVICE
+    PRS_1
+    0.0   0.0   0.0
+DEVICE
+    ULOD_1
+    0.0   0.0   0.0
+DEVICE
+    LLOD_1
+    0.0   0.0   0.0
+DEVICE
+    HRR_1
+    0.0   0.0   0.0
+DEVICE
+    FLHGT_1
+    0.0   0.0   0.0
+DEVICE
+    FBASE_1
+    0.0   0.0   0.0
+DEVICE
+    FAREA_1
+    0.0   0.0   0.0
+DEVICE
+    HVENT_1
+    0.0   0.0   0.0

@@ -1,0 +1,1070 @@
+CFAST Version 6.2.0 built 2011/10/31, run 2011/11/01
+
+Data file is C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_NBS\fm19.in    Title is FMRC four room w/corridor (Vent) Test 19
+
+
+OVERVIEW
+
+
+Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
+
+   4               7             0                    0
+
+Simulation     Output     History     Smokeview  Spreadsheet
+   Time       Interval    Interval    Interval    Interval    
+   (s)          (s)         (s)         (s)         (s)         
+
+   500          50           0           0           5
+
+Ceiling jet is on for all                                         
+
+
+AMBIENT CONDITIONS
+
+Interior       Interior       Exterior       Exterior       Station        Wind           Wind           Wind           
+Temperature    Pressure       Temperature    Pressure       Elevation      Speed          Ref. Height    Power
+(C)            (Pa)           (C)             (Pa)          (m)            (m/s)           (m)
+
+    15.          101300.          15.          101300.         0.00          0.0           10.0           0.16
+
+
+COMPARTMENTS
+
+Compartment  Name           Width     Depth     Height    Area      Volume    Ceiling   Floor     
+                                                                              Height    Height    
+                             (m)       (m)       (m)       (m^2)     (m^3)      (m)       (m)
+------------------------------------------------------------------------------------------------
+    1        Compartment 1   3.64      3.64      2.45     13.25     32.46      2.45      0.00
+    2        Compartment 2   2.43     18.89      2.43     45.90    111.54      2.43      0.00
+    3        Compartment 3   3.64      3.65      2.45     13.29     32.55      2.45      0.00
+    4        Compartment 4   3.52      3.52      2.43     12.39     30.11      2.43      0.00
+
+
+VENT CONNECTIONS
+
+Horizontal Natural Flow Connections (Doors, Windows, ...)
+
+From           To             Vent      Width     Sill      Soffit    Abs.      Abs.      Area
+Compartment    Compartment    Number              Height    Height    Sill      Soffit
+                                        (m)       (m)       (m)       (m)       (m)       (m^2)
+----------------------------------------------------------------------------------------------------
+Compartment 1  Compartment 2   1        0.92      0.00      2.05      0.00      2.05      1.89
+Compartment 1   Outside        1        0.85      1.26      2.11      1.26      2.11      0.72
+Compartment 1   Outside        2        0.05      0.24      0.30      0.24      0.30      0.00
+Compartment 2  Compartment 3   1        0.88      0.00      2.02      0.00      2.02      1.78
+Compartment 2  Compartment 4   1        0.88      0.00      2.02      0.00      2.02      1.78
+Compartment 3   Outside        1        0.05      0.24      0.30      0.24      0.30      0.00
+Compartment 4   Outside        1        0.05      0.24      0.30      0.24      0.30      0.00
+
+
+There are no vertical natural flow connections
+
+
+There are no mechanical flow connections
+
+
+THERMAL PROPERTIES
+
+Compartment    Ceiling      Wall         Floor
+----------------------------------------------------------------------
+Compartment 1  GYP1/2       GYP1/2       CONCRETE
+Compartment 2  GYP1/2       GYP1/2       CONCRETE
+Compartment 3  GYP1/2       GYP1/2       CONCRETE
+Compartment 4  GYP1/2       GYP1/2       CONCRETE
+
+
+Thermal data base used: thermal             
+
+Name    Conductivity Specific heat     Density     Thickness   Emissivity                HCL B's (1->5)
+ACOUTILE    5.800E-02    1.340E+03     290.        3.000E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ALUM1/8      231.        1.033E+03    2.702E+03    3.000E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ALUM2064     186.        1.042E+03    2.770E+03    3.000E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+BRICK        1.50         960.        2.645E+03    7.600E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+COMBRICK    0.720         835.        1.920E+03    7.600E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+MARINITE    0.180        1.293E+03     737.        1.300E-02    0.830      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+CELLULOS    3.900E-02    1.380E+03     45.0        8.800E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+CEMENTMO    0.720         780.        1.860E+03    2.500E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+CONCLITE    0.125        1.050E+03     525.        0.150        0.940      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+CONCRETE     1.75        1.000E+03    2.200E+03    0.150        0.940      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+CONCRGYP    0.170        1.090E+03     930.        1.270E-02    0.940      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+DEFAULT     0.160         900.         790.        1.600E-02    0.900      6.30E-03  1.92E+02  5.87E-02  7.48E+03  1.93E+02
+FIREBRIK    0.360         750.        1.040E+03    0.113        0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+FBRKCRMF    0.170        1.040E+03     128.        5.000E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASSFB2    3.800E-02     835.         32.0        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASSFB2    3.800E-02     835.         32.0        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASFIBR    4.000E-02     720.         105.        8.800E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASSFB3    3.600E-02     795.         105.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASSFB3    3.600E-02     795.         105.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASSFB4    4.300E-02     835.         16.0        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASSFB4    4.300E-02     835.         16.0        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GYP1/2      0.160         900.         790.        1.300E-02    0.900      6.30E-03  1.92E+02  5.87E-02  7.48E+03  1.93E+02
+GYP3/4      0.160         900.         790.        1.900E-02    0.900      6.30E-03  1.92E+02  5.87E-02  7.48E+03  1.93E+02
+GYPSUM      0.160         900.         790.        1.600E-02    0.900      6.30E-03  1.92E+02  5.87E-02  7.48E+03  1.93E+02
+GYPPLAST    0.220        1.085E+03    1.680E+03    7.600E-02    0.900      6.30E-03  1.92E+02  5.87E-02  7.48E+03  1.93E+02
+GYPX5/8     0.140         900.         770.        1.600E-02    0.900      6.30E-03  1.92E+02  5.87E-02  7.48E+03  1.93E+02
+GYPGLASS    0.160         900.         790.        2.400E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GYPMARI     0.110        1.330E+03     720.        1.270E-02    0.830      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+HARDBDHD    0.150        1.380E+03    1.010E+03    1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+HARDBDSD    9.400E-02    1.170E+03     640.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+MARICRMF    0.170        1.040E+03     128.        5.000E-02    0.950      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+METHANE     7.000E-02    1.090E+03     930.        1.270E-02    4.000E-02  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+KAOWOOL     0.220        1.047E+03     128.        0.116        0.970      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+OIL          145.        1.909E+03     884.        6.000E-03    0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PARTBDHD    0.170        1.300E+03    1.000E+03    1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PARTBDLD    7.800E-02    1.300E+03     590.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASS        1.40         750.        2.500E+03    6.000E-03    0.100      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+GLASS        1.40         750.        2.500E+03    6.000E-03    0.100      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+PLYWOOD     0.120        1.215E+03     545.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+SHEATHNG    5.500E-02    1.300E+03     290.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+STAIN304     19.8         557.        7.900E+03    3.000E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+STEELSHT     48.0         559.        7.854E+03    1.500E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+STEEL1/8     48.0         559.        7.854E+03    3.000E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+STEEL3/8     48.0         559.        7.854E+03    9.500E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+URETHANE    2.600E-02    1.045E+03     70.0        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+VERMICUL    6.800E-02     835.         80.0        6.000E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+WOODSHCM    8.700E-02    1.590E+03     350.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+HARDWOOD    0.160        1.255E+03     720.        1.900E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+SOFTWOOD    0.120        1.380E+03     510.        1.900E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+DEFAULT     0.120         900.         800.        1.200E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+
+
+
+TARGETS
+
+Target Compartment    Position (x, y, z)         Direction (x, y, z)      Material
+----------------------------------------------------------------------------------
+    1    Compartmen   3.64     0.00     0.00     0.00     0.00     1.00   METHANE 
+    2    Compartmen   1.82     1.82     0.00     0.00     0.00     1.00   CONCRETE
+    3    Compartmen   1.22     9.45     0.00     0.00     0.00     1.00   CONCRETE
+    4    Compartmen   1.82     1.82     0.00     0.00     0.00     1.00   CONCRETE
+    5    Compartmen   1.76     1.76     0.00     0.00     0.00     1.00   CONCRETE
+
+
+FIRES
+
+
+Name: FM19   Referenced as object #  1
+
+Compartment    Fire Type       Position (x,y,z)     Relative    Lower O2    Pyrolysis
+                                                    Humidity    Limit       Temperature
+Compartment 1  Constrained     3.64   0.00   0.00   50.0         6.00        300.
+
+
+  Time      Fmass     Hcomb     Fqdot     Fhigh     C/CO2     CO/CO2    H/C       O/C       HCN       HCL         CT        TS
+  (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
+------------------------------------------------------------------------------------------------------------------------------------
+     0.      0.0      4.58E+07   0.0      0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+   180.      0.0      4.58E+07   0.0      0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+   195.     2.31E-03  4.58E+07  1.06E+05  0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+   210.     6.81E-03  4.58E+07  3.12E+05  0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+   240.     1.14E-02  4.58E+07  5.22E+05  0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+   480.     1.14E-02  4.58E+07  5.22E+05  0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+   500.      0.0      4.58E+07   0.0      0.58      0.20      1.50E-02  0.14       0.0       0.0       0.0       1.0       0.0
+
+
+Time =      0.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 15.00     15.00     2.450     3.25E-03(  0%)  1.000E-02  7.379E-02   0.00       0.00      1.421E-14
+Compartment 2 15.00     15.00     2.430     1.12E-02(  0%)  0.500      1.000E-02   0.00     -5.684E-14 -2.931E-14
+Compartment 3 15.00     15.00     2.450     3.26E-03(  0%)  0.500      1.000E-02   0.00      5.684E-14  5.063E-14
+Compartment 4 15.00     15.00     2.430     3.01E-03(  0%)  0.500      1.000E-02   0.00       0.00      2.753E-14
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19    0.00      0.00      0.00      0.00                                    0.00      0.00      0.00        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   15.0      15.0      15.0      15.0     Floor              15.0               1.4211E-14    0.0   *******   *******       0.0
+                                                         1      15.0      15.0      15.0    
+Compartment 2   15.0      15.0      15.0      15.0     Floor              15.0               **********    0.0   *******   *******       0.0
+Compartment 3   15.0      15.0      15.0      15.0     Floor              15.0               5.0626E-14    0.0   *******   *******       0.0
+Compartment 4   15.0      15.0      15.0      15.0     Floor              15.0               2.7534E-14    0.0   *******   *******       0.0
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+               H Outside #2                                                                                                                                     
+
+Compart        H Comp  1 #1                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Outside        H Comp  1 #1                                                                                                                                     
+               H Comp  1 #2                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+
+Time =     50.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 15.00     15.00     2.450     3.25E-03(  0%)  1.000E-02  7.379E-02 -4.789E-13  2.491E-10  6.058E-11
+Compartment 2 15.00     15.00     2.430     1.12E-02(  0%)  0.500      1.000E-02 -4.672E-13  2.760E-10  9.368E-11
+Compartment 3 15.00     15.00     2.450     3.26E-03(  0%)  0.500      1.000E-02 -4.475E-13  4.017E-10  2.089E-10
+Compartment 4 15.00     15.00     2.430     3.01E-03(  0%)  0.500      1.000E-02 -4.998E-13  3.060E-10  1.198E-10
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19    0.00      0.00      0.00      0.00                                    0.00      0.00      0.00        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   15.0      15.0      15.0      15.0     Floor              15.0               2.4911E-10    0.0   *******   *******       8.2
+                                                         1      15.0      15.0      15.0     1.8437E-10    0.0   *******   *******      11.1
+Compartment 2   15.0      15.0      15.0      15.0     Floor              15.0               2.7603E-10    0.0   *******   *******       4.4
+Compartment 3   15.0      15.0      15.0      15.0     Floor              15.0               4.0169E-10    0.0   *******   *******       3.8
+Compartment 4   15.0      15.0      15.0      15.0     Floor              15.0               3.0604E-10    0.0   *******   *******       6.6
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+               H Outside #2                                                                                                                                     
+
+Compart        H Comp  1 #1                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Outside        H Comp  1 #1                                                                                                                                     
+               H Comp  1 #2                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+
+Time =    100.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 15.00     15.00     2.450     3.25E-03(  0%)  1.000E-02  7.379E-02 -1.395E-12  3.915E-10  1.391E-10
+Compartment 2 15.00     15.00     2.430     1.12E-02(  0%)  0.500      1.000E-02 -1.369E-12  4.358E-10  2.098E-10
+Compartment 3 15.00     15.00     2.450     3.26E-03(  0%)  0.500      1.000E-02 -1.302E-12  5.265E-10  2.807E-10
+Compartment 4 15.00     15.00     2.430     3.01E-03(  0%)  0.500      1.000E-02 -1.441E-12  5.138E-10  2.666E-10
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19    0.00      0.00      0.00      0.00                                    0.00      0.00      0.00        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   15.0      15.0      15.0      15.0     Floor              15.0               3.9154E-10    0.0   *******   *******      15.2
+                                                         1      15.0      15.0      15.0     3.1212E-10    0.0   *******   *******      19.1
+Compartment 2   15.0      15.0      15.0      15.0     Floor              15.0               4.3580E-10    0.0   *******   *******       7.9
+Compartment 3   15.0      15.0      15.0      15.0     Floor              15.0               5.2655E-10    0.0   *******   *******       7.6
+Compartment 4   15.0      15.0      15.0      15.0     Floor              15.0               5.1378E-10    0.0   *******   *******      10.4
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+               H Outside #2                                                                                                                                     
+
+Compart        H Comp  1 #1                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Outside        H Comp  1 #1                                                                                                                                     
+               H Comp  1 #2                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+
+Time =    150.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 15.00     15.00     2.450     3.25E-03(  0%)  1.000E-02  7.379E-02 -2.261E-12  4.844E-10  1.835E-10
+Compartment 2 15.00     15.00     2.430     1.12E-02(  0%)  0.500      1.000E-02 -2.230E-12  6.437E-10  3.529E-10
+Compartment 3 15.00     15.00     2.450     3.26E-03(  0%)  0.500      1.000E-02 -2.126E-12  5.381E-10  2.747E-10
+Compartment 4 15.00     15.00     2.430     3.01E-03(  0%)  0.500      1.000E-02 -2.327E-12  5.935E-10  2.997E-10
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19    0.00      0.00      0.00      0.00                                    0.00      0.00      0.00        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   15.0      15.0      15.0      15.0     Floor              15.0               4.8438E-10    0.0   *******   *******      19.9
+                                                         1      15.0      15.0      15.0     4.0426E-10    0.0   *******   *******      23.9
+Compartment 2   15.0      15.0      15.0      15.0     Floor              15.0               6.4370E-10    0.0   *******   *******      10.0
+Compartment 3   15.0      15.0      15.0      15.0     Floor              15.0               5.3808E-10    0.0   *******   *******      13.5
+Compartment 4   15.0      15.0      15.0      15.0     Floor              15.0               5.9350E-10    0.0   *******   *******      15.2
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+               H Outside #2                                                                                                                                     
+
+Compart        H Comp  1 #1                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Compart        H Comp  2 #1                                                                                                                                     
+               H Outside #1                                                                                                                                     
+
+Outside        H Comp  1 #1                                                                                                                                     
+               H Comp  1 #2                                                                                                                                     
+               H Comp  3 #1                                                                                                                                     
+               H Comp  4 #1                                                                                                                                     
+
+
+Time =    200.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 90.86     16.13     1.683      10.    ( 31%)  0.477      8.073E-02 -5.918E-02   256.       249.    
+Compartment 2 29.15     15.00     2.368      2.9    (  3%)  0.500      1.000E-02  1.097E-02   1.72       1.71    
+Compartment 3 15.00     15.00     2.450     3.26E-03(  0%)  0.500      1.000E-02  1.101E-02  2.851E-05  2.785E-05
+Compartment 4 15.00     15.00     2.430     3.01E-03(  0%)  0.500      1.000E-02  1.101E-02  2.867E-05  2.800E-05
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19   0.592     3.814E-03 1.747E+05 0.925                                   1.170E+05 5.764E+04 3.302E-02    0.00    
+
+Compartment 1            0.592     3.814E-03 1.747E+05            0.00     1.747E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   21.5      20.1      27.0      15.9     Floor              15.9                256.5       45.8     149.3      56.0       1.3
+                                                         1      16.1      15.2      15.2      6827.       97.5       4.7       3.5       0.0
+Compartment 2   15.3      15.3      15.0      15.0     Floor              15.0                1.718        0.0   22223.4     635.2       0.3
+Compartment 3   15.0      15.0      15.0      15.0     Floor              15.0               2.8511E-05    0.0   *******   *******      93.2
+Compartment 4   15.0      15.0      15.0      15.0     Floor              15.0               2.8667E-05    0.0   *******   *******      93.2
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.2       19.6      0.503       119.       0.00       0.00       0.00       1.34       5.62      0.434       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.5       20.3      0.121       28.5       0.00       0.00       0.00      0.969       1.62      8.144E-02   0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.847       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5       0.00       0.00       0.00       0.00       0.00      0.851       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                  0.212        0.267        1.101E-02                                                                                
+               H Outside #1                  0.248        4.624E-05    3.602E-02                                                                                
+               H Outside #2                               7.066E-04    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.212                     1.101E-02    0.267        0.399                                                                       
+               H Comp  3 #1                               4.030E-03    4.374E-03                                                                                
+               H Comp  4 #1                               4.030E-03    4.373E-03                                                                                
+
+Compart        H Comp  2 #1                               4.374E-03    4.030E-03                                                                                
+               H Outside #1                                            3.436E-04                                                                                
+
+Compart        H Comp  2 #1                               4.373E-03    4.030E-03                                                                                
+               H Outside #1                                            3.436E-04                                                                                
+
+Outside        H Comp  1 #1     0.248                     3.602E-02    4.624E-05                                                                                
+               H Comp  1 #2                               4.457E-05    7.066E-04                                                                                
+               H Comp  3 #1                               3.436E-04                                                                                             
+               H Comp  4 #1                               3.436E-04                                                                                             
+
+
+Time =    250.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 256.8     39.09     1.477      13.    ( 40%)   1.60      0.104      -1.73      2.150E+03  2.040E+03
+Compartment 2 87.99     15.35     1.671      35.    ( 31%)  0.500      1.000E-02 -0.653       105.       103.    
+Compartment 3 35.01     15.00     1.995      6.1    ( 19%)  0.500      1.000E-02 -0.622       11.7       11.5    
+Compartment 4 35.96     15.00     1.963      5.8    ( 19%)  0.500      1.000E-02 -0.622       12.4       12.3    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19   0.984     1.140E-02 5.217E+05  1.94                                   3.496E+05 1.722E+05 0.474        0.00    
+
+Compartment 1            0.984     1.140E-02 5.217E+05            0.00     5.217E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   90.7      86.1      128.      25.0     Floor              25.0                2150.       15.4      29.9      68.2       4.7
+                                                         1      39.1      18.1      18.1     2.1746E+04   89.9       1.7       9.8       0.5
+Compartment 2   25.0      23.5      16.1      15.2     Floor              15.2                104.9        0.0     361.3     110.4       1.0
+Compartment 3   16.2      16.0      15.1      15.0     Floor              15.0                11.68        0.0    3141.9     305.3       0.1
+Compartment 4   16.3      16.1      15.1      15.0     Floor              15.0                12.45        0.0    2947.0     293.4       0.1
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.0       16.6       2.05       484.       0.00       0.00       0.00       2.79       15.9       5.34       0.00       0.00      0.00      0.00      0.00
+Compartment 2  77.9       18.8      0.886       209.       0.00       0.00       0.00       1.70       9.98       2.32       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.4       20.0      0.274       64.6       0.00       0.00       0.00       1.11       3.61      0.464       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.4       20.0      0.287       67.7       0.00       0.00       0.00       1.13       3.77      0.484       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.7       20.5      4.236E-02   9.99       0.00       0.00       0.00      0.792      0.550      8.432E-02   0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5      6.655E-04  0.157       0.00       0.00       0.00      0.851      9.349E-03  5.484E-04   0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5      9.788E-09  2.307E-06   0.00       0.00       0.00      0.850      1.377E-07  2.662E-08   0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5      1.057E-08  2.492E-06   0.00       0.00       0.00      0.850      1.487E-07  2.876E-08   0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                  0.509        0.826        9.424E-02                                                                                
+               H Outside #1                  0.451        0.164                                  3.477E-02                                                      
+               H Outside #2                               3.985E-03    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.509                     9.424E-02    0.826        4.252E-02                                                                   
+               H Comp  3 #1                  0.180        0.219                                  1.686E-03                                                      
+               H Comp  4 #1                  0.180        0.219                                  1.409E-03                                                      
+
+Compart        H Comp  2 #1     0.180                                  0.219        0.141                                                                       
+               H Outside #1                               2.582E-03    1.078E-05                                                                                
+
+Compart        H Comp  2 #1     0.180                                  0.219        0.115                                                                       
+               H Outside #1                               2.582E-03    1.077E-05                                                                                
+
+Outside        H Comp  1 #1     0.451                                  0.164                                                                                    
+               H Comp  1 #2                               4.457E-05    3.985E-03                                                                                
+               H Comp  3 #1                               1.078E-05    2.582E-03                                                                                
+               H Comp  4 #1                               1.077E-05    2.582E-03                                                                                
+
+
+Time =    300.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 278.4     59.33     1.458      13.    ( 40%)   1.70      0.135      -2.98      2.768E+03  2.564E+03
+Compartment 2 102.9     18.32     1.429      46.    ( 41%)  0.500      1.000E-02  -1.47       199.       194.    
+Compartment 3 51.40     15.21     1.249      16.    ( 49%)  0.500      1.000E-02  -1.35       65.1       63.8    
+Compartment 4 51.83     15.25     1.238      15.    ( 49%)  0.500      1.000E-02  -1.35       65.4       64.1    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19   0.965     1.140E-02 5.215E+05  1.94                                   3.494E+05 1.721E+05  1.04        0.00    
+
+Compartment 1            0.965     1.140E-02 5.215E+05            0.00     5.215E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   136.      131.      181.      31.6     Floor              31.6                2768.       11.0      29.7      65.6       7.9
+                                                         1      59.3      22.9      22.9     2.1924E+04   87.1       1.8      11.9       1.0
+Compartment 2   35.8      33.2      18.4      15.6     Floor              15.6                199.1        0.0     198.2      93.6       4.5
+Compartment 3   21.0      20.2      15.9      15.2     Floor              15.2                65.05        0.0     507.1     192.8       0.9
+Compartment 4   21.2      20.3      15.9      15.2     Floor              15.2                65.38        0.0     506.4     190.4       1.1
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.0       16.3       2.19       515.       0.00       0.00       0.00       2.84       16.2       11.8       0.00       0.00      0.00      0.00      0.00
+Compartment 2  77.5       17.8       1.44       340.       0.00       0.00       0.00       2.20       15.6       7.62       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.0       19.0      0.792       187.       0.00       0.00       0.00       1.60       9.93       3.27       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.0       19.0      0.809       191.       0.00       0.00       0.00       1.62       10.1       3.38       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.7       20.4      8.639E-02   20.4       0.00       0.00       0.00      0.765       1.05      0.419       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5      6.364E-03   1.50       0.00       0.00       0.00      0.844      8.849E-02  1.749E-02   0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5      9.888E-04  0.233       0.00       0.00       0.00      0.845      1.390E-02  8.903E-04   0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5      1.353E-03  0.319       0.00       0.00       0.00      0.845      1.901E-02  1.333E-03   0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                  0.500        0.849        0.204                                                                                    
+               H Outside #1                  0.418        0.225                                  4.825E-02                                                      
+               H Outside #2                               5.229E-03    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.500                     0.204        0.849                     7.772E-04                                                      
+               H Comp  3 #1     6.953E-02    0.216        0.214        3.929E-02    2.929E-02                                                                   
+               H Comp  4 #1     7.700E-02    0.208        0.201        4.387E-02    3.294E-02                                                                   
+
+Compart        H Comp  2 #1     0.216        6.953E-02    3.929E-02    0.214                     2.194E-03                                                      
+               H Outside #1                               3.800E-03    1.078E-05                                                                                
+
+Compart        H Comp  2 #1     0.208        7.700E-02    4.387E-02    0.201                     2.469E-03                                                      
+               H Outside #1                               3.808E-03    1.077E-05                                                                                
+
+Outside        H Comp  1 #1     0.418                                  0.225                                                                                    
+               H Comp  1 #2                               4.457E-05    5.229E-03                                                                                
+               H Comp  3 #1                               1.078E-05    3.800E-03                                                                                
+               H Comp  4 #1                               1.077E-05    3.808E-03                                                                                
+
+
+Time =    350.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 295.2     76.67     1.426      14.    ( 42%)   1.78      0.165      -3.89      3.348E+03  3.059E+03
+Compartment 2 93.89     24.12     1.086      62.    ( 55%)  0.500      1.000E-02  -2.28       255.       246.    
+Compartment 3 54.12     16.33    0.7601      22.    ( 69%)  0.500      1.000E-02  -2.09       109.       106.    
+Compartment 4 54.76     16.52    0.7604      21.    ( 69%)  0.500      1.000E-02  -2.09       110.       107.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19   0.932     1.140E-02 5.213E+05  1.94                                   3.493E+05 1.720E+05  1.61        0.00    
+
+Compartment 1            0.932     1.140E-02 5.213E+05            0.00     5.213E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   167.      163.      213.      37.1     Floor              37.1                3348.        8.4      28.6      64.8       9.9
+                                                         1      76.7      28.6      28.6     2.2107E+04   84.5       1.8      14.0       1.5
+Compartment 2   40.4      37.5      20.6      15.9     Floor              15.9                254.6        0.0     147.6      94.6      11.3
+Compartment 3   24.3      23.2      17.0      15.3     Floor              15.3                108.9        0.0     268.9     186.6       3.5
+Compartment 4   24.5      23.3      17.0      15.3     Floor              15.3                109.9        0.0     268.6     183.2       3.9
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  76.9       16.1       2.30       542.       0.00       0.00       0.00       2.91       16.6       18.3       0.00       0.00      0.00      0.00      0.00
+Compartment 2  77.5       17.7       1.50       353.       0.00       0.00       0.00       2.23       16.7       14.1       0.00       0.00      0.00      0.00      0.00
+Compartment 3  77.7       18.4       1.13       266.       0.00       0.00       0.00       1.90       14.0       8.12       0.00       0.00      0.00      0.00      0.00
+Compartment 4  77.7       18.3       1.15       271.       0.00       0.00       0.00       1.92       14.3       8.31       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.7       20.3      0.131       30.8       0.00       0.00       0.00      0.760       1.51      0.925       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.5      3.202E-02   7.55       0.00       0.00       0.00      0.846      0.437      0.106       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5      1.527E-02   3.60       0.00       0.00       0.00      0.846      0.214      3.744E-02   0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5      1.775E-02   4.18       0.00       0.00       0.00      0.847      0.248      4.482E-02   0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1                  0.462        0.772        0.190                                                                                    
+               H Outside #1                  0.414        0.248                                  5.924E-02                                                      
+               H Outside #2                               5.968E-03    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.462                     0.190        0.772                     2.778E-02                                                      
+               H Comp  3 #1     0.187        0.327        0.183        1.854E-02    9.481E-02                                                                   
+               H Comp  4 #1     0.190        0.319        0.175        2.168E-02    9.465E-02                                                                   
+
+Compart        H Comp  2 #1     0.327        0.187        1.854E-02    0.183                     5.004E-03                                                      
+               H Outside #1                               4.712E-03    1.078E-05                                                                                
+
+Compart        H Comp  2 #1     0.319        0.190        2.168E-02    0.175                     5.299E-03                                                      
+               H Outside #1                               4.720E-03    1.077E-05                                                                                
+
+Outside        H Comp  1 #1     0.414                                  0.248                                                                                    
+               H Comp  1 #2                               4.457E-05    5.968E-03                                                                                
+               H Comp  3 #1                               1.078E-05    4.712E-03                                                                                
+               H Comp  4 #1                               1.077E-05    4.720E-03                                                                                
+
+
+Time =    400.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 304.7     99.06     1.397      14.    ( 43%)   1.81      0.205      -4.82      3.847E+03  3.469E+03
+Compartment 2 86.57     27.53    0.6426      82.    ( 74%)  0.500      1.000E-02  -3.27       305.       292.    
+Compartment 3 54.86     16.66    0.3039      29.    ( 88%)  0.500      1.000E-02  -3.01       148.       143.    
+Compartment 4 55.52     16.90    0.3023      26.    ( 88%)  0.500      1.000E-02  -3.03       151.       146.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19   0.909     1.140E-02 5.210E+05  1.94                                   3.491E+05 1.719E+05  2.18        0.00    
+
+Compartment 1            0.909     1.140E-02 5.210E+05            0.00     5.210E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   191.      188.      236.      42.2     Floor              42.2                3847.        6.6      27.8      63.3      12.5
+                                                         1      99.1      35.1      35.1     2.2068E+04   82.2       1.7      15.6       2.2
+Compartment 2   42.4      39.5      23.0      16.3     Floor              16.3                305.3        0.0     110.2     103.6      14.2
+Compartment 3   26.6      25.3      18.6      15.6     Floor              15.6                148.4        0.0     166.6     193.7       3.1
+Compartment 4   26.8      25.5      18.6      15.6     Floor              15.6                150.5        0.0     165.6     190.6       3.5
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  76.9       16.0       2.35       554.       0.00       0.00       0.00       2.91       16.6       24.9       0.00       0.00      0.00      0.00      0.00
+Compartment 2  77.5       17.7       1.46       343.       0.00       0.00       0.00       2.17       16.5       20.7       0.00       0.00      0.00      0.00      0.00
+Compartment 3  77.6       18.0       1.30       307.       0.00       0.00       0.00       2.05       16.2       14.2       0.00       0.00      0.00      0.00      0.00
+Compartment 4  77.6       18.0       1.32       311.       0.00       0.00       0.00       2.07       16.4       14.5       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.7       20.2      0.189       44.6       0.00       0.00       0.00      0.760       2.06       1.64       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.4      6.233E-02   14.7       0.00       0.00       0.00      0.854      0.840      0.396       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.6       20.5      2.456E-02   5.79       0.00       0.00       0.00      0.827      0.343      0.166       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.6       20.5      2.991E-02   7.05       0.00       0.00       0.00      0.829      0.418      0.198       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1     0.103        0.500        0.563        5.564E-02                                                                                
+               H Outside #1                  0.418        0.255                                  6.796E-02                                                      
+               H Outside #2                               6.625E-03    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.500        0.103        5.564E-02    0.563                                                                                    
+               H Comp  3 #1     0.357        0.463        0.127        4.890E-05    0.129                                                                       
+               H Comp  4 #1     0.354        0.455        0.120        9.134E-05    0.129                                                                       
+
+Compart        H Comp  2 #1     0.463        0.357        4.890E-05    0.127                                                                                    
+               H Outside #1                               5.663E-03    1.078E-05                                                                                
+
+Compart        H Comp  2 #1     0.455        0.354        9.134E-05    0.120                                                                                    
+               H Outside #1                               5.705E-03    1.077E-05                                                                                
+
+Outside        H Comp  1 #1     0.418                                  0.255                                                                                    
+               H Comp  1 #2                               4.457E-05    6.625E-03                                                                                
+               H Comp  3 #1                               1.078E-05    5.663E-03                                                                                
+               H Comp  4 #1                               1.077E-05    5.705E-03                                                                                
+
+
+Time =    450.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 290.1     137.6     1.183      17.    ( 52%)   1.82      0.343      -6.42      4.239E+03  3.772E+03
+Compartment 2 89.18     25.04    0.2415     1.00E+02( 90%)  0.500      1.000E-02  -4.63       364.       346.    
+Compartment 3 56.70     16.73    6.2676E-02  32.    ( 97%)  0.500      1.000E-02  -4.08       179.       171.    
+Compartment 4 57.42     16.85    5.9474E-02  29.    ( 98%)  0.500      1.000E-02  -4.11       182.       174.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19   0.765     1.140E-02 5.206E+05  1.94                                   3.488E+05 1.718E+05  2.75        0.00    
+
+Compartment 1            0.765     1.140E-02 5.206E+05            0.00     5.206E+05  0.00    
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   199.      196.      262.      46.4     Floor              46.4                4239.        4.1      23.2      64.4      17.6
+                                                         1      138.      43.1      43.1     2.0791E+04   78.9       1.3      18.1       3.6
+Compartment 2   44.9      42.0      26.4      16.9     Floor              16.9                364.5        0.0      82.6     115.7       8.9
+Compartment 3   28.5      27.1      20.6      15.9     Floor              15.9                178.8        0.0     123.5     192.4       2.7
+Compartment 4   28.8      27.3      20.7      15.9     Floor              15.9                181.6        0.0     122.6     189.9       2.8
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  76.9       16.0       2.37       559.       0.00       0.00       0.00       2.92       17.2       31.6       0.00       0.00      0.00      0.00      0.00
+Compartment 2  77.5       17.6       1.53       361.       0.00       0.00       0.00       2.22       17.2       27.4       0.00       0.00      0.00      0.00      0.00
+Compartment 3  77.6       17.8       1.40       331.       0.00       0.00       0.00       2.12       17.3       20.9       0.00       0.00      0.00      0.00      0.00
+Compartment 4  77.6       17.8       1.41       333.       0.00       0.00       0.00       2.13       17.4       21.2       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       19.9      0.377       88.8       0.00       0.00       0.00      0.858       3.72       2.75       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.6       20.4      6.198E-02   14.6       0.00       0.00       0.00      0.832      0.842      0.728       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.7       20.5      4.418E-02   10.4       0.00       0.00       0.00      0.737      0.617      0.338       0.00       0.00      0.00      0.00      0.00
+Compartment 4  78.7       20.5      5.103E-02   12.0       0.00       0.00       0.00      0.730      0.713      0.403       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1     0.559        0.720        0.282        1.506E-03                                                                                
+               H Outside #1                  0.431        0.250                                  0.121                                                          
+               H Outside #2                               7.655E-03    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.720        0.559        1.506E-03    0.282                                                                                    
+               H Comp  3 #1     0.525        0.551        4.409E-02    4.890E-05    5.663E-02                                                                   
+               H Comp  4 #1     0.520        0.544        4.084E-02    9.134E-05    5.790E-02                                                                   
+
+Compart        H Comp  2 #1     0.551        0.525        4.890E-05    4.409E-02                                                                                
+               H Outside #1                               6.414E-03    1.078E-05                 8.260E-04                                                      
+
+Compart        H Comp  2 #1     0.544        0.520        9.134E-05    4.084E-02                                                                                
+               H Outside #1                               6.830E-03    1.077E-05                 8.290E-04                                                      
+
+Outside        H Comp  1 #1     0.431                                  0.250                                                                                    
+               H Comp  1 #2                               4.457E-05    7.655E-03                                                                                
+               H Comp  3 #1                               1.078E-05    6.414E-03                                                                                
+               H Comp  4 #1                               1.077E-05    6.830E-03                                                                                
+
+
+Time =    500.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Compartment 1 197.6     134.2     1.425      14.    ( 42%)   1.64      0.440      -6.95      2.464E+03  1.998E+03
+Compartment 2 90.00     37.10    9.0083E-02 1.07E+02( 96%)  0.500      1.000E-02  -5.83       456.       428.    
+Compartment 3 60.14     16.96    1.3943E-02  32.    ( 99%)  0.500      1.000E-02  -5.11       203.       193.    
+Compartment 4 60.94     17.04    1.3353E-02  30.    ( 99%)  0.500      1.000E-02  -5.14       206.       196.    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+                  FM19    0.00      0.00      0.00      0.00                                    0.00      0.00      3.21        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1   186.      183.      234.      46.5     Floor              46.5                2464.        0.0      32.2      54.4      29.3
+                                                         1      134.      52.0      52.0      2434.        0.0       8.2      78.2      29.6
+Compartment 2   48.3      45.2      30.7      17.6     Floor              17.6                456.2        0.0      63.9     101.9      19.8
+Compartment 3   30.7      29.1      22.7      16.2     Floor              16.2                203.1        0.0     107.8     181.9       2.7
+Compartment 4   31.0      29.4      22.8      16.3     Floor              16.3                206.2        0.0     107.2     179.6       2.7
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  77.1       16.5       2.11       498.       0.00       0.00       0.00       2.65       18.3       38.8       0.00       0.00      0.00      0.00      0.00
+Compartment 2  77.4       17.3       1.71       402.       0.00       0.00       0.00       2.36       19.2       34.6       0.00       0.00      0.00      0.00      0.00
+Compartment 3  77.5       17.6       1.54       362.       0.00       0.00       0.00       2.23       18.8       28.1       0.00       0.00      0.00      0.00      0.00
+Compartment 4  77.5       17.6       1.55       365.       0.00       0.00       0.00       2.24       18.9       28.4       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Compartment 1  78.6       19.7      0.519       122.       0.00       0.00       0.00      0.794       5.16       4.56       0.00       0.00      0.00      0.00      0.00
+Compartment 2  78.7       20.3      0.139       32.9       0.00       0.00       0.00      0.778       1.82       1.09       0.00       0.00      0.00      0.00      0.00
+Compartment 3  78.9       20.4      0.123       28.9       0.00       0.00       0.00      0.429       1.71      0.772       0.00       0.00      0.00      0.00      0.00
+Compartment 4  79.0       20.4      0.132       31.1       0.00       0.00       0.00      0.404       1.84      0.885       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Compart        H Comp  2 #1     0.476        0.525        8.690E-02    0.190                                                                                    
+               H Outside #1                  0.136        0.603                                  0.136                                                          
+               H Outside #2                               8.025E-03    4.457E-05                                                                                
+
+Compart        H Comp  1 #1     0.525        0.476        0.190        8.690E-02                                                                                
+               H Comp  3 #1     0.534        0.541        1.131E-02    4.890E-05    1.399E-02                                                                   
+               H Comp  4 #1     0.526        0.533        1.064E-02    9.134E-05    1.409E-02                                                                   
+
+Compart        H Comp  2 #1     0.541        0.534        4.890E-05    1.131E-02                                                                                
+               H Outside #1                               7.157E-03    1.078E-05                 8.887E-04                                                      
+
+Compart        H Comp  2 #1     0.533        0.526        9.134E-05    1.064E-02                                                                                
+               H Outside #1                               7.573E-03    1.077E-05                 8.918E-04                                                      
+
+Outside        H Comp  1 #1     0.136                                  0.603                                                                                    
+               H Comp  1 #2                               4.457E-05    8.025E-03                                                                                
+               H Comp  3 #1                               1.078E-05    7.157E-03                                                                                
+               H Comp  4 #1                               1.077E-05    7.573E-03                                                                                

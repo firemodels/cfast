@@ -1,0 +1,25 @@
+Date stamp from CFAST initialization 2011/11/01    
+The project files are based on the root: 1rfurn6                                                         
+Version 6.2.0 Created 2011/10/31
+***** Modify dassl tolerances with C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\bin\solver.ini                                                                                                                                                                                     
+Opening a version  6 file in normal mode
+Key word TIMES parameter(s) = 1800      -50       0         10        10        
+Key word EAMB  parameter(s) = 300.15    101300    0         
+Key word TAMB  parameter(s) = 300.15    101300    0         50        
+Key word CJET  parameter(s) = WALLS     
+Ceiling jet calculation has been set:  T F T F T
+Key word CHEMI parameter(s) = 10        393.15    
+Key word WIND  parameter(s) = 0         10        0.16      
+Key word COMPA parameter(s) = Compartmen2.26      3.94      2.31      0         0         0         GYPSUM    CONCRETE  GYPSUM    
+Compartment   1 Compartm    2.3   3.9   2.3   0.0   0.0   0.0 T T T T   GYPSUM    CONCRETE  GYPSUM    GYPSUM  
+Key word HVENT parameter(s) = 1         2         1         1.29      2         0         1         0.485     0         1         1         
+Key word OBJEC parameter(s) = 1RFURN6   1         1.13      1.97      0         1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Open the output file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6.out
+Open the smokeview files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6.smv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6.plt
+Open the spreadsheet files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6_n.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6_f.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6_s.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1rfurn6_w.csv
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\1RFURN\1RFURN6.o                                                                                                                                                                        
+Object 1RFURN6 position set to   1.130  1.970  0.001; Maximum HRR per m^3 is  3.694E+05
+Open the thermophysical properties file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\bin\thermal.csv                                                                                                                                                                                    
+Total execution time =   1.14     seconds
+Normal exit from CFAST

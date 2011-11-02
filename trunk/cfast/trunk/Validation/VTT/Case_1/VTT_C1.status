@@ -1,0 +1,8 @@
+Status at T =    6.00E+02 DT =   4.622E-02
+ 
+ Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure  Ambient
+               Temp.   Temp.   Height  Rate      Size                Target
+               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)
+ -----------------------------------------------------------------------------
+    1           65.6    27.3   3.3      0.00      0.00     -10.5      184.    
+  Outside                                         0.00    

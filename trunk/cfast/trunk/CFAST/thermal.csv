@@ -1,0 +1,4 @@
+SwMCCConcrete,1.6,750,2400,0.6,0.9,0,0,0,0,0,0,0,Switchgear MCC Concrete (user's guide)
+SwMCCSteel,54,465,7850,0.0015,0.9,0,0,0,0,0,0,0,Switchgear MCC Steel (user's guide)
+SwMCCXPE,0.2,1500,2538,0.015,0.9,0,0,0,0,0,0,0,Switchgear MCC XPE Cable (NUREG 1824)
+THIEF,0.2,1500,2264,0.015,0.8,0,0,0,0,0,0,0,Thief Cable (per NUREG CR 6931)

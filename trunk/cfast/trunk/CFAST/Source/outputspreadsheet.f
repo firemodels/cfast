@@ -287,7 +287,7 @@
               end if
               IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
               IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
-			  if (validate) then
+			  if (validate.or.netheatflux) then
                 TOTAL = GTFLUX(ITARG,1) /1000.d0
                 FTOTAL = GTFLUX(ITARG,2) /1000.d0
                 WTOTAL = GTFLUX(ITARG,3) /1000.d0

@@ -6,7 +6,31 @@
 		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
 	</head>
 	<body>
-		<H3>Version 6.1.1 (October 1, 2008)</H3>
+	<H3>Version 6.2.0 (October 31, 2011)</H3>
+        <blockquote>
+	    Added plume centerline temperature calculation from work of McCaffrey, Heskestad, and Evans. This is
+	    now used for the surrounding gas temperature for target calculations. Note that at this 
+	    point, it only impacts targets directly over a fire source.
+        </blockquote>
+        <blockquote>
+	    Updated spreadsheet column headings to be more readable and useful, including units. This also added
+	    the option for a net heat flux output (now the default) for all target heat flux outputs.
+        </blockquote>
+        <blockquote>
+	    Added cylindrical targets largely aimed at improving calculation of heat flux to and temperature of
+	    wire and cable targets.
+        </blockquote>
+        <blockquote>
+	    General code cleanup, verification, and validation.  This included removal of numerous unused variables that were
+ 	    left over from earlier features long since removed from the model.  Code logic analysis with
+	    Forcheck to ensure call and variable consistency, additional and repeated validation tests.
+        </blockquote>
+        <blockquote>
+	    Added detailed discussion of CFAST's fire chemistry and target calculations to Technical Reference Guide.  Updated
+	    User's Guide and Validation Guide for latest version.
+	</blockquote>
+
+	<H3>Version 6.1.1 (Febrary 4, 2009)</H3>
         <blockquote>
             Added a new species, labeled TS, to track flow through compartments. TS is a trace
             species produce during pyrolysis and is not affected by combustion. The assumption
@@ -43,8 +67,11 @@
             Incorporated Heskestad plume model as an alternative to the McCaffrey plume model
             (type 2).&nbsp; There is a small difference in the calculated results for a range
             of test cases (on the order of 2% to 4%).&nbsp; The plan is to add plume temperature
-            to the calculation as well.</blockquote>
+            to the calculation as well.
+	</blockquote>
         <blockquote>
+	    Smokeview updated to improve visualization of vent flows (now accounts for vent opening and closing)
+	    and smoke (3-D smoke visualization now an option that depends on calculation optical density).
         </blockquote>
         <blockquote>
             Corrected error in the GUI that incorrectly outputs the mechanical ventilation specification

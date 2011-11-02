@@ -45,6 +45,7 @@ Public Class CeditMain
     Friend WithEvents MenuNetHeatFluxOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
     Friend WithEvents MainOpen As System.Windows.Forms.Button
+    Friend WithEvents MenuValidationOutput As System.Windows.Forms.MenuItem
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -440,6 +441,7 @@ Public Class CeditMain
         Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
         Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
         Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
+        Me.MenuValidationOutput = New System.Windows.Forms.MenuItem()
         Me.MenuTools = New System.Windows.Forms.MenuItem()
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
@@ -963,7 +965,7 @@ Public Class CeditMain
         'MenuItem2
         '
         Me.MenuItem2.Index = 4
-        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuShowCFAST})
+        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuShowCFAST, Me.MenuValidationOutput})
         Me.MenuItem2.Text = "Output Options"
         '
         'MenuDetailedOutput
@@ -979,6 +981,7 @@ Public Class CeditMain
         '
         'MenuNetHeatFluxOutput
         '
+        Me.MenuNetHeatFluxOutput.Checked = True
         Me.MenuNetHeatFluxOutput.Index = 2
         Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
         '
@@ -986,6 +989,11 @@ Public Class CeditMain
         '
         Me.MenuShowCFAST.Index = 3
         Me.MenuShowCFAST.Text = "Show CFAST Window"
+        '
+        'MenuValidationOutput
+        '
+        Me.MenuValidationOutput.Index = 4
+        Me.MenuValidationOutput.Text = "CFAST Validation Output"
         '
         'MenuTools
         '
@@ -4492,6 +4500,8 @@ Public Class CeditMain
                             TotalMassCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
                         Case "NetHeatFlux"
                             NetHeatFluxCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
+                        Case "Validation"
+                            ValidationOutput = CType(RegistryOptions(iSet, 1), Boolean)
                     End Select
                 Next
             End If
@@ -5838,5 +5848,15 @@ Public Class CeditMain
         Me.MenuViewLog.Enabled = False
         Me.MenuDetailedOutput.Checked = True
         UpdateAll()
+    End Sub
+
+    Private Sub MenuValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuValidationOutput.Click
+        If Me.MenuValidationOutput.Checked Then
+            ValidationOutput = False
+        Else
+            ValidationOutput = True
+        End If
+        Me.MenuValidationOutput.Checked = ValidationOutput
+        SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
     End Sub
 End Class

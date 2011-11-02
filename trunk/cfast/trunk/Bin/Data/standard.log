@@ -1,0 +1,33 @@
+Date stamp from CFAST initialization 2011/10/27    
+The project files are based on the root: standard                                                        
+Version 6.2.0 Created 2009/03/04
+***** Modify dassl tolerances with C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\solver.ini                                                                                                                                                                                     
+Opening a version  6 file in normal mode
+Key word TIMES parameter(s) = 1800      -120      0         10        30        
+Key word EAMB  parameter(s) = 293.15    101300    0         
+Key word TAMB  parameter(s) = 293.15    101300    0         50        
+Key word CJET  parameter(s) = WALLS     
+Ceiling jet calculation has been set:  T F T F T
+Key word CHEMI parameter(s) = 10        393.15    
+Key word WIND  parameter(s) = 0         10        0.16      
+Key word COMPA parameter(s) = Compartmen9.1       5         4.6       0         0         0         GLASSFB3  CONCRETE  CONCRETE  
+Compartment   1 Compartm    9.1   5.0   4.6   0.0   0.0   0.0 T T T T   GLASSFB3  CONCRETE  CONCRETE  CONCRETE
+Key word HVENT parameter(s) = 1         2         1         1         2.4       0         1         0         0         1         1         
+Key word OBJEC parameter(s) = bunsen    1         4.55      2.5       0         1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word OBJEC parameter(s) = Wood_Wall 1         4.55      2.5       0         1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word (ext) TARGE parameter(s) = 1         2.2       1.88      2.34      0         0         1         CONCRETE  IMPLICIT  PDE       0.5       
+Key word TARGE parameter(s) = 1         2.2       1.88      2.34      0         0         1         CONCRETE  IMPLICIT  PDE       0.5       
+Key word TARGE parameter(s) = 1         2.2       1.88      2.34      0         0         1         CONCRETE  IMPLICIT  PDE       0.5       
+Open the output file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard.out
+Open the smokeview files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard.smv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard.plt
+Open the spreadsheet files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard_n.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard_f.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard_s.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard_w.csv
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\bunsen.o                                                                                                                                                                                       
+Object bunsen position set to   4.550  2.500  0.001; Maximum HRR per m^3 is  1.165E+06
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\Wood_Wall.o                                                                                                                                                                                    
+>>>Old fire object format - please update, count = 13
+Object Wood_Wall position set to   4.550  2.500  0.001; Maximum HRR per m^3 is  1.881E+06
+Open the thermophysical properties file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\thermal.csv                                                                                                                                                                                    
+Total execution time =   1.70     seconds
+Normal exit from CFAST

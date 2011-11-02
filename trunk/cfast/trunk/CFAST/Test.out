@@ -1,0 +1,201 @@
+CFAST Version 6.2.0 built 2009/03/04, run 2011/10/27
+
+Data file is C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\CFAST\Test.in    Title is CFAST Simulation
+
+
+OVERVIEW
+
+
+Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
+
+   2               3             0                    4
+
+Simulation     Output     History     Smokeview  Spreadsheet
+   Time       Interval    Interval    Interval    Interval    
+   (s)          (s)         (s)         (s)         (s)         
+
+  3600         600           0           0          10
+
+Ceiling jet is on for all                                         
+
+
+AMBIENT CONDITIONS
+
+Interior       Interior       Exterior       Exterior       Station        Wind           Wind           Wind           
+Temperature    Pressure       Temperature    Pressure       Elevation      Speed          Ref. Height    Power
+(C)            (Pa)           (C)             (Pa)          (m)            (m/s)           (m)
+
+    20.          101300.          20.          101300.         0.00          0.0           10.0           0.16
+
+
+COMPARTMENTS
+
+Compartment  Name           Width     Depth     Height    Area      Volume    Ceiling   Floor     
+                                                                              Height    Height    
+                             (m)       (m)       (m)       (m^2)     (m^3)      (m)       (m)
+------------------------------------------------------------------------------------------------
+    1        Low Ceiling A   8.50      8.50      3.00     72.25    216.75      3.00      0.00
+    2        High Ceiling    8.60      8.50      9.10     73.10    665.21      9.10      0.00
+
+
+VENT CONNECTIONS
+
+Horizontal Natural Flow Connections (Doors, Windows, ...)
+
+From           To             Vent      Width     Sill      Soffit    Abs.      Abs.      Area
+Compartment    Compartment    Number              Height    Height    Sill      Soffit
+                                        (m)       (m)       (m)       (m)       (m)       (m^2)
+----------------------------------------------------------------------------------------------------
+Low Ceiling Ar High Ceiling A  1        8.50      0.00      3.00      0.00      3.00     25.50
+Low Ceiling Ar  Outside        1        1.00      0.00      0.01      0.00      0.01      0.01
+High Ceiling A  Outside        1        1.00      0.00      0.01      0.00      0.01      0.01
+
+
+There are no vertical natural flow connections
+
+
+Fans
+
+System    From           From      To             To        Fan       Minimum   Maximum    Fan Curve
+                         Elev.                    Elev.     Number
+                         (m)                      (m)                 (Pa)      (Pa)
+----------------------------------------------------------------------------------------------------
+   1      Outside        2.45      Node  1        2.45                0.20
+          Node  1        2.45      Node  2        2.45        1       200.00    300.00     0.73    
+          Node  2        2.45      Comp  1        2.45                0.20
+   2      Comp  2        6.05      Node  3        6.05                0.20
+          Node  3        6.05      Node  4        6.05        2       200.00    300.00     0.73    
+          Node  4        6.05      Outside        6.05                0.20
+
+
+THERMAL PROPERTIES
+
+Compartment    Ceiling      Wall         Floor
+----------------------------------------------------------------------
+Low Ceiling A  SwMCCCon     SwMCCCon     SwMCCCon
+High Ceiling   SwMCCCon     SwMCCCon     SwMCCCon
+
+
+Thermal data base used: thermal             
+
+Name    Conductivity Specific heat     Density     Thickness   Emissivity                HCL B's (1->5)
+SwMCCCon     1.60         750.        2.400E+03    0.600        0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+SwMCCSte     54.0         465.        7.850E+03    1.500E-03    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+SwMCCXPE    0.200        1.500E+03    2.538E+03    1.500E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+THIEF       0.200        1.500E+03    2.264E+03    1.500E-02    0.800      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+DEFAULT     0.120         900.         800.        1.200E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+
+
+
+TARGETS
+
+Target Compartment    Position (x, y, z)         Direction (x, y, z)      Material
+----------------------------------------------------------------------------------
+    1    Low Ceilin   2.50     4.00     2.30     0.86     0.43     0.27   THIEF   
+    2    Low Ceilin   3.00     5.50     2.60    -0.14    -0.98    -0.14   THIEF   
+    3    High Ceili   4.25     4.25     9.00     0.00     0.00    -1.00   THIEF   
+    4    Low Ceilin   3.50     5.00     2.40    -0.64    -0.77     0.00   SwMCCSte
+    5    Low Ceilin   2.80     4.15     2.40     0.00     0.00     1.00   SwMCCXPE
+    6    Low Ceilin   4.25     4.25     0.00     0.00     0.00     1.00   SwMCCCon
+    7    High Ceili   4.30     4.25     0.00     0.00     0.00     1.00   SwMCCCon
+
+
+FIRES
+
+
+Name: MCC 702 kW   Referenced as object #  1
+
+Compartment    Fire Type       Position (x,y,z)     Relative    Lower O2    Pyrolysis
+                                                    Humidity    Limit       Temperature
+Low Ceiling Ar Constrained     2.80   4.15   2.40   50.0        10.00        293.
+
+
+  Time      Fmass     Hcomb     Fqdot     Fhigh     C/CO2     CO/CO2    H/C       O/C       HCN       HCL         CT        TS
+  (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
+------------------------------------------------------------------------------------------------------------------------------------
+     0.      0.0      1.03E+07   0.0       0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+    72.     6.82E-04  1.03E+07  7.02E+03   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   144.     2.73E-03  1.03E+07  2.81E+04   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   216.     6.13E-03  1.03E+07  6.32E+04   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   288.     1.09E-02  1.03E+07  1.12E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   360.     1.70E-02  1.03E+07  1.76E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   432.     2.45E-02  1.03E+07  2.53E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   504.     3.34E-02  1.03E+07  3.44E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   576.     4.36E-02  1.03E+07  4.49E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   648.     5.52E-02  1.03E+07  5.69E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+   720.     6.82E-02  1.03E+07  7.02E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+  1200.     6.82E-02  1.03E+07  7.02E+05   0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+  2340.      0.0      1.03E+07   0.0       0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+  2350.      0.0      1.03E+07   0.0       0.0      0.28      0.13      0.13       0.0      0.31       0.0       1.0       0.0
+
+
+Time =      0.0 seconds.
+
+Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Low Ceiling A 20.00     20.00     3.000     2.17E-02(  0%)  1.000E-02  5.282E-02  5.201E-04   0.00       0.00    
+High Ceiling  20.00     20.00     9.099     6.65E-02(  0%)  0.500      1.000E-02 -5.195E-04   0.00       0.00    
+
+
+Fires
+
+Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
+                         Flow      Rate      Size      Height    Upper     Lower     Fire
+                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)
+------------------------------------------------------------------------------------------------------------------------------------------
+              MCC 702     0.00      0.00      0.00      0.00                                    0.00      0.00      0.00        0.00    
+
+
+
+Surfaces and Targets
+
+Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire      Surface   Gas
+               Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.      Rad.      Rad.      Convect.
+               (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (%)       (%)       (%)       (%)
+------------------------------------------------------------------------------------------------------------------------------------------------
+Low Ceiling Ar  20.0      20.0      20.0      20.0     Floor              20.0                418.7        0.0      86.9      13.1       0.0
+                                                         1      20.0      20.0      20.0    
+                                                         2      20.0      20.0      20.0    
+                                                         4      20.0      20.0      20.0    
+                                                         5      20.0      20.0      20.0      418.7        0.0      92.0       8.0       0.0
+High Ceiling A  20.0      20.0      20.0      20.0     Floor              20.0                418.7        0.0      94.5       5.5       0.0
+                                                         3      20.0      20.0      20.0    
+
+
+Upper Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Low Ceiling A  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+High Ceiling   78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.17       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Lower Layer Species
+
+Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD         CT          TS        HCl c     HCl f     HCl uw    HCl lw
+               (%)        (%)        (%)        (ppm)      (ppm)      (ppm)      (%)        (%)        (1/m)      (g-min/m3)  kg        (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Low Ceiling A  78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.16       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+High Ceiling   78.4       20.5       0.00       0.00       0.00       0.00       0.00       1.17       0.00       0.00       0.00       0.00      0.00      0.00      0.00
+
+
+Flow Through Vents (kg/s)
+
+To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
+Compartment    Vent             Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented     Filtered
+-------------------------------------------------------------------------------------------------------------------------------------
+Low Cei        H Comp  2 #1                  8.663E-05                 0.878                                                                                    
+               H Outside #1                                            3.208E-04                                                                                
+               M Node  2                                  0.878                                                                                                 
+
+High Ce        H Comp  1 #1     8.663E-05                 0.878                                                                                                 
+               H Outside #1                               3.207E-04                                                                                             
+               M Node  3                                               0.878                                                                                    
+
+Outside        H Comp  1 #1                               3.208E-04                                                                                             
+               H Comp  2 #1                                            3.207E-04                                                                                
+               M Node  1                                               0.878                                                                                    
+               M Node  4                                  0.878                                                                                                 

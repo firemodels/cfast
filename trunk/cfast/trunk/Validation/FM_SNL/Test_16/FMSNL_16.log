@@ -1,0 +1,39 @@
+Date stamp from CFAST initialization 2011/11/01    
+The project files are based on the root: FMSNL_16                                                        
+Version 6.2.0 Created 2011/10/31
+***** Modify dassl tolerances with C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\bin\solver.ini                                                                                                                                                                                     
+Opening a version  6 file in normal mode
+Key word TIMES parameter(s) = 900       -50       0         10        1         
+Key word EAMB  parameter(s) = 293.15    101300    0         
+Key word TAMB  parameter(s) = 293.15    101300    0         50        
+Key word CJET  parameter(s) = WALLS     
+Ceiling jet calculation has been set:  T F T F T
+Key word CHEMI parameter(s) = 10        393.15    
+Key word WIND  parameter(s) = 0         10        0.16      
+Key word COMPA parameter(s) = Compartmen18.3      12.2      6.1       0         0         0         MariniteFMConcreteFMMariniteFM
+Compartment   1 Compartm   18.3  12.2   6.1   0.0   0.0   0.0 T T T T   Marinite  Concrete  Marinite  Marinite
+Key word VVENT parameter(s) = 2         1         1.08      2         1         
+Key word MVENT parameter(s) = 2         1         1         H         4.9       0.66      H         4.9       0.66      0.38      200       300       1         
+Key word (ext) EVENT parameter(s) = M         2         1         1         540       0         1         
+Key word EVENT parameter(s) = M         2         1         1         540       0         1         
+Key word OBJEC parameter(s) = FMSNL_16  1         17.55     11.45     0         1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word DETEC parameter(s) = 1         1         347.04    3.05      6.1       5.98      100       0         7E-05     
+A type   1 detector has been placed in Compartment 1                                                                                                                   
+Key word DETEC parameter(s) = 1         1         347.04    15.25     6.1       5.98      100       0         7E-05     
+A type   1 detector has been placed in Compartment 1                                                                                                                   
+Key word (ext) TARGE parameter(s) = 1         12        6.1       5.66      0         0         -1        TC        IMPLICIT  ODE       0.5       
+Key word TARGE parameter(s) = 1         12        6.1       5.66      0         0         -1        TC        IMPLICIT  ODE       0.5       
+Key word TARGE parameter(s) = 1         12        6.1       5.66      0         0         -1        TC        IMPLICIT  ODE       0.5       
+Open the output file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16.out
+Open the smokeview files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16.smv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16.plt
+Open the spreadsheet files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16_n.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16_f.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16_s.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16_w.csv
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\FMSNL_16.o                                                                                                                                                               
+Object FMSNL_16 position set to  17.550 11.450  0.001; Maximum HRR per m^3 is  1.648E+05
+Open the thermophysical properties file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\FM_SNL\Test_16\thermal.csv                                                                                                                                                              
+ 
+*** Sensor   2 has activated at  178.0 seconds in compartment   1 ***
+ 
+*** Sensor   1 has activated at  324.2 seconds in compartment   1 ***
+Total execution time =   1.24     seconds
+Normal exit from CFAST

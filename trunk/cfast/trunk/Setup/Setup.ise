@@ -351,6 +351,10 @@
 		<row><td>CFAST.exe</td><td>{BF2648F1-A715-4E9B-B20E-E799DCFF67FF}</td><td>INSTALLDIR</td><td>2</td><td/><td>cfast.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>CFAST6.chm</td><td>{A66723CA-5F5E-4AD7-B5C7-1695C59B1075}</td><td>INSTALLDIR</td><td>2</td><td/><td>cfast6.chm</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{13D71563-8AEA-45A5-A79E-0140D45B42B8}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{358D2B9C-A916-4E6C-AB2B-0B207E606541}</td><td>AppDataFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{4DD890B7-B293-4776-B01B-3E50B413F016}</td><td>PersonalFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{D1F81593-3D5A-4E11-BF4E-F55837DE4341}</td><td>MY_DOCUMENTS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{FDC74D2B-7DCC-43F4-A7B3-2B97AD31AFE1}</td><td>CFASTDATA</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NPlot.dll</td><td>{9CB7290E-D249-48B1-9F31-1FEFD700697F}</td><td>INSTALLDIR</td><td>2</td><td/><td>nplot.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>background.exe</td><td>{15C18888-88AE-401D-9E04-55A250539E6E}</td><td>INSTALLDIR</td><td>2</td><td/><td>background.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>glew32.dll</td><td>{4F7380F1-EFB3-4DC0-B126-B51E7ABA5DD2}</td><td>INSTALLDIR</td><td>2</td><td/><td>glew32.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1066,6 +1070,9 @@
 	<table name="CreateFolder">
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
+		<row><td>AppDataFolder</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>MY_DOCUMENTS</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>PersonalFolder</td><td>ISX_DEFAULTCOMPONENT2</td></row>
 	</table>
 
 	<table name="CustomAction">
@@ -1150,6 +1157,7 @@
 		<row><td>CFAST</td><td>NATIONAL_INSITUTE_OF_STANDARDS_AND_TECHNOLOGY</td><td>CFAST</td><td/><td>0</td><td/></row>
 		<row><td>CFAST1</td><td>NIST</td><td>CFAST</td><td/><td>0</td><td/></row>
 		<row><td>CFAST6</td><td>ProgramFilesFolder</td><td>CFAST6</td><td/><td>0</td><td/></row>
+		<row><td>CFASTDATA</td><td>MY_DOCUMENTS</td><td>CFASTD~1|CFASTData</td><td/><td>0</td><td/></row>
 		<row><td>CommonAppDataFolder</td><td>TARGETDIR</td><td>.:Common~1|CommonAppData</td><td/><td>0</td><td/></row>
 		<row><td>CommonFilesFolder</td><td>TARGETDIR</td><td>.:Common</td><td/><td>0</td><td/></row>
 		<row><td>DATABASEDIR</td><td>ISYourDataBaseDir</td><td>.</td><td/><td>0</td><td/></row>
@@ -1163,6 +1171,7 @@
 		<row><td>ISMyProductDir</td><td>ISMyCompanyDir</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
 		<row><td>ISYourDataBaseDir</td><td>INSTALLDIR</td><td>Database</td><td/><td>0</td><td/></row>
 		<row><td>LocalAppDataFolder</td><td>TARGETDIR</td><td>.:LocalA~1|LocalAppData</td><td/><td>0</td><td/></row>
+		<row><td>MY_DOCUMENTS</td><td>PersonalFolder</td><td>MYDOCU~1|My Documents</td><td/><td>0</td><td/></row>
 		<row><td>MY_PRODUCT_NAME</td><td>NATIONAL_INSITUTE_OF_STANDARDS_AND_TECHNOLOGY</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
 		<row><td>NATIONAL_INSITUTE_OF_STANDARDS_AND_TECHNOLOGY</td><td>ProgramFilesFolder</td><td>NATION~1|National Insitute of Standards and Technology</td><td/><td>0</td><td/></row>
@@ -1185,8 +1194,7 @@
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WindowsFolder</td><td>TARGETDIR</td><td>.:Windows</td><td/><td>0</td><td/></row>
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
-		<row><td>cfast</td><td>national_insitute_of_standards_and_technology</td><td>CFAST</td><td/><td>1</td><td/></row>
-		<row><td>national_insitute_of_standards_and_technology</td><td>ProgramMenuFolder</td><td>National Insitute of Standards and Technology</td><td/><td>1</td><td/></row>
+		<row><td>national_insitute_of_standards_and_technology</td><td>ProgramMenuFolder</td><td>CFAST</td><td/><td>1</td><td/></row>
 	</table>
 
 	<table name="DrLocator">
@@ -1888,6 +1896,10 @@
 		<row><td>AlwaysInstall</td><td>CFAST.exe</td></row>
 		<row><td>AlwaysInstall</td><td>CFAST6.chm</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>AlwaysInstall</td><td>NPlot.dll</td></row>
 		<row><td>AlwaysInstall</td><td>background.exe</td></row>
 		<row><td>AlwaysInstall</td><td>glew32.dll</td></row>
@@ -1932,6 +1944,7 @@
 		<row><td>smokeview.exe</td><td>smokeview.exe</td><td>smokeview.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\smokeview.exe</td><td>1</td><td/></row>
 		<row><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokezip_win_32.exe</td><td>1</td><td/></row>
 		<row><td>sofa.o</td><td>ISX_DEFAULTCOMPONENT</td><td>sofa.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\sofa.o</td><td>1</td><td/></row>
+		<row><td>standard.in</td><td>ISX_DEFAULTCOMPONENT4</td><td>standard.in</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard.in</td><td>1</td><td/></row>
 		<row><td>thermal.csv</td><td>ISX_DEFAULTCOMPONENT</td><td>thermal.csv</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\thermal.csv</td><td>1</td><td/></row>
 		<row><td>tv_set.o</td><td>ISX_DEFAULTCOMPONENT</td><td>TV Set.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\TV Set.o</td><td>1</td><td/></row>
 		<row><td>upholstered_chair.o</td><td>ISX_DEFAULTCOMPONENT</td><td>Upholstered_Chair.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\Upholstered_Chair.o</td><td>1</td><td/></row>
@@ -2205,6 +2218,10 @@
 		<row><td>CFAST.exe</td><td/><td/><td>_4402F788_4CEE_49D6_8D5B_3297B20A6A7D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>CFAST6.chm</td><td/><td/><td>_230CCA70_8E23_4116_998E_3DF9D5F9F1D6_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_05674F59_4054_4B03_A0C6_0AF4664D1A46_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_617EBFF0_EFBC_4542_BB0C_28B26D94D8DB_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_DD96ADA2_E927_40D8_99F5_9EAE57665B5F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_68A21D85_F5CB_4AEC_8E56_50CE76D64A8D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_382D9E37_610B_4182_B8C9_35F64CAD0F47_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NPlot.dll</td><td/><td/><td>_2A4E0135_1E4E_4DFE_AE2E_9F8B65E0C453_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>background.exe</td><td/><td/><td>_41C7D75B_644C_4F4C_88A7_B3B625B58D63_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>glew32.dll</td><td/><td/><td>_B4249909_662B_438E_B137_CA83FB9AFAFF_FILTER</td><td/><td/><td/><td/></row>
@@ -4592,7 +4609,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{8C3CB364-5BC9-4067-8F9A-C54D3ED8506A}</td><td/></row>
 		<row><td>ProductName</td><td>CFAST</td><td/></row>
-		<row><td>ProductVersion</td><td>6.2.0.266</td><td/></row>
+		<row><td>ProductVersion</td><td>6.2.0.290</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4668,7 +4685,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="L255">FileName</col>
 		<col def="s72">DirProperty</col>
 		<col def="i2">InstallMode</col>
-		<row><td>CEdit.exe</td><td>CEdit.exe</td><td/><td>cfast</td><td>2</td></row>
+		<row><td>CEdit.exe</td><td>CEdit.exe</td><td/><td>national_insitute_of_standards_and_technology</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4754,7 +4771,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>CEdit.exe</td><td>cfast</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td>1</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>CEdit.exe</td><td>national_insitute_of_standards_and_technology</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td>1</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

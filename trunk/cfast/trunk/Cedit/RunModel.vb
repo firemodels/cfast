@@ -218,9 +218,14 @@ Public Class RunModel
             RunOptions.Text += "Total Mass Output"
         End If
         If NetHeatFluxCFASTOutput Then
-            CommandString += " /V"
+            CommandString += " /N"
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Net Heat Flux Output"
+        End If
+        If ValidationOutput Then
+            CommandString += " /V"
+            If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
+            RunOptions.Text += "Validation Output"
         End If
         Me.RunOK.Enabled = False
         Me.RunStop.Enabled = True

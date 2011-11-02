@@ -1,0 +1,39 @@
+Date stamp from CFAST initialization 2011/11/01    
+The project files are based on the root: VTT_C2                                                          
+Version 6.2.0 Created 2011/10/31
+***** Modify dassl tolerances with C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\bin\solver.ini                                                                                                                                                                                     
+Opening a version  6 file in normal mode
+Key word TIMES parameter(s) = 600       -10       0         10        1         
+Key word EAMB  parameter(s) = 293.15    101300    0         
+Key word TAMB  parameter(s) = 293.15    101300    0         50        
+Key word LIMO2 parameter(s) = 10        
+Key word WIND  parameter(s) = 0         10        0.16      
+Key word CJET  parameter(s) = WALLS     
+Ceiling jet calculation has been set:  T F T F T
+Key word COMPA parameter(s) = Compartmen13.8      27        19        0         0         0         SteelBE2  ConcreteBESteelBE2  
+Compartment   1 Compartm   13.8  27.0  19.0   0.0   0.0   0.0 T T T T   SteelBE2  Concrete  SteelBE2  SteelBE2
+Key word (ext) ROOMA parameter(s) = 1         4         372.6     372.6     51.3      51.3      
+Compartment  1 has been redefined as a variable space- area:    372.6     0.0     0.0     0.0
+Key word (ext) ROOMH parameter(s) = 1         4         0         12        17.1      19        
+Compartment  1 has been redefined as a variable space- height:      0.0     0.0     0.0     0.0
+Key word HVENT parameter(s) = 1         2         1         0.71      0.71      0         1         6.55      0         4         1         
+Key word HVENT parameter(s) = 1         2         2         0.71      0.71      0         1         6.55      0         2         1         
+Key word HVENT parameter(s) = 1         2         3         0.71      12.71     12        1         6.55      0         4         1         
+Key word HVENT parameter(s) = 1         2         4         0.71      12.71     12        1         6.55      0         2         1         
+Key word OBJEC parameter(s) = VTT_C2    1         7.2       16        0         1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word TARGE parameter(s) = 1         7.2       16        6         0         0         -1        TC        IMPLICIT  ODE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         7.2       16        12        0         0         -1        TC        IMPLICIT  ODE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Open the output file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2.out
+Open the smokeview files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2.smv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2.plt
+Open the spreadsheet files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2_n.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2_f.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2_s.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2_w.csv
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\VTT_C2.o                                                                                                                                                                     
+>>>Old fire object format - please update, count = 13
+Object VTT_C2 position set to   7.200 16.000  0.001; Maximum HRR per m^3 is  5.579E+05
+Open the thermophysical properties file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\VTT\Case_2\thermal.csv                                                                                                                                                                  
+Total execution time =   1.02     seconds
+Normal exit from CFAST

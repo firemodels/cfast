@@ -12,6 +12,7 @@ C
 C
       COMMON /CONFIG/ VERSION, 
      +    RUNDAT, LOGERR, HEADER, IOFILI, IOFILO, NOKBD,
-     +    initializeonly, outputformat, debugging, trace, validate,
+     +    initializeonly, outputformat, debugging, trace, validate, 
+     +    netheatflux,
      +    THRMFILE, NNFILE, MPSDATC, DUMPF, SETPFILE, DATAFILE
       SAVE /CONFIG/

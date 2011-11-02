@@ -1,0 +1,80 @@
+ZONE
+ VTT_C1_zone.csv
+ P
+ Pa
+ Layer Height
+ ylay
+ m
+ TEMPERATURE
+ TEMP
+ C
+ TEMPERATURE
+ TEMP
+ C
+AMBIENT
+  0.101300E+06  0.000000E+00  0.293150E+03
+ROOM   1
+  0.1233E+02  0.2412E+02  0.1900E+02
+  0.0000E+00  0.0000E+00  0.0000E+00
+VENTGEOM
+   1   2   4  0.7100E+00  0.6550E+01  0.0000E+00  0.7100E+00  0.1000E+01  0.0000E+00  0.1000E+01
+VENTGEOM
+   1   2   2  0.7100E+00  0.6550E+01  0.0000E+00  0.7100E+00  0.1000E+01  0.0000E+00  0.1000E+01
+VENTGEOM
+   1   2   4  0.7100E+00  0.6550E+01  0.1200E+02  0.1271E+02  0.1000E+01  0.0000E+00  0.1000E+01
+VENTGEOM
+   1   2   2  0.7100E+00  0.6550E+01  0.1200E+02  0.1271E+02  0.1000E+01  0.0000E+00  0.1000E+01
+FIRE
+   1  0.7200E+01  0.1600E+02  0.1000E-02
+THCP
+   3
+       7.20     16.00      6.00      0.00      0.00     -1.00
+       7.20     16.00     12.00      0.00      0.00     -1.00
+       7.20     16.00      0.00      0.00      0.00      1.00
+TIME
+    600        600.
+DEVICE
+    TIME
+    0.0   0.0   0.0
+DEVICE
+    ULT_1
+    0.0   0.0   0.0
+DEVICE
+    LLT_1
+    0.0   0.0   0.0
+DEVICE
+    HGT_1
+    0.0   0.0   0.0
+DEVICE
+    PRS_1
+    0.0   0.0   0.0
+DEVICE
+    ULOD_1
+    0.0   0.0   0.0
+DEVICE
+    LLOD_1
+    0.0   0.0   0.0
+DEVICE
+    HRR_1
+    0.0   0.0   0.0
+DEVICE
+    FLHGT_1
+    0.0   0.0   0.0
+DEVICE
+    FBASE_1
+    0.0   0.0   0.0
+DEVICE
+    FAREA_1
+    0.0   0.0   0.0
+DEVICE
+    HVENT_1
+    0.0   0.0   0.0
+DEVICE
+    HVENT_2
+    0.0   0.0   0.0
+DEVICE
+    HVENT_3
+    0.0   0.0   0.0
+DEVICE
+    HVENT_4
+    0.0   0.0   0.0

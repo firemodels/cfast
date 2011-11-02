@@ -1,0 +1,30 @@
+VERSN,6,FM Test 5
+!!
+!!Environmental Keywords
+!!
+TIMES,900,-50,0,10,1
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+CHEMI,10,393.15
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,18.3,12.2,6.1,0,0,0,MariniteFM,ConcreteFM,MariniteFM
+!!
+!!vent keywords
+!!
+VVENT,2,1,1.08,2,1
+MVENT,2,1,1,H,4.9,0.66,H,4.9,0.66,3.78,200,300,1
+EVENT,M,2,1,1,540,0,1
+!!
+!!fire keywords
+!!
+OBJECT,FMSNL17,1,17.55,11.45,0,1,1,0,0,0,1
+!!
+!!target and detector keywords
+!!
+DETECT,1,1,347.04,3.05,6.1,5.98,100,0,7E-05
+DETECT,1,1,347.04,15.25,6.1,5.98,100,0,7E-05
+TARGET,1,12,6.1,5.66,0,0,-1,TC,IMPLICIT,ODE

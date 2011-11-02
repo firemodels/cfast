@@ -1,0 +1,64 @@
+Date stamp from CFAST initialization 2011/08/08    
+The project files are based on the root: MCC in Switchgear                                               
+Version 6.2.0 Created 2009/03/04
+***** Modify dassl tolerances with C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\solver.ini                                                                                                                                                                                     
+Opening a version  6 file in normal mode
+Key word TIMES parameter(s) = 3600      -300      0         10        10        
+Key word EAMB  parameter(s) = 293.15    101300    0         
+Key word TAMB  parameter(s) = 293.15    101300    0         50        
+Key word CJET  parameter(s) = WALLS     
+Ceiling jet calculation has been set:  T F T F T
+Key word CHEMI parameter(s) = 10        393.15    
+Key word WIND  parameter(s) = 0         10        0.16      
+Key word COMPA parameter(s) = Switchgear26.5      18.5      6.1       0         0         0         OFF       OFF       OFF       
+Compartment   1 Switchge   26.5  18.5   6.1   0.0   0.0   0.0 F F F F   OFF       OFF       OFF       OFF     
+Key word COMPA parameter(s) = Cabinet 1 18.5      1         2.4       4         6         0         CABSWSteelCABSWSteelCABSWSteel
+Compartment   2 Cabinet    18.5   1.0   2.4   4.0   6.0   0.0 T T T T   CABSWSte  CABSWSte  CABSWSte  CABSWSte
+Key word COMPA parameter(s) = Cabinet 2 18.5      1         2.4       4         9         0         CABSWSteelCABSWSteelCABSWSteel
+Compartment   3 Cabinet    18.5   1.0   2.4   4.0   9.0   0.0 T T T T   CABSWSte  CABSWSte  CABSWSte  CABSWSte
+Key word COMPA parameter(s) = Cabinet 3 18.5      1         2.4       4         12        0         CABSWSteelCABSWSteelCABSWSteel
+Compartment   4 Cabinet    18.5   1.0   2.4   4.0  12.0   0.0 T T T T   CABSWSte  CABSWSte  CABSWSte  CABSWSte
+Key word COMPA parameter(s) = Cable Tray24.5      0.8       0.2       1         9.1       3.9       CABSWPVC  CABSWPVC  CABSWPVC  
+Compartment   5 Cable Tr   24.5   0.8   0.2   1.0   9.1   3.9 T T T T   CABSWPVC  CABSWPVC  CABSWPVC  CABSWPVC
+Key word COMPA parameter(s) = Cable Tray24.5      0.8       0.2       1         9.1       4.4       CABSWPVC  CABSWPVC  CABSWPVC  
+Compartment   6 Cable Tr   24.5   0.8   0.2   1.0   9.1   4.4 T T T T   CABSWPVC  CABSWPVC  CABSWPVC  CABSWPVC
+Key word COMPA parameter(s) = Cable Tray24.5      0.8       0.2       1         9.1       4.9       CABSWPVC  CABSWPVC  CABSWPVC  
+Compartment   7 Cable Tr   24.5   0.8   0.2   1.0   9.1   4.9 T T T T   CABSWPVC  CABSWPVC  CABSWPVC  CABSWPVC
+Key word HVENT parameter(s) = 1         8         1         1.0922    0.0254    0         1         15.0114   15.0114   1         1         
+Key word HVENT parameter(s) = 1         8         2         1.0922    2         0.0254    1         15.0114   15.0114   4         0         
+Key word MVENT parameter(s) = 8         1         1         H         5.6       0.3       H         5.6       0.3       0.472     200       300       1         
+Key word MVENT parameter(s) = 8         1         2         H         5.6       0.3       H         5.6       0.3       0.472     200       300       1         
+Key word MVENT parameter(s) = 8         1         3         H         5.6       0.3       H         5.6       0.3       0.472     200       300       1         
+Key word MVENT parameter(s) = 1         8         4         H         5.6       0.3       H         5.6       0.3       0.472     200       300       1         
+Key word MVENT parameter(s) = 1         8         5         H         5.6       0.3       H         5.6       0.3       0.472     200       300       1         
+Key word MVENT parameter(s) = 1         8         6         H         5.6       0.3       H         5.6       0.3       0.472     200       300       1         
+Key word OBJEC parameter(s) = MCC 702 kW1         8.3       9.5       2.4       1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word DETEC parameter(s) = 2         1         303.15    6.6       9.4       6.039     5         0         7E-05     
+A type   2 detector has been placed in Switchgear Room                                                                                                                 
+Key word DETEC parameter(s) = 2         1         303.15    19.9      9.3       6.039     5         0         7E-05     
+A type   2 detector has been placed in Switchgear Room                                                                                                                 
+Key word (ext) TARGE parameter(s) = 1         8.3       7         2.4       0         1         0         CABSWSteelEXPLICIT  PDE       0.5       
+Key word TARGE parameter(s) = 1         8.3       7         2.4       0         1         0         CABSWSteelEXPLICIT  PDE       0.5       
+Key word TARGE parameter(s) = 1         8.3       7         2.4       0         1         0         CABSWSteelEXPLICIT  PDE       0.5       
+Key word (ext) TARGE parameter(s) = 1         8.3       12        2.4       0         -1        0         CABSWSteelIMPLICIT  PDE       0.5       
+Key word TARGE parameter(s) = 1         8.3       12        2.4       0         -1        0         CABSWSteelIMPLICIT  PDE       0.5       
+Key word TARGE parameter(s) = 1         8.3       12        2.4       0         -1        0         CABSWSteelIMPLICIT  PDE       0.5       
+Key word (ext) TARGE parameter(s) = 1         8.3       9.5       3.9       0         0         -1        CABSWPVC  EXPLICIT  CYL       0.2       
+Key word TARGE parameter(s) = 1         8.3       9.5       3.9       0         0         -1        CABSWPVC  EXPLICIT  CYL       0.2       
+Key word TARGE parameter(s) = 1         8.3       9.5       3.9       0         0         -1        CABSWPVC  EXPLICIT  CYL       0.2       
+Key word (ext) TARGE parameter(s) = 1         8.3       9.5       4.4       0         0         1         CABSWPVC  EXPLICIT  CYL       0.2       
+Key word TARGE parameter(s) = 1         8.3       9.5       4.4       0         0         1         CABSWPVC  EXPLICIT  CYL       0.2       
+Key word TARGE parameter(s) = 1         8.3       9.5       4.4       0         0         1         CABSWPVC  EXPLICIT  CYL       0.2       
+Key word (ext) TARGE parameter(s) = 1         8.3       9.5       4.9       0         0         1         CABSWPVC  EXPLICIT  CYL       0.2       
+Key word TARGE parameter(s) = 1         8.3       9.5       4.9       0         0         1         CABSWPVC  EXPLICIT  CYL       0.2       
+Key word TARGE parameter(s) = 1         8.3       9.5       4.9       0         0         1         CABSWPVC  EXPLICIT  CYL       0.2       
+Open the output file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.out
+Open the smokeview files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.smv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.plt
+Open the spreadsheet files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.n.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.f.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.s.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC in Switchgear.w.csv
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\MCC 702 kW.o                                                                                                                               
+Object MCC 702 kW position set to   8.300  9.500  2.400; Maximum HRR per m^3 is  1.893E+06
+Open the thermophysical properties file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Verification\NRC Users Guide\4 - MCC Fire in Switchgear\thermal.csv                                                                                                                                
+Initialize only
+Total execution time =   0.00     seconds
+Normal exit from CFAST

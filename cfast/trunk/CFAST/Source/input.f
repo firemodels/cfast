@@ -2059,6 +2059,7 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 	bfired(i) = rarray(i,4)
 	hfired(i) = rarray(i,5)
 	afired(i) = rarray(i,6)
+      if (afired(i).eq.0.0) afired(i) = 0.05D0
       OCRATI(I) = rarray(i,7)
 	hcratio(i) = rarray(i,8)
 	COCO2(I) = rarray(i,9)
@@ -2226,6 +2227,7 @@ C     CEILING JET (CJET)- walls, ceiling, all or off
 ! It only occurs for objects which are on the floor and ignite after t=0
          OHIGH(II,IOBJ) = rarray(ii+1,5)
          OAREA(II,IOBJ) = rarray(ii+1,6)
+         if (OAREA(II,IOBJ).eq.0.0) OAREA(II,IOBJ) = 0.05D0
          OOC(II,IOBJ) = rarray(ii+1,7)
          OHCR(II,IOBJ) = rarray(ii+1,8)
          OCO(II,IOBJ) = rarray(ii+1,9)

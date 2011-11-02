@@ -1802,7 +1802,8 @@ C     COMMAND LINE ARGUMENTS
 !     H to include the header in the output file
 !     D to turn on debugging writes
 !     T to output trace species mass
-!     G to output target fluxes relative to an ambient target (incident flux - sigma*eps*Tamb**4)
+!     V to output target fluxes relative to an ambient target (incident flux - sigma*eps*Tamb**4) and smoke in mg/m^3
+!     N to output just target fluxes relative to ambient (smoke still in OD)
 
       IF (cmdflag('H').NE.0) HEADER = .TRUE.
       IF (cmdflag('K').NE.0) NOKBD = .TRUE.
@@ -1810,6 +1811,7 @@ C     COMMAND LINE ARGUMENTS
 	IF (cmdflag('D').NE.0) DEBUGGING = .TRUE.
 	if (cmdflag('T').ne.0) trace = .true.
 	if (cmdflag('V').ne.0) validate = .true.
+      if (cmdflag('N').ne.0) netheatflux = .true.
       LOGERR = 3
 
       IF (cmdflag('F').ne.0.and.cmdflag('C').ne.0) stop 107

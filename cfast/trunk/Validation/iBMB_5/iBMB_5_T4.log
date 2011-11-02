@@ -1,0 +1,119 @@
+Date stamp from CFAST initialization 2011/11/01    
+The project files are based on the root: iBMB_5_T4                                                       
+Version 6.2.0 Created 2011/10/31
+***** Modify dassl tolerances with C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\bin\solver.ini                                                                                                                                                                                     
+Opening a version  6 file in normal mode
+Key word TIMES parameter(s) = 2300      -10       0         10        1         
+Key word EAMB  parameter(s) = 293.15    101300    0         
+Key word TAMB  parameter(s) = 293.15    101300    0         50        
+Key word LIMO2 parameter(s) = 10        
+Key word WIND  parameter(s) = 0         10        0.16      
+Key word CJET  parameter(s) = WALLS     
+Ceiling jet calculation has been set:  T F T F T
+Key word COMPA parameter(s) = Compartmen3.6       3.6       5.6       0         0         0         LiteConcBELiteConcBEConcreteBE
+Compartment   1 Compartm    3.6   3.6   5.6   0.0   0.0   0.0 T T T T   LiteConc  LiteConc  Concrete  Concrete
+Key word HVENT parameter(s) = 1         2         1         0.7       3.6       1.4       1         1.8       1.8       1         1         
+Key word HVENT parameter(s) = 1         2         2         0.6       1.4       0.7       1         1.8       1.8       2         1         
+Key word OBJEC parameter(s) = iBMB_5_4F 1         3.05      1.75      0.6       1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word OBJEC parameter(s) = iBMB_5_4B 1         0.6       2.1       0.4       1         1         0         0         0         1         
+Plume model for this fire: McCaffrey 
+Key word TARGE parameter(s) = 1         0.41      2.13      1.2       1         0         0         LiteConcBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.41      2.13      2         1         0         0         LiteConcBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.41      2.13      2.8       1         0         0         LiteConcBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.41      2.13      3.6       1         0         0         LiteConcBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.41      2.13      4.4       1         0         0         LiteConcBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      1.2       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      1.6       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      2         1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      2.4       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      2.8       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      3.2       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      3.6       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      4         1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.24      4.4       1         0         0         PVC_P_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      1.2       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      1.6       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      2         1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      2.4       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      2.8       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      3.2       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      3.6       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      4         1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0.44      2.05      4.4       1         0         0         PVC_C_BE4 IMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         2.6       3.6       0.4       0         -1        0         ConcreteBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         2.6       3.6       2.8       0         -1        0         ConcreteBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         2.6       3.6       5.2       0         -1        0         ConcreteBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0         2.2       0.4       1         0         0         ConcreteBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0         2.2       2.8       1         0         0         ConcreteBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Key word TARGE parameter(s) = 1         0         2.2       5.2       1         0         0         ConcreteBEIMPLICIT  PDE       
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Error for key word: TARGE Required count = 11 and there were only 10 entries
+Open the output file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4.out
+Open the smokeview files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4.smv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4.plt
+Open the spreadsheet files - C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4_n.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4_f.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4_s.csv  C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_T4_w.csv
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_4F.o                                                                                                                                                                      
+>>>Old fire object format - please update, count = 13
+Object iBMB_5_4F position set to   3.050  1.750  0.600; Maximum HRR per m^3 is  5.879E+05
+Open the object fire file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\iBMB_5_4B.o                                                                                                                                                                      
+>>>Old fire object format - please update, count = 13
+Object iBMB_5_4B position set to   0.600  2.100  0.400; Maximum HRR per m^3 is  1.996E+06
+Open the thermophysical properties file C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Validation\iBMB_5\thermal.csv                                                                                                                                                                      
+Total execution time =   7.14     seconds
+Normal exit from CFAST

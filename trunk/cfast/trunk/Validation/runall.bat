@@ -144,6 +144,9 @@ cd ..\..\
 cd FM_SNL\Test_21
 ..\..\..\bin\cfast FMSNL_21 /V
 cd ..\..\
+cd FM_SNL\Test_22
+..\..\..\bin\cfast FMSNL_22 /V
+cd ..\..\
 echo NBS Tests MV100A, MV100O, MV100Z
 cd NBS\MV100A
 ..\..\..\bin\cfast MV100A /V

@@ -14,7 +14,7 @@ ConcreteBE4,2.1,880,2400,0.25,0.95,0,0,0,0,0,0,0,Concrete ICFMP BE4 and BE5
 LiteConcBE4,0.11,1350,420,0.3,0.95,0,0,0,0,0,0,0,Lightweight Concrete ICFMP BE4 and BE5
 PVC_P_BE4,0.134,1586,1380,0.015,0.8,0,0,0,0,0,0,0,PVC Power Cable BE4
 PVC_C_BE4,0.134,1586,1380,0.007,0.8,0,0,0,0,0,0,0,PVC Control Cable BE4
-MariniteFM,0.12,1250,720,0.025,0.95,0,0,0,0,0,0,0,Marinite FMSNL
+MariniteFM,0.23,1160,1000,0.025,0.95,0,0,0,0,0,0,0,Marinite FMSNL
 ConcreteFM,1.8,1040,2280,0.15,0.95,0,0,0,0,0,0,0,Concrete FMSNL
 FireBrickNBS,0.36,1040,750,0.113,0.8,0,0,0,0,0,0,0,Fire Brick NBS
 CeramicNBS,0.09,1040,128,0.05,0.97,0,0,0,0,0,0,0,Ceramic Fiber NBS

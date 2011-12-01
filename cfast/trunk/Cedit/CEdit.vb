@@ -5176,7 +5176,13 @@ Public Class CeditMain
         Dim aDetector As New Target
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then
             aDetector = myDetectors.Item(CurrentDetector)
-            If sender Is Me.DetectorType Then aDetector.DetectorType = Me.DetectorType.SelectedIndex
+            If sender Is Me.DetectorType Then
+                aDetector.DetectorType = Me.DetectorType.SelectedIndex
+                If aDetector.DetectorType = Target.TypeSmokeDetector Then
+                    aDetector.ActivationTemperature = Target.SmokeDetectorActivationTemperature
+                    aDetector.RTI = Target.SmokeDetectorRTI
+                End If
+            End If
             If sender Is Me.DetectorComp Then aDetector.Compartment = Me.DetectorComp.SelectedIndex - 1
             If sender Is Me.DetectorActivation Then aDetector.ActivationTemperature = Val(Me.DetectorActivation.Text)
             If sender Is Me.DetectorXPosition Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)

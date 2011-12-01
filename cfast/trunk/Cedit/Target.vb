@@ -3,6 +3,7 @@ Public Class Target
     Friend Const TypeTarget As Integer = 0
     Friend Const TypeDetector As Integer = 1
     Friend Const SmokeDetectorActivationTemperature As Single = 25.0 ' Smoke detector simulated as a heat detector with 5 °C rise trigger
+    Friend Const SmokeDetectorRTI As Single = 5.0                    ' Smoke detector simulated as a heat detector with RTI = 5 
     Friend Const Implicit As Integer = 0
     Friend Const Explicit As Integer = 1
     Friend Const Steady As Integer = 2
@@ -325,6 +326,7 @@ Public Class Target
             Me.Compartment = index
             Me.DetectorType = TypeSmokeDetector
             Me.ActivationTemperature = SmokeDetectorActivationTemperature
+            Me.RTI = SmokeDetectorRTI
             If Me.XPosition = -1 Then Me.XPosition = aCompartment.RoomWidth / 2
             If Me.YPosition = -1 Then Me.YPosition = aCompartment.RoomDepth / 2
             If Me.ZPosition = -1 Then Me.ZPosition = aCompartment.RoomHeight

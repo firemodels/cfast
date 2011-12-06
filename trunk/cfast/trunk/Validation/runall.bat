@@ -87,6 +87,9 @@ echo FM SNL Tests
 cd FM_SNL\Test_1
 ..\..\..\bin\cfast FMSNL_1 /V
 cd ..\..\
+cd FM_SNL\Test_2
+..\..\..\bin\cfast FMSNL_2 /V
+cd ..\..\
 cd FM_SNL\Test_3
 ..\..\..\bin\cfast FMSNL_3 /V
 cd ..\..\

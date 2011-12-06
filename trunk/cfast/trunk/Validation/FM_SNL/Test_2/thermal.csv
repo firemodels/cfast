@@ -1,0 +1,5 @@
+!!Short Name,Conductivity,Specific Heat,Density,Thickness,Emissivity,HCl Coefficients,,,,,,,Long Name
+METHANE,0.07,1090,930,0.0127,0.04,0,0,0,0,0,0,0,"Methane, a transparent gas (CH4)"
+MariniteFM,0.23,1160,1000,0.025,0.95,0,0,0,0,0,0,0,Marinite FMSNL
+ConcreteFM,1.8,1040,2280,0.15,0.95,0,0,0,0,0,0,0,Concrete FMSNL
+TC,54,425,7850,0.001,0.95,0,0,0,0,0,0,0,Thermocouple (small steel target for plume temp)

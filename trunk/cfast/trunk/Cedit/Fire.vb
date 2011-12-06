@@ -31,7 +31,7 @@ Public Class Fire
     Private Const MaxMdot As Single = 1500.0
     Private Const MaxCO As Single = 0.4
     Private Const MaxSoot As Single = 99.0
-    Private Const MaxHC As Single = 1.0 / 3.0
+    Private Const MaxHC As Single = 4.03176 / 12.0107
     Private Const MaxO2 As Single = 99.0
     Private Const MaxHCN As Single = 1.0
     Private Const MaxHCl As Single = 1.0
@@ -634,7 +634,7 @@ Public Class Fire
                         HasErrors += 1
                     End If
                     If aHeatofCombustion < MinHeatofCombustion Or aHeatofCombustion > MaxHeatofCombustion Then
-                        myErrors.Add("Fire Object " + aName + " has a heat of COmbustion less than " + MinHeatofCombustion.ToString + _
+                        myErrors.Add("Fire Object " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
                             " J/kg or greater than " + MaxHeatofCombustion.ToString + " J/kg.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
@@ -681,7 +681,7 @@ Public Class Fire
                                             HasErrors += 1
                                         End If
                                     Case FireArea
-                                        If aFireTimeSeries(FireArea, ir) <= 0.0 Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
+                                        If (aFireTimeSeries(FireArea, ir) < 0.0 And aFireTimeSeries(FireHRR, ir) <> 0.0) And aFireTimeSeries(FireArea, ir) < 0.0 Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
                                             FireCurveErrors(FireArea) = True
                                             HasErrors += 1
                                         End If

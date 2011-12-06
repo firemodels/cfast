@@ -165,7 +165,79 @@ A single nozzle was used to spray liquid hydrocarbon fuels onto a 1 m by 2 m fir
 
 \section{FM/SNL Test Series}
 
-The Factory Mutual and Sandia National Laboratories (FM/SNL) Test Series was a series of 25 fire tests conducted in 1985 for the NRC by Factory Mutual Research Corporation (FMRC), under the direction of Sandia National Laboratories (SNL).  The primary purpose of these tests was to provide data with which to validate computer models for various types of NPP compartments.  The experiments were conducted in an enclosure measuring 18 m x 12 m x 6 m, constructed at the FMRC fire test facility in Rhode Island.  Figure \ref{fig:FMSNL_Detailed} shows detailed schematic drawings of the compartment from various perspectives.  The FM/SNL test series is described in detail, including the types and locations of measurement devices, as well as some results in References \cite{Nowlen:1987, Sandia:1989}.
+The Factory Mutual and Sandia National Laboratories (FM/SNL) Test Series was a series of 25 fire tests conducted in 1985 for the NRC by Factory Mutual Research Corporation (FMRC), under the direction of Sandia National Laboratories (SNL).  The primary purpose of these tests was to provide data with which to validate computer models for various types of NPP compartments.  The experiments were conducted in an enclosure measuring 18 m x 12 m x 6 m, constructed at the FMRC fire test facility in Rhode Island.  Figure \ref{fig:FMSNL_Detailed} shows detailed schematic drawings of the compartment from various perspectives.  The FM/SNL test series is described in detail, including the types and locations of measurement devices, as well as some results in References \cite{Nowlen:1987, Sandia:1989}.  Six of
+the experiments were conducted with a full-scale control room mock-up in place. Parameters varied
+during the experiments included fire intensity, enclosure ventilation rate, and fire location.
+The current guide uses data from nineteen experiments (Tests 1-17, 21, and 22).
+In these tests,  propylene gas burners, heptane pools, and methanol pools were used as fire sources.
+Table~\ref{FM_SNL_Matrix} lists the test parameters.
+
+The following information was provided by the test director,
+Steve Nowlen of Sandia National Laboratory. In particular, Tests 4, 5, and 21 were given extra attention.
+\begin{description}
+\item[Heat Release Rate:] The HRR was determined using oxygen consumption calorimetry in the exhaust stack with
+a correction applied for the carbon dioxide in the upper layer of the compartment. The
+uncertainty of the fuel mass flow was not documented. Several tests selected for this study had
+the same target peak heat release rate of 516~kW following a 4~min ``t-squared'' growth
+profile. The test report contains time histories of the measured HRR, for which the average,
+sustained HRR following the ramp up for Tests 4, 5, and 21 have been estimated as 510~kW, 480~kW, and 470~kW, respectively.
+Once reached, the peak HRR was maintained essentially constant
+during a steady-burn period of 6~min in Tests~4 and 5, and 16~min in Test~21. Note that in Test 21, Nowlen reports a
+``significant'' loss of effluent from the exhaust hood that could lead to an under-estimate of the HRR towards the end of the experiment.
+\item[Radiative Fraction:] The radiative fraction was not measured during the experiment, but
+in this study it is assumed to equal 0.35, which is typical for a smoky hydrocarbons.
+It was further assumed that the radiative fraction was about the same in
+Test~21 as the other tests, as fuel burning must have occurred outside of the electrical cabinet in
+which the burner was placed.
+\item[Measurements:] Four types of measurements were conducted during the FM/SNL test series that are used in the
+current model evaluation study, including the HGL temperature and depth, and the ceiling jet and
+plume temperatures. Aspirated thermocouples (TCs) were used to make all of the temperature
+measurements. Generally, aspirated TC measurements are preferable to bare-bead TC measurements,
+as systematic radiative exchange measurement error is reduced.
+\item[HGL Depth and Temperature:] Data from all of the vertical TC trees were used when reducing
+the HGL height and temperature. For the majority of the tests, Sectors 1, 2, and 3 were used,
+all weighted evenly. For Tests 21 and 22, Sectors 1 and 3 were used, evenly weighted. Sector 2 was
+partially within the fire plume.
+\end{description}
+
+
+
+\begin{table}[h!]
+\caption{Summary of FM/SNL Experiments.}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Test    &  Fuel             & Nominal Peak  & Fire          & Ventilation       & Room                  & Used in  \\
+No.     &  Type             & HRR (kW)      & Position      & Rate (ach)        & Configuration         & Guide?      \\ \hline \hline
+1       & Propylene Burner  &     516       & Center        & 10                & Empty                 &        Yes \\ \hline
+2       & Propylene Burner  &     516       & Center        & 10                & Empty                 &        Yes \\ \hline
+3       & Propylene Burner  &    2000       & Center        & 10                & Empty                 &        Yes \\ \hline
+4       & Propylene Burner  &     516       & Center        & 1                 & Empty                 &        Yes \\ \hline
+5       & Propylene Burner  &     516       & Center        & 10                & Empty                 &        Yes \\ \hline
+6       & Heptane Pool      &     500       & Wall          & 1                 & Empty                 &        Yes \\ \hline
+7       & Propylene Burner  &     516       & Center        & 1                 & Empty                 &        Yes \\ \hline
+8       & Propylene Burner  &    1000       & Center        & 1                 & Empty                 &        Yes \\ \hline
+9       & Propylene Burner  &    1000       & Center        & 8                 & Empty                 &        Yes \\ \hline
+10      & Heptane Pool      &    1000       & Wall          & 4.4               & Empty                 &        Yes \\ \hline
+11      & Methanol Pool     &     500       & Wall          & 4.4               & Empty                 &        Yes \\ \hline
+12      & Heptane Pool      &    2000       & Wall          & 4.4               & Empty                 &        Yes \\ \hline
+13      & Heptane Pool      &    2000       & Wall          & 8                 & Empty                 &        Yes \\ \hline
+14      & Methanol Pool     &     500       & Wall          & 1                 & Empty                 &        Yes \\ \hline
+15      & Heptane Pool      &    1000       & Wall          & 1                 & Empty                 &        Yes \\ \hline
+16      & Heptane Pool      &    2000       & Corner        & 1                 & Empty                 &        Yes \\ \hline
+17      & Heptane Pool      &    2000       & Corner        & 10                & Empty                 &         No \\ \hline
+18      &  PMMA Slab        &    1000       & Wall          & 1                 & Empty                 &         No \\ \hline
+19      & Heptane Pool      &    1000       & Center        & 1                 & Furnished             &         No \\ \hline
+20      & Heptane Pool      &    1000       & Corner        & 8                 & Furnished             &        Yes \\ \hline
+21      & Propylene Burner  &     500       & Cabinet       & 1                 & Furnished             &        Yes \\ \hline
+22      & Propylene Burner  &    1000       & Cabinet       & 1                 & Furnished             &         No \\ \hline
+23      & Qualified Cable   &        N/A    & Cabinet       & 1                 & Furnished             &         No \\ \hline
+24      & Unqualified Cable &        N/A    & Cabinet       & 1                 & Furnished             &         No \\ \hline
+25      & Unqualified Cable &        N/A    & Cabinet       & 8                 & Furnished             &         No \\ \hline
+\end{tabular}
+\end{center}
+\label{FM_SNL_Matrix}
+\end{table}
 
 \begin{figure}
 \begin{center}
@@ -175,11 +247,7 @@ The Factory Mutual and Sandia National Laboratories (FM/SNL) Test Series was a s
  \label{fig:FMSNL_Detailed}
 \end{figure}
  
-All of the tests involved forced ventilation to simulate typical nuclear power plant installation practices.  Four of the tests were conducted with a full scale control room mockup in place.  Parameters varied during the experiments included fire HRR, enclosure ventilation rate, and fire location. 
- 
-Data from three of these experiments (Tests 4, 5, and 21) were used since these tests were documented far more completely than other tests in the series. In these tests, the fire source was a 0.91 m diameter propylene gas burner. For Tests 4 and 5, the burner was centered along the longitudinal axis centerline, 6.1 m laterally from the nearest wall, and the burner rim was located approximately 0.1 m above the floor.  For Test 21, the fire source was placed within a simulated benchboard electrical cabinet.
- 
- The value of heat release rate was determined using oxygen consumption calorimetry in the exhaust stack with a correction applied for the CO$_2$ in the upper layer of the compartment.  The uncertainty of the fuel mass flow was not documented. All three tests selected for this study had the same target peak heat release rate of 516 kW.  A 4 min “t-squared” growth profile preceded the target heat release rate. The test report contains time histories of the measured  heat release rate, for which the average sustained  heat release rate following the ramp up for Tests 4, 5, and 21 have been estimated as 510 kW, 480 kW, and 470 kW, respectively.   Once reached, the peak  heat release rate was maintained essentially constant during a steady burn period of 6 min in Tests 4 and 5, and 16 min in Test 21.   Figure \ref{fig:FMSNL_HRR} shows the specified and the measured   \cite {Nowlen:1987} heat release rate as a function of time during Test 21 of the FM/SNL test series. The specified curves are used in the model calculations rather than the measured time-dependent curves, because the fuel flow was maintained a constant and fluctuations in the heat release rate are expected from calorimetry measurements.  Also, there was some concern with the quality of the heat release rate measurement as the test report notes that during Tests 4, 5, and 21 there was a downward bias in the measured  values due to “significant” loss of effluent from the exhaust hood. This bias was treated as an additional uncertainty, and the relative combined expanded uncertainty was assumed to equal $\pm$ 20 \% \cite{NRCNUREG1824Experimental}, which is somewhat larger than typical calorimetric measurement uncertainty.  The radiative fraction was not measured during the experiment, but in this study it is assumed to equal 0.35, which is typical for a smoky hydrocarbons \cite{Tewarson:1986, Tewarson:2003}.  The expanded uncertainty in this value was taken as $\pm$ 20 \% \cite{NRCNUREG1824Experimental}, a value typical of reported uncertainty \cite{Hamins:2003, Hamins:1991}.  It was further assumed that the radiative fraction was about the same in Test 21 as the other tests, as fuel burning occurred outside of the electrical cabinet in which the burner was placed.  
+All of the tests involved forced ventilation to simulate typical nuclear power plant installation practices.   
 
 \begin{figure}[\figoptions{t}]
 \begin{center}
@@ -188,12 +256,6 @@ Data from three of these experiments (Tests 4, 5, and 21) were used since these 
 \caption{Prescribed (dotted line) and measured (solid line) heat release rate as a function of time during Test 21 of the FM/SNL test series}
  \label{fig:FMSNL_HRR}
 \end{figure}
-
-Four types of measurements were conducted during the FM/SNL test series that are used in the current model evaluation study, including the hot gas layer temperature and depth, and the ceiling jet and plume temperatures.  Aspirated thermocouples were used to make all of the temperature measurements.  Generally, aspirated thermocouple (TC) measurements are preferable to bare-bead TC measurements, as systematic radiative exchange measurement error is reduced \cite{NRCNUREG1824Experimental}.  For the relatively low temperatures observed ($<$100 $^\circ$C), however, the differences are expected to be small \cite{NRCNUREG1824Experimental}.  
-
-Aspirated thermocouple measurements for the range of temperatures measured are typically accurate to a few degrees ($^\circ$C) \cite{NRCNUREG1824Experimental}.  The temperatures were measured using the aspirated thermocouples in Sectors 1, 2 and 3 of the compartment.  In addition, there were some near-ceiling TCs placed directly above the burner in Tests 4 and 5.  
-
-Data from all of the vertical thermocouple trees were used when reducing the HGL height and temperature. For the FM/SNL Tests 4 and 5, Sectors 1, 2, and 3 were used, all weighted evenly \cite{NRCNUREG1824Experimental}.  For Test 21, Sectors 1 and 3 were used, evenly weighted. Sector 2 was partially within the fire plume in Test 21 and was not used in the calculation of hot gas layer temperature \cite{NRCNUREG1824Experimental}.
 
 \section{iBMB Compartment Tests}
 

@@ -179,8 +179,8 @@ Module IO
             csv.CSVrow(i) = """" + dataFileHeader.Item(j) + """"
             i += 1
         Next
-        'comment for environmental section
-        AddHeadertoOutput(csv, i, "Environmental Keywords")
+        'comment for configuration section
+        AddHeadertoOutput(csv, i, "Scenario Configuration Keywords")
         'Time line
         csv.str(i, CFASTlnNum.keyWord) = "TIMES"
         csv.Num(i, timesNum.simTime) = myEnvironment.SimulationTime
@@ -297,7 +297,7 @@ Module IO
             End If
         Next
         'comment header for vents
-        If myVVents.Count > 0 Or myHVents.Count > 0 Or myMVents.Count > 0 Then AddHeadertoOutput(csv, i, "vent keywords")
+        If myVVents.Count > 0 Or myHVents.Count > 0 Or myMVents.Count > 0 Then AddHeadertoOutput(csv, i, "Vent keywords")
         Dim aVent As Vent
         'horizontal flow
         For j = 0 To myHVents.Count - 1
@@ -428,7 +428,7 @@ Module IO
             End If
         Next
         'comment header for fire keywords
-        If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "fire keywords")
+        If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "Fire keywords")
         'mainf
         Dim aFire As New Fire
         For j = 0 To myFires.Count - 1
@@ -465,7 +465,7 @@ Module IO
             End If
         Next
         'comment header for heat transfer section
-        If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "heat flow keywords")
+        If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
         'HHeat and VHeat
         For j = 0 To myHHeats.Count - 1
             aVent = myHHeats.Item(j)
@@ -494,7 +494,7 @@ Module IO
             i += 1
         Next
         'comment header of targets and detectors
-        If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "target and detector keywords")
+        If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "Target and detector keywords")
         'detectors
         Dim aDetect As New Target
         For j = 0 To myDetectors.Count - 1
@@ -552,7 +552,7 @@ Module IO
         Next
         'comment header of misc.
         If myEnvironment.MaximumTimeStep > 0 Or myThermalProperties.FileName <> "thermal" Then _
-            AddHeadertoOutput(csv, i, "misc. stuff")
+            AddHeadertoOutput(csv, i, "Misc. stuff")
         'stepmax
         If myEnvironment.MaximumTimeStep > 0 Then
             csv.str(i, CFASTlnNum.keyWord) = "STPMAX"
@@ -560,7 +560,7 @@ Module IO
             i += 1
         End If
         'thermf
-        If myThermalProperties.FileName <> "thermal" Then
+        If myThermalProperties.FileName <> "Thermal" Then
             csv.str(i, CFASTlnNum.keyWord) = "THRMF"
             csv.str(i, 2) = myThermalProperties.FileName
             i += 1

@@ -78,7 +78,7 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
 
 ! compute entrained vent flow
 
-    call entrain(toroom,slab_flow,entrain_flow,dummy_flow,p_ventflow)
+    call v_entrain(toroom,slab_flow,entrain_flow)
 
 ! put slab flow into "to" flow according to slab temperature
 

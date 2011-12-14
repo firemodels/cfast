@@ -24,7 +24,7 @@ module zonedata
     real(kind=dd) :: mtotal, qtotal, qconvec, qrad, chi_rad
     real(kind=dd), pointer, dimension(:) :: times, q_pyrol
 	  integer :: npoints
-    type(flow_data) :: fire_flow, entrainl_flow, entrainu_flow, plume_flow                    
+    type(flow_data) :: fire_flow, entrain_flow, plume_flow                    
   end type fire_data
 
   type wall_data
@@ -290,14 +290,33 @@ end module zonedata
 
 module zoneinterfaces
   interface
-    subroutine entrain(flowroom,source_flow,entrainl_flow,entrainu_flow,flowtype)
+    subroutine f_entrain(flowroom,fire)
     use precision
     use zonedata
     implicit none
     type(room_data), pointer :: flowroom
-    type(flow_data), pointer :: source_flow, entrainl_flow, entrainu_flow
-    integer, intent(in) :: flowtype
-    end subroutine entrain
+    type(fire_data), pointer :: fire
+    end subroutine f_entrain
+  end interface
+  interface
+    subroutine setfire(qtotal,fire)
+      use precision
+      use zonedata
+      implicit none
+
+      real(kind=dd), intent(in) :: qtotal
+      type(fire_data), pointer :: fire
+    end subroutine setfire
+  end interface
+
+  interface
+    subroutine v_entrain(flowroom,source_flow,entrain_flow)
+    use precision
+    use zonedata
+    implicit none
+    type(room_data), pointer :: flowroom
+    type(flow_data), pointer :: source_flow, entrain_flow
+    end subroutine v_entrain
   end interface
   interface
     subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)

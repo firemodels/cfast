@@ -17,8 +17,8 @@ subroutine fireflow
   do ifire = 1, nfires
     fire => fires(ifire)
     iroom = fire%room_number
-    fflow(iroom,lower) = fflow(iroom,lower) - fire%entrainl_flow
-    fflow(iroom,upper) = fflow(iroom,upper) + fire%plume_flow
+    fflow(iroom,lower) = fflow(iroom,lower) - fire%entrain_flow
+    fflow(iroom,upper) = fflow(iroom,upper) + fire%entrain_flow + fire%fire_flow
   end do
 end subroutine fireflow
 
@@ -32,11 +32,9 @@ subroutine getfires
   integer :: ifire
   type(fire_data), pointer :: fire
   type(room_data), pointer :: fireroom
-  type(flow_data), pointer :: fire_flow, entrainl_flow, entrainu_flow, plume_flow
+  type(flow_data), pointer :: fire_flow, entrain_flow, plume_flow
   real(kind=dd), pointer :: mfire, qfire
-  real(kind=dd) :: qqfire, qqofire
-  real(kind=dd) :: tentrain, zlength, qtotal
-  real(kind=dd) :: o2lfrac, o2lindex, o2ufrac, o2uindex
+  real(kind=dd) :: tentrain, zlength
 ! compute fire flow
 
    do ifire = 1, nfires
@@ -47,53 +45,27 @@ subroutine getfires
 	   tentrain = fireroom%layer(lower)%temperature
 	   zlength = fireroom%rel_layer_height
 	   fire_flow => fire%fire_flow
-	   entrainl_flow => fire%entrainl_flow
-	   entrainu_flow => fire%entrainu_flow
+	   entrain_flow => fire%entrain_flow
 	   plume_flow => fire%plume_flow
 
 	   if(mfire.eq.0.0_dd)then
        fire_flow%zero = .true.
-       entrainl_flow%zero = .true.
-       entrainu_flow%zero = .true.
+       entrain_flow%zero = .true.
        plume_flow%zero = .true.
 	     cycle
-	    else
-       fire_flow%zero = .false.
-       entrainl_flow%zero = .false.
-       entrainu_flow%zero = .false.
-       plume_flow%zero = .false.
 	   endif
+
+     fire_flow%zero = .false.
+     entrain_flow%zero = .false.
+     plume_flow%zero = .false.
 
 	   fire_flow%rel_height = fire%z0
 	   fire_flow%abs_height = fire%z0 + rooms(fire%room_number)%z0
 
 ! compute entrainment flow
 
-	   call entrain(fireroom,fire_flow,entrainl_flow,entrainu_flow,p_fireflow)
-     if(solveoxy.and.(.not.entrainl_flow%zero.or..not.entrainu_flow%zero))then
-       qqfire = fire_flow%qtotal
-       o2lfrac=fireroom%layer(lower)%s_con(oxygen)
-       o2ufrac=fireroom%layer(upper)%s_con(oxygen)
-
-       o2lindex = 0.50_dd*(tanh(800.0_dd*(o2lfrac-o2limit)-4.0_dd)+1.0_dd)
-       o2uindex = 0.50_dd*(tanh(800.0_dd*(o2ufrac-o2limit)-4.0_dd)+1.0_dd)
-       qqofire =           heat_o2*entrainl_flow%sdot(oxygen)*o2lindex
-       qqofire = qqofire + heat_o2*entrainu_flow%sdot(oxygen)*o2uindex
-       qtotal = min(qqfire,qqofire)
-       if(qqofire.lt.qqfire)then
-         call setfire(qtotal,ifire)
-         call entrain(fireroom,fire_flow,entrainl_flow,entrainu_flow,p_fireflow)
-         qqfire = fire_flow%qtotal
-         qqofire = heat_o2*entrainl_flow%sdot(oxygen)*o2lindex
-         qqofire = qqofire + heat_o2*entrainu_flow%sdot(oxygen)*o2uindex
-         qtotal = min(qqfire,qqofire)
-         call setfire(qtotal,ifire)
-       endif
-       fire_flow%sdot(oxygen) = -fire%qtotal/heat_o2
-     endif
-     fire_flow%temperature = qfire/(cp*mfire)
-     fire_flow%density=fireroom%abs_pressure/(rgas*fire_flow%temperature)
-	   plume_flow = fire_flow + entrainl_flow
+	   call f_entrain(fireroom,fire)
+	   plume_flow = fire_flow + entrain_flow
    end do
 
 end subroutine getfires
@@ -103,6 +75,7 @@ end subroutine getfires
 subroutine setfireflow(tsec)
   use precision
   use zonedata
+  use zoneinterfaces
   implicit none
   real(kind=dd), intent(in) :: tsec
   real(kind=dd) :: qtotal
@@ -121,7 +94,7 @@ subroutine setfireflow(tsec)
      elseif(fire%type.eq.general)then
       call interp(tsec,fire%times,fire%q_pyrol,fire%npoints,qtotal)
     endif
-    call setfire(qtotal,ifire)
+    call setfire(qtotal,fire)
   end do
 
   return
@@ -129,18 +102,16 @@ end subroutine setfireflow
 
 ! --------------- setfire ----------------------
 
-subroutine setfire(qtotal,ifire)
+subroutine setfire(qtotal,fire)
   use precision
   use zonedata
   implicit none
 
   real(kind=dd), intent(in) :: qtotal
-  integer, intent(in) :: ifire
 
   type(fire_data), pointer :: fire
   type(flow_data), pointer :: fire_flow
 
-  fire => fires(ifire)
   fire_flow => fire%fire_flow
 
 
@@ -154,127 +125,188 @@ subroutine setfire(qtotal,ifire)
   fire_flow%qtotal = fire%qtotal
   fire_flow%temperature = fire%qconvec/cp/fire%mtotal
   fire_flow%density = pabs_ref/rgas/fire_flow%temperature
+  if(solveoxy)fire_flow%sdot(oxygen) = -qtotal/heat_o2
 
   return
 end subroutine setfire
 
 ! --------------- entrain ----------------------
 
-subroutine entrain(flowroom,source_flow,entrainl_flow,entrainu_flow,flowtype)
+subroutine f_entrain(flowroom,fire)
   use precision
   use zonedata
   use zoneinterfaces
   implicit none
 
   type(room_data), pointer :: flowroom
-  type(flow_data), pointer :: source_flow, entrainl_flow, entrainu_flow
-  integer, intent(in) :: flowtype
+  type(flow_data), pointer :: fire_flow, entrain_flow
+  type(fire_data), pointer :: fire
 
-  real(kind=dd) :: qsource,msource,zl,zu
-  real(kind=dd) :: mentrain, maxentrain, qentrain, muentrain, quentrain
-  type(zone_data), pointer :: entrainsourcelayer, entraindestlayer
-  real(kind=dd) :: tsource, tdest, tentrain, tuentrain, oentrain
-  real(kind=dd) :: base, exponent, baseu, exponentu, oxysource
+  real(kind=dd) :: qtotal,qfire,mfire,zl,zu
+  real(kind=dd) :: mentrain, maxentrain, qentrain, muentrain
+  type(zone_data), pointer :: lowerlayer, upperlayer
+  real(kind=dd) :: tfire, tupper, tentrain
+  real(kind=dd) :: oxyl, oxyu
+  real(kind=dd) :: qtotal_oxy, qfire_new, relerror, dmldq, dmudq
+  integer :: i, numiters
 
-  zl = flowroom%rel_layer_height - source_flow%rel_height
-  if(zl.gt.0)then
-    entrainsourcelayer => flowroom%layer(lower)
-    entraindestlayer => flowroom%layer(upper)
-    entrainl_flow%fromlower = .true.
-    entrainl_flow%fromupper = .false.
-   else
-    entrainsourcelayer => flowroom%layer(upper)
-    entraindestlayer => flowroom%layer(lower)
-    entrainl_flow%fromlower = .false.
-    entrainl_flow%fromupper = .true.
+  fire_flow => fire%fire_flow
+  entrain_flow => fire%entrain_flow
+  zl = max(0.0_dd,flowroom%rel_layer_height - fire_flow%rel_height)
+  zu = flowroom%dz - fire_flow%rel_height
+
+  entrain_flow%fromlower = .true.
+  entrain_flow%fromupper = .false.
+  lowerlayer => flowroom%layer(lower)
+  upperlayer => flowroom%layer(upper)
+
+  tentrain = lowerlayer%temperature
+  tupper = upperlayer%temperature
+  tfire = fire_flow%temperature
+
+  qfire = fire_flow%qdot
+  mfire = fire_flow%mdot
+
+  entrain_flow%zero = .false.
+  call entrainfl(zl,qfire,mentrain,dmldq)
+  numiters = 0
+  if(solveoxy)then
+    oxyl = lowerlayer%s_con(oxygen)
+    oxyl = oxyl*0.50_dd*(tanh(800.0_dd*(oxyl-o2limit)-4.0_dd)+1.0_dd)
+    qtotal = fire_flow%qtotal
+    qtotal_oxy = heat_o2*oxyl*mentrain
+    if(qtotal_oxy.lt.qtotal)then
+      oxyu = upperlayer%s_con(oxygen)
+      oxyu = oxyu*0.50_dd*(tanh(800.0_dd*(oxyu-o2limit)-4.0_dd)+1.0_dd)
+      call entrainfl(zu,qfire,muentrain,dmudq)
+      muentrain = muentrain - mentrain  
+      qtotal_oxy = heat_o2*(oxyl*mentrain + oxyu*muentrain)
+      qfire_new = (1.0_dd-fire%chi_rad)*qtotal_oxy
+      if(qtotal_oxy.lt.qtotal)then
+        do i = 1, 5
+          numiters = i
+          qfire = qfire_new
+          call entrainfl(zl,qfire,mentrain,dmldq)
+          call entrainfl(zu,qfire,muentrain,dmudq)
+          muentrain = muentrain - mentrain
+          dmudq = dmudq - dmldq  
+          qtotal_oxy = heat_o2*(oxyl*mentrain+oxyu*muentrain) 
+          qtotal = qtotal_oxy
+          qfire_new = (1.0_dd-fire%chi_rad)*qtotal_oxy  
+          qfire_new = qfire - (qfire-qfire_new)/&
+          (1.0_dd - heat_o2*(1.0_dd-fire%chi_rad)*(oxyl*dmldq - oxyu*dmudq))
+          if(qfire_new.eq.0.0)exit
+          relerror = abs((qfire_new-qfire)/qfire_new)
+          if(relerror.lt.0.0001_dd)exit
+        end do
+      endif
+    endif
+    call setfire(qtotal,fire)
   endif
-  tentrain = entrainsourcelayer%temperature
-  tdest = entraindestlayer%temperature
-  tsource = source_flow%temperature
 
-  if(flowtype.eq.p_fireflow)then
-    qsource = source_flow%qdot
-    msource = source_flow%mdot
-    if(solveoxy)oxysource = entrainsourcelayer%s_con(oxygen)
-   else
-    qsource = abs(cp*(tsource-tentrain)*source_flow%mdot)
-  endif
-
-  entrainl_flow%zero = .true.
-  if(flowtype.eq.p_fireflow)entrainu_flow%zero = .true.
-  qentrain = zero
-  entrainl_flow%zero = .true.
-  if(entrainl_flow%fromlower.and.tsource.le.tentrain+5.0_dd)return
-  if(entrainl_flow%fromupper.and.tsource+5.0_dd.ge.tentrain)return
-  if(flowtype.eq.p_ventflow.and.zl.eq.0.0_dd)return
-
-  if(flowtype.eq.p_fireflow.and.zl.lt.0.0_dd)zl=0.0_dd  ! fire flow only goes up
-                                      !
-  ! lower layer entrainment
-
-  zl = abs(zl)
-  entrainl_flow%zero = .false.
-  call entrainfl(zl,qsource,mentrain,base,exponent)
 
   ! limit entrainment so that plume flow will exceed destination layer temperature
 
-  ! tplume > tdest ==> cp*mp*tp=cp*(ms+me)*tp=qs+cp*me*te
+  ! tplume > tupper ==> cp*mp*tp=cp*(ms+me)*tp=qs+cp*me*te
   !                    tp=(qs+cp*me*te)/(cp*(ms+me))>td  
   ! solve for me where                                   
-  ! qs==qsource, me==mentrain, te=tentrain, td=tdest     
+  ! qs==qfire, me==mentrain, te=tentrain, td=tupper     
 
-!  if(tdest.ne.tentrain)then 
-!    maxentrain = abs((qsource/cp-msource*tdest)/(tdest-tentrain))
+!  if(tupper.ne.tentrain)then 
+!    maxentrain = abs((qfire/cp-mfire*tupper)/(tupper-tentrain))
 !    if(maxentrain.lt.mentrain)then
 !      mentrain = maxentrain
 !    endif
 !  endif
 
   qentrain = cp*mentrain*tentrain
-  entrainl_flow%mdot = mentrain
-  entrainl_flow%qdot = qentrain
-  entrainl_flow%qtotal = qentrain
-  if(solveoxy)then
-    oentrain = mentrain*oxysource
-    entrainl_flow%sdot(oxygen)=oentrain
+  entrain_flow%mdot = mentrain
+  entrain_flow%qdot = qentrain
+  entrain_flow%qtotal = qentrain
+
+end subroutine f_entrain
+
+
+
+! --------------- entrain ----------------------
+
+subroutine v_entrain(flowroom,source_flow,entrain_flow)
+  use precision
+  use zonedata
+  use zoneinterfaces
+  implicit none
+
+  type(room_data), pointer :: flowroom
+  type(flow_data), pointer :: source_flow, entrain_flow
+
+  real(kind=dd) :: qsource,zl
+  real(kind=dd) :: mentrain, qentrain
+  type(zone_data), pointer :: entrainsourcelayer, entraindestlayer
+  real(kind=dd) :: tsource, tdest, tentrain
+  real(kind=dd) :: oxysource, dmdq
+
+  zl = flowroom%rel_layer_height - source_flow%rel_height
+  if(zl.gt.0)then
+    entrainsourcelayer => flowroom%layer(lower)
+    entraindestlayer => flowroom%layer(upper)
+    entrain_flow%fromlower = .true.
+    entrain_flow%fromupper = .false.
+   else
+    entrainsourcelayer => flowroom%layer(upper)
+    entraindestlayer => flowroom%layer(lower)
+    entrain_flow%fromlower = .false.
+    entrain_flow%fromupper = .true.
   endif
-  entrainl_flow%temperature = tentrain
-  entrainl_flow%density=flowroom%abs_pressure/(rgas*tentrain)
-  entrainl_flow%sdot(1:nspecies) = entrainsourcelayer%s_con(1:nspecies)*mentrain
+  tentrain = entrainsourcelayer%temperature
+  tdest = entraindestlayer%temperature
+  tsource = source_flow%temperature
+  if(solveoxy)oxysource = entrainsourcelayer%s_con(oxygen)
+  qsource = abs(cp*(tsource-tentrain)*source_flow%mdot)
+
+  entrain_flow%zero = .true.
+  qentrain = zero
+  entrain_flow%zero = .true.
+  if(entrain_flow%fromlower.and.tsource.le.tentrain+5.0_dd)return
+  if(entrain_flow%fromupper.and.tsource+5.0_dd.ge.tentrain)return
+  if(zl.eq.0.0_dd)return
+
+                                      !
+  ! lower layer entrainment
+
+  zl = abs(zl)
+  entrain_flow%zero = .false.
+  call entrainfl(zl,qsource,mentrain,dmdq)
+
+  qentrain = cp*mentrain*tentrain
+  entrain_flow%mdot = mentrain
+  entrain_flow%qdot = qentrain
+  entrain_flow%qtotal = qentrain
+  if(solveoxy)entrain_flow%sdot(oxygen)=mentrain*oxysource
+  entrain_flow%temperature = tentrain
+  entrain_flow%density=flowroom%abs_pressure/(rgas*tentrain)
+  entrain_flow%sdot(1:nspecies) = entrainsourcelayer%s_con(1:nspecies)*mentrain
 
   ! upper layer entrainment (only if this is a fire plume ande solveoxy is true)
 
-  if(solveoxy.and.flowtype.eq.p_fireflow)then
-    zu = flowroom%dz - source_flow%rel_height
-    entrainu_flow%zero = .false.
-    call entrainfl(zu,qsource,muentrain,baseu,exponentu)
-    muentrain = muentrain - mentrain  ! only interested in net upper layer entrainment
-    tuentrain = flowroom%layer(upper)%temperature
-    quentrain = cp*muentrain*tuentrain
-    entrainu_flow%mdot = muentrain
-    entrainu_flow%qdot = quentrain
-    entrainu_flow%qtotal = quentrain
-    entrainu_flow%sdot(oxygen)=muentrain*flowroom%layer(upper)%s_con(oxygen)
-    entrainu_flow%temperature = tuentrain
-    entrainu_flow%density=flowroom%abs_pressure/(rgas*tuentrain)
-    entrainu_flow%sdot(1:nspecies) = flowroom%layer(upper)%s_con(1:nspecies)*muentrain
-  endif
+end subroutine v_entrain
 
-end subroutine entrain
 
 ! --------------- entrainfl ----------------------
 
-subroutine entrainfl(zlength,qsource,mentrain,base,exponent)
+subroutine entrainfl(zlength,qsource,mentrain,dmdq)
   use precision
   implicit none
 
   real(kind=dd), intent(in) :: zlength, qsource
-  real(kind=dd), intent(out) :: mentrain,base,exponent
+  real(kind=dd), intent(out) :: mentrain, dmdq
+  real(kind=dd) :: base,exponent
 
   real(kind=dd) :: zstar
   real(kind=dd), parameter :: factor=1000.0_dd**(0.4_dd)
   real(kind=dd) :: base2, exponent2
 
+  mentrain = 0.0_dd
+  if(qsource.eq.0.0_dd)return
   zstar = abs(zlength/(qsource/1000.0_dd)**(0.4_dd))
   if(zstar.lt.0.08_dd)then
     exponent2 = 0.566_dd
@@ -290,6 +322,7 @@ subroutine entrainfl(zlength,qsource,mentrain,base,exponent)
   base = base2*(factor*abs(zlength))**exponent2/1000.0_dd
   exponent = 1.0_dd - 0.4_dd*exponent2 
   ! mentrain = base*qsource**exponent = (qsource/1000)*base2*zstar**exponent2
+  dmdq = base*exponent*qsource**(exponent-1.0_dd)
   return
 end subroutine entrainfl
 

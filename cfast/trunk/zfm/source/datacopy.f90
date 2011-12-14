@@ -10,7 +10,6 @@ subroutine datacopy(tsec,psolve)
   real(kind=dd), intent(in) :: tsec
   real(kind=dd), dimension(*) :: psolve
   real(kind=dd), dimension(2) :: VOL, TEMP, RHO, OXY
-  real(kind=dd) :: tanharg
   type(room_data), pointer :: room
   type(zone_data), pointer :: layer
   integer :: iroom, ilayer, iwall

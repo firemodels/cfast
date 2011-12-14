@@ -34,6 +34,7 @@ module zonedata
     integer :: dir,from,to,wallmatindex
     character(len=30) :: wallmat
     real(kind=dd) :: temp, area, qdot
+    logical :: defined
   end type wall_data
 
   type room_data

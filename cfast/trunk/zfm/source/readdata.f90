@@ -72,7 +72,8 @@ subroutine dumpcase(fileout,error,append)
   type(vent_data), pointer :: vent
   type(fire_data), pointer :: fire
   type(hvac_data), pointer :: h
-  integer :: iroom, i, ivent, ifire, ihvac
+  type(zone_data), pointer :: llay, ulay
+  integer :: iroom, i, ivent, ifire, ihvac, iwall, nwalls
 
   outunit = funit(70)
   if(append)then
@@ -106,6 +107,25 @@ subroutine dumpcase(fileout,error,append)
   if(allwalls)then
     write(outunit,"(a)")"ALLWALLS"
     write(outunit,"(a)")trim(allwallsmat)
+   else
+    nwalls = 0
+    do iroom = 1, nrooms
+      do iwall = 1, 3
+        if(rooms(iroom)%wall(iwall)%defined)nwalls = nwalls + 1
+      end do
+    end do
+    if(nwalls.gt.0)then
+      write(outunit,"(a)")"WALLS"
+      write(outunit,"(i4)")nwalls
+      do iroom = 1, nrooms
+        do iwall = 1, 3
+          if(rooms(iroom)%wall(iwall)%defined)then
+            write(outunit,"(i3,1x,i1)")iroom,iwall
+            write(outunit,"(a)")trim( rooms(iroom)%wall(iwall)%wallmat )
+          endif
+        end do
+      end do
+    endif
   endif
 
   if(nfires.gt.0)then
@@ -163,8 +183,16 @@ subroutine dumpcase(fileout,error,append)
   write(outunit,"(e13.6,1x,e13.6)")tnow,tfinal
   do iroom = 1, nrooms
     room => rooms(iroom)
-    write(outunit,"(4(e13.6,1x))")room%rel_pressure,room%rel_layer_height, &
-      room%layer(lower)%temperature,room%layer(upper)%temperature
+    llay => room%layer(lower)
+    ulay => room%layer(upper)
+    if(solveoxy)then
+      write(outunit,"(6(e13.6,1x))")room%rel_pressure,room%rel_layer_height, &
+                                    llay%temperature,ulay%temperature, &
+                                    llay%s_con(oxygen),ulay%s_con(oxygen)
+     else
+      write(outunit,"(4(e13.6,1x))")room%rel_pressure,room%rel_layer_height, &
+                                    llay%temperature,ulay%temperature
+     endif
   end do
 
   close(outunit)
@@ -183,6 +211,7 @@ recursive subroutine loadcase(filein,error)
   type(vent_data), pointer :: vent
   type(fire_data), pointer :: fire
   type(hvac_data), pointer :: h
+  type(zone_data), pointer :: llay, ulay
   integer :: iroom, ivent, jvent, ifire, ihvac,iwall,iw,nwalls
   integer :: iin, npoints, i
   real(kind=dd) :: t1,tr1,dt,tr2,t2,t3,t4,qlevel,x,y,offset
@@ -234,18 +263,21 @@ recursive subroutine loadcase(filein,error)
       room%volume = room%floor_area*room%dz
       room%VU = 0.0_dd
 
-      room%layer(lower)%temperature = tamb
-      room%layer(upper)%temperature = tamb
-      room%layer(lower)%density = rhoamb
-      room%layer(upper)%density = rhoamb
-      room%layer(lower)%volume = room%floor_area*room%dz
-      room%layer(lower)%mass = rhoamb*room%volume
-      room%layer(lower)%s_mass = room%layer(lower)%mass*amb_oxy_con
-      room%layer(lower)%s_con = amb_oxy_con
-      room%layer(upper)%s_mass = room%layer(upper)%mass*amb_oxy_con
-      room%layer(upper)%s_con = amb_oxy_con
-      room%layer(upper)%volume = 0.0_dd
-      room%layer(upper)%mass = 0.0_dd
+      llay => room%layer(lower)
+      ulay => room%layer(upper)
+
+      llay%temperature = tamb
+      ulay%temperature = tamb
+      llay%density = rhoamb
+      ulay%density = rhoamb
+      llay%volume = room%floor_area*room%dz
+      llay%mass = rhoamb*room%volume
+      llay%s_mass = llay%mass*amb_oxy_con
+      llay%s_con = amb_oxy_con
+      ulay%s_mass = ulay%mass*amb_oxy_con
+      ulay%s_con = amb_oxy_con
+      ulay%volume = 0.0_dd
+      ulay%mass = 0.0_dd
 
 ! read in data for the indoor environment
 
@@ -254,6 +286,7 @@ recursive subroutine loadcase(filein,error)
         read(iin,*)room%z0,room%dx,room%dy,room%dz
         do iwall = 1, 4
           room%wall(iwall)%wallmatindex = p_nowall
+          room%wall(iwall)%defined = .false.
         end do
         room%x0=0.0
         room%y0=0.0
@@ -286,17 +319,20 @@ recursive subroutine loadcase(filein,error)
 
     if(line(1:8).eq."SOLVEOXY")then
       solveoxy=.true.
+      nspecies = 1
       cycle
     endif
 
     if(line(1:4).eq."LOAD")then
-      read(iin,"(a)")loadfile
+      read(iin,"(a)")line2
+      loadfile=adjustl(line2)
       call loadcase(loadfile,error)
     endif
 
     if(line(1:8).eq."ALLWALLS")then
       allwalls=.true.
-      read(iin,"(a)")allwallsmat
+      read(iin,"(a)")line2
+      allwallsmat=adjustl(line2)
       walltype = getwalltype(allwallsmat)
       do iroom=1, nrooms
         do iw = 1, 4
@@ -319,10 +355,12 @@ recursive subroutine loadcase(filein,error)
             rooms(iroom)%wall(iw)%wallmat=wallmat
             rooms(iroom)%wall(iw)%wallmatindex=walltype
             rooms(iroom)%wall(iw)%dir=iw
+            rooms(iroom)%wall(iw)%defined=.true.
             if(iw.eq.3)then
               rooms(iroom)%wall(4)%wallmatindex=walltype
               rooms(iroom)%wall(4)%wallmat=wallmat
               rooms(iroom)%wall(4)%dir=4
+              rooms(iroom)%wall(4)%defined=.true.
             endif
           endif
         endif
@@ -357,7 +395,8 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:4).eq."PLOT")then
-      read(iin,"(a)")plotfilebase
+      read(iin,"(a)")line2
+      plotfilebase=adjustl(line2)
       csvfile=trim(plotfilebase)//'.csv'
       smvfile=trim(plotfilebase)//'.smv'
       plotfile=trim(plotfilebase)//'.zfm'
@@ -397,14 +436,6 @@ recursive subroutine loadcase(filein,error)
     endif
   
   ! read in species data 
-
-  ! read(iin,*)nspecies
-    
-    if(solveoxy)then
-      nspecies = 1
-     else
-      nspecies = 0
-    endif
 
   ! read in fire info
 
@@ -544,8 +575,16 @@ recursive subroutine loadcase(filein,error)
 
       do iroom = 1, nrooms
         room => rooms(iroom)
-    	  read(iin,*)room%rel_pressure,room%rel_layer_height, &
-          room%layer(lower)%temperature,room%layer(upper)%temperature
+        llay => room%layer(lower)
+        ulay => room%layer(upper)
+        if(solveoxy)then
+    	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
+            llay%temperature,ulay%temperature,&
+            llay%s_con(oxygen),ulay%s_con(oxygen)
+         else
+    	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
+            llay%temperature,ulay%temperature
+        endif
       end do
       cycle
     endif

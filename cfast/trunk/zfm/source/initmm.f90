@@ -26,6 +26,7 @@ subroutine initmm
   zeroflow%fromupper = .false.
   zeroflow%zero = .true.
   
+  nspecies = 0
   amb_oxy_con = 0.23_dd
   heat_c  = 18000000.0_dd
   heat_o2 = 13200000.0_dd

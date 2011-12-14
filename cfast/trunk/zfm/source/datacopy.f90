@@ -19,37 +19,70 @@ subroutine datacopy(tsec,psolve)
 	  room => rooms(iroom)  ! get room pointer
 
   	relp = psolve(iroom+offset_p) ! copy data out of solver array
-  	VOL(upper) = max(psolve(iroom+offset_vu),room%volmin)
-    VOL(upper) = min(VOL(upper),room%volmax)
-  	VOL(lower) = max(room%volume - VOL(upper),room%volmin)
-    VOL(lower) = min(VOL(lower),room%volmax)
-  	TEMP(lower) = psolve(iroom+offset_tl)
-  	TEMP(upper) = psolve(iroom+offset_tu)
+!  	VOL(upper) = max(psolve(iroom+offset_vu),room%volmin)
+!    VOL(upper) = min(VOL(upper),room%volmax)
+!  	VOL(lower) = max(room%volume - VOL(upper),room%volmin)
+!    VOL(lower) = min(VOL(lower),room%volmax)
+!  	TEMP(lower) = psolve(iroom+offset_tl)
+!  	TEMP(upper) = psolve(iroom+offset_tu)
 
-    if(solveoxy)then
-     OXY(lower) = psolve(iroom+offset_oxyl)
-     OXY(upper) = psolve(iroom+offset_oxyu)
-    endif
+!    if(solveoxy)then
+!     OXY(lower) = max(psolve(iroom+offset_oxyl),0.0_dd)
+!     OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_dd)
+!    endif
 
   	pabs = pabs_ref + relp     ! copy data into zone modeling data structures
 
     room%rel_pressure = relp
     room%abs_pressure = pabs
+
+    VOL(upper) = psolve(iroom+offset_vu)
+    if(VOL(upper).lt.room%volmin)then
+      VOL(upper) = room%volmin
+      VOL(lower) = room%volmax
+    	TEMP(lower) = psolve(iroom+offset_tl)
+    	TEMP(upper) = TEMP(lower)
+    	RHO(lower) = pabs/(rgas*TEMP(lower))
+    	RHO(upper) = RHO(lower)
+      if(solveoxy)then
+        OXY(lower) = max(psolve(iroom+offset_oxyl),0.0_dd)
+        OXY(upper) = (OXY(lower)/(RHO(lower)*VOL(lower)))*RHO(upper)*VOL(upper)
+      endif
+     elseif(VOL(upper).gt.room%volmax)then
+      VOL(upper) = room%volmax
+      VOL(lower) = room%volmin
+    	TEMP(upper) = psolve(iroom+offset_tu)
+    	TEMP(lower) = TEMP(upper)
+    	RHO(upper) = pabs/(rgas*TEMP(upper))
+    	RHO(lower) = RHO(upper)
+      if(solveoxy)then
+        OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_dd)
+        OXY(lower) = (OXY(upper)/(RHO(upper)*VOL(upper)))*RHO(lower)*VOL(lower)
+      endif
+     else
+    	TEMP(lower) = psolve(iroom+offset_tl)
+    	TEMP(upper) = psolve(iroom+offset_tu)
+      VOL(lower) = room%volume - VOL(upper)
+    	RHO(lower) = pabs/(rgas*TEMP(lower))
+    	RHO(upper) = pabs/(rgas*TEMP(upper))
+      if(solveoxy)then
+        OXY(lower) = max(psolve(iroom+offset_oxyl),0.0_dd)
+        OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_dd)
+      endif
+    endif
+
   	room%VU = VOL(upper)
     room%VL = VOL(lower)
 
     do ilayer = 1, 2
       layer => room%layer(ilayer)
-    	RHO(ilayer) = pabs/(rgas*TEMP(ilayer))
+!    	RHO(ilayer) = pabs/(rgas*TEMP(ilayer))
     	layer%temperature = TEMP(ilayer)
     	layer%density = RHO(ilayer)
     	layer%mass = RHO(ilayer)*VOL(ilayer)
       if(solveoxy)then
         layer%s_mass(oxygen) = OXY(ilayer)
         layer%s_con(oxygen) = OXY(ilayer)/layer%mass
-        tanharg = layer%s_con(oxygen)-o2limit
-        tanharg = 4*tanharg/0.01_dd
-        layer%o2index = 0.50_dd*(1.0_dd+tanh(tanharg))
       endif
     end do
 

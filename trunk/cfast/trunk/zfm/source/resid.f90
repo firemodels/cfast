@@ -11,16 +11,19 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
   real(kind=dd), intent(in) :: tsec
   real(kind=dd), dimension(neq), intent(in) :: x, xpsolvesub
   real(kind=dd), dimension(neq), intent(out) :: deltasub
+  real(kind=dd), dimension(maxspecies,2) :: speciesdot
   integer :: ires
   real(kind=dd), dimension(*) :: rpar
   integer,  dimension(*) :: ipar
+  integer :: iiroom
 
   real(kind=dd), dimension(neq) :: xprime
   type(room_data), pointer :: r
-  integer :: iroom
+  integer :: iroom, ispec
   real(kind=dd) :: vroom, pabs, hinter, qldot, qudot, mldot, mudot, &
                           tu, tl, rhou, rhol, massu, massl, volu, &
-                          pdot, tlaydu, vlayd, tlaydl, oxyldot, oxyudot
+                          pdot, tlaydu, vlayd, tlaydl
+  real(kind=dd) :: oxyldot, oxyudot
 
   totalflow(0:nrooms,1:2) = zeroflow
   fflow(0:nrooms,1:2) = zeroflow
@@ -49,6 +52,7 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
 
 ! calculate rhs of ode's for each room
   if(printresid.and.debugprint)write(6,*)"tsec=",tsec
+  iiroom = 0
   do iroom = 1, nrooms
     r => rooms(iroom)
     vroom = r%volume
@@ -58,9 +62,31 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
     qudot = totalflow(iroom,upper)%qdot
     mldot = totalflow(iroom,lower)%mdot
     mudot = totalflow(iroom,upper)%mdot
+    if(r%singlezone.eq.0)then
+      iiroom = iiroom + 1
+     else
+      qudot = qldot + qudot
+      qldot = 0.0
+      mudot = mldot + mudot
+      mldot = 0.0
+    endif
     if(solveoxy)then
       oxyldot = totalflow(iroom,lower)%sdot(oxygen)
       oxyudot = totalflow(iroom,upper)%sdot(oxygen)
+      if(r%singlezone.eq.1)then
+        oxyudot = oxyudot + oxyldot 
+        oxyldot = 0.0
+      endif
+    endif
+    if(solveprods)then
+      do ispec = 2, maxspecies
+        speciesdot(ispec,lower) = totalflow(iroom,lower)%sdot(ispec)
+        speciesdot(ispec,upper) = totalflow(iroom,upper)%sdot(ispec)
+        if(r%singlezone.eq.1)then
+          speciesdot(ispec,upper) = speciesdot(ispec,lower) + speciesdot(ispec,upper)
+          speciesdot(ispec,lower) = 0.0
+        endif
+      end do
     endif
     tu = r%layer(upper)%temperature
     tl = r%layer(lower)%temperature
@@ -85,22 +111,35 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
 
 !     upper layer volume equation
 
-    vlayd = (gamma - 1.0_dd)*qudot/(gamma*pabs)
-    vlayd = vlayd - volu*pdot/(gamma*pabs)
+    if(r%singlezone.eq.0)then
+      vlayd = (gamma - 1.0_dd)*qudot/(gamma*pabs)
+      vlayd = vlayd - volu*pdot/(gamma*pabs)
+    endif
 
 !     lower layer temperature equation
 
-    tlaydl = (qldot - cp*mldot*tl)/(cp*massl)
-    tlaydl = tlaydl + pdot / (cp*rhol)
+    if(r%singlezone.eq.0)then
+      tlaydl = (qldot - cp*mldot*tl)/(cp*massl)
+      tlaydl = tlaydl + pdot / (cp*rhol)
+    endif
 
     xprime(iroom + offset_p) = pdot
-    xprime(iroom + offset_tl) = tlaydl
-    xprime(iroom + offset_vu) = vlayd
+    if(r%singlezone.eq.0)then
+      xprime(iiroom + offset_tl) = tlaydl
+      xprime(iiroom + offset_vu) = vlayd
+    endif
     xprime(iroom + offset_tu) = tlaydu
     if(solveoxy)then
-      xprime(iroom + offset_oxyl) = oxyldot
+      if(r%singlezone.eq.0)xprime(iiroom + offset_oxyl) = oxyldot
       xprime(iroom + offset_oxyu) = oxyudot
     endif
+    if(solveprods)then
+      do ispec = 2, maxspecies
+        if(r%singlezone.eq.0)xprime(iiroom + offset_SPECIES(ispec,lower)) = speciesdot(ispec,lower)
+        xprime(iroom + offset_SPECIES(ispec,upper)) = speciesdot(ispec,upper)
+      end do
+    endif
+
 
   end do
 

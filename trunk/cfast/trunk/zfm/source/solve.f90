@@ -87,23 +87,45 @@ subroutine initsolve
   real(kind=dd) :: rpar
   integer :: i, ires
   integer :: error
+  integer :: iiroom,ispec
 
+  iiroom = 0
   do i = 1, nrooms
     vatol(i+offset_p) = aptol
     vrtol(i+offset_p) = rptol
     vatol(i+offset_tu) = atol
     vrtol(i+offset_tu) = rtol
-    vatol(i+offset_vu) = atol
-    vrtol(i+offset_vu) = rtol
-    vatol(i+offset_tl) = atol
-    vrtol(i+offset_tl) = rtol
     if(solveoxy)then
-      vatol(i+offset_oxyl) = atol
-      vrtol(i+offset_oxyl) = rtol
       vatol(i+offset_oxyu) = atol
       vrtol(i+offset_oxyu) = rtol
     endif
+    if(solveprods)then
+      do ispec = 2, maxspecies
+        vatol(i+offset_SPECIES(ispec,upper)) = atol
+        vrtol(i+offset_SPECIES(ispec,upper)) = rtol
+      end do
+    endif
+
+
+    if(rooms(i)%singlezone.eq.0)then
+      iiroom = iiroom + 1
+      vatol(iiroom+offset_vu) = atol
+      vrtol(iiroom+offset_vu) = rtol
+      vatol(iiroom+offset_tl) = atol
+      vrtol(iiroom+offset_tl) = rtol
+      if(solveoxy)then
+        vatol(iiroom+offset_oxyl) = atol
+        vrtol(iiroom+offset_oxyl) = rtol
+      endif
+      if(solveprods)then
+        do ispec = 2, maxspecies
+          vatol(iiroom+offset_SPECIES(ispec,lower)) = atol
+          vrtol(iiroom+offset_SPECIES(ispec,lower)) = rtol
+        end do
+      endif
+    endif
   end do
+
   call initsoln
   lrw = 40 + 9*neq + neq**2
   liw = 20 + neq
@@ -125,24 +147,30 @@ subroutine initsoln
   use precision
   use zonedata
   implicit none
-  integer :: iroom
+  integer :: iroom,iiroom,ispec
   type(room_data), pointer :: r
+  iiroom=0
   do iroom = 1, nrooms
     r => rooms(iroom)
     p(offset_p + iroom) = r%rel_pressure
-  	p(offset_vu + iroom) = r%VU
-  	p(offset_tl + iroom) = r%layer(lower)%temperature
+    if(r%singlezone.eq.0)then
+      iiroom = iiroom + 1
+    	p(offset_vu + iiroom) = r%VU
+    	p(offset_tl + iiroom) = r%layer(lower)%temperature
+    endif
   	p(offset_tu + iroom) = r%layer(upper)%temperature
     if(solveoxy)then
-    	p(offset_oxyl + iroom) = r%layer(lower)%s_mass(oxygen)
+    	if(r%singlezone.eq.0)p(offset_oxyl + iiroom) = r%layer(lower)%s_mass(oxygen)
     	p(offset_oxyu + iroom) = r%layer(upper)%s_mass(oxygen)
     endif
+    if(solveprods)then
+      do ispec = 2, maxspecies
+    	  if(r%singlezone.eq.0)p(offset_SPECIES(ispec,lower) + iiroom) = r%layer(lower)%s_mass(ispec)
+    	  p(offset_SPECIES(ispec,upper) + iroom) = r%layer(upper)%s_mass(ispec)
+      end do
+    endif
   end do
-  if(smvfile.ne."")then
-    write(plotunit)1
-    write(plotunit)nrooms
-    write(plotunit)nfires
-  endif
+  if(smvfile.ne."")call svplothdr(plotfile,1,nrooms,nfires)
 end subroutine initsoln
 
 subroutine result
@@ -152,20 +180,26 @@ subroutine result
   integer :: iroom
   type(room_data), pointer :: r
   type(zone_data), pointer :: llay, ulay
+  integer :: ispec
+
   do iroom = 1, nrooms
     r => rooms(iroom)
     llay => r%layer(lower)
     ulay => r%layer(upper)
-    if(solveoxy)then
+    if(solveprods)then
   	  write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,&
-                 llay%temperature,ulay%temperature,&
+                 llay%temperature,ulay%temperature,fires(1)%qtotal,&
                  llay%s_con(oxygen),ulay%s_con(oxygen),&
-                 fires(1)%qtotal
+                 (llay%s_con(ispec),ulay%s_con(ispec),ispec=2,maxspecies)
+    else if(solveoxy.and..not.solveprods)then
+  	  write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,&
+                 llay%temperature,ulay%temperature,fires(1)%qtotal,&
+                 llay%s_con(oxygen),ulay%s_con(oxygen)
      else
   	  write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,&
-                 llay%temperature,ulay%temperature
+                 llay%temperature,ulay%temperature,fires(1)%qtotal
     endif
-10  format(1x,e11.4,",",i3,7(",",e11.4)) 
+10  format(1x,e11.4,",",i3,13(",",e11.4)) 
   end do
   write(6,*)""
 end subroutine result
@@ -178,28 +212,29 @@ subroutine plot
   use zonedata
   implicit none
   integer :: iroom, ifire
-  real :: ylay, tl, tu,pr,tt,qdot,height
+  real, dimension(nrooms) :: ylay, tl, tu,pr
+  real :: tt
+  real, dimension(nfires) :: qdot,height
   type(room_data), pointer :: r
   type(fire_data), pointer :: f
   if(smvfile.ne."")then
     tt = tnow
-    write(plotunit)tt
     do iroom = 1, nrooms
       r => rooms(iroom)
-      pr = r%rel_pressure
-    	ylay = r%abs_layer_height
-      tl = r%layer(lower)%temperature
-      tu = r%layer(upper)%temperature 
-    	write(plotunit)pr,ylay,tl,tu
+      pr(iroom) = r%rel_pressure
+    	ylay(iroom) = r%abs_layer_height
+      tl(iroom) = r%layer(lower)%temperature
+      tu(iroom) = r%layer(upper)%temperature 
     end do
     do ifire=1, nfires
       f=>fires(ifire)
-      qdot = f%qconvec
-      height = f%dz
-      write(plotunit)height,qdot
+      qdot(ifire) = f%qconvec
+      height(ifire) = f%dz
     end do
-    write(csvunit,10)tnow,(rooms(iroom)%rel_layer_height,rooms(iroom)%layer(lower)%temperature,rooms(iroom)%layer(upper)%temperature,iroom=1,nrooms)
-10  format(e11.4,",",10(3(e11.4,",")))
+     write(csvunit,10)tnow,(rooms(iroom)%layer(upper)%temperature,iroom=1,nrooms)
+10  format(e11.4,",",10(1(e11.4,",")))
+
+    call svplotdata(plotfile,tt,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
   endif
 

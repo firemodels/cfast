@@ -13,9 +13,9 @@ module zonedata
   end type zone_data
 
   type flow_data
-    real(kind=dd) :: mdot, qdot, temperature, density, rel_height, abs_height
+    real(kind=dd) :: mdot, qdot, qtotal, temperature, density, rel_height, abs_height
     real(kind=dd), dimension(1:maxspecies) :: sdot
-  	logical :: fromlower, fromupper, zeroflowflag
+  	logical :: fromlower, fromupper, zero
   end type flow_data
 
   type fire_data
@@ -24,10 +24,13 @@ module zonedata
     real(kind=dd) :: mtotal, qtotal, qconvec, qrad, chi_rad
     real(kind=dd), pointer, dimension(:) :: times, q_pyrol
 	  integer :: npoints
-    type(flow_data) :: fire_flow, entrain_flow, plume_flow                    
+    type(flow_data) :: fire_flow, entrainl_flow, entrainu_flow, plume_flow                    
   end type fire_data
 
   type wall_data
+    integer :: n
+    real(kind=dd), pointer, dimension(:) :: dx, wtemp
+    real(kind=dd) :: k, rho, c
     integer :: dir,from,to,wallmatindex
     character(len=30) :: wallmat
     real(kind=dd) :: temp, area, qdot
@@ -72,7 +75,8 @@ module zonedata
   integer, parameter :: lower=1, upper=2
   integer, parameter :: p_coldwall=-2, p_thinwall=-1, p_thickwall=0, p_nowall=-3
   integer, parameter :: p_ceiling=1, p_floor=2, p_wall=3
-  logical :: printresid, debugprint
+  integer, parameter :: p_fireflow=1, p_ventflow=2
+  logical :: printresid, debugprint, solveoxy
   type(room_data), allocatable, target, dimension(:) :: rooms
   type(vent_data), allocatable, target, dimension(:) :: vents
   type(fire_data), allocatable, target, dimension(:) :: fires
@@ -103,7 +107,10 @@ module zonedata
   real(kind=dd), allocatable, dimension(:) :: vatol, vrtol, & 
          pprime, p, pdzero, delta, xpsolve, dummysoln, zerosoln
   real(kind=dd) :: aptol, rptol, atol, rtol
-  character(len=128) :: smvfile, plotfile, csvfile
+  character(len=128) :: smvfile, plotfile, csvfile, plotfilebase, dumpfile
+  character(len=30) :: allwallsmat
+  logical :: allwalls
+
   integer, parameter :: smvunit=21, plotunit=22, csvunit=23
 
   !  overload +, -, * and = so that these operators will work with flows!
@@ -122,27 +129,27 @@ module zonedata
     module procedure assignflow
   end interface
 
-
   contains
 
 ! --------------- addflow ----------------------
 
 type(flow_data) function addflow(flow1,flow2)
     type(flow_data), intent(in) :: flow1, flow2
-    real(kind=dd) :: total_mdot, total_qdot
+    real(kind=dd) :: total_mdot, total_qdot, total_qtotal
 
-  addflow%zeroflowflag = .false.
-	if(flow1%zeroflowflag)then
+  addflow%zero = .false.
+	if(flow1%zero)then
 	  addflow = flow2
 	  return
 	endif
-	if(flow2%zeroflowflag)then
+	if(flow2%zero)then
 	  addflow = flow1
 	  return
 	endif
 
   total_mdot = flow1%mdot + flow2%mdot
   total_qdot = flow1%qdot + flow2%qdot
+  total_qtotal = flow1%qtotal + flow2%qtotal
   addflow%mdot = total_mdot
   addflow%qdot = total_qdot
   addflow%sdot(1:nspecies) = flow1%sdot(1:nspecies) + flow2%sdot(1:nspecies)
@@ -150,7 +157,7 @@ type(flow_data) function addflow(flow1,flow2)
     addflow%temperature = total_qdot/(cp*total_mdot)
 	 else
     addflow%temperature = zero
-    addflow%zeroflowflag = .true.
+    addflow%zero = .true.
 	endif
 	if(addflow%temperature.ne.zero)then
 	  addflow%density = pabs_ref/(addflow%temperature*rgas)
@@ -164,28 +171,30 @@ end function addflow
 
 type(flow_data) function subtractflow(flow1,flow2)
     type(flow_data), intent(in) :: flow1, flow2
-    real(kind=dd) :: total_mdot, total_qdot, x
+    real(kind=dd) :: total_mdot, total_qdot, total_qtotal, x
 
-  subtractflow%zeroflowflag = .false.
-	if(flow1%zeroflowflag)then
+  subtractflow%zero = .false.
+	if(flow1%zero)then
 	  x = -1._dd
 	  subtractflow = x*flow2
 	  return
 	endif
-	if(flow2%zeroflowflag)then
+	if(flow2%zero)then
 	  subtractflow = flow1
 	  return
 	endif
 
   total_mdot = flow1%mdot - flow2%mdot
   total_qdot = flow1%qdot - flow2%qdot
+  total_qtotal = flow1%qtotal - flow2%qtotal
   subtractflow%mdot = total_mdot
   subtractflow%qdot = total_qdot
+  subtractflow%qtotal = total_qtotal
   subtractflow%sdot(1:nspecies) = flow1%sdot(1:nspecies) - flow2%sdot(1:nspecies)
 	if(total_mdot.ne.zero)then
     subtractflow%temperature = total_qdot/(cp*total_mdot)
 	 else
-    subtractflow%zeroflowflag = .true.
+    subtractflow%zero = .true.
     subtractflow%temperature = zero
 	endif
 	if(subtractflow%temperature.ne.zero)then
@@ -202,13 +211,14 @@ type(flow_data) function realtimesflow(scale,flow1)
 	real(kind=dd), intent(in) :: scale
 
   if(scale.eq.0.0_dd)then
-    realtimesflow%zeroflowflag = .true.
+    realtimesflow%zero = .true.
    else
-    realtimesflow%zeroflowflag = flow1%zeroflowflag
+    realtimesflow%zero = flow1%zero
   endif
-  if(realtimesflow%zeroflowflag)return
+  if(realtimesflow%zero)return
   realtimesflow%mdot = scale*flow1%mdot
   realtimesflow%qdot = scale*flow1%qdot
+  realtimesflow%qtotal = scale*flow1%qtotal
   realtimesflow%sdot(1:nspecies) = scale*flow1%sdot(1:nspecies)
   realtimesflow%temperature = flow1%temperature
   realtimesflow%density = flow1%temperature
@@ -222,13 +232,14 @@ type(flow_data) function flowtimesreal(flow1,scale)
 	real(kind=dd), intent(in) :: scale
 
   if(scale.eq.0.0_dd)then
-    flowtimesreal%zeroflowflag = .true.
+    flowtimesreal%zero = .true.
    else
-    flowtimesreal%zeroflowflag = flow1%zeroflowflag
+    flowtimesreal%zero = flow1%zero
   endif
-  if(flowtimesreal%zeroflowflag)return
+  if(flowtimesreal%zero)return
   flowtimesreal%mdot = scale*flow1%mdot
   flowtimesreal%qdot = scale*flow1%qdot
+  flowtimesreal%qtotal = scale*flow1%qtotal
   flowtimesreal%sdot(1:nspecies) = scale*flow1%sdot(1:nspecies)
   flowtimesreal%temperature = flow1%temperature
   flowtimesreal%density = flow1%temperature
@@ -240,18 +251,64 @@ subroutine assignflow(flowout,flowin)
   type(flow_data), intent(out) :: flowout
   type(flow_data), intent(in) :: flowin
 
-	if(flowin%zeroflowflag)then
-	  flowout%zeroflowflag = .true.
+	if(flowin%zero)then
+	  flowout%zero = .true.
 	  return
 	endif
 
   flowout%mdot = flowin%mdot
   flowout%qdot = flowin%qdot
+  flowout%qtotal = flowin%qtotal
   flowout%temperature = flowin%temperature
   flowout%density = flowin%density
   flowout%sdot(1:nspecies) = flowin%sdot(1:nspecies)
-  flowout%zeroflowflag = flowin%zeroflowflag
+  flowout%zero = flowin%zero
 end subroutine assignflow
+
+integer function funit(unit)
+  implicit none
+
+  integer, intent(in) :: unit
+  integer, parameter :: maxio=32767
+  logical :: opened
+  integer :: itemp
+
+  itemp = unit
+  opened = .false.
+  do
+    inquire(unit=itemp,opened=opened)
+    if(.not.opened)exit
+    itemp = itemp + 1
+  end do
+  funit=itemp
+  return
+end function funit
+
 
 end module zonedata
 
+module zoneinterfaces
+  interface
+    subroutine entrain(flowroom,source_flow,entrainl_flow,entrainu_flow,flowtype)
+    use precision
+    use zonedata
+    implicit none
+    type(room_data), pointer :: flowroom
+    type(flow_data), pointer :: source_flow, entrainl_flow, entrainu_flow
+    integer, intent(in) :: flowtype
+    end subroutine entrain
+  end interface
+  interface
+    subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
+      use precision
+      use zonedata
+      implicit none
+      integer, intent(in) :: nfromslab, ntoslab
+      type(slab_data), target, dimension(nfromslab) :: slabfrom
+      type(slab_data), target, dimension(ntoslab) :: slabto
+      type(flow_data), dimension(0:nrooms,2) :: odeflow
+    end subroutine flowgo
+  end interface
+
+
+end module zoneinterfaces

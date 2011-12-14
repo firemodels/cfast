@@ -25,23 +25,11 @@ subroutine datacopy(tsec,psolve)
     VOL(lower) = min(VOL(lower),room%volmax)
   	TEMP(lower) = psolve(iroom+offset_tl)
   	TEMP(upper) = psolve(iroom+offset_tu)
-!    if(VOL(upper).ge.room%volmax)TEMP(upper)=TEMP(lower)
-!    if(VOL(lower).ge.room%volmin)TEMP(lower)=TEMP(upper)
 
-#ifdef pp_solveoxy
-    OXY(lower) = psolve(iroom+offset_oxyl)
-    OXY(upper) = psolve(iroom+offset_oxyu)
- !   if(VOL(upper).le.room%volmin)then
- !   	OXY(upper) = OXY(lower)
- !    elseif(VOL(lower).le.room%volmin)then
- !   	OXY(lower) = OXY(upper)
- !   endif
-#endif
- !   if(VOL(upper).le.room%volmin)then
- !   	TEMP(upper) = TEMP(lower)
- !    elseif(VOL(lower).le.room%volmin)then
- !   	TEMP(lower) = TEMP(upper)
- !   endif
+    if(solveoxy)then
+     OXY(lower) = psolve(iroom+offset_oxyl)
+     OXY(upper) = psolve(iroom+offset_oxyu)
+    endif
 
   	pabs = pabs_ref + relp     ! copy data into zone modeling data structures
 
@@ -56,13 +44,13 @@ subroutine datacopy(tsec,psolve)
     	layer%temperature = TEMP(ilayer)
     	layer%density = RHO(ilayer)
     	layer%mass = RHO(ilayer)*VOL(ilayer)
-#ifdef pp_solveoxy
-      layer%s_mass(oxygen) = OXY(ilayer)
-      layer%s_con(oxygen) = OXY(ilayer)/layer%mass
-      tanharg = layer%s_con(oxygen)-o2limit
-      tanharg = 4*tanharg/0.01_dd
-      layer%o2index = 0.50_dd*(1.0_dd+tanh(tanharg))
-#endif
+      if(solveoxy)then
+        layer%s_mass(oxygen) = OXY(ilayer)
+        layer%s_con(oxygen) = OXY(ilayer)/layer%mass
+        tanharg = layer%s_con(oxygen)-o2limit
+        tanharg = 4*tanharg/0.01_dd
+        layer%o2index = 0.50_dd*(1.0_dd+tanh(tanharg))
+      endif
     end do
 
   	room%rel_layer_height = room%dz - VOL(upper)/room%floor_area

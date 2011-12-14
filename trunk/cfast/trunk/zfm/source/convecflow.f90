@@ -44,9 +44,9 @@ subroutine convecflow
     endif
 
     cflow(iroom,upper)%qdot = - qceil*r%wall(1)%area - quwall*r%wall(3)%area
-    cflow(iroom,upper)%zeroflowflag = .false.
+    cflow(iroom,upper)%zero = .false.
 
-    cflow(iroom,lower)%zeroflowflag = .false.
+    cflow(iroom,lower)%zero = .false.
     cflow(iroom,lower)%qdot =  -qfloor*r%wall(2)%area - qlwall*r%wall(4)%area
   end do
 end subroutine convecflow

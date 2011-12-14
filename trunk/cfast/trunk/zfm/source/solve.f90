@@ -8,13 +8,14 @@ subroutine solve
 
   integer, dimension(15) :: info
   integer :: idid
-  integer :: ipar
+  integer :: ipar,error
   real(kind=dd) :: rpar
   integer :: ires
   external resid, jac
 
 
   call setinfo(info)
+  call dumpcase(dumpfile,error,.false.)
   call output
   do while (tnow .lt. tfinal)
     tout = min(tfinal, tprint, tdump, tplot)
@@ -40,6 +41,7 @@ subroutine output
   use precision
   use zonedata
   implicit none
+  integer :: error
   if(abs(tprint-tnow).lt.0.001.or.tnow.ge.tfinal)then
     iprint = iprint + 1
     tprint = tstartprint + iprint*dprint
@@ -50,7 +52,7 @@ subroutine output
   if(abs(tnow-tdump).lt.0.001.or.tnow.ge.tfinal)then
     idump = idump + 1
     tdump = tstartdump + idump*ddump
-    call dump
+    call dumpcase(dumpfile,error,.true.)
   end if
   if(abs(tnow-tplot).lt.0.001.or.tnow.ge.tfinal)then
     iplot = iplot + 1
@@ -95,12 +97,12 @@ subroutine initsolve
     vrtol(i+offset_vu) = rtol
     vatol(i+offset_tl) = atol
     vrtol(i+offset_tl) = rtol
-#ifdef pp_solveoxy
-    vatol(i+offset_oxyl) = atol
-    vrtol(i+offset_oxyl) = rtol
-    vatol(i+offset_oxyu) = atol
-    vrtol(i+offset_oxyu) = rtol
-#endif
+    if(solveoxy)then
+      vatol(i+offset_oxyl) = atol
+      vrtol(i+offset_oxyl) = rtol
+      vatol(i+offset_oxyu) = atol
+      vrtol(i+offset_oxyu) = rtol
+    endif
   end do
   call initsoln
   lrw = 40 + 9*neq + neq**2
@@ -131,10 +133,10 @@ subroutine initsoln
   	p(offset_vu + iroom) = r%VU
   	p(offset_tl + iroom) = r%layer(lower)%temperature
   	p(offset_tu + iroom) = r%layer(upper)%temperature
-#ifdef pp_solveoxy
-  	p(offset_oxyl + iroom) = r%layer(lower)%s_mass(oxygen)
-  	p(offset_oxyu + iroom) = r%layer(upper)%s_mass(oxygen)
-#endif
+    if(solveoxy)then
+    	p(offset_oxyl + iroom) = r%layer(lower)%s_mass(oxygen)
+    	p(offset_oxyu + iroom) = r%layer(upper)%s_mass(oxygen)
+    endif
   end do
   if(smvfile.ne."")then
     write(plotunit)1
@@ -149,15 +151,20 @@ subroutine result
   implicit none
   integer :: iroom
   type(room_data), pointer :: r
+  type(zone_data), pointer :: llay, ulay
   do iroom = 1, nrooms
     r => rooms(iroom)
-#ifdef pp_solveoxy
-  	write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,r%layer(lower)%temperature,r%layer(upper)%temperature,&
-               r%layer(lower)%s_con(oxygen),r%layer(upper)%s_con(oxygen),&
-               fires(1)%qtotal
-#else
-  	write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,r%layer(lower)%temperature,r%layer(upper)%temperature
-#endif
+    llay => r%layer(lower)
+    ulay => r%layer(upper)
+    if(solveoxy)then
+  	  write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,&
+                 llay%temperature,ulay%temperature,&
+                 llay%s_con(oxygen),ulay%s_con(oxygen),&
+                 fires(1)%qtotal
+     else
+  	  write(6,10)tnow,iroom,r%rel_pressure,r%rel_layer_height,&
+                 llay%temperature,ulay%temperature
+    endif
 10  format(1x,e11.4,",",i3,7(",",e11.4)) 
   end do
   write(6,*)""

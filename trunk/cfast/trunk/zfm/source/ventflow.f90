@@ -4,20 +4,10 @@
 subroutine hventflow
   use precision
   use zonedata
+  use zoneinterfaces
+
   implicit none
   type(vent_data), pointer :: v
-  interface
-    subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
-      use precision
-      use zonedata
-      implicit none
-      integer, intent(in) :: nfromslab, ntoslab
-      type(slab_data), target, dimension(nfromslab) :: slabfrom
-      type(slab_data), target, dimension(ntoslab) :: slabto
-      type(flow_data), dimension(0:nrooms,2) :: odeflow
-    end subroutine flowgo
-  end interface
-
   integer :: ivent
 
  ! calculate horizontal flows through vents
@@ -38,6 +28,8 @@ end subroutine hventflow
 subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
   use precision
   use zonedata
+  use zoneinterfaces
+
   implicit none
   integer, intent(in) :: nfromslab, ntoslab
   type(slab_data), target, dimension(nfromslab) :: slabfrom
@@ -46,21 +38,11 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
 
   type(room_data), pointer :: toroom
   type(slab_data), pointer :: slab
-  type(flow_data), pointer :: slab_flow, entrain_flow
+  type(flow_data), pointer :: slab_flow, entrain_flow, dummy_flow
   real(kind=dd), pointer :: tslab
   real(kind=dd) :: tlower, tupper, f_lower, f_upper
   integer :: islab, from, to
   real(kind=dd), parameter :: dtempmin=1.0_dd
-  interface
-    subroutine entrain(flowroom,source_flow,entrain_flow,flowtype)
-    use precision
-    use zonedata
-    implicit none
-    type(room_data), pointer :: flowroom
-    type(flow_data), pointer :: source_flow, entrain_flow
-    integer, intent(in) :: flowtype
-    end subroutine entrain
-  end interface
 
   do islab = 1, nfromslab
     slab => slabfrom(islab)
@@ -68,7 +50,7 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
                                              ! take flow out of "from" room according to slab elevation
 
     from = slab%from
-    if(slab_flow%zeroflowflag)cycle
+    if(slab_flow%zero)cycle
     if(from.eq.0)cycle
     to = slab%to
 	  toroom => rooms(to)
@@ -92,11 +74,11 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
 
 	  entrain_flow = zeroflow
     if(to.eq.0)cycle
-	  if(slab_flow%zeroflowflag)cycle
+	  if(slab_flow%zero)cycle
 
 ! compute entrained vent flow
 
-    call entrain(toroom,slab_flow,entrain_flow,0)
+    call entrain(toroom,slab_flow,entrain_flow,dummy_flow,p_ventflow)
 
 ! put slab flow into "to" flow according to slab temperature
 
@@ -116,7 +98,7 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
     if(f_upper.ne.zero)hflow(to,upper) = hflow(to,upper) + f_upper*slab_flow
     if(f_lower.ne.zero)hflow(to,lower) = hflow(to,lower) + f_lower*slab_flow
 
-    if(.not.entrain_flow%zeroflowflag)then
+    if(.not.entrain_flow%zero)then
       if(entrain_flow%fromlower)then
         hflow(to,upper) = hflow(to,upper) + entrain_flow
         hflow(to,lower) = hflow(to,lower) - entrain_flow
@@ -278,9 +260,9 @@ subroutine getventslabs
         dpavg = twothirds*(dptop+dptopsq*dpbotsq+dpbot)/(dpbotsq+dptopsq)
       endif
       if(dpavg.eq.0.0_dd)then
-        slab_flow%zeroflowflag = .true.
+        slab_flow%zero = .true.
        else
-        slab_flow%zeroflowflag = .false.
+        slab_flow%zero = .false.
       endif
       if(slab_flow%density.lt.0.0)then
         write(6,*)"ut oh"

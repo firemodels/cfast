@@ -93,7 +93,7 @@ module zonedata
 
   real(kind=dd), parameter :: cp = 1004._dd, g=9.8_dd, cvent=0.7_dd
   real(kind=dd), parameter :: gamma=1.4_dd, cv=cp/gamma, rgas=cp-cv
-  real(kind=dd), parameter :: pabs_ref=101325._dd
+  real(kind=dd), parameter :: pabs_ref=101300._dd
   real(kind=dd) :: tamb, pamb
   real(kind=dd), parameter :: twothirds=2.0_dd/3.0_dd, zero=0.0_dd
   real(kind=dd), parameter :: onethird=1.0_dd/3.0_dd

@@ -58,10 +58,10 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
     qudot = totalflow(iroom,upper)%qdot
     mldot = totalflow(iroom,lower)%mdot
     mudot = totalflow(iroom,upper)%mdot
-#ifdef pp_solveoxy
-    oxyldot = totalflow(iroom,lower)%sdot(oxygen)
-    oxyudot = totalflow(iroom,upper)%sdot(oxygen)
-#endif
+    if(solveoxy)then
+      oxyldot = totalflow(iroom,lower)%sdot(oxygen)
+      oxyudot = totalflow(iroom,upper)%sdot(oxygen)
+    endif
     tu = r%layer(upper)%temperature
     tl = r%layer(lower)%temperature
     if(printresid.and.debugprint)then
@@ -97,10 +97,10 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
     xprime(iroom + offset_tl) = tlaydl
     xprime(iroom + offset_vu) = vlayd
     xprime(iroom + offset_tu) = tlaydu
-#ifdef pp_solveoxy
-    xprime(iroom + offset_oxyl) = oxyldot
-    xprime(iroom + offset_oxyu) = oxyudot
-#endif
+    if(solveoxy)then
+      xprime(iroom + offset_oxyl) = oxyldot
+      xprime(iroom + offset_oxyu) = oxyudot
+    endif
 
   end do
 

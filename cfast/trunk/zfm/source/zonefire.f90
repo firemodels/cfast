@@ -10,7 +10,8 @@ subroutine zonefire(filein,error)
     firstcall = .false.
   endif
   call initmm
-  call readdata(filein,error)
+  call readini
+  call loadcase(filein,error)
   if(error.ne.0)return
   call initamb
 !  call writedata

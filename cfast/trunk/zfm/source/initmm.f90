@@ -24,10 +24,10 @@ subroutine initmm
   zeroflow%sdot = 0.0_dd
   zeroflow%fromlower = .false.
   zeroflow%fromupper = .false.
-  zeroflow%zeroflowflag = .true.
+  zeroflow%zero = .true.
   
   amb_oxy_con = 0.23_dd
-  heat_c=18000000.0_dd
+  heat_c  = 18000000.0_dd
   heat_o2 = 13200000.0_dd
   o2limit = 0.10_dd
   chi_rad = 0.35_dd
@@ -38,6 +38,14 @@ subroutine initmm
   iprint = 0
   idump = 0
   debugprint = .false.
+  solveoxy = .false.
+  allwalls = .false.
+  allwallsmat = ""
+  plotfilebase = ""
+  smvfile=""
+  plotfile=""
+  csvfile=""
+  dumpfile=""
   call setstate(.true.)
 end subroutine initmm
 
@@ -62,11 +70,11 @@ subroutine initamb
   offset_tu = offset_tl + nrooms
   offset_oxyl = offset_tu + nrooms
   offset_oxyu = offset_oxyl + nrooms
-  neq = 4*nrooms
-#ifdef pp_solveoxy
-  neq = 6*nrooms
-#endif
-
+  if(solveoxy)then
+    neq = 6*nrooms
+   else
+    neq = 4*nrooms
+  endif
   ! allocate space for solver arrays and error tolerance arrays
 
   if(allocated(vatol))deallocate(vatol)

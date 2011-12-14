@@ -82,7 +82,7 @@ subroutine gethvacslabs
         endif
     		slab_flow%qdot =  slabtemp*cp*slab_flow%mdot
         slab_flow%sdot =  r%layer(layer)%s_con*slab_flow%mdot
-        slab_flow%zeroflowflag=.false.
+        slab_flow%zero=.false.
   	  endif
   	end do
 

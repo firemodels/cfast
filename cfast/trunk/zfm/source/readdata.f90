@@ -11,7 +11,7 @@ subroutine readini
   integer :: error
   character(len=256) :: line, line2
   
-  iin = 7 
+  iin = funit(70)
   rptol = 1.0d-5
   aptol = 1.0d-5
   rtol = 1.0d-5
@@ -55,9 +55,125 @@ subroutine readini
   return
 end  subroutine readini
 
-! --------------- readdata ----------------------
 
-subroutine readdata(filein,error)
+! --------------- loadcase ----------------------
+
+subroutine dumpcase(fileout,error,append)
+  use precision
+  use zonedata
+  implicit none
+  character(len=*), intent(in) :: fileout
+  integer, intent(out) :: error
+  logical, intent(in) :: append
+
+
+  integer :: outunit
+  type(room_data), pointer :: room
+  type(vent_data), pointer :: vent
+  type(fire_data), pointer :: fire
+  type(hvac_data), pointer :: h
+  integer :: iroom, i, ivent, ifire, ihvac
+
+  outunit = funit(70)
+  if(append)then
+    open(unit=outunit,file=fileout,position="append",iostat=error)
+   else
+    open(unit=outunit, file=fileout, status="replace",iostat=error)
+  endif
+  if(error.ne.0)return
+
+  if(append)go to 999
+  if(nrooms.gt.0)then
+    write(outunit,"(a)")"ROOMS"
+    write(outunit,*)nrooms
+    do iroom = 1, nrooms
+      room => rooms(iroom)
+      write(outunit,"(4e11.4)")room%z0,room%dx,room%dy,room%dz
+    end do
+  endif
+
+  if(nvents.gt.0)then
+    write(outunit,"(a)")"VENTS"
+    write(outunit,*)nvents
+    do ivent = 1, nvents
+      vent => vents(ivent)
+      write(outunit,"(i3,1x,i3,3(e13.6,1x))")vent%from,vent%to,vent%relbot,vent%reltop,vent%width
+    end do
+  endif
+
+  if(solveoxy)write(outunit,"(a)")"SOLVEOXY"
+
+  if(allwalls)then
+    write(outunit,"(a)")"ALLWALLS"
+    write(outunit,"(a)")trim(allwallsmat)
+  endif
+
+  if(nfires.gt.0)then
+    write(outunit,"(a)")"FIRES"
+    write(outunit,*)nfires
+    do ifire = 1, nfires
+      fire=>fires(ifire)
+      write(outunit,*)fire%room_number,fire%type,fire%z0
+    	if(fire%type.eq.constant)then
+        write(outunit,*)fire%q_pyrol(1)
+    	 elseif(fire%type.eq.general)then
+    	  write(outunit,*)fire%npoints
+    	  do i = 1, fire%npoints
+    	    write(outunit,"(e13.6,1x,e13.6)")fire%times(i),fire%q_pyrol(i)/1000.00_dd
+    	  end do
+      end if
+    end do
+  endif
+
+  if(nhvacs.gt.0)then
+    write(outunit,"(a)")"HVACS"
+    write(outunit,*)nhvacs
+    do ihvac = 1, nhvacs
+      h => hvacs(ihvac)
+      write(outunit,"(e13.6,1x,l2,1x,e13.6)")h%vfan,h%specifiedtemp,h%tfan
+      write(outunit,"(2(i3,1x,e13.6,1x,e13.6,1x))")h%fromroom,h%rel_frombot,h%rel_fromtop,h%toroom,h%rel_tobot,h%rel_totop
+    end do
+  endif
+
+  if(nrooms.gt.0)then
+    write(outunit,"(a)")"GEOM"
+    write(outunit,*)nrooms
+    do iroom = 1, nrooms
+      room => rooms(iroom)
+      write(outunit,"(i3,e13.6,1x,e13.6)")iroom,room%x0,room%y0
+    end do
+  endif
+
+  if(nvents.gt.0)then
+    write(outunit,"(a)")"VENTGEOM"
+    write(outunit,"(i3)")nvents
+    do ivent = 1, nvents
+      vent=>vents(ivent)
+      write(outunit,"(i3,1x,i3,1x,e13.6)")ivent,vent%face,vent%offset
+    end do
+  endif
+
+  if(plotfilebase.ne."")then
+    write(outunit,"(a)")"PLOTFILEBASE"
+    write(outunit,"(a)")trim(plotfilebase)
+  endif
+
+999 continue
+  write(outunit,"(a)")"TIME"
+  write(outunit,"(e13.6,1x,e13.6)")tnow,tfinal
+  do iroom = 1, nrooms
+    room => rooms(iroom)
+    write(outunit,"(4(e13.6,1x))")room%rel_pressure,room%rel_layer_height, &
+      room%layer(lower)%temperature,room%layer(upper)%temperature
+  end do
+
+  close(outunit)
+end subroutine dumpcase
+
+
+! --------------- loadcase ----------------------
+
+recursive subroutine loadcase(filein,error)
   use precision
   use zonedata
   implicit none
@@ -71,19 +187,16 @@ subroutine readdata(filein,error)
   integer :: iin, npoints, i
   real(kind=dd) :: t1,tr1,dt,tr2,t2,t3,t4,qlevel,x,y,offset
   real(kind=dd) :: dx, dy
-  character(len=256) :: line,line2
-  character(len=10) :: wallmat
-  character(len=128) :: plotfilebase
+  character(len=256) :: line,line2,loadfile
   integer :: j, mrooms, face,mvents
   integer :: walltype
+  character(len=30) :: wallmat
   integer :: getwalltype
 
   ! read in and allocate room data
-  iin = 5  
+  iin = funit(70)
   error = 0
   
-  call readini
-
   open(unit=iin, file=filein) 
 
   do
@@ -167,26 +280,39 @@ subroutine readdata(filein,error)
     endif
 
     if(line(1:5).eq."DEBUG")then
-      debugprint=.false.
+      debugprint=.true.
+      cycle
+    endif
+
+    if(line(1:8).eq."SOLVEOXY")then
+      solveoxy=.true.
+      cycle
+    endif
+
+    if(line(1:4).eq."LOAD")then
+      read(iin,"(a)")loadfile
+      call loadcase(loadfile,error)
     endif
 
     if(line(1:8).eq."ALLWALLS")then
-      read(5,"(a)")wallmat
-      walltype = getwalltype(wallmat)
+      allwalls=.true.
+      read(iin,"(a)")allwallsmat
+      walltype = getwalltype(allwallsmat)
       do iroom=1, nrooms
         do iw = 1, 4
           rooms(iroom)%wall(iw)%wallmatindex=walltype
-          rooms(iroom)%wall(iw)%wallmat=wallmat
+          rooms(iroom)%wall(iw)%wallmat=allwallsmat
         end do
       end do
       cycle
     endif
 
     if(line(1:5).eq."WALLS")then
+      allwalls = .false.
       read(iin,*)nwalls
       do iwall=1,nwalls
-        read(5,*)iroom,iw
-        read(5,"(a)")wallmat
+        read(iin,*)iroom,iw
+        read(iin,"(a)")wallmat
         if(iroom.ge.1.and.iroom.le.nrooms)then
           walltype = getwalltype(wallmat)
           if(iw.ge.1.and.iw.le.3)then
@@ -204,7 +330,7 @@ subroutine readdata(filein,error)
       cycle
     endif
 
-    if(line(1:4).eq."ROOMGEOM")then
+    if(line(1:4).eq."GEOM")then
       read(iin,*)mrooms
       do iroom = 1, mrooms
         read(iin,*)j,x,y
@@ -235,6 +361,7 @@ subroutine readdata(filein,error)
       csvfile=trim(plotfilebase)//'.csv'
       smvfile=trim(plotfilebase)//'.smv'
       plotfile=trim(plotfilebase)//'.zfm'
+      dumpfile=trim(plotfilebase)//'.dmp'
       cycle
     endif
 
@@ -273,11 +400,11 @@ subroutine readdata(filein,error)
 
   ! read(iin,*)nspecies
     
-#ifdef pp_solveoxy
-    nspecies = 1
-#else
-    nspecies = 0
-#endif
+    if(solveoxy)then
+      nspecies = 1
+     else
+      nspecies = 0
+    endif
 
   ! read in fire info
 
@@ -426,7 +553,7 @@ subroutine readdata(filein,error)
 999 continue
   close(iin)
   tnow = tstart
-end subroutine readdata
+end subroutine loadcase
 
 ! --------------- writedata ----------------------
 

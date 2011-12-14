@@ -38,7 +38,7 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
 
   type(room_data), pointer :: toroom
   type(slab_data), pointer :: slab
-  type(flow_data), pointer :: slab_flow, entrain_flow, dummy_flow
+  type(flow_data), pointer :: slab_flow, entrain_flow
   real(kind=dd), pointer :: tslab
   real(kind=dd) :: tlower, tupper, f_lower, f_upper
   integer :: islab, from, to

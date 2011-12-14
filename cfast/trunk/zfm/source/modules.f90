@@ -4,8 +4,9 @@ module zonedata
   implicit none
   save
 
-  integer, parameter :: maxspecies=1, mass=-1, enthalpy=0, oxygen=1
-  integer, parameter :: nitrogen=2, fuel=3, co=4, co2=5, soot=6	
+  integer, parameter :: maxspecies=4, mass=-1, enthalpy=0, oxygen=1
+ ! integer, parameter :: nitrogen=2, fuel=3, co=4, co2=5, soot=6	
+  integer, parameter :: co=2, co2=3, smoke=4
 
   type zone_data
     real(kind=dd) :: temperature, density, volume, mass, o2index
@@ -20,7 +21,9 @@ module zonedata
 
   type fire_data
     integer :: room_number, type
+    real(kind=dd), dimension(4) :: taufl, taufu, angle
     real(kind=dd) :: heat_c, temp, x0,y0,z0,dz, time_rate, time_start
+    real(kind=dd), dimension(maxspecies) :: yield
     real(kind=dd) :: mtotal, qtotal, qconvec, qrad, chi_rad
     real(kind=dd), pointer, dimension(:) :: times, q_pyrol
 	  integer :: npoints
@@ -30,7 +33,7 @@ module zonedata
   type wall_data
     integer :: n
     real(kind=dd), pointer, dimension(:) :: dx, wtemp
-    real(kind=dd) :: k, rho, c
+    real(kind=dd) :: k, rho, c, emis
     integer :: dir,from,to,wallmatindex
     character(len=30) :: wallmat
     real(kind=dd) :: temp, area, qdot
@@ -39,12 +42,14 @@ module zonedata
 
   type room_data
     type(zone_data) :: layer(2)
+  	integer :: singlezone
     real(kind=dd) :: x0, y0, z0, &
                      dx, dy, dz, &
                      abs_pressure, rel_pressure, &
                      rel_layer_height, abs_layer_height, &
                      VU, VL, volume, volmax, volmin,    &
-                     upper_area, lower_area, floor_area
+                     upper_area, lower_area, floor_area, &
+                     fig14
     type(wall_data) :: wall(4)
   end type room_data
   type slab_data
@@ -77,7 +82,7 @@ module zonedata
   integer, parameter :: p_coldwall=-2, p_thinwall=-1, p_thickwall=0, p_nowall=-3
   integer, parameter :: p_ceiling=1, p_floor=2, p_wall=3
   integer, parameter :: p_fireflow=1, p_ventflow=2
-  logical :: printresid, debugprint, solveoxy
+  logical :: printresid, debugprint, solveoxy, solveprods
   type(room_data), allocatable, target, dimension(:) :: rooms
   type(vent_data), allocatable, target, dimension(:) :: vents
   type(fire_data), allocatable, target, dimension(:) :: fires
@@ -93,20 +98,28 @@ module zonedata
   real(kind=dd), parameter :: twothirds=2.0_dd/3.0_dd, zero=0.0_dd
   real(kind=dd), parameter :: onethird=1.0_dd/3.0_dd
   real(kind=dd) :: rhoamb
+  real(kind=dd), dimension(2) :: absorb
 
   integer :: offset_p, offset_vu, offset_tl, offset_tu, offset_oxyl, offset_oxyu
+  integer, dimension(maxspecies,2) :: offset_SPECIES
+  integer :: offset_col, offset_cou, offset_co2l, offset_co2u, offset_smokel, offset_smokeu
+  integer, dimension(:,:), pointer :: nabor, nabor2
+
   integer, parameter :: constant=1, tsquared=2, general=3
   real(kind=dd) :: tnow, tstart, tfinal, tprint, tdump, tplot, tout
   real(kind=dd) :: tstartprint, tstartplot, tstartdump
+  real(kind=dd) :: pi
   integer :: iprint, iplot, idump
   real(kind=dd) :: dprint=1.0_dd, ddump=10.0_dd, dplot=10.0_dd
   real(kind=dd) :: heat_c, heat_o2, chi_rad, amb_oxy_con, o2limit
+  real(kind=dd), dimension(maxspecies) :: yield_SPECIES
   integer :: nvents, nrooms, nspecies, nfires, noldfires, nhvacs, neq, lrw, liw
   real(kind=dd), dimension(:), allocatable :: rwork
   integer, dimension(:), allocatable :: iwork
+  integer :: n_single
 
   real(kind=dd), allocatable, dimension(:) :: vatol, vrtol, & 
-         pprime, p, pdzero, delta, xpsolve, dummysoln, zerosoln
+         pprime, p, p_compact, pdzero, delta, xpsolve, dummysoln, zerosoln
   real(kind=dd) :: aptol, rptol, atol, rtol
   character(len=128) :: smvfile, plotfile, csvfile, plotfilebase, dumpfile
   character(len=30) :: allwallsmat
@@ -265,26 +278,6 @@ subroutine assignflow(flowout,flowin)
   flowout%sdot(1:nspecies) = flowin%sdot(1:nspecies)
   flowout%zero = flowin%zero
 end subroutine assignflow
-
-integer function funit(unit)
-  implicit none
-
-  integer, intent(in) :: unit
-  integer, parameter :: maxio=32767
-  logical :: opened
-  integer :: itemp
-
-  itemp = unit
-  opened = .false.
-  do
-    inquire(unit=itemp,opened=opened)
-    if(.not.opened)exit
-    itemp = itemp + 1
-  end do
-  funit=itemp
-  return
-end function funit
-
 
 end module zonedata
 

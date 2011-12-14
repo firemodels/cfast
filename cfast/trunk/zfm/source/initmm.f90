@@ -27,9 +27,13 @@ subroutine initmm
   zeroflow%zero = .true.
   
   nspecies = 0
+  n_single = 0
   amb_oxy_con = 0.23_dd
-  heat_c  = 18000000.0_dd
+  heat_c  = 45000000.0_dd
   heat_o2 = 13200000.0_dd
+  yield_SPECIES(co) = 1.0
+  yield_SPECIES(co2) = 1.0
+  yield_SPECIES(smoke) = 1.0
   o2limit = 0.10_dd
   chi_rad = 0.35_dd
   tprint = 0.0_dd
@@ -40,6 +44,7 @@ subroutine initmm
   idump = 0
   debugprint = .false.
   solveoxy = .false.
+  solveprods = .false.
   allwalls = .false.
   allwallsmat = ""
   plotfilebase = ""
@@ -47,6 +52,7 @@ subroutine initmm
   plotfile=""
   csvfile=""
   dumpfile=""
+  pi = 4.0d0 * atan(1.0_dd)
   call setstate(.true.)
 end subroutine initmm
 
@@ -63,19 +69,14 @@ subroutine initamb
   type(zone_data), pointer :: layer
   type(fire_data), pointer :: f
   type(wall_data), pointer :: w
-  integer :: error, ilay , ivent, ifire, iwall
-  
-  offset_p = 0  ! define offsets used to access solver array
-  offset_vu = offset_p + nrooms
-  offset_tl = offset_vu + nrooms
-  offset_tu = offset_tl + nrooms
-  offset_oxyl = offset_tu + nrooms
-  offset_oxyu = offset_oxyl + nrooms
-  if(solveoxy)then
-    neq = 6*nrooms
-   else
-    neq = 4*nrooms
-  endif
+  integer :: error, ilay , ivent, ifire, iwall, i, ispec
+
+  real, dimension(nrooms) :: x0, dx, y0, dy, z0, dz
+  integer, dimension(nvents) :: vfrom, vto, vface
+  real, dimension(nvents) :: vwidth, voffset, vrelbot, vreltop
+  integer, dimension(nfires) :: froom_number
+  real, dimension(nfires) :: fx0, fy0, fz0
+
   ! allocate space for solver arrays and error tolerance arrays
 
   if(allocated(vatol))deallocate(vatol)
@@ -88,14 +89,58 @@ subroutine initamb
   if(allocated(zerosoln))deallocate(zerosoln)
   if(allocated(dummysoln))deallocate(dummysoln)
 
+  neq = 4*nrooms
+  if(solveoxy)neq = neq + 2*nrooms
+  if(solveprods)neq = neq + 6*nrooms
+
   allocate(vatol(neq),vrtol(neq), pprime(neq), p(neq), & 
            pdzero(neq), delta(neq), xpsolve(neq),&
            zerosoln(neq), dummysoln(neq), stat=error)
+  i=0
+  n_single = 0
+  do iroom= 1, nrooms
+    r => rooms(iroom)
+    if(r%singlezone.eq.1)n_single = n_single + 1
+  end do
+
+  offset_p = 0  ! define offsets used to access solver array
+  offset_vu = offset_p + nrooms
+  offset_tl = offset_vu + nrooms - n_single
+  offset_tu = offset_tl + nrooms - n_single
+  offset_oxyl = offset_tu + nrooms 
+  offset_oxyu = offset_oxyl + nrooms - n_single
+  offset_col = offset_oxyu + nrooms 
+  offset_cou = offset_col + nrooms - n_single
+  offset_co2l = offset_cou + nrooms 
+  offset_co2u = offset_co2l + nrooms - n_single
+  offset_smokel = offset_co2u + nrooms 
+  offset_smokeu = offset_smokel + nrooms - n_single
+
+  offset_SPECIES(oxygen,upper)=offset_oxyu
+  offset_SPECIES(co,upper)    =offset_cou
+  offset_SPECIES(co2,upper)   =offset_co2u
+  offset_SPECIES(smoke,upper) =offset_smokeu
+  offset_SPECIES(oxygen,lower)=offset_oxyl
+  offset_SPECIES(co,lower)    =offset_col
+  offset_SPECIES(co2,lower)   =offset_co2l
+  offset_SPECIES(smoke,lower) =offset_smokel
+
+
+
+
+
+  neq = neq - 2*n_single
+  if(solveoxy)neq = neq - n_single
+  if(solveprods)neq = neq - (maxspecies-1)*n_single
+
+
   zerosoln = 0.0_dd
   if(error.ne.0)then
     write(6,*)"error allocating solver arrays"
     stop
   endif
+  absorb(lower) = 0.01
+  absorb(upper) = 0.50
   do iroom = 1, nrooms
     r => rooms(iroom)
 
@@ -113,6 +158,10 @@ subroutine initamb
     	layer%mass = layer%density*layer%volume
       layer%s_mass(oxygen) = layer%mass*amb_oxy_con
       layer%s_con(oxygen) = amb_oxy_con
+      do ispec = 2, maxspecies
+        layer%s_mass(ispec) = 0.0
+        layer%s_con(ispec) = 0.0
+      end do
     end do
 
     do iwall=1,4
@@ -141,42 +190,36 @@ subroutine initamb
   end do
 
   if(plotfile.ne."")then
-    open(unit=plotunit,file=plotfile,form="unformatted")
-    open(unit=smvunit,file=smvfile)
-    write(smvunit,"(a)")"ZONE"
-    write(smvunit,"(a)")plotfile
-    write(smvunit,"(a)")"P"
-    write(smvunit,"(a)")"Pa"
-    write(smvunit,"(a)")"Layer Height"
-    write(smvunit,"(a)")"ylay"
-    write(smvunit,"(a)")"m"
-    write(smvunit,"(a)")"TEMPERATURE"                   
-    write(smvunit,"(a)")"TEMP"                          
-    write(smvunit,"(a)")"C"                             
-    write(smvunit,"(a)")"TEMPERATURE"
-    write(smvunit,"(a)")"TEMP"
-    write(smvunit,"(a)")"C"
-    write(smvunit,"(a)")"AMBIENT"
-    write(smvunit,"(e13.6,1x,e13.6,1x,e13.6)")pabs_ref,pamb,tamb
     do iroom = 1, nrooms
       r=>rooms(iroom)
-      write(smvunit,"(a)")"ROOM"
-      write(smvunit,"(e11.4,1x,e11.4,1x,e11.4)")r%dx,r%dy,r%dz
-      write(smvunit,"(e11.4,1x,e11.4,1x,e11.4)")r%x0,r%y0,r%z0
+      x0(iroom) = r%x0
+      y0(iroom) = r%y0
+      z0(iroom) = r%z0
+      dx(iroom) = r%dx
+      dy(iroom) = r%dy
+      dz(iroom) = r%dz
     end do
     do ivent = 1, nvents
       v=>vents(ivent)
-      write(smvunit,"(a)")"VENTGEOM"
-      write(smvunit,"(i3,1x,i3,1x,i3,1x,3(e11.4,1x),e11.4)")v%from,v%to,v%face,v%width,v%offset,v%relbot,v%reltop
+      vfrom(ivent) = v%from
+      vto(ivent) = v%to
+      vface(ivent) = v%face
+      vwidth(ivent) = v%width
+      voffset(ivent) = v%offset
+      vrelbot(ivent) = v%relbot
+      vreltop(ivent) = v%reltop
     end do
     do ifire = 1, nfires
       f=>fires(ifire)
-      write(smvunit,"(a)")"FIRE"
-      write(smvunit,"(i3,1x,e11.4,1x,e11.4,1x,e11.4)")f%room_number,f%x0,f%y0,f%z0
+      froom_number(ifire) = f%room_number
+      fx0(ifire) = f%x0
+      fy0(ifire) = f%y0
+      fz0(ifire) = f%z0
     end do
 
-    close(smvunit)
-
+    call smvout(smvfile,plotfile,pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
+                          nvents,vfrom,vto,vface,vwidth,voffset,vrelbot,vreltop, &
+                          nfires,froom_number,fx0,fy0,fz0)
     open(unit=csvunit,file=csvfile)
 
 

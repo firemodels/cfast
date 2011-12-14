@@ -104,6 +104,7 @@ subroutine setfire(qtotal,fire)
 
   type(fire_data), pointer :: fire
   type(flow_data), pointer :: fire_flow
+  integer :: ispec
 
   fire_flow => fire%fire_flow
 
@@ -119,6 +120,11 @@ subroutine setfire(qtotal,fire)
   fire_flow%temperature = fire%qconvec/cp/fire%mtotal
   fire_flow%density = pabs_ref/rgas/fire_flow%temperature
   if(solveoxy)fire_flow%sdot(oxygen) = -qtotal/heat_o2
+  if(solveprods)then
+    do ispec = 2, maxspecies
+      fire_flow%sdot(ispec) = qtotal/fire%heat_c*fire%yield(ispec)
+    end do
+  endif
 
   return
 end subroutine setfire
@@ -281,7 +287,7 @@ subroutine v_entrain(flowroom,source_flow,entrain_flow)
   tentrain = entrainsourcelayer%temperature
   tdest = entraindestlayer%temperature
   tsource = source_flow%temperature
-  if(solveoxy)oxysource = entrainsourcelayer%s_con(oxygen)
+!  if(solveoxy)oxysource = entrainsourcelayer%s_con(oxygen)
   qsource = abs(cp*(tsource-tentrain)*source_flow%mdot)
 
   entrain_flow%zero = .true.
@@ -303,7 +309,7 @@ subroutine v_entrain(flowroom,source_flow,entrain_flow)
   entrain_flow%mdot = mentrain
   entrain_flow%qdot = qentrain
   entrain_flow%qtotal = qentrain
-  if(solveoxy)entrain_flow%sdot(oxygen)=mentrain*oxysource
+ ! if(solveoxy)entrain_flow%sdot(oxygen)=mentrain*oxysource
   entrain_flow%temperature = tentrain
   entrain_flow%density=flowroom%abs_pressure/(rgas*tentrain)
   entrain_flow%sdot(1:nspecies) = entrainsourcelayer%s_con(1:nspecies)*mentrain

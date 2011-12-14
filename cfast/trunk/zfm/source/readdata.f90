@@ -10,6 +10,7 @@ subroutine readini
   integer :: iin
   integer :: error
   character(len=256) :: line, line2
+  integer funit
   
   iin = funit(70)
   rptol = 1.0d-5
@@ -56,7 +57,7 @@ subroutine readini
 end  subroutine readini
 
 
-! --------------- loadcase ----------------------
+! --------------- dumpcase ----------------------
 
 subroutine dumpcase(fileout,error,append)
   use precision
@@ -66,7 +67,6 @@ subroutine dumpcase(fileout,error,append)
   integer, intent(out) :: error
   logical, intent(in) :: append
 
-
   integer :: outunit
   type(room_data), pointer :: room
   type(vent_data), pointer :: vent
@@ -74,6 +74,8 @@ subroutine dumpcase(fileout,error,append)
   type(hvac_data), pointer :: h
   type(zone_data), pointer :: llay, ulay
   integer :: iroom, i, ivent, ifire, ihvac, iwall, nwalls
+  integer :: funit
+  integer :: ispec
 
   outunit = funit(70)
   if(append)then
@@ -103,6 +105,8 @@ subroutine dumpcase(fileout,error,append)
   endif
 
   if(solveoxy)write(outunit,"(a)")"SOLVEOXY"
+  if(solveprods)write(outunit,"(a)")"SOLVEPRODS"
+
 
   if(allwalls)then
     write(outunit,"(a)")"ALLWALLS"
@@ -185,7 +189,12 @@ subroutine dumpcase(fileout,error,append)
     room => rooms(iroom)
     llay => room%layer(lower)
     ulay => room%layer(upper)
-    if(solveoxy)then
+    if(solveprods)then
+      write(outunit,"(12(e13.6,1x))")room%rel_pressure,room%rel_layer_height, &
+                                    llay%temperature,ulay%temperature, &
+                                    llay%s_con(oxygen),ulay%s_con(oxygen), &
+                                    (llay%s_con(ispec),ulay%s_con(ispec),ispec=2,maxspecies)
+     else if(solveoxy.and..not.solveprods)then
       write(outunit,"(6(e13.6,1x))")room%rel_pressure,room%rel_layer_height, &
                                     llay%temperature,ulay%temperature, &
                                     llay%s_con(oxygen),ulay%s_con(oxygen)
@@ -221,6 +230,18 @@ recursive subroutine loadcase(filein,error)
   integer :: walltype
   character(len=30) :: wallmat
   integer :: getwalltype
+  integer, parameter :: stempmax=1000
+  integer, dimension(stempmax) :: stemp
+  integer :: ns
+  integer :: iiroom, iifar
+  integer :: funit
+  integer :: ispec
+  real(kind=dd), dimension(maxspecies) :: yield
+  real(kind=dd) :: h_c
+  integer :: fireflag
+
+!  real(kind=dd) :: rdparfig
+
 
   ! read in and allocate room data
   iin = funit(70)
@@ -238,7 +259,18 @@ recursive subroutine loadcase(filein,error)
       read(iin,*)nrooms 
       if(allocated(rooms))deallocate(rooms)
       error=0
-      if(nrooms.gt.0)allocate(rooms(0:nrooms),stat=error)
+      if(nrooms.gt.0)then
+        allocate(rooms(0:nrooms),stat=error)
+        allocate(nabor(nrooms,nrooms),nabor2(nrooms,nrooms))
+        nabor = 0
+        nabor2 = 0
+        do i = 1, nrooms
+          nabor(i,i) = 1
+        end do
+        do i = 1, nrooms
+          write(6,*)(nabor(i,j),j=1,nrooms)
+        end do
+      endif
       if(nrooms.le.0)then
         write(6,*)"number of rooms must be greater than zero"
         stop
@@ -272,10 +304,18 @@ recursive subroutine loadcase(filein,error)
       ulay%density = rhoamb
       llay%volume = room%floor_area*room%dz
       llay%mass = rhoamb*room%volume
-      llay%s_mass = llay%mass*amb_oxy_con
-      llay%s_con = amb_oxy_con
-      ulay%s_mass = ulay%mass*amb_oxy_con
-      ulay%s_con = amb_oxy_con
+      llay%s_mass(oxygen) = llay%mass*amb_oxy_con
+      llay%s_con(oxygen) = amb_oxy_con
+      ulay%s_mass(oxygen) = ulay%mass*amb_oxy_con
+      ulay%s_con(oxygen) = amb_oxy_con
+
+      do ispec = 2, maxspecies
+        llay%s_mass(ispec) = 0.0_dd
+        llay%s_con(ispec) = 0.0_dd
+        ulay%s_mass(ispec) = 0.0_dd
+        ulay%s_con(ispec) = 0.0_dd
+      end do
+
       ulay%volume = 0.0_dd
       ulay%mass = 0.0_dd
 
@@ -284,12 +324,14 @@ recursive subroutine loadcase(filein,error)
       do iroom = 1, nrooms
         room => rooms(iroom)
         read(iin,*)room%z0,room%dx,room%dy,room%dz
+!        room%fig14=rdparfig(room%dx,room%dy,room%dz)
+        room%singlezone=0
         do iwall = 1, 4
           room%wall(iwall)%wallmatindex = p_nowall
           room%wall(iwall)%defined = .false.
         end do
-        room%x0=0.0
-        room%y0=0.0
+        room%x0=0.0_dd
+        room%y0=0.0_dd
       end do
 
 ! allocate space for horizontal vent and fire flow data structures
@@ -312,14 +354,33 @@ recursive subroutine loadcase(filein,error)
       cycle
     endif
 
+    if(line(1:6).eq."SINGLE")then
+      read(iin,*)ns,(stemp(i),i=1,min(ns,stempmax))
+      if(nrooms.le.0)continue
+      do i = 1, min(ns,stempmax)
+        iroom = stemp(i)
+        if(iroom.ge.1.and.iroom.le.nrooms)rooms(iroom)%singlezone = 1
+      end do
+    endif
+
     if(line(1:5).eq."DEBUG")then
       debugprint=.true.
       cycle
     endif
 
-    if(line(1:8).eq."SOLVEOXY")then
+    if(line(1:8).eq."SOLVEOXY".and..not.solveoxy)then
       solveoxy=.true.
-      nspecies = 1
+      nspecies = nspecies + 1
+      cycle
+    endif
+
+    if(line(1:10).eq."SOLVEPRODS".and..not.solveprods)then
+      solveprods=.true.
+      nspecies = nspecies + 2
+      if(.not.solveoxy)then
+        solveoxy = .true.
+        nspecies = nspecies+1
+      endif
       cycle
     endif
 
@@ -427,12 +488,39 @@ recursive subroutine loadcase(filein,error)
       	  write(6,*)"vent error: from room out of bounds"
       	  stop
       	endif
+        if(vent%from.ge.1.and.vent%from.le.nrooms)then
+          if(vent%to.ge.1.and.vent%to.le.nrooms)then
+            nabor(vent%from,vent%to)=1
+            nabor(vent%to,vent%from)=1
+          endif
+        endif
       	if(vent%to.eq.vent%from.or.vent%to.lt.0.or.vent%to.gt.nrooms)then
       	  write(6,*)"vent error: to room out of bounds"
       	  error=2
       	endif
       end do
       cycle
+    endif
+
+    if(line(1:8).eq."NEARROOM")then
+      read(iin,*)iiroom,iifar
+      nabor2=nabor
+      if(iifar.gt.1.and.iifar.le.nrooms)then
+        do i = 1, iifar-1
+          call matmult(nabor,nabor2,nabor2,nrooms)
+        end do
+      endif
+      do i=1, nrooms
+        room => rooms(i)
+        if(nabor2(iiroom,i).eq.1)then
+          room%singlezone=0
+          write(6,*)"i=",i,"nzones=",2
+         else
+          write(6,*)"i=",i,"nzones=",1
+          room%singlezone=1
+        endif
+      end do
+      deallocate(nabor,nabor2)
     endif
   
   ! read in species data 
@@ -457,7 +545,19 @@ recursive subroutine loadcase(filein,error)
       noldfires=nfires
       do ifire = 1, nfires
         fire=>fires(ifire)
-        read(iin,*)iroom,fire%type,fire%z0
+        read(iin,*)iroom,fire%type,fire%z0,fireflag,h_c,(yield(ispec),ispec=2,maxspecies)
+        if(fireflag.eq.1)then
+          fire%heat_c=h_c
+          do ispec=2, maxspecies
+            fire%yield(ispec) = yield(ispec)
+          end do
+         else
+          fire%heat_c=heat_c
+          do ispec=2, maxspecies
+            fire%yield(ispec) = yield_SPECIES(ispec)
+          end do
+        endif
+
         fire%room_number = iroom
         dx=rooms(iroom)%dx*0.50_dd
         dy=rooms(iroom)%dy*0.50_dd
@@ -577,14 +677,20 @@ recursive subroutine loadcase(filein,error)
         room => rooms(iroom)
         llay => room%layer(lower)
         ulay => room%layer(upper)
-        if(solveoxy)then
+        if(solveprods)then
     	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
-            llay%temperature,ulay%temperature,&
-            llay%s_con(oxygen),ulay%s_con(oxygen)
+           llay%temperature,ulay%temperature,&
+           llay%s_con(oxygen),ulay%s_con(oxygen),&
+           (llay%s_con(ispec),ulay%s_con(ispec),ispec=2,maxspecies)
+         else if(solveoxy.and..not.solveprods)then
+    	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
+           llay%temperature,ulay%temperature,&
+           llay%s_con(oxygen),ulay%s_con(oxygen)
          else
     	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
-            llay%temperature,ulay%temperature
+           llay%temperature,ulay%temperature
         endif
+
       end do
       cycle
     endif
@@ -604,7 +710,7 @@ subroutine writedata
   type(vent_data), pointer :: vent
   type(fire_data), pointer :: fire
   type(hvac_data), pointer :: h
-  integer :: error, iroom, ivent, ifire, ihvac
+  integer :: iroom, ivent, ifire, ihvac
 
   ! read in and allocate room data 
 
@@ -668,3 +774,21 @@ integer function getwalltype(name)
   endif
 
 end function getwalltype
+
+subroutine matmult(mat,mat2,mat_dest,nrooms)
+implicit none
+integer, intent(in) :: nrooms
+integer, dimension(nrooms,nrooms) :: mat, mat2, mat_dest
+integer, dimension(nrooms,nrooms) :: mat_temp
+integer :: i, j, k
+mat_temp=0
+do i = 1, nrooms
+do j = 1, nrooms
+do k = 1, nrooms
+mat_temp(i,j) = mat_temp(i,j) + mat(i,k)*mat2(k,j)
+end do
+end do
+end do
+mat_dest=mat_temp
+return
+end subroutine matmult

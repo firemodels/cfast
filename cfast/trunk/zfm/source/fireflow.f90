@@ -32,40 +32,33 @@ subroutine getfires
   integer :: ifire
   type(fire_data), pointer :: fire
   type(room_data), pointer :: fireroom
-  type(flow_data), pointer :: fire_flow, entrain_flow, plume_flow
-  real(kind=dd), pointer :: mfire, qfire
-  real(kind=dd) :: tentrain, zlength
+  type(flow_data), pointer :: fire_flow, entrain_flow
+  real(kind=dd), pointer :: mfire
+
 ! compute fire flow
 
    do ifire = 1, nfires
      fire => fires(ifire)
      mfire => fire%fire_flow%mdot
-     qfire => fire%fire_flow%qdot
 	   fireroom => rooms(fire%room_number)
-	   tentrain = fireroom%layer(lower)%temperature
-	   zlength = fireroom%rel_layer_height
 	   fire_flow => fire%fire_flow
 	   entrain_flow => fire%entrain_flow
-	   plume_flow => fire%plume_flow
 
 	   if(mfire.eq.0.0_dd)then
        fire_flow%zero = .true.
        entrain_flow%zero = .true.
-       plume_flow%zero = .true.
 	     cycle
 	   endif
 
      fire_flow%zero = .false.
      entrain_flow%zero = .false.
-     plume_flow%zero = .false.
 
 	   fire_flow%rel_height = fire%z0
-	   fire_flow%abs_height = fire%z0 + rooms(fire%room_number)%z0
+	   fire_flow%abs_height = fire%z0 + fireroom%z0
 
 ! compute entrainment flow
 
 	   call f_entrain(fireroom,fire)
-	   plume_flow = fire_flow + entrain_flow
    end do
 
 end subroutine getfires
@@ -143,12 +136,12 @@ subroutine f_entrain(flowroom,fire)
   type(fire_data), pointer :: fire
 
   real(kind=dd) :: qtotal,qfire,mfire,zl,zu
-  real(kind=dd) :: mentrain, maxentrain, qentrain, muentrain
+  real(kind=dd) :: mentrain, qentrain, muentrain
   type(zone_data), pointer :: lowerlayer, upperlayer
   real(kind=dd) :: tfire, tupper, tentrain
   real(kind=dd) :: oxyl, oxyu
-  real(kind=dd) :: qtotal_oxy, qfire_new, relerror, dmldq, dmudq
-  integer :: i, numiters
+  real(kind=dd) :: qtotal_oxy, qfire_new, relerror, dmldq, dmudq, factor
+  integer :: i
 
   fire_flow => fire%fire_flow
   entrain_flow => fire%entrain_flow
@@ -166,40 +159,63 @@ subroutine f_entrain(flowroom,fire)
 
   qfire = fire_flow%qdot
   mfire = fire_flow%mdot
+  qtotal = fire_flow%qtotal
 
   entrain_flow%zero = .false.
-  call entrainfl(zl,qfire,mentrain,dmldq)
-  numiters = 0
+  factor = -1.0_dd
+  if(.not.solveoxy)call entrainfl(zl,qfire,mentrain,dmldq,factor)
   if(solveoxy)then
     oxyl = lowerlayer%s_con(oxygen)
-    oxyl = oxyl*0.50_dd*(tanh(800.0_dd*(oxyl-o2limit)-4.0_dd)+1.0_dd)
-    qtotal = fire_flow%qtotal
+    oxyl = oxyl*(tanh(800.0_dd*(oxyl-o2limit)-4.0_dd)+1.0_dd)/2.0_dd
+    oxyu = upperlayer%s_con(oxygen)
+    oxyu = oxyu*(tanh(800.0_dd*(oxyu-o2limit)-4.0_dd)+1.0_dd)/2.0_dd
+    factor = (1.0_dd-fire%chi_rad)*heat_o2*oxyl
+
+    call entrainfl(zl,qfire,mentrain,dmldq,factor)
     qtotal_oxy = heat_o2*oxyl*mentrain
-    if(qtotal_oxy.lt.qtotal)then
-      oxyu = upperlayer%s_con(oxygen)
-      oxyu = oxyu*0.50_dd*(tanh(800.0_dd*(oxyu-o2limit)-4.0_dd)+1.0_dd)
-      call entrainfl(zu,qfire,muentrain,dmudq)
+    dmudq = 0.0_dd
+    if(oxyu.gt.0.0_dd)then
+      factor = -1.0_dd
+      call entrainfl(zu,qfire,muentrain,dmudq,factor)
       muentrain = muentrain - mentrain  
-      qtotal_oxy = heat_o2*(oxyl*mentrain + oxyu*muentrain)
-      qfire_new = (1.0_dd-fire%chi_rad)*qtotal_oxy
-      if(qtotal_oxy.lt.qtotal)then
-        do i = 1, 5
-          numiters = i
-          qfire = qfire_new
-          call entrainfl(zl,qfire,mentrain,dmldq)
-          call entrainfl(zu,qfire,muentrain,dmudq)
-          muentrain = muentrain - mentrain
+      dmudq = dmudq - dmldq  
+      qtotal_oxy = qtotal_oxy + heat_o2*oxyu*muentrain
+    endif
+
+    factor = -1.0_dd
+    qfire_new = (1.0_dd-fire%chi_rad)*qtotal_oxy
+    relerror=0.0_dd
+    if(qfire_new.ne.0.0_dd)relerror = abs( (qfire_new-qfire)/qfire_new )
+    if(qtotal_oxy.lt.qtotal)then
+      do i = 1, 5
+        qfire = qfire_new
+        if(relerror.lt.0.000001_dd)then
+          if((1.0_dd-fire%chi_rad).ne.0.0_dd)qtotal = qfire/(1.0_dd-fire%chi_rad)
+          exit
+        endif
+
+        factor = -1.0_dd
+        call entrainfl(zl,qfire,mentrain,dmldq,factor)
+        qtotal_oxy = heat_o2*oxyl*mentrain
+        dmudq = 0.0_dd
+        if(oxyu.gt.0.0_dd)then
+          factor = -1.0_dd
+          call entrainfl(zu,qfire,muentrain,dmudq,factor)
+          muentrain = muentrain - mentrain  
           dmudq = dmudq - dmldq  
-          qtotal_oxy = heat_o2*(oxyl*mentrain+oxyu*muentrain) 
-          qtotal = qtotal_oxy
-          qfire_new = (1.0_dd-fire%chi_rad)*qtotal_oxy  
-          qfire_new = qfire - (qfire-qfire_new)/&
-          (1.0_dd - heat_o2*(1.0_dd-fire%chi_rad)*(oxyl*dmldq - oxyu*dmudq))
-          if(qfire_new.eq.0.0)exit
-          relerror = abs((qfire_new-qfire)/qfire_new)
-          if(relerror.lt.0.0001_dd)exit
-        end do
-      endif
+          qtotal_oxy = qtotal_oxy + heat_o2*oxyu*muentrain
+        endif
+
+        qfire_new = (1.0_dd-fire%chi_rad)*qtotal_oxy  
+
+        qtotal = qtotal_oxy
+        qfire_new = qfire - (qfire-qfire_new)/(1.0_dd - heat_o2*(1.0_dd-fire%chi_rad)*(oxyl*dmldq + oxyu*dmudq))
+        if(qfire_new.lt.0.0)then
+          qfire_new = 0.0_dd
+          cycle
+        endif
+        relerror = abs((qfire_new-qfire)/qfire_new)
+      end do
     endif
     call setfire(qtotal,fire)
   endif
@@ -224,6 +240,11 @@ subroutine f_entrain(flowroom,fire)
   entrain_flow%qdot = qentrain
   entrain_flow%qtotal = qentrain
 
+  entrain_flow%temperature = tentrain
+  entrain_flow%density=flowroom%abs_pressure/(rgas*tentrain)
+  entrain_flow%sdot(1:nspecies) = lowerlayer%s_con(1:nspecies)*mentrain
+
+  return
 end subroutine f_entrain
 
 
@@ -243,7 +264,7 @@ subroutine v_entrain(flowroom,source_flow,entrain_flow)
   real(kind=dd) :: mentrain, qentrain
   type(zone_data), pointer :: entrainsourcelayer, entraindestlayer
   real(kind=dd) :: tsource, tdest, tentrain
-  real(kind=dd) :: oxysource, dmdq
+  real(kind=dd) :: oxysource, dmdq, factor
 
   zl = flowroom%rel_layer_height - source_flow%rel_height
   if(zl.gt.0)then
@@ -275,7 +296,8 @@ subroutine v_entrain(flowroom,source_flow,entrain_flow)
 
   zl = abs(zl)
   entrain_flow%zero = .false.
-  call entrainfl(zl,qsource,mentrain,dmdq)
+  factor = -1.0_dd
+  call entrainfl(zl,qsource,mentrain,dmdq,factor)
 
   qentrain = cp*mentrain*tentrain
   entrain_flow%mdot = mentrain
@@ -286,27 +308,30 @@ subroutine v_entrain(flowroom,source_flow,entrain_flow)
   entrain_flow%density=flowroom%abs_pressure/(rgas*tentrain)
   entrain_flow%sdot(1:nspecies) = entrainsourcelayer%s_con(1:nspecies)*mentrain
 
-  ! upper layer entrainment (only if this is a fire plume ande solveoxy is true)
-
+  return
 end subroutine v_entrain
 
 
 ! --------------- entrainfl ----------------------
 
-subroutine entrainfl(zlength,qsource,mentrain,dmdq)
+subroutine entrainfl(zlength,qsource,mentrain,dmdq,factor)
   use precision
   implicit none
 
-  real(kind=dd), intent(in) :: zlength, qsource
+  real(kind=dd), intent(in) :: zlength, factor
+  real(kind=dd), intent(inout) :: qsource
   real(kind=dd), intent(out) :: mentrain, dmdq
   real(kind=dd) :: base,exponent
 
   real(kind=dd) :: zstar
-  real(kind=dd), parameter :: factor=1000.0_dd**(0.4_dd)
+  real(kind=dd), parameter :: factor2=1000.0_dd**(0.4_dd)
   real(kind=dd) :: base2, exponent2
 
   mentrain = 0.0_dd
   if(qsource.eq.0.0_dd)return
+  if(qsource.lt.0.0_dd)then
+    write(6,*)"qsource negative in f_entrain"
+  endif
   zstar = abs(zlength/(qsource/1000.0_dd)**(0.4_dd))
   if(zstar.lt.0.08_dd)then
     exponent2 = 0.566_dd
@@ -319,10 +344,18 @@ subroutine entrainfl(zlength,qsource,mentrain,dmdq)
     base2 = 0.124_dd
   endif
   mentrain = (qsource/1000.0_dd)*base2*zstar**exponent2
-  base = base2*(factor*abs(zlength))**exponent2/1000.0_dd
+  base = base2*(factor2*abs(zlength))**exponent2/1000.0_dd
   exponent = 1.0_dd - 0.4_dd*exponent2 
+  if(factor.gt.0.0_dd.and.qsource.gt.0.0_dd)then
+    qsource = (factor*base)**(1.0_dd/(1.0_dd-exponent))
+    mentrain = base*qsource**exponent
+  endif
   ! mentrain = base*qsource**exponent = (qsource/1000)*base2*zstar**exponent2
-  dmdq = base*exponent*qsource**(exponent-1.0_dd)
+  if(qsource.le.0.0_dd)then
+    dmdq = 0.0_dd
+   else
+    dmdq = base*exponent*qsource**(exponent-1.0_dd)
+  endif
   return
 end subroutine entrainfl
 

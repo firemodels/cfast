@@ -36,7 +36,7 @@ subroutine getfires
   real(kind=dd), pointer :: mfire, qfire
   real(kind=dd) :: qqfire, qqofire
   real(kind=dd) :: tentrain, zlength, qtotal
-  real(kind=dd) :: o2frac, o2index, o2ufrac, o2uindex
+  real(kind=dd) :: o2lfrac, o2lindex, o2ufrac, o2uindex
 ! compute fire flow
 
    do ifire = 1, nfires
@@ -72,19 +72,19 @@ subroutine getfires
 	   call entrain(fireroom,fire_flow,entrainl_flow,entrainu_flow,p_fireflow)
      if(solveoxy.and.(.not.entrainl_flow%zero.or..not.entrainu_flow%zero))then
        qqfire = fire_flow%qtotal
-       o2frac=entrainl_flow%sdot(oxygen)/entrainl_flow%mdot
+       o2lfrac=fireroom%layer(lower)%s_con(oxygen)
        o2ufrac=fireroom%layer(upper)%s_con(oxygen)
 
-       o2index = 0.50_dd*(tanh(800.0_dd*(o2frac-o2limit)-4.0_dd)+1.0_dd)
+       o2lindex = 0.50_dd*(tanh(800.0_dd*(o2lfrac-o2limit)-4.0_dd)+1.0_dd)
        o2uindex = 0.50_dd*(tanh(800.0_dd*(o2ufrac-o2limit)-4.0_dd)+1.0_dd)
-       qqofire = heat_o2*entrainl_flow%sdot(oxygen)*o2index
+       qqofire =           heat_o2*entrainl_flow%sdot(oxygen)*o2lindex
        qqofire = qqofire + heat_o2*entrainu_flow%sdot(oxygen)*o2uindex
        qtotal = min(qqfire,qqofire)
        if(qqofire.lt.qqfire)then
          call setfire(qtotal,ifire)
          call entrain(fireroom,fire_flow,entrainl_flow,entrainu_flow,p_fireflow)
          qqfire = fire_flow%qtotal
-         qqofire = heat_o2*entrainl_flow%sdot(oxygen)*o2index
+         qqofire = heat_o2*entrainl_flow%sdot(oxygen)*o2lindex
          qqofire = qqofire + heat_o2*entrainu_flow%sdot(oxygen)*o2uindex
          qtotal = min(qqfire,qqofire)
          call setfire(qtotal,ifire)
@@ -223,12 +223,12 @@ subroutine entrain(flowroom,source_flow,entrainl_flow,entrainu_flow,flowtype)
   ! solve for me where                                   
   ! qs==qsource, me==mentrain, te=tentrain, td=tdest     
 
-  if(tdest.ne.tentrain)then 
-    maxentrain = abs((qsource/cp-msource*tdest)/(tdest-tentrain))
-    if(maxentrain.lt.mentrain)then
-      mentrain = maxentrain
-    endif
-  endif
+!  if(tdest.ne.tentrain)then 
+!    maxentrain = abs((qsource/cp-msource*tdest)/(tdest-tentrain))
+!    if(maxentrain.lt.mentrain)then
+!      mentrain = maxentrain
+!    endif
+!  endif
 
   qentrain = cp*mentrain*tentrain
   entrainl_flow%mdot = mentrain

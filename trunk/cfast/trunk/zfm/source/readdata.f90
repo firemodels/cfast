@@ -18,15 +18,15 @@ subroutine readini
   rtol = 1.0d-5
   atol = 1.0d-5 
   pamb = 0.0_dd
-  tamb = 288.0_dd
-  dprint = 10.0_dd
-  ddump = 10.0_dd
-  dplot = 10.0_dd
+  tamb = 293.15_dd
+  dprint = 1.0_dd
+  ddump = 1.0_dd
+  dplot = 1.0_dd
   open(unit=iin, file='zfm.ini',iostat=error) 
 
   if(error.ne.0)go to 999
   do
-    read(iin,'(a)',end=999)line
+    read(iin,'(a256)',end=999)line
     line2=adjustl(line)
     line=line2
     if(line(1:1).eq."#".or.line.eq."")cycle
@@ -250,7 +250,7 @@ recursive subroutine loadcase(filein,error)
   open(unit=iin, file=filein) 
 
   do
-    read(iin,'(a)',end=999)line
+    read(iin,'(a256)',end=999)line
     line2=adjustl(line)
     line=line2
     if(line(1:1).eq."#".or.line.eq."")cycle

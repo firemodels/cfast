@@ -231,7 +231,7 @@ subroutine plot
       qdot(ifire) = f%qconvec
       height(ifire) = f%dz
     end do
-     write(csvunit,10)tnow,(rooms(iroom)%layer(upper)%temperature,iroom=1,nrooms)
+     write(csvunit,10)tnow,((tu(iroom),tl(iroom),ylay(iroom),pr(iroom)),iroom=1,nrooms)
 10  format(e11.4,",",10(1(e11.4,",")))
 
     call svplotdata(plotfile,tt,nrooms,pr,ylay,tl,tu,nfires,qdot,height)

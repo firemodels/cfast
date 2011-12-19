@@ -10,9 +10,9 @@ subroutine readini
   integer :: iin
   integer :: error
   character(len=256) :: line, line2
-  integer funit
+  !integer funit
   
-  iin = funit(70)
+  !iin = funit(70)
   rptol = 1.0d-5
   aptol = 1.0d-5
   rtol = 1.0d-5
@@ -22,27 +22,27 @@ subroutine readini
   dprint = 1.0_dd
   ddump = 1.0_dd
   dplot = 1.0_dd
-  open(unit=iin, file='zfm.ini',iostat=error) 
+  open(unit=iniunit, file='zfm.ini',iostat=error) 
 
   if(error.ne.0)go to 999
   do
-    read(iin,'(a256)',end=999)line
+    read(iniunit,'(a256)',end=999)line
     line2=adjustl(line)
     line=line2
     if(line(1:1).eq."#".or.line.eq."")cycle
 
     if(line(1:3).eq."AMB")then
-      read(iin,*)pamb, tamb
+      read(iniunit,*)pamb, tamb
       cycle
     endif
 
     if(line(1:3).eq."TOL")then
-      read(iin,*)rptol, aptol, rtol, atol
+      read(iniunit,*)rptol, aptol, rtol, atol
       cycle
     endif
 
     if(line(1:).eq."SHOWTIME")then
-      read(iin,*)dprint,ddump,dplot
+      read(iniunit,*)dprint,ddump,dplot
       cycle
     endif
 
@@ -67,17 +67,17 @@ subroutine dumpcase(fileout,error,append)
   integer, intent(out) :: error
   logical, intent(in) :: append
 
-  integer :: outunit
+  !integer :: outunit
   type(room_data), pointer :: room
   type(vent_data), pointer :: vent
   type(fire_data), pointer :: fire
   type(hvac_data), pointer :: h
   type(zone_data), pointer :: llay, ulay
   integer :: iroom, i, ivent, ifire, ihvac, iwall, nwalls
-  integer :: funit
+  !integer :: funit
   integer :: ispec
 
-  outunit = funit(70)
+  !outunit = funit(70)
   if(append)then
     open(unit=outunit,file=fileout,position="append",iostat=error)
    else
@@ -234,7 +234,7 @@ recursive subroutine loadcase(filein,error)
   integer, dimension(stempmax) :: stemp
   integer :: ns
   integer :: iiroom, iifar
-  integer :: funit
+  !integer :: funit
   integer :: ispec
   real(kind=dd), dimension(maxspecies) :: yield
   real(kind=dd) :: h_c
@@ -244,19 +244,19 @@ recursive subroutine loadcase(filein,error)
 
 
   ! read in and allocate room data
-  iin = funit(70)
+  !iin = funit(70)
   error = 0
   
-  open(unit=iin, file=filein) 
+  open(unit=inunit, file=filein) 
 
   do
-    read(iin,'(a256)',end=999)line
+    read(inunit,'(a256)',end=999)line
     line2=adjustl(line)
     line=line2
     if(line(1:1).eq."#".or.line.eq."")cycle
 
     if(line(1:5).eq.'ROOMS')then
-      read(iin,*)nrooms 
+      read(inunit,*)nrooms 
       if(allocated(rooms))deallocate(rooms)
       error=0
       if(nrooms.gt.0)then
@@ -323,7 +323,7 @@ recursive subroutine loadcase(filein,error)
 
       do iroom = 1, nrooms
         room => rooms(iroom)
-        read(iin,*)room%z0,room%dx,room%dy,room%dz
+        read(inunit,*)room%z0,room%dx,room%dy,room%dz
 !        room%fig14=rdparfig(room%dx,room%dy,room%dz)
         room%singlezone=0
         do iwall = 1, 4
@@ -355,7 +355,7 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:6).eq."SINGLE")then
-      read(iin,*)ns,(stemp(i),i=1,min(ns,stempmax))
+      read(inunit,*)ns,(stemp(i),i=1,min(ns,stempmax))
       if(nrooms.le.0)continue
       do i = 1, min(ns,stempmax)
         iroom = stemp(i)
@@ -385,14 +385,14 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:4).eq."LOAD")then
-      read(iin,"(a)")line2
+      read(inunit,"(a)")line2
       loadfile=adjustl(line2)
       call loadcase(loadfile,error)
     endif
 
     if(line(1:8).eq."ALLWALLS")then
       allwalls=.true.
-      read(iin,"(a)")line2
+      read(inunit,"(a)")line2
       allwallsmat=adjustl(line2)
       walltype = getwalltype(allwallsmat)
       do iroom=1, nrooms
@@ -406,10 +406,10 @@ recursive subroutine loadcase(filein,error)
 
     if(line(1:5).eq."WALLS")then
       allwalls = .false.
-      read(iin,*)nwalls
+      read(inunit,*)nwalls
       do iwall=1,nwalls
-        read(iin,*)iroom,iw
-        read(iin,"(a)")wallmat
+        read(inunit,*)iroom,iw
+        read(inunit,"(a)")wallmat
         if(iroom.ge.1.and.iroom.le.nrooms)then
           walltype = getwalltype(wallmat)
           if(iw.ge.1.and.iw.le.3)then
@@ -430,9 +430,9 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:4).eq."GEOM")then
-      read(iin,*)mrooms
+      read(inunit,*)mrooms
       do iroom = 1, mrooms
-        read(iin,*)j,x,y
+        read(inunit,*)j,x,y
         if(j.ge.1.and.j.le.nrooms)then
           room=>rooms(j)
           room%x0=x
@@ -443,9 +443,9 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:8).eq."VENTGEOM")then
-      read(iin,*)mvents
+      read(inunit,*)mvents
       do jvent = 1, mvents
-        read(iin,*)ivent,face,offset
+        read(inunit,*)ivent,face,offset
         if(ivent.ge.1.and.ivent.le.nvents)then
           vent=>vents(ivent)
           vent%face=face
@@ -456,7 +456,7 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:4).eq."PLOT")then
-      read(iin,"(a)")line2
+      read(inunit,"(a)")line2
       plotfilebase=adjustl(line2)
       csvfile=trim(plotfilebase)//'.csv'
       smvfile=trim(plotfilebase)//'.smv'
@@ -468,7 +468,7 @@ recursive subroutine loadcase(filein,error)
   ! read in vent data and allocate space for vent data structures
 
     if(line(1:5).eq."VENTS")then
-      read(iin,*)nvents
+      read(inunit,*)nvents
       if(allocated(vents))deallocate(vents)
       error=0
       if(nvents.gt.0)allocate(vents(nvents),stat=error)
@@ -478,7 +478,7 @@ recursive subroutine loadcase(filein,error)
       end if
       do ivent = 1, nvents
         vent => vents(ivent)
-        read(iin,*)vent%from,vent%to,vent%relbot,vent%reltop,vent%width
+        read(inunit,*)vent%from,vent%to,vent%relbot,vent%reltop,vent%width
       	iroom = vent%from
       	if(iroom.ge.0.and.iroom.le.nrooms)then
           vent%absbot = rooms(iroom)%z0 + vent%relbot
@@ -503,7 +503,7 @@ recursive subroutine loadcase(filein,error)
     endif
 
     if(line(1:8).eq."NEARROOM")then
-      read(iin,*)iiroom,iifar
+      read(inunit,*)iiroom,iifar
       nabor2=nabor
       if(iifar.gt.1.and.iifar.le.nrooms)then
         do i = 1, iifar-1
@@ -528,7 +528,7 @@ recursive subroutine loadcase(filein,error)
   ! read in fire info
 
     if(line(1:5).eq."FIRES")then
-      read(iin,*)nfires
+      read(inunit,*)nfires
       if(allocated(fires))then
         do ifire = 1, noldfires
           fire=>fires(ifire)
@@ -545,7 +545,7 @@ recursive subroutine loadcase(filein,error)
       noldfires=nfires
       do ifire = 1, nfires
         fire=>fires(ifire)
-        read(iin,*)iroom,fire%type,fire%z0,fireflag,h_c,(yield(ispec),ispec=2,maxspecies)
+        read(inunit,*)iroom,fire%type,fire%z0,fireflag,h_c,(yield(ispec),ispec=2,maxspecies)
         if(fireflag.eq.1)then
           fire%heat_c=h_c
           do ispec=2, maxspecies
@@ -578,7 +578,7 @@ recursive subroutine loadcase(filein,error)
             write(6,*)"error allocating fire points"
             stop
           endif
-          read(iin,*)t1,tr1,dt,qlevel,tr2
+          read(inunit,*)t1,tr1,dt,qlevel,tr2
           qlevel=qlevel*1000.0_dd
       	  fire%times(1) = 0.0
       	  fire%q_pyrol(1) = 0.0
@@ -607,11 +607,11 @@ recursive subroutine loadcase(filein,error)
             write(6,*)"error allocating fire points"
             stop
           endif
-          read(iin,*)fire%q_pyrol(1)
+          read(inunit,*)fire%q_pyrol(1)
           fire%q_pyrol(1) = fire%q_pyrol(1)*1000.0_dd
       	  fire%times(1) = 0.0
       	 elseif(fire%type.eq.general)then
-      	  read(iin,*)npoints
+      	  read(inunit,*)npoints
       	  if(npoints.eq.1)fire%type = constant
       	  fire%npoints = npoints
       	  allocate(fire%times(npoints),fire%q_pyrol(npoints),stat=error)
@@ -620,7 +620,7 @@ recursive subroutine loadcase(filein,error)
             stop
           endif
       	  do i = 1, npoints
-      	    read(iin,*)fire%times(i),fire%q_pyrol(i)
+      	    read(inunit,*)fire%times(i),fire%q_pyrol(i)
             fire%q_pyrol(i) = fire%q_pyrol(i)*1000.0_dd
       	  end do
         end if
@@ -631,7 +631,7 @@ recursive subroutine loadcase(filein,error)
   ! read in hvac data
 
     if(line(1:4).eq."HVAC")then
-      read(iin,*)nhvacs
+      read(inunit,*)nhvacs
       if(allocated(hvacs))deallocate(hvacs)
       error=0
       if(nhvacs.gt.0)allocate(hvacs(nhvacs),stat=error)
@@ -641,9 +641,9 @@ recursive subroutine loadcase(filein,error)
       endif
       do ihvac = 1, nhvacs
         h => hvacs(ihvac)
-        read(iin,*)h%vfan,h%specifiedtemp,h%tfan
+        read(inunit,*)h%vfan,h%specifiedtemp,h%tfan
         if(h%specifiedtemp)h%rhofan=pabs_ref/rgas/h%tfan
-        read(iin,*)h%fromroom,h%rel_frombot,h%rel_fromtop,h%toroom,h%rel_tobot,h%rel_totop
+        read(inunit,*)h%fromroom,h%rel_frombot,h%rel_fromtop,h%toroom,h%rel_tobot,h%rel_totop
       end do
       cycle
     endif
@@ -653,7 +653,7 @@ recursive subroutine loadcase(filein,error)
     if(line(1:4).eq."TIME")then
       tstart = 0.0
       tfinal = 100.0
-      read(iin,*)tstart,tfinal
+      read(inunit,*)tstart,tfinal
       if(dprint.ne.0.0)then
         tprint=tstart+dprint - mod(tstart+dprint,dprint)
        else
@@ -678,16 +678,16 @@ recursive subroutine loadcase(filein,error)
         llay => room%layer(lower)
         ulay => room%layer(upper)
         if(solveprods)then
-    	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
+    	    read(inunit,*)room%rel_pressure,room%rel_layer_height, &
            llay%temperature,ulay%temperature,&
            llay%s_con(oxygen),ulay%s_con(oxygen),&
            (llay%s_con(ispec),ulay%s_con(ispec),ispec=2,maxspecies)
          else if(solveoxy.and..not.solveprods)then
-    	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
+    	    read(inunit,*)room%rel_pressure,room%rel_layer_height, &
            llay%temperature,ulay%temperature,&
            llay%s_con(oxygen),ulay%s_con(oxygen)
          else
-    	    read(iin,*)room%rel_pressure,room%rel_layer_height, &
+    	    read(inunit,*)room%rel_pressure,room%rel_layer_height, &
            llay%temperature,ulay%temperature
         endif
 

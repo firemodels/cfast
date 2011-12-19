@@ -8,8 +8,9 @@ subroutine solve
 
   integer, dimension(15) :: info
   integer :: idid
-  integer :: ipar,error
-  real(kind=dd) :: rpar
+  integer, dimension(1) :: ipar
+  integer :: error
+  real(kind=dd), dimension(1) :: rpar
   integer :: ires
   external resid, jac
 
@@ -45,9 +46,7 @@ subroutine output
   if(abs(tprint-tnow).lt.0.001.or.tnow.ge.tfinal)then
     iprint = iprint + 1
     tprint = tstartprint + iprint*dprint
-#ifndef pp_inverse
     call result
-#endif
   end if
   if(abs(tnow-tdump).lt.0.001.or.tnow.ge.tfinal)then
     idump = idump + 1
@@ -83,8 +82,8 @@ subroutine initsolve
   use precision
   use zonedata
   implicit none
-  integer :: ipar
-  real(kind=dd) :: rpar
+  integer, dimension(1) :: ipar
+  real(kind=dd),dimension(1) :: rpar
   integer :: i, ires
   integer :: error
   integer :: iiroom,ispec
@@ -170,7 +169,8 @@ subroutine initsoln
       end do
     endif
   end do
-  if(smvfile.ne."")call svplothdr(plotfile,1,nrooms,nfires)
+  ! for now, comment out the smokeview stuff
+  !if(smvfile.ne."")call svplothdr(plotfile,1,nrooms,nfires)
 end subroutine initsoln
 
 subroutine result
@@ -234,7 +234,8 @@ subroutine plot
      write(csvunit,10)tnow,((tu(iroom),tl(iroom),ylay(iroom),pr(iroom)),iroom=1,nrooms)
 10  format(e11.4,",",10(1(e11.4,",")))
 
-    call svplotdata(plotfile,tt,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
+    !for now, comment out the smokeview stuff
+    !call svplotdata(plotfile,tt,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
   endif
 

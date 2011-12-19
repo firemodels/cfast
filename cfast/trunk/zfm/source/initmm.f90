@@ -217,9 +217,10 @@ subroutine initamb
       fz0(ifire) = f%z0
     end do
 
-    call smvout(smvfile,plotfile,pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
-                          nvents,vfrom,vto,vface,vwidth,voffset,vrelbot,vreltop, &
-                          nfires,froom_number,fx0,fy0,fz0)
+    !for now, comment out the smokeview stuff
+    !call smvout(smvfile,plotfile,pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
+    !                      nvents,vfrom,vto,vface,vwidth,voffset,vrelbot,vreltop, &
+    !                      nfires,froom_number,fx0,fy0,fz0)
     open(unit=csvunit,file=csvfile)
 
 

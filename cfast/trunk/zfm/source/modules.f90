@@ -125,7 +125,7 @@ module zonedata
   character(len=30) :: allwallsmat
   logical :: allwalls
 
-  integer, parameter :: smvunit=21, plotunit=22, csvunit=23
+  integer, parameter :: smvunit=21, plotunit=22, csvunit=23, inunit=24, outunit=25, iniunit=26
 
   !  overload +, -, * and = so that these operators will work with flows!
 

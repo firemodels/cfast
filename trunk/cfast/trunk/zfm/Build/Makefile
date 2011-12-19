@@ -48,7 +48,7 @@ intel_win_32 : FC        = ifort
 intel_win_32 : exe       = zfm_win_32.exe
 
 intel_win_32 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) 
+	$(FC) -o $(bin)/$(exe) $(objwin) 
 
 # ------------- Linux 32 ----------------
 #  32 bit linux
@@ -58,10 +58,10 @@ intel_linux_32 : CFLAGS    = -O2 -m32 -vec_report0
 intel_linux_32 : CC        = icc
 intel_linux_32 : CPP       = icc
 intel_linux_32 : FC        = ifort
-intel_linux_32 : exe       = background
+intel_linux_32 : exe       = zfm_linux_32
 
 intel_linux_32 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) 
+	$(FC) -o $(bin)/$(exe) $(obj) 
 
 #-------------- Clean Target to remove Object and Module files -----------
 

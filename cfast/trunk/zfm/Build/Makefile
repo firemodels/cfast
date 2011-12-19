@@ -63,6 +63,19 @@ intel_linux_32 : exe       = zfm_linux_32
 intel_linux_32 : $(obj)
 	$(FC) -o $(bin)/$(exe) $(obj) 
 
+# ------------- OSX 32 ----------------
+#  32 bit OSX
+
+intel_osx_32 : FFLAGS    = 
+intel_osx_32 : CFLAGS    = -O2 -m32 -vec_report0 
+intel_osx_32 : CC        = icc
+intel_osx_32 : CPP       = icc
+intel_osx_32 : FC        = ifort
+intel_osx_32 : exe       = zfm_osx_32
+
+intel_osx_32 : $(obj)
+	$(FC) -o $(bin)/$(exe) $(obj) 
+
 #-------------- Clean Target to remove Object and Module files -----------
 
 .PHONY : clean

@@ -7,12 +7,9 @@ subroutine readini
   implicit none
 
 !  type(room_data), pointer :: room
-  integer :: iin
   integer :: error
   character(len=256) :: line, line2
-  !integer funit
-  
-  !iin = funit(70)
+
   rptol = 1.0d-5
   aptol = 1.0d-5
   rtol = 1.0d-5
@@ -51,7 +48,7 @@ subroutine readini
   
   rhoamb = (pabs_ref+pamb)/(rgas*tamb)
 
-  close(iin)
+  close(iniunit)
 
   return
 end  subroutine readini
@@ -222,7 +219,7 @@ recursive subroutine loadcase(filein,error)
   type(hvac_data), pointer :: h
   type(zone_data), pointer :: llay, ulay
   integer :: iroom, ivent, jvent, ifire, ihvac,iwall,iw,nwalls
-  integer :: iin, npoints, i
+  integer ::  npoints, i
   real(kind=dd) :: t1,tr1,dt,tr2,t2,t3,t4,qlevel,x,y,offset
   real(kind=dd) :: dx, dy
   character(len=256) :: line,line2,loadfile
@@ -244,7 +241,7 @@ recursive subroutine loadcase(filein,error)
 
 
   ! read in and allocate room data
-  !iin = funit(70)
+
   error = 0
   
   open(unit=inunit, file=filein) 
@@ -696,7 +693,7 @@ recursive subroutine loadcase(filein,error)
     endif
   end do
 999 continue
-  close(iin)
+  close(inunit)
   tnow = tstart
 end subroutine loadcase
 

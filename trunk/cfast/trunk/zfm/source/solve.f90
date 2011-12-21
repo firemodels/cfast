@@ -232,10 +232,9 @@ subroutine plot
       height(ifire) = f%dz
     end do
      write(csvunit,10)tnow,((tu(iroom),tl(iroom),ylay(iroom),pr(iroom)),iroom=1,nrooms)
-10  format(e11.4,",",10(1(e11.4,",")))
+10  format(e11.4,",",10(e11.4,","))
 
-    !for now, comment out the smokeview stuff
-    !call svplotdata(plotfile,tt,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
+    call svplotdata(plotfile,tt,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
   endif
 

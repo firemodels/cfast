@@ -31,7 +31,7 @@ Module Copy
         ToFire.Changed = FromFire.Changed
     End Sub
     Public Sub PropertyCopy(ByVal FromMaterial As ThermalProperty, ByVal ToMaterial As ThermalProperty)
-        ' Copies and entire thermal property record from on structure to another
+        ' Copies an entire thermal property record from one structure to another
         ToMaterial.ShortName = FromMaterial.ShortName
         ToMaterial.Name = FromMaterial.Name
         ToMaterial.Conductivity = FromMaterial.Conductivity

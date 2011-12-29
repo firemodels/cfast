@@ -138,7 +138,7 @@ Public Class About
         Me.TextBox2.TabIndex = 8
         Me.TextBox2.TabStop = False
         Me.TextBox2.Text = "CEdit includes software developed as part of the NPlot library project available " & _
-            "from: http://www.nplot.com/"
+    "from: http://netcontrols.org/nplot/wiki/"
         '
         'About
         '

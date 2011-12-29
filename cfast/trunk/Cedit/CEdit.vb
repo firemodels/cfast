@@ -4550,6 +4550,10 @@ Public Class CeditMain
                 myUnits.SI = False
             Next
         End If
+        UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+        UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+        UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+        UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
         UpdateAll()
     End Sub
 
@@ -5591,9 +5595,6 @@ Public Class CeditMain
         UpdateGUI.Menu()
         UpdateGUI.General()
     End Sub
-    Private Sub OpenDataFile()
-
-    End Sub
     Private Sub SaveDataFile(ByVal Prompt As Boolean)
         Dim Filename As String
         myUnits.SI = True
@@ -5609,7 +5610,7 @@ Public Class CeditMain
                         myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
                         myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
                         WriteFireObjects(".\")
-                        Filename = myThermalProperties.FileName + ".csv"
+                        Filename = myEnvironment.InputFilePath + "\" + myThermalProperties.FileName + ".csv"
                         WriteThermalProperties(Filename)
                     End If
                 End If

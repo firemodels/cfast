@@ -4770,7 +4770,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>CEdit.exe</td><td>national_insitute_of_standards_and_technology</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td>1</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>CEdit.exe</td><td>national_insitute_of_standards_and_technology</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td>1</td><td>1</td><td>CFASTDATA</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

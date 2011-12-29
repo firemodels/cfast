@@ -137,6 +137,7 @@ Module IO
                 For k = 0 To 6
                     csv.Num(i, thermalNum.HClCoefficients + k) = hcl(k)
                 Next
+                aThermal.Changed = False
                 i += 1
             Next
             For j = 1 To thermalFileComments.Count
@@ -144,6 +145,7 @@ Module IO
                 i += 1
             Next
             csv.WrtCSVfile(FileName)
+            myThermalProperties.FileChanged = False
         End If
     End Sub
     Public Sub AddThermalHeader(ByRef csv As CSVsheet, ByRef i As Integer)

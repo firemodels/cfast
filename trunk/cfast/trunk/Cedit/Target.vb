@@ -45,7 +45,7 @@ Public Class Target
         aYNormal = 0.0
         aZNormal = 1.0
         aInternalLocation = 0.5
-        aMaterial = "GYPSUM"
+        aMaterial = "Off"
         aSolutionThickness = 0
         aSolutionMethod = 0
         aDetectorType = 0

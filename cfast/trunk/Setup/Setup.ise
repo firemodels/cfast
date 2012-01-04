@@ -60,12 +60,12 @@
 		<lastauthor>Administrator</lastauthor>
 		<revnumber>{A2EECFBF-539D-42CD-A68C-706B1334CA67}</revnumber>
 		<lastprinted/>
-		<createdtm>06/21/1999 09:00</createdtm>
-		<lastsavedtm>07/14/2000 12:50</lastsavedtm>
+		<createdtm>06/21/1999 08:00</createdtm>
+		<lastsavedtm>07/14/2000 11:50</lastsavedtm>
 		<pagecount>200</pagecount>
 		<wordcount>0</wordcount>
 		<charcount/>
-		<appname>InstallShield Express</appname>
+		<appname>InstallShield</appname>
 		<security>1</security>
 	</summary>
 	
@@ -356,6 +356,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{D1F81593-3D5A-4E11-BF4E-F55837DE4341}</td><td>MY_DOCUMENTS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{FDC74D2B-7DCC-43F4-A7B3-2B97AD31AFE1}</td><td>CFASTDATA</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NPlot.dll</td><td>{9CB7290E-D249-48B1-9F31-1FEFD700697F}</td><td>INSTALLDIR</td><td>2</td><td/><td>nplot.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>{F5356216-9C74-4764-ACA6-3EA72917E5FB}</td><td>INSTALLDIR</td><td>10</td><td/><td>system.windows.forms.datavis</td><td>17</td><td>This component consists of a Windows dynamic link library.</td><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>background.exe</td><td>{15C18888-88AE-401D-9E04-55A250539E6E}</td><td>INSTALLDIR</td><td>2</td><td/><td>background.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>glew32.dll</td><td>{4F7380F1-EFB3-4DC0-B126-B51E7ABA5DD2}</td><td>INSTALLDIR</td><td>2</td><td/><td>glew32.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>pthreadVC.dll</td><td>{84A1340B-A768-4B7D-BAEF-1A8BC1E19888}</td><td>INSTALLDIR</td><td>2</td><td/><td>pthreadvc.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1865,8 +1866,9 @@
 		<col def="S255">ProgId_</col>
 		<col def="S64">MIME_</col>
 		<col def="s38">Feature_</col>
-		<row><td>.in</td><td>CEdit.exe</td><td>.in.file</td><td/><td>AlwaysInstall</td></row>
-		<row><td>.smv</td><td>smokeview.exe</td><td>ext1.File</td><td/><td>AlwaysInstall</td></row>
+		<row><td>.cft</td><td>CEdit.exe</td><td>cft.File</td><td/><td>AlwaysInstall</td></row>
+		<row><td>.in</td><td>CEdit.exe</td><td>in.File</td><td/><td>AlwaysInstall</td></row>
+		<row><td>.smv</td><td>smokeview.exe</td><td>smv.File</td><td/><td>AlwaysInstall</td></row>
 	</table>
 
 	<table name="Feature">
@@ -1901,6 +1903,7 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>AlwaysInstall</td><td>NPlot.dll</td></row>
+		<row><td>AlwaysInstall</td><td>System.Windows.Forms.DataVisualization.dll</td></row>
 		<row><td>AlwaysInstall</td><td>background.exe</td></row>
 		<row><td>AlwaysInstall</td><td>glew32.dll</td></row>
 		<row><td>AlwaysInstall</td><td>pthreadVC.dll</td></row>
@@ -1945,6 +1948,7 @@
 		<row><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokezip_win_32.exe</td><td>1</td><td/></row>
 		<row><td>sofa.o</td><td>ISX_DEFAULTCOMPONENT</td><td>sofa.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\sofa.o</td><td>1</td><td/></row>
 		<row><td>standard.in</td><td>ISX_DEFAULTCOMPONENT4</td><td>standard.in</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard.in</td><td>1</td><td/></row>
+		<row><td>system.windows.forms.datavis</td><td>System.Windows.Forms.DataVisualization.dll</td><td>System.Windows.Forms.DataVisualization.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;WindowsFolder&gt;\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.DataVisualization.dll</td><td>1</td><td/></row>
 		<row><td>thermal.csv</td><td>ISX_DEFAULTCOMPONENT</td><td>thermal.csv</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\thermal.csv</td><td>1</td><td/></row>
 		<row><td>tv_set.o</td><td>ISX_DEFAULTCOMPONENT</td><td>TV Set.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\TV Set.o</td><td>1</td><td/></row>
 		<row><td>upholstered_chair.o</td><td>ISX_DEFAULTCOMPONENT</td><td>Upholstered_Chair.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\Upholstered_Chair.o</td><td>1</td><td/></row>
@@ -2223,6 +2227,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_68A21D85_F5CB_4AEC_8E56_50CE76D64A8D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_382D9E37_610B_4182_B8C9_35F64CAD0F47_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NPlot.dll</td><td/><td/><td>_2A4E0135_1E4E_4DFE_AE2E_9F8B65E0C453_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td/><td/><td>_56875F39_A3C4_45F9_B318_6CD56D2AE67B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>background.exe</td><td/><td/><td>_41C7D75B_644C_4F4C_88A7_B3B625B58D63_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>glew32.dll</td><td/><td/><td>_B4249909_662B_438E_B137_CA83FB9AFAFF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>pthreadVC.dll</td><td/><td/><td>_34F65D85_EB9F_40CD_995C_ADCA33654179_FILTER</td><td/><td/><td/><td/></row>
@@ -2330,7 +2335,8 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s255">ISMergeModule_</col>
 		<col key="yes" def="i2">Language_</col>
-		<row><td>AlwaysInstall</td><td>MSVCRT.51D569E0_8A28_11D2_B962_006097C4DE24</td><td>0</td></row>
+		<row><td>AlwaysInstall</td><td>MDAC27ENU.C9C35FC7_5AEE_4C1E_8BD2_80ED9FA87FFF</td><td>1033</td></row>
+		<row><td>AlwaysInstall</td><td>VC_User_gdiPlus.3B694ABE_4410_11D5_A54A_0090278A1BB8</td><td>0</td></row>
 	</table>
 
 	<table name="ISFeatureSetupPrerequisites">
@@ -2453,7 +2459,8 @@
 		<col def="s255">Name</col>
 		<col def="S255">Destination</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>MSVCRT.51D569E0_8A28_11D2_B962_006097C4DE24</td><td>0</td><td>Microsoft (R) C Runtime Library</td><td/><td/></row>
+		<row><td>MDAC27ENU.C9C35FC7_5AEE_4C1E_8BD2_80ED9FA87FFF</td><td>1033</td><td>MDAC 2.7 Sp1 (English)</td><td/><td/></row>
+		<row><td>VC_User_gdiPlus.3B694ABE_4410_11D5_A54A_0090278A1BB8</td><td>0</td><td>VC User gdiPlus RTL X86 ---</td><td/><td/></row>
 	</table>
 
 	<table name="ISMergeModuleCfgValues">
@@ -2470,6 +2477,7 @@
 		<col def="L255">Description</col>
 		<col def="L255">HelpLocation</col>
 		<col def="L255">HelpKeyword</col>
+		<row><td>VC_User_gdiPlus.3B694ABE_4410_11D5_A54A_0090278A1BB8</td><td>0</td><td>DIR_RETARGET_TARGETDIR</td><td>TARGETDIR</td><td>1</td><td>Directory</td><td>IsolationDir</td><td>TARGETDIR</td><td>2</td><td>Module Retargetable Folder</td><td/><td/><td/></row>
 	</table>
 
 	<table name="ISObject">
@@ -2538,7 +2546,7 @@
 	</table>
 
 	<table name="ISPathVariable">
-		<col key="yes" def="s32">ISPathVariable</col>
+		<col key="yes" def="s72">ISPathVariable</col>
 		<col def="S255">Value</col>
 		<col def="S255">TestValue</col>
 		<col def="i4">Type</col>
@@ -2772,6 +2780,7 @@
 		<col def="i2">Attributes</col>
 		<col def="S15">Version</col>
 		<col def="S255">Condition</col>
+		<col def="S72">DisplayName</col>
 	</table>
 
 	<table name="ISSQLScriptImport">
@@ -2853,7 +2862,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>National Insitute of Standards and Technology</td><td>0</td><td/><td>-568408945</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>National Insitute of Standards and Technology</td><td>0</td><td/><td>-165683058</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40CLIENT</td><td>1033</td><td>Microsoft .NET Framework 4.0 Client Package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>-1910613746</td></row>
@@ -3665,7 +3674,7 @@
 		<row><td>IDS_PROGMSG_XML_ROLLBACK_FILES</td><td>1033</td><td>Rolling back XML file changes...</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS_PROGMSG_XML_UPDATE_FILE</td><td>1033</td><td>Updating XML file %s...</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS_SETUPEXE_EXPIRE_MSG</td><td>1033</td><td>This setup works until %s. The setup will now exit.</td><td>0</td><td/><td>-1910591346</td></row>
-		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>CFAST 6</td><td>0</td><td/><td>-341855927</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>CEdit (CFAST 6)</td><td>0</td><td/><td>-165715283</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME3</td><td>1033</td><td>Launch smokeview.exe</td><td>0</td><td/><td>-1910578802</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME4</td><td>1033</td><td>Launch smokezip.exe</td><td>0</td><td/><td>-1910578802</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME5</td><td>1033</td><td>Launch CEdit</td><td>0</td><td/><td>-1910615538</td></row>
@@ -3958,13 +3967,19 @@
 		<row><td>IDS__TargetReq_DESC_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>-1910591346</td></row>
-		<row><td>ID_STRING1</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-618681749</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>National Insitute of Standards and Technology</td><td>0</td><td/><td>-568408945</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-618681749</td></row>
+		<row><td>ID_STRING1</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-165740210</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>National Insitute of Standards and Technology</td><td>0</td><td/><td>-165683058</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>http://www.nist.gov/el/fire_research/cfast-support.cfm</td><td>0</td><td/><td>-165709490</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>in</td><td>0</td><td/><td>-165767414</td></row>
 		<row><td>NEW_STRING2</td><td>1033</td><td>smv</td><td>0</td><td/><td>-165769366</td></row>
 		<row><td>NEW_STRING3</td><td>1033</td><td>.smv</td><td>0</td><td/><td>1562335403</td></row>
+		<row><td>NEW_STRING4</td><td>1033</td><td>.cft</td><td>0</td><td/><td>-165694451</td></row>
+	</table>
+
+	<table name="ISSwidtagProperty">
+		<col key="yes" def="s72">Name</col>
+		<col def="s0">Value</col>
 	</table>
 
 	<table name="ISTargetImage">
@@ -4071,6 +4086,7 @@
 		<row><td>_53D97906_C18A_43EB_A82E_576350D19A29</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
 		<row><td>_5C9F1F4B_D64F_4E7E_802C_E603A3CE3F14</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\sv5_icon.ico</td><td>0</td></row>
 		<row><td>_9E6B9ECD_636B_427C_BCF3_D2C5A795F86C</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
+		<row><td>_C47EF883_1623_4569_8516_14583EA08914</td><td/><td>&lt;ISProjectFolder&gt;\sv5_icon.ico</td><td>0</td></row>
 		<row><td>_F87D79E8_E2CE_421A_866D_2F0A87B51958</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\CEdit.exe</td><td>0</td></row>
 	</table>
 
@@ -4190,6 +4206,7 @@
 UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 			</td></row>
 		<row><td>DefaultProductConfiguration</td><td>Express</td></row>
+		<row><td>EnableSwidtag</td><td>0</td></row>
 		<row><td>ISCompilerOption_CompileBeforeBuild</td><td>1</td></row>
 		<row><td>ISCompilerOption_Debug</td><td>0</td></row>
 		<row><td>ISCompilerOption_IncludePath</td><td/></row>
@@ -4214,7 +4231,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>SaveAsSchema</td><td/></row>
 		<row><td>SccEnabled</td><td>0</td></row>
 		<row><td>SccPath</td><td/></row>
-		<row><td>SchemaVersion</td><td>771</td></row>
+		<row><td>SchemaVersion</td><td>772</td></row>
 		<row><td>Type</td><td>MSIE</td></row>
 	</table>
 
@@ -4324,6 +4341,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>C1.Win.C1FlexGrid.4.dll</td><td>AlwaysInstall</td><td>c1.win.c1flexgrid.4.dll</td><td>c1.win.c1flexgrid.4.dll</td><td>0</td></row>
 		<row><td>C1.Win.C1Report.4.dll</td><td>AlwaysInstall</td><td>c1.win.c1report.4.dll</td><td>c1.win.c1report.4.dll</td><td>0</td></row>
 		<row><td>C1.Win.C1Sizer.4.dll</td><td>AlwaysInstall</td><td>c1.win.c1sizer.4.dll</td><td>c1.win.c1sizer.4.dll</td><td>0</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>AlwaysInstall</td><td>system.windows.forms.datavis</td><td>system.windows.forms.datavis</td><td>0</td></row>
 	</table>
 
 	<table name="MsiAssemblyName">
@@ -4350,6 +4368,11 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>C1.Win.C1Sizer.4.dll</td><td>Name</td><td>C1.Win.C1Sizer.4</td></row>
 		<row><td>C1.Win.C1Sizer.4.dll</td><td>PublicKeyToken</td><td>79882D576C6336DA</td></row>
 		<row><td>C1.Win.C1Sizer.4.dll</td><td>Version</td><td>4.1.20111.58</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>Culture</td><td>neutral</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>FileVersion</td><td>4.0.30319.1</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>Name</td><td>System.Windows.Forms.DataVisualization</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>PublicKeyToken</td><td>31BF3856AD364E35</td></row>
+		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>Version</td><td>4.0.0.0</td></row>
 	</table>
 
 	<table name="MsiDigitalCertificate">
@@ -4528,8 +4551,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S72">Icon_</col>
 		<col def="I2">IconIndex</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>.in.file</td><td/><td/><td/><td>_F87D79E8_E2CE_421A_866D_2F0A87B51958</td><td>1</td><td/></row>
-		<row><td>ext1.File</td><td/><td/><td/><td/><td/><td/></row>
+		<row><td>cft.File</td><td/><td/><td>CFAST 7 input file</td><td/><td>0</td><td/></row>
+		<row><td>in.File</td><td/><td/><td>CFAST 6.2 and earlier input file</td><td/><td/><td/></row>
+		<row><td>smv.File</td><td/><td/><td>Smokeview file</td><td>_C47EF883_1623_4569_8516_14583EA08914</td><td>0</td><td/></row>
 	</table>
 
 	<table name="Property">
@@ -4608,7 +4632,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{8C3CB364-5BC9-4067-8F9A-C54D3ED8506A}</td><td/></row>
 		<row><td>ProductName</td><td>CFAST</td><td/></row>
-		<row><td>ProductVersion</td><td>6.2.0.290</td><td/></row>
+		<row><td>ProductVersion</td><td>6.2.0.341</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4901,6 +4925,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="I2">Sequence</col>
 		<col def="L255">Command</col>
 		<col def="L255">Argument</col>
+		<row><td>.cft</td><td>open</td><td/><td/><td>"%1"</td></row>
 		<row><td>.in</td><td>Open</td><td/><td/><td>"%1"</td></row>
 		<row><td>.smv</td><td>open</td><td/><td/><td>"%1"</td></row>
 	</table>
@@ -5386,7 +5411,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISLocalRadioButton</td><td>Width</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The width of the button.</td></row>
 		<row><td>ISLocalRadioButton</td><td>X</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The horizontal coordinate of the upper left corner of the bounding rectangle of the radio button.</td></row>
 		<row><td>ISLocalRadioButton</td><td>Y</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The vertical coordinate of the upper left corner of the bounding rectangle of the radio button.</td></row>
-		<row><td>ISLockPermissions</td><td>Attributes</td><td>Y</td><td>-2147483647</td><td>2147483647</td><td/><td/><td/><td/><td>Permissions attributes mask, 1==Deny access; 2==No inherit</td></row>
+		<row><td>ISLockPermissions</td><td>Attributes</td><td>Y</td><td>-2147483647</td><td>2147483647</td><td/><td/><td/><td/><td>Permissions attributes mask, 1==Deny access; 2==No inherit, 4==Ignore apply failures, 8==Target object is 64-bit</td></row>
 		<row><td>ISLockPermissions</td><td>Domain</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Domain name for user whose permissions are being set.</td></row>
 		<row><td>ISLockPermissions</td><td>LockObject</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Foreign key into CreateFolder, Registry, or File table</td></row>
 		<row><td>ISLockPermissions</td><td>Permission</td><td>Y</td><td>-2147483647</td><td>2147483647</td><td/><td/><td/><td/><td>Permission Access mask.</td></row>
@@ -5617,6 +5642,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISSQLScriptFile</td><td>Comments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Comments</td></row>
 		<row><td>ISSQLScriptFile</td><td>Component_</td><td>N</td><td/><td/><td>Component</td><td>1</td><td>Identifier</td><td/><td>Foreign key referencing Component that controls the SQL script.</td></row>
 		<row><td>ISSQLScriptFile</td><td>Condition</td><td>Y</td><td/><td/><td/><td/><td>Condition</td><td/><td>A conditional statement that will disable this script if the specified condition evaluates to the 'False' state. If a script is disabled, it will not be installed regardless of the 'Action' state associated with the component.</td></row>
+		<row><td>ISSQLScriptFile</td><td>DisplayName</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Display name for the SQL script file.</td></row>
 		<row><td>ISSQLScriptFile</td><td>ErrorHandling</td><td>N</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>ISSQLScriptFile</td><td>ISBuildSourcePath</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Full path, the category is of Text instead of Path because of potential use of path variables.</td></row>
 		<row><td>ISSQLScriptFile</td><td>ISSQLScriptFile</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>This is the primary key to the ISSQLScriptFile table</td></row>
@@ -5669,6 +5695,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISString</td><td>ISString</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>String id.</td></row>
 		<row><td>ISString</td><td>TimeStamp</td><td>Y</td><td/><td/><td/><td/><td>Time/Date</td><td/><td>Time Stamp. MSI's Time/Date column type is just an int, with bits packed in a certain order.</td></row>
 		<row><td>ISString</td><td>Value</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>real string value.</td></row>
+		<row><td>ISSwidtagProperty</td><td>Name</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Property name</td></row>
+		<row><td>ISSwidtagProperty</td><td>Value</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>Property value</td></row>
 		<row><td>ISTargetImage</td><td>Flags</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>relative order of the target image</td></row>
 		<row><td>ISTargetImage</td><td>IgnoreMissingFiles</td><td>N</td><td/><td/><td/><td/><td/><td/><td>If true, ignore missing source files when creating patch</td></row>
 		<row><td>ISTargetImage</td><td>MsiPath</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>Path to the target image</td></row>

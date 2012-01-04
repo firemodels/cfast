@@ -3,7 +3,7 @@ subroutine getvals(rm_pres,layer_ht,llayer_temp,ulayer_temp)
   use zonedata
   implicit none
 
-  real(kind=dd),dimension(*) :: rm_pres,layer_ht,llayer_temp,ulayer_temp
+  real(kind=eb),dimension(*) :: rm_pres,layer_ht,llayer_temp,ulayer_temp
   
   type(room_data), pointer :: r
   integer :: iroom

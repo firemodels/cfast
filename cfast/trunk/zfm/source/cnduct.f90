@@ -5,7 +5,7 @@ subroutine cnduct(update,tempin,tempout,dt,wall,&
   implicit none
 
   integer, intent(in) :: update, iwbound
-  real(kind=dd), intent(in) :: tempin,tempout, dt, wfluxout
+  real(kind=eb), intent(in) :: tempin,tempout, dt, wfluxout
   type(wall_data), pointer :: wall
 
 !
@@ -23,12 +23,12 @@ subroutine cnduct(update,tempin,tempout,dt,wall,&
 
 !  DECLARE LOCAL VARIABLES
 
-  real(kind=dd), allocatable, dimension(:) :: a, b, c
-  real(kind=dd), allocatable, dimension(:) :: tnew
-  real(kind=dd) :: tgrad
-  real(kind=dd) :: xkrhoc, s, hi, him1
-  real(kind=dd), pointer, dimension(:) :: wtemp
-  real(kind=dd), pointer, dimension(:) :: walldx
+  real(kind=eb), allocatable, dimension(:) :: a, b, c
+  real(kind=eb), allocatable, dimension(:) :: tnew
+  real(kind=eb) :: tgrad
+  real(kind=eb) :: xkrhoc, s, hi, him1
+  real(kind=eb), pointer, dimension(:) :: wtemp
+  real(kind=eb), pointer, dimension(:) :: walldx
   integer :: nx, i 
 
   
@@ -42,17 +42,17 @@ subroutine cnduct(update,tempin,tempout,dt,wall,&
 
 !   setup first row
 
-  a(1) = 1.0_dd
-  b(1) = 0.0_dd
-  c(1) = 0.0_dd
+  a(1) = 1.0_eb
+  b(1) = 0.0_eb
+  c(1) = 0.0_eb
   tnew(1) = tempin
 
   xkrhoc = wall%k / (wall%c*wall%rho)
-  s = 2.0_dd * dt * xkrhoc
+  s = 2.0_eb * dt * xkrhoc
   do i = 2, nx-1
     hi = wall%dx(i)
     him1 = wall%dx(i-1)
-    a(i) = 1.0_dd + s / (hi*him1)
+    a(i) = 1.0_eb + s / (hi*him1)
     b(i) = -s / (him1*(hi+him1))
     c(i) = -s / (hi*(hi+him1))
   end do
@@ -63,17 +63,17 @@ subroutine cnduct(update,tempin,tempout,dt,wall,&
 
 !   insulated boundary condition
 
-    a(nx) = 1.0_dd
-    b(nx) = -1.0_dd
-    c(nx) = 0.0_dd
-    tnew(nx) = 0.0_dd
+    a(nx) = 1.0_eb
+    b(nx) = -1.0_eb
+    c(nx) = 0.0_eb
+    tnew(nx) = 0.0_eb
    else
 
 !   flux boundary condition (using lagged temperatures
 
-    a(nx) = 1.0_dd
-    b(nx) = -1.0_dd
-    c(nx) = 0.0_dd
+    a(nx) = 1.0_eb
+    b(nx) = -1.0_eb
+    c(nx) = 0.0_eb
     tnew(nx) = walldx(nx-1) * wfluxout / wall%k
   end if
      

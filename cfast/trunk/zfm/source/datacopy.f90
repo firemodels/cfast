@@ -6,11 +6,11 @@ subroutine datacopy(tsec,psolve)
   use zonedata
   implicit none
 
-  real(kind=dd) :: relp, pabs
-  real(kind=dd), intent(in) :: tsec
-  real(kind=dd), dimension(*) :: psolve
-  real(kind=dd), dimension(2) :: VOL, TEMP, RHO, OXY
-  real(kind=dd), dimension(maxspecies,2) :: vSPECIES
+  real(kind=eb) :: relp, pabs
+  real(kind=eb), intent(in) :: tsec
+  real(kind=eb), dimension(*) :: psolve
+  real(kind=eb), dimension(2) :: VOL, TEMP, RHO, OXY
+  real(kind=eb), dimension(maxspecies,2) :: vSPECIES
   type(room_data), pointer :: room
   type(zone_data), pointer :: layer
   integer :: iiroom, iroom, ilayer, iwall, ispec
@@ -39,12 +39,12 @@ subroutine datacopy(tsec,psolve)
     	RHO(lower) = pabs/(rgas*TEMP(lower))
     	RHO(upper) = RHO(lower)
       if(solveoxy)then
-        OXY(lower) = max(psolve(iroom+offset_oxyl),0.0_dd)
+        OXY(lower) = max(psolve(iroom+offset_oxyl),0.0_eb)
         OXY(upper) = (OXY(lower)/(RHO(lower)*VOL(lower)))*RHO(upper)*VOL(upper)
       endif
       if(solveprods)then
         do ispec = 2, maxspecies
-          vSPECIES(ispec,lower) = max(psolve(iroom+offset_SPECIES(ispec,lower)),0.0_dd)
+          vSPECIES(ispec,lower) = max(psolve(iroom+offset_SPECIES(ispec,lower)),0.0_eb)
           vSPECIES(ispec,upper) = (vSPECIES(ispec,lower)/(RHO(lower)*VOL(lower)))*RHO(upper)*VOL(upper)
         end do
       endif
@@ -57,22 +57,22 @@ subroutine datacopy(tsec,psolve)
     	RHO(upper) = pabs/(rgas*TEMP(upper))
     	RHO(lower) = RHO(upper)
       if(solveoxy)then
-        OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_dd)
+        OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_eb)
         OXY(lower) = (OXY(upper)/(RHO(upper)*VOL(upper)))*RHO(lower)*VOL(lower)
       endif
       if(solveprods)then
         do ispec = 2, maxspecies
-          vSPECIES(ispec,upper) = max(psolve(iroom+offset_SPECIES(ispec,upper)),0.0_dd)
+          vSPECIES(ispec,upper) = max(psolve(iroom+offset_SPECIES(ispec,upper)),0.0_eb)
           vSPECIES(ispec,lower) = (vSPECIES(ispec,upper)/(RHO(upper)*VOL(upper)))*RHO(lower)*VOL(lower)
         end do
       endif
      else
     	TEMP(upper) = psolve(iroom+offset_tu)
     	RHO(upper) = pabs/(rgas*TEMP(upper))
-      if(solveoxy)OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_dd)
+      if(solveoxy)OXY(upper) = max(psolve(iroom+offset_oxyu),0.0_eb)
       if(solveprods)then
         do ispec = 2, maxspecies
-          vSPECIES(ispec,upper) = max(psolve(iroom+offset_SPECIES(ispec,upper)),0.0_dd)
+          vSPECIES(ispec,upper) = max(psolve(iroom+offset_SPECIES(ispec,upper)),0.0_eb)
         end do
       endif
 
@@ -81,10 +81,10 @@ subroutine datacopy(tsec,psolve)
       if(room%singlezone.eq.0)then
       	TEMP(lower) = psolve(iiroom+offset_tl)
       	RHO(lower) = pabs/(rgas*TEMP(lower))
-        if(solveoxy)OXY(lower) = max(psolve(iiroom+offset_oxyl),0.0_dd)
+        if(solveoxy)OXY(lower) = max(psolve(iiroom+offset_oxyl),0.0_eb)
         if(solveprods)then
           do ispec = 2, maxspecies
-            vSPECIES(ispec,lower) = max(psolve(iiroom+offset_SPECIES(ispec,lower)),0.0_dd)
+            vSPECIES(ispec,lower) = max(psolve(iiroom+offset_SPECIES(ispec,lower)),0.0_eb)
           end do
         endif
        else
@@ -122,8 +122,8 @@ subroutine datacopy(tsec,psolve)
   	room%rel_layer_height = room%dz - VOL(upper)/room%floor_area
   	room%abs_layer_height = room%z0 + room%rel_layer_height
 
-    room%wall(3)%area = 2.0_dd*(room%dx+room%dy)*(room%dz-room%rel_layer_height)
-    room%wall(4)%area = 2.0_dd*(room%dx+room%dy)*room%rel_layer_height
+    room%wall(3)%area = 2.0_eb*(room%dx+room%dy)*(room%dz-room%rel_layer_height)
+    room%wall(4)%area = 2.0_eb*(room%dx+room%dy)*room%rel_layer_height
     do iwall=1,4
       room%wall(iwall)%temp=tamb
     end do

@@ -34,53 +34,53 @@ subroutine convec(iw,tg,tw,qdinl)
 !                  on flux calculation.
 !
 
-  real(kind=dd), intent(in) :: tg, tw
+  real(kind=eb), intent(in) :: tg, tw
   integer, intent(in) :: iw
-  real(kind=dd), intent(out) :: qdinl
-  real(kind=dd) :: nuoverl, k, tdel, x1del, xthird, tf
-  real(kind=dd) :: t3000, tff, alpha, pr, cup, cdown, c, abstwtg
+  real(kind=eb), intent(out) :: qdinl
+  real(kind=eb) :: nuoverl, k, tdel, x1del, xthird, tf
+  real(kind=eb) :: t3000, tff, alpha, pr, cup, cdown, c, abstwtg
 
-  tdel = 5.0_dd
-  x1del = 1.0_dd / tdel
-  xthird = 1.0_dd / 3.0_dd
+  tdel = 5.0_eb
+  x1del = 1.0_eb / tdel
+  xthird = 1.0_eb / 3.0_eb
 
-  qdinl = 0.0_dd
-  tf = (tw+tg) * 0.50_dd
+  qdinl = 0.0_eb
+  tf = (tw+tg) * 0.50_eb
 !
 !*** To keep K positive, make sure TF is below 3000.  Of course the
 !    calculation will have long since lost any semblance to reality.
 !
-  t3000 = 3000.0_dd
+  t3000 = 3000.0_eb
   tff = min(tf,t3000)
   tf = tff
-  if (tf.le.0.0_dd) return
-  alpha = (tff ** (1.75_dd))/1000000000.0_dd
-  k = (0.0209_dd+2.33_dd*tff/100000.0_dd) / (1.0_dd-2.67_dd*tff/10000.0_dd)
-  pr = 0.72_dd
+  if (tf.le.0.0_eb) return
+  alpha = (tff ** (1.75_eb))/1000000000.0_eb
+  k = (0.0209_eb+2.33_eb*tff/100000.0_eb) / (1.0_eb-2.67_eb*tff/10000.0_eb)
+  pr = 0.72_eb
 !
 !     CEILINGS AND FLOORS
 !     Use the hyperbolic tangent to smooth the coefficient C 
 !     from CUP to CDOWN over a temperature range of TDEL degress. 
 !     Note: Tanh(x>>0)=1 and Tanh(x<<0)=-1 .
 !
-  cup = 0.16_dd
-  cdown = 0.13_dd
+  cup = 0.16_eb
+  cdown = 0.13_eb
   if (iw.eq.1) then
-    c = (cup+cdown+(cup-cdown)*tanh((tg-tw)*x1del)) * 0.50_dd
+    c = (cup+cdown+(cup-cdown)*tanh((tg-tw)*x1del)) * 0.50_eb
   else if (iw.eq.2) then
-    c = (cup+cdown-(cup-cdown)*tanh((tg-tw)*x1del)) * 0.50_dd
+    c = (cup+cdown-(cup-cdown)*tanh((tg-tw)*x1del)) * 0.50_eb
 
 !     VERTICAL SURFACES
 
   else
-   c = 0.121_dd
+   c = 0.121_eb
   end if
 !
 !     Prevent the vertical tangent in the calculation of NUOVERL
 !     by keeping ABSTWTG from going to zero.  
 !
   abstwtg = max(abs(tw-tg),tdel)
-  abstwtg=300.0_dd
+  abstwtg=300.0_eb
 
   nuoverl = c * (g*abstwtg*pr/(tf*alpha**2)) ** xthird
 !

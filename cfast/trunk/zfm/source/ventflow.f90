@@ -39,10 +39,10 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
   type(room_data), pointer :: toroom
   type(slab_data), pointer :: slab
   type(flow_data), pointer :: slab_flow, entrain_flow
-  real(kind=dd), pointer :: tslab
-  real(kind=dd) :: tlower, tupper, f_lower, f_upper
+  real(kind=eb), pointer :: tslab
+  real(kind=eb) :: tlower, tupper, f_lower, f_upper
   integer :: islab, from, to
-  real(kind=dd), parameter :: dtempmin=1.0_dd
+  real(kind=eb), parameter :: dtempmin=1.0_eb
 
   do islab = 1, nfromslab
     slab => slabfrom(islab)
@@ -87,14 +87,14 @@ subroutine flowgo(slabfrom,nfromslab,slabto,ntoslab,odeflow)
     tlower = rooms(to)%layer(lower)%temperature
 
     if(tslab.ge.tupper+dtempmin)then
-      f_upper = 1.0_dd
+      f_upper = 1.0_eb
      elseif(tslab.le.tlower-dtempmin)then
       f_upper = zero
      else
-      f_upper = (tslab - (tlower-dtempmin))/(tupper-tlower+2.0_dd*dtempmin)
+      f_upper = (tslab - (tlower-dtempmin))/(tupper-tlower+2.0_eb*dtempmin)
     endif
 
-    f_lower = 1.0_dd - f_upper
+    f_lower = 1.0_eb - f_upper
     if(f_upper.ne.zero)hflow(to,upper) = hflow(to,upper) + f_upper*slab_flow
     if(f_lower.ne.zero)hflow(to,lower) = hflow(to,lower) + f_lower*slab_flow
 
@@ -122,17 +122,17 @@ subroutine getventslabs
   implicit none
 
   type(vent_data), pointer :: v
-  real(kind=dd), dimension(7) :: yelev1, dp1
-  real(kind=dd), dimension(6), pointer :: dpslab(:)
-  real(kind=dd), dimension(6) :: abs_slab_height
+  real(kind=eb), dimension(7) :: yelev1, dp1
+  real(kind=eb), dimension(6), pointer :: dpslab(:)
+  real(kind=eb), dimension(6) :: abs_slab_height
   type(flow_data), pointer :: slab_flow
   type(zone_data), pointer :: fromlayer
   type(slab_data), pointer :: slab
-  real(kind=dd), pointer :: area
-  real(kind=dd) :: yb, y1, y2, yt, y12min, y12max
-  real(kind=dd) :: yy, dptop, dpbot, dptopsq, dpbotsq, dpavg
-  real(kind=dd) :: getdp
-  real(kind=dd) :: f1, f2
+  real(kind=eb), pointer :: area
+  real(kind=eb) :: yb, y1, y2, yt, y12min, y12max
+  real(kind=eb) :: yy, dptop, dpbot, dptopsq, dpbotsq, dpavg
+  real(kind=eb) :: getdp
+  real(kind=eb) :: f1, f2
   integer :: ivent, nslab, nelev2, islab
   integer :: ielev
   integer :: from, to, fromlayer_index, tolayer_index
@@ -246,7 +246,7 @@ subroutine getventslabs
 
       slab_flow%temperature = fromlayer%temperature
       slab_flow%density = fromlayer%density
-      if(slab_flow%density.lt.0.0_dd)then
+      if(slab_flow%density.lt.0.0_eb)then
         write(6,*)"ut oh from=",from,fromlayer%temperature
       endif
 
@@ -254,12 +254,12 @@ subroutine getventslabs
       dpbot = abs(v%dpelev(islab+1))
       dptopsq = sqrt(dptop)
       dpbotsq = sqrt(dpbot)
-      if(dpbotsq+dptopsq.eq.0.0_dd)then
-        dpavg = 0.0_dd
+      if(dpbotsq+dptopsq.eq.0.0_eb)then
+        dpavg = 0.0_eb
        else
         dpavg = twothirds*(dptop+dptopsq*dpbotsq+dpbot)/(dpbotsq+dptopsq)
       endif
-      if(dpavg.eq.0.0_dd)then
+      if(dpavg.eq.0.0_eb)then
         slab_flow%zero = .true.
        else
         slab_flow%zero = .false.

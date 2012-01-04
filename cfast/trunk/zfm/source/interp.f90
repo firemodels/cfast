@@ -2,11 +2,11 @@ subroutine interp(tsec,t,q,n,qt)
   use precision
   implicit none
   integer, intent(in) :: n
-  real(kind=dd), dimension(n) :: t, q
-  real(kind=dd), intent(out) :: qt
-  real(kind=dd), intent(in) :: tsec
-  real(kind=dd) :: qlow, qhigh, tlow, thigh
-  real(kind=dd) :: f1, f2
+  real(kind=eb), dimension(n) :: t, q
+  real(kind=eb), intent(out) :: qt
+  real(kind=eb), intent(in) :: tsec
+  real(kind=eb) :: qlow, qhigh, tlow, thigh
+  real(kind=eb) :: f1, f2
   integer :: istart, iend, imid
 
 
@@ -38,7 +38,7 @@ subroutine interp(tsec,t,q,n,qt)
   tlow = t(istart)
   thigh = t(istart+1)
   f1 = (thigh-tsec)/(thigh-tlow)
-  f2 = 1.0_dd - f1
+  f2 = 1.0_eb - f1
   qt = qlow*f1 + qhigh*f2
 return
 end subroutine interp

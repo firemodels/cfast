@@ -34,7 +34,7 @@ subroutine gethvacslabs
   type(room_data), pointer :: r
   type(flow_data), pointer :: slab_flow, totalslab_flow
   type(slab_data), pointer :: slab
-  real(kind=dd) :: f_lower, f_upper, slabtemp, slabdensity
+  real(kind=eb) :: f_lower, f_upper, slabtemp, slabdensity
   
   do ihvac = 1, nhvacs
     h => hvacs(ihvac)
@@ -48,8 +48,8 @@ subroutine gethvacslabs
     h%fromslab(lower)%top = min(h%abs_fromtop,max(r%abs_layer_height,h%abs_frombot))
     h%fromslab(upper)%bot = min(h%abs_fromtop,max(r%abs_layer_height,h%abs_frombot))
     h%fromslab(upper)%top = h%abs_fromtop
-    h%fromslab(lower)%height = (h%fromslab(lower)%bot + h%fromslab(lower)%top)/2.0_dd
-    h%fromslab(upper)%height = (h%fromslab(upper)%bot + h%fromslab(upper)%top)/2.0_dd
+    h%fromslab(lower)%height = (h%fromslab(lower)%bot + h%fromslab(lower)%top)/2.0_eb
+    h%fromslab(upper)%height = (h%fromslab(upper)%bot + h%fromslab(upper)%top)/2.0_eb
 
 
 	! compute "from slabs"
@@ -99,8 +99,8 @@ subroutine gethvacslabs
     h%toslab(lower)%top = min(h%abs_fromtop,max(r%abs_layer_height,h%abs_frombot))
     h%toslab(upper)%bot = min(h%abs_fromtop,max(r%abs_layer_height,h%abs_frombot))
     h%toslab(upper)%top = h%abs_fromtop
-    h%toslab(lower)%height = (h%toslab(lower)%bot + h%toslab(lower)%top)/2.0_dd
-    h%toslab(upper)%height = (h%toslab(upper)%bot + h%toslab(upper)%top)/2.0_dd
+    h%toslab(lower)%height = (h%toslab(lower)%bot + h%toslab(lower)%top)/2.0_eb
+    h%toslab(upper)%height = (h%toslab(upper)%bot + h%toslab(upper)%top)/2.0_eb
 
   	call getfrac(h%rel_tobot,h%rel_totop,r%rel_layer_height,f_lower,f_upper)
 
@@ -135,16 +135,16 @@ subroutine getfrac(hbot, htop, ylay, f_lower, f_upper)
   use precision
   use zonedata
   implicit none
-  real(kind=dd), intent(in) :: hbot, htop, ylay 
-  real(kind=dd), intent(out) :: f_lower, f_upper
+  real(kind=eb), intent(in) :: hbot, htop, ylay 
+  real(kind=eb), intent(out) :: f_lower, f_upper
   if(ylay.lt.hbot)then
-    f_upper = 1.0_dd
+    f_upper = 1.0_eb
    elseif(ylay.gt.htop)then
     f_upper = zero
    else
     f_upper = (htop - ylay)/(htop - hbot)
   endif
-  f_lower = 1.0_dd - f_upper
+  f_lower = 1.0_eb - f_upper
   return
 end subroutine getfrac
 

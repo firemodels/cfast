@@ -1,7 +1,7 @@
 
 ! --------------- getdp ----------------------
 
-real(kind=dd) function getdp(y,ivent)
+real(kind=eb) function getdp(y,ivent)
   use precision
   use zonedata
   implicit none
@@ -9,8 +9,8 @@ real(kind=dd) function getdp(y,ivent)
   type(vent_data), pointer :: v
   type(room_data), pointer :: r1,r2
   integer :: ivent
-  real(kind=dd) :: p1, p2, y, zz, epscut, dpold, epsp
-  real(kind=dd) :: absold, expold
+  real(kind=eb) :: p1, p2, y, zz, epscut, dpold, epsp
+  real(kind=eb) :: absold, expold
 
   v => vents(ivent)
   r1 => rooms(v%from)
@@ -23,13 +23,13 @@ real(kind=dd) function getdp(y,ivent)
   p2 = p2 - g*max(y-r2%abs_layer_height,zero)*r2%layer(upper)%density
 
   epsp = rptol
-  epscut = 10.0_dd*epsp*max(1.0_dd,abs(p1),abs(p2))
+  epscut = 10.0_eb*epsp*max(1.0_eb,abs(p1),abs(p2))
   dpold = p1 - p2
   absold = abs(p1-p2)/epscut
-  if(absold.le.37.0_dd)then      ! absold < 16*ln(10) < 37
+  if(absold.le.37.0_eb)then      ! absold < 16*ln(10) < 37
    ! write(6,*)"fudge active!!",p1,p2,dpold
     expold = exp(-absold)
-    zz = 1.0_dd - expold       
+    zz = 1.0_eb - expold       
     getdp = dpold*zz
    else
     getdp = dpold

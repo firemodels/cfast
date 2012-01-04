@@ -14,11 +14,11 @@ subroutine readini
   aptol = 1.0d-5
   rtol = 1.0d-5
   atol = 1.0d-5 
-  pamb = 0.0_dd
-  tamb = 293.15_dd
-  dprint = 1.0_dd
-  ddump = 1.0_dd
-  dplot = 1.0_dd
+  pamb = 0.0_eb
+  tamb = 293.15_eb
+  dprint = 1.0_eb
+  ddump = 1.0_eb
+  dplot = 1.0_eb
   open(unit=iniunit, file='zfm.ini',iostat=error) 
 
   if(error.ne.0)go to 999
@@ -140,7 +140,7 @@ subroutine dumpcase(fileout,error,append)
     	 elseif(fire%type.eq.general)then
     	  write(outunit,*)fire%npoints
     	  do i = 1, fire%npoints
-    	    write(outunit,"(e13.6,1x,e13.6)")fire%times(i),fire%q_pyrol(i)/1000.00_dd
+    	    write(outunit,"(e13.6,1x,e13.6)")fire%times(i),fire%q_pyrol(i)/1000.00_eb
     	  end do
       end if
     end do
@@ -220,8 +220,8 @@ recursive subroutine loadcase(filein,error)
   type(zone_data), pointer :: llay, ulay
   integer :: iroom, ivent, jvent, ifire, ihvac,iwall,iw,nwalls
   integer ::  npoints, i
-  real(kind=dd) :: t1,tr1,dt,tr2,t2,t3,t4,qlevel,x,y,offset
-  real(kind=dd) :: dx, dy
+  real(kind=eb) :: t1,tr1,dt,tr2,t2,t3,t4,qlevel,x,y,offset
+  real(kind=eb) :: dx, dy
   character(len=256) :: line,line2,loadfile
   integer :: j, mrooms, face,mvents
   integer :: walltype
@@ -233,11 +233,11 @@ recursive subroutine loadcase(filein,error)
   integer :: iiroom, iifar
   !integer :: funit
   integer :: ispec
-  real(kind=dd), dimension(maxspecies) :: yield
-  real(kind=dd) :: h_c
+  real(kind=eb), dimension(maxspecies) :: yield
+  real(kind=eb) :: h_c
   integer :: fireflag
 
-!  real(kind=dd) :: rdparfig
+!  real(kind=eb) :: rdparfig
 
 
   ! read in and allocate room data
@@ -277,44 +277,7 @@ recursive subroutine loadcase(filein,error)
         stop
       end if
 
-      ! define room 0 using data read in or in readini
-
-      room => rooms(0)
-      room%z0 = 0.0_dd
-      room%dx = 1000._dd
-      room%dy = 1000._dd
-      room%dz = 1000._dd
-      room%rel_layer_height = 1000._dd
-      room%floor_area = room%dx*room%dy
-      room%abs_pressure = pabs_ref
-      room%rel_pressure = 0.0_dd
-      room%abs_layer_height = room%z0 + room%rel_layer_height
-      room%volume = room%floor_area*room%dz
-      room%VU = 0.0_dd
-
-      llay => room%layer(lower)
-      ulay => room%layer(upper)
-
-      llay%temperature = tamb
-      ulay%temperature = tamb
-      llay%density = rhoamb
-      ulay%density = rhoamb
-      llay%volume = room%floor_area*room%dz
-      llay%mass = rhoamb*room%volume
-      llay%s_mass(oxygen) = llay%mass*amb_oxy_con
-      llay%s_con(oxygen) = amb_oxy_con
-      ulay%s_mass(oxygen) = ulay%mass*amb_oxy_con
-      ulay%s_con(oxygen) = amb_oxy_con
-
-      do ispec = 2, maxspecies
-        llay%s_mass(ispec) = 0.0_dd
-        llay%s_con(ispec) = 0.0_dd
-        ulay%s_mass(ispec) = 0.0_dd
-        ulay%s_con(ispec) = 0.0_dd
-      end do
-
-      ulay%volume = 0.0_dd
-      ulay%mass = 0.0_dd
+   
 
 ! read in data for the indoor environment
 
@@ -327,8 +290,8 @@ recursive subroutine loadcase(filein,error)
           room%wall(iwall)%wallmatindex = p_nowall
           room%wall(iwall)%defined = .false.
         end do
-        room%x0=0.0_dd
-        room%y0=0.0_dd
+        room%x0=0.0_eb
+        room%y0=0.0_eb
       end do
 
 ! allocate space for horizontal vent and fire flow data structures
@@ -556,11 +519,11 @@ recursive subroutine loadcase(filein,error)
         endif
 
         fire%room_number = iroom
-        dx=rooms(iroom)%dx*0.50_dd
-        dy=rooms(iroom)%dy*0.50_dd
+        dx=rooms(iroom)%dx*0.50_eb
+        dy=rooms(iroom)%dy*0.50_eb
         fire%x0=dx
         fire%y0=dy
-        fire%dz=-1.0_dd
+        fire%dz=-1.0_eb
       	fire%heat_c = heat_c
       	fire%chi_rad = chi_rad
       	fire%fire_flow%rel_height = fire%z0
@@ -576,7 +539,7 @@ recursive subroutine loadcase(filein,error)
             stop
           endif
           read(inunit,*)t1,tr1,dt,qlevel,tr2
-          qlevel=qlevel*1000.0_dd
+          qlevel=qlevel*1000.0_eb
       	  fire%times(1) = 0.0
       	  fire%q_pyrol(1) = 0.0
    
@@ -605,7 +568,7 @@ recursive subroutine loadcase(filein,error)
             stop
           endif
           read(inunit,*)fire%q_pyrol(1)
-          fire%q_pyrol(1) = fire%q_pyrol(1)*1000.0_dd
+          fire%q_pyrol(1) = fire%q_pyrol(1)*1000.0_eb
       	  fire%times(1) = 0.0
       	 elseif(fire%type.eq.general)then
       	  read(inunit,*)npoints
@@ -618,7 +581,7 @@ recursive subroutine loadcase(filein,error)
           endif
       	  do i = 1, npoints
       	    read(inunit,*)fire%times(i),fire%q_pyrol(i)
-            fire%q_pyrol(i) = fire%q_pyrol(i)*1000.0_dd
+            fire%q_pyrol(i) = fire%q_pyrol(i)*1000.0_eb
       	  end do
         end if
       end do

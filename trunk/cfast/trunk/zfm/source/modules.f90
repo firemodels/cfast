@@ -9,41 +9,41 @@ module zonedata
   integer, parameter :: co=2, co2=3, smoke=4
 
   type zone_data
-    real(kind=dd) :: temperature, density, volume, mass, o2index
-    real(kind=dd), dimension(1:maxspecies) :: s_mass, s_con
+    real(kind=eb) :: temperature, density, volume, mass, o2index
+    real(kind=eb), dimension(1:maxspecies) :: s_mass, s_con
   end type zone_data
 
   type flow_data
-    real(kind=dd) :: mdot, qdot, qtotal, temperature, density, rel_height, abs_height
-    real(kind=dd), dimension(1:maxspecies) :: sdot
+    real(kind=eb) :: mdot, qdot, qtotal, temperature, density, rel_height, abs_height
+    real(kind=eb), dimension(1:maxspecies) :: sdot
   	logical :: fromlower, fromupper, zero
   end type flow_data
 
   type fire_data
     integer :: room_number, type
-    real(kind=dd), dimension(4) :: taufl, taufu, angle
-    real(kind=dd) :: heat_c, temp, x0,y0,z0,dz, time_rate, time_start
-    real(kind=dd), dimension(maxspecies) :: yield
-    real(kind=dd) :: mtotal, qtotal, qconvec, qrad, chi_rad
-    real(kind=dd), pointer, dimension(:) :: times, q_pyrol
+    real(kind=eb), dimension(4) :: taufl, taufu, angle
+    real(kind=eb) :: heat_c, temp, x0,y0,z0,dz, time_rate, time_start
+    real(kind=eb), dimension(maxspecies) :: yield
+    real(kind=eb) :: mtotal, qtotal, qconvec, qrad, chi_rad
+    real(kind=eb), pointer, dimension(:) :: times, q_pyrol
 	  integer :: npoints
     type(flow_data) :: fire_flow, entrain_flow
   end type fire_data
 
   type wall_data
     integer :: n
-    real(kind=dd), pointer, dimension(:) :: dx, wtemp
-    real(kind=dd) :: k, rho, c, emis
+    real(kind=eb), pointer, dimension(:) :: dx, wtemp
+    real(kind=eb) :: k, rho, c, emis
     integer :: dir,from,to,wallmatindex
     character(len=30) :: wallmat
-    real(kind=dd) :: temp, area, qdot
+    real(kind=eb) :: temp, area, qdot
     logical :: defined
   end type wall_data
 
   type room_data
     type(zone_data) :: layer(2)
   	integer :: singlezone
-    real(kind=dd) :: x0, y0, z0, &
+    real(kind=eb) :: x0, y0, z0, &
                      dx, dy, dz, &
                      abs_pressure, rel_pressure, &
                      rel_layer_height, abs_layer_height, &
@@ -53,17 +53,17 @@ module zonedata
     type(wall_data) :: wall(4)
   end type room_data
   type slab_data
-    real(kind=dd) :: dp, height, bot, top, area
+    real(kind=eb) :: dp, height, bot, top, area
   	integer :: from, to
     type(flow_data) :: slab_flow, entrain_flow
   end type slab_data
 
   type hvac_data
-    real(kind=dd) :: vfan, mfan, qfan, tfan, rhofan, dpfan, height
-    real(kind=dd) :: rel_frombot, rel_tobot, rel_fromtop, rel_totop
-    real(kind=dd) :: abs_frombot, abs_tobot, abs_fromtop, abs_totop
-    real(kind=dd) :: fromupperfrac, fromlowerfrac
-    real(kind=dd) :: toupperfrac, tolowerfrac
+    real(kind=eb) :: vfan, mfan, qfan, tfan, rhofan, dpfan, height
+    real(kind=eb) :: rel_frombot, rel_tobot, rel_fromtop, rel_totop
+    real(kind=eb) :: abs_frombot, abs_tobot, abs_fromtop, abs_totop
+    real(kind=eb) :: fromupperfrac, fromlowerfrac
+    real(kind=eb) :: toupperfrac, tolowerfrac
 	  logical :: specifiedtemp
   	integer :: fromroom, toroom
   	type(slab_data) :: fromslab(2), toslab(2), totalslab
@@ -71,11 +71,11 @@ module zonedata
 
   type vent_data
     integer :: nslabs, from, to, nneutrals,face
-    real(kind=dd) :: relbot, reltop, width, offset
-    real(kind=dd) :: absbot, abstop
+    real(kind=eb) :: relbot, reltop, width, offset
+    real(kind=eb) :: absbot, abstop
     type(slab_data), dimension(6) :: slab
-    real(kind=dd), dimension(7) :: abs_yelev, dpelev, dpslab
-    real(kind=dd), dimension(3) :: yneutral
+    real(kind=eb), dimension(7) :: abs_yelev, dpelev, dpslab
+    real(kind=eb), dimension(3) :: yneutral
   end type vent_data
 
   integer, parameter :: lower=1, upper=2
@@ -91,14 +91,14 @@ module zonedata
 
   type(flow_data) :: zeroflow
 
-  real(kind=dd), parameter :: cp = 1004._dd, g=9.8_dd, cvent=0.7_dd
-  real(kind=dd), parameter :: gamma=1.4_dd, cv=cp/gamma, rgas=cp-cv
-  real(kind=dd), parameter :: pabs_ref=101300._dd
-  real(kind=dd) :: tamb, pamb
-  real(kind=dd), parameter :: twothirds=2.0_dd/3.0_dd, zero=0.0_dd
-  real(kind=dd), parameter :: onethird=1.0_dd/3.0_dd
-  real(kind=dd) :: rhoamb
-  real(kind=dd), dimension(2) :: absorb
+  real(kind=eb), parameter :: cp = 1004._eb, g=9.8_eb, cvent=0.7_eb
+  real(kind=eb), parameter :: gamma=1.4_eb, cv=cp/gamma, rgas=cp-cv
+  real(kind=eb), parameter :: pabs_ref=101300._eb
+  real(kind=eb) :: tamb, pamb
+  real(kind=eb), parameter :: twothirds=2.0_eb/3.0_eb, zero=0.0_eb
+  real(kind=eb), parameter :: onethird=1.0_eb/3.0_eb
+  real(kind=eb) :: rhoamb
+  real(kind=eb), dimension(2) :: absorb
 
   integer :: offset_p, offset_vu, offset_tl, offset_tu, offset_oxyl, offset_oxyu
   integer, dimension(maxspecies,2) :: offset_SPECIES
@@ -106,21 +106,21 @@ module zonedata
   integer, dimension(:,:), pointer :: nabor, nabor2
 
   integer, parameter :: constant=1, tsquared=2, general=3
-  real(kind=dd) :: tnow, tstart, tfinal, tprint, tdump, tplot, tout
-  real(kind=dd) :: tstartprint, tstartplot, tstartdump
-  real(kind=dd) :: pi
+  real(kind=eb) :: tnow, tstart, tfinal, tprint, tdump, tplot, tout
+  real(kind=eb) :: tstartprint, tstartplot, tstartdump
+  real(kind=eb) :: pi
   integer :: iprint, iplot, idump
-  real(kind=dd) :: dprint=1.0_dd, ddump=10.0_dd, dplot=10.0_dd
-  real(kind=dd) :: heat_c, heat_o2, chi_rad, amb_oxy_con, o2limit
-  real(kind=dd), dimension(maxspecies) :: yield_SPECIES
+  real(kind=eb) :: dprint=1.0_eb, ddump=10.0_eb, dplot=10.0_eb
+  real(kind=eb) :: heat_c, heat_o2, chi_rad, amb_oxy_con, o2limit
+  real(kind=eb), dimension(maxspecies) :: yield_SPECIES
   integer :: nvents, nrooms, nspecies, nfires, noldfires, nhvacs, neq, lrw, liw
-  real(kind=dd), dimension(:), allocatable :: rwork
+  real(kind=eb), dimension(:), allocatable :: rwork
   integer, dimension(:), allocatable :: iwork
   integer :: n_single
 
-  real(kind=dd), allocatable, dimension(:) :: vatol, vrtol, & 
+  real(kind=eb), allocatable, dimension(:) :: vatol, vrtol, & 
          pprime, p, p_compact, pdzero, delta, xpsolve, dummysoln, zerosoln
-  real(kind=dd) :: aptol, rptol, atol, rtol
+  real(kind=eb) :: aptol, rptol, atol, rtol
   character(len=128) :: smvfile, plotfile, csvfile, plotfilebase, dumpfile
   character(len=30) :: allwallsmat
   logical :: allwalls
@@ -149,7 +149,7 @@ module zonedata
 
 type(flow_data) function addflow(flow1,flow2)
     type(flow_data), intent(in) :: flow1, flow2
-    real(kind=dd) :: total_mdot, total_qdot, total_qtotal
+    real(kind=eb) :: total_mdot, total_qdot, total_qtotal
 
   addflow%zero = .false.
 	if(flow1%zero)then
@@ -185,11 +185,11 @@ end function addflow
 
 type(flow_data) function subtractflow(flow1,flow2)
     type(flow_data), intent(in) :: flow1, flow2
-    real(kind=dd) :: total_mdot, total_qdot, total_qtotal, x
+    real(kind=eb) :: total_mdot, total_qdot, total_qtotal, x
 
   subtractflow%zero = .false.
 	if(flow1%zero)then
-	  x = -1._dd
+	  x = -1._eb
 	  subtractflow = x*flow2
 	  return
 	endif
@@ -222,9 +222,9 @@ end function subtractflow
 
 type(flow_data) function realtimesflow(scale,flow1)
   type(flow_data), intent(in) :: flow1
-	real(kind=dd), intent(in) :: scale
+	real(kind=eb), intent(in) :: scale
 
-  if(scale.eq.0.0_dd)then
+  if(scale.eq.0.0_eb)then
     realtimesflow%zero = .true.
    else
     realtimesflow%zero = flow1%zero
@@ -243,9 +243,9 @@ end function realtimesflow
 
 type(flow_data) function flowtimesreal(flow1,scale)
   type(flow_data), intent(in) :: flow1
-	real(kind=dd), intent(in) :: scale
+	real(kind=eb), intent(in) :: scale
 
-  if(scale.eq.0.0_dd)then
+  if(scale.eq.0.0_eb)then
     flowtimesreal%zero = .true.
    else
     flowtimesreal%zero = flow1%zero
@@ -297,7 +297,7 @@ module zoneinterfaces
       use zonedata
       implicit none
 
-      real(kind=dd), intent(in) :: qtotal
+      real(kind=eb), intent(in) :: qtotal
       type(fire_data), pointer :: fire
     end subroutine setfire
   end interface
@@ -327,8 +327,8 @@ module zoneinterfaces
       use precision
       implicit none
 
-      real(kind=dd), intent(in) :: zlength, qsource,factor
-      real(kind=dd), intent(out) :: mentrain, dmdq
+      real(kind=eb), intent(in) :: zlength, qsource,factor
+      real(kind=eb), intent(out) :: mentrain, dmdq
     end subroutine
   end interface
 

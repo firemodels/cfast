@@ -10,7 +10,7 @@ subroutine solve
   integer :: idid
   integer, dimension(1) :: ipar
   integer :: error
-  real(kind=dd), dimension(1) :: rpar
+  real(kind=eb), dimension(1) :: rpar
   integer :: ires
   external resid, jac
 
@@ -65,7 +65,7 @@ subroutine gettemp(templ,tempu)
   use precision
   use zonedata
   implicit none
-  real(kind=dd), dimension(*) :: templ, tempu
+  real(kind=eb), dimension(*) :: templ, tempu
   type(room_data), pointer :: r
   integer :: iroom
 
@@ -83,7 +83,7 @@ subroutine initsolve
   use zonedata
   implicit none
   integer, dimension(1) :: ipar
-  real(kind=dd),dimension(1) :: rpar
+  real(kind=eb),dimension(1) :: rpar
   integer :: i, ires
   integer :: error
   integer :: iiroom,ispec

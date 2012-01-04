@@ -21,24 +21,24 @@ subroutine initmm
   zeroflow%qdot = zero
   zeroflow%temperature = tamb
   zeroflow%density = rhoamb
-  zeroflow%sdot = 0.0_dd
+  zeroflow%sdot = 0.0_eb
   zeroflow%fromlower = .false.
   zeroflow%fromupper = .false.
   zeroflow%zero = .true.
   
   nspecies = 0
   n_single = 0
-  amb_oxy_con = 0.23_dd
-  heat_c  = 45000000.0_dd
-  heat_o2 = 13200000.0_dd
+  amb_oxy_con = 0.23_eb
+  heat_c  = 45000000.0_eb
+  heat_o2 = 13200000.0_eb
   yield_SPECIES(co) = 1.0
   yield_SPECIES(co2) = 1.0
   yield_SPECIES(smoke) = 1.0
-  o2limit = 0.10_dd
-  chi_rad = 0.35_dd
-  tprint = 0.0_dd
-  tdump = 0.0_dd
-  tplot = 0.0_dd
+  o2limit = 0.10_eb
+  chi_rad = 0.35_eb
+  tprint = 0.0_eb
+  tdump = 0.0_eb
+  tplot = 0.0_eb
   iplot = 0
   iprint = 0
   idump = 0
@@ -52,7 +52,7 @@ subroutine initmm
   plotfile=""
   csvfile=""
   dumpfile=""
-  pi = 4.0d0 * atan(1.0_dd)
+  pi = 4.0d0 * atan(1.0_eb)
   call setstate(.true.)
 end subroutine initmm
 
@@ -64,6 +64,7 @@ subroutine initamb
   implicit none
   integer :: iroom, ihvac
   type(room_data), pointer :: r
+  type(zone_data), pointer :: llay, ulay
   type(hvac_data), pointer :: h
   type(vent_data), pointer :: v
   type(zone_data), pointer :: layer
@@ -134,11 +135,51 @@ subroutine initamb
   if(solveprods)neq = neq - (maxspecies-1)*n_single
 
 
-  zerosoln = 0.0_dd
+  zerosoln = 0.0_eb
   if(error.ne.0)then
     write(6,*)"error allocating solver arrays"
     stop
   endif
+  
+      ! define room 0 using data read in or in readini
+
+      r => rooms(0)
+      r%z0 = 0.0_eb
+      r%dx = 1000._eb
+      r%dy = 1000._eb
+      r%dz = 1000._eb
+      r%rel_layer_height = 1000._eb
+      r%floor_area = r%dx*r%dy
+      r%abs_pressure = pabs_ref
+      r%rel_pressure = 0.0_eb
+      r%abs_layer_height = r%z0 + r%rel_layer_height
+      r%volume = r%floor_area*r%dz
+      r%VU = 0.0_eb
+
+      llay => r%layer(lower)
+      ulay => r%layer(upper)
+
+      llay%temperature = tamb
+      ulay%temperature = tamb
+      llay%density = rhoamb
+      ulay%density = rhoamb
+      llay%volume = r%floor_area*r%dz
+      llay%mass = rhoamb*r%volume
+      llay%s_mass(oxygen) = llay%mass*amb_oxy_con
+      llay%s_con(oxygen) = amb_oxy_con
+      ulay%s_mass(oxygen) = ulay%mass*amb_oxy_con
+      ulay%s_con(oxygen) = amb_oxy_con
+
+      do ispec = 2, maxspecies
+        llay%s_mass(ispec) = 0.0_eb
+        llay%s_con(ispec) = 0.0_eb
+        ulay%s_mass(ispec) = 0.0_eb
+        ulay%s_con(ispec) = 0.0_eb
+      end do
+
+      ulay%volume = 0.0_eb
+      ulay%mass = 0.0_eb
+
   absorb(lower) = 0.01
   absorb(upper) = 0.50
   do iroom = 1, nrooms
@@ -168,13 +209,13 @@ subroutine initamb
       w=>r%wall(iwall)
       w%temp=tamb
       w%dir=iwall
-      w%qdot=0.0_dd
+      w%qdot=0.0_eb
       if(iwall.eq.1.or.iwall.eq.2)w%area=r%floor_area
 
     end do
       
-    r%volmax = r%volume*0.999_dd
-    r%volmin = r%volume*0.001_dd
+    r%volmax = r%volume*0.999_eb
+    r%volmin = r%volume*0.001_eb
 
   end do
 

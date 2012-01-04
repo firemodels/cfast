@@ -8,22 +8,22 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
 
 ! declarations for the argument list
 
-  real(kind=dd), intent(in) :: tsec
-  real(kind=dd), dimension(neq), intent(in) :: x, xpsolvesub
-  real(kind=dd), dimension(neq), intent(out) :: deltasub
-  real(kind=dd), dimension(maxspecies,2) :: speciesdot
+  real(kind=eb), intent(in) :: tsec
+  real(kind=eb), dimension(neq), intent(in) :: x, xpsolvesub
+  real(kind=eb), dimension(neq), intent(out) :: deltasub
+  real(kind=eb), dimension(maxspecies,2) :: speciesdot
   integer :: ires
-  real(kind=dd), dimension(*) :: rpar
+  real(kind=eb), dimension(*) :: rpar
   integer,  dimension(*) :: ipar
   integer :: iiroom
 
-  real(kind=dd), dimension(neq) :: xprime
+  real(kind=eb), dimension(neq) :: xprime
   type(room_data), pointer :: r
   integer :: iroom, ispec
-  real(kind=dd) :: vroom, pabs, hinter, qldot, qudot, mldot, mudot, &
+  real(kind=eb) :: vroom, pabs, hinter, qldot, qudot, mldot, mudot, &
                           tu, tl, rhou, rhol, massu, massl, volu, &
                           pdot, tlaydu, vlayd, tlaydl
-  real(kind=dd) :: oxyldot, oxyudot
+  real(kind=eb) :: oxyldot, oxyudot
 
   totalflow(0:nrooms,1:2) = zeroflow
   fflow(0:nrooms,1:2) = zeroflow
@@ -102,7 +102,7 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
 
 !     pressure equation
 
-    pdot = (gamma - 1.0_dd)*(qldot + qudot)/vroom
+    pdot = (gamma - 1.0_eb)*(qldot + qudot)/vroom
 
 !     upper layer temperature equation
 
@@ -112,7 +112,7 @@ subroutine resid (tsec,x,xpsolvesub,deltasub,ires,rpar,ipar)
 !     upper layer volume equation
 
     if(r%singlezone.eq.0)then
-      vlayd = (gamma - 1.0_dd)*qudot/(gamma*pabs)
+      vlayd = (gamma - 1.0_eb)*qudot/(gamma*pabs)
       vlayd = vlayd - volu*pdot/(gamma*pabs)
     endif
 

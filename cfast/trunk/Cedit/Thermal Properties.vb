@@ -315,10 +315,11 @@ Public Class ThermalPropertiesCollection
                     If aCompartment.WallMaterial = aShortName Then numUses = numUses + 1
                 Next
             End If
-            If myFireObjects.Count > 0 Then
-                Dim aFireObject As New Fire
-                For i = 0 To myFireObjects.Count - 1
-                    aFireObject = myFireObjects.Item(i)
+            If myFires.Count > 0 Then
+                Dim aFire As New Fire, aFireObject As New Fire
+                For i = 0 To myFires.Count - 1
+                    aFire = myFires.Item(i)
+                    aFireObject = myFireObjects.Item(myFireObjects.GetFireIndex(aFire.Name))
                     If aFireObject.Material = aShortName Then numUses = numUses + 1
                 Next
             End If

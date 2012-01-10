@@ -37,6 +37,9 @@ Friend Module Data
     Friend Const FireTypeNames As String = "ConstrainedHeat Source"
     Friend Const CJetNames As String = "OFF    CEILINGWALLS  ALL    "
     Friend firefile() As Integer = {2, 4, 3, 5, 6, 9, 10, 8, 7, 11, 12, 13, 14}
+    Friend Const NumFireCurves As Integer = 7
+    Friend Const FireCurveTypes As String = "TIME HRR  SOOT CO   TRACEAREA HEIGH"
+    Friend FireCurveColumns() As Integer = {0, Fire.FireTime, Fire.FireHRR, Fire.FireSoot, Fire.FireCO, Fire.FireLPF, Fire.FireArea, Fire.FireHeight}
 
     Friend myThermalProperties As New ThermalPropertiesCollection
     Friend TempThermalProperties As New ThermalPropertiesCollection
@@ -52,6 +55,7 @@ Friend Module Data
     Friend TotalMassCFASTOutput As Boolean = False                  ' True if species output is to be in total mass rather than concenration (adds /T option to CFAST execution command)
     Friend NetHeatFluxCFASTOutput As Boolean = True                ' True if heat flux output is to be net heat flux rather than incident heat flux (adds /N option to CFAST execution command)
     Friend ValidationOutput As Boolean = False                      ' True if heat flux output is to be net heat flux (adds /V option to CFAST execution command)
+    Friend TestVersion As Boolean = True                            ' True to test new features that are not yet complete
     Friend Enum BaseUnitsNum    ' Provides an index into the array of base units conversion by type of conversion
         Length = 0
         Mass
@@ -60,6 +64,7 @@ Friend Module Data
         Pressure
         Energy
     End Enum
+
     Friend Enum UnitsNum    ' Provides an index into the array of units conversion by type of conversion
         Time = 0
         Temperature
@@ -157,6 +162,20 @@ Friend Module Data
         yPosition
         zposition
         plumeType
+        ignType
+        ignCriterion
+        xNormal
+        yNormal
+        zNormal
+        name
+    End Enum
+
+    Friend Enum formula
+        C = 1
+        H
+        O
+        N
+        Cl
     End Enum
 
     Friend Enum objfireNum
@@ -167,7 +186,7 @@ Friend Module Data
         zposition
         plumeType
         ignType
-        ignCriteria
+        ignCriterion
         xNormal
         yNormal
         zNormal
@@ -206,7 +225,16 @@ Friend Module Data
         limo2 = 2
         igntemp
         cjetType
+        C = 2
+        H
+        O
+        N
+        Cl
+        chiR
+        HoC
+        Material
     End Enum
+
     Friend Enum detectNum
         type = 2
         compartment
@@ -255,6 +283,16 @@ Friend Module Data
         emissivity
         HClCoefficients
         longName = 14
+    End Enum
+
+    Friend Enum MaterialNum
+        shortName = 2
+        Conductivity
+        specificHeat
+        density
+        thickness
+        emissivity
+        longName
     End Enum
 
     Friend Enum eventNum

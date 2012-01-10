@@ -1,2 +1,8 @@
-C1.Win.C1FlexGrid.C1FlexGrid, C1.Win.C1FlexGrid.4, Version=4.6.20113.658, Culture=neutral, PublicKeyToken=79882d576c6336da
 C1.Win.C1Sizer.C1SizerLight, C1.Win.C1Sizer.4, Version=4.1.20113.64, Culture=neutral, PublicKeyToken=79882d576c6336da
+C1.Win.C1Preview.C1PrintPreviewControl, C1.Win.C1Report.4, Version=4.6.20113.54462, Culture=neutral, PublicKeyToken=41780e2fc605e636
+C1.Win.C1FlexGrid.C1FlexGrid, C1.Win.C1FlexGrid.4, Version=4.6.20113.658, Culture=neutral, PublicKeyToken=79882d576c6336da
+C1.Win.C1Preview.C1PreviewPane, C1.Win.C1Report.4, Version=4.6.20113.54462, Culture=neutral, PublicKeyToken=41780e2fc605e636
+C1.C1Preview.C1PrintDocument, C1.C1Report.4, Version=4.6.20113.54462, Culture=neutral, PublicKeyToken=594a0605db190bb9
+C1.Win.C1Preview.C1PreviewThumbnailView, C1.Win.C1Report.4, Version=4.6.20113.54462, Culture=neutral, PublicKeyToken=41780e2fc605e636
+C1.Win.C1Preview.C1PreviewTextSearchPanel, C1.Win.C1Report.4, Version=4.6.20113.54462, Culture=neutral, PublicKeyToken=41780e2fc605e636
+C1.Win.C1Preview.C1PreviewOutlineView, C1.Win.C1Report.4, Version=4.6.20113.54462, Culture=neutral, PublicKeyToken=41780e2fc605e636

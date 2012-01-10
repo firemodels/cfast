@@ -66,6 +66,7 @@ Public Class Fire
 
     ' Object Definition for FireType = -1
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
+    Private aFormula(5) As Single                   ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
     Private aLength As Single                       ' Length of the burning object
     Private aWidth As Single                        ' Width of the burning object
     Private aThickness As Single                    ' Thickness of the burning object
@@ -98,10 +99,11 @@ Public Class Fire
         aCommentsIndex = -1
         ' New definitions for a fire object
         aName = "New Fire"
+        aFormula(1) = 1.0 : aFormula(2) = 4.0 : aFormula(3) = 0.0 : aFormula(4) = 0.0 : aFormula(5) = 0.0
         aLength = 1.0
         aWidth = 1.0
         aThickness = 1.0
-        aMolarMass = 0.016
+        aMolarMass = (12.0107 * aFormula(1) + 1.00794 * aFormula(2) + 15.9994 * aFormula(3) + 14.0067 * aFormula(4) + 35.453 * aFormula(5)) / 1000.0
         aTotalMass = 10000.0
         aVolitilTemp = 293.15
         aHeatofCombustion = 50000000.0
@@ -375,6 +377,20 @@ Public Class Fire
             End If
         End Set
     End Property
+    Property Formula(whichAtom As Integer) As Long
+        Get
+            If whichAtom >= 1 And whichAtom <= 5 Then
+                Return aFormula(whichAtom)
+            Else
+                Return -1
+            End If
+        End Get
+        Set(value As Long)
+            If whichAtom >= 1 And whichAtom <= 5 Then
+                aFormula(whichAtom) = value
+            End If
+        End Set
+    End Property
     Property Length() As Single
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aLength)
@@ -596,7 +612,6 @@ Public Class Fire
                     End If
                 Next
             Next
-
         End If
     End Sub
     Property Changed() As Boolean

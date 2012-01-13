@@ -66,7 +66,7 @@ Public Class Fire
 
     ' Object Definition for FireType = -1
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
-    Private aFormula(5) As Single                   ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
+    Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
     Private aLength As Single                       ' Length of the burning object
     Private aWidth As Single                        ' Width of the burning object
     Private aThickness As Single                    ' Thickness of the burning object
@@ -99,34 +99,24 @@ Public Class Fire
         aCommentsIndex = -1
         ' New definitions for a fire object
         aName = "New Fire"
-        aFormula(1) = 1.0 : aFormula(2) = 4.0 : aFormula(3) = 0.0 : aFormula(4) = 0.0 : aFormula(5) = 0.0
-        aLength = 1.0
-        aWidth = 1.0
-        aThickness = 1.0
-        aMolarMass = (12.0107 * aFormula(1) + 1.00794 * aFormula(2) + 15.9994 * aFormula(3) + 14.0067 * aFormula(4) + 35.453 * aFormula(5)) / 1000.0
-        aTotalMass = 10000.0
-        aVolitilTemp = 293.15
+        aChemicalFormula(1) = 1.0 : aChemicalFormula(2) = 4.0 : aChemicalFormula(3) = 0.0 : aChemicalFormula(4) = 0.0 : aChemicalFormula(5) = 0.0
         aHeatofCombustion = 50000000.0
-        aHeatofGasification = 0.0
         aRadiativeFraction = 0.3
         aCommentsIndex = -1
         aMaterial = "METHANE"
     End Sub
-    Public Sub New(ByVal Name As String, ByVal Length As Single, ByVal Width As Single, ByVal Thickness As Single, _
-    ByVal MolarMass As Single, ByVal TotalMass As Single, ByVal IgnitionTemp As Single, ByVal VolitilTemp As Single, _
-    ByVal Hoc As Single, ByVal HoG As Single, ByVal RadiativeFraction As Single)
+    Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Single, ByVal Hoc As Single, ByVal RadiativeFraction As Single)
         ' New to define a fire object with all the details
         Me.New(TypeFireObject)
         aName = Name
-        aLength = Length
-        aWidth = Width
-        aThickness = Thickness
-        aMolarMass = MolarMass
-        aTotalMass = TotalMass
-        ' Note that ignition temperature is not currently used as a fire object parameter. It's now a global parameter in the environment
-        aVolitilTemp = VolitilTemp
+        If UBound(Chemical_Formula) = 5 Then
+            aChemicalFormula(1) = Chemical_Formula(1)
+            aChemicalFormula(1) = Chemical_Formula(1)
+            aChemicalFormula(1) = Chemical_Formula(1)
+            aChemicalFormula(1) = Chemical_Formula(1)
+            aChemicalFormula(1) = Chemical_Formula(1)
+        End If
         aHeatofCombustion = Hoc
-        aHeatofGasification = HoG
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
     End Sub
@@ -377,74 +367,24 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property Formula(whichAtom As Integer) As Long
+    Property ChemicalFormula(whichAtom As Integer) As Single
         Get
             If whichAtom >= 1 And whichAtom <= 5 Then
-                Return aFormula(whichAtom)
+                Return aChemicalFormula(whichAtom)
             Else
                 Return -1
             End If
         End Get
-        Set(value As Long)
+        Set(value As Single)
             If whichAtom >= 1 And whichAtom <= 5 Then
-                aFormula(whichAtom) = value
+                aChemicalFormula(whichAtom) = value
             End If
         End Set
     End Property
-    Property Length() As Single
+    ReadOnly Property MolarMass() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aLength)
+            Return myUnits.Convert(UnitsNum.Mass).FromSI((12.0107 * aChemicalFormula(1) + 1.00794 * aChemicalFormula(2) + 15.9994 * aChemicalFormula(3) + 14.0067 * aChemicalFormula(4) + 35.453 * aChemicalFormula(5)) / 1000.0)
         End Get
-        Set(ByVal Value As Single)
-            If aLength <> myUnits.Convert(UnitsNum.Length).ToSI(Value) And Value >= 0.0 Then
-                aLength = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property Width() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aWidth)
-        End Get
-        Set(ByVal Value As Single)
-            If aWidth <> myUnits.Convert(UnitsNum.Length).ToSI(Value) And Value >= 0.0 Then
-                aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property Thickness() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aThickness)
-        End Get
-        Set(ByVal Value As Single)
-            If aThickness <> myUnits.Convert(UnitsNum.Length).ToSI(Value) And Value >= 0.0 Then
-                aThickness = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property MolarMass() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Mass).FromSI(aMolarMass)
-        End Get
-        Set(ByVal Value As Single)
-            If aMolarMass <> myUnits.Convert(UnitsNum.Mass).ToSI(Value) And Value >= 0.0 Then
-                aMolarMass = myUnits.Convert(UnitsNum.Mass).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property TotalMass() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Mass).FromSI(aTotalMass)
-        End Get
-        Set(ByVal Value As Single)
-            If aTotalMass <> myUnits.Convert(UnitsNum.Mass).ToSI(Value) And Value >= 0.0 Then
-                aTotalMass = myUnits.Convert(UnitsNum.Mass).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
     End Property
     Public Property Material() As String
         Get
@@ -464,28 +404,6 @@ Public Class Fire
         Set(ByVal Value As Single)
             If aHeatofCombustion <> myUnits.Convert(UnitsNum.HoC).ToSI(Value) And Value > 0.0 Then
                 aHeatofCombustion = myUnits.Convert(UnitsNum.HoC).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property HeatofGasification() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.HoG).FromSI(aHeatofGasification)
-        End Get
-        Set(ByVal Value As Single)
-            If aHeatofGasification <> myUnits.Convert(UnitsNum.HoG).ToSI(Value) And Value >= 0.0 Then
-                aHeatofGasification = myUnits.Convert(UnitsNum.HoG).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property VolitilTemp() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Temperature).FromSI(aVolitilTemp)
-        End Get
-        Set(ByVal Value As Single)
-            If aVolitilTemp <> myUnits.Convert(UnitsNum.Temperature).ToSI(Value) Then
-                aVolitilTemp = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -578,9 +496,6 @@ Public Class Fire
                 aChanged = True
             End If
         End If
-        Me.MolarMass = MolarMass
-        Me.TotalMass = TotalMass
-        Me.VolitilTemp = VolitilTemp
         Me.RadiativeFraction = RadiativeFraction
         Me.IgnitionType = IgnitionType
         Me.IgnitionValue = IgnitionValue
@@ -628,33 +543,13 @@ Public Class Fire
             HasErrors = 0
             Select Case aFireType
                 Case TypeFireObject
-                    If aLength < 0.0 Or aLength > CEdit.Compartment.MaxSize Then
-                        myErrors.Add("Fire Object " + aName + " has a length less than 0 m or greater than " + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
-                    If aWidth < 0.0 Or aWidth > CEdit.Compartment.MaxSize Then
-                        myErrors.Add("Fire Object " + aName + " has a width less than 0 m or greater than " + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
-                    If aThickness < 0.0 Or aThickness > CEdit.Compartment.MaxSize Then
-                        myErrors.Add("Fire Object " + aName + " has a thickness less than 0 m or greater than " + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
                     If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
                         myErrors.Add("Fire Object " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
-                    If aTotalMass < 0.0 Or aTotalMass > MaxTotalMass Then
-                        myErrors.Add("Fire Object " + aName + " has a total mass less than 0 m or greater than " + MaxTotalMass.ToString + " m.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aHeatofCombustion < MinHeatofCombustion Or aHeatofCombustion > MaxHeatofCombustion Then
                         myErrors.Add("Fire Object " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
                             " J/kg or greater than " + MaxHeatofCombustion.ToString + " J/kg.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
-                    If aVolitilTemp < MinTemperature Or aVolitilTemp > MaxTemperature Then
-                        myErrors.Add("Fire object " + aName + ". Volitilization temperature is less than " + MinTemperature.ToString + " °C or greater than " + MaxTemperature.ToString + " °C.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aRadiativeFraction < 0.0 Or aRadiativeFraction > 1.0 Then
@@ -676,15 +571,15 @@ Public Class Fire
                                             FireCurveErrors(FireHRR) = True
                                             HasErrors += 1
                                         End If
-                                        Dim aD As Single, qstar As Single, FlameLength As Single, HRRpm3 As Single
-                                        aD = Math.Max(0.3, Math.Sqrt(4 / 3.14159 * aWidth * aLength))
-                                        qstar = aFireTimeSeries(FireHRR, ir) / (1.29 * 1012.0 * 288.0) * Math.Sqrt(9.8 * aD) * aD * aD
-                                        FlameLength = Math.Max(0.0, aD * (3.7 * qstar ^ 0.4 - 1.02))
-                                        HRRpm3 = aFireTimeSeries(FireHRR, ir) / (aWidth * aLength * (aThickness + FlameLength))
-                                        If HRRpm3 > 4 * 10 ^ 6 Then
-                                            FireCurveErrors(FireHRR) = True
-                                            HasErrors += 1
-                                        End If
+                                        'Dim aD As Single, qstar As Single, FlameLength As Single, HRRpm3 As Single
+                                        'aD = Math.Max(0.3, aFireTimeSeries(FireArea, ir))
+                                        'qstar = aFireTimeSeries(FireHRR, ir) / (1.29 * 1012.0 * 288.0) * Math.Sqrt(9.8 * aD) * aD * aD
+                                        'FlameLength = Math.Max(0.0, aD * (3.7 * qstar ^ 0.4 - 1.02))
+                                        'HRRpm3 = aFireTimeSeries(FireHRR, ir) / (aFireTimeSeries(FireArea, ir) * FlameLength)
+                                        'If HRRpm3 > 4 * 10 ^ 6 Then
+                                        'FireCurveErrors(FireHRR) = True
+                                        'HasErrors += 1
+                                        'End If
                                     Case FireMdot
                                         If aFireTimeSeries(FireMdot, ir) < 0.0 Or aFireTimeSeries(FireMdot, ir) > MaxMdot Then
                                             FireCurveErrors(FireMdot) = True

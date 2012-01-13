@@ -36,25 +36,19 @@ Public Class FireObjectsEdit
     Friend WithEvents FireMaterial As System.Windows.Forms.ComboBox
     Friend WithEvents Label84 As System.Windows.Forms.Label
     Friend WithEvents FireDupObject As System.Windows.Forms.Button
-    Friend WithEvents FireHoG As System.Windows.Forms.TextBox
-    Friend WithEvents Label17 As System.Windows.Forms.Label
     Friend WithEvents FireHoC As System.Windows.Forms.TextBox
     Friend WithEvents Label56 As System.Windows.Forms.Label
-    Friend WithEvents FireTotalMass As System.Windows.Forms.TextBox
-    Friend WithEvents FireWidth As System.Windows.Forms.TextBox
+    Friend WithEvents FireN As System.Windows.Forms.TextBox
+    Friend WithEvents FireH As System.Windows.Forms.TextBox
     Friend WithEvents Label64 As System.Windows.Forms.Label
-    Friend WithEvents FireLength As System.Windows.Forms.TextBox
-    Friend WithEvents FireThickness As System.Windows.Forms.TextBox
+    Friend WithEvents FireC As System.Windows.Forms.TextBox
+    Friend WithEvents FireO As System.Windows.Forms.TextBox
     Friend WithEvents Label65 As System.Windows.Forms.Label
     Friend WithEvents Label39 As System.Windows.Forms.Label
     Friend WithEvents Label38 As System.Windows.Forms.Label
-    Friend WithEvents FireVolitilizationTemp As System.Windows.Forms.TextBox
     Friend WithEvents Label59 As System.Windows.Forms.Label
-    Friend WithEvents Label57 As System.Windows.Forms.Label
-    Friend WithEvents FireMolarMass As System.Windows.Forms.TextBox
-    Friend WithEvents Label94 As System.Windows.Forms.Label
     Friend WithEvents FireRadiativeFraction As System.Windows.Forms.TextBox
-    Friend WithEvents FireData As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents Label9 As System.Windows.Forms.Label
     Friend WithEvents FireRemoveObject As System.Windows.Forms.Button
     Friend WithEvents FireName As System.Windows.Forms.TextBox
@@ -63,34 +57,40 @@ Public Class FireObjectsEdit
     Friend WithEvents FireObjectsOK As System.Windows.Forms.Button
     Friend WithEvents FireObjectsCancel As System.Windows.Forms.Button
     Friend WithEvents FireNewt2 As System.Windows.Forms.Button
+    Friend WithEvents FireCl As System.Windows.Forms.TextBox
+    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents FireCOYield As System.Windows.Forms.TextBox
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents FireSootYield As System.Windows.Forms.TextBox
+    Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FireObjectsEdit))
         Me.GroupFireObject = New System.Windows.Forms.GroupBox()
+        Me.FireCOYield = New System.Windows.Forms.TextBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.FireSootYield = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.FireCl = New System.Windows.Forms.TextBox()
+        Me.Label1 = New System.Windows.Forms.Label()
         Me.FireMaterial = New System.Windows.Forms.ComboBox()
         Me.Label84 = New System.Windows.Forms.Label()
-        Me.FireHoG = New System.Windows.Forms.TextBox()
-        Me.Label17 = New System.Windows.Forms.Label()
         Me.FireHoC = New System.Windows.Forms.TextBox()
         Me.Label56 = New System.Windows.Forms.Label()
-        Me.FireTotalMass = New System.Windows.Forms.TextBox()
-        Me.FireWidth = New System.Windows.Forms.TextBox()
+        Me.FireN = New System.Windows.Forms.TextBox()
+        Me.FireH = New System.Windows.Forms.TextBox()
         Me.Label64 = New System.Windows.Forms.Label()
-        Me.FireLength = New System.Windows.Forms.TextBox()
-        Me.FireThickness = New System.Windows.Forms.TextBox()
+        Me.FireC = New System.Windows.Forms.TextBox()
+        Me.FireO = New System.Windows.Forms.TextBox()
         Me.Label65 = New System.Windows.Forms.Label()
         Me.Label39 = New System.Windows.Forms.Label()
         Me.Label38 = New System.Windows.Forms.Label()
-        Me.FireVolitilizationTemp = New System.Windows.Forms.TextBox()
         Me.Label59 = New System.Windows.Forms.Label()
-        Me.Label57 = New System.Windows.Forms.Label()
-        Me.FireMolarMass = New System.Windows.Forms.TextBox()
-        Me.Label94 = New System.Windows.Forms.Label()
         Me.FireRadiativeFraction = New System.Windows.Forms.TextBox()
         Me.FireNewObject = New System.Windows.Forms.Button()
         Me.FireDupObject = New System.Windows.Forms.Button()
-        Me.FireData = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.FireDataSS = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.FireObjectSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.FireName = New System.Windows.Forms.TextBox()
         Me.Label9 = New System.Windows.Forms.Label()
@@ -101,32 +101,32 @@ Public Class FireObjectsEdit
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.FireNewt2 = New System.Windows.Forms.Button()
         Me.GroupFireObject.SuspendLayout()
-        CType(Me.FireData, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.FireDataSS, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.FireObjectSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'GroupFireObject
         '
+        Me.GroupFireObject.Controls.Add(Me.FireCOYield)
+        Me.GroupFireObject.Controls.Add(Me.Label3)
+        Me.GroupFireObject.Controls.Add(Me.FireSootYield)
+        Me.GroupFireObject.Controls.Add(Me.Label2)
+        Me.GroupFireObject.Controls.Add(Me.FireCl)
+        Me.GroupFireObject.Controls.Add(Me.Label1)
         Me.GroupFireObject.Controls.Add(Me.FireMaterial)
         Me.GroupFireObject.Controls.Add(Me.Label84)
-        Me.GroupFireObject.Controls.Add(Me.FireHoG)
-        Me.GroupFireObject.Controls.Add(Me.Label17)
         Me.GroupFireObject.Controls.Add(Me.FireHoC)
         Me.GroupFireObject.Controls.Add(Me.Label56)
-        Me.GroupFireObject.Controls.Add(Me.FireTotalMass)
-        Me.GroupFireObject.Controls.Add(Me.FireWidth)
+        Me.GroupFireObject.Controls.Add(Me.FireN)
+        Me.GroupFireObject.Controls.Add(Me.FireH)
         Me.GroupFireObject.Controls.Add(Me.Label64)
-        Me.GroupFireObject.Controls.Add(Me.FireLength)
-        Me.GroupFireObject.Controls.Add(Me.FireThickness)
+        Me.GroupFireObject.Controls.Add(Me.FireC)
+        Me.GroupFireObject.Controls.Add(Me.FireO)
         Me.GroupFireObject.Controls.Add(Me.Label65)
         Me.GroupFireObject.Controls.Add(Me.Label39)
         Me.GroupFireObject.Controls.Add(Me.Label38)
-        Me.GroupFireObject.Controls.Add(Me.FireVolitilizationTemp)
         Me.GroupFireObject.Controls.Add(Me.Label59)
-        Me.GroupFireObject.Controls.Add(Me.Label57)
-        Me.GroupFireObject.Controls.Add(Me.FireMolarMass)
-        Me.GroupFireObject.Controls.Add(Me.Label94)
         Me.GroupFireObject.Controls.Add(Me.FireRadiativeFraction)
         Me.GroupFireObject.Location = New System.Drawing.Point(20, 256)
         Me.GroupFireObject.Name = "GroupFireObject"
@@ -135,10 +135,61 @@ Public Class FireObjectsEdit
         Me.GroupFireObject.TabStop = False
         Me.GroupFireObject.Text = "Details"
         '
+        'FireCOYield
+        '
+        Me.FireCOYield.Location = New System.Drawing.Point(279, 136)
+        Me.FireCOYield.Name = "FireCOYield"
+        Me.FireCOYield.Size = New System.Drawing.Size(80, 20)
+        Me.FireCOYield.TabIndex = 139
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(220, 140)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(51, 13)
+        Me.Label3.TabIndex = 140
+        Me.Label3.Text = "CO Yield:"
+        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireSootYield
+        '
+        Me.FireSootYield.Location = New System.Drawing.Point(279, 105)
+        Me.FireSootYield.Name = "FireSootYield"
+        Me.FireSootYield.Size = New System.Drawing.Size(80, 20)
+        Me.FireSootYield.TabIndex = 137
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(213, 109)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(58, 13)
+        Me.Label2.TabIndex = 138
+        Me.Label2.Text = "Soot Yield:"
+        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireCl
+        '
+        Me.FireCl.Location = New System.Drawing.Point(47, 198)
+        Me.FireCl.Name = "FireCl"
+        Me.FireCl.Size = New System.Drawing.Size(80, 20)
+        Me.FireCl.TabIndex = 135
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(17, 202)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(19, 13)
+        Me.Label1.TabIndex = 136
+        Me.Label1.Text = "Cl:"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'FireMaterial
         '
         Me.FireMaterial.ItemHeight = 13
-        Me.FireMaterial.Location = New System.Drawing.Point(120, 24)
+        Me.FireMaterial.Location = New System.Drawing.Point(122, 38)
         Me.FireMaterial.Name = "FireMaterial"
         Me.FireMaterial.Size = New System.Drawing.Size(192, 21)
         Me.FireMaterial.TabIndex = 7
@@ -147,33 +198,16 @@ Public Class FireObjectsEdit
         'Label84
         '
         Me.Label84.AutoSize = True
-        Me.Label84.Location = New System.Drawing.Point(64, 24)
+        Me.Label84.Location = New System.Drawing.Point(66, 38)
         Me.Label84.Name = "Label84"
         Me.Label84.Size = New System.Drawing.Size(47, 13)
         Me.Label84.TabIndex = 134
         Me.Label84.Text = "Material:"
         Me.Label84.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'FireHoG
-        '
-        Me.FireHoG.Location = New System.Drawing.Point(276, 112)
-        Me.FireHoG.Name = "FireHoG"
-        Me.FireHoG.Size = New System.Drawing.Size(80, 20)
-        Me.FireHoG.TabIndex = 14
-        Me.FireHoG.Text = "Default"
-        '
-        'Label17
-        '
-        Me.Label17.Location = New System.Drawing.Point(196, 112)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(72, 24)
-        Me.Label17.TabIndex = 130
-        Me.Label17.Text = "Heat of Gasification:"
-        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
         'FireHoC
         '
-        Me.FireHoC.Location = New System.Drawing.Point(276, 80)
+        Me.FireHoC.Location = New System.Drawing.Point(279, 73)
         Me.FireHoC.Name = "FireHoC"
         Me.FireHoC.Size = New System.Drawing.Size(80, 20)
         Me.FireHoC.TabIndex = 13
@@ -181,127 +215,93 @@ Public Class FireObjectsEdit
         '
         'Label56
         '
-        Me.Label56.Location = New System.Drawing.Point(196, 80)
+        Me.Label56.Location = New System.Drawing.Point(199, 71)
         Me.Label56.Name = "Label56"
         Me.Label56.Size = New System.Drawing.Size(72, 24)
         Me.Label56.TabIndex = 116
         Me.Label56.Text = "Heat of Combustion:"
         Me.Label56.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'FireTotalMass
+        'FireN
         '
-        Me.FireTotalMass.Location = New System.Drawing.Point(92, 208)
-        Me.FireTotalMass.Name = "FireTotalMass"
-        Me.FireTotalMass.Size = New System.Drawing.Size(80, 20)
-        Me.FireTotalMass.TabIndex = 12
+        Me.FireN.Location = New System.Drawing.Point(49, 167)
+        Me.FireN.Name = "FireN"
+        Me.FireN.Size = New System.Drawing.Size(80, 20)
+        Me.FireN.TabIndex = 12
         '
-        'FireWidth
+        'FireH
         '
-        Me.FireWidth.Location = New System.Drawing.Point(92, 112)
-        Me.FireWidth.Name = "FireWidth"
-        Me.FireWidth.Size = New System.Drawing.Size(80, 20)
-        Me.FireWidth.TabIndex = 9
+        Me.FireH.Location = New System.Drawing.Point(47, 105)
+        Me.FireH.Name = "FireH"
+        Me.FireH.Size = New System.Drawing.Size(80, 20)
+        Me.FireH.TabIndex = 9
         '
         'Label64
         '
         Me.Label64.AutoSize = True
-        Me.Label64.Location = New System.Drawing.Point(42, 80)
+        Me.Label64.Location = New System.Drawing.Point(19, 78)
         Me.Label64.Name = "Label64"
-        Me.Label64.Size = New System.Drawing.Size(43, 13)
+        Me.Label64.Size = New System.Drawing.Size(17, 13)
         Me.Label64.TabIndex = 118
-        Me.Label64.Text = "Length:"
+        Me.Label64.Text = "C:"
         Me.Label64.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'FireLength
+        'FireC
         '
-        Me.FireLength.Location = New System.Drawing.Point(94, 80)
-        Me.FireLength.Name = "FireLength"
-        Me.FireLength.Size = New System.Drawing.Size(80, 20)
-        Me.FireLength.TabIndex = 8
+        Me.FireC.Location = New System.Drawing.Point(49, 74)
+        Me.FireC.Name = "FireC"
+        Me.FireC.Size = New System.Drawing.Size(80, 20)
+        Me.FireC.TabIndex = 8
         '
-        'FireThickness
+        'FireO
         '
-        Me.FireThickness.Location = New System.Drawing.Point(92, 144)
-        Me.FireThickness.Name = "FireThickness"
-        Me.FireThickness.Size = New System.Drawing.Size(80, 20)
-        Me.FireThickness.TabIndex = 10
+        Me.FireO.Location = New System.Drawing.Point(47, 136)
+        Me.FireO.Name = "FireO"
+        Me.FireO.Size = New System.Drawing.Size(80, 20)
+        Me.FireO.TabIndex = 10
         '
         'Label65
         '
         Me.Label65.AutoSize = True
-        Me.Label65.Location = New System.Drawing.Point(28, 144)
+        Me.Label65.Location = New System.Drawing.Point(18, 140)
         Me.Label65.Name = "Label65"
-        Me.Label65.Size = New System.Drawing.Size(59, 13)
+        Me.Label65.Size = New System.Drawing.Size(18, 13)
         Me.Label65.TabIndex = 122
-        Me.Label65.Text = "Thickness:"
+        Me.Label65.Text = "O:"
         Me.Label65.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Label39
         '
         Me.Label39.AutoSize = True
-        Me.Label39.Location = New System.Drawing.Point(52, 112)
+        Me.Label39.Location = New System.Drawing.Point(18, 109)
         Me.Label39.Name = "Label39"
-        Me.Label39.Size = New System.Drawing.Size(38, 13)
+        Me.Label39.Size = New System.Drawing.Size(18, 13)
         Me.Label39.TabIndex = 119
-        Me.Label39.Text = "Width:"
+        Me.Label39.Text = "H:"
         Me.Label39.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Label38
         '
         Me.Label38.AutoSize = True
-        Me.Label38.Location = New System.Drawing.Point(20, 208)
+        Me.Label38.Location = New System.Drawing.Point(18, 171)
         Me.Label38.Name = "Label38"
-        Me.Label38.Size = New System.Drawing.Size(62, 13)
+        Me.Label38.Size = New System.Drawing.Size(18, 13)
         Me.Label38.TabIndex = 116
-        Me.Label38.Text = "Total Mass:"
+        Me.Label38.Text = "N:"
         Me.Label38.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireVolitilizationTemp
-        '
-        Me.FireVolitilizationTemp.Location = New System.Drawing.Point(276, 144)
-        Me.FireVolitilizationTemp.Name = "FireVolitilizationTemp"
-        Me.FireVolitilizationTemp.Size = New System.Drawing.Size(80, 20)
-        Me.FireVolitilizationTemp.TabIndex = 15
-        Me.FireVolitilizationTemp.Text = "20 °C"
         '
         'Label59
         '
-        Me.Label59.Location = New System.Drawing.Point(212, 176)
+        Me.Label59.Location = New System.Drawing.Point(215, 167)
         Me.Label59.Name = "Label59"
         Me.Label59.Size = New System.Drawing.Size(56, 24)
         Me.Label59.TabIndex = 124
         Me.Label59.Text = "Radiative Fraction:"
         Me.Label59.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label57
-        '
-        Me.Label57.Location = New System.Drawing.Point(196, 144)
-        Me.Label57.Name = "Label57"
-        Me.Label57.Size = New System.Drawing.Size(72, 24)
-        Me.Label57.TabIndex = 114
-        Me.Label57.Text = "Volitilization Temperature:"
-        Me.Label57.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireMolarMass
-        '
-        Me.FireMolarMass.Location = New System.Drawing.Point(92, 176)
-        Me.FireMolarMass.Name = "FireMolarMass"
-        Me.FireMolarMass.Size = New System.Drawing.Size(80, 20)
-        Me.FireMolarMass.TabIndex = 11
-        '
-        'Label94
-        '
-        Me.Label94.AutoSize = True
-        Me.Label94.Location = New System.Drawing.Point(20, 176)
-        Me.Label94.Name = "Label94"
-        Me.Label94.Size = New System.Drawing.Size(64, 13)
-        Me.Label94.TabIndex = 128
-        Me.Label94.Text = "Molar Mass:"
-        Me.Label94.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
         'FireRadiativeFraction
         '
-        Me.FireRadiativeFraction.Location = New System.Drawing.Point(276, 176)
+        Me.FireRadiativeFraction.Location = New System.Drawing.Point(279, 169)
         Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
         Me.FireRadiativeFraction.Size = New System.Drawing.Size(80, 20)
         Me.FireRadiativeFraction.TabIndex = 17
@@ -313,7 +313,7 @@ Public Class FireObjectsEdit
         Me.FireNewObject.Name = "FireNewObject"
         Me.FireNewObject.Size = New System.Drawing.Size(75, 23)
         Me.FireNewObject.TabIndex = 2
-        Me.FireNewObject.Text = "Add"
+        Me.FireNewObject.Text = "New"
         '
         'FireDupObject
         '
@@ -323,33 +323,34 @@ Public Class FireObjectsEdit
         Me.FireDupObject.TabIndex = 3
         Me.FireDupObject.Text = "Duplicate"
         '
-        'FireData
+        'FireDataSS
         '
-        Me.FireData.AllowDelete = True
-        Me.FireData.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
-        Me.FireData.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
-        Me.FireData.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.FireData.AutoClipboard = True
-        Me.FireData.ColumnInfo = resources.GetString("FireData.ColumnInfo")
-        Me.FireData.ExtendLastCol = True
-        Me.FireData.Location = New System.Drawing.Point(16, 536)
-        Me.FireData.Name = "FireData"
-        Me.FireData.Rows.Count = 101
-        Me.FireData.Rows.DefaultSize = 17
-        Me.FireData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.FireData.Size = New System.Drawing.Size(945, 112)
-        Me.FireData.TabIndex = 18
+        Me.FireDataSS.AllowDelete = True
+        Me.FireDataSS.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
+        Me.FireDataSS.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.FireDataSS.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.FireDataSS.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom), System.Windows.Forms.AnchorStyles)
+        Me.FireDataSS.AutoClipboard = True
+        Me.FireDataSS.ColumnInfo = resources.GetString("FireDataSS.ColumnInfo")
+        Me.FireDataSS.ExtendLastCol = True
+        Me.FireDataSS.Location = New System.Drawing.Point(198, 536)
+        Me.FireDataSS.Name = "FireDataSS"
+        Me.FireDataSS.Rows.Count = 101
+        Me.FireDataSS.Rows.DefaultSize = 17
+        Me.FireDataSS.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.FireDataSS.Size = New System.Drawing.Size(597, 112)
+        Me.FireDataSS.TabIndex = 18
         '
         'FireObjectSummary
         '
         Me.FireObjectSummary.ColumnInfo = resources.GetString("FireObjectSummary.ColumnInfo")
         Me.FireObjectSummary.ExtendLastCol = True
-        Me.FireObjectSummary.Location = New System.Drawing.Point(40, 16)
+        Me.FireObjectSummary.Location = New System.Drawing.Point(36, 12)
         Me.FireObjectSummary.Name = "FireObjectSummary"
         Me.FireObjectSummary.Rows.Count = 101
         Me.FireObjectSummary.Rows.DefaultSize = 17
         Me.FireObjectSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.FireObjectSummary.Size = New System.Drawing.Size(896, 144)
+        Me.FireObjectSummary.Size = New System.Drawing.Size(921, 144)
         Me.FireObjectSummary.TabIndex = 1
         '
         'FireName
@@ -425,7 +426,7 @@ Public Class FireObjectsEdit
         Me.FireNewt2.Name = "FireNewt2"
         Me.FireNewt2.Size = New System.Drawing.Size(75, 23)
         Me.FireNewt2.TabIndex = 145
-        Me.FireNewt2.Text = "Add t²"
+        Me.FireNewt2.Text = "New t²"
         '
         'FireObjectsEdit
         '
@@ -440,7 +441,7 @@ Public Class FireObjectsEdit
         Me.Controls.Add(Me.FireName)
         Me.Controls.Add(Me.Label9)
         Me.Controls.Add(Me.FireObjectSummary)
-        Me.Controls.Add(Me.FireData)
+        Me.Controls.Add(Me.FireDataSS)
         Me.Controls.Add(Me.GroupFireObject)
         Me.Controls.Add(Me.FireNewObject)
         Me.Controls.Add(Me.FireDupObject)
@@ -452,7 +453,7 @@ Public Class FireObjectsEdit
         Me.Text = "Fire Objects"
         Me.GroupFireObject.ResumeLayout(False)
         Me.GroupFireObject.PerformLayout()
-        CType(Me.FireData, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.FireDataSS, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.FireObjectSummary, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
@@ -471,7 +472,7 @@ Public Class FireObjectsEdit
                 FireCopy(myFireObjects(i), TempFireObjects(TempFireObjects.Count - 1))
             Next
             InitThermalPropertyList(Me.FireMaterial)
-            Me.FireData.Cols.Fixed = 0
+            Me.FireDataSS.Cols.Fixed = 0
             UpdateFireObjects(CurrentFireObject)
         End If
     End Sub
@@ -501,7 +502,7 @@ Public Class FireObjectsEdit
         Me.FireObjectPlot.Clear()
         aFireObject.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
-        iSelectedColumn = Me.FireData.ColSel
+        iSelectedColumn = Me.FireDataSS.ColSel
         If iSelectedColumn < 1 Then iSelectedColumn = Fire.FireHRR
         For j = 0 To numPoints
             x(j) = aFireData(Fire.FireTime, j)
@@ -516,46 +517,52 @@ Public Class FireObjectsEdit
         Dim aFireObject As New Fire
         Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
         Dim i As Integer, j As Integer, ir As Integer, ic As Integer
-        Dim PeakHRR As Single, PeakCO As Single, PeakC As Single, PeakHCN As Single, PeakHCl As Single
+        Dim PeakHeight As Single, PeakArea As Single, PeakHRR As Single, PeakCO As Single, PeakC As Single, PeakHCN As Single, PeakHCl As Single
+        Dim aFormula As String
 
+        ' Update details for currently selected fire object
         aFireObject = TempFireObjects(index)
         Me.FireName.Text = aFireObject.Name
         Me.FireMaterial.Text = myThermalProperties.GetLongName(aFireObject.Material)
-        Me.FireLength.Text = aFireObject.Length.ToString + myUnits.Convert(UnitsNum.Length).Units
-        Me.FireWidth.Text = aFireObject.Width.ToString + myUnits.Convert(UnitsNum.Length).Units
-        Me.FireThickness.Text = aFireObject.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
-        Me.FireMolarMass.Text = aFireObject.MolarMass.ToString + myUnits.Convert(UnitsNum.Mass).Units + "/mol"
-        Me.FireTotalMass.Text = aFireObject.TotalMass.ToString + myUnits.Convert(UnitsNum.Mass).Units
+        Me.FireC.Text = aFireObject.ChemicalFormula(formula.C).ToString
+        Me.FireH.Text = aFireObject.ChemicalFormula(formula.H).ToString
+        Me.FireO.Text = aFireObject.ChemicalFormula(formula.O).ToString
+        Me.FireN.Text = aFireObject.ChemicalFormula(formula.N).ToString
+        Me.FireCl.Text = aFireObject.ChemicalFormula(formula.Cl).ToString
         Me.FireHoC.Text = aFireObject.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
-        Me.FireHoG.Text = aFireObject.HeatofGasification.ToString + myUnits.Convert(UnitsNum.HoG).Units
-        Me.FireVolitilizationTemp.Text = aFireObject.VolitilTemp.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         Me.FireRadiativeFraction.Text = aFireObject.RadiativeFraction.ToString
         aFireObject.GetFireData(aFireTimeSeries, numPoints)
-        ClearGrid(Me.FireData)
-        Me.FireData(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
-        Me.FireData(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
-        Me.FireData(0, 2) = "Qdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireQdot).Units.Substring(1) + ")"
-        Me.FireData(0, 3) = "Height" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireHeight).Units.Substring(1) + ")"
-        Me.FireData(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
-        Me.FireData.AutoSizeRow(0)
+        ClearGrid(Me.FireDataSS)
+        Me.FireDataSS(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
+        Me.FireDataSS(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
+        Me.FireDataSS(0, 2) = "Qdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireQdot).Units.Substring(1) + ")"
+        Me.FireDataSS(0, 3) = "Height" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireHeight).Units.Substring(1) + ")"
+        Me.FireDataSS(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
+        Me.FireDataSS.AutoSizeRow(0)
 
         If numPoints >= 0 Then
             For ir = 0 To numPoints
                 For ic = 0 To 12
-                    Me.FireData(ir + 1, ic) = aFireTimeSeries(ic, ir)
+                    Me.FireDataSS(ir + 1, ic) = aFireTimeSeries(ic, ir)
                 Next
             Next
         End If
 
+        ' Update Summary table of all fire objects
         For i = 1 To TempFireObjects.Count
             aFireObject = TempFireObjects(i - 1)
             Me.FireObjectSummary(i, 0) = i
             Me.FireObjectSummary(i, 1) = aFireObject.Name
-            Me.FireObjectSummary(i, 2) = aFireObject.Length.ToString
-            Me.FireObjectSummary(i, 3) = aFireObject.Width.ToString
-            Me.FireObjectSummary(i, 4) = aFireObject.Thickness.ToString
+            aFormula = ""
+            For j = 1 To 5
+                If aFireObject.ChemicalFormula(j) <> 0 Then aFormula = aFormula + Trim("C H O N Cl".Substring(2 * (j - 1), 2))
+                If aFireObject.ChemicalFormula(j) > 1 Then aFormula = aFormula + Trim(aFireObject.ChemicalFormula(j).ToString)
+            Next
+            Me.FireObjectSummary(i, 2) = aFormula
             Me.FireObjectSummary(i, 10) = aFireObject.HeatofCombustion.ToString
             Me.FireObjectSummary(i, 11) = aFireObject.Material
+            PeakHeight = 0.0
+            PeakArea = 0.0
             PeakHRR = 0.0
             PeakCO = 0.0
             PeakC = 0.0
@@ -563,12 +570,16 @@ Public Class FireObjectsEdit
             PeakHCl = 0.0
             aFireObject.GetFireData(aFireTimeSeries, numPoints)
             For j = 0 To numPoints
+                If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
+                If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
                 If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
                 If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
                 If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
                 If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
                 If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
             Next
+            Me.FireObjectSummary(i, 3) = PeakHeight
+            Me.FireObjectSummary(i, 4) = PeakArea
             Me.FireObjectSummary(i, 5) = PeakHRR.ToString
             Me.FireObjectSummary(i, 6) = PeakCO.ToString
             Me.FireObjectSummary(i, 7) = PeakC.ToString
@@ -616,62 +627,91 @@ Public Class FireObjectsEdit
             Return LastRow
         End Get
     End Property
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireMaterial.SelectedIndexChanged, FireLength.Leave, FireWidth.Leave, FireThickness.Leave, FireMolarMass.Leave, FireTotalMass.Leave, FireHoC.Leave, FireHoG.Leave, FireVolitilizationTemp.Leave, FireRadiativeFraction.Leave, FireName.Leave
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireMaterial.SelectedIndexChanged, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireSootYield.Leave, FireCOYield.Leave, FireRadiativeFraction.Leave, FireName.Leave
         Dim aFireObject As New Fire
         Dim numPoints As Integer, ir As Integer
         aFireObject = TempFireObjects(CurrentFireObject)
         If sender Is Me.FireName Then aFireObject.Name = Me.FireName.Text
         If sender Is Me.FireMaterial Then aFireObject.Material = myThermalProperties.GetShortName(sender.text)
-        If sender Is Me.FireLength Then aFireObject.Length = Val(Me.FireLength.Text)
-        If sender Is Me.FireWidth Then aFireObject.Width = Val(Me.FireWidth.Text)
-        If sender Is Me.FireThickness Then aFireObject.Thickness = Val(Me.FireThickness.Text)
-        If sender Is Me.FireMolarMass Then aFireObject.MolarMass = Val(Me.FireMolarMass.Text)
-        If sender Is Me.FireTotalMass Then aFireObject.TotalMass = Val(Me.FireTotalMass.Text)
+        If sender Is Me.FireC Then
+            If Val(Me.FireC.Text) > 0 Then
+                aFireObject.ChemicalFormula(formula.C) = Val(Me.FireC.Text)
+            Else
+                aFireObject.ChemicalFormula(formula.C) = 1
+            End If
+        End If
+        If sender Is Me.FireH Then aFireObject.ChemicalFormula(formula.H) = Val(Me.FireH.Text)
+        If sender Is Me.FireO Then aFireObject.ChemicalFormula(formula.O) = Val(Me.FireO.Text)
+        If sender Is Me.FireN Then aFireObject.ChemicalFormula(formula.N) = Val(Me.FireN.Text)
+        If sender Is Me.FireCl Then aFireObject.ChemicalFormula(formula.Cl) = Val(Me.FireCl.Text)
+        If sender Is Me.FireC Or sender Is Me.FireH Or sender Is Me.FireO Or sender Is Me.FireN Or sender Is Me.FireCl Then
+            numPoints = CountGridPoints(Me.FireDataSS)
+            For ir = 1 To numPoints
+                Me.FireDataSS(ir, Fire.FireHC) = aFireObject.ChemicalFormula(formula.H) * 1.00794 / (aFireObject.ChemicalFormula(formula.C) * 12.0107)
+                Me.FireDataSS(ir, Fire.FireHCN) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.N)
+                Me.FireDataSS(ir, Fire.FireHCl) = (1.00794 + 35.453) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.Cl)
+            Next
+            CopyFireData(aFireObject)
+        End If
         If sender Is Me.FireHoC Then
             If Val(Me.FireHoC.Text) <> aFireObject.HeatofCombustion Then
                 aFireObject.HeatofCombustion = Val(Me.FireHoC.Text)
-                numPoints = CountGridPoints(Me.FireData)
+                numPoints = CountGridPoints(Me.FireDataSS)
                 For ir = 1 To numPoints
-                    Me.FireData(ir, Fire.FireMdot) = Me.FireData(ir, Fire.FireHRR) / aFireObject.HeatofCombustion
+                    Me.FireDataSS(ir, Fire.FireMdot) = Me.FireDataSS(ir, Fire.FireHRR) / aFireObject.HeatofCombustion
                 Next
-                CopyFireData(aFireObject)
             End If
+            CopyFireData(aFireObject)
         End If
-        If sender Is Me.FireHoG Then aFireObject.HeatofGasification = Val(Me.FireHoG.Text)
-        If sender Is Me.FireVolitilizationTemp Then aFireObject.VolitilTemp = Val(Me.FireVolitilizationTemp.Text)
+        If sender Is Me.FireSootYield Then
+            numPoints = CountGridPoints(Me.FireDataSS)
+            For ir = 1 To numPoints
+                Me.FireDataSS(ir, Fire.FireSoot) = Val(Me.FireSootYield.Text)
+            Next
+            CopyFireData(aFireObject)
+        End If
+        If sender Is Me.FireCOYield Then
+            numPoints = CountGridPoints(Me.FireDataSS)
+            For ir = 1 To numPoints
+                If Me.FireCOYield.Text <> "" Then
+                    Me.FireDataSS(ir, Fire.FireCO) = Val(Me.FireCOYield.Text)
+                Else
+                    Me.FireDataSS(ir, Fire.FireCO) = (0.012 * Val(Me.FireC.Text) / aFireObject.MolarMass * 0.0014 + 0.37 * Me.FireDataSS(ir, Fire.FireSoot))
+                End If
+            Next
+            CopyFireData(aFireObject)
+        End If
         If sender Is Me.FireRadiativeFraction Then aFireObject.RadiativeFraction = Val(Me.FireRadiativeFraction.Text)
         If CurrentFireObject >= 0 Then TempFireObjects(CurrentFireObject) = aFireObject
         UpdateFireObjects(CurrentFireObject)
     End Sub
-    Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireData.BeforeRowColChange
+    Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
         Dim numPoints As Integer
-        numPoints = CountGridPoints(Me.FireData)
+        numPoints = CountGridPoints(Me.FireDataSS)
         ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
         If CurrentFireObject >= 0 And CurrentFireObject < TempFireObjects.Count Then
             Dim aFireObject As New Fire
             aFireObject = TempFireObjects(CurrentFireObject)
-            If Me.FireData.ColSel = Fire.FireHRR Then
-                Me.FireData(Me.FireData.RowSel, Fire.FireMdot) = Me.FireData(Me.FireData.RowSel, Fire.FireHRR) / aFireObject.HeatofCombustion
-            End If
-            If Me.FireData.ColSel = Fire.FireMdot Then
-                Me.FireData(Me.FireData.RowSel, Fire.FireHRR) = Me.FireData(Me.FireData.RowSel, Fire.FireMdot) * aFireObject.HeatofCombustion
+            If Me.FireDataSS.ColSel = Fire.FireHRR Then
+                Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireMdot) = Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireHRR) / aFireObject.HeatofCombustion
             End If
             CopyFireData(aFireObject)
             TempFireObjects(CurrentFireObject) = aFireObject
             UpdateFireObjects(CurrentFireObject)
         End If
     End Sub
-    Private Sub FireData_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireData.AfterRowColChange
+    Private Sub FireData_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.AfterRowColChange
         UpdateFirePlot(CurrentFireObject)
     End Sub
     Private Sub CopyFireData(ByVal aFireObject As Fire)
+        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
         Dim numPoints As Integer, ir As Integer, ic As Integer
-        numPoints = CountGridPoints(Me.FireData)
+        numPoints = CountGridPoints(Me.FireDataSS)
         If numPoints > 0 Then
             Dim aFireTimeSeries(12, numPoints - 1) As Single
             For ir = 0 To numPoints - 1
                 For ic = 0 To 12
-                    aFireTimeSeries(ic, ir) = Val(Me.FireData(ir + 1, ic))
+                    aFireTimeSeries(ic, ir) = Val(Me.FireDataSS(ir + 1, ic))
                 Next
             Next
             aFireObject.SetFireData(aFireTimeSeries)
@@ -702,31 +742,31 @@ Public Class FireObjectsEdit
         End If
         UpdateFireObjects(CurrentFireObject)
     End Sub
-    Private Sub FireData_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireData.KeyDown
+    Private Sub FireData_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown
         Dim aChar As String
         aChar = e.KeyCode.ToString
         If e.Control Then
             If aChar = "Delete" Then
-                If FireData.Row > 0 And FireData.Col >= 0 Then
-                    FireData(FireData.Row, FireData.Col) = " "
+                If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
+                    FireDataSS(FireDataSS.Row, FireDataSS.Col) = " "
                 End If
             End If
         End If
         If e.Alt Then
             If aChar = "Delete" Then
-                If FireData.Row > 0 And FireData.Col >= 0 Then
+                If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
                     If CurrentFireObject >= 0 And CurrentFireObject < TempFireObjects.Count Then
                         Dim numPoints As Integer, i As Integer, j As Integer
-                        numPoints = CountGridPoints(Me.FireData)
-                        If numPoints > FireData.Row Then
-                            For i = FireData.Row To numPoints
-                                For j = 0 To FireData.Cols.Count - 1
-                                    FireData(i, j) = FireData(i + 1, j)
+                        numPoints = CountGridPoints(Me.FireDataSS)
+                        If numPoints > FireDataSS.Row Then
+                            For i = FireDataSS.Row To numPoints
+                                For j = 0 To FireDataSS.Cols.Count - 1
+                                    FireDataSS(i, j) = FireDataSS(i + 1, j)
                                 Next
                             Next
                         End If
-                        For j = 0 To FireData.Cols.Count - 1
-                            FireData(numPoints, j) = Nothing
+                        For j = 0 To FireDataSS.Cols.Count - 1
+                            FireDataSS(numPoints, j) = Nothing
                         Next
                         Dim aFireObject As New Fire
                         aFireObject = TempFireObjects(CurrentFireObject)
@@ -737,17 +777,17 @@ Public Class FireObjectsEdit
                 End If
             End If
             If aChar = "Insert" Then
-                If FireData.Row > 0 Then
+                If FireDataSS.Row > 0 Then
                     Dim numPoints As Integer, i As Integer, j As Integer
-                    numPoints = Me.CountGridPoints(Me.FireData)
-                    If numPoints > FireData.Row Then
-                        For i = numPoints To FireData.Row Step -1
-                            For j = 0 To FireData.Cols.Count - 1
-                                FireData(i + 1, j) = FireData(i, j)
+                    numPoints = Me.CountGridPoints(Me.FireDataSS)
+                    If numPoints > FireDataSS.Row Then
+                        For i = numPoints To FireDataSS.Row Step -1
+                            For j = 0 To FireDataSS.Cols.Count - 1
+                                FireDataSS(i + 1, j) = FireDataSS(i, j)
                             Next
                         Next
-                        For j = 0 To FireData.Cols.Count - 1
-                            FireData(FireData.Row, j) = 0
+                        For j = 0 To FireDataSS.Cols.Count - 1
+                            FireDataSS(FireDataSS.Row, j) = 0
                         Next
                     End If
 

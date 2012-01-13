@@ -674,14 +674,14 @@ C
       DO 50 I = 1, MAXIN
 	  lsp = i
         IF (C(LSP).EQ.LABEL) THEN
-            GO TO (150,190,210,550,
-     +             560,670,620,200,
-     +             630,230, 42,710,
-     +              40,770,780,225,
-     +			 805,815, 42,835,
-     +             910, 42,940,950,
+            GO TO (,,,550,
+     +             560,670,620,,
+     +             630,, ,710,
+     +              ,770,780,,
+     +			 805,815, ,835,
+     +             910, ,940,950,
      +             960,970,990,1010,
-     +             825,240,470,660,
+     +             825,,470,660,
      +			 552,1240,250,260,1100), I
         END IF
    50 CONTINUE
@@ -692,260 +692,255 @@ C
 
 !	Start the case statement for key words
 
-
-!	TIMES total_simulation, print interval, history interval, smokeview interval, spreadsheet interval
-
-  150	if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
-		 ierror = 1
-		 return
-	endif
-      NSMAX =  lrarray(1)
-      LPRINT = lrarray(2)
-      LDIAGO = lrarray(3)
-	if (ldiago.gt.0) ndumpr = 1
-      LDIAGP = lrarray(4)
-      lcopyss =  lrarray(5)
-      GO TO 810
-
-!	TAMB REFERENCE AMBIENT TEMPERATURE (C), REFERENCE AMBIENT PRESSURE, REFERENCE PRESSURE, relative humidity
-
-  190	if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
-		 ierror = 2
-		 return
-	endif
-	TA = lrarray(1)
-      PA = lrarray(2)
-      SAL = lrarray(3)
-	relhum = lrarray(4) * 0.01d0
-      IF (.NOT.EXSET) THEN
-        EXTA = TA
-        EXPA = PA
-        EXRA = RA
-        EXSAL = SAL
-      END IF
-      GO TO 810
-
-!	EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE, REFERENCE EXTERNAL AMBIENT HEIGHT
-
-  200	if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
-		 ierror = 3
-		 return
-	endif
-      EXTA = lrarray(1)
-      EXPA = lrarray(2)
-      EXSAL = lrarray(3)
-      EXSET = .TRUE.
-      GO TO 810
-
-!	Limiting oxygen index
-
-  210	if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		 ierror = 4
-		 return
-	endif
-	limo2 = lrarray(1) * 0.01d0
-	go to 810
-	  
-C     Rename the THERMAL or object DATA FILE
-
-  225	ierror = 5
-	return
-      GO TO 810
-
-  230	if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		 ierror = 6
-		 return
-	endif
-	THRMFILE = lcarray(1)
-      GO TO 810
-
-!	Mainfire (MAINF)
-
-  240	if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
-		 ierror = 7
-		 return
-	endif
-	objnin(0) = 'mainfire'
-	lfbo =      lrarray(1)
-	if(lfbo.lt.0.or.lfbo.gt.n-1) then
-		 ierror = 64
-		 return
-	endif
-!	Only constrained fires
-	lfbt =      2
-	fpos(1) =   lrarray(2)
-	fpos(2) =   lrarray(3)
-	fpos(3) =   lrarray(4)
-	fplume(0) = lrarray(5)
-	if(fplume(0).lt.1.or.fplume(0).gt.2) then
-	  write(logerr,5402) fplume(0)
-	  ierror = 78
-	  return 
-	end if
-	write(logerr,5403) plumemodel(fplume(0))
-	go to 810
-
-!	Set the gaseous ignition temperature - this is a global parameter DJIGN
-
-  250 if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		return
-		ierror = 4
-	endif
-	tgignt = lrarray(2)
-	go to 810
-
-!	Set global parameters - CHEMI is redundant with DJIGN (250) and LIMO2 (210)
-
-  260	if (.not.countargs(label,2,lcarray,xnumc-1, nret)) then
-		return
-		ierror = 4
-	endif
-	limo2 = lrarray(1) * 0.01d0
-	tgignt = lrarray(2)
-	go to 810
+      select case (label)
+          
+          ! TIMES total_simulation, print interval, history interval, smokeview interval, spreadsheet interval
+          case ("TIMES")
+              if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
+		        ierror = 1
+		        return
+	        endif
+              nsmax =  lrarray(1)
+              lprint = lrarray(2)
+              ldiago = lrarray(3)
+	        if (ldiago.gt.0) ndumpr = 1
+              ldiagp = lrarray(4)
+              lcopyss =  lrarray(5)
+              
+          ! TAMB REFERENCE AMBIENT TEMPERATURE (C), REFERENCE AMBIENT PRESSURE, REFERENCE PRESSURE, relative humidity
+          case ("TAMB")
+              if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
+		        ierror = 2
+		        return
+	        endif
+	        ta = lrarray(1)
+              pa = lrarray(2)
+              sal = lrarray(3)
+	        relhum = lrarray(4) * 0.01d0
+              if (.not.exset) then
+                  exta = ta
+                  expa = pa
+                  exra = ra
+                  exsal = sal
+              end if
+              
+          ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE, REFERENCE EXTERNAL AMBIENT HEIGHT
+          case ("EAMB")
+              if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
+		        ierror = 3
+                  return
+	        endif
+              exta = lrarray(1)
+              expa = lrarray(2)
+              exsal = lrarray(3)
+              exset = .true.
+              
+          ! Limiting oxygen index
+          case ("LIMO2")
+              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+		        ierror = 4
+		        return
+	        endif
+	        limo2 = lrarray(1) * 0.01d0 
+              
+          ! Rename the THERMAL DATA FILE
+          case ("THRMF")
+              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+		        ierror = 6
+		        return
+	        endif
+	        thrmfile = lcarray(1)
+          case ("MAINF")
+              if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
+		        ierror = 7
+		        return
+	        endif
+	        objnin(0) = 'mainfire'
+	        lfbo =      lrarray(1)
+	        if(lfbo.lt.0.or.lfbo.gt.n-1) then
+                  ierror = 64
+		        return
+	        endif
+	        lfbt =      2
+	        fpos(1) =   lrarray(2)
+	        fpos(2) =   lrarray(3)
+	        fpos(3) =   lrarray(4)
+	        fplume(0) = lrarray(5)
+	        if(fplume(0).lt.1.or.fplume(0).gt.2) then
+	            write(logerr,5402) fplume(0)
+	            ierror = 78
+	            return 
+	        end if
+	        write(logerr,5403) plumemodel(fplume(0))
+              
+          ! Set the gaseous ignition temperature - this is a global parameter DJIGN
+          case ('DJIGN')
+              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+		        return
+		        ierror = 4
+	        endif
+	        tgignt = lrarray(2)
+              
+          ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
+          case ('CHEMI')
+              if (countargs(label,2,lcarray,xnumc-1, nret)) then
+                  limo2 = lrarray(1) * 0.01d0
+	            tgignt = lrarray(2)
+              elseif ((countargs(label,8,lcarray,xnumc-1, nret)) then
+                  ! fire object CHEMI input here
+              else
+                  ierror = 4
+                  return
+              end if
+          
+          ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
+          case ('COMPA')
+              if (.not.countargs(label, 10, lcarray, xnumc-1, nret)) then
+		        ierror = 8
+		        return
+	        endif
 	
-!	COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3),
-!           ceiling_material(c), floor_material(c), wall_material (c)
+	        compartment = compartment + 1
+	        if (compartment.gt.nr) then
+		        write (logerr, 5062) compartment
+		        ierror = 9
+		        return
+	        endif
 
-  470	if (.not.countargs(label, 10, lcarray, xnumc-1, nret)) then
-		 ierror = 8
-		 return
-	endif
+              ! Name
+	        compartmentnames(compartment) = lcarray(1)
 	
-	compartment = compartment + 1
-	if (compartment.gt.nr) then
-		 write (logerr, 5062) compartment
-		 ierror = 9
-		 return
-	endif
-
-!	Name
-	compartmentnames(compartment) = lcarray(1)
+              ! Size
+	        br(compartment) = lrarray(2)
+	        dr(compartment) = lrarray(3)
+	        hr(compartment) = lrarray(4)
+	        cxabs(compartment) = lrarray(5)
+	        cyabs(compartment) = lrarray(6)
+	        hflr(compartment) = lrarray(7)
 	
-!	Size
-	br(compartment) = lrarray(2)
-	dr(compartment) = lrarray(3)
-	hr(compartment) = lrarray(4)
-	cxabs(compartment) = lrarray(5)
-	cyabs(compartment) = lrarray(6)
-	hflr(compartment) = lrarray(7)
+              ! Ceiling
+              tcname = lcarray(8)
+              if (tcname.ne.'OFF') then
+		        switch(1,compartment) = .true.
+		        cname(1,compartment) = tcname
+                  ! keep track of the total number of thermal properties used
+		        numthrm = numthrm + 1
+              end if
+
+              ! floor
+              tcname = lcarray(9)
+              if (tcname.ne.'OFF') then
+		        switch(2,compartment) = .true.
+		        cname(2,compartment) = tcname   
+                  ! keep track of the total number of thermal properties used
+		        numthrm = numthrm + 1
+              end if
+
+              ! walls
+              tcname = lcarray(10)
+              if (tcname.ne.'OFF') then
+		        switch(3,compartment) = .true.
+		        cname(3,compartment) = tcname
+		        switch(4,compartment) = .true.
+                  cname(4,compartment) = tcname
+                  ! keep track of the total number of thermal properties used
+		        numthrm = numthrm + 1
+              END IF
+
+              ! Reset this each time in case this is the last entry
+	        n = compartment+1
+	        nx = compartment
+
+	        write (logerr,5063) compartment, compartmentnames(nx), br(nx),
+     +        dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),
+     +        (switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
+              
+          ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
+!		    BW = width, HH = soffit, HL = sill, 
+!		    HHP = ABSOLUTE HEIGHT OF THE soffit,HLP = ABSOLUTE HEIGHT OF THE sill, HFLR = ABSOLUTE HEIGHT OF THE FLOOR (not set here)
+!		    WINDC = a wind coefficient which varies from -1 to +1 and is dimensionless
+!		    Compartment offset for the HALL command (2 of these)
+!		    VFACE = THE RELATIVE FACE OF THE VENT: 1-4 FOR X PLANE (-), Y PLANE (+), X PLANE (+), Y PLANE (-)
+!		    Initial open fraction
+          case ('HVENT')
+              if (.not.countargs(label, 11, lcarray, xnumc-1, nret)) then
+		        ierror = 10
+		        return
+	        endif
+
+              I = lrarray(1)
+              J = lrarray(2)
+              K = lrarray(3)
+              IMIN = MIN(I,J)
+              JMAX = MAX(I,J)
+              IF (IMIN.GT.NR-1.OR.JMAX.GT.NR.OR.IMIN.EQ.JMAX) THEN
+                  WRITE (LOGERR,5070) I, J
+	            ierror = 78
+                  return
+              END IF
+              IF (K.GT.mxccv) THEN
+                  WRITE (logerr,5080) I, J, K, NW(I,J)
+	            ierror = 78
+	            return
+	        END IF
+              NVENTIJK = NVENTIJK + 1
+	        if (nventijk.gt.mxvents) then
+	            write(logerr,5081) i,j,k
+	             ierror = 78
+	            return
+	        endif
+	        IJK(I,J,K) = NVENTIJK
+              IJK(J,I,K) = IJK(I,J,K)
+              IIJK = IJK(I,J,K)
+              JIK = IIJK
+              KOFFST = 2 ** K
+              IF (IAND(KOFFST,NW(I,J)).NE.0) WRITE (IOFILO,5090) I, J, K
+              NW(I,J) = IOR(NW(I,J),KOFFST)
+              BW(IIJK) = lrarray(4)
+              HH(IIJK) = lrarray(5)
+              HL(IIJK) = lrarray(6)
+              WINDC(IIJK) = lrarray(7)
+              HALLDIST(IIJK,1) = lrarray(8)
+              HALLDIST(IIJK,2) = lrarray(9)
+	        VFACE(IIJK) = lrarray(10)
+	        initialopening = lrarray(11)
 	
-!	Ceiling
-      tcname = lcarray(8)
-      IF (TCNAME.NE.'OFF') THEN
-		 SWITCH(1,compartment) = .TRUE.
-		 CNAME(1,compartment) = TCNAME
-!		 Keep track of the total number of thermal properties used
-		 NUMTHRM = NUMTHRM + 1
-      END IF
+	        qcvh(2,iijk) = initialopening
+	        qcvh(4,iijk) = initialopening
 
-!	Floor
-      tcname = lcarray(9)
-      IF (TCNAME.NE.'OFF') THEN
-		 SWITCH(2,compartment) = .TRUE.
-		 CNAME(2,compartment) = TCNAME
-!		 Keep track of the total number of thermal properties used
-		 NUMTHRM = NUMTHRM + 1
-      END IF
+              HHP(IIJK) = HH(IIJK) + HFLR(I)
+              HLP(IIJK) = HL(IIJK) + HFLR(I)
 
-!	Walls
-      tcname = lcarray(10)
-      IF (TCNAME.NE.'OFF') THEN
-		 SWITCH(3,compartment) = .TRUE.
-		 CNAME(3,compartment) = TCNAME
-		 SWITCH(4,compartment) = .TRUE.
-          CNAME(4,compartment) = TCNAME
-!		 Keep track of the total number of thermal properties used
-		 NUMTHRM = NUMTHRM + 1
-      END IF
+              ! CONNECTIONS ARE BIDIRECTIONAL
 
-!	Reset this each time in case this is the last entry
-	n = compartment+1
-!	Throwaway index
-	nx = compartment
+              NW(J,I) = NW(I,J)
+              HH(JIK) = MIN(HR(J),MAX(XX0,HHP(JIK)-HFLR(J)))
+              HL(JIK) = MIN(HH(JIK),MAX(XX0,HLP(JIK)-HFLR(J)))
 
-	write (logerr,5063) compartment, compartmentnames(nx), br(nx),
-     + dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),(switch(i,nx),i=1,4),
-     + (cname(i,nx),i=1,4)
-  	GO TO 810
+              ! ASSURE OURSELVES THAT THE CONNECTIONS ARE SYMMETRICAL
 
-!	HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
-!		 BW = width, HH = soffit, HL = sill, 
-!		 HHP = ABSOLUTE HEIGHT OF THE soffit,HLP = ABSOLUTE HEIGHT OF THE sill, HFLR = ABSOLUTE HEIGHT OF THE FLOOR (not set here)
-!		 WINDC = A WIND COEFFICIENT WHICH VARIES FROM -1 TO +1 AND IS DIMENSIONLESS
-!		 Compartment offset for the HALL command (2 of these)
-!		 VFACE = THE RELATIVE FACE OF THE VENT: 1-4 FOR X PLANE (-), Y PLANE (+), X PLANE (+), Y PLANE (-)
-!		 Initial open fraction
+              HHP(JIK) = HH(JIK) + HFLR(J)
+              HLP(JIK) = HL(JIK) + HFLR(J)
+              HH(IIJK) = MIN(HR(I),MAX(XX0,HHP(IIJK)-HFLR(I)))
+              HL(IIJK) = MIN(HH(IIJK),MAX(XX0,HLP(IIJK)-HFLR(I)))
+  
+          ! EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
+          ! EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time
+          ! EVENT - M Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time
+          ! EVENT - F Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time    
+          case ('EVENT')
+             
+          ! Outdated keywords
+          case ("OBJFL")
+              ierror = 5
+	        return
+ 
+              
+          case default
+              write(logerr, 5051) label
+      end select
+      go to 810 
 
-  550 if (.not.countargs(label, 11, lcarray, xnumc-1, nret)) then
-		 ierror = 10
-		 return
-	endif
-
-!	We do not keep track of the number of vents. They are counted in the DATACOPY initialization (NVENTS)
-
-      I = lrarray(1)
-      J = lrarray(2)
-      K = lrarray(3)
-      IMIN = MIN(I,J)
-      JMAX = MAX(I,J)
-      IF (IMIN.GT.NR-1.OR.JMAX.GT.NR.OR.IMIN.EQ.JMAX) THEN
-        WRITE (LOGERR,5070) I, J
-	  ierror = 78
-        return
-      END IF
-      IF (K.GT.mxccv) THEN
-        WRITE (logerr,5080) I, J, K, NW(I,J)
-	  ierror = 78
-	  return
-	END IF
-      NVENTIJK = NVENTIJK + 1
-	if (nventijk.gt.mxvents) then
-	  write(logerr,5081) i,j,k
-	  ierror = 78
-	  return
-	endif
-	IJK(I,J,K) = NVENTIJK
-      IJK(J,I,K) = IJK(I,J,K)
-      IIJK = IJK(I,J,K)
-      JIK = IIJK
-      KOFFST = 2 ** K
-      IF (IAND(KOFFST,NW(I,J)).NE.0) THEN
-        WRITE (IOFILO,5090) I, J, K
-      END IF
-      NW(I,J) = IOR(NW(I,J),KOFFST)
-      BW(IIJK) = lrarray(4)
-      HH(IIJK) = lrarray(5)
-      HL(IIJK) = lrarray(6)
-      WINDC(IIJK) = lrarray(7)
-      HALLDIST(IIJK,1) = lrarray(8)
-      HALLDIST(IIJK,2) = lrarray(9)
-	VFACE(IIJK) = lrarray(10)
-	initialopening = lrarray(11)
-
-! version 5 and earlier
-!	do 551 l = 1, nv
-!  551	qcvent(iijk,l) = initialopening
-	
-	qcvh(2,iijk) = initialopening
-	qcvh(4,iijk) = initialopening
-
-      HHP(IIJK) = HH(IIJK) + HFLR(I)
-      HLP(IIJK) = HL(IIJK) + HFLR(I)
-
-C     CONNECTIONS ARE BIDIRECTIONAL
-
-      NW(J,I) = NW(I,J)
-      HH(JIK) = MIN(HR(J),MAX(XX0,HHP(JIK)-HFLR(J)))
-      HL(JIK) = MIN(HH(JIK),MAX(XX0,HLP(JIK)-HFLR(J)))
-
-C     ASSURE OURSELVES THAT THE CONNECTIONS ARE SYMMETRICAL
-
-      HHP(JIK) = HH(JIK) + HFLR(J)
-      HLP(JIK) = HL(JIK) + HFLR(J)
-      HH(IIJK) = MIN(HR(I),MAX(XX0,HHP(IIJK)-HFLR(I)))
-      HL(IIJK) = MIN(HH(IIJK),MAX(XX0,HLP(IIJK)-HFLR(I)))
-      GO TO 810
 
 !	EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
 !	EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time

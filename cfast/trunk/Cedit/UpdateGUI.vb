@@ -687,22 +687,30 @@ Public Class UpdateGUI
             If aFire.FireObject < 0 Or myFireObjects.Count <= aFire.FireObject Then
                 MainWin.FireName.SelectedIndex = -1
                 MainWin.FireMaterial.Text = "Material:"
-                MainWin.FireLength.Text = "Length:"
-                MainWin.FireWidth.Text = "Width:"
-                MainWin.FireThickness.Text = "Thickness:"
-                MainWin.FireMolarMass.Text = "Molar Mass:"
-                MainWin.FireTotalMass.Text = "Total Mass:"
+                MainWin.FireFormula.Text = "Formula:"
+                MainWin.FireMolarMass.Text = "Molar Mass:"""
                 MainWin.FireHoC.Text = "Heat of Combustion:"
-                MainWin.FireHoG.Text = "Heat of Gasification:"
-                MainWin.FireVolitilizationTemp.Text = "Volitilization Temperature:"
+                MainWin.FirePeakCO.Text = "Peak CO Yield:"
+                MainWin.FirePeakHCN.Text = "Peak HCN Yield:"
+                MainWin.FirePeakHCl.Text = "Peak HCl Yield:"
+                MainWin.FirePeakSoot.Text = "Peak Soot Yield:
+                MainWin.FirePeakHeight.Text = "Peak Fire Height:"
+                MainWin.FirePeakArea.Text = "Peak Area::"
                 MainWin.FireRadiativeFraction.Text = "Radiative Fraction:"
                 MainWin.FireObjectPlot.Clear()
                 MainWin.FireObjectPlot.Refresh()
             Else
                 aFireObject = myFireObjects(aFire.FireObject)
                 MainWin.FireMaterial.Text = "Material: " + myThermalProperties.GetLongName(aFireObject.Material)
+                MainWin.FireFormula.Text = "Formula: " + aFireObject.ChemicalFormula()
                 MainWin.FireMolarMass.Text = "Molar Mass: " + aFireObject.MolarMass.ToString + myUnits.Convert(UnitsNum.Mass).Units + "/mol"
                 MainWin.FireHoC.Text = "Heat of Combustion: " + aFireObject.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
+                MainWin.FirePeakCO.Text = "Peak CO Yield: " + aFireObject.Peak(Fire.FireCO).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
+                MainWin.FirePeakHCN.Text = "Peak HCN Yield: " + aFireObject.Peak(Fire.FireHCN).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
+                MainWin.FirePeakHCl.Text = "Peak HCl Yield: " + aFireObject.Peak(Fire.FireHCl).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
+                MainWin.FirePeakSoot.Text = "Peak Soot Yield: " + aFireObject.Peak(Fire.FireSoot).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
+                MainWin.FirePeakHeight.Text = "Peak Fire Height: " + aFireObject.Peak(Fire.FireHeight).ToString + myUnits.Convert(UnitsNum.Length).Units
+                MainWin.FirePeakArea.Text = "Peak Fire Area: " + aFireObject.Peak(Fire.FireArea).ToString + myUnits.Convert(UnitsNum.Area).Units
                 MainWin.FireRadiativeFraction.Text = "Radiative Fraction: " + aFireObject.RadiativeFraction.ToString
                 UpdateFirePlot(aFire.FireObject)
             End If

@@ -46,6 +46,8 @@ Public Class Fire
     Private aChanged As Boolean = False
     Private HasErrors As Integer                    ' Temp variable that holds error COunt during error check
     Private ir As Integer, ic As Integer
+    Private aValue, aPeak As Single
+    Private aString As String
 
     ' Variables for current instance of a fire
     Private aCompartment As Integer                 ' COmpartment where the fire is located
@@ -165,6 +167,38 @@ Public Class Fire
         Me.SetFireData(FireTimeSeries)
         myUnits.SI = False
     End Sub
+    Public Sub PeakFireValues(ByRef PeakHeight As Single, ByRef PeakArea As Single, ByRef PeakHRR As Single, ByRef PeakCO As Single, ByRef PeakC As Single, ByRef PeakHCN As Single, ByRef PeakHCl As Single)
+        Dim NumPoints, j As Integer
+        NumPoints = aFireTimeSeries.GetUpperBound(1)
+        PeakHeight = 0.0
+        PeakArea = 0.0
+        PeakHRR = 0.0
+        PeakCO = 0.0
+        PeakC = 0.0
+        PeakHCN = 0.0
+        PeakHCl = 0.0
+        For j = 0 To NumPoints
+            If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
+            If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
+            If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
+            If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
+            If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
+            If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
+            If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
+        Next
+    End Sub
+    ReadOnly Property Peak(ByVal whichItem As Integer) As Single
+        Get
+            aPeak = -10 ^ 99
+            If whichItem >= 0 And whichItem <= 12 Then
+                For ic = 0 To aFireTimeSeries.GetUpperBound(1)
+                    aValue = myUnits.ConvertFireData(whichItem).FromSI(aFireTimeSeries(whichItem, ic))
+                    If aValue > aPeak Then aPeak = aValue
+                Next
+            End If
+            Return aPeak
+        End Get
+    End Property
     Property FireType() As Integer
         Get
             Return aFireType
@@ -366,6 +400,16 @@ Public Class Fire
                 aChanged = True
             End If
         End Set
+    End Property
+    ReadOnly Property ChemicalFormula() As String
+        Get
+            aString = ""
+            For ir = 1 To 5
+                If aChemicalFormula(ir) <> 0 Then aString = aString + Trim("C H O N Cl".Substring(2 * (ir - 1), 2))
+                If aChemicalFormula(ir) > 1 Then aString = aString + Trim(aChemicalFormula(ir).ToString)
+            Next
+            Return aString
+        End Get
     End Property
     Property ChemicalFormula(whichAtom As Integer) As Single
         Get

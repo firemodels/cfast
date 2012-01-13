@@ -516,9 +516,7 @@ Public Class FireObjectsEdit
     Private Sub UpdateFireObjects(ByVal index As Integer)
         Dim aFireObject As New Fire
         Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
-        Dim i As Integer, j As Integer, ir As Integer, ic As Integer
-        Dim PeakHeight As Single, PeakArea As Single, PeakHRR As Single, PeakCO As Single, PeakC As Single, PeakHCN As Single, PeakHCl As Single
-        Dim aFormula As String
+        Dim i As Integer, ir As Integer, ic As Integer
 
         ' Update details for currently selected fire object
         aFireObject = TempFireObjects(index)
@@ -553,38 +551,16 @@ Public Class FireObjectsEdit
             aFireObject = TempFireObjects(i - 1)
             Me.FireObjectSummary(i, 0) = i
             Me.FireObjectSummary(i, 1) = aFireObject.Name
-            aFormula = ""
-            For j = 1 To 5
-                If aFireObject.ChemicalFormula(j) <> 0 Then aFormula = aFormula + Trim("C H O N Cl".Substring(2 * (j - 1), 2))
-                If aFireObject.ChemicalFormula(j) > 1 Then aFormula = aFormula + Trim(aFireObject.ChemicalFormula(j).ToString)
-            Next
-            Me.FireObjectSummary(i, 2) = aFormula
+            Me.FireObjectSummary(i, 2) = aFireObject.ChemicalFormula()
             Me.FireObjectSummary(i, 10) = aFireObject.HeatofCombustion.ToString
             Me.FireObjectSummary(i, 11) = aFireObject.Material
-            PeakHeight = 0.0
-            PeakArea = 0.0
-            PeakHRR = 0.0
-            PeakCO = 0.0
-            PeakC = 0.0
-            PeakHCN = 0.0
-            PeakHCl = 0.0
-            aFireObject.GetFireData(aFireTimeSeries, numPoints)
-            For j = 0 To numPoints
-                If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
-                If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
-                If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
-                If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
-                If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
-                If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
-                If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
-            Next
-            Me.FireObjectSummary(i, 3) = PeakHeight
-            Me.FireObjectSummary(i, 4) = PeakArea
-            Me.FireObjectSummary(i, 5) = PeakHRR.ToString
-            Me.FireObjectSummary(i, 6) = PeakCO.ToString
-            Me.FireObjectSummary(i, 7) = PeakC.ToString
-            Me.FireObjectSummary(i, 8) = PeakHCN.ToString
-            Me.FireObjectSummary(i, 9) = PeakHCl.ToString
+            Me.FireObjectSummary(i, 3) = aFireObject.Peak(Fire.FireHeight)
+            Me.FireObjectSummary(i, 4) = aFireObject.Peak(Fire.FireArea)
+            Me.FireObjectSummary(i, 5) = aFireObject.Peak(Fire.FireHRR)
+            Me.FireObjectSummary(i, 6) = aFireObject.Peak(Fire.FireCO)
+            Me.FireObjectSummary(i, 7) = aFireObject.Peak(Fire.FireSoot)
+            Me.FireObjectSummary(i, 8) = aFireObject.Peak(Fire.FireHCN)
+            Me.FireObjectSummary(i, 9) = aFireObject.Peak(Fire.FireHCl)
         Next
         Me.FireObjectSummary.Select(index + 1, 0, index + 1, Me.FireObjectSummary.Cols.Count - 1, True)
 

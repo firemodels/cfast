@@ -91,6 +91,7 @@ Friend Module Data
         FireArea
         FireHCN = 9
         FireHCl
+        FireSpeciesYields = 5
     End Enum
 
     Friend Enum compaNum

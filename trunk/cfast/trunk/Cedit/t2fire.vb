@@ -78,7 +78,6 @@ Public Class t2Fire
         Updatet2Fire()
     End Sub
     Private Sub Updatet2Fire()
-        Dim i As Integer
         Me.t2GrowthTime.Text = GrowthTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
         Me.t2SteadyTime.Text = SteadyTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
         Me.t2PeakHRR.Text = PeakHRR.ToString + myUnits.ConvertFireData(UnitsNum.FireQdot).Units

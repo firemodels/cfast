@@ -46,6 +46,7 @@ Public Class CeditMain
     Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
     Friend WithEvents MainOpen As System.Windows.Forms.Button
     Friend WithEvents MenuValidationOutput As System.Windows.Forms.MenuItem
+    Friend WithEvents FirePeakHCl As System.Windows.Forms.Label
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -396,15 +397,15 @@ Public Class CeditMain
     Friend WithEvents ErrorProvider1 As System.Windows.Forms.ErrorProvider
     Friend WithEvents FireObjectPlot As NPlot.Windows.PlotSurface2D
     Friend WithEvents FireMaterial As System.Windows.Forms.Label
-    Friend WithEvents FireLength As System.Windows.Forms.Label
-    Friend WithEvents FireWidth As System.Windows.Forms.Label
-    Friend WithEvents FireHoG As System.Windows.Forms.Label
+    Friend WithEvents FireFormula As System.Windows.Forms.Label
+    Friend WithEvents FirePeakHCN As System.Windows.Forms.Label
+    Friend WithEvents FirePeakHeight As System.Windows.Forms.Label
     Friend WithEvents FireHoC As System.Windows.Forms.Label
-    Friend WithEvents FireThickness As System.Windows.Forms.Label
-    Friend WithEvents FireTotalMass As System.Windows.Forms.Label
+    Friend WithEvents FirePeakSoot As System.Windows.Forms.Label
+    Friend WithEvents FirePeakCO As System.Windows.Forms.Label
     Friend WithEvents FireMolarMass As System.Windows.Forms.Label
     Friend WithEvents FireRadiativeFraction As System.Windows.Forms.Label
-    Friend WithEvents FireVolitilizationTemp As System.Windows.Forms.Label
+    Friend WithEvents FirePeakArea As System.Windows.Forms.Label
     Friend WithEvents FireObjectEdit As System.Windows.Forms.Button
     Friend WithEvents TargetNormalCalc As System.Windows.Forms.ComboBox
     Friend WithEvents MenuTimeStep As System.Windows.Forms.MenuItem
@@ -678,19 +679,20 @@ Public Class CeditMain
         Me.FireLOL = New System.Windows.Forms.TextBox()
         Me.Label55 = New System.Windows.Forms.Label()
         Me.GroupFireObject = New System.Windows.Forms.GroupBox()
+        Me.FirePeakHCl = New System.Windows.Forms.Label()
         Me.FireObjectEdit = New System.Windows.Forms.Button()
         Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D()
         Me.FireMaterial = New System.Windows.Forms.Label()
         Me.FireName = New System.Windows.Forms.ComboBox()
-        Me.FireHoG = New System.Windows.Forms.Label()
+        Me.FirePeakHeight = New System.Windows.Forms.Label()
         Me.FireHoC = New System.Windows.Forms.Label()
         Me.Label71 = New System.Windows.Forms.Label()
-        Me.FireLength = New System.Windows.Forms.Label()
-        Me.FireThickness = New System.Windows.Forms.Label()
-        Me.FireWidth = New System.Windows.Forms.Label()
-        Me.FireTotalMass = New System.Windows.Forms.Label()
+        Me.FireFormula = New System.Windows.Forms.Label()
+        Me.FirePeakSoot = New System.Windows.Forms.Label()
+        Me.FirePeakHCN = New System.Windows.Forms.Label()
+        Me.FirePeakCO = New System.Windows.Forms.Label()
         Me.FireRadiativeFraction = New System.Windows.Forms.Label()
-        Me.FireVolitilizationTemp = New System.Windows.Forms.Label()
+        Me.FirePeakArea = New System.Windows.Forms.Label()
         Me.FireMolarMass = New System.Windows.Forms.Label()
         Me.TabDetection = New System.Windows.Forms.TabPage()
         Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
@@ -2002,8 +2004,8 @@ Public Class CeditMain
         Me.CompSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.CompSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.CompSummary.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.CompSummary.AutoGenerateColumns = False
         Me.CompSummary.ColumnInfo = resources.GetString("CompSummary.ColumnInfo")
         Me.CompSummary.ExtendLastCol = True
@@ -3256,19 +3258,20 @@ Public Class CeditMain
         '
         'GroupFireObject
         '
+        Me.GroupFireObject.Controls.Add(Me.FirePeakHCl)
         Me.GroupFireObject.Controls.Add(Me.FireObjectEdit)
         Me.GroupFireObject.Controls.Add(Me.FireObjectPlot)
         Me.GroupFireObject.Controls.Add(Me.FireMaterial)
         Me.GroupFireObject.Controls.Add(Me.FireName)
-        Me.GroupFireObject.Controls.Add(Me.FireHoG)
+        Me.GroupFireObject.Controls.Add(Me.FirePeakHeight)
         Me.GroupFireObject.Controls.Add(Me.FireHoC)
         Me.GroupFireObject.Controls.Add(Me.Label71)
-        Me.GroupFireObject.Controls.Add(Me.FireLength)
-        Me.GroupFireObject.Controls.Add(Me.FireThickness)
-        Me.GroupFireObject.Controls.Add(Me.FireWidth)
-        Me.GroupFireObject.Controls.Add(Me.FireTotalMass)
+        Me.GroupFireObject.Controls.Add(Me.FireFormula)
+        Me.GroupFireObject.Controls.Add(Me.FirePeakSoot)
+        Me.GroupFireObject.Controls.Add(Me.FirePeakHCN)
+        Me.GroupFireObject.Controls.Add(Me.FirePeakCO)
         Me.GroupFireObject.Controls.Add(Me.FireRadiativeFraction)
-        Me.GroupFireObject.Controls.Add(Me.FireVolitilizationTemp)
+        Me.GroupFireObject.Controls.Add(Me.FirePeakArea)
         Me.GroupFireObject.Controls.Add(Me.FireMolarMass)
         Me.GroupFireObject.Location = New System.Drawing.Point(56, 288)
         Me.GroupFireObject.Name = "GroupFireObject"
@@ -3276,6 +3279,16 @@ Public Class CeditMain
         Me.GroupFireObject.TabIndex = 17
         Me.GroupFireObject.TabStop = False
         Me.GroupFireObject.Text = "Fire Object"
+        '
+        'FirePeakHCl
+        '
+        Me.FirePeakHCl.AutoSize = True
+        Me.FirePeakHCl.Location = New System.Drawing.Point(24, 166)
+        Me.FirePeakHCl.Name = "FirePeakHCl"
+        Me.FirePeakHCl.Size = New System.Drawing.Size(81, 13)
+        Me.FirePeakHCl.TabIndex = 146
+        Me.FirePeakHCl.Text = "Peak HCl Yield:"
+        Me.FirePeakHCl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'FireObjectEdit
         '
@@ -3326,20 +3339,20 @@ Public Class CeditMain
         Me.FireName.Size = New System.Drawing.Size(140, 21)
         Me.FireName.TabIndex = 18
         '
-        'FireHoG
+        'FirePeakHeight
         '
-        Me.FireHoG.AutoSize = True
-        Me.FireHoG.Location = New System.Drawing.Point(24, 180)
-        Me.FireHoG.Name = "FireHoG"
-        Me.FireHoG.Size = New System.Drawing.Size(103, 13)
-        Me.FireHoG.TabIndex = 130
-        Me.FireHoG.Text = "Heat of Gasification:"
-        Me.FireHoG.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.FirePeakHeight.AutoSize = True
+        Me.FirePeakHeight.Location = New System.Drawing.Point(24, 180)
+        Me.FirePeakHeight.Name = "FirePeakHeight"
+        Me.FirePeakHeight.Size = New System.Drawing.Size(69, 13)
+        Me.FirePeakHeight.TabIndex = 130
+        Me.FirePeakHeight.Text = "Peak Height:"
+        Me.FirePeakHeight.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'FireHoC
         '
         Me.FireHoC.AutoSize = True
-        Me.FireHoC.Location = New System.Drawing.Point(24, 164)
+        Me.FireHoC.Location = New System.Drawing.Point(24, 110)
         Me.FireHoC.Name = "FireHoC"
         Me.FireHoC.Size = New System.Drawing.Size(103, 13)
         Me.FireHoC.TabIndex = 116
@@ -3356,70 +3369,70 @@ Public Class CeditMain
         Me.Label71.Text = "Fire Object:"
         Me.Label71.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'FireLength
+        'FireFormula
         '
-        Me.FireLength.AutoSize = True
-        Me.FireLength.Location = New System.Drawing.Point(24, 84)
-        Me.FireLength.Name = "FireLength"
-        Me.FireLength.Size = New System.Drawing.Size(43, 13)
-        Me.FireLength.TabIndex = 118
-        Me.FireLength.Text = "Length:"
-        Me.FireLength.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.FireFormula.AutoSize = True
+        Me.FireFormula.Location = New System.Drawing.Point(24, 82)
+        Me.FireFormula.Name = "FireFormula"
+        Me.FireFormula.Size = New System.Drawing.Size(47, 13)
+        Me.FireFormula.TabIndex = 118
+        Me.FireFormula.Text = "Formula:"
+        Me.FireFormula.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'FireThickness
+        'FirePeakSoot
         '
-        Me.FireThickness.AutoSize = True
-        Me.FireThickness.Location = New System.Drawing.Point(24, 116)
-        Me.FireThickness.Name = "FireThickness"
-        Me.FireThickness.Size = New System.Drawing.Size(59, 13)
-        Me.FireThickness.TabIndex = 122
-        Me.FireThickness.Text = "Thickness:"
-        Me.FireThickness.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.FirePeakSoot.AutoSize = True
+        Me.FirePeakSoot.Location = New System.Drawing.Point(24, 124)
+        Me.FirePeakSoot.Name = "FirePeakSoot"
+        Me.FirePeakSoot.Size = New System.Drawing.Size(86, 13)
+        Me.FirePeakSoot.TabIndex = 122
+        Me.FirePeakSoot.Text = "Peak Soot Yield:"
+        Me.FirePeakSoot.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'FireWidth
+        'FirePeakHCN
         '
-        Me.FireWidth.AutoSize = True
-        Me.FireWidth.Location = New System.Drawing.Point(24, 100)
-        Me.FireWidth.Name = "FireWidth"
-        Me.FireWidth.Size = New System.Drawing.Size(38, 13)
-        Me.FireWidth.TabIndex = 119
-        Me.FireWidth.Text = "Width:"
-        Me.FireWidth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.FirePeakHCN.AutoSize = True
+        Me.FirePeakHCN.Location = New System.Drawing.Point(24, 152)
+        Me.FirePeakHCN.Name = "FirePeakHCN"
+        Me.FirePeakHCN.Size = New System.Drawing.Size(87, 13)
+        Me.FirePeakHCN.TabIndex = 119
+        Me.FirePeakHCN.Text = "Peak HCN Yield:"
+        Me.FirePeakHCN.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'FireTotalMass
+        'FirePeakCO
         '
-        Me.FireTotalMass.AutoSize = True
-        Me.FireTotalMass.Location = New System.Drawing.Point(24, 148)
-        Me.FireTotalMass.Name = "FireTotalMass"
-        Me.FireTotalMass.Size = New System.Drawing.Size(62, 13)
-        Me.FireTotalMass.TabIndex = 116
-        Me.FireTotalMass.Text = "Total Mass:"
-        Me.FireTotalMass.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.FirePeakCO.AutoSize = True
+        Me.FirePeakCO.Location = New System.Drawing.Point(24, 138)
+        Me.FirePeakCO.Name = "FirePeakCO"
+        Me.FirePeakCO.Size = New System.Drawing.Size(79, 13)
+        Me.FirePeakCO.TabIndex = 116
+        Me.FirePeakCO.Text = "Peak CO Yield:"
+        Me.FirePeakCO.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'FireRadiativeFraction
         '
         Me.FireRadiativeFraction.AutoSize = True
-        Me.FireRadiativeFraction.Location = New System.Drawing.Point(24, 212)
+        Me.FireRadiativeFraction.Location = New System.Drawing.Point(24, 208)
         Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
         Me.FireRadiativeFraction.Size = New System.Drawing.Size(96, 13)
         Me.FireRadiativeFraction.TabIndex = 124
         Me.FireRadiativeFraction.Text = "Radiative Fraction:"
         Me.FireRadiativeFraction.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'FireVolitilizationTemp
+        'FirePeakArea
         '
-        Me.FireVolitilizationTemp.AutoSize = True
-        Me.FireVolitilizationTemp.Location = New System.Drawing.Point(24, 196)
-        Me.FireVolitilizationTemp.Name = "FireVolitilizationTemp"
-        Me.FireVolitilizationTemp.Size = New System.Drawing.Size(127, 13)
-        Me.FireVolitilizationTemp.TabIndex = 114
-        Me.FireVolitilizationTemp.Text = "Volitilization Temperature:"
-        Me.FireVolitilizationTemp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.FirePeakArea.AutoSize = True
+        Me.FirePeakArea.Location = New System.Drawing.Point(24, 194)
+        Me.FirePeakArea.Name = "FirePeakArea"
+        Me.FirePeakArea.Size = New System.Drawing.Size(60, 13)
+        Me.FirePeakArea.TabIndex = 114
+        Me.FirePeakArea.Text = "Peak Area:"
+        Me.FirePeakArea.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'FireMolarMass
         '
         Me.FireMolarMass.AutoSize = True
-        Me.FireMolarMass.Location = New System.Drawing.Point(24, 132)
+        Me.FireMolarMass.Location = New System.Drawing.Point(24, 96)
         Me.FireMolarMass.Name = "FireMolarMass"
         Me.FireMolarMass.Size = New System.Drawing.Size(64, 13)
         Me.FireMolarMass.TabIndex = 128

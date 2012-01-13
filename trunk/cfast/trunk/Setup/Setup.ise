@@ -1939,7 +1939,6 @@
 		<row><td>glew32.dll</td><td>glew32.dll</td><td>glew32.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\glew32.dll</td><td>1</td><td/></row>
 		<row><td>hazard.tbl</td><td>ISX_DEFAULTCOMPONENT</td><td>HAZARD.TBL</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\HAZARD.TBL</td><td>1</td><td/></row>
 		<row><td>kiosk.o</td><td>ISX_DEFAULTCOMPONENT</td><td>kiosk.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\kiosk.o</td><td>1</td><td/></row>
-		<row><td>mainfire.o</td><td>ISX_DEFAULTCOMPONENT</td><td>mainfire.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\mainfire.o</td><td>1</td><td/></row>
 		<row><td>mattress_and_boxspring.o</td><td>ISX_DEFAULTCOMPONENT</td><td>mattress and boxspring.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\mattress and boxspring.o</td><td>1</td><td/></row>
 		<row><td>nplot.dll</td><td>NPlot.dll</td><td>NPlot.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\NPlot.dll</td><td>1</td><td/></row>
 		<row><td>pthreadvc.dll</td><td>pthreadVC.dll</td><td>pthreadVC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\pthreadVC.dll</td><td>1</td><td/></row>

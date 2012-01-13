@@ -15,15 +15,13 @@ Module Copy
         ToFire.PlumeType = FromFire.PlumeType
         ToFire.FireObject = FromFire.FireObject
         ToFire.Name = FromFire.Name
-        ToFire.Length = FromFire.Length
-        ToFire.Width = FromFire.Width
-        ToFire.Thickness = FromFire.Thickness
-        ToFire.MolarMass = FromFire.MolarMass
-        ToFire.TotalMass = FromFire.TotalMass
+        ToFire.ChemicalFormula(formula.C) = FromFire.ChemicalFormula(formula.C)
+        ToFire.ChemicalFormula(formula.H) = FromFire.ChemicalFormula(formula.H)
+        ToFire.ChemicalFormula(formula.O) = FromFire.ChemicalFormula(formula.O)
+        ToFire.ChemicalFormula(formula.N) = FromFire.ChemicalFormula(formula.N)
+        ToFire.ChemicalFormula(formula.Cl) = FromFire.ChemicalFormula(formula.Cl)
         ToFire.Material = FromFire.Material
         ToFire.HeatofCombustion = FromFire.HeatofCombustion
-        ToFire.HeatofGasification = FromFire.HeatofGasification
-        ToFire.VolitilTemp = FromFire.VolitilTemp
         ToFire.RadiativeFraction = FromFire.RadiativeFraction
         Dim aFireData(12, 0) As Single
         FromFire.GetFireData(aFireData, NumDataPoints)

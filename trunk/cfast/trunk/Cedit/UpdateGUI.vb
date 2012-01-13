@@ -701,14 +701,8 @@ Public Class UpdateGUI
             Else
                 aFireObject = myFireObjects(aFire.FireObject)
                 MainWin.FireMaterial.Text = "Material: " + myThermalProperties.GetLongName(aFireObject.Material)
-                MainWin.FireLength.Text = "Length: " + aFireObject.Length.ToString + myUnits.Convert(UnitsNum.Length).Units
-                MainWin.FireWidth.Text = "Width: " + aFireObject.Width.ToString + myUnits.Convert(UnitsNum.Length).Units
-                MainWin.FireThickness.Text = "Thickness: " + aFireObject.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
                 MainWin.FireMolarMass.Text = "Molar Mass: " + aFireObject.MolarMass.ToString + myUnits.Convert(UnitsNum.Mass).Units + "/mol"
-                MainWin.FireTotalMass.Text = "Total Mass: " + aFireObject.TotalMass.ToString + myUnits.Convert(UnitsNum.Mass).Units
                 MainWin.FireHoC.Text = "Heat of Combustion: " + aFireObject.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
-                MainWin.FireHoG.Text = "Heat of Gasification: " + aFireObject.HeatofGasification.ToString + myUnits.Convert(UnitsNum.HoG).Units
-                MainWin.FireVolitilizationTemp.Text = "Volitilization Temperature: " + aFireObject.VolitilTemp.ToString + myUnits.Convert(UnitsNum.Temperature).Units
                 MainWin.FireRadiativeFraction.Text = "Radiative Fraction: " + aFireObject.RadiativeFraction.ToString
                 UpdateFirePlot(aFire.FireObject)
             End If

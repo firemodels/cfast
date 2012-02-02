@@ -1105,7 +1105,7 @@ C    IN THIS ROOM
       RETURN
       END
 
-      subroutine integrate mass (time, deltt)
+      subroutine integrate_mass (time, deltt)
       
 !   Routine to integrate the pyrolosate of objects
 

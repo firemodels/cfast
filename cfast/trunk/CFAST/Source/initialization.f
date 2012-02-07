@@ -1,53 +1,37 @@
-	subroutine gettpp (name, tp, errorcode)
+      subroutine gettpp (name, tp, errorcode)
+
+!     Routine: gettpp
+!     Purpose: check for and return index to a thermal property
+!     Revision: $Revision$
+!     Revision Date: $Date$
 
       include "cfast.fi"
       include "thermp.fi"
 
-	character name*(*), missingtpp*64
-	integer tp, errorcode
+      character name*(*), missingtpp*64
+      integer tp, errorcode
 
-	errorcode = 0
-	do 1 i = 1, maxct
-	tp = i
-	if (name.eq.nlist(i)) return
- 1	continue
-	missingtpp = name
-	errorcode = 205
-	write(3,2) missingtpp
- 2    format('Missing tpp = ',a)
-	return
-	end
+      errorcode = 0
+      do i = 1, maxct
+          tp = i
+          if (name.eq.nlist(i)) return
+      end do
+      missingtpp = name
+      errorcode = 205
+      write(3,'(''Missing tpp = '',a)') missingtpp
+      return
+      end
 
-      SUBROUTINE GRES(NNN,HVPSOLV,DELTAMV,IFLAG)
+      subroutine gres(nnn,hvpsolv,deltamv,iflag)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     GRES
-C
-C     Source File: GRES.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  Calculates residuals for initial solution by SNSQE
-C
-C     Arguments: NNN
-C                HVPSOLV
-C                DELTAMV
-C                IFLAG
-C
-C     Revision History:
-C        Created:  6/14/92 by GPF
-C        Modified: 2/5/1993 at 13:18 by RDP:
-C                  Changed initial solution time from 0 to STIME for restart 
-C                  case.
-C        Modified: 2/12/1993 by GPF: added debug print
-C        Modified: 2/5/95 by GPF:  ignore rooms that are isolated from outside
-C                                  (set pressure equation residual to zero)
-C        Modified: 2/1/97 by GPF:  added write before PAUSE so that output is
-C                                  not lost
-C        Modified: 10/9/97 by GPF: improved debug printout
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: gres
+!     purpose: calculates residuals for initial solution by snsqe
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: nnn
+!                hvpsolv
+!                deltamv
+!                iflag
 
       include "precis.fi"
       include "cfast.fi"
@@ -57,85 +41,69 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cshell.fi"
       include "opt.fi"
 
-      DIMENSION HVPSOLV(*), DELTAMV(*), P2(MAXTEQ), DELTA(MAXTEQ), 
-     +    PDZERO(MAXTEQ)
-      DATA PDZERO /MAXTEQ * 0.0D0/
-      NALG = NM1 + NHVPVAR + NHVTVAR
-      DO 10 I = 1, NALG
-        P2(I) = HVPSOLV(I)
-   10 CONTINUE
-      DO 20 I = NALG + 1, NEQUALS
-        P2(I) = PINIT(I)
-   20 CONTINUE
-      IF(IPRTALG.NE.0)THEN
-        WRITE(IOFILO,*)'Room pressures'
-        DO 25 I = 1, NM1
-          WRITE(IOFILO,*)I,P2(I)
-   25   CONTINUE
-        IF(NHVPVAR.GT.0)WRITE (IOFILO,*) 'HVAC pressures'
-        DO 26 I = 1, NHVPVAR
-          WRITE(IOFILO,*)I,P2(I+NOFPMV)
-   26   CONTINUE
-        IF(NHVTVAR.GT.0)WRITE (IOFILO,*) 'HVAC temperatures'
-        DO 27 I = 1, NHVTVAR
-          WRITE(IOFILO,*)I,P2(I+NOFTMV)
-   27   CONTINUE
-      ENDIF
-      T = STIME
-      CALL RESID(T,P2,PDZERO,DELTA,IRES,RPAR2,IPAR2)
-      DO 30 I = 1, NALG
-        DELTAMV(I) = DELTA(I)
-   30 CONTINUE
-      DO 31 I = 1, NM1
-        IF(.NOT.IZCON(I))DELTAMV(I) = 0.0D0
-   31 CONTINUE
-      IF(IPRTALG.NE.0)THEN
-        WRITE(IOFILO,*)'Room pressure Residuals'
-        DO 35 I = 1, NM1
-          WRITE(IOFILO,*)I,DELTA(I)
-   35   CONTINUE
-        IF(NHVpvar.GT.0)WRITE (IOFILO,*) 'HVAC pressure Residuals'
-        DO 36 I = 1, NHVPVAR
-          WRITE(IOFILO,*)I,DELTA(I+NOFPMV)
-   36   CONTINUE
-        IF(NHVTVAR.GT.0)WRITE (IOFILO,*) 'HVAC temperature Residuals'
-        DO 37 I = 1, NHVTVAR
-          WRITE(IOFILO,*)I,DELTA(I+NOFTMV)
-   37   CONTINUE
-        WRITE(IOFILO,*)' '
-        PAUSE
-      ENDIF
-      RETURN
-      END
+      dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), 
+     +pdzero(maxteq)
+      data pdzero /maxteq * 0.0d0/
+      nalg = nm1 + nhvpvar + nhvtvar
+      do i = 1, nalg
+          p2(i) = hvpsolv(i)
+      end do
+      do i = nalg + 1, nequals
+          p2(i) = pinit(i)
+      end do
+      if(iprtalg.ne.0)then
+          write(iofilo,*)'room pressures'
+          do i = 1, nm1
+              write(iofilo,*)i,p2(i)
+          end do
+          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressures'
+          do i = 1, nhvpvar
+              write(iofilo,*)i,p2(i+nofpmv)
+          end do
+          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperatures'
+          do i = 1, nhvtvar
+              write(iofilo,*)i,p2(i+noftmv)
+          end do
+      endif
+      t = stime
+      call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
+      do i = 1, nalg
+          deltamv(i) = delta(i)
+      end do
+      do i = 1, nm1
+          if(.not.izcon(i))deltamv(i) = 0.0d0
+      end do
+      if(iprtalg.ne.0)then
+          write(iofilo,*)'room pressure residuals'
+          do i = 1, nm1
+              write(iofilo,*)i,delta(i)
+          end do
+          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressure residuals'
+          do i = 1, nhvpvar
+              write(iofilo,*)i,delta(i+nofpmv)
+          end do
+          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperature residuals'
+          do i = 1, nhvtvar
+              write(iofilo,*)i,delta(i+noftmv)
+          end do
+          write(iofilo,*)' '
+          pause
+      endif
+      return
+      end
 
-      SUBROUTINE GRES2(NNN,HVSOLV,DELTAMV,IFLAG)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     GRES2
-C
-C     Source File: GRES2.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  Calculates residuals for initial solution by SNSQE
-C                   (HVAC pressure and temperature)
-C
-C     Arguments: NNN
-C                HVSOLV
-C                DELTAMV
-C                IFLAG
-C
-C     Revision History:
-C        Created:  6/14/92 by GPF
-C        Modified: 2/12/1993 by GPF:
-C                  Changed initial solution time from 0 to STIME for restart 
-C                  case.  Added debug print
-C        Modified: 2/1/97 by GPF:  added write before PAUSE so that output is
-C                                  not lost
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      subroutine gres2(nnn,hvsolv,deltamv,iflag)
+
+!     routine: gres2
+!     purpose: calculates residuals for initial solution by snsqe
+!              (HVAC pressure and temperature)
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     Arguments: NNN
+!                HVSOLV
+!                DELTAMV
+!                IFLAG
+
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -144,79 +112,66 @@ C
       include "opt.fi"
       include "cshell.fi"
 
-      DIMENSION HVSOLV(*), DELTAMV(*), P2(MAXTEQ), DELTA(MAXTEQ)
-      DIMENSION PDZERO(MAXTEQ)
-      DATA PDZERO /MAXTEQ * 0.0D0/
-      DO 10 I = 1, NEQUALS
-        P2(I) = PINIT(I)
-   10 CONTINUE
-      DO 20 I = 1, NHVPVAR
-        P2(I+NOFPMV) = HVSOLV(I)
-   20 CONTINUE
-      DO 30 I = 1, NHVTVAR
-        P2(I+NOFTMV) = HVSOLV(NHVPVAR+I)
-   30 CONTINUE
-      IF (IPRTALG.NE.0) THEN
-        IF(NHVPVAR.GT.0)WRITE (IOFILO,*) 'HVAC PRESSURES'
-        DO 40 I = 1, NHVPVAR
-          WRITE (IOFILO,*) I, HVSOLV(I)
-   40   CONTINUE
-        IF(NHVTVAR.GT.0)WRITE (IOFILO,*) 'HVAC TEMPERATURES'
-        DO 50 I = 1, NHVTVAR
-          WRITE (IOFILO,*) I, HVSOLV(NHVPVAR+I)
-   50   CONTINUE
-      END IF
-      T = STIME
-      CALL RESID(T,P2,PDZERO,DELTA,IRES,RPAR2,IPAR2)
-      DO 60 I = 1, NHVPVAR
-        DELTAMV(I) = DELTA(I+NOFPMV)
-   60 CONTINUE
-      DO 70 I = 1, NHVTVAR
-        DELTAMV(I+NHVPVAR) = DELTA(I+NOFTMV)
-   70 CONTINUE
-      IF (IPRTALG.NE.0) THEN
-        WRITE (IOFILO,*) ' '
-        IF(NHVPVAR.GT.0)WRITE (IOFILO,*) 'HVAC PRESSURE RESIDUALS'
-        DO 80 I = 1, NHVPVAR
-          WRITE (IOFILO,*) I, DELTAMV(I)
-   80   CONTINUE
-        IF(NHVTVAR.GT.0)WRITE (IOFILO,*) 'HVAC TEMPERATURE RESIDUALS'
-        DO 90 I = 1, NHVTVAR
-          WRITE (IOFILO,*) I, DELTAMV(I+NHVPVAR)
-   90   CONTINUE
-        WRITE(IOFILO,*)' '
-        PAUSE
-      END IF
-      RETURN
-      END
+      dimension hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq)
+      dimension pdzero(maxteq)
+      data pdzero /maxteq * 0.0d0/
+      do i = 1, nequals
+          p2(i) = pinit(i)
+      end do
+      do i = 1, nhvpvar
+          p2(i+nofpmv) = hvsolv(i)
+      end do
+      do i = 1, nhvtvar
+          p2(i+noftmv) = hvsolv(nhvpvar+i)
+      end do
+      if (iprtalg.ne.0) then
+          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressures'
+          do i = 1, nhvpvar
+              write (iofilo,*) i, hvsolv(i)
+          end do
+          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperatures'
+          do i = 1, nhvtvar
+              write (iofilo,*) i, hvsolv(nhvpvar+i)
+          end do
+      end if
+      t = stime
+      call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
+      do i = 1, nhvpvar
+          deltamv(i) = delta(i+nofpmv)
+      end do
+      do i = 1, nhvtvar
+          deltamv(i+nhvpvar) = delta(i+noftmv)
+      end do
+      if (iprtalg.ne.0) then
+          write (iofilo,*) ' '
+          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressure residuals'
+          do i = 1, nhvpvar
+              write (iofilo,*) i, deltamv(i)
+          end do
+          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperature residuals'
+          do i = 1, nhvtvar
+              write (iofilo,*) i, deltamv(i+nhvpvar)
+          end do
+          write(iofilo,*)' '
+          pause
+      end if
+      return
+      end
 
-      SUBROUTINE GRES3(NNN,HVPSOLV,DELTAMV,IFLAG)
+      subroutine gres3(nnn,hvpsolv,deltamv,iflag)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     GRES3
-C
-C     Source File: GRES3.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  Calculates residuals for initial solution by SNSQE
-C                   This routine finds initial upper layer temperatures,
-C                   upper wall and ceiling surface temperatures
-C                   in addition to room pressures and hvac pressures and
-C                   temperatures.
-C
-C     Arguments: NNN
-C                HVPSOLV
-C                DELTAMV
-C                IFLAG
-C
-C     Revision History:
-C        Created:  6/23/97 by GPF
-C        Modified: 5/11/98 by GPF:
-C                  Implement fast startup option.
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: gres2
+!     purpose: calculates residuals for initial solution by snsqe
+!                 this routine finds initial upper layer temperatures,
+!                 upper wall and ceiling surface temperatures
+!                 in addition to room pressures and hvac pressures and
+!                 temperatures.
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: nnn
+!                hvpsolv
+!                deltamv
+!                iflag
 
       include "precis.fi"
       include "cfast.fi"
@@ -227,153 +182,126 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "wnodes.fi"
       include "opt.fi"
 
-      DIMENSION HVPSOLV(*), DELTAMV(*), P2(MAXTEQ), DELTA(MAXTEQ),
-     +    PDZERO(MAXTEQ)
-      DATA PDZERO /MAXTEQ * 0.0D0/
-      NALG = NM1 + NHVPVAR + NHVTVAR
+      dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq),
+     +pdzero(maxteq)
+      data pdzero /maxteq * 0.0d0/
+      nalg = nm1 + nhvpvar + nhvtvar
 
-      DO 10 I = 1, NEQUALS
-        P2(I) = PINIT(I)
-   10 CONTINUE
+      do i = 1, nequals
+          p2(i) = pinit(i)
+      end do
 
-c*** copy pressures, hvac pressures and temps
+      ! copy pressures, hvac pressures and temps
+      do i = 1, nalg
+          p2(i) = hvpsolv(i)
+      end do
 
-      DO 20 I = 1, NALG
-        P2(I) = HVPSOLV(I)
-   20 CONTINUE
+      ! copy upper layer temperatures in fire room
+      p2(lfbo + noftu) = hvpsolv(1+nalg)
 
-c*** copy upper layer temperatures in fire room
+      ! copy wall temperatures
+      ii = 0
+      ieq1 = izwmap2(1,lfbo)
+      ieq2 = izwmap2(3,lfbo)
+      if(ieq1.ne.0)then
+          ii = ii + 1
+          p2(ieq1) = hvpsolv(ii+nalg+1)
+      endif
+      if(ieq2.ne.0)then
+          ii = ii + 1
+          p2(ieq2) = hvpsolv(ii+nalg+1)
+      endif
 
-      P2(LFBO + NOFTU) = HVPSOLV(1+NALG)
+      if(iprtalg.ne.0)then
+          write(iofilo,*)' *** guesses ***'
+          write(iofilo,*)'room pressures'
+          do i = 1, nm1
+              write(iofilo,'(1x,i3,1x,e23.16)')i,p2(i)
+          end do
+          write(iofilo,*)'hvac pressure and temperatures'
+          do i = nm1+1,nalg
+              write(iofilo,'(1x,i3,1x,e23.16)')i,p2(i)
+          end do
+          ii = 1
+          write(iofilo,*)'upper layer temperature in fire room'
+          write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(lfbo+noftu)
+          ieq1 = izwmap2(1,lfbo)
+          ieq3 = izwmap2(3,lfbo)
+          if(ieq1.ne.0.or.ieq3.ne.0)then
+              write(iofilo,*)'wall temperatures'
+              if(ieq1.ne.0)then
+                  ii = ii + 1
+                  write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(ieq1)
+              endif
+              if(ieq3.ne.0)then
+                  ii = ii + 1
+                  write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(ieq3)
+              endif
+          endif
+      endif
+      t = stime
+      call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
+      do i = 1, nalg
+          deltamv(i) = delta(i)
+      end do
+      do i = 1, nm1
+          if(.not.izcon(i))deltamv(i) = 0.0d0
+      end do
+      deltamv(1+nalg) = delta(lfbo+noftu)
+      ii = 0
+      if(ieq1.ne.0)then
+          ii = ii + 1
+          deltamv(ii+1+nalg) = delta(ieq1)
+      endif
+      if(ieq2.ne.0)then
+          ii = ii + 1
+          deltamv(ii+1+nalg) = delta(ieq2)
+      endif
+      if(iprtalg.ne.0)then
+          write(iofilo,*)' '
+          write(iofilo,*)' *** residuals ***'
+          write(iofilo,*)'room pressure'
+          do i = 1, nm1
+              write(iofilo,'(1x,i3,1x,e23.16)')i,delta(i)
+          end do
+          write(iofilo,*)'hvac pressure and temperatures'
+          do i = nm1+1,nalg
+              write(iofilo,'(1x,i3,1x,e23.16)')i,delta(i)
+          end do
+          write(iofilo,*)'upper layer temperature in fire room'
+          write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(lfbo+noftu)
+          ieq1 = izwmap2(1,lfbo)
+          ieq3 = izwmap2(3,lfbo)
+          if(ieq1.ne.0.or.ieq3.ne.0)then
+              write(iofilo,*)'wall temperatures'
+              if(ieq1.ne.0)then
+                  ii = ii + 1
+                  write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(ieq1)
+              endif
+              if(ieq3.ne.0)then
+                  ii = ii + 1
+                  write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(ieq3)
+              endif
+          endif
+          write(iofilo,*)' '
+          pause
+      endif
+      return
+      end
 
-c*** copy wall temperatures
+      subroutine hvinit (ierror)
 
-      II = 0
-      IEQ1 = IZWMAP2(1,LFBO)
-      IEQ2 = IZWMAP2(3,LFBO)
-      IF(IEQ1.NE.0)THEN
-        II = II + 1
-        P2(IEQ1) = HVPSOLV(II+NALG+1)
-      ENDIF
-      IF(IEQ2.NE.0)THEN
-        II = II + 1
-        P2(IEQ2) = HVPSOLV(II+NALG+1)
-      ENDIF
+!     routine: hvinit
+!     purpose: this routine sets up the arrays needed to for hvac
+!                 simulation and initializes temperatures and concentrations
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: ierror  returns error codes
 
-      IF(IPRTALG.NE.0)THEN
-        WRITE(IOFILO,*)' *** GUESSES ***'
-        WRITE(IOFILO,*)'Room pressures'
-        DO 25 I = 1, NM1
-          WRITE(IOFILO,26)I,P2(I)
-   26     FORMAT(1x,I3,1x,e23.16)
-   25   CONTINUE
-        WRITE(IOFILO,*)'HVAC pressure and temperatures'
-        DO 27 I = NM1+1,NALG
-          WRITE(IOFILO,26)I,P2(I)
-   27   CONTINUE
-        II = 1
-        WRITE(IOFILO,*)'Upper Layer Temperature in Fire Room'
-        WRITE(IOFILO,26)NALG+II,P2(LFBO+NOFTU)
-        IEQ1 = IZWMAP2(1,LFBO)
-        IEQ3 = IZWMAP2(3,LFBO)
-        IF(IEQ1.NE.0.OR.IEQ3.NE.0)THEN
-          WRITE(IOFILO,*)'Wall temperatures'
-          IF(IEQ1.NE.0)THEN
-            II = II + 1
-            WRITE(IOFILO,26)NALG+II,P2(IEQ1)
-          ENDIF
-          IF(IEQ3.NE.0)THEN
-            II = II + 1
-            WRITE(IOFILO,26)NALG+II,P2(IEQ3)
-          ENDIF
-        ENDIF
-      ENDIF
-      T = STIME
-      CALL RESID(T,P2,PDZERO,DELTA,IRES,RPAR2,IPAR2)
-      DO 30 I = 1, NALG
-        DELTAMV(I) = DELTA(I)
-   30 CONTINUE
-      DO 31 I = 1, NM1
-        IF(.NOT.IZCON(I))DELTAMV(I) = 0.0D0
-   31 CONTINUE
-      DELTAMV(1+NALG) = DELTA(LFBO+NOFTU)
-      II = 0
-      IF(IEQ1.NE.0)THEN
-        II = II + 1
-        DELTAMV(II+1+NALG) = DELTA(IEQ1)
-      ENDIF
-      IF(IEQ2.NE.0)THEN
-        II = II + 1
-        DELTAMV(II+1+NALG) = DELTA(IEQ2)
-      ENDIF
-      IF(IPRTALG.NE.0)THEN
-        WRITE(IOFILO,*)' '
-        WRITE(IOFILO,*)' *** Residuals ***'
-        WRITE(IOFILO,*)'Room pressure'
-        DO 35 I = 1, NM1
-          WRITE(IOFILO,26)I,delta(I)
-   35   CONTINUE
-        WRITE(IOFILO,*)'HVAC pressure and temperatures'
-        DO 37 I = NM1+1,NALG
-          WRITE(IOFILO,26)I,delta(I)
-   37   CONTINUE
-        WRITE(IOFILO,*)'Upper Layer Temperature in Fire Room'
-        WRITE(IOFILO,26)NALG+II,DELTA(LFBO+NOFTU)
-        IEQ1 = IZWMAP2(1,LFBO)
-        IEQ3 = IZWMAP2(3,LFBO)
-        IF(IEQ1.NE.0.OR.IEQ3.NE.0)THEN
-          WRITE(IOFILO,*)'Wall temperatures'
-          IF(IEQ1.NE.0)THEN
-            II = II + 1
-            WRITE(IOFILO,26)NALG+II,DELTA(IEQ1)
-          ENDIF
-          IF(IEQ3.NE.0)THEN
-            II = II + 1
-            WRITE(IOFILO,26)NALG+II,DELTA(IEQ3)
-          ENDIF
-        ENDIF
-        WRITE(IOFILO,*)' '
-        PAUSE
-      ENDIF
-      RETURN
-      END
-
-      SUBROUTINE HVINIT (IERROR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     HVINIT
-C
-C     Source File: HVINIT.SOR
-C
-C     Functional Class:  
-C
-C     Description:  THIS ROUTINE SETS UP THE ARRAYS NEEDED TO FOR HVAC
-C                   SIMULATION AND INITIALIZES TEMPERATURES AND CONCENTRATIONS
-C
-C     Arguments: IERROR  Returns error codes
-C
-C     Revision History:
-C        Created:  11/28/1992 at 9:57 by WWJ
-C        Modified: 05/15/1991 at 10:19 by WWJ:
-C                  Add initialization for the outside connections
-C        Modified: 06/14/1992 at 10:21 by GPF:
-C                  Added Initialization of various mapping arrays.  define surface area
-C                  of each duct (used to compute heat loss through duct walls).
-C        Modified: 11/28/1992 at 10:35 by GPF:
-C                  Changed the initilization of the extrnal nodes connected to 
-C                  the outside to use the correct values
-C        Modified: 9/5/1995 at 9:50 by PAR:
-C                  Added support for IERROR and returning stops to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-
-C
-C     THIS FUNCTION HAS BEEN MODIFIED TO PREVENT NEGATIVE FLOW.  A MAX FUNCTION
-C     WAS INSERTED JUST AFTER THE CALCULATION OFF, THE FLOW TO DO THIS.  IF
-C     THE FLOW IS ALLOWED TO BE NEGATIVE (FLOW REVERSAL) THEN THIS STATEMENT
-C     MUST BE REMOVED.
+!     this function has been modified to prevent negative flow.  a max function
+!     was inserted just after the calculation off, the flow to do this.  if
+!     the flow is allowed to be negative (flow reversal) then this statement
+!     must be removed.
 
       include "precis.fi"
       include "cfast.fi"
@@ -381,373 +309,296 @@ C     MUST BE REMOVED.
       include "cenviro.fi"
       include "cshell.fi"
 
-      DIMENSION C3(NS)
-  
-C    CALCULATE MIN & MAX VALUES FOR FAN CURVE
+      dimension c3(ns)
 
-      X1 = 1.0D0
-      X0 = 0.0D0
-      PI = 4.0D0 * ATAN(X1)
-C          
-      DO 20 K = 1, NFAN
-        F = HVBCO(K,1)
-        DF = X0
-        XX = X1
-        DO 10 J = 2, NFC(K)
-          XXJM1 = J - 1
-          DF = DF + XXJM1 * HVBCO(K,J) * XX
-          XX = XX * HMIN(K)
-          F = F + HVBCO(K,J) * XX
-   10   CONTINUE
-C  ----- PREVENT NEGATIVE FLOW
-        QMIN(K) = MAX(X0,F)
-        DFMIN(K) = DF
-   20 CONTINUE
-      DO 40 K = 1, NFAN
-        F = HVBCO(K,1)
-        DF = X0
-        XX = X1
-        DO 30 J = 2, NFC(K)
-          XXJM1 = J - 1
-          DF = DF + XXJM1 * HVBCO(K,J) * XX
-          XX = XX * HMAX(K)
-          F = F + HVBCO(K,J) * XX
-   30   CONTINUE
-C  ----- PREVENT NEGATIVE FLOW
-        QMAX(K) = MAX(X0,F)
-        DFMAX(K) = DF
-   40 CONTINUE
-   
-C
-C     IF THERE ARE NO CONNECTIONS BETWEEN THE HVAC SYSTEM AND THE
-C     OUTSIDE WORLD, WE DO NOT NEED TO GO ANY FURTHER
-C
-      IF (NEXT.LE.0) RETURN
-C
-C     ARRANGE DATA ON NODE BASIS
-C
-      DO 70 I = 1, NNODE
-        K = 0
-        DO 60 IB = 1, NBR
-          IF (I.EQ.NA(IB)) THEN
-            K = K + 1
-            ICMV(I,K) = IB
-            MVINTNODE(I,K) = NE(IB)
-          ELSE IF (I.EQ.NE(IB)) THEN
-            K = K + 1
-            ICMV(I,K) = IB
-            MVINTNODE(I,K) = NA(IB)
-          END IF
-   60   CONTINUE
-        NCNODE(I) = K
-   70 CONTINUE
+!    calculate min & max values for fan curve
+      x1 = 1.0d0
+      x0 = 0.0d0
+      pi = 4.0d0 * atan(x1)
+          
+      do k = 1, nfan
+          f = hvbco(k,1)
+          df = x0
+          xx = x1
+          do j = 2, nfc(k)
+              xxjm1 = j - 1
+              df = df + xxjm1 * hvbco(k,j) * xx
+              xx = xx * hmin(k)
+              f = f + hvbco(k,j) * xx
+          end do
+          ! prevent negative flow
+          qmin(k) = max(x0,f)
+          dfmin(k) = df
+      end do
+      do k = 1, nfan
+          f = hvbco(k,1)
+          df = x0
+          xx = x1
+          do j = 2, nfc(k)
+              xxjm1 = j - 1
+              df = df + xxjm1 * hvbco(k,j) * xx
+              xx = xx * hmax(k)
+              f = f + hvbco(k,j) * xx
+          end do
+          ! prevent negative flow
+          qmax(k) = max(x0,f)
+          dfmax(k) = df
+      end do
 
-C     CHECK INTERIOR NODES
+      ! if there are no connections between the hvac system and the
+      ! outside world, we do not need to go any further
+      if (next.le.0) return
 
-      DO 80 I = 1, NNODE
-        IF (NCNODE(I).LT.1.OR.NCNODE(I).GT.MCON) THEN
-C     STOP 'INTERIOR NODE HAS TOO MANY OR TOO FEW CONNECTIONS'
-          CALL XERROR(
-     .  'HVINIT - Interior node has too many or too few connections',
-     .   0,1,1)
-          IERROR = 223
-          RETURN
-        END IF
-   80 CONTINUE
+      ! arrange data on node basis
+      do i = 1, nnode
+          k = 0
+          do ib = 1, nbr
+              if (i.eq.na(ib)) then
+                  k = k + 1
+                  icmv(i,k) = ib
+                  mvintnode(i,k) = ne(ib)
+              else if (i.eq.ne(ib)) then
+                  k = k + 1
+                  icmv(i,k) = ib
+                  mvintnode(i,k) = na(ib)
+              end if
+          end do
+          ncnode(i) = k
+      end do
 
-C     LIMIT THE RANGE OF HVELXT AND SET THE ABSOLUTE HEIGHT OF THE INTERIOR NODE
+      ! check interior nodes
+      do i = 1, nnode
+          if (ncnode(i).lt.1.or.ncnode(i).gt.mcon) then
+              call xerror('hvinit - interior node has too many ',
+     .        'or too few connections',0,1,1)
+              ierror = 223
+              return
+          end if
+      end do
 
-      DO 90 II = 1, NEXT
-        I = HVNODE(1,II)
-        J = HVNODE(2,II)
-        IF (NCNODE(J).GT.1) then
-		ierror = 223
-		return
-	  endif
-        HVELXT(II) = MIN(HR(I),MAX(X0,HVELXT(II)))
-        HVGHT(J) = HVELXT(II) + HFLR(I)
-   90 CONTINUE
-C
-C     ASSIGN COMPARTMENT PRESSURE & TEMPERATURE DATA TO EXTERIOR NODES
-C     OF THE HVAC NETWORK
-C
-      DO 100 I = 1, NNODE
-        HVP(I) = -1.0D0
-  100 CONTINUE
-      DO 110 I = 1, NBR
-        HVDARA(I) = X0
-        HVDVOL(I) = X0
-        HVCONC(I,1) = -X1
-        TBR(I) = -X1
-  110 CONTINUE
-C
-      S1 = X0
-      S2 = X0
-      DO 120 LSP = 1, NS
-        C3(LSP) = X0
-  120 CONTINUE
-      DO 140 II = 1, NEXT
-        I = HVNODE(1,II)
-        J = HVNODE(2,II)
-        IB = ICMV(J,1)
-C        THE OUTSIDE IS DEFINED TO BE AT THE BASE OF THE STRUCTURE FOR MV
-        IF (I.LT.N) THEN
-          HVEXTT(II,UPPER) = TAMB(I)
-          HVEXTT(II,LOWER) = TAMB(I)
-          HVP(J) = ZZRELP(I) - HVGRAV * RAMB(I) * HVELXT(II)
-        ELSE
-          HVEXTT(II,UPPER) = EXTA
-          HVEXTT(II,LOWER) = EXTA
-          HVP(J) = EXPA - HVGRAV * EXRA * HVELXT(II)
-        END IF
-        TBR(IB) = HVEXTT(II,UPPER)
-        S1 = S1 + HVP(J)
-        S2 = S2 + TBR(IB)
-        DO 130 LSP = 1, NS
-C           THE OUTSIDE IS DEFINED TO BE AT THE BASE OF THE STRUCTURE FOR MV
-          IF (I.LT.N) THEN
-            HVEXCN(II,LSP,UPPER) = O2N2(LSP) * RAMB(I)
-            HVEXCN(II,LSP,LOWER) = O2N2(LSP) * RAMB(I)
-          ELSE
-            HVEXCN(II,LSP,UPPER) = O2N2(LSP) * EXRA
-            HVEXCN(II,LSP,LOWER) = O2N2(LSP) * EXRA
-          END IF
-          HVCONC(J,LSP) = HVEXCN(II,LSP,UPPER)
-          C3(LSP) = C3(LSP) + HVEXCN(II,LSP,UPPER)
-  130   CONTINUE
-  140 CONTINUE
-C     THIS IS TO INITIALIZE THE NODES AND BRANCHES TO SOMETHING
-C     WE WILL THEN LET THE SYSTEM EQUILIBRATE TO GIVE US THE TRUE ANSWER
+      ! limit the range of hvelxt and set the absolute height of the interior node
+      do ii = 1, next
+          i = hvnode(1,ii)
+          j = hvnode(2,ii)
+          if (ncnode(j).gt.1) then
+              ierror = 223
+              return
+          endif
+          hvelxt(ii) = min(hr(i),max(x0,hvelxt(ii)))
+          hvght(j) = hvelxt(ii) + hflr(i)
+      end do
+
+      ! assign compartment pressure & temperature data to exterior nodes of the hvac network
+      do i = 1, nnode
+          hvp(i) = -1.0d0
+      end do
+      do i = 1, nbr
+          hvdara(i) = x0
+          hvdvol(i) = x0
+          hvconc(i,1) = -x1
+          tbr(i) = -x1
+      end do
+
+      s1 = x0
+      s2 = x0
+      do lsp = 1, ns
+          c3(lsp) = x0
+      end do
+      do ii = 1, next
+          i = hvnode(1,ii)
+          j = hvnode(2,ii)
+          ib = icmv(j,1)
+          ! the outside is defined to be at the base of the structure for mv
+          if (i.lt.n) then
+              hvextt(ii,upper) = tamb(i)
+              hvextt(ii,lower) = tamb(i)
+              hvp(j) = zzrelp(i) - hvgrav * ramb(i) * hvelxt(ii)
+          else
+              hvextt(ii,upper) = exta
+              hvextt(ii,lower) = exta
+              hvp(j) = expa - hvgrav * exra * hvelxt(ii)
+          end if
+          tbr(ib) = hvextt(ii,upper)
+          s1 = s1 + hvp(j)
+          s2 = s2 + tbr(ib)
+          do lsp = 1, ns
+              ! the outside is defined to be at the base of the structure for mv
+              if (i.lt.n) then
+                  hvexcn(ii,lsp,upper) = o2n2(lsp) * ramb(i)
+                  hvexcn(ii,lsp,lower) = o2n2(lsp) * ramb(i)
+              else
+                  hvexcn(ii,lsp,upper) = o2n2(lsp) * exra
+                  hvexcn(ii,lsp,lower) = o2n2(lsp) * exra
+              end if
+              hvconc(j,lsp) = hvexcn(ii,lsp,upper)
+              c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
+          end do
+      end do
       
-      XNEXT = NEXT
-      PAV = S1 / XNEXT
-      TAV = S2 / XNEXT
-      DO 150 LSP = 1, NS
-        C3(LSP) = C3(LSP) / XNEXT
-  150 CONTINUE
-      DO 160 I = 1, NNODE
-        IF (HVP(I).LT.X0) THEN
-          HVP(I) = PAV
-        END IF
-  160 CONTINUE
-      DO 180 I = 1, NBR
-        IF (TBR(I).LE.X0) TBR(I) = TAV
-        IF (HVCONC(I,1).LT.X0) THEN
-          DO 170 LSP = 1, NS
-            HVCONC(I,LSP) = C3(LSP)
-  170     CONTINUE
-        END IF
-  180 CONTINUE
+      ! this is to initialize the nodes and branches to something
+      ! we will then let the system equilibrate to give us the true answer
+      xnext = next
+      pav = s1 / xnext
+      tav = s2 / xnext
+      do lsp = 1, ns
+          c3(lsp) = c3(lsp) / xnext
+      end do
+      do i = 1, nnode
+          if (hvp(i).lt.x0) then
+              hvp(i) = pav
+          end if
+      end do
+      do i = 1, nbr
+          if (tbr(i).le.x0) tbr(i) = tav
+          if (hvconc(i,1).lt.x0) then
+              do lsp = 1, ns
+                  hvconc(i,lsp) = c3(lsp)
+              end do
+          end if
+      end do
 
-C     CALCULATE AREA, RELATIVE ROUGHNESS, EFFECTIVE
-C     DIAMETER AND VOLUME OF DUCTS
+      ! calculate area, relative roughness, effective diameter and volume of ducts
+      ! volume and roughness
+      do id = 1, ndt
+          da(id) = (pi*de(id)**2) / 4.0d0
+          rr(id) = ductar(id) / de(id)
+          ib = ibrd(id)
+          hvdvol(ib) = hvdvol(ib) + da(id) * dl(id)
+          hvdara(ib) = hvdara(ib) + pi*de(id)*dl(id)
+      end do
 
-C     VOLUME AND ROUGHNESS
 
-      DO 190 ID = 1, NDT
-        DA(ID) = (PI*DE(ID)**2) / 4.0D0
-        RR(ID) = DUCTAR(ID) / DE(ID)
-        IB = IBRD(ID)
-        HVDVOL(IB) = HVDVOL(IB) + DA(ID) * DL(ID)
-        HVDARA(IB) = HVDARA(IB) + PI*DE(ID)*DL(ID)
-  190 CONTINUE
+      ! construct hvmap arrays
+      call hvmap
 
-C
-C*** CONSTRUCT HVMAP ARRAYS
-C
-      CALL HVMAP
-C
-C*** DEFINE TOTAL MASS FOR EACH HVAC SYSTEM
-C
-      DO 230 ISYS = 1, NHVSYS
-         HVTM(ISYS) = X0
-  230 CONTINUE      
-      DO 240 IB = 1, NBR
-         ISYS = IZHVBSYS(IB)
-         RDEN = (POFSET+PAV)/(HVRGAS*TBR(IB))
-         HVTM(ISYS) = HVTM(ISYS) + RDEN*HVDVOL(IB)
-  240 CONTINUE
-C
-C     NOW THAT EVERYTHING IS OK, WE CAN TURN ON VENTILATION
-C
-      MVCALC = .TRUE.
-      RETURN
-C
- 5000 format ('HVINIT - fan not properly defined',i3)
-      END
+      ! define total mass for each hvac system
+      do isys = 1, nhvsys
+          hvtm(isys) = x0
+      end do     
+      do ib = 1, nbr
+          isys = izhvbsys(ib)
+          rden = (pofset+pav)/(hvrgas*tbr(ib))
+          hvtm(isys) = hvtm(isys) + rden*hvdvol(ib)
+      end do
 
-      Subroutine HVMAP
-C
-C     Update History
-C
-C     created June 14, 1992
-C
+      ! now that everything is ok, we can turn on ventilation
+      mvcalc = .true.
+      return
+      end
+
+      subroutine hvmap
+
+!     routine: hvmap
+!     purpose: this routine maps all the hvac nodes into a single mapping array for dassl and creates
+!              a mapping from those to exterior ones
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: 
+
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
 
-      DIMENSION ISTACK(100)
+      dimension istack(100)
 
-C    Construct the array that maps between interior nodes
-C    (nodes that dassl solves for) and the entire node array
+      ! construct the array that maps between interior nodes (nodes that dassl solves for) and the entire node array
+      do i = 1, nnode
+          izhvmapi(i) = i
+      end do
 
-      Do 10 I = 1, NNODE
-        IZHVMAPI(I) = I
-   10 Continue
+      ! DASSL only solve interior nodes so zero out exterior nodes
+      do ii = 1, next
+          i = hvnode(2,ii)
+          izhvmapi(i) = 0
+      end do
 
-C     Zero out exterior nodes
+      ! and fill in the holes vacated by the exterior nodes
+      ii = 0
+      do i = 1, nnode
+          if (izhvmapi(i).ne.0) then
+              ii = ii + 1
+              izhvmapi(ii) = izhvmapi(i)
+          end if
+      end do
 
-      Do 20 II = 1, NEXT
-        I = HVNODE(2,II)
-        IZHVMAPI(I) = 0
-   20 Continue
+      ! construct inverse of izhvmapi
+      do i = 1, nnode
+          izhvmape(i) = -1
+      end do
+      do i = 1, nnode - next
+          izhvmape(izhvmapi(i)) = i
+      end do
 
-C     Fill in the holes vacated by the exterior nodes
+      ! construct array that maps between all nodes and exterior nodes
+      do i = 1, nnode
+          izhvie(i) = 0
+      end do
+      do ii = 1, next
+          i = hvnode(2,ii)
+          izhvie(i) = ii
+      end do
 
-      II = 0
-      Do 30 I = 1, NNODE
-        If (IZHVMAPI(I).NE.0) Then
-          II = II + 1
-          IZHVMAPI(II) = IZHVMAPI(I)
-        END IF
-   30 Continue
+      ! construct array that maps between all nodes and hvac system number to which they belong
+      do i = 1, nnode
+          izhvsys(i) = 0
+      end do
+      icursys = 0
+      iptr = 0
+   90 continue
+      icurnod = 0
+      do i = 1, nnode
+          if (izhvsys(i).eq.0) then
+              icurnod = i
+              exit
+          end if
+      end do
+      if (icurnod.ne.0) then
+          icursys = icursys + 1
+          iptr = iptr + 1
+          istack(iptr) = icurnod
+  120     continue
+          if (iptr.eq.0) go to 90
+          icurnod = istack(iptr)
+          iptr = iptr - 1
+          izhvsys(icurnod) = icursys
+          do j = 1, ncnode(icurnod)
+              nxtnode = mvintnode(icurnod,j)
+              if (izhvsys(nxtnode).eq.0) then
+                  iptr = iptr + 1
+                  istack(iptr) = nxtnode
+              end if
+          end do
+          go to 120
+      end if
+      nhvsys = icursys
 
-C     Construct inverse of izhvmapi
+      ! we have to update nequals.  nequals was originally defined in 
+      ! offset but offset was called before nhvsys was defined.
+      nequals = nofhvpr + nhvsys*nlspct
 
-      Do 40 I = 1, NNODE
-        IZHVMAPE(I) = -1
-   40 Continue
-      Do 50 I = 1, NNODE - NEXT
-        IZHVMAPE(IZHVMAPI(I)) = I
-   50 Continue
-
-C    Construct array that maps between all nodes and exterior nodes
-
-      Do 60 I = 1, NNODE
-        IZHVIE(I) = 0
-   60 CONTINUE
-      Do 70 II = 1, NEXT
-        I = HVNODE(2,II)
-        IZHVIE(I) = II
-   70 CONTINUE
-
-C    Construct array that maps between all nodes and hvac system 
-C    number to which they belong
-
-      Do 80 I = 1, NNODE
-        IZHVSYS(I) = 0
-   80 CONTINUE
-      ICURSYS = 0
-      IPTR = 0
-   90 CONTINUE
-      ICURNOD = 0
-      Do 100 I = 1, NNODE
-        If (IZHVSYS(I).EQ.0) Then
-          ICURNOD = I
-          Go To 110
-        END IF
-  100 CONTINUE
-  110 CONTINUE
-      If (ICURNOD.NE.0) Then
-        ICURSYS = ICURSYS + 1
-        IPTR = IPTR + 1
-        ISTACK(IPTR) = ICURNOD
-  120   Continue
-        If (IPTR.EQ.0) Go To 90
-        ICURNOD = ISTACK(IPTR)
-        IPTR = IPTR - 1
-        IZHVSYS(ICURNOD) = ICURSYS
-        Do 130 J = 1, NCNODE(ICURNOD)
-          NXTNODE = MVINTNODE(ICURNOD,J)
-          If (IZHVSYS(NXTNODE).EQ.0) Then
-            IPTR = IPTR + 1
-            ISTACK(IPTR) = NXTNODE
-          END IF
-  130   CONTINUE
-        GO TO 120
-      END IF
-      NHVSYS = ICURSYS
-
-C     WE HAVE TO UPDATE NEQUALS.  NEQUALS WAS ORIGINALLY DEFINED IN 
-C     offset BUT offset WAS CALLED BEFORE NHVSYS WAS DEFINED.
-
-      NEQUALS = NOFHVPR + NHVSYS*NLSPCT
-
-      DO 140 I = 1, NNODE
-         ISYS = IZHVSYS(I)
-         DO 150 J = 1, NCNODE(I)
-            IB = ICMV(I,J)
-            IZHVBSYS(IB) = ISYS
-  150    CONTINUE
-  140 CONTINUE
-      RETURN
-      END
+      do i = 1, nnode
+          isys = izhvsys(i)
+          do j = 1, ncnode(i)
+              ib = icmv(i,j)
+              izhvbsys(ib) = isys
+          end do
+      end do
+      return
+      end
 
       SUBROUTINE INITAMB(YINTER,IFLAG)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITAMB
-C
-C     Source File: INITAMB.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C     THIS ROUTINE COMPUTES INITIALIZATIONS FOR VARIALBES
-C     RELATED TO AMBIENT CONDITIONS.  WHEN IFLAG=1 THE ARRAY
-C     YINTER IS USED TO COMPUTE UPPER LAYER VOLUMES.  OTHERWISE,
-C     UPPER LAYER VOLUMES ARE NOT COMPUTED.  IF IFLAG IS SET TO 1
-C     THEN YINTER MUST BE A FLOATING POINT ARRAY OF AT LEAST SIZE NR
-C     (NR = NUMBER OF ROOMS) IN THE CALLING ROUTINE.
-C
-C     Arguments: YINTER
-C                IFLAG
-C
-C     Revision History:
-C     July 26, 1990 changed mapping to eliminate reference to outside room
-C     May 15, 1991  fix the minimum pressure so that all offsets are pref-pofset
-C     June 14, 1992 added initialization of hvac duct temperatures and
-C                   hvac internal node pressures
-C     gpf 10/14/93  initialized variables involved in the 
-C                   detection/suppression
-C        Modified: 6/10/1994 by GPF:
-C                  added shaft option (combine two layers into one)
-C        Modified: 10/10/1994 by GPF:
-C                  initialize some target data structures
-C        Modified: 4/26/95 by GPF
-C                  Remove usage of obsolete variables.  Add definition of target temperatures
-C                  into P array for implicit targets.  Changed definition of POFFSET to reduce
-C                  the size of pressure variables that DASSL solves for.
-C        Modified: 6/30/95 by GPF:
-C                  If oxygen is being solved for by DASSL, 
-C                  initialize solver array.
-C        Modified: 5/28/96 by GPF:
-C                  Fixed subscript error in WINDC array (changed I -> N)
-C        Modified: 7/22/96 by GPF:
-C                  initalized IZHALL(.,IHXY) for the hall option.
-C                  This value is 1 if the room depth, DR, is the
-C                  longer than room breadth, BR, and 2 otherwise.
-C        Modified: 2/6/97 by GPF:
-C                  Fixed wind.  Wind now is a property of a vent connected to the outside
-C                  rather than a property of a room.  (before the fix you could not have 
-C                  wind effecting more than one vent in the same room.
-C                  Also fixed initializations.  Fictional flows in tall buildings occurred
-C                  due to the inconsistent way that we initialized pressures and 
-C                  temperatures.  Inside the building we assume that temperature
-C                  and density are constant in a layer.  Outside the building
-C                  we did not.  This inconsitency in assumptions results in 
-C                  fictional flows.
-C        Modified:  10/9/1997 by gpf
-C                   turn off a sprinkler if its spray density is zero.
-C        Modified:  12/3/1997 by gpf
-C                   defined ETA(N) and ERA(N)
-!        Modified:  1/25/5 - wwj; removed calculations using atmosp; lapse rate inside and out are assumed to be the same
-!					  With chage, the TAMB line now only has the original three entries (ambient temperature, ambient pressure an
-!					  ambient station elevation. The same is true for EAMB
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: hvmap
+!     purpose: this routine computes initializations for varialbes
+!     related to ambient conditions.  when iflag=1 the array
+!     yinter is used to compute upper layer volumes.  otherwise,
+!     upper layer volumes are not computed.  if iflag is set to 1
+!     then yinter must be a floating point array of at least size nr
+!     (nr = number of rooms) in the calling routine.
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: yinter, iflag
 
       include "precis.fi"
       include "cfast.fi"
@@ -755,197 +606,168 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cenviro.fi"
       include "fltarget.fi"
       include "opt.fi"
-C
-      DIMENSION YINTER(*), DUMMY(1)
-C
-C     INITIAL CONDITIONS FOR THE VARIABLES FOR WHICH WE KEEP TIME HISTORIES
-C
-      XX0 = 0.0D0
-      XX2 = 2.0D0
 
-C*** simplify and make initial pressure calculations consistent.  Inside pressures
-C    were calculated using rho*g*h .  But outside pressures were calculated using
-C    ATMOSP.  Fictional flows resulted making  SNSQE work a log harder to get
-C    an initial solution.  The initial temperature values calculated by ATMOSP
-C    at the top of the empire state building (about 400 M above base) is only
-C    about 0.2 K different that at the base.  
+      dimension yinter(*), dummy(1)
 
-!      IF(SAL2.GT.XX0.AND.SAL.NE.SAL2)PA = ATMOSP(TA,SAL,PA,SAL2)
-      DO 10 I = 1, NM1
-        PAMB(I) = -RA*G*HFLR(I)
-        TAMB(I) = TA
-        RAMB(I) = RA
-        EPA(I) = -EXRA*G*HFLR(I)
-        ETA(I) = EXTA
-        ERA(I) = EXRA
-   10 CONTINUE
-      ETA(N) = EXTA
-      ERA(N) = EXRA
-      EPA(N) = XX0
+      xx0 = 0.0d0
+      xx2 = 2.0d0
 
-C*** if the user enters a SAL2 value on the TAMB input line then
-C    ATMOSP calculates a new base pressure.  This could be used 
-C    for example, to calculate an ambient pressure in Denver 
-C    (1609 M above sea level) given a base pressure of 101300 Pa
-C    in Ocean City MD (sea level).
-
-!      IF(SAL2.GT.XX0.AND.SAL.NE.SAL2)THEN
-!        PA = ATMOSP(TA,SAL,PA,SAL2)
-!        EXPA = PA
-!        POFSET = PA
-!      ENDIF
-C
-C     normalize pressures so that the smallest pressure is zero
-C
-      XXPMIN = PAMB(1)
-      DO 30 I = 1, NM1
-        XXPMIN = MIN(XXPMIN,PAMB(I),EPA(I))
-   30 CONTINUE
-      DO 50 I = 1, NM1
-        EPA(I) = EPA(I) - XXPMIN
-        PAMB(I) = PAMB(I) - XXPMIN
-   50 CONTINUE
-      POFSET = POFSET + XXPMIN
-      PA = PA + XXPMIN - POFSET
-      EXPA = EXPA + XXPMIN - POFSET
-
-C     COPY ALL OF THE VARIABLES FROM THE INITIAL VALUES INTO THE DATA ARRAYS
-
-      CALL DATACOPY(DUMMY,CONSTVAR)
-
-C    DEFINE THE P ARRAY, THE SOLUTION TO THE ODE
-
-      DO 70 I = 1, NM1
-        P(I) = PAMB(I)
-        P(I+NOFTU) = TAMB(I)
-
-C     CHECK FOR A SPECIAL SETTING OF THE INTERFACE HEIGHT
-
-        IF (IFLAG.EQ.1) THEN
-          IF (YINTER(I).LT.0.D0) THEN
-            P(I+NOFVU) = ZZVMIN(I)
-          ELSE
-            P(I+NOFVU) = MIN(ZZVMAX(I),MAX(ZZVMIN(I),YINTER(I)*AR(I)))
-          END IF
-          YINTER(I) = XX0
-        END IF
-        IF(IZSHAFT(I).EQ.1)P(I+NOFVU) = ZZVMAX(I)
-        P(I+NOFTL) = TAMB(I)
-   70 CONTINUE
-
-C     DEFINE HVAC PRESSURES AND TEMPERATURES.  THESE VALUES ARE LATER REFINED BY 
-C     SNSQE SO THAT EACH HVAC NODE CONSERVES MASS AND ENERGY
-
-      DO 75 I = 1, NHVPVAR
-         P(I+NOFPMV) = XX0
-   75 CONTINUE
-      DO 76 I = 1, NHVTVAR
-         P(I+NOFTMV) = TAMB(1)
-   76 CONTINUE
-
-C     DEFINE INTERIOR SURFACE WALL TEMPERATURES
-
-      II =NOFWT 
-      DO 90 I = 1, NM1
-        DO 80 IWALL = 1, NWAL
-          IF (SWITCH(IWALL,I)) THEN
-            II = II + 1
-            P(II) = TAMB(I)
-          END IF
-   80   CONTINUE
-   90 CONTINUE
-
-c*** establish default values for detector data
-
-      DO 13 I = 1, NDTECT
-         IROOM=IXDTECT(I,DROOM)
-         IF(XDTECT(I,DXLOC).LT.0.0D0)XDTECT(I,DXLOC)=bR(IROOM)*.5D0
-         IF(XDTECT(I,DYLOC).LT.0.0D0)XDTECT(I,DYLOC)=dR(IROOM)*.5D0
-         IF(XDTECT(I,DZLOC).LT.0.0D0)THEN
-            XDTECT(I,DZLOC)=HRP(IROOM)+XDTECT(I,DZLOC)
-         ENDIF
-         TDSPRAY = XDTECT(I,DSPRAY)
-
-C*** IF TDSPRAY>0 THEN INTERPRET IT AS A SPRAY DENSITY AND CONVERT
-C        TO A CHARACTERISTIC QUENCHING TIME
-C    IF TDSPRAY < 0 THEN INTERPRET ABS(TDSPRAY) AS THE TIME
-C        REQUIRED TO REDUCE THE FIRE SIZE BY 50 PER CENT
-C    IF TDSPRAY = 0 THEN TURN THE SPRINKLER OFF
+      ! simplify and make initial pressure calculations consistent.  Inside pressures
+      ! were calculated using rho*g*h .  But outside pressures were calculated using
+      ! ATMOSP.  Fictional flows resulted making  SNSQE work a log harder to get
+      ! an initial solution.  The initial temperature values calculated by ATMOSP
+      ! at the top of the empire state building (about 400 M above base) is only
+      ! about 0.2 K different that at the base.  
+      do i = 1, nm1
+          pamb(i) = -ra*g*hflr(i)
+          tamb(i) = ta
+          ramb(i) = ra
+          epa(i) = -exra*g*hflr(i)
+          eta(i) = exta
+          era(i) = exra
+      end do
+      eta(n) = exta
+      era(n) = exra
+      epa(n) = xx0
 
 
-         IF(TDSPRAY.GT.0.0D0)THEN
-           TDRATE = 3.0D0/TDSPRAY**1.8D0
-          ELSEIF(TDSPRAY.LT.0.0D0)THEN
-           TDRATE = ABS(TDSPRAY)/LOG(XX2)
-           TDSPRAY = (3.0D0/TDRATE)**(1.0D0/1.8D0)
-          ELSE
-           TDSPRAY = 0.0D0
-           TDRATE = 1.0D10
-           IXDTECT(I,DQUENCH) = 0
-         ENDIF
+      ! normalize pressures so that the smallest pressure is zero
+      xxpmin = pamb(1)
+      do i = 1, nm1
+          xxpmin = min(xxpmin,pamb(i),epa(i))
+      end do
+      do i = 1, nm1
+          epa(i) = epa(i) - xxpmin
+          pamb(i) = pamb(i) - xxpmin
+      end do
+      pofset = pofset + xxpmin
+      pa = pa + xxpmin - pofset
+      expa = expa + xxpmin - pofset
 
-C*** SET INITIAL CEILING JET AND DETECTOR LINK TEMPERATURES TO AMBIENT
+      ! copy all of the variables from the initial values into the data arrays
+      call datacopy(dummy,constvar)
 
-         XDTECT(I,DSPRAY) = TDSPRAY
-         XDTECT(I,DTHALF) = TDRATE*LOG(XX2)
-         XDTECT(I,DRATE) = TDRATE
-         XDTECT(I,DTEMP) = TAMB(IROOM)
-         XDTECT(I,DTEMPO) = TAMB(IROOM)
-         XDTECT(I,DTJET) = TAMB(IROOM)
-         XDTECT(I,DTJETO) = TAMB(IROOM)
-   13 CONTINUE
+      ! define the p array, the solution to the ode
+      do i = 1, nm1
+          p(i) = pamb(i)
+          p(i+noftu) = tamb(i)
 
-      CALL SORTBRM(XDTECT,MXDTECT,IXDTECT,MXDTECT,
-     .             NDTECT,DTXCOL,DTICOL,DROOM,NR,NM1,IDTPNT)
+          ! check for a special setting of the interface height
+          if (iflag.eq.1) then
+              if (yinter(i).lt.0.d0) then
+                  p(i+nofvu) = zzvmin(i)
+              else
+                  p(i+nofvu) = 
+     .            min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
+              end if
+              yinter(i) = xx0
+          end if
+          if(izshaft(i).eq.1)p(i+nofvu) = zzvmax(i)
+          p(i+noftl) = tamb(i)
+      end do
 
-C     P'S FOR PRESSURE, VOLUME AND TEMPERATURE ARE DEFINED
-C     WE CAN NOW COPY THESE VALUES TO THE ENVIRONMENT VARIABLES
+      ! define hvac pressures and temperatures.  these values are later refined by 
+      ! snsqe so that each hvac node conserves mass and energy
+      do i = 1, nhvpvar
+          p(i+nofpmv) = xx0
+      end do
+      do i = 1, nhvtvar
+          p(i+noftmv) = tamb(1)
+      end do
 
-      CALL DATACOPY (P, ODEVARA)
+      ! define interior surface wall temperatures
+      ii =nofwt 
+      do i = 1, nm1
+          do iwall = 1, nwal
+              if (switch(iwall,i)) then
+                  ii = ii + 1
+                  p(ii) = tamb(i)
+              end if
+          end do
+      end do
 
-C*** INITIALIZE TARGET TEMPERATURES
+      ! establish default values for detector data
+      do i = 1, ndtect
+          iroom=ixdtect(i,droom)
+          if(xdtect(i,dxloc).lt.0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
+          if(xdtect(i,dyloc).lt.0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
+          if(xdtect(i,dzloc).lt.0.0d0)then
+              xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
+          endif
+          tdspray = xdtect(i,dspray)
 
-      DO 140 ITARG = 1, NTARG
-         IROOM = IXTARG(TRGROOM,ITARG)
-         IF(IXTARG(TRGMETH,ITARG).EQ.MPLICIT)THEN
-           IEQ = IZTARG(ITARG)
-           P(NOFTT+IEQ) = TAMB(IROOM)
-         ENDIF  
-         DO 150 I=TRGTEMPF,TRGTEMPB
-            XXTARG(I,ITARG)=TAMB(IROOM)
-  150    CONTINUE
-         tgtarg(itarg) = tamb(iroom)
+          ! if tdspray>0 then interpret it as a spray density and convert
+          ! to a characteristic quenching time
+          ! if tdspray < 0 then interpret abs(tdspray) as the time
+          ! required to reduce the fire size by 50 per cent
+          ! if tdspray = 0 then turn the sprinkler off
+          if(tdspray.gt.0.0d0)then
+              tdrate = 3.0d0/tdspray**1.8d0
+          elseif(tdspray.lt.0.0d0)then
+              tdrate = abs(tdspray)/log(xx2)
+              tdspray = (3.0d0/tdrate)**(1.0d0/1.8d0)
+          else
+              tdspray = 0.0d0
+              tdrate = 1.0d10
+              ixdtect(i,dquench) = 0
+          endif
 
-C*** SCALE NORMAL VECTORS TO HAVE LENGTH 1
+          ! set initial ceiling jet and detector link temperatures to ambient
+          xdtect(i,dspray) = tdspray
+          xdtect(i,dthalf) = tdrate*log(xx2)
+          xdtect(i,drate) = tdrate
+          xdtect(i,dtemp) = tamb(iroom)
+          xdtect(i,dtempo) = tamb(iroom)
+          xdtect(i,dtjet) = tamb(iroom)
+          xdtect(i,dtjeto) = tamb(iroom)
+      end do
 
-         SCALE = 1.0D0/DNRM2(3,XXTARG(TRGNORMX,ITARG),1)
-         CALL DSCAL(3,SCALE,XXTARG(TRGNORMX,ITARG),1)
-  140 CONTINUE 
+      call sortbrm(xdtect,mxdtect,ixdtect,mxdtect,
+     .ndtect,dtxcol,dticol,droom,nr,nm1,idtpnt)
 
-c*** initialize solver oxygen values if required.   (must be initialized
-c    after zzmass is defined)
+      ! p's for pressure, volume and temperature are defined
+      ! we can now copy these values to the environment variables
+      call datacopy (p, odevara)
 
-      IF(OPTION(FOXYGEN).EQ.ON)THEN
-        DO 160 IROOM = 1, NM1
-           P(IROOM+NOFOXYU)=0.23D0*ZZMASS(IROOM,UPPER)
-           P(IROOM+NOFOXYL)=0.23D0*ZZMASS(IROOM,LOWER)
-  160   CONTINUE
-      ENDIF
+      ! initialize target temperatures
+      do itarg = 1, ntarg
+          iroom = ixtarg(trgroom,itarg)
+          if(ixtarg(trgmeth,itarg).eq.mplicit)then
+              ieq = iztarg(itarg)
+              p(noftt+ieq) = tamb(iroom)
+          endif  
+          do i=trgtempf,trgtempb
+              xxtarg(i,itarg)=tamb(iroom)
+          end do
+          tgtarg(itarg) = tamb(iroom)
 
-c*** define IHXY in IZHALL (dimension that is longest)
+          ! scale normal vectors to have length 1
+          scale = 1.0d0/dnrm2(3,xxtarg(trgnormx,itarg),1)
+          call dscal(3,scale,xxtarg(trgnormx,itarg),1)
+      end do
 
-      DO 200 I = 1, NM1
-        IF(IZHALL(I,IHROOM).EQ.1)THEN
-          IF(DR(I).GT.BR(I))THEN
-            IZHALL(I,IHXY) = 1
-           ELSE
-            IZHALL(I,IHXY) = 2
-          ENDIF
-        ENDIF
-  200 CONTINUE
+      ! initialize solver oxygen values if required.   (must be initialized
+      ! after zzmass is defined)
+      if(option(foxygen).eq.on)then
+          do iroom = 1, nm1
+              p(iroom+nofoxyu)=0.23d0*zzmass(iroom,upper)
+              p(iroom+nofoxyl)=0.23d0*zzmass(iroom,lower)
+          end do
+      endif
 
-      RETURN
-      END
+      ! define ihxy in izhall (dimension that is longest)
+      do i = 1, nm1
+          if(izhall(i,ihroom).eq.1)then
+              if(dr(i).gt.br(i))then
+                  izhall(i,ihxy) = 1
+              else
+                  izhall(i,ihxy) = 2
+              endif
+          endif
+      end do
+
+      return
+      end
 
       SUBROUTINE INITMM
 C
@@ -1015,27 +837,27 @@ C
 C     SET SOME INITIALIZATION - SIMPLE CONTROL STUFF
 
       EXSET = .FALSE.
-	debugging = .false.
+      debugging = .false.
       XX0 = 0.0D0
-	xx1 = 1.0d0
-	xm1 = -1.0d0
+      xx1 = 1.0d0
+      xm1 = -1.0d0
 
 C     INITIALIZE THE COMMON BLOCK
 
       DO 10 I = 1, NS
-        O2N2(I) = XX0
-        ALLOWED(I) = .FALSE.
-        ACTIVS(I) = .TRUE.
+          O2N2(I) = XX0
+          ALLOWED(I) = .FALSE.
+          ACTIVS(I) = .TRUE.
    10 CONTINUE
       DO 30 I = 1, NR
-        DO 20 J = 1, NWAL
-          CNAME(J,I) = 'OFF'
-          SWITCH(J,I) = .FALSE.
-   20   CONTINUE
+          DO 20 J = 1, NWAL
+              CNAME(J,I) = 'OFF'
+              SWITCH(J,I) = .FALSE.
+   20     CONTINUE
    30 CONTINUE
       DO 40 I = 1, NR
-        SWITCH(1,I) = .TRUE.
-        CNAME(1,I) = 'DEFAULT'
+          SWITCH(1,I) = .TRUE.
+          CNAME(1,I) = 'DEFAULT'
    40 CONTINUE
       NCONFG = 0
       NDUMPR = 0
@@ -1050,99 +872,99 @@ C     INITIALIZE THE COMMON BLOCK
       SMKAGL = 0
       N = 0
       DO 50 I = 1, NWAL + 1
-        CJETON(I) = .FALSE.
+          CJETON(I) = .FALSE.
    50 CONTINUE
 
 C     INITIALIZE THE FLOW VARIABLES
 
       DO 80 I = 1, NR
-        IZSHAFT(I) = 0
-        HEATUP(I) = XX0
-        HEATLP(I) = XX0
-        HEATVF(I) = XX0
-        DO 70 J = 1, NR
+          IZSHAFT(I) = 0
+          HEATUP(I) = XX0
+          HEATLP(I) = XX0
+          HEATVF(I) = XX0
+          DO 70 J = 1, NR
 C     DO VERTICAL VENTS (VVENT,...)
-          VSHAPE(I,J) = 0
-          NWV(I,J) = 0
-          VVAREA(I,J) = XX0
+              VSHAPE(I,J) = 0
+              NWV(I,J) = 0
+              VVAREA(I,J) = XX0
 C     DO HORIZONTAL VENTS (HVENT,...)
-          NW(I,J) = 0
-          NEUTRAL(I,J) = 0
-   70   CONTINUE
+              NW(I,J) = 0
+              NEUTRAL(I,J) = 0
+   70     CONTINUE
    80 CONTINUE
 
       DO 60 IVENT = 1, MXVENTS
-        SS1(IVENT) = XX0
-        SS2(IVENT) = XX0
-        SA1(IVENT) = XX0
-        SA2(IVENT) = XX0
-        AS1(IVENT) = XX0
-        AS2(IVENT) = XX0
-        AA1(IVENT) = XX0
-        AA2(IVENT) = XX0
-        SAU1(IVENT) = XX0
-        SAU2(IVENT) = XX0
-        ASL1(IVENT) = XX0
-        ASL2(IVENT) = XX0
+          SS1(IVENT) = XX0
+          SS2(IVENT) = XX0
+          SA1(IVENT) = XX0
+          SA2(IVENT) = XX0
+          AS1(IVENT) = XX0
+          AS2(IVENT) = XX0
+          AA1(IVENT) = XX0
+          AA2(IVENT) = XX0
+          SAU1(IVENT) = XX0
+          SAU2(IVENT) = XX0
+          ASL1(IVENT) = XX0
+          ASL2(IVENT) = XX0
    60 CONTINUE
-   
+
       do i = 1, mext
-        hveflot(upper,i) = xx0
-        hveflot(lower,i) = xx0
-        tracet(upper,i) = xx0
-        tracet(lower,i) = xx0
+          hveflot(upper,i) = xx0
+          hveflot(lower,i) = xx0
+          tracet(upper,i) = xx0
+          tracet(lower,i) = xx0
       end do
 
 C     INITIALIZE THE FORCING FUNCTIONS
 
       DO 100 I = 1, NR
-        EMP(I) = XX0
-        EMS(I) = XX0
-        EME(I) = XX0
-        APS(I) = XX0
-        DO 90 K = UPPER, LOWER
-          QR(K,I) = XX0
-          QC(K,I) = XX0
-          QFC(K,I) = XX0
-   90   CONTINUE
+          EMP(I) = XX0
+          EMS(I) = XX0
+          EME(I) = XX0
+          APS(I) = XX0
+          DO 90 K = UPPER, LOWER
+              QR(K,I) = XX0
+              QC(K,I) = XX0
+              QFC(K,I) = XX0
+   90     CONTINUE
   100 CONTINUE
       DO 110 I = 1, MXFIRE
-        QFR(I) = XX0
+          QFR(I) = XX0
   110 CONTINUE
       do i = 1, maxteq
-        p(i) = xx0
+          p(i) = xx0
       end do
 
 C     DEFINE THE OUTSIDE WORLD AS INFINITY
 
       XLRG = 1.D+5
       DO 150 I = 1, NR
-        DR(I) = XLRG
-        BR(I) = XLRG
-        HR(I) = XLRG
-        HRP(I) = XLRG
-        HRL(I) = XX0
-        HFLR(I) = XX0
-	  CXABS(I) = XX0
-	  CYABS(I) = XX0
-        AR(I) = BR(I) * DR(I)
-        VR(I) = HR(I) * AR(I)
-        DO 120 J = 1, NWAL
-          EPW(J,I) = XX0
-          QSRADW(J,I) = XX0
-          QSCNV(J,I) = XX0
-  120   CONTINUE
-        DO 140 J = 1, NR
-          NW(I,J) = 0
-  140   CONTINUE
+          DR(I) = XLRG
+          BR(I) = XLRG
+          HR(I) = XLRG
+          HRP(I) = XLRG
+          HRL(I) = XX0
+          HFLR(I) = XX0
+          CXABS(I) = XX0
+          CYABS(I) = XX0
+          AR(I) = BR(I) * DR(I)
+          VR(I) = HR(I) * AR(I)
+          DO 120 J = 1, NWAL
+              EPW(J,I) = XX0
+              QSRADW(J,I) = XX0
+              QSCNV(J,I) = XX0
+  120     CONTINUE
+          DO 140 J = 1, NR
+              NW(I,J) = 0
+  140     CONTINUE
   150 CONTINUE
       DO 130 IVENT = 1, MXVENTS
-        BW(IVENT) = XX0
-        HH(IVENT) = XX0
-        HL(IVENT) = XX0
-        HHP(IVENT) = XX0
-        HLP(IVENT) = XX0
-	  VFACE(IVENT) = 1
+          BW(IVENT) = XX0
+          HH(IVENT) = XX0
+          HL(IVENT) = XX0
+          HHP(IVENT) = XX0
+          HLP(IVENT) = XX0
+          VFACE(IVENT) = 1
   130 CONTINUE
 
 C     SET THE TIME STEP AND INNER STEP DIVISION FOR TIME SPLITTING
@@ -1177,12 +999,12 @@ C     DEFINE ALL THE "UNIVERSAL CONSTANTS
       WINDV = XX0
       WINDRF = 10.D0
       WINDPW = 0.16D0
-	do i = 0, mxfire
-	  objmaspy(i) = xx0
-	  radio(i) = xx0
-  	  radconsplit(i) = 0.15d0
-  	end do
-  	tradio = xx0
+      do i = 0, mxfire
+          objmaspy(i) = xx0
+          radio(i) = xx0
+          radconsplit(i) = 0.15d0
+      end do
+      tradio = xx0
       QRADRL = 0.15D0
 
 C     NORMAL AIR
@@ -1195,11 +1017,11 @@ C     A SPECIFIED FIRE IN THE CENTER OF THE ROOM
       LFBT = 2
       LFBO = 0
       LFMAX = 1
-	heatfl = .false.
-	heatfq = 0.0
-	heatfp(1) = xm1
-	heatfp(2) = xm1
-	heatfp(3) = xm1
+      heatfl = .false.
+      heatfq = 0.0
+      heatfp(1) = xm1
+      heatfp(2) = xm1
+      heatfp(3) = xm1
 
 C     SET TO -1 AS A FLAG FOR NPUTP INITIALIZATION - ANY VALUE NOT SET
 C     WILL BE SET TO THE DEFAULT WHICH IS THE CENTER OF THE RESPECTIVE WALL
@@ -1214,182 +1036,182 @@ C     SET UP DEFAULT VALUES FOR THE CHEMISTRY
 
 C     DEFINE THE VENTS AS BEING OPEN
 
-        DO 180 IVENT=1, MXVENTS
-          QCVENT(IVENT,I) = 1.0D0
-  180   CONTINUE
-        TFIRED(I) = 86400.D0
-        HFIRED(I) = XX0
-        AFIRED(I) = XX0
-        BFIRED(I) = 0.000D0
-        QFIRED(I) = BFIRED(I) * HCOMBA
-        HCRATIO(I) = 0.3333333D0
-        HOCBMB(I) = HCOMBA
-        COCO2(I) = XX0
-        CCO2(I) = XX0
+          DO 180 IVENT=1, MXVENTS
+              QCVENT(IVENT,I) = 1.0D0
+  180     CONTINUE
+          TFIRED(I) = 86400.D0
+          HFIRED(I) = XX0
+          AFIRED(I) = XX0
+          BFIRED(I) = 0.000D0
+          QFIRED(I) = BFIRED(I) * HCOMBA
+          HCRATIO(I) = 0.3333333D0
+          HOCBMB(I) = HCOMBA
+          COCO2(I) = XX0
+          CCO2(I) = XX0
   190 CONTINUE
 
 !	Start with vents open: h for hvent, v for vvent, and m for mvent
 
-	do 191 i = 1,mxvents
-	qcvh(1,i) = xx0
-	qcvh(2,i) = xx1
-	qcvh(3,i) = xx0
-  191 qcvh(4,j) = xx1
+      do 191 i = 1,mxvents
+          qcvh(1,i) = xx0
+          qcvh(2,i) = xx1
+          qcvh(3,i) = xx0
+  191     qcvh(4,j) = xx1
 
-	do 193 i = 1, nr
-	qcvv(1,i) = xx0
-	qcvv(2,i) = xx1
-	qcvv(3,i) = xx0
-  193 qcvv(4,i) = xx1
+          do 193 i = 1, nr
+              qcvv(1,i) = xx0
+              qcvv(2,i) = xx1
+              qcvv(3,i) = xx0
+  193         qcvv(4,i) = xx1
 
 !	Note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering
 !	Since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
 !		way to have an intial value other than 0 (no filtering).
-	do 194 i = 1, mfan
-	qcvf(1,i) = xx0
-	qcvf(2,i) = xx0
-	qcvf(3,i) = xx0
-	qcvf(4,i) = xx0
-	qcvm(1,i) = xx0
-	qcvm(2,i) = xx1
-	qcvm(3,i) = xx0
-  194 qcvm(4,i) = XX1
-  192 continue
+              do 194 i = 1, mfan
+                  qcvf(1,i) = xx0
+                  qcvf(2,i) = xx0
+                  qcvf(3,i) = xx0
+                  qcvf(4,i) = xx0
+                  qcvm(1,i) = xx0
+                  qcvm(2,i) = xx1
+                  qcvm(3,i) = xx0
+  194             qcvm(4,i) = XX1
+  192             continue
 
-      HCRATT = HCRATIO(1)
+                  HCRATT = HCRATIO(1)
 
 C     TURN HVAC OFF INITIALLY
 
-      NNODE = 0
-      NFT = 0
-      NFAN = 0
-	nfilter = 0
-      NBR = 0
-      NEXT = 0
-      HVGRAV = G
-      HVRGAS = RGAS
-      MVCALC = .FALSE.
-      DO 200 I = 1, MNODE
-        HVGHT(I) = XX0
-  200 CONTINUE
+                  NNODE = 0
+                  NFT = 0
+                  NFAN = 0
+                  nfilter = 0
+                  NBR = 0
+                  NEXT = 0
+                  HVGRAV = G
+                  HVRGAS = RGAS
+                  MVCALC = .FALSE.
+                  DO 200 I = 1, MNODE
+                      HVGHT(I) = XX0
+  200             CONTINUE
 
 C*** INITIALIZE DETECTORS
 
-      DO 210 I = 1, MXDTECT
-        XDTECT(I,DRTI) = 50.0D0
-        XDTECT(I,DSPRAY) = -300.D0
-        XDTECT(I,DXLOC) = -1.0D0
-        XDTECT(I,DYLOC) = -1.0D0
-        XDTECT(I,DZLOC) = -3.0D0/39.37D0
-        XDTECT(I,DTRIG) = 330.3722D0
-        XDTECT(I,DVEL) = 0.D0
-        XDTECT(I,DVELO) = 0.D0
-        XDTECT(I,DTACT) = 99999.D0
-        IXDTECT(I,DTYPE) = 2
-        IXDTECT(I,DROOM) = 1
-        IXDTECT(I,DQUENCH) = 0
-        IXDTECT(I,DACT) = 0
-  210 CONTINUE
-      NDTECT = 0
-      DO 220 I = 1, NR
-         IQUENCH(I) = 0
-  220 CONTINUE
+                  DO 210 I = 1, MXDTECT
+                      XDTECT(I,DRTI) = 50.0D0
+                      XDTECT(I,DSPRAY) = -300.D0
+                      XDTECT(I,DXLOC) = -1.0D0
+                      XDTECT(I,DYLOC) = -1.0D0
+                      XDTECT(I,DZLOC) = -3.0D0/39.37D0
+                      XDTECT(I,DTRIG) = 330.3722D0
+                      XDTECT(I,DVEL) = 0.D0
+                      XDTECT(I,DVELO) = 0.D0
+                      XDTECT(I,DTACT) = 99999.D0
+                      IXDTECT(I,DTYPE) = 2
+                      IXDTECT(I,DROOM) = 1
+                      IXDTECT(I,DQUENCH) = 0
+                      IXDTECT(I,DACT) = 0
+  210             CONTINUE
+                  NDTECT = 0
+                  DO 220 I = 1, NR
+                      IQUENCH(I) = 0
+  220             CONTINUE
 
 C*** initialize room to room heat transfer data structures
 
-      NSWAL = 0
+                  NSWAL = 0
 
 C*** initialize target counter
 
-      NTARG = 0
+                  NTARG = 0
 
-      DO 230 ITARG = 1, MXTARG
-        IXTARG(TRGMETH,ITARG) = XPLICIT
-        IXTARG(TRGEQ,ITARG) = PDE
-        IXTARG(TRGBACK,ITARG) = INT
-        CXTARG(ITARG) = 'DEFAULT'
-  230 CONTINUE
+                  DO 230 ITARG = 1, MXTARG
+                      IXTARG(TRGMETH,ITARG) = XPLICIT
+                      IXTARG(TRGEQ,ITARG) = PDE
+                      IXTARG(TRGBACK,ITARG) = INT
+                      CXTARG(ITARG) = 'DEFAULT'
+  230             CONTINUE
 
 C*** initialize JACCOL  
 
-      JACCOL = -2
-      NEQOFF = 10
+                  JACCOL = -2
+                  NEQOFF = 10
 
 C*** initialize hall start time
 
-      DO 240 I = 1, NR
-        ZZHALL(I,IHTIME0) = -1.0D0
-        ZZHALL(I,IHVEL) = -1.0D0
-        ZZHALL(I,IHDEPTH) = -1.0D0
-        ZZHALL(I,IHMAXLEN) = -1.0D0
-        ZZHALL(I,IHHALF) = -1.0D0
-        ZZHALL(I,IHTEMP) = 0.0D0
-        ZZHALL(I,IHORG) = -1.0D0
-        IZHALL(I,IHDEPTHFLAG) = 0
-        IZHALL(I,IHHALFFLAG) = 0
-        IZHALL(I,IHMODE) = IHAFTER
-        IZHALL(I,IHROOM) = 0
-        IZHALL(I,IHVELFLAG) = 0
-        IZHALL(I,IHVENTNUM) = 0
-        IZHALL(I,IHXY) = 0
-        DO 250 IVENT = 1, MXVENT
-          ZZVENTDIST(I,IVENT) = -1.
-  250   CONTINUE
-  240 CONTINUE
-      UPDATEHALL = .FALSE.
+                  DO 240 I = 1, NR
+                      ZZHALL(I,IHTIME0) = -1.0D0
+                      ZZHALL(I,IHVEL) = -1.0D0
+                      ZZHALL(I,IHDEPTH) = -1.0D0
+                      ZZHALL(I,IHMAXLEN) = -1.0D0
+                      ZZHALL(I,IHHALF) = -1.0D0
+                      ZZHALL(I,IHTEMP) = 0.0D0
+                      ZZHALL(I,IHORG) = -1.0D0
+                      IZHALL(I,IHDEPTHFLAG) = 0
+                      IZHALL(I,IHHALFFLAG) = 0
+                      IZHALL(I,IHMODE) = IHAFTER
+                      IZHALL(I,IHROOM) = 0
+                      IZHALL(I,IHVELFLAG) = 0
+                      IZHALL(I,IHVENTNUM) = 0
+                      IZHALL(I,IHXY) = 0
+                      DO 250 IVENT = 1, MXVENT
+                          ZZVENTDIST(I,IVENT) = -1.
+  250                 CONTINUE
+  240             CONTINUE
+                  UPDATEHALL = .FALSE.
 
-      DO 260 I = 1, NR
-      DO 260 J = 1, NR
-      DO 260 K = 1, 4
-        IJK(I,J,K) = 0
-  260 CONTINUE
-      NVENTIJK = 0
+                  DO 260 I = 1, NR
+                      DO 260 J = 1, NR
+                          DO 260 K = 1, 4
+                              IJK(I,J,K) = 0
+  260             CONTINUE
+                  NVENTIJK = 0
 
-      DO 270 I = 1, NR
-        IZRVOL(I) = 0
-        DO 280 J = 1, MXPTS
-          ZZRVOL(J,I)=0.0D0
-          ZZRAREA(J,I)=0.0D0
-          ZZRHGT(J,I)=0.0D0
-  280   CONTINUE
-  270 CONTINUE
+                  DO 270 I = 1, NR
+                      IZRVOL(I) = 0
+                      DO 280 J = 1, MXPTS
+                          ZZRVOL(J,I)=0.0D0
+                          ZZRAREA(J,I)=0.0D0
+                          ZZRHGT(J,I)=0.0D0
+  280                 CONTINUE
+  270             CONTINUE
 
 C*** initialzie time step checking
 
-      ZZDTCRIT = 1.0D-09
-      IZDTNUM = 0
-      IZDTMAX = 100
-      IZDTFLAG = .TRUE.
+                  ZZDTCRIT = 1.0D-09
+                  IZDTNUM = 0
+                  IZDTMAX = 100
+                  IZDTFLAG = .TRUE.
 
 C*** initialize inter-compartment heat transfer fractions
 
-      DO 300 I = 1, NR
-        DO 310 J = 1, NR
-          ZZHTFRAC(I,J) = 0.0D0
-  310   CONTINUE
-  300 CONTINUE
+                  DO 300 I = 1, NR
+                      DO 310 J = 1, NR
+                          ZZHTFRAC(I,J) = 0.0D0
+  310                 CONTINUE
+  300             CONTINUE
 
-      do 320 j = 0, nr
-        izheat(j) = 0
-        do 330 i = 1, nr
-          izhtfrac(i,j) = 0
-  330   continue
-  320 continue
-  
-      do lsp = 1, ns
-        do j = upper, lower
-            do i = 1, nr
-            zzgspec(i,j,lsp) = xx0
-            zzcspec(i,j,lsp) = xx0            
-            end do
-        end do
-      end do
+                  do 320 j = 0, nr
+                      izheat(j) = 0
+                      do 330 i = 1, nr
+                          izhtfrac(i,j) = 0
+  330                 continue
+  320             continue
+
+                  do lsp = 1, ns
+                      do j = upper, lower
+                          do i = 1, nr
+                              zzgspec(i,j,lsp) = xx0
+                              zzcspec(i,j,lsp) = xx0            
+                          end do
+                      end do
+                  end do
 
 C     initialize number of furnace temperature nodes
-      
-      nfurn=0
 
-      RETURN
+                  nfurn=0
+
+                  RETURN
       END
 
       SUBROUTINE INITOB
@@ -1419,20 +1241,20 @@ C
 C     TURN OFF OBJECTS
 C
       NUMOBJL = 0
-	DO 10 I = 0, MXOIN
-        OBJON(I) = .FALSE.
-        OBJPOS(1,I) = -1.0
-        OBJPOS(2,I) = -1.0
-        OBJPOS(3,I) = -1.0
-        OBJRM(I) = 0
-        OBJNIN(I) = ' '
-        OBJLD(I) = .FALSE.
-        OBJPNT(I) = 0
-        OBJCRI(1,I) = 0.0
-        OBJCRI(2,I) = 0.0
-        OBJCRI(3,I) = 0.0
-        OBJDEF(I) = .FALSE.
-        ODBNAM(I) = ' '
+      DO 10 I = 0, MXOIN
+          OBJON(I) = .FALSE.
+          OBJPOS(1,I) = -1.0
+          OBJPOS(2,I) = -1.0
+          OBJPOS(3,I) = -1.0
+          OBJRM(I) = 0
+          OBJNIN(I) = ' '
+          OBJLD(I) = .FALSE.
+          OBJPNT(I) = 0
+          OBJCRI(1,I) = 0.0
+          OBJCRI(2,I) = 0.0
+          OBJCRI(3,I) = 0.0
+          OBJDEF(I) = .FALSE.
+          ODBNAM(I) = ' '
    10 CONTINUE
       RETURN
       END
@@ -1489,8 +1311,8 @@ C     THIS GUY IS IN UNLABELED COMMON SO WE CAN NOT PUT IT INTO A DATA STATEMENT
       INQUIRE (FILE=solverini,EXIST=EXISTED)
       IF (.NOT.EXISTED) return
       CLOSE (IOFILI)
-	write (logerr, 1) solverini
-	open (unit=iofili,file=solverini)
+      write (logerr, 1) solverini
+      open (unit=iofili,file=solverini)
 
 C*** READ IN SOLVER ERROR TOLERANCES
 
@@ -1507,10 +1329,10 @@ C     READ IN PHYSICAL SUB-MODEL OPTION LIST
       READ (IOFILI,*) NOPT
       NOPT = MAX(0, MIN(MXOPT, NOPT))
       DO 10 I = 1, (NOPT-1) / 5 + 1
-        IBEG = 1 + (I-1) * 5
-        IEND = MIN(IBEG+4,NOPT)
-        READ (IOFILI,*)
-        READ (IOFILI,*) (OPTION(J),J = IBEG,IEND)
+          IBEG = 1 + (I-1) * 5
+          IEND = MIN(IBEG+4,NOPT)
+          READ (IOFILI,*)
+          READ (IOFILI,*) (OPTION(J),J = IBEG,IEND)
    10 CONTINUE
 C     SINCE THE SOLVER.INI FILE IS ON, TURN ON DEBUG HELP
       OPTION(FKEYEVAL) = 1
@@ -1518,11 +1340,11 @@ C     SINCE THE SOLVER.INI FILE IS ON, TURN ON DEBUG HELP
 C     SET DEBUG PRINT
 
       IF (OPTION(FDEBUG).EQ.2) THEN
-         OPTION(FDEBUG) = OFF
-         SWITCH(1,NR) = .TRUE.
+          OPTION(FDEBUG) = OFF
+          SWITCH(1,NR) = .TRUE.
       ELSE IF (OPTION(FDEBUG).GE.3) THEN
-         OPTION(FDEBUG) = ON
-         SWITCH(1,NR) = .TRUE.
+          OPTION(FDEBUG) = ON
+          SWITCH(1,NR) = .TRUE.
       END IF
 
 C     READ IN WALL INFO
@@ -1553,50 +1375,50 @@ C*** READ IN JACOBIAN AND SNSQE PRINT FLAGS
       READ(IOFILI,*) JACCHK, CUTJAC, IPRTALG
       CLOSE (IOFILI)
 
-	RETURN
+      RETURN
 
-    1	FORMAT ('***** Modify dassl tolerances with ',a256)
+    1 FORMAT ('***** Modify dassl tolerances with ',a256)
       END
 
       BLOCKDATA INITSLVB
 
 C     THIS INITIALIZES THE SOLVER VARIABLES
 
-      include "precis.fi"
-      include "cparams.fi"
-      include "opt.fi"
-      include "wnodes.fi"
-      include "solvprm.fi"
-      include "cfin.fi"
-      include "cshell.fi"
-      include "params.fi"
+          include "precis.fi"
+          include "cparams.fi"
+          include "opt.fi"
+          include "wnodes.fi"
+          include "solvprm.fi"
+          include "cfin.fi"
+          include "cshell.fi"
+          include "params.fi"
 
 C     ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL
-      DATA APTOL, RPTOL, ATOL, RTOL/1.0D-6, 1.0D-6, 1.0D-5, 1.0D-5/
+          DATA APTOL, RPTOL, ATOL, RTOL/1.0D-6, 1.0D-6, 1.0D-5, 1.0D-5/
 C     ABS WALL TOL, REL WALL TOL
-      DATA AWTOL, RWTOL, ALGTOL/1.0D-2, 1.0D-2, 1.0D-8/
+          DATA AWTOL, RWTOL, ALGTOL/1.0D-2, 1.0D-2, 1.0D-8/
 C     ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP
-      DATA AHVPTOL,RHVPTOL,AHVTTOL,RHVTTOL/1.0D-6,1.0D-6,1.0D-5,1.0D-5/
+          DATA AHVPTOL,RHVPTOL,AHVTTOL,RHVTTOL/2*1.0D-6,2*1.0D-5/
 C     OPTIONS FIRE, HFLOW, ENTRAIN, VFLOW, CJET, DOOR-FIRE, CONVEC, RAD,
-      DATA (OPTION(J),J=1,21)/ 2, 1, 1, 1, 2, 1, 1, 2, 
+          DATA (OPTION(J),J=1,21)/ 2, 1, 1, 1, 2, 1, 1, 2, 
 C         CONDUCT, DEBUG, EXACT ODE,  HCL , MFLOW, KEYBOARD, 
-     +        1,     0,     1,         1,     1,      1,
+     +    1,     0,     1,         1,     1,      1,
 C         TYPE OF INITIALIZATION,   MV HEAT LOSS, MOD JAC, DASSL DEBUG
-     +        1,                       0,          1,     0,
+     +    1,                       0,          1,     0,
 C         OXYGEN DASSL SOLVE, BACK TRACK ON DTECT,  BACK TRACK ON OBJECTS
-     .        0,                       0,                 0    /
+     .    0,                       0,                 0    /
 C     NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB
-      DATA NWPTS /30/
+          DATA NWPTS /30/
 C     BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE, 2=INSULATED 3=FLUX)
-      DATA IWBOUND /3/
+          DATA IWBOUND /3/
 C     COMPUTED VALUES FOR BOUNDARY THICKNESS
-      DATA (WSPLIT(J),J=1,3)  /0.50, 0.17, 0.33/
+          DATA (WSPLIT(J),J=1,3)  /0.50, 0.17, 0.33/
 C     TURN DEBUGGING OPTIONS OFF - THIS IS NOT CURRENTLY USED
-      DATA DEBUG /MXOPT*0/
+          DATA DEBUG /MXOPT*0/
 C     MAXIMUM STEP SIZE, IF NEGATIVE THEN SOLVER WILL DECIDE
-      DATA STPMAX /1.0D0/, DASSLFTS/0.005D0/
+          DATA STPMAX /1.0D0/, DASSLFTS/0.005D0/
 C
-      DATA JACCHK/0/, CUTJAC/0.0D0/, IPRTALG/0/
+          DATA JACCHK/0/, CUTJAC/0.0D0/, IPRTALG/0/
       END
 
       SUBROUTINE INITSPEC
@@ -1639,8 +1461,8 @@ C     THIS IS JUST TO SET THE PPM AND PPMDV VALUES FOR OUTPUT
 C     IT SERVES NO REAL PURPOSE
 C
       DO 50 I = 1, NM1
-        XM(1) = RAMB(I) * ZZVOL(I,UPPER)
-        XM(2) = RAMB(I) * ZZVOL(I,LOWER)
+          XM(1) = RAMB(I) * ZZVOL(I,UPPER)
+          XM(2) = RAMB(I) * ZZVOL(I,LOWER)
 C
 C     SET THE WATER CONTENT TO RELHUM - THE POLYNOMIAL FIT IS TO (T-273), AND
 C     IS FOR SATURATION PRESSURE OF WATER.  THIS FIT COMES FROM THE STEAM
@@ -1648,64 +1470,64 @@ C     TABLES IN THE HANDBOOK OF PHYSICS AND CHEMISTRY.  WE ARE BEING CLEVER
 C     HERE.  THE FINAL RESULT IN O2N2 SHOULD BE THE VALUE USED IN STPORT FOR
 C     THE OUTSIDE AMBIENT.
 C
-        XT = TAMB(I)
-        XTEMP = 23.2D0 - 3.816D3 / (XT-46.D0)
-        XH2O = EXP(XTEMP) / 101325.0D0 * (18.D0/28.4D0)
-        O2N2(8) = RELHUM * XH2O
+          XT = TAMB(I)
+          XTEMP = 23.2D0 - 3.816D3 / (XT-46.D0)
+          XH2O = EXP(XTEMP) / 101325.0D0 * (18.D0/28.4D0)
+          O2N2(8) = RELHUM * XH2O
 C
 C     NORMALIZE THE ATMOSPHERE
 C
-        TOTO2N2 = 0.0D0
-        DO 10 J = 1, NS
-          TOTO2N2 = TOTO2N2 + O2N2(J)
-   10   CONTINUE
-        DO 20 J = 1, NS
-          O2N2(J) = O2N2(J) / TOTO2N2
-   20   CONTINUE
+          TOTO2N2 = 0.0D0
+          DO 10 J = 1, NS
+              TOTO2N2 = TOTO2N2 + O2N2(J)
+   10     CONTINUE
+          DO 20 J = 1, NS
+              O2N2(J) = O2N2(J) / TOTO2N2
+   20     CONTINUE
 C
-        DO 40 K = UPPER, LOWER
-          DO 30 LSP = 1, NS
-            TOXICT(I,K,LSP) = 0.0D0
-            MASS(K,I,LSP) = O2N2(LSP) * XM(K)
-   30     CONTINUE
-   40   CONTINUE
+          DO 40 K = UPPER, LOWER
+              DO 30 LSP = 1, NS
+                  TOXICT(I,K,LSP) = 0.0D0
+                  MASS(K,I,LSP) = O2N2(LSP) * XM(K)
+   30         CONTINUE
+   40     CONTINUE
    50 CONTINUE
 
       ISOF = NOFPRD
       DO 60 LSP = 1, NS
-        IF (ACTIVS(LSP)) THEN
-          DO 70 I = 1, NM1
-            DO 80 K = UPPER, LOWER
-              ISOF = ISOF + 1
-              P(ISOF) = MASS(K,I,LSP) + MINMAS
-   80       CONTINUE
-   70     CONTINUE
-        END IF
+          IF (ACTIVS(LSP)) THEN
+              DO 70 I = 1, NM1
+                  DO 80 K = UPPER, LOWER
+                      ISOF = ISOF + 1
+                      P(ISOF) = MASS(K,I,LSP) + MINMAS
+   80             CONTINUE
+   70         CONTINUE
+          END IF
    60 CONTINUE
 
 C     HVINIT DEFINE INITIAL PRODUCTS FOR HVAC SYSTEMS
 
       IF(NHVSYS.NE.0)THEN
-         ISOF = NOFHVPR
-         DO 220 LSP = 1, MIN(NS,9)
-            IF(ACTIVS(LSP))THEN
-               DO 230 ISYS = 1, NHVSYS
-                  ISOF = ISOF + 1
-                  P(ISOF) = O2N2(LSP)*HVTM(ISYS)
-  230          CONTINUE
-            ENDIF
-  220    CONTINUE
+          ISOF = NOFHVPR
+          DO 220 LSP = 1, MIN(NS,9)
+              IF(ACTIVS(LSP))THEN
+                  DO 230 ISYS = 1, NHVSYS
+                      ISOF = ISOF + 1
+                      P(ISOF) = O2N2(LSP)*HVTM(ISYS)
+  230             CONTINUE
+              ENDIF
+  220     CONTINUE
       ENDIF
-         
+
 C     ADD IN HYDROGEN CHLORIDE DEPOSITION ONTO THE WALLS IF HCL IS TRACKED
 
       IF (ACTIVS(6)) THEN
-        DO 90 I = 1, NM1
-          DO 91 K = 1, NWAL
-            ISOF = ISOF + 1
-            P(ISOF) = MINMAS
-   91     CONTINUE
-   90   CONTINUE
+          DO 90 I = 1, NM1
+              DO 91 K = 1, NWAL
+                  ISOF = ISOF + 1
+                  P(ISOF) = MINMAS
+   91         CONTINUE
+   90     CONTINUE
       END IF
 
 C     ADD SMOKE AGGLOMERATION IF SMOKE IS TRACKED
@@ -1727,10 +1549,10 @@ C     DEFINE PRODUCT MAP ARRAY
       IZPMAP(2) = 2
       IP = 2
       DO 100 IPROD = 1, NS
-        IF (ACTIVS(IPROD)) THEN
-          IP = IP + 1
-          IZPMAP(IP) = IPROD + 2
-        END IF
+          IF (ACTIVS(IPROD)) THEN
+              IP = IP + 1
+              IZPMAP(IP) = IPROD + 2
+          END IF
   100 CONTINUE
       RETURN
       END
@@ -1776,122 +1598,122 @@ C
 
 C*** ROOM NUMBER MUST BE BETWEEN 1 AND NM1
 
-        IROOM = IXTARG(TRGROOM,ITARG)
-        IF(IROOM.LT.1.OR.IROOM.GT.NM1)THEN
-		 write(logerr,5000) iroom
-		 ierror = 213
-		 return
-        ENDIF
-        IWALL = IXTARG(TRGWALL,ITARG)
-        XLOC = XXTARG(TRGCENX,ITARG)
-        YLOC = XXTARG(TRGCENY,ITARG)
-        ZLOC = XXTARG(TRGCENZ,ITARG)
-        XXNORM = XXTARG(TRGNORMX,ITARG)
-        YYNORM = XXTARG(TRGNORMY,ITARG)
-        ZZNORM = XXTARG(TRGNORMZ,ITARG)
-        XSIZE = BR(IROOM)
-        YSIZE = DR(IROOM)
-        ZSIZE = HRP(IROOM)
-        !*** If the locator is -1, set to center of room on the floor
-        if(xloc.eq.xm1) xloc = 0.5 * xsize
-        if(yloc.eq.xm1) yloc = 0.5 * ysize
-        if(zloc.eq.xm1) zloc = x0
-        IF(IWALL.NE.0)THEN
-          XXNORM = 0.0D0
-          YYNORM = 0.0D0
-          ZZNORM = 0.0D0
-        ENDIF
-        IF(IWALL.EQ.1)THEN
-          ZZNORM = -1.0D0
-          XX = XLOC
-          YY = YLOC
-          ZZ = ZSIZE
-         ELSEIF(IWALL.EQ.2)THEN
-          YYNORM = -1.0D0
-C          XX = XSIZE - XLOC
-          XX = XSIZE
-          YY = YSIZE
-          ZZ = YLOC
-         ELSEIF(IWALL.EQ.3)THEN
-          XXNORM = -1.0D0
-          XX = XSIZE
-          YY = XLOC
-          ZZ = YLOC
-         ELSEIF(IWALL.EQ.4)THEN
-          YYNORM = 1.0D0
-          XX = XLOC
-          YY = 0.0D0
-          ZZ = YLOC
-         ELSEIF(IWALL.EQ.5)THEN
-          XXNORM = 1.0D0
-          XX = 0.0D0
-C          YY = YSIZE - XLOC
-          YY = YSIZE
-          ZZ = YLOC
-         ELSEIF(IWALL.EQ.6)THEN
-          ZZNORM = 1.0D0
-          XX = XLOC
-C          YY = YSIZE - YLOC
-          YY = YSIZE
-          ZZ = 0.0D0
-        ENDIF
-        IF(IWALL.NE.0)THEN
-          XXTARG(TRGCENX,ITARG) = XX
-          XXTARG(TRGCENY,ITARG) = YY
-          XXTARG(TRGCENZ,ITARG) = ZZ
-          XXTARG(TRGNORMX,ITARG) = XXNORM
-          XXTARG(TRGNORMY,ITARG) = YYNORM
-          XXTARG(TRGNORMZ,ITARG) = ZZNORM
-          XLOC = XX
-          YLOC = YY
-          ZLOC = ZZ
-          IWALL2 = MAP6(IWALL)
-          IF(SWITCH(IWALL2,IROOM))THEN
-            CXTARG(ITARG) = CNAME(IWALL2,IROOM)
-           ELSE
-            CXTARG(ITARG) = ' '
+          IROOM = IXTARG(TRGROOM,ITARG)
+          IF(IROOM.LT.1.OR.IROOM.GT.NM1)THEN
+              write(logerr,5000) iroom
+              ierror = 213
+              return
           ENDIF
-        ENDIF
+          IWALL = IXTARG(TRGWALL,ITARG)
+          XLOC = XXTARG(TRGCENX,ITARG)
+          YLOC = XXTARG(TRGCENY,ITARG)
+          ZLOC = XXTARG(TRGCENZ,ITARG)
+          XXNORM = XXTARG(TRGNORMX,ITARG)
+          YYNORM = XXTARG(TRGNORMY,ITARG)
+          ZZNORM = XXTARG(TRGNORMZ,ITARG)
+          XSIZE = BR(IROOM)
+          YSIZE = DR(IROOM)
+          ZSIZE = HRP(IROOM)
+          !*** If the locator is -1, set to center of room on the floor
+          if(xloc.eq.xm1) xloc = 0.5 * xsize
+          if(yloc.eq.xm1) yloc = 0.5 * ysize
+          if(zloc.eq.xm1) zloc = x0
+          IF(IWALL.NE.0)THEN
+              XXNORM = 0.0D0
+              YYNORM = 0.0D0
+              ZZNORM = 0.0D0
+          ENDIF
+          IF(IWALL.EQ.1)THEN
+              ZZNORM = -1.0D0
+              XX = XLOC
+              YY = YLOC
+              ZZ = ZSIZE
+          ELSEIF(IWALL.EQ.2)THEN
+              YYNORM = -1.0D0
+C          XX = XSIZE - XLOC
+              XX = XSIZE
+              YY = YSIZE
+              ZZ = YLOC
+          ELSEIF(IWALL.EQ.3)THEN
+              XXNORM = -1.0D0
+              XX = XSIZE
+              YY = XLOC
+              ZZ = YLOC
+          ELSEIF(IWALL.EQ.4)THEN
+              YYNORM = 1.0D0
+              XX = XLOC
+              YY = 0.0D0
+              ZZ = YLOC
+          ELSEIF(IWALL.EQ.5)THEN
+              XXNORM = 1.0D0
+              XX = 0.0D0
+C          YY = YSIZE - XLOC
+              YY = YSIZE
+              ZZ = YLOC
+          ELSEIF(IWALL.EQ.6)THEN
+              ZZNORM = 1.0D0
+              XX = XLOC
+C          YY = YSIZE - YLOC
+              YY = YSIZE
+              ZZ = 0.0D0
+          ENDIF
+          IF(IWALL.NE.0)THEN
+              XXTARG(TRGCENX,ITARG) = XX
+              XXTARG(TRGCENY,ITARG) = YY
+              XXTARG(TRGCENZ,ITARG) = ZZ
+              XXTARG(TRGNORMX,ITARG) = XXNORM
+              XXTARG(TRGNORMY,ITARG) = YYNORM
+              XXTARG(TRGNORMZ,ITARG) = ZZNORM
+              XLOC = XX
+              YLOC = YY
+              ZLOC = ZZ
+              IWALL2 = MAP6(IWALL)
+              IF(SWITCH(IWALL2,IROOM))THEN
+                  CXTARG(ITARG) = CNAME(IWALL2,IROOM)
+              ELSE
+                  CXTARG(ITARG) = ' '
+              ENDIF
+          ENDIF
 
 C***    CENTER COORDINATES NEED TO BE WITHIN ROOM
 
-        IF(XLOC.LT.0.0D0.OR.XLOC.GT.XSIZE.OR.
-     .     YLOC.LT.0.0D0.OR.YLOC.GT.YSIZE.OR.
-     .     ZLOC.LT.0.0D0.OR.ZLOC.GT.ZSIZE)THEN
-		  write(logerr,5001) iroom,xloc,yloc,zloc
-		  ierror = 214
-		  return
-        ENDIF
+          IF(XLOC.LT.0.0D0.OR.XLOC.GT.XSIZE.OR.
+     .    YLOC.LT.0.0D0.OR.YLOC.GT.YSIZE.OR.
+     .    ZLOC.LT.0.0D0.OR.ZLOC.GT.ZSIZE)THEN
+              write(logerr,5001) iroom,xloc,yloc,zloc
+              ierror = 214
+              return
+          ENDIF
   210 CONTINUE
 
 C*** put a target in the center of the floor of each room
 
       DO 216 IROOM = 1, NM1
-         NTARG = NTARG + 1
-         IXTARG(TRGROOM,NTARG) = IROOM
-         IXTARG(TRGMETH,NTARG) = STEADY
-         IXTARG(TRGBACK,NTARG) = EXT
+          NTARG = NTARG + 1
+          IXTARG(TRGROOM,NTARG) = IROOM
+          IXTARG(TRGMETH,NTARG) = STEADY
+          IXTARG(TRGBACK,NTARG) = EXT
 
-         XX = BR(IROOM)*0.50D0
-         YY = DR(IROOM)*0.50D0
-         ZZ = x0
-         XXTARG(TRGCENX,NTARG) = XX
-         XXTARG(TRGCENY,NTARG) = YY
-         XXTARG(TRGCENZ,NTARG) = ZZ
-         XXTARG(TRGNORMX,NTARG) = x0
-         XXTARG(TRGNORMY,NTARG) = x0
-         XXTARG(TRGNORMZ,NTARG) = 1.0D0
-         XXTARG(TRGINTERIOR,NTARG) = 0.5
-         
-         IF(SWITCH(2,IROOM))THEN
-           CXTARG(NTARG) = CNAME(2,IROOM)
+          XX = BR(IROOM)*0.50D0
+          YY = DR(IROOM)*0.50D0
+          ZZ = x0
+          XXTARG(TRGCENX,NTARG) = XX
+          XXTARG(TRGCENY,NTARG) = YY
+          XXTARG(TRGCENZ,NTARG) = ZZ
+          XXTARG(TRGNORMX,NTARG) = x0
+          XXTARG(TRGNORMY,NTARG) = x0
+          XXTARG(TRGNORMZ,NTARG) = 1.0D0
+          XXTARG(TRGINTERIOR,NTARG) = 0.5
+
+          IF(SWITCH(2,IROOM))THEN
+              CXTARG(NTARG) = CNAME(2,IROOM)
           ELSE
-           CXTARG(NTARG) = ' '
-         ENDIF
+              CXTARG(NTARG) = ' '
+          ENDIF
   216 CONTINUE
-      
+
       RETURN
- 5000	format("Target assigned to non-existent compartment",i3)
+ 5000 format("Target assigned to non-existent compartment",i3)
  5001 format("Target located outside of compartment",i3,1x,3f10.3)
       END
 
@@ -1960,130 +1782,130 @@ C        THE DATA FROM THE DATA BASE IS STORED IN THE LOCAL VARIABLES LFKW,LCW,L
 C     MAP THE THERMAL DATA INTO ITS APPROPRIATE WALL SPECIFICATION
 C     IF NAME IS "OFF" OR "NONE" THEN JUST TURN ALL OFF
 
-	DO 170 I = 1, NWAL
-      DO 160 J = 1, NM1
-         THSET(I,J) = .FALSE.
-         IF (SWITCH(I,J)) THEN
-            IF (CNAME(I,J).EQ.OFF.OR.CNAME(I,J).EQ.NONE) THEN
-               SWITCH(I,J) = .FALSE.
-               GO TO 160
-            END IF
-            CALL GETTPP(CNAME(I,J),tp,IERROR)
-            IF (IERROR.NE.0) RETURN
-            NSLB(I,J) = lnslb(tp)
-            DO 140 K = 1, NSLB(I,J)
-               FKW(K,I,J) = lfkw(k,tp)
-               CW(K,I,J) = lcw(k,tp)
-               RW(K,I,J) = lrw(k,tp)
-               FLW(K,I,J) = lflw(k,tp)
-  140       CONTINUE
-            EPW(I,J) = lepw(tp)
-            DO 150 K = 1, 7
-               HCLBF(K,I,J) = lhclbf(k,tp)
-  150       CONTINUE
-         END IF
-  160 CONTINUE
+      DO 170 I = 1, NWAL
+          DO 160 J = 1, NM1
+              THSET(I,J) = .FALSE.
+              IF (SWITCH(I,J)) THEN
+                  IF (CNAME(I,J).EQ.OFF.OR.CNAME(I,J).EQ.NONE) THEN
+                      SWITCH(I,J) = .FALSE.
+                      GO TO 160
+                  END IF
+                  CALL GETTPP(CNAME(I,J),tp,IERROR)
+                  IF (IERROR.NE.0) RETURN
+                  NSLB(I,J) = lnslb(tp)
+                  DO 140 K = 1, NSLB(I,J)
+                      FKW(K,I,J) = lfkw(k,tp)
+                      CW(K,I,J) = lcw(k,tp)
+                      RW(K,I,J) = lrw(k,tp)
+                      FLW(K,I,J) = lflw(k,tp)
+  140             CONTINUE
+                  EPW(I,J) = lepw(tp)
+                  DO 150 K = 1, 7
+                      HCLBF(K,I,J) = lhclbf(k,tp)
+  150             CONTINUE
+              END IF
+  160     CONTINUE
   170 CONTINUE
 
 !	Initialize the interior temperatures to the interior ambient
 
       DO 270 I = 1, NM1
-      DO 260 J = 1, NWAL
-         TWE(J,I) = ETA(I)
-         DO 250 K = 1, NN 
-            TWJ(K,I,J) = TAMB(I)
-  250    CONTINUE
-  260 CONTINUE
+          DO 260 J = 1, NWAL
+              TWE(J,I) = ETA(I)
+              DO 250 K = 1, NN 
+                  TWJ(K,I,J) = TAMB(I)
+  250         CONTINUE
+  260     CONTINUE
   270 CONTINUE
 
 C*** initialize temperature profile data structures
 
       DO 20 I = 1, NM1
-        DO 10 J = 1, NWAL
-          IF (SWITCH(J,I)) THEN
-            CALL WSET(NUMNODE(1,J,I),NSLB(J,I),TSTOP,WALLDX(1,I,J),
-     +          WSPLIT,FKW(1,J,I),CW(1,J,I),RW(1,J,I),FLW(1,J,I),
-     +          WLENGTH(I,J),TWJ(1,I,J),TAMB(I),ETA(I))
-          END IF
-   10   CONTINUE
+          DO 10 J = 1, NWAL
+              IF (SWITCH(J,I)) THEN
+                  CALL WSET(NUMNODE(1,J,I),NSLB(J,I),TSTOP,WALLDX(1,I,J)
+     +            ,WSPLIT,FKW(1,J,I),CW(1,J,I),RW(1,J,I),FLW(1,J,I),
+     +            WLENGTH(I,J),TWJ(1,I,J),TAMB(I),ETA(I))
+              END IF
+   10     CONTINUE
    20 CONTINUE
 
 C*** concatenate slab properties of wall nodes that are connected
 C    to each other
 
       DO 30 I = 1, NSWAL
-         IFROMR = IZSWAL(I,1)
-         IFROMW = IZSWAL(I,2)
-         ITOR = IZSWAL(I,3)
-         ITOW = IZSWAL(I,4)
+          IFROMR = IZSWAL(I,1)
+          IFROMW = IZSWAL(I,2)
+          ITOR = IZSWAL(I,3)
+          ITOW = IZSWAL(I,4)
 
-         NSLABF = NSLB(IFROMW,IFROMR)
-         NSLABT = NSLB(ITOW,ITOR)
-         NSLB(IFROMW,IFROMR) = NSLABF + NSLABT
-         NSLB(ITOW,ITOR) = NSLABF + NSLABT
+          NSLABF = NSLB(IFROMW,IFROMR)
+          NSLABT = NSLB(ITOW,ITOR)
+          NSLB(IFROMW,IFROMR) = NSLABF + NSLABT
+          NSLB(ITOW,ITOR) = NSLABF + NSLABT
 
-         NPTSF = NUMNODE(1,IFROMW,IFROMR)
-         NPTST = NUMNODE(1,ITOW,ITOR)
-         NUMNODE(1,ITOW,ITOR) = NPTSF + NPTST - 1
-         NUMNODE(1,IFROMW,IFROMR) = NPTSF + NPTST - 1
+          NPTSF = NUMNODE(1,IFROMW,IFROMR)
+          NPTST = NUMNODE(1,ITOW,ITOR)
+          NUMNODE(1,ITOW,ITOR) = NPTSF + NPTST - 1
+          NUMNODE(1,IFROMW,IFROMR) = NPTSF + NPTST - 1
 
-         WFROM = WLENGTH(IFROMR,IFROMW)
-         WTO = WLENGTH(ITOR,ITOW)
-         WLENGTH(IFROMR,IFROMW) = WFROM + WTO
-         WLENGTH(ITOR,ITOW) = WFROM + WTO
+          WFROM = WLENGTH(IFROMR,IFROMW)
+          WTO = WLENGTH(ITOR,ITOW)
+          WLENGTH(IFROMR,IFROMW) = WFROM + WTO
+          WLENGTH(ITOR,ITOW) = WFROM + WTO
 
-         JJ = NSLABT + 1
-         DO 40 J = NSLABF+1, NSLABF+NSLABT
-            JJ = JJ - 1
-            FKW(J,IFROMW,IFROMR) = FKW(JJ,ITOW,ITOR)
-             CW(J,IFROMW,IFROMR) =  CW(JJ,ITOW,ITOR)
-             RW(J,IFROMW,IFROMR) =  RW(JJ,ITOW,ITOR)
-            FLW(J,IFROMW,IFROMR) = FLW(JJ,ITOW,ITOR)
-             NUMNODE(J+1,IFROMW,IFROMR) = NUMNODE(JJ+1,ITOW,ITOR)
-   40    CONTINUE
+          JJ = NSLABT + 1
+          DO 40 J = NSLABF+1, NSLABF+NSLABT
+              JJ = JJ - 1
+              FKW(J,IFROMW,IFROMR) = FKW(JJ,ITOW,ITOR)
+              CW(J,IFROMW,IFROMR) =  CW(JJ,ITOW,ITOR)
+              RW(J,IFROMW,IFROMR) =  RW(JJ,ITOW,ITOR)
+              FLW(J,IFROMW,IFROMR) = FLW(JJ,ITOW,ITOR)
+              NUMNODE(J+1,IFROMW,IFROMR) = NUMNODE(JJ+1,ITOW,ITOR)
+   40     CONTINUE
 
-         JJ = NSLABF + 1
-         DO 50 J = NSLABT+1, NSLABT+NSLABF
-            JJ = JJ - 1
-            FKW(J,ITOW,ITOR) = FKW(JJ,IFROMW,IFROMR)
-            CW(J,ITOW,ITOR) =  CW(JJ,IFROMW,IFROMR)
-            RW(J,ITOW,ITOR) =  RW(JJ,IFROMW,IFROMR)
-            FLW(J,ITOW,ITOR) = FLW(JJ,IFROMW,IFROMR)
-            NUMNODE(J+1,ITOW,ITOR) = NUMNODE(JJ+1,IFROMW,IFROMR)
-   50    CONTINUE
+          JJ = NSLABF + 1
+          DO 50 J = NSLABT+1, NSLABT+NSLABF
+              JJ = JJ - 1
+              FKW(J,ITOW,ITOR) = FKW(JJ,IFROMW,IFROMR)
+              CW(J,ITOW,ITOR) =  CW(JJ,IFROMW,IFROMR)
+              RW(J,ITOW,ITOR) =  RW(JJ,IFROMW,IFROMR)
+              FLW(J,ITOW,ITOR) = FLW(JJ,IFROMW,IFROMR)
+              NUMNODE(J+1,ITOW,ITOR) = NUMNODE(JJ+1,IFROMW,IFROMR)
+   50     CONTINUE
 
-         JJ = NPTST 
-         DO 60 J = NPTSF+1,NPTSF+NPTST - 1
-            JJ = JJ - 1
-            TWJ(J,IFROMR,IFROMW) = TWJ(JJ,ITOR,ITOW)
-            WALLDX(J-1,IFROMR,IFROMW) = WALLDX(JJ,ITOR,ITOW)
-   60    CONTINUE
+          JJ = NPTST 
+          DO 60 J = NPTSF+1,NPTSF+NPTST - 1
+              JJ = JJ - 1
+              TWJ(J,IFROMR,IFROMW) = TWJ(JJ,ITOR,ITOW)
+              WALLDX(J-1,IFROMR,IFROMW) = WALLDX(JJ,ITOR,ITOW)
+   60     CONTINUE
 
-         JJ = NPTSF 
-         DO 70 J = NPTST+1,NPTST+NPTSF - 1
-            JJ = JJ - 1
-            TWJ(J,ITOR,ITOW) = TWJ(JJ,IFROMR,IFROMW)
-            WALLDX(J-1,ITOR,ITOW) = WALLDX(JJ,IFROMR,IFROMW)
-   70    CONTINUE
+          JJ = NPTSF 
+          DO 70 J = NPTST+1,NPTST+NPTSF - 1
+              JJ = JJ - 1
+              TWJ(J,ITOR,ITOW) = TWJ(JJ,IFROMR,IFROMW)
+              WALLDX(J-1,ITOR,ITOW) = WALLDX(JJ,IFROMR,IFROMW)
+   70     CONTINUE
 
    30 CONTINUE
 
 C*** INITIALIZE TARGET DATA STRUCTURES
 
       DO 100 ITARG = 1, NTARG
-        TCNAME = CXTARG(ITARG)
-        IF(TCNAME.EQ.' ')THEN
-          TCNAME = 'DEFAULT'
-          CXTARG(ITARG) = TCNAME
-        ENDIF
-	  ICODE = 0
-	  CALL GETTPP(TCNAME,tp,IERROR)
-        IF (IERROR.NE.0) RETURN
-        XXTARG(TRGK,ITARG) = lfkw(1,tp)
-        XXTARG(TRGCP,ITARG) = lcw(1,tp)
-        XXTARG(TRGRHO,ITARG) = lrw(1,tp)
-        XXTARG(TRGL,ITARG) = lflw(1,tp)
-        XXTARG(TRGEMIS,ITARG) = lepw(tp)
+          TCNAME = CXTARG(ITARG)
+          IF(TCNAME.EQ.' ')THEN
+              TCNAME = 'DEFAULT'
+              CXTARG(ITARG) = TCNAME
+          ENDIF
+          ICODE = 0
+          CALL GETTPP(TCNAME,tp,IERROR)
+          IF (IERROR.NE.0) RETURN
+          XXTARG(TRGK,ITARG) = lfkw(1,tp)
+          XXTARG(TRGCP,ITARG) = lcw(1,tp)
+          XXTARG(TRGRHO,ITARG) = lrw(1,tp)
+          XXTARG(TRGL,ITARG) = lflw(1,tp)
+          XXTARG(TRGEMIS,ITARG) = lepw(tp)
   100 CONTINUE
 
       RETURN
@@ -2166,12 +1988,12 @@ C     COUNT THE OF NODES (LARGEST OF NS AND NE)
 
       NNODE = MAX(NA(1),NE(1))
       DO 50 IB = 2, NBR
-        NNODE = MAX(NNODE,NA(IB),NE(IB))
+          NNODE = MAX(NNODE,NA(IB),NE(IB))
    50 CONTINUE
       IF (NNODE.GT.MNODE) THEN
-        CALL XERROR('OFFSET - Node range exceeded for HVAC',0,1,1)
-        IERROR = 16
-        RETURN
+          CALL XERROR('OFFSET - Node range exceeded for HVAC',0,1,1)
+          IERROR = 16
+          RETURN
       END IF
 
 C     SET THE NUMBER OF COMPARTMENTS AND OFFSETS
@@ -2183,36 +2005,36 @@ C     COUNT THE SPECIES
       NLSPCT = 0
 
       IF (LFBT.EQ.1) THEN
-         DO 90 I = 1, NS
-           IF (ALLOWED(I).AND.ACTIVS(I)) THEN
-              NLSPCT = NLSPCT + 1
-           END IF
-   90    CONTINUE
-      ELSE IF (LFBT.EQ.2.OR.LFBT.EQ.0) THEN
-         DO 110 I = 1, NS
-            IF (ALLOWED(I)) THEN
-               IF (ACTIVS(I)) THEN
+          DO 90 I = 1, NS
+              IF (ALLOWED(I).AND.ACTIVS(I)) THEN
                   NLSPCT = NLSPCT + 1
-               END IF
-            ELSE IF (I.NE.7) THEN
-               NLSPCT = NLSPCT + 1
-            END IF
-  110    CONTINUE
-         NLSPCT = NLSPCT + 1
+              END IF
+   90     CONTINUE
+      ELSE IF (LFBT.EQ.2.OR.LFBT.EQ.0) THEN
+          DO 110 I = 1, NS
+              IF (ALLOWED(I)) THEN
+                  IF (ACTIVS(I)) THEN
+                      NLSPCT = NLSPCT + 1
+                  END IF
+              ELSE IF (I.NE.7) THEN
+                  NLSPCT = NLSPCT + 1
+              END IF
+  110     CONTINUE
+          NLSPCT = NLSPCT + 1
       ELSE
-         STOP ' NOT AN ALLOWED FIRE TYPE'
+          STOP ' NOT AN ALLOWED FIRE TYPE'
       ENDIF
 
 C     COUNT THE NUMBER OF WALLS
 
       NWALLS = 0
       DO 270 I = 1, NM1
-      DO 260 J = 1, NWAL
-         IF (SWITCH(J,I)) THEN
-            NWALLS = NWALLS + 1
-         END IF
-         IF (NWPTS.NE.0) NUMNODE(1,J,I) = NWPTS
-  260 CONTINUE
+          DO 260 J = 1, NWAL
+              IF (SWITCH(J,I)) THEN
+                  NWALLS = NWALLS + 1
+              END IF
+              IF (NWPTS.NE.0) NUMNODE(1,J,I) = NWPTS
+  260     CONTINUE
   270 CONTINUE
 
 C     count the number of implicit targets
@@ -2222,14 +2044,14 @@ C     count the number of implicit targets
       NEQTARG(STEADY) = 0
       NEQTARG(XPLICIT) = 0
       DO 300 ITARG = 1, NTARG
-         IF(IXTARG(TRGMETH,ITARG).EQ.MPLICIT)THEN
-            NIMTARG = NIMTARG + 1
-            NEQTARG(MPLICIT) = NEQTARG(MPLICIT) + 1
-           ELSEIF(IXTARG(TRGMETH,ITARG).EQ.STEADY)THEN
-            NEQTARG(STEADY) = NEQTARG(STEADY) + 1
-           ELSEIF(IXTARG(TRGMETH,ITARG).EQ.XPLICIT)THEN
-            NEQTARG(XPLICIT) = NEQTARG(STEADY) + 1
-         ENDIF
+          IF(IXTARG(TRGMETH,ITARG).EQ.MPLICIT)THEN
+              NIMTARG = NIMTARG + 1
+              NEQTARG(MPLICIT) = NEQTARG(MPLICIT) + 1
+          ELSEIF(IXTARG(TRGMETH,ITARG).EQ.STEADY)THEN
+              NEQTARG(STEADY) = NEQTARG(STEADY) + 1
+          ELSEIF(IXTARG(TRGMETH,ITARG).EQ.XPLICIT)THEN
+              NEQTARG(XPLICIT) = NEQTARG(STEADY) + 1
+          ENDIF
   300 CONTINUE
 
 C    SET NUMBER OF IMPLICIT OXYGEN VARIABLES
@@ -2238,11 +2060,11 @@ C*** note we never let dassl solve for oxygen when we have a type 1 fire
 
       IF(LFBT.EQ.1)OPTION(FOXYGEN) = OFF
       IF(OPTION(FOXYGEN).EQ.ON)THEN
-         NOXYGEN = NM1
-        ELSE
-         NOXYGEN = 0
+          NOXYGEN = NM1
+      ELSE
+          NOXYGEN = 0
       ENDIF
-      
+
 C     NOW DO ALL THE EQUATION OFFSETS
 
       NHVPVAR = NNODE - NEXT
@@ -2250,8 +2072,8 @@ C     NOW DO ALL THE EQUATION OFFSETS
       NOFP = 0
       NOFPMV = NOFP + NM1
       NOFTMV = NOFPMV + NHVPVAR
-	NOFFSM = NOFTMV + NHVTVAR
-	NOFTU = NOFFSM
+      NOFFSM = NOFTMV + NHVTVAR
+      NOFTU = NOFFSM
       NOFVU = NOFTU + NM1
       NOFTL = NOFVU + NM1
       NOFOXYL = NOFTL + NM1
@@ -2263,7 +2085,7 @@ C     NOW DO ALL THE EQUATION OFFSETS
       NOFSMKW = NOFHCL + 4 * NM1 * HCLDEP
       NOFSMK = NOFSMKW + 4 * NM1 * SMKAGL
       NOFHVPR = NOFSMK + 4 * NM1 * SMKAGL
-  
+
 C     If the hvac model is used then nequals needs to be redefined in 
 C     HVMAP since the variable NHVSYS is not defined yet.  After NHVSYS 
 C     is defined the following statement can be used to define nequals
@@ -2311,39 +2133,39 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
 C*** initially assume that no rooms are connected
       DO 10 I = 1, N
-        DO 20 J = 1, N
-           ROOMC(I,J) = 0
-   20   CONTINUE
-        ROOMC(I,I) = 1
+          DO 20 J = 1, N
+              ROOMC(I,J) = 0
+   20     CONTINUE
+          ROOMC(I,I) = 1
    10 CONTINUE
 
 C*** check horizontal vent flow
 
       DO 30 I = 1, NVENTS
-        IROOM1 = IZVENT(I,1)
-        IROOM2 = IZVENT(I,2)
-        IK = IZVENT(I,3)
-        IM = MIN(IROOM1,IROOM2)
-        IX = MAX(IROOM1,IROOM2)
-        factor2 = qchfraction(qcvh,ijk(im,ix,ik),tsec)
-        HEIGHT = ZZVENT(I,2) - ZZVENT(I,1)
-        WIDTH = ZZVENT(I,3)
-        avent = factor2 * height * width
-        IF(AVENT.NE.0.0D0)THEN
-          ROOMC(IROOM1,IROOM2) = 1
-          ROOMC(IROOM2,IROOM1) = 1
-        ENDIF
+          IROOM1 = IZVENT(I,1)
+          IROOM2 = IZVENT(I,2)
+          IK = IZVENT(I,3)
+          IM = MIN(IROOM1,IROOM2)
+          IX = MAX(IROOM1,IROOM2)
+          factor2 = qchfraction(qcvh,ijk(im,ix,ik),tsec)
+          HEIGHT = ZZVENT(I,2) - ZZVENT(I,1)
+          WIDTH = ZZVENT(I,3)
+          avent = factor2 * height * width
+          IF(AVENT.NE.0.0D0)THEN
+              ROOMC(IROOM1,IROOM2) = 1
+              ROOMC(IROOM2,IROOM1) = 1
+          ENDIF
    30 CONTINUE
 
 C*** check vertical vent flow
 
       DO 50 I = 1, NVVENT
-         IROOM1 = IVVENT(I,TOPRM)
-         IROOM2 = IVVENT(I,BOTRM)
-         IF(VVAREA(IROOM1,IROOM2).NE.0.0D0)THEN
-           ROOMC(IROOM1,IROOM2) = 1
-           ROOMC(IROOM2,IROOM1) = 1
-         ENDIF
+          IROOM1 = IVVENT(I,TOPRM)
+          IROOM2 = IVVENT(I,BOTRM)
+          IF(VVAREA(IROOM1,IROOM2).NE.0.0D0)THEN
+              ROOMC(IROOM1,IROOM2) = 1
+              ROOMC(IROOM2,IROOM1) = 1
+          ENDIF
    50 CONTINUE
 
 
@@ -2361,18 +2183,18 @@ C           through several other intermediate rooms).
 
       MATITER = 1
       DO 60 I = 1, N
-        IF(N.LE.MATITER)GO TO 70
-        CALL MAT2MULT(ROOMC,TEMPMAT,NR,N,matiter)
-        MATITER = MATITER*2
+          IF(N.LE.MATITER)GO TO 70
+          CALL MAT2MULT(ROOMC,TEMPMAT,NR,N,matiter)
+          MATITER = MATITER*2
    60 CONTINUE
    70 CONTINUE
 
       DO 80 I = 1, NM1
-        IF(ROOMC(I,N).NE.0)THEN
-          IZCON(I) = .TRUE.
-         ELSE
-          IZCON(I) = .FALSE.
-        ENDIF
+          IF(ROOMC(I,N).NE.0)THEN
+              IZCON(I) = .TRUE.
+          ELSE
+              IZCON(I) = .FALSE.
+          ENDIF
    80 CONTINUE
 
 
@@ -2400,15 +2222,15 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       DIMENSION MAT1(IDIM,N),MAT2(IDIM,N)
       DO 10 I = 1, N
-        DO 20 J = 1, N
-           MAT2(I,J) = IDOT(MAT1(I,1),IDIM,MAT1(1,J),1,N)
-           IF(MAT2(I,J).GE.1)MAT2(I,J) = 1
-   20   CONTINUE
+          DO 20 J = 1, N
+              MAT2(I,J) = IDOT(MAT1(I,1),IDIM,MAT1(1,J),1,N)
+              IF(MAT2(I,J).GE.1)MAT2(I,J) = 1
+   20     CONTINUE
    10 CONTINUE
       DO 30 I = 1, N
-        DO 40 J = 1, N
-          MAT1(I,J) = MAT2(I,J)
-   40   CONTINUE
+          DO 40 J = 1, N
+              MAT1(I,J) = MAT2(I,J)
+   40     CONTINUE
    30 CONTINUE
       RETURN
       END
@@ -2435,15 +2257,15 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       II = 1 - INX
       JJ = 1 - INY
       DO 10 I = 1, N
-        II = II + INX
-        JJ = JJ + INY
-        IDOT = IDOT + IX(II)*IY(JJ)
+          II = II + INX
+          JJ = JJ + INY
+          IDOT = IDOT + IX(II)*IY(JJ)
    10 CONTINUE
       RETURN
       END
 
       SUBROUTINE WSET(NUMNODE,NSLAB,TSTOP,WALLDX,WSPLIT,WK,WSPEC,WRHO,
-     +    WTHICK,WLEN,WTEMP,TAMB,TEXT)
+     +WTHICK,WLEN,WTEMP,TAMB,TEXT)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -2496,16 +2318,16 @@ C
 C      
       NINTX = NX - (NSLAB+1)
       IF (NSLAB.LE.2) THEN
-        NSPLIT = (WSPLIT(1)+WSPLIT(2)) * XXNX
+          NSPLIT = (WSPLIT(1)+WSPLIT(2)) * XXNX
       ELSE
-        NSPLIT = WSPLIT(1) * XXNX
+          NSPLIT = WSPLIT(1) * XXNX
       END IF
 C
 C*** calculate total walldepth
 C
       XPOS(1) = 0.0D0
       DO 20 ISLAB = 1, NSLAB
-        XPOS(ISLAB+1) = XPOS(ISLAB) + WTHICK(ISLAB)
+          XPOS(ISLAB+1) = XPOS(ISLAB) + WTHICK(ISLAB)
    20 CONTINUE
       WLEN = XPOS(NSLAB+1)
 C
@@ -2521,19 +2343,19 @@ C
 C*** SET UP WALL NODE LOCATIONS for 1 slab case
 C    bunch points at interior and exterior boundary
 C
-        XXNSPLIT = NSPLIT
-        W = 1.0D0 / XXNSPLIT 
-        DO 30 I = 1, NSPLIT + 1 
-          XXIM1 = I - 1
-          XWALL(I) = XB * (XXIM1*W) ** 2
-   30   CONTINUE
-        W = 1.0D0 / (XXNX-(XXNSPLIT+1.0D0))
-        DO 40 I = NSPLIT +2, NX
-          II = NX + 1 - I 
-          XXIIM1 = II - 1
-          XWALL(I) = WLEN - (WLEN-XB) * (XXIIM1*W) ** 2
-   40   CONTINUE
-        NUMNODE(1+NSLAB) = NINTX
+          XXNSPLIT = NSPLIT
+          W = 1.0D0 / XXNSPLIT 
+          DO 30 I = 1, NSPLIT + 1 
+              XXIM1 = I - 1
+              XWALL(I) = XB * (XXIM1*W) ** 2
+   30     CONTINUE
+          W = 1.0D0 / (XXNX-(XXNSPLIT+1.0D0))
+          DO 40 I = NSPLIT +2, NX
+              II = NX + 1 - I 
+              XXIIM1 = II - 1
+              XWALL(I) = WLEN - (WLEN-XB) * (XXIIM1*W) ** 2
+   40     CONTINUE
+          NUMNODE(1+NSLAB) = NINTX
       ELSE
 C
 C*** SET UP WALL NODE LOCATIONS for multi-slab case.
@@ -2543,75 +2365,75 @@ C
 C
 C*** calculate number of points interior to each slab
 C
-        XXNINTX = NINTX
-        NUMPTS(1) = WSPLIT(1) * XXNINTX * MIN(XB,WTHICK(1)) / WLEN
-        IF (NUMPTS(1).LT.1) NUMPTS(1) = 1
-        WMXB = WLEN - XB
-        NUMPTS(NSLAB) = WSPLIT(3) * XXNINTX * MIN(WMXB,WTHICK(NSLAB)) / 
-     +      WLEN
-        IF (NUMPTS(NSLAB).LT.1) NUMPTS(NSLAB) = 1
-        ISUM = NINTX - NUMPTS(1) - NUMPTS(NSLAB)
-        XXNSLABM2 = NSLAB - 2
-        DO 50 I = 2, NSLAB - 1
-          NUMPTS(I) = XXNX * WSPLIT(2) * WTHICK(NSLAB) / XXNSLABM2 /WLEN
-          IF (NUMPTS(I).LT.1) NUMPTS(I) = 1
-          ISUM = ISUM - NUMPTS(I)
-   50   CONTINUE
-        NUMPTS(1) = NUMPTS(1) + (ISUM-ISUM/2)
-        NUMPTS(NSLAB) = NUMPTS(NSLAB) + ISUM / 2
-        IF (NUMPTS(NSLAB).LT.1) THEN
-          NUMPTS(1) = NUMPTS(1) + NUMPTS(NSLAB) - 1
-          NUMPTS(NSLAB) = 1
-        END IF
+          XXNINTX = NINTX
+          NUMPTS(1) = WSPLIT(1) * XXNINTX * MIN(XB,WTHICK(1)) / WLEN
+          IF (NUMPTS(1).LT.1) NUMPTS(1) = 1
+          WMXB = WLEN - XB
+          NUMPTS(NSLAB) = WSPLIT(3) * XXNINTX * MIN(WMXB,WTHICK(NSLAB))/ 
+     +    WLEN
+          IF (NUMPTS(NSLAB).LT.1) NUMPTS(NSLAB) = 1
+          ISUM = NINTX - NUMPTS(1) - NUMPTS(NSLAB)
+          XXNSLABM2 = NSLAB - 2
+          DO 50 I = 2, NSLAB - 1
+              NUMPTS(I) = XXNX * WSPLIT(2)*WTHICK(NSLAB)/XXNSLABM2/WLEN
+              IF (NUMPTS(I).LT.1) NUMPTS(I) = 1
+              ISUM = ISUM - NUMPTS(I)
+   50     CONTINUE
+          NUMPTS(1) = NUMPTS(1) + (ISUM-ISUM/2)
+          NUMPTS(NSLAB) = NUMPTS(NSLAB) + ISUM / 2
+          IF (NUMPTS(NSLAB).LT.1) THEN
+              NUMPTS(1) = NUMPTS(1) + NUMPTS(NSLAB) - 1
+              NUMPTS(NSLAB) = 1
+          END IF
 C
 C*** copy numpts data into numnode and keep a running total
 C
-        CUMPTS(1) = 1
-        DO 60 ISLAB = 1, NSLAB
-          NUMNODE(1+ISLAB) = NUMPTS(ISLAB)
-          CUMPTS(ISLAB+1) = CUMPTS(ISLAB) + NUMPTS(ISLAB) + 1
-   60   CONTINUE
+          CUMPTS(1) = 1
+          DO 60 ISLAB = 1, NSLAB
+              NUMNODE(1+ISLAB) = NUMPTS(ISLAB)
+              CUMPTS(ISLAB+1) = CUMPTS(ISLAB) + NUMPTS(ISLAB) + 1
+   60     CONTINUE
 C
 C*** calculate wall positions for first slab (bunched near left)
 C
-        NINT = NUMPTS(1) + 1
-        XXNINT = NINT
-        DO 70 I = 1, NINT
-          XXIM1 = I - 1
-          XWALL(I) = XXIM1 ** 2 * XPOS(2) / XXNINT**2
-   70   CONTINUE
+          NINT = NUMPTS(1) + 1
+          XXNINT = NINT
+          DO 70 I = 1, NINT
+              XXIM1 = I - 1
+              XWALL(I) = XXIM1 ** 2 * XPOS(2) / XXNINT**2
+   70     CONTINUE
 C
 C*** calculate wall positions for middle slabs (uniform)
 C
-        DO 90 ISLAB = 2, NSLAB - 1
-          IBEG = CUMPTS(ISLAB)
-          IEND = CUMPTS(ISLAB+1) - 1
-          XXI3 = IEND+1-IBEG
-          DO 80 I = IBEG, IEND
-            XXI1 = IEND+1-I
-            XXI2 = I-IBEG
-            XWALL(I) = (XPOS(ISLAB)*XXI1+XPOS(ISLAB+1)*XXI2) / XXI3
-   80     CONTINUE
+          DO 90 ISLAB = 2, NSLAB - 1
+              IBEG = CUMPTS(ISLAB)
+              IEND = CUMPTS(ISLAB+1) - 1
+              XXI3 = IEND+1-IBEG
+              DO 80 I = IBEG, IEND
+                  XXI1 = IEND+1-I
+                  XXI2 = I-IBEG
+                  XWALL(I) = (XPOS(ISLAB)*XXI1+XPOS(ISLAB+1)*XXI2) / XXI3
+   80         CONTINUE
 C
 C*** keep track of break points
 C
-   90   CONTINUE
+   90     CONTINUE
 C
 C*** calculate wall positions for last slab (bunched near right)
 C
-        IF (NSLAB.GE.2) THEN
-          IBEG = CUMPTS(NSLAB)
+          IF (NSLAB.GE.2) THEN
+              IBEG = CUMPTS(NSLAB)
 
 !*** include last point for last slab
 
-          IEND = CUMPTS(NSLAB+1)
-          XXI3 = IEND - IBEG
-          DO 100 I = IBEG, IEND
-            XXI1 = IEND - I
-            XWALL(I) = XPOS(NSLAB+1) - XXI1 ** 2 * (XPOS(NSLAB+1)-
-     +          XPOS(NSLAB)) / XXI3 ** 2
-  100     CONTINUE
-        END IF
+              IEND = CUMPTS(NSLAB+1)
+              XXI3 = IEND - IBEG
+              DO 100 I = IBEG, IEND
+                  XXI1 = IEND - I
+                  XWALL(I) = XPOS(NSLAB+1) - XXI1 ** 2 * (XPOS(NSLAB+1)-
+     +            XPOS(NSLAB)) / XXI3 ** 2
+  100         CONTINUE
+          END IF
       END IF
 C
 C*** finally calculate distances between each point
@@ -2619,7 +2441,7 @@ C    these distances are used by cnduct to setup discretization
 C    tri-diagonal matrix
 C
       DO 110 I = 1, NX - 1
-        WALLDX(I) = XWALL(I+1) - XWALL(I)
+          WALLDX(I) = XWALL(I+1) - XWALL(I)
   110 CONTINUE
 C
 C*** initialize temperature profile.  Note, WTEMP(1)=WTEMP(2) and
@@ -2630,22 +2452,22 @@ C
       WTEMP(NX) = TEXT
       DTDW = (TEXT-TAMB)/(XWALL(NX-1)-XWALL(2))
       DO 10 I = 2, NX-1
-        WTEMP(I) = TAMB + (XWALL(I)-XWALL(2))*DTDW
+          WTEMP(I) = TAMB + (XWALL(I)-XWALL(2))*DTDW
    10 CONTINUE
       RETURN
       END
-      
+
       integer function rev_initialization
-          
+
       INTEGER :: MODULE_REV
       CHARACTER(255) :: MODULE_DATE 
       CHARACTER(255), PARAMETER :: 
-     * mainrev='$Revision$'
+     *mainrev='$Revision$'
       CHARACTER(255), PARAMETER :: 
-     * maindate='$Date$'
-      
+     *maindate='$Date$'
+
       WRITE(module_date,'(A)') 
-     *    mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
+     *mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
       READ (MODULE_DATE,'(I5)') MODULE_REV
       rev_initialization = module_rev
       WRITE(MODULE_DATE,'(A)') maindate

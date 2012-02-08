@@ -770,60 +770,12 @@
       end
 
       SUBROUTINE INITMM
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITMM
-C
-C     Source File: INITMM.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  This routine initializes the main memory - must be used by 
-C                   all modules that will run the model kernel
-C
-C     Arguments: none
-C
-C     Revision History:
-C        Created:  06/20/1990 at 9:57 by WWJ
-C        Modified: 05/15/1991 at 10:27 by WWJ:
-C                  initialize vertical flow data
-C        Modified: 11/30/1992 at 10:56 by RDP:
-C                  Set MINMAS to 0.0 (with change in TOXIC to eliminate its
-C                  need)
-C        Modified: 3/12/1993 at 9:36 by RDP:
-C                  Moved object initialization to new routine INITOB
-C        gpf 10/14/93 initialized variables involved in the 
-C                     detection/suppression option
-C        gpf 2/25/94 initialized variables involved in the
-C                    room to room heat transfer option
-C        Modified: 6/10/1994 by GPF:
-C                  added shaft option (combine two layers into one)
-C        Modified: 10/10/1994 by gpf:
-C                  initialize ntarg, a target counter
-C        Modified: 4/26/95
-C                  give default values for target data structures, corrected
-C                  value of sigma
-C        Modified: 7/13/95
-C                  defined JACCOL, NEQOFF for use in the new Jacobian speedup
-C                  option.
-C        Modified: 9/12/96
-C                  initialized IXDTECT(I,DQUENCH) to 0 rather than 1 .  That is,
-C                  sprinklers will now not go off by default.  
-C        Modified: 7/22/96
-C                  Initialized variables for use by hall option
-C        Modified: 11/25/96
-C                  Initialized variables used by non-rectangular room option
-C        Modified: 4/21/97 by gpf
-C                  Added BLACK option for the gas to allow better simulations
-C                  for furnaces
-C        Modified: 7/18/97 by par
-C                  Initialized GUISELCT for gui graphics output
-C        Modified: 10/21/97 by gpf
-C                  Changed default fire size to 0 to be consistent with FAST
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
+!     routine: initmm
+!     purpose: This routine initializes the main memory - must be used by 
+!              all modules that will run the model kernel
+!     Arguments: none
+
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -834,79 +786,76 @@ C
       include "fltarget.fi"
       include "vents.fi"
 
-C     SET SOME INITIALIZATION - SIMPLE CONTROL STUFF
-
-      EXSET = .FALSE.
+      ! set some initialization - simple control stuff
+      exset = .false.
       debugging = .false.
-      XX0 = 0.0D0
+      xx0 = 0.0d0
       xx1 = 1.0d0
       xm1 = -1.0d0
 
-C     INITIALIZE THE COMMON BLOCK
+      ! initialize the common block
+      do i = 1, ns
+          o2n2(i) = xx0
+          allowed(i) = .false.
+          activs(i) = .true.
+      end do
+      do i = 1, nr
+          do j = 1, nwal
+              cname(j,i) = 'OFF'
+              switch(j,i) = .false.
+          end do
+      end do
+      do i = 1, nr
+          switch(1,i) = .true.
+          cname(1,i) = 'DEFAULT'
+      end do
+      nconfg = 0
+      ndumpr = 0
+      nlspct = 0
+      nrestr = 0
+      numthrm = 0
+      mapltw(1) = 1
+      mapltw(2) = 2
+      mapltw(3) = 1
+      mapltw(4) = 2
+      hcldep = 0
+      smkagl = 0
+      n = 0
+      do i = 1, nwal + 1
+          cjeton(i) = .false.
+      end do
 
-      DO 10 I = 1, NS
-          O2N2(I) = XX0
-          ALLOWED(I) = .FALSE.
-          ACTIVS(I) = .TRUE.
-   10 CONTINUE
-      DO 30 I = 1, NR
-          DO 20 J = 1, NWAL
-              CNAME(J,I) = 'OFF'
-              SWITCH(J,I) = .FALSE.
-   20     CONTINUE
-   30 CONTINUE
-      DO 40 I = 1, NR
-          SWITCH(1,I) = .TRUE.
-          CNAME(1,I) = 'DEFAULT'
-   40 CONTINUE
-      NCONFG = 0
-      NDUMPR = 0
-      NLSPCT = 0
-      NRESTR = 0
-      NUMTHRM = 0
-      MAPLTW(1) = 1
-      MAPLTW(2) = 2
-      MAPLTW(3) = 1
-      MAPLTW(4) = 2
-      HCLDEP = 0
-      SMKAGL = 0
-      N = 0
-      DO 50 I = 1, NWAL + 1
-          CJETON(I) = .FALSE.
-   50 CONTINUE
+      ! initialize the flow variables
+      do i = 1, nr
+          izshaft(i) = 0
+          heatup(i) = xx0
+          heatlp(i) = xx0
+          heatvf(i) = xx0
+          do j = 1, nr
+              ! do vertical vents (vvent,...)
+              vshape(i,j) = 0
+              nwv(i,j) = 0
+              vvarea(i,j) = xx0
+              ! do horizontal vents (hvent,...)
+              nw(i,j) = 0
+              neutral(i,j) = 0
+        end do
+      end do
 
-C     INITIALIZE THE FLOW VARIABLES
-
-      DO 80 I = 1, NR
-          IZSHAFT(I) = 0
-          HEATUP(I) = XX0
-          HEATLP(I) = XX0
-          HEATVF(I) = XX0
-          DO 70 J = 1, NR
-C     DO VERTICAL VENTS (VVENT,...)
-              VSHAPE(I,J) = 0
-              NWV(I,J) = 0
-              VVAREA(I,J) = XX0
-C     DO HORIZONTAL VENTS (HVENT,...)
-              NW(I,J) = 0
-              NEUTRAL(I,J) = 0
-   70     CONTINUE
-   80 CONTINUE
-
-      DO 60 IVENT = 1, MXVENTS
-          SS1(IVENT) = XX0
-          SS2(IVENT) = XX0
-          SA1(IVENT) = XX0
-          SA2(IVENT) = XX0
-          AS1(IVENT) = XX0
-          AS2(IVENT) = XX0
-          AA1(IVENT) = XX0
-          AA2(IVENT) = XX0
-          SAU1(IVENT) = XX0
-          SAU2(IVENT) = XX0
-          ASL1(IVENT) = XX0
-          ASL2(IVENT) = XX0
-   60 CONTINUE
+      do ivent = 1, mxvents
+          ss1(ivent) = xx0
+          ss2(ivent) = xx0
+          sa1(ivent) = xx0
+          sa2(ivent) = xx0
+          as1(ivent) = xx0
+          as2(ivent) = xx0
+          aa1(ivent) = xx0
+          aa2(ivent) = xx0
+          sau1(ivent) = xx0
+          sau2(ivent) = xx0
+          asl1(ivent) = xx0
+          asl2(ivent) = xx0
+      end do
 
       do i = 1, mext
           hveflot(upper,i) = xx0
@@ -915,383 +864,331 @@ C     DO HORIZONTAL VENTS (HVENT,...)
           tracet(lower,i) = xx0
       end do
 
-C     INITIALIZE THE FORCING FUNCTIONS
-
-      DO 100 I = 1, NR
-          EMP(I) = XX0
-          EMS(I) = XX0
-          EME(I) = XX0
-          APS(I) = XX0
-          DO 90 K = UPPER, LOWER
-              QR(K,I) = XX0
-              QC(K,I) = XX0
-              QFC(K,I) = XX0
-   90     CONTINUE
-  100 CONTINUE
-      DO 110 I = 1, MXFIRE
-          QFR(I) = XX0
-  110 CONTINUE
+      ! initialize the forcing functions
+      do i = 1, nr
+          emp(i) = xx0
+          ems(i) = xx0
+          eme(i) = xx0
+          aps(i) = xx0
+          do k = upper, lower
+              qr(k,i) = xx0
+              qc(k,i) = xx0
+              qfc(k,i) = xx0
+          end do
+      end do
+      do i = 1, mxfire
+          qfr(i) = xx0
+      end do
       do i = 1, maxteq
           p(i) = xx0
       end do
 
-C     DEFINE THE OUTSIDE WORLD AS INFINITY
+      ! define the outside world as infinity
+      xlrg = 1.d+5
+      do i = 1, nr
+          dr(i) = xlrg
+          br(i) = xlrg
+          hr(i) = xlrg
+          hrp(i) = xlrg
+          hrl(i) = xx0
+          hflr(i) = xx0
+          cxabs(i) = xx0
+          cyabs(i) = xx0
+          ar(i) = br(i) * dr(i)
+          vr(i) = hr(i) * ar(i)
+          do  j = 1, nwal
+              epw(j,i) = xx0
+              qsradw(j,i) = xx0
+              qscnv(j,i) = xx0
+          end do
+          do j = 1, nr
+              nw(i,j) = 0
+          end do
+      end do
 
-      XLRG = 1.D+5
-      DO 150 I = 1, NR
-          DR(I) = XLRG
-          BR(I) = XLRG
-          HR(I) = XLRG
-          HRP(I) = XLRG
-          HRL(I) = XX0
-          HFLR(I) = XX0
-          CXABS(I) = XX0
-          CYABS(I) = XX0
-          AR(I) = BR(I) * DR(I)
-          VR(I) = HR(I) * AR(I)
-          DO 120 J = 1, NWAL
-              EPW(J,I) = XX0
-              QSRADW(J,I) = XX0
-              QSCNV(J,I) = XX0
-  120     CONTINUE
-          DO 140 J = 1, NR
-              NW(I,J) = 0
-  140     CONTINUE
-  150 CONTINUE
-      DO 130 IVENT = 1, MXVENTS
-          BW(IVENT) = XX0
-          HH(IVENT) = XX0
-          HL(IVENT) = XX0
-          HHP(IVENT) = XX0
-          HLP(IVENT) = XX0
-          VFACE(IVENT) = 1
-  130 CONTINUE
+      ! initialize all vents to zero size
+      do ivent = 1, mxvents
+          bw(ivent) = xx0
+          hh(ivent) = xx0
+          hl(ivent) = xx0
+          hhp(ivent) = xx0
+          hlp(ivent) = xx0
+          vface(ivent) = 1
+      end do
 
-C     SET THE TIME STEP AND INNER STEP DIVISION FOR TIME SPLITTING
-C     WE DO NOT LET THE USER CHOOSE THESE
+      ! set the time step and inner step division for time splitting
+      ! we do not let the user choose these
+      deltat = 1.0d0
 
-      DELTAT = 1.0D0
-
-C     DEFINE ALL THE "UNIVERSAL CONSTANTS
-
-      SIGM = 5.67D-8
-      CP = 1012.0D0
-      GAMMA = 1.40D0
-      RGAS = (GAMMA-1.0D0) / GAMMA * CP
-      MINMAS = 0.0D0
-      G = 9.80D0
-      STIME = XX0
-      TREF = 288.D0
-      LIMO2 = 0.10D0
-      GMWF = 16.0D0
-      HCOMBA = 50000000.0D0
-      PREF = 1.013D+5
-      PA = PREF
-      POFSET = PREF
-      SAL = XX0
-      SAL2 = -1.0D0
-      TE = TREF
-      TA = TREF
-      TGIGNT = TE + 200.D0
-      EXTA = TA
-      EXPA = PA
-      EXSAL = SAL
-      WINDV = XX0
-      WINDRF = 10.D0
-      WINDPW = 0.16D0
+      ! define all the "universal constants
+      sigm = 5.67d-8
+      cp = 1012.0d0
+      gamma = 1.40d0
+      rgas = (gamma-1.0d0) / gamma * cp
+      minmas = 0.0d0
+      g = 9.80d0
+      stime = xx0
+      tref = 288.d0
+      limo2 = 0.10d0
+      gmwf = 16.0d0
+      hcomba = 50000000.0d0
+      pref = 1.013d+5
+      pa = pref
+      pofset = pref
+      sal = xx0
+      sal2 = -1.0d0
+      te = tref
+      ta = tref
+      tgignt = te + 200.d0
+      exta = ta
+      expa = pa
+      exsal = sal
+      windv = xx0
+      windrf = 10.d0
+      windpw = 0.16d0
       do i = 0, mxfire
           objmaspy(i) = xx0
           radio(i) = xx0
           radconsplit(i) = 0.15d0
       end do
       tradio = xx0
-      QRADRL = 0.15D0
+      qradrl = 0.15d0
 
-C     NORMAL AIR
+      ! normal air
+      o2n2(1) = 0.77d0
+      o2n2(2) = 0.23d0
 
-      O2N2(1) = 0.77D0
-      O2N2(2) = 0.23D0
-
-C     A SPECIFIED FIRE IN THE CENTER OF THE ROOM
-
-      LFBT = 2
-      LFBO = 0
-      LFMAX = 1
+      ! a specified fire in the center of the room
+      lfbt = 2
+      lfbo = 0
+      lfmax = 1
       heatfl = .false.
       heatfq = 0.0
       heatfp(1) = xm1
       heatfp(2) = xm1
       heatfp(3) = xm1
 
-C     SET TO -1 AS A FLAG FOR NPUTP INITIALIZATION - ANY VALUE NOT SET
-C     WILL BE SET TO THE DEFAULT WHICH IS THE CENTER OF THE RESPECTIVE WALL
+      ! set to -1 as a flag for nputp initialization - any value not set
+      ! will be set to the default which is the center of the respective wall
 
-      FPOS(1) = xm1
-      FPOS(2) = xm1
-      FPOS(3) = xm1
+      fpos(1) = xm1
+      fpos(2) = xm1
+      fpos(3) = xm1
 
-C     SET UP DEFAULT VALUES FOR THE CHEMISTRY
+      ! set up default values for the chemistry
+      do i = 1, nv
 
-      DO 190 I = 1, NV
+          ! define the vents as being open
+          do ivent=1, mxvents
+              qcvent(ivent,i) = 1.0d0
+          end do
+          tfired(i) = 86400.d0
+          hfired(i) = xx0
+          afired(i) = xx0
+          bfired(i) = 0.000d0
+          qfired(i) = bfired(i) * hcomba
+          hcratio(i) = 0.3333333d0
+          hocbmb(i) = hcomba
+          coco2(i) = xx0
+          cco2(i) = xx0
+      end do
 
-C     DEFINE THE VENTS AS BEING OPEN
-
-          DO 180 IVENT=1, MXVENTS
-              QCVENT(IVENT,I) = 1.0D0
-  180     CONTINUE
-          TFIRED(I) = 86400.D0
-          HFIRED(I) = XX0
-          AFIRED(I) = XX0
-          BFIRED(I) = 0.000D0
-          QFIRED(I) = BFIRED(I) * HCOMBA
-          HCRATIO(I) = 0.3333333D0
-          HOCBMB(I) = HCOMBA
-          COCO2(I) = XX0
-          CCO2(I) = XX0
-  190 CONTINUE
-
-!	Start with vents open: h for hvent, v for vvent, and m for mvent
-
-      do 191 i = 1,mxvents
+      ! Start with vents open: h for hvent, v for vvent, and m for mvent
+      do i = 1,mxvents
           qcvh(1,i) = xx0
           qcvh(2,i) = xx1
           qcvh(3,i) = xx0
-  191     qcvh(4,j) = xx1
+          qcvh(4,j) = xx1
+      end do
 
-          do 193 i = 1, nr
-              qcvv(1,i) = xx0
-              qcvv(2,i) = xx1
-              qcvv(3,i) = xx0
-  193         qcvv(4,i) = xx1
+      do i = 1, nr
+          qcvv(1,i) = xx0
+          qcvv(2,i) = xx1
+          qcvv(3,i) = xx0
+          qcvv(4,i) = xx1
+      end do
 
-!	Note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering
-!	Since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
-!		way to have an intial value other than 0 (no filtering).
-              do 194 i = 1, mfan
-                  qcvf(1,i) = xx0
-                  qcvf(2,i) = xx0
-                  qcvf(3,i) = xx0
-                  qcvf(4,i) = xx0
-                  qcvm(1,i) = xx0
-                  qcvm(2,i) = xx1
-                  qcvm(3,i) = xx0
-  194             qcvm(4,i) = XX1
-  192             continue
+      ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering
+      ! since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
+      ! way to have an intial value other than 0 (no filtering).
+      do i = 1, mfan
+          qcvf(1,i) = xx0
+          qcvf(2,i) = xx0
+          qcvf(3,i) = xx0
+          qcvf(4,i) = xx0
+          qcvm(1,i) = xx0
+          qcvm(2,i) = xx1
+          qcvm(3,i) = xx0
+          qcvm(4,i) = xx1
+      end do
 
-                  HCRATT = HCRATIO(1)
+      hcratt = hcratio(1)
 
-C     TURN HVAC OFF INITIALLY
+      ! turn hvac off initially
 
-                  NNODE = 0
-                  NFT = 0
-                  NFAN = 0
-                  nfilter = 0
-                  NBR = 0
-                  NEXT = 0
-                  HVGRAV = G
-                  HVRGAS = RGAS
-                  MVCALC = .FALSE.
-                  DO 200 I = 1, MNODE
-                      HVGHT(I) = XX0
-  200             CONTINUE
+      nnode = 0
+      nft = 0
+      nfan = 0
+      nfilter = 0
+      nbr = 0
+      next = 0
+      hvgrav = g
+      hvrgas = rgas
+      mvcalc = .false.
+      do i = 1, mnode
+          hvght(i) = xx0
+      end do
 
-C*** INITIALIZE DETECTORS
+      ! initialize detectors
+      do i = 1, mxdtect
+          xdtect(i,drti) = 50.0d0
+          xdtect(i,dspray) = -300.d0
+          xdtect(i,dxloc) = -1.0d0
+          xdtect(i,dyloc) = -1.0d0
+          xdtect(i,dzloc) = -3.0d0/39.37d0
+          xdtect(i,dtrig) = 330.3722d0
+          xdtect(i,dvel) = 0.d0
+          xdtect(i,dvelo) = 0.d0
+          xdtect(i,dtact) = 99999.d0
+          ixdtect(i,dtype) = 2
+          ixdtect(i,droom) = 1
+          ixdtect(i,dquench) = 0
+          ixdtect(i,dact) = 0
+      end do
+      ndtect = 0
+      do i = 1, nr
+          iquench(i) = 0
+      end do
 
-                  DO 210 I = 1, MXDTECT
-                      XDTECT(I,DRTI) = 50.0D0
-                      XDTECT(I,DSPRAY) = -300.D0
-                      XDTECT(I,DXLOC) = -1.0D0
-                      XDTECT(I,DYLOC) = -1.0D0
-                      XDTECT(I,DZLOC) = -3.0D0/39.37D0
-                      XDTECT(I,DTRIG) = 330.3722D0
-                      XDTECT(I,DVEL) = 0.D0
-                      XDTECT(I,DVELO) = 0.D0
-                      XDTECT(I,DTACT) = 99999.D0
-                      IXDTECT(I,DTYPE) = 2
-                      IXDTECT(I,DROOM) = 1
-                      IXDTECT(I,DQUENCH) = 0
-                      IXDTECT(I,DACT) = 0
-  210             CONTINUE
-                  NDTECT = 0
-                  DO 220 I = 1, NR
-                      IQUENCH(I) = 0
-  220             CONTINUE
+      ! initialize room to room heat transfer data structures
+      nswal = 0
 
-C*** initialize room to room heat transfer data structures
+      ! initialize target counter
+      ntarg = 0
 
-                  NSWAL = 0
+      do itarg = 1, mxtarg
+          ixtarg(trgmeth,itarg) = xplicit
+          ixtarg(trgeq,itarg) = pde
+          ixtarg(trgback,itarg) = int
+          cxtarg(itarg) = 'default'
+      end do
 
-C*** initialize target counter
+      ! initialize jaccol  
+      jaccol = -2
+      neqoff = 10
 
-                  NTARG = 0
+      ! initialize hall start time
+      do i = 1, nr
+          zzhall(i,ihtime0) = -1.0d0
+          zzhall(i,ihvel) = -1.0d0
+          zzhall(i,ihdepth) = -1.0d0
+          zzhall(i,ihmaxlen) = -1.0d0
+          zzhall(i,ihhalf) = -1.0d0
+          zzhall(i,ihtemp) = 0.0d0
+          zzhall(i,ihorg) = -1.0d0
+          izhall(i,ihdepthflag) = 0
+          izhall(i,ihhalfflag) = 0
+          izhall(i,ihmode) = ihafter
+          izhall(i,ihroom) = 0
+          izhall(i,ihvelflag) = 0
+          izhall(i,ihventnum) = 0
+          izhall(i,ihxy) = 0
+          do ivent = 1, mxvent
+              zzventdist(i,ivent) = -1.
+          end do
+      end do
+      updatehall = .false.
 
-                  DO 230 ITARG = 1, MXTARG
-                      IXTARG(TRGMETH,ITARG) = XPLICIT
-                      IXTARG(TRGEQ,ITARG) = PDE
-                      IXTARG(TRGBACK,ITARG) = INT
-                      CXTARG(ITARG) = 'DEFAULT'
-  230             CONTINUE
+      do i = 1, nr
+          do j = 1, nr
+              do k = 1, 4
+                  ijk(i,j,k) = 0
+              end do
+          end do
+      end do
+      nventijk = 0
 
-C*** initialize JACCOL  
+      ! initialize variable cross sectional area to none
+      do i = 1, nr
+          izrvol(i) = 0
+          do j = 1, mxpts
+              zzrvol(j,i) = xx0
+              zzrarea(j,i) = xx0
+              zzrhgt(j,i) = xx0
+          end do
+      end do
 
-                  JACCOL = -2
-                  NEQOFF = 10
+      ! initialzie time step checking
+      zzdtcrit = 1.0d-09
+      izdtnum = 0
+      izdtmax = 100
+      izdtflag = .true.
 
-C*** initialize hall start time
+      ! initialize inter-compartment heat transfer fractions
+      do i = 1, nr
+          do j = 1, nr
+              zzhtfrac(i,j) = xx0
+          end do
+      end do
 
-                  DO 240 I = 1, NR
-                      ZZHALL(I,IHTIME0) = -1.0D0
-                      ZZHALL(I,IHVEL) = -1.0D0
-                      ZZHALL(I,IHDEPTH) = -1.0D0
-                      ZZHALL(I,IHMAXLEN) = -1.0D0
-                      ZZHALL(I,IHHALF) = -1.0D0
-                      ZZHALL(I,IHTEMP) = 0.0D0
-                      ZZHALL(I,IHORG) = -1.0D0
-                      IZHALL(I,IHDEPTHFLAG) = 0
-                      IZHALL(I,IHHALFFLAG) = 0
-                      IZHALL(I,IHMODE) = IHAFTER
-                      IZHALL(I,IHROOM) = 0
-                      IZHALL(I,IHVELFLAG) = 0
-                      IZHALL(I,IHVENTNUM) = 0
-                      IZHALL(I,IHXY) = 0
-                      DO 250 IVENT = 1, MXVENT
-                          ZZVENTDIST(I,IVENT) = -1.
-  250                 CONTINUE
-  240             CONTINUE
-                  UPDATEHALL = .FALSE.
+      do j = 0, nr
+          izheat(j) = 0
+          do i = 1, nr
+              izhtfrac(i,j) = 0
+          end do
+      end do
 
-                  DO 260 I = 1, NR
-                      DO 260 J = 1, NR
-                          DO 260 K = 1, 4
-                              IJK(I,J,K) = 0
-  260             CONTINUE
-                  NVENTIJK = 0
+      do lsp = 1, ns
+          do j = upper, lower
+              do i = 1, nr
+                  zzgspec(i,j,lsp) = xx0
+                  zzcspec(i,j,lsp) = xx0            
+              end do
+          end do
+      end do
 
-                  DO 270 I = 1, NR
-                      IZRVOL(I) = 0
-                      DO 280 J = 1, MXPTS
-                          ZZRVOL(J,I)=0.0D0
-                          ZZRAREA(J,I)=0.0D0
-                          ZZRHGT(J,I)=0.0D0
-  280                 CONTINUE
-  270             CONTINUE
+      ! initialize number of furnace temperature nodes
+      nfurn=0
 
-C*** initialzie time step checking
+      return
+      end
 
-                  ZZDTCRIT = 1.0D-09
-                  IZDTNUM = 0
-                  IZDTMAX = 100
-                  IZDTFLAG = .TRUE.
+      subroutine initob
 
-C*** initialize inter-compartment heat transfer fractions
+!     routine: initob
+!     purpose: this routine initializes the fire objects
+!     arguments: none
 
-                  DO 300 I = 1, NR
-                      DO 310 J = 1, NR
-                          ZZHTFRAC(I,J) = 0.0D0
-  310                 CONTINUE
-  300             CONTINUE
-
-                  do 320 j = 0, nr
-                      izheat(j) = 0
-                      do 330 i = 1, nr
-                          izhtfrac(i,j) = 0
-  330                 continue
-  320             continue
-
-                  do lsp = 1, ns
-                      do j = upper, lower
-                          do i = 1, nr
-                              zzgspec(i,j,lsp) = xx0
-                              zzcspec(i,j,lsp) = xx0            
-                          end do
-                      end do
-                  end do
-
-C     initialize number of furnace temperature nodes
-
-                  nfurn=0
-
-                  RETURN
-      END
-
-      SUBROUTINE INITOB
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITOB
-C
-C     Source File: INITOB.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  Initialize object data
-C
-C     Arguments: none
-C
-C     Revision History:
-C        Created:  3/12/1993 at 9:34 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
       include "precis.fi"
       include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
-C
-C     TURN OFF OBJECTS
-C
-      NUMOBJL = 0
-      DO 10 I = 0, MXOIN
-          OBJON(I) = .FALSE.
-          OBJPOS(1,I) = -1.0
-          OBJPOS(2,I) = -1.0
-          OBJPOS(3,I) = -1.0
-          OBJRM(I) = 0
-          OBJNIN(I) = ' '
-          OBJLD(I) = .FALSE.
-          OBJPNT(I) = 0
-          OBJCRI(1,I) = 0.0
-          OBJCRI(2,I) = 0.0
-          OBJCRI(3,I) = 0.0
-          OBJDEF(I) = .FALSE.
-          ODBNAM(I) = ' '
-   10 CONTINUE
-      RETURN
-      END
+
+      ! turn off objects
+      numobjl = 0
+      do i = 0, mxoin
+          objon(i) = .false.
+          objpos(1,i) = -1.0
+          objpos(2,i) = -1.0
+          objpos(3,i) = -1.0
+          objrm(i) = 0
+          objnin(i) = ' '
+          objld(i) = .false.
+          objpnt(i) = 0
+          objcri(1,i) = 0.0
+          objcri(2,i) = 0.0
+          objcri(3,i) = 0.0
+          objdef(i) = .false.
+          odbnam(i) = ' '
+      end do
+      return
+      end
 
       SUBROUTINE INITSLV
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITSLV
-C
-C     Source File: INITSLV.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: 
-C
-C     Revision History:
-C        Created:  11/28/1992 at 9:57 by WWJ
-C        Modified: 06/14/1992 at 10:28 by GPF:
-C                  Added parameters for new initialization
-C                  heuristic and various parameters for hvac
-C                  (error tolerances, convective loss through
-C                  duct walls)
-C        Modified: 2/3/93 by GPF
-C                  Added parameters in support of the reduced Jacobian
-C                  option.  Added debug print option to print out
-C                  SNSQE progress
-C        Modified: 6/30/95 by GPF
-C                  Reallocated points in wall, adding more points to the rear.
-C                  Added oxygen dassl option flag.
-C        Modified: 10/16/97 by gpf
-C                  made STPMAX initializations consistent
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
+!     routine: initslv
+!     purpose: this routine initializes the solver variables from solver.ini if it exists
+!     arguments: none
 
       use iofiles
       include "precis.fi"
@@ -1303,86 +1200,80 @@ C
       include "cshell.fi"
       include "params.fi"
 
-      LOGICAL EXISTED
+      logical existed
 
-C     THIS GUY IS IN UNLABELED COMMON SO WE CAN NOT PUT IT INTO A DATA STATEMENT
-      DUCTCV = 0.0D0
+      ! this guy is in unlabeled common so we can not put it into a data statement
+      ductcv = 0.0d0
 
-      INQUIRE (FILE=solverini,EXIST=EXISTED)
-      IF (.NOT.EXISTED) return
-      CLOSE (IOFILI)
-      write (logerr, 1) solverini
+      inquire (file=solverini,exist=existed)
+      if (.not.existed) return
+      close (iofili)
+      write (logerr, '(2a)') '***** modify dassl tolerances with ', 
+     .    solverini
       open (unit=iofili,file=solverini)
 
-C*** READ IN SOLVER ERROR TOLERANCES
+      ! read in solver error tolerances
+      read (iofili,*)
+      read (iofili,*) aptol, rptol, atol, rtol
+      read (iofili,*)
+      read (iofili,*) awtol, rwtol, algtol
+      read (iofili,*)
+      read (iofili,*) ahvptol, rhvptol, ahvttol, rhvttol
 
-      READ (IOFILI,*)
-      READ (IOFILI,*) APTOL, RPTOL, ATOL, RTOL
-      READ (IOFILI,*)
-      READ (IOFILI,*) AWTOL, RWTOL, ALGTOL
-      READ (IOFILI,*)
-      READ (IOFILI,*) AHVPTOL, RHVPTOL, AHVTTOL, RHVTTOL
+      ! read in physical sub-model option list
+      read (iofili,*)
+      read (iofili,*) nopt
+      nopt = max(0, min(mxopt, nopt))
+      do i = 1, (nopt-1) / 5 + 1
+          ibeg = 1 + (i-1) * 5
+          iend = min(ibeg+4,nopt)
+          read (iofili,*)
+          read (iofili,*) (option(j),j = ibeg,iend)
+      end do
+      ! since the solver.ini file is on, turn on debug help
+      option(fkeyeval) = 1
 
-C     READ IN PHYSICAL SUB-MODEL OPTION LIST
+      ! set debug print
+      if (option(fdebug).eq.2) then
+          option(fdebug) = off
+          switch(1,nr) = .true.
+      else if (option(fdebug).ge.3) then
+          option(fdebug) = on
+          switch(1,nr) = .true.
+      end if
 
-      READ (IOFILI,*)
-      READ (IOFILI,*) NOPT
-      NOPT = MAX(0, MIN(MXOPT, NOPT))
-      DO 10 I = 1, (NOPT-1) / 5 + 1
-          IBEG = 1 + (I-1) * 5
-          IEND = MIN(IBEG+4,NOPT)
-          READ (IOFILI,*)
-          READ (IOFILI,*) (OPTION(J),J = IBEG,IEND)
-   10 CONTINUE
-C     SINCE THE SOLVER.INI FILE IS ON, TURN ON DEBUG HELP
-      OPTION(FKEYEVAL) = 1
+      ! read in wall info
+      read (iofili,*)
+      read (iofili,*) nwpts, fract1, fract2, fract3
+      read (iofili,*)
+      read (iofili,*) iwbound
+      fsum = abs(fract1) + abs(fract2) + abs(fract3)
+      wsplit(1) = abs(fract1) / fsum
+      wsplit(2) = abs(fract2) / fsum
+      wsplit(3) = abs(fract3) / fsum
 
-C     SET DEBUG PRINT
+      ! read in maximum desired solve step size, if negative then then solve will decide
+      read (iofili,*)
+      read (iofili,*) stpmax, dasslfts
 
-      IF (OPTION(FDEBUG).EQ.2) THEN
-          OPTION(FDEBUG) = OFF
-          SWITCH(1,NR) = .TRUE.
-      ELSE IF (OPTION(FDEBUG).GE.3) THEN
-          OPTION(FDEBUG) = ON
-          SWITCH(1,NR) = .TRUE.
-      END IF
+      ! read in hvac convection coefficient
+      read(iofili,*)
+      read(iofili,*) ductcv
 
-C     READ IN WALL INFO
+      ! read in jacobian and snsqe print flags
+      read(iofili,*)
+      read(iofili,*) jacchk, cutjac, iprtalg
+      close (iofili)
 
-      READ (IOFILI,*)
-      READ (IOFILI,*) NWPTS, FRACT1, FRACT2, FRACT3
-      READ (IOFILI,*)
-      READ (IOFILI,*) IWBOUND
-      FSUM = ABS(FRACT1) + ABS(FRACT2) + ABS(FRACT3)
-      WSPLIT(1) = ABS(FRACT1) / FSUM
-      WSPLIT(2) = ABS(FRACT2) / FSUM
-      WSPLIT(3) = ABS(FRACT3) / FSUM
+      return
+      end
 
-C     READ IN MAXIMUM DESIRED SOLVE STEP SIZE, 
-C     IF NEGATIVE THEN THEN SOLVE WILL DECIDE
+      blockdata initslvb
 
-      READ (IOFILI,*)
-      READ (IOFILI,*) STPMAX, DASSLFTS
-
-C*** read in hvac convection coefficient
-
-      READ(IOFILI,*)
-      READ(IOFILI,*) DUCTCV
-
-C*** READ IN JACOBIAN AND SNSQE PRINT FLAGS
-
-      READ(IOFILI,*)
-      READ(IOFILI,*) JACCHK, CUTJAC, IPRTALG
-      CLOSE (IOFILI)
-
-      RETURN
-
-    1 FORMAT ('***** Modify dassl tolerances with ',a256)
-      END
-
-      BLOCKDATA INITSLVB
-
-C     THIS INITIALIZES THE SOLVER VARIABLES
+!     routine: initslvv
+!     purpose: this common block data initializes the solver variables
+!              it may be modified by solver.ini if it exists
+!     arguments: none
 
           include "precis.fi"
           include "cparams.fi"
@@ -1393,57 +1284,42 @@ C     THIS INITIALIZES THE SOLVER VARIABLES
           include "cshell.fi"
           include "params.fi"
 
-C     ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL
-          DATA APTOL, RPTOL, ATOL, RTOL/1.0D-6, 1.0D-6, 1.0D-5, 1.0D-5/
-C     ABS WALL TOL, REL WALL TOL
-          DATA AWTOL, RWTOL, ALGTOL/1.0D-2, 1.0D-2, 1.0D-8/
-C     ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP
-          DATA AHVPTOL,RHVPTOL,AHVTTOL,RHVTTOL/2*1.0D-6,2*1.0D-5/
-C     OPTIONS FIRE, HFLOW, ENTRAIN, VFLOW, CJET, DOOR-FIRE, CONVEC, RAD,
-          DATA (OPTION(J),J=1,21)/ 2, 1, 1, 1, 2, 1, 1, 2, 
-C         CONDUCT, DEBUG, EXACT ODE,  HCL , MFLOW, KEYBOARD, 
+c     abs pressure tol, rel pressure tol, abs other tol, rel other tol
+          data aptol, rptol, atol, rtol/1.0d-6, 1.0d-6, 1.0d-5, 1.0d-5/
+c     abs wall tol, rel wall tol
+          data awtol, rwtol, algtol/1.0d-2, 1.0d-2, 1.0d-8/
+c     abs hvac press, rel hvac press, abs hvac temp, rel hvac temp
+          data ahvptol,rhvptol,ahvttol,rhvttol/2*1.0d-6,2*1.0d-5/
+c     options fire, hflow, entrain, vflow, cjet, door-fire, convec, rad,
+          data (option(j),j=1,21)/ 2, 1, 1, 1, 2, 1, 1, 2, 
+c         conduct, debug, exact ode,  hcl , mflow, keyboard, 
      +    1,     0,     1,         1,     1,      1,
-C         TYPE OF INITIALIZATION,   MV HEAT LOSS, MOD JAC, DASSL DEBUG
+c         type of initialization,   mv heat loss, mod jac, dassl debug
      +    1,                       0,          1,     0,
-C         OXYGEN DASSL SOLVE, BACK TRACK ON DTECT,  BACK TRACK ON OBJECTS
+c         oxygen dassl solve, back track on dtect,  back track on objects
      .    0,                       0,                 0    /
-C     NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB
-          DATA NWPTS /30/
-C     BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE, 2=INSULATED 3=FLUX)
-          DATA IWBOUND /3/
-C     COMPUTED VALUES FOR BOUNDARY THICKNESS
-          DATA (WSPLIT(J),J=1,3)  /0.50, 0.17, 0.33/
-C     TURN DEBUGGING OPTIONS OFF - THIS IS NOT CURRENTLY USED
-          DATA DEBUG /MXOPT*0/
-C     MAXIMUM STEP SIZE, IF NEGATIVE THEN SOLVER WILL DECIDE
-          DATA STPMAX /1.0D0/, DASSLFTS/0.005D0/
-C
-          DATA JACCHK/0/, CUTJAC/0.0D0/, IPRTALG/0/
-      END
+c     number of wall nodes, fractions for first, middle and last wall slab
+          data nwpts /30/
+c     boundary condition type (1=constant temperature, 2=insulated 3=flux)
+          data iwbound /3/
+c     computed values for boundary thickness
+          data (wsplit(j),j=1,3)  /0.50, 0.17, 0.33/
+c     turn debugging options off - this is not currently used
+          data debug /mxopt*0/
+c     maximum step size, if negative then solver will decide
+          data stpmax /1.0d0/, dasslfts/0.005d0/
+c
+          data jacchk/0/, cutjac/0.0d0/, iprtalg/0/
+      end
 
-      SUBROUTINE INITSPEC
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITSPEC
-C
-C     Source File: INITSPEC.SOR
-C
-C     Functional Class:  
-C
-C     Description:  This routine initializes variables associated with 
-C         species it originally occured in CFAST and INITFS.  It was moved
-C         to one subroutine to make maintenance easier
-C
-C     Arguments: 
-C
-C     Revision History:
-C     July 26, 1990 modified mapping to eliminate referene to outside room
-c     June 14, 1992 added initialization for species occuring in HVAC systems
-c     4/24/95  removed reference to xx0 to eliminate flint complaint
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      subroutine initspec
+
+!     routine: initspec
+!     purpose: This routine initializes variables associated with 
+!              species it originally occured in CFAST and INITFS.  It was moved
+!              to one subroutine to make maintenance easier
+!     Arguments: none
+
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1451,271 +1327,235 @@ C
       include "thermp.fi"
       include "cenviro.fi"
       include "wnodes.fi"
-C
+
       DIMENSION XM(2)
-C
-C     WE MUST SET THE NITROGEN/OXYGEN FOR AMBIENT AIR
-C
-C     NOTE THAT THE FIRST CALL TO "TOXIC" IS WITH ZERO INTERVAL
-C     THIS IS JUST TO SET THE PPM AND PPMDV VALUES FOR OUTPUT
-C     IT SERVES NO REAL PURPOSE
-C
-      DO 50 I = 1, NM1
-          XM(1) = RAMB(I) * ZZVOL(I,UPPER)
-          XM(2) = RAMB(I) * ZZVOL(I,LOWER)
-C
-C     SET THE WATER CONTENT TO RELHUM - THE POLYNOMIAL FIT IS TO (T-273), AND
-C     IS FOR SATURATION PRESSURE OF WATER.  THIS FIT COMES FROM THE STEAM
-C     TABLES IN THE HANDBOOK OF PHYSICS AND CHEMISTRY.  WE ARE BEING CLEVER
-C     HERE.  THE FINAL RESULT IN O2N2 SHOULD BE THE VALUE USED IN STPORT FOR
-C     THE OUTSIDE AMBIENT.
-C
-          XT = TAMB(I)
-          XTEMP = 23.2D0 - 3.816D3 / (XT-46.D0)
-          XH2O = EXP(XTEMP) / 101325.0D0 * (18.D0/28.4D0)
-          O2N2(8) = RELHUM * XH2O
-C
-C     NORMALIZE THE ATMOSPHERE
-C
-          TOTO2N2 = 0.0D0
-          DO 10 J = 1, NS
-              TOTO2N2 = TOTO2N2 + O2N2(J)
-   10     CONTINUE
-          DO 20 J = 1, NS
-              O2N2(J) = O2N2(J) / TOTO2N2
-   20     CONTINUE
-C
-          DO 40 K = UPPER, LOWER
-              DO 30 LSP = 1, NS
-                  TOXICT(I,K,LSP) = 0.0D0
-                  MASS(K,I,LSP) = O2N2(LSP) * XM(K)
-   30         CONTINUE
-   40     CONTINUE
-   50 CONTINUE
 
-      ISOF = NOFPRD
-      DO 60 LSP = 1, NS
-          IF (ACTIVS(LSP)) THEN
-              DO 70 I = 1, NM1
-                  DO 80 K = UPPER, LOWER
-                      ISOF = ISOF + 1
-                      P(ISOF) = MASS(K,I,LSP) + MINMAS
-   80             CONTINUE
-   70         CONTINUE
-          END IF
-   60 CONTINUE
 
-C     HVINIT DEFINE INITIAL PRODUCTS FOR HVAC SYSTEMS
+      do i = 1, nm1
+          xm(1) = ramb(i) * zzvol(i,upper)
+          xm(2) = ramb(i) * zzvol(i,lower)
 
-      IF(NHVSYS.NE.0)THEN
-          ISOF = NOFHVPR
-          DO 220 LSP = 1, MIN(NS,9)
-              IF(ACTIVS(LSP))THEN
-                  DO 230 ISYS = 1, NHVSYS
-                      ISOF = ISOF + 1
-                      P(ISOF) = O2N2(LSP)*HVTM(ISYS)
-  230             CONTINUE
-              ENDIF
-  220     CONTINUE
-      ENDIF
+          !  set the water content to relhum - the polynomial fit is to (t-273), and
+          ! is for saturation pressure of water.  this fit comes from the steam
+          ! tables in the handbook of physics and chemistry.  we are being clever
+          ! here.  the final result in o2n2 should be the value used in stport for
+          ! the outside ambient.
+          xt = tamb(i)
+          xtemp = 23.2d0 - 3.816d3 / (xt-46.d0)
+          xh2o = exp(xtemp) / 101325.0d0 * (18.d0/28.4d0)
+          o2n2(8) = relhum * xh2o
 
-C     ADD IN HYDROGEN CHLORIDE DEPOSITION ONTO THE WALLS IF HCL IS TRACKED
+          ! normalize the atmosphere
+          toto2n2 = 0.0d0
+          do j = 1, ns
+              toto2n2 = toto2n2 + o2n2(j)
+          end do
+          do j = 1, ns
+              o2n2(j) = o2n2(j) / toto2n2
+          end do
 
-      IF (ACTIVS(6)) THEN
-          DO 90 I = 1, NM1
-              DO 91 K = 1, NWAL
-                  ISOF = ISOF + 1
-                  P(ISOF) = MINMAS
-   91         CONTINUE
-   90     CONTINUE
-      END IF
+          do k = upper, lower
+              do lsp = 1, ns
+                  toxict(i,k,lsp) = 0.0d0
+                  mass(k,i,lsp) = o2n2(lsp) * xm(k)
+              end do
+          end do
+      end do
 
-C     ADD SMOKE AGGLOMERATION IF SMOKE IS TRACKED
+      isof = nofprd
+      do lsp = 1, ns
+          if (activs(lsp)) then
+              do i = 1, nm1
+                  do k = upper, lower
+                      isof = isof + 1
+                      p(isof) = mass(k,i,lsp) + minmas
+                  end do
+              end do
+          end if
+      end do
 
-      IF (ACTIVS(9)) THEN
-      END IF
+      ! hvinit define initial products for hvac systems (if any)
+      if(nhvsys.ne.0)then
+          isof = nofhvpr
+          do lsp = 1, min(ns,9)
+              if(activs(lsp))then
+                  do isys = 1, nhvsys
+                      isof = isof + 1
+                      p(isof) = o2n2(lsp)*hvtm(isys)
+                  end do
+              endif
+          end do
+      endif
 
-c     the following line was commented out 8/27/92 because wall initialization
-c     is now done by offset, nputt and initwall (wset)
-c      CALL DATACOPY(P,ODEVARB)
+      ! add in hydrogen chloride deposition onto the walls if hcl is tracked
+      if (activs(6)) then
+          do i = 1, nm1
+              do k = 1, nwal
+                  isof = isof + 1
+                  p(isof) = minmas
+              end do
+          end do
+      end if
 
-C     CONNECT HVAC TO THE REST OF THE WORLD
+      ! placeholder for smoke agglomeration if smoke is tracked
+      if (activs(9)) then
+      end if
 
-      HVDELT = DELTAT
+      ! connect hvac to the rest of the world
+      hvdelt = deltat
 
-C     DEFINE PRODUCT MAP ARRAY
-
-      IZPMAP(1) = 1
-      IZPMAP(2) = 2
-      IP = 2
-      DO 100 IPROD = 1, NS
-          IF (ACTIVS(IPROD)) THEN
-              IP = IP + 1
-              IZPMAP(IP) = IPROD + 2
-          END IF
-  100 CONTINUE
-      RETURN
-      END
+      ! define product map array
+      izpmap(1) = 1
+      izpmap(2) = 2
+      ip = 2
+      do iprod = 1, ns
+          if (activs(iprod)) then
+              ip = ip + 1
+              izpmap(ip) = iprod + 2
+          end if
+      end do
+      
+      return
+      end
 
       SUBROUTINE INITTARG (IERROR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITTARG
-C
-C     Source File: INITTARG.SOR
-C
-C     Functional Class:  
-C
-C     Description:  Initialize target data structures
-C
-C     Arguments: IERROR  Returns error codes
-C
-C     Revision History:
-C        Created:  5/5/1995 at 13:51 by GPF
-C       Modified:  8/15/1995 at 14:00 by PAR
-C	             Changed intialization of wall targets so that the X,
-C                  Y given in the keyword are using the same origin as 
-C                  the general room geometry.
-C        Modified: 9/5/1995 at 9:55 by PAR:
-C                  Added support for IERROR and returning stops to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
+!     routine: initspec
+!     purpose: Initialize target data structures
+!     Arguments: IERROR  Returns error codes
+
       include "precis.fi"
       include "cfast.fi"
       include "fltarget.fi"
       include "thermp.fi"
       include "cshell.fi"
-      CHARACTER*133 MESSG
-      INTEGER MAP6(6)
-      DATA MAP6/1,3,3,3,3,2/
+      character*133 messg
+      integer map6(6)
+      data map6/1,3,3,3,3,2/
 
-      IFAIL = 0
+      ifail = 0
       xm1 = -1.0d0
       x0 = 0.0d0
-      DO 210 ITARG = 1, NTARG
+      do itarg = 1, ntarg
 
-C*** ROOM NUMBER MUST BE BETWEEN 1 AND NM1
-
-          IROOM = IXTARG(TRGROOM,ITARG)
-          IF(IROOM.LT.1.OR.IROOM.GT.NM1)THEN
-              write(logerr,5000) iroom
+          ! room number must be between 1 and nm1
+          iroom = ixtarg(trgroom,itarg)
+          if(iroom.lt.1.or.iroom.gt.nm1)then
+              write(logerr,'(a,i3)') 
+     .            'Target assigned to non-existent compartment',iroom
               ierror = 213
               return
-          ENDIF
-          IWALL = IXTARG(TRGWALL,ITARG)
-          XLOC = XXTARG(TRGCENX,ITARG)
-          YLOC = XXTARG(TRGCENY,ITARG)
-          ZLOC = XXTARG(TRGCENZ,ITARG)
-          XXNORM = XXTARG(TRGNORMX,ITARG)
-          YYNORM = XXTARG(TRGNORMY,ITARG)
-          ZZNORM = XXTARG(TRGNORMZ,ITARG)
-          XSIZE = BR(IROOM)
-          YSIZE = DR(IROOM)
-          ZSIZE = HRP(IROOM)
-          !*** If the locator is -1, set to center of room on the floor
+          endif
+          iwall = ixtarg(trgwall,itarg)
+          xloc = xxtarg(trgcenx,itarg)
+          yloc = xxtarg(trgceny,itarg)
+          zloc = xxtarg(trgcenz,itarg)
+          xxnorm = xxtarg(trgnormx,itarg)
+          yynorm = xxtarg(trgnormy,itarg)
+          zznorm = xxtarg(trgnormz,itarg)
+          xsize = br(iroom)
+          ysize = dr(iroom)
+          zsize = hrp(iroom)
+          !*** if the locator is -1, set to center of room on the floor
           if(xloc.eq.xm1) xloc = 0.5 * xsize
           if(yloc.eq.xm1) yloc = 0.5 * ysize
           if(zloc.eq.xm1) zloc = x0
-          IF(IWALL.NE.0)THEN
-              XXNORM = 0.0D0
-              YYNORM = 0.0D0
-              ZZNORM = 0.0D0
-          ENDIF
-          IF(IWALL.EQ.1)THEN
-              ZZNORM = -1.0D0
-              XX = XLOC
-              YY = YLOC
-              ZZ = ZSIZE
-          ELSEIF(IWALL.EQ.2)THEN
-              YYNORM = -1.0D0
-C          XX = XSIZE - XLOC
-              XX = XSIZE
-              YY = YSIZE
-              ZZ = YLOC
-          ELSEIF(IWALL.EQ.3)THEN
-              XXNORM = -1.0D0
-              XX = XSIZE
-              YY = XLOC
-              ZZ = YLOC
-          ELSEIF(IWALL.EQ.4)THEN
-              YYNORM = 1.0D0
-              XX = XLOC
-              YY = 0.0D0
-              ZZ = YLOC
-          ELSEIF(IWALL.EQ.5)THEN
-              XXNORM = 1.0D0
-              XX = 0.0D0
-C          YY = YSIZE - XLOC
-              YY = YSIZE
-              ZZ = YLOC
-          ELSEIF(IWALL.EQ.6)THEN
-              ZZNORM = 1.0D0
-              XX = XLOC
-C          YY = YSIZE - YLOC
-              YY = YSIZE
-              ZZ = 0.0D0
-          ENDIF
-          IF(IWALL.NE.0)THEN
-              XXTARG(TRGCENX,ITARG) = XX
-              XXTARG(TRGCENY,ITARG) = YY
-              XXTARG(TRGCENZ,ITARG) = ZZ
-              XXTARG(TRGNORMX,ITARG) = XXNORM
-              XXTARG(TRGNORMY,ITARG) = YYNORM
-              XXTARG(TRGNORMZ,ITARG) = ZZNORM
-              XLOC = XX
-              YLOC = YY
-              ZLOC = ZZ
-              IWALL2 = MAP6(IWALL)
-              IF(SWITCH(IWALL2,IROOM))THEN
-                  CXTARG(ITARG) = CNAME(IWALL2,IROOM)
-              ELSE
-                  CXTARG(ITARG) = ' '
-              ENDIF
-          ENDIF
+          if(iwall.ne.0)then
+              xxnorm = 0.0d0
+              yynorm = 0.0d0
+              zznorm = 0.0d0
+          endif
+          if(iwall.eq.1)then
+              zznorm = -1.0d0
+              xx = xloc
+              yy = yloc
+              zz = zsize
+          elseif(iwall.eq.2)then
+              yynorm = -1.0d0
+c          xx = xsize - xloc
+              xx = xsize
+              yy = ysize
+              zz = yloc
+          elseif(iwall.eq.3)then
+              xxnorm = -1.0d0
+              xx = xsize
+              yy = xloc
+              zz = yloc
+          elseif(iwall.eq.4)then
+              yynorm = 1.0d0
+              xx = xloc
+              yy = 0.0d0
+              zz = yloc
+          elseif(iwall.eq.5)then
+              xxnorm = 1.0d0
+              xx = 0.0d0
+c          yy = ysize - xloc
+              yy = ysize
+              zz = yloc
+          elseif(iwall.eq.6)then
+              zznorm = 1.0d0
+              xx = xloc
+c          yy = ysize - yloc
+              yy = ysize
+              zz = 0.0d0
+          endif
+          if(iwall.ne.0)then
+              xxtarg(trgcenx,itarg) = xx
+              xxtarg(trgceny,itarg) = yy
+              xxtarg(trgcenz,itarg) = zz
+              xxtarg(trgnormx,itarg) = xxnorm
+              xxtarg(trgnormy,itarg) = yynorm
+              xxtarg(trgnormz,itarg) = zznorm
+              xloc = xx
+              yloc = yy
+              zloc = zz
+              iwall2 = map6(iwall)
+              if(switch(iwall2,iroom))then
+                  cxtarg(itarg) = cname(iwall2,iroom)
+              else
+                  cxtarg(itarg) = ' '
+              endif
+          endif
 
-C***    CENTER COORDINATES NEED TO BE WITHIN ROOM
-
-          IF(XLOC.LT.0.0D0.OR.XLOC.GT.XSIZE.OR.
-     .    YLOC.LT.0.0D0.OR.YLOC.GT.YSIZE.OR.
-     .    ZLOC.LT.0.0D0.OR.ZLOC.GT.ZSIZE)THEN
-              write(logerr,5001) iroom,xloc,yloc,zloc
+          ! center coordinates need to be within room
+          if(xloc.lt.0.0d0.or.xloc.gt.xsize.or.
+     .    yloc.lt.0.0d0.or.yloc.gt.ysize.or.
+     .    zloc.lt.0.0d0.or.zloc.gt.zsize)then
+              write(logerr,'(a,i3,1x,3f10.3)') 
+     .            'Target located outside of compartment',
+     .            iroom,xloc,yloc,zloc
               ierror = 214
               return
-          ENDIF
-  210 CONTINUE
+          endif
+      end do
 
-C*** put a target in the center of the floor of each room
+      ! put a target in the center of the floor of each room
+      do iroom = 1, nm1
+          ntarg = ntarg + 1
+          ixtarg(trgroom,ntarg) = iroom
+          ixtarg(trgmeth,ntarg) = steady
+          ixtarg(trgback,ntarg) = ext
 
-      DO 216 IROOM = 1, NM1
-          NTARG = NTARG + 1
-          IXTARG(TRGROOM,NTARG) = IROOM
-          IXTARG(TRGMETH,NTARG) = STEADY
-          IXTARG(TRGBACK,NTARG) = EXT
+          xx = br(iroom)*0.50d0
+          yy = dr(iroom)*0.50d0
+          zz = x0
+          xxtarg(trgcenx,ntarg) = xx
+          xxtarg(trgceny,ntarg) = yy
+          xxtarg(trgcenz,ntarg) = zz
+          xxtarg(trgnormx,ntarg) = x0
+          xxtarg(trgnormy,ntarg) = x0
+          xxtarg(trgnormz,ntarg) = 1.0d0
+          xxtarg(trginterior,ntarg) = 0.5
 
-          XX = BR(IROOM)*0.50D0
-          YY = DR(IROOM)*0.50D0
-          ZZ = x0
-          XXTARG(TRGCENX,NTARG) = XX
-          XXTARG(TRGCENY,NTARG) = YY
-          XXTARG(TRGCENZ,NTARG) = ZZ
-          XXTARG(TRGNORMX,NTARG) = x0
-          XXTARG(TRGNORMY,NTARG) = x0
-          XXTARG(TRGNORMZ,NTARG) = 1.0D0
-          XXTARG(TRGINTERIOR,NTARG) = 0.5
+          if(switch(2,iroom))then
+              cxtarg(ntarg) = cname(2,iroom)
+          else
+              cxtarg(ntarg) = ' '
+          endif
+      end do
 
-          IF(SWITCH(2,IROOM))THEN
-              CXTARG(NTARG) = CNAME(2,IROOM)
-          ELSE
-              CXTARG(NTARG) = ' '
-          ENDIF
-  216 CONTINUE
-
-      RETURN
- 5000 format("Target assigned to non-existent compartment",i3)
- 5001 format("Target located outside of compartment",i3,1x,3f10.3)
-      END
+      return
+      end
 
       SUBROUTINE INITWALL(TSTOP,IERROR)
 

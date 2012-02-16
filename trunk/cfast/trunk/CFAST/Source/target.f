@@ -319,7 +319,7 @@ C*** COMPUTE RADIATIVE FLUX FROM FIRE
           SVECT(2) = XXTARG(TRGCENY,ITARG) - XFIRE(IFIRE,2)
           SVECT(3) = XXTARG(TRGCENZ,ITARG) - XFIRE(IFIRE,3)
           COSANG = 0.0D0
-          S = max(DNRM2(3,SVECT,1),objcl(ifire))
+          S = max(DNRM2(3,SVECT,1),objclen(ifire))
           IF(S.NE.0.0D0)THEN
             COSANG = -DDOT(3,SVECT,1,XXTARG(TRGNORMX,ITARG),1)/S
           ENDIF

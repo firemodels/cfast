@@ -12,16 +12,19 @@ C	Aug 15,1995 added a group of varibles for FSM (PAR)
      *     OAREA(NV,0:MXOIN),OHIGH(NV,0:MXOIN),OQDOT(NV,0:MXOIN),
      *     OCO(NV,0:MXOIN),OHCR(NV,0:MXOIN),OOD(NV,0:MXOIN),
 ! Add a volume based characteristic length for calculating flux
-     *     OOC(NV,0:MXOIN), objcl(0:mxoin),
-     *     OMPRODR(NV,NS,MXOIN),OTFMAXT(MXOIN),OTIME(NV,MXOIN),
+     *     OOC(NV,0:MXOIN), objclen(0:mxoin),
+     *     OMPRODR(NV,NS,MXOIN),OTIME(NV,MXOIN),
      *     OBJORT(3,0:MXOIN),PNLDS, OBCOND(2,0:MXOIN),
      *     OBJMINT,OBJPHI, OBJHGAS, OBJQAREA, 
-     *     DYPDT, DXPDT, DYBDT, DXBDT, DQDT
+     *     DYPDT, DXPDT, DYBDT, DXBDT, DQDT,
+     *     OBJ_C(MXOIN), OBJ_H(MXOIN), OBJ_O(MXOIN), OBJ_N(MXOIN),
+     *     OBJ_Cl(MXOIN)
 
       COMMON /OBJCT2/ OBJNAM,CONEF
       COMMON /OBJCT3/ OTIME,OBJCRI,OBJMAS,OBJGMW,OBJHC,OBJVT,
      *                OMASS,OAREA,OHIGH,OQDOT,OCO,OHCR,OOD,OOC,OMPRODR,
-     *                OTFMAXT,OBJORT,PNLDS,OBCOND, objcl,
+     *                OBJORT,PNLDS,OBCOND, objclen,
      *                OBJMINT,OBJPHI, OBJHGAS, OBJQAREA,
      *                DYPDT, DXPDT, DYBDT, DXBDT, DQDT,
-     *                OBJLFM,OBJTYP,OBJDEF,OBTARG, OBJSET
+     *                OBJLFM,OBJTYP,OBJDEF,OBTARG, OBJSET,
+     *                OBJ_C, OBJ_H, OBJ_O, OBJ_N, OBJ_Cl

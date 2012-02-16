@@ -382,7 +382,7 @@ C
          CT = 9.115D0
          CP = 1000.0D0
          PR = .70D0
-         GSQRT = SQRT(G)
+         GSQRT = sqrt(G)
          X2D3 = 2.0D0 / 3.0D0
          X1D3 = 1.0D0 / 3.0D0
          TWO = 2.0D0

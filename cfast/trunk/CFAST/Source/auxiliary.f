@@ -866,21 +866,21 @@ C
 	countargs = .false.
 	nret = 0.
 
-	do 1 i = 1, tocount
-	if (lcarray(i).eq.' ') then
-		 if (i.eq.1.) then
-			  write(logerr,5003) label, tocount
-		 else if (i.eq.2) then
-			  write(logerr,5004) label, tocount
-		 else
-			  write(logerr,5000) label, tocount, nret
-		 endif
-		 return
-	endif
-	nret = nret + 1
-    1 continue
+      do i = 1, tocount
+          if (lcarray(i).eq.' ') then
+              if (i.eq.1.) then
+                  write(logerr,5003) label, tocount
+              else if (i.eq.2) then
+                  write(logerr,5004) label, tocount
+              else
+                  write(logerr,5000) label, tocount, nret
+              endif
+              return
+          endif
+          nret = nret + 1
+      end do
 
-	countargs = .true.
+      countargs = .true.
 
 	do 2 i = tocount+1, numc
 	if (lcarray(i).ne.' ') nret = nret + 1
@@ -1183,6 +1183,70 @@ C	Be very careful; we are using lbuf as input as well as a string for constructi
 		ENDIF
 	ENDIF
 
+      RETURN
+      END
+      
+      SUBROUTINE MAT2MULT(MAT1,MAT2,IDIM,N,MATITER)
+
+C--------------------------------- NIST/BFRL ---------------------------------
+C
+C     Routine:     MAT2MULT
+C
+C     Source File: ROOMCON.SOR
+C
+C     Functional Class:  CFAST
+C
+C     Description:  Given an NxN matrix MAT1 whose elements are either 0 or 1,
+C                   this routine computes the matrix MAT1**2 and 
+C                   returns the results in MAT1 (after scaling non-zero entries
+C                   to 1).
+C
+C     Revision History:
+C        Created:  1/31/96 by GPF
+C
+C---------------------------- ALL RIGHTS RESERVED ----------------------------
+
+      DIMENSION MAT1(IDIM,N),MAT2(IDIM,N)
+      DO 10 I = 1, N
+          DO 20 J = 1, N
+              MAT2(I,J) = IDOT(MAT1(I,1),IDIM,MAT1(1,J),1,N)
+              IF(MAT2(I,J).GE.1)MAT2(I,J) = 1
+   20     CONTINUE
+   10 CONTINUE
+      DO 30 I = 1, N
+          DO 40 J = 1, N
+              MAT1(I,J) = MAT2(I,J)
+   40     CONTINUE
+   30 CONTINUE
+      RETURN
+      END
+      INTEGER FUNCTION IDOT(IX,INX,IY,INY,N)
+
+C--------------------------------- NIST/BFRL ---------------------------------
+C
+C     Routine:     IDOT
+C
+C     Source File: ROOMCON.SOR
+C
+C     Functional Class:  CFAST
+C
+C     Description:  This routine computes the integer dot product of two
+C                   integer vectors.
+C
+C     Revision History:
+C        Created:  1/31/96 by GPF
+C
+C---------------------------- ALL RIGHTS RESERVED ----------------------------
+
+      INTEGER IX(*), IY(*)
+      IDOT = 0
+      II = 1 - INX
+      JJ = 1 - INY
+      DO 10 I = 1, N
+          II = II + INX
+          JJ = JJ + INY
+          IDOT = IDOT + IX(II)*IY(JJ)
+   10 CONTINUE
       RETURN
       END
 

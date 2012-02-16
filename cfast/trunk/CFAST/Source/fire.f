@@ -88,7 +88,7 @@ C       CALCULATE THE FIRE OUTPUTS FOR THE MAIN FIRE
      +      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,MFIRET,
      +      STMASS,FPOS(1),FPOS(2),FPOS(3)+HF0T,EME(LFBO),EMS(LFBO),
      +      QPYROL,XNTMS,QF(LFBO),QFC(1,LFBO),XQFR,HEATLP(LFBO),
-     +      HEATUP(LFBO),objcl(0))
+     +      HEATUP(LFBO),objclen(0))
 
 !     SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
 
@@ -129,7 +129,7 @@ C       MAKE UP IFROOM AND XFIRE FOR THE MAIN FIRE
         XFIRE(NFIRE,16) = OCRATT
         XFIRE(NFIRE,17) = CLFRAT
         XFIRE(NFIRE,18) = CNFRAT
-	  xfire(nfire,19) = objcl(0)
+	  xfire(nfire,19) = objclen(0)
         FROOM(0) = LFBO
         FEMP(0) = EMP(LFBO)
         FEMS(0) = EMS(LFBO)
@@ -209,7 +209,7 @@ C     OTHER FIRES COME FROM THE OBJECT DATABASE
      +        crfrat,MFIRET,STMASS,OBJPOS(1,IOBJ),OBJPOS(2,IOBJ),
      +        OBJPOS(3,IOBJ)+HF0T,OPLUME(2,IOBJ),OPLUME(3,IOBJ),QPYROL,
      +        XNTMS,QF(IROOM),QFC(1,IROOM),XQFR,HEATLP(IROOM),
-     +        HEATUP(IROOM),objcl(i))
+     +        HEATUP(IROOM),objclen(i))
 
 C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
 
@@ -253,7 +253,7 @@ C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
           XFIRE(NFIRE,16) = OCRATT
           XFIRE(NFIRE,17) = CLFRAT
           XFIRE(NFIRE,18) = CNFRAT
-	    xfire(nfire,19) = objcl(iobj)
+	    xfire(nfire,19) = objclen(iobj)
           NOBJ = NOBJ + 1
           FROOM(NOBJ) = IROOM
           FEMP(NOBJ) = OPLUME(1,IOBJ)
@@ -1408,7 +1408,7 @@ C
       real*8 fheight
       real*8 d
       if (area.le.0d0) THEN
-        d = 0.3d0
+        d = 0.09d0
       else
         d = SQRT(four*area/pi)
       end if

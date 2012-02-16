@@ -1559,51 +1559,25 @@ c          yy = ysize - yloc
 
       SUBROUTINE INITWALL(TSTOP,IERROR)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     INITWALL
-C
-C     Description:  This routine initializes data structures associated
-C                   with walls and targets
-C
-C     Arguments: TSTOP
-C                IERROR  Returns error codes
-C
-C     Revision History:
-C        Created:  by gpf
-C        Modified: 2/25/1994 by gpf:
-C          Redefine wall slab properties for walls that connect 
-C          interior rooms.  For example, if the ceiling in room 1
-C          is connected to the floor of room 2 then this routine
-C          will concatenate the slab property variables for conductivity,
-C          specific heat etc.  The heat transfer can then be calculated
-C          using the same routine, CNDUCT, but with the new slab variables.
-C        Modified: 10/10/1994 by gpf:
-C          Added initialization of target data structures.  Targets
-C          are just thin walls.
-C        Modified: 6/14/1995 by gpf:
-C          Added exterior temperature parameter to WSET so that the temperature
-C          profile is defined to be a linear ramp between the interior and exterior
-C          wall surfaces temperature.
-C        Modified: 6/30/1995 by gpf:
-C          added CSHELL include file
-C        Modified: 9/5/1995 at 9:57 by PAR:
-C                  Added support for IERROR and returning stops to main
-!		Modified 2/25/5 to use direct properties lookup
-C
-C        FKW = THERMAL CONDUCTIVITY
-C        CW = SPECIFIC HEAT (J/KG)
-C        RW = DENSITY OF THE WALL (KG/M**3)
-C        FLW = THICKNESS OF THE WALL (M)
-C        EPW = EMMISIVITY OF THE WALL
-C        NSLB = DISCRETIZATION OF THE WALL SLABS (NUMBER OF NODES)
-C        CNAME CONTAINS THE NAME OF THE THERMAL DATA SUBSET IN THE tpp datafile 
-C        SWITCH IS A LOGICAL FOR THERMAL CALCULATION ON/OFF
-C        THSET IS A SWITCH FOR A PROPERLY TRANSFERRED DATA SET
-C        MAXCT IS A COUNT OF THE NUMBER OF tpp DATA SETs in the database
-C        SWITCH IS SET IF CALCULATION IS CALLED FOR
-C        THSET IS SET IF A NAME IN THE LIST OF REQUESTED DATA SETS matches ONE OF THE NAMES IN THE LIST OF DATA SET NAMES (NLIST).
-C        THE DATA FROM THE DATA BASE IS STORED IN THE LOCAL VARIABLES LFKW,LCW,LRS,LFLW AND LEPW AND IS TRANSFERRED TO FKW...
+!     routine: initspec
+!     purpose: This routine initializes data structures associated
+!             with walls and targets
+!     Arguments: TSTOP
+!                IERROR  Returns error codes
+
+!        fkw = thermal conductivity
+!        cw = specific heat (j/kg)
+!        rw = density of the wall (kg/m**3)
+!        flw = thickness of the wall (m)
+!        epw = emmisivity of the wall
+!        nslb = discretization of the wall slabs (number of nodes)
+!        cname contains the name of the thermal data subset in the tpp datafile 
+!        switch is a logical for thermal calculation on/off
+!        thset is a switch for a properly transferred data set
+!        maxct is a count of the number of tpp data sets in the database
+!        switch is set if calculation is called for
+!        thset is set if a name in the list of requested data sets matches one of the names in the list of data set names (nlist).
+!        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
       include "precis.fi"
       include "cfast.fi"
@@ -1613,143 +1587,137 @@ C        THE DATA FROM THE DATA BASE IS STORED IN THE LOCAL VARIABLES LFKW,LCW,L
       include "thermp.fi"
       include "fltarget.fi"
 
-      CHARACTER OFF*8, NONE*8, tcname*8
-!	TP is the pointer into the data base for each material
-      INTEGER tp
+      character off*8, none*8, tcname*8
+      
+      ! tp is the pointer into the data base for each material
+      integer tp
 
-      DATA OFF /'OFF'/, NONE /'NONE'/
+      data off /'OFF'/, none /'NONE'/
 
-C     MAP THE THERMAL DATA INTO ITS APPROPRIATE WALL SPECIFICATION
-C     IF NAME IS "OFF" OR "NONE" THEN JUST TURN ALL OFF
+      ! map the thermal data into its appropriate wall specification
+      ! if name is "OFF" or "NONE" then just turn all off
+      do i = 1, nwal
+          do j = 1, nm1
+              thset(i,j) = .false.
+              if (switch(i,j)) then
+                  if (cname(i,j).eq.off.or.cname(i,j).eq.none) then
+                      switch(i,j) = .false.
+                  else
+                      call gettpp(cname(i,j),tp,ierror)
+                      if (ierror.ne.0) return
+                      nslb(i,j) = lnslb(tp)
+                      do k = 1, nslb(i,j)
+                          fkw(k,i,j) = lfkw(k,tp)
+                          cw(k,i,j) = lcw(k,tp)
+                          rw(k,i,j) = lrw(k,tp)
+                          flw(k,i,j) = lflw(k,tp)
+                      end do
+                      epw(i,j) = lepw(tp)
+                      do k = 1, 7
+                          hclbf(k,i,j) = lhclbf(k,tp)
+                      end do
+                  end if
+              end if
+      end do
+      end do
 
-      DO 170 I = 1, NWAL
-          DO 160 J = 1, NM1
-              THSET(I,J) = .FALSE.
-              IF (SWITCH(I,J)) THEN
-                  IF (CNAME(I,J).EQ.OFF.OR.CNAME(I,J).EQ.NONE) THEN
-                      SWITCH(I,J) = .FALSE.
-                      GO TO 160
-                  END IF
-                  CALL GETTPP(CNAME(I,J),tp,IERROR)
-                  IF (IERROR.NE.0) RETURN
-                  NSLB(I,J) = lnslb(tp)
-                  DO 140 K = 1, NSLB(I,J)
-                      FKW(K,I,J) = lfkw(k,tp)
-                      CW(K,I,J) = lcw(k,tp)
-                      RW(K,I,J) = lrw(k,tp)
-                      FLW(K,I,J) = lflw(k,tp)
-  140             CONTINUE
-                  EPW(I,J) = lepw(tp)
-                  DO 150 K = 1, 7
-                      HCLBF(K,I,J) = lhclbf(k,tp)
-  150             CONTINUE
-              END IF
-  160     CONTINUE
-  170 CONTINUE
+      ! Initialize the interior temperatures to the interior ambient
+      do i = 1, nm1
+          do j = 1, nwal
+              twe(j,i) = eta(i)
+              do k = 1, nn 
+                  twj(k,i,j) = tamb(i)
+              end do
+          end do
+      end do
 
-!	Initialize the interior temperatures to the interior ambient
+      ! initialize temperature profile data structures
+      do i = 1, nm1
+          do j = 1, nwal
+              if (switch(j,i)) then
+                  call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j)
+     +            ,wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),
+     +            wlength(i,j),twj(1,i,j),tamb(i),eta(i))
+              end if
+          end do
+      end do
 
-      DO 270 I = 1, NM1
-          DO 260 J = 1, NWAL
-              TWE(J,I) = ETA(I)
-              DO 250 K = 1, NN 
-                  TWJ(K,I,J) = TAMB(I)
-  250         CONTINUE
-  260     CONTINUE
-  270 CONTINUE
+      ! concatenate slab properties of wall nodes that are connected to each other
+      do i = 1, nswal
+          ifromr = izswal(i,1)
+          ifromw = izswal(i,2)
+          itor = izswal(i,3)
+          itow = izswal(i,4)
 
-C*** initialize temperature profile data structures
+          nslabf = nslb(ifromw,ifromr)
+          nslabt = nslb(itow,itor)
+          nslb(ifromw,ifromr) = nslabf + nslabt
+          nslb(itow,itor) = nslabf + nslabt
 
-      DO 20 I = 1, NM1
-          DO 10 J = 1, NWAL
-              IF (SWITCH(J,I)) THEN
-                  CALL WSET(NUMNODE(1,J,I),NSLB(J,I),TSTOP,WALLDX(1,I,J)
-     +            ,WSPLIT,FKW(1,J,I),CW(1,J,I),RW(1,J,I),FLW(1,J,I),
-     +            WLENGTH(I,J),TWJ(1,I,J),TAMB(I),ETA(I))
-              END IF
-   10     CONTINUE
-   20 CONTINUE
+          nptsf = numnode(1,ifromw,ifromr)
+          nptst = numnode(1,itow,itor)
+          numnode(1,itow,itor) = nptsf + nptst - 1
+          numnode(1,ifromw,ifromr) = nptsf + nptst - 1
 
-C*** concatenate slab properties of wall nodes that are connected
-C    to each other
+          wfrom = wlength(ifromr,ifromw)
+          wto = wlength(itor,itow)
+          wlength(ifromr,ifromw) = wfrom + wto
+          wlength(itor,itow) = wfrom + wto
 
-      DO 30 I = 1, NSWAL
-          IFROMR = IZSWAL(I,1)
-          IFROMW = IZSWAL(I,2)
-          ITOR = IZSWAL(I,3)
-          ITOW = IZSWAL(I,4)
+          jj = nslabt + 1
+          do j = nslabf+1, nslabf+nslabt
+              jj = jj - 1
+              fkw(j,ifromw,ifromr) = fkw(jj,itow,itor)
+              cw(j,ifromw,ifromr) =  cw(jj,itow,itor)
+              rw(j,ifromw,ifromr) =  rw(jj,itow,itor)
+              flw(j,ifromw,ifromr) = flw(jj,itow,itor)
+              numnode(j+1,ifromw,ifromr) = numnode(jj+1,itow,itor)
+          end do
 
-          NSLABF = NSLB(IFROMW,IFROMR)
-          NSLABT = NSLB(ITOW,ITOR)
-          NSLB(IFROMW,IFROMR) = NSLABF + NSLABT
-          NSLB(ITOW,ITOR) = NSLABF + NSLABT
+          jj = nslabf + 1
+          do j = nslabt+1, nslabt+nslabf
+              jj = jj - 1
+              fkw(j,itow,itor) = fkw(jj,ifromw,ifromr)
+              cw(j,itow,itor) =  cw(jj,ifromw,ifromr)
+              rw(j,itow,itor) =  rw(jj,ifromw,ifromr)
+              flw(j,itow,itor) = flw(jj,ifromw,ifromr)
+              numnode(j+1,itow,itor) = numnode(jj+1,ifromw,ifromr)
+          end do
 
-          NPTSF = NUMNODE(1,IFROMW,IFROMR)
-          NPTST = NUMNODE(1,ITOW,ITOR)
-          NUMNODE(1,ITOW,ITOR) = NPTSF + NPTST - 1
-          NUMNODE(1,IFROMW,IFROMR) = NPTSF + NPTST - 1
+          jj = nptst 
+          do j = nptsf+1,nptsf+nptst - 1
+              jj = jj - 1
+              twj(j,ifromr,ifromw) = twj(jj,itor,itow)
+              walldx(j-1,ifromr,ifromw) = walldx(jj,itor,itow)
+          end do
 
-          WFROM = WLENGTH(IFROMR,IFROMW)
-          WTO = WLENGTH(ITOR,ITOW)
-          WLENGTH(IFROMR,IFROMW) = WFROM + WTO
-          WLENGTH(ITOR,ITOW) = WFROM + WTO
+          jj = nptsf 
+          do j = nptst+1,nptst+nptsf - 1
+              jj = jj - 1
+              twj(j,itor,itow) = twj(jj,ifromr,ifromw)
+              walldx(j-1,itor,itow) = walldx(jj,ifromr,ifromw)
+          end do
+      end do
 
-          JJ = NSLABT + 1
-          DO 40 J = NSLABF+1, NSLABF+NSLABT
-              JJ = JJ - 1
-              FKW(J,IFROMW,IFROMR) = FKW(JJ,ITOW,ITOR)
-              CW(J,IFROMW,IFROMR) =  CW(JJ,ITOW,ITOR)
-              RW(J,IFROMW,IFROMR) =  RW(JJ,ITOW,ITOR)
-              FLW(J,IFROMW,IFROMR) = FLW(JJ,ITOW,ITOR)
-              NUMNODE(J+1,IFROMW,IFROMR) = NUMNODE(JJ+1,ITOW,ITOR)
-   40     CONTINUE
+      ! initialize target data structures
+      do itarg = 1, ntarg
+          tcname = cxtarg(itarg)
+          if(tcname.eq.' ')then
+              tcname = 'DEFAULT'
+              cxtarg(itarg) = tcname
+          endif
+          icode = 0
+          call gettpp(tcname,tp,ierror)
+          if (ierror.ne.0) return
+          xxtarg(trgk,itarg) = lfkw(1,tp)
+          xxtarg(trgcp,itarg) = lcw(1,tp)
+          xxtarg(trgrho,itarg) = lrw(1,tp)
+          xxtarg(trgl,itarg) = lflw(1,tp)
+          xxtarg(trgemis,itarg) = lepw(tp)
+      end do
 
-          JJ = NSLABF + 1
-          DO 50 J = NSLABT+1, NSLABT+NSLABF
-              JJ = JJ - 1
-              FKW(J,ITOW,ITOR) = FKW(JJ,IFROMW,IFROMR)
-              CW(J,ITOW,ITOR) =  CW(JJ,IFROMW,IFROMR)
-              RW(J,ITOW,ITOR) =  RW(JJ,IFROMW,IFROMR)
-              FLW(J,ITOW,ITOR) = FLW(JJ,IFROMW,IFROMR)
-              NUMNODE(J+1,ITOW,ITOR) = NUMNODE(JJ+1,IFROMW,IFROMR)
-   50     CONTINUE
-
-          JJ = NPTST 
-          DO 60 J = NPTSF+1,NPTSF+NPTST - 1
-              JJ = JJ - 1
-              TWJ(J,IFROMR,IFROMW) = TWJ(JJ,ITOR,ITOW)
-              WALLDX(J-1,IFROMR,IFROMW) = WALLDX(JJ,ITOR,ITOW)
-   60     CONTINUE
-
-          JJ = NPTSF 
-          DO 70 J = NPTST+1,NPTST+NPTSF - 1
-              JJ = JJ - 1
-              TWJ(J,ITOR,ITOW) = TWJ(JJ,IFROMR,IFROMW)
-              WALLDX(J-1,ITOR,ITOW) = WALLDX(JJ,IFROMR,IFROMW)
-   70     CONTINUE
-
-   30 CONTINUE
-
-C*** INITIALIZE TARGET DATA STRUCTURES
-
-      DO 100 ITARG = 1, NTARG
-          TCNAME = CXTARG(ITARG)
-          IF(TCNAME.EQ.' ')THEN
-              TCNAME = 'DEFAULT'
-              CXTARG(ITARG) = TCNAME
-          ENDIF
-          ICODE = 0
-          CALL GETTPP(TCNAME,tp,IERROR)
-          IF (IERROR.NE.0) RETURN
-          XXTARG(TRGK,ITARG) = lfkw(1,tp)
-          XXTARG(TRGCP,ITARG) = lcw(1,tp)
-          XXTARG(TRGRHO,ITARG) = lrw(1,tp)
-          XXTARG(TRGL,ITARG) = lflw(1,tp)
-          XXTARG(TRGEMIS,ITARG) = lepw(tp)
-  100 CONTINUE
-
-      RETURN
-      END
+      return
+      end
 
       SUBROUTINE OFFSET (IERROR)
 
@@ -2038,69 +2006,6 @@ C           through several other intermediate rooms).
    80 CONTINUE
 
 
-      RETURN
-      END
-      SUBROUTINE MAT2MULT(MAT1,MAT2,IDIM,N,MATITER)
-
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     MAT2MULT
-C
-C     Source File: ROOMCON.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  Given an NxN matrix MAT1 whose elements are either 0 or 1,
-C                   this routine computes the matrix MAT1**2 and 
-C                   returns the results in MAT1 (after scaling non-zero entries
-C                   to 1).
-C
-C     Revision History:
-C        Created:  1/31/96 by GPF
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-
-      DIMENSION MAT1(IDIM,N),MAT2(IDIM,N)
-      DO 10 I = 1, N
-          DO 20 J = 1, N
-              MAT2(I,J) = IDOT(MAT1(I,1),IDIM,MAT1(1,J),1,N)
-              IF(MAT2(I,J).GE.1)MAT2(I,J) = 1
-   20     CONTINUE
-   10 CONTINUE
-      DO 30 I = 1, N
-          DO 40 J = 1, N
-              MAT1(I,J) = MAT2(I,J)
-   40     CONTINUE
-   30 CONTINUE
-      RETURN
-      END
-      INTEGER FUNCTION IDOT(IX,INX,IY,INY,N)
-
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     IDOT
-C
-C     Source File: ROOMCON.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  This routine computes the integer dot product of two
-C                   integer vectors.
-C
-C     Revision History:
-C        Created:  1/31/96 by GPF
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-
-      INTEGER IX(*), IY(*)
-      IDOT = 0
-      II = 1 - INX
-      JJ = 1 - INY
-      DO 10 I = 1, N
-          II = II + INX
-          JJ = JJ + INY
-          IDOT = IDOT + IX(II)*IY(JJ)
-   10 CONTINUE
       RETURN
       END
 

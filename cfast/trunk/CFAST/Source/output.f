@@ -130,7 +130,7 @@ C     NOW THE VERSION
 7	format('int,dimensions ',i3,3f8.2)
 	write(*,11) objlfm(iobj),(objpos(j,iobj),j=1,3)
 11    format('int,position   ',i3,3f8.2)
-	write(*,12) objcl(iobj)
+	write(*,12) objclen(iobj)
 12    format('Characteristic volume = ',f10.3)
 	write(*,*) 'targ#,targname ',obtarg(iobj),cxtarg(obtarg(iobj))
 	write(*,4) nlspct,activs

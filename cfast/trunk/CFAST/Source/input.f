@@ -1,4 +1,4 @@
-      SUBROUTINE readinputfile (IERROR)
+      subroutine readinputfile (ierror)
 
 !	Read the input file and set up the data for processing
 
@@ -12,14 +12,13 @@
       include "objects1.fi"
       include "thermp.fi"
 
-!	Pretty pedestrian to use these names, but...
 	integer numr, numc
-      LOGICAL EXISTS
-      CHARACTER*133 MESSG
-      CHARACTER AVERSION*5
-      DIMENSION YINTER(NR)
-      EQUIVALENCE (YINTER,QFR)
-      DIMENSION TEMPAREA(MXPTS), TEMPHGT(MXPTS)
+      logical exists
+      character*133 messg
+      character aversion*5
+      dimension yinter(nr)
+      equivalence (yinter,qfr)
+      dimension temparea(mxpts), temphgt(mxpts)
 
 !	Unit numbers defined in readop, openoutputfiles, readinputfiles
 !
@@ -35,57 +34,61 @@
 !     17 spreadsheet output (species)
 !     18 spreadsheet output (walls and targets)
 !
-!     switch (1) = CEILING PROPERTIES ARE DEFINED
-!            (2) = FLOOR PROPERTIES ARE DEFINED
-!            (3) = SIDE WALL PROPERTIES ARE DEFINED FOR UPPER WALLS
-!            (4) = SIDE WALL PROPERTIES ARE DEFINED FOR LOWER WALLS
+!     switch (1) = ceiling properties are defined
+!            (2) = floor properties are defined
+!            (3) = side wall properties are defined for upper walls
+!            (4) = side wall properties are defined for lower walls
 
-      IFAIL = 0
-      XX0 = 0.0D0
+      ifail = 0
+      xx0 = 0.0d0
 	xx1 = 1.0d0
 
-!	Deal with opening the data file and assuring ourselves that it is compatible
-
-      CLOSE (IOFILI)
-      OPEN (UNIT=IOFILI,FILE=inputfile,ERR=130,STATUS='OLD',iostat=ios)
-	call readcsvformat(iofili,rarray,carray,nrow,ncol,1,numr,numc,
-     . ierror)
-	if (ierror.gt.0) then
-		 write(logerr,5003)
-		 return
-	endif
-
-	close (iofili)
-
-!	aversion is the header name, ivers is the major version number read in, iversion is the major version number
-!	from the internal version data. These need to be compatible
-
-	aversion = carray(1,1)
-	ivers = rarray(1,2)
-!new version numbering 600->6000, so current version is 6100
-	if (version.ge.1000) then
-            iversion = version / 1000
-      else
-      	iversion = version / 100
+      ! deal with opening the data file and assuring ourselves that it is compatible
+      close (iofili)
+      open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
+      if (ios.ne.0) then
+          if (logerr.gt.0) write (logerr,5050) mod(ios,256)
+          ierror = 99
+          return
+      end if
+      
+      ! read in the entire input file as a spreadsheet array of numbers and/or character strings
+      call readcsvformat(iofili,rarray,carray,nrow,ncol,1,numr,numc,
+     .ierror)
+      if (ierror.gt.0) then
+          write(logerr,5003)
+          return
       endif
-	if (aversion.eq.heading.and.ivers.eq.iversion) then
-		 write (logerr,5001) ivers
-	else
-		 write (logerr,5002) aversion,heading,ivers,iversion
-		 ierror = 206
-		 return
-      END IF
-	title = carray(1,3)
 
-!     READ IN ALL SPECIFICATIONS
+      close (iofili)
 
-      DO 10 I = 1, NR
-        YINTER(I) = -1.0D0
-   10 CONTINUE
+      ! aversion is the header name, ivers is the major version number read in, iversion is the major version number
+      ! from the internal version data. these need to be compatible
+      aversion = carray(1,1)
+      ivers = rarray(1,2)
+      ! new version numbering 600->6000, so current version is 6100
+      if (version.ge.1000) then
+          iversion = version / 1000
+      else
+          iversion = version / 100
+      endif
+      if (aversion.eq.heading.and.ivers.eq.iversion) then
+          write (logerr,5001) ivers
+      else
+          write (logerr,5002) aversion,heading,ivers,iversion
+          ierror = 206
+          return
+      end if
+      title = carray(1,3)
+
+      ! read in all specifications
+      do i = 1, nr
+        yinter(i) = -1.0d0
+      end do
       
 	call keywordcases (numr, numc, ierror)
 
-!	wait until the input file is parsed before dieing on temperature
+!	wait until the input file is parsed before dieing on temperature outside reasonable limits
 	if (exta.gt.373.15.or.exta.lt.223.15d0) then
 		write(logerr,5022) exta
 		ierror = 218
@@ -97,505 +100,460 @@
 
       IF (IERROR.NE.0) RETURN
 
-!	We now know what output is going to be generated, so create the files
-
+      ! We now know what output is going to be generated, so create the files
 	call openoutputfiles
-
-C     WE COME HERE FOR ANY CALL TO the keywordcases statement
 
       RA = PA / TA / RGAS
       EXRA = EXPA / EXTA / RGAS
 
-!	Get the mainfire and set the species
-
-	if (objnin(0).ne.' ') then
-		call inputmainfire (iofili,ierror)
-		if (debugging) call printfireparameters
-		if (ierror.ne.0) return
-	endif
-	
-      IF(LFBT.LT.0.OR.LFBT.GT.2) THEN
-	   write(logerr,5101) lfbt
-		IERROR = 201
-         RETURN
-      END IF
-
-C     TURN ON THE SUBSIDIARY EQUATIONS IF THEY ARE NEEEDED - this is always true
-
-         IF (ACTIVS(6)) HCLDEP = 1
-
-C **** NOTE THAT SMOKE AGGLOMERATION IS NOT DONE, SO THE FOLLOWING
-C **** FACTOR IS NEVER SET - THIS WILL PROVIDE FOR A SET OF SUBSIDARY
-C **** EQUATION TO TRACK SMOKE NUMBER DENSITY AS WELL AS MASS DENSITY
-C        IF (ACTIVS(9)) SMKAGL = 1
-
-         NM1 = N - 1
-         IF (NUMOBJL.GT.0) THEN
-			do 19 i = 1, numobjl
-			   CALL inputobject (objnin(i), i, iofili, ierror)
-			   if (debugging) call printobjectparameters(i)
-			   IF (IERROR.NE.0) RETURN
-   19			continue
-         END IF
-
-!	Initialize the targets
-         CALL INITTARG (IERROR)
-          IF (IERROR.NE.0) RETURN
-!     NOW CALCULATE THE OFFSETS - the order is important
-         CALL OFFSET (IERROR)
-		 IF (IERROR.NE.0) RETURN
-
-C     FLOOR PLAN DEPENDENT PARAMETERS
-
-         NM1 = N - 1
-         DO 20 I = 1, NM1
-            HRL(I) = HFLR(I)
-            HRP(I) = HR(I) + HFLR(I)
-   20    CONTINUE
-
-C     CHECK AND/OR SET FPOS
-
-         IF (LFBO.GT.0) THEN
-            IF ((FPOS(1).LT.XX0).OR.(FPOS(1).GT.BR(LFBO))) THEN
-               FPOS(1) = BR(LFBO) / 2.0D0
-               IF (LOGERR.GT.0) WRITE (LOGERR,5000) FPOS(1)
-            END IF
-            IF ((FPOS(2).LT.XX0).OR.(FPOS(2).GT.DR(LFBO))) THEN
-               FPOS(2) = DR(LFBO) / 2.0D0
-               IF (LOGERR.GT.0) WRITE (LOGERR,5010) FPOS(2)
-            END IF
-            IF ((FPOS(3).LT.XX0).OR.(FPOS(3).GT.HR(LFBO))) THEN
-               FPOS(3) = 0.0D0
-               IF (LOGERR.GT.0) WRITE (LOGERR,5020) FPOS(3)
-            END IF
-         ENDIF
-
-C     CHECK AND/OR SET heatf position
-
-         IF (heatfl) THEN
-            IF ((heatfp(1).LT.XX0).OR.(heatfp(1).GT.BR(heatfr))) THEN
-               heatfp(1) = BR(heatfr) / 2.0D0
-            END IF
-            IF ((heatfp(2).LT.XX0).OR.(heatfp(2).GT.DR(heatfr))) THEN
-               heatfp(2) = DR(heatfr) / 2.0D0
-            END IF
-            IF ((heatfp(3).LT.XX0).OR.(heatfp(3).GT.HR(heatfr))) THEN
-               heatfp(3) = 0.0D0
-            END IF
-		   write(logerr,5021) heatfr,heatfp
-         ENDIF
-
-C     CHECK AND/OR SET POSITION OF OBJECTS
-
-         DO 1300 I = 1, NUMOBJL
-            IF((OBJPOS(1,I).LT.XX0).OR.
-     .                 (OBJPOS(1,I).GT.BR(OBJRM(I)))) THEN
-               OBJPOS(1,I) = BR(OBJRM(I)) / 2.0D0
-               IF (LOGERR.GT.0) WRITE (LOGERR,5080) I, OBJPOS(1,I)
-            END IF
-            IF((OBJPOS(2,I).LT.XX0).OR.
-     .                 (OBJPOS(2,I).GT.DR(OBJRM(I)))) THEN
-               OBJPOS(2,I) = DR(OBJRM(I)) / 2.0D0
-               IF (LOGERR.GT.0) WRITE (LOGERR,5090) I, OBJPOS(2,I)
-            END IF
-            IF((OBJPOS(3,I).LT.XX0).OR.
-     .                 (OBJPOS(3,I).GT.HR(OBJRM(I)))) THEN
-               OBJPOS(3,I) = XX0
-               IF (LOGERR.GT.0) WRITE (LOGERR,5100) I, OBJPOS(3,I)
-            END IF
- 1300    CONTINUE
-C    MAKE SURE HORIZONTAL VENT SPECIFICATIONS ARE CORRECT -  WE HAVE TO DO THIS
-C    HERE RATHER THAN RIGHT AFTER NPUTQ BECAUSE HRL AND HRP WERE JUST DEFINED
-C    ABOVE
-
-         DO 40 ITOP = 1, NM1
-           IF (NWV(ITOP,ITOP).NE.0) THEN
-            IF (LOGERR.GT.0) WRITE (LOGERR,*) 
-     +        ' A ROOM CAN NOT BE CONNECTED TO ITSELF'
-            NWV(ITOP,ITOP) = 0
-           END IF
-           DO 30 IBOT = 1, ITOP - 1
-             IF (NWV(ITOP,IBOT).NE.0.OR.NWV(IBOT,ITOP).NE.0) THEN
-
-C    SEE WHICH ROOM IS ON TOP (IF ANY) - THIS IS LIKE A BUBBLE SORT
-
-              DEPS1 = HRL(ITOP) - HRP(IBOT)
-              DEPS2 = HRL(IBOT) - HRP(ITOP)
-              IF (NWV(ITOP,IBOT).NE.1.OR.ABS(DEPS1).GE.VFMAXDZ) THEN
-               IF (NWV(IBOT,ITOP).NE.1.OR.ABS(DEPS2).GE.VFMAXDZ) THEN
-                IF (NWV(ITOP,IBOT).EQ.1.AND.ABS(DEPS2).LT.VFMAXDZ) THEN
-                  IF (NWV(IBOT,ITOP).NE.0) THEN
-                     WRITE (LOGERR,*) 'Vent ', IBOT, ITOP, 
-     +                       ' is being redefined'
-                  END IF
-                  NWV(ITOP,IBOT) = 0
-                  NWV(IBOT,ITOP) = 1
-                  VVAREA(IBOT,ITOP) = VVAREA(ITOP,IBOT)
-                  VSHAPE(IBOT,ITOP) = VSHAPE(ITOP,IBOT)
-                  GO TO 30
-                END IF
-                IF (NWV(IBOT,ITOP).EQ.1.AND.ABS(DEPS1).LT.VFMAXDZ) THEN
-                  IF (NWV(ITOP,IBOT).NE.0) THEN
-                      WRITE (LOGERR,*) 'Vent ', ITOP, IBOT, 
-     +                    ' is being redefined'
-                  END IF
-                  NWV(ITOP,IBOT) = 1
-                  NWV(IBOT,ITOP) = 0
-                  VVAREA(ITOP,IBOT) = VVAREA(IBOT,ITOP)
-                  VSHAPE(ITOP,IBOT) = VSHAPE(IBOT,ITOP)
-                  GO TO 30
-                END IF
-                NWV(ITOP,IBOT) = 0
-                NWV(IBOT,ITOP) = 0
-               END IF
-              END IF
-             END IF
-   30      CONTINUE
-   40    CONTINUE
-
-         DO 50 I = 1, NM1
-            AR(I) = BR(I) * DR(I)
-            VR(I) = AR(I) * HR(I)
-   50    CONTINUE
-
-
-C*** CHECK ROOM TO ROOM HEAT TRANSFER PARAMETERS (CFCON COMMAND)
-         NSWALL2 = NSWAL
-         II = 0
-         DO 200 I = 1, NSWAL
-            IROOM1 = IZSWAL(I,1)
-            IROOM2 = IZSWAL(I,3)
-
-C*** ROOM NUMBERS MUST BE BETWEEN 1 AND NM1
-
-            IF(IROOM1.LT.1.OR.IROOM2.LT.1.OR.
-     .          IROOM1.GT.NM1+1.OR.IROOM2.GT.NM1+1)THEN
-              IFAIL = 39
-              WRITE (MESSG,201)IROOM1,IROOM2 
-  201         FORMAT(' INVALID CFCON SPECIFICATION:',
-     +         ' ONE OR BOTH OF ROOMS ',2I3, ' IS OUT OF BOUNDS')
-              CALL XERROR(MESSG,0,1,1)
-            ENDIF
-
-C*** If room is connected to the outside then ignore it
-C
-            IF(IROOM1.EQ.NM1+1.OR.IROOM2.EQ.NM1+1)THEN
-              NSWALL2 = NSWALL2 - 1
-              GO TO 200
-             ELSE
-              II = II + 1
-              IF(I.NE.II)THEN
-                IZSWAL(II,1) = IZSWAL(I,1)
-                IZSWAL(II,2) = IZSWAL(I,2)
-                IZSWAL(II,3) = IZSWAL(I,3)
-                IZSWAL(II,4) = IZSWAL(I,4)
-              ENDIF
-            ENDIF
-
-C*** FLOOR OF ONE ROOM MUST BE ADJACENT TO CEILING OF THE OTHER
-
-            DWALL1 = ABS(HRL(IROOM1) - HRP(IROOM2))
-            DWALL2 = ABS(HRL(IROOM2) - HRP(IROOM1))
-            IF(DWALL1.LT.VFMAXDZ.OR.DWALL2.LE.VFMAXDZ)THEN
-               IF(DWALL1.LT.VFMAXDZ)THEN
-                 IZSWAL(II,2) = 2
-                 IZSWAL(II,4) = 1
-                ELSE
-                 IZSWAL(II,2) = 1
-                 IZSWAL(II,4) = 2
-               ENDIF
-              ELSE
-               IFAIL = 40
-               WRITE (MESSG,202)IROOM1,IROOM2 
-  202          FORMAT(' INVALID CFCON SPECIFICATION:'
-     +                ' CEILING AND FLOOR OF ROOMS',
-     +                2I3, ' ARE NOT CONNECTETD')
-            ENDIF
-
-C*** WALLS MUST BE TURNED ON, IE SWITCH MUST BE SET
-C    FOR THE CEILING IN THE LOWER ROOM AND THE FLOOR OF
-C    THE UPPER ROOM
-
-            IWALL1 = IZSWAL(II,2)
-            IWALL2 = IZSWAL(II,4)
-            IF(.NOT.SWITCH(iwall1,IROOM1).OR.
-     .         .NOT.SWITCH(iwall2,IROOM2))THEN
-               WRITE (MESSG,203)
-  203          FORMAT(' INVALID CFCON SPECIFICATION:')
-               CALL XERROR(MESSG,0,1,1)
-               IF(.NOT.SWITCH(iwall1,IROOM1))THEN
-                  WRITE(MESSG,204)iwall1,IROOM1
-  204             FORMAT(' WALL ',I2,' OF ROOM ',I2,' IS NOT TURNED ON')
-                  CALL XERROR(MESSG,0,1,1)
-               ENDIF
-               IF(.NOT.SWITCH(iwall2,IROOM2))THEN
-                  WRITE(MESSG,204)iwall2,IROOM2
-                  CALL XERROR(MESSG,0,1,1)
-               ENDIF
-               IFAIL = 41
-            ENDIF
-  200    CONTINUE
-         NSWAL = NSWALL2
-
-
-C*** CHECK SHAFTS
-
-         DO 205 IROOM = NM1 + 1, NR
-            IF(IZSHAFT(IROOM).NE.0)THEN
-               CALL XERROR(' INVALID SHAFT SPECIFICATION:',0,1,1)
-               IFAIL = 42
-               WRITE (MESSG,206)IROOM,NM1
-  206          FORMAT(' Room ',I3,' must be less than or equal to ',I3)
-               CALL XERROR(MESSG,0,1,1)
-            ENDIF
-  205    CONTINUE
-
-C    INITIALIZE VARIABLES THAT WILL CHANGE WHEN AMBIENT CONDITIONS CHANGE
-
-         CALL INITAMB(YINTER,1)
-
-C     INITIALIZE THE MECHANICAL VENTILATION
-
-         CALL HVINIT (IERROR)
-         IF (IERROR.NE.0) RETURN
-
-C*** CHECK DETECTOR STUFF
-
-         DO 65 I = 1, NDTECT
-            IROOM = IXDTECT(I,DROOM)
-            IF(IROOM.LT.1.OR.IROOM.GT.NM1)THEN
-              WRITE (MESSG,104)IROOM 
-  104         FORMAT('Invalid DETECTOR specification: Room ',
-     +              I3, ' is not a valid')
-              IFAIL = 43
-              CALL XERROR(MESSG,0,1,1)
-            ENDIF
-            RTI = XDTECT(I,DRTI)
-            IF(RTI.LE.0.0D0.AND.IXDTECT(I,DTYPE).NE.SMOKED)THEN
-              WRITE (MESSG,101)RTI 
-  101         FORMAT('Invalid DETECTOR specification - RTI= ',
-     +              E11.4, ' is not a valid.')
-              IFAIL = 44
-            ENDIF
-            XLOC = XDTECT(I,DXLOC)
-            YLOC = XDTECT(I,DYLOC)
-            ZLOC = XDTECT(I,DZLOC)
-            IF(XLOC.LT.0.0D0.OR.XLOC.GT.bR(IROOM).OR.
-     .         YLOC.LT.0.0D0.OR.YLOC.GT.dR(IROOM).OR.
-     .         ZLOC.LT.0.0D0.OR.ZLOC.GT.HRP(IROOM))THEN
-               WRITE(MESSG,102)XLOC,YLOC,ZLOC
-  102          FORMAT('Invalid DETECTOR specification - x,y,z,location',
-     +               'x,y,z=',3E11.4,' is out of bounds')
-               IFAIL = 45
-            ENDIF
-            IDTYPE = IXDTECT(I,DTYPE)
-            IF(IDTYPE.LT.1.OR.IDTYPE.GT.3)THEN
-              WRITE(MESSG,103)IDTYPE
-  103         FORMAT('Invalid DETECTOR specification - TYPE= ',
-     +              I2,' is not a valid')
-              IFAIL = 46
-            ENDIF
-   65    CONTINUE
-
-C     FIRE TYPE AND PARAMETERS: COME HERE DIRECTLY IF THIS IS A RESTART
-
-      TFMAXT = 0.0D0
-      DO 60 I = 1, LFMAX
-        TFMAXT = MAX(TFMAXT,TFIRED(I))
-   60 CONTINUE
-
-C*** check room area specs and convert to volume
-
-      DO 300 I = 1, NM1
-        NPTS = IZRVOL(I)
-        IF(NPTS.NE.0)THEN
-
-c*** force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
-
-          IF(ZZRHGT(1,I).NE.0.0D0)THEN
-            TEMPAREA(1) = ZZRAREA(1,I)
-            TEMPHGT(1) = 0.0D0
-            IOFF = 1
-           ELSE
-            IOFF = 0
-          ENDIF
-
-c*** copy data to temporary arrays
-
-          DO 310 J = 1, NPTS
-            TEMPAREA(J+IOFF) = ZZRAREA(J,I)
-            TEMPHGT(J+IOFF) = ZZRHGT(J,I)
-  310     CONTINUE
-
-c*** force last elevation to be at the ceiling (as defined by hr(i)
-
-          IF(HR(I).NE.ZZRHGT(NPTS,I))THEN
-              IOFF2 = 1
-              TEMPAREA(NPTS+IOFF+IOFF2) = ZZRAREA(NPTS,I)
-              TEMPHGT(NPTS+IOFF+IOFF2) = HR(I)
-             ELSE
-              IOFF2 = 0
-          ENDIF
-
-          NPTS = NPTS + IOFF + IOFF2
-          IZRVOL(I) = NPTS
-
-c*** copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
-
-          ZZRHGT(1,I) = 0.0D0
-          ZZRVOL(1,I) = 0.0D0
-          ZZRAREA(1,I) = TEMPAREA(1)
-          J = 1
-          DO 320 J = 2, NPTS
-            ZZRHGT(J,I) = TEMPHGT(J)
-            ZZRAREA(J,I) = TEMPAREA(J)
-            DAREA = (ZZRAREA(J,I)+ZZRAREA(J-1,I))/2.0D0
-            DHEIGHT = ZZRHGT(J,I) - ZZRHGT(J-1,I)
-            ZZRVOL(J,I) = ZZRVOL(J-1,I) + DAREA*DHEIGHT
-  320     CONTINUE
-
-C*** re-define volume, area, breadth and depth arrays 
-C        (vr, ar, br and dr ) according to room area - height
-C        data read in.  HR remains the same, VR is defined
-C        by integrating areas specified on the ROOMAREA command,
-C        AR is then VR/HR, BR and DR are defined so that
-C        BR*DR=AR and BR/DR remain the same as entered on
-C        the WIDTH and DEPTH  commands.
-
-          VR(I) = ZZRVOL(NPTS,I)
-          AR(I) = VR(I)/HR(I)
-          XX = bR(I)/dR(I)
-          BR(I) = SQRT(AR(I)*XX)
-          DR(I) = SQRT(AR(I)/XX)
-        ENDIF
-  300 CONTINUE
-
-
-C*** room to room heat transfer 
-
-C  The array IZHEAT may have one of three values, 0, 1, 2.  
-C  0 = no room to room heat transfer
-C  1 = fractions are determined by what rooms are connected by vents
-C      For example, if room 1 is connected to rooms 2, 3, 4 and the outside
-C      by vents then the first row of ZZHTFRAC will have the values
-C      0. .25 .25 .25 .25
-
-c***  force all rooms to transfer heat between connected rooms
-
-      IF(IZHEAT(0).EQ.1)THEN
-        DO 400 I = 1, NM1
-          IZHEAT(I) = 1
-  400   CONTINUE
-      ENDIF
-      DO 410 I = 1, NM1
-
-c*** force heat transfer between rooms connected by vents.
-
-        IF(IZHEAT(I).EQ.1)THEN
-          DO 420 J = 1, NM1+1
-            NVENTIJ = 0
-            DO 430 K = 1, 4
-              NVENTIJ = NVENTIJ + IJK(I,J,K)
-  430       CONTINUE
-            IF(NVENTIJ.NE.0)ZZHTFRAC(I,J) = 1.0D0
-
-C*** if the back wall is not active then don't consider its contribution
-
-				IF(J.LE.NM1.AND..NOT.SWITCH(3,J))ZZHTFRAC(I,J) = 0.0D0
-  420     CONTINUE
-        ENDIF
-
-c*** normalize ZZHTFRAC fraction matrix so that rows sum to one
-
-        IF(IZHEAT(I).NE.0)THEN
-          SUM = 0.0D0
-          DO 440 J = 1, NM1+1
-            SUM = SUM + ZZHTFRAC(I,J)
-  440     CONTINUE
-          IF(SUM.LT.1.D-5)THEN
-            DO 450 J = 1, NM1
-              ZZHTFRAC(I,J) = 0.0D0
-  450       CONTINUE
-            ZZHTFRAC(I,NM1+1) = 1.0D0
-           ELSE
-            DO 460 J = 1, NM1+1
-              ZZHTFRAC(I,J) = ZZHTFRAC(I,J)/SUM
-  460       CONTINUE
-          ENDIF
-          JJ = 0
-          DO 480 J = 1, NM1
-            IF(ZZHTFRAC(I,J).NE.0.0D0)THEN
-              IZHTFRAC(I,0) = IZHTFRAC(I,0) + 1
-              JJ = JJ + 1
-              IZHTFRAC(I,JJ) = J
-            ENDIF
-  480     CONTINUE
-        ENDIF
-  410 CONTINUE
-
-
-C     GET GRAPHICS DISPLAY INFORMATION - NOT WITH THE PREDEFINED DATA
-
-      IF(IFAIL.GT.0) THEN
-        CALL XERROR('Input error in readinputfile',0,1,1)
-        IERROR = IFAIL
-        RETURN
-      END IF
-      CLOSE (IOFILI)
-      RETURN
-
-C     ERROR
-
-  130 IF (LOGERR.GT.0) WRITE (LOGERR,5050) MOD(IOS,256)
-	ierror = 99
-      RETURN
-
- 5000 FORMAT ('Setting X cood. of fire position to default ',F12.5)
+      ! get the mainfire
+      if (objnin(0).ne.' ') then
+          call inputmainfire (iofili,ierror)
+          if (debugging) call printfireparameters
+          if (ierror.ne.0) return
+      endif
+
+      if(lfbt.lt.0.or.lfbt.gt.2) then
+          write(logerr,5101) lfbt
+          ierror = 201
+          return
+      end if
+
+      ! turn on the subsidiary equations if they are neeeded - this is always true
+
+      if (activs(6)) hcldep = 1
+
+      ! get any object fires
+      nm1 = n - 1
+      if (numobjl.gt.0) then
+          do i = 1, numobjl
+              call inputobject (objnin(i), i, iofili, ierror)
+              if (debugging) call printobjectparameters(i)
+              if (ierror.ne.0) return
+          end do
+      end if
+
+      ! initialize the targets
+      call inittarg (ierror)
+      if (ierror.ne.0) return
+      
+      ! now calculate the offsets - the order is important
+      call offset (ierror)
+      if (ierror.ne.0) return
+
+      ! floor plan dependent parameters
+      nm1 = n - 1
+      do i = 1, nm1
+          hrl(i) = hflr(i)
+          hrp(i) = hr(i) + hflr(i)
+      end do
+
+      ! check and/or set main fire position
+      if (lfbo.gt.0) then
+          if ((fpos(1).lt.xx0).or.(fpos(1).gt.br(lfbo))) then
+              fpos(1) = br(lfbo) / 2.0d0
+              if (logerr.gt.0) write (logerr,5000) fpos(1)
+          end if
+          if ((fpos(2).lt.xx0).or.(fpos(2).gt.dr(lfbo))) then
+              fpos(2) = dr(lfbo) / 2.0d0
+              if (logerr.gt.0) write (logerr,5010) fpos(2)
+          end if
+          if ((fpos(3).lt.xx0).or.(fpos(3).gt.hr(lfbo))) then
+              fpos(3) = 0.0d0
+              if (logerr.gt.0) write (logerr,5020) fpos(3)
+          end if
+      endif
+
+      ! check and/or set heat source fire position
+      if (heatfl) then
+          if ((heatfp(1).lt.xx0).or.(heatfp(1).gt.br(heatfr))) then
+              heatfp(1) = br(heatfr) / 2.0d0
+          end if
+          if ((heatfp(2).lt.xx0).or.(heatfp(2).gt.dr(heatfr))) then
+              heatfp(2) = dr(heatfr) / 2.0d0
+          end if
+          if ((heatfp(3).lt.xx0).or.(heatfp(3).gt.hr(heatfr))) then
+              heatfp(3) = 0.0d0
+          end if
+          write(logerr,5021) heatfr,heatfp
+      endif
+
+      ! check and/or set position of fire objects
+      do i = 1, numobjl
+          if((objpos(1,i).lt.xx0).or.
+     .    (objpos(1,i).gt.br(objrm(i)))) then
+              objpos(1,i) = br(objrm(i)) / 2.0d0
+              if (logerr.gt.0) write (logerr,5080) i, objpos(1,i)
+          end if
+          if((objpos(2,i).lt.xx0).or.
+     .    (objpos(2,i).gt.dr(objrm(i)))) then
+              objpos(2,i) = dr(objrm(i)) / 2.0d0
+              if (logerr.gt.0) write (logerr,5090) i, objpos(2,i)
+          end if
+          if((objpos(3,i).lt.xx0).or.
+     .    (objpos(3,i).gt.hr(objrm(i)))) then
+              objpos(3,i) = xx0
+              if (logerr.gt.0) write (logerr,5100) i, objpos(3,i)
+          end if
+      end do
+         
+      ! make sure horizontal vent specifications are correct -  we have to do this
+      ! here rather than right after nputq because hrl and hrp were just defined
+      ! above
+      do itop = 1, nm1
+          if (nwv(itop,itop).ne.0) then
+              if (logerr.gt.0) write (logerr,*) 
+     +        ' A room can not be connected to itself'
+              nwv(itop,itop) = 0
+          end if
+          do ibot = 1, itop - 1
+              if (nwv(itop,ibot).ne.0.or.nwv(ibot,itop).ne.0) then
+
+c    see which room is on top (if any) - this is like a bubble sort
+
+                  deps1 = hrl(itop) - hrp(ibot)
+                  deps2 = hrl(ibot) - hrp(itop)
+                  if (nwv(itop,ibot).ne.1.or.abs(deps1).ge.vfmaxdz) then
+                      if (nwv(ibot,itop).ne.1.or.
+     .                    abs(deps2).ge.vfmaxdz) then
+                          if (nwv(itop,ibot).eq.1.and.
+     .                        abs(deps2).lt.vfmaxdz) then
+                              if (nwv(ibot,itop).ne.0) then
+                                  write (logerr,*) 'Vent ', ibot, itop, 
+     +                            ' is being redefined'
+                              end if
+                              nwv(itop,ibot) = 0
+                              nwv(ibot,itop) = 1
+                              vvarea(ibot,itop) = vvarea(itop,ibot)
+                              vshape(ibot,itop) = vshape(itop,ibot)
+                              cycle
+                          end if
+                          if (nwv(ibot,itop).eq.1.and.
+     .                        abs(deps1).lt.vfmaxdz) then
+                              if (nwv(itop,ibot).ne.0) then
+                                  write (logerr,*) 'Vent ', itop, ibot, 
+     +                            ' is being redefined'
+                              end if
+                              nwv(itop,ibot) = 1
+                              nwv(ibot,itop) = 0
+                              vvarea(itop,ibot) = vvarea(ibot,itop)
+                              vshape(itop,ibot) = vshape(ibot,itop)
+                              cycle
+                          end if
+                          nwv(itop,ibot) = 0
+                          nwv(ibot,itop) = 0
+                      end if
+                  end if
+              end if
+          end do
+      end do
+
+      ! Compartment area and volume
+      do i = 1, nm1
+          ar(i) = br(i) * dr(i)
+          vr(i) = ar(i) * hr(i)
+      end do
+
+
+      ! check room to room heat transfer parameters (cfcon command)
+      nswall2 = nswal
+      ii = 0
+      do i = 1, nswal
+          iroom1 = izswal(i,1)
+          iroom2 = izswal(i,3)
+
+          ! room numbers must be between 1 and nm1
+          if(iroom1.lt.1.or.iroom2.lt.1.or.
+     .        iroom1.gt.nm1+1.or.iroom2.gt.nm1+1)then
+              ifail = 39
+              write (messg,201)iroom1,iroom2 
+  201         format(' Invalid CFCON specification:',
+     +        ' one or both of rooms ',2i3, ' is out of bounds')
+              call xerror(messg,0,1,1)
+          endif
+
+          ! if room is connected to the outside then ignore it
+          if(iroom1.eq.nm1+1.or.iroom2.eq.nm1+1)then
+              nswall2 = nswall2 - 1
+              cycle
+          else
+              ii = ii + 1
+              if(i.ne.ii)then
+                  izswal(ii,1) = izswal(i,1)
+                  izswal(ii,2) = izswal(i,2)
+                  izswal(ii,3) = izswal(i,3)
+                  izswal(ii,4) = izswal(i,4)
+              endif
+          endif
+
+          ! floor of one room must be adjacent to ceiling of the other
+          dwall1 = abs(hrl(iroom1) - hrp(iroom2))
+          dwall2 = abs(hrl(iroom2) - hrp(iroom1))
+          if(dwall1.lt.vfmaxdz.or.dwall2.le.vfmaxdz)then
+              if(dwall1.lt.vfmaxdz)then
+                  izswal(ii,2) = 2
+                  izswal(ii,4) = 1
+              else
+                  izswal(ii,2) = 1
+                  izswal(ii,4) = 2
+              endif
+          else
+              ifail = 40
+              write (messg,202) iroom1,iroom2 
+  202         format(' Invalid CFCON specification:'
+     +        ' ceiling and floor of rooms',
+     +        2i3, ' are not connectetd')
+          endif
+
+          ! walls must be turned on, ie switch must be set
+          ! for the ceiling in the lower room and the floor of
+          ! the upper room
+          iwall1 = izswal(ii,2)
+          iwall2 = izswal(ii,4)
+          if(.not.switch(iwall1,iroom1).or.
+     .    .not.switch(iwall2,iroom2))then
+              write (messg,203)
+  203         format(' Invalid CFCON specification:')
+              call xerror(messg,0,1,1)
+              if(.not.switch(iwall1,iroom1))then
+                  write(messg,204) iwall1,iroom1
+  204             format(' Wall ',i2,' of room ',i2,' is not turned on')
+                  call xerror(messg,0,1,1)
+              endif
+              if(.not.switch(iwall2,iroom2))then
+                  write(messg,204)iwall2,iroom2
+                  call xerror(messg,0,1,1)
+              endif
+              ifail = 41
+          endif
+      end do
+      nswal = nswall2
+
+      ! check shafts
+      do iroom = nm1 + 1, nr
+          if(izshaft(iroom).ne.0)then
+              call xerror(' invalid SHAFT specification:',0,1,1)
+              ifail = 42
+              write (messg,206)iroom,nm1
+  206         format(' room ',i3,' must be less than or equal to ',i3)
+              call xerror(messg,0,1,1)
+          endif
+      end do
+
+      ! initialize variables that will change when ambient conditions change
+      call initamb(yinter,1)
+
+      ! initialize the mechanical ventilation
+      call hvinit (ierror)
+      if (ierror.ne.0) return
+
+      ! check detectors
+      do i = 1, ndtect
+          iroom = ixdtect(i,droom)
+          if(iroom.lt.1.or.iroom.gt.nm1)then
+              write (messg,104)iroom 
+  104         format('Invalid DETECTOR specification: room ',
+     +        i3, ' is not a valid')
+              ifail = 43
+              call xerror(messg,0,1,1)
+          endif
+          rti = xdtect(i,drti)
+          if(rti.le.0.0d0.and.ixdtect(i,dtype).ne.smoked)then
+              write (messg,101)rti 
+  101         format('Invalid DETECTOR specification - rti= ',
+     +        e11.4, ' is not a valid.')
+              ifail = 44
+          endif
+          xloc = xdtect(i,dxloc)
+          yloc = xdtect(i,dyloc)
+          zloc = xdtect(i,dzloc)
+          if(xloc.lt.0.0d0.or.xloc.gt.br(iroom).or.
+     .    yloc.lt.0.0d0.or.yloc.gt.dr(iroom).or.
+     .    zloc.lt.0.0d0.or.zloc.gt.hrp(iroom))then
+              write(messg,102)xloc,yloc,zloc
+  102         format('Invalid DETECTOR specification - x,y,z,location',
+     +        'x,y,z=',3e11.4,' is out of bounds')
+              ifail = 45
+          endif
+          idtype = ixdtect(i,dtype)
+          if(idtype.lt.1.or.idtype.gt.3)then
+              write(messg,103)idtype
+  103         format('Invalid DETECTOR specification - type= ',
+     +        i2,' is not a valid')
+              ifail = 46
+         endif
+      end do
+
+      ! fire type and parameters
+      tfmaxt = 0.0d0
+      do i = 1, lfmax
+          tfmaxt = max(tfmaxt,tfired(i))
+      end do
+
+      ! check variable cross-sectional area specs and convert to volume
+      do i = 1, nm1
+          npts = izrvol(i)
+          if(npts.ne.0)then
+
+              ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
+              if(zzrhgt(1,i).ne.0.0d0)then
+                  temparea(1) = zzrarea(1,i)
+                  temphgt(1) = 0.0d0
+                  ioff = 1
+              else
+                  ioff = 0
+              endif
+
+              ! copy data to temporary arrays
+              do j = 1, npts
+                  temparea(j+ioff) = zzrarea(j,i)
+                  temphgt(j+ioff) = zzrhgt(j,i)
+              end do
+
+              ! force last elevation to be at the ceiling (as defined by hr(i)
+              if(hr(i).ne.zzrhgt(npts,i))then
+                  ioff2 = 1
+                  temparea(npts+ioff+ioff2) = zzrarea(npts,i)
+                  temphgt(npts+ioff+ioff2) = hr(i)
+              else
+                  ioff2 = 0
+              endif
+
+              npts = npts + ioff + ioff2
+              izrvol(i) = npts
+
+              ! copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
+              zzrhgt(1,i) = 0.0d0
+              zzrvol(1,i) = 0.0d0
+              zzrarea(1,i) = temparea(1)
+              j = 1
+              do j = 2, npts
+                  zzrhgt(j,i) = temphgt(j)
+                  zzrarea(j,i) = temparea(j)
+                  darea = (zzrarea(j,i)+zzrarea(j-1,i))/2.0d0
+                  dheight = zzrhgt(j,i) - zzrhgt(j-1,i)
+                  zzrvol(j,i) = zzrvol(j-1,i) + darea*dheight
+              end do
+
+              ! re-define volume, area, breadth and depth arrays 
+              ! (vr, ar, br and dr ) according to room area - height
+              ! data read in.  hr remains the same, vr is defined
+              ! by integrating areas specified on the roomarea command,
+              ! ar is then vr/hr, br and dr are defined so that
+              ! br*dr=ar and br/dr remain the same as entered on
+              ! the width and depth  commands.
+
+              vr(i) = zzrvol(npts,i)
+              ar(i) = vr(i)/hr(i)
+              xx = br(i)/dr(i)
+              br(i) = sqrt(ar(i)*xx)
+              dr(i) = sqrt(ar(i)/xx)
+          endif
+      end do
+
+
+      ! check room to room heat transfer 
+
+      ! The array IZHEAT may have one of three values, 0, 1, 2.  
+      ! 0 = no room to room heat transfer
+      ! 1 = fractions are determined by what rooms are connected by vents
+      ! For example, if room 1 is connected to rooms 2, 3, 4 and the outside
+      ! by vents then the first row of ZZHTFRAC will have the values
+      ! 0. .25 .25 .25 .25
+
+      ! force all rooms to transfer heat between connected rooms
+      if(izheat(0).eq.1)then
+          do i = 1, nm1
+              izheat(i) = 1
+          end do
+      endif
+      
+      do i = 1, nm1
+
+          ! force heat transfer between rooms connected by vents.
+          if(izheat(i).eq.1)then
+              do j = 1, nm1+1
+                  nventij = 0
+                  do k = 1, 4
+                      nventij = nventij + ijk(i,j,k)
+                  end do
+                  if(nventij.ne.0)zzhtfrac(i,j) = 1.0d0
+
+c*** if the back wall is not active then don't consider its contribution
+
+                  if(j.le.nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0d0
+              end do
+          endif
+
+c*** normalize zzhtfrac fraction matrix so that rows sum to one
+
+          if(izheat(i).ne.0)then
+              sum = 0.0d0
+              do j = 1, nm1+1
+                  sum = sum + zzhtfrac(i,j)
+              end do
+              if(sum.lt.1.d-5)then
+                  do j = 1, nm1
+                      zzhtfrac(i,j) = 0.0d0
+                  end do
+                  zzhtfrac(i,nm1+1) = 1.0d0
+              else
+                  do j = 1, nm1+1
+                      zzhtfrac(i,j) = zzhtfrac(i,j)/sum
+                  end do
+              endif
+              jj = 0
+              do j = 1, nm1
+                  if(zzhtfrac(i,j).ne.0.0d0)then
+                      izhtfrac(i,0) = izhtfrac(i,0) + 1
+                      jj = jj + 1
+                      izhtfrac(i,jj) = j
+                  endif
+              end do
+          endif
+      end do
+
+      if(ifail.gt.0) then
+          call xerror('Input error in readinputfile',0,1,1)
+          ierror = ifail
+          return
+      end if
+      close (iofili)
+      return
+
+ 5000 format ('Setting X cood. of fire position to default ',F12.5)
  5001 format ('Opening a version ',i2,' file in normal mode')
  5002 format ('Not a compatible version ',2a8,2x,2i10)
  5003 format ('Too many lines in the main data file')
- 5010 FORMAT ('Setting Y cood. of fire position to default ',F12.5)
- 5020 FORMAT ('Setting Z cood. of fire position to default ',F12.5)
- 5021 FORMAT ('The constant heat source (heatf) is in compartment ',i3,
+ 5010 format ('Setting Y cood. of fire position to default ',F12.5)
+ 5020 format ('Setting Z cood. of fire position to default ',F12.5)
+ 5021 format ('The constant heat source (heatf) is in compartment ',i3,
      .        ' at ',3f12.5)
  5022 format (
      . 'Initial temperature outside of allowable range (-50 to +100)',
      . f5.2)
 
-C     READ FORMAT LIST
+      ! read format list
+ 5030 format (A5,2X,I3,128A1)
+ 5050 format (' Error opening the input file = ',I6)
 
- 5030 FORMAT (A5,2X,I3,128A1)
- 5050 FORMAT (' Error opening the input file = ',I6)
+      ! output for objects
+ 5080 format (' Object no. ',I3,' X cood. set to ',F12.5)
+ 5090 format (' Object no. ',I3,' Y cood. set to ',F12.5)
+ 5100 format (' Object no. ',I3,' Z cood. set to ',F12.5)
+ 5101 format ('Not an allowed fire type ',i3)
 
-C     OUTPUT FOR OBJECTS
-
- 5080 FORMAT (' Object no. ',I3,' X cood. set to ',F12.5)
- 5090 FORMAT (' Object no. ',I3,' Y cood. set to ',F12.5)
- 5100 FORMAT (' Object no. ',I3,' Z cood. set to ',F12.5)
- 5101 FORMAT ('Not an allowed fire type ',i3)
-
-      END
+      end subroutine readinputfile
 
       SUBROUTINE keywordcases(xnumr,xnumc,IERROR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     NPUTQ
-C
-C     Source File: NPUTQ.SOR
-C
-C     Functional Class:  INPUT
-C
-C     Description:  Handles CFAST datafile keywords
-C
-C     Arguments: ISRSTR
-C                IERROR  Returns error codes
-C
-C     Revision History:
-C	Modified: 10/20/04 : assume default values for hvac expansion coefficient and areas
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
+
+!     routine:  keywordcases (remaned from NPUTQ)
+!     purpose: Handles CFAST datafile keywords
+!     Arguments: xnumr    number of rows in input file spreadsheet
+!                xnumc    number of columns in input file spreadsheet
+!                ierror  Returns error codes
+
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -1139,12 +1097,118 @@ C
 
               ! finally, we set the initial fraction opening
 	        qcvm(2,mid) = lrarray(13)
-	        qcvm(4,mid) = lrarray(13)  
+	        qcvm(4,mid) = lrarray(13)
               
-          ! OBJECT NAME ROOM POS(3) PLUME IGNITION_TYPE IGNITION_CRITERION NORMAL(3)
+          ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
+          ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more consistent with other keywords
+          ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
+          ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
+          case ('FIRE')
+              if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
+		        ierror = 32
+		        return
+	        endif
+	        if (numobjl.ge.mxoin) then
+                  write(logerr,5300)
+                  go to 10
+              end if
+              iroom = lrarray(1)
+              if (iroom.lt.1.or.iroom.gt.n-1) then
+		        write(logerr,5320)iroom
+                  ierror = 33
+		        return
+              end if
+              obpnt = numobjl + 1
+              numobjl = obpnt
+
+              ! Only constrained fires
+	        objtyp(numobjl) = 2
+	        if (objtyp(numobjl).gt.2) then
+		        write(logerr,5321) objtyp(numobjl)
+		        ierror = 63
+		        return
+	        endif
+
+              objpos(1,obpnt) = lrarray(2)
+              objpos(2,obpnt) = lrarray(3)
+              objpos(3,obpnt) = lrarray(4)
+	        if (objpos(1,obpnt).gt.br(iroom).or.
+     .            objpos(2,obpnt).gt.dr(iroom).or.
+     .            objpos(3,obpnt).gt.hr(iroom)) then
+		        write(logerr,5323) obpnt
+		        ierror = 82
+		        return
+	        endif
+
+	        fplume(numobjl) = lrarray(5)
+	        if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
+	            write(logerr,5402) fplume(numobjl)
+	            ierror = 78
+	            return 
+	        end if
+	        write(logerr,5403) plumemodel(fplume(numobjl))	
+              objign(obpnt) =   lrarray(6)
+              tmpcond =         lrarray(7)
+              objort(1,obpnt) = lrarray(8)
+              objort(2,obpnt) = lrarray(9)
+              objort(3,obpnt) = lrarray(10)
+
+              ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
+	        if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
+		        write(logerr,5322)
+		        ierror = 216
+		        return
+              endif
+              
+              objrm(obpnt) = iroom
+              objnin(obpnt) = lcarray(11)
+              objld(obpnt) = .true.
+              objon(obpnt) = .false.
+              ! This is redudant but needed to be compatible with the object database format
+	        objpnt(obpnt) = obpnt
+
+              ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
+              ! The critiria for temperature and flux are stored backupwards - this is historical
+              ! See corresponding code in updobj
+              if (tmpcond.gt.0.0d0) then
+                  if (objign(obpnt).eq.1) then
+                      objcri(1,obpnt) = tmpcond
+                      objcri(2,obpnt) = 1.0d30
+                      objcri(3,obpnt) = 1.0d30
+                  else if (objign(obpnt).eq.2) then
+                      objcri(1,obpnt) = 1.0d30
+                      objcri(2,obpnt) = 1.0d30
+                      objcri(3,obpnt) = tmpcond
+                  else if (objign(obpnt).eq.3) then
+                      objcri(1,obpnt) = 1.0d30
+                      objcri(2,obpnt) = tmpcond
+                      objcri(3,obpnt) = 1.0d30
+                  else
+                      write(logerr,5358) objign(obpnt)
+		            ierror = 13
+		            return
+                  end if
+	        else
+                  objon(obpnt) = .true.
+              end if
+              if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
+                  if (stpmax.gt.0.0d0) then
+		            stpmax = min(stpmax,1.d0)
+                  else
+                      stpmax = 1.d0
+                  end if
+              end if 
+              
+              ! read and set the other stuff for this fire
+              call inputembeddedfire(objnin(obpnt), lrowcount, 
+     .        xnumr, xnumc, obpnt, ierror)
+              if (ierror.ne.0) return
+              
+          ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
           case ('OBJEC')
 
               if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
+                  write(logerr,5310)
 		        ierror = 32
 		        return
 	        endif
@@ -1479,19 +1543,19 @@ C
               zzhall(iroom,ihdepth) = -1.0d0
               zzhall(iroom,ihhalf) = -1.0d0
 
-              ! CORRIDOR velocity; not set if negative
+              ! HALL velocity; not set if negative
               if(lrarray(2).ge.0) then
                   zzhall(iroom,ihvel) = lrarray(2)
                   izhall(iroom,ihvelflag) = 1
               endif
 
-              ! CORRIDOR layer depth; not set if negative
+              ! HALL layer depth; not set if negative
               if (lrarray(3).ge.0) then
                   zzhall(iroom,ihdepth) = lrarray(3)
                   izhall(iroom,ihdepthflag) = 1
               endif
 
-              ! CORRIDOR temperature decay distance (temperature decays by 0.50); if negative, not set
+              ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
               if (lrarray(4).ge.0) then
                   zzhall(iroom,ihhalf) = lrarray(4)
                   izhall(iroom,ihhalfflag) = 1
@@ -1703,45 +1767,33 @@ C
               write(logerr, 5051) label
       end select
       go to 10 
-	
 
-!	
-
-!	
-
-!	
-
-!	      
-
-!	
-
-
-  912 FORMAT ('Invalid TARGET METHOD:',A8,'. Valid choices are: ',
+  912 format ('Invalid TARGET METHOD:',A8,'. Valid choices are: ',
      +         'STEADY, IMPLICIT OR EXPLICIT')
-  913 FORMAT('Invalid equation type specified in TARGET:',A3,
+  913 format('Invalid equation type specified in TARGET:',A3,
      +          ' Valid choices are:ODE, PDE or CYL')
- 5000 FORMAT ('Keyword ',A5)
- 5001	FORMAT ('ONEZ requires a defined compartment ',i3)
- 5002 FORMAT ('Too many targets are being defined')
- 5003 FORMAT ('The compartment specified by TARGET does not exist',i3)
- 5030 FORMAT ('Thermal count does not match compartment count ',2I5)
- 5051 FORMAT ('The key word ',a5,' is not recognized')
- 5060 FORMAT ('THERE MUST BE SIX PARAMETERS TO SPECIFY A VENT',I5)
- 5061 FORMAT ('NEED SIX PARAMETERS TO SPECIFY THE MAINFIRE',I5)
- 5062 FORMAT ('Compartment number outside of allowable range',i5)
- 5063 FORMAT ('Compartment ',i3,1x,a8,1x,6f6.1,4l,1x,4a10)
- 5070 FORMAT ('VENT parameter(s) outside of allowable range',2I4)
- 5080 FORMAT ('Too many pairwise horizontal connections',4I5)
+ 5000 format ('Keyword ',A5)
+ 5001	format ('ONEZ requires a defined compartment ',i3)
+ 5002 format ('Too many targets are being defined')
+ 5003 format ('The compartment specified by TARGET does not exist',i3)
+ 5030 format ('Thermal count does not match compartment count ',2I5)
+ 5051 format ('The key word ',a5,' is not recognized')
+ 5060 format ('THERE MUST BE SIX PARAMETERS TO SPECIFY A VENT',I5)
+ 5061 format ('NEED SIX PARAMETERS TO SPECIFY THE MAINFIRE',I5)
+ 5062 format ('Compartment number outside of allowable range',i5)
+ 5063 format ('Compartment ',i3,1x,a8,1x,6f6.1,4l,1x,4a10)
+ 5070 format ('VENT parameter(s) outside of allowable range',2I4)
+ 5080 format ('Too many pairwise horizontal connections',4I5)
  5081 format ('Too many horizontal connections ',3i5)
- 5090 FORMAT ('The connection',3I3,' is being redefined')
- 5100 FORMAT (' There must be at least 3 parameters to specify ',
+ 5090 format ('The connection',3I3,' is being redefined')
+ 5100 format (' There must be at least 3 parameters to specify ',
      +        ' vertical flow (VVENT).',I4)
- 5120 FORMAT ('NOT ENOUGH DATA FOR WIND INPUT ROUTINE ???')
- 5130 FORMAT ('THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
- 5140 FORMAT ('Specification for interface height is outside of',
+ 5120 format ('NOT ENOUGH DATA FOR WIND INPUT ROUTINE ???')
+ 5130 format ('THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
+ 5140 format ('Specification for interface height is outside of',
      +        ' allowable range',2I4)
- 5170 FORMAT ('MVOPN must define both sides of a duct opening')
- 5180 FORMAT ('Specified node number too large for this system',2I2)
+ 5170 format ('MVOPN must define both sides of a duct opening')
+ 5180 format ('Specified node number too large for this system',2I2)
  5191 format ('Compartments specified in MVENT have not been defined ',
      .        2i3)
  5192 format ('Exceeded maximum number of nodes/openings in MVENT ',2i3)
@@ -1750,54 +1802,234 @@ C
      .        f10.2)
  5195 format ('Too many fan systems',i3)
  5196 format ('Fan (MID) has not been defined for this filter ',i3)
- 5200 FORMAT ('Redefinition for node ',2I3)
- 5210 FORMAT ('Exceed max external connections',I3)
- 5220 FORMAT ('Only ',I2,' specified for an mv duct, 5 required')
- 5230 FORMAT ('Exceeded maximum number of mv ducts =',I2)
- 5250 FORMAT ('Fan data in wrong format (>4)')
- 5260 FORMAT ('Exceeded allowed number of fans',I3)
- 5270 FORMAT ('Fan curve has incorrect specification',1P2G12.3)
- 5271 FORMAT ('Fan between nodes:',i3,' and ',i3,' is being redefined')
- 5272	FORMAT ('Define fan ',i2,' from ',i3,' to ',i3,
+ 5200 format ('Redefinition for node ',2I3)
+ 5210 format ('Exceed max external connections',I3)
+ 5220 format ('Only ',I2,' specified for an mv duct, 5 required')
+ 5230 format ('Exceeded maximum number of mv ducts =',I2)
+ 5250 format ('Fan data in wrong format (>4)')
+ 5260 format ('Exceeded allowed number of fans',I3)
+ 5270 format ('Fan curve has incorrect specification',1P2G12.3)
+ 5271 format ('Fan between nodes:',i3,' and ',i3,' is being redefined')
+ 5272	format ('Define fan ',i2,' from ',i3,' to ',i3,
      +		  ' over the pressure range ',2f6.1,' with ',i2,
      +		  ' coefficients')
- 5290 FORMAT ('Too many internal nodes specified')
- 5300 FORMAT ('Too many objects defined in datafile')
- 5310 FORMAT ('Incorrect number of parameters for OBJECT')
- 5320 FORMAT ('Object specification error, room ',I4,' out of range')
- 5321 FORMAT ('Object specification error, not an allowed fire type',i3)
- 5322 FORMAT ('Object normal vector must be non-zero')
+ 5290 format ('Too many internal nodes specified')
+ 5300 format ('Too many objects defined in datafile')
+ 5310 format ('Incorrect number of parameters for OBJECT')
+ 5320 format ('Object specification error, room ',I4,' out of range')
+ 5321 format ('Object specification error, not an allowed fire type',i3)
+ 5322 format ('Object normal vector must be non-zero')
  5323 format ('Object ',i3,' is outside its compartment')
  5338 format ('Exceed allowed number of detectors')
  5339 format ('Detector ',i3,' is outside of compartment ',a)
- 5340 FORMAT ('Set point file name is - ',A)
- 5341	FORMAT ('Ceiling jet calculation has been set: ',5l2)
- 5342	FORMAT ('Invalid DETECTOR specification - room ',i3)
- 5343	FORMAT ('A type ',i3,' detector has been placed in ',a128)
- 5344 FORMAT ('A referenced compartment is not yet defined ',i3)
- 5345	FORMAT ('VHEAT has specified a non-existent compartment')
- 5346 FORMAT ('HALL has specified a non-existent compartment',i3)
- 5347 FORMAT ('Compartment specified by ROOMA does not exist ',i3)
- 5348 FORMAT ('Data on the ROOMA (or H) line must be positive ',1pg12.3)
- 5349 FORMAT ('Compartment specified by ROOMH is not defined ',i3)
- 5350 FORMAT ('ROOMH error on data line ',i3)
- 5351 FORMAT ('Compartment',i3,' has been redefined as a variable space'
+ 5340 format ('Set point file name is - ',A)
+ 5341	format ('Ceiling jet calculation has been set: ',5l2)
+ 5342	format ('Invalid DETECTOR specification - room ',i3)
+ 5343	format ('A type ',i3,' detector has been placed in ',a128)
+ 5344 format ('A referenced compartment is not yet defined ',i3)
+ 5345	format ('VHEAT has specified a non-existent compartment')
+ 5346 format ('HALL has specified a non-existent compartment',i3)
+ 5347 format ('Compartment specified by ROOMA does not exist ',i3)
+ 5348 format ('Data on the ROOMA (or H) line must be positive ',1pg12.3)
+ 5349 format ('Compartment specified by ROOMH is not defined ',i3)
+ 5350 format ('ROOMH error on data line ',i3)
+ 5351 format ('Compartment',i3,' has been redefined as a variable space'
      +        '- area: ',20f8.1)
- 5352 FORMAT ('Compartment',i3,' has been redefined as a variable space'
+ 5352 format ('Compartment',i3,' has been redefined as a variable space'
      +        '- height: ',20f8.1)
- 5353 FORMAT ('Trying to reset the point file name is - ',A)
- 5354 FORMAT ('HHEAT to compartment out of bounds or not defined - ',i3)
- 5355 FORMAT ('HHEAT fraction pairs is not consistent ',2i3)
- 5356 FORMAT ('HHEAT specification error in compartment pairs: ',2i3)
- 5357 FORMAT ('Error in fraction for HHEAT:',2i3,f5.3)
- 5358 FORMAT ('Not a valid ignition criterion ',I5)
+ 5353 format ('Trying to reset the point file name is - ',A)
+ 5354 format ('HHEAT to compartment out of bounds or not defined - ',i3)
+ 5355 format ('HHEAT fraction pairs is not consistent ',2i3)
+ 5356 format ('HHEAT specification error in compartment pairs: ',2i3)
+ 5357 format ('Error in fraction for HHEAT:',2i3,f5.3)
+ 5358 format ('Not a valid ignition criterion ',I5)
  5400 format ('xdtect = ',15f8.1)
  5401 format ('ixdtect = ',4i5)
  5402 format ('Plume index out of range ',i3)
  5403 format ('Plume model for this fire: ',a10)
 
-      END SUBROUTINE keywordcases
+      end subroutine keywordcases
+      
+      subroutine inputembeddedfire(objname, lrowcount, xnumr, xnumc, 
+     .iobj, ierror)
+           
+!     routine: inputembeddedfire
+!     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
+!              followed by CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH keywords (read in here)
+!     Arguments: objname: name of this fire object
+!                lrowcount: current row in the input file.  We begin one row after this one
+!                xnumr:   number of rows in the input file
+!                xnumc:   number of columns in the input file
+!                iobj:    pointer to the fire object that will contain all the data we read in here
+!                ierror:  error return index
+      
 
+      use iofiles
+      include "precis.fi"
+      include "cfast.fi"
+      include "objects2.fi"
+      include "fltarget.fi"
+
+      logical countargs
+      integer lrowcount, xnumr, xnumc, iobj
+      integer logerr/3/, midpoint/1/, base/2/, errorcode, ierror
+      character lcarray*128(ncol), label*5, objname*(*)
+      double precision lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3,
+     .minimumheight/1.d-3/
+
+      ! there are seven required inputs for each fire
+      do ir = 1, 7
+          lrowcount = lrowcount + 1
+          label = carray(lrowcount,1)
+          if (label.eq.' ') cycle
+          do i = 2, xnumc
+              lcarray(i-1) = carray(lrowcount,i)
+              lrarray(i-1) = rarray(lrowcount,i)
+          end do
+
+          select case (label)
+
+              ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula, radiative fraction, heat of combustion, and material
+          case ('CHEMI')
+              if (.not.countargs(label,8,lcarray,xnumc-1,nret)) then
+                  ierror = 4
+                  return
+              end if
+              
+              ! define chemical formula
+              obj_c(iobj) = lrarray(1)
+              obj_h(iobj) = lrarray(2)
+              obj_o(iobj) = lrarray(3)
+              obj_n(iobj) = lrarray(4)
+              obj_cl(iobj) = lrarray(5)
+              objgmw(iobj) = (12.0107 * obj_c(iobj) + 
+     .        1.00794 * obj_h(iobj) + 15.9994 * obj_o(iobj) + 
+     .        14.0067 * obj_N(iobj) + 35.453 * obj_cl(iobj)) / 1000.0
+
+              radconsplit(iobj) = lrarray(6)
+              ohcomb = lrarray(7)
+              if (ohcomb.le.0.0d0) then
+                  write(logerr,5001) ohcomb
+                  ierror = 32
+                  return
+              end if  
+
+              ! Add a target to calculate temperature of and heat flux to the object prior to ignition
+              ntarg = ntarg + 1
+              if (ntarg.gt.mxtarg) then
+                  write(logerr, 5002) 
+                  ierror = 201
+                  return
+              end if
+              obtarg(iobj) = ntarg
+              cxtarg(ntarg) = lcarray(8)
+
+          case ('TIME')
+              objlfm(iobj) = nret
+              do ii = 1, nret
+                  otime(ii,iobj) = lrarray(ii)
+              end do
+          case ('HRR')
+              max_hrr = 0.0d0
+              do ii = 1, nret
+                  oqdot(ii,iobj) = lrarray(ii)
+                  max_hrr = max(max_hrr, oqdot(ii,iobj))
+                  omass(ii,iobj) = oqdot(ii,iobj) / ohcomb
+              end do
+          case ('SOOT')
+              do ii = 1, nret
+                  ood(ii,iobj) = lrarray(ii)
+              end do
+          case ('CO')
+              do ii = 1, nret
+                  oco(ii,iobj) = lrarray(ii)
+              end do
+          case ('TRACE')
+              ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
+              do ii = 1, nret
+                  omprodr(ii,7,iobj) = 1.0d0
+                  omprodr(ii,10,iobj) = 0.0d0
+                  omprodr(ii,11,iobj) = lrarray(ii)   
+              end do
+          case ('AREA')
+              max_area = 0.0d0
+              do ii = 1, nret
+                  ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the ignition point.
+                  ! It only occurs for objects which are on the floor and ignite after t=0
+                  oarea(ii,iobj) = max(lrarray(ii),0.09d0)
+                  max_area = max(max_area,oarea(ii,iobj))
+              end do
+
+              ! calculate size of the object based on the maximum area with a default thickness
+              ! as with the flame height calculation, the minimum area is 0.09 m^2 (about 1 ft^2)
+              objxyz(1,iobj) = sqrt(max(max_area,0.09d0))
+              objxyz(2,iobj) = objxyz(1,iobj)
+              objxyz(3,iobj) = 0.15d0
+
+              ! calculate the characteristic length of an object. This is used for target calculation
+              objclen(iobj) = (objxyz(1,iobj) * objxyz(2,iobj) * 
+     .        objxyz(3,iobj))**(1.d0/3.d0)
+          case ('HEIGH')
+              do ii = 1, nret
+                  ohigh(ii,iobj) = max(lrarray(ii),0.0d0)
+              end do
+          case default
+              write(logerr, 5000) label
+          end select
+
+      end do
+
+      ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
+	call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), 
+     +             objhc(1,iobj), ohcomb)
+
+      ! Position the object
+	call positionobject(objpos,1,iobj,objrm(iobj),br,
+     . midpoint,minimumheight,errorcode)
+	if (errorcode.ne.0) return
+	call positionobject(objpos,2,iobj,objrm(iobj),dr,
+     . midpoint,minimumheight,errorcode)
+	if (errorcode.ne.0) return
+	call positionobject(objpos,3,iobj,objrm(iobj),hr,
+     . base,minimumheight,errorcode)
+	if (errorcode.ne.0) return
+
+      ! diagnostic - check for the maximum heat release per unit volume.
+      ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
+      area = objxyz(1,iobj) * objxyz(2,iobj)
+      d = max(0.33d0,sqrt(4.0/3.14*area))
+      flamelength = d * (0.235d0*(max_hrr/1.0d3)**0.4 - 1.02)
+      flamelenght = max (xx0, flamelength)
+      ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
+      hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
+      if (hrrpm3.gt.4.0d+6) then
+          write (logerr,5106)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+          errorcode = 221
+          return
+      else if (hrrpm3.gt.2.0d+6) then
+          write (logerr,5107)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+      else 
+          write (logerr,5100)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+      endif
+
+      ! initialize object target position
+      call setobtrg (ntarg,iobj,ierror)
+
+      return
+5001  format ('Invalid heat of combustion, must be greater than zero, ',
+     .        1pg12.3)
+5002  format ('Too many targets are being defined in a fire definition')
+5100  format ('Object ',a,' position set to ',3F7.3, 
+     . '; Maximum HRR per m^3 is ',1pg10.3)
+5106  format ('Object ',a,' position set to ',3F7.3,
+     . '; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
+5107  format ('Object ',a,' position set to ',3F7.3,
+     . '; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
+5000  format ('The key word ',a5,' is not part of a fire definition')
+      
+      end subroutine inputembeddedfire
+
+      
 	subroutine inputmainfire (iounit,errorcode)
 
 !  This routine reads the "mainfire.o" file either from the current directory
@@ -1941,7 +2173,7 @@ C
      . midpoint/1/, base/2/
 	logical exists, doesthefileexist
       data hcmax /5.0D8/, hcmin/1.31D+7/
-	double precision minimumheight/1.d-3/, maximumhrr, xx0, hrrpm3
+	double precision minimumheight/1.d-3/, max_hrr, xx0, hrrpm3
 
 ! First we try the local directory
 
@@ -2003,30 +2235,30 @@ C
 		write(logerr,5103) radconsplit(iobj)
 	endif
 
-      OHCOMB = rarray(12,1)
-      NTARG = NTARG + 1
-      IF (NTARG.GT.MXTARG) THEN
+      ohcomb = rarray(12,1)
+      ntarg = ntarg + 1
+      if (ntarg.gt.mxtarg) then
       	write(logerr, 5002) 
-      	IERROR = 201
-      	RETURN
-      END IF
-      OBTARG(IOBJ) = NTARG
-      CXTARG(NTARG) = carray(13,1)
+      	ierror = 201
+      	return
+      end if
+      obtarg(iobj) = ntarg
+      cxtarg(ntarg) = carray(13,1)
 
-      OBJMAS(IOBJ) = rarray(8,1)
-      OBJXYZ(1,IOBJ) = rarray(9,1)
-      OBJXYZ(2,IOBJ) = rarray(10,1)
-      OBJXYZ(3,IOBJ) = rarray(11,1)
+      objmas(iobj) = rarray(8,1)
+      objxyz(1,iobj) = rarray(9,1)
+      objxyz(2,iobj) = rarray(10,1)
+      objxyz(3,iobj) = rarray(11,1)
 
-! Calculate the characteristic size of an object.
-! This is a basic conceptual model for the physical extent for the heat release
-	objcl(iobj) = objxyz(1,iobj) * objxyz(2,iobj) * objxyz(3,iobj)
-	if(objcl(iobj).lt.1.0d-6) then
-		write(logerr,5005) iobj,objcl(iobj)
+      ! Calculate a characteristic size of an object.
+      ! This is a basic conceptual model for the physical extent for the heat release
+	objclen(iobj) = objxyz(1,iobj) * objxyz(2,iobj) * objxyz(3,iobj)
+	if(objclen(iobj).lt.1.0d-6) then
+		write(logerr,5005) iobj,objclen(iobj)
 		errorcode = 220
 		return
 	endif
-	objcl(iobj) = objcl(iobj)**0.333d0
+	objclen(iobj) = objclen(iobj)**0.333d0
 
       OTIME(1,IOBJ) = xx0
 
@@ -2036,20 +2268,20 @@ C
 		 return
 	endif
 
-! This should not be important, but just in case
-
-      do 300 i = 1, nv
-      DO 300 II = 1, ns
-      	OMPRODR(I,II,IOBJ) = xx0
-  300 CONTINUE
+      ! This should not be important, but just in case
+      do i = 1, nv
+          do ii = 1, ns
+              omprodr(i,ii,iobj) = xx0
+          end do
+      end do
 
 ! Move the array data into the object arrays
 
-	maximumhrr = xx0
+	max_hrr = xx0
       DO 400 II = 1, OBJLFM(IOBJ)
          OTIME(II,IOBJ) = rarray(ii+1,2)
          OQDOT(II,IOBJ) = rarray(ii+1,3)
-	   maximumhrr = max(maximumhrr, oqdot(ii,iobj))
+	   max_hrr = max(max_hrr, oqdot(ii,iobj))
          OMASS(II,IOBJ) = rarray(ii+1,4)
 ! This is to stop dassl from an floating point underflow when it tries to extrapolate back.
 ! It only occurs for objects which are on the floor and ignite after t=0
@@ -2066,8 +2298,6 @@ C
          OMPRODR(II,10,IOBJ) = rarray(ii+1,13)
 	   omprodr(ii,11,iobj) = rarray(ii+1,14)
   400 CONTINUE
-
-	OTFMAXT(IOBJ) = OTIME(OBJLFM(IOBJ),IOBJ)
 
 !	set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
 	call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), 
@@ -2090,10 +2320,10 @@ C
 !	First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
 	area = objxyz(1,iobj) * objxyz(2,iobj)
 	d = max(0.33d0,sqrt(4.0/3.14*area))
-	flamelength = d * (0.235d0*(maximumhrr/1.0d3)**0.4 - 1.02)
+	flamelength = d * (0.235d0*(max_hrr/1.0d3)**0.4 - 1.02)
 	flamelenght = max (xx0, flamelength)
 !	Now the heat realease per cubic meter - we know that the size is larger than 1.0d-6 m^3 - enforced above
-	hrrpm3 = maximumhrr/(area*(objxyz(3,iobj)+flamelength))
+	hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
 	if (hrrpm3.gt.4.0e+6) then
 	  WRITE (LOGERR,5106) trim(objname),(OBJPOS(i,IOBJ),i=1,3),hrrpm3
 	  errorcode = 221

@@ -81,12 +81,14 @@
       end if
       title = carray(1,3)
 
-      ! read in all specifications
       do i = 1, nr
         yinter(i) = -1.0d0
       end do
       
-	call keywordcases (numr, numc, ierror)
+      maxct = 0
+      
+	! read in data file
+      call keywordcases (numr, numc, ierror)
 
 !	wait until the input file is parsed before dieing on temperature outside reasonable limits
 	if (exta.gt.373.15.or.exta.lt.223.15d0) then
@@ -103,37 +105,14 @@
       ! We now know what output is going to be generated, so create the files
 	call openoutputfiles
 
-      RA = PA / TA / RGAS
-      EXRA = EXPA / EXTA / RGAS
-
-      ! get the mainfire
-      if (objnin(0).ne.' ') then
-          call inputmainfire (iofili,ierror)
-          if (debugging) call printfireparameters
-          if (ierror.ne.0) return
-      endif
-
-      if(lfbt.lt.0.or.lfbt.gt.2) then
-          write(logerr,5101) lfbt
-          ierror = 201
-          return
-      end if
+      ra = pa / ta / rgas
+      exra = expa / exta / rgas
 
       ! turn on the subsidiary equations if they are neeeded - this is always true
-
       if (activs(6)) hcldep = 1
 
-      ! get any object fires
-      nm1 = n - 1
-      if (numobjl.gt.0) then
-          do i = 1, numobjl
-              call inputobject (objnin(i), i, iofili, ierror)
-              if (debugging) call printobjectparameters(i)
-              if (ierror.ne.0) return
-          end do
-      end if
-
       ! initialize the targets
+      nm1 = n - 1
       call inittarg (ierror)
       if (ierror.ne.0) return
       
@@ -142,27 +121,10 @@
       if (ierror.ne.0) return
 
       ! floor plan dependent parameters
-      nm1 = n - 1
       do i = 1, nm1
           hrl(i) = hflr(i)
           hrp(i) = hr(i) + hflr(i)
       end do
-
-      ! check and/or set main fire position
-      if (lfbo.gt.0) then
-          if ((fpos(1).lt.xx0).or.(fpos(1).gt.br(lfbo))) then
-              fpos(1) = br(lfbo) / 2.0d0
-              if (logerr.gt.0) write (logerr,5000) fpos(1)
-          end if
-          if ((fpos(2).lt.xx0).or.(fpos(2).gt.dr(lfbo))) then
-              fpos(2) = dr(lfbo) / 2.0d0
-              if (logerr.gt.0) write (logerr,5010) fpos(2)
-          end if
-          if ((fpos(3).lt.xx0).or.(fpos(3).gt.hr(lfbo))) then
-              fpos(3) = 0.0d0
-              if (logerr.gt.0) write (logerr,5020) fpos(3)
-          end if
-      endif
 
       ! check and/or set heat source fire position
       if (heatfl) then
@@ -198,7 +160,7 @@
       end do
          
       ! make sure horizontal vent specifications are correct -  we have to do this
-      ! here rather than right after nputq because hrl and hrp were just defined
+      ! here rather than right after keywordcases because hrl and hrp were just defined
       ! above
       do itop = 1, nm1
           if (nwv(itop,itop).ne.0) then
@@ -479,14 +441,12 @@ c    see which room is on top (if any) - this is like a bubble sort
                   end do
                   if(nventij.ne.0)zzhtfrac(i,j) = 1.0d0
 
-c*** if the back wall is not active then don't consider its contribution
-
+                  ! if the back wall is not active then don't consider its contribution
                   if(j.le.nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0d0
               end do
           endif
 
-c*** normalize zzhtfrac fraction matrix so that rows sum to one
-
+          ! normalize zzhtfrac fraction matrix so that rows sum to one
           if(izheat(i).ne.0)then
               sum = 0.0d0
               do j = 1, nm1+1
@@ -676,28 +636,6 @@ c*** normalize zzhtfrac fraction matrix so that rows sum to one
 		        return
 	        endif
 	        thrmfile = lcarray(1)
-          case ("MAINF")
-              if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
-		        ierror = 7
-		        return
-	        endif
-	        objnin(0) = 'mainfire'
-	        lfbo =      lrarray(1)
-	        if(lfbo.lt.0.or.lfbo.gt.n-1) then
-                  ierror = 64
-		        return
-	        endif
-	        lfbt =      2
-	        fpos(1) =   lrarray(2)
-	        fpos(2) =   lrarray(3)
-	        fpos(3) =   lrarray(4)
-	        fplume(0) = lrarray(5)
-	        if(fplume(0).lt.1.or.fplume(0).gt.2) then
-	            write(logerr,5402) fplume(0)
-	            ierror = 78
-	            return 
-	        end if
-	        write(logerr,5403) plumemodel(fplume(0))
               
           ! Set the gaseous ignition temperature - this is a global parameter DJIGN
           case ('DJIGN')
@@ -718,7 +656,46 @@ c*** normalize zzhtfrac fraction matrix so that rows sum to one
                   ierror = 4
                   return
               end if
-          
+              
+          ! MATL short_name conductivity specific_heat density thickness emissivity long_name
+          ! HCl deposition constants are only available for gypsum so we just add the automatically if the name of the material contains gypsum
+          case ('MATL')
+              if(.not.countargs(label,7,lcarray,xnumc-1,nret)) then
+                  ierror = 6
+                  return
+              end if
+              maxct = maxct + 1
+              if (maxct.gt.nthmx) then
+                  write (logerr,'(a,i3)') 'Too many thermal properties',
+     .            ' in input data file. Limit is ',nthmx
+                  ierror = 203
+                  return
+              end if
+              
+              nlist(maxct) = lcarray(1)
+              lnslb(maxct) = 1
+              lfkw(1,maxct) = lrarray(2)
+              lcw(1,maxct) = lrarray(3)
+              lrw(1,maxct) = lrarray(4)
+              lflw(1,maxct) = lrarray(5)
+              lepw(maxct) = lrarray(6)
+              if (index(lcarray(1),'gypsum').ne.0.or.
+     .            index(lcarray(1),'GYPSUM').ne.0.or.
+     .            index(lcarray(7),'gypsum').ne.0.or.
+     .            index(lcarray(7),'GYPSUM').ne.0) then
+                  lhclbf(1,maxct) = 0.0063
+                  lhclbf(2,maxct) = 191.8
+                  lhclbf(3,maxct) = 0.0587
+                  lhclbf(4,maxct) = 7476.0
+                  lhclbf(5,maxct) = 193.0
+                  lhclbf(6,maxct) = 1.021
+                  lhclbf(7,maxct) = 0.431
+              else
+                  do i = 1, 7
+                      lhclbf(i,maxct) = 0.0
+                  end do
+              end if
+
           ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
           case ('COMPA')
               if (.not.countargs(label,10,lcarray,xnumc-1,nret)) then
@@ -1758,7 +1735,7 @@ c*** normalize zzhtfrac fraction matrix so that rows sum to one
 
      
           ! Outdated keywords
-          case ('OBJFL','MVOPN','MVFAN')
+          case ('OBJFL','MVOPN','MVFAN','MAINF')
               ierror = 5
 	        return
  
@@ -1870,15 +1847,15 @@ c*** normalize zzhtfrac fraction matrix so that rows sum to one
       include "objects2.fi"
       include "fltarget.fi"
 
-      logical countargs
+      logical countargs, lstat
       integer lrowcount, xnumr, xnumc, iobj
       integer logerr/3/, midpoint/1/, base/2/, errorcode, ierror
       character lcarray*128(ncol), label*5, objname*(*)
       double precision lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3,
      .minimumheight/1.d-3/
 
-      ! there are seven required inputs for each fire
-      do ir = 1, 7
+      ! there are eight required inputs for each fire
+      do ir = 1, 8
           lrowcount = lrowcount + 1
           label = carray(lrowcount,1)
           if (label.eq.' ') cycle
@@ -1925,6 +1902,7 @@ c*** normalize zzhtfrac fraction matrix so that rows sum to one
               cxtarg(ntarg) = lcarray(8)
 
           case ('TIME')
+              lstat = countargs(label,2,lcarray,xnumc-1,nret)
               objlfm(iobj) = nret
               do ii = 1, nret
                   otime(ii,iobj) = lrarray(ii)

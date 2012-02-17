@@ -1070,7 +1070,7 @@
           ixtarg(trgmeth,itarg) = xplicit
           ixtarg(trgeq,itarg) = pde
           ixtarg(trgback,itarg) = int
-          cxtarg(itarg) = 'default'
+          cxtarg(itarg) = 'DEFAULT'
       end do
 
       ! initialize jaccol  
@@ -1529,7 +1529,7 @@ c          yy = ysize - yloc
           endif
       end do
 
-      ! put a target in the center of the floor of each room
+      ! add a target in the center of the floor of each room
       do iroom = 1, nm1
           ntarg = ntarg + 1
           ixtarg(trgroom,ntarg) = iroom

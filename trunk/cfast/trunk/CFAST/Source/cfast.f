@@ -78,35 +78,45 @@
           itmmax = xdelt + 1
           tstop = itmmax - 1
 
-          call inputtpp (thrmfile, errorcode)
-          if (errorcode.eq.0) then
+          ! add the default thermal property
+          maxct = maxct + 1
 
-              call initwall(tstop,errorcode)
-              if (errorcode.le.0) then
+          nlist(maxct) = 'DEFAULT'
+          lnslb(maxct) = 1
+          lfkw(1,maxct) = 0.120d0
+          lcw(1,maxct) = 900.0d0
+          lrw(1,maxct) = 800.0d0
+          lflw(1,maxct) = 0.0120d0
+          lepw(maxct) = 0.90d0
+          do i = 1, 7
+              lhclbf(i,maxct) = 0.00d0
+          end do
 
-                  stime = 0.0d0
-                  itmstp = 1
-                  ih = -1
-                  xdelt = nsmax / deltat
-                  itmmax = xdelt + 1
-                  tstop = itmmax - 1
+          call initwall(tstop,errorcode)
+          if (errorcode.le.0) then
 
-                  call outinitial(1)
+              stime = 0.0d0
+              itmstp = 1
+              ih = -1
+              xdelt = nsmax / deltat
+              itmmax = xdelt + 1
+              tstop = itmmax - 1
 
-                  call cptime(tbeg)
-                  call solve(tstop,errorcode)
-                  call cptime(tend)
+              call outinitial(1)
 
-                  write (logerr,5003) tend - tbeg
-                  errorcode = 0
+              call cptime(tbeg)
+              call solve(tstop,errorcode)
+              call cptime(tend)
 
-              end if
+              write (logerr,5003) tend - tbeg
+              errorcode = 0
+
           end if
       end if
 
 !     errors
 
-   10 call cfastexit ('CFAST', errorcode)
+      call cfastexit ('CFAST', errorcode)
 
  5000 format ('Date stamp from CFAST initialization ',a14)
  5001 format ('Error encountered in opening data files; code = ',i4)
@@ -137,7 +147,7 @@
 
      .    version/6200/
 
-      END
+      end block data initcs
 
       block data initcf
 
@@ -145,7 +155,8 @@
           include "cfast.fi"
 
           data crdate/2011,11,1/
-      end
+          
+      end block data initcf
 
       subroutine initsoln(t,pdold,pdzero,rpar,ipar)
 
@@ -309,7 +320,7 @@ C
       end
 
 
-      SUBROUTINE SOLVE(TSTOP,IERROR)
+      subroutine solve(tstop,ierror)
 
 !     Routine: solve
 !     Purpose: main solution loop for the model
@@ -446,121 +457,117 @@ C
 
       call setinfo (info, rwork)
 
-      ! Copy error tolerances into arrays. If the location of pressure is
+      ! copy error tolerances into arrays. if the location of pressure is
       ! changed in the solver array then the following code has to be changed
-      do I = 1, NM1
-          VATOL(I+NOFP) = APTOL
-          VRTOL(I+NOFP) = RPTOL
-          VATOL(I+NOFTU) = ATOL
-          VRTOL(I+NOFTU) = RTOL
-          VATOL(I+NOFVU) = ATOL
-          VRTOL(I+NOFVU) = RTOL
-          VATOL(I+NOFTL) = ATOL
-          VRTOL(I+NOFTL) = RTOL
-          IF(OPTION(FOXYGEN).EQ.ON)THEN
-              VATOL(I+NOFOXYU)=ATOL
-              VRTOL(I+NOFOXYU)=RTOL
-              VATOL(I+NOFOXYL)=ATOL
-              VRTOL(I+NOFOXYL)=RTOL
-          ENDIF
+      do i = 1, nm1
+          vatol(i+nofp) = aptol
+          vrtol(i+nofp) = rptol
+          vatol(i+noftu) = atol
+          vrtol(i+noftu) = rtol
+          vatol(i+nofvu) = atol
+          vrtol(i+nofvu) = rtol
+          vatol(i+noftl) = atol
+          vrtol(i+noftl) = rtol
+          if (option(foxygen).eq.on) then
+              vatol(i+nofoxyu)=atol
+              vrtol(i+nofoxyu)=rtol
+              vatol(i+nofoxyl)=atol
+              vrtol(i+nofoxyl)=rtol
+          end if
       end do
-      DO I = 1, NHVPVAR
-          VATOL(I+NOFPMV) = AHVPTOL
-          VRTOL(I+NOFPMV) = RHVPTOL
+      do i = 1, nhvpvar
+          vatol(i+nofpmv) = ahvptol
+          vrtol(i+nofpmv) = rhvptol
       end do
-      DO I = 1, NHVTVAR
-          VATOL(I+NOFTMV) = AHVTTOL
-          VRTOL(I+NOFTMV) = RHVTTOL
+      do i = 1, nhvtvar
+          vatol(i+noftmv) = ahvttol
+          vrtol(i+noftmv) = rhvttol
       end do
-      DO I = 1, NWALLS
-          VATOL(I+NOFWT) = AWTOL
-          VRTOL(I+NOFWT) = RWTOL
+      do i = 1, nwalls
+          vatol(i+nofwt) = awtol
+          vrtol(i+nofwt) = rwtol
       end do
-      DO I = 1, NEQTARG(MPLICIT)
-          VATOL(I+NOFTT) = AWTOL
-          VRTOL(I+NOFTT) = RWTOL
+      do i = 1, neqtarg(mplicit)
+          vatol(i+noftt) = awtol
+          vrtol(i+noftt) = rwtol
       end do
 
-      OVTIME = XX0
-      TOTTIME = XX0
-      PRTTIME = XX0
+      ovtime = xx0
+      tottime = xx0
+      prttime = xx0
 
       ! See note in comments about the nodes=nofprd line below
-
-      NODES = NOFPRD
-      IPAR(1) = NODES
-      IPAR(2) = ALL
-      IDSET = 0
+      nodes = nofprd
+      ipar(1) = nodes
+      ipar(2) = all
+      idset = 0
 
       ! Setting initial vector
-      CALL SETP0(P0, IZP0, PMXMN, IZPMXMN, iofili, IERROR)
-      IF (IERROR.GT.0) THEN
-          RETURN
-      END IF
-      IF (IZP0(0).EQ.ON) THEN
-          DO I = 1, NODES
-              IF (IZP0(I).EQ.ON) P(I) = P0(I)
+      call setp0(p0, izp0, pmxmn, izpmxmn, iofili, ierror)
+      if (ierror.gt.0) then
+          return
+      end if
+      if (izp0(0).eq.on) then
+          do i = 1, nodes
+              if (izp0(i).eq.on) p(i) = p0(i)
           end do
 
-          ! if we set pressures with SETP0 then over-ride steady state pressure
+          ! if we set pressures with setp0 then over-ride steady state pressure
           ! initialization
-          DO I = 1, NM1
-              IF(IZP0(I+NOFP).EQ.ON)OPTION(FPSTEADY) = OFF
+          do i = 1, nm1
+              if(izp0(i+nofp).eq.on)option(fpsteady) = off
           end do
-      END IF
+      end if
 
-      ! CONSTRUCT INITIAL SOLUTION
-      DO I = 1, NEQUALS
-          PDOLD(I) = 0.0D0
-          POLD(I) = P(I)
+      ! construct initial solution
+      do i = 1, nequals
+          pdold(i) = 0.0d0
+          pold(i) = p(i)
       end do
-      CALL INITSOLN(T,PDOLD,PDZERO,RPAR,IPAR)
-      DO I = 1, NEQUALS
-          PPRIME(I) = PDOLD(I)
-          POLD(I) = P(I)
+      call initsoln(t,pdold,pdzero,rpar,ipar)
+      do i = 1, nequals
+          pprime(i) = pdold(i)
+          pold(i) = p(i)
       end do
 
       ! Calculate the mass of objects that have been pyrolized
       ! at the moment we do only the total and the radiological species
       ! make sure that the INTEGRATE routine is called before TOXIC
       call integrate_mass (t, dt)
-      CALL TOXIC(XX0)
+      call toxic(xx0)
 
       ! If we are running only an initialization test then we do not need to solve anything
       if (initializeonly) then
-          CALL TARGET(STEADY)
-          ! Normally, this only needs to be done while running. However, if we are doing an initialonly run then we need the output now
-          CALL REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
-     .    FZLOCAL, FQLOCAL, FHLOCAL)
-          CALL SVOUT(smvdata, PREF, PA, TA, 
-     .    NM1, CXABS, CYABS, HRL, BR, DR, HR,
-     .    NVENTS,
+          call target(steady)
+          ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
+          call remapfires (nfires, flocal, fxlocal, fylocal, 
+     .    fzlocal, fqlocal, fhlocal)
+          call svout(smvdata, pref, pa, ta, 
+     .    nm1, cxabs, cyabs, hrl, br, dr, hr,
+     .    nvents,
      .    nvvent,
-     .    NFIRES, FLOCAL, FXLOCAL, FYLOCAL, FZLOCAL, 
-     .    ntarg, 0.0D0, 1)
+     .    nfires, flocal, fxlocal, fylocal, fzlocal, 
+     .    ntarg, 0.0d0, 1)
           icode = 0
           write (logerr, 5004)
           return
       endif
  5004 format ('Initialize only')
 
-      ! MAIN SOLVE LOOP
+      ! main solve loop
+      numjac = 0
+      numstep = 0
+      numresd = 0
 
-      NUMJAC = 0
-      NUMSTEP = 0
-      NUMRESD = 0
+   80 continue
 
-   80 CONTINUE
-
-      ! DASSL EQUATION WITH MOST ERROR
-
+      ! DASSL equation with most error
       IEQMAX = 0
 
       ! Check for interactive commands
-      ! IF A KEY HAS BEEN PRESSED (and we are wathcing the keyboard) FIGURE OUT WHAT TO DO
+      ! if a key has been pressed (and we are watching the keyboard) figure out what to do
       ! The escape key returns a code of 1
-
-      IF (.NOT.NOKBD) CALL NTRACT(T,ICODE,TPAWS,TOUT,IEQMAX)
+      if (.not.nokbd) call ntract(t,icode,tpaws,tout,ieqmax)
       inquire (file=stopfile, exist =exists)
       if (exists) then
           icode = 1
@@ -570,222 +577,217 @@ C
           write (logerr, 5000) t, dt
           return
       endif
- 5000 FORMAT (/,'Stopped by request at T = ',1PG11.3,' DT = ',G11.3)
+ 5000 format (/,'Stopped by request at T = ',1PG11.3,' DT = ',G11.3)
 
       ! Check the .query file. If it does not exist, do nothing. If if DOES exist, then
       ! rewind/write the status file and delete the query file (in that order).
       ! Ignore errors from deleting the file. It may not exist
-
       inquire (file=queryfile, exist = exists)
       if (exists) then
           call StatusOutput (T, dT, errorcode)
           filecount = delfilesqq(queryfile)
       endif
 
-      ! Now do normal output (printout, spreadsheets, ...)
+      ! now do normal output (printout, spreadsheets, ...)
+      if (idid.gt.0) then
+          ltarg = .false.
 
-      IF (IDID.GT.0) THEN
-          LTARG = .FALSE.
+          if (t+x0001.gt.min(tprint,tstop).and.iprint) then
 
-          IF (T+X0001.GT.MIN(TPRINT,TSTOP).AND.IPRINT) THEN
+              ! update target temperatures (only need to update just before we print target temperatures).
+              ! if we actually use target temperatures in a calculation then this call will need to be moved to inside resid.
 
-              ! UPDATE TARGET TEMPERATURES (ONLY NEED TO UPDATE JUST BEFORE WE PRINT TARGET TEMPERATURES).
-              ! IF WE ACTUALLY USE TARGET TEMPERATURES IN A CALCULATION THEN THIS CALL WILL NEED TO BE MOVED TO INSIDE RESID.
+              if(.not.ltarg)then
+                  call target(steady)
+                  ltarg = .true.
+              endif
 
-              IF(.NOT.LTARG)THEN
-                  CALL TARGET(STEADY)
-                  LTARG = .TRUE.
-              ENDIF
+              itmstp = tprint
+              call result(t,1)
+              call statusoutput (t, dt, errorcode)
+              call outjcnt(t)
+              tprint = tprint + dprint
+              numjac = 0
+              numstep = 0
+              numresd = 0
+              prttime = xx0
+          end if
 
-              ITMSTP = TPRINT
-              CALL RESULT(T,1)
-              call StatusOutput (T, dT, errorcode)
-              CALL OUTJCNT(T)
-              TPRINT = TPRINT + DPRINT
-              NUMJAC = 0
-              NUMSTEP = 0
-              NUMRESD = 0
-              PRTTIME = XX0
-          END IF
+          if (t+x0001.gt.min(tdump,tstop).and.idump) then
+              itmstp = tdump + 1.0d0
+              if(.not.ltarg)then
+                  call target(steady)
+                  ltarg = .true.
+              endif
+              call dumper(itmstp,ierror)
+              if (ierror.ne.0) return
+              tdump = tdump + ddump
+              call statusoutput (t, dt, errorcode)
+          end if
 
-          IF (T+X0001.GT.MIN(TDUMP,TSTOP).AND.IDUMP) THEN
-              ITMSTP = TDUMP + 1.0D0
-              IF(.NOT.LTARG)THEN
-                  CALL TARGET(STEADY)
-                  LTARG = .TRUE.
-              ENDIF
-              CALL DUMPER(ITMSTP,IERROR)
-              IF (IERROR.NE.0) RETURN
-              TDUMP = TDUMP + DDUMP
-              call StatusOutput (T, dT, errorcode)
-          END IF
-
-          IF (T+X0001.GT.MIN(TPLOT,TSTOP).AND.IPLOT) THEN
-              ITMSTP = TPLOT
-              IF(.NOT.LTARG)THEN
-                  CALL TARGET(STEADY)
-                  LTARG = .TRUE.
-              ENDIF
-              ! Note: svout writes the .smv file. We do not close the file but only rewind so that smokeview 
-              ! can have the latest time step information. Remapfires just puts all of the information in a single list
-              CALL REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
-     .        FZLOCAL, FQLOCAL, FHLOCAL)
-              CALL SVOUT(smvdata, PREF, PA, TA, NM1, CXABS, CYABS, HRL,
-     .        BR, DR, HR, NVENTS, nvvent,
-     .        NFIRES, FLOCAL, FXLOCAL, FYLOCAL,FZLOCAL,
-     .        ntarg,T,itmstp)
-              ! This ought to go earlier and drop the logical test. However, not all of the information 
+          if (t+x0001.gt.min(tplot,tstop).and.iplot) then
+              itmstp = tplot
+              if(.not.ltarg)then
+                  call target(steady)
+                  ltarg = .true.
+              endif
+              ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
+              ! can have the latest time step information. remapfires just puts all of the information in a single list
+              call remapfires (nfires, flocal, fxlocal, fylocal, 
+     .        fzlocal, fqlocal, fhlocal)
+              call svout(smvdata, pref, pa, ta, nm1, cxabs, cyabs, hrl,
+     .        br, dr, hr, nvents, nvvent,
+     .        nfires, flocal, fxlocal, fylocal,fzlocal,
+     .        ntarg,t,itmstp)
+              ! this ought to go earlier and drop the logical test. however, not all of the information 
               ! is available until this point
               if (firstpassforsmokeview) then
                   firstpassforsmokeview = .false.
                   call svplothdr (version,nm1,nfires)
               endif
-              call svplotdata(T,NM1,ZZRELP,ZZHLAY(1,LOWER),
-     .        ZZTEMP(1,2),ZZTEMP(1,1),NFIRES, FQLOCAL,
-     .        FHLOCAL)
-              call SpreadSheetSMV(T,ierror)
-              TPLOT = TPLOT + DPLOT
-              call StatusOutput (T, dT, errorcode)
-          END IF
+              call svplotdata(t,nm1,zzrelp,zzhlay(1,lower),
+     .        zztemp(1,2),zztemp(1,1),nfires, fqlocal,
+     .        fhlocal)
+              call spreadsheetsmv(t,ierror)
+              tplot = tplot + dplot
+              call statusoutput (t, dt, errorcode)
+          end if
 
-          IF (T+X0001.GT.MIN(tspread,TSTOP).AND.ispread) THEN
-              ITMSTP = tspread
-              IF(.NOT.LTARG)THEN
-                  CALL TARGET(STEADY)
-                  LTARG = .TRUE.
-              ENDIF
-              call SpreadSheetNormal (T, ierror)
-              call SpreadSheetSpecies (T, ierror)
-              call SpreadSheetFlow (T, ierror)
-              call SpreadSheetFlux (T, ierror)
+          if (t+x0001.gt.min(tspread,tstop).and.ispread) then
+              itmstp = tspread
+              if(.not.ltarg)then
+                  call target(steady)
+                  ltarg = .true.
+              endif
+              call spreadsheetnormal (t, ierror)
+              call spreadsheetspecies (t, ierror)
+              call spreadsheetflow (t, ierror)
+              call spreadsheetflux (t, ierror)
               if (ierror.ne.0) return
               tspread =tspread + dspread
-              call StatusOutput (T, dT, errorcode)
-          END IF
+              call statusoutput (t, dt, errorcode)
+          end if
 
-          ! Diagnostics
-          IF (T+X0001.GT.TPAWS) THEN
-              ITMSTP = TPAWS
-              CALL RESULT(T,1)
-              CALL DEBUGPR(1,T,DT,IEQMAX)
-              TPAWS = TSTOP + 1.0D0
-              call StatusOutput (T, dT, errorcode)
-          END IF
+          ! diagnostics
+          if (t+x0001.gt.tpaws) then
+              itmstp = tpaws
+              call result(t,1)
+              call debugpr(1,t,dt,ieqmax)
+              tpaws = tstop + 1.0d0
+              call statusoutput (t, dt, errorcode)
+          end if
 
           ! find the interval next discontinuity is in
-
-          IDISC = 0
-          DO I = 1, IZNDISC
-              IF(T.GE.ZZDISC(I-1).AND.T.LT.ZZDISC(I))THEN
-                  IDISC = I
+          idisc = 0
+          do i = 1, izndisc
+              if(t.ge.zzdisc(i-1).and.t.lt.zzdisc(i))then
+                  idisc = i
                   exit
-              ENDIF
+              endif
           end do
-          TOUT = MIN(TPRINT,TPLOT,TDUMP,tspread,TPAWS,TSTOP)
+          tout = min(tprint,tplot,tdump,tspread,tpaws,tstop)
 
-          ! if there is a discontinuity then tell dassl
+          ! if there is a discontinuity then tell DASSL
+          if(idisc.ne.0)then
+              tout = min(tout,zzdisc(idisc))
+              rwork(1) = zzdisc(idisc)
+              info(4) = 1
+          else
+              info(4) = 0
+          endif
+      end if
 
-          IF(IDISC.NE.0)THEN
-              TOUT = MIN(TOUT,ZZDISC(IDISC))
-              RWORK(1) = ZZDISC(IDISC)
-              INFO(4) = 1
-          ELSE
-              INFO(4) = 0
-          ENDIF
-      END IF
+      if (t.lt.tstop) then
+          idset = 0
+          ipar(2) = some
+          told = t
+          call setderv(-1)
+          call cptime(ton)
+          call ddassl(resid,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,
+     +    rwork,lrw,iwork,liw,rpar,ipar,jac)
+          ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
+          call setderv(-2)
+          ieqmax = ipar(3)
+          if (option(fpdassl).eq.on) call debugpr (3,t,dt,ieqmax)
+          ostptime = ton - toff
+          call cptime(toff)
+          stime = t
+          stptime = toff - ton
+          prttime = prttime + stptime
+          tottime = tottime + stptime
+          ovtime = ovtime + ostptime
+          tovtime = tovtime + ostptime
 
-      IF (T.LT.TSTOP) THEN
-          IDSET = 0
-          IPAR(2) = SOME
-          TOLD = T
-          CALL SETDERV(-1)
-          CALL CPTIME(TON)
-          CALL DDASSL(RESID,NODES,T,P,PPRIME,TOUT,INFO,VRTOL,VATOL,IDID,
-     +    RWORK,LRW,IWORK,LIW,RPAR,IPAR,JAC)
-          ! CALL CPU TIMER AND MEASURE, SOLVER TIME WITHIN DASSL AND OVERHEAD TIME (EVERYTHING ELSE).
-          CALL SETDERV(-2)
-          IEQMAX = IPAR(3)
-          IF (OPTION(FPDASSL).EQ.ON) CALL DEBUGPR (3,T,DT,IEQMAX)
-          OSTPTIME = TON - TOFF
-          CALL CPTIME(TOFF)
-          STIME = T
-          STPTIME = TOFF - TON
-          PRTTIME = PRTTIME + STPTIME
-          TOTTIME = TOTTIME + STPTIME
-          OVTIME = OVTIME + OSTPTIME
-          TOVTIME = TOVTIME + OSTPTIME
+          ! make sure dassl is happy
 
-          ! MAKE SURE DASSL IS HAPPY
+          if (idid.lt.0) then
+              call fnd_comp(iofilo,ieqmax)
+              write (messg,101)idid
+  101         format('error, dassl - idid=', i3)
+              call xerror(messg,0,1,1)
+              ierror = idid
+              return
+          end if
 
-          IF (IDID.LT.0) THEN
-              CALL FND_COMP(IOFILO,IEQMAX)
-              WRITE (MESSG,101)IDID
-  101         FORMAT('ERROR, DASSL - IDID=', I3)
-              CALL XERROR(MESSG,0,1,1)
-              IERROR = IDID
-              RETURN
-          END IF
+          dt = t - told
+          if(izdtflag)then
+              if(dt.lt.zzdtcrit)then
+                  izdtnum = izdtnum + 1
+                  if(izdtnum.gt.izdtmax)then
+                      ! model has hung (izdtmax consective time step sizes were below zzdtcrit)
+                      write(messg,103)izdtmax,zzdtcrit,t
+  103                 format
+     .                (i3,' consecutive time steps with size below',
+     .                e11.4,' at t=',e11.4)
+                      call xerror(messg,0,1,2)
+                      izdtnum = 0
+                  endif
+              else
+                  ! this time step is above the critical size so reset counter
+                  izdtnum = 0
+              endif
+          endif
 
-          DT = T - TOLD
-          IF(IZDTFLAG)THEN
-              IF(DT.LT.ZZDTCRIT)THEN
-                  IZDTNUM = IZDTNUM + 1
-                  IF(IZDTNUM.GT.IZDTMAX)THEN
-                      ! model has hung (IZDTMAX consective time step sizes were below ZZDTCRIT)
-                      WRITE(MESSG,103)IZDTMAX,ZZDTCRIT,T
-  103                 FORMAT
-     .                (I3,' consecutive time steps with size below',
-     .                E11.4,' at t=',E11.4)
-                      CALL XERROR(MESSG,0,1,2)
-                      IZDTNUM = 0
-                  ENDIF
-              ELSE
-                  ! This time step is above the critical size so reset counter
-                  IZDTNUM = 0
-              ENDIF
-          ENDIF
+          ipar(2) = all
+          updatehall = .true.
+          call resid(t,p,pdzero,pdnew,ires,rpar,ipar)
+          updatehall = .false.
+          call updrest(nodes, nequals, nlspct, t, told, p, pold, pdnew,
+     .    pdold, pdzero)
 
-          IPAR(2) = ALL
-          UPDATEHALL = .TRUE.
-          CALL RESID(T,P,PDZERO,PDNEW,IRES,RPAR,IPAR)
-          UPDATEHALL = .FALSE.
-          CALL UPDREST(NODES, NEQUALS, NLSPCT, T, TOLD, P, POLD, PDNEW,
-     .    PDOLD, PDZERO)
-
-          ! Advance the detector temperature solutions and check for object ignition
-
-          IDSAVE = 0
-          CALL UPDTECT(MDCHK,TOLD,DT,NDTECT,ZZHLAY,ZZTEMP,
-     .    XDTECT,IXDTECT,IQUENCH,IDSET,IFDTECT,TDTECT)
-          CALL UPDOBJ(MDCHK,TOLD,DT,IFOBJ,TOBJ,IERROR)
-          TD = MIN(TDTECT,TOBJ)
+          ! advance the detector temperature solutions and check for object ignition
+          idsave = 0
+          call updtect(mdchk,told,dt,ndtect,zzhlay,zztemp,
+     .    xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+          call updobj(mdchk,told,dt,ifobj,tobj,ierror)
+          td = min(tdtect,tobj)
 
           ! a detector is the first thing that went off
+          if (ifdtect.gt.0.and.tdtect.le.td) then
+              isensor = ifdtect
+              isroom = ixdtect(isensor,droom)
+              call updtect(mdset,told,dt,ndtect,zzhlay,zztemp,
+     .        xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+              write(lbuf,*) ' '
+              call xerror(lbuf,0,1,0)
+              write(lbuf,76)isensor,tdtect,isroom
+   76         format(' Sensor ',i3,' has activated at ',
+     .        f6.1,' seconds in compartment ',i3)
+              call xerror(lbuf,0,1,0)
+              ! check to see if we are backing up for detectors going off
+              if (option(fbtdtect).eq.on) then
+                  idsave = idset
+              else
+                  idsave = ifobj
+                  td = tobj
+                  call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
+                  idset = 0
+              end if
+          else
+              call updtect(mdupdt,told,dt,ndtect,zzhlay,zztemp,
+     .        xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+          end if
 
-          IF (IFDTECT.GT.0.AND.TDTECT.LE.TD) THEN
-              ISENSOR = IFDTECT
-              ISROOM = IXDTECT(ISENSOR,DROOM)
-              CALL UPDTECT(MDSET,TOLD,DT,NDTECT,ZZHLAY,ZZTEMP,
-     .        XDTECT,IXDTECT,IQUENCH,IDSET,IFDTECT,TDTECT)
-              WRITE(LBUF,*) ' '
-              CALL XERROR(LBUF,0,1,0)
-              WRITE(LBUF,76)ISENSOR,TDTECT,ISROOM
-   76         FORMAT('*** Sensor ',I3,' has activated at ',
-     .        F6.1,' seconds in compartment ',i3,' ***')
-              CALL XERROR(LBUF,0,1,0)
-C       Check to see if we are backing up for detectors going off
-              IF (OPTION(FBTDTECT).EQ.ON) THEN
-                  IDSAVE = IDSET
-              ELSE
-                  IDSAVE = IFOBJ
-                  TD = TOBJ
-                  CALL RESID (T, P, PDZERO, PDNEW, IRES, RPAR, IPAR)
-                  IDSET = 0
-              END IF
-          ELSE
-              CALL UPDTECT(MDUPDT,TOLD,DT,NDTECT,ZZHLAY,ZZTEMP,
-     .        XDTECT,IXDTECT,IQUENCH,IDSET,IFDTECT,TDTECT)
-          END IF
           ! object ignition is the first thing to happen
           if (ifobj.gt.0.and.tobj.le.td) then
               call updobj(mdset,told,dt,ifobj,tobj,ierror)
@@ -795,102 +797,98 @@ C       Check to see if we are backing up for detectors going off
      .        max(tobj,xx0)
  5003         format(/,' Object #',i3,' (',a,') ignited at ',
      .        f10.3,' seconds')
-              ! Check to see if we are backing up objects igniting
-              IF (OPTION(FBTOBJ).EQ.ON) THEN
-                  IDSAVE = IFOBJ
-              ELSE
-                  IDSAVE = IDSET
-                  TD = TDTECT
-                  OBJON(IFOBJ) = .TRUE.
-                  OBJSET(IFOBJ) = 0
-                  CALL SETINFO(INFO,RWORK)
-                  IFOBJ = 0
-              END IF
-          ELSE
-              CALL UPDOBJ(MDUPDT,TOLD,DT,IFOBJ,TOBJ,IERROR)
-          END IF
+              ! check to see if we are backing up objects igniting
+              if (option(fbtobj).eq.on) then
+                  idsave = ifobj
+              else
+                  idsave = idset
+                  td = tdtect
+                  objon(ifobj) = .true.
+                  objset(ifobj) = 0
+                  call setinfo(info,rwork)
+                  ifobj = 0
+              end if
+          else
+              call updobj(mdupdt,told,dt,ifobj,tobj,ierror)
+          end if
 
-          IF (IDSAVE.NE.0)THEN
+          if (idsave.ne.0)then
 
-              ! A detector has activated so call dassl to integrate backwards
+              ! a detector has activated so call dassl to integrate backwards
               ! in time to t=td.  this is better than using simple linear interpolation
               ! because in general dassl could be taking very big time steps
-
-              IF(TOLD.LE.TD.AND.TD.LT.T)THEN
-                  CALL RESULT(T,1)
-                  IPAR(2) = SOME
-                  TDOUT = TD
-                  DO I = 1, 11
-                      INFO2(I) = 0
+              if(told.le.td.and.td.lt.t)then
+                  call result(t,1)
+                  ipar(2) = some
+                  tdout = td
+                  do i = 1, 11
+                      info2(i) = 0
                   end do
-                  INFO2(2) = 1
-                  TOLD = T
-                  CALL DDASSL(RESID,NODES,T,P,PPRIME,TDOUT,INFO2,VRTOL,
-     +            VATOL,IDID,RWORK,LRW,IWORK,LIW,RPAR,IPAR,JAC)
+                  info2(2) = 1
+                  told = t
+                  call ddassl(resid,nodes,t,p,pprime,tdout,info2,vrtol,
+     +            vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
 
-C*** MAKE SURE DASSL IS HAPPY (AGAIN)
-
-                  IF (IDID.LT.0) THEN
-                      CALL FND_COMP(IOFILO,IPAR(3))
-                      WRITE (MESSG,101)IDID
-                      CALL XERROR(MESSG,0,1,-2)
-                      WRITE(messg,'(A13,f10.5,1x,A8,f10.5)')
+                  ! make sure dassl is happy (again)
+                  if (idid.lt.0) then
+                      call fnd_comp(iofilo,ipar(3))
+                      write (messg,101)idid
+                      call xerror(messg,0,1,-2)
+                      write(messg,'(a13,f10.5,1x,a8,f10.5)')
      .                'Backing from ',t,'to time ',tdout
-                      CALL XERROR(MESSG,0,1,1)
-                      CALL XERROR('ERROR IN DASSL WHILE BACKING UP',
+                      call xerror(messg,0,1,1)
+                      call xerror('Error in DASSL while backing up',
      .                0,1,1)
-                      IERROR = IDID
-                      RETURN
-                  END IF
+                      ierror = idid
+                      return
+                  end if
 
-C*** RESET DASSL FLAGS TO INTEGRATE FORWARD FROM T=TD AND
-C    CALL RESID TO GET PRODUCT INFO AT SPRINKLER ACTIVATION TIME
+                  ! reset dassl flags to integrate forward from t=td and
+                  ! call resid to get product info at sprinkler activation time
+                  if (ifdtect.gt.0) idset = idsave
+                  dt = t - told
+                  ipar(2) = all
 
-                  IF (IFDTECT.GT.0) IDSET = IDSAVE
-                  DT = T - TOLD
-                  IPAR(2) = ALL
-
-C*** CALL RESID TO GET PRODUCT INFO AT THE CORRECT TIME AND
-C    TO SAVE FIRE RELEASE RATES IN ROOM WHERE DETECTOR HAS
-C    ACTIVATED.  (THIS HAPPENS BECAUSE IDSET .NE. 0)
-
-                  CALL RESID (T, P, PDZERO, PDNEW, IRES, RPAR, IPAR)
-                  CALL UPDREST(NODES, NEQUALS, NLSPCT, T, TOLD, P, POLD,
-     .            PDNEW, PDOLD, PDZERO)
-                  CALL SETINFO(INFO,RWORK)
-              ELSE IF (TD.EQ.T) THEN
-                  CALL SETINFO(INFO,RWORK)
-                  CALL RESID (T, P, PDZERO, PDNEW, IRES, RPAR, IPAR)
-              ELSE
-C    UPDTECT SAID THAT A SPRINKLER HAS GONE OFF BUT THE TIME IS WRONG!!
-                  WRITE(MESSG,'(A7,F10.5,A13,F10.5,A22,F10.5)')'TIME = '
-     .            ,T,' LAST TIME = ',TOLD,' NEED TO BACK STEP TO ',TD
-                  CALL XERROR(MESSG,0,1,1)
-                  CALL XERROR('BACK STEP TO LARGE',0,1,1)
-                  CALL XERROR(' ',0,1,1)
-                  IERROR = IDID
-                  RETURN
-              ENDIF
-              DO  I = 1, MXOIN
-                  OBJSET(I) = 0
+                  ! call resid to get product info at the correct time and
+                  ! to save fire release rates in room where detector has
+                  ! activated.  (this happens because idset .ne. 0)
+                  call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
+                  call updrest(nodes, nequals, nlspct, t, told, p, pold,
+     .            pdnew, pdold, pdzero)
+                  call setinfo(info,rwork)
+              else if (td.eq.t) then
+                  call setinfo(info,rwork)
+                  call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
+              else
+                  ! updtect said that a sprinkler has gone off but the time is wrong!!
+                  write(messg,'(a7,f10.5,a13,f10.5,a22,f10.5)')'Time = '
+     .            ,t,' Last time = ',told,' need to back step to ',td
+                  call xerror(messg,0,1,1)
+                  call xerror('Back step to large',0,1,1)
+                  call xerror(' ',0,1,1)
+                  ierror = idid
+                  return
+              endif
+              do  i = 1, mxoin
+                  objset(i) = 0
               end do
-          ENDIF
+          endif
 
-!     calculate the mass of objects that have been pyrolized
-!     at the moment we do only the total and the radiological species
-!     It is important to call the routine to integrate the mass before call the toxicology calculatino
+          ! calculate the mass of objects that have been pyrolized
+          ! at the moment we do only the total and the radiological species
+          ! It is important to call the routine to integrate the mass before call the toxicology calculatino
           call integrate_mass (t, dt)
 
-C     CALCULATE GAS DOSAGE
-          CALL TOXIC(DT)
+          ! calculate gas dosage
+          call toxic(dt)
 
-          IF (OPTION(FDEBUG).EQ.ON) CALL DEBUGPR(2,T,DT,IEQMAX)
-          NUMSTEP = NUMSTEP + 1
-          GO TO 80
-      END IF
-      RETURN
+          if (option(fdebug).eq.on) call debugpr(2,t,dt,ieqmax)
+          numstep = numstep + 1
+          go to 80
+      end if
+      return
 
-      END
+      end
 
       subroutine updrest(nodes, nequals, nlspct,  t, told, p, pold,
      .pdnew, pdold, pdzero)

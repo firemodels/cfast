@@ -32,23 +32,23 @@ Partial Class ViewFile
         'C1PrintPreviewControl1
         '
         Me.C1PrintPreviewControl1.AvailablePreviewActions = CType(((((((((((((((((((C1.Win.C1Preview.C1PreviewActionFlags.PageSetup Or C1.Win.C1Preview.C1PreviewActionFlags.Print) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.Reflow) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.PageSingle) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.PageContinuous) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.PageFacing) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.PageFacingContinuous) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.GoFirst) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.GoPrev) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.GoNext) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.GoLast) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.GoPage) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.HistoryNext) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.HistoryPrev) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomIn) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomOut) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomFactor) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomInTool) _
-                    Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomOutTool), C1.Win.C1Preview.C1PreviewActionFlags)
+            Or C1.Win.C1Preview.C1PreviewActionFlags.Reflow) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.PageSingle) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.PageContinuous) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.PageFacing) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.PageFacingContinuous) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.GoFirst) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.GoPrev) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.GoNext) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.GoLast) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.GoPage) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.HistoryNext) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.HistoryPrev) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomIn) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomOut) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomFactor) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomInTool) _
+            Or C1.Win.C1Preview.C1PreviewActionFlags.ZoomOutTool), C1.Win.C1Preview.C1PreviewActionFlags)
         Me.C1PrintPreviewControl1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.C1PrintPreviewControl1.Location = New System.Drawing.Point(0, 0)
         Me.C1PrintPreviewControl1.Name = "C1PrintPreviewControl1"

@@ -464,32 +464,33 @@ C
 20    CONTINUE
       RETURN
       END
-	SUBROUTINE CFASTEXIT (NAME, errorcode)
-	
+      
+      subroutine cfastexit (name, errorcode)
+
       use iofiles
       include "cparams.fi"
       include "cshell.fi"
 
-	CHARACTER NAME*(*)
-	integer errorcode
-	logical doesthefileexist
+      character name*(*)
+      integer errorcode
+      logical doesthefileexist
 
-C	SET THE APPROPRIATE EXIT FORMAT
+      ! set the appropriate exit format
+      len= min(len_trim (name),32)
 
-	LEN= MIN(LEN_TRIM (NAME),32)
+      if (errorcode.eq.0) then
+          write(logerr, 1) (name(i:i),i=1,len)
+      else
+          write(logerr,2) errorcode
+      endif
 
-	if (errorcode.eq.0) then
-		WRITE(LOGERR, 1) (NAME(i:i),i=1,LEN)
-	else
-		 write(logerr,2) errorcode
-	ENDIF
+      stop
 
-	STOP
-
-1     FORMAT ('Normal exit from ',32a1)
+1     format ('Normal exit from ',32a1)
 2     format ('Error exit, code = ',i5)
 
-	END
+      end subroutine cfastexit
+      
       SUBROUTINE CMDLINE (NARGS,STRS,IARG,IOPT)
 
 C--------------------------------- NIST/BFRL ---------------------------------
@@ -853,8 +854,9 @@ C
       END
 	logical function countargs (label,tocount,lcarray,numc,nret)
 
-!	Count the number of arguments on the input line. 
-!	Should be tocount. If not, then return an error (logical false)
+      ! Count the number of non-blank arguments on the input line. 
+      ! Should be tocount. If not, then return an error (logical false)
+      ! If tocount is zero or less, just count them
 
       include "precis.fi"
       include "cparams.fi"
@@ -866,31 +868,28 @@ C
 	countargs = .false.
 	nret = 0.
 
-      do i = 1, tocount
-          if (lcarray(i).eq.' ') then
-              if (i.eq.1.) then
-                  write(logerr,5003) label, tocount
-              else if (i.eq.2) then
-                  write(logerr,5004) label, tocount
-              else
-                  write(logerr,5000) label, tocount, nret
+      ! check for the expected number of arguments if tocount >=0
+      if (tocount.gt.0) then
+          do i = 1, tocount
+              if (lcarray(i).eq.' ') then
+                  if (i.eq.1.) then
+                      write(logerr,5003) label, tocount
+                  else if (i.eq.2) then
+                      write(logerr,5004) label, tocount
+                  else
+                      write(logerr,5000) label, tocount, nret
+                  endif
+                  return
               endif
-              return
-          endif
-          nret = nret + 1
-      end do
+              nret = nret + 1
+          end do
+      end if
 
+      ! we have the number expected or tocount <=0, just count them now
       countargs = .true.
-
-	do 2 i = tocount+1, numc
+	do i = tocount+1, numc
 	if (lcarray(i).ne.' ') nret = nret + 1
-2	continue	
-
-	if(nret.eq.tocount) then
-		 write(logerr,5001) label, (lcarray(i),i=1,nret)
-	else
-		 write(logerr,5002) label, (lcarray(i),i=1,nret)
-	endif
+      end do	
 
 	return
 

@@ -5581,6 +5581,7 @@ Public Class CeditMain
         myEnvironment.InputFilePath = FileName
         myRecentFiles.Add(FileName)
         myUnits.SI = False
+        UpdateGUI.InitFireObjectList(Me.FireName)
     End Sub
     Private Sub MenuSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSave.Click
         SaveDataFile(False)

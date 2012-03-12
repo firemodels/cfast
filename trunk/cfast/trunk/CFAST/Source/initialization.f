@@ -1420,7 +1420,7 @@ c
 
       SUBROUTINE INITTARG (IERROR)
 
-!     routine: initspec
+!     routine: inittarg
 !     purpose: Initialize target data structures
 !     Arguments: IERROR  Returns error codes
 

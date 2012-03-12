@@ -1,30 +1,29 @@
-C	Aug 15,1995 added a group of varibles for FSM (PAR)
-	INTEGER OBOTEMP, OBOFLUX
-	PARAMETER (OBOTEMP=1,OBOFLUX=2)
+      integer obotemp, oboflux
+      parameter (obotemp=1,oboflux=2)
 
-      LOGICAL OBJDEF(0:MXOIN)
-      CHARACTER*60 OBJNAM(MXOIN),CONEF(5)
-      INTEGER OBJLFM(MXOIN),OBJTYP(MXOIN),OBTARG(MXOIN), OBJSET(MXOIN)
+      logical objdef(0:mxoin)
+      character*60 objnam(mxoin), omatl(0:mxoin)
+      integer objlfm(mxoin),objtyp(mxoin),obtarg(mxoin), objset(mxoin)
 
-      DOUBLE PRECISION
-     *     OBJCRI(3,0:MXOIN),OBJMAS(0:MXOIN),OBJGMW(0:MXOIN),
-     *     OBJHC(NV,0:MXOIN),OBJVT(0:MXOIN),OMASS(NV,0:MXOIN),
-     *     OAREA(NV,0:MXOIN),OHIGH(NV,0:MXOIN),OQDOT(NV,0:MXOIN),
-     *     OCO(NV,0:MXOIN),OHCR(NV,0:MXOIN),OOD(NV,0:MXOIN),
-! Add a volume based characteristic length for calculating flux
-     *     OOC(NV,0:MXOIN), objclen(0:mxoin),
-     *     OMPRODR(NV,NS,MXOIN),OTIME(NV,MXOIN),
-     *     OBJORT(3,0:MXOIN),PNLDS, OBCOND(2,0:MXOIN),
-     *     OBJMINT,OBJPHI, OBJHGAS, OBJQAREA, 
-     *     DYPDT, DXPDT, DYBDT, DXBDT, DQDT,
-     *     OBJ_C(MXOIN), OBJ_H(MXOIN), OBJ_O(MXOIN), OBJ_N(MXOIN),
-     *     OBJ_Cl(MXOIN)
+      double precision
+     *objcri(3,0:mxoin),objmas(0:mxoin),objgmw(0:mxoin),
+     *objhc(nv,0:mxoin),objvt(0:mxoin),omass(nv,0:mxoin),
+     *oarea(nv,0:mxoin),ohigh(nv,0:mxoin),oqdot(nv,0:mxoin),
+     *oco(nv,0:mxoin),ohcr(nv,0:mxoin),ood(nv,0:mxoin),
+! add a volume based characteristic length for calculating flux
+     *ooc(nv,0:mxoin), objclen(0:mxoin),
+     *omprodr(nv,ns,mxoin),otime(nv,mxoin),
+     *objort(3,0:mxoin),pnlds, obcond(2,0:mxoin),
+     *objmint,objphi, objhgas, objqarea, 
+     *dypdt, dxpdt, dybdt, dxbdt, dqdt,
+     *obj_c(mxoin), obj_h(mxoin), obj_o(mxoin), obj_n(mxoin),
+     *obj_cl(mxoin)
 
-      COMMON /OBJCT2/ OBJNAM,CONEF
-      COMMON /OBJCT3/ OTIME,OBJCRI,OBJMAS,OBJGMW,OBJHC,OBJVT,
-     *                OMASS,OAREA,OHIGH,OQDOT,OCO,OHCR,OOD,OOC,OMPRODR,
-     *                OBJORT,PNLDS,OBCOND, objclen,
-     *                OBJMINT,OBJPHI, OBJHGAS, OBJQAREA,
-     *                DYPDT, DXPDT, DYBDT, DXBDT, DQDT,
-     *                OBJLFM,OBJTYP,OBJDEF,OBTARG, OBJSET,
-     *                OBJ_C, OBJ_H, OBJ_O, OBJ_N, OBJ_Cl
+      common /objct2/ objnam,omatl
+      common /objct3/ otime,objcri,objmas,objgmw,objhc,objvt,
+     *omass,oarea,ohigh,oqdot,oco,ohcr,ood,ooc,omprodr,
+     *objort,pnlds,obcond, objclen,
+     *objmint,objphi, objhgas, objqarea,
+     *dypdt, dxpdt, dybdt, dxbdt, dqdt,
+     *objlfm,objtyp,objdef,obtarg, objset,
+     *obj_c, obj_h, obj_o, obj_n, obj_cl

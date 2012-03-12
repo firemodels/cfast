@@ -1,46 +1,31 @@
-      SUBROUTINE FIRES(TSEC,FLWF,UPDATE)
-C
-C     Routine:     FIRES
-C
-C     Description:  Physical interface routine to calculate the current
-C                   rates of mass and energy flows into the layers from
-C                   all fires in the building.
-C
-C     Arguments: TSEC   Current simulation time (s)
-C                FLWF   Mass and energy flows into layers due to fires.
-C                       Standard source routine data structure.
-C                NFIRE  Total number of fires
-C                IFROOM Room numbers for each of the fires
-C                XFIRE  Fire related quantities used by other routines.
-C                       (I,1 to 3) = X, Y, and Z position for fire i
-C                       (I,4) = Mass into upper layer from fire i (EMS)
-C                       (I,5) = Pyrolysis rate from fire i (EMP)
-C                       (I,6) = Mass entrained in plume by fire i (EME)
-C                       (I,7 & 8) = Convective, and radiative heat into
-C                               upper layer, fire i
-C                       (I,9) = Total heat released by fire i
-C                       (I,10) = Total heat into lower layer by fire i
-C                       (I,11) = Total heat into upper layer by fire i
-C                       (I,12 to 18) = Heat of combustion, C/CO2,
-C                                CO/CO2, H/C, O/C, HCl, HCN yields for
-C                                fire i
-C					   (I,19) characteristic length of the burning volume
-C
-!     Revision History:
-!          7/93 Created
-!         10/93 added detection/suppression
-!          4/95 removed references to TMASS to eliminate FLINT complaint
-!          8/95 added UPDATE to argument list for FIRES and OBJINT.  Fixed so LFBT = 0 means no main fire.
-!          7/96 update hall data structures for rooms that are halls and have a main fire.
-!          9/96 changed qf to qfc in fire flow computation (qdot terms in ode's use convective not total
-!               heat release, radiative contribution to layers is handled in rdheat.)
-!          5/98 Implement fast startup option.  Execute this routine only if this 
-!               modeling feature is being used (rather than zeroing out the flow vector.)
-!          3/07 modify chemistry to include radiological species. Note that the knockdown from sprinklers is 
-!               applied in CHEMIE to the pyrolysis rate and in the interpreter to mass. Since knockdown is 
-!               applied to pyrolysis rate, (see notes below) the radiological production is the reduced 
-!               pyrolysis rate times the bare crfrat
-!          5/08 separate pyrolysis and kinetics to correct error in upper layer burning species generation
+      subroutine fires(tsec,flwf,update)
+
+!     routine: fires
+!     purpose: physical interface routine to calculate the current
+!              rates of mass and energy flows into the layers from
+!              all fires in the building.
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: tsec   current simulation time (s)
+!                flwf   mass and energy flows into layers due to fires.
+!                       standard source routine data structure.
+!                nfire  total number of fires
+!                ifroom room numbers for each of the fires
+!                xfire  fire related quantities used by other routines.
+!                       (i,1 to 3) = x, y, and z position for fire i
+!                       (i,4) = mass into upper layer from fire i (ems)
+!                       (i,5) = pyrolysis rate from fire i (emp)
+!                       (i,6) = mass entrained in plume by fire i (eme)
+!                       (i,7 & 8) = convective, and radiative heat into
+!                               upper layer, fire i
+!                       (i,9) = total heat released by fire i
+!                       (i,10) = total heat into lower layer by fire i
+!                       (i,11) = total heat into upper layer by fire i
+!                       (i,12 to 18) = heat of combustion, c/co2,
+!                                co/co2, h/c, o/c, hcl, hcn yields for
+!                                fire i
+!					   (i,19) characteristic length of the burning volume
+
 
       include "precis.fi"
       include "cfast.fi"
@@ -52,1065 +37,685 @@ C
       include "opt.fi"
       include "fltarget.fi"
 
-      DIMENSION FLWF(NR,NS+2,2), XNTMS(2,NS), STMASS(2,NS)
-      DIMENSION XXFIRE(1), YYFIRE(1), ZZFIRE(1), ZZLOC(1)
-      DIMENSION FTEMP(1), FVEL(1)
-      INTEGER CJETOPT
-      INTEGER UPDATE
+      dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
+      dimension xxfire(1), yyfire(1), zzfire(1), zzloc(1)
+      dimension ftemp(1), fvel(1)
+      integer cjetopt
+      integer update
 
-C     INITIALIZE SUMMATIONS AND LOCAL DATA
+      ! initialize summations and local data
+      do lsp = 1, ns + 2
+          do iroom = 1, n
+              flwf(iroom,lsp,upper) = 0.0d0
+              flwf(iroom,lsp,lower) = 0.0d0
+          end do
+      end do
+      nfire = 0
 
-      DO 30 LSP = 1, NS + 2
-        DO 20 IROOM = 1, N
-          FLWF(IROOM,LSP,UPPER) = 0.0D0
-          FLWF(IROOM,LSP,LOWER) = 0.0D0
-   20   CONTINUE
-   30 CONTINUE
-      NFIRE = 0
+      if (option(ffire)/=fcfast) return
 
-      IF (OPTION(FFIRE).NE.FCFAST) RETURN
+      ! Check to see if there is a main fire specified. We should not be able to get here
+      if (lfbo>0.and.lfbo<n.and.lfbt>0) then
+          write (logerr,*) 'Stop MAINF keyword is outdated. ',
+     .        'Update input file'
+      end if
 
-!	Start with the main fire (it is object 0)
+      nobj = 0
+      do i = 1, numobjl
+          if (objpnt(i)>0) then
+              iroom = objrm(i)
+              iobj = objpnt(i)
+              call pyrols(i,tsec,iroom,omasst,oareat,hf0t,
+     +        qpyrol,hcombt,cco2t,coco2t,hcratt,mfiret,ocratt,
+     +        clfrat,cnfrat,crfrat,update)
+              oplume(1,iobj) = omasst
 
-      IF (LFBO.GT.0.AND.LFBO.LT.N.AND.LFBT.GT.0) THEN
+              do lsp = 1, ns
+                  stmass(upper,lsp) = zzgspec(iroom,upper,lsp)
+                  stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
+              end do
 
-C       CALCULATE THE FIRE OUTPUTS FOR THE MAIN FIRE
+              call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),
+     +        dr(iroom),hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,
+     +        crfrat,mfiret,stmass,objpos(1,iobj),objpos(2,iobj),
+     +        objpos(3,iobj)+hf0t,oplume(2,iobj),oplume(3,iobj),qpyrol,
+     +        xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),
+     +        heatup(iroom),objclen(i))
 
-        CALL PYROLS(TSEC,LFBO,EMP(LFBO),APS(LFBO),HF0T,QPYROL,HCOMBT,
-     +      CCO2T,COCO2T,HCRATT,OCRATT,
-     +      CLFRAT,CNFRAT,crfrat,MFIRET)
-        DO 40 LSP = 1, NS
-          STMASS(UPPER,LSP) = ZZGSPEC(LFBO,UPPER,LSP)
-          STMASS(LOWER,LSP) = ZZGSPEC(LFBO,LOWER,LSP)
-   40   CONTINUE
+              ! sum the flows for return to the source routine
+              xtl = zztemp(iroom,lower)
+              flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
+              flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
+              q1 = cp * oplume(1,iobj) * te
+              q2 = cp * oplume(2,iobj) * xtl
+              flwf(iroom,q,upper) = flwf(iroom,q,upper) + 
+     +        qfc(upper,iroom) + q1 + q2
+              flwf(iroom,q,lower) = flwf(iroom,q,lower) - q2
+              do lsp = 1, ns
+                  flwf(iroom,lsp+2,upper) = flwf(iroom,lsp+2,upper) +
+     +            xntms(upper,lsp)
+                  flwf(iroom,lsp+2,lower) = flwf(iroom,lsp+2,lower) +
+     +            xntms(lower,lsp)
+              end do
 
-        CALL DOFIRE(0,LFBO,EMP(LFBO),HR(LFBO),BR(LFBO),DR(LFBO),HCOMBT,
-     +      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,MFIRET,
-     +      STMASS,FPOS(1),FPOS(2),FPOS(3)+HF0T,EME(LFBO),EMS(LFBO),
-     +      QPYROL,XNTMS,QF(LFBO),QFC(1,LFBO),XQFR,HEATLP(LFBO),
-     +      HEATUP(LFBO),objclen(0))
+              ! put the object information to arrays - xfire and froom, ...
+              ! note that we are carrying parallel data structures for the fire information
+              ! output uses the unsorted arrays, froom, ..., ordered by object
+              ! fire physics uses the sorted arrays, sorted by compartment
+              nfire = nfire + 1
+              ifroom(nfire) = iroom
+              xfire(nfire,1) = objpos(1,iobj)
+              xfire(nfire,2) = objpos(2,iobj)
+              xfire(nfire,3) = objpos(3,iobj) + hf0t
+              xfire(nfire,4) = oplume(3,iobj)
+              xfire(nfire,5) = oplume(1,iobj)
+              xfire(nfire,6) = oplume(2,iobj)
+              xfire(nfire,7) = qfc(1,iroom)
+              xfire(nfire,8) = xqfr
+              xfire(nfire,9) = heatlp(iroom) + heatup(iroom)
+              xfire(nfire,10) = heatlp(iroom)
+              xfire(nfire,11) = heatup(iroom)
+              xfire(nfire,12) = hcombt
+              xfire(nfire,13) = cco2t
+              xfire(nfire,14) = coco2t
+              xfire(nfire,15) = hcratt
+              xfire(nfire,16) = ocratt
+              xfire(nfire,17) = clfrat
+              xfire(nfire,18) = cnfrat
+              xfire(nfire,19) = objclen(iobj)
+              nobj = nobj + 1
+              froom(nobj) = iroom
+              femp(nobj) = oplume(1,iobj)
+              fems(nobj) = oplume(3,iobj)
+              ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemie and pyrols)
+              femr(nobj) = oplume(1,iobj)* crfrat
+              fqf(nobj) = heatlp(iroom) + heatup(iroom)
+              fqfc(nobj) = qfc(1,iroom)
+              fqlow(nobj) = heatlp(iroom)
+              fqupr(nobj) = heatup(iroom)
+              farea(nobj) = oareat
+              do j = 1,3
+                  fopos (j,nobj) = objpos(j,iobj)
+              end do
 
-!     SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
+          end if
+      end do
 
-        XTL = ZZTEMP(LFBO,LOWER)
-        FLWF(LFBO,M,UPPER) = FLWF(LFBO,M,UPPER) + EMS(LFBO)
-        FLWF(LFBO,M,LOWER) = FLWF(LFBO,M,LOWER) - EME(LFBO)
-        QEME = CP * EME(LFBO) * XTL
-        QEMP = CP * EMP(LFBO) * TE
-        FLWF(LFBO,Q,UPPER) = FLWF(LFBO,Q,UPPER) + QFC(UPPER,LFBO)
-     .                     + QEME + QEMP
-        FLWF(LFBO,Q,LOWER) = FLWF(LFBO,Q,LOWER) - QEME
-        DO 50 LSP = 1, NS
-          FLWF(LFBO,LSP+2,UPPER) = FLWF(LFBO,LSP+2,UPPER) +
-     +        XNTMS(UPPER,LSP)
-          FLWF(LFBO,LSP+2,LOWER) = FLWF(LFBO,LSP+2,LOWER) +
-     +        XNTMS(LOWER,LSP)
-   50   CONTINUE
+      return
+      end
 
-C       MAKE UP IFROOM AND XFIRE FOR THE MAIN FIRE
+      subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,cco2t,
+     .coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,xmfir,stmass,
+     .xfx,xfy,xfz,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup,
+     .objectsize)
 
-        NFIRE = NFIRE + 1
-        IFROOM(NFIRE) = LFBO
-        XFIRE(NFIRE,1) = FPOS(1)
-        XFIRE(NFIRE,2) = FPOS(2)
-        XFIRE(NFIRE,3) = FPOS(3) + HF0T
-        XFIRE(NFIRE,4) = EMS(LFBO)
-        XFIRE(NFIRE,5) = EMP(LFBO)
-        XFIRE(NFIRE,6) = EME(LFBO)
-        XFIRE(NFIRE,7) = QFC(1,LFBO)
-        XFIRE(NFIRE,8) = XQFR
-        XFIRE(NFIRE,9) = HEATLP(LFBO) + HEATUP(LFBO)
-        XFIRE(NFIRE,10) = HEATLP(LFBO)
-        XFIRE(NFIRE,11) = HEATUP(LFBO)
-        XFIRE(NFIRE,12) = HCOMBT
-        XFIRE(NFIRE,13) = CCO2T
-        XFIRE(NFIRE,14) = COCO2T
-        XFIRE(NFIRE,15) = HCRATT
-        XFIRE(NFIRE,16) = OCRATT
-        XFIRE(NFIRE,17) = CLFRAT
-        XFIRE(NFIRE,18) = CNFRAT
-	  xfire(nfire,19) = objclen(0)
-        FROOM(0) = LFBO
-        FEMP(0) = EMP(LFBO)
-        FEMS(0) = EMS(LFBO)
-! note that cnfrat is not reduced by sprinklers, but emp is so femr is
-! (see code in chemie and pyrols)
-        femr(0) = emp(lfbo) * crfrat
-        FQF(0) = HEATLP(LFBO) + HEATUP(LFBO)
-        FQFC(0) = QFC(1,LFBO)
-        FQLOW(0) = HEATLP(LFBO)
-        FQUPR(0) = HEATUP(LFBO)
-        FAREA(0) = APS(LFBO)
 
-C*** update HALL data structures for rooms that are halls and have a main
-C    fire
-
-        I = LFBO
-        IF(UPDATEHALL.AND.IZHALL(I,IHROOM).EQ.1.AND.
-     .                    IZHALL(I,IHMODE).NE.IHAFTER)THEN
-          IF (SWITCH(1,I)) THEN
-            TCEIL = TWJ(1,I,1)
-           ELSE
-            TCEIL = ZZTEMP(I,UPPER)
-          END IF
-          IF (SWITCH(3,I)) THEN
-            TUWALL = TWJ(1,I,3)
-           ELSE
-            TUWALL = ZZTEMP(I,UPPER)
-          END IF
-
-C*** don't calculate heat transfer
-
-          CJETOPT = 2
-
-          XXFIRE(1) = XFIRE(NFIRE,1)
-          YYFIRE(1) = XFIRE(NFIRE,2)
-          ZZFIRE(1) = XFIRE(NFIRE,3)
-
-C*** it doesn't matter what ZZLOC is since we are not using the
-C    temperature or velocity of the ceiling jet.  we are just interested
-C    in the maximum value
-
-          ZZLOC(1) = HR(I) - 0.1D0
-
-          CALL CEILHT(XFIRE(NFIRE,4),XFIRE(NFIRE,7),TCEIL,
-     +        ZZTEMP(I,LOWER),ZZTEMP(I,UPPER),TUWALL,bR(I),dR(I),
-     +        HR(I),XXFIRE(1),YYFIRE(1),ZZFIRE(1),
-     +        ZZHLAY(I,LOWER),ZZRHO(I,LOWER),ZZRHO(I,UPPER),CJETOPT,
-     +        XXFIRE,YYFIRE,ZZLOC,
-     +        1,QCEIL,QFCLGA,QFWLA,QFWUA,
-     +        FTEMP,FVEL,FTMAX,FVMAX,FDMAX)
-
-          WIDTH = MIN(BR(I),DR(I))
-          CALL SETHALL(2,-1,I,TSEC,WIDTH,FTMAX,FVMAX,FDMAX)
-        ENDIF
-
-      END IF
-
-C     OTHER FIRES COME FROM THE OBJECT DATABASE
-
-      NOBJ = 0
-      DO 80 I = 1, NUMOBJL
-        IF (OBJPNT(I).GT.0) THEN
-          IROOM = OBJRM(I)
-          IOBJ = OBJPNT(I)
-          CALL OBJINT(I,TSEC,IROOM,OMASST,OAREAT,HF0T,
-     +        QPYROL,HCOMBT,CCO2T,COCO2T,HCRATT,MFIRET,OCRATT,
-     +        CLFRAT,CNFRAT,crfrat,UPDATE)
-          OPLUME(1,IOBJ) = OMASST
-
-          DO 60 LSP = 1, NS
-            STMASS(UPPER,LSP) = ZZGSPEC(IROOM,UPPER,LSP)
-            STMASS(LOWER,LSP) = ZZGSPEC(IROOM,LOWER,LSP)
-   60     CONTINUE
-
-          CALL DOFIRE(I,IROOM,OPLUME(1,IOBJ),HR(IROOM),BR(IROOM),
-     +        DR(IROOM),HCOMBT,CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,
-     +        crfrat,MFIRET,STMASS,OBJPOS(1,IOBJ),OBJPOS(2,IOBJ),
-     +        OBJPOS(3,IOBJ)+HF0T,OPLUME(2,IOBJ),OPLUME(3,IOBJ),QPYROL,
-     +        XNTMS,QF(IROOM),QFC(1,IROOM),XQFR,HEATLP(IROOM),
-     +        HEATUP(IROOM),objclen(i))
-
-C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
-
-          XTL = ZZTEMP(IROOM,LOWER)
-          FLWF(IROOM,M,UPPER) = FLWF(IROOM,M,UPPER) + OPLUME(3,IOBJ)
-          FLWF(IROOM,M,LOWER) = FLWF(IROOM,M,LOWER) - OPLUME(2,IOBJ)
-          Q1 = CP * OPLUME(1,IOBJ) * TE
-          Q2 = CP * OPLUME(2,IOBJ) * XTL
-          FLWF(IROOM,Q,UPPER) = FLWF(IROOM,Q,UPPER) + QFC(UPPER,IROOM)
-     +                          + Q1 + Q2
-          FLWF(IROOM,Q,LOWER) = FLWF(IROOM,Q,LOWER) - Q2
-          DO 70 LSP = 1, NS
-            FLWF(IROOM,LSP+2,UPPER) = FLWF(IROOM,LSP+2,UPPER) +
-     +          XNTMS(UPPER,LSP)
-            FLWF(IROOM,LSP+2,LOWER) = FLWF(IROOM,LSP+2,LOWER) +
-     +          XNTMS(LOWER,LSP)
-   70     CONTINUE
-
-!     Put the object information to arrays - xfire and froom, ...
-!	Note that we are carrying parallel data structures for the fire information
-!	Output uses the unsorted arrays, froom, ..., ordered by object
-!	Fire physics uses the sorted arrays, sorted by compartment
-
-          NFIRE = NFIRE + 1
-          IFROOM(NFIRE) = IROOM
-          XFIRE(NFIRE,1) = OBJPOS(1,IOBJ)
-          XFIRE(NFIRE,2) = OBJPOS(2,IOBJ)
-          XFIRE(NFIRE,3) = OBJPOS(3,IOBJ) + HF0T
-          XFIRE(NFIRE,4) = OPLUME(3,IOBJ)
-          XFIRE(NFIRE,5) = OPLUME(1,IOBJ)
-          XFIRE(NFIRE,6) = OPLUME(2,IOBJ)
-          XFIRE(NFIRE,7) = QFC(1,IROOM)
-          XFIRE(NFIRE,8) = XQFR
-          XFIRE(NFIRE,9) = HEATLP(IROOM) + HEATUP(IROOM)
-          XFIRE(NFIRE,10) = HEATLP(IROOM)
-          XFIRE(NFIRE,11) = HEATUP(IROOM)
-          XFIRE(NFIRE,12) = HCOMBT
-          XFIRE(NFIRE,13) = CCO2T
-          XFIRE(NFIRE,14) = COCO2T
-          XFIRE(NFIRE,15) = HCRATT
-          XFIRE(NFIRE,16) = OCRATT
-          XFIRE(NFIRE,17) = CLFRAT
-          XFIRE(NFIRE,18) = CNFRAT
-	    xfire(nfire,19) = objclen(iobj)
-          NOBJ = NOBJ + 1
-          FROOM(NOBJ) = IROOM
-          FEMP(NOBJ) = OPLUME(1,IOBJ)
-          FEMS(NOBJ) = OPLUME(3,IOBJ)
-! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is
-! (see code in chemie and pyrols)
-          femr(nobj) = oplume(1,iobj)* crfrat
-          FQF(NOBJ) = HEATLP(IROOM) + HEATUP(IROOM)
-          FQFC(NOBJ) = QFC(1,IROOM)
-          FQLOW(NOBJ) = HEATLP(IROOM)
-          FQUPR(NOBJ) = HEATUP(IROOM)
-          FAREA(NOBJ) = OAREAT
-		do j = 1,3
-			fopos (j,nobj) = objpos(j,iobj)
-		end do
-
-        END IF
-   80 CONTINUE
-      RETURN
-      END
-
-      SUBROUTINE DOFIRE(IFIRE,IROOM,XEMP,XHR,XBR,XDR,HCOMBT,CCO2T,
-     .   COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,XMFIR,STMASS,
-     .   XFX,XFY,XFZ,XEME,XEMS,XQPYRL,XNTMS,XQF,XQFC,XQFR,XQLP,XQUP,
-     .   objectsize)
-
-C
-C     Routine:     DOFIRE
-
-!     Description:  Do heat release from a fire for both main fire and objects. Pyrolysis 
-!     and kinetics are separate operations.  Pyrolysis: TUHC, HCL, HCN, CT and TS - source 
-!     is from pyrol and objint; plume to UL is done below. Combustion kinetics applies to O2, CO2, CO, OD - chemie
-
-!     Inputs:   IFIRE   - fire number (ifire=0 is the main fire)
-!               IROOM   - room containing the fire
-!               XEMP    - pyrolysis rate of the fire (kg/s)
-!               XHR     - height of the room (m)
-!               XBR     - breadth of the room (m)
-!               HCOMBT  - current heat of combustion (J/kg)
-!               CCO2T   - current carbon/CO2 production ratio (kg/kg)
-!               COCO2T  - current CO/CO2 production ratio (kg/kg)
-!               HCRATT  - current Hydrogen/Carbon ratio in fuel (kg/kg)
-!               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
-!               CLFRAT  - current HCl production rate (kg/kg pyrolized)
-!               CNFRAT  - current HCN production rate (kg/kg pyrolized)
-!               crfrat  - current trace species production rate (kg/kg pyrolized)
-!               XMFIR   - production rate of a species in fire (kg/s)
-!               STMASS   - mass of a species in a layer in the room (kg)
-!               XFX     - position of the fire in x direction
-!               XFY     - position of the fire in y direction
-!               XFZ     - position of the fire in z direction
-!               objectsize - characteristic object diameter for plume models
-!     Outputs:  XEME    - plume entrainment rate (kg/s)
-!               XEMS    - plume flow rate into the upper layer (kg/s)
-!               XQPYRL  - actual heat release rate of the fire (W)
-!               XNTMS   - net change in mass of a species in a layer
-!               XQF     - net heat generation rate into upper layer (W)
-!               XQFC    - net convection into layers (W)
-!               XQFR    - net radiation from fire (W)
-!               XQLP    - heat release in the lower plume (W)
-!               XQUP    - heat release rate in the upper plume (W)
+!     routine: dofire
+!     purpose: do heat release from a fire for both main fire and objects. pyrolysis 
+!         and kinetics are separate operations.  pyrolysis: tuhc, hcl, hcn, ct and ts - source 
+!         is from pyrols ; plume to ul is done below. combustion kinetics applies to o2, co2, co, od - chemie
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments: ifire   - fire number (ifire=0 is the main fire)
+!                iroom   - room containing the fire
+!                xemp    - pyrolysis rate of the fire (kg/s)
+!                xhr     - height of the room (m)
+!                xbr     - breadth of the room (m)
+!                hcombt  - current heat of combustion (j/kg)
+!                cco2t   - current carbon/co2 production ratio (kg/kg)
+!                coco2t  - current co/co2 production ratio (kg/kg)
+!                hcratt  - current hydrogen/carbon ratio in fuel (kg/kg)
+!                ocratt  - current oxygen/carbon ratio in fuel (kg/kg)
+!                clfrat  - current hcl production rate (kg/kg pyrolized)
+!                cnfrat  - current hcn production rate (kg/kg pyrolized)
+!                crfrat  - current trace species production rate (kg/kg pyrolized)
+!                xmfir   - production rate of a species in fire (kg/s)
+!                stmass   - mass of a species in a layer in the room (kg)
+!                xfx     - position of the fire in x direction
+!                xfy     - position of the fire in y direction
+!                xfz     - position of the fire in z direction
+!                objectsize - characteristic object diameter for plume models
+!     outputs:   xeme    - plume entrainment rate (kg/s)
+!                xems    - plume flow rate into the upper layer (kg/s)
+!                xqpyrl  - actual heat release rate of the fire (w)
+!                xntms   - net change in mass of a species in a layer
+!                xqf     - net heat generation rate into upper layer (w)
+!                xqfc    - net convection into layers (w)
+!                xqfr    - net radiation from fire (w)
+!                xqlp    - heat release in the lower plume (w)
+!                xqup    - heat release rate in the upper plume (w)
 !
-!     Revision History:
-!     
-!          5/08 separate pyrolisys and kinetics so that the the plume model for heat realease can be 
-!               modified to a dynamic model.
-!          3/07 add trace species (ns = 11)
-!          4/98 fixed upper/lower layer separation (depends on where the fire is)
-!          9/98 added some more initializations for when the fire is only in the upper layer
-!         10/97 added initialization to XQFC, error only showed when there was upper but not lower layer burning
-!          2/96 fixed definition of XXFIREU (was missing XZ term)
-!          2/96 added missing initialization to XQFR
-!          6/95 commented out species specific code from a 'type 1' fire calculation
-!          4/95 removed reference to tmass to remove flint complaint
-!          4/94 added multiple pass through fire "chemistry" for oxygen limited fires so that plume entrainment is
-!               consistent with actual fire size.
-!         10/93 added detection/suppression
-!         11/91 modified call to firplm for entrainment type so NETMAS returns just amount for this
-!               fire.  Accumulation must be done by calling routine.  Note new definition of NETMAS.
-!               Standardized calling sequence.
-!          5/91 eliminate general contribution from plume done in chemie, add in just ct and tuhc
-!          2/91 changed limit on plume entrainment
 
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "fireptrs.fi"
 
-      DIMENSION XMFIR(NS), XNTMS(2,NS), XQFC(2), STMASS(2,NS), XMASS(NS)
-      LOGICAL PASS2
+      dimension xmfir(ns), xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
 
-      X1 = 1.0D0
-      X0 = 0.0D0
+      x1 = 1.0d0
+      x0 = 0.0d0
 
-C--- note: added upper/lower parameters to following three statements.
-C          xtu was incorrectly set to lower layer temp, fixed it
+      ! note: added upper/lower parameters to following three statements.
+      ! xtu was incorrectly set to lower layer temp, fixed it
+      xz = zzhlay(iroom,upper)
+      xtl = zztemp(iroom,lower)
+      xtu = zztemp(iroom,upper)
+      xqfc(lower) = 0.0d0
+      xqfc(upper) = 0.0d0
+      xqlp = 0.0d0
+      xeme = 0.0d0
 
-      XZ = ZZHLAY(IROOM,UPPER)
-      XTL = ZZTEMP(IROOM,LOWER)
-      XTU = ZZTEMP(IROOM,UPPER)
-      XQFC(LOWER) = 0.0D0
-      XQFC(UPPER) = 0.0D0
-      XQLP = 0.0D0
-      XEME = 0.0D0
+      ! these are the lengths ("heights") in the upper and lower layers respectively
+      ! if it is negative, then the fire is not in that layer
+      xxfirel = xhr - xz - xfz
+      xxfireu = xhr - xfz
+      xntfl = x0
+      qheatl = x0
+      qheatu = x0
+      xqfr = x0
+      xems = x0
 
-C     THESE ARE THE LENGTHS ("HEIGHTS") IN THE UPPER AND LOWER LAYERS RESPECTIVELY
-C     IF IT IS NEGATIVE, THEN THE FIRE IS NOT IN THAT LAYER
+      do lsp = 1, ns
+          xntms(upper,lsp) = x0
+          xntms(lower,lsp) = x0
+          xmass(lsp) = x0
+      end do
 
-      XXFIREL = XHR - XZ - XFZ
-	XXFIREU = XHR - XFZ
-      XNTFL = X0
-      QHEATL = X0
-      QHEATU = X0
-      XQFR = X0
-      XEMS = X0
-
-      DO 10 LSP = 1, NS
-        XNTMS(UPPER,LSP) = X0
-        XNTMS(LOWER,LSP) = X0
-        XMASS(LSP) = X0
-   10 CONTINUE
-   
-!     Deposit pyrolysis material into the upper layer. These are the species which are not affected by combustion.
-!     Any combustion related stuff is done by chemie. TUHC is a pyrolysis material whose concentration can be 
-!     modified by combustion.
-
+      ! Deposit pyrolysis material into the upper layer. These are the species which are not affected by combustion.
+      ! Any combustion related stuff is done by chemie. TUHC is a pyrolysis material whose concentration can be 
+      ! modified by combustion.
       xntms(upper,5) = xmfir(5)
       xntms(upper,6) = xmfir(6)
       xntms(upper,7) = xmfir(7)
       xntms(upper,10)= xmfir(10)
       xntms(upper,11) = xmfir(11)
-      
-!     Now do the kinetics scheme
-	
-C     DIVVY UP THE PLUME OUTPUT INTO RADIATION AND CONVECTIVE ENERGY.
-C     CONVECTION DRIVES THE PLUME ENTRAINMENT
 
-      CHIRAD = MAX(MIN(radconsplit(ifire),X1),X0)
-      QHEATL = MAX((XQPYRL+CP*(TE-XTL)*XEMP)*(X1-CHIRAD),X0)
+      ! now do the kinetics scheme
 
-      IF (LFBT.EQ.FREE) THEN
-!	We have eliminated unconstrained fires, if we reach this point, the input parser has failed!
-	  stop 101
-      ELSE
+      ! divvy up the plume output into radiation and convective energy.
+      ! convection drives the plume entrainment
 
-C     NOTE THAT THE COMBINATION OF FIRPLM AND CHEMIE CAN BE CALLED TWICE
-C     IN A SINGLE ITERATION TO MAKE SURE THAT THE PLUME ENTRAINMENT IS
-C     CONSISTENT WITH THE ACTUAL FIRE SIZE FOR OXYGEN LIMITED FIRES
-C     THIS IS DONE BY "RE-PASSING" THE ACTUAL FIRE SIZE TO FIRPLM IN THE
-C     SECOND PASS
+      chirad = max(min(radconsplit(ifire),x1),x0)
+      qheatl = max((xqpyrl+cp*(te-xtl)*xemp)*(x1-chirad),x0)
 
-	  PASS2 = .FALSE.
+      if (lfbt==free) then
+          ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
+          stop 101
+      else
 
-C     CALCULATE THE ENTRAINMENT RATE BUT CONSTRAIN THE ACTUAL AMOUNT
-C     OF AIR ENTRAINED TO THAT REQUIRED TO PRODUCE STABLE STRATIFICATION
+          ! note that the combination of firplm and chemie can be called twice
+          ! in a single iteration to make sure that the plume entrainment is
+          ! consistent with the actual fire size for oxygen limited fires
+          ! this is done by "re-passing" the actual fire size to firplm in the
+          ! second pass
+          ipass = 1
+          do while (ipass<=2)
 
-   40   CALL FIRPLM(fplume(ifire), ifire, objectsize, 
-     .  QHEATL,XXFIREL,XEMP,XEMS,XEME,MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
+              ! calculate the entrainment rate but constrain the actual amount
+              ! of air entrained to that required to produce stable stratification
+              call firplm(fplume(ifire), ifire, objectsize, qheatl,
+     .        xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
-C     Only do the upper layer (the fire is not in the lower layer)
+              ! check for an upper only layer fire
+              if (xxfirel<=x0) go to 90
+              xeme = min(xeme,qheatl/(max((xtu-xtl),x1)*cp))
+              xems = xemp + xeme
 
-        IF (XXFIREL.LE.X0) GO TO 90
-        XEME = MIN(XEME,QHEATL/(MAX((XTU-XTL),X1)*CP))
-        XEMS = XEMP + XEME
+              call chemie(qspray(ifire,lower),xemp,xeme,iroom,lower,
+     .        hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
+     .        xqpyrl,xntfl,xmass)
 
-        CALL CHEMIE(QSPRAY(IFIRE,LOWER),XEMP,XEME,IROOM,LOWER,HCOMBT,
-     .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,
-     .      XQPYRL,XNTFL,XMASS)
+              ! limit the amount entrained to that actually entrained by the
+              ! fuel burned
+              xqpyrl = max(x0, (xqpyrl+cp*(te-xtl)*xemp)*(x1-chirad))
 
-C       LIMIT THE AMOUNT ENTRAINED TO THAT ACTUALLY ENTRAINED BY THE
-C       FUEL BURNED
+              if (xqpyrl<qheatl) then
+                  xeme = xeme * (xqpyrl/qheatl)
+                  qheatl = xqpyrl
+                  ipass = ipass + 1
+                  cycle
+              end if
+              exit
+          end do
+          xqpyrl = xqpyrl/(x1-chirad)
+          xems = xemp + xeme
 
-        XQPYRL = MAX(X0, (XQPYRL+CP*(TE-XTL)*XEMP)*(X1-CHIRAD))
+          do  i = 1, ns
+              xntms(upper,i) = xmass(i) + xntms(upper,i)
+          end do
 
-        IF (XQPYRL.LT.QHEATL) THEN
-          XEME = XEME * (XQPYRL/QHEATL)
-          QHEATL = XQPYRL
-          IF (.NOT.PASS2) THEN
-            PASS2 = .TRUE.
-            GO TO 40
-          END IF
-        END IF
+          ! add the species flow entrained by the plume
+          xtemp = x0
+          do lsp = 1, 9
+              xtemp = xtemp + stmass(lower,lsp)
+          end do
+          ! include the trace species in mass balance
+          xtemp = xtemp + stmass(lower,11)
+          if(xtemp==0.0d0) xtemp = 1.0d0
+          do lsp = 1, ns
+              if (activs(lsp)) then
+                  xnet = xeme * stmass(lower,lsp) / xtemp
+                  xntms(upper,lsp) = xntms(upper,lsp) + xnet
+                  xntms(lower,lsp) = xntms(lower,lsp) - xnet
+              end if
+          end do
+          xqfr = xqpyrl * chirad
+          xqfc(upper) = xqpyrl * (x1-chirad)
+          xqlp = xqpyrl
+          xqf = xqpyrl
 
-        XQPYRL = XQPYRL/(X1-CHIRAD)
-        XEMS = XEMP + XEME
+          ! add burning in the upper layer to the fire. the heat which
+          ! drives entrainment in the upper layer is the sum of the
+          ! heat released in the lower layer and what can be released
+          ! in the upper layer.
 
-        DO 50 I = 1, NS
-          XNTMS(UPPER,I) = XMASS(I) + XNTMS(UPPER,I)
-   50   CONTINUE
-C
-C       ADD THE SPECIES FLOW ENTRAINED BY THE PLUME
-C
-        XTEMP = X0
-        DO 60 LSP = 1, 9
-          XTEMP = XTEMP + STMASS(LOWER,LSP)
-   60   CONTINUE
-!       include the trace species in mass balance
-        xtemp = xtemp + stmass(lower,11)
-        IF(XTEMP.EQ.0.0D0)XTEMP = 1.0D0
-        DO 70 LSP = 1, NS
-          IF (ACTIVS(LSP)) THEN
-            XNET = XEME * STMASS(LOWER,LSP) / XTEMP
-            XNTMS(UPPER,LSP) = XNTMS(UPPER,LSP) + XNET
-            XNTMS(LOWER,LSP) = XNTMS(LOWER,LSP) - XNET
-          END IF
-   70   CONTINUE
-        XQFR = XQPYRL * CHIRAD
-        XQFC(UPPER) = XQPYRL * (X1-CHIRAD)
-        XQLP = XQPYRL
-        XQF = XQPYRL
+          ! start with the fuel removed by lower layer burning, xntfl
+          ! umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
+   90     xqup = 0.0d0
+          uplmep = max(x0,xemp-xntfl)
 
-C       ADD BURNING IN THE UPPER LAYER TO THE FIRE. THE HEAT WHICH
-C       DRIVES ENTRAINMENT IN THE UPPER LAYER IS THE SUM OF THE
-C       HEAT RELEASED IN THE LOWER LAYER AND WHAT CAN BE RELEASED
-C       IN THE UPPER LAYER.
-C
-C       START WITH THE FUEL REMOVED BY LOWER LAYER BURNING, XNTFL
-C       UMPLM{EP},{ES},AND {EE} ARE EQUIVALENT TO EMP, EMS AND EME
+          if (uplmep>x0) then
+              qheatu = hcombt * uplmep + qheatl
+              height = max (x0, min(xz,xxfireu))
 
-   90   XQUP = 0.0D0
-	  UPLMEP = MAX(X0,XEMP-XNTFL)
+              call firplm(fplume(ifire), ifire, objectsize,
+     .        qheatu,height,uplmep,uplmes,uplmee,
+     .        min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
-        IF (UPLMEP.GT.X0) THEN
-          QHEATU = HCOMBT * UPLMEP + QHEATL
-          HEIGHT = MAX (X0, MIN(XZ,XXFIREU))
-          CALL FIRPLM(fplume(ifire), ifire, objectsize,
-     .        QHEATU,HEIGHT,UPLMEP,UPLMES,UPLMEE,
-     .        MIN(XFX,XbR-XFX),MIN(XFY,XdR-XFY))
-          CALL CHEMIE(QSPRAY(IFIRE,UPPER),UPLMEP,UPLMEE,IROOM,UPPER,
-     .        HCOMBT,CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,
-     .        XQPYRL,XNTFL,XMASS)
-          XQFR = XQPYRL * CHIRAD + XQFR
-          XQFC(UPPER) = XQPYRL * (X1-CHIRAD) + XQFC(UPPER)
-          XQUP = XQPYRL
-          XQF = XQPYRL + XQF
-          DO 80 I = 1, NS
-            XNTMS(UPPER,I) = XMASS(I) + XNTMS(UPPER,I)
-   80     CONTINUE
-        END IF
-        
-      END IF
-      RETURN
-      END
+              call chemie(qspray(ifire,upper),uplmep,uplmee,iroom,upper,
+     .        hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
+     .        xqpyrl,xntfl,xmass)
+              xqfr = xqpyrl * chirad + xqfr
+              xqfc(upper) = xqpyrl * (x1-chirad) + xqfc(upper)
+              xqup = xqpyrl
+              xqf = xqpyrl + xqf
+              do i = 1, ns
+                  xntms(upper,i) = xmass(i) + xntms(upper,i)
+              end do
+          end if
 
-      SUBROUTINE CHEMIE(QQSPRAY,PYROL,ENTRAIN,SOURCE,LAYER,HCOMBT,CCO2T,
-     + COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,QPYROL,NETFUEL,XMASS)
+      end if
+      return
+      end
 
-!     Routine:     CHEMIE
+      subroutine chemie(qqspray,pyrol,entrain,source,layer,hcombt,cco2t,
+     +coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,qpyrol,netfuel,xmass)
 
-!     Description:  Do the combustion chemistry - for plumes in both the upper and lower layers.
-!     Note that the kinetics scheme is implemented here.  However, applying it to the
-!     various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is 
-!     somewhat complex.
 
-!     Care should be exercised in making changes either here or in the source interface routine.
+!     routine: chemie
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     purpose: do the combustion chemistry - for plumes in both the upper and lower layers.
+!         note that the kinetics scheme is implemented here.  however, applying it to the
+!         various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is 
+!         somewhat complex.
 
-!     Arguments: QQSPRAY  heat release rate at sprinkler activation time
-!                PYROL   pyrolysis rate of the fuel (kg/s)
-!                ENTRAIN plume entrainment rate (kg/s)
-!                SOURCE  room number from which the mass flux comes
-!                LAYER   layer mass is coming from (1=lower, 2=upper)
-!                HCOMBT  current heat of combustion (J/kg)
-!                CCO2T   current carbon/CO2 production ratio (kg/kg)
-!                COCO2T  current CO/CO2 production ratio (kg/kg)
-!                HCRATT  current Hydrogen/Carbon ratio in fuel (kg/kg)
-!                OCRATT  current Oxygen/Carbon ratio in fuel (kg/kg)
-!                CLFRAT  current HCl production rate (kg/kg pyrolized )
-!                CNFRAT  current HCN production rate (kg/kg pyrolized)
+!         care should be exercised in making changes either here or in the source interface routine.
+
+!     arguments: qqspray  heat release rate at sprinkler activation time
+!                pyrol   pyrolysis rate of the fuel (kg/s)
+!                entrain plume entrainment rate (kg/s)
+!                source  room number from which the mass flux comes
+!                layer   layer mass is coming from (1=lower, 2=upper)
+!                hcombt  current heat of combustion (j/kg)
+!                cco2t   current carbon/co2 production ratio (kg/kg)
+!                coco2t  current co/co2 production ratio (kg/kg)
+!                hcratt  current hydrogen/carbon ratio in fuel (kg/kg)
+!                ocratt  current oxygen/carbon ratio in fuel (kg/kg)
+!                clfrat  current hcl production rate (kg/kg pyrolized )
+!                cnfrat  current hcn production rate (kg/kg pyrolized)
 !                crfrat  current trace species production (kg/kg pyrolized)
-!                QPYROL  net heat release rate constrained by available oxygen (W)
-!                NETFUEL net burning rate of fuel constrained by available oxygen (kg/s)
-!                XMASS   net rate of production of species into layers in the room containing the fire (kg/s)
-
-!     Revision History:
-!          5/08 remove pyrolysis calculations 
-!          3/07 added trace species tracking
-!          3/04 fixed oxygen and hydrogen accounting. The way o/c was being used was as a mass ratio
-!               of oxygen to fuel, but the manual specifies mass of oxygen to mass of carbon
-!          4/94 moved summing of species production rates to calling routine so CHEMIE can be 
-!               called multiple times. Removed EQUIVALENCE to XMASS, now an argument.
-!         10/93 added sprinkler attenuation
-!         12/92 modified oxygen limit to TANH for smooth cutoff independent of the limit
-!         11/91 modified so NETMAS returns just amount for this fire.  Accumulation must be done by calling 
-!               routine.  Note new definition of NETMAS. Standardized calling sequence.
-!          8/90 remove entrainment calculation. Done by caller
-!          3/90 procedure call modified to pass all changed arguments
-!          2/90 more complete combustion scheme, account for H, O, HCL, and HCN
-!          9/89 correct coefficients - FACTOR and NETCO2
-!         11/88 smooth falloff of kinetics near oxygen limit
-!         11/87 generalize for upper layer, lower layer, and plume
+!                qpyrol  net heat release rate constrained by available oxygen (w)
+!                netfuel net burning rate of fuel constrained by available oxygen (kg/s)
+!                xmass   net rate of production of species into layers in the room containing the fire (kg/s)
 
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
 
-      DIMENSION XMASS(NS)
-      INTEGER SOURCE
-      DOUBLE PRECISION NETFUEL, NETFUL
-      DOUBLE PRECISION NETH2O, NETCO2, NETCO, NETC, NETO2, NETCL, NETCN
-	double precision mdotnet, mdotnetactual
-      LOGICAL FIRST
-      SAVE FIRST, O2F, O2FI, O2RANGE, XX0, XXFOUR, XXHALF, XXRANGE
-      DATA FIRST /.TRUE./
-      IF (FIRST) THEN
-        O2F = 1.31D+7
-        O2FI = 1.0D0 / O2F
-        O2RANGE = 0.01D0
-        FIRST = .FALSE.
-        XX0 = 0.0D0
-	  XX1 = 1.0D0
-        XXFOUR = 4.0D0
-        XXHALF = 0.5D0
-        XXRANGE = 8.0D0 / O2RANGE
-      END IF
+      dimension xmass(ns)
+      integer source
+      double precision netfuel, netful
+      double precision neth2o, netco2, netco, netc, neto2, netcl, netcn
+      double precision mdotnet, mdotnetactual
+      logical first
+      save first, o2f, o2fi, o2range, xx0, xxfour, xxhalf, xxrange
+      data first /.true./
+      if (first) then
+          o2f = 1.31d+7
+          o2fi = 1.0d0 / o2f
+          o2range = 0.01d0
+          first = .false.
+          xx0 = 0.0d0
+          xx1 = 1.0d0
+          xxfour = 4.0d0
+          xxhalf = 0.5d0
+          xxrange = 8.0d0 / o2range
+      end if
 
-C     CALCULATE THE ACTUAL BURNING RATE CONSTRAINED BY AVAILABLE O2.
- 
-C     NOTE THE SCALING IN THE TANH FUNCTION.  TANH APPROACHES ~2 AT
-C     ABOUT ~4. THE FUNCTION INSIDE THE TANH SCALES THE ORDINATE TO
-C     ~O2RANGE.  THE REMAINDER OF THE FUNCTION SCALES THE ABSCISSA 
-C     TO 0-1 FOR O2INDEX.
- 
-      O2FRAC = ZZCSPEC(SOURCE,LAYER,2)
-      O2ENTR = ENTRAIN * O2FRAC
-      O2INDEX = TANH(XXRANGE*(O2FRAC-LIMO2)-XXFOUR) * XXHALF + XXHALF
-      O2MASS = O2ENTR * O2INDEX
-      QPYROL = MAX(XX0,MIN(PYROL*HCOMBT,O2MASS*O2F))
+      ! calculate the actual burning rate constrained by available o2.
 
-C     THIS IS THE KINETICS SCHEME AS DRIVEN BY DIFFUSION
+      ! note the scaling in the tanh function.  tanh approaches ~2 at
+      ! about ~4. the function inside the tanh scales the ordinate to
+      ! ~o2range.  the remainder of the function scales the abscissa 
+      ! to 0-1 for o2index.
+      o2frac = zzcspec(source,layer,2)
+      o2entr = entrain * o2frac
+      o2index = tanh(xxrange*(o2frac-limo2)-xxfour) * xxhalf + xxhalf
+      o2mass = o2entr * o2index
+      qpyrol = max(xx0,min(pyrol*hcombt,o2mass*o2f))
 
-C     FIRST CONVERT CHLORINE AND CYANIDE PRODUCTION TO CARBON BASED 
-C     RATIOS
+      ! first convert chlorine and cyanide production to carbon based ratios
 
-      FACT = (1.0D0+HCRATT+OCRATT) / (1.0D0-CLFRAT-CNFRAT)
-      CLCRAT = CLFRAT * FACT
-      CNCRAT = CNFRAT * FACT
+      fact = (1.0d0+hcratt+ocratt) / (1.0d0-clfrat-cnfrat)
+      clcrat = clfrat * fact
+      cncrat = cnfrat * fact
 
-      FCRATT = (1.0D0+OCRATT+HCRATT+CLCRAT+CNCRAT)
+      fcratt = (1.0d0+ocratt+hcratt+clcrat+cncrat)
 
-	mdotnet = pyrol
-	mdotnetactual = min (mdotnet, o2mass*o2f/hcombt)
+      mdotnet = pyrol
+      mdotnetactual = min (mdotnet, o2mass*o2f/hcombt)
       qpyrol = mdotnetactual * hcombt
 
-!	Here we do a reduction for sprinklers if activation has occurred. Otherwise we just save the current value of the HRR
+      ! Here we do a reduction for sprinklers if activation has occurred. Otherwise we just save the current value of the HRR
 
-      IF (IDSET.EQ.SOURCE) THEN
+      if (idset==source) then
+          ! if idset=source then save value of fire for later quenching
+          qqspray = qpyrol
+      else if (idset==0) then
+          ! a sprinkler reduces the hrr from a fire. the reduction factor is determined by the sprinkler characteristics.
+          ! this factor is applied to the fire based on hrr at activation.
+          ! however, the hrr might be reduced for other reasons, so the arithmetic min function is used.
+          ! the value of qqspray is the value at activation. tfact is then a reduction based on time since activation
+          id = iquench(source)
+          if (id/=0) then
+              tdrate = xdtect(id,drate)
+              timef = xdtect(id,dtact)
+              tfact = exp(-(stime-timef)/tdrate)
+              if (qqspray>0.0d0) qpyrol = min(qpyrol,tfact*qqspray)
+          end if
+      end if
 
-C    IF IDSET=SOURCE THEN SAVE VALUE OF FIRE FOR LATER QUENCHING
+      netfuel = mdotnetactual
+      neto2 = -qpyrol * o2fi 
 
-        QQSPRAY = QPYROL
-      ELSE IF (IDSET.EQ.0) THEN
+      ! now do the "kinetics scheme"
+      neth2o = 9.0d0 * netfuel * hcratt / fcratt
+      factor1 = 1.0d0 + hcombt * o2fi - ocratt / fcratt
+      factor2 = (clcrat+cncrat+9.d0*hcratt) / fcratt
+      netco2 = (factor1-factor2) * netfuel / (1.d0+coco2t+cco2t)
 
-!	A sprinkler reduces the HRR from a fire. The reduction factor is determined by the sprinkler characteristics.
-!	This factor is applied to the fire based on HRR at activation.
-!	However, the HRR might be reduced for other reasons, so the arithmetic Min function is used.
-!	The value of QQSPRAY is the value at activation. TFACT is then a reduction based on time since activation
+      xmass(2) = neto2
+      xmass(3) = netco2
+      xmass(4) = netco2 * coco2t
+      xmass(7) = -netfuel ! this adjusts tuhc when combustion occurs
+      xmass(8) = 9.0d0 * netfuel * hcratt / fcratt
+      xmass(9) = netco2 * cco2t
 
-        ID = IQUENCH(SOURCE)
-        IF (ID.NE.0) THEN
-          TDRATE = XDTECT(ID,DRATE)
-          TIMEF = XDTECT(ID,DTACT)
-          TFACT = EXP(-(STIME-TIMEF)/TDRATE)
-          IF (QQSPRAY.GT.0.0D0) QPYROL = MIN(QPYROL,TFACT*QQSPRAY)
-        END IF
-      END IF
+      return
+      end subroutine chemie
 
-      NETFUEL = mdotnetactual
-      NETO2 = -QPYROL * O2FI 
+      subroutine pyrols (objn, time, iroom, omasst, oareat, 
+     .ohight, oqdott, objhct, cco2t, coco2t, hcratt, zmfire, ocratt,
+     .clfrat, cnfrat,crfrat,update)
 
-C     NOW DO THE "KINETICS SCHEME"
+!     routine:     pyrols
 
-      NETH2O = 9.0D0 * NETFUEL * HCRATT / FCRATT
-      FACTOR1 = 1.0D0 + HCOMBT * O2FI - OCRATT / FCRATT
-      FACTOR2 = (CLCRAT+CNCRAT+9.D0*HCRATT) / FCRATT
-      NETCO2 = (FACTOR1-FACTOR2) * NETFUEL / (1.D0+COCO2T+CCO2T)
+!     description:  returns yields for object fires interpolated from user input  
 
-      XMASS(2) = NETO2
-      XMASS(3) = NETCO2
-      XMASS(4) = NETCO2 * COCO2T
-      XMASS(7) = -netfuel ! this adjusts TUHC when combustion occurs
-      XMASS(8) = 9.0D0 * NETFUEL * HCRATT / FCRATT
-      XMASS(9) = NETCO2 * CCO2T
+!     arguments: objn   the object pointer number, 
+!                time   current simulation time (s)
+!                iroom  room object is in
+!                flux   the normal radiative flux to the object
+!                surft  surfice temp of object
+!                omasst pyrolysis rate of object (returned)
+!                oareat area of pyrolysis of object (returned)
+!                ohight height of fire (returned)
+!                oqdott heat release rate of object
+!                objhct object heat of combustion
+!                cco2t  carbon to co2 ratio
+!                coco2t co to co2 ration
+!                hcratt hydrogen to carbon ratio of fuel
+!                zmfire 
+!                ocratt oxygen to carbon ration of fuel
+!                clfrat hcl production rate
+!                cnfrat hcn production rate
+!                crfrat trace gase production rate
+!                update update varible
+!
 
-      RETURN
-      END
+c     pyrolysis rate of the fuel - hcratt is in common (params.inc) since
+c     it is used in several places
 
-
-      SUBROUTINE ENTRAIN(DIRS12,YSLAB,XMSLAB,NSLAB,TU,TL,CP,YLAY,CONL,
-     +    CONU,PMIX,MXPRD,NPROD,YVBOT,YVTOP,UFLW3,VSAS,VASA)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     ENTRAIN
-C
-C     Source File: ENTRAIN.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: DIRS12
-C    INPUT
-C    -----
-C   DIRS12 - A MEASURE OF THE DIRECTION OF THE ROOM 1 TO ROOM
-C                       2 FLOW IN EACH SLAB
-C   YSLAB  - SLAB HEIGHTS IN ROOMS 1,2 ABOVE DATUM ELEVATION [M]
-C   XMSLAB - MAGNITUDE OF THE MASS FLOW RATE IN SLABS [KG/S]
-C   NSLAB  - NUMBER OF SLABS BETWEEN BOTTOM AND TOP OF VENT
-C   TU     - UPPER LAYER TEMPERATURE IN EACH ROOM [K]
-C   TL     - LOWER LAYER TEMPERATURE IN EACH ROOM [K]
-C   YLAY   - HEIGHT OF LAYER IN EACH ROOM ABOVE DATUM ELEVATION [M]
-C
-C   OUTPUT
-C   ------
-C   UFLW3(I,1,J), I=1 OR 2, J=1 OR 2 - MASS FLOW RATE TO UPPER
-C            (J=2) OR LOWER (J=1) LAYER OF ROOM I DUE TO ENTRAINMENT
-C   UFLW3(I,2,J), I=1 OR 2, J=1 OR 2 - ENTHALPY FLOW RATE TO UPPER
-C            (J=2) OR LOWER (J=1) LAYER OF ROOM I ENTRAINMENT
-C   UFLW3(I,2+K,J), I=1 OR 2, K=1 TO NPROD, J=1 OR 2 - PRODUCT K FLOW
-C            RATE TO UPPER (J=2) OR LOWER (J=1) LAYER OF ROOM I DUE
-C            ENTRAINMENT
-C
-C        Created:  
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      include "precis.fi"
-      include "flwptrs.fi"
-      INTEGER DIRS12(10)
-      DIMENSION YSLAB(10), XMSLAB(10), PMIX(MXPRD)
-      DIMENSION TU(2), TL(2), YLAY(2)
-      DIMENSION CONL(MXPRD,2), CONU(MXPRD,2)
-      DIMENSION UFLW3(2,MXPRD+2,2)
-      DIMENSION VSAS(2), VASA(2)
-      PARAMETER (XX0 = 0.0D0)
-C
-C*** INITIALIZE OUTPUTS
-C
-      DO 20 I = 1, 2
-        DO 10 IPROD = 1, NPROD + 2
-          UFLW3(I,IPROD,L) = XX0
-          UFLW3(I,IPROD,U) = XX0
-   10   CONTINUE
-        VSAS(I) = XX0
-        VASA(I) = XX0
-   20 CONTINUE
-C    
-C
-      DO 60 N = 1, NSLAB
-C
-C*** ELIMINATE CASES WHERE ENTRAINMENT DOES NOT OCCUR
-C    I.E. A SLAB WHICH IS ADJACENT TO THE UPPER LAYER ON BOTH SIDES
-C      OR A SLAB WHICH IS ADJACENT TO THE LOWER LAYER ON BOTH SIDES
-C
-        IF (YSLAB(N).LT.YLAY(1).OR.YSLAB(N).LT.YLAY(2)) THEN
-          IF (YSLAB(N).GE.YLAY(1).OR.YSLAB(N).GE.YLAY(2)) THEN
-C
-C*** SLABS WITH NO FLOW CAUSE NO ENTRAINMENT
-C
-            IF (XMSLAB(N).NE.XX0) THEN
-C
-C*** DETERMINE WHAT ROOM FLOW IS COMING FROM
-C
-              IF (DIRS12(N).EQ.1) THEN
-                IFROM = 1
-                ITO = 2
-              ELSE IF (DIRS12(N).EQ.0) THEN
-C
-C*** NO FLOW IN THIS SLAB SO WE CAN SKIP IT
-C    (WE SHOULD NEVER GET HERE)
-C
-                GO TO 60
-              ELSE IF (DIRS12(N).EQ.-1) THEN
-                IFROM = 2
-                ITO = 1
-              END IF
-C
-C***  DETERMINE TEMPERATURE AND PRODUCT CONCENTRATIONS
-C     OF ENTRAINED FLOW
-C
-              IF (YSLAB(N).LT.YLAY(ITO)) THEN
-                TMIX = TL(ITO)
-                DO 30 IPROD = 1, NPROD
-                  PMIX(IPROD) = CONL(IPROD,ITO)
-   30           CONTINUE
-              ELSE
-                TMIX = TU(ITO)
-                DO 40 IPROD = 1, NPROD
-                  PMIX(IPROD) = CONU(IPROD,ITO)
-   40           CONTINUE
-              END IF
-C         
-C*** COMPUTE THE SIZE OF THE ENTRAINED MASS FLOW
-C
-              IF (YSLAB(N).GE.YLAY(IFROM)) THEN
-C
-C*** INTO UPPER
-C
-                IF (TU(IFROM).GT.TL(ITO).AND.XMSLAB(N).NE.XX0) THEN
-                  ZD = MAX(XX0,YLAY(ITO)-MAX(YVBOT,YLAY(IFROM)))
-                  CALL ENTRFL(TU(IFROM),TL(ITO),XMSLAB(N),ZD,
-     +                UFLW3(ITO,M,U))
-                  UFLW3(ITO,M,L) = -UFLW3(ITO,M,U)
-                  VSAS(ITO) = UFLW3(ITO,M,U)
-                END IF
-              ELSE
-C
-C*** INTO LOWER
-C
-                IF (TL(IFROM).LT.TU(ITO).AND.XMSLAB(N).NE.XX0) THEN
-C               ZD = MAX(XX0,YLAY(IFROM)-MAX(YVBOT,YLAY(ITO)))
-
-C*** need to re-work distance zd for both into upper and into
-C         upper case.  the above doesn't work for all cases
-
-                  ZD = MIN(YVTOP,YLAY(IFROM)) - MAX(YLAY(ITO),YVBOT)
-                  CALL ENTRFL(TU(ITO),TL(IFROM),XMSLAB(N),ZD,
-     +                UFLW3(ITO,M,L))
-C*** The following factor (0.25 as of 10/1/93) now multiplies the lower layer
-C*** entrainment to try to approximate the reduced Kelvin-Helmholz type mixing.
-C*** This observation arises from the problems encountered in the test
-C*** case temper1.dat.  This needs to be researched carefully!
-
-                  UFLW3(ITO,M,L) = UFLW3(ITO,M,L) * 0.25D0
-                  VASA(ITO) = UFLW3(ITO,M,L)
-                  UFLW3(ITO,M,U) = -UFLW3(ITO,M,L)
-                END IF
-              END IF
-C
-C*** COMPUTE ENTHALPY AND PRODUCT FLOW RATES OF ENTRAINED FLOW
-C    FROM THE MASS FLOW RATE
-C
-              UFLW3(ITO,Q,L) = CP * UFLW3(ITO,M,L) * TMIX
-              UFLW3(ITO,Q,U) = CP * UFLW3(ITO,M,U) * TMIX
-              DO 50 IPROD = 3, 2 + NPROD
-                 UFLW3(ITO,IPROD,L) = UFLW3(ITO,M,L) * PMIX(IPROD-2)
-                 UFLW3(ITO,IPROD,U) = UFLW3(ITO,M,U) * PMIX(IPROD-2)
-   50         CONTINUE
-            END IF
-          END IF
-        END IF
-   60 CONTINUE
-      RETURN
-      END
-
-      SUBROUTINE ENTRFL(TU,TL,FMD,Z,FMZ)
-C
-C     For the reference for this correlation, see the comments
-C     in the routine "firplm."  The offset for the formulation of
-C     an equivalent door jet is provided by requiring the plume
-C     be long enough to be the appropriate plume for the fire of size
-C     QJ.  Note that McCaffrey's units are kilojoules.  Also we assume
-C     that the plume is round as in McCaffrey's plume.  This should
-C     be modified to account for the flat plume verus the round
-C     plume in the theory.
-C
-C     update history
-C
-C     July 24, 1990 modified coefiscients so that McCaffrey correlation is
-C                   continuous.  the coeff's are calculated the first time
-C                   this routine is called.  gpf
-C
       include "precis.fi"
       include "cfast.fi"
-      LOGICAL FIRSTC
-      SAVE FIRSTC, A1, A2, A3, E1, E2, E3, F1, F2
-      DATA FIRSTC /.TRUE./
-C
-C*** DEFINE ASSIGNMENT STATEMENT SUBROUTINES TO COMPUTE THREE PARTS
-C    OF CORRELATION
-C
-      FM1(ZQ) = ZQ ** .566D0
-      FM2(ZQ) = ZQ ** .909D0
-      FM3(ZQ) = ZQ ** 1.895D0
-C
-C*** FIRST TIME IN FIRPLM CALCULATE COEFF'S 
-C    TO INSURE THAT MCCAFFREY CORRELATION IS CONTINUOUS.
-C    THAT IS, FOR A1 = .011, COMPUTE A2, A3 SUCH THAT
-C  
-C     A1*ZQ**.566 = A2*ZQ**.909  FOR ZQ = .08
-C     A2*ZQ**.909 = A3*ZQ**1.895 FOR ZQ = .2
-C
-      IF (FIRSTC) THEN
-C
-C*** RESET FLAG SO THIS CODE DOESN'T GET EXECUTED NEXT TIME IN 
-C    THIS ROUTINE
-C
-        FIRSTC = .FALSE.
-C
-C*** BREAKPOINTS FOR "FORWARD" CORRELATION
-C
-        T1 = .08D0
-        T2 = .20D0
-C
-C*** COEF'S FOR "FORWARD" CORRELATION
-C
-        A1 = .011D0
-        A2 = A1 * FM1(T1) / FM2(T1)
-        A3 = A2 * FM2(T2) / FM3(T2)
-C
-C*** EXPONENTS FOR "INVERSE" CORRELATION
-C
-        E1 = 1.0D0 / .566D0
-        E2 = 1.0D0 / .909D0
-        E3 = 1.0D0 / 1.895D0
-C
-C*** BREAKPOINTS FOR "INVERSE" CORRELATION
-C
-        F1 = A1 * FM1(T1)
-        F2 = A2 * FM2(T2)
-      END IF
-C
-      XQJ = CP * (TU-TL) * 0.001D0
-      QJ = XQJ * FMD
-      FMDQJ = 1.D0 / XQJ
-      IF (FMDQJ.GE.0.0D0.AND.FMDQJ.LE.F1) THEN
-        Z0DQ = (FMDQJ/A1) ** E1
-      ELSE IF (FMDQJ.GT.F1.AND.FMDQJ.LE.F2) THEN
-        Z0DQ = (FMDQJ/A2) ** E2
-      ELSE
-        Z0DQ = (FMDQJ/A3) ** E3
-      END IF
-C
-      ZDQ = Z / QJ ** 0.4D0 + Z0DQ
-      IF (ZDQ.GT.0.2D0) THEN
-        FMZ = A3 * FM3(ZDQ) * QJ
-      ELSE IF (ZDQ.GT.0.08D0) THEN
-        FMZ = A2 * FM2(ZDQ) * QJ
-      ELSE
-        FMZ = A1 * FM1(ZDQ) * QJ
-      END IF
-C
-      XX0 = 0.0D0
-      FMZ = MAX(XX0,FMZ-FMD)
-      RETURN
-      END
+      include "cenviro.fi"
+      include "fireptrs.fi"
+      include "fltarget.fi"
+      include "objects1.fi"
+      include "objects2.fi"
 
-      SUBROUTINE FIRPLM(plumetype, objectnumber, objectsize, 
-     .                  QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY)
+      dimension zmfire(ns)
+      integer objn, update
 
-!     Physical interface between DOFIRE and the plume models
-!     July 30, 2008 supports two plume models
-!     1) McCaffrey and
-!     2) Heskestad's modified version of Zukoski's model
+      onethrd = 0.3333d0
+      if (.not.objon(objn).or.objset(objn).gt.0) then
+          xx0 = 0.0d0
+          omasst = xx0
+          oareat = xx0
+          ohight = xx0
+          oqdott = xx0
+          hcratt = xx0
+          cco2t = xx0
+          coco2t = xx0
+          ocratt = xx0
+          objhct = 5.0d7
+          do j = 1, ns
+              zmfire(j) = xx0
+          end do
+          clfrat = xx0
+          cnfrat = xx0
+          crfrat = xx0
+          return
+      endif
+
+      lobjlfm = objlfm(objn)
+      xxtime = time - objcri(1,objn)
+
+      id = iquench(iroom)
+
+      if(id==0)then
+
+!	if a sprinkler is not active then interpolate at current time
+
+          ifact = 0
+      else
+c
+c*** if a sprinkler is active then interpolate at current time
+c    and when sprinkler first activated.  make sure that specified
+c    heat release rate is the smaller of rate at current time
+c    and rate at sprinkler activation time * exp( ...) 
+c
+          tdrate = xdtect(id,drate)
+          xxtimef = xdtect(id,dtact) - objcri(1,objn)
+          call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,
+     .    qt)
+          call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,
+     .    qtf)
+          ifact = 1
+          tfact = exp(-(xxtime-xxtimef)/tdrate)
+          if(qt<tfact*qtf)then
+c
+c*** current time heat release rate is smaller than sprinklerd value
+c    so use current time and reset ifact to 0 so rates are not 
+c    decreased
+c
+              ifact = 0
+          else
+              xxtime = xxtimef
+          endif
+      endif
+
+      call interp(otime(1,objn),omass(1,objn),lobjlfm,xxtime,1,
+     .omasst)
+      call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,
+     .oqdott)
+      call interp(otime(1,objn),omprodr(1,6,objn),lobjlfm,xxtime,1,
+     +clfrat)
+      call interp(otime(1,objn),omprodr(1,5,objn),lobjlfm,xxtime,1,
+     +cnfrat)
+      call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,
+     +crfrat)
+
+!     attenuate mass and energy release rates if there is an active sprinkler in this room
+      if(id/=0.and.ifact==1)then
+          omasst = omasst*tfact
+          oqdott = oqdott*tfact
+      endif
+      call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,
+     .oareat)
+      call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,
+     .ohight)
+
+      call interp(otime(1,objn),ohcr(1,objn),lobjlfm,xxtime,1,hcratt)
+      hcratt = min (onethrd, hcratt)
+      call interp(otime(1,objn),ood(1,objn),lobjlfm,xxtime,1,cco2t)
+      call interp(otime(1,objn),oco(1,objn),lobjlfm,xxtime,1,coco2t)
+      call interp(otime(1,objn),ooc(1,objn),lobjlfm,xxtime,1,ocratt)
+      call interp(otime(1,objn),objhc(1,objn),lobjlfm,xxtime,1,objhct)
+      do j = 1, ns
+          call interp(otime(1,objn),omprodr(1,j,objn),lobjlfm,
+     .    xxtime,1,xprod)
+          zmfire(j) = xprod * omasst
+      end do
+
+      return
+      end subroutine pyrols
+
+      subroutine firplm (plumetype, objectnumber, objectsize, 
+     .qjl,zz,xemp,xems,xeme,xfx,xfy)
+
+!     routine: fireplm
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     purpose: physical interface between dofire and the plume models
 
       include "precis.fi"
       include "cfast.fi"
       integer plumetype, objectnumber
-      
+
       select case (plumetype)
-      case (1) !    McCaffrey
-        call mccaffrey(QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY,objectsize)
-        RETURN        
-      case (2) !    Heskestad
-        call heskestad (qjl, zz, xemp, xems, xeme, xfx, xfy, objectsize)
-        RETURN        
+      case (1) !    mccaffrey
+          call mccaffrey(qjl,zz,xemp,xems,xeme,xfx,xfy,objectsize)
+          return        
+      case (2) !    heskestad
+          call heskestad (qjl,zz,xemp,xems,xeme,xfx,xfy,objectsize)
+          return        
       end select
       stop 'bad case in firplm'
-      END
+      end subroutine firplm
 
-      SUBROUTINE mccaffrey(QJL,ZZ,XEMP,XEMS,XEME,XFX,XFY,od)
+      subroutine mccaffrey (qjl,zz,xemp,xems,xeme,xfx,xfy,od)
 
-!     Function:  Calculates plume entrainment for a fire from 
-!                McCaffrey's correlation
-!     Inputs:    QJL    fire size (W)
-!                ZZ      plume height (m)
-!                XEMP  mass loss rate of the fire (kg/s)
-!                XFX   position of the fire in x direction (m)
-!                XFY   position of the fire in y direction (m)
+!     routine: mccaffrey
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     purpose: calculates plume entrainment for a fire from mccaffrey's correlation
+!     inputs:    qjl    fire size (w)
+!                zz      plume height (m)
+!                xemp  mass loss rate of the fire (kg/s)
+!                xfx   position of the fire in x direction (m)
+!                xfy   position of the fire in y direction (m)
 !                od is the object diameter
-!     Outputs:   XEMS  total mass transfer rate at height z (kg/s)
-!                XEME  net entrainment rate at height z (kg/s)
-!     Algorithm: "Momentum Implications for Buoyant Diffusion Flames", Combustion and Flame 52, 149 (1983)
+!     outputs:   xems  total mass transfer rate at height z (kg/s)
+!                xeme  net entrainment rate at height z (kg/s)
+!     algorithm: "momentum implications for buoyant diffusion flames", combustion and flame 52, 149 (1983)
 
       include "precis.fi"
-      LOGICAL FIRST
-      SAVE FIRST, A1, A2, A3, T1, T2
-      DATA FIRST /.TRUE./
-C
-C*** DEFINE ASSIGNMENT STATEMENT SUBROUTINES TO COMPUTE THREE PARTS OF CORRELATION
-C
-      FM1(ZQ) = ZQ ** .566D0
-      FM2(ZQ) = ZQ ** .909D0
-      FM3(ZQ) = ZQ ** 1.895D0
-C
-C*** FIRST TIME IN FIRPLM CALCULATE COEFF'S TO INSURE THAT MCCAFFREY 
-C    CORRELATION IS CONTINUOUS.  
-C    THAT IS, FOR A1 = .011, COMPUTE A2, A3 SUCH THAT
-C  
-C     A1*ZQ**.566 = A2*ZQ**.909  FOR ZQ = .08
-C     A2*ZQ**.909 = A3*ZQ**1.895 FOR ZQ = .2
-C
-      IF (FIRST) THEN
-        FIRST = .FALSE.
-        T1 = .08D0
-        T2 = .20D0
-        A1 = .011D0
-        A2 = A1 * FM1(T1) / FM2(T1)
-        A3 = A2 * FM2(T2) / FM3(T2)
-      END IF
-      X0 = 0.0D0
-C
-C     DETERMINE WHICH ENTRAINMENT TO USE BY FIRE POSITION.  IF WE'RE ON
-C     THE WALL OR IN THE CORNER, ENTRAINMENT IS MODIFIED.
-C
-      XF = 1.0D0
-      IF (XFX.EQ.X0.OR.XFY.EQ.X0) XF = 2.0D0
-      IF (XFX.EQ.X0.AND.XFY.EQ.X0) XF = 4.0D0
-      QJ = 0.001D0 * QJL
-      IF (ZZ.GT.0.D0.AND.QJ.GT.0.0D0) THEN
-        ZDQ = ZZ / (XF*QJ) ** 0.4D0
-        IF (ZDQ.GT.T2) THEN
-          XEMS = A3 * FM3(ZDQ) * QJ
-        ELSE IF (ZDQ.GT.T1) THEN
-          XEMS = A2 * FM2(ZDQ) * QJ
-        ELSE
-          XEMS = A1 * FM1(ZDQ) * QJ
-        END IF
-        XEMS = MAX(XEMP,XEMS/XF)
-        XEME = MAX(XEMS-XEMP,X0)
-      ELSE
-        XEMS = XEMP
-        XEME = 0.0D0
-      END IF
-      RETURN
-      END
+      logical first
+      save first, a1, a2, a3, t1, t2
+      data first /.true./
+
+      ! define assignment statement subroutines to compute three parts of correlation
+      fm1(zq) = zq ** .566d0
+      fm2(zq) = zq ** .909d0
+      fm3(zq) = zq ** 1.895d0
+
+      ! first time in firplm calculate coeff's to insure that mccaffrey correlation is continuous.  
+      ! that is, for a1 = .011, compute a2, a3 such that
+      ! a1*zq**.566 = a2*zq**.909  for zq = .08
+      ! a2*zq**.909 = a3*zq**1.895 for zq = .2
+      if (first) then
+          first = .false.
+          t1 = .08d0
+          t2 = .20d0
+          a1 = .011d0
+          a2 = a1 * fm1(t1) / fm2(t1)
+          a3 = a2 * fm2(t2) / fm3(t2)
+      end if
+      x0 = 0.0d0
+
+      ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
+      xf = 1.0d0
+      if (xfx==x0.or.xfy==x0) xf = 2.0d0
+      if (xfx==x0.and.xfy==x0) xf = 4.0d0
+      qj = 0.001d0 * qjl
+      if (zz>0.d0.and.qj>0.0d0) then
+          zdq = zz / (xf*qj) ** 0.4d0
+          if (zdq>t2) then
+              xems = a3 * fm3(zdq) * qj
+          else if (zdq>t1) then
+              xems = a2 * fm2(zdq) * qj
+          else
+              xems = a1 * fm1(zdq) * qj
+          end if
+          xems = max(xemp,xems/xf)
+          xeme = max(xems-xemp,x0)
+      else
+          xems = xemp
+          xeme = 0.0d0
+      end if
+      return
+      end subroutine mccaffrey
 
       subroutine heskestad (q, z, emp, ems, eme, x, y, od)
 
-!     Function:  Calculates plume entrainment for a fire from Heskestad's variant of Zukoski's correlation
-!     Inputs:    Q    fire size (W)
-!                Z      plume height (m)
-!                EMP  mass loss rate of the fire (kg/s)
-!                XFX   position of the fire in x direction (m)
-!                XFY   position of the fire in y direction (m)
+!     routine: mccaffrey
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
+!     inputs:    q    fire size (w)
+!                z      plume height (m)
+!                emp  mass loss rate of the fire (kg/s)
+!                xfx   position of the fire in x direction (m)
+!                xfy   position of the fire in y direction (m)
 !                od is the characteristic size of the object (diameter)
-!     Outputs:   EMS  total mass transfer rate at height z (kg/s)
-!                EME  net entrainment rate at height z (kg/s)
-    
+!     outputs:   ems  total mass transfer rate at height z (kg/s)
+!                eme  net entrainment rate at height z (kg/s)
+
       include "precis.fi"
-    
+
       double precision q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
-    
+
       qj = 0.001d0 * q
       z0 = -1.02d0 * od + 0.083d0 * qj**0.4
       deltaz = max(0.0001d0, z-z0)
       eme = 0.071 * qj**0.333 * deltaz**1.67 * (1+0.026d0*qj**0.67
-     .      * deltaz**(-1.67))
+     .* deltaz**(-1.67))
       ems = emp + eme    
 
       end subroutine heskestad
-
-      SUBROUTINE PYROLS(TIME,IROOM,BFIRET,AFIRET,HFIRET,QFIRET,HCOMBT,
-     .      CCO2T,COCO2T,HCRATT,OCRATT,CLFRAT,CNFRAT,crfrat,ZMFIRE)
-
-!     Routine:  PYROLS
-
-!     Description: Calculate pyrolysis rate of the fuel for the specified main fire
-!     Inputs:   TIME    - current time (s)
-!               IROOM   - room number containing fire
-!     Outputs:  BFIRET  - current pyrolysis rate (kg/s)
-!               AFIRET  - current area of the fire (m^2)
-!               HFIRET  - current height of the fire (m)
-!               QFIRET  - current heat release rate of the fire (W)
-!               HCRATT  - current hydrogen/carbon ratio in fuel (kg/kg)
-!               CCO2T   - current carbon/CO2 production ratio (kg/kg)
-!               COCO2T  - current CO/CO2 production ratio (kg/kg)
-!               OCRATT  - current Oxygen/Carbon ratio in fuel (kg/kg)
-!               HCOMBT  - current heat of combustion (J/kg)
-!               CLFRAT  - current HCl production rate (kg/kg burned)
-!               CNFRAT  - current HCN production rate (kg/kg burned)
-!               crFRAT  - current trace gas production rate (kg/kg burned)
-!               ZMFIRE  - current species production rates (kg/s)
-
-!     Revision History
-!         11/91 modified to use new interpolation subroutine
-!          3/90 changed the procedure call to pass variables that are changed
-!         10/93 added detection/suppression
-!          5/08 added initialization for trace species, separated kinetics and chemistry
-
-
-      include "precis.fi"
-      include "cfast.fi"
-
-      DIMENSION ZMFIRE(*)
- 
-      ID = IQUENCH(IROOM)
-      XXTIME = TIME
-      IF(ID.EQ.0)THEN
-C
-C*** IF A SPRINKLER IS NOT ACTIVE THEN INTERPOLATE AT CURRENT TIME
-C
-        IFACT = 0
-       ELSE
-C
-C*** IF A SPRINKLER IS ACTIVE THEN INTERPOLATE AT CURRENT TIME
-C    AND WHEN SPRINKLER FIRST ACTIVATED.  MAKE SURE THAT SPECIFIED
-C    HEAT RELEASE RATE IS THE SMALLER OF RATE AT CURRENT TIME
-C    AND RATE AT SPRINKLER ACTIVATION TIME * EXP( ...) 
-C
-        TDRATE = XDTECT(ID,DRATE)
-        XXTIMEF = XDTECT(ID,DTACT)
-        CALL INTERP(TFIRED,QFIRED,LFMAX,XXTIME,1,QT)
-        CALL INTERP(TFIRED,QFIRED,LFMAX,XXTIMEF,1,QTF)
-        IFACT = 1
-        TFACT = EXP(-(XXTIME-XXTIMEF)/TDRATE)
-        IF(QT.LT.TFACT*QTF)THEN
-C
-C*** CURRENT TIME HEAT RELEASE RATE IS SMALLER THAN SPRINKLERD VALUE
-C    SO USE CURRENT TIME AND RESET IFACT TO 0 SO RATES ARE NOT 
-C    DECREASED
-C
-           IFACT = 0
-          ELSE
-           XXTIME = XXTIMEF
-        ENDIF
-      ENDIF
-C
-C     INTERPOLATE THE FIRE OUTPUTS
-C
-      CALL INTERP(TFIRED,BFIRED,LFMAX,XXTIME,1,BFIRET)
-      CALL INTERP(TFIRED,QFIRED,LFMAX,XXTIME,1,QFIRET)
-      CALL INTERP(TFIRED,HCLF,LFMAX,XXTIME,1,CLFRAT)
-      CALL INTERP(TFIRED,HCNF,LFMAX,XXTIME,1,CNFRAT)
-      call interp(tfired,hcrf,lfmax,xxtime,1,crfrat)
- 
-C*** ATTENUATE MASS AND ENERGY RELEASE RATES IF THERE IS AN ACTIVE SPRINKLER
-C    IN THIS ROOM
- 
-      IF(ID.NE.0.AND.IFACT.EQ.1)THEN
-        BFIRET = BFIRET*TFACT
-        QFIRET = QFIRET*TFACT
-      ENDIF
-      CALL INTERP(TFIRED,HOCBMB,LFMAX,XXTIME,1,HCOMBT)
-      CALL INTERP(TFIRED,AFIRED,LFMAX,XXTIME,1,AFIRET)
-      CALL INTERP(TFIRED,HFIRED,LFMAX,XXTIME,1,HFIRET)
-      CALL INTERP(TFIRED,HCRATIO,LFMAX,XXTIME,1,HCRATT)
-      XLIM = 0.3333D0
-      HCRATT = MIN(XLIM,HCRATT)
-      CALL INTERP(TFIRED,CCO2,LFMAX,XXTIME,1,CCO2T)
-      CALL INTERP(TFIRED,COCO2,LFMAX,XXTIME,1,COCO2T)
-      CALL INTERP(TFIRED,OCRATI,LFMAX,XXTIME,1,OCRATT)
-      DO 10 IPROD = 1, NS
-        IF (ACTIVS(IPROD)) THEN
-          CALL INTERP(TFIRED,MPRODR(1,IPROD),LFMAX,XXTIME,1,XPROD)
-          ZMFIRE(IPROD) = XPROD * BFIRET
-        END IF
-   10 CONTINUE
-      RETURN
-      END
-
-      subroutine integrate_mass (time, deltt)
       
-!   Routine to integrate the pyrolosate of objects
+      subroutine integrate_mass (time, deltt)
 
-!     deltt is the time step
-!     we also integrate the trace species release and total for all fires
+!     routine:  integrate_mass
+!     description: Routine to integrate the pyrolosate of objects
+!         we also integrate the trace species release and total for all fires
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     Arguments:  time    current simulation time
+!                 deltt   current time step
 
       include "precis.fi"
       include "cfast.fi"
@@ -1120,79 +725,69 @@ C    IN THIS ROOM
       integer i, j
       double precision xx0,xx1,filter,qcifraction,time,deltt
       data xx0/0.0d0/, xx1/1.0d0/
-     
-      do i = 0, numobjl
-        objmaspy(i) = objmaspy(i) + femp(i)*deltt
-        radio(i) = radio(i) + femr(i)*deltt
-      end do
-      
-! sum the radiological release from all of the fires
 
+      do i = 0, numobjl
+          objmaspy(i) = objmaspy(i) + femp(i)*deltt
+          radio(i) = radio(i) + femr(i)*deltt
+      end do
+
+      ! sum the trace release from all of the fires
       tradio = xx0
       do i = 0, numobjl
-        tradio = tradio + radio(i)
+          tradio = tradio + radio(i)
       end do
 
-! sum the hvac flow
-
-! tracet is the trace species which gets through the vent, traces is the mass stopped. Has to be calculated here since
-! there is no equivalent to 1-... 
-
+      ! sum the hvac flow
+      ! tracet is the trace species which gets through the vent, traces is the mass stopped. Has to be calculated here since
+      ! there is no equivalent to 1-... 
       do irm = 1, n
-        DO II = 1, NEXT
-            I = HVNODE(1,II)
-            J = HVNODE(2,II)
-            ISYS = IZHVSYS(J)       
-	      filter = (xx1-qcifraction(qcvf,isys,time)) 
-	      if (irm.eq.i) then
-	         hveflot(upper,ii) = hveflot(upper,ii)+hveflo(upper,ii)*deltt
-	         hveflot(lower,ii) = hveflot(lower,ii)+hveflo(lower,ii)*deltt 
-	         tracet(upper,ii)  = tracet(upper,ii) + 
-     .           hveflo(upper,ii)*hvexcn(ii,11,upper)*filter*deltt
-	         tracet(lower,ii)  = tracet(lower,ii) + 
-     .           hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
-	         traces(upper,ii)  = traces(upper,ii) + 
-     .           hveflo(upper,ii)*hvexcn(ii,11,upper)*(xx1-filter)*deltt
-	         traces(lower,ii)  = traces(lower,ii) + 
-     .           hveflo(lower,ii)*hvexcn(ii,11,lower)*(xx1-filter)*deltt
-	      endif 
-        end do
+          DO II = 1, NEXT
+              I = HVNODE(1,II)
+              J = HVNODE(2,II)
+              ISYS = IZHVSYS(J)       
+              filter = (xx1-qcifraction(qcvf,isys,time)) 
+              if (irm==i) then
+                  hveflot(upper,ii) = hveflot(upper,ii)+hveflo(upper,ii)
+     .                *deltt
+                  hveflot(lower,ii) = hveflot(lower,ii)+hveflo(lower,ii)
+     .                *deltt 
+                  tracet(upper,ii)  = tracet(upper,ii) + 
+     .            hveflo(upper,ii)*hvexcn(ii,11,upper)*filter*deltt
+                  tracet(lower,ii)  = tracet(lower,ii) + 
+     .            hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
+                  traces(upper,ii)  = traces(upper,ii) + 
+     .            hveflo(upper,ii)*hvexcn(ii,11,upper)*(xx1-filter)
+     .                *deltt
+                  traces(lower,ii)  = traces(lower,ii) + 
+     .            hveflo(lower,ii)*hvexcn(ii,11,lower)*(xx1-filter)
+     .                *deltt
+              endif 
+          end do
       end do
-      
+
       return
-      end
-  
-      SUBROUTINE DJET(FLWDJF,DJETFLG)
-C*RB
-C     Routine:  DJET
-C
-C     Function: Physical interface routine to calculate the current
-C               rates of mass and energy flows into the layers from
-C               all door jet fires in the building.
-C
-C               Note that we presume that this calculation is performed
-C               after the normal fires and flow through vents so we
-C               have a heat of combustion to use for the burning fuel.
-C               At present, this heat of combustion is presumed to be
-C               that of the main fire.
-C
-C     Inputs:   NFIRE   Total number of normal fires
-C     Outputs:  FLWDJF  Mass and energy flows into layers due to fires.
-C                       Standard source routine data structure.
-C     Commons:
-C      PASSED:  Vsas     Zzgspec  Zztemp
-C        USED:  Izvent   N        Nvents
-C
-C     Revision History:
-C        Modified: 2/7/93 by GPF:
-C                  The radiation routines expect to receive info for each
-C                  fire in a room.  Therefore, XFIRE a 2-d array must have
-C                  the number of fires as the first subscript.
-C        Modified: 5/11/98 by GPF:
-C                  Implement fast startup option.  Execute this routine only if this 
-C                  modeling feature is being used (rather than zeroing out 
-C                  the flow vector.)
-C*RE
+      end subroutine integrate_mass
+
+      subroutine djet (flwdjf,djetflg)
+
+!     routine:  integrate_mass
+!     description: physical interface routine to calculate the current
+!                  rates of mass and energy flows into the layers from
+!                  all door jet fires in the building.
+
+!                  note that we presume that this calculation is performed
+!                  after the normal fires and flow through vents so we
+!                  have a heat of combustion to use for the burning fuel.
+!                  at present, this heat of combustion is presumed to be
+!                  that of the main fire.
+!
+!     inputs:   nfire   total number of normal fires
+!     outputs:  flwdjf  mass and energy flows into layers due to fires.
+!                       standard source routine data structure.
+!     commons:
+!      passed:  vsas     zzgspec  zztemp
+!        used:  izvent   n        nvents
+
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1200,133 +795,129 @@ C*RE
       include "flwptrs.fi"
       include "opt.fi"
       include "vents.fi"
-C
-      DIMENSION FLWDJF(NR,NS+2,2), XNTMS1(2,NS), XNTMS2(2,NS)
-      DIMENSION FLWDJF0(NR,NS+2,2)
-      SAVE FLWDJF0
 
-      LOGICAL DJETFLG,DJ1FLAG,DJ2FLAG
-      LOGICAL VENTFLG(MXVENT), ROOMFLG(NR), anyvents
-C
-C     INITIALIZE SUMMATIONS AND LOCAL DATA
-C
-      DJETFLG = .FALSE.
-      XX0 = 0.0D0
-      IF (OPTION(FDFIRE).NE.ON.OR.NFIRE.LE.0) RETURN
+      dimension flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns)
+      dimension flwdjf0(nr,ns+2,2)
+      save flwdjf0
+
+      logical djetflg,dj1flag,dj2flag
+      logical ventflg(mxvent), roomflg(nr), anyvents
+
+      ! initialize summations and local data
+      djetflg = .false.
+      xx0 = 0.0d0
+      if (option(fdfire)/=on.or.nfire.le.0) return
 
 
-c*** if no vents have a door jet fire then exit
+      ! if no vents have a door jet fire then exit
+      do i = 1, nvents
 
-      DO 5 I = 1, NVENTS
+          ! is there a door jet fire into room iroom1
+          iroom1 = izvent(i,1)
+          if(zztemp(iroom1,upper).ge.tgignt)then
+              flw1to2 = vss(1,i)+vsa(1,i)
+              if(vsas(2,i).gt.xx0.and.flw1to2.gt.xx0)then
+                  djetflg = .true.
+                  exit
+              endif
+          endif
 
-c*** is there a door jet fire into room IROOM1
+          !is there a door jet fire into room iroom2
+          iroom2 = izvent(i,2)
+          if(zztemp(iroom2,upper).ge.tgignt)then
+              flw2to1 = vss(2,i)+vsa(2,i)
+              if(vsas(1,i).gt.xx0.and.flw2to1.gt.xx0)then
+                  djetflg = .true.
+                  exit
+              endif
+          endif
+      end do
 
-        IROOM1 = IZVENT(I,1)
-        IF(ZZTEMP(IROOM1,UPPER).GE.TGIGNT)then
-          FLW1TO2 = VSS(1,I)+VSA(1,I)
-          IF(VSAS(2,I).GT.XX0.AND.FLW1TO2.GT.XX0)THEN
-            DJETFLG = .TRUE.
-            GO TO 1
-          ENDIF
-        ENDIF
+      if(.not.djetflg)return
+      do ifrom = 1, n
+          do lsp = 1, ns + 2
+              flwdjf(ifrom,lsp,lower) = xx0
+              flwdjf(ifrom,lsp,upper) = xx0
+          end do
+      end do
 
-c*** is there a door jet fire into room IROOM2
+      do i = 1, n
+          fqdj(i) = xx0
+      end do
+      
+      hcombt = xfire(1,12)
 
-        IROOM2 = IZVENT(I,2)
-        IF(ZZTEMP(IROOM2,UPPER).GE.TGIGNT)then
-          FLW2TO1 = VSS(2,I)+VSA(2,I)
-          IF(VSAS(1,I).GT.XX0.AND.FLW2TO1.GT.XX0)THEN
-             DJETFLG = .TRUE.
-             GO TO 1
-          ENDIF
-        ENDIF
-    5 CONTINUE
-    1 CONTINUE
+      ! calculate the heat for each of the door jet fires
+      call ventflag(ventflg,roomflg,anyvents)
+      if(anyvents)then
+          do i = 1, nvents
+              if(ventflg(i))then
+                  iroom1 = izvent(i,1)
+                  iroom2 = izvent(i,2)
+                  flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
+                  flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
+                  call djfire(iroom2,zztemp(iroom1,upper),
+     .            flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                  call djfire(iroom1,zztemp(iroom2,upper),
+     .            flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
-      IF(.NOT.DJETFLG)RETURN
-      DO 10 IFROM = 1, N
-        DO 20 LSP = 1, NS + 2
-          FLWDJF(IFROM,LSP,LOWER) = XX0
-          FLWDJF(IFROM,LSP,UPPER) = XX0
-   20   CONTINUE
-   10 CONTINUE
-
-      DO 25 I = 1, N
-        FQDJ(I) = XX0
-   25 CONTINUE
-C
-      HCOMBT = XFIRE(1,12)
-C
-C     CALCULATE THE HEAT FOR EACH OF THE DOOR JET FIRES
-C
-      CALL VENTFLAG(VENTFLG,ROOMFLG,ANYVENTS)
-      IF(ANYVENTS)THEN
-      DO 40 I = 1, NVENTS
-        IF(.NOT.VENTFLG(I))GO TO 40
-        IROOM1 = IZVENT(I,1)
-        IROOM2 = IZVENT(I,2)
-        FLW1TO2 = ZZCSPEC(IROOM1,UPPER,7) * (VSS(1,I)+VSA(1,I))
-        FLW2TO1 = ZZCSPEC(IROOM2,UPPER,7) * (VSS(2,I)+VSA(2,I))
-        CALL DJFIRE(IROOM2,ZZTEMP(IROOM1,UPPER),
-     .    FLW1TO2,VSAS(2,I),HCOMBT,QPYROL2,XNTMS2,DJ2FLAG)
-        CALL DJFIRE(IROOM1,ZZTEMP(IROOM2,UPPER),
-     .    FLW2TO1,VSAS(1,I),HCOMBT,QPYROL1,XNTMS1,DJ1FLAG)
-C
-C       SUM THE FLOWS FOR RETURN TO THE SOURCE ROUTINE
-C
-        IF(DJ1FLAG)THEN
-          FLWDJF(IROOM1,Q,UPPER) = FLWDJF(IROOM1,Q,UPPER) + QPYROL1
-          DO 30 LSP = 1, NS
-            FLWDJF(IROOM1,LSP+2,UPPER) = FLWDJF(IROOM1,LSP+2,UPPER) +
-     .                                   XNTMS1(UPPER,LSP)
-   30     CONTINUE
-        ENDIF
-        IF(DJ2FLAG)THEN
-          FLWDJF(IROOM2,Q,UPPER) = FLWDJF(IROOM2,Q,UPPER) + QPYROL2
-          DO 31 LSP = 1, NS
-            FLWDJF(IROOM2,LSP+2,UPPER) = FLWDJF(IROOM2,LSP+2,UPPER) +
-     .                                   XNTMS2(UPPER,LSP)
-   31     CONTINUE
-        ENDIF
-   40 CONTINUE
+                  ! sum the flows for return to the source routine
+                  if(dj1flag)then
+                      flwdjf(iroom1,q,upper) = 
+     .                flwdjf(iroom1,q,upper) + qpyrol1
+                      do lsp = 1, ns
+                          flwdjf(iroom1,lsp+2,upper) = 
+     .                    flwdjf(iroom1,lsp+2,upper) + xntms1(upper,lsp)
+                      end do
+                  endif
+                  if(dj2flag)then
+                      flwdjf(iroom2,q,upper) = 
+     .                flwdjf(iroom2,q,upper) + qpyrol2
+                      do lsp = 1, ns
+                          flwdjf(iroom2,lsp+2,upper) = 
+     .                    flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
+                      end do
+                  endif
+              end if
+          end do
       endif
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
-        IF(JACCOL.EQ.0)THEN
+      if(option(fmodjac)==on)then
+          if(jaccol==0)then
 
-C*** we need to save the solution for later jacobian calculations
+              ! we need to save the solution for later jacobian calculations
+              do iroom = 1, nm1
+                  do lsp = 1, ns + 2
+                      flwdjf0(iroom,lsp,lower) = flwdjf(iroom,lsp,lower)
+                      flwdjf0(iroom,lsp,upper) = flwdjf(iroom,lsp,upper)
+                  end do
+              end do
+          else if(jaccol>0)then
 
-          DO 140 IROOM = 1, NM1
-            DO 150 LSP = 1, NS + 2
-              FLWDJF0(IROOM,LSP,LOWER) = FLWDJF(IROOM,LSP,LOWER)
-              FLWDJF0(IROOM,LSP,UPPER) = FLWDJF(IROOM,LSP,UPPER)
-  150       CONTINUE
-  140     CONTINUE
-         ELSEIF(JACCOL.GT.0)THEN
+              ! we are computing a jacobian, so get previously saved solution for rooms
+              ! that are not affected by the perturbed solution variable
+              do iroom = 1, nm1
+                  if(.not.roomflg(iroom))then
+                      do lsp = 1, ns+2
+                          flwdjf(iroom,lsp,lower) = 
+     .                    flwdjf0(iroom,lsp,lower)
+                          flwdjf(iroom,lsp,upper) = 
+     .                    flwdjf0(iroom,lsp,upper)
+                      end do
+                  endif
+              end do
+          endif
+      endif
 
-C*** we are computing a jacobian, so get previously saved solution for rooms
-C    that are not affected by the perturbed solution variable
-
-          DO 160 IROOM = 1, NM1
-            IF(.NOT.ROOMFLG(IROOM))THEN
-              DO 170 LSP = 1, NS+2
-                FLWDJF(IROOM,LSP,LOWER) = FLWDJF0(IROOM,LSP,LOWER)
-                FLWDJF(IROOM,LSP,UPPER) = FLWDJF0(IROOM,LSP,UPPER)
-  170         CONTINUE
-            ENDIF
-  160     CONTINUE
-        ENDIF
-      ENDIF
-
-      DO 50 I = 1, N
-        FQDJ(I) = FLWDJF(I,Q,UPPER) + FLWDJF(I,Q,LOWER)
-        HEATVF(I) = FLWDJF(I,Q,UPPER)
-   50 CONTINUE
-      RETURN
-      END
+      do i = 1, n
+          fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
+          heatvf(i) = flwdjf(i,q,upper)
+      end do
+      return
+      end subroutine djet
 
       SUBROUTINE DJFIRE(ITO,TJET,XXNETFL,SAS,HCOMBT,QPYROL,XNTMS,
-     .                  DJFLOWFLG)
+     .DJFLOWFLG)
 C*RB
 C     Routine:  DJFIRE
 C
@@ -1370,23 +961,23 @@ C
 C     WE ONLY WNAT TO DO THE DOOR JET CALCULATION IF THERE IS FUEL,
 C     OXYGEN, AND SUFFICIENT TEMPERATURE IN THE DOOR JET
 C
-      IF (XXNETFL.GT.X0.AND.SAS.GT.X0.AND.TJET.GE.TGIGNT) THEN
+      IF (XXNETFL>X0.AND.SAS>X0.AND.TJET>=TGIGNT) THEN
 C
 C     DO COMBUSTION CHEMISTRY ASSUMING COMPLETE COMVERSION TO CO2 & H2O.
 C     ALTHOUGH THE REAL CHEMISTRY IS MORE COMPLEX, FOR NOW WE DON'T KNOW
 C     HOW TO HANDLE IT.
 C
-        DUMMY = -1.0D0
-        DJFLOWFLG = .TRUE.
-        DO 10 i = 1, NS
-          XMASS(i) = X0
-   10   CONTINUE
-        CALL CHEMIE(DUMMY,XXNETFL,SAS,ITO,LOWER,HCOMBT,X0,X0,X0,X0,X0,
-     +      X0,x0,QPYROL,XXNETFUE,XMASS)
-        DO 20 I = 1, NS
-          XNTMS(UPPER,I) = XMASS(I)
-          XNTMS(LOWER,I) = X0
-   20   CONTINUE
+          DUMMY = -1.0D0
+          DJFLOWFLG = .TRUE.
+          DO 10 i = 1, NS
+              XMASS(i) = X0
+   10     CONTINUE
+          CALL CHEMIE(DUMMY,XXNETFL,SAS,ITO,LOWER,HCOMBT,X0,X0,X0,X0,X0,
+     +    X0,x0,QPYROL,XXNETFUE,XMASS)
+          DO 20 I = 1, NS
+              XNTMS(UPPER,I) = XMASS(I)
+              XNTMS(LOWER,I) = X0
+   20     CONTINUE
       END IF
       RETURN
       END
@@ -1407,19 +998,19 @@ C
       real*8 qdot, area
       real*8 fheight
       real*8 d
-      if (area.le.0d0) THEN
-        d = 0.09d0
+      if (area<=0d0) THEN
+          d = 0.09d0
       else
-        d = SQRT(four*area/pi)
+          d = SQRT(four*area/pi)
       end if
-	fheight = -1.02*d + 0.235*(qdot/1.0d3)**0.4d0
+      fheight = -1.02*d + 0.235*(qdot/1.0d3)**0.4d0
       fheight = max (zero, fheight)
       return
       end subroutine flamhgt
-      
+
       subroutine PlumeTemp (qdot, xrad, dfire, tu, tl, zfire, zlayer,
-     *                      zin, tplume)
-    
+     *zin, tplume)
+
 ! Calculates plume centerline temperature at a specified height above
 ! the fire.
 !
@@ -1448,57 +1039,57 @@ C
       real*8 tplume
       real*8, parameter :: g = 9.81d0, C_T = 9.115d0, Beta = 0.955d0
       real*8 cp,  rhoamb, z0, qdot_c, z_i1, q_i1star, xi, fheight, z,
-     *       q_i2star, z_i2, z_eff, q_eff, dt
+     *q_i2star, z_i2, z_eff, q_eff, dt
 
 !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
       z = zin - zfire
-      if (qdot.gt.0.0d0.and.tu.ge.tl.and.z.ge.0.0d0) then
+      if (qdot>0.0d0.and.tu>=tl.and.z>=0.0d0) then
 
 !       fire and target are both in the lower layer
-        if (z.le.zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
-            call PlumeTemp_M (qdot, tl, z, tplume)
-     
+          if (z<=zlayer) then
+              !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
+              call PlumeTemp_M (qdot, tl, z, tplume)
+
 !       fire and target are both in the upper layer
-        else if (zfire.ge.zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
-            call PlumeTemp_M (qdot, tu, z, tplume)
-                
+          else if (zfire>=zlayer) then
+              !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
+              call PlumeTemp_M (qdot, tu, z, tplume)
+
 !       fire is in lower layer and target is in upper layer
-        else
-            qdot_c = qdot*(1.0d0 - xrad)/1000.d0
-            rhoamb = 352.981915d0/tl
-            cp = 3.019d-7*tl**2 - 1.217d-4*tl + 1.014d0
-            z_i1 = zlayer - zfire
-            q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
-            xi = tu/tl
+          else
+              qdot_c = qdot*(1.0d0 - xrad)/1000.d0
+              rhoamb = 352.981915d0/tl
+              cp = 3.019d-7*tl**2 - 1.217d-4*tl + 1.014d0
+              z_i1 = zlayer - zfire
+              q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**(5.d0/2.d0))
+              xi = tu/tl
 !           the effective fire source (qi2star) must be a positive number
-            if (1.d0+C_T*q_i1star**(2.d0/3.d0).gt.xi) then
-                q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/(xi*C_T)
-     *                      -1.d0/C_T)**(3.d0/2.d0)
-                z_i2 = (xi*q_i1star*C_T/
-     *                 (q_i2star**(1.d0/3.d0)*((xi-1.d0)*(Beta+1.d0)+
-     *                 xi*C_T*q_i2star**(2.d0/3.d0))))**(2.d0/5.d0)*z_i1
-                rhoamb = 352.981915d0/tu
-                cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014d0
-                q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*
-     *                  z_i2**(5.d0/2.d0)/(1.0d0-xrad)*1000.d0
-                z_eff = z-z_i1+z_i2
-                call PlumeTemp_M (q_eff, tu, z_eff, tplume)
-            else
-                tplume = tu
-            end if
-        end if
+              if (1.d0+C_T*q_i1star**(2.d0/3.d0)>xi) then
+                  q_i2star = ((1.d0+C_T*q_i1star**(2.d0/3.d0))/(xi*C_T)
+     *            -1.d0/C_T)**(3.d0/2.d0)
+                  z_i2 = (xi*q_i1star*C_T/
+     *            (q_i2star**(1.d0/3.d0)*((xi-1.d0)*(Beta+1.d0)+
+     *            xi*C_T*q_i2star**(2.d0/3.d0))))**(2.d0/5.d0)*z_i1
+                  rhoamb = 352.981915d0/tu
+                  cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014d0
+                  q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*
+     *            z_i2**(5.d0/2.d0)/(1.0d0-xrad)*1000.d0
+                  z_eff = z-z_i1+z_i2
+                  call PlumeTemp_M (q_eff, tu, z_eff, tplume)
+              else
+                  tplume = tu
+              end if
+          end if
       else
-        if (zin.le.zlayer) then
-            tplume = tl
-        else
-            tplume = tu
-        end if
+          if (zin<=zlayer) then
+              tplume = tl
+          else
+              tplume = tu
+          end if
       end if  
       return
       end subroutine PlumeTemp
-      
+
       subroutine PlumeTemp_H (qdot, xrad, dfire, tgas, z, tplume)
 
 ! Calculates plume centerline temperature at a specified height above
@@ -1522,39 +1113,39 @@ C
       real*8, parameter :: g = 9.81d0, piov4 = (3.14159d0/4.0d0)
       real*8 cp, fheight, rhoamb, z0, qdot_c, dt
       real*8 dstar, zp1, zp2, tp1, tp2, a, b
-      
+
 !     plume temperature correlation is only valid above the mean flame height      
       call flamhgt (qdot,piov4*dfire**2,fheight)
-      
+
 !     z0 = virtual origin, qdot_c = convective HRR
-      if (dfire.gt.0.d0) then
-        z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
+      if (dfire>0.d0) then
+          z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
       else
-        z0 = 0.d0
+          z0 = 0.d0
       end if
       qdot_c = qdot*(1.0d0 - xrad)/1000.d0
-      
+
       rhoamb = 352.981915d0/tgas
       cp = 3.019d-7*tgas**2 - 1.217d-4*tgas + 1.014d0
       dstar = (qdot/1000.d0/(rhoamb*cp*tgas*sqrt(g)))**0.4d0
-      
-      if ((z-z0)/dstar.lt.1.32) then
-        dt = 2.91d0*tgas
-      else if ((z-z0).lt.fheight) then
-        zp1 = 1.32*dstar
-        tp1 = 2.91*tgas
-        zp2 = fheight
-        tp2 = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
-     *     qdot_c**(2.d0/3.d0)*(zp2)**(-5.d0/3.d0)
-        a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
-        b = tp1-a/zp1
-        dt = a/(z-z0) + b
+
+      if ((z-z0)/dstar<1.32) then
+          dt = 2.91d0*tgas
+      else if ((z-z0)<fheight) then
+          zp1 = 1.32*dstar
+          tp1 = 2.91*tgas
+          zp2 = fheight
+          tp2 = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *    qdot_c**(2.d0/3.d0)*(zp2)**(-5.d0/3.d0)
+          a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
+          b = tp1-a/zp1
+          dt = a/(z-z0) + b
       else
-        dt = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
-     *       qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
+          dt = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
+     *    qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
       end if
       tplume = tgas + dt
-      
+
       end subroutine PlumeTemp_H
 
       subroutine PlumeTemp_M (qdot, tgas, z, tplume)
@@ -1583,13 +1174,13 @@ C
       cp = 3.019d-7*tgas**2 - 1.217d-4*tgas + 1.014d0
       dstar = (qdot/1000.d0/(rhoamb*cp*tgas*sqrt(g)))**(0.4d0)
       zstar = z/dstar
-      if (zstar.ge.0.d0 .and. zstar.lt.1.32d0) then
+      if (zstar>=0.d0 .and. zstar<1.32d0) then
           n = 0.5d0
           b = 2.91d0
-      else if (zstar.ge.1.32d0 .and. zstar.lt.3.30d0) then
+      else if (zstar>=1.32d0 .and. zstar<3.30d0) then
           n = 0.d0
           b = 3.81d0
-      elseif (zstar.ge.3.30d0) then
+      elseif (zstar>=3.30d0) then
           n = -1.d0/3.d0
           b  = 8.41d0
       endif
@@ -1598,151 +1189,6 @@ C
       tplume = tgas*(1.+theta)
       return
       end subroutine PlumeTemp_M
-
-      SUBROUTINE OBJINT (OBJN, TIME, IROOM, OMASST, OAREAT, 
-     . OHIGHT, OQDOTT, OBJHCT, CCO2T, COCO2T, HCRATT, ZMFIRE, OCRATT,
-     . CLFRAT, CNFRAT,crfrat,UPDATE)
-
-!     Routine:     OBJINT
-
-!     Description:  Returns yields for object fires interpolated from user input  
-
-!     Arguments: OBJN   The object pointer number, 
-!                TIME   Current simulation time (s)
-!                IROOM  Room object is in
-!                FLUX   The normal radiative flux to the object
-!                SURFT  Surfice temp of object
-!                OMASST Pyrolysis rate of object (returned)
-!                OAREAT Area of pyrolysis of object (returned)
-!                OHIGHT Height of fire (returned)
-!                OQDOTT Heat release rate of object
-!                OBJHCT Object heat of combustion
-!                CCO2T  Carbon to CO2 ratio
-!                COCO2T CO to CO2 ration
-!                HCRATT Hydrogen to Carbon ratio of fuel
-!                ZMFIRE 
-!                OCRATT Oxygen to Carbon ration of fuel
-!                CLFRAT HCl production rate
-!                CNFRAT HCN production rate
-!                crFRAT trace gase production rate
-!                UPDATE Update varible
-!
-!     Revision History:
-!          8/90 calculate the pyrolysis rate, ... for other objects at this time, this 
-!               code is identical to PYROLS, but the intent is to be able to change it.
-!         10/93 added detection/suppression by GPF
-!          8/95 added code to handle type three fires. Also fixed objects so they can properly
-!               ignite by conditions and added header
-!          5/08 added initialization for trace species, separated kinetics and chemistry
-
-C     PYROLYSIS RATE OF THE FUEL - HCRATT IS IN COMMON (PARAMS.INC) SINCE
-C     IT IS USED IN SEVERAL PLACES
-
-      include "precis.fi"
-      include "cfast.fi"
-      include "cenviro.fi"
-      include "fireptrs.fi"
-      include "fltarget.fi"
-      include "objects1.fi"
-      include "objects2.fi"
-
-      DIMENSION ZMFIRE(NS)
-      INTEGER OBJN, UPDATE
-
-      ONETHRD = 0.3333D0
-      IF (.NOT.OBJON(OBJN).OR.OBJSET(OBJN).GT.0) THEN
-        XX0 = 0.0D0
-        OMASST = XX0
-        OAREAT = XX0
-        OHIGHT = XX0
-        OQDOTT = XX0
-        HCRATT = XX0
-        CCO2T = XX0
-        COCO2T = XX0
-        OCRATT = XX0
-        OBJHCT = 5.0D7
-        DO 14 J = 1, NS
-   14     ZMFIRE(J) = XX0
-        CLFRAT = XX0
-        CNFRAT = XX0
-        crfrat = xx0
-        RETURN
-      ENDIF
-
-      LOBJLFM = OBJLFM(OBJN)
-      XXTIME = TIME - OBJCRI(1,OBJN)
-      
-	ID = IQUENCH(IROOM)
-      
-	IF(ID.EQ.0)THEN
-
-!	IF A SPRINKLER IS NOT ACTIVE THEN INTERPOLATE AT CURRENT TIME
-
-	    IFACT = 0
-	ELSE
-C
-C*** IF A SPRINKLER IS ACTIVE THEN INTERPOLATE AT CURRENT TIME
-C    AND WHEN SPRINKLER FIRST ACTIVATED.  MAKE SURE THAT SPECIFIED
-C    HEAT RELEASE RATE IS THE SMALLER OF RATE AT CURRENT TIME
-C    AND RATE AT SPRINKLER ACTIVATION TIME * EXP( ...) 
-C
-	    TDRATE = XDTECT(ID,DRATE)
-	    XXTIMEF = XDTECT(ID,DTACT) - OBJCRI(1,OBJN)
-	    CALL INTERP(OTIME(1,OBJN),OQDOT(1,OBJN),LOBJLFM,XXTIME,1,
-     .                QT)
-	    CALL INTERP(OTIME(1,OBJN),OQDOT(1,OBJN),LOBJLFM,XXTIMEF,1,
-     .                QTF)
-	    IFACT = 1
-	    TFACT = EXP(-(XXTIME-XXTIMEF)/TDRATE)
-	    IF(QT.LT.TFACT*QTF)THEN
-C
-C*** CURRENT TIME HEAT RELEASE RATE IS SMALLER THAN SPRINKLERD VALUE
-C    SO USE CURRENT TIME AND RESET IFACT TO 0 SO RATES ARE NOT 
-C    DECREASED
-C
-	  		IFACT = 0
-	    ELSE
-	  		XXTIME = XXTIMEF
-	    ENDIF
-	ENDIF
-      
-	CALL INTERP(OTIME(1,OBJN),OMASS(1,OBJN),LOBJLFM,XXTIME,1,
-     .            OMASST)
-	CALL INTERP(OTIME(1,OBJN),OQDOT(1,OBJN),LOBJLFM,XXTIME,1,
-     .  			 OQDOTT)
-	CALL INTERP(OTIME(1,OBJN),OMPRODR(1,6,OBJN),LOBJLFM,XXTIME,1,
-     +  			 CLFRAT)
-	CALL INTERP(OTIME(1,OBJN),OMPRODR(1,5,OBJN),LOBJLFM,XXTIME,1,
-     +					 CNFRAT)
-!     crfrat is no longer used -  probably can eliminate the following code
-      call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,
-     +                   crfrat)
-
-!     ATTENUATE MASS AND ENERGY RELEASE RATES IF THERE IS AN ACTIVE SPRINKLER IN THIS ROOM
-
-	IF(ID.NE.0.AND.IFACT.EQ.1)THEN
-	    OMASST = OMASST*TFACT
-	    OQDOTT = OQDOTT*TFACT
-	ENDIF
-	CALL INTERP(OTIME(1,OBJN),OAREA(1,OBJN),LOBJLFM,XXTIME,1,
-     .        OAREAT)
-	CALL INTERP(OTIME(1,OBJN),OHIGH(1,OBJN),LOBJLFM,XXTIME,1,
-     .        OHIGHT)
-
-	CALL INTERP(OTIME(1,OBJN),OHCR(1,OBJN),LOBJLFM,XXTIME,1,HCRATT)
-	HCRATT = MIN (ONETHRD, HCRATT)
-	CALL INTERP(OTIME(1,OBJN),OOD(1,OBJN),LOBJLFM,XXTIME,1,CCO2T)
-	CALL INTERP(OTIME(1,OBJN),OCO(1,OBJN),LOBJLFM,XXTIME,1,COCO2T)
-	CALL INTERP(OTIME(1,OBJN),OOC(1,OBJN),LOBJLFM,XXTIME,1,OCRATT)
-	CALL INTERP(OTIME(1,OBJN),OBJHC(1,OBJN),LOBJLFM,XXTIME,1,OBJHCT)
-	DO 15 J = 1, NS
-	    CALL INTERP(OTIME(1,OBJN),OMPRODR(1,J,OBJN),LOBJLFM,
-     .  		XXTIME,1,XPROD)
-	    ZMFIRE(J) = XPROD * OMASST
-   15	CONTINUE
-
-      RETURN
-      END
 
       SUBROUTINE TOXIC(DELTT)
 C
@@ -1787,94 +1233,94 @@ C     AWEIGH'S ARE MOLAR WEIGHTS OF THE SPECIES, AVAGAD IS THE RECIPROCAL
 C     OF AVAGADRO'S NUMBER (SO YOU CAN'T HAVE LESS THAN AN ATOM OF A SPECIES
 C
       DATA AWEIGH, AWEIGH7 /28.D0, 32.D0, 44.D0, 28.D0, 27.D0, 37.D0, 
-     +    12.D0, 18.D0, 12.D0, 0.D0, 0.0d0, 12.D0/
+     +12.D0, 18.D0, 12.D0, 0.D0, 0.0d0, 12.D0/
       DATA AVAGAD /1.66D-24/
       DATA PPMCAL /3 * .FALSE., 3 * .TRUE., 5 * .FALSE./
       AWEIGH(7) = AWEIGH7 * (1.0D0+HCRATT)
 
       DO 90 I = 1, NM1
 C
-        V(UPPER) = ZZVOL(I,UPPER)
-        V(LOWER) = ZZVOL(I,LOWER)
-        DO 20 K = UPPER, LOWER
-          AIR(K) = 0.0D0
-          DO 10 LSP = 1, 9
-            AIR(K) = AIR(K) + ZZGSPEC(I,K,LSP) / AWEIGH(LSP)
-   10     CONTINUE
-          AIR(K) = MAX(AVAGAD,AIR(K))
-   20   CONTINUE
+          V(UPPER) = ZZVOL(I,UPPER)
+          V(LOWER) = ZZVOL(I,LOWER)
+          DO 20 K = UPPER, LOWER
+              AIR(K) = 0.0D0
+              DO 10 LSP = 1, 9
+                  AIR(K) = AIR(K) + ZZGSPEC(I,K,LSP) / AWEIGH(LSP)
+   10         CONTINUE
+              AIR(K) = MAX(AVAGAD,AIR(K))
+   20     CONTINUE
 C
 C     CALCLUATE THE MASS DENSITY IN KG/M^3
 C
-        DO 40 LSP = 1, NS
-          IF (ACTIVS(LSP)) THEN
-            DO 30 K = UPPER, LOWER
-              PPMDV(K,I,LSP) = ZZGSPEC(I,K,LSP) / V(K)
-   30       CONTINUE
-          END IF
-   40   CONTINUE
+          DO 40 LSP = 1, NS
+              IF (ACTIVS(LSP)) THEN
+                  DO 30 K = UPPER, LOWER
+                      PPMDV(K,I,LSP) = ZZGSPEC(I,K,LSP) / V(K)
+   30             CONTINUE
+              END IF
+   40     CONTINUE
 C
 C     NOW CALCULATE THE MOLAR DENSITY
 C
-        DO 60 LSP = 1, 8
-          IF (ACTIVS(LSP)) THEN
-            DO 50 K = UPPER, LOWER
-              IF (PPMCAL(LSP)) THEN
-                TOXICT(I,K,LSP) = 1.D+6 * ZZGSPEC(I,K,LSP) / (AIR(K)*
-     +              AWEIGH(LSP))
-              ELSE
-                TOXICT(I,K,LSP) = 100.D0 * ZZGSPEC(I,K,LSP) / (AIR(K)*
-     +              AWEIGH(LSP))
+          DO 60 LSP = 1, 8
+              IF (ACTIVS(LSP)) THEN
+                  DO 50 K = UPPER, LOWER
+                      IF (PPMCAL(LSP)) THEN
+                          TOXICT(I,K,LSP) = 1.D+6 * ZZGSPEC(I,K,LSP) /
+     +                    (AIR(K)*AWEIGH(LSP))
+                      ELSE
+                          TOXICT(I,K,LSP) = 100.D0 * ZZGSPEC(I,K,LSP) / 
+     +                    (AIR(K)*AWEIGH(LSP))
+                      END IF
+   50             CONTINUE
               END IF
-   50       CONTINUE
-          END IF
-   60   CONTINUE
+   60     CONTINUE
 C
 C     OPACITY IS CALCULATED FROM SEDER'S WORK
 C	Note: this value was change 2/15/2 from 3500 to 3778 to reflect the new value as reported by
 C     Mulholland in Fire and Materials, 24, 227(2000) with recommended value of extinction coefficient
 C     of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
 C
-        LSP = 9
-        IF (ACTIVS(LSP)) THEN
-          DO 70 K = UPPER, LOWER
-            TOXICT(I,K,LSP) = PPMDV(K,I,LSP) * 3778.0D0
-   70     CONTINUE
-        END IF
+          LSP = 9
+          IF (ACTIVS(LSP)) THEN
+              DO 70 K = UPPER, LOWER
+                  TOXICT(I,K,LSP) = PPMDV(K,I,LSP) * 3778.0D0
+   70         CONTINUE
+          END IF
 
 !     CT is the integration of the total "junk" being transported
 
-        LSP = 10
-        IF (ACTIVS(LSP)) THEN
-          DO 80 K = UPPER, LOWER
-            TOXICT(I,K,LSP) = TOXICT(I,K,LSP) + PPMDV(K,I,LSP) * 
-     +          1000.0D0 * DELTT / 60.0D0
-   80     CONTINUE
-        END IF
+          LSP = 10
+          IF (ACTIVS(LSP)) THEN
+              DO 80 K = UPPER, LOWER
+                  TOXICT(I,K,LSP) = TOXICT(I,K,LSP) + PPMDV(K,I,LSP) * 
+     +            1000.0D0 * DELTT / 60.0D0
+   80         CONTINUE
+          END IF
 
 !     TS (trace species) is the filtered concentration - this is the total mass. 
 !     It is converted to fraction of the total generated by all fires.
 !     This step being correct depends on the INTEGRATEMASS routine
 
-        LSP = 11
-        IF (ACTIVS(LSP)) THEN
-          DO 81 K = UPPER, LOWER
-            TOXICT(I,K,LSP) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
-   81     CONTINUE
-        END IF
+          LSP = 11
+          IF (ACTIVS(LSP)) THEN
+              DO 81 K = UPPER, LOWER
+                  TOXICT(I,K,LSP) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
+   81         CONTINUE
+          END IF
 
    90 continue
 
 !     ONTARGET IS THE RADIATION RECEIVED ON A TARGET ON THE FLOOR
 
-	DO 100 I = 1, NM1
-        ONTARGET(I) = SIGM * (ZZTEMP(I,UPPER)**4-TAMB(I)**4)
-        IF (ONTARGET(I).LT.1.0D0) ONTARGET(I) = 0.0D0
+      DO 100 I = 1, NM1
+          ONTARGET(I) = SIGM * (ZZTEMP(I,UPPER)**4-TAMB(I)**4)
+          IF (ONTARGET(I)<1.0D0) ONTARGET(I) = 0.0D0
   100 CONTINUE
       RETURN
       END
-	SUBROUTINE REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
-     . FZLOCAL, FQLOCAL, FHLOCAL)
+      SUBROUTINE REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
+     .FZLOCAL, FQLOCAL, FHLOCAL)
 
 C	This routine is to combine the main fire (in lfbo) and any objects into a single list
 C	There does not have to be a main fire nor any objects, so NFIRES may be zero
@@ -1888,61 +1334,61 @@ C	There does not have to be a main fire nor any objects, so NFIRES may be zero
 
 C	First, the mainfire if there is one
 
-	IF (LFBO.GT.0) THEN
-		nfires = 1
-		FLOCAL(1) = FROOM(0)
-		FXLOCAL(1) = fopos(1,0)
-		FYLOCAL(1) = fopos(2,0)
-		FZLOCAL(1) = fopos(3,0)
-		CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
-		FQLOCAL(1) = FQF(0)
-		FHLOCAL(1) = FHEIGHT
-	ELSE
-		NFIRES = 0
-	ENDIF
-	
+      IF (LFBO>0) THEN
+          nfires = 1
+          FLOCAL(1) = FROOM(0)
+          FXLOCAL(1) = fopos(1,0)
+          FYLOCAL(1) = fopos(2,0)
+          FZLOCAL(1) = fopos(3,0)
+          CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
+          FQLOCAL(1) = FQF(0)
+          FHLOCAL(1) = FHEIGHT
+      ELSE
+          NFIRES = 0
+      ENDIF
+
 C	Now the other objects
 
-	DO I = 1, NUMOBJL
-		NFIRES = NFIRES + 1
-		FXLOCAL(NFIRES) = fopos(1,i)
-		FYLOCAL(NFIRES) = fopos(2,i)
-		FZLOCAL(NFIRES) = fopos(3,i)
-        CALL FLAMHGT (fqf(i),FAREA(I),FHEIGHT)
-		FQLOCAL(NFIRES) = fqf(i)
-		FHLOCAL(NFIRES) = FHEIGHT
-		flocal(nfires) = froom(i)
-	END DO
-	RETURN
-	END
+      DO I = 1, NUMOBJL
+          NFIRES = NFIRES + 1
+          FXLOCAL(NFIRES) = fopos(1,i)
+          FYLOCAL(NFIRES) = fopos(2,i)
+          FZLOCAL(NFIRES) = fopos(3,i)
+          CALL FLAMHGT (fqf(i),FAREA(I),FHEIGHT)
+          FQLOCAL(NFIRES) = fqf(i)
+          FHLOCAL(NFIRES) = FHEIGHT
+          flocal(nfires) = froom(i)
+      END DO
+      RETURN
+      END
 
-	subroutine sethoc (maxint, mdot, qdot, hdot, hinitial)
+      subroutine sethoc (maxint, mdot, qdot, hdot, hinitial)
 
 !	Routine to implement the algorithm to set the heat of combustion for all fires
 
       include "precis.fi"
 
-	double precision mdot(maxint), qdot(maxint), hdot(maxint)
+      double precision mdot(maxint), qdot(maxint), hdot(maxint)
 
       data hcmax /1.0D8/, hcmin /1.0D+6/
-	
-	do 600 i = 1, maxint
-	if(i.gt.1) then
-	    if (mdot(i)*qdot(i).le.0.d0) then
-	  		hdot(i) = hinitial
-	    else					
-	  		Hdot(I) = min(hcmax,max(Qdot(I)/mdot(I),hcmin))
-	  		mdot(I) = Qdot(I)/Hdot(I)
-	    endif
-	else
-	    hdot(1) = hinitial
-	endif
-  600	continue
 
-	return
-	end subroutine sethoc
+      do 600 i = 1, maxint
+          if(i>1) then
+              if (mdot(i)*qdot(i)<=0.d0) then
+                  hdot(i) = hinitial
+              else					
+                  Hdot(I) = min(hcmax,max(Qdot(I)/mdot(I),hcmin))
+                  mdot(I) = Qdot(I)/Hdot(I)
+              endif
+          else
+              hdot(1) = hinitial
+          endif
+  600 continue
 
-	SUBROUTINE UPDOBJ(IFLAG, TOLD, DT, IFOBJ, TOBJ, IERROR)
+      return
+      end subroutine sethoc
+
+      SUBROUTINE UPDOBJ(IFLAG, TOLD, DT, IFOBJ, TOBJ, IERROR)
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -1975,88 +1421,89 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "fltarget.fi"
       include "opt.fi"
 
-	DIMENSION TMPOB(2,MXOIN)
+      DIMENSION TMPOB(2,MXOIN)
 
-	IFOBJ = 0
-	TOBJ = TOLD + 2.D0*DT
-	TNOBJ = TOLD + DT
+      IFOBJ = 0
+      TOBJ = TOLD + 2.D0*DT
+      TNOBJ = TOLD + DT
 
 !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
 !!!!! The critiria for temperature and flux are stored backupwards - this historical
 !!!!! See corresponding code in keywordcases
-	DO 10 IOBJ = 1, NUMOBJL
-	  IF (OBJON(IOBJ)) GOTO 10
-	  IGNFLG = OBJIGN(IOBJ)
-	  IOBTARG = OBTARG(IOBJ)
-	  IF (IGNFLG.EQ.1) THEN
-	    IF (OBJCRI(1,IOBJ).LE.TNOBJ) THEN
-	      TOBJ = MIN(OBJCRI(1,IOBJ),TOBJ)
-		    IFOBJ = IOBJ
-	      TMPOB(1,IOBJ) = 1.D0
-	      TMPOB(2,IOBJ) = OBJCRI(1,IOBJ)
-	    ELSE
-	      TMPOB(1,IOBJ) = 0.0D0
-	      TMPOB(2,IOBJ) = TNOBJ + DT
-	    END IF
-	  ELSE IF (IGNFLG.EQ.2) THEN
-	    CALL DO_OBJCK(IFLAG, TOLD, DT, XXTARG(TRGTEMPF,IOBTARG), 
-     .         OBJCRI(3,IOBJ), OBCOND(OBOTEMP,IOBJ), IOBJ, IFOBJ, TOBJ,
-     .         TMPOB(1,IOBJ))
-          ELSE IF (IGNFLG.EQ.3) THEN
-	    CALL DO_OBJCK(IFLAG, TOLD, DT, XXTARG(TRGTFLUXF,IOBTARG), 
-     .         OBJCRI(2,IOBJ), OBCOND(OBOFLUX,IOBJ), IOBJ, IFOBJ, TOBJ,
-     .         TMPOB(1,IOBJ))
-        ELSE
-          CALL XERROR('UPDOBJ - Incorrectly defined object type',0,1,1)
-          IERROR = 20
-          RETURN
-	  ENDIF
+      DO 10 IOBJ = 1, NUMOBJL
+          IF (OBJON(IOBJ)) GOTO 10
+          IGNFLG = OBJIGN(IOBJ)
+          IOBTARG = OBTARG(IOBJ)
+          IF (IGNFLG==1) THEN
+              IF (OBJCRI(1,IOBJ)<=TNOBJ) THEN
+                  TOBJ = MIN(OBJCRI(1,IOBJ),TOBJ)
+                  IFOBJ = IOBJ
+                  TMPOB(1,IOBJ) = 1.D0
+                  TMPOB(2,IOBJ) = OBJCRI(1,IOBJ)
+              ELSE
+                  TMPOB(1,IOBJ) = 0.0D0
+                  TMPOB(2,IOBJ) = TNOBJ + DT
+              END IF
+          ELSE IF (IGNFLG==2) THEN
+              CALL DO_OBJCK(IFLAG, TOLD, DT, XXTARG(TRGTEMPF,IOBTARG), 
+     .        OBJCRI(3,IOBJ), OBCOND(OBOTEMP,IOBJ), IOBJ, IFOBJ, TOBJ,
+     .        TMPOB(1,IOBJ))
+          ELSE IF (IGNFLG==3) THEN
+              CALL DO_OBJCK(IFLAG, TOLD, DT, XXTARG(TRGTFLUXF,IOBTARG), 
+     .        OBJCRI(2,IOBJ), OBCOND(OBOFLUX,IOBJ), IOBJ, IFOBJ, TOBJ,
+     .        TMPOB(1,IOBJ))
+          ELSE
+              CALL XERROR('UPDOBJ - Incorrectly defined object type',
+     .            0,1,1)
+              IERROR = 20
+              RETURN
+          ENDIF
    10 CONTINUE
-	    
-	IF (IFLAG.NE.MDCHK) THEN
-	  DO 20 IOBJ = 1, NUMOBJL
-	    IF (.NOT.OBJON(IOBJ)) THEN
-	      IOBTARG = OBTARG(IOBJ)
-	      OBCOND(OBOTEMP,IOBJ) = XXTARG(TRGTEMPF,IOBTARG)
-	      OBCOND(OBOFLUX,IOBJ) = XXTARG(TRGTFLUXF,IOBTARG)
-	      IF (IFLAG.EQ.MDSET.AND.TMPOB(1,IOBJ).GT.0.0D0) THEN
-	        IF (TMPOB(2,IOBJ).LE.TOBJ) THEN
-		       OBJON(IOBJ) = .TRUE.
-                IF (OPTION(FBTOBJ).EQ.ON) THEN
-		          OBJSET(IOBJ) = 1
-                ELSE
-                   OBJSET(IOBJ) = 0
-                END IF
-		       OBJCRI(1,IOBJ) = TMPOB(2,IOBJ)
-		      END IF
-	      END IF
-	    END IF
-   20   CONTINUE
+
+      IF (IFLAG/=MDCHK) THEN
+          DO 20 IOBJ = 1, NUMOBJL
+              IF (.NOT.OBJON(IOBJ)) THEN
+                  IOBTARG = OBTARG(IOBJ)
+                  OBCOND(OBOTEMP,IOBJ) = XXTARG(TRGTEMPF,IOBTARG)
+                  OBCOND(OBOFLUX,IOBJ) = XXTARG(TRGTFLUXF,IOBTARG)
+                  IF (IFLAG==MDSET.AND.TMPOB(1,IOBJ)>0.0D0) THEN
+                      IF (TMPOB(2,IOBJ)<=TOBJ) THEN
+                          OBJON(IOBJ) = .TRUE.
+                          IF (OPTION(FBTOBJ)==ON) THEN
+                              OBJSET(IOBJ) = 1
+                          ELSE
+                              OBJSET(IOBJ) = 0
+                          END IF
+                          OBJCRI(1,IOBJ) = TMPOB(2,IOBJ)
+                      END IF
+                  END IF
+              END IF
+   20     CONTINUE
       END IF
 
-	RETURN
-	END
+      RETURN
+      END
 
-	SUBROUTINE DO_OBJCK(IFLAG,TOLD, DT, COND, TRIP, OLDCOND, IOBJ,
-     .                    IFOBJ, TOBJ, TMPOB)
+      SUBROUTINE DO_OBJCK(IFLAG,TOLD, DT, COND, TRIP, OLDCOND, IOBJ,
+     .IFOBJ, TOBJ, TMPOB)
 
       include "precis.fi"
 
-     	DIMENSION TMPOB(2)
+      DIMENSION TMPOB(2)
 
-      IF (COND.GT.TRIP) THEN
-	  DELTA = (TRIP-OLDCOND)/(COND-OLDCOND)
-	  TMPOB(1) = 1.0D0
-	  TMPOB(2) = TOLD + DT*DELTA
-	  TOBJ = MIN(TOBJ,TMPOB(2))
-	  IFOBJ = IOBJ
-	ELSE
-	  TMPOB(1) = 0.0D0
-	  TMPOB(2) = TOLD + 2.D0*DT
-	END IF
+      IF (COND>TRIP) THEN
+          DELTA = (TRIP-OLDCOND)/(COND-OLDCOND)
+          TMPOB(1) = 1.0D0
+          TMPOB(2) = TOLD + DT*DELTA
+          TOBJ = MIN(TOBJ,TMPOB(2))
+          IFOBJ = IOBJ
+      ELSE
+          TMPOB(1) = 0.0D0
+          TMPOB(2) = TOLD + 2.D0*DT
+      END IF
 
-	RETURN
-	END
+      RETURN
+      END
 
       SUBROUTINE HCL (FLWHCL, FLXHCL,IERROR)
 C
@@ -2103,69 +1550,70 @@ C     INITIALIZE SUMMATIONS AND LOCAL DATA
 C*** only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
 
       DO 10 IROOM = 1, N
-      DO 11 J = 1, NS+2
-        FLWHCL(IROOM,J,UPPER) = X0
-   11   FLWHCL(IROOM,J,LOWER) = X0
-        FLXHCL(IROOM,1) = X0
-        FLXHCL(IROOM,2) = X0
-        FLXHCL(IROOM,3) = X0
-        FLXHCL(IROOM,4) = X0
+          DO 11 J = 1, NS+2
+              FLWHCL(IROOM,J,UPPER) = X0
+   11         FLWHCL(IROOM,J,LOWER) = X0
+              FLXHCL(IROOM,1) = X0
+              FLXHCL(IROOM,2) = X0
+              FLXHCL(IROOM,3) = X0
+              FLXHCL(IROOM,4) = X0
    10 CONTINUE
-      IF (OPTION(FHCL).EQ.OFF) RETURN
+      IF (OPTION(FHCL)==OFF) RETURN
 
 C     CALCULATE THE HCL "ADDED" TO THE LAYERS FROM EACH SURFACE
 
       IF (ACTIVS(6)) THEN
-        DO 30 IROOM = 1, NM1
-          DO 20 IWALL = 1, 4
-            IF (SWITCH(IWALL,IROOM)) THEN
-              IF (IWALL.EQ.1) THEN
-                ARW = AR(IROOM)
-                LAYER = UPPER
-              ELSE IF (IWALL.EQ.2) THEN
-                ARW = AR(IROOM)
-                LAYER = LOWER
-              ELSE IF (IWALL.EQ.3) THEN
-                ARW = (BR(IROOM)+DR(IROOM)) * ZZHLAY(IROOM,UPPER) * 
-     +              2.0D0
-                LAYER = UPPER
-              ELSE IF (IWALL.EQ.4) THEN
-                ARW = (BR(IROOM)+DR(IROOM)) * (HR(IROOM)-
-     +              ZZHLAY(IROOM,UPPER)) * 2.0D0
-                ARW = MAX(X0,ARW)
-                LAYER = LOWER
-              END IF
+          DO 30 IROOM = 1, NM1
+              DO 20 IWALL = 1, 4
+                  IF (SWITCH(IWALL,IROOM)) THEN
+                      IF (IWALL==1) THEN
+                          ARW = AR(IROOM)
+                          LAYER = UPPER
+                      ELSE IF (IWALL==2) THEN
+                          ARW = AR(IROOM)
+                          LAYER = LOWER
+                      ELSE IF (IWALL==3) THEN
+                          ARW = (BR(IROOM)+DR(IROOM)) * 
+     +                    ZZHLAY(IROOM,UPPER) * 2.0D0
+                          LAYER = UPPER
+                      ELSE IF (IWALL==4) THEN
+                          ARW = (BR(IROOM)+DR(IROOM)) * (HR(IROOM)-
+     +                    ZZHLAY(IROOM,UPPER)) * 2.0D0
+                          ARW = MAX(X0,ARW)
+                          LAYER = LOWER
+                      END IF
 C              Hclg = Mass(Layer,iroom,6) / Zzvol(iroom,Layer)
 C              H2o = Mass(Layer,iroom,8) / Zzvol(iroom,Layer)
 
 C*** use environment variables
 
-              HCLG = ZZCSPEC(IROOM,LAYER,6)
-              H2O = ZZCSPEC(IROOM,LAYER,8)
-              RHO = ZZRHO(IROOM,LAYER)
-              TG = ZZTEMP(IROOM,LAYER)
-              HCLW = ZZWSPEC(IROOM,IWALL)
-              FLUX = QSCNV(IWALL,IROOM)
-              TW = TWJ(1,IROOM,IWALL)
-              CALL HCLTRAN(IROOM,IWALL,ARW,HCLG,H2O,RHO,TG,HCLW,FLUX,TW,
-     +            HWDOT,HNET,IERROR)
-              IF (IERROR.NE.0) RETURN
+                      HCLG = ZZCSPEC(IROOM,LAYER,6)
+                      H2O = ZZCSPEC(IROOM,LAYER,8)
+                      RHO = ZZRHO(IROOM,LAYER)
+                      TG = ZZTEMP(IROOM,LAYER)
+                      HCLW = ZZWSPEC(IROOM,IWALL)
+                      FLUX = QSCNV(IWALL,IROOM)
+                      TW = TWJ(1,IROOM,IWALL)
+                      CALL HCLTRAN(IROOM,IWALL,ARW,HCLG,H2O,RHO,TG,HCLW,
+     +                    FLUX,TW,HWDOT,HNET,IERROR)
+                      IF (IERROR/=0) RETURN
 
 C             SUM UP THE FLOWS AND FLUXES FOR THE SOURCE ROUTINE
 
-              FLWHCL(IROOM,1,LAYER) = FLWHCL(IROOM,1,LAYER) + HNET
-              FLWHCL(IROOM,2+6,LAYER) = FLWHCL(IROOM,2+6,LAYER) + HNET
-              FLXHCL(IROOM,IWALL) = HWDOT
+                      FLWHCL(IROOM,1,LAYER) = FLWHCL(IROOM,1,LAYER)+HNET
+                      FLWHCL(IROOM,2+6,LAYER) = FLWHCL(IROOM,2+6,LAYER) 
+     .                    + HNET
+                      FLXHCL(IROOM,IWALL) = HWDOT
 
-            END IF
-   20     CONTINUE
-   30   CONTINUE
+                  END IF
+   20         CONTINUE
+   30     CONTINUE
       END IF
       RETURN
       END
 
       SUBROUTINE HCLTRAN(ICOMP,IWALL,ARW,HCLG,H2O,RHO,TG,HCLW,FLUX,TW,
-     +    HWDOT,HNET,IERROR)
+     +HWDOT,HNET,IERROR)
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -2214,7 +1662,7 @@ C
       XX0 = 0.0D0
       HWDOT = XX0
       HNET = XX0
-      IF ((HCLG.EQ.0.).AND.(HCLW.EQ.0.)) RETURN
+      IF ((HCLG==0.).AND.(HCLW==0.)) RETURN
 C
 C     NOTE THAT WE CALCULATE DENSITY ON THE FLY, SINCE PPMDV IS NOT UPDATED
 C     OFTEN ENOUGH
@@ -2234,50 +1682,50 @@ C
       B6 = HCLBF(6,IWALL,ICOMP)
       B7 = HCLBF(7,IWALL,ICOMP)
 
-      IF (B1.LE.0) RETURN
+      IF (B1<=0) RETURN
 
 C     CALCULATE HCL GAS-SURFACE PARTITION COEFFICIENT
 C     H2OS IS THE SATURATION CONCENTRATION OF WATER.
 
-      IF (TWC.LE.40.D0) THEN
-        IF (HCLP.GT.10.D0) THEN
-          H2OS = (1.8204D0-0.18890D0*LOG(HCLP)+0.06466D0*TWC+1.650D-3*
-     +        TWC**2+7.408D-5*TWC**3) / TW
-        ELSE
-          XTEMP = 17.64262D0 - 5164.1D0 / TW
-          EXPTW = EXP(XTEMP)
-          BCOEF = (7.696D-5+3.5920D-6*TWC+9.166D-8*TWC**2+4.116D-9*TWC
-     +        **3) / TW - 1.D-7 * EXPTW
-          H2OS = 0.018D0 * EXPTW + 1.8D4 * BCOEF * HCLP
-        END IF
-      ELSE IF ((TWC.GT.40.0D0).AND.(TWC.LE.60.0D0)) THEN
-        H2OS = (7.044D0-2.2416D3*XHCLF-3.874D-3*TWC**2+2.328D-4*TWC**3
-     +      +2.376D6*XHCLF**2-5.527D8*XHCLF**3+4.918D10*XHCLF**4-
-     +      1.359D12*XHCLF**5-1.4033D2*TWC*XHCLF+2.431D4*TWC*XHCLF**2-
-     +      1.6023D6*TWC*XHCLF**3) / TW
-      ELSE IF ((TWC.GT.60.0D0).AND.(TWC.LE.80.0D0)) THEN
-        H2OS = (107.46D0-4.129D0*TWC+5.096D-2*TWC**2-3.1915D8*XHCLF**3
-     +      +1.0408D10*XHCLF**4-2.2793D11*XHCLF**5-5.8194D0*TWC**2*
-     +      XHCLF+7.6883D4*TWC*XHCLF**2-7.4363D2*TWC**2*XHCLF**2+
-     +      .059067D0*TWC**3*XHCLF+1.8132D6*TWC*XHCLF**3) / TW
-      ELSE IF ((TWC.GT.80.0D0).AND.(TWC.LE.95.0D0)) THEN
-        H2OS = (2.583D2-8.0386D0*TWC+1.739D5*XHCLF+7.608D-2*TWC**2-
-     +      1.5492D7*XHCLF**2+3.956D9*XHCLF**3-2.065D11*XHCLF**4+
-     +      1.3747D13*XHCLF**5-4.086D3*TWC*XHCLF+24.06D0*TWC**2*XHCLF+
-     +      1.3558D5*TWC*XHCLF**2-3.076D7*TWC*XHCLF**3) / TW
-      ELSE IF ((TWC.GT.95.0D0).AND.(TWC.LE.110.0D0)) THEN
-        H2OS = (6.431D2-16.374D0*TWC+2.822D5*XHCLF+0.12117D0*TWC**2-
-     +      8.224D7*XHCLF**2-7.387D6*XHCLF**3-5.247D3*TWC*XHCLF+
-     +      24.30D0*TWC**2*XHCLF+1.5465D6*TWC*XHCLF**2-7.250D3*TWC**2*
-     +      XHCLF**2) / TW
-      ELSE IF (TWC.GT.110.0D0) THEN
-        XTEMP = 18.3036D0 - 3816.44D0 / (TW-46.13D0)
-        H2OS = 0.2885D0 * EXP(XTEMP) / TW
+      IF (TWC<=40.D0) THEN
+          IF (HCLP>10.D0) THEN
+              H2OS = (1.8204D0-0.18890D0*LOG(HCLP)+0.06466D0*TWC+
+     +        1.650D-3*TWC**2+7.408D-5*TWC**3) / TW
+          ELSE
+              XTEMP = 17.64262D0 - 5164.1D0 / TW
+              EXPTW = EXP(XTEMP)
+              BCOEF = (7.696D-5+3.5920D-6*TWC+9.166D-8*TWC**2+4.116D-
+     +        9*TWC**3) / TW - 1.D-7 * EXPTW
+              H2OS = 0.018D0 * EXPTW + 1.8D4 * BCOEF * HCLP
+          END IF
+      ELSE IF ((TWC>40.0D0).AND.(TWC<=60.0D0)) THEN
+          H2OS = (7.044D0-2.2416D3*XHCLF-3.874D-3*TWC**2+2.328D-4*TWC**3
+     +    +2.376D6*XHCLF**2-5.527D8*XHCLF**3+4.918D10*XHCLF**4-
+     +    1.359D12*XHCLF**5-1.4033D2*TWC*XHCLF+2.431D4*TWC*XHCLF**2-
+     +    1.6023D6*TWC*XHCLF**3) / TW
+      ELSE IF ((TWC>60.0D0).AND.(TWC<=80.0D0)) THEN
+          H2OS = (107.46D0-4.129D0*TWC+5.096D-2*TWC**2-3.1915D8*XHCLF**3
+     +    +1.0408D10*XHCLF**4-2.2793D11*XHCLF**5-5.8194D0*TWC**2*
+     +    XHCLF+7.6883D4*TWC*XHCLF**2-7.4363D2*TWC**2*XHCLF**2+
+     +    .059067D0*TWC**3*XHCLF+1.8132D6*TWC*XHCLF**3) / TW
+      ELSE IF ((TWC>80.0D0).AND.(TWC<=95.0D0)) THEN
+          H2OS = (2.583D2-8.0386D0*TWC+1.739D5*XHCLF+7.608D-2*TWC**2-
+     +    1.5492D7*XHCLF**2+3.956D9*XHCLF**3-2.065D11*XHCLF**4+
+     +    1.3747D13*XHCLF**5-4.086D3*TWC*XHCLF+24.06D0*TWC**2*XHCLF+
+     +    1.3558D5*TWC*XHCLF**2-3.076D7*TWC*XHCLF**3) / TW
+      ELSE IF ((TWC>95.0D0).AND.(TWC<=110.0D0)) THEN
+          H2OS = (6.431D2-16.374D0*TWC+2.822D5*XHCLF+0.12117D0*TWC**2-
+     +    8.224D7*XHCLF**2-7.387D6*XHCLF**3-5.247D3*TWC*XHCLF+
+     +    24.30D0*TWC**2*XHCLF+1.5465D6*TWC*XHCLF**2-7.250D3*TWC**2*
+     +    XHCLF**2) / TW
+      ELSE IF (TWC>110.0D0) THEN
+          XTEMP = 18.3036D0 - 3816.44D0 / (TW-46.13D0)
+          H2OS = 0.2885D0 * EXP(XTEMP) / TW
       ELSE
 C        STOP 'Error in hcltran - H2O out of range'
-         CALL XERROR('HCLTRAN - H2O out of range',0,1,1)
-         IERROR = 12
-         RETURN
+          CALL XERROR('HCLTRAN - H2O out of range',0,1,1)
+          IERROR = 12
+          RETURN
       END IF
 C
 C     CALCULATE THE COEFFICIENTS
@@ -2285,19 +1733,19 @@ C
 C     RK IS THE CONSTANT "kc" WHICH IS THE DEPOSITION COEFFICIENT (M/S)
 C     RKE IS THE EQUILIBRIUM COEFFIENT BETWEEN THE GAS AND SOLID PHASE
 C
-      IF (TW.GE.TG) THEN
-        RK = 8.33D-3
+      IF (TW>=TG) THEN
+          RK = 8.33D-3
       ELSE
-        X001 = .001D0
-        RK = ABS(FLUX/(MAX(X001,TG-TW)*RHO*CP))
+          X001 = .001D0
+          RK = ABS(FLUX/(MAX(X001,TG-TW)*RHO*CP))
       END IF
-      IF (H2OS.GT.H2O) THEN
-        XTEMP = 1500.0D0 / TW
-        EXPTW = EXP(XTEMP)
-        RKE = B1 * EXPTW / (1.0D0+B2*EXPTW*HCLG) * (1.0D0+B5*H2O**B6/(
-     +      (H2OS-H2O)**B7))
+      IF (H2OS>H2O) THEN
+          XTEMP = 1500.0D0 / TW
+          EXPTW = EXP(XTEMP)
+          RKE = B1 * EXPTW / (1.0D0+B2*EXPTW*HCLG) * (1.0D0+B5*H2O**B6/(
+     +    (H2OS-H2O)**B7))
       ELSE
-        RKE = 1.0D4
+          RKE = 1.0D4
       END IF
 C
 C     CALCULATE THE DERIVATIVES
@@ -2309,16 +1757,16 @@ C
       RETURN
       END
       integer function rev_fire
-          
+
       INTEGER :: MODULE_REV
       CHARACTER(255) :: MODULE_DATE 
       CHARACTER(255), PARAMETER :: 
-     * mainrev='$Revision$'
+     *mainrev='$Revision$'
       CHARACTER(255), PARAMETER :: 
-     * maindate='$Date$'
-      
+     *maindate='$Date$'
+
       WRITE(module_date,'(A)') 
-     *    mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
+     *mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
       READ (MODULE_DATE,'(I5)') MODULE_REV
       rev_fire = module_rev
       WRITE(MODULE_DATE,'(A)') maindate

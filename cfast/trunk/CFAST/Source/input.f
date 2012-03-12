@@ -10,9 +10,10 @@
       include "cshell.fi"
       include "cfin.fi"
       include "objects1.fi"
+      include "objects2.fi"
       include "thermp.fi"
 
-	integer numr, numc
+      integer numr, numc
       logical exists
       character*133 messg
       character aversion*5
@@ -41,7 +42,7 @@
 
       ifail = 0
       xx0 = 0.0d0
-	xx1 = 1.0d0
+      xx1 = 1.0d0
 
       ! deal with opening the data file and assuring ourselves that it is compatible
       close (iofili)
@@ -51,7 +52,7 @@
           ierror = 99
           return
       end if
-      
+
       ! read in the entire input file as a spreadsheet array of numbers and/or character strings
       call readcsvformat(iofili,rarray,carray,nrow,ncol,1,numr,numc,
      .ierror)
@@ -82,28 +83,28 @@
       title = carray(1,3)
 
       do i = 1, nr
-        yinter(i) = -1.0d0
+          yinter(i) = -1.0d0
       end do
-      
+
       maxct = 0
-      
-	! read in data file
+
+      ! read in data file
       call keywordcases (numr, numc, ierror)
 
 !	wait until the input file is parsed before dieing on temperature outside reasonable limits
-	if (exta.gt.373.15.or.exta.lt.223.15d0) then
-		write(logerr,5022) exta
-		ierror = 218
-	endif
-	if (ta.gt.373.15.or.ta.lt.223.15d0) then
-		write(logerr,5022) ta
-		ierror = 218
-	endif
+      if (exta.gt.373.15.or.exta.lt.223.15d0) then
+          write(logerr,5022) exta
+          ierror = 218
+      endif
+      if (ta.gt.373.15.or.ta.lt.223.15d0) then
+          write(logerr,5022) ta
+          ierror = 218
+      endif
 
       IF (IERROR.NE.0) RETURN
 
       ! We now know what output is going to be generated, so create the files
-	call openoutputfiles
+      call openoutputfiles
 
       ra = pa / ta / rgas
       exra = expa / exta / rgas
@@ -111,11 +112,16 @@
       ! turn on the subsidiary equations if they are neeeded - this is always true
       if (activs(6)) hcldep = 1
 
-      ! initialize the targets
+      ! initialize the targets. add targets for each fire
       nm1 = n - 1
+      if (numobjl.gt.0) then
+          do i = 1, numobjl 
+             call initfireobject(i,ierror)
+          end do
+      end if
       call inittarg (ierror)
       if (ierror.ne.0) return
-      
+
       ! now calculate the offsets - the order is important
       call offset (ierror)
       if (ierror.ne.0) return
@@ -158,7 +164,7 @@
               if (logerr.gt.0) write (logerr,5100) i, objpos(3,i)
           end if
       end do
-         
+
       ! make sure horizontal vent specifications are correct -  we have to do this
       ! here rather than right after keywordcases because hrl and hrp were just defined
       ! above
@@ -177,9 +183,9 @@ c    see which room is on top (if any) - this is like a bubble sort
                   deps2 = hrl(ibot) - hrp(itop)
                   if (nwv(itop,ibot).ne.1.or.abs(deps1).ge.vfmaxdz) then
                       if (nwv(ibot,itop).ne.1.or.
-     .                    abs(deps2).ge.vfmaxdz) then
+     .                abs(deps2).ge.vfmaxdz) then
                           if (nwv(itop,ibot).eq.1.and.
-     .                        abs(deps2).lt.vfmaxdz) then
+     .                    abs(deps2).lt.vfmaxdz) then
                               if (nwv(ibot,itop).ne.0) then
                                   write (logerr,*) 'Vent ', ibot, itop, 
      +                            ' is being redefined'
@@ -191,7 +197,7 @@ c    see which room is on top (if any) - this is like a bubble sort
                               cycle
                           end if
                           if (nwv(ibot,itop).eq.1.and.
-     .                        abs(deps1).lt.vfmaxdz) then
+     .                    abs(deps1).lt.vfmaxdz) then
                               if (nwv(itop,ibot).ne.0) then
                                   write (logerr,*) 'Vent ', itop, ibot, 
      +                            ' is being redefined'
@@ -226,7 +232,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 
           ! room numbers must be between 1 and nm1
           if(iroom1.lt.1.or.iroom2.lt.1.or.
-     .        iroom1.gt.nm1+1.or.iroom2.gt.nm1+1)then
+     .    iroom1.gt.nm1+1.or.iroom2.gt.nm1+1)then
               ifail = 39
               write (messg,201)iroom1,iroom2 
   201         format(' Invalid CFCON specification:',
@@ -343,7 +349,7 @@ c    see which room is on top (if any) - this is like a bubble sort
   103         format('Invalid DETECTOR specification - type= ',
      +        i2,' is not a valid')
               ifail = 46
-         endif
+          endif
       end do
 
       ! fire type and parameters
@@ -429,7 +435,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               izheat(i) = 1
           end do
       endif
-      
+
       do i = 1, nm1
 
           ! force heat transfer between rooms connected by vents.
@@ -488,10 +494,10 @@ c    see which room is on top (if any) - this is like a bubble sort
  5010 format ('Setting Y cood. of fire position to default ',F12.5)
  5020 format ('Setting Z cood. of fire position to default ',F12.5)
  5021 format ('The constant heat source (heatf) is in compartment ',i3,
-     .        ' at ',3f12.5)
+     .' at ',3f12.5)
  5022 format (
-     . 'Initial temperature outside of allowable range (-50 to +100)',
-     . f5.2)
+     .'Initial temperature outside of allowable range (-50 to +100)',
+     .f5.2)
 
       ! read format list
  5030 format (A5,2X,I3,128A1)
@@ -502,6 +508,7 @@ c    see which room is on top (if any) - this is like a bubble sort
  5090 format (' Object no. ',I3,' Y cood. set to ',F12.5)
  5100 format (' Object no. ',I3,' Z cood. set to ',F12.5)
  5101 format ('Not an allowed fire type ',i3)
+ 5102 format ('Too many targets are being defined for object fires')
 
       end subroutine readinputfile
 
@@ -529,17 +536,17 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "opt.fi"
       include "vents.fi"
       include "wnodes.fi"
-     
+
       PARAMETER (MAXIN = 37)
       LOGICAL LFUPDAT, eof, countargs
       INTEGER OBPNT,compartment,lrowcount,xnumr,xnumc,nx, i1, i2,
-     + fannumber, iecfrom, iecto, mid
+     +fannumber, iecfrom, iecto, mid
       DOUBLE PRECISION NTER(NR), initialopening, lrarray(ncol),
-     + inter(nr), minpres, maxpres, heightfrom, heightto, areafrom, 
-     + areato
+     +inter(nr), minpres, maxpres, heightfrom, heightto, areafrom, 
+     +areato
       CHARACTER ORIENTYP*1, MESSG*133, lcarray*128(ncol), cjtype*1,
-     + LABEL*5, TCNAME*64, METHOD*8, EQTYPE*3, venttype,
-     + orientypefrom*1, orientypeto*1, compfrom*128, compto*128
+     +LABEL*5, TCNAME*64, METHOD*8, EQTYPE*3, venttype,
+     +orientypefrom*1, orientypeto*1, compfrom*128, compto*128
       character*10 plumemodel(2)/'McCaffrey','Heskestad'/
 
       EQUIVALENCE (INTER,QFR)
@@ -565,7 +572,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 
    40 lrowcount = lrowcount + 1
 !	If we reach the end of the file, then we are done
-	if (lrowcount.gt.xnumr) return
+      if (lrowcount.gt.xnumr) return
 
 !	Copy a single row into local arrays for processing in readin; start with column two, assuming that the key word is the first entry!
 
@@ -579,185 +586,185 @@ c    see which room is on top (if any) - this is like a bubble sort
 !	Start the case statement for key words
 
       select case (label)
-          
+
           ! TIMES total_simulation, print interval, history interval, smokeview interval, spreadsheet interval
-          case ("TIMES")
-              if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
-		        ierror = 1
-		        return
-	        endif
-              nsmax =  lrarray(1)
-              lprint = lrarray(2)
-              ldiago = lrarray(3)
-	        if (ldiago.gt.0) ndumpr = 1
-              ldiagp = lrarray(4)
-              lcopyss =  lrarray(5)
-              
+      case ("TIMES")
+          if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
+              ierror = 1
+              return
+          endif
+          nsmax =  lrarray(1)
+          lprint = lrarray(2)
+          ldiago = lrarray(3)
+          if (ldiago.gt.0) ndumpr = 1
+          ldiagp = lrarray(4)
+          lcopyss =  lrarray(5)
+
           ! TAMB REFERENCE AMBIENT TEMPERATURE (C), REFERENCE AMBIENT PRESSURE, REFERENCE PRESSURE, relative humidity
-          case ("TAMB")
-              if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
-		        ierror = 2
-		        return
-	        endif
-	        ta = lrarray(1)
-              pa = lrarray(2)
-              sal = lrarray(3)
-	        relhum = lrarray(4) * 0.01d0
-              if (.not.exset) then
-                  exta = ta
-                  expa = pa
-                  exra = ra
-                  exsal = sal
-              end if
-              
+      case ("TAMB")
+          if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
+              ierror = 2
+              return
+          endif
+          ta = lrarray(1)
+          pa = lrarray(2)
+          sal = lrarray(3)
+          relhum = lrarray(4) * 0.01d0
+          if (.not.exset) then
+              exta = ta
+              expa = pa
+              exra = ra
+              exsal = sal
+          end if
+
           ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE, REFERENCE EXTERNAL AMBIENT HEIGHT
-          case ("EAMB")
-              if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
-		        ierror = 3
-                  return
-	        endif
-              exta = lrarray(1)
-              expa = lrarray(2)
-              exsal = lrarray(3)
-              exset = .true.
-              
+      case ("EAMB")
+          if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
+              ierror = 3
+              return
+          endif
+          exta = lrarray(1)
+          expa = lrarray(2)
+          exsal = lrarray(3)
+          exset = .true.
+
           ! Limiting oxygen index
-          case ("LIMO2")
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        ierror = 4
-		        return
-	        endif
-	        limo2 = lrarray(1) * 0.01d0 
-              
+      case ("LIMO2")
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 4
+              return
+          endif
+          limo2 = lrarray(1) * 0.01d0 
+
           ! Rename the THERMAL DATA FILE
-          case ("THRMF")
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        ierror = 6
-		        return
-	        endif
-	        thrmfile = lcarray(1)
-              
+      case ("THRMF")
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 6
+              return
+          endif
+          thrmfile = lcarray(1)
+
           ! Set the gaseous ignition temperature - this is a global parameter DJIGN
-          case ('DJIGN')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        return
-		        ierror = 4
-	        endif
-	        tgignt = lrarray(2)
-              
+      case ('DJIGN')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              return
+              ierror = 4
+          endif
+          tgignt = lrarray(2)
+
           ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
-          case ('CHEMI')
-              if (countargs(label,2,lcarray,xnumc-1, nret)) then
-                  limo2 = lrarray(1) * 0.01d0
-	            tgignt = lrarray(2)
-              else if (countargs(label,8,lcarray,xnumc-1,nret)) then
-                  ! fire object CHEMI input here
-              else
-                  ierror = 4
-                  return
-              end if
-              
+      case ('CHEMI')
+          if (countargs(label,2,lcarray,xnumc-1, nret)) then
+              limo2 = lrarray(1) * 0.01d0
+              tgignt = lrarray(2)
+          else if (countargs(label,8,lcarray,xnumc-1,nret)) then
+              ! fire object CHEMI input here
+          else
+              ierror = 4
+              return
+          end if
+
           ! MATL short_name conductivity specific_heat density thickness emissivity long_name
           ! HCl deposition constants are only available for gypsum so we just add the automatically if the name of the material contains gypsum
-          case ('MATL')
-              if(.not.countargs(label,7,lcarray,xnumc-1,nret)) then
-                  ierror = 6
-                  return
-              end if
-              maxct = maxct + 1
-              if (maxct.gt.nthmx) then
-                  write (logerr,'(a,i3)') 'Too many thermal properties',
-     .            ' in input data file. Limit is ',nthmx
-                  ierror = 203
-                  return
-              end if
-              
-              nlist(maxct) = lcarray(1)
-              lnslb(maxct) = 1
-              lfkw(1,maxct) = lrarray(2)
-              lcw(1,maxct) = lrarray(3)
-              lrw(1,maxct) = lrarray(4)
-              lflw(1,maxct) = lrarray(5)
-              lepw(maxct) = lrarray(6)
-              if (index(lcarray(1),'gypsum').ne.0.or.
-     .            index(lcarray(1),'GYPSUM').ne.0.or.
-     .            index(lcarray(7),'gypsum').ne.0.or.
-     .            index(lcarray(7),'GYPSUM').ne.0) then
-                  lhclbf(1,maxct) = 0.0063
-                  lhclbf(2,maxct) = 191.8
-                  lhclbf(3,maxct) = 0.0587
-                  lhclbf(4,maxct) = 7476.0
-                  lhclbf(5,maxct) = 193.0
-                  lhclbf(6,maxct) = 1.021
-                  lhclbf(7,maxct) = 0.431
-              else
-                  do i = 1, 7
-                      lhclbf(i,maxct) = 0.0
-                  end do
-              end if
+      case ('MATL')
+          if(.not.countargs(label,7,lcarray,xnumc-1,nret)) then
+              ierror = 6
+              return
+          end if
+          maxct = maxct + 1
+          if (maxct.gt.nthmx) then
+              write (logerr,'(a,i3)') 'Too many thermal properties',
+     .        ' in input data file. Limit is ',nthmx
+              ierror = 203
+              return
+          end if
+
+          nlist(maxct) = lcarray(1)
+          lnslb(maxct) = 1
+          lfkw(1,maxct) = lrarray(2)
+          lcw(1,maxct) = lrarray(3)
+          lrw(1,maxct) = lrarray(4)
+          lflw(1,maxct) = lrarray(5)
+          lepw(maxct) = lrarray(6)
+          if (index(lcarray(1),'gypsum').ne.0.or.
+     .    index(lcarray(1),'GYPSUM').ne.0.or.
+     .    index(lcarray(7),'gypsum').ne.0.or.
+     .    index(lcarray(7),'GYPSUM').ne.0) then
+              lhclbf(1,maxct) = 0.0063
+              lhclbf(2,maxct) = 191.8
+              lhclbf(3,maxct) = 0.0587
+              lhclbf(4,maxct) = 7476.0
+              lhclbf(5,maxct) = 193.0
+              lhclbf(6,maxct) = 1.021
+              lhclbf(7,maxct) = 0.431
+          else
+              do i = 1, 7
+                  lhclbf(i,maxct) = 0.0
+              end do
+          end if
 
           ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
-          case ('COMPA')
-              if (.not.countargs(label,10,lcarray,xnumc-1,nret)) then
-		        ierror = 8
-		        return
-	        endif
-	
-	        compartment = compartment + 1
-	        if (compartment.gt.nr) then
-		        write (logerr, 5062) compartment
-		        ierror = 9
-		        return
-	        endif
+      case ('COMPA')
+          if (.not.countargs(label,10,lcarray,xnumc-1,nret)) then
+              ierror = 8
+              return
+          endif
 
-              ! Name
-	        compartmentnames(compartment) = lcarray(1)
-	
-              ! Size
-	        br(compartment) = lrarray(2)
-	        dr(compartment) = lrarray(3)
-	        hr(compartment) = lrarray(4)
-	        cxabs(compartment) = lrarray(5)
-	        cyabs(compartment) = lrarray(6)
-	        hflr(compartment) = lrarray(7)
-	
-              ! Ceiling
-              tcname = lcarray(8)
-              if (tcname.ne.'OFF') then
-		        switch(1,compartment) = .true.
-		        cname(1,compartment) = tcname
-                  ! keep track of the total number of thermal properties used
-		        numthrm = numthrm + 1
-              end if
+          compartment = compartment + 1
+          if (compartment.gt.nr) then
+              write (logerr, 5062) compartment
+              ierror = 9
+              return
+          endif
 
-              ! floor
-              tcname = lcarray(9)
-              if (tcname.ne.'OFF') then
-		        switch(2,compartment) = .true.
-		        cname(2,compartment) = tcname   
-                  ! keep track of the total number of thermal properties used
-		        numthrm = numthrm + 1
-              end if
+          ! Name
+          compartmentnames(compartment) = lcarray(1)
 
-              ! walls
-              tcname = lcarray(10)
-              if (tcname.ne.'OFF') then
-		        switch(3,compartment) = .true.
-		        cname(3,compartment) = tcname
-		        switch(4,compartment) = .true.
-                  cname(4,compartment) = tcname
-                  ! keep track of the total number of thermal properties used
-		        numthrm = numthrm + 1
-              END IF
+          ! Size
+          br(compartment) = lrarray(2)
+          dr(compartment) = lrarray(3)
+          hr(compartment) = lrarray(4)
+          cxabs(compartment) = lrarray(5)
+          cyabs(compartment) = lrarray(6)
+          hflr(compartment) = lrarray(7)
 
-              ! Reset this each time in case this is the last entry
-	        n = compartment+1
-	        nx = compartment
+          ! Ceiling
+          tcname = lcarray(8)
+          if (tcname.ne.'OFF') then
+              switch(1,compartment) = .true.
+              cname(1,compartment) = tcname
+              ! keep track of the total number of thermal properties used
+              numthrm = numthrm + 1
+          end if
 
-	        write (logerr,5063) compartment, compartmentnames(nx), br(nx),
-     +        dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),
-     +        (switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
-              
+          ! floor
+          tcname = lcarray(9)
+          if (tcname.ne.'OFF') then
+              switch(2,compartment) = .true.
+              cname(2,compartment) = tcname   
+              ! keep track of the total number of thermal properties used
+              numthrm = numthrm + 1
+          end if
+
+          ! walls
+          tcname = lcarray(10)
+          if (tcname.ne.'OFF') then
+              switch(3,compartment) = .true.
+              cname(3,compartment) = tcname
+              switch(4,compartment) = .true.
+              cname(4,compartment) = tcname
+              ! keep track of the total number of thermal properties used
+              numthrm = numthrm + 1
+          END IF
+
+          ! Reset this each time in case this is the last entry
+          n = compartment+1
+          nx = compartment
+
+          write (logerr,5063) compartment, compartmentnames(nx), br(nx),
+     +    dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),
+     +    (switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
+
           ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
 !		    BW = width, HH = soffit, HL = sill, 
 !		    HHP = ABSOLUTE HEIGHT OF THE soffit,HLP = ABSOLUTE HEIGHT OF THE sill, HFLR = ABSOLUTE HEIGHT OF THE FLOOR (not set here)
@@ -765,204 +772,204 @@ c    see which room is on top (if any) - this is like a bubble sort
 !		    Compartment offset for the HALL command (2 of these)
 !		    VFACE = THE RELATIVE FACE OF THE VENT: 1-4 FOR X PLANE (-), Y PLANE (+), X PLANE (+), Y PLANE (-)
 !		    Initial open fraction
-          case ('HVENT')
-              if (.not.countargs(label,11,lcarray,xnumc-1,nret)) then
-		        ierror = 10
-		        return
-	        endif
+      case ('HVENT')
+          if (.not.countargs(label,11,lcarray,xnumc-1,nret)) then
+              ierror = 10
+              return
+          endif
 
-              i = lrarray(1)
-              j = lrarray(2)
-              k = lrarray(3)
-              imin = min(i,j)
-              jmax = max(i,j)
-              if (imin.gt.nr-1.or.jmax.gt.nr.or.imin.eq.jmax) then
-                  write (logerr,5070) i, j
-	            ierror = 78
-                  return
-              end if
-              if (k.gt.mxccv) then
-                  write (logerr,5080) i, j, k, nw(i,j)
-	            ierror = 78
-	            return
-	        end if
-              nventijk = nventijk + 1
-	        if (nventijk.gt.mxvents) then
-	            write(logerr,5081) i,j,k
-	             ierror = 78
-	            return
-	        endif
-	        ijk(i,j,k) = nventijk
-              ijk(j,i,k) = ijk(i,j,k)
-              iijk = ijk(i,j,k)
-              jik = iijk
-              koffst = 2 ** k
-              if (iand(koffst,nw(i,j)).ne.0) write (iofilo,5090) i, j, k
-              nw(i,j) = ior(nw(i,j),koffst)
-              bw(iijk) = lrarray(4)
-              hh(iijk) = lrarray(5)
-              hl(iijk) = lrarray(6)
-              windc(iijk) = lrarray(7)
-              halldist(iijk,1) = lrarray(8)
-              halldist(iijk,2) = lrarray(9)
-	        vface(iijk) = lrarray(10)
-	        initialopening = lrarray(11)
-	
-	        qcvh(2,iijk) = initialopening
-	        qcvh(4,iijk) = initialopening
+          i = lrarray(1)
+          j = lrarray(2)
+          k = lrarray(3)
+          imin = min(i,j)
+          jmax = max(i,j)
+          if (imin.gt.nr-1.or.jmax.gt.nr.or.imin.eq.jmax) then
+              write (logerr,5070) i, j
+              ierror = 78
+              return
+          end if
+          if (k.gt.mxccv) then
+              write (logerr,5080) i, j, k, nw(i,j)
+              ierror = 78
+              return
+          end if
+          nventijk = nventijk + 1
+          if (nventijk.gt.mxvents) then
+              write(logerr,5081) i,j,k
+              ierror = 78
+              return
+          endif
+          ijk(i,j,k) = nventijk
+          ijk(j,i,k) = ijk(i,j,k)
+          iijk = ijk(i,j,k)
+          jik = iijk
+          koffst = 2 ** k
+          if (iand(koffst,nw(i,j)).ne.0) write (iofilo,5090) i, j, k
+          nw(i,j) = ior(nw(i,j),koffst)
+          bw(iijk) = lrarray(4)
+          hh(iijk) = lrarray(5)
+          hl(iijk) = lrarray(6)
+          windc(iijk) = lrarray(7)
+          halldist(iijk,1) = lrarray(8)
+          halldist(iijk,2) = lrarray(9)
+          vface(iijk) = lrarray(10)
+          initialopening = lrarray(11)
 
-              hhp(iijk) = hh(iijk) + hflr(i)
-              hlp(iijk) = hl(iijk) + hflr(i)
+          qcvh(2,iijk) = initialopening
+          qcvh(4,iijk) = initialopening
 
-              ! connections are bidirectional
+          hhp(iijk) = hh(iijk) + hflr(i)
+          hlp(iijk) = hl(iijk) + hflr(i)
 
-              nw(j,i) = nw(i,j)
-              hh(jik) = min(hr(j),max(xx0,hhp(jik)-hflr(j)))
-              hl(jik) = min(hh(jik),max(xx0,hlp(jik)-hflr(j)))
+          ! connections are bidirectional
 
-              ! assure ourselves that the connections are symmetrical
+          nw(j,i) = nw(i,j)
+          hh(jik) = min(hr(j),max(xx0,hhp(jik)-hflr(j)))
+          hl(jik) = min(hh(jik),max(xx0,hlp(jik)-hflr(j)))
 
-              hhp(jik) = hh(jik) + hflr(j)
-              hlp(jik) = hl(jik) + hflr(j)
-              hh(iijk) = min(hr(i),max(xx0,hhp(iijk)-hflr(i)))
-              hl(iijk) = min(hh(iijk),max(xx0,hlp(iijk)-hflr(i)))
-  
+          ! assure ourselves that the connections are symmetrical
+
+          hhp(jik) = hh(jik) + hflr(j)
+          hlp(jik) = hl(jik) + hflr(j)
+          hh(iijk) = min(hr(i),max(xx0,hhp(iijk)-hflr(i)))
+          hl(iijk) = min(hh(iijk),max(xx0,hlp(iijk)-hflr(i)))
+
           ! EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
           ! EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time
           ! EVENT - M Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time
           ! EVENT - F Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time    
-          case ('EVENT')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        ierror = 11
-		        return
-	        endif
+      case ('EVENT')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 11
+              return
+          endif
 
 !	        Sort by event type, h, v, m, or f
-	        venttype = lcarray(1)
-		
-	        select case (venttype)
-	            case ('H')
-		            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
-			            ierror = 11
-			            return
-		            endif
-		            i = lrarray(2)
-		            j = lrarray(3)
-                      k = lrarray(4)
-		            iijk = ijk(i,j,k)
-		            qcvh(1,iijk) = lrarray(5)
-		            qcvh(3,iijk) = lrarray(5) + lrarray(7)
-		            qcvh(4,iijk) = lrarray(6)		 
-	            case ('V')
-		            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
-			            ierror = 11
-			            return
-		            endif
-                      ! Sort these out in datacopy; we duplicate here so that readinputfile does not have to sort these as well
-		            itop = lrarray(2)
-                      ibot = lrarray(3)
-		            qcvpp(1,itop,ibot) = lrarray(5)
-		            qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
-		            qcvpp(4,itop,ibot) = lrarray(6)
-                      qcvpp(1,ibot,itop) = lrarray(5)
-		            qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
-		            qcvpp(4,ibot,itop) = lrarray(6)
-	            case ('M')
-		            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
-			            ierror = 11
-			            return
-		            endif
-		            fannumber = lrarray(4)
-		            qcvm(1,fannumber) = lrarray(5)
-		            qcvm(3,fannumber) = lrarray(5) + lrarray(7)
-		            qcvm(4,fannumber) = lrarray(6)
-	            case ('F')
-		            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
-			            ierror = 11
-			            return
-		            endif
-		            fannumber = lrarray(4)
-		            if (fannumber.gt.nfan) then
-			            ierror = 82
-			            write(logerr,5196) fannumber
-			            return
-		            endif
-		            nfilter = nfilter + 1
-		            qcvf(1,fannumber) = lrarray(5)
-		            qcvf(3,fannumber) = lrarray(5) + lrarray(7)
-		            qcvf(4,fannumber) = lrarray(6)
-	            case default
-		            ierror = 71
-		            return
-              end select 
-              
-          ! VVENT - from_compartment to_compartment area shape initial_fraction
-          case ('VVENT')
-              if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
-		        ierror = 23
-		        return
-	        endif
-              i = lrarray(1)
-              j = lrarray(2)
-              ! check for outside of compartment space; self pointers are covered in readinputfile
-              if (i.gt.nr.or.j.gt.nr) then
-                  write (logerr,5070) i, j
-	            ierror = 79
-	            return
-              end if
+          venttype = lcarray(1)
 
-              ! readinputfile will verify the orientation (i is on top of j)
-              nwv(i,j) = 1
-              vvarea(i,j) = lrarray(3)
-              ! check the shape parameter. the default (1) is a circle)
-	        if (lrarray(4).lt.1.or.lrarray(4).gt.2) then
-		        vshape(i,j) = 1
-	        else
-	            vshape(i,j) = lrarray(4)
-	        endif
-	        qcvpp(2,i,j) = lrarray(5)
-	        qcvpp(2,j,i) = lrarray(5)
-	        qcvpp(4,i,j) = lrarray(5)
-	        qcvpp(4,j,i) = lrarray(5)
+          select case (venttype)
+          case ('H')
+              if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+                  ierror = 11
+                  return
+              endif
+              i = lrarray(2)
+              j = lrarray(3)
+              k = lrarray(4)
+              iijk = ijk(i,j,k)
+              qcvh(1,iijk) = lrarray(5)
+              qcvh(3,iijk) = lrarray(5) + lrarray(7)
+              qcvh(4,iijk) = lrarray(6)		 
+          case ('V')
+              if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+                  ierror = 11
+                  return
+              endif
+              ! Sort these out in datacopy; we duplicate here so that readinputfile does not have to sort these as well
+              itop = lrarray(2)
+              ibot = lrarray(3)
+              qcvpp(1,itop,ibot) = lrarray(5)
+              qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
+              qcvpp(4,itop,ibot) = lrarray(6)
+              qcvpp(1,ibot,itop) = lrarray(5)
+              qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
+              qcvpp(4,ibot,itop) = lrarray(6)
+          case ('M')
+              if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+                  ierror = 11
+                  return
+              endif
+              fannumber = lrarray(4)
+              qcvm(1,fannumber) = lrarray(5)
+              qcvm(3,fannumber) = lrarray(5) + lrarray(7)
+              qcvm(4,fannumber) = lrarray(6)
+          case ('F')
+              if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+                  ierror = 11
+                  return
+              endif
+              fannumber = lrarray(4)
+              if (fannumber.gt.nfan) then
+                  ierror = 82
+                  write(logerr,5196) fannumber
+                  return
+              endif
+              nfilter = nfilter + 1
+              qcvf(1,fannumber) = lrarray(5)
+              qcvf(3,fannumber) = lrarray(5) + lrarray(7)
+              qcvf(4,fannumber) = lrarray(6)
+          case default
+              ierror = 71
+              return
+          end select 
+
+          ! VVENT - from_compartment to_compartment area shape initial_fraction
+      case ('VVENT')
+          if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
+              ierror = 23
+              return
+          endif
+          i = lrarray(1)
+          j = lrarray(2)
+          ! check for outside of compartment space; self pointers are covered in readinputfile
+          if (i.gt.nr.or.j.gt.nr) then
+              write (logerr,5070) i, j
+              ierror = 79
+              return
+          end if
+
+          ! readinputfile will verify the orientation (i is on top of j)
+          nwv(i,j) = 1
+          vvarea(i,j) = lrarray(3)
+          ! check the shape parameter. the default (1) is a circle)
+          if (lrarray(4).lt.1.or.lrarray(4).gt.2) then
+              vshape(i,j) = 1
+          else
+              vshape(i,j) = lrarray(4)
+          endif
+          qcvpp(2,i,j) = lrarray(5)
+          qcvpp(2,j,i) = lrarray(5)
+          qcvpp(4,i,j) = lrarray(5)
+          qcvpp(4,j,i) = lrarray(5)
 
           ! WIND - VELOCITY AT REFERENCE HEIGHT and EXPONENTIAL LAPSE RATE
-          case ('WIND')
-              if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
-		        ierror = 24
-		        return
-	        endif
-              windv = lrarray(1)
-              windrf = lrarray(2)
-              windpw = lrarray(3)
-              
+      case ('WIND')
+          if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
+              ierror = 24
+              return
+          endif
+          windv = lrarray(1)
+          windrf = lrarray(2)
+          windpw = lrarray(3)
+
           ! INTER - Set the initial interface height only if it different than the default
           !         this key word takes arguements in pairs - compartment, height
-          case ('INTER')
-              if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
-		        ierror = 25
-		        return
-	        endif
-              if ((nret/2)*2.ne.nret) then   ! There have to be pairs of numbers
-		        write (iofilo,5130) nret
-		        ierror = 73
-		        return
+      case ('INTER')
+          if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+              ierror = 25
+              return
+          endif
+          if ((nret/2)*2.ne.nret) then   ! There have to be pairs of numbers
+              write (iofilo,5130) nret
+              ierror = 73
+              return
+          end if
+          do i = 1, nret - 1, 2
+              j = lrarray(i)
+              if (j.gt.n.or.j.lt.1) then
+                  write (iofilo,5140) i, j
+                  ierror = 26
+                  return
+              else
+                  xxlocal = lrarray(i+1)
+                  if(xxlocal.lt.xx0.or.xxlocal.gt.hr(j)) then
+                      ierror = 72
+                      return
+                  endif
+                  inter(j) = xxlocal
               end if
-              do i = 1, nret - 1, 2
-	            j = lrarray(i)
-                  if (j.gt.n.or.j.lt.1) then
-                      write (iofilo,5140) i, j
-		            ierror = 26
-		            return
-                  else
-		            xxlocal = lrarray(i+1)
-		            if(xxlocal.lt.xx0.or.xxlocal.gt.hr(j)) then
-			            ierror = 72
-		                return
-		            endif
-		            inter(j) = xxlocal
-                  end if
-              end do
-              
+          end do
+
           ! MVENT - simplified mechanical ventilation
 
           ! (1) From_Compartment, (2) To_Compartment, (3) ID_Number
@@ -970,787 +977,784 @@ c    see which room is on top (if any) - this is like a bubble sort
           ! (7-9) To_Opening_Orientation To_Center_Height To_Opening_Area 
           ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
           ! (13) Initial fraction of the fan speed
-          case ('MVENT')
-              if (.not.countargs(label,13,lcarray,xnumc-1,nret)) then 
-		        ierror = 12
-		        return
-	        endif
-              mid = lrarray(3)
-              iecfrom = lrarray(1)
-              iecto = lrarray(2)
-	        if (iecfrom.gt.n.or.iecto.gt.n) then
-		        write(logerr,5191) iecfrom, iecto
-		        ierror = 67
-		        return
-	        endif
+      case ('MVENT')
+          if (.not.countargs(label,13,lcarray,xnumc-1,nret)) then 
+              ierror = 12
+              return
+          endif
+          mid = lrarray(3)
+          iecfrom = lrarray(1)
+          iecto = lrarray(2)
+          if (iecfrom.gt.n.or.iecto.gt.n) then
+              write(logerr,5191) iecfrom, iecto
+              ierror = 67
+              return
+          endif
 
-              orientypefrom = lcarray(4)
-              heightfrom = lrarray(5)
-              areafrom = lrarray(6)
-              orientypeto = lcarray(7)
-              heightto = lrarray(8)
-              areato = lrarray(9)
-              minpres = lrarray(11)
-              maxpres = lrarray(12)
-	        fanfraction = lrarray(13)
+          orientypefrom = lcarray(4)
+          heightfrom = lrarray(5)
+          areafrom = lrarray(6)
+          orientypeto = lcarray(7)
+          heightto = lrarray(8)
+          areato = lrarray(9)
+          minpres = lrarray(11)
+          maxpres = lrarray(12)
+          fanfraction = lrarray(13)
 
-              ! We start with two new nodes for the openings into the compartments for connections to the fan
+          ! We start with two new nodes for the openings into the compartments for connections to the fan
 
-              ! first compartment/node opening
-              next = next + 1
-              nnode = nnode + 1
-              if (next.gt.mext.or.nnode.gt.mnode) then
-		        write (logerr,5192) next,nnode
-		        ierror = 68
-		        return
-              end if
-              if (orientypefrom.eq.'V') then
-                  hvorien(next) = 1
-                  else
-                  hvorien(next) = 2
-              end if
-              hvnode(1,next) = iecfrom
-              hvnode(2,next) = nnode
-              hvelxt(next) = heightfrom
-              arext(next) = areafrom
+          ! first compartment/node opening
+          next = next + 1
+          nnode = nnode + 1
+          if (next.gt.mext.or.nnode.gt.mnode) then
+              write (logerr,5192) next,nnode
+              ierror = 68
+              return
+          end if
+          if (orientypefrom.eq.'V') then
+              hvorien(next) = 1
+          else
+              hvorien(next) = 2
+          end if
+          hvnode(1,next) = iecfrom
+          hvnode(2,next) = nnode
+          hvelxt(next) = heightfrom
+          arext(next) = areafrom
 
           ! second compartment/node opening
-              next = next + 1
-              nnode = nnode + 1
-              if (next.gt.mext.or.nnode.gt.mnode) then
-		        write (logerr,5192) next,nnode
-		        ierror = 68
-		        return
-              end if
-              if (orientypeto.eq.'V') then
-                  hvorien(next) = 1
-              else
-                  hvorien(next) = 2
-              end if
-              hvnode(1,next) = iecto
-              hvnode(2,next) = nnode
-              hvelxt(next) = heightto
-              arext(next) = areato
+          next = next + 1
+          nnode = nnode + 1
+          if (next.gt.mext.or.nnode.gt.mnode) then
+              write (logerr,5192) next,nnode
+              ierror = 68
+              return
+          end if
+          if (orientypeto.eq.'V') then
+              hvorien(next) = 1
+          else
+              hvorien(next) = 2
+          end if
+          hvnode(1,next) = iecto
+          hvnode(2,next) = nnode
+          hvelxt(next) = heightto
+          arext(next) = areato
 
-              ! now connect nodes 1 and 2 with a fan
+          ! now connect nodes 1 and 2 with a fan
 
-              if (minpres.gt.maxpres) then
-                  write (logerr,5194) minpres,maxpres
-	            ierror = 70
-                  return
-              end if
+          if (minpres.gt.maxpres) then
+              write (logerr,5194) minpres,maxpres
+              ierror = 70
+              return
+          end if
 
-              nfan = nfan + 1
-	        if (mid.ne.nfan) then
-		        write(logerr,5193) mid,nfan
-		        ierror = 68
-		        return
-	        endif
+          nfan = nfan + 1
+          if (mid.ne.nfan) then
+              write(logerr,5193) mid,nfan
+              ierror = 68
+              return
+          endif
 
-              nbr = nbr + 1
-              if (nfan.gt.mfan.or.nbr.gt.mbr) then
-		        write (iofilo,5195) mfan
-		        ierror = 70
-		         return
-              end if
-  
-              nf(nbr) = nfan
-              nfc(nfan) = 1
-              na(nbr) = hvnode(2,next-1)
-              ne(nbr) = hvnode(2,next)
-              hvdvol(nbr) = xx0
-              hmin(nfan) = minpres
-              hmax(nfan) = maxpres
-              hvbco(nfan,1) = lrarray(10)
+          nbr = nbr + 1
+          if (nfan.gt.mfan.or.nbr.gt.mbr) then
+              write (iofilo,5195) mfan
+              ierror = 70
+              return
+          end if
 
-              ! add a simple duct to connect the two nodes/fan - this is artificial since we do not worry about the species in the system
-              ndt = ndt + 1
-              
-              ! to change from the zero volume calculation to a finite volume, use 1.0d1 (10 meter duct)
-              ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation for flow through the external nodes
-              dl(ndt) = xx0 ! 1.0d1
-              de(ndt) = lrarray(6)
-              ibrd(ndt) = nbr
+          nf(nbr) = nfan
+          nfc(nfan) = 1
+          na(nbr) = hvnode(2,next-1)
+          ne(nbr) = hvnode(2,next)
+          hvdvol(nbr) = xx0
+          hmin(nfan) = minpres
+          hmax(nfan) = maxpres
+          hvbco(nfan,1) = lrarray(10)
 
-              ! finally, we set the initial fraction opening
-	        qcvm(2,mid) = lrarray(13)
-	        qcvm(4,mid) = lrarray(13)
-              
+          ! add a simple duct to connect the two nodes/fan - this is artificial since we do not worry about the species in the system
+          ndt = ndt + 1
+
+          ! to change from the zero volume calculation to a finite volume, use 1.0d1 (10 meter duct)
+          ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation for flow through the external nodes
+          dl(ndt) = xx0 ! 1.0d1
+          de(ndt) = lrarray(6)
+          ibrd(ndt) = nbr
+
+          ! finally, we set the initial fraction opening
+          qcvm(2,mid) = lrarray(13)
+          qcvm(4,mid) = lrarray(13)
+
           ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
           ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more consistent with other keywords
           ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
           ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
-          case ('FIRE')
-              if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
-		        ierror = 32
-		        return
-	        endif
-	        if (numobjl.ge.mxoin) then
-                  write(logerr,5300)
-                  go to 10
-              end if
-              iroom = lrarray(1)
-              if (iroom.lt.1.or.iroom.gt.n-1) then
-		        write(logerr,5320)iroom
-                  ierror = 33
-		        return
-              end if
-              obpnt = numobjl + 1
-              numobjl = obpnt
+      case ('FIRE')
+          if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
+              ierror = 32
+              return
+          endif
+          if (numobjl.ge.mxoin) then
+              write(logerr,5300)
+              go to 10
+          end if
+          iroom = lrarray(1)
+          if (iroom.lt.1.or.iroom.gt.n-1) then
+              write(logerr,5320)iroom
+              ierror = 33
+              return
+          end if
+          obpnt = numobjl + 1
+          numobjl = obpnt
 
-              ! Only constrained fires
-	        objtyp(numobjl) = 2
-	        if (objtyp(numobjl).gt.2) then
-		        write(logerr,5321) objtyp(numobjl)
-		        ierror = 63
-		        return
-	        endif
+          ! Only constrained fires
+          objtyp(numobjl) = 2
+          if (objtyp(numobjl).gt.2) then
+              write(logerr,5321) objtyp(numobjl)
+              ierror = 63
+              return
+          endif
 
-              objpos(1,obpnt) = lrarray(2)
-              objpos(2,obpnt) = lrarray(3)
-              objpos(3,obpnt) = lrarray(4)
-	        if (objpos(1,obpnt).gt.br(iroom).or.
-     .            objpos(2,obpnt).gt.dr(iroom).or.
-     .            objpos(3,obpnt).gt.hr(iroom)) then
-		        write(logerr,5323) obpnt
-		        ierror = 82
-		        return
-	        endif
+          objpos(1,obpnt) = lrarray(2)
+          objpos(2,obpnt) = lrarray(3)
+          objpos(3,obpnt) = lrarray(4)
+          if (objpos(1,obpnt).gt.br(iroom).or.
+     .    objpos(2,obpnt).gt.dr(iroom).or.
+     .    objpos(3,obpnt).gt.hr(iroom)) then
+              write(logerr,5323) obpnt
+              ierror = 82
+              return
+          endif
 
-	        fplume(numobjl) = lrarray(5)
-	        if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
-	            write(logerr,5402) fplume(numobjl)
-	            ierror = 78
-	            return 
-	        end if
-	        write(logerr,5403) plumemodel(fplume(numobjl))	
-              objign(obpnt) =   lrarray(6)
-              tmpcond =         lrarray(7)
-              objort(1,obpnt) = lrarray(8)
-              objort(2,obpnt) = lrarray(9)
-              objort(3,obpnt) = lrarray(10)
+          fplume(numobjl) = lrarray(5)
+          if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
+              write(logerr,5402) fplume(numobjl)
+              ierror = 78
+              return 
+          end if
+          write(logerr,5403) plumemodel(fplume(numobjl))	
+          objign(obpnt) =   lrarray(6)
+          tmpcond =         lrarray(7)
+          objort(1,obpnt) = lrarray(8)
+          objort(2,obpnt) = lrarray(9)
+          objort(3,obpnt) = lrarray(10)
 
-              ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-	        if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
-		        write(logerr,5322)
-		        ierror = 216
-		        return
-              endif
-              
-              objrm(obpnt) = iroom
-              objnin(obpnt) = lcarray(11)
-              objld(obpnt) = .true.
-              objon(obpnt) = .false.
-              ! This is redudant but needed to be compatible with the object database format
-	        objpnt(obpnt) = obpnt
+          ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
+          if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
+              write(logerr,5322)
+              ierror = 216
+              return
+          endif
 
-              ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
-              ! The critiria for temperature and flux are stored backupwards - this is historical
-              ! See corresponding code in updobj
-              if (tmpcond.gt.0.0d0) then
-                  if (objign(obpnt).eq.1) then
-                      objcri(1,obpnt) = tmpcond
-                      objcri(2,obpnt) = 1.0d30
-                      objcri(3,obpnt) = 1.0d30
-                  else if (objign(obpnt).eq.2) then
-                      objcri(1,obpnt) = 1.0d30
-                      objcri(2,obpnt) = 1.0d30
-                      objcri(3,obpnt) = tmpcond
-                  else if (objign(obpnt).eq.3) then
-                      objcri(1,obpnt) = 1.0d30
-                      objcri(2,obpnt) = tmpcond
-                      objcri(3,obpnt) = 1.0d30
-                  else
-                      write(logerr,5358) objign(obpnt)
-		            ierror = 13
-		            return
-                  end if
-	        else
-                  objon(obpnt) = .true.
-              end if
-              if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
-                  if (stpmax.gt.0.0d0) then
-		            stpmax = min(stpmax,1.d0)
-                  else
-                      stpmax = 1.d0
-                  end if
-              end if 
-              
-              ! read and set the other stuff for this fire
-              call inputembeddedfire(objnin(obpnt), lrowcount, 
-     .        xnumr, xnumc, obpnt, ierror)
-              if (ierror.ne.0) return
-              
-          ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
-          case ('OBJEC')
+          objrm(obpnt) = iroom
+          objnin(obpnt) = lcarray(11)
+          objld(obpnt) = .true.
+          objon(obpnt) = .false.
+          ! This is redudant but needed to be compatible with the object database format
+          objpnt(obpnt) = obpnt
 
-              if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
-                  write(logerr,5310)
-		        ierror = 32
-		        return
-	        endif
-	        if (numobjl.ge.mxoin) then
-                  write(logerr,5300)
-                  go to 10
-              end if
-              tcname = lcarray(1)
-              iroom = lrarray(2)
-              if (iroom.lt.1.or.iroom.gt.n-1) then
-		        write(logerr,5320)iroom
-                  ierror = 33
-		        return
-              end if
-              obpnt = numobjl + 1
-              numobjl = obpnt
-
-              ! Only constrained fires
-	        objtyp(numobjl) = 2
-	        if (objtyp(numobjl).gt.2) then
-		        write(logerr,5321) objtyp(numobjl)
-		        ierror = 63
-		        return
-	        endif
-
-              objpos(1,obpnt) = lrarray(3)
-              objpos(2,obpnt) = lrarray(4)
-              objpos(3,obpnt) = lrarray(5)
-	        if (objpos(1,obpnt).gt.br(iroom).or.
-     .            objpos(2,obpnt).gt.dr(iroom).or.
-     .            objpos(3,obpnt).gt.hr(iroom)) then
-		        write(logerr,5323) obpnt
-		        ierror = 82
-		        return
-	        endif
-
-	        fplume(numobjl) = lrarray(6)
-	        if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
-	            write(logerr,5402) fplume(numobjl)
-	            ierror = 78
-	            return 
-	        end if
-	        write(logerr,5403) plumemodel(fplume(numobjl))	
-              objign(obpnt) =   lrarray(7)
-              tmpcond =         lrarray(8)
-              objort(1,obpnt) = lrarray(9)
-              objort(2,obpnt) = lrarray(10)
-              objort(3,obpnt) = lrarray(11)
-              ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-	        if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
-		        write(logerr,5322)
-		        ierror = 216
-		        return
-	        endif
-              objrm(obpnt) = iroom
-              objnin(obpnt) = tcname
-              objld(obpnt) = .true.
-              objon(obpnt) = .false.
-              ! This is redudant but needed to be compatible with the object database format
-	        objpnt(obpnt) = obpnt
-
-              !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
-              !!!!! The critiria for temperature and flux are stored backupwards - this is historical
-              !!!!! See corresponding code in updobj
-              if (tmpcond.gt.0.0d0) then
-                  if (objign(obpnt).eq.1) then
-                      objcri(1,obpnt) = tmpcond
-                      objcri(2,obpnt) = 1.0d30
-                      objcri(3,obpnt) = 1.0d30
-                  else if (objign(obpnt).eq.2) then
-                      objcri(1,obpnt) = 1.0d30
-                      objcri(2,obpnt) = 1.0d30
-                      objcri(3,obpnt) = tmpcond
-                  else if (objign(obpnt).eq.3) then
-                      objcri(1,obpnt) = 1.0d30
-                      objcri(2,obpnt) = tmpcond
-                      objcri(3,obpnt) = 1.0d30
-                  else
-                      write(logerr,5358) objign(obpnt)
-		            ierror = 13
-		            return
-                  end if
-	        else
-                  objon(obpnt) = .true.
-              end if
-              if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
-                  if (stpmax.gt.0.0d0) then
-		            stpmax = min(stpmax,1.d0)
-                  else
-                      stpmax = 1.d0
-                  end if
-              end if
-          
-          ! CJET - Ceiling jet for walls, ceiling, all, or off
-          case ('CJET')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        ierror = 34
-		        return
-	        endif
-              DO  I = 1, 5
-                  cjeton(i) = .false.
-              end do
-              cjtype = lcarray(1)(1:1)
-              if (cjtype.ne.' ') then
-		        if (cjtype.eq.'C') then
-			        cjeton(1) = .true.
-			        cjeton(5) = .true.
-		        else if (cjtype.eq.'W') then
-		            cjeton(1) = .true.
-			        cjeton(3) = .true.
-			        cjeton(5) = .true.
-		        else if (cjtype.eq.'A') then
-			        cjeton(1) = .true.
-			        cjeton(3) = .true.
-			        cjeton(4) = .true.
-			        cjeton(5) = .true.
-	            endif
-	        endif
-	        write(logerr,5341) cjeton
-              
-          ! STPMAX # - set the maximum time step to #
-          case ('STPMA')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        ierror = 35
-		        return
-	        endif
-              stpmax = lrarray(1)
-      
-          ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
-          case ('DETEC')
-              if (.not.countargs(label,9,lcarray, xnumc-1, nret)) then
-		        ierror = 34
-		        return
-	        endif
-
-              ndtect = ndtect + 1
-	        if (ndtect.gt.mxdtect) then
-		        write (logerr, 5338)
-		        ierror = 81
-		        return
-	        endif
-
-              i1 = lrarray(1)
-	        i2 = lrarray(2)
-              ! force to heat detector if out of range
-	        if (i1.gt.3) i1 = heatd
-	        ixdtect(ndtect,dtype) = i1
-	        iroom = i2
-	        ixdtect(ndtect,droom) = iroom
-	        if(iroom.lt.1.or.iroom.gt.nr)then
-	 	        write (logerr,5342) i2
-	 	        ierror = 35
-	 	        return
-	        endif
-
-              xdtect(ndtect,dtrig) = lrarray(3)
-              xdtect(ndtect,dxloc) = lrarray(4)
-              xdtect(ndtect,dyloc) = lrarray(5)
-              xdtect(ndtect,dzloc) = lrarray(6)
-              xdtect(ndtect,drti) =  lrarray(7)
-              ixdtect(ndtect,dquench) = lrarray(8)
-              xdtect(ndtect,dspray) = lrarray(9)*1000.d0
-              ! if spray density is zero, then turn off the sprinkler
-              if(xdtect(ndtect,dspray).eq.0.0d0)then
-                  ixdtect(ndtect,dquench) = 0
-              endif
-              if(option(fbtdtect).eq.off.
-     .            and.ixdtect(ndtect,dquench).gt.0)then
-                  if (stpmax.gt.0) then
-                      stpmax = min(stpmax,1.d0)
-                  else
-                      stpmax = 1.d0
-                  end if
-              end if
-	        if (compartmentnames(i2).eq.' ') then
-		        write(logerr,5344) i2
-		        ierror = 36
-		        return
-	        else
-		        write(logerr, 5343) i1,compartmentnames(i2)
-	        endif
-
-	        if (debugging) then
-		        write(*,5400) (xdtect(ndtect,i),i=1,dtxcol)
-		        write(*,5401) (ixdtect(ndtect,i),i=1,dticol)
-		        write(*,*)
-	        endif
-
-	        if(xdtect(ndtect,dxloc).gt.br(i2).or.
-     .            xdtect(ndtect,dyloc).gt.dr(i2).or.
-     .            xdtect(ndtect,dzloc).gt.hr(i2)) then
-                  write(logerr,5339) ndtect,compartmentnames(i2)
-		        ierror = 80
-		        return
-              endif
-     
-          !     VHEAT top_compartment bottom_compartment
-          case ('VHEAT')
-              if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
-		        ierror = 37
-		        return
-	        endif
-
-              i1 = lrarray(1)
-              i2 = lrarray(2)
-	        if (i1.lt.1.or.i2.lt.1.or.i1.gt.n.or.i2.gt.n) then
-		        write(logerr,5345) i1, i2
-		        ierror = 38
-		        return
-	        endif
-
-              nswal = nswal + 1
-              izswal(nswal,1) = i1
-              izswal(nswal,2) = 1
-              izswal(nswal,3) = i2
-              izswal(nswal,4) = 3
-              
-          ! ONEZ compartment number - This turns the compartment into a single zone
-          case ('ONEZ')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-		        ierror = 39
-		        return
-	        endif
-
-              iroom = lrarray(1)
-              if(iroom.lt.1.or.iroom.gt.n)then
-		        write(logerr, 5001) i1
-		        ierror = 40
-		        return
-	        endif
-              izshaft(iroom) = 1
-          !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
-          case ('TARGE')
-              if (countargs(label,10,lcarray, xnumc-1, nret).or.
-     .            countargs(label,11,lcarray, xnumc-1, nret)) then
-                  if(ntarg+1.gt.mxtarg)then
-		            write(logerr,5002) 
-		            ierror = 42
-		            return
-	            else
-		            ntarg = ntarg + 1
-                  endif
-        
-                  ! The target can exist, now for the compartment
-                  IROOM = lrarray(1)
-                  IF(IROOM.LT.1.OR.IROOM.GT.N)THEN
-		            write(logerr,5003) iroom
-		            ierror = 43
-		            return
-	            endif
-
-                  ! position and normal
-                  ixtarg(trgroom,ntarg)=iroom
-                  do i = 0, 2
-                      xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
-                      xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
-                  end do
-                  if (countargs(label,11,lcarray, xnumc-1, nret)) then
-                      xxtarg(trginterior,ntarg) = lrarray(11)
-                  else
-                      xxtarg(trginterior,ntarg) = 0.5
-                  end if
-
-                  ! material type
-	            tcname = lcarray(8)
-	            if(tcname.eq.' ') tcname='DEFAULT'
-                  cxtarg(ntarg) = tcname
-                  ixtarg(trgwall,ntarg) = 0
-
-                  ! solution method
-                  method = ' '
-                  method = lcarray(9)
-                  call upperall(method,method)
-                  if(method.ne.' ')then
-                      if(method(1:3).eq.'STE') then
-                          ixtarg(trgmeth,ntarg) = STEADY
-                          method = ' '
-                      elseif (method(1:3).eq.'IMP') then
-                          ixtarg(trgmeth,ntarg) = MPLICIT
-                      elseif (method(1:3).eq.'EXP') then
-                          ixtarg(trgmeth,ntarg) = XPLICIT
-                      else
-                          write(logerr,912) method
-                          ierror = 44
-                          return
-                      endif
-                  endif
-
-                  ! equation type
-                  eqtype = ' '
-                  eqtype = lcarray(10)
-                  call upperall(eqtype,eqtype)
-                  if(eqtype.ne.' '.and.method.ne.' ')then
-                      if (eqtype(1:3).eq.'ODE') then
-                          ixtarg(trgeq,ntarg) = ODE
-                      elseif (eqtype(1:3).eq.'PDE') then
-                          ixtarg(trgeq,ntarg) = PDE
-                      elseif (eqtype(1:3).eq.'CYL') then
-                          ixtarg(trgeq,ntarg) = CYLPDE
-                      else
-                          write(logerr,913) eqtype
-                          ierror = 45
-                          return
-                      endif
-                  endif
+          ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
+          ! The critiria for temperature and flux are stored backupwards - this is historical
+          ! See corresponding code in updobj
+          if (tmpcond.gt.0.0d0) then
+              if (objign(obpnt).eq.1) then
+                  objcri(1,obpnt) = tmpcond
+                  objcri(2,obpnt) = 1.0d30
+                  objcri(3,obpnt) = 1.0d30
+              else if (objign(obpnt).eq.2) then
+                  objcri(1,obpnt) = 1.0d30
+                  objcri(2,obpnt) = 1.0d30
+                  objcri(3,obpnt) = tmpcond
+              else if (objign(obpnt).eq.3) then
+                  objcri(1,obpnt) = 1.0d30
+                  objcri(2,obpnt) = tmpcond
+                  objcri(3,obpnt) = 1.0d30
               else
-		        ierror = 41
-		        return
-              endif
-          ! HALL Compartment Velocity Depth Decay_Distance
-          case ('HALL')
-              if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
-                  ierror = 46
+                  write(logerr,5358) objign(obpnt)
+                  ierror = 13
                   return
+              end if
+          else
+              objon(obpnt) = .true.
+          end if
+          if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
+              if (stpmax.gt.0.0d0) then
+                  stpmax = min(stpmax,1.d0)
+              else
+                  stpmax = 1.d0
+              end if
+          end if 
+
+          ! read and set the other stuff for this fire
+          call inputembeddedfire(objnin(obpnt), objrm(obpnt), 
+     .    lrowcount, xnumr, xnumc, obpnt, ierror)
+          if (ierror.ne.0) return
+
+          ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
+      case ('OBJEC')
+
+          if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
+              write(logerr,5310)
+              ierror = 32
+              return
+          endif
+          if (numobjl.ge.mxoin) then
+              write(logerr,5300)
+              go to 10
+          end if
+          tcname = lcarray(1)
+          iroom = lrarray(2)
+          if (iroom.lt.1.or.iroom.gt.n-1) then
+              write(logerr,5320)iroom
+              ierror = 33
+              return
+          end if
+          obpnt = numobjl + 1
+          numobjl = obpnt
+
+          ! Only constrained fires
+          objtyp(numobjl) = 2
+          if (objtyp(numobjl).gt.2) then
+              write(logerr,5321) objtyp(numobjl)
+              ierror = 63
+              return
+          endif
+
+          objpos(1,obpnt) = lrarray(3)
+          objpos(2,obpnt) = lrarray(4)
+          objpos(3,obpnt) = lrarray(5)
+          if (objpos(1,obpnt).gt.br(iroom).or.
+     .    objpos(2,obpnt).gt.dr(iroom).or.
+     .    objpos(3,obpnt).gt.hr(iroom)) then
+              write(logerr,5323) obpnt
+              ierror = 82
+              return
+          endif
+
+          fplume(numobjl) = lrarray(6)
+          if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
+              write(logerr,5402) fplume(numobjl)
+              ierror = 78
+              return 
+          end if
+          write(logerr,5403) plumemodel(fplume(numobjl))	
+          objign(obpnt) =   lrarray(7)
+          tmpcond =         lrarray(8)
+          objort(1,obpnt) = lrarray(9)
+          objort(2,obpnt) = lrarray(10)
+          objort(3,obpnt) = lrarray(11)
+          ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
+          if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
+              write(logerr,5322)
+              ierror = 216
+              return
+          endif
+          objrm(obpnt) = iroom
+          objnin(obpnt) = tcname
+          objld(obpnt) = .true.
+          objon(obpnt) = .false.
+          ! This is redudant but needed to be compatible with the object database format
+          objpnt(obpnt) = obpnt
+
+          !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
+          !!!!! The critiria for temperature and flux are stored backupwards - this is historical
+          !!!!! See corresponding code in updobj
+          if (tmpcond.gt.0.0d0) then
+              if (objign(obpnt).eq.1) then
+                  objcri(1,obpnt) = tmpcond
+                  objcri(2,obpnt) = 1.0d30
+                  objcri(3,obpnt) = 1.0d30
+              else if (objign(obpnt).eq.2) then
+                  objcri(1,obpnt) = 1.0d30
+                  objcri(2,obpnt) = 1.0d30
+                  objcri(3,obpnt) = tmpcond
+              else if (objign(obpnt).eq.3) then
+                  objcri(1,obpnt) = 1.0d30
+                  objcri(2,obpnt) = tmpcond
+                  objcri(3,obpnt) = 1.0d30
+              else
+                  write(logerr,5358) objign(obpnt)
+                  ierror = 13
+                  return
+              end if
+          else
+              objon(obpnt) = .true.
+          end if
+          if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
+              if (stpmax.gt.0.0d0) then
+                  stpmax = min(stpmax,1.d0)
+              else
+                  stpmax = 1.d0
+              end if
+          end if
+
+          ! CJET - Ceiling jet for walls, ceiling, all, or off
+      case ('CJET')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 34
+              return
+          endif
+          DO  I = 1, 5
+              cjeton(i) = .false.
+          end do
+          cjtype = lcarray(1)(1:1)
+          if (cjtype.ne.' ') then
+              if (cjtype.eq.'C') then
+                  cjeton(1) = .true.
+                  cjeton(5) = .true.
+              else if (cjtype.eq.'W') then
+                  cjeton(1) = .true.
+                  cjeton(3) = .true.
+                  cjeton(5) = .true.
+              else if (cjtype.eq.'A') then
+                  cjeton(1) = .true.
+                  cjeton(3) = .true.
+                  cjeton(4) = .true.
+                  cjeton(5) = .true.
+              endif
+          endif
+          write(logerr,5341) cjeton
+
+          ! STPMAX # - set the maximum time step to #
+      case ('STPMA')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 35
+              return
+          endif
+          stpmax = lrarray(1)
+
+          ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
+      case ('DETEC')
+          if (.not.countargs(label,9,lcarray, xnumc-1, nret)) then
+              ierror = 34
+              return
+          endif
+
+          ndtect = ndtect + 1
+          if (ndtect.gt.mxdtect) then
+              write (logerr, 5338)
+              ierror = 81
+              return
+          endif
+
+          i1 = lrarray(1)
+          i2 = lrarray(2)
+          ! force to heat detector if out of range
+          if (i1.gt.3) i1 = heatd
+          ixdtect(ndtect,dtype) = i1
+          iroom = i2
+          ixdtect(ndtect,droom) = iroom
+          if(iroom.lt.1.or.iroom.gt.nr)then
+              write (logerr,5342) i2
+              ierror = 35
+              return
+          endif
+
+          xdtect(ndtect,dtrig) = lrarray(3)
+          xdtect(ndtect,dxloc) = lrarray(4)
+          xdtect(ndtect,dyloc) = lrarray(5)
+          xdtect(ndtect,dzloc) = lrarray(6)
+          xdtect(ndtect,drti) =  lrarray(7)
+          ixdtect(ndtect,dquench) = lrarray(8)
+          xdtect(ndtect,dspray) = lrarray(9)*1000.d0
+          ! if spray density is zero, then turn off the sprinkler
+          if(xdtect(ndtect,dspray).eq.0.0d0)then
+              ixdtect(ndtect,dquench) = 0
+          endif
+          if(option(fbtdtect).eq.off.
+     .    and.ixdtect(ndtect,dquench).gt.0)then
+              if (stpmax.gt.0) then
+                  stpmax = min(stpmax,1.d0)
+              else
+                  stpmax = 1.d0
+              end if
+          end if
+          if (compartmentnames(i2).eq.' ') then
+              write(logerr,5344) i2
+              ierror = 36
+              return
+          else
+              write(logerr, 5343) i1,compartmentnames(i2)
+          endif
+
+          if (debugging) then
+              write(*,5400) (xdtect(ndtect,i),i=1,dtxcol)
+              write(*,5401) (ixdtect(ndtect,i),i=1,dticol)
+              write(*,*)
+          endif
+
+          if(xdtect(ndtect,dxloc).gt.br(i2).or.
+     .    xdtect(ndtect,dyloc).gt.dr(i2).or.
+     .    xdtect(ndtect,dzloc).gt.hr(i2)) then
+              write(logerr,5339) ndtect,compartmentnames(i2)
+              ierror = 80
+              return
+          endif
+
+          !     VHEAT top_compartment bottom_compartment
+      case ('VHEAT')
+          if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+              ierror = 37
+              return
+          endif
+
+          i1 = lrarray(1)
+          i2 = lrarray(2)
+          if (i1.lt.1.or.i2.lt.1.or.i1.gt.n.or.i2.gt.n) then
+              write(logerr,5345) i1, i2
+              ierror = 38
+              return
+          endif
+
+          nswal = nswal + 1
+          izswal(nswal,1) = i1
+          izswal(nswal,2) = 1
+          izswal(nswal,3) = i2
+          izswal(nswal,4) = 3
+
+          ! ONEZ compartment number - This turns the compartment into a single zone
+      case ('ONEZ')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 39
+              return
+          endif
+
+          iroom = lrarray(1)
+          if(iroom.lt.1.or.iroom.gt.n)then
+              write(logerr, 5001) i1
+              ierror = 40
+              return
+          endif
+          izshaft(iroom) = 1
+          !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
+      case ('TARGE')
+          if (countargs(label,10,lcarray, xnumc-1, nret).or.
+     .    countargs(label,11,lcarray, xnumc-1, nret)) then
+              if(ntarg+1.gt.mxtarg)then
+                  write(logerr,5002) 
+                  ierror = 42
+                  return
+              else
+                  ntarg = ntarg + 1
               endif
 
+              ! The target can exist, now for the compartment
               IROOM = lrarray(1)
-
-              ! check that specified room is valid
-              if(iroom.lt.0.or.iroom.gt.n)then
-                  write(logerr,5346) iroom
-                  ierror = 63
+              IF(IROOM.LT.1.OR.IROOM.GT.N)THEN
+                  write(logerr,5003) iroom
+                  ierror = 43
                   return
               endif
 
-              izhall(iroom,ihroom) = 1
-              izhall(iroom,ihvelflag) = 0
-              izhall(iroom,ihdepthflag) = 0
-              izhall(iroom,ihventnum) = 0
-              zzhall(iroom,ihtime0) = -1.0d0
-              zzhall(iroom,ihvel) = 0.0d0
-              zzhall(iroom,ihdepth) = -1.0d0
-              zzhall(iroom,ihhalf) = -1.0d0
+              ! position and normal
+              ixtarg(trgroom,ntarg)=iroom
+              do i = 0, 2
+                  xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
+                  xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
+              end do
+              if (countargs(label,11,lcarray, xnumc-1, nret)) then
+                  xxtarg(trginterior,ntarg) = lrarray(11)
+              else
+                  xxtarg(trginterior,ntarg) = 0.5
+              end if
 
-              ! HALL velocity; not set if negative
-              if(lrarray(2).ge.0) then
-                  zzhall(iroom,ihvel) = lrarray(2)
-                  izhall(iroom,ihvelflag) = 1
-              endif
+              ! material type
+              tcname = lcarray(8)
+              if(tcname.eq.' ') tcname='DEFAULT'
+              cxtarg(ntarg) = tcname
+              ixtarg(trgwall,ntarg) = 0
 
-              ! HALL layer depth; not set if negative
-              if (lrarray(3).ge.0) then
-                  zzhall(iroom,ihdepth) = lrarray(3)
-                  izhall(iroom,ihdepthflag) = 1
-              endif
-
-              ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
-              if (lrarray(4).ge.0) then
-                  zzhall(iroom,ihhalf) = lrarray(4)
-                  izhall(iroom,ihhalfflag) = 1
-                  izhall(iroom,ihmode) = ihbefore
-              endif
-              
-          ! ROOMA Compartment Number_of_Area_Values Area_Values
-          ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
-          case ('ROOMA')
-              if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
-                  ierror = 47
-                  return
-              endif
-
-              IROOM = lrarray(1)
-
-              ! make sure the room number is valid
-              if(iroom.lt.1.or.iroom.gt.n)then
-                  write(logerr,5347) iroom
-                  ierror = 48
-                  return
-              endif
-
-              ! make sure the number of points is valid
-              npts = lrarray(2)
-              if(npts.gt.mxpts.or.npts.le.0.or.npts.ne.nret-2) then
-                  write (logerr,5347) npts
-                  ierror = 49
-                  return
-              endif
-              if(izrvol(iroom).ne.0) npts = min(izrvol(iroom),npts)
-              izrvol(iroom) = npts
-
-              ! make sure all data is positive 
-              do  i = 1, npts
-                  if(lrarray(i+2).lt.0.0d0)then
-                      write(logerr,5348) lrarray(i+2)
-                      ierror = 50
+              ! solution method
+              method = ' '
+              method = lcarray(9)
+              call upperall(method,method)
+              if(method.ne.' ')then
+                  if(method(1:3).eq.'STE') then
+                      ixtarg(trgmeth,ntarg) = STEADY
+                      method = ' '
+                  elseif (method(1:3).eq.'IMP') then
+                      ixtarg(trgmeth,ntarg) = MPLICIT
+                  elseif (method(1:3).eq.'EXP') then
+                      ixtarg(trgmeth,ntarg) = XPLICIT
+                  else
+                      write(logerr,912) method
+                      ierror = 44
                       return
                   endif
-              end do
+              endif
 
-              ! put the data in its place
-              do i = 1, npts
-                  zzrarea(i,iroom) = lrarray(i+2)
-              end do
-              write(logerr,5351) iroom, (zzrarea(iroom,i),i=1,npts)
+              ! equation type
+              eqtype = ' '
+              eqtype = lcarray(10)
+              call upperall(eqtype,eqtype)
+              if(eqtype.ne.' '.and.method.ne.' ')then
+                  if (eqtype(1:3).eq.'ODE') then
+                      ixtarg(trgeq,ntarg) = ODE
+                  elseif (eqtype(1:3).eq.'PDE') then
+                      ixtarg(trgeq,ntarg) = PDE
+                  elseif (eqtype(1:3).eq.'CYL') then
+                      ixtarg(trgeq,ntarg) = CYLPDE
+                  else
+                      write(logerr,913) eqtype
+                      ierror = 45
+                      return
+                  endif
+              endif
+          else
+              ierror = 41
+              return
+          endif
+          ! HALL Compartment Velocity Depth Decay_Distance
+      case ('HALL')
+          if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
+              ierror = 46
+              return
+          endif
+
+          IROOM = lrarray(1)
+
+          ! check that specified room is valid
+          if(iroom.lt.0.or.iroom.gt.n)then
+              write(logerr,5346) iroom
+              ierror = 63
+              return
+          endif
+
+          izhall(iroom,ihroom) = 1
+          izhall(iroom,ihvelflag) = 0
+          izhall(iroom,ihdepthflag) = 0
+          izhall(iroom,ihventnum) = 0
+          zzhall(iroom,ihtime0) = -1.0d0
+          zzhall(iroom,ihvel) = 0.0d0
+          zzhall(iroom,ihdepth) = -1.0d0
+          zzhall(iroom,ihhalf) = -1.0d0
+
+          ! HALL velocity; not set if negative
+          if(lrarray(2).ge.0) then
+              zzhall(iroom,ihvel) = lrarray(2)
+              izhall(iroom,ihvelflag) = 1
+          endif
+
+          ! HALL layer depth; not set if negative
+          if (lrarray(3).ge.0) then
+              zzhall(iroom,ihdepth) = lrarray(3)
+              izhall(iroom,ihdepthflag) = 1
+          endif
+
+          ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
+          if (lrarray(4).ge.0) then
+              zzhall(iroom,ihhalf) = lrarray(4)
+              izhall(iroom,ihhalfflag) = 1
+              izhall(iroom,ihmode) = ihbefore
+          endif
+
+          ! ROOMA Compartment Number_of_Area_Values Area_Values
+          ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
+      case ('ROOMA')
+          if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+              ierror = 47
+              return
+          endif
+
+          IROOM = lrarray(1)
+
+          ! make sure the room number is valid
+          if(iroom.lt.1.or.iroom.gt.n)then
+              write(logerr,5347) iroom
+              ierror = 48
+              return
+          endif
+
+          ! make sure the number of points is valid
+          npts = lrarray(2)
+          if(npts.gt.mxpts.or.npts.le.0.or.npts.ne.nret-2) then
+              write (logerr,5347) npts
+              ierror = 49
+              return
+          endif
+          if(izrvol(iroom).ne.0) npts = min(izrvol(iroom),npts)
+          izrvol(iroom) = npts
+
+          ! make sure all data is positive 
+          do  i = 1, npts
+              if(lrarray(i+2).lt.0.0d0)then
+                  write(logerr,5348) lrarray(i+2)
+                  ierror = 50
+                  return
+              endif
+          end do
+
+          ! put the data in its place
+          do i = 1, npts
+              zzrarea(i,iroom) = lrarray(i+2)
+          end do
+          write(logerr,5351) iroom, (zzrarea(iroom,i),i=1,npts)
 
           ! ROOMH Compartment Number_of_Height_Values Height_Values
           ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
-          case ('ROOMH')
-              if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
-                  ierror = 51
+      case ('ROOMH')
+          if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+              ierror = 51
+              return
+          endif
+
+          iroom = lrarray(1)
+
+          ! make sure the room number is valid
+          if(iroom.lt.1.or.iroom.gt.n)then
+              write(logerr,5349) iroom
+              ierror = 52
+              return
+          endif
+
+          ! make sure the number of points is valid
+          npts = lrarray(2)
+          if(npts.gt.mxpts.or.npts.lt.0.or.npts.ne.nret-2)then
+              write(logerr,5350) npts
+              ierror = 53
+              return
+          endif
+          if(izrvol(iroom).ne.0)npts = min(izrvol(iroom),npts)
+          izrvol(iroom) = npts
+
+          ! make sure all data is positive 
+          do i = 1, npts
+              if(lrarray(i+2).lt.0.0d0)then
+                  write(logerr,5348) lrarray(i+2)
+                  ierror = 54
                   return
               endif
+          end do
 
-              iroom = lrarray(1)
+          ! put the data in its place
+          do i = 1, npts
+              zzrhgt(i,iroom) = lrarray(i+2)
+          end do
+          write(logerr,5352) iroom, (zzrhgt(iroom,i),i=1,npts)
 
-              ! make sure the room number is valid
-              if(iroom.lt.1.or.iroom.gt.n)then
-                  write(logerr,5349) iroom
-                  ierror = 52
-                  return
-              endif
-
-              ! make sure the number of points is valid
-              npts = lrarray(2)
-              if(npts.gt.mxpts.or.npts.lt.0.or.npts.ne.nret-2)then
-                  write(logerr,5350) npts
-                  ierror = 53
-                  return
-              endif
-              if(izrvol(iroom).ne.0)npts = min(izrvol(iroom),npts)
-              izrvol(iroom) = npts
-
-              ! make sure all data is positive 
-              do i = 1, npts
-                  if(lrarray(i+2).lt.0.0d0)then
-                      write(logerr,5348) lrarray(i+2)
-                      ierror = 54
-                      return
-                  endif
-              end do
-
-              ! put the data in its place
-              do i = 1, npts
-                  zzrhgt(i,iroom) = lrarray(i+2)
-              end do
-              write(logerr,5352) iroom, (zzrhgt(iroom,i),i=1,npts)
-              
           ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
-          case ('DTCHE')
-              if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
-                  ierror = 55
-                  return
-              endif
+      case ('DTCHE')
+          if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+              ierror = 55
+              return
+          endif
 
-              zzdtcrit = abs(lrarray(1))
-              izdtmax = abs(lrarray(2))
-              ! a negative turns off the check
-              if(lrarray(2).le.0)izdtflag = .false.
-              
+          zzdtcrit = abs(lrarray(1))
+          izdtmax = abs(lrarray(2))
+          ! a negative turns off the check
+          if(lrarray(2).le.0)izdtflag = .false.
+
           ! SETP file_name
-          case ('SETP')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-                  ierror = 56
-                  return
-              endif
+      case ('SETP')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 56
+              return
+          endif
 
-              if (iflgsetp.gt.0) then
-                  ierror = 57
-                  write (logerr,5353) setpfile
-                  return
-              else
-                  iflgsetp = 1
-                  setpfile = lcarray(1)
-                  write (logerr,5340) setpfile
-              end if
-              
+          if (iflgsetp.gt.0) then
+              ierror = 57
+              write (logerr,5353) setpfile
+              return
+          else
+              iflgsetp = 1
+              setpfile = lcarray(1)
+              write (logerr,5340) setpfile
+          end if
+
           ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
 
           ! There are two forms of the command
           !   The first (single entry of the room number) - all connections based on horizontal flow
           !   The second is the compartment number followed by N pairs of compartments to which the heat will flow and the fraction of the vertical surface of the compartment that loses heat
-          case ('HHEAT')
-              if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
-                  ierror = 58
+      case ('HHEAT')
+          if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+              ierror = 58
+              return
+          endif
+
+          nto = 0
+          ifrom = lrarray(1)
+
+          if (nret.eq.1) then
+              izheat(ifrom) = 1
+              go to 10
+          else
+              nto = lrarray(2)
+              if(nto.lt.1.or.nto.gt.n)then
+                  write(logerr,5354) nto
+                  ierror = 59
                   return
               endif
+              izheat(ifrom) = 2
+              izheat(ifrom) = 2
+          endif
 
-              nto = 0
-              ifrom = lrarray(1)
+          if (2*nto.ne.(nret-2)) then
+              write(logerr,	5355) ifrom, nto
+              ierror = 60
+              return
+          endif
 
-              if (nret.eq.1) then
-                  izheat(ifrom) = 1
-                  go to 10
-              else
-                  nto = lrarray(2)
-                  if(nto.lt.1.or.nto.gt.n)then
-                      write(logerr,5354) nto
-                      ierror = 59
-                      return
-                  endif
-                  izheat(ifrom) = 2
-                  izheat(ifrom) = 2
-              endif
-
-              if (2*nto.ne.(nret-2)) then
-                  write(logerr,	5355) ifrom, nto
-                  ierror = 60
+          do i = 1, nto
+              i1 = 2*i+1
+              i2 = 2*i+2
+              ito = lrarray(i1)
+              frac = lrarray(i2)
+              if(ito.lt.1.or.ito.eq.ifrom.or.ito.gt.n)then
+                  write(logerr, 5356) ifrom,ito
+                  ierror = 61
                   return
               endif
+              if(frac.lt.0.0d0.or.frac.gt.1.0d0)then
+                  write(logerr, 5357) ifrom,ito,frac
+                  ierror = 62
+                  return
+              endif
+              zzhtfrac(ifrom,ito) = frac
+          end do
 
-              do i = 1, nto
-                  i1 = 2*i+1
-                  i2 = 2*i+2
-                  ito = lrarray(i1)
-                  frac = lrarray(i2)
-                  if(ito.lt.1.or.ito.eq.ifrom.or.ito.gt.n)then
-                      write(logerr, 5356) ifrom,ito
-                      ierror = 61
-                      return
-                  endif
-                  if(frac.lt.0.0d0.or.frac.gt.1.0d0)then
-                      write(logerr, 5357) ifrom,ito,frac
-                      ierror = 62
-                      return
-                  endif
-                  zzhtfrac(ifrom,ito) = frac
-              end do
-              
           ! FURN - no fire, heat walls according to a prescribed time temperature curve
-          case ('FURN')
-              nfurn=lrarray(1)+0.5
-              do i = 1, nfurn
-                  furn_time(i)=lrarray(2*i)
-                  furn_temp(i)=lrarray(2*i+1)
-              end do
+      case ('FURN')
+          nfurn=lrarray(1)+0.5
+          do i = 1, nfurn
+              furn_time(i)=lrarray(2*i)
+              furn_temp(i)=lrarray(2*i+1)
+          end do
 
           !  HEATF Special fire - heat source only; no mass
-          case ('HEATF')
-              if (.not.countargs(label,6,lcarray, xnumc-1, nret)) then
-                  ierror = 65
-                  return
-              endif
-              heatfr = lrarray(1)
-              if(heatfr.lt.1.or.heatfr.gt.n-1) then
-                  ierror = 66
-                  return
-              endif
-              heatfl = .true.
-              heatfp(1) = lrarray(2)
-              heatfp(2) = lrarray(3)
-              heatfp(3) = lrarray(4)
-              heatfplume =  lrarray(5)
-              ! This is a constant heat source only
-              heatfq = lrarray(6)
+      case ('HEATF')
+          if (.not.countargs(label,6,lcarray, xnumc-1, nret)) then
+              ierror = 65
+              return
+          endif
+          heatfr = lrarray(1)
+          if(heatfr.lt.1.or.heatfr.gt.n-1) then
+              ierror = 66
+              return
+          endif
+          heatfl = .true.
+          heatfp(1) = lrarray(2)
+          heatfp(2) = lrarray(3)
+          heatfp(3) = lrarray(4)
+          heatfplume =  lrarray(5)
+          ! This is a constant heat source only
+          heatfq = lrarray(6)
 
-
-
-     
           ! Outdated keywords
-          case ('OBJFL','MVOPN','MVFAN','MAINF')
-              ierror = 5
-	        return
- 
-        
-          case default
-              write(logerr, 5051) label
+      case ('OBJFL','MVOPN','MVFAN','MAINF')
+          ierror = 5
+          return
+
+
+      case default
+          write(logerr, 5051) label
       end select
       go to 10 
 
   912 format ('Invalid TARGET METHOD:',A8,'. Valid choices are: ',
-     +         'STEADY, IMPLICIT OR EXPLICIT')
+     +'STEADY, IMPLICIT OR EXPLICIT')
   913 format('Invalid equation type specified in TARGET:',A3,
-     +          ' Valid choices are:ODE, PDE or CYL')
+     +' Valid choices are:ODE, PDE or CYL')
  5000 format ('Keyword ',A5)
- 5001	format ('ONEZ requires a defined compartment ',i3)
+ 5001 format ('ONEZ requires a defined compartment ',i3)
  5002 format ('Too many targets are being defined')
  5003 format ('The compartment specified by TARGET does not exist',i3)
  5030 format ('Thermal count does not match compartment count ',2I5)
@@ -1764,19 +1768,19 @@ c    see which room is on top (if any) - this is like a bubble sort
  5081 format ('Too many horizontal connections ',3i5)
  5090 format ('The connection',3I3,' is being redefined')
  5100 format (' There must be at least 3 parameters to specify ',
-     +        ' vertical flow (VVENT).',I4)
+     +' vertical flow (VVENT).',I4)
  5120 format ('NOT ENOUGH DATA FOR WIND INPUT ROUTINE ???')
  5130 format ('THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
  5140 format ('Specification for interface height is outside of',
-     +        ' allowable range',2I4)
+     +' allowable range',2I4)
  5170 format ('MVOPN must define both sides of a duct opening')
  5180 format ('Specified node number too large for this system',2I2)
  5191 format ('Compartments specified in MVENT have not been defined ',
-     .        2i3)
+     .2i3)
  5192 format ('Exceeded maximum number of nodes/openings in MVENT ',2i3)
  5193 format ('MVENT(MID) is not consistent ',2i3)
  5194 format ('Pressure for zero flow must exceed the lower limit',
-     .        f10.2)
+     .f10.2)
  5195 format ('Too many fan systems',i3)
  5196 format ('Fan (MID) has not been defined for this filter ',i3)
  5200 format ('Redefinition for node ',2I3)
@@ -1787,9 +1791,9 @@ c    see which room is on top (if any) - this is like a bubble sort
  5260 format ('Exceeded allowed number of fans',I3)
  5270 format ('Fan curve has incorrect specification',1P2G12.3)
  5271 format ('Fan between nodes:',i3,' and ',i3,' is being redefined')
- 5272	format ('Define fan ',i2,' from ',i3,' to ',i3,
-     +		  ' over the pressure range ',2f6.1,' with ',i2,
-     +		  ' coefficients')
+ 5272 format ('Define fan ',i2,' from ',i3,' to ',i3,
+     +' over the pressure range ',2f6.1,' with ',i2,
+     +' coefficients')
  5290 format ('Too many internal nodes specified')
  5300 format ('Too many objects defined in datafile')
  5310 format ('Incorrect number of parameters for OBJECT')
@@ -1800,20 +1804,20 @@ c    see which room is on top (if any) - this is like a bubble sort
  5338 format ('Exceed allowed number of detectors')
  5339 format ('Detector ',i3,' is outside of compartment ',a)
  5340 format ('Set point file name is - ',A)
- 5341	format ('Ceiling jet calculation has been set: ',5l2)
- 5342	format ('Invalid DETECTOR specification - room ',i3)
- 5343	format ('A type ',i3,' detector has been placed in ',a128)
+ 5341 format ('Ceiling jet calculation has been set: ',5l2)
+ 5342 format ('Invalid DETECTOR specification - room ',i3)
+ 5343 format ('A type ',i3,' detector has been placed in ',a128)
  5344 format ('A referenced compartment is not yet defined ',i3)
- 5345	format ('VHEAT has specified a non-existent compartment')
+ 5345 format ('VHEAT has specified a non-existent compartment')
  5346 format ('HALL has specified a non-existent compartment',i3)
  5347 format ('Compartment specified by ROOMA does not exist ',i3)
  5348 format ('Data on the ROOMA (or H) line must be positive ',1pg12.3)
  5349 format ('Compartment specified by ROOMH is not defined ',i3)
  5350 format ('ROOMH error on data line ',i3)
  5351 format ('Compartment',i3,' has been redefined as a variable space'
-     +        '- area: ',20f8.1)
+     +'- area: ',20f8.1)
  5352 format ('Compartment',i3,' has been redefined as a variable space'
-     +        '- height: ',20f8.1)
+     +'- height: ',20f8.1)
  5353 format ('Trying to reset the point file name is - ',A)
  5354 format ('HHEAT to compartment out of bounds or not defined - ',i3)
  5355 format ('HHEAT fraction pairs is not consistent ',2i3)
@@ -1826,20 +1830,21 @@ c    see which room is on top (if any) - this is like a bubble sort
  5403 format ('Plume model for this fire: ',a10)
 
       end subroutine keywordcases
-      
-      subroutine inputembeddedfire(objname, lrowcount, xnumr, xnumc, 
-     .iobj, ierror)
-           
+
+      subroutine inputembeddedfire(objname, iroom, lrowcount, xnumr,
+     .xnumc, iobj, ierror)
+
 !     routine: inputembeddedfire
 !     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
 !              followed by CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH keywords (read in here)
 !     Arguments: objname: name of this fire object
+!                iroom: compartment where this fire is located
 !                lrowcount: current row in the input file.  We begin one row after this one
 !                xnumr:   number of rows in the input file
 !                xnumc:   number of columns in the input file
 !                iobj:    pointer to the fire object that will contain all the data we read in here
 !                ierror:  error return index
-      
+
 
       use iofiles
       include "precis.fi"
@@ -1872,7 +1877,7 @@ c    see which room is on top (if any) - this is like a bubble sort
                   ierror = 4
                   return
               end if
-              
+
               ! define chemical formula
               obj_c(iobj) = lrarray(1)
               obj_h(iobj) = lrarray(2)
@@ -1890,17 +1895,7 @@ c    see which room is on top (if any) - this is like a bubble sort
                   ierror = 32
                   return
               end if  
-
-              ! Add a target to calculate temperature of and heat flux to the object prior to ignition
-              ntarg = ntarg + 1
-              if (ntarg.gt.mxtarg) then
-                  write(logerr, 5002) 
-                  ierror = 201
-                  return
-              end if
-              obtarg(iobj) = ntarg
-              cxtarg(ntarg) = lcarray(8)
-
+              omatl(iobj) = lcarray(8)
           case ('TIME')
               lstat = countargs(label,2,lcarray,xnumc-1,nret)
               objlfm(iobj) = nret
@@ -1958,19 +1953,19 @@ c    see which room is on top (if any) - this is like a bubble sort
       end do
 
       ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-	call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), 
-     +             objhc(1,iobj), ohcomb)
+      call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), 
+     +objhc(1,iobj), ohcomb)
 
       ! Position the object
-	call positionobject(objpos,1,iobj,objrm(iobj),br,
-     . midpoint,minimumheight,errorcode)
-	if (errorcode.ne.0) return
-	call positionobject(objpos,2,iobj,objrm(iobj),dr,
-     . midpoint,minimumheight,errorcode)
-	if (errorcode.ne.0) return
-	call positionobject(objpos,3,iobj,objrm(iobj),hr,
-     . base,minimumheight,errorcode)
-	if (errorcode.ne.0) return
+      call positionobject(objpos,1,iobj,objrm(iobj),br,
+     .midpoint,minimumheight,errorcode)
+      if (errorcode.ne.0) return
+      call positionobject(objpos,2,iobj,objrm(iobj),dr,
+     .midpoint,minimumheight,errorcode)
+      if (errorcode.ne.0) return
+      call positionobject(objpos,3,iobj,objrm(iobj),hr,
+     .base,minimumheight,errorcode)
+      if (errorcode.ne.0) return
 
       ! diagnostic - check for the maximum heat release per unit volume.
       ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1990,25 +1985,22 @@ c    see which room is on top (if any) - this is like a bubble sort
           write (logerr,5100)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
       endif
 
-      ! initialize object target position
-      call setobtrg (ntarg,iobj,ierror)
-
       return
 5001  format ('Invalid heat of combustion, must be greater than zero, ',
-     .        1pg12.3)
+     .1pg12.3)
 5002  format ('Too many targets are being defined in a fire definition')
 5100  format ('Object ',a,' position set to ',3F7.3, 
-     . '; Maximum HRR per m^3 is ',1pg10.3)
+     .'; Maximum HRR per m^3 is ',1pg10.3)
 5106  format ('Object ',a,' position set to ',3F7.3,
-     . '; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
+     .'; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
 5107  format ('Object ',a,' position set to ',3F7.3,
-     . '; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
+     .'; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
 5000  format ('The key word ',a5,' is not part of a fire definition')
-      
+
       end subroutine inputembeddedfire
 
-      
-	subroutine inputmainfire (iounit,errorcode)
+
+      subroutine inputmainfire (iounit,errorcode)
 
 !  This routine reads the "mainfire.o" file either from the current directory
 !  or the directory for the executable. If it does not exist in either place, then
@@ -2020,125 +2012,113 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "precis.fi"
       include "cfast.fi"
 
-	character*10 data_file /'mainfire.o' /, testpath*256 
-	integer numr, numc, i, j, iounit, logerr/3/, errorcode
-	logical exists, doesthefileexist
+      character*10 data_file /'mainfire.o' /, testpath*256 
+      integer numr, numc, i, j, iounit, logerr/3/, errorcode
+      logical exists, doesthefileexist
       data hcmax /5.0D7/, hcmin/1.31D+7/
 
 ! First we try the local directory
-	testpath = trim (datapath) // data_file 
-	exists = DoesTheFileExist(testpath)
+      testpath = trim (datapath) // data_file 
+      exists = DoesTheFileExist(testpath)
 
 ! Then we try the executable root directory
-	if (.not.exists) then
-	  testpath = trim (exepath) // data_file 
-	  exists = DoesTheFileExist(testpath)
-	  if (.not.exists) then
+      if (.not.exists) then
+          testpath = trim (exepath) // data_file 
+          exists = DoesTheFileExist(testpath)
+          if (.not.exists) then
 ! All is lost
-			write (logerr, 5000) trim(testpath)
-			errorcode = 200
-			return
-	  endif
-	endif
-	write (logerr, 5001) testpath
-	
-	close (iounit)
-	open (unit=iounit,file=testpath,form='formatted')
+              write (logerr, 5000) trim(testpath)
+              errorcode = 200
+              return
+          endif
+      endif
+      write (logerr, 5001) testpath
+
+      close (iounit)
+      open (unit=iounit,file=testpath,form='formatted')
 
 !	ignore the header line and start with row 2
 
-	call readcsvformat (iounit,rarray,carray,nrow,ncol,2,numr,numc,
-     . errorcode)
-	if (errorcode.gt.0) return
+      call readcsvformat (iounit,rarray,carray,nrow,ncol,2,numr,numc,
+     .errorcode)
+      if (errorcode.gt.0) return
 
 !	First, get the scalar data; for the mainfire, we do not check the name
 
-	lfmax = rarray (1,1)
-	xx1 = 1.0d0
+      lfmax = rarray (1,1)
+      xx1 = 1.0d0
 
 !	Check array limits
-	if (lfmax.gt.nv) then
-		 ierror = 209
-		 write(logerr,5002)
-		 return
-	endif
+      if (lfmax.gt.nv) then
+          ierror = 209
+          write(logerr,5002)
+          return
+      endif
 
 !	Note that we are fudging this; gmwf is in m/kg, but cfast is expecting m/g
-	GMWF = rarray(2,1) * 1.0D3
-	te = rarray(4,1)
+      GMWF = rarray(2,1) * 1.0D3
+      te = rarray(4,1)
 !	Note that we are not using the heat of gasification at the moment
 
-	radconsplit(0) = rarray(6,1)
+      radconsplit(0) = rarray(6,1)
 !	Fires do not radiate below a fraction of 0.8
-	if(radconsplit(0).gt.0.8d0) then
-		write(logerr,5003) radconsplit(0)
-		errorcode = 219
-		return
-	else if (radconsplit(0).gt.0.5d0) then
-		write(logerr,5003) radconsplit(0)
-	endif
+      if(radconsplit(0).gt.0.8d0) then
+          write(logerr,5003) radconsplit(0)
+          errorcode = 219
+          return
+      else if (radconsplit(0).gt.0.5d0) then
+          write(logerr,5003) radconsplit(0)
+      endif
 
-	HCOMBA = rarray(11,1)
+      HCOMBA = rarray(11,1)
 
 ! This should not be important, but just in case
 
       do 300 i = 1, nv
-      DO 300 II = 1, ns
-      	MPRODR(I,II) = xx0
+          DO 300 II = 1, ns
+              MPRODR(I,II) = xx0
   300 CONTINUE
-	
+
       DO 400 I = 1, NV
-        HOCBMB(I) = HCOMBA
+          HOCBMB(I) = HCOMBA
   400 CONTINUE
 
-	do 1 i = 1, lfmax
-	tfired(i) = rarray(i,2)
-	qfired(i) = rarray(i,3)
-	bfired(i) = rarray(i,4)
-	hfired(i) = rarray(i,5)
-	afired(i) = rarray(i,6)
-      if (afired(i).eq.0.0) afired(i) = 0.05D0
-      OCRATI(I) = rarray(i,7)
-	hcratio(i) = rarray(i,8)
-	COCO2(I) = rarray(i,9)
-      CCO2(I) = rarray(i,10)
-      HCNF(I) = rarray(i,11)
-      HCLF(I) = rarray(i,12)
-      hcrf(i) = rarray(i,14)
+      do 1 i = 1, lfmax
+          tfired(i) = rarray(i,2)
+          qfired(i) = rarray(i,3)
+          bfired(i) = rarray(i,4)
+          hfired(i) = rarray(i,5)
+          afired(i) = rarray(i,6)
+          if (afired(i).eq.0.0) afired(i) = 0.05D0
+          OCRATI(I) = rarray(i,7)
+          hcratio(i) = rarray(i,8)
+          COCO2(I) = rarray(i,9)
+          CCO2(I) = rarray(i,10)
+          HCNF(I) = rarray(i,11)
+          HCLF(I) = rarray(i,12)
+          hcrf(i) = rarray(i,14)
 !	Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
-	mprodr(i,7) = xx1
-	mprodr(i,10) = rarray(i,13)
-	mprodr(i,11) = rarray(i,14)
+          mprodr(i,7) = xx1
+          mprodr(i,10) = rarray(i,13)
+          mprodr(i,11) = rarray(i,14)
 
-    1	continue
+    1 continue
 
-	call sethoc (lfmax, bfired, qfired, hocbmb, hcomba)
+      call sethoc (lfmax, bfired, qfired, hocbmb, hcomba)
 
-	close (iounit)	
+      close (iounit)	
 
  5001 format ('Open mainfire object file ',a256)
  5000 format ('Cannot find the main object file in either the' 
-     . ' executable path or the local directory ',/,a)
- 5002	format ('Too many entries for the main fire')
+     .' executable path or the local directory ',/,a)
+ 5002 format ('Too many entries for the main fire')
  5003 format (
-     . 'Radiation fraction for main fire is outside of a normal range',
-     .  f7.2)
+     .'Radiation fraction for main fire is outside of a normal range',
+     .f7.2)
 
-	end subroutine inputmainfire
+      end subroutine inputmainfire
 
-	subroutine inputobject (objname, iobj, iounit, errorcode)
-
-!  This routine reads the object files either from the current directory
-!	or the directory for the executable. If it does not exist in either place, then
-!	we quit
-
-!  The object name is objname.  iobj is the counter in the main list of objects
-
-!  The order of species is 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', 'TS'
-
-!  The minimum separation between an object an a wall is 1mm (minimumseparation)
-!  The maximum heat release rate (see reference in the UG and TR) is 4 MW/m^3 (the actual value should be 2, 
-!     but where we cut the user some slack
+      subroutine initfireobject (iobj,ierror)
 
       use iofiles
       include "precis.fi"
@@ -2146,202 +2126,22 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "objects2.fi"
       include "fltarget.fi"
 
-	character testpath*256 , objname*(*)
-	integer numr, numc, i, j, iounit, logerr/3/, errorcode, 
-     . midpoint/1/, base/2/
-	logical exists, doesthefileexist
-      data hcmax /5.0D8/, hcmin/1.31D+7/
-	double precision minimumheight/1.d-3/, max_hrr, xx0, hrrpm3
-
-! First we try the local directory
-
-	testpath = trim (datapath) // trim(objname) // '.o'
-	exists = DoesTheFileExist(testpath)
-
-! Then we try the executable root directory
-
-	if (.not.exists) then
-	  testpath = trim (exepath) // trim(objname) // '.o'
-	  exists = DoesTheFileExist(testpath)
-
-! All is lost
-
-	  if (.not.exists) then
-			write (logerr, 5000) trim(testpath)
-			errorcode = 215
-			return
-	  endif
-	endif
-
-! All is not lost
-
-	write (logerr, 5001) testpath
-	
-	close (iounit)
-	open (unit=iounit,file=testpath,form='formatted')
-
-!	Unlike the main fire, we need the header information
-
-	call readcsvformat (iounit,rarray,carray,nrow,ncol,1,numr,numc,
-     . errorcode)
-	if (errorcode.gt.0) return
-! Make sure we are reading the object we think we should have
-	if(carray(1,1).ne.objname) then
-		 errorcode = 210
-		 write(logerr,5004) objname, carray(1,1)
-		 return
-	endif
-	if(numc.lt.14) then
-		write(logerr,5108) numc
-	endif
-
-! Copy the data into the appropriate arrays
-!!!!!! Note, we assume that there cannot be more objects to initialize than there are objects in a calculation 
-
-	xx0 = 0.0d0
-	xx1 = 1.0d0
-
-      OBJLFM(IOBJ) = rarray(2,1)
-      OBJGMW(IOBJ) = rarray(3,1) * 1.0D+3
-      OBJVT(IOBJ) = rarray(5,1)
-	radconsplit(iobj) = rarray(7,1)
-	if(radconsplit(iobj).gt.0.8d0) then
-		write(logerr,5103) radconsplit(iobj)
-		errorcode = 219
-		return
-	else if (radconsplit(iobj).gt.0.5d0) then
-		write(logerr,5103) radconsplit(iobj)
-	endif
-
-      ohcomb = rarray(12,1)
       ntarg = ntarg + 1
       if (ntarg.gt.mxtarg) then
-      	write(logerr, 5002) 
-      	ierror = 201
-      	return
+          write(logerr, *)
+     .    'Too many targets created for fire objects'
+          ierror = 201
+          return
       end if
       obtarg(iobj) = ntarg
-      cxtarg(ntarg) = carray(13,1)
+      cxtarg(ntarg) = omatl(iobj)
 
-      objmas(iobj) = rarray(8,1)
-      objxyz(1,iobj) = rarray(9,1)
-      objxyz(2,iobj) = rarray(10,1)
-      objxyz(3,iobj) = rarray(11,1)
+      ! Initialize object target
+      call setobtrg (ntarg,iobj,ierror)
+      return
+      end subroutine initfireobject
 
-      ! Calculate a characteristic size of an object.
-      ! This is a basic conceptual model for the physical extent for the heat release
-	objclen(iobj) = objxyz(1,iobj) * objxyz(2,iobj) * objxyz(3,iobj)
-	if(objclen(iobj).lt.1.0d-6) then
-		write(logerr,5005) iobj,objclen(iobj)
-		errorcode = 220
-		return
-	endif
-	objclen(iobj) = objclen(iobj)**0.333d0
-
-      OTIME(1,IOBJ) = xx0
-
-	if(objlfm(iobj).gt.nv) then
-		 errorcode = 208
-		 write (logerr,5003)
-		 return
-	endif
-
-      ! This should not be important, but just in case
-      do i = 1, nv
-          do ii = 1, ns
-              omprodr(i,ii,iobj) = xx0
-          end do
-      end do
-
-! Move the array data into the object arrays
-
-	max_hrr = xx0
-      DO 400 II = 1, OBJLFM(IOBJ)
-         OTIME(II,IOBJ) = rarray(ii+1,2)
-         OQDOT(II,IOBJ) = rarray(ii+1,3)
-	   max_hrr = max(max_hrr, oqdot(ii,iobj))
-         OMASS(II,IOBJ) = rarray(ii+1,4)
-! This is to stop dassl from an floating point underflow when it tries to extrapolate back.
-! It only occurs for objects which are on the floor and ignite after t=0
-         OHIGH(II,IOBJ) = rarray(ii+1,5)
-         OAREA(II,IOBJ) = rarray(ii+1,6)
-         if (OAREA(II,IOBJ).eq.0.0) OAREA(II,IOBJ) = 0.05D0
-         OOC(II,IOBJ) = rarray(ii+1,7)
-         OHCR(II,IOBJ) = rarray(ii+1,8)
-         OCO(II,IOBJ) = rarray(ii+1,9)
-         OOD(II,IOBJ) = rarray(ii+1,10)
-         OMPRODR(II,5,IOBJ) = rarray(ii+1,11)
-         OMPRODR(II,6,IOBJ) = rarray(ii+1,12)
-	   omprodr(ii,7,iobj) = xx1
-         OMPRODR(II,10,IOBJ) = rarray(ii+1,13)
-	   omprodr(ii,11,iobj) = rarray(ii+1,14)
-  400 CONTINUE
-
-!	set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-	call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), 
-     +             objhc(1,iobj), ohcomb)
-
-!	Position the object
-
-	call positionobject(objpos,1,iobj,objrm(iobj),br,
-     . midpoint,minimumheight,errorcode)
-	if (errorcode.ne.0) return
-	call positionobject(objpos,2,iobj,objrm(iobj),dr,
-     . midpoint,minimumheight,errorcode)
-	if (errorcode.ne.0) return
-	call positionobject(objpos,3,iobj,objrm(iobj),hr,
-     . base,minimumheight,errorcode)
-	if (errorcode.ne.0) return
-	
-! Diagnostic - check for the maximum heat release per unit volume.
- 
-!	First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-	area = objxyz(1,iobj) * objxyz(2,iobj)
-	d = max(0.33d0,sqrt(4.0/3.14*area))
-	flamelength = d * (0.235d0*(max_hrr/1.0d3)**0.4 - 1.02)
-	flamelenght = max (xx0, flamelength)
-!	Now the heat realease per cubic meter - we know that the size is larger than 1.0d-6 m^3 - enforced above
-	hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
-	if (hrrpm3.gt.4.0e+6) then
-	  WRITE (LOGERR,5106) trim(objname),(OBJPOS(i,IOBJ),i=1,3),hrrpm3
-	  errorcode = 221
-	  return
-	else if (hrrpm3.gt.2.0d+6) then
-	  WRITE (LOGERR,5107) trim(objname),(OBJPOS(i,IOBJ),i=1,3),hrrpm3
-	else 
-	  WRITE (LOGERR,5100) trim(objname),(OBJPOS(i,IOBJ),i=1,3),hrrpm3
-	endif
-
-!	Initialize object target position
-
-	CALL SETOBTRG (NTARG,IOBJ,IERROR)
-
-	close (iounit)	
-
-	return
-
- 5000 format ('Cannot find the object fire file in either the' 
-     . ' executable path or the local directory ',/,a)
- 5001 format ('Open the object fire file ',a256)
- 5002 FORMAT ('Too many targets are being defined in inputobject')
- 5003 format ('Too many entries for the object file')
- 5004 format ('Names do not match ',a8,2x,a8)
- 5005 format ('Object # ',i3,' is too small. Volume = ',g10.3)
- 5100 FORMAT ('Object ',a,' position set to ',3F7.3, 
-     . '; Maximum HRR per m^3 is ',1pg10.3)
- 5106 FORMAT ('Object ',a,' position set to ',3F7.3,
-     . '; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
- 5107 FORMAT ('Object ',a,' position set to ',3F7.3,
-     . '; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
- 5103 format (
-     . 'Radiation fraction for object fire is outside of a normal range'
-     . f7.3)
- 5108 format ('>>>Old fire object format - please update, count =',i3)
-
-
-	end subroutine inputobject
-
-	subroutine inputtpp (tppname, errorcode)
+      subroutine inputtpp (tppname, errorcode)
 
 !  This routine reads the thermophysical properties file either from the current directory
 !  or the directory for the executable. If it does not exist in either place, then we quit
@@ -2354,67 +2154,67 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "fltarget.fi"
       include "thermp.fi"
 
-	character testpath*256, tppname*(*)
-	integer numr, numc, i, j, iounit, logerr/3/, errorcode
-	logical exists
+      character testpath*256, tppname*(*)
+      integer numr, numc, i, j, iounit, logerr/3/, errorcode
+      logical exists
 
 ! First we try the local directory
-	testpath = trim (datapath) // trim(tppname) // '.csv'
-	inquire (file = testpath, exist = exists)
+      testpath = trim (datapath) // trim(tppname) // '.csv'
+      inquire (file = testpath, exist = exists)
 ! Then we try the executable root directory
-	if (.not.exists) then
-	  testpath = trim (exepath) // trim(tppname) // '.csv'
-	  inquire (file=testpath, exist=exists)
-	  if (.not.exists) then
+      if (.not.exists) then
+          testpath = trim (exepath) // trim(tppname) // '.csv'
+          inquire (file=testpath, exist=exists)
+          if (.not.exists) then
 ! All is lost
-			write (logerr, 5000) trim(testpath)
-			errorcode = 202
-			return
-	  endif
-	endif
-	write (logerr, 5001) testpath
-	
-	close (iounit)
-	open (unit=iounit,file=testpath,form='formatted')
+              write (logerr, 5000) trim(testpath)
+              errorcode = 202
+              return
+          endif
+      endif
+      write (logerr, 5001) testpath
+
+      close (iounit)
+      open (unit=iounit,file=testpath,form='formatted')
 
 ! The first entry is the first property, so start at the beginning
 
-	call readcsvformat (iounit,rarray,carray,nrow,ncol,1,numr,numc,
-     . errorcode)
+      call readcsvformat (iounit,rarray,carray,nrow,ncol,1,numr,numc,
+     .errorcode)
       if (errorcode.gt.0) return
 
 ! Check to make sure we do not overwrite the tpp data structures
 
 ! Too many TPPs.
-	if (numr.gt.nthmx) then
-		 ierror = 203
-		 return
-	endif
+      if (numr.gt.nthmx) then
+          ierror = 203
+          return
+      endif
 ! Data format is not correct
-	if (numc.lt.14) then
-		 ierror = 204
-		 return
-	endif
-		
+      if (numc.lt.14) then
+          ierror = 204
+          return
+      endif
+
 ! Copy the data into the appropriate arrays
 
-	do 10 i = 1, numr
-	nlist(i) = carray(i,1)
-	lnslb(i) = 1
-	DO 30 K = 1, lNSLB(I)
-	 	lFKW(K,I) = rarray(i,2)
-	 	lCW(K,I) = rarray(i,3)
-	 	lRW(K,I) = rarray(i,4)
-	 	lFLW(K,I) = rarray(i,5)
-   30 CONTINUE
-      lEPW(I) = rarray(i,6)
-      DO 40 K = 1, 7
-   40 lHCLBF(K,I) = rarray(i,6+k)
+      do 10 i = 1, numr
+          nlist(i) = carray(i,1)
+          lnslb(i) = 1
+          DO 30 K = 1, lNSLB(I)
+              lFKW(K,I) = rarray(i,2)
+              lCW(K,I) = rarray(i,3)
+              lRW(K,I) = rarray(i,4)
+              lFLW(K,I) = rarray(i,5)
+   30     CONTINUE
+          lEPW(I) = rarray(i,6)
+          DO 40 K = 1, 7
+   40         lHCLBF(K,I) = rarray(i,6+k)
 
    10 CONTINUE
 
 ! Finally we put in the default properties; this also becomes the size of the database
-	maxct = numr + 1
+      maxct = numr + 1
 
       NLIST(maxct) = 'DEFAULT'
       LNSLB(maxct) = 1
@@ -2424,17 +2224,17 @@ c    see which room is on top (if any) - this is like a bubble sort
       LFLW(1,maxct) = 0.0120D0
       LEPW(maxct) = 0.90D0
       DO 50 I = 1, 7
-        LHCLBF(I,maxct) = 0.00D0
+          LHCLBF(I,maxct) = 0.00D0
    50 CONTINUE
 
-	close (iounit)	
-	return
+      close (iounit)	
+      return
 
  5000 format ('Cannot find the thermophysical properties file in '
-     . 'either the executable path or the local directory ',/,a)
+     .'either the executable path or the local directory ',/,a)
  5001 format ('Open the thermophysical properties file ',a256)
 
-	end subroutine inputtpp
+      end subroutine inputtpp
 
       SUBROUTINE DREADIN(OUTPUT,IOUNIT,IERR,IVERS0)
 C
@@ -2461,7 +2261,7 @@ C                  Added support for IERROR and returning error codes to main
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
- 
+
       PARAMETER (MXDMP = 36000)
       LOGICAL CNVRT
       CHARACTER HEADER*6, RHEADER(2)*6
@@ -2472,59 +2272,59 @@ C
       READ (IOUNIT,END=30,IOSTAT=IOS) HEADER, IVERS0
       IF (HEADER.EQ.RHEADER(1)) THEN
 #ifdef pp_ibmpc
-        CNVRT = .FALSE.
+          CNVRT = .FALSE.
 #else
-        CNVRT = .TRUE.
+          CNVRT = .TRUE.
 #endif
       ELSE IF (HEADER.EQ.RHEADER(2)) THEN
 #ifdef pp_ibmpc
-        CNVRT = .TRUE.
+          CNVRT = .TRUE.
 #else
-        CNVRT = .FALSE.
+          CNVRT = .FALSE.
 #endif
       ELSE
-        IERR = 9999
-        RETURN
+          IERR = 9999
+          RETURN
       END IF
-	IF (CNVRT) IVERS0 = FLOP(IVERS0)
+      IF (CNVRT) IVERS0 = FLOP(IVERS0)
       IF (CNVRT) THEN
-        READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
-     +      FLOP(INPUT(1)))
-        INPUT(1) = FLOP(INPUT(1))
+          READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
+     +    FLOP(INPUT(1)))
+          INPUT(1) = FLOP(INPUT(1))
       ELSE
-        READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
-     +      INPUT(1))
+          READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
+     +    INPUT(1))
       END IF
       IF (INPUT(1).GT.MXDMP) THEN
-         CALL XERROR('DREADIN - overwrite input buffer; fatal error',
-     .               0,1,1)
-         IERR = 7
-         RETURN
+          CALL XERROR('DREADIN - overwrite input buffer; fatal error',
+     .    0,1,1)
+          IERR = 7
+          RETURN
       END IF
       IF (CNVRT) THEN
-        DO 10 I = 2, INPUT(1)
-          INPUT(I) = FLOP(INPUT(I))
-   10   CONTINUE
+          DO 10 I = 2, INPUT(1)
+              INPUT(I) = FLOP(INPUT(I))
+   10     CONTINUE
       END IF
       CALL UNPACK(INPUT,OUTPUT)
       IF (CNVRT) THEN
-        CALL LENOCO(((IVERS0-1800)/10),ITOT,IFLT,IINT)
-        DO 20 I = 1, IFLT / 2
-          ITEMP = OUTPUT(2*I-1)
-          OUTPUT(2*I-1) = OUTPUT(2*I)
-          OUTPUT(2*I) = ITEMP
-   20   CONTINUE
+          CALL LENOCO(((IVERS0-1800)/10),ITOT,IFLT,IINT)
+          DO 20 I = 1, IFLT / 2
+              ITEMP = OUTPUT(2*I-1)
+              OUTPUT(2*I-1) = OUTPUT(2*I)
+              OUTPUT(2*I) = ITEMP
+   20     CONTINUE
       END IF
    30 IF (IOS.NE.0) THEN
-        IERR = IOS
+          IERR = IOS
       ELSE
-        IERR = 0
+          IERR = 0
       END IF
       RETURN
       END
- 
+
       SUBROUTINE UNPACK(INPUT,OUTPUT)
- 
+
 C
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -2548,36 +2348,36 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       INTEGER OUTPUT(*), INPUT(*)
       INTEGER I, INTGR, CNTR, MRKR, INLEN, INIDX, OUTIDX
- 
+
       MRKR = 106
       INIDX = 1
       OUTIDX = 0
       INLEN = INPUT(1)
    10 IF (.TRUE.) THEN
-        INIDX = INIDX + 1
-        IF (INIDX.GT.INLEN) GO TO 30
-        INTGR = INPUT(INIDX)
-        IF (INTGR.EQ.MRKR) THEN
           INIDX = INIDX + 1
           IF (INIDX.GT.INLEN) GO TO 30
           INTGR = INPUT(INIDX)
           IF (INTGR.EQ.MRKR) THEN
-            OUTIDX = OUTIDX + 1
-            OUTPUT(OUTIDX) = INTGR
+              INIDX = INIDX + 1
+              IF (INIDX.GT.INLEN) GO TO 30
+              INTGR = INPUT(INIDX)
+              IF (INTGR.EQ.MRKR) THEN
+                  OUTIDX = OUTIDX + 1
+                  OUTPUT(OUTIDX) = INTGR
+              ELSE
+                  INIDX = INIDX + 1
+                  IF (INIDX.GT.INLEN) GO TO 30
+                  CNTR = INPUT(INIDX)
+                  DO 20, I = 1, CNTR
+                      OUTIDX = OUTIDX + 1
+                      OUTPUT(OUTIDX) = INTGR
+   20             CONTINUE
+              END IF
           ELSE
-            INIDX = INIDX + 1
-            IF (INIDX.GT.INLEN) GO TO 30
-            CNTR = INPUT(INIDX)
-            DO 20, I = 1, CNTR
               OUTIDX = OUTIDX + 1
               OUTPUT(OUTIDX) = INTGR
-   20       CONTINUE
           END IF
-        ELSE
-          OUTIDX = OUTIDX + 1
-          OUTPUT(OUTIDX) = INTGR
-        END IF
-        GO TO 10
+          GO TO 10
       END IF
    30 RETURN
       END
@@ -2628,7 +2428,7 @@ C
 ! 	call the input routines
 
       use iofiles
-      
+
       integer errorcode , lp, ld, lf, ios
       integer(2) filecount
       logical exists
@@ -2664,14 +2464,14 @@ C
       queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
       statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
       kernelisrunning = testpath(1:lp) // testproj(1:ld) //
-     * '.kernelisrunning'
+     *'.kernelisrunning'
 
       testpath = trim (exepath)
       lp = len_trim (testpath)
       solverini = testpath(1:lp) // 'solver.ini'
 
       open (unit=1, file=inputfile, action='read', status='old', 
-     *      iostat=ios)
+     *iostat=ios)
 
       call deleteoutputfiles (outputfile)
       call deleteoutputfiles (smvhead)	
@@ -2692,16 +2492,16 @@ C
 ! open the log file and return the correct project name
 
       open (unit=3, file=errorlogging, action='write', iostat=ios, 
-     *      status='new')
+     *status='new')
 
-	project = testproj (1:ld)
-	errorcode = ios
+      project = testproj (1:ld)
+      errorcode = ios
 
       return
 
       end
 
-	SUBROUTINE SETP0(P0, IP0, PMXMN, IPMXMN, iounit, IERROR)
+      SUBROUTINE SETP0(P0, IP0, PMXMN, IPMXMN, iounit, IERROR)
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -2733,62 +2533,62 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DIMENSION PMXMN(MAXTEQ,2), IPMXMN(0:MAXTEQ,2)
       INTEGER iounit
       CHARACTER LABEL*5, TESTFILE*128, PLACE*1, MXMN*1, TOUPPER*1
-	character testpath*256
+      character testpath*256
       INTEGER ILOCAL(2)
-	logical exists, doesthefileexist, eof
+      logical exists, doesthefileexist, eof
 
       DOUBLE PRECISION LOCAL(2)
 
       IP0(0) = OFF
       IERROR = 0
       DO 10 I = 1, MAXTEQ
-      	P0(I) = 0.D0
-	IP0(I) = OFF
+          P0(I) = 0.D0
+          IP0(I) = OFF
    10 CONTINUE
 
       IF (SETPFILE.EQ.'   ') RETURN
 
 ! First we try the local directory
 
-	testpath = trim (datapath) // trim(setpfile)
-	exists = DoesTheFileExist(testpath)
+      testpath = trim (datapath) // trim(setpfile)
+      exists = DoesTheFileExist(testpath)
 
 ! Then we try the executable root directory
 
-	if (.not.exists) then
-	  testpath = trim (exepath) // trim(setpfile)
-	  exists = DoesTheFileExist(testpath)
+      if (.not.exists) then
+          testpath = trim (exepath) // trim(setpfile)
+          exists = DoesTheFileExist(testpath)
 
 ! All is lost
 
-	  if (.not.exists) then
-			write (logerr, 5000) trim(setpfile)
-			errorcode = 217
-			return
-	  endif
-	endif
+          if (.not.exists) then
+              write (logerr, 5000) trim(setpfile)
+              errorcode = 217
+              return
+          endif
+      endif
 
 ! All is not lost
 
-	write (logerr, 5001) testpath
-	
-	close (iounit)
-	open (unit=iounit,file=testpath,form='formatted')
+      write (logerr, 5001) testpath
+
+      close (iounit)
+      open (unit=iounit,file=testpath,form='formatted')
 
       CALL READBF(IO, LABEL, eof)
       DO 30 I = 1, 5
-        LABEL(I:I) = TOUPPER(LABEL(I:I))
+          LABEL(I:I) = TOUPPER(LABEL(I:I))
    30 CONTINUE
       IF (LABEL(1:4).NE.'FILE') THEN
-		IERROR = 75
-		CLOSE(IO)
-		RETURN
+          IERROR = 75
+          CLOSE(IO)
+          RETURN
       END IF
       CALL READFL(TESTFILE)
       IF (TESTFILE.NE.NNFILE) THEN
-        IERROR = 50
-	CLOSE(IO)
-	RETURN
+          IERROR = 50
+          CLOSE(IO)
+          RETURN
       END IF
 
    20 CONTINUE
@@ -2796,48 +2596,48 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       CALL READBF(IO, LABEL, eof)
       DO 40 I = 1, 5
           LABEL(I:I) = TOUPPER(LABEL(I:I))
-   40 CONTINUE
+   40     CONTINUE
 
-      CALL READIN(2,NRET,ILOCAL,LOCAL)
-		IROOM = ILOCAL(1)
-		X = LOCAL(2)
-      CALL READFL(PLACE)
-		PLACE = TOUPPER(PLACE)
-      CALL READFL(MXMN)
-		MXMN = TOUPPER(MXMN)
-	
-	IF (LABEL(1:4).EQ.'TEMP') THEN
-	  IF (PLACE.EQ.'U') THEN
-	    CALL DOP0(NOFTU,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
-	  ELSE IF (PLACE.EQ.'L') THEN
-	    CALL DOP0(NOFTL,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
-	  ELSE
-		 write(logerr,*) 'Parameter not supported by SETP'
-		 ierror = 77
-		 CLOSE(IO)
-		 return
-	  END IF
-	ELSE IF (LABEL.EQ.'PRESS') THEN
-		MXMN = PLACE
-		CALL DOP0(NOFP,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
-	ELSE IF (LABEL.EQ.'INTER') THEN
-		MXMN = PLACE
-		X = (HR(IROOM) - X)*AR(IROOM)
-		CALL DOP0(NOFVU,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
-	ELSE
-		CLOSE(IO)
-		RETURN
-	END IF
+          CALL READIN(2,NRET,ILOCAL,LOCAL)
+          IROOM = ILOCAL(1)
+          X = LOCAL(2)
+          CALL READFL(PLACE)
+          PLACE = TOUPPER(PLACE)
+          CALL READFL(MXMN)
+          MXMN = TOUPPER(MXMN)
 
-      GOTO 20
+          IF (LABEL(1:4).EQ.'TEMP') THEN
+              IF (PLACE.EQ.'U') THEN
+                  CALL DOP0(NOFTU,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
+              ELSE IF (PLACE.EQ.'L') THEN
+                  CALL DOP0(NOFTL,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
+              ELSE
+                  write(logerr,*) 'Parameter not supported by SETP'
+                  ierror = 77
+                  CLOSE(IO)
+                  return
+              END IF
+          ELSE IF (LABEL.EQ.'PRESS') THEN
+              MXMN = PLACE
+              CALL DOP0(NOFP,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
+          ELSE IF (LABEL.EQ.'INTER') THEN
+              MXMN = PLACE
+              X = (HR(IROOM) - X)*AR(IROOM)
+              CALL DOP0(NOFVU,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
+          ELSE
+              CLOSE(IO)
+              RETURN
+          END IF
 
- 1000 CONTINUE
-      write(logerr,*)'Error Reading the "SETP" file'
-      IERROR = 76
-      RETURN
- 5000 format ('Cannot find the object fire file in either the' 
-     . ' executable path or the local directory ',/,a)
- 5001 format ('Open the SETPARAMETER file ',a)
+          GOTO 20
+
+ 1000     CONTINUE
+          write(logerr,*)'Error Reading the "SETP" file'
+          IERROR = 76
+          RETURN
+ 5000     format ('Cannot find the object fire file in either the' 
+     .    ' executable path or the local directory ',/,a)
+ 5001     format ('Open the SETPARAMETER file ',a)
 
       END
 
@@ -2877,28 +2677,28 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       CHARACTER MXMN*1
 
       IF (MXMN.EQ.'X') THEN
-        IPMXMN(0,1) = ON
-        PMXMN(NOFLG+IROOM,1) = X
-        IPMXMN(NOFLG+IROOM,1) = ON
+          IPMXMN(0,1) = ON
+          PMXMN(NOFLG+IROOM,1) = X
+          IPMXMN(NOFLG+IROOM,1) = ON
       ELSE IF (MXMN.EQ.'M') THEN
-        IPMXMN(0,2) = ON
-        PMXMN(NOFLG+IROOM,2) = X
-        IPMXMN(NOFLG+IROOM,2) = ON
+          IPMXMN(0,2) = ON
+          PMXMN(NOFLG+IROOM,2) = X
+          IPMXMN(NOFLG+IROOM,2) = ON
       ELSE
-        IP0(0) = ON
-        P0(NOFLG+IROOM) = X
-        IP0(NOFLG+IROOM) = ON
+          IP0(0) = ON
+          P0(NOFLG+IROOM) = X
+          IP0(NOFLG+IROOM) = ON
       END IF
 
       RETURN
       END
 
       subroutine positionobject (xyz,index,opoint,rpoint,criterion,
-     . defaultposition,minimumseparation,errorcode)
+     .defaultposition,minimumseparation,errorcode)
 
-	integer index, defaultposition, opoint,rpoint, errorcode
-	double precision xyz(3,0:*), xx0/0.d0/, minimumseparation,
-     . criterion(*)
+      integer index, defaultposition, opoint,rpoint, errorcode
+      double precision xyz(3,0:*), xx0/0.d0/, minimumseparation,
+     .criterion(*)
 
 !       Position an object in a compartment
 !		xyz is objposition (objpos)
@@ -2910,22 +2710,22 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !		minimumseparation is the closest the object can be to a wall
 
       IF((xyz(index,opoint).lt.xx0).or.
-     .   (xyz(index,opoint).gt.criterion(rpoint))) THEN
-		select case (defaultposition)
-			case (1) 
-				xyz(index,opoint) = criterion(rpoint)/2.0d0
-			case (2) 
-				xyz(index,opoint) = minimumseparation
-			case default
-				errorcode = 222
-		end select
-	else if (xyz(index,opoint).eq.xx0) then
-		xyz(index,opoint) = minimumseparation
-	else if (xyz(index,opoint).eq.criterion(rpoint)) then
-		xyz(index,opoint) = criterion(rpoint)-minimumseparation
-	END IF
+     .(xyz(index,opoint).gt.criterion(rpoint))) THEN
+          select case (defaultposition)
+          case (1) 
+              xyz(index,opoint) = criterion(rpoint)/2.0d0
+          case (2) 
+              xyz(index,opoint) = minimumseparation
+          case default
+              errorcode = 222
+          end select
+      else if (xyz(index,opoint).eq.xx0) then
+          xyz(index,opoint) = minimumseparation
+      else if (xyz(index,opoint).eq.criterion(rpoint)) then
+          xyz(index,opoint) = criterion(rpoint)-minimumseparation
+      END IF
 
-	return
+      return
 
       end subroutine positionobject
 
@@ -2962,21 +2762,21 @@ C
       include "objects2.fi"
       include "fltarget.fi"
 
-	IXTARG(TRGROOM,ITARG) = OBJRM(IOBJ)
-	DO 10 I = 0,2
-	  XXTARG(TRGCENX+I,ITARG) = OBJPOS(1+I,IOBJ)
-	  XXTARG(TRGNORMX+I,ITARG) = OBJORT(1+I,IOBJ)
+      IXTARG(TRGROOM,ITARG) = OBJRM(IOBJ)
+      DO 10 I = 0,2
+          XXTARG(TRGCENX+I,ITARG) = OBJPOS(1+I,IOBJ)
+          XXTARG(TRGNORMX+I,ITARG) = OBJORT(1+I,IOBJ)
    10 CONTINUE
-   	IXTARG(TRGWALL,ITARG) = 0
-   	IXTARG(TRGMETH,ITARG) = MPLICIT
+      IXTARG(TRGWALL,ITARG) = 0
+      IXTARG(TRGMETH,ITARG) = MPLICIT
 !	Using ODE because of problems with PDE
 !	IXTARG(TRGEQ,ITARG) = PDE
-	IXTARG(TRGEQ,ITARG) = ODE
-	RETURN
-	END
+      IXTARG(TRGEQ,ITARG) = ODE
+      RETURN
+      END
 
       subroutine readcsvformat (iunit,x,c,numr,numc,nstart,maxr,maxc,
-     . ierror)
+     .ierror)
 
 c
 c   reads a comma-delimited file as generated by Micorsoft Excel
@@ -2996,94 +2796,94 @@ c
       include "cparams.fi"
       include "cshell.fi"
 
-	double precision x(numr,numc)
-	character in*10000,token*128, c(numr,numc)*(*)
-	integer ierror
+      double precision x(numr,numc)
+      character in*10000,token*128, c(numr,numc)*(*)
+      integer ierror
 
-	maxr = 0
-	maxc = 0
-	ierror = 0
-	do i=1,numr
-	  do j=1,numc
-	    x(i,j) = 0.
-		c(i,j) = ' '
-	  end do
-	end do
+      maxr = 0
+      maxc = 0
+      ierror = 0
+      do i=1,numr
+          do j=1,numc
+              x(i,j) = 0.
+              c(i,j) = ' '
+          end do
+      end do
 
 ! if we have header rows, then skip them
 
-	if (nstart.gt.1) then
-	  do  i=1,nstart-1
-	    read (iunit,'(A)') in
-        end do 
+      if (nstart.gt.1) then
+          do  i=1,nstart-1
+              read (iunit,'(A)') in
+          end do 
       end if
 
 ! read the data
 
-	nrcurrent=0
+      nrcurrent=0
 20    read (iunit,'(A)',end=100) in
 
 ! Skip comments
-	if (in(1:1).eq.'!'.or.in(1:1).eq.'#') then
-		 go to 20
-	endif
+      if (in(1:1).eq.'!'.or.in(1:1).eq.'#') then
+          go to 20
+      endif
 
       nrcurrent=nrcurrent+1
-	maxr=max(maxr,nrcurrent)
+      maxr=max(maxr,nrcurrent)
 
 ! Cannot exceed work array
-	if(maxr.gt.numr) then
-		 ierror = 207
-		 return
-	endif
+      if(maxr.gt.numr) then
+          ierror = 207
+          return
+      endif
 
       nc=0
       ic=1
-30	icomma=index(in,',')
-	if (icomma.ne.0) then
-	  if (icomma.eq.ic) then
-	    token=' '
-	  else
-	    token=in(ic:icomma-1)
-	  end if
-	  ic = icomma+1
-	  nc = nc + 1
-	  in(1:ic-1)=' '
-	  if (nrcurrent.le.numr.and.nc.le.numc) then
-		c(nrcurrent,nc) = token
-	   read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
-		if (ios.ne.0) x(nrcurrent,nc) = 0
-	  else
-		write (logerr,*) 'Array exceeded (readcsv), r,c=',nrcurrent,nc
-		ierror = 207
-		return
-	  end if
-	  go to 30
-	end if
-	nc = nc + 1
-	maxc=max(maxc,nc)
-	token = in(ic:ic+100)
-	c(nrcurrent,nc) = token
-	read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
-	if (ios.ne.0) x(nrcurrent,nc) = 0
-	go to 20
+30    icomma=index(in,',')
+      if (icomma.ne.0) then
+          if (icomma.eq.ic) then
+              token=' '
+          else
+              token=in(ic:icomma-1)
+          end if
+          ic = icomma+1
+          nc = nc + 1
+          in(1:ic-1)=' '
+          if (nrcurrent.le.numr.and.nc.le.numc) then
+              c(nrcurrent,nc) = token
+              read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
+              if (ios.ne.0) x(nrcurrent,nc) = 0
+          else
+              write (logerr,*) 'Array exceeded (readcsv), r,c=',nrcurrent,nc
+              ierror = 207
+              return
+          end if
+          go to 30
+      end if
+      nc = nc + 1
+      maxc=max(maxc,nc)
+      token = in(ic:ic+100)
+      c(nrcurrent,nc) = token
+      read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
+      if (ios.ne.0) x(nrcurrent,nc) = 0
+      go to 20
 
 100   continue
-	
+
       return
       end
 
       integer function rev_input
-          
+
       INTEGER :: MODULE_REV
       CHARACTER(255) :: MODULE_DATE 
       CHARACTER(255), PARAMETER :: 
-     * mainrev='$Revision$'
+     *mainrev='$Revision$'
       CHARACTER(255), PARAMETER :: 
-     * maindate='$Date$'
-      
+     *maindate='$Date$'
+
       WRITE(module_date,'(A)') 
-     *    mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
+     *mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
       READ (MODULE_DATE,'(I5)') MODULE_REV
       rev_input = module_rev
       WRITE(MODULE_DATE,'(A)') maindate

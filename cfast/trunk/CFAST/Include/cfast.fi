@@ -79,7 +79,7 @@ C
       LOGICAL ACTIVS(NS), SWITCH(NWAL,NR), MVCALC, OBJON(0:MXOIN),
      +    CJETON(NWAL+1), heatfl
 
-      COMMON /MOCO1A/ GAMMA,G,SIGM,CP,TA,RA,PREF,RGAS,POFSET,
+      COMMON /CFASTN/ GAMMA,G,SIGM,CP,TA,RA,PREF,RGAS,POFSET,
      .    PA,TREF,SAL,SAL2,SS1,SS2,SA1,SA2,AS1,AS2,AA1,AA2,SAU1,SAU2,
      .    ASL1,ASL2,MINMAS,QF,QR,QC,HEATUP,
      .    HEATLP,HEATVF,EMP,EMS,EME,APS,VVAREA,QRADRL,HCOMBA,HVDELT,
@@ -95,7 +95,8 @@ C
      .    OBJMA1,OPLUME,HMFNET,FPOS,HCNF,HCLF,FEMP,FEMS,FQF,FQFC,FQLOW,
      .    FQUPR,FAREA,FQDJ,XDTECT,QSPRAY,VMFLO,XXTARG,XFIRE,RDQOUT,
      .    CXABS,CYABS,radconsplit,heatfp,qcvh,qcvv,qcvm,heatfq,
-     .    qcvpp,fopos,qcvf,TERMXX,
+     .    qcvpp,fopos,qcvf,tradio, femr, radio, objmaspy, hveflot,
+     .    tracet,traces,TERMXX,
      .    NEUTRAL,NLSPCT,IVERS,LFMAX, NUMNODE,NSLB,HVORIEN,
      .    LFBO,LFBT,SWITCH,NOPMX,NRFLOW,LPRINT,NSMAX,LDIAGP,
      .    LDIAGO,ITMMAX,IDIAG,NM1,N,N2,N3,N4,ITMSTP,ACTIVS,
@@ -105,13 +106,9 @@ C
      .    NOFSETS,FROOM,NUMOBJL,IXDTECT,IQUENCH,IDTPNT,NDTECT, IDSET,
      .    IXTARG,NTARG,NFIRE,IFROOM,IFRPNT,IBRD,IPNTFSM,IJK,
      .    NVENTIJK,NFOPT,VFACE,heatfl,heatfr,fplume,nfilter,ITERMXX
-      SAVE /MOCO1A/
+      SAVE /CFASTN/
 
       CHARACTER TITLE*128, compartmentnames(nr)*128
 
-      COMMON /MOCO1B/ TITLE, compartmentnames
-      SAVE /MOCO1B/
-      
-      common /moco1c/ tradio, femr, radio, objmaspy, hveflot,tracet,
-     . traces
-      save /moco1c/
+      COMMON /CFASTC/ TITLE, compartmentnames
+      SAVE /CFASTC/

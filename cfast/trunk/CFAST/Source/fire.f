@@ -701,7 +701,7 @@ c
       qj = 0.001d0 * q
       z0 = -1.02d0 * od + 0.083d0 * qj**0.4
       deltaz = max(0.0001d0, z-z0)
-      eme = 0.071 * qj**0.333 * deltaz**1.67 * (1+0.026d0*qj**0.67
+      eme = 0.071 * qj**0.333 * deltaz**1.67 * (1.0d0+0.026d0*qj**0.67
      .* deltaz**(-1.67))
       ems = emp + eme    
 

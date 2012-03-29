@@ -369,8 +369,8 @@
       ! check interior nodes
       do i = 1, nnode
           if (ncnode(i).lt.1.or.ncnode(i).gt.mcon) then
-              call xerror('hvinit - interior node has too many ',
-     .        'or too few connections',0,1,1)
+              call xerror('hvinit - interior node has too many or too fe
+     .w connections',0,1,1)
               ierror = 223
               return
           end if

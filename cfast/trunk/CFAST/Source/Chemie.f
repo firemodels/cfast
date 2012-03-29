@@ -38,20 +38,21 @@
       implicit none
       integer, intent(in) :: source_room, activated_room,
      . activated_sprinkler
-      real(kind=8), intent(in) :: pyrolysis_rate, molar_mass,
+      double precision, intent(in) :: pyrolysis_rate, molar_mass,
      . entrainment_rate, h_c, y_soot, y_co, y_trace, 
      . n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit,
      . activated_time, activated_rate, model_time
-      real(kind=8), intent(out) :: hrr_constrained, hrr_at_activation, 
+      double precision, intent(out) :: hrr_constrained, 
+     . hrr_at_activation, 
      . pyrolysis_rate_constrained, species_rates(:)
       
       logical :: first=.TRUE.
-      real(kind=8) :: o2f, o2fi, o2_entrained, o2_factor, o2_available,
-     . quenching_factor
-      real(kind=8) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl, 
+      double precision :: o2f, o2fi, o2_entrained, o2_factor, 
+     . o2_available, quenching_factor
+      double precision :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,
      . nu_hcn
-      real(kind=8) net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, 
-     . net_hcn, net_fuel, net_trace
+      double precision :: net_o2, net_co2, net_h2o, net_co, net_soot, 
+     . net_hcl, net_hcn, net_fuel, net_ct, net_trace
       
       if (first) then
           o2f = 1.31d+7
@@ -109,6 +110,7 @@
       net_hcl = pyrolysis_rate_constrained*nu_hcl*0.036458d0/molar_mass
       net_hcn = pyrolysis_rate_constrained*nu_hcn*0.027028d0/molar_mass
       net_soot = pyrolysis_rate_constrained*nu_soot*0.01201d0/molar_mass
+      net_ct = pyrolysis_rate_constrained
       net_trace = pyrolysis_rate_constrained * y_trace
       
       ! need to see where cfast does hcl, hcn, and trace and make sure it's only done here, i think
@@ -120,6 +122,7 @@
       species_rates(7) = net_fuel
       species_rates(8) = net_h2o
       species_rates(9) = net_soot
+      species_rates(10) = net_ct
       species_rates(11) = net_trace
 
       end subroutine chemie 

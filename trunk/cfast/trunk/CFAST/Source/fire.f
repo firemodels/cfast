@@ -40,6 +40,7 @@
       dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
       dimension xxfire(1), yyfire(1), zzfire(1), zzloc(1)
       dimension ftemp(1), fvel(1)
+      double precision n_C,n_H,n_O,n_N,n_Cl
       integer cjetopt
       integer update
 
@@ -65,9 +66,12 @@
           if (objpnt(i)>0) then
               iroom = objrm(i)
               iobj = objpnt(i)
-              call pyrols(i,tsec,iroom,omasst,oareat,hf0t,
-     +        qpyrol,hcombt,cco2t,coco2t,hcratt,mfiret,ocratt,
-     +        clfrat,cnfrat,crfrat,update)
+              call pyrols(i,tsec,iroom,omasst,oareat,ohight,
+     +        oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,
+     +        y_soot,y_co,y_trace)
+!              call pyrols(i,tsec,iroom,omasst,oareat,hf0t,
+!     +        qpyrol,hcombt,cco2t,coco2t,hcratt,mfiret,ocratt,
+!     +        clfrat,cnfrat,crfrat,update)
               oplume(1,iobj) = omasst
 
               do lsp = 1, ns
@@ -76,10 +80,10 @@
               end do
 
               call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),
-     +        dr(iroom),hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,
-     +        crfrat,mfiret,stmass,objpos(1,iobj),objpos(2,iobj),
-     +        objpos(3,iobj)+hf0t,oplume(2,iobj),oplume(3,iobj),qpyrol,
-     +        xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),
+     +        dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,
+     +        objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),
+     +        objpos(3,iobj)+ohight,oplume(2,iobj),oplume(3,iobj),
+     +        oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),
      +        heatup(iroom),objclen(i))
 
               ! sum the flows for return to the source routine
@@ -106,7 +110,7 @@
               ifroom(nfire) = iroom
               xfire(nfire,1) = objpos(1,iobj)
               xfire(nfire,2) = objpos(2,iobj)
-              xfire(nfire,3) = objpos(3,iobj) + hf0t
+              xfire(nfire,3) = objpos(3,iobj) + ohight
               xfire(nfire,4) = oplume(3,iobj)
               xfire(nfire,5) = oplume(1,iobj)
               xfire(nfire,6) = oplume(2,iobj)
@@ -144,8 +148,8 @@
       return
       end
 
-      subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,cco2t,
-     .coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,xmfir,stmass,
+      subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,
+     . y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,
      .xfx,xfy,xfz,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup,
      .objectsize)
 
@@ -169,7 +173,6 @@
 !                clfrat  - current hcl production rate (kg/kg pyrolized)
 !                cnfrat  - current hcn production rate (kg/kg pyrolized)
 !                crfrat  - current trace species production rate (kg/kg pyrolized)
-!                xmfir   - production rate of a species in fire (kg/s)
 !                stmass   - mass of a species in a layer in the room (kg)
 !                xfx     - position of the fire in x direction
 !                xfy     - position of the fire in y direction
@@ -186,12 +189,14 @@
 !                xqup    - heat release rate in the upper plume (w)
 !
 
+      use interfaces
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "fireptrs.fi"
 
-      dimension xmfir(ns), xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
+      dimension xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
+      double precision n_C,n_H,n_O,n_N,n_Cl,mol_mass
 
       x1 = 1.0d0
       x0 = 0.0d0
@@ -221,15 +226,6 @@
           xntms(lower,lsp) = x0
           xmass(lsp) = x0
       end do
-
-      ! Deposit pyrolysis material into the upper layer. These are the species which are not affected by combustion.
-      ! Any combustion related stuff is done by chemie. TUHC is a pyrolysis material whose concentration can be 
-      ! modified by combustion.
-      xntms(upper,5) = xmfir(5)
-      xntms(upper,6) = xmfir(6)
-      xntms(upper,7) = xmfir(7)
-      xntms(upper,10)= xmfir(10)
-      xntms(upper,11) = xmfir(11)
 
       ! now do the kinetics scheme
 
@@ -261,10 +257,24 @@
               if (xxfirel<=x0) go to 90
               xeme = min(xeme,qheatl/(max((xtu-xtl),x1)*cp))
               xems = xemp + xeme
+              
+              source_o2 = zzcspec(iroom,lower,2)
+              if (iquench(iroom)>0) then
+                  activated_time = xdtect(iquench(iroom),dtact)
+                  activated_rate = xdtect(iquench(source),drate)
+              else
+                  activated_time = 0
+                  activated_rate = 0.0
+              end if
+              call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,
+     .         y_trace,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
+     .         iquench(iroom),activated_time,
+     .        activated_rate,stime,qspray(ifire,lower),
+     .        xqpyrl,xntfl,xmass) 
 
-              call chemie(qspray(ifire,lower),xemp,xeme,iroom,lower,
-     .        hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
-     .        xqpyrl,xntfl,xmass)
+!              call chemie(qspray(ifire,lower),xemp,xeme,iroom,lower,
+!     .        hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
+!     .        xqpyrl,xntfl,xmass)
 
               ! limit the amount entrained to that actually entrained by the
               ! fuel burned
@@ -315,6 +325,7 @@
    90     xqup = 0.0d0
           uplmep = max(x0,xemp-xntfl)
 
+          uplmep=x0 ! just for debugging of new chemie insertion
           if (uplmep>x0) then
               qheatu = hcombt * uplmep + qheatl
               height = max (x0, min(xz,xxfireu))
@@ -323,9 +334,9 @@
      .        qheatu,height,uplmep,uplmes,uplmee,
      .        min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
-              call chemie(qspray(ifire,upper),uplmep,uplmee,iroom,upper,
-     .        hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
-     .        xqpyrl,xntfl,xmass)
+              !call chemie(qspray(ifire,upper),uplmep,uplmee,iroom,upper,
+     .        !hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
+     .        !xqpyrl,xntfl,xmass)
               xqfr = xqpyrl * chirad + xqfr
               xqfc(upper) = xqpyrl * (x1-chirad) + xqfc(upper)
               xqup = xqpyrl
@@ -339,37 +350,25 @@
       return
       end
 
-      subroutine pyrols (objn, time, iroom, omasst, oareat, 
-     .ohight, oqdott, objhct, cco2t, coco2t, hcratt, zmfire, ocratt,
-     .clfrat, cnfrat,crfrat,update)
+      subroutine pyrols (objn,time,iroom,omasst,oareat,ohight,
+     +        oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,
+     +        y_soot,y_co,y_trace)
 
-!     routine:     pyrols
-
-!     description:  returns yields for object fires interpolated from user input  
-
-!     arguments: objn   the object pointer number, 
-!                time   current simulation time (s)
-!                iroom  room object is in
-!                flux   the normal radiative flux to the object
-!                surft  surfice temp of object
-!                omasst pyrolysis rate of object (returned)
-!                oareat area of pyrolysis of object (returned)
-!                ohight height of fire (returned)
-!                oqdott heat release rate of object
-!                objhct object heat of combustion
-!                cco2t  carbon to co2 ratio
-!                coco2t co to co2 ration
-!                hcratt hydrogen to carbon ratio of fuel
-!                zmfire 
-!                ocratt oxygen to carbon ration of fuel
-!                clfrat hcl production rate
-!                cnfrat hcn production rate
-!                crfrat trace gase production rate
-!                update update varible
-!
-
-c     pyrolysis rate of the fuel - hcratt is in common (params.inc) since
-c     it is used in several places
+      
+!     routine: chemie
+!     purpose: returns yields for object fires interpolated from user input  
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  objn: the object pointer number, 
+!                 time: current simulation time (s)
+!                 iroom: room contining the object
+!                 omasst (output): pyrolysis rate of object (returned)
+!                 oareat (output): area of pyrolysis of object (returned)
+!                 ohight (output): height of fire (returned)
+!                 oqdott (output): heat release rate of object
+!                 objhct (output): object heat of combustion
+!                 n_C, n_H, n_O, n_N, n_Cl (output): molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
+!                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
       include "precis.fi"
       include "cfast.fi"
@@ -379,27 +378,24 @@ c     it is used in several places
       include "objects1.fi"
       include "objects2.fi"
 
-      dimension zmfire(ns)
-      integer objn, update
+      integer objn
+      double precision n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace
 
-      onethrd = 0.3333d0
       if (.not.objon(objn).or.objset(objn).gt.0) then
           xx0 = 0.0d0
           omasst = xx0
           oareat = xx0
           ohight = xx0
           oqdott = xx0
-          hcratt = xx0
-          cco2t = xx0
-          coco2t = xx0
-          ocratt = xx0
+          n_C = 1.0d0
+          n_H = 4.0d0
+          n_O = 0.0d0
+          n_N = 0.0d0
+          n_Cl = 0.0d0
           objhct = 5.0d7
-          do j = 1, ns
-              zmfire(j) = xx0
-          end do
-          clfrat = xx0
-          cnfrat = xx0
-          crfrat = xx0
+          y_soot = 0.0d0
+          y_co = 0.0d0
+          y_trace = 0.0d0
           return
       endif
 
@@ -410,68 +406,52 @@ c     it is used in several places
 
       if(id==0)then
 
-!	if a sprinkler is not active then interpolate at current time
-
+          ! if a sprinkler is not active then interpolate at current time
           ifact = 0
       else
-c
-c*** if a sprinkler is active then interpolate at current time
-c    and when sprinkler first activated.  make sure that specified
-c    heat release rate is the smaller of rate at current time
-c    and rate at sprinkler activation time * exp( ...) 
-c
+
+          ! if a sprinkler is active then interpolate at current time
+          ! and when sprinkler first activated.  make sure that specified
+          ! heat release rate is the smaller of rate at current time
+          ! and rate at sprinkler activation time * exp( ...) 
           tdrate = xdtect(id,drate)
           xxtimef = xdtect(id,dtact) - objcri(1,objn)
-          call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,
-     .    qt)
-          call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,
-     .    qtf)
+          call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,qt)
+          call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,qtf)
           ifact = 1
           tfact = exp(-(xxtime-xxtimef)/tdrate)
           if(qt<tfact*qtf)then
-c
-c*** current time heat release rate is smaller than sprinklerd value
-c    so use current time and reset ifact to 0 so rates are not 
-c    decreased
-c
+
+              ! current time heat release rate is smaller than sprinklerd value
+              ! so use current time and reset ifact to 0 so rates are not 
+              ! decreased
               ifact = 0
           else
               xxtime = xxtimef
           endif
       endif
 
-      call interp(otime(1,objn),omass(1,objn),lobjlfm,xxtime,1,
-     .omasst)
-      call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,
-     .oqdott)
-      call interp(otime(1,objn),omprodr(1,6,objn),lobjlfm,xxtime,1,
-     +clfrat)
-      call interp(otime(1,objn),omprodr(1,5,objn),lobjlfm,xxtime,1,
-     +cnfrat)
+      call interp(otime(1,objn),omass(1,objn),lobjlfm,xxtime,1,omasst)
+      call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,oqdott)
+      call interp(otime(1,objn),objhc(1,objn),lobjlfm,xxtime,1,objhct)
+      call interp(otime(1,objn),ood(1,objn),lobjlfm,xxtime,1,y_soot)
+      call interp(otime(1,objn),oco(1,iobj),lobjlfm,xxtime,1,y_co)
       call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,
-     +crfrat)
-
-!     attenuate mass and energy release rates if there is an active sprinkler in this room
+     .y_trace)
+      call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,oareat)
+      call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,ohight)
+      
+      n_C = obj_C(objn)
+      n_H = obj_H(objn)
+      n_O = obj_O(objn)
+      n_N = obj_N(objn)
+      n_Cl = obj_Cl(objn)
+      
+    ! attenuate mass and energy release rates if there is an active sprinkler in this room
       if(id/=0.and.ifact==1)then
           omasst = omasst*tfact
           oqdott = oqdott*tfact
       endif
-      call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,
-     .oareat)
-      call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,
-     .ohight)
-
-      call interp(otime(1,objn),ohcr(1,objn),lobjlfm,xxtime,1,hcratt)
-      hcratt = min (onethrd, hcratt)
-      call interp(otime(1,objn),ood(1,objn),lobjlfm,xxtime,1,cco2t)
-      call interp(otime(1,objn),oco(1,objn),lobjlfm,xxtime,1,coco2t)
-      call interp(otime(1,objn),ooc(1,objn),lobjlfm,xxtime,1,ocratt)
-      call interp(otime(1,objn),objhc(1,objn),lobjlfm,xxtime,1,objhct)
-      do j = 1, ns
-          call interp(otime(1,objn),omprodr(1,j,objn),lobjlfm,
-     .    xxtime,1,xprod)
-          zmfire(j) = xprod * omasst
-      end do
 
       return
       end subroutine pyrols
@@ -844,6 +824,7 @@ C
 C     WE ONLY WNAT TO DO THE DOOR JET CALCULATION IF THERE IS FUEL,
 C     OXYGEN, AND SUFFICIENT TEMPERATURE IN THE DOOR JET
 C
+      xxnetfl=x0 ! just for debugging new chemie insertion
       IF (XXNETFL>X0.AND.SAS>X0.AND.TJET>=TGIGNT) THEN
 C
 C     DO COMBUSTION CHEMISTRY ASSUMING COMPLETE COMVERSION TO CO2 & H2O.
@@ -855,8 +836,8 @@ C
           DO 10 i = 1, NS
               XMASS(i) = X0
    10     CONTINUE
-          CALL CHEMIE(DUMMY,XXNETFL,SAS,ITO,LOWER,HCOMBT,X0,X0,X0,X0,X0,
-     +    X0,x0,QPYROL,XXNETFUE,XMASS)
+          !CALL CHEMIE(DUMMY,XXNETFL,SAS,ITO,LOWER,HCOMBT,X0,X0,X0,X0,X0,
+     +    !X0,x0,QPYROL,XXNETFUE,XMASS)
           DO 20 I = 1, NS
               XNTMS(UPPER,I) = XMASS(I)
               XNTMS(LOWER,I) = X0
@@ -1255,7 +1236,7 @@ C	Now the other objects
 
       data hcmax /1.0D8/, hcmin /1.0D+6/
 
-      do 600 i = 1, maxint
+      do i = 1, maxint
           if(i>1) then
               if (mdot(i)*qdot(i)<=0.d0) then
                   hdot(i) = hinitial
@@ -1266,7 +1247,7 @@ C	Now the other objects
           else
               hdot(1) = hinitial
           endif
-  600 continue
+      end do
 
       return
       end subroutine sethoc

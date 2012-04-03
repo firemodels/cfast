@@ -533,6 +533,7 @@ C     Natural flow through vertical vents (horizontal flow)
       include "objects1.fi"
       include "vents.fi"
       
+      logical lmode
       ! local variables     
       parameter (maxhead = 1+6*nr+5+2*mxfire)
       character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent,

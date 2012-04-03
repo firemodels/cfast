@@ -82,9 +82,9 @@
               call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),
      +        dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,
      +        objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),
-     +        objpos(3,iobj)+ohight,oplume(2,iobj),oplume(3,iobj),
-     +        oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),
-     +        heatup(iroom),objclen(i))
+     +        objpos(3,iobj)+ohight,objclen(i),oplume(2,iobj),
+     +        oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),
+     +        xqfr,heatlp(iroom),heatup(iroom))
 
               ! sum the flows for return to the source routine
               xtl = zztemp(iroom,lower)
@@ -150,8 +150,8 @@
 
       subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,
      . y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,
-     .xfx,xfy,xfz,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup,
-     .objectsize)
+     .xfx,xfy,xfz,objectsize,
+     .xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
 
 
 !     routine: dofire
@@ -160,34 +160,30 @@
 !         is from pyrols ; plume to ul is done below. combustion kinetics applies to o2, co2, co, od - chemie
 !     revision: $revision: 352 $
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-!     arguments: ifire   - fire number (ifire=0 is the main fire)
-!                iroom   - room containing the fire
-!                xemp    - pyrolysis rate of the fire (kg/s)
-!                xhr     - height of the room (m)
-!                xbr     - breadth of the room (m)
-!                hcombt  - current heat of combustion (j/kg)
-!                cco2t   - current carbon/co2 production ratio (kg/kg)
-!                coco2t  - current co/co2 production ratio (kg/kg)
-!                hcratt  - current hydrogen/carbon ratio in fuel (kg/kg)
-!                ocratt  - current oxygen/carbon ratio in fuel (kg/kg)
-!                clfrat  - current hcl production rate (kg/kg pyrolized)
-!                cnfrat  - current hcn production rate (kg/kg pyrolized)
-!                crfrat  - current trace species production rate (kg/kg pyrolized)
-!                stmass   - mass of a species in a layer in the room (kg)
-!                xfx     - position of the fire in x direction
-!                xfy     - position of the fire in y direction
-!                xfz     - position of the fire in z direction
-!                objectsize - characteristic object diameter for plume models
-!     outputs:   xeme    - plume entrainment rate (kg/s)
-!                xems    - plume flow rate into the upper layer (kg/s)
-!                xqpyrl  - actual heat release rate of the fire (w)
-!                xntms   - net change in mass of a species in a layer
-!                xqf     - net heat generation rate into upper layer (w)
-!                xqfc    - net convection into layers (w)
-!                xqfr    - net radiation from fire (w)
-!                xqlp    - heat release in the lower plume (w)
-!                xqup    - heat release rate in the upper plume (w)
-!
+!     arguments:  ifire: fire number (ifire=0 is the main fire)
+!                 iroom: room containing the fire
+!                 xemp: pyrolysis rate of the fire (kg/s)
+!                 xhr: height of the room (m)
+!                 xbr: breadth of the room (m)
+!                 xdr: Depth of the room (m)
+!                 hcombt  - current heat of combustion (j/kg)
+!                 y_soot, y_co, y_trace: species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
+!                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
+!                 molar_mass: molar mass of the fuel (kg/mol)
+!                 stmass: mass of a species in a layer in the room (kg)
+!                 xfx: position of the fire in x direction
+!                 xfy: position of the fire in y direction
+!                 xfz: position of the fire in z direction
+!                 objectsize: characteristic object diameter for plume models
+!                 xeme (output): plume entrainment rate (kg/s)
+!                 xems (output): plume flow rate into the upper layer (kg/s)
+!                 xqpyrl (output): actual heat release rate of the fire (w)
+!                 xntms (output): net change in mass of a species in a layer
+!                 xqf (output): net heat generation rate into upper layer (w)
+!                 xqfc (output): net convection into layers (w)
+!                 xqfr (output): net radiation from fire (w)
+!                 xqlp (output): heat release in the lower plume (w)
+!                 xqup (output): heat release rate in the upper plume (w)
 
       use interfaces
       include "precis.fi"
@@ -267,14 +263,10 @@
                   activated_rate = 0.0
               end if
               call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,
-     .         y_trace,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
-     .         iquench(iroom),activated_time,
+     .        y_trace,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
+     .        iquench(iroom),activated_time,
      .        activated_rate,stime,qspray(ifire,lower),
      .        xqpyrl,xntfl,xmass) 
-
-!              call chemie(qspray(ifire,lower),xemp,xeme,iroom,lower,
-!     .        hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,
-!     .        xqpyrl,xntfl,xmass)
 
               ! limit the amount entrained to that actually entrained by the
               ! fuel burned
@@ -325,7 +317,6 @@
    90     xqup = 0.0d0
           uplmep = max(x0,xemp-xntfl)
 
-          uplmep=x0 ! just for debugging of new chemie insertion
           if (uplmep>x0) then
               qheatu = hcombt * uplmep + qheatl
               height = max (x0, min(xz,xxfireu))
@@ -333,6 +324,13 @@
               call firplm(fplume(ifire), ifire, objectsize,
      .        qheatu,height,uplmep,uplmes,uplmee,
      .        min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+              
+              source_o2 = zzcspec(iroom,upper,2)
+              call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,
+     .        y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
+     .        iquench(iroom),activated_time,
+     .        activated_rate,stime,qspray(ifire,upper),
+     .        xqpyrl,xntfl,xmass)
 
               !call chemie(qspray(ifire,upper),uplmep,uplmee,iroom,upper,
      .        !hcombt,cco2t,coco2t,hcratt,ocratt,clfrat,cnfrat,crfrat,

@@ -777,72 +777,59 @@
       return
       end subroutine djet
 
-      SUBROUTINE DJFIRE(ITO,TJET,XXNETFL,SAS,HCOMBT,QPYROL,XNTMS,
-     .DJFLOWFLG)
-C*RB
-C     Routine:  DJFIRE
-C
-C     Function: Calculate heat and combustion chemistry for a door jet
-C               fire.
-C
-C     Inputs:   ITO     Room number door jet is flowing into
-C               TJET    Temperature of the door jet gas
-C               XXNETFL Net fuel available to be burned
-C               SAS     Mass flow rate of entrained air in door jet
-C               HCOMBT  Heat of combustion of unburned fuel
-C     Outputs:  QPYROL  Total heat released by door jet fire
-C               XNTMS   Net change in mass of species in door jet
-C     Commons:
-C        USED:  Activs   Tgignt   Zzgspec  Zzmass
-C
-C     Revision History:
-C     gpf 5/11/98
-C                  Implement fast startup option.  Execute this routine only if this 
-C                  modeling feature is being used (rather than zeroing out 
-C                  the flow vector.)
-C     RDP   4/8/94    moved summing of species production rates from CHEMIE
-C                     to calling routine.
-C     gpf 10/14/93   In DOFIRE, the routine CHEMIE requires info about
-C                    fire size for sprinkler option.  Though a door jet
-C                    fire is not attenuated by sprinklers, the call
-C                    to CHEMIE had to made consistent with call in
-C                    dofire.
-C*RE
+      subroutine djfire(ito,tjet,xxnetfl,sas,hcombt,qpyrol,xntms,
+     .djflowflg)
+
+!     routine: djfire
+!     purpose: calculate heat and combustion chemistry for a door jet fire  
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  ito: room number door jet is flowing into
+!                 tjet: temperature of the door jet gas
+!                 xxnetfl: net fuel available to be burned
+!                 sas: mass flow rate of entrained air in door jet
+!                 hcombt: heat of combustion of unburned fuel
+!                 qpyrol (output): total heat released by door jet fire
+!                 xntms (output): net change in mass of species in door jet
+
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-C
-      DIMENSION XNTMS(2,NS), XMASS(NS)
-      LOGICAL DJFLOWFLG
-C
-      X0 = 0.0D0
-      QPYROL = X0
-      DJFLOWFLG = .FALSE.
-C
-C     WE ONLY WNAT TO DO THE DOOR JET CALCULATION IF THERE IS FUEL,
-C     OXYGEN, AND SUFFICIENT TEMPERATURE IN THE DOOR JET
-C
-      xxnetfl=x0 ! just for debugging new chemie insertion
-      IF (XXNETFL>X0.AND.SAS>X0.AND.TJET>=TGIGNT) THEN
-C
-C     DO COMBUSTION CHEMISTRY ASSUMING COMPLETE COMVERSION TO CO2 & H2O.
-C     ALTHOUGH THE REAL CHEMISTRY IS MORE COMPLEX, FOR NOW WE DON'T KNOW
-C     HOW TO HANDLE IT.
-C
-          DUMMY = -1.0D0
-          DJFLOWFLG = .TRUE.
-          DO 10 i = 1, NS
-              XMASS(i) = X0
-   10     CONTINUE
-          !CALL CHEMIE(DUMMY,XXNETFL,SAS,ITO,LOWER,HCOMBT,X0,X0,X0,X0,X0,
-     +    !X0,x0,QPYROL,XXNETFUE,XMASS)
-          DO 20 I = 1, NS
-              XNTMS(UPPER,I) = XMASS(I)
-              XNTMS(LOWER,I) = X0
-   20     CONTINUE
-      END IF
-      RETURN
-      END
+
+      dimension xntms(2,ns), xmass(ns)
+      logical djflowflg
+
+      x0 = 0.0d0
+      qpyrol = x0
+      djflowflg = .false.
+      
+      ! we only wnat to do the door jet calculation if there is fuel, oxygen, and sufficient temperature in the door jet
+      if (xxnetfl>x0.and.sas>x0.and.tjet>=tgignt) then
+
+          ! do combustion chemistry assuming complete comversion to co2 & h2o.
+          ! although the real chemistry is more complex, for now we don't know
+          ! how to handle it.
+          dummy = -1.0d0
+          djflowflg = .true.
+          do i = 1, ns
+              xmass(i) = x0
+          end do
+          source_o2 = zzcspec(ito,lower,2)
+          mol_mass = 0.01201d0 ! we assume it's just complete combustion of methane
+          qspray = 0.0d0
+          call chemie(xxnetfl,mol_mass,sas,ito,hcombt,0.0d0,0.0d0,
+     .    0.0d0,1.0d0,4.0d0,0.0d0,0.0d0,0.0d0,source_o2,limo2,0,
+     .    0,0.0d0,0.0d0,stime,qspray,
+     .    xqpyrl,xntfl,xmass)
+          !call chemie(dummy,xxnetfl,sas,ito,lower,hcombt,x0,x0,x0,x0,x0,
+     +    !x0,x0,qpyrol,xxnetfue,xmass)
+          do i = 1, ns
+              xntms(upper,i) = xmass(i)
+              xntms(lower,i) = x0
+          end do
+      end if
+      return
+      end
 
       subroutine flamhgt (qdot, area, fheight)
 

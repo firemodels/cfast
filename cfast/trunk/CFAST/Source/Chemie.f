@@ -113,7 +113,7 @@
       net_ct = pyrolysis_rate_constrained
       net_trace = pyrolysis_rate_constrained * y_trace
       
-      ! need to see where cfast does hcl, hcn, and trace and make sure it's only done here, i think
+      ! set mass "generation" rates in the cfast structure for species
       species_rates(2) = net_o2
       species_rates(3) = net_co2
       species_rates(4) = net_co

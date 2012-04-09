@@ -1884,9 +1884,9 @@ c    see which room is on top (if any) - this is like a bubble sort
               obj_o(iobj) = lrarray(3)
               obj_n(iobj) = lrarray(4)
               obj_cl(iobj) = lrarray(5)
-              objgmw(iobj) = (12.0107 * obj_c(iobj) + 
-     .        1.00794 * obj_h(iobj) + 15.9994 * obj_o(iobj) + 
-     .        14.0067 * obj_N(iobj) + 35.453 * obj_cl(iobj)) / 1000.0
+              objgmw(iobj) = (12.01 * obj_c(iobj) + 
+     .        1.008 * obj_h(iobj) + 16.0 * obj_o(iobj) + 
+     .        14.01 * obj_n(iobj) + 35.45 * obj_cl(iobj)) / 1000.0
 
               radconsplit(iobj) = lrarray(6)
               ohcomb = lrarray(7)

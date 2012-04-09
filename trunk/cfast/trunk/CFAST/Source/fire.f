@@ -267,6 +267,17 @@
      .        iquench(iroom),activated_time,
      .        activated_rate,stime,qspray(ifire,lower),
      .        xqpyrl,xntfl,xmass) 
+              if (stime>=100.0d0) then
+                  write (*,'(a,f10.6)') 'O2 = ',xmass(2)*1000.0d0
+                  write (*,'(a,f10.6)') 'CO2 = ',xmass(3)*1000.0d0
+                  write (*,'(a,f10.6)') 'CO = ',xmass(4)*1000.0d0
+                  write (*,'(a,f10.6)') 'HCN = ',xmass(5)*1000.0d0
+                  write (*,'(a,f10.6)') 'HCl = ',xmass(6)*1000.0d0
+                  write (*,'(a,f10.6)') 'fuel = ',xmass(7)*1000.0d0
+                  write (*,'(a,f10.6)') 'H2O = ',xmass(8)*1000.0d0
+                  write (*,'(a,f10.6)') 'soot = ',xmass(9)*1000.0d0
+                  stop
+              end if
 
               ! limit the amount entrained to that actually entrained by the
               ! fuel burned
@@ -433,7 +444,7 @@
       call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,oqdott)
       call interp(otime(1,objn),objhc(1,objn),lobjlfm,xxtime,1,objhct)
       call interp(otime(1,objn),ood(1,objn),lobjlfm,xxtime,1,y_soot)
-      call interp(otime(1,objn),oco(1,iobj),lobjlfm,xxtime,1,y_co)
+      call interp(otime(1,objn),oco(1,objn),lobjlfm,xxtime,1,y_co)
       call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,
      .y_trace)
       call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,oareat)
@@ -792,6 +803,7 @@
 !                 qpyrol (output): total heat released by door jet fire
 !                 xntms (output): net change in mass of species in door jet
 
+      use interfaces
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -817,9 +829,9 @@
           source_o2 = zzcspec(ito,lower,2)
           mol_mass = 0.01201d0 ! we assume it's just complete combustion of methane
           qspray = 0.0d0
-          call chemie(xxnetfl,mol_mass,sas,ito,hcombt,0.0d0,0.0d0,
+          call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0d0,0.0d0,
      .    0.0d0,1.0d0,4.0d0,0.0d0,0.0d0,0.0d0,source_o2,limo2,0,
-     .    0,0.0d0,0.0d0,stime,qspray,
+     .    0,0.0d0,0.0d0,stime,xxqspray,
      .    xqpyrl,xntfl,xmass)
           !call chemie(dummy,xxnetfl,sas,ito,lower,hcombt,x0,x0,x0,x0,x0,
      +    !x0,x0,qpyrol,xxnetfue,xmass)

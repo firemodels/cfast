@@ -220,39 +220,42 @@ plume, unburned fuel will be transported from zone to zone until there is suffic
 high enough temperature to support combustion. In general, CFAST uses a simple definition of
 a combustion reaction that includes major products of combustion for hydrocarbon fuels:
 
-\be  \mathrm{C_vH_wO_xN_yCl_z} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
-     \nu_\So \, \mathrm{Soot}  + \nu_\NTWO \, \mathrm{N_2} + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee
-where the stoichiometric coefficients $\nu_\OTWO$, $\nu_\COTWO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation and are defined as
+\be  \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
+     \nu_\So \, \mathrm{Soot}  + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee
+assuming that all the nitrogen and chlorine in the fuel are converted to HCN and HCl. The stoichiometric coefficients $\nu_\So$, $\nu_\CO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation and are defined as
 
 \be
    \nu_\So = \frac{M_\F}{M_\So} \; y_\So \label{soot_yield}
 \ee
+\be
+   \nu_\CO = \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield}
+\ee
+which are defined by user input of the yields as appropriate.  Yields of HCN and HCl are defined by assuming complete conversion to HCN and HCl with the same relationships as soot and CO
+
 \be
    \nu_\HCN = \frac{M_\F}{M_\HCN} \; y_\HCN \label{HCN_yield}
 \ee
 \be
    \nu_\HCl = \frac{M_\F}{M_\HCl} \; y_\HCl \label{HCl_yield}
 \ee
-\be
-   \nu_\CO = \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield}
-\ee
-which are defined by user input of the yields as appropriate.  The remaining stoichioimetry falls directly from the chemical balance as
 
+The remaining stoichioimetry falls directly from the chemical balance as
 \be
-  \nu_\HTWOO = \frac{w - \frac{M_\F}{M_\HCl} \; y_\HCl -  \frac{M_\F}{M_\HCN} \; y_\HCN \label{HTWOO_yield}}{2}
+  \nu_\COTWO = \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So}
 \ee
-
 \be
-  \nu_\COTWO = v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN -\frac{M_\F}{M_\So} \; y_\So
+  \nu_\HTWOO = \frac{\mathrm{n_\Hy} - \nu_\HCl+\nu_\HCN}{2}
 \ee
 
-\begin{eqnarray} \nu_\OTWO &=& \nu_\COTWO + \frac{\nu_\HTWOO}{2} + \frac{\nu_\CO}{2} - \frac{x}{2}  \nonumber \\
- &=& \brackets{v - \frac{M_\F}{M_\CO} \; y_\CO - \frac{M_\F}{M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \brackets{\frac{w}{4} - \frac{M_\F}{2 M_\HCl} \; y_\HCl -  \frac{M_\F}{2 M_\HCN} \; y_\HCN} + \brackets{\frac{M_\F}{2 M_\CO} \; y_\CO} - \frac{x}{2} \nonumber \\
- &=& \brackets{v - \frac{M_\F}{2 M_\CO} \; y_\CO - \frac{M_\F}{2 M_\HCl} \; y_\HCl - \frac{3 M_\F}{2 M_\HCN} \; y_\HCN - \frac{M_\F}{M_\So} \; y_\So} + \frac{w}{4} - \frac{x}{2}
+\begin{eqnarray} \nu_\OTWO &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO - \mathrm{n_\N}}{2} \label{Oxygen_yield} \\
+ &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So}+\frac{\nu_\CO}{2}+\frac{\mathrm{n_\Hy} - \nu_\HCl+\nu_\HCN}{4}-\frac{\mathrm{n_\Oh}}{2} \\
+ &=& \frac{4 \mathrm{n_\C+n_\Hy}}{4}-\frac{\mathrm{n_\Oh}}{2}-\brackets{\frac{2 \nu_\So-\nu_\CO}{2}+\frac{5 \nu_\HCN+\nu_\HCl}{4}}\\
+ &=& \frac{4 \mathrm{n_\C+n_\Hy}}{4}-\frac{\mathrm{2 n_\Oh+5 n_\N+n_\Cl}}{4}-\brackets{\nu_\So+\frac{\nu_\CO}{2}} \label{Oxygen_yield_2}
 \end{eqnarray}
+The simpler eq. \ref{Oxygen_yield} is used in the code, but the latter equations allow more direct examination of the impact of individual species on the oxygen consumption and are useful to understand the limits of the individual inputs. Again, it is useful to note that eq. \ref{Oxygen_yield_2} assumes complete conversion of the nitrogen and chlorine in the fuel to HCN and HCl, respectively. For incomplete conversion, an effective chemical formula can be used.
 
 For complete combustion of the simplest hydrocarbon fuel, methane reacts with
-oxygen to form carbon dioxide and water. The only input required is the pyrolysis rate and the
+oxygen to form carbon dioxide and water. The only input required is the heat release rate and the
 heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes
 more complex. In this case, production yields for the species are prescribed by the user.
 Stoichiometry is used to insure conservation of mass and elements in the reaction. The species

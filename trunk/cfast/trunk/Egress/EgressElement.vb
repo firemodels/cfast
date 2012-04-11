@@ -1,5 +1,4 @@
 Imports System.IO
-
 ' Types of single Egress elements
 Public Class EgressElement
     'Implements Matricies.ScalorFunction
@@ -44,6 +43,7 @@ Public Class EgressElement
     Protected err As ErrorHandler
     Protected ready As Boolean
     Protected valid As Boolean = True
+    Protected stime As Double
     ' varibles for pde solution
     Protected K(,,) As Double
     Protected wenter() As Double
@@ -489,10 +489,11 @@ Public Class EgressElement
 
     End Sub
 
-    Sub New(ByVal numConnect As Integer, ByVal mrgType As Integer, ByVal length As Double, ByVal wide As Double, ByVal widthtype As Integer, ByVal maxfin As Double, ByVal tmpangle As Double)
+    Sub New(ByVal numConnect As Integer, ByVal mrgType As Integer, ByVal length As Double, ByVal wide As Double, ByVal widthtype As Integer, ByVal maxfin As Double, ByVal tmpangle As Double, ByVal stime As Double)
 
         Me.ready = False
         Me.errCode = ErrCodeNums.NoErrors
+        Me.stime = stime
         Me.validPos(Me.numConnections, numConnect)
         Me.validPos(Me.l, length)
         If mrgType >= 0 And mrgType < MergeType.MaxMergeTypes Then
@@ -587,8 +588,20 @@ Public Class EgressElement
         Next
     End Sub
 
+    Sub New(ByVal numConnect As Integer, ByVal mrgType As Integer, ByVal length As Double, ByVal wide As Double, ByVal widthtype As Integer, ByVal maxfin As Double, ByVal tmpangle As Double)
+
+        Me.New(numConnect, mrgType, length, wide, widthtype, maxfin, tmpangle, 0.0)
+
+    End Sub
+
     Sub New(ByVal numConnect As Integer, ByVal mrgType As Integer, ByVal length As Double, ByVal wide As Double, ByVal widthtype As Integer, ByVal maxfin() As Double, ByVal tmpangle As Double)
-        Me.new(numConnect, mrgType, length, wide, widthtype, maxfin(0), tmpangle)
+
+        Me.New(numConnect, mrgType, length, wide, widthtype, maxfin, tmpangle, 0.0)
+
+    End Sub
+
+    Sub New(ByVal numConnect As Integer, ByVal mrgType As Integer, ByVal length As Double, ByVal wide As Double, ByVal widthtype As Integer, ByVal maxfin() As Double, ByVal tmpangle As Double, ByVal stime As Double)
+        Me.new(numConnect, mrgType, length, wide, widthtype, maxfin(0), tmpangle, stime)
         If Me.valid Then
             Dim iend As Integer = maxfin.GetUpperBound(0)
             If Me.numConnections = maxfin.GetUpperBound(0) + 1 Then
@@ -603,7 +616,7 @@ Public Class EgressElement
     End Sub
 
     Sub New(ByVal length As Double, ByVal wide As Double, ByVal widthtype As Integer, ByVal maxfin As Double)
-        Me.New(1, MergeType.Interleve, length, wide, widthtype, maxfin, 0.0)
+        Me.New(1, MergeType.Interleve, length, wide, widthtype, maxfin, 0.0, 0.0)
     End Sub
 
     Sub New()
@@ -1270,7 +1283,7 @@ Public Class EgressElement
         Return ((1 - d1 / Me.dmax) * d0 + (1 + d1 / Me.dmax) * d1) / 2.0
     End Function
 
-    Public Overridable Function RK4step0(ByVal dt As Double) As Boolean
+    Public Overridable Function RK4step0(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim istep As Integer = 0
         If Not Me.RKstep Then
@@ -1305,7 +1318,7 @@ Public Class EgressElement
     End Function
 
 
-    Public Overridable Function RK4step1or2(ByVal istep As Integer, ByVal dt As Double) As Boolean
+    Public Overridable Function RK4step1or2(ByVal istep As Integer, ByVal curtime As Double, ByVal dt As Double) As Boolean
         If Me.RKstep Then
             Dim flw As Double = Me.FlowIn(istep)
             Me.kp(istep) = flw
@@ -1336,7 +1349,7 @@ Public Class EgressElement
     End Function
 
 
-    Public Overridable Function RK4step3(ByVal dt As Double) As Boolean
+    Public Overridable Function RK4step3(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Dim istep As Integer = 3
         If Me.RKstep Then
             Dim flw As Double = Me.FlowIn(istep)
@@ -1362,7 +1375,7 @@ Public Class EgressElement
     End Function
 
 
-    Public Overridable Function RK4Complete(ByVal dt As Double) As Boolean
+    Public Overridable Function RK4Complete(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Dim flg As Boolean = False
         Dim pintmp As Double = 0.0
         If Me.RKstep Then
@@ -1832,19 +1845,19 @@ Public Class EgressSink
         End Get
     End Property
 
-    Public Overrides Function RK4step0(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step0(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Return True
     End Function
 
-    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal curtime As Double, ByVal dt As Double) As Boolean
         Return True
     End Function
 
-    Public Overrides Function RK4step3(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step3(ByVal cutime As Double, ByVal dt As Double) As Boolean
         Return True
     End Function
 
-    Public Overrides Function RK4Complete(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4Complete(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Me.pin = Me.TotalEgress - Me.TotalIn
         Return True
     End Function
@@ -2108,9 +2121,25 @@ Public Class EgressSource
             End If
         End Set
     End Property
+    Public Property Delay() As Double
+        Get
+            Return Me.stime
+        End Get
+        Set(ByVal value As Double)
+            If value >= 0.0 Then
+                Me.stime = value
+            Else
+                Me.stime = 0.0
+            End If
+        End Set
+    End Property
 
     Public Sub New()
+        Me.New(0.0)
+    End Sub
+    Public Sub New(ByVal delay As Double)
         MyBase.New()
+        Me.Delay = delay
         Me.numConnections = 0
         Me.eqno = 2
         Me.inno = 2
@@ -2242,13 +2271,18 @@ Public Class EgressSource
         Return Me.fout * w0
     End Function
 
-    Public Overrides Function RK4step0(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step0(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Dim istep As Integer = 0
         If Not Me.RKstep Then
             Dim w0 As Double = Me.endElement.EgressEntranceWidth(Me.EgressExitNum - 1)
-            If Me.D(0) > 0.0 Then
-                Me.K(0, istep, 0) = -Me.dmax / 2.0 * Me.sdmax / 2.0 * w0
-                Me.K(1, istep, 0) = 0.0
+            If curtime >= Me.stime Then
+                If Me.D(0) > 0.0 Then
+                    Me.K(0, istep, 0) = -Me.dmax / 2.0 * Me.sdmax / 2.0 * w0
+                    Me.K(1, istep, 0) = 0.0
+                Else
+                    Me.K(0, istep, 0) = 0.0
+                    Me.K(1, istep, 0) = 0.0
+                End If
             Else
                 Me.K(0, istep, 0) = 0.0
                 Me.K(1, istep, 0) = 0.0
@@ -2266,12 +2300,17 @@ Public Class EgressSource
         Return Me.RKstep
     End Function
 
-    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal curtime As Double, ByVal dt As Double) As Boolean
         If Me.RKstep Then
-            Dim w0 As Double = Me.endElement.EgressEntranceWidth(Me.EgressExitNum-1)
-            If Me.Dtmp(istep - 1, 0) > 0.0 Then
-                Me.K(0, istep, 0) = -Me.dmax / 2.0 * Me.sdmax / 2.0 * w0
-                Me.K(1, istep, 0) = 0.0
+            If curtime >= Me.stime Then
+                Dim w0 As Double = Me.endElement.EgressEntranceWidth(Me.EgressExitNum - 1)
+                If Me.Dtmp(istep - 1, 0) > 0.0 Then
+                    Me.K(0, istep, 0) = -Me.dmax / 2.0 * Me.sdmax / 2.0 * w0
+                    Me.K(1, istep, 0) = 0.0
+                Else
+                    Me.K(0, istep, 0) = 0.0
+                    Me.K(1, istep, 0) = 0.0
+                End If
             Else
                 Me.K(0, istep, 0) = 0.0
                 Me.K(1, istep, 0) = 0.0
@@ -2288,13 +2327,18 @@ Public Class EgressSource
         Return Me.RKstep
     End Function
 
-    Public Overrides Function RK4step3(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step3(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Dim istep As Integer = 3
         If Me.RKstep Then
-            Dim w0 As Double = Me.endElement.EgressEntranceWidth(Me.EgressExitNum - 1)
-            If Me.Dtmp(istep - 1, 0) > 0.0 Then
-                Me.K(0, istep, 0) = -Me.dmax / 2.0 * Me.sdmax / 2.0 * w0
-                Me.K(1, istep, 0) = 0.0
+            If curtime >= Me.stime Then
+                Dim w0 As Double = Me.endElement.EgressEntranceWidth(Me.EgressExitNum - 1)
+                If Me.Dtmp(istep - 1, 0) > 0.0 Then
+                    Me.K(0, istep, 0) = -Me.dmax / 2.0 * Me.sdmax / 2.0 * w0
+                    Me.K(1, istep, 0) = 0.0
+                Else
+                    Me.K(0, istep, 0) = 0.0
+                    Me.K(1, istep, 0) = 0.0
+                End If
             Else
                 Me.K(0, istep, 0) = 0.0
                 Me.K(1, istep, 0) = 0.0
@@ -2305,7 +2349,7 @@ Public Class EgressSource
         Return Me.RKstep
     End Function
 
-    Public Overrides Function RK4Complete(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4Complete(ByVal curtime As Double, ByVal dt As Double) As Boolean
         Dim flg As Boolean = True
         If Me.RKstep Then
             Me.D(0) = Me.D(0) + dt / 6.0 * (Me.K(0, 0, 0) + 2.0 * (Me.K(0, 1, 0) + Me.K(0, 2, 0)) + Me.K(0, 3, 0))
@@ -2438,9 +2482,18 @@ Public Class EgressElLobby
         End Get
     End Property
     'End of properites included because Visual Basic errorsz
-    Public Property CallButton As Boolean
+    Public Property CallButton(ByVal curtime As Double) As Boolean
         Get
-            Return Me.cll
+            If curtime >= Me.stime Then
+                If Me.totalPop > 0 Then
+                    Me.cll = True
+                Else
+                    Me.cll = False
+                End If
+                Return Me.cll
+            Else
+                Return False
+            End If
         End Get
         Set(ByVal value As Boolean)
             If Me.totalPop > 0 Then
@@ -2460,8 +2513,13 @@ Public Class EgressElLobby
     End Property
 
     Public Sub New()
+        Me.New(0.0)
+    End Sub
+
+    Public Sub New(ByVal lobbyDelay As Double)
         MyBase.New()
         Me.cll = False
+        Me.Delay = lobbyDelay
     End Sub
 
     Public Overrides Property totalPop As Double
@@ -2919,7 +2977,7 @@ Public Class EgressElevator
         ReDim Me.eqResults(0)
         ReDim Me.inputnum(0)
         ReDim Me.names(0)
-        Me.elName = "Invalid EgressElevator"
+        Me.elName = "Invalide EgressElevator"
         Return
     End Sub
 
@@ -2931,8 +2989,8 @@ Public Class EgressElevator
             Return -1
         End If
         Me.doorIdx = tmpDoorType
-        Return (1 + Me.doorTimes(tmpDoorType, 1)) * 2 * Me.doorTimes(tmpDoorType, 0)
-
+        'Return (1 + Me.doorTimes(tmpDoorType, 1)) * 2 * Me.doorTimes(tmpDoorType, 0)
+        Return (1 + Me.doorTimes(tmpDoorType, 1)) * Me.doorTimes(tmpDoorType, 0)
     End Function
 
     Protected Function CalcFloorTime(ByVal flrIdx As Integer) As Double
@@ -3211,9 +3269,9 @@ Public Class EgressElevator
                 Me.outside.totalPop = Me.outside.totalPop + Me.totalPop
                 Me.totalPop = 0.0
                 For i As Integer = Me.numConnections - 1 To 0 Step -1
-                    If Me.conns(i).CallButton Then
+                    If Me.conns(i).CallButton(curTime) Then
                         Me.evacFlr = i
-                        Me.conns(i).CallButton = False
+                        Me.conns(i).CallButton(curTime) = False
                         Me.timeFlag = Me.timeFlag + Me.tToFlr(Me.conns(i).Floor - 2)
                         Me.ElState = ElStateTypes.TransitUp
                         Return True
@@ -3228,11 +3286,11 @@ Public Class EgressElevator
                 Dim tmp As Double = Math.Min(Me.maxCarCap - Me.totalPop, Me.conns(Me.evacFlr).totalPop)
                 Me.totalPop = Me.totalPop + tmp
                 Me.conns(Me.evacFlr).totalPop = Me.conns(Me.evacFlr).totalPop - tmp
-                Me.conns(Me.evacFlr).CallButton = True
+                Me.conns(Me.evacFlr).CallButton(curTime) = True
                 If Me.totalPop / Me.maxCarCap < Me.fracEl Then
                     For i As Integer = Me.evacFlr - 1 To 0 Step -1
-                        If Me.conns(i).CallButton Then
-                            Me.conns(i).CallButton = False
+                        If Me.conns(i).CallButton(curTime) Then
+                            Me.conns(i).CallButton(curTime) = False
                             Me.timeFlag = Me.timeFlag + Me.tToFlr(Me.conns(Me.evacFlr).Floor - Me.conns(i).Floor - 1)
                             Me.evacFlr = i
                             Me.ElState = ElStateTypes.TransitUp
@@ -3247,10 +3305,10 @@ Public Class EgressElevator
                 Me.timeFlag = Me.timeFlag + Me.KloteUnloadTime(Me.totalPop / Me.numCars)
                 Me.ElState = ElStateTypes.Unloading
             ElseIf Me.ElState = ElStateTypes.ElStandby Then
-                For i As Integer = Me.evacFlr - 1 To 0 Step -1
-                    If Me.conns(i).CallButton Then
-                        Me.conns(i).CallButton = False
-                        Me.timeFlag = Me.timeFlag + Me.tToFlr(Me.conns(Me.evacFlr).Floor - Me.conns(i).Floor - 1)
+                For i As Integer = Me.numConnections - 1 To 0 Step -1
+                    If Me.conns(i).CallButton(curTime) Then
+                        Me.conns(i).CallButton(curTime) = False
+                        Me.timeFlag = Me.timeFlag + Me.tToFlr(Me.conns(i).Floor - 2)
                         Me.evacFlr = i
                         Me.ElState = ElStateTypes.TransitUp
                         Return True
@@ -4585,44 +4643,44 @@ Public Class EgressStair
     End Property
 
 
-    Public Overrides Function RK4step0(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step0(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4step0(dt) Then
+            If Not Me.elements(idx).RK4step0(curtime, dt) Then
                 Return False
             End If
         Next
         Return flg
     End Function
 
-    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4step1or2(istep, dt) Then
+            If Not Me.elements(idx).RK4step1or2(istep, curtime, dt) Then
                 Return False
             End If
         Next
         Return flg
     End Function
 
-    Public Overrides Function RK4step3(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step3(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4step3(dt) Then
+            If Not Me.elements(idx).RK4step3(curtime, dt) Then
                 Return False
             End If
         Next
         Return flg
     End Function
 
-    Public Overrides Function RK4Complete(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4Complete(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4Complete(dt) Then
+            If Not Me.elements(idx).RK4Complete(curtime, dt) Then
                 Return False
             End If
         Next
@@ -5030,10 +5088,23 @@ Public Class EgressStairWay
             Me.Rooms(iflr).totalPop = value
         End Set
     End Property
+    Public Overridable Property RoomDelay(ByVal ifloor As Integer) As Integer
+        Get
+            Dim iflr As Integer = ifloor - Me.baseFloor
+            If iflr < 0 Or iflr >= Me.numFloors Then Return -1
+            Return Me.Rooms(iflr).Delay
+        End Get
+        Set(ByVal value As Integer)
+            If value < 0 Then Return
+            Dim iflr As Integer = ifloor - Me.baseFloor
+            If iflr < 0 Or iflr >= Me.numFloors Then Return
+            Me.Rooms(iflr).Delay = value
+        End Set
+    End Property
 
     Public Sub New(ByVal numFloors As Integer, ByVal numConnect As Integer, ByVal mergeType As Integer, ByVal numFlights As Integer, ByVal rsr As Double, ByVal trd As Double, ByVal numsteps As Integer, _
                      ByVal stairwidth As Double, ByVal landlength As Double, ByVal landwidth As Double, ByVal widthtype As Integer, _
-                     ByVal maxfin As Double, ByVal hallLength As Double, ByVal hallWidth As Double, ByVal hallwidthtype As Integer, ByVal hallmaxfin As Double, ByVal tmpangle As Double)
+                     ByVal maxfin As Double, ByVal hallLength As Double, ByVal hallWidth As Double, ByVal hallwidthtype As Integer, ByVal hallmaxfin As Double, ByVal tmpangle As Double, ByVal delay As Double)
 
         Me.ready = False
         Me.errCode = ErrCodeNums.NoErrors
@@ -5061,7 +5132,7 @@ Public Class EgressStairWay
         Me.eqno = 0
         Me.inno = 0
         For i = Me.numFloors - 1 To 0 Step -1
-            Me.Rooms(i) = New EgressSource()
+            Me.Rooms(i) = New EgressSource(delay)
             Me.eqno = Me.eqno + Me.Rooms(i).NumEqs
             Me.inno = Me.inno + Me.Rooms(i).NumInputs
             Me.elements(elidx) = Me.Rooms(i)
@@ -5300,44 +5371,44 @@ Public Class EgressStairWay
         End Set
     End Property
 
-    Public Overrides Function RK4step0(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step0(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4step0(dt) Then
+            If Not Me.elements(idx).RK4step0(curtime, dt) Then
                 Return False
             End If
         Next
         Return flg
     End Function
 
-    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step1or2(ByVal istep As Integer, ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4step1or2(istep, dt) Then
+            If Not Me.elements(idx).RK4step1or2(istep, curtime, dt) Then
                 Return False
             End If
         Next
         Return flg
     End Function
 
-    Public Overrides Function RK4step3(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4step3(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4step3(dt) Then
+            If Not Me.elements(idx).RK4step3(curtime, dt) Then
                 Return False
             End If
         Next
         Return flg
     End Function
 
-    Public Overrides Function RK4Complete(ByVal dt As Double) As Boolean
+    Public Overrides Function RK4Complete(ByVal curtime As Double, ByVal dt As Double) As Boolean
 
         Dim flg As Boolean = True
         For idx As Integer = 0 To Me.numElements - 1
-            If Not Me.elements(idx).RK4Complete(dt) Then
+            If Not Me.elements(idx).RK4Complete(curtime, dt) Then
                 Return False
             End If
         Next
@@ -5661,6 +5732,19 @@ Public Class EgressKloteElevatorBank
             Me.Lobbies(iflr).totalPop = value
         End Set
     End Property
+    Public Overridable Property LobbyDelay(ByVal ifloor As Integer) As Integer
+        Get
+            Dim iflr As Integer = ifloor - Me.baseFloor
+            If iflr < 0 Or iflr >= Me.numFloors Then Return -1
+            Return Me.Lobbies(iflr).Delay
+        End Get
+        Set(ByVal value As Integer)
+            If value < 0 Then Return
+            Dim iflr As Integer = ifloor - Me.baseFloor
+            If iflr < 0 Or iflr >= Me.numFloors Then Return
+            Me.Lobbies(iflr).Delay = value
+        End Set
+    End Property
     Public Overrides ReadOnly Property EgressElementNameListCSV() As String
         Get
             Dim i, j As Integer
@@ -5710,7 +5794,7 @@ Public Class EgressKloteElevatorBank
     Public Sub New(ByVal numFloors As Integer, ByVal DoorType As Integer, ByVal speed As Double, _
                     ByVal accel As Double, ByVal flrhigh As Double, ByVal numCars As Integer, _
                     ByVal maxcarcap As Double, ByVal elmaxfin As Double, ByVal pop As Integer, _
-                    ByVal recallDelay As Double)
+                    ByVal recallDelay As Double, ByVal lobbyDelay As Double)
 
         Me.ready = False
         Me.errCode = ErrCodeNums.NoErrors
@@ -5744,14 +5828,14 @@ Public Class EgressKloteElevatorBank
             elidx = elidx + 1
         Next
         For i = Me.numFloors - 2 To 0 Step -1
-            Me.Lobbies(i) = New EgressElLobby()
+            Me.Lobbies(i) = New EgressElLobby(lobbyDelay)
             Me.Lobbies(i).totalPop = pop
             Me.Lobbies(i).Floor = i + 2
             If Not Me.Lobbies(i).IsValid Then Me.valid = False
             Me.eqno = Me.eqno + Me.Lobbies(i).NumEqs
             Me.inno = Me.inno + Me.Lobbies(i).NumInputs
             Me.elements(elidx) = Me.Lobbies(i)
-            Me.Lobbies(i).CallButton = True
+            Me.Lobbies(i).CallButton(lobbyDelay) = True
             elidx = elidx + 1
         Next
         Me.Out = New EgressElSink()
@@ -6259,13 +6343,35 @@ Public Class EgressCalculation
                    ByVal numEls As Integer, ByVal doorType As Double, ByVal speed As Double, _
                    ByVal numCars As Integer, ByVal maxCarCap As Integer, ByVal accel As Double, _
                    ByVal exLen As Double, ByVal exWide As Double, ByVal exWType As Double, _
-                   ByVal eoMxFin As Double, ByVal recallDelay As Double, ByVal aBuildingfile As Boolean)
+                   ByVal eoMxFin As Double, ByVal recallDelay As Double)
 
         Me.New(numFloors, popPerFlr, fracInElevators, numStrs, mergeType, numFlights, rsr, trd, _
                    numSteps, strWide, strWType, landLen, landWide, landWType, strMxFin, hLen, hWide, _
                    hWType, hMxFin, xLen, xWide, xWType, xMxFin, oMxFin, frstFlr, numEls, doorType, speed, _
                    EgressKloteElevatorBank.KloteLoadRate(maxCarCap), EgressKloteElevatorBank.KloteUnLoadRate(maxCarCap), _
-                   numCars, maxCarCap, accel, exLen, exWide, exWType, eoMxFin, recallDelay, aBuildingfile)
+                   numCars, maxCarCap, accel, exLen, exWide, exWType, eoMxFin, recallDelay)
+
+    End Sub
+
+    Public Sub New(ByVal numFloors As Integer, ByVal flrPop() As Integer, ByVal elFrac() As Double, _
+                   ByVal numStrs As Integer, ByVal mergeType As Integer, _
+                   ByVal numFlights As Integer, ByVal rsr As Double, ByVal trd As Double, _
+                   ByVal numSteps As Integer, ByVal strWide As Double, ByVal strWType As Integer, _
+                   ByVal landLen As Double, ByVal landWide As Double, ByVal landWType As Integer, _
+                   ByVal strMxFin As Double, ByVal hLen As Double, ByVal hWide As Double, _
+                   ByVal hWType As Integer, ByVal hMxFin As Double, ByVal xLen As Double, _
+                   ByVal xWide As Double, ByVal xWType As Integer, ByVal xMxFin As Double, _
+                   ByVal oMxFin As Double, ByVal frstFlr As Boolean, _
+                   ByVal numEls As Integer, ByVal doorType As Double, ByVal speed As Double, _
+                   ByVal numCars As Integer, ByVal maxCarCap As Integer, ByVal accel As Double, _
+                   ByVal exLen As Double, ByVal exWide As Double, ByVal exWType As Double, _
+                   ByVal eoMxFin As Double, ByVal recallDelay As Double, ByVal strDlay() As Double, ByVal elDlay() As Double)
+
+        Me.DoNew(numFloors, flrPop, elFrac, numStrs, mergeType, numFlights, rsr, trd, _
+                   numSteps, strWide, strWType, landLen, landWide, landWType, strMxFin, hLen, hWide, _
+                   hWType, hMxFin, xLen, xWide, xWType, xMxFin, oMxFin, frstFlr, numEls, doorType, speed, _
+                   EgressKloteElevatorBank.KloteLoadRate(maxCarCap), EgressKloteElevatorBank.KloteUnLoadRate(maxCarCap), _
+                   numCars, maxCarCap, accel, exLen, exWide, exWType, eoMxFin, recallDelay, strDlay, elDlay)
 
     End Sub
 
@@ -6282,10 +6388,67 @@ Public Class EgressCalculation
                    ByVal eMxFin As Double, ByVal eMxFout As Double, ByVal numCars As Integer, _
                    ByVal maxCarCap As Integer, ByVal accel As Double, ByVal exLen As Double, _
                    ByVal exWide As Double, ByVal exWType As Double, ByVal eoMxFin As Double, _
-                   ByVal recallDelay As Double, ByVal aBuildingfile As Boolean)
+                   ByVal recallDelay As Double)
+
+        Dim flrPop(numFloors - 1) As Integer
+        Dim elFrac(numFloors - 1) As Double
+        Dim delay(numFloors - 1) As Double
+        If frstFlr Then
+            flrPop(0) = popPerFlr
+        Else
+            flrPop(0) = 0.0
+        End If
+        elFrac(0) = 0.0
+        delay(0) = 0.0
+        For i As Integer = 1 To numFloors - 1
+            flrPop(i) = popPerFlr
+            elFrac(i) = fracInElevators
+            delay(i) = 0.0
+        Next
+
+        Me.DoNew(numFloors, flrPop, elFrac, numStrs, mergeType, numFlights, rsr, trd, numSteps, strWide, strWType, landLen, landWide, landWType, _
+                strMxFin, hLen, hWide, hWType, hMxFin, xLen, xWide, xWType, xMxFin, oMxFin, frstFlr, numEls, doorType, speed, eMxFin, eMxFout, _
+                numCars, maxCarCap, accel, exLen, exWide, exWType, eoMxFin, recallDelay, delay, delay)
+
+    End Sub
+
+    Public Sub New(ByVal numFloors As Integer, ByVal flrPop() As Integer, ByVal elFrac() As Double, _
+                   ByVal numStrs As Integer, ByVal mergeType As Integer, _
+                   ByVal numFlights As Integer, ByVal rsr As Double, ByVal trd As Double, _
+                   ByVal numSteps As Integer, ByVal strWide As Double, ByVal strWType As Integer, _
+                   ByVal landLen As Double, ByVal landWide As Double, ByVal landWType As Integer, _
+                   ByVal strMxFin As Double, ByVal hLen As Double, ByVal hWide As Double, _
+                   ByVal hWType As Integer, ByVal hMxFin As Double, ByVal xLen As Double, _
+                   ByVal xWide As Double, ByVal xWType As Integer, ByVal xMxFin As Double, _
+                   ByVal oMxFin As Double, ByVal frstFlr As Boolean, _
+                   ByVal numEls As Integer, ByVal doorType As Double, ByVal speed As Double, _
+                   ByVal eMxFin As Double, ByVal eMxFout As Double, ByVal numCars As Integer, _
+                   ByVal maxCarCap As Integer, ByVal accel As Double, ByVal exLen As Double, _
+                   ByVal exWide As Double, ByVal exWType As Double, ByVal eoMxFin As Double, _
+                   ByVal recallDelay As Double, ByVal strDlay() As Double, ByVal elDlay() As Double)
+
+        Me.DoNew(numFloors, flrPop, elFrac, numStrs, mergeType, numFlights, rsr, trd, numSteps, strWide, strWType, landLen, landWide, _
+                 landWType, strMxFin, hLen, hWide, hWType, hMxFin, xLen, xWide, xWType, xMxFin, oMxFin, frstFlr, numEls, doorType, speed, eMxFin, _
+                 eMxFout, numCars, maxCarCap, accel, exLen, exWide, exWType, eoMxFin, recallDelay, strDlay, elDlay)
+
+    End Sub
+
+    Private Sub DoNew(ByVal numFloors As Integer, ByVal flrPop() As Integer, ByVal elFrac() As Double, _
+                   ByVal numStrs As Integer, ByVal mergeType As Integer, _
+                   ByVal numFlights As Integer, ByVal rsr As Double, ByVal trd As Double, _
+                   ByVal numSteps As Integer, ByVal strWide As Double, ByVal strWType As Integer, _
+                   ByVal landLen As Double, ByVal landWide As Double, ByVal landWType As Integer, _
+                   ByVal strMxFin As Double, ByVal hLen As Double, ByVal hWide As Double, _
+                   ByVal hWType As Integer, ByVal hMxFin As Double, ByVal xLen As Double, _
+                   ByVal xWide As Double, ByVal xWType As Integer, ByVal xMxFin As Double, _
+                   ByVal oMxFin As Double, ByVal frstFlr As Boolean, _
+                   ByVal numEls As Integer, ByVal doorType As Double, ByVal speed As Double, _
+                   ByVal eMxFin As Double, ByVal eMxFout As Double, ByVal numCars As Integer, _
+                   ByVal maxCarCap As Integer, ByVal accel As Double, ByVal exLen As Double, _
+                   ByVal exWide As Double, ByVal exWType As Double, ByVal eoMxFin As Double, _
+                   ByVal recallDelay As Double, ByVal strDlay() As Double, ByVal elDlay() As Double)
 
         If Not Me.ValidPos(Me.numStairs, numStrs) Then Return
-        Me.DividePop(popPerFlr, fracInElevators, Me.numStairs, Me.stairPopPerFlr, Me.elPopPerFlr, Me.valid)
         If Not Me.ValidPos(Me.numFloors, numFloors) Then Return
         If Not Me.ValidPos(Me.numStairCase, 1) Then Return
         If Not Me.ValidPos(Me.numElPath, 1) Then Return
@@ -6319,50 +6482,50 @@ Public Class EgressCalculation
 
         ' PT changes - read csv into array
         '''''''''''''''''''''''''''''''''''''''''''''''
-        If aBuildingfile = True Then
+        'If aBuildingfile = True Then
 
-            Dim strfilename As String
-            Dim num_rows As Long
-            Dim num_cols As Long
-            Dim x As Integer
-            Dim y As Integer
-            Dim strarray(1, 1) As String
+        'Dim strfilename As String
+        'Dim num_rows As Long
+        'Dim num_cols As Long
+        'Dim x As Integer
+        'Dim y As Integer
+        'Dim strarray(1, 1) As String
 
-            ' Load the file.
-            strfilename = "buildingfile.csv"
+        ' Load the file.
+        'strfilename = "buildingfile.csv"
 
-            Dim tmpstream As StreamReader = File.OpenText(strfilename)
-            Dim strlines() As String
-            Dim strline() As String
+        'Dim tmpstream As StreamReader = File.OpenText(strfilename)
+        'Dim strlines() As String
+        'Dim strline() As String
 
-            'Load content of file to strLines array
-            strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
+        'Load content of file to strLines array
+        'strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
 
-            ' Redimension the array.
-            num_rows = UBound(strlines)
-            strline = strlines(0).Split(",")
-            num_cols = UBound(strline)
-            ReDim strarray(num_rows, num_cols)
+        ' Redimension the array.
+        'num_rows = UBound(strlines)
+        'strline = strlines(0).Split(",")
+        'num_cols = UBound(strline)
+        'ReDim strarray(num_rows, num_cols)
 
-            ' Copy the data into the array.
-            For x = 0 To num_rows
-                strline = strlines(x).Split(",")
+        ' Copy the data into the array.
+        'For x = 0 To num_rows
+        'strline = strlines(x).Split(",")
 
-                For y = 0 To num_cols
-                    strarray(x, y) = strline(y)
-                Next
-            Next
+        'For y = 0 To num_cols
+        'strarray(x, y) = strline(y)
+        'Next
+        'Next
 
-            Me.numFloors = num_rows + 1
-            ReDim PopulationPF(Me.numFloors)
-            ReDim LobbyPopulationPF(Me.numFloors)
+        'Me.numFloors = num_rows + 1
+        'ReDim PopulationPF(Me.numFloors)
+        'ReDim LobbyPopulationPF(Me.numFloors)
 
-            For x = 1 To Me.numFloors
-                Me.LobbyPopulationPF(x) = Val(strarray(x - 1, 1))
-                Me.PopulationPF(x) = Val(strarray(x - 1, 0))
-            Next
+        'For x = 1 To Me.numFloors
+        'Me.LobbyPopulationPF(x) = Val(strarray(x - 1, 1))
+        'Me.PopulationPF(x) = Val(strarray(x - 1, 0))
+        'Next
 
-        End If
+        'End If
 
 
         '''''''''''''''''''''''''''''''''''''''''''''''
@@ -6371,7 +6534,7 @@ Public Class EgressCalculation
             If Not Me.valid Then Return
             Dim flrhigh As Double = numSteps * numFlights * rsr
             Me.ElBank(i) = New EgressKloteElevatorBank(Me.numFloors, doorType, speed, accel, flrhigh, _
-                                numCars, maxCarCap, eMxFin, Me.elPopPerFlr, recallDelay)
+                                numCars, maxCarCap, eMxFin, Me.elPopPerFlr, recallDelay, 0.0)
             If Not Me.ElBank(i).IsValid Then
                 Me.valid = False
             End If
@@ -6388,23 +6551,25 @@ Public Class EgressCalculation
             'PT changed: If structure to include the option with building file
             If Me.valid Then
                 For j As Integer = 2 To Me.numFloors
-                    If aBuildingfile = True Then
-                        Me.ElBank(i).LobbyPop(j) = Me.LobbyPopulationPF(j)
-                    Else
-                        Me.ElBank(i).LobbyPop(j) = Me.elPopPerFlr
-                    End If
+                    'If aBuildingfile = True Then
+                    'Me.ElBank(i).LobbyPop(j) = Me.LobbyPopulationPF(j)
+                    Me.DividePop(flrPop(j - 1), elFrac(j - 1), Me.numStairs, stairPopPerFlr, elPopPerFlr, valid)
+                    Me.ElBank(i).LobbyPop(j) = elPopPerFlr
+                    Me.ElBank(i).LobbyDelay(j) = elDlay(j - 1)
+                    'Else
+                    'Me.ElBank(i).LobbyPop(j) = Me.elPopPerFlr
+                    'End If
                 Next
 
-                If aBuildingfile = True Then
-                    For x As Integer = 2 To Me.numFloors
-                        Me.totpop(i) = Me.totpop(i) + Me.ElBank(i).LobbyPop(x)
-                    Next
-                    Me.maxPop = Me.maxPop + Me.totpop(i)
-                Else
-                    Me.totpop(i) = (Me.numFloors - 1) * Me.elPopPerFlr
-                    Me.maxPop = Me.maxPop + Me.totpop(i)
-                End If
-
+                'If aBuildingfile = True Then
+                For x As Integer = 2 To Me.numFloors
+                    Me.totpop(i) = Me.totpop(i) + Me.ElBank(i).LobbyPop(x)
+                Next
+                Me.maxPop = Me.maxPop + Me.totpop(i)
+                'Else
+                'Me.totpop(i) = (Me.numFloors - 1) * Me.elPopPerFlr
+                'Me.maxPop = Me.maxPop + Me.totpop(i)
+                'End If
             End If
             '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         Next
@@ -6413,7 +6578,7 @@ Public Class EgressCalculation
             If Not Me.valid Then Return
             Me.StairCase(i) = New EgressStairWay(Me.numFloors, 1, mergeType, numFlights, _
                 rsr, trd, numSteps, strWide, landLen, landWide, strWide, strMxFin, hLen, _
-                hWide, hWType, hMxFin, 0.0)
+                hWide, hWType, hMxFin, 0.0, 0.0)
             If Not Me.StairCase(i).IsValid Then
                 Me.valid = False
             End If
@@ -6429,25 +6594,29 @@ Public Class EgressCalculation
 
             'PT changed: IF structure to include the option with building file
             If Me.valid Then
-                If Me.firstFloorExit Then Me.StairCase(i).RoomPop(1) = Me.stairPopPerFlr
-                For j As Integer = 2 To Me.numFloors
-                    If aBuildingfile = True Then
-                        Me.StairCase(i).RoomPop(j) = Me.PopulationPF(j)
-                    Else
-                        Me.StairCase(i).RoomPop(j) = Me.stairPopPerFlr
-                    End If
+                If Me.firstFloorExit Then Me.StairCase(i).RoomPop(0) = Me.stairPopPerFlr
+                For j As Integer = 1 To Me.numFloors - 1
+                    'If aBuildingfile = True Then
+                    'Me.StairCase(i).RoomPop(j) = Me.PopulationPF(j)
+                    Me.DividePop(flrPop(j), elFrac(j), Me.numStairs, stairPopPerFlr, elPopPerFlr, valid)
+                    Me.StairCase(i).RoomPop(j) = stairPopPerFlr
+                    Me.StairCase(i).RoomDelay(j) = strDlay(j)
+                    'Else
+                    'Me.StairCase(i).RoomPop(j) = Me.stairPopPerFlr
+                    'End If
                 Next
-                If aBuildingfile = True Then
-                    For x As Integer = 1 To Me.numFloors
-                        Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.StairCase(i).RoomPop(x)
-                    Next
-                    If Me.firstFloorExit Then Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.StairCase(i).RoomPop(1)
-                    Me.maxPop = Me.maxPop + Me.totpop(Me.numElPath + i)
-                Else
-                    Me.totpop(Me.numElPath + i) = Me.numStairs * (Me.numFloors - 1) * Me.stairPopPerFlr
-                    If Me.firstFloorExit Then Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.stairPopPerFlr
-                    Me.maxPop = Me.maxPop + Me.totpop(Me.numElPath + i)
-                End If
+                'If aBuildingfile = True Then
+                For x As Integer = 1 To Me.numFloors
+                    Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.StairCase(i).RoomPop(x)
+                Next
+                If Me.firstFloorExit Then Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.StairCase(i).RoomPop(1)
+                Me.maxPop = Me.maxPop + Me.totpop(Me.numElPath + i)
+                MsgBox(Me.maxPop)
+                'Else
+                'Me.totpop(Me.numElPath + i) = Me.numStairs * (Me.numFloors - 1) * Me.stairPopPerFlr
+                'If Me.firstFloorExit Then Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.stairPopPerFlr
+                'Me.maxPop = Me.maxPop + Me.totpop(Me.numElPath + i)
+                'End If
 
             End If
             ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -6960,57 +7129,57 @@ Public Class EgressCalculation
         Dim flg As Boolean = True
         Dim dthalf As Double = dt / 2.0
         For idx As Integer = 0 To Me.numStairCase - 1
-            If Not Me.StairCase(idx).RK4step0(dthalf) Then
+            If Not Me.StairCase(idx).RK4step0(Me.curTime, dthalf) Then
                 flg = False
             End If
-            If Not Me.ExitHalls(idx).RK4step0(dthalf) Then
+            If Not Me.ExitHalls(idx).RK4step0(Me.curTime, dthalf) Then
                 flg = False
             End If
-            If Not Me.Outside(idx).RK4step0(dthalf) Then
-                flg = False
-            End If
-        Next
-        For idx As Integer = 0 To Me.numStairCase - 1
-            If Not Me.StairCase(idx).RK4step1or2(1, dthalf) Then
-                flg = False
-            End If
-            If Not Me.ExitHalls(idx).RK4step1or2(1, dthalf) Then
-                flg = False
-            End If
-            If Not Me.Outside(idx).RK4step1or2(1, dthalf) Then
+            If Not Me.Outside(idx).RK4step0(Me.curTime, dthalf) Then
                 flg = False
             End If
         Next
         For idx As Integer = 0 To Me.numStairCase - 1
-            If Not Me.StairCase(idx).RK4step1or2(2, dt) Then
+            If Not Me.StairCase(idx).RK4step1or2(1, Me.curTime, dthalf) Then
                 flg = False
             End If
-            If Not Me.ExitHalls(idx).RK4step1or2(2, dt) Then
+            If Not Me.ExitHalls(idx).RK4step1or2(1, Me.curTime, dthalf) Then
                 flg = False
             End If
-            If Not Me.Outside(idx).RK4step1or2(2, dt) Then
-                flg = False
-            End If
-        Next
-        For idx As Integer = 0 To Me.numStairCase - 1
-            If Not Me.StairCase(idx).RK4step3(dt) Then
-                flg = False
-            End If
-            If Not Me.ExitHalls(idx).RK4step3(dt) Then
-                flg = False
-            End If
-            If Not Me.Outside(idx).RK4step3(dt) Then
+            If Not Me.Outside(idx).RK4step1or2(1, Me.curTime, dthalf) Then
                 flg = False
             End If
         Next
         For idx As Integer = 0 To Me.numStairCase - 1
-            If Not Me.StairCase(idx).RK4Complete(dt) Then
+            If Not Me.StairCase(idx).RK4step1or2(2, Me.curTime, dt) Then
                 flg = False
             End If
-            If Not Me.ExitHalls(idx).RK4Complete(dt) Then
+            If Not Me.ExitHalls(idx).RK4step1or2(2, Me.curTime, dt) Then
                 flg = False
             End If
-            If Not Me.Outside(idx).RK4Complete(dt) Then
+            If Not Me.Outside(idx).RK4step1or2(2, Me.curTime, dt) Then
+                flg = False
+            End If
+        Next
+        For idx As Integer = 0 To Me.numStairCase - 1
+            If Not Me.StairCase(idx).RK4step3(Me.curTime, dt) Then
+                flg = False
+            End If
+            If Not Me.ExitHalls(idx).RK4step3(Me.curTime, dt) Then
+                flg = False
+            End If
+            If Not Me.Outside(idx).RK4step3(Me.curTime, dt) Then
+                flg = False
+            End If
+        Next
+        For idx As Integer = 0 To Me.numStairCase - 1
+            If Not Me.StairCase(idx).RK4Complete(Me.curTime, dt) Then
+                flg = False
+            End If
+            If Not Me.ExitHalls(idx).RK4Complete(Me.curTime, dt) Then
+                flg = False
+            End If
+            If Not Me.Outside(idx).RK4Complete(Me.curTime, dt) Then
                 flg = False
             End If
             Me.ExitHalls(idx).CorrectDensity()

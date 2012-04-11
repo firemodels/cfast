@@ -386,7 +386,7 @@ Partial Class frmEstimator
         'BuildingFile
         '
         Me.BuildingFile.AutoSize = True
-        Me.BuildingFile.Location = New System.Drawing.Point(720, 18)
+        Me.BuildingFile.Location = New System.Drawing.Point(720, 20)
         Me.BuildingFile.Name = "BuildingFile"
         Me.BuildingFile.Size = New System.Drawing.Size(124, 17)
         Me.BuildingFile.TabIndex = 36
@@ -653,9 +653,9 @@ Partial Class frmEstimator
         '
         'Batchmode
         '
-        Me.Batchmode.Location = New System.Drawing.Point(732, 412)
+        Me.Batchmode.Location = New System.Drawing.Point(880, 417)
         Me.Batchmode.Name = "Batchmode"
-        Me.Batchmode.Size = New System.Drawing.Size(182, 23)
+        Me.Batchmode.Size = New System.Drawing.Size(34, 23)
         Me.Batchmode.TabIndex = 47
         Me.Batchmode.Text = "Start estimating in batch mode"
         Me.Batchmode.UseVisualStyleBackColor = True

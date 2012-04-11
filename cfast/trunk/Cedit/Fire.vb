@@ -405,8 +405,10 @@ Public Class Fire
         Get
             aString = ""
             For ir = 1 To 5
-                If aChemicalFormula(ir) <> 0 Then aString = aString + Trim("C H O N Cl".Substring(2 * (ir - 1), 2))
-                If aChemicalFormula(ir) > 1 Then aString = aString + Trim(aChemicalFormula(ir).ToString)
+                If aChemicalFormula(ir) <> 0 Then
+                    aString = aString + Trim("C H O N Cl".Substring(2 * (ir - 1), 2))
+                    aString = aString + Trim(aChemicalFormula(ir).ToString)
+                End If
             Next
             Return aString
         End Get

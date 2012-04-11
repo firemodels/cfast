@@ -222,6 +222,10 @@
           xntms(lower,lsp) = x0
           xmass(lsp) = x0
       end do
+      
+      ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of whether the fuel actually combusts here.
+      ! this is consistent with the earlier chemistry routine. release it here and deposit it in the upper layer
+      xntms(upper,11) = xemp*y_trace
 
       ! now do the kinetics scheme
 
@@ -263,11 +267,11 @@
                   activated_rate = 0.0
               end if
               call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,
-     .        y_trace,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
+     .        n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
      .        iquench(iroom),activated_time,
      .        activated_rate,stime,qspray(ifire,lower),
      .        xqpyrl,xntfl,xmass) 
-!              if (stime>=1200.0d0) then
+!              if (stime>=100.0d0) then
 !                  write (*,'(a,f10.6)') 'O2 = ',xmass(2)*1000.0d0
 !                  write (*,'(a,f10.6)') 'CO2 = ',xmass(3)*1000.0d0
 !                  write (*,'(a,f10.6)') 'CO = ',xmass(4)*1000.0d0
@@ -338,7 +342,7 @@
               
               source_o2 = zzcspec(iroom,upper,2)
               call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,
-     .        y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
+     .        y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
      .        iquench(iroom),activated_time,
      .        activated_rate,stime,qspray(ifire,upper),
      .        xqpyrl,xntfl,xmass)
@@ -830,7 +834,7 @@
           mol_mass = 0.01201d0 ! we assume it's just complete combustion of methane
           qspray = 0.0d0
           call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0d0,0.0d0,
-     .    0.0d0,1.0d0,4.0d0,0.0d0,0.0d0,0.0d0,source_o2,limo2,0,
+     .    1.0d0,4.0d0,0.0d0,0.0d0,0.0d0,source_o2,limo2,0,
      .    0,0.0d0,0.0d0,stime,xxqspray,
      .    xqpyrl,xntfl,xmass)
           !call chemie(dummy,xxnetfl,sas,ito,lower,hcombt,x0,x0,x0,x0,x0,

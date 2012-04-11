@@ -1,6 +1,6 @@
       subroutine chemie (pyrolysis_rate, molar_mass,
      . entrainment_rate, source_room, h_c, y_soot, y_co,
-     . y_trace, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit,
+     . n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit,
      . activated_room, activated_sprinkler, activated_time, 
      . activated_rate, model_time,
      . hrr_at_activation, hrr_constrained, pyrolysis_rate_constrained, 
@@ -21,7 +21,7 @@
 !                 entrainment_rate: calculated entrainment rate (kg/s)
 !                 source_room: compartment that contains this fire
 !                 h_c: heat of combustion of the fuel (W/kg)
-!                 y_soot, y_co, y_trace: species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
+!                 y_soot, y_co: species yields for soot and CO; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
 !                 source_o2, lower_o2_limit: oxygen concentration in the source layer of the compartment; lower oxygen limit for combustion (as a fraction)
 !                 activated_room: if zero, a sprinkler has gone off in this compartment.  If equal to the source room, HRR is saved for future quenching
@@ -39,7 +39,7 @@
       integer, intent(in) :: source_room, activated_room,
      . activated_sprinkler
       double precision, intent(in) :: pyrolysis_rate, molar_mass,
-     . entrainment_rate, h_c, y_soot, y_co, y_trace, 
+     . entrainment_rate, h_c, y_soot, y_co, 
      . n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit,
      . activated_time, activated_rate, model_time
       double precision, intent(out) :: hrr_constrained, 
@@ -111,7 +111,6 @@
       net_hcn = pyrolysis_rate_constrained*nu_hcn*0.027028d0/molar_mass
       net_soot = pyrolysis_rate_constrained*nu_soot*0.01201d0/molar_mass
       net_ct = pyrolysis_rate_constrained
-      net_trace = pyrolysis_rate_constrained * y_trace
       
       ! set mass "generation" rates in the cfast structure for species
       species_rates(2) = net_o2
@@ -123,6 +122,5 @@
       species_rates(8) = net_h2o
       species_rates(9) = net_soot
       species_rates(10) = net_ct
-      species_rates(11) = net_trace
 
       end subroutine chemie 

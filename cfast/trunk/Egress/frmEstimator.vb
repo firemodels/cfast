@@ -5,6 +5,7 @@ Public Class frmEstimator
     Dim FileName As String
     Dim FileBase As String
     Dim FileExtension As String
+    Dim BuildDataFile As String
     Dim fileIdx As Integer
     Dim Batchrun As Integer
     Dim NumBatchruns As Integer
@@ -98,6 +99,75 @@ Public Class frmEstimator
 
     End Sub
 
+    Private Function ReadBuildFile(ByVal strfilename As String, ByVal aNumFloors As Integer, ByVal PopPerFlr As Integer, ByVal ElFracPerFlr As Double, _
+                                   ByRef strPop() As Integer, ByRef lbyFrac() As Double, ByRef strDelay() As Double, ByRef lbyDelay() As Double, ByRef errMsg As String) As Boolean
+
+        Dim num_rows As Long
+        Dim num_cols As Long
+        Dim sflr, eflr As Integer
+        Dim x As Integer
+        Dim y As Integer
+        Dim strarray(1, 1) As String
+
+        ' Load the file.
+
+        Dim tmpstream As StreamReader = System.IO.File.OpenText(strfilename)
+        Dim strlines() As String
+        Dim strline() As String
+
+        'Load content of file to strLines array
+        strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
+
+        ' Redimension the array.
+        num_rows = UBound(strlines) + 1
+        strline = strlines(0).Split(",")
+        num_cols = UBound(strline) + 1
+        ReDim strarray(num_rows, num_cols)
+
+        ' Copy the data into the array.
+        For x = 0 To num_rows - 1
+            strline = strlines(x).Split(",")
+
+            For y = 0 To num_cols - 1
+                strarray(x, y) = strline(y)
+            Next
+        Next
+
+        If num_cols <> 6 Then
+            errMsg = "Building file must have 6 columns current file has " + num_cols.ToString
+            Return False
+        End If
+        ReDim strPop(aNumFloors - 1)
+        ReDim lbyFrac(aNumFloors - 1)
+        ReDim strDelay(aNumFloors - 1)
+        ReDim lbyDelay(aNumFloors - 1)
+        For x = 0 To aNumFloors - 1
+            strPop(x) = PopPerFlr
+            strDelay(x) = 0.0
+            lbyFrac(x) = ElFracPerFlr
+            lbyDelay(x) = 0.0
+        Next
+
+        For x = 1 To num_rows - 1
+            sflr = Val(strarray(x, 0))
+            eflr = Val(strarray(x, 1))
+            If sflr >= 2 And eflr >= sflr And eflr <= aNumFloors Then
+                For y = sflr - 1 To eflr - 1
+                    strPop(y) = Val(strarray(x, 2))
+                    lbyFrac(y) = Val(strarray(x, 3))
+                    strDelay(y) = Val(strarray(x, 4))
+                    lbyDelay(y) = Val(strarray(x, 5))
+                Next
+            Else
+                errMsg = "Start floor, " + sflr.ToString + ", must be >= 2 and end floor. " + eflr.ToString + ", must be > start floor and <= top floor, " + aNumFloors.ToString
+                Return False
+            End If
+        Next
+        errMsg = "No errors"
+        Return True
+
+    End Function
+
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         EndEstimate.SelectedIndex = 0
         DoorType.SelectedIndex = 7
@@ -124,6 +194,7 @@ Public Class frmEstimator
             btnDebug.Hide()
             btnDebug.Enabled = False
         End If
+        Batchmode.Hide()
         GreyOut(False)
     End Sub
     Private Sub Help_Clicked(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.HelpButtonClicked
@@ -215,17 +286,46 @@ Public Class frmEstimator
             SaveFileDialog.OverwritePrompt = True
             If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                 FileName = SaveFileDialog.FileName
+                'PT Code
 
-                estimator = New EgressCalculation(aNumFloors, aNumOccupants, aElevatorFrac, aNumStairs, _
-                                aMergingFlow, aFlightsPerFloor, aStairRiserHeight, aStairTreadDepth, _
-                                aStairsPerFlight, aStairWidth, aStairHasHandrails, aStairWidth, _
-                                1.5 * aStairWidth, EgressElement.Bndry.StairHandrails, aStairEntryRate, _
-                                aHallLength, aHallWidth, EgressElement.Bndry.Corridor, aHallEntryRate, _
-                                aExitHallLength, aExitHallWidth, EgressElement.Bndry.Corridor, _
-                                aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
-                                aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
-                                aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
-                                EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay, aBuildingfile)
+                If aBuildingfile = True Then
+
+                    Dim PopulationPF(aNumFloors) As Integer
+                    Dim LobbyFractionPF(aNumFloors) As Double
+                    Dim LobbyDelay(aNumFloors) As Double
+                    Dim StairDelay(aNumFloors) As Double
+                    Dim errMsg As String = " "
+                    If Not ReadBuildFile(BuildDataFile, aNumFloors, aNumOccupants, aElevatorFrac, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
+                        MsgBox("Error with Building file: " + errMsg)
+                        Return
+                    End If
+
+                    estimator = New EgressCalculation(aNumFloors, PopulationPF, LobbyFractionPF, aNumStairs, _
+                                    aMergingFlow, aFlightsPerFloor, aStairRiserHeight, aStairTreadDepth, _
+                                    aStairsPerFlight, aStairWidth, aStairHasHandrails, aStairWidth, _
+                                    1.5 * aStairWidth, EgressElement.Bndry.StairHandrails, aStairEntryRate, _
+                                    aHallLength, aHallWidth, EgressElement.Bndry.Corridor, aHallEntryRate, _
+                                    aExitHallLength, aExitHallWidth, EgressElement.Bndry.Corridor, _
+                                    aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
+                                    aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
+                                    aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
+                                    EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay, StairDelay, LobbyDelay)
+                Else
+
+                    estimator = New EgressCalculation(aNumFloors, aNumOccupants, aElevatorFrac, aNumStairs, _
+                                    aMergingFlow, aFlightsPerFloor, aStairRiserHeight, aStairTreadDepth, _
+                                    aStairsPerFlight, aStairWidth, aStairHasHandrails, aStairWidth, _
+                                    1.5 * aStairWidth, EgressElement.Bndry.StairHandrails, aStairEntryRate, _
+                                    aHallLength, aHallWidth, EgressElement.Bndry.Corridor, aHallEntryRate, _
+                                    aExitHallLength, aExitHallWidth, EgressElement.Bndry.Corridor, _
+                                    aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
+                                    aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
+                                    aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
+                                    EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay)
+                End If
+
+                'End PT code
+
                 If Not estimator.IsValid Then
                     MsgBox("Error not a validly defined simulation")
                     Return
@@ -453,6 +553,7 @@ Public Class frmEstimator
         Dim aElevatorDoorType As Integer
         Dim aBuildingfile As Boolean
 
+        Return
         ' Properties of the building and it's occupants
 
         If Me.Estimate.Text = "OK" Then
@@ -573,7 +674,7 @@ Public Class frmEstimator
                                 aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
                                 aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
                                 aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
-                                EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay, aBuildingfile)
+                                EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay)
 
                 If Not estimator.IsValid Then
                     MsgBox("Error not a validly defined simulation")
@@ -749,7 +850,7 @@ Public Class frmEstimator
                         aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
                         aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
                         aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
-                        EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay, aBuildingfile)
+                        EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay)
 
         If Not estimator.IsValid Then
             MsgBox("Error, not a validly defined simulation")
@@ -792,6 +893,33 @@ Public Class frmEstimator
 
 
 
+    End Sub
+
+    Private Sub BuildingFile_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BuildingFile.CheckedChanged
+
+        If BuildingFile.Checked = True Then
+            Dim path As String = Me.SaveFileDialog.InitialDirectory
+            My.Computer.FileSystem.CurrentDirectory = path
+            BuildDataFile = "buildfile.csv"
+            SaveFileDialog.FileName = BuildDataFile
+            SaveFileDialog.OverwritePrompt = False
+            If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+                BuildDataFile = SaveFileDialog.FileName
+                If My.Computer.FileSystem.FileExists(BuildDataFile) Then
+                    BuildingFile.Text = "Data file: " + BuildDataFile
+                Else
+                    NoBuildingDataFile()
+                End If
+            Else
+                NoBuildingDataFile()
+            End If
+        Else
+            NoBuildingDataFile()
+        End If
+    End Sub
+    Private Sub NoBuildingDataFile()
+        BuildingFile.Checked = False
+        BuildingFile.Text = "Use building data file"
     End Sub
 End Class
 

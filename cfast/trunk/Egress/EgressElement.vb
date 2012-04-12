@@ -6611,7 +6611,7 @@ Public Class EgressCalculation
                 Next
                 If Me.firstFloorExit Then Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.StairCase(i).RoomPop(1)
                 Me.maxPop = Me.maxPop + Me.totpop(Me.numElPath + i)
-                MsgBox(Me.maxPop)
+                'MsgBox(Me.maxPop)
                 'Else
                 'Me.totpop(Me.numElPath + i) = Me.numStairs * (Me.numFloors - 1) * Me.stairPopPerFlr
                 'If Me.firstFloorExit Then Me.totpop(Me.numElPath + i) = Me.totpop(Me.numElPath + i) + Me.numStairs * Me.stairPopPerFlr

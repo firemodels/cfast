@@ -1933,15 +1933,16 @@ c    see which room is on top (if any) - this is like a bubble sort
                   max_area = max(max_area,oarea(ii,iobj))
               end do
 
-              ! calculate size of the object based on the maximum area with a default thickness
+              ! calculate size of the object based on the maximum area with a thickness assuming it's a cube
               ! as with the flame height calculation, the minimum area is 0.09 m^2 (about 1 ft^2)
               objxyz(1,iobj) = sqrt(max(max_area,0.09d0))
               objxyz(2,iobj) = objxyz(1,iobj)
-              objxyz(3,iobj) = 0.15d0
+              objxyz(3,iobj) = objxyz(1,iobj)
 
-              ! calculate the characteristic length of an object. This is used for target calculation
-              objclen(iobj) = (objxyz(1,iobj) * objxyz(2,iobj) * 
-     .        objxyz(3,iobj))**(1.d0/3.d0)
+              ! calculate a characteristic length of an object (we assume the diameter). 
+              ! This is used for point source radiation fire to target calculation as a minimum effective distance between the fire and the target
+              ! which only impact very small fire to target distances
+              objclen(iobj) = 2.0d0*sqrt(max_area / (4.0D0*ATAN(1.0d0)))
           case ('HEIGH')
               do ii = 1, nret
                   ohigh(ii,iobj) = max(lrarray(ii),0.0d0)

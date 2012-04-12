@@ -271,7 +271,7 @@
      .        iquench(iroom),activated_time,
      .        activated_rate,stime,qspray(ifire,lower),
      .        xqpyrl,xntfl,xmass) 
-!              if (stime>=100.0d0) then
+!              if (stime>=1200.0d0) then
 !                  write (*,'(a,f10.6)') 'O2 = ',xmass(2)*1000.0d0
 !                  write (*,'(a,f10.6)') 'CO2 = ',xmass(3)*1000.0d0
 !                  write (*,'(a,f10.6)') 'CO = ',xmass(4)*1000.0d0
@@ -280,7 +280,7 @@
 !                  write (*,'(a,f10.6)') 'fuel = ',xmass(7)*1000.0d0
 !                  write (*,'(a,f10.6)') 'H2O = ',xmass(8)*1000.0d0
 !                  write (*,'(a,f10.6)') 'soot = ',xmass(9)*1000.0d0
-!                  stop
+!                  continue
 !              end if
 
               ! limit the amount entrained to that actually entrained by the

@@ -445,7 +445,7 @@ Partial Class frmEstimator
         'btnDebug
         '
         Me.btnDebug.Enabled = False
-        Me.btnDebug.Location = New System.Drawing.Point(13, 412)
+        Me.btnDebug.Location = New System.Drawing.Point(9, 412)
         Me.btnDebug.Name = "btnDebug"
         Me.btnDebug.Size = New System.Drawing.Size(99, 23)
         Me.btnDebug.TabIndex = 33
@@ -455,7 +455,7 @@ Partial Class frmEstimator
         '
         'Estimate
         '
-        Me.Estimate.Location = New System.Drawing.Point(393, 412)
+        Me.Estimate.Location = New System.Drawing.Point(481, 412)
         Me.Estimate.Name = "Estimate"
         Me.Estimate.Size = New System.Drawing.Size(75, 23)
         Me.Estimate.TabIndex = 5
@@ -464,7 +464,7 @@ Partial Class frmEstimator
         '
         'Progress
         '
-        Me.Progress.Location = New System.Drawing.Point(12, 454)
+        Me.Progress.Location = New System.Drawing.Point(12, 448)
         Me.Progress.Name = "Progress"
         Me.Progress.Size = New System.Drawing.Size(990, 10)
         Me.Progress.TabIndex = 6
@@ -498,7 +498,7 @@ Partial Class frmEstimator
         'EgressTime
         '
         Me.EgressTime.AutoSize = True
-        Me.EgressTime.Location = New System.Drawing.Point(524, 417)
+        Me.EgressTime.Location = New System.Drawing.Point(612, 417)
         Me.EgressTime.Name = "EgressTime"
         Me.EgressTime.Size = New System.Drawing.Size(83, 13)
         Me.EgressTime.TabIndex = 43
@@ -507,7 +507,7 @@ Partial Class frmEstimator
         'NumberEvacuated
         '
         Me.NumberEvacuated.AutoSize = True
-        Me.NumberEvacuated.Location = New System.Drawing.Point(224, 417)
+        Me.NumberEvacuated.Location = New System.Drawing.Point(312, 417)
         Me.NumberEvacuated.Name = "NumberEvacuated"
         Me.NumberEvacuated.Size = New System.Drawing.Size(135, 13)
         Me.NumberEvacuated.TabIndex = 44
@@ -653,9 +653,9 @@ Partial Class frmEstimator
         '
         'Batchmode
         '
-        Me.Batchmode.Location = New System.Drawing.Point(880, 417)
+        Me.Batchmode.Location = New System.Drawing.Point(874, 412)
         Me.Batchmode.Name = "Batchmode"
-        Me.Batchmode.Size = New System.Drawing.Size(34, 23)
+        Me.Batchmode.Size = New System.Drawing.Size(36, 23)
         Me.Batchmode.TabIndex = 47
         Me.Batchmode.Text = "Start estimating in batch mode"
         Me.Batchmode.UseVisualStyleBackColor = True
@@ -663,7 +663,7 @@ Partial Class frmEstimator
         'BatchRunCounter
         '
         Me.BatchRunCounter.AutoSize = True
-        Me.BatchRunCounter.Location = New System.Drawing.Point(920, 417)
+        Me.BatchRunCounter.Location = New System.Drawing.Point(916, 417)
         Me.BatchRunCounter.Name = "BatchRunCounter"
         Me.BatchRunCounter.Size = New System.Drawing.Size(33, 13)
         Me.BatchRunCounter.TabIndex = 48
@@ -673,7 +673,7 @@ Partial Class frmEstimator
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1014, 474)
+        Me.ClientSize = New System.Drawing.Size(1014, 463)
         Me.Controls.Add(Me.BatchRunCounter)
         Me.Controls.Add(Me.Batchmode)
         Me.Controls.Add(Me.EndEstimateTime)

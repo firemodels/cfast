@@ -906,7 +906,9 @@ Public Class frmEstimator
             If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                 BuildDataFile = SaveFileDialog.FileName
                 If My.Computer.FileSystem.FileExists(BuildDataFile) Then
-                    BuildingFile.Text = "Data file: " + BuildDataFile
+                    Dim dFile As New System.IO.FileInfo(BuildDataFile)
+                    BuildingFile.Text = "Data file: " + dFile.Name
+                    Me.Text = "Egress Estimator: " + dFile.DirectoryName
                 Else
                     NoBuildingDataFile()
                 End If
@@ -920,6 +922,7 @@ Public Class frmEstimator
     Private Sub NoBuildingDataFile()
         BuildingFile.Checked = False
         BuildingFile.Text = "Use building data file"
+        Me.Text = "Egress Estimator"
     End Sub
 End Class
 

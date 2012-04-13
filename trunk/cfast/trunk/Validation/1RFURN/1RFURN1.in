@@ -1,22 +1,36 @@
 VERSN,6,"Single Room with Furniture (Sect 5, Test 1)"
 !!
-!!Environmental Keywords
+!!Scenario Configuration Keywords
 !!
 TIMES,2000,-50,0,10,10
 EAMB,300.15,101300,0
 TAMB,300.15,101300,0,50
 CJET,WALLS
-CHEMI,10,393.15
 WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GYPSUM,0.16,900,790,0.016,0.9,Gypsum Board (5/8 in)
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
 !!
 !!Compartment keywords
 !!
 COMPA,Compartment 1,2.26,3.94,2.31,0,0,0,GYPSUM,CONCRETE,GYPSUM
 !!
-!!vent keywords
+!!Vent keywords
 !!
 HVENT,1,2,1,2,2,0.87,1,0.13,0,1,1
 !!
-!!fire keywords
+!!Fire keywords
 !!
-OBJECT,1RFURN1,1,1.13,1.97,0,1,1,0,0,0,1
+!!1RFURN1
+FIRE,1,1.13,1.97,0,1,1,0,0,0,1,1RFURN1
+CHEMI,1,4,0,0,0,0.33,1.81E+07,METHANE
+TIME,0,240,300,360,420,450,480,510,540,600,660,960,1380,2000
+HRR,0,0,35000,360000,1520000,2020000,2200000,2160000,1520000,800000,460000,120000,40000,0
+SOOT,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2
+CO,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02
+TRACE,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+AREA,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12,1.12
+HEIGH,0,0,0,0,0,0,0,0,0,0,0,0,0,0

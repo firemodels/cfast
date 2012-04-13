@@ -1,13 +1,18 @@
 VERSN,6,"Plaza Hotel Smoke Movement Tests (#7, 6 Room Case)"
 !!
-!!Environmental Keywords
+!!Scenario Configuration Keywords
 !!
 TIMES,2000,-50,0,10,10
 EAMB,287.15,101300,0
 TAMB,288.15,101300,0,50
 CJET,WALLS
-CHEMI,10,393.15
 WIND,5.1,22.5,0.16
+!!
+!!Material Properties
+!!
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GYPSUM,0.16,900,790,0.016,0.9,Gypsum Board (5/8 in)
+MATL,KAOWOOL,0.22,1047,128,0.116,0.97,Mineral Fiber Insulation (1/2 in)
 !!
 !!Compartment keywords
 !!
@@ -20,7 +25,7 @@ COMPA,Compartment 6,2.5,1.5,21.53,0,0,0,CONCRETE,CONCRETE,CONCRETE
 ONEZ,5
 ONEZ,6
 !!
-!!vent keywords
+!!Vent keywords
 !!
 HVENT,1,2,1,0.78,2.1,0,1,1.5,0,4,1
 HVENT,1,7,1,6.2,2.3,2.29,1,0,0,2,1
@@ -44,6 +49,15 @@ HVENT,6,7,2,2.5,0.05,0,1,0,0,1,1
 MVENT,2,7,1,V,0.5,0.13,V,5.88,0.2,0.94,40,300,1
 MVENT,7,6,2,V,1,0.66,V,1,0.66,0.33,40,300,1
 !!
-!!fire keywords
+!!Fire keywords
 !!
-OBJECT,MULTI,2,0,0,0,1,1,0,0,0,1
+!!MULTI
+FIRE,2,0,0,0,1,1,0,0,0,1,MULTI
+CHEMI,1,4,0,0,0,0.33,5E+07,KAOWOOL
+TIME,0,120,420,1170,1180
+HRR,0,0,1130000,1130000,0
+SOOT,0.2,0.2,0.2,0.2,0.2
+CO,0.06,0.06,0.06,0.06,0.06
+TRACE,0,0,0,0,0
+AREA,0.74,0.74,0.74,0.74,0.74
+HEIGH,0.25,0.25,0.25,0.25,0.25

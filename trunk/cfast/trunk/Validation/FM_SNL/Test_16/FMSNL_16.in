@@ -1,29 +1,44 @@
 VERSN,6,FM Test 16
 !!
-!!Environmental Keywords
+!!Scenario Configuration Keywords
 !!
 TIMES,1020,-10,0,10,10
 EAMB,291.15,101300,0
 TAMB,291.15,101300,0,50
 CJET,WALLS
-CHEMI,10,393.15
 WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+MATL,MariniteFM,0.23,1160,1000,0.025,0.95,Marinite FMSNL
+MATL,ConcreteFM,1.8,1040,2280,0.15,0.95,Concrete FMSNL
+MATL,TC,54,425,7850,0.001,0.95,Thermocouple (small steel target for plume temp)
 !!
 !!Compartment keywords
 !!
 COMPA,Compartment 1,18.3,12.2,6.1,0,0,0,MariniteFM,ConcreteFM,MariniteFM
 !!
-!!vent keywords
+!!Vent keywords
 !!
 VVENT,2,1,1.08,2,1
 MVENT,2,1,1,H,4.9,0.66,H,4.9,0.66,0.38,200,300,1
 EVENT,M,2,1,1,540,0,1
 !!
-!!fire keywords
+!!Fire keywords
 !!
-OBJECT,FMSNL_16,1,17.55,11.45,0,1,1,0,0,0,1
+!!FMSNL_16
+FIRE,1,17.55,11.45,0,1,1,0,0,0,1,FMSNL_16
+CHEMI,7,16,0,0,0,0.35,4.46E+07,METHANE
+TIME,0,10,695,696
+HRR,0,500000,500000,0
+SOOT,0.2,0.2,0.2,0.2
+CO,0.07517363,0.07517363,0.07517363,0.07517363
+TRACE,0,0,0,0
+AREA,0.64,0.64,0.64,0.64
+HEIGH,0.2,0.2,0.2,0.2
 !!
-!!target and detector keywords
+!!Target and detector keywords
 !!
 DETECT,1,1,347.04,3.05,6.1,5.98,100,0,7E-05
 DETECT,1,1,347.04,15.25,6.1,5.98,100,0,7E-05

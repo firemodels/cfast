@@ -135,15 +135,6 @@ cd ..\..\
 cd FM_SNL\Test_17
 ..\..\..\bin\cfast FMSNL_17 /V
 cd ..\..\
-cd FM_SNL\Test_18
-..\..\..\bin\cfast FMSNL_18 /V
-cd ..\..\
-cd FM_SNL\Test_19
-..\..\..\bin\cfast FMSNL_19 /V
-cd ..\..\
-cd FM_SNL\Test_20
-..\..\..\bin\cfast FMSNL_20 /V
-cd ..\..\
 cd FM_SNL\Test_21
 ..\..\..\bin\cfast FMSNL_21 /V
 cd ..\..\

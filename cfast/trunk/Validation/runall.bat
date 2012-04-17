@@ -163,4 +163,15 @@ cd High_Bay
 ..\..\bin\cfast Keflavik_6 /V
 ..\..\bin\cfast Keflavik_7 /V
 cd ..\
+echo LLNL Tests
+cd LLNL_Enclosure
+..\..\bin\cfast LLNL_01 /V
+..\..\bin\cfast LLNL_02 /V
+..\..\bin\cfast LLNL_03 /V
+..\..\bin\cfast LLNL_04 /V
+..\..\bin\cfast LLNL_05 /V
+..\..\bin\cfast LLNL_06 /V
+..\..\bin\cfast LLNL_07 /V
+..\..\bin\cfast LLNL_08 /V
+..\..\bin\cfast LLNL_09 /V
 echo.| time

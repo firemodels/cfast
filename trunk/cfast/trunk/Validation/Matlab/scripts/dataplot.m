@@ -45,6 +45,10 @@ if nargin>=1
         cfil = [pwd,'/training_data_config_matlab.csv'];
         vdir = [pwd,'/../../Training/'];
         plotdir = [pwd,'/../../Manuals/FDS_SMV_Training_Guide/datafigures/'];
+    elseif strcmp(varargin{1},'1824')|strcmp(varargin{1},'1824')
+        cfil = [pwd,'/1824_validation_data_config_matlab.csv'];
+        vdir = [pwd,'/../../Validation/'];
+        plotdir = [pwd,'/../../Docs/Validation_Guide/FIGURES/'];
     end
 end
 if nargin==2

@@ -174,4 +174,5 @@ cd LLNL_Enclosure
 ..\..\bin\cfast LLNL_07 /V
 ..\..\bin\cfast LLNL_08 /V
 ..\..\bin\cfast LLNL_09 /V
+cd ..\
 echo.| time

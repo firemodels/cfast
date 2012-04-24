@@ -537,7 +537,7 @@ Partial Class frmEstimator
         '
         'ElevatorCustomCapacity
         '
-        Me.ElevatorCustomCapacity.Location = New System.Drawing.Point(284, 65)
+        Me.ElevatorCustomCapacity.Location = New System.Drawing.Point(331, 65)
         Me.ElevatorCustomCapacity.Name = "ElevatorCustomCapacity"
         Me.ElevatorCustomCapacity.Size = New System.Drawing.Size(100, 20)
         Me.ElevatorCustomCapacity.TabIndex = 44
@@ -546,7 +546,7 @@ Partial Class frmEstimator
         '
         Me.ElevatorCapacity.FormattingEnabled = True
         Me.ElevatorCapacity.Items.AddRange(New Object() {"900 kg (12 people)", "1200 kg (16 people)", "1400 kg (19 people)", "1600 kg (21 people)", "1800 kg (24 people)", "Custom (in kg)"})
-        Me.ElevatorCapacity.Location = New System.Drawing.Point(178, 65)
+        Me.ElevatorCapacity.Location = New System.Drawing.Point(225, 65)
         Me.ElevatorCapacity.Name = "ElevatorCapacity"
         Me.ElevatorCapacity.Size = New System.Drawing.Size(100, 21)
         Me.ElevatorCapacity.TabIndex = 43
@@ -554,7 +554,7 @@ Partial Class frmEstimator
         'Label26
         '
         Me.Label26.AutoSize = True
-        Me.Label26.Location = New System.Drawing.Point(115, 95)
+        Me.Label26.Location = New System.Drawing.Point(162, 95)
         Me.Label26.Name = "Label26"
         Me.Label26.Size = New System.Drawing.Size(57, 13)
         Me.Label26.TabIndex = 42
@@ -564,14 +564,14 @@ Partial Class frmEstimator
         '
         Me.DoorType.FormattingEnabled = True
         Me.DoorType.Items.AddRange(New Object() {"Single-Slide, 0.91 m (36 in)", "Two-Speed, 0.91 m (36 in)", "Center-Opening, 0.91 m (36 in)", "Single-Slide, 1.07 m (42 in)", "Two-Speed, 1.07 m (42 in)", "Center-Opening, 1.07 m (42 in)", "Two-Speed, 1.22 m (48 in)", "Center-Opening, 1.22 m (48 in)", "Two-Speed, 1.37 m (54 in)", "Center-Opening, 1.37 m (54 in)", "Two-Speed, 1.52 m (60 in)", "Center-Opening, 1.52 m (60 in)"})
-        Me.DoorType.Location = New System.Drawing.Point(178, 92)
+        Me.DoorType.Location = New System.Drawing.Point(225, 92)
         Me.DoorType.Name = "DoorType"
         Me.DoorType.Size = New System.Drawing.Size(195, 21)
         Me.DoorType.TabIndex = 41
         '
         'ElevatorStartup
         '
-        Me.ElevatorStartup.Location = New System.Drawing.Point(178, 171)
+        Me.ElevatorStartup.Location = New System.Drawing.Point(225, 171)
         Me.ElevatorStartup.Name = "ElevatorStartup"
         Me.ElevatorStartup.Size = New System.Drawing.Size(100, 20)
         Me.ElevatorStartup.TabIndex = 40
@@ -579,7 +579,7 @@ Partial Class frmEstimator
         'Label25
         '
         Me.Label25.AutoSize = True
-        Me.Label25.Location = New System.Drawing.Point(49, 174)
+        Me.Label25.Location = New System.Drawing.Point(96, 174)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(123, 13)
         Me.Label25.TabIndex = 39
@@ -587,7 +587,7 @@ Partial Class frmEstimator
         '
         'ElevatorAcceleration
         '
-        Me.ElevatorAcceleration.Location = New System.Drawing.Point(178, 145)
+        Me.ElevatorAcceleration.Location = New System.Drawing.Point(225, 145)
         Me.ElevatorAcceleration.Name = "ElevatorAcceleration"
         Me.ElevatorAcceleration.Size = New System.Drawing.Size(100, 20)
         Me.ElevatorAcceleration.TabIndex = 38
@@ -595,7 +595,7 @@ Partial Class frmEstimator
         'Label24
         '
         Me.Label24.AutoSize = True
-        Me.Label24.Location = New System.Drawing.Point(34, 148)
+        Me.Label24.Location = New System.Drawing.Point(81, 148)
         Me.Label24.Name = "Label24"
         Me.Label24.Size = New System.Drawing.Size(138, 13)
         Me.Label24.TabIndex = 37
@@ -603,7 +603,7 @@ Partial Class frmEstimator
         '
         'ElevatorVelocity
         '
-        Me.ElevatorVelocity.Location = New System.Drawing.Point(178, 119)
+        Me.ElevatorVelocity.Location = New System.Drawing.Point(225, 119)
         Me.ElevatorVelocity.Name = "ElevatorVelocity"
         Me.ElevatorVelocity.Size = New System.Drawing.Size(100, 20)
         Me.ElevatorVelocity.TabIndex = 36
@@ -611,7 +611,7 @@ Partial Class frmEstimator
         'Label23
         '
         Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(16, 122)
+        Me.Label23.Location = New System.Drawing.Point(63, 122)
         Me.Label23.Name = "Label23"
         Me.Label23.Size = New System.Drawing.Size(156, 13)
         Me.Label23.TabIndex = 35
@@ -619,7 +619,7 @@ Partial Class frmEstimator
         '
         'NumElevators
         '
-        Me.NumElevators.Location = New System.Drawing.Point(178, 36)
+        Me.NumElevators.Location = New System.Drawing.Point(225, 36)
         Me.NumElevators.Name = "NumElevators"
         Me.NumElevators.Size = New System.Drawing.Size(100, 20)
         Me.NumElevators.TabIndex = 33
@@ -627,7 +627,7 @@ Partial Class frmEstimator
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(24, 67)
+        Me.Label21.Location = New System.Drawing.Point(71, 67)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(148, 13)
         Me.Label21.TabIndex = 32
@@ -637,7 +637,7 @@ Partial Class frmEstimator
         'Label22
         '
         Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(69, 39)
+        Me.Label22.Location = New System.Drawing.Point(116, 39)
         Me.Label22.Name = "Label22"
         Me.Label22.Size = New System.Drawing.Size(103, 13)
         Me.Label22.TabIndex = 31

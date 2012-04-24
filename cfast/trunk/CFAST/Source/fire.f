@@ -368,7 +368,7 @@
      +        y_soot,y_co,y_trace)
 
       
-!     routine: chemie
+!     routine: pyrols
 !     purpose: returns yields for object fires interpolated from user input  
 !     revision: $revision: 352 $
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
@@ -646,7 +646,7 @@
 
       subroutine djet (flwdjf,djetflg)
 
-!     routine:  integrate_mass
+!     routine:  djet
 !     description: physical interface routine to calculate the current
 !                  rates of mass and energy flows into the layers from
 !                  all door jet fires in the building.
@@ -849,11 +849,13 @@
 
       subroutine flamhgt (qdot, area, fheight)
 
-!     Description:  Calculates flame height for a given fire size and area
-!
-!     Arguments: qdot    Fire Size (W)
-!                area    Area of the base of the fire (m^2)
-!                fheight Calculated flame height (m)
+!     routine: flamhgt
+!     purpose: Calculates flame height for a given fire size and area 
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  qdot: Fire Size (W)
+!                 area: Area of the base of the fire (m^2)
+!                 fheight (output): Calculated flame height (m)
 !
 !     Source: SFPE handbook, Section 2, Chapter 1
 
@@ -863,10 +865,10 @@
       real*8 qdot, area
       real*8 fheight
       real*8 d
-      if (area<=0d0) THEN
+      if (area<=0d0) then
           d = 0.09d0
       else
-          d = SQRT(four*area/pi)
+          d = sqrt(four*area/pi)
       end if
       fheight = -1.02*d + 0.235*(qdot/1.0d3)**0.4d0
       fheight = max (zero, fheight)
@@ -876,28 +878,23 @@
       subroutine PlumeTemp (qdot, xrad, dfire, tu, tl, zfire, zlayer,
      *zin, tplume)
 
-! Calculates plume centerline temperature at a specified height above
-! the fire.
+!     routine: PlumeTemp
+!     purpose: Calculates plume centerline temperature at a specified height above the fire.
 !
-! Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
-
-! Uses Evan's method to determine virtual fire size and fire origin when fire
-! is in the lower layer and position is in the upper layer
-
-! Inputs:
-!
-! qdot    total heat release rate of the fire (W)
-! xrad    fraction of fire HRR released as radiation
-! dfire   fire diamater (m)
-! tu      upper layer gas temperature (K)
-! tl      lower layer gas temperature (K)
-! zfire   height of the base of the fire (m)
-! zlayer  height of the hot/cold gas layer interface (m)
-! z       position to calculate plume centerline temperature (m)
-
-! Output:
-!
-! tplume  plume centerline temperature
+!     Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
+!     Uses Evan's method to determine virtual fire size and fire origin when fire
+!     is in the lower layer and position is in the upper layer
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  qdot: total heat release rate of the fire (W)
+!                 xrad: fraction of fire HRR released as radiation
+!                 dfire: fire diamater (m)
+!                 tu: upper layer gas temperature (K)
+!                 tl: lower layer gas temperature (K)
+!                 zfire: height of the base of the fire (m)
+!                 zlayer: height of the hot/cold gas layer interface (m)
+!                 z: position to calculate plume centerline temperature (m)
+!                 tplume (output): plume centerline temperature
 
       implicit none
       real*8 qdot, xrad, dfire, tu, tl, zfire, zlayer, zin
@@ -1055,135 +1052,106 @@
       return
       end subroutine PlumeTemp_M
 
-      SUBROUTINE TOXIC(DELTT)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     TOXIC
-C
-C     Source File: TOXIC.SOR
-C
-C     Functional Class:  CFAST
-C
-C     Description:  This routine is used tto calculate species concentrations
-C                   (ppm), mass density (kg/m^3), opacity (1/m), 
-C                   CT (g-min/m^3), heat flux to target on floor (W)
-C
-C     Arguments: DELTT  length of the latest time step (s)
-C
-C     Revision History:
-C        5/26/1987 by WWJ, change ct calculation to g-m/m^3
-C        11/20/1987 by WWJ, use sum of species to determine total mass used
-C                           to calculate mass and volume fractions
-C        3/30/1989 by WWJ, fix "ontarget" s*(t-ta)**4->s*(t**4-ta**4)
-C        9/12/1989 by WWJ, set ontarget to 0 if < 1
-C        11/20/92 by RDP, eliminated MINMAS as the check for minimum molar
-C                 count used to calculate molar fraction.  Changed to
-C                 1/Avagadro' number so you can't have less than 1 molecule
-C                 of gas in a layer.
-C	    02/15/02 by WWJ The smoke conversion factor has been changed from 3500 to 3817 
-C                  to reflect the new value as reported by Mulholland in Fire and Materials, 24, 227(2000)
+      subroutine toxic(deltt)
 
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: toxic
+!     purpose: calculate species concentrations (ppm), mass density (kg/m^3), opacity (1/m), 
+c              ct (g-min/m^3), heat flux to target on floor (w)
+!     revision: $revision: 352 $
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  deltt  length of the latest time step (s)
 
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-C
-      DIMENSION AWEIGH(NS), AIR(2), V(2)
-      LOGICAL PPMCAL(NS)
-C
-C     AWEIGH'S ARE MOLAR WEIGHTS OF THE SPECIES, AVAGAD IS THE RECIPROCAL
-C     OF AVAGADRO'S NUMBER (SO YOU CAN'T HAVE LESS THAN AN ATOM OF A SPECIES
-C
-      DATA AWEIGH, AWEIGH7 /28.D0, 32.D0, 44.D0, 28.D0, 27.D0, 37.D0, 
-     +12.D0, 18.D0, 12.D0, 0.D0, 0.0d0, 12.D0/
-      DATA AVAGAD /1.66D-24/
-      DATA PPMCAL /3 * .FALSE., 3 * .TRUE., 5 * .FALSE./
-      AWEIGH(7) = AWEIGH7 * (1.0D0+HCRATT)
 
-      DO 90 I = 1, NM1
-C
-          V(UPPER) = ZZVOL(I,UPPER)
-          V(LOWER) = ZZVOL(I,LOWER)
-          DO 20 K = UPPER, LOWER
-              AIR(K) = 0.0D0
-              DO 10 LSP = 1, 9
-                  AIR(K) = AIR(K) + ZZGSPEC(I,K,LSP) / AWEIGH(LSP)
-   10         CONTINUE
-              AIR(K) = MAX(AVAGAD,AIR(K))
-   20     CONTINUE
-C
-C     CALCLUATE THE MASS DENSITY IN KG/M^3
-C
-          DO 40 LSP = 1, NS
-              IF (ACTIVS(LSP)) THEN
-                  DO 30 K = UPPER, LOWER
-                      PPMDV(K,I,LSP) = ZZGSPEC(I,K,LSP) / V(K)
-   30             CONTINUE
-              END IF
-   40     CONTINUE
-C
-C     NOW CALCULATE THE MOLAR DENSITY
-C
-          DO 60 LSP = 1, 8
-              IF (ACTIVS(LSP)) THEN
-                  DO 50 K = UPPER, LOWER
-                      IF (PPMCAL(LSP)) THEN
-                          TOXICT(I,K,LSP) = 1.D+6 * ZZGSPEC(I,K,LSP) /
-     +                    (AIR(K)*AWEIGH(LSP))
-                      ELSE
-                          TOXICT(I,K,LSP) = 100.D0 * ZZGSPEC(I,K,LSP) / 
-     +                    (AIR(K)*AWEIGH(LSP))
-                      END IF
-   50             CONTINUE
-              END IF
-   60     CONTINUE
-C
-C     OPACITY IS CALCULATED FROM SEDER'S WORK
-C	Note: this value was change 2/15/2 from 3500 to 3778 to reflect the new value as reported by
-C     Mulholland in Fire and Materials, 24, 227(2000) with recommended value of extinction coefficient
-C     of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
-C
-          LSP = 9
-          IF (ACTIVS(LSP)) THEN
-              DO 70 K = UPPER, LOWER
-                  TOXICT(I,K,LSP) = PPMDV(K,I,LSP) * 3778.0D0
-   70         CONTINUE
-          END IF
+      dimension aweigh(ns), air(2), v(2)
+      logical ppmcal(ns)
 
-!     CT is the integration of the total "junk" being transported
+      ! aweigh's are molar weights of the species, avagad is the reciprocal
+      ! of avagadro's number (so you can't have less than an atom of a species
+      data aweigh, aweigh7 /28.d0, 32.d0, 44.d0, 28.d0, 27.d0, 37.d0, 
+     +12.d0, 18.d0, 12.d0, 0.d0, 0.0d0, 12.d0/
+      data avagad /1.66d-24/
+      data ppmcal /3 * .false., 3 * .true., 5 * .false./
+      aweigh(7) = aweigh7 * (1.0d0+hcratt)
 
-          LSP = 10
-          IF (ACTIVS(LSP)) THEN
-              DO 80 K = UPPER, LOWER
-                  TOXICT(I,K,LSP) = TOXICT(I,K,LSP) + PPMDV(K,I,LSP) * 
-     +            1000.0D0 * DELTT / 60.0D0
-   80         CONTINUE
-          END IF
+      do i = 1, nm1
+          v(upper) = zzvol(i,upper)
+          v(lower) = zzvol(i,lower)
+          do k = upper, lower
+              air(k) = 0.0d0
+              do lsp = 1, 9
+                  air(k) = air(k) + zzgspec(i,k,lsp) / aweigh(lsp)
+              end do
+              air(k) = max(avagad,air(k))
+          end do
 
-!     TS (trace species) is the filtered concentration - this is the total mass. 
-!     It is converted to fraction of the total generated by all fires.
-!     This step being correct depends on the INTEGRATEMASS routine
+          ! calcluate the mass density in kg/m^3
+          do lsp = 1, ns
+              if (activs(lsp)) then
+                  do k = upper, lower
+                      ppmdv(k,i,lsp) = zzgspec(i,k,lsp) / v(k)
+                  end do
+              end if
+          end do
 
-          LSP = 11
-          IF (ACTIVS(LSP)) THEN
-              DO 81 K = UPPER, LOWER
-                  TOXICT(I,K,LSP) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
-   81         CONTINUE
-          END IF
+          ! calculate the molar density
+          do lsp = 1, 8
+              if (activs(lsp)) then
+                  do k = upper, lower
+                      if (ppmcal(lsp)) then
+                          toxict(i,k,lsp) = 1.d+6 * zzgspec(i,k,lsp) /
+     +                    (air(k)*aweigh(lsp))
+                      else
+                          toxict(i,k,lsp) = 100.d0 * zzgspec(i,k,lsp) / 
+     +                    (air(k)*aweigh(lsp))
+                      end if
+                  end do
+              end if
+          end do
 
-   90 continue
+          ! opacity is calculated from seder's work
+          ! note: this value was changed 2/15/2 from 3500 to 3778 to reflect the new value as reported by
+          ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
+          ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
+          lsp = 9
+          if (activs(lsp)) then
+              do k = upper, lower
+                  toxict(i,k,lsp) = ppmdv(k,i,lsp) * 3778.0d0
+              end do
+          end if
 
-!     ONTARGET IS THE RADIATION RECEIVED ON A TARGET ON THE FLOOR
+          ! ct is the integration of the total "junk" being transported
+          lsp = 10
+          if (activs(lsp)) then
+              do k = upper, lower
+                  toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp) * 
+     +            1000.0d0 * deltt / 60.0d0
+              end do
+          end if
 
-      DO 100 I = 1, NM1
-          ONTARGET(I) = SIGM * (ZZTEMP(I,UPPER)**4-TAMB(I)**4)
-          IF (ONTARGET(I)<1.0D0) ONTARGET(I) = 0.0D0
-  100 CONTINUE
-      RETURN
-      END
+          ! ts (trace species) is the filtered concentration - this is the total mass. 
+          ! it is converted to fraction of the total generated by all fires.
+          ! this step being correct depends on the integratemass routine
+          lsp = 11
+          if (activs(lsp)) then
+              do k = upper, lower
+                  toxict(i,k,lsp) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
+              end do
+          end if
+
+      end do
+
+      ! ontarget is the radiation received on a target on the floor
+      do i = 1, nm1
+          ontarget(i) = sigm * (zztemp(i,upper)**4-tamb(i)**4)
+          if (ontarget(i)<1.0d0) ontarget(i) = 0.0d0
+      end do
+      return
+      end subroutine toxic
+
       SUBROUTINE REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
      .FZLOCAL, FQLOCAL, FHLOCAL)
 

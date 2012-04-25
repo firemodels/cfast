@@ -56,7 +56,7 @@ C
       DIMENSION TPRIME(*), PRPRIME(*)
       DIMENSION FLWMV0(NR,NS+2,2),DELTPMV0(MNODE),DELTTMV0(MBR)
       LOGICAL FIRST, DOIT, HVACFLG
-	double precision filter, qcifraction, tsec, xx0, xx1, filterm1,
+	real*8 filter, qcifraction, tsec, xx0, xx1, filterm1,
      . filtered(nr,ns+2,2)
       SAVE FIRST,FLWMV0,DELTPMV0,DELTTMV0
 
@@ -67,8 +67,8 @@ C     from solver.ini file by INITSLV.  CHV should eventually be defined
 C     elsewhere.
 
       HVACFLG = .FALSE.
-      IF (.NOT.MVCALC.OR.OPTION(FMVENT).NE.ON.OR.
-     .    (NHVPVAR.EQ.0.AND.NHVTVAR.EQ.0)) RETURN
+      IF (.NOT.MVCALC.OR.OPTION(FMVENT)/=ON.OR.
+     .    (NHVPVAR==0.AND.NHVTVAR==0)) RETURN
       HVACFLG = .TRUE.
       XX0 = 0.0D0
 	xx1 = 1.0d0      
@@ -100,21 +100,21 @@ C     elsewhere.
          DELTTMV(I) = HVTSOLV(I)
    31 CONTINUE
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
 
 C*** determine where the hvac calculation should be done.  initially assume
 C    that it should be.
 
         DOIT = .TRUE.
-        IF(JACCOL.GT.0)THEN
+        IF(JACCOL>0)THEN
           IEQTYP = IZEQMAP(JACCOL,1)
-          IF(IEQTYP.EQ.EQPMV.OR.IEQTYP.EQ.EQTMV)THEN
+          IF(IEQTYP==EQPMV.OR.IEQTYP==EQTMV)THEN
 
 C*** if we're computing a jacobian and a hvac pressure or temperature is being perturbed
 C    then doit.
 
             DOIT = .TRUE.
-           ELSEIF(IEQTYP.EQ.EQTT.OR.IEQTYP.EQ.EQWT)THEN
+           ELSEIF(IEQTYP==EQTT.OR.IEQTYP==EQWT)THEN
 
 C*** if we're computing a jacobian and a wall or target temperature is being perturbed
 C    then don't doit
@@ -160,14 +160,14 @@ C    previously saved vectors
 
       CALL HVFREX (tsec, HVPSOLV,HVTSOLV)
       CALL HVMFLO (tsec, DELTPMV,IERROR)
-      IF (IERROR.NE.0) RETURN
+      IF (IERROR/=0) RETURN
       CALL HVSFLO (TPRIME,DELTTMV)
       CALL HVTOEX (tsec, PRPRIME,NPROD)
       DO 20 II = 1, NEXT
             I = HVNODE(1,II)
             J = HVNODE(2,II)
             ISYS = IZHVSYS(J)
-            IF(I.LT.1.OR.I.GT.NM1) GO TO 20
+            IF(I<1.OR.I>NM1) GO TO 20
             FLWMV(I,M,UPPER) = FLWMV(I,M,UPPER) + HVEFLO(UPPER,II)
             FLWMV(I,M,LOWER) = FLWMV(I,M,LOWER) + HVEFLO(LOWER,II)
             FLWMV(I,Q,UPPER) = FLWMV(I,Q,UPPER) +
@@ -191,8 +191,8 @@ C    previously saved vectors
             filtered(i,11,lower) = max(xx0,filter*flwmv(i,11,lower))
 20    CONTINUE
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
-        IF(JACCOL.EQ.0)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
+        IF(JACCOL==0)THEN
 
 C*** save information for a later Jacobian calculation
 
@@ -258,7 +258,7 @@ C
       include "params.fi"
 
       DIMENSION DELTPMV(*)
-	double precision tsec
+	real*8 tsec
 
 C     CALCULATE AVERAGE TEMPERATURES AND DENSITIES FOR EACH BRANCH
 C 
@@ -289,7 +289,7 @@ C     INITIALIZE CONDUCTANCE
 !     CONVERT FROM PRESSURE TO MASS FLOW RATE COEFFICIENTS
 
       DO 40 IB = 1, NBR
-         IF (CE(IB).NE.XX0) THEN
+         IF (CE(IB)/=XX0) THEN
             XTEMP = XX1 / SQRT(ABS(CE(IB)))
             CE (IB) = SIGN(XTEMP, CE(IB))
          ENDIF
@@ -309,7 +309,7 @@ C     Find mass flow for each branch and mass residual at each node
          F = 0.0D0
             DO 25 J = 1, NCNODE(I)
                DP = HVP(MVINTNODE(I,J)) - HVP(I) + DPZ(I,J)
-               IF (NF(ICMV(I,J)).EQ.0) THEN
+               IF (NF(ICMV(I,J))==0) THEN
 
 C        RESISTIVE BRANCH CONNECTION 
 
@@ -320,7 +320,7 @@ C        RESISTIVE BRANCH CONNECTION
 C        FAN BRANCH CONNECTION
 
                   K = NF(ICMV(I,J))
-                  IF(NE(ICMV(I,J)) .NE. I)THEN
+                  IF(NE(ICMV(I,J)) /= I)THEN
 C*** FLOW IS AT FAN INLET
                      HVFLOW(I,J) = -HVFAN(tsec,I,J,K,DP)
                     ELSE
@@ -331,10 +331,10 @@ C*** FLOW IS AT FAN EXIT
                ENDIF
                F = F + HVFLOW(I,J)
                II = IZHVIE(MVINTNODE(I,J))
-               IF(II.NE.0)HVFLOW(MVINTNODE(I,J),1) = -HVFLOW(I,J)
+               IF(II/=0)HVFLOW(MVINTNODE(I,J),1) = -HVFLOW(I,J)
    25       CONTINUE
          ii = IZHVMAPE(I)
-         IF(II.GT.0) DELTPMV(ii) = F
+         IF(II>0) DELTPMV(ii) = F
    30 CONTINUE
     1 CONTINUE
 
@@ -385,18 +385,18 @@ C     CONNECTING NODES
          HVTA = XX0
          FLOWIN = XX0
          DO 20 J = 1, NCNODE(I)
-            IF (HVFLOW(I,J).GT.XX0) THEN
+            IF (HVFLOW(I,J)>XX0) THEN
                FLOWIN = FLOWIN + HVFLOW(I,J)
                IB = ICMV(I,J)
                HVTEMP = HVFLOW(I,J)
                HVTA = HVTA + HVTEMP*TBR(IB)
             ENDIF
    20    CONTINUE
-         IF (FLOWIN.GT.XX0) THEN
+         IF (FLOWIN>XX0) THEN
             HVTA = HVTA / FLOWIN
          ELSE
             DO 21 II = 1, NEXT
-               IF (HVNODE(2,II).EQ.I) THEN
+               IF (HVNODE(2,II)==I) THEN
                   HVTA = HVEXTT(II,UPPER)
                   GO TO 22
                ENDIF
@@ -414,20 +414,20 @@ C     NOW CALCULATE THE RESULTING TEMPERATURE AND CONCENTRATIONS
 C     IN THE DUCTS AND FANS
 C
          DO 40 J = 1, NCNODE(I)
-         IF (HVFLOW(I,J).LT.XX0) THEN
+         IF (HVFLOW(I,J)<XX0) THEN
             IB = ICMV (I,J)
             DELTTMV(IB) = DELTTMV(IB) - (HVTA-TBR(IB))*ABS(HVFLOW(I,J))
-            IF(OPTION(FHVLOSS).EQ.ON)THEN
+            IF(OPTION(FHVLOSS)==ON)THEN
                DELTTMV(IB) = DELTTMV(IB) + 
      .                       CHV(IB)*(TBR(IB)-TAMB(1))*HVDARA(IB)
             ENDIF
          ENDIF
          II = IZHVIE(MVINTNODE(I,J))
-         IF(II.NE.0.AND.HVFLOW(I,J).GT.XX0) THEN
+         IF(II/=0.AND.HVFLOW(I,J)>XX0) THEN
             IB = ICMV(I,J)
             HVTA = HVEXTT(II,UPPER)
             DELTTMV(IB) = DELTTMV(IB) - (HVTA-TBR(IB))*HVFLOW(I,J)
-            IF(OPTION(FHVLOSS).EQ.ON)THEN
+            IF(OPTION(FHVLOSS)==ON)THEN
                DELTTMV(IB) = DELTTMV(IB) + 
      .                       CHV(IB)*(TBR(IB)-TAMB(1))*HVDARA(IB)
             ENDIF
@@ -437,7 +437,7 @@ C
       RETURN
       END
 
-      DOUBLE PRECISION FUNCTION HVFAN(tsec,II,JJ,K,DP)
+      real*8 FUNCTION HVFAN(tsec,II,JJ,K,DP)
 
 C     Description:  This function returns the mass flow rate through a fan
 C           This function has been modified to prevent negative flow.  
@@ -459,7 +459,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cfast.fi"
       include "cshell.fi"
       LOGICAL firstc
-	double precision hvfanl, openfraction, qcffraction, tsec,
+	real*8 hvfanl, openfraction, qcffraction, tsec,
      . minimumopen
       DATA firstc/.true./
       SAVE firstc
@@ -524,7 +524,7 @@ C
       include "cenviro.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
-	double precision tsec, xx1, xx0
+	real*8 tsec, xx1, xx0
 
 !
 !    INITIALIZE THE PARAMETERS USED BY THE MECHANICAL VENTILATION ROUTINES
@@ -538,7 +538,7 @@ C
         I = HVNODE(1,II)
         J = HVNODE(2,II)
         Z = ZZHLAY(I,LOWER)
-        IF (HVORIEN(II).EQ.1) THEN
+        IF (HVORIEN(II)==1) THEN
 C     WE HAVE AN OPENING WHICH IS ORIENTED VERTICALLY - USE A SMOOTH CROSSOVER
 C     FIRST, CALCULATE THE SCALING LENGTH OF THE DUCT
            XXL = SQRT(AREXT(II))
@@ -559,7 +559,7 @@ C     THIS IS THE ACTUAL DUCT INITIALIZATION
       DO 30 II = 1, NEXT
         I = HVNODE(1,II)
         J = HVNODE(2,II)
-        IF (I.LT.N) THEN
+        IF (I<N) THEN
           Z = ZZHLAY(I,LOWER)
           ZL = MIN(Z,HVELXT(II))
           ZU = MIN(XX0,HVELXT(II)-ZL)
@@ -572,18 +572,18 @@ C     THIS IS THE ACTUAL DUCT INITIALIZATION
           HVEXTT(II,UPPER) = EXTA
           HVEXTT(II,LOWER) = EXTA
           HVP(J) =  EXPA - EXRA * HVGRAV * HVELXT(II)
-        END IF
+        endif
         DO 20 LSP = 1, NS
           IF (ACTIVS(LSP)) THEN
-            IF (I.LT.N) THEN
+            IF (I<N) THEN
                HVEXCN(II,LSP,UPPER) = ZZCSPEC(I,UPPER,LSP)
                HVEXCN(II,LSP,LOWER) = ZZCSPEC(I,LOWER,LSP)
             ELSE
                XXRHO = O2N2(LSP) * EXRA
                HVEXCN(II,LSP,UPPER) = XXRHO
                HVEXCN(II,LSP,LOWER) = XXRHO
-            END IF
-          END IF
+            endif
+          endif
    20   CONTINUE
    30 CONTINUE
       DO 40 I = 1, NHVPVAR
@@ -628,19 +628,19 @@ C
       include "cenviro.fi"
 
       DIMENSION PRPRIME(*)
-	double precision tsec, xx1, xx0
+	real*8 tsec, xx1, xx0
 
 C    SUM PRODUCT FLOWS ENTERING SYSTEM
 
       XX0 = 0.0D0
 	xx1 = 1.0d0
       NHVPR = NLSPCT*NHVSYS
-      IF(NPROD.NE.0)THEN
+      IF(NPROD/=0)THEN
          DO 3 I = 1, NHVPR
             PRPRIME(I) = xx0
     3    CONTINUE
       ENDIF
-      IF(NS.GT.0)THEN
+      IF(NS>0)THEN
          DO 1 ISYS = 1, NHVSYS
             HVMFSYS(ISYS) = XX0
             DO 2 K = 1, NS
@@ -657,25 +657,25 @@ C     FLOW INTO THE ISYS SYSTEM
         HVEFLO(UPPER,II) = HVFLOW(J,1) * HVFRAC(UPPER,II)
         HVEFLO(LOWER,II) = HVFLOW(J,1) * HVFRAC(LOWER,II)
         ISYS = IZHVSYS(J)
-        IF (HVFLOW(J,1).LT.XX0) THEN
+        IF (HVFLOW(J,1)<XX0) THEN
           HVMFSYS(ISYS) = HVMFSYS(ISYS) + HVFLOW(J,1)
-          IF(NPROD.NE.0)THEN
+          IF(NPROD/=0)THEN
              DO 10 K = 1, ns
                IF (ACTIVS(K)) DHVPRSYS(ISYS,K) = DHVPRSYS(ISYS,K) + 
      .                      ABS(HVEFLO(UPPER,II))*HVEXCN(II,K,UPPER) +
      .                      ABS(HVEFLO(LOWER,II))*HVEXCN(II,K,LOWER)
    10        CONTINUE
           ENDIF
-        END IF
+        endif
    20 CONTINUE
 
 C     FLOW OUT OF THE ISYS SYSTEM
 
-      IF(NPROD.NE.0)THEN
+      IF(NPROD/=0)THEN
          DO 24 K = 1, MIN(NS,9)
             IF(ACTIVS(K))THEN
                DO 25 ISYS = 1, NHVSYS
-                  IF (ZZHVM(ISYS).NE.XX0)THEN
+                  IF (ZZHVM(ISYS)/=XX0)THEN
                      DHVPRSYS(ISYS,K) = DHVPRSYS(ISYS,K) -
      .                   ABS(HVMFSYS(ISYS))*ZZHVPR(ISYS,K)/ZZHVM(ISYS)
                   ENDIF
@@ -686,7 +686,7 @@ C     FLOW OUT OF THE ISYS SYSTEM
 		  k = 11
             IF(ACTIVS(K))THEN
                DO 255 ISYS = 1, NHVSYS
-                  IF (ZZHVM(ISYS).NE.XX0)THEN
+                  IF (ZZHVM(ISYS)/=XX0)THEN
                      DHVPRSYS(ISYS,k) = DHVPRSYS(ISYS,k) -
      .                   ABS(HVMFSYS(ISYS))*ZZHVPR(ISYS,k)/ZZHVM(ISYS)
                   ENDIF
@@ -700,7 +700,7 @@ C     PACK THE SPECIES CHANGE FOR DASSL (ACTUALLY RESID)
             IF(ACTIVS(K))THEN
                DO 27 ISYS = 1, NHVSYS
                   ISOF = ISOF + 1
-                  IF (ZZHVM(ISYS).NE.XX0)THEN
+                  IF (ZZHVM(ISYS)/=XX0)THEN
                      PRPRIME(ISOF) = DHVPRSYS(ISYS,K)
                    ELSE
 	               PRPRIME(ISOF) = XX0
@@ -713,7 +713,7 @@ C     PACK THE SPECIES CHANGE FOR DASSL (ACTUALLY RESID)
             IF(ACTIVS(K))THEN
                DO 277 ISYS = 1, NHVSYS
                   ISOF = ISOF + 1
-                  IF (ZZHVM(ISYS).NE.XX0)THEN
+                  IF (ZZHVM(ISYS)/=XX0)THEN
                      PRPRIME(ISOF) = DHVPRSYS(ISYS,k)
                    ELSE
 	               PRPRIME(ISOF) = XX0
@@ -729,17 +729,17 @@ C    DEFINE FLOWS OR TEMPERATURE LEAVING SYSTEM
          ISYS = IZHVSYS(J)
 C        WE ALLOW ONLY ONE CONNECTION FROM A NODE TO AN EXTERNAL DUCT
          IB = ICMV(J,1)
-         IF (HVFLOW(J,1).GT.XX0) THEN
+         IF (HVFLOW(J,1)>XX0) THEN
             HVEXTT(II,UPPER) = TBR(IB)
             HVEXTT(II,LOWER) = TBR(IB)
             DO 40 K = 1, NS
                IF (ACTIVS(K))THEN
 ! Case 1 - finite volume and finite mass in the ISYS mechanical ventilation system
-                 IF (ZZHVM(ISYS).NE.XX0) THEN
+                 IF (ZZHVM(ISYS)/=XX0) THEN
                     HVEXCN(II,K,UPPER) = ZZHVPR(ISYS,K)/ZZHVM(ISYS)
                     HVEXCN(II,K,LOWER) = HVEXCN(II,K,UPPER)
 ! Case 2 - zero volume (no duct). Flow through the system is mdot(product)/mdot(total mass) - see keywordcases to change this
-                 ELSEIF(HVMFSYS(ISYS).NE.XX0) THEN
+                 ELSEIF(HVMFSYS(ISYS)/=XX0) THEN
                     HVEXCN(II,K,UPPER) = 
      .                          -(DHVPRSYS(ISYS,K)/HVMFSYS(ISYS))
                     HVEXCN(II,K,LOWER) = HVEXCN(II,K,UPPER)
@@ -749,7 +749,7 @@ C        WE ALLOW ONLY ONE CONNECTION FROM A NODE TO AN EXTERNAL DUCT
                  ENDIF
                ENDIF
    40       CONTINUE
-         END IF
+         endif
    30 CONTINUE
       RETURN
       END

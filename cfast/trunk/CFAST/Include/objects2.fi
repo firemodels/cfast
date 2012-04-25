@@ -5,7 +5,7 @@
       character*60 objnam(mxoin), omatl(0:mxoin)
       integer objlfm(mxoin),objtyp(mxoin),obtarg(mxoin), objset(mxoin)
 
-      double precision
+      real*8
      *objcri(3,0:mxoin),objmas(0:mxoin),objgmw(0:mxoin),
      *objhc(nv,0:mxoin),objvt(0:mxoin),omass(nv,0:mxoin),
      *oarea(nv,0:mxoin),ohigh(nv,0:mxoin),oqdot(nv,0:mxoin),

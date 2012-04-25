@@ -45,14 +45,14 @@
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-      end if
+      endif
       position = 1
         
       ! Compartment variables
       do j = 1, nm1
         do i = 1, 7
-          if (i.ne.2.or.izshaft(j).eq.0) then
-            if (i.ne.3.or.izshaft(j).eq.0) then
+          if (i/=2.or.izshaft(j)==0) then
+            if (i/=3.or.izshaft(j)==0) then
               position = position + 1
               if (validate) then
                 cRoom = toIntString(j)
@@ -64,14 +64,14 @@
                 headertext(1,position) = Labels(i+1)
                 headertext(2,position) = compartmentnames(j)
                 headertext(3,position) = LabelUnits(i+1)
-              end if
-            end if
-          end if
+              endif
+            endif
+          endif
         end do
       end do
         
       ! Fire variables. Main fire first, then object fires
-      if (lfbo.gt.0) then
+      if (lfbo>0) then
         do i = 1, 7
           position = position + 1
           if (validate) then
@@ -83,7 +83,7 @@
             headertext(1,position) = Labels(i+8)
             headertext(2,position) = 'Mainfire'
             headertext(3,position) = LabelUnits(i+8)
-          end if  
+          endif  
         end do
       endif
         do j = 1, numobjl
@@ -98,7 +98,7 @@
             headertext(1,position) = Labels(i+8)
             headertext(2,position) = objnin(j)
             headertext(3,position) = LabelUnits(i+8)
-          end if
+          endif
         end do
       end do
         
@@ -170,13 +170,13 @@
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-      end if
+      endif
       position = 1
       
       ! Species by compartment, then layer, then species type
       do i = 1, nm1
         do j = upper, lower
-          if (j.eq.upper.or.izshaft(j).EQ.0) then
+          if (j==upper.or.izshaft(j)==0) then
             do lsp = 1, NS
               if(tooutput(lsp)) then
                 position = position + 1
@@ -186,16 +186,16 @@
      *              trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
                   headertext(2,position) = LabelUnits((j-1)*11+lsp+1)
                   if (molfrac(lsp)) headertext(2,position) = 'mol frac'
-                  if (lsp.eq.9) headertext(2,position) = 'mg/m^3'
+                  if (lsp==9) headertext(2,position) = 'mg/m^3'
                   headertext(3,1) = ' '
                 else
                   headertext(1,position) = Labels((j-1)*11+lsp+1)
                   headertext(2,position) = compartmentnames(i)
                   headertext(3,position) = LabelUnits((j-1)*11+lsp+1)
-                end if
-              end if
+                endif
+              endif
             end do
-          end if
+          endif
          end do
       end do
             
@@ -275,7 +275,7 @@
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-      end if
+      endif
       position = 1
 
       ! Compartment surfaces temperatures
@@ -291,34 +291,34 @@
 	      headertext(1,position) = Labels(j+1)
 	      headertext(2,position) = compartmentnames(i)
 	      headertext(3,position) = LabelUnits(j+1)
-	    end if
+	    endif
 	  end do
 	end do
 
 !	All the additional targets
 
       do i = 1, nm1
-        IF (NTARG.GT.NM1) then
+        IF (NTARG>NM1) then
           DO ITARG = 1, NTARG-NM1
-            if (IXTARG(TRGROOM,ITARG).EQ.I) then
+            if (IXTARG(TRGROOM,ITARG)==I) then
 			  cDet = toIntString(itarg)
 			  do j = 1, 9
 			    position = position + 1
 			    if (validate) then
                   headertext(1,position) = trim(LabelsShort(j+5)) // 
      *                                     trim(cDet)
-                  if (LabelUnits(j+5).eq.'W') LabelUnits(j+5) = 'kW'
+                  if (LabelUnits(j+5)=='W') LabelUnits(j+5) = 'kW'
                   headertext(2,position) = LabelUnits(j+5)
                   headertext(3,position) = ' '
 	          else
 	            headertext(1,position) = Labels(j+5)
 	            headertext(2,position) = 'Target ' // trim(cDet)
 	            headertext(3,position) = LabelUnits(j+5)
-	          end if
+	          endif
 			  end do  
-            end if
+            endif
    30     end do
-        end if
+        endif
       end do
 
 !	Hall flow needs to go here
@@ -328,9 +328,9 @@
 	do i = 1, ndtect
 		cDet = toIntString(i)
         itype = ixdtect(i,dtype)
-		if (itype.eq.smoked) then
+		if (itype==smoked) then
 		  cType = 'Smoke'
-		elseif (itype.eq.heatd) then
+		elseif (itype==heatd) then
 	 	  cType = 'Heat'
 	  else
 	    cType = 'Other'
@@ -346,7 +346,7 @@
 	      write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
 	      headertext(2,position) = cTemp
 	      headertext(3,position) = LabelUnits(j+14)
-	    end if
+	    endif
         end do
       end do
             
@@ -403,7 +403,7 @@
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-      end if
+      endif
       position = 1
 
       !	Do the output by compartments
@@ -415,15 +415,15 @@ C     Natural flow through vertical vents (horizontal flow)
 
         do j = 1, n
           do k = 1, mxccv
-            if (iand(1,ishft(nw(i,j),-k)).ne.0) then
+            if (iand(1,ishft(nw(i,j),-k))/=0) then
               iijk = ijk(i,j,k)
-              if (j.eq.n) then
+              if (j==n) then
                 cFrom = 'Outside'
               else
                 cFrom = toIntString(j)
-              end if
+              endif
               do ih = 1, 4
-                if (j.ne.n.or.ih.lt.3) then
+                if (j/=n.or.ih<3) then
                   position = position + 1
                   cVent = toIntString(k)
                   cTo = toIntString(i)
@@ -440,21 +440,21 @@ C     Natural flow through vertical vents (horizontal flow)
      *                    'Vent #',trim(cVent),trim(cFrom),'-',trim(cTo)
                     headertext(2,position) = ctemp
                     headertext(3,position) = LabelUnits(ih+1)
-                  end if
-                end if
+                  endif
+                endif
               end do
-            end if
+            endif
           end do
         end do
 
 !	Natural flow through horizontal vents (vertical flow)
 
         do j = 1, n
-          if (nwv(i,j).ne.0.or.nwv(j,i).ne.0) then
+          if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
             cFrom = toIntString(i)
-            if (i.eq.n) cFrom = 'Outside'
+            if (i==n) cFrom = 'Outside'
             cTo = toIntString(j)
-			if (j.eq.n) cTo = 'Outside'
+			if (j==n) cTo = 'Outside'
 		    do ih = 1,2
 		      position = position + 1
 		      if (validate) then
@@ -469,47 +469,47 @@ C     Natural flow through vertical vents (horizontal flow)
      *                'Vent #',trim(cFrom),'-',trim(cTo)
 		        headertext(2,position) = cTemp
 		        headertext(3,position) = LabelUnits(ih+5)
-		      end if
+		      endif
 		    end do
-          end if
+          endif
         end do
 
 !	Mechanical ventilation
 
-        if (nnode.ne.0.and.next.ne.0) then
+        if (nnode/=0.and.next/=0) then
           do i = 1, next
             ii = hvnode(1,i)
-            if (ii.eq.irm) then
+            if (ii==irm) then
               inode = hvnode(2,i)
 	        cFrom = toIntString(ii)
-              if (ii.eq.n) cnum = 'Outside'
+              if (ii==n) cnum = 'Outside'
               cTo = toIntString(inode)
               do ih = 1,4
                 position = position + 1
                 if (validate) then
-                  if (ih.le.2) then
+                  if (ih<=2) then
                     headertext(1,position) = trim(LabelsShort(ih+7)) 
      *                //'Vent_' // trim(cFrom) // '-' // trim(cTo)
                   else
                     headertext(1,position) = trim(LabelsShort(ih+7)) //
      *               'Fan_' // trim(cTo)
-                  end if
+                  endif
                   headertext(2,position) = LabelUnits(ih+7)
                   headertext(3,position) = ' '
                 else
                   headertext(1,position) = Labels(ih+7)
-                  if (ih.le.2) then
+                  if (ih<=2) then
                     headertext(2,position) = 'Vent Connection at Node '
      *                                // trim(cFrom) // '-' // trim(cTo)
                   else
                     headertext(2,position) = 'Fan at Node ' // trim(cTo)
-                  end if
+                  endif
                   headertext(3,position) = LabelUnits(ih+7)
-                end if
+                endif
               end do
-            end if
+            endif
           end do
-        end if
+        endif
       end do
             
       ! write out header
@@ -554,21 +554,21 @@ C     Natural flow through vertical vents (horizontal flow)
       ! Compartment variables
       do j = 1, nm1
         do i = 1, 6
-          if (i.ne.2.or.izshaft(j).eq.0) then
-            if (i.ne.3.or.izshaft(j).eq.0) then
+          if (i/=2.or.izshaft(j)==0) then
+            if (i/=3.or.izshaft(j)==0) then
               position = position + 1
               cRoom = toIntString(j)
               headertext(1,position) = LabelUnits(i+1)
               headertext(2,position) = trim(LabelsShort(i+1)) // 
      *                                 trim(cRoom)
               call smvDeviceTag(headertext(2,position))
-            end if
-          end if
+            endif
+          endif
         end do
       end do
         
       ! Fire variables. Main fire first, then object fires
-      if (lfbo.gt.0) then
+      if (lfbo>0) then
         do i = 1, 4
           position = position + 1
           write (cTemp,'(a,i1)') trim(LabelsShort(i+7)), 0
@@ -608,7 +608,7 @@ C     Natural flow through vertical vents (horizontal flow)
       if(lMode) then
         write(15,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
         write(15,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-      end if
+      endif
 
       end subroutine ssHeadersSMV
 
@@ -624,21 +624,21 @@ C     Natural flow through vertical vents (horizontal flow)
       character*(*) function toIntString(i)
       integer i
       character string*256
-      if (i.lt.10) then
+      if (i<10) then
         write (string,'(i1)') i
-      else if (i.lt.100) then
+      else if (i<100) then
         write (string,'(i2)') i
-      else if (i.lt.1000) then
+      else if (i<1000) then
         write (string,'(i3)') i
-      else if (i.lt.10000) then
+      else if (i<10000) then
         write (string,'(i4)') i
-      else if (i.lt.100000) then
+      else if (i<100000) then
         write (string,'(i5)') i
-      else if (i.lt.1000000) then
+      else if (i<1000000) then
         write (string,'(i6)') i
       else
         string = 'error'
-      end if
+      endif
       toIntString = trim(string)
       return
       end function to IntString

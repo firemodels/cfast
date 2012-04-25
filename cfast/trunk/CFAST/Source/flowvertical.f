@@ -47,7 +47,7 @@ C
       DIMENSION XMVENT(2), ILAY(2), TMVENT(2)
       INTEGER TOPRM, BOTRM
       LOGICAL VFLOWFLG
-	double precision area, tsec
+	real*8 area, tsec
       DATA TOPRM /1/, BOTRM /2/
 
 C     THE SELECTION RULES ARE NOW IMPLEMENTED HERE.  THE CROSOVER
@@ -55,8 +55,8 @@ C     IS THE RELATIVE FRACTION OF THE VOLUME CLOESEST TO THE HOLE
 C     FROM WHICH THE MASS WILL COME
 
       VFLOWFLG = .FALSE.
-      IF (OPTION(FVFLOW).NE.ON) RETURN
-      IF (NVVENT.EQ.0) RETURN
+      IF (OPTION(FVFLOW)/=ON) RETURN
+      IF (NVVENT==0) RETURN
       VFLOWFLG = .TRUE.
       CROSOVER = 0.5D0
       OCO = 1.0D0 / CROSOVER
@@ -83,18 +83,18 @@ C
 
 C     DETERMINE ROOM WHERE FLOW COMES AND GOES
 
-            IF (IFLOW.EQ.1) THEN
+            IF (IFLOW==1) THEN
                IFRM = IBOT
                ITO = ITOP
             ELSE
                IFRM = ITOP
                ITO = IBOT
-            END IF
+            endif
 C
 C     DETERMINE MASS AND ENTHALPY FRACTIONS - FIRST "FROM," THEN "TO"
 C
-            IF (IFRM.LE.NM1) THEN
-               IF (IFRM.EQ.IBOT) THEN
+            IF (IFRM<=NM1) THEN
+               IF (IFRM==IBOT) THEN
                     VOLUP = VOLFRU(IFRM) * OCO
                     VOLUP = MIN(VOLUP, XX1)
                     VOLLOW = MAX(XX1 - VOLUP, XX0)
@@ -102,7 +102,7 @@ C
                     VOLLOW = VOLFRL(IFRM) * OCO
                     VOLLOW = MIN(VOLLOW,XX1)
                     VOLUP = MAX(XX1 - VOLLOW, XX0)
-               END IF
+               endif
                XXMU = VOLUP  * XMVENT(IFLOW)
                XXML = VOLLOW * XMVENT(IFLOW)
                XXQU = CP * XXMU * ZZTEMP(IFRM,UPPER)
@@ -120,7 +120,7 @@ C
             ENDIF
 
             FL = XX0
-            IF (XXTMP.LE.ZZTEMP(ITO,LOWER)) FL = XX1
+            IF (XXTMP<=ZZTEMP(ITO,LOWER)) FL = XX1
             FU = XX1 - FL
             FUMU = FU * XMVENT(IFLOW)
             FUML = FL * XMVENT(IFLOW)
@@ -130,23 +130,23 @@ C
 C
 C     DEPOSIT MASS AND ENTHALPY INTO "TO" ROOM VARIBLES (NOT OUTSIDE)
 C
-          IF (ITO.LE.NM1) THEN
+          IF (ITO<=NM1) THEN
              FLWVF(ITO,M,UPPER) = FLWVF(ITO,M,UPPER) + FUMU
              FLWVF(ITO,M,LOWER) = FLWVF(ITO,M,LOWER) + FUML
              FLWVF(ITO,Q,UPPER) = FLWVF(ITO,Q,UPPER) + FUQU
              FLWVF(ITO,Q,LOWER) = FLWVF(ITO,Q,LOWER) + FUQL
-          END IF
+          endif
           VMFLO(IFRM,ITO,UPPER) = FUMU + VMFLO(IFRM,ITO,UPPER)
           VMFLO(IFRM,ITO,LOWER) = FUML + VMFLO(IFRM,ITO,LOWER)
 C
 C     EXTRACT MASS AND ENTHALPY FROM "FROM" ROOM (NOT FROM OUTSIDE)
 C
-          IF (IFRM.LE.NM1) THEN
+          IF (IFRM<=NM1) THEN
              FLWVF(IFRM,M,UPPER) = FLWVF(IFRM,M,UPPER) - XXMU
              FLWVF(IFRM,M,LOWER) = FLWVF(IFRM,M,LOWER) - XXML
              FLWVF(IFRM,Q,UPPER) = FLWVF(IFRM,Q,UPPER) - XXQU
              FLWVF(IFRM,Q,LOWER) = FLWVF(IFRM,Q,LOWER) - XXQL
-          END IF
+          endif
           VMFLO(ITO,IFRM,UPPER) = VMFLO(ITO,IFRM,UPPER) - XXMU
           VMFLO(ITO,IFRM,LOWER) = VMFLO(ITO,IFRM,LOWER) - XXML
 C     SPECIES TRANSFER FOR VERTICAL VENTS
@@ -158,24 +158,24 @@ C     SPECIES TRANSFER FOR VERTICAL VENTS
 C
 C     DEPOSIT MASS AND ENTHALPHY INTO "TO" ROOM VARIABLES (NOT OUTSIDE)
 C
-                IF (ITO.LE.NM1) THEN
+                IF (ITO<=NM1) THEN
                    PMTOUP = (XXMIXU + XXMIXL) * FU
                    PMTOLP = (XXMIXU + XXMIXL) * FL
                    FLWVF(ITO,INDEX,UPPER) = FLWVF(ITO,INDEX,UPPER) +
      .                                      PMTOUP
                    FLWVF(ITO,INDEX,LOWER) = FLWVF(ITO,INDEX,LOWER) +
      .                                      PMTOLP
-                END IF
+                endif
 C
 C     EXTRACT MASS AND ENTHALPY FROM "FROM" ROOM (NOT FROM THE OUTSIDE)
 C
-                IF (IFRM.LE.NM1) THEN
+                IF (IFRM<=NM1) THEN
                    FLWVF(IFRM,INDEX,UPPER) = FLWVF(IFRM,INDEX,UPPER) -
      .                                       XXMIXU
                    FLWVF(IFRM,INDEX,LOWER) = FLWVF(IFRM,INDEX,LOWER) -
      .                                       XXMIXL
-                END IF
-             END IF
+                endif
+             endif
    50     CONTINUE
    30    CONTINUE
    60 CONTINUE
@@ -255,27 +255,27 @@ C
      +      XXONE)))
         GAMMAX = SQRT(ZZZ)
         PI = 4.0D0 * ATAN(XXONE)
-      END IF
+      endif
 C
 C     calculate the PABS(I), DELP, the other properties
 C     adjacent to the two sides of the vent, and DELDEN.
 C
       DP(1) = XXZERO
       DP(2) = XXZERO
-      IF (IBOT.LE.NM1) THEN
+      IF (IBOT<=NM1) THEN
         DP(2) = -G * (ZZRHO(IBOT,L)*ZZHLAY(IBOT,L)+ZZRHO(IBOT,U)*
      +      ZZHLAY(IBOT,U))
         RELP(2) = ZZRELP(IBOT)
       ELSE
         RELP(2) = EPA(ITOP)
-      END IF
+      endif
 C
-      IF (ITOP.LE.NM1) THEN
+      IF (ITOP<=NM1) THEN
         RELP(1) = ZZRELP(ITOP)
       ELSE
         DP(1) = -G * HRP(IBOT) * ERA(IBOT)
         RELP(1) = EPA(IBOT)
-      END IF
+      endif
       PABS(1) = RELP(1) + DP(1) + POFSET
       PABS(2) = RELP(2) + DP(2) + POFSET
 C
@@ -287,90 +287,90 @@ C
 C     ILAY(1) contains layer index in top room that is adjacent to vent
 C     ILAY(2) contains layer index in bottom room that is adjacent to vent
 C
-      IF (ZZVOL(ITOP,L).LE.XXTWO*ZZVMIN(ITOP)) THEN
+      IF (ZZVOL(ITOP,L)<=XXTWO*ZZVMIN(ITOP)) THEN
         ILAY(1) = U
       ELSE
         ILAY(1) = L
-      END IF
-      IF (ZZVOL(IBOT,U).LE.XXTWO*ZZVMIN(IBOT)) THEN
+      endif
+      IF (ZZVOL(IBOT,U)<=XXTWO*ZZVMIN(IBOT)) THEN
         ILAY(2) = L
       ELSE
         ILAY(2) = U
-      END IF
+      endif
 C
 C     DELDEN is density immediately above the vent less density
 C     immediately below the vent
 C
-      IF (ITOP.LE.NM1) THEN
+      IF (ITOP<=NM1) THEN
         DEN(1) = ZZRHO(ITOP,ILAY(1))
       ELSE
         DEN(1) = ERA(IBOT)
-      END IF
-      IF (IBOT.LE.NM1) THEN
+      endif
+      IF (IBOT<=NM1) THEN
         DEN(2) = ZZRHO(IBOT,ILAY(2))
       ELSE
         DEN(2) = ERA(ITOP)
-      END IF
+      endif
       DELDEN = DEN(1) - DEN(2)
 C
 C     calculate VST(I), the "standard" volume rate of flow
 C     through the vent into space I
 C
-      IF (DELP.GE.XXZERO) THEN
+      IF (DELP>=XXZERO) THEN
         RHO = DEN(2)
         EPS = DELP / PABS(2)
       ELSE
         RHO = DEN(1)
         EPS = -DELP / PABS(1)
-      END IF
+      endif
       X = XXONE - EPS
       COEF = 0.68D0 + 0.17D0 * EPS
       EPSCUT = EPSP * MAX (XXONE, RELP(1), RELP(2))
       EPSCUT = SQRT(EPSCUT)
       SRDELP = SQRT(ABS(DELP))
       FNOISE = XXONE
-      IF ((SRDELP/EPSCUT).LE.130.D0) FNOISE = XXONE - 
+      IF ((SRDELP/EPSCUT)<=130.D0) FNOISE = XXONE - 
      +    EXP(-SRDELP/EPSCUT)
-      IF (EPS.LE.0.1D-5) THEN
+      IF (EPS<=0.1D-5) THEN
         W = XXONE - 0.75D0 * EPS / GAMMA
       ELSE
-        IF (EPS.LT.GAMCUT) THEN
+        IF (EPS<GAMCUT) THEN
           GG = X ** (XXONE/GAMMA)
           FF = SQRT((XXTWO*GAMMA/(GAMMA-XXONE))*GG*GG*(XXONE-X/GG))
         ELSE
           FF = GAMMAX
-        END IF
+        endif
         W = FF / SQRT(EPS+EPS)
-      END IF
+      endif
       RHO2 = 2.0D0/RHO
       V = FNOISE * COEF * W * SQRT(RHO2) * AVENT * SRDELP
 C
 C     calculate VST for DELP > 0, DELP < 0 and DELP = 0
 C
-      IF (DELP.GT.XXZERO) THEN
+      IF (DELP>XXZERO) THEN
         VST(1) = V
         VST(2) = XXZERO
-      ELSE IF (DELP.LT.XXZERO) THEN
+      ELSE IF (DELP<XXZERO) THEN
         VST(1) = XXZERO
         VST(2) = V
       ELSE
         VST(1) = XXZERO
         VST(2) = XXZERO
-      END IF
+      endif
 C
 C     calculate VEX, the exchange volume rate of flow through the vent
 C
-      IF (DELDEN.GT.XXZERO.AND.AVENT.NE.XXZERO) THEN
+      IF (DELDEN>XXZERO.AND.AVENT/=XXZERO) THEN
 C
 C     unstable configuration, calculate nonzero VEX
 C
-        IF (NSHAPE.EQ.1) THEN
+        IF (NSHAPE==1) THEN
           CSHAPE = 0.754D0
           D = XXTWO * SQRT(AVENT/PI)
         ELSE
           CSHAPE = 0.942D0
           D = SQRT(AVENT)
-        END IF
+        endif
         DELPFD = CSHAPE ** 2 * G * DELDEN * D ** 5 / (XXTWO*AVENT**2)
         DPDDPF = ABS(DELP/DELPFD)
         VEXMAX = 0.1D0 * SQRT(XXTWO*G*DELDEN*SQRT(AVENT**5)/(DEN(1)+
@@ -381,7 +381,7 @@ C
 C     Stable configuration, set VEX = 0
 C
         VEX = XXZERO
-      END IF
+      endif
 C
 C     calculate VVENT(I), the volume rate of flow through the vent into space i
 C
@@ -400,7 +400,7 @@ C
       IROOM(2) = ITOP
       DO 20 I = 1, 2
         XMVENT(I) = DENVNT(I) * VVENT(I)
-        IF (IROOM(I).LE.NM1) THEN
+        IF (IROOM(I)<=NM1) THEN
 C
 C        IROOM(I) is an inside room so use the environment variable
 C        ZZTEMP for temperature 
@@ -411,7 +411,7 @@ C
 C        IROOM(I) is an outside room so use ETA(IROOM(3-I) for temperature
 C
           TMVENT(I) = ETA(IROOM(3-I))
-        END IF
+        endif
    20 CONTINUE
       RETURN
       END
@@ -425,13 +425,13 @@ C
       include "vents.fi"
 
 	integer itop, ibot, hshape, hface, iinvvent
-	double precision harea
+	real*8 harea
 
 	itop = ivvent(iinvvent,1)
 	ibot = ivvent(iinvvent,2)
 	harea = vvarea(itop,ibot)
 	hshape = vshape(itop,ibot)
-	if (itop.gt.nm1) then
+	if (itop>nm1) then
 		hface = 6
 	else
 		hface = 5

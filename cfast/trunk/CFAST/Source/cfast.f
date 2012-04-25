@@ -51,7 +51,7 @@
 !     initial output
 
       write (logerr, 5000) mpsdatc
-      if (errorcode.gt.0) then
+      if (errorcode>0) then
           write (*, 5001) errorcode
           stop 
       else
@@ -68,7 +68,7 @@
       call initslv
 
       call readinputfile (errorcode)
-      if (errorcode.le.0) then
+      if (errorcode<=0) then
 
           if (header) call disclaim('CFAST')
 
@@ -93,7 +93,7 @@
           end do
 
           call initwall(tstop,errorcode)
-          if (errorcode.le.0) then
+          if (errorcode<=0) then
 
               stime = 0.0d0
               itmstp = 1
@@ -111,8 +111,8 @@
               write (logerr,5003) tend - tbeg
               errorcode = 0
 
-          end if
-      end if
+          endif
+      endif
 
 !     errors
 
@@ -226,10 +226,10 @@
       do i = 1, nequals
           pinit(i) = p(i)
       end do
-      if (option(fpsteady).eq.1) then
+      if (option(fpsteady)==1) then
           call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info,
      *    work,lrw)
-      elseif (option(fpsteady).eq.2) then
+      elseif (option(fpsteady)==2) then
           ioff0 = nalg1
 
           ! upper layer temperatures
@@ -240,12 +240,12 @@
           ii = 0
           ieq1 = izwmap2(1,lfbo)
           ieq2 = izwmap2(3,lfbo)
-          if(ieq1.ne.0)then
+          if(ieq1/=0)then
               ii = ii + 1
               nalg2 = nalg2 + 1
               hhvp(ii+ioff0+1) = p(ieq1)
           endif
-          if(ieq2.ne.0)then
+          if(ieq2/=0)then
               ii = ii + 1
               nalg2 = nalg2 + 1
               hhvp(ii+ioff0+1) = p(ieq2)
@@ -254,7 +254,7 @@
           call snsqe(gres3,gjac,iopt,nalg2,hhvp,deltamv,tol,nprint,info,
      *    work,lrw)
       else
-          if (nhvalg.gt.0) then
+          if (nhvalg>0) then
               call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nm1)
      *        ,deltamv(1+nm1),tol,nprint,info,work,lrw)
           else
@@ -262,10 +262,9 @@
           endif
       endif
 
-C*** couldn't find a solution.  either try to recover or stop
-
-      if (info.ne.1) then
-          if(option(fpsteady).ne.off)then
+      ! couldn't find a solution.  either try to recover or stop
+      if (info/=1) then
+          if(option(fpsteady)/=off)then
               option(fpsteady) = off
               call xerror('Trying non-steady initial guess' ,
      .        0,101,1)
@@ -275,10 +274,9 @@ C*** couldn't find a solution.  either try to recover or stop
      .    0,102,2)
       endif
 
-c*** if a room is not connected to any other room via a horizontal or
-c    vertical vent then do not use the snsqe pressure solution,
-c    use the original pressure solution that was based on rho*g*h.
-
+      ! if a room is not connected to any other room via a horizontal or
+      ! vertical vent then do not use the snsqe pressure solution,
+      ! use the original pressure solution that was based on rho*g*h.
       do i = 1, nm1
           if(izcon(i))p(i+nofp) = hhvp(i)
       end do
@@ -288,23 +286,21 @@ c    use the original pressure solution that was based on rho*g*h.
       do i = 1, nhvtvar
           p(i+noftmv) = hhvp(i+nm1+nhvpvar)
       end do
-      if (option(fpsteady).eq.2) then
+      if (option(fpsteady)==2) then
           p(lfbo+noftu) = hhvp(1+ioff0)
           ii = 0
-          if(ieq1.ne.0)then
+          if(ieq1/=0)then
               ii = ii + 1
               p(ieq1) = hhvp(ii+ioff0+1)
           endif
-          if(ieq2.ne.0)then
+          if(ieq2/=0)then
               ii = ii + 1
               p(ieq2) = hhvp(ii+ioff0+1)
           endif
       endif
       call resid(t,p,pdzero,pdold,ires,rpar,ipar)
 
-C     Added to resync the species mass with the total mass of each layer at
-C     the new pressure  12/01/92
-C
+      ! Added to resync the species mass with the total mass of each layer at the new pressure
       nodes = nofprd+1
       call resync(p,nodes)
       do i = 1, nhvpvar
@@ -396,7 +392,7 @@ C
      .firstpassforsmokeview
       integer all, some, ios, ierror
       integer*2 filecount
-      double precision ton, toff
+      real*8 ton, toff
       character*133 messg
       parameter (all = 1,some = 0)
       external resid, jac
@@ -427,33 +423,33 @@ C
       firstpassforsmokeview = .true.
 
       ! Output options
-      if (dprint.lt.x0001.or.lprint.eq.0) then
+      if (dprint<x0001.or.lprint==0) then
           iprint = .false.
           tprint = tstop + xx1
       else
           iprint = .true.
-      end if
+      endif
 
-      if (dplot.lt.x0001.or.ldiagp.le.0) then
+      if (dplot<x0001.or.ldiagp<=0) then
           iplot = .false.
           tplot = tstop + xx1
       else
           iplot = .true.
-      end if
+      endif
 
-      if (ddump.lt.x0001.or.ldiago.le.0) then
+      if (ddump<x0001.or.ldiago<=0) then
           idump = .false.
           tdump = tstop + xx1
       else
           idump = .true.
-      end if
+      endif
 
-      if (dspread.lt.x0001.or.lcopyss.le.0) then
+      if (dspread<x0001.or.lcopyss<=0) then
           ispread = .false.
           tspread = tstop + xx1
       else
           ispread = .true.
-      end if
+      endif
 
       call setinfo (info, rwork)
 
@@ -468,12 +464,12 @@ C
           vrtol(i+nofvu) = rtol
           vatol(i+noftl) = atol
           vrtol(i+noftl) = rtol
-          if (option(foxygen).eq.on) then
+          if (option(foxygen)==on) then
               vatol(i+nofoxyu)=atol
               vrtol(i+nofoxyu)=rtol
               vatol(i+nofoxyl)=atol
               vrtol(i+nofoxyl)=rtol
-          end if
+          endif
       end do
       do i = 1, nhvpvar
           vatol(i+nofpmv) = ahvptol
@@ -504,20 +500,20 @@ C
 
       ! Setting initial vector
       call setp0(p0, izp0, pmxmn, izpmxmn, iofili, ierror)
-      if (ierror.gt.0) then
+      if (ierror>0) then
           return
-      end if
-      if (izp0(0).eq.on) then
+      endif
+      if (izp0(0)==on) then
           do i = 1, nodes
-              if (izp0(i).eq.on) p(i) = p0(i)
+              if (izp0(i)==on) p(i) = p0(i)
           end do
 
           ! if we set pressures with setp0 then over-ride steady state pressure
           ! initialization
           do i = 1, nm1
-              if(izp0(i+nofp).eq.on)option(fpsteady) = off
+              if(izp0(i+nofp)==on)option(fpsteady) = off
           end do
-      end if
+      endif
 
       ! construct initial solution
       do i = 1, nequals
@@ -573,7 +569,7 @@ C
           icode = 1
       endif
       ! If the stop file exists or the esc key has been pressed, then quit
-      if (icode.eq.1) then
+      if (icode==1) then
           write (logerr, 5000) t, dt
           return
       endif
@@ -589,10 +585,10 @@ C
       endif
 
       ! now do normal output (printout, spreadsheets, ...)
-      if (idid.gt.0) then
+      if (idid>0) then
           ltarg = .false.
 
-          if (t+x0001.gt.min(tprint,tstop).and.iprint) then
+          if (t+x0001>min(tprint,tstop).and.iprint) then
 
               ! update target temperatures (only need to update just before we print target temperatures).
               ! if we actually use target temperatures in a calculation then this call will need to be moved to inside resid.
@@ -611,21 +607,21 @@ C
               numstep = 0
               numresd = 0
               prttime = xx0
-          end if
+          endif
 
-          if (t+x0001.gt.min(tdump,tstop).and.idump) then
+          if (t+x0001>min(tdump,tstop).and.idump) then
               itmstp = tdump + 1.0d0
               if(.not.ltarg)then
                   call target(steady)
                   ltarg = .true.
               endif
               call dumper(itmstp,ierror)
-              if (ierror.ne.0) return
+              if (ierror/=0) return
               tdump = tdump + ddump
               call statusoutput (t, dt, errorcode)
-          end if
+          endif
 
-          if (t+x0001.gt.min(tplot,tstop).and.iplot) then
+          if (t+x0001>min(tplot,tstop).and.iplot) then
               itmstp = tplot
               if(.not.ltarg)then
                   call target(steady)
@@ -651,9 +647,9 @@ C
               call spreadsheetsmv(t,ierror)
               tplot = tplot + dplot
               call statusoutput (t, dt, errorcode)
-          end if
+          endif
 
-          if (t+x0001.gt.min(tspread,tstop).and.ispread) then
+          if (t+x0001>min(tspread,tstop).and.ispread) then
               itmstp = tspread
               if(.not.ltarg)then
                   call target(steady)
@@ -663,24 +659,24 @@ C
               call spreadsheetspecies (t, ierror)
               call spreadsheetflow (t, ierror)
               call spreadsheetflux (t, ierror)
-              if (ierror.ne.0) return
+              if (ierror/=0) return
               tspread =tspread + dspread
               call statusoutput (t, dt, errorcode)
-          end if
+          endif
 
           ! diagnostics
-          if (t+x0001.gt.tpaws) then
+          if (t+x0001>tpaws) then
               itmstp = tpaws
               call result(t,1)
               call debugpr(1,t,dt,ieqmax)
               tpaws = tstop + 1.0d0
               call statusoutput (t, dt, errorcode)
-          end if
+          endif
 
           ! find the interval next discontinuity is in
           idisc = 0
           do i = 1, izndisc
-              if(t.ge.zzdisc(i-1).and.t.lt.zzdisc(i))then
+              if(t>=zzdisc(i-1).and.t<zzdisc(i))then
                   idisc = i
                   exit
               endif
@@ -688,16 +684,16 @@ C
           tout = min(tprint,tplot,tdump,tspread,tpaws,tstop)
 
           ! if there is a discontinuity then tell DASSL
-          if(idisc.ne.0)then
+          if(idisc/=0)then
               tout = min(tout,zzdisc(idisc))
               rwork(1) = zzdisc(idisc)
               info(4) = 1
           else
               info(4) = 0
           endif
-      end if
+      endif
 
-      if (t.lt.tstop) then
+      if (t<tstop) then
           idset = 0
           ipar(2) = some
           told = t
@@ -708,7 +704,7 @@ C
           ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
           call setderv(-2)
           ieqmax = ipar(3)
-          if (option(fpdassl).eq.on) call debugpr (3,t,dt,ieqmax)
+          if (option(fpdassl)==on) call debugpr (3,t,dt,ieqmax)
           ostptime = ton - toff
           call cptime(toff)
           stime = t
@@ -720,20 +716,20 @@ C
 
           ! make sure dassl is happy
 
-          if (idid.lt.0) then
+          if (idid<0) then
               call fnd_comp(iofilo,ieqmax)
               write (messg,101)idid
   101         format('error, dassl - idid=', i3)
               call xerror(messg,0,1,1)
               ierror = idid
               return
-          end if
+          endif
 
           dt = t - told
           if(izdtflag)then
-              if(dt.lt.zzdtcrit)then
+              if(dt<zzdtcrit)then
                   izdtnum = izdtnum + 1
-                  if(izdtnum.gt.izdtmax)then
+                  if(izdtnum>izdtmax)then
                       ! model has hung (izdtmax consective time step sizes were below zzdtcrit)
                       write(messg,103)izdtmax,zzdtcrit,t
   103                 format
@@ -763,7 +759,7 @@ C
           td = min(tdtect,tobj)
 
           ! a detector is the first thing that went off
-          if (ifdtect.gt.0.and.tdtect.le.td) then
+          if (ifdtect>0.and.tdtect<=td) then
               isensor = ifdtect
               isroom = ixdtect(isensor,droom)
               call updtect(mdset,told,dt,ndtect,zzhlay,zztemp,
@@ -775,21 +771,21 @@ C
      .        f6.1,' seconds in compartment ',i3)
               call xerror(lbuf,0,1,0)
               ! check to see if we are backing up for detectors going off
-              if (option(fbtdtect).eq.on) then
+              if (option(fbtdtect)==on) then
                   idsave = idset
               else
                   idsave = ifobj
                   td = tobj
                   call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
                   idset = 0
-              end if
+              endif
           else
               call updtect(mdupdt,told,dt,ndtect,zzhlay,zztemp,
      .        xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
-          end if
+          endif
 
           ! object ignition is the first thing to happen
-          if (ifobj.gt.0.and.tobj.le.td) then
+          if (ifobj>0.and.tobj<=td) then
               call updobj(mdset,told,dt,ifobj,tobj,ierror)
               write(iofilo,5003) ifobj,trim(objnin(ifobj)),
               ! need a trick to keep from reporting an object which ignited prior to the simulation from
@@ -798,7 +794,7 @@ C
  5003         format(/,' Object #',i3,' (',a,') ignited at ',
      .        f10.3,' seconds')
               ! check to see if we are backing up objects igniting
-              if (option(fbtobj).eq.on) then
+              if (option(fbtobj)==on) then
                   idsave = ifobj
               else
                   idsave = idset
@@ -807,17 +803,17 @@ C
                   objset(ifobj) = 0
                   call setinfo(info,rwork)
                   ifobj = 0
-              end if
+              endif
           else
               call updobj(mdupdt,told,dt,ifobj,tobj,ierror)
-          end if
+          endif
 
-          if (idsave.ne.0)then
+          if (idsave/=0)then
 
               ! a detector has activated so call dassl to integrate backwards
               ! in time to t=td.  this is better than using simple linear interpolation
               ! because in general dassl could be taking very big time steps
-              if(told.le.td.and.td.lt.t)then
+              if(told<=td.and.td<t)then
                   call result(t,1)
                   ipar(2) = some
                   tdout = td
@@ -830,7 +826,7 @@ C
      +            vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
 
                   ! make sure dassl is happy (again)
-                  if (idid.lt.0) then
+                  if (idid<0) then
                       call fnd_comp(iofilo,ipar(3))
                       write (messg,101)idid
                       call xerror(messg,0,1,-2)
@@ -841,22 +837,22 @@ C
      .                0,1,1)
                       ierror = idid
                       return
-                  end if
+                  endif
 
                   ! reset dassl flags to integrate forward from t=td and
                   ! call resid to get product info at sprinkler activation time
-                  if (ifdtect.gt.0) idset = idsave
+                  if (ifdtect>0) idset = idsave
                   dt = t - told
                   ipar(2) = all
 
                   ! call resid to get product info at the correct time and
                   ! to save fire release rates in room where detector has
-                  ! activated.  (this happens because idset .ne. 0)
+                  ! activated.  (this happens because idset /= 0)
                   call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
                   call updrest(nodes, nequals, nlspct, t, told, p, pold,
      .            pdnew, pdold, pdzero)
                   call setinfo(info,rwork)
-              else if (td.eq.t) then
+              else if (td==t) then
                   call setinfo(info,rwork)
                   call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
               else
@@ -882,10 +878,10 @@ C
           ! calculate gas dosage
           call toxic(dt)
 
-          if (option(fdebug).eq.on) call debugpr(2,t,dt,ieqmax)
+          if (option(fdebug)==on) call debugpr(2,t,dt,ieqmax)
           numstep = numstep + 1
           go to 80
-      end if
+      endif
       return
 
       end
@@ -922,7 +918,7 @@ c
 
       call trheat(1,xplicit,dt,pdzero,pdnew)
       call trheat(1,mplicit,dt,pdzero,pdnew)
-      if (nlspct.gt.0) call resync(p,nodes+1)
+      if (nlspct>0) call resync(p,nodes+1)
 
       do i = 1, nequals
           pold(i) = p(i)
@@ -951,50 +947,50 @@ c
 
       ICODE = 0
       CALL GRABKY(CH,HIT)
-      IF (HIT.GT.0) THEN
-          IF (CH.EQ.27) THEN
+      IF (HIT>0) THEN
+          IF (CH==27) THEN
               ICODE = 1
               RETURN
-          ELSEIF (HIT.GT.1) THEN
-              IF (OPTION(FKEYEVAL).EQ.ON) THEN
-                  IF (CH.EQ.59) THEN
+          ELSEIF (HIT>1) THEN
+              IF (OPTION(FKEYEVAL)==ON) THEN
+                  IF (CH==59) THEN
                       WRITE (*,5010) T, DT
                       IF (SLVHELP()) ICODE = 1
-                  ELSE IF (CH.EQ.60) THEN
-                      IF (OPTION(FDEBUG).EQ.ON) THEN
+                  ELSE IF (CH==60) THEN
+                      IF (OPTION(FDEBUG)==ON) THEN
                           OPTION(FDEBUG) = OFF
                           WRITE (*,*) 'Debug is now off'
                           WRITE (*,*)
                       ELSE
                           OPTION(FDEBUG) = ON
-                      END IF
-                  ELSE IF (CH.EQ.61) THEN
+                      endif
+                  ELSE IF (CH==61) THEN
                       SWITCH(1,NR) = .NOT. SWITCH(1,NR)
                       WRITE (*,*) 'Toggle flow field printing to ',
      +                SWITCH(1,NR)
-                  ELSE IF (CH.EQ.62) THEN
+                  ELSE IF (CH==62) THEN
                       CALL DEBUGPR(1,T,DT,IEQMAX)
-                  ELSE IF (CH.EQ.63) THEN
+                  ELSE IF (CH==63) THEN
                       WRITE (*,5010) T, DT
-                  ELSE IF (CH.EQ.64) THEN
+                  ELSE IF (CH==64) THEN
                       WRITE (*,5010) T, DT
                       WRITE (*,*) 'Enter time at which to pause: '
                       READ (*,*) RCODE
                       TPAWS = RCODE
                       TOUT = MIN(TPAWS,TOUT)
-                  ELSE IF (CH.EQ.65) THEN
-                      IF (OPTION(FPDASSL).EQ.ON) THEN
+                  ELSE IF (CH==65) THEN
+                      IF (OPTION(FPDASSL)==ON) THEN
                           OPTION(FPDASSL) = OFF
                           WRITE (*,*) 'DASSL debug is now off'
                       ELSE
                           OPTION(FPDASSL) = ON
-                      END IF
-                  END IF
+                      endif
+                  endif
               ELSE
                   WRITE (*,5010) T, DT
-              END IF
-          END IF
-      END IF
+              endif
+          endif
+      endif
 
       RETURN
  5010 FORMAT (' Time = ',1PG12.4,', dt = ',1PG12.4)
@@ -1028,15 +1024,15 @@ c
      +'************************************************************'
 
    10 call grabky(ch,hit)
-      if (hit.eq.0) go to 10
-      if (ch.eq.27) then
+      if (hit==0) go to 10
+      if (ch==27) then
           slvhelp = .true.
           write (iofilo,*) 'Run terminated at user request'
       else
           slvhelp = .false.
           write (iofilo,*) 'continuing'
           write (iofilo,*)
-      end if
+      endif
       return
       end
 
@@ -1059,18 +1055,18 @@ c
       end do
       INFO(3) = 1
       INFO(2) = 1
-      IF (STPMAX.LE.XX0) THEN
+      IF (STPMAX<=XX0) THEN
           INFO(7) = 0
       ELSE
           INFO(7) = 1
           RWORK(2) = STPMAX
-      END IF
-      IF (DASSLFTS.LT.XX0) THEN
+      endif
+      IF (DASSLFTS<XX0) THEN
           INFO(8) = 0
       ELSE
           INFO(8) = 1
           RWORK(3) = DASSLFTS
-      END IF
+      endif
 
 C     SETTING JACOBIAN FLAG
 
@@ -1181,11 +1177,11 @@ C     SETTING JACOBIAN FLAG
       ! computed for species.  Further, temperature profiles are only
       ! updated when RESID is called by SOLVE.
 
-      if (ipar(2).eq.some) then
+      if (ipar(2)==some) then
           update = 0
       else
           update = 1
-      end if
+      endif
 
       epsp = rpar(1)
 
@@ -1202,10 +1198,10 @@ C     SETTING JACOBIAN FLAG
      .flwmv,delta(nofpmv+1),delta(noftmv+1),
      .xprime(nofhvpr+1),nprod,ierror,hvacflg,filtered)
 
-      IF (IERROR.NE.0) THEN
+      IF (IERROR/=0) THEN
           IRES = -2
           RETURN
-      END IF
+      endif
 
       ! calculate heat and mass flows due to fires
       call fires (tsec,flwf,update)
@@ -1217,18 +1213,18 @@ C     SETTING JACOBIAN FLAG
       call cjet (flwcjet,flxcjet)
       call cvheat (flwcv,flxcv)
       call rdheat (flwrad,flxrad,ierror)
-      if (ierror.ne.0) then
+      if (ierror/=0) then
           ires = -2
           return
-      end if
+      endif
 
       ! calculate hcl deposition to walls
 
       call hcl (flwhcl, flxhcl,ierror)
-      if (ierror.ne.0) then
+      if (ierror/=0) then
           ires = -2
           return
-      end if
+      endif
 
       ! reset parallel data structures
 
@@ -1291,7 +1287,7 @@ C     SETTING JACOBIAN FLAG
               flwtot(iroom,1,uu) = flwtot(iroom,1,uu)+flwhcl(iroom,1,uu)
               flwtot(iroom,8,ll) = flwtot(iroom,8,ll)+flwhcl(iroom,8,ll)
               flwtot(iroom,8,uu) = flwtot(iroom,8,uu)+flwhcl(iroom,8,uu)
-          end if
+          endif
 
           flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) +
      +    flwrad(iroom,ll) + flwcjet(iroom,ll)
@@ -1302,7 +1298,7 @@ C     SETTING JACOBIAN FLAG
           ! this is done by combining flows from to both
           ! layers into upper layer flow and setting lower layer flow to
           ! zero.
-          if(izshaft(iroom).eq.1)then
+          if(izshaft(iroom)==1)then
               do iprod = 1, nprod + 2
                   flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) +
      .            flwtot(iroom,iprod,ll)
@@ -1312,10 +1308,10 @@ C     SETTING JACOBIAN FLAG
 
           ! calculate temperature of flow going into the upper layer
           ! of each room
-          IF(JACCOL.LE.0)THEN
+          IF(JACCOL<=0)THEN
               XQU = FLWTOT(IROOM,Q,UPPER)
               XMU = FLWTOT(IROOM,M,UPPER)
-              IF(XMU.NE.0.0D0)THEN
+              IF(XMU/=0.0D0)THEN
                   ZZFTEMP(IROOM,UPPER) = XQU/(CP*XMU)
               ELSE
                   ZZFTEMP(IROOM,UPPER) = TAMB(IROOM)
@@ -1331,15 +1327,15 @@ C     SETTING JACOBIAN FLAG
               if (switch(iwall,iroom)) then
                   flxtot(iroom,iwall) = flxcv(iroom,iwall) +
      +            flxrad(iroom,iwall) + flxcjet(iroom,iwall)
-              end if
+              endif
           end do
       end do
 
       ! set nprod to zero when we are only solving "some" of the ode's
-      if (ipar(2).eq.some) then
+      if (ipar(2)==some) then
           nprodsv = nprod
           nprod = 0
-      end if
+      endif
 
       ! calculate rhs of ode's for each room
       do iroom = 1, nirm
@@ -1352,7 +1348,7 @@ C     SETTING JACOBIAN FLAG
           tmu = flwtot(iroom,m,uu)
           tml = flwtot(iroom,m,ll)
 
-          if(option(foxygen).eq.on)then
+          if(option(foxygen)==on)then
               oxydu = flwtot(iroom,4,uu)
               oxydl = flwtot(iroom,4,ll)
           endif
@@ -1362,36 +1358,36 @@ C     SETTING JACOBIAN FLAG
 
           ! upper layer temperature equation
           tlaydu = (qu-cp*tmu*zztemp(iroom,uu)) / (cp*zzmass(iroom,uu))
-          if (option(fode).eq.on) then
+          if (option(fode)==on) then
               tlaydu = tlaydu + pdot / (cp*zzrho(iroom,uu))
-          end if
+          endif
 
           ! upper layer volume equation
           vlayd = (gamma-1.0d0) * qu / (gamma*pabs)
-          if (option(fode).eq.on) then
+          if (option(fode)==on) then
               vlayd = vlayd - zzvol(iroom,uu) * pdot / (gamma*pabs)
-          end if
-          if(izshaft(iroom).eq.1)vlayd = xx0
+          endif
+          if(izshaft(iroom)==1)vlayd = xx0
 
           ! lower layer temperature equation
           tlaydl = (ql-cp*tml*zztemp(iroom,ll)) / (cp*zzmass(iroom,ll))
-          if (option(fode).eq.on) then
+          if (option(fode)==on) then
               tlaydl = tlaydl + pdot / (cp*zzrho(iroom,ll))
-          end if
+          endif
 
           xprime(iroom) = pdot
           xprime(iroom+noftl) = tlaydl
           xprime(iroom+nofvu) = vlayd
           xprime(iroom+noftu) = tlaydu
 
-          if(option(foxygen).eq.on)then
+          if(option(foxygen)==on)then
               xprime(iroom+nofoxyu) = oxydu
               xprime(iroom+nofoxyl) = oxydl
           endif
       end do
 
       ! compute product of combustion terms
-      if (nprod.gt.0.and.ipar(2).eq.all) then
+      if (nprod>0.and.ipar(2)==all) then
           iprodu = nofprd - 1
           do iprod = 1, nprod
               do iroom = 1, nm1
@@ -1405,27 +1401,27 @@ C     SETTING JACOBIAN FLAG
                   ! of the hall then don't solve for it using dassl
                   produ = flwtot(iroom,iprod+2,uu)
 
-                  if (hinter.lt.hceil) then
+                  if (hinter<hceil) then
                       xprime(iprodu) = produ
-                  else if(hinter.ge.hceil.and.flwtot(iroom,m,uu).lt.xx0)
+                  else if(hinter>=hceil.and.flwtot(iroom,m,uu)<xx0)
      +            then
                       xprime(iprodu) = produ
                   else
                       xprime(iprodu) = xx0
-                  end if
-                  if (hinter.gt.xx0) then
+                  endif
+                  if (hinter>xx0) then
                       xprime(iprodl) = prodl
-                  else if (hinter.le.xx0.and.flwtot(iroom,m,ll).gt.xx0)
+                  else if (hinter<=xx0.and.flwtot(iroom,m,ll)>xx0)
      +            then
                       xprime(iprodl) = prodl
                   else
                       xprime(iprodl) = xx0
-                  end if
+                  endif
               end do
           end do
 
           ! HCL deposition.  note that these are done only if hcldep is set
-          if (hcldep.ne.0) then
+          if (hcldep/=0) then
               iwhcl = nofhcl
               do iroom = 1, nm1
                   do iwall = 1, nwal
@@ -1433,14 +1429,14 @@ C     SETTING JACOBIAN FLAG
                       xprime(iwhcl) = flxhcl(iroom,iwall)
                   end do
               end do
-          end if
+          endif
 
           ! smoke deposition and agglomeration.
           ! note that these are done only if smkagl is set
           do i = nofsmkw + 1, nofsmkw + 4 * nm1 * (smkagl+smkagl)
               xprime(i) = xx0
           end do
-      end if
+      endif
 
       ! residuals for pressure
       do i = nofp + 1, nofp + nm1
@@ -1453,7 +1449,7 @@ C     SETTING JACOBIAN FLAG
       end do
 
       ! residual for oxygen
-      if(option(foxygen).eq.on)then
+      if(option(foxygen)==on)then
           do i = 1, nm1
               delta(i+nofoxyu) = xprime(i+nofoxyu) - xpsolve(i+nofoxyu)
               delta(i+nofoxyl) = xprime(i+nofoxyl) - xpsolve(i+nofoxyl)
@@ -1467,7 +1463,7 @@ C     SETTING JACOBIAN FLAG
       call trheat(0,mplicit,dt,xpsolve,delta)
 
       ! residuals for stuff that is solved in solve itself, and not by dassl
-      if (nprod.ne.0) then
+      if (nprod/=0) then
 
           ! residuals for gas layer species
           do i = nofprd + 1, nofprd + 2*nprod*nm1
@@ -1485,9 +1481,9 @@ C     SETTING JACOBIAN FLAG
           end do
       endif
 
-      if (ipar(2).eq.some) then
+      if (ipar(2)==some) then
           nprod = nprodsv
-      end if
+      endif
 
       return
       end
@@ -1528,7 +1524,7 @@ c     order of variables is defined in the routine offset
       dimension pdif(*)
       integer frmask(mxccv)
 
-      if(nfurn.gt.0)then
+      if(nfurn>0)then
           call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
           qfurnout=5.67*(273.3+wtemp)**4/10**8
       endif
@@ -1537,7 +1533,7 @@ c     order of variables is defined in the routine offset
       xx2 = 2.0d0
       xx1 = 1.0d0
       vminfrac = 1.0d-4
-      if (iflag.eq.constvar) then
+      if (iflag==constvar) then
           do iroom = 1, n
               zzvmin(iroom) = min(vminfrac * vr(iroom), xx1)
               zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
@@ -1617,9 +1613,9 @@ c     order of variables is defined in the routine offset
           nvents = 0
           do i = 1, nm1
               do j = i + 1, n
-                  if (nw(i,j).ne.0) then
+                  if (nw(i,j)/=0) then
                       do k = 1, mxccv
-                          if (iand(frmask(k),nw(i,j)).ne.0) then
+                          if (iand(frmask(k),nw(i,j))/=0) then
                               nvents = nvents + 1
                               iijk = ijk(i,j,k)
                               zzvent(nvents,1) = hl(iijk)
@@ -1632,14 +1628,14 @@ c     order of variables is defined in the routine offset
                               izvent(nvents,3) = k
 
                               ! is "from" room a hall?
-                              if(izhall(i,ihroom).eq.1)then
+                              if(izhall(i,ihroom)==1)then
                                   izvent(nvents,4) = 1
                               else
                                   izvent(nvents,4) = 0
                               endif
 
                               ! is "to" room a hall?
-                              if(izhall(j,ihroom).eq.1)then
+                              if(izhall(j,ihroom)==1)then
                                   izvent(nvents,5) = 1
                               else
                                   izvent(nvents,5) = 0
@@ -1650,13 +1646,13 @@ c     order of variables is defined in the routine offset
 
                               ! compute pressure rise due to wind.  this value is only defined for outside rooms
                               wcos = windc(iijk)
-                              if(j.eq.n.and.wcos.ne.xx0)then
+                              if(j==n.and.wcos/=xx0)then
 
                                   ! compute wind velocity and pressure rise at the average vent height
                                   havg = (zzvent(nvents,1) + 
      .                            zzvent(nvents,2))/2.0d0 
                                   havg = havg + zzyflor(i) 
-                                  if(windrf.ne.xx0)then
+                                  if(windrf/=xx0)then
                                       windvnew = windv* 
      .                                (havg/windrf)**windpw
                                   else
@@ -1669,9 +1665,9 @@ c     order of variables is defined in the routine offset
                                   zzvent(nvents,6) = xx0
                               endif
 
-                          end if
+                          endif
                       end do
-                  end if
+                  endif
               end do
           end do
 
@@ -1680,7 +1676,7 @@ c     order of variables is defined in the routine offset
           nvvent = 0
           do i = 1, n
               do j = 1, n
-                  if (nwv(i,j).ne.0) then
+                  if (nwv(i,j)/=0) then
                       nvvent = nvvent + 1
                       ivvent(nvvent,1) = i
                       ivvent(nvvent,2) = j
@@ -1688,7 +1684,7 @@ c     order of variables is defined in the routine offset
                       qcvv(2,nvvent) = qcvpp(2,i,j)
                       qcvv(3,nvvent) = qcvpp(3,i,j)
                       qcvv(4,nvvent) = qcvpp(4,i,j)
-                  end if
+                  endif
               end do
           end do
 
@@ -1757,7 +1753,7 @@ c     order of variables is defined in the routine offset
                       izwall(ii,1) = iroom
                       izwall(ii,2) = iwall
                       izwall(ii,3) = nm1 + 1
-                      if(iwall.eq.1.or.iwall.eq.2)then
+                      if(iwall==1.or.iwall==2)then
                           iwfar = 3 - iwall
                       else
                           iwfar = iwall
@@ -1767,7 +1763,7 @@ c     order of variables is defined in the routine offset
 
                   else
                       izwmap2(iwall,iroom) = 0
-                  end if
+                  endif
               end do
               izwmap(1,iroom) = icol - icnt + 1
               izwmap(2,iroom) = icnt
@@ -1800,7 +1796,7 @@ c     order of variables is defined in the routine offset
           ! define maps for dassl eqs <--> target data structures
           ieq = 0
           do itarg = 1, ntarg
-              if(ixtarg(trgmeth,itarg).eq.mplicit)then
+              if(ixtarg(trgmeth,itarg)==mplicit)then
                   ieq = ieq + 1
                   iztarg(itarg) = ieq
               else
@@ -1831,7 +1827,7 @@ c     order of variables is defined in the routine offset
               izhvac(i) = .true.
           end do
 
-      else if (iflag.eq.odevara) then
+      else if (iflag==odevara) then
           do iroom = 1, nm1
               zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
               zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
@@ -1849,7 +1845,7 @@ c     order of variables is defined in the routine offset
 
               ! calculate layer height for non-rectangular rooms
               npts = izrvol(iroom)
-              if(npts.eq.0)then
+              if(npts==0)then
                   zzhlay(iroom,upper) = zzvol(iroom,upper) / ar(iroom)
                   zzhlay(iroom,lower) = zzvol(iroom,lower) / ar(iroom)
               else
@@ -1869,13 +1865,13 @@ c     order of variables is defined in the routine offset
               ! (because the rhs of the temperature equation is wrong).  the following
               ! code causes the temperature of the opposite layer to be used in these
               ! situations.
-              if(zztemp(iroom,upper).lt.0.0d0)then
+              if(zztemp(iroom,upper)<0.0d0)then
                   zztemp(iroom,upper)=zztemp(iroom,lower)
               endif
-              if(zztemp(iroom,lower).lt.0.0d0)then
+              if(zztemp(iroom,lower)<0.0d0)then
                   zztemp(iroom,lower)=zztemp(iroom,upper)
               endif
-              if(izshaft(iroom).eq.1)then
+              if(izshaft(iroom)==1)then
                   zztemp(iroom,lower) = zztemp(iroom,upper)
               endif
 
@@ -1923,7 +1919,7 @@ c     order of variables is defined in the routine offset
               iroom = ixtarg(trgroom,itarg)
               ylay = zzhlay(iroom,lower)
               ytarg = xxtarg(trgcenz,itarg)
-              if(ytarg.ge.ylay)then
+              if(ytarg>=ylay)then
                   ixtarg(trglayer,itarg) = upper
               else
                   ixtarg(trglayer,itarg) = lower
@@ -1934,19 +1930,19 @@ c     order of variables is defined in the routine offset
           ! (ie solved by dassl)
 
           do itarg = 1, ntarg
-              if(ixtarg(trgmeth,itarg).eq.mplicit) then
+              if(ixtarg(trgmeth,itarg)==mplicit) then
                   ieq = iztarg(itarg)
                   xxtarg(trgtempf,itarg) = p(ieq+noftt)
-              end if
+              endif
           end do
 
       ! define surface wall temperatures (interior=1,exterior=2)
-      else if (iflag.eq.odevarb.or.iflag.eq.odevarc) then
+      else if (iflag==odevarb.or.iflag==odevarc) then
           isof = nofwt
           do iroom = 1, nm1
               do iwall = 1, nwal
                   iwalleq = izwmap2(iwall,iroom)
-                  if(iwalleq.ne.0)then
+                  if(iwalleq/=0)then
                       ieqfrom = iwalleq - nofwt
                       ifromr = izwall(ieqfrom,1)
                       ifromw = izwall(ieqfrom,2)
@@ -1955,7 +1951,7 @@ c     order of variables is defined in the routine offset
                       zzwtemp(iroom,iwall,1) = pdif(iwalleq)
                       iwalleq2 = izwmap2(itow,itor)
                       iinode = numnode(1,iwall,iroom)
-                      if(iwalleq2.eq.0)then
+                      if(iwalleq2==0)then
                           zzwtemp(iroom,iwall,2) = 
      .                    twj(iinode,iroom,iwall)
                       else
@@ -1967,7 +1963,7 @@ c     order of variables is defined in the routine offset
                       ! to the layer temperature that it is adjacent too.  note,
                       ! zzwtemp(iroom,iwall,2) is only referenced if the iwall'th
                       ! wall in room iroom is being solved with the heat equation
-                      if(iwall.eq.1.or.iwall.eq.3)then
+                      if(iwall==1.or.iwall==3)then
                           ilay = upper
                       else
                           ilay = lower
@@ -1983,21 +1979,21 @@ c     order of variables is defined in the routine offset
               if (activs(lsp)) then
                   do iroom = 1, nm1
                       isof = isof + 1
-                      if (iflag.eq.odevarb) then
+                      if (iflag==odevarb) then
                           ppgas = pold(isof) + dt * pdold(isof)
                       else
                           ppgas = pdif(isof)
-                      end if
+                      endif
                       zzgspec(iroom,upper,lsp) = max(ppgas,xx0)
                       isof = isof + 1
-                      if (iflag.eq.odevarb) then
+                      if (iflag==odevarb) then
                           ppgas = pold(isof) + dt * pdold(isof)
                       else
                           ppgas = pdif(isof)
-                      end if
+                      endif
                       zzgspec(iroom,lower,lsp) = max(ppgas,xx0)
                   end do
-              end if
+              endif
           end do
 
           ! define species mass fractions: normalize to total product mass 
@@ -2010,29 +2006,29 @@ c     order of variables is defined in the routine offset
                   if (activs(lsp)) then
                       totu = totu + zzgspec(iroom,upper,lsp)
                       totl = totl + zzgspec(iroom,lower,lsp)
-                  end if
+                  endif
               end do
               rtotl = 1.0d0
               rtotu = 1.0d0
-              if (totl.gt.xx0) rtotl = 1.0d0 / totl
-              if (totu.gt.xx0) rtotu = 1.0d0 / totu
+              if (totl>xx0) rtotl = 1.0d0 / totl
+              if (totu>xx0) rtotu = 1.0d0 / totu
               do lsp = 1, ns
                   if (activs(lsp)) then
                       zzcspec(iroom,upper,lsp) = 
      .                zzgspec(iroom,upper,lsp) * rtotu
                       zzcspec(iroom,lower,lsp) = 
      .                zzgspec(iroom,lower,lsp) * rtotl
-                      if(izshaft(iroom).eq.1)then
+                      if(izshaft(iroom)==1)then
                           zzcspec(iroom,lower,lsp) = 
      .                    zzcspec(iroom,upper,lsp)
                       endif
-                  end if
+                  endif
               end do
 
               ! if oxygen is a dassl variable then use dassl solve array to define
               ! zzgspec and zzcspec values for oxygen.
               ! make sure oxygen never goes negative
-              if(option(foxygen).eq.on)then
+              if(option(foxygen)==on)then
                   oxyl = max(p(iroom+nofoxyl),xx0)
                   oxyu = max(p(iroom+nofoxyu),xx0)
                   zzgspec(iroom,lower,2) = oxyl
@@ -2041,7 +2037,7 @@ c     order of variables is defined in the routine offset
      .            zzmass(iroom,lower)
                   zzcspec(iroom,upper,2) = oxyu/
      .            zzmass(iroom,upper)
-                  if(izshaft(iroom).eq.1)then
+                  if(izshaft(iroom)==1)then
                       zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
                   endif
               endif
@@ -2053,20 +2049,20 @@ c     order of variables is defined in the routine offset
               do iroom = 1, nm1
                   do lsp = 1, nwal
                       isof = isof + 1
-                      if (iflag.eq.odevarb) then
+                      if (iflag==odevarb) then
                           ppwgas = pold(isof) + dt * pdold(isof)
                       else
                           ppwgas = pdif(isof)
-                      end if
+                      endif
                       zzwspec(iroom,lsp) = ppwgas
                   end do
               end do
-          end if
-      end if
+          endif
+      endif
 
       ! copy hvac product values for each hvac system
 
-      if (nhvsys.ne.0.and.ns.ne.0) then
+      if (nhvsys/=0.and.ns/=0) then
           isof = nofhvpr
           do isys = 1, nhvsys
               zzhvm(isys) = xx0
@@ -2075,17 +2071,17 @@ c     order of variables is defined in the routine offset
               if (activs(lsp)) then
                   do isys = 1, nhvsys
                       isof = isof + 1
-                      if (iflag.eq.odevarb) then
+                      if (iflag==odevarb) then
                           pphv = max(xx0,pold(isof)+dt*pdold(isof))
                       else
                           pphv = max(xx0,pdif(isof))
-                      end if
+                      endif
                       zzhvpr(isys,lsp) = pphv
                       zzhvm(isys) = zzhvm(isys) + zzhvpr(isys,lsp)
                   end do
-              end if
+              endif
           end do
-      end if
+      endif
       return
       end
 
@@ -2126,20 +2122,20 @@ c     order of variables is defined in the routine offset
       end do
       
       do iroom = 1, nm1
-          if (factor(iroom,upper).gt.xx0.and.
-     .    zzmass(iroom,upper).gt.xx0) then
+          if (factor(iroom,upper)>xx0.and.
+     .    zzmass(iroom,upper)>xx0) then
               factor(iroom,upper) = zzmass(iroom,upper) / 
      .        factor(iroom,upper)
           else
               factor(iroom,upper) = 1.0d0
-          end if
-          if (factor(iroom,lower).gt.xx0.and.
-     .    zzmass(iroom,lower).gt.xx0) then
+          endif
+          if (factor(iroom,lower)>xx0.and.
+     .    zzmass(iroom,lower)>xx0) then
               factor(iroom,lower) = zzmass(iroom,lower) / 
      .        factor(iroom,lower)
           else
               factor(iroom,lower) = 1.0d0
-          end if
+          endif
       end do
 
       isof = ibeg
@@ -2151,7 +2147,7 @@ c     order of variables is defined in the routine offset
                   pdif(isof) = pdif(isof) * factor(iroom,lower)
                   isof = isof + 1
               end do
-          end if
+          endif
       end do
 
       return

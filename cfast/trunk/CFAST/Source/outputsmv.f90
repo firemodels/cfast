@@ -31,14 +31,14 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
       use iofiles
   implicit none
 
-  DOUBLE PRECISION, intent(in) :: pabs_ref, pamb, tamb, stime
+  real*8, intent(in) :: pabs_ref, pamb, tamb, stime
   integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
-  DOUBLE PRECISION, dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
+  real*8, dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
   integer, intent(in), dimension(nfires) :: froom_number
-  DOUBLE PRECISION, intent(in), dimension(nfires) :: fx0, fy0, fz0
+  real*8, intent(in), dimension(nfires) :: fx0, fy0, fz0
   character(len=*), intent(in) :: plotfile
-  double precision vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
-  double precision  harea, targetvector(6)
+  real*8 vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
+  real*8  harea, targetvector(6)
   integer i, hface, ibot, itop, hshape
   character(128) dir
   CHARACTER(64) smokeviewplotfilename, drive, ext, name ! the extension is .plt
@@ -94,7 +94,7 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, &
 35  format(1x,3i3,1x,e11.4,1x,i3)
   end do
 
-  if (ntarg.gt.nrooms) then
+  if (ntarg>nrooms) then
     write(13,"(a)") "THCP"
     write(13,"(1x,i3)") ntarg-nrooms
       do i = 1, ntarg-nrooms
@@ -132,11 +132,11 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 !
   implicit none
 
-  DOUBLE PRECISION, intent(in) :: time
+  real*8, intent(in) :: time
   integer, intent(in) :: nrooms
-  DOUBLE PRECISION, intent(in), dimension(nrooms) :: pr, ylay, tl, tu
+  real*8, intent(in), dimension(nrooms) :: pr, ylay, tl, tu
   integer, intent(in) :: nfires
-  DOUBLE PRECISION, intent(in), dimension(nfires) :: qdot, height
+  real*8, intent(in), dimension(nfires) :: qdot, height
   REAL XXTIME, XXPR, XXYLAY, XXTL, XXTU, XXHEIGHT, XXQDOT
 
   integer :: i

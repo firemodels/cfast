@@ -47,16 +47,16 @@
       ! deal with opening the data file and assuring ourselves that it is compatible
       close (iofili)
       open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
-      if (ios.ne.0) then
-          if (logerr.gt.0) write (logerr,5050) mod(ios,256)
+      if (ios/=0) then
+          if (logerr>0) write (logerr,5050) mod(ios,256)
           ierror = 99
           return
-      end if
+      endif
 
       ! read in the entire input file as a spreadsheet array of numbers and/or character strings
       call readcsvformat(iofili,rarray,carray,nrow,ncol,1,numr,numc,
      .ierror)
-      if (ierror.gt.0) then
+      if (ierror>0) then
           write(logerr,5003)
           return
       endif
@@ -68,18 +68,18 @@
       aversion = carray(1,1)
       ivers = rarray(1,2)
       ! new version numbering 600->6000, so current version is 6100
-      if (version.ge.1000) then
+      if (version>=1000) then
           iversion = version / 1000
       else
           iversion = version / 100
       endif
-      if (aversion.eq.heading.and.ivers.eq.iversion) then
+      if (aversion==heading.and.ivers==iversion) then
           write (logerr,5001) ivers
       else
           write (logerr,5002) aversion,heading,ivers,iversion
           ierror = 206
           return
-      end if
+      endif
       title = carray(1,3)
 
       do i = 1, nr
@@ -92,16 +92,16 @@
       call keywordcases (numr, numc, ierror)
 
 !	wait until the input file is parsed before dieing on temperature outside reasonable limits
-      if (exta.gt.373.15.or.exta.lt.223.15d0) then
+      if (exta>373.15.or.exta<223.15d0) then
           write(logerr,5022) exta
           ierror = 218
       endif
-      if (ta.gt.373.15.or.ta.lt.223.15d0) then
+      if (ta>373.15.or.ta<223.15d0) then
           write(logerr,5022) ta
           ierror = 218
       endif
 
-      IF (IERROR.NE.0) RETURN
+      IF (IERROR/=0) RETURN
 
       ! We now know what output is going to be generated, so create the files
       call openoutputfiles
@@ -114,17 +114,17 @@
 
       ! initialize the targets. add targets for each fire
       nm1 = n - 1
-      if (numobjl.gt.0) then
+      if (numobjl>0) then
           do i = 1, numobjl 
              call initfireobject(i,ierror)
           end do
-      end if
+      endif
       call inittarg (ierror)
-      if (ierror.ne.0) return
+      if (ierror/=0) return
 
       ! now calculate the offsets - the order is important
       call offset (ierror)
-      if (ierror.ne.0) return
+      if (ierror/=0) return
 
       ! floor plan dependent parameters
       do i = 1, nm1
@@ -134,85 +134,85 @@
 
       ! check and/or set heat source fire position
       if (heatfl) then
-          if ((heatfp(1).lt.xx0).or.(heatfp(1).gt.br(heatfr))) then
+          if ((heatfp(1)<xx0).or.(heatfp(1)>br(heatfr))) then
               heatfp(1) = br(heatfr) / 2.0d0
-          end if
-          if ((heatfp(2).lt.xx0).or.(heatfp(2).gt.dr(heatfr))) then
+          endif
+          if ((heatfp(2)<xx0).or.(heatfp(2)>dr(heatfr))) then
               heatfp(2) = dr(heatfr) / 2.0d0
-          end if
-          if ((heatfp(3).lt.xx0).or.(heatfp(3).gt.hr(heatfr))) then
+          endif
+          if ((heatfp(3)<xx0).or.(heatfp(3)>hr(heatfr))) then
               heatfp(3) = 0.0d0
-          end if
+          endif
           write(logerr,5021) heatfr,heatfp
       endif
 
       ! check and/or set position of fire objects
       do i = 1, numobjl
-          if((objpos(1,i).lt.xx0).or.
-     .    (objpos(1,i).gt.br(objrm(i)))) then
+          if((objpos(1,i)<xx0).or.
+     .    (objpos(1,i)>br(objrm(i)))) then
               objpos(1,i) = br(objrm(i)) / 2.0d0
-              if (logerr.gt.0) write (logerr,5080) i, objpos(1,i)
-          end if
-          if((objpos(2,i).lt.xx0).or.
-     .    (objpos(2,i).gt.dr(objrm(i)))) then
+              if (logerr>0) write (logerr,5080) i, objpos(1,i)
+          endif
+          if((objpos(2,i)<xx0).or.
+     .    (objpos(2,i)>dr(objrm(i)))) then
               objpos(2,i) = dr(objrm(i)) / 2.0d0
-              if (logerr.gt.0) write (logerr,5090) i, objpos(2,i)
-          end if
-          if((objpos(3,i).lt.xx0).or.
-     .    (objpos(3,i).gt.hr(objrm(i)))) then
+              if (logerr>0) write (logerr,5090) i, objpos(2,i)
+          endif
+          if((objpos(3,i)<xx0).or.
+     .    (objpos(3,i)>hr(objrm(i)))) then
               objpos(3,i) = xx0
-              if (logerr.gt.0) write (logerr,5100) i, objpos(3,i)
-          end if
+              if (logerr>0) write (logerr,5100) i, objpos(3,i)
+          endif
       end do
 
       ! make sure horizontal vent specifications are correct -  we have to do this
       ! here rather than right after keywordcases because hrl and hrp were just defined
       ! above
       do itop = 1, nm1
-          if (nwv(itop,itop).ne.0) then
-              if (logerr.gt.0) write (logerr,*) 
+          if (nwv(itop,itop)/=0) then
+              if (logerr>0) write (logerr,*) 
      +        ' A room can not be connected to itself'
               nwv(itop,itop) = 0
-          end if
+          endif
           do ibot = 1, itop - 1
-              if (nwv(itop,ibot).ne.0.or.nwv(ibot,itop).ne.0) then
+              if (nwv(itop,ibot)/=0.or.nwv(ibot,itop)/=0) then
 
 c    see which room is on top (if any) - this is like a bubble sort
 
                   deps1 = hrl(itop) - hrp(ibot)
                   deps2 = hrl(ibot) - hrp(itop)
-                  if (nwv(itop,ibot).ne.1.or.abs(deps1).ge.vfmaxdz) then
-                      if (nwv(ibot,itop).ne.1.or.
-     .                abs(deps2).ge.vfmaxdz) then
-                          if (nwv(itop,ibot).eq.1.and.
-     .                    abs(deps2).lt.vfmaxdz) then
-                              if (nwv(ibot,itop).ne.0) then
+                  if (nwv(itop,ibot)/=1.or.abs(deps1)>=vfmaxdz) then
+                      if (nwv(ibot,itop)/=1.or.
+     .                abs(deps2)>=vfmaxdz) then
+                          if (nwv(itop,ibot)==1.and.
+     .                    abs(deps2)<vfmaxdz) then
+                              if (nwv(ibot,itop)/=0) then
                                   write (logerr,*) 'Vent ', ibot, itop, 
      +                            ' is being redefined'
-                              end if
+                              endif
                               nwv(itop,ibot) = 0
                               nwv(ibot,itop) = 1
                               vvarea(ibot,itop) = vvarea(itop,ibot)
                               vshape(ibot,itop) = vshape(itop,ibot)
                               cycle
-                          end if
-                          if (nwv(ibot,itop).eq.1.and.
-     .                    abs(deps1).lt.vfmaxdz) then
-                              if (nwv(itop,ibot).ne.0) then
+                          endif
+                          if (nwv(ibot,itop)==1.and.
+     .                    abs(deps1)<vfmaxdz) then
+                              if (nwv(itop,ibot)/=0) then
                                   write (logerr,*) 'Vent ', itop, ibot, 
      +                            ' is being redefined'
-                              end if
+                              endif
                               nwv(itop,ibot) = 1
                               nwv(ibot,itop) = 0
                               vvarea(itop,ibot) = vvarea(ibot,itop)
                               vshape(itop,ibot) = vshape(ibot,itop)
                               cycle
-                          end if
+                          endif
                           nwv(itop,ibot) = 0
                           nwv(ibot,itop) = 0
-                      end if
-                  end if
-              end if
+                      endif
+                  endif
+              endif
           end do
       end do
 
@@ -231,8 +231,8 @@ c    see which room is on top (if any) - this is like a bubble sort
           iroom2 = izswal(i,3)
 
           ! room numbers must be between 1 and nm1
-          if(iroom1.lt.1.or.iroom2.lt.1.or.
-     .    iroom1.gt.nm1+1.or.iroom2.gt.nm1+1)then
+          if(iroom1<1.or.iroom2<1.or.
+     .    iroom1>nm1+1.or.iroom2>nm1+1)then
               ifail = 39
               write (messg,201)iroom1,iroom2 
   201         format(' Invalid CFCON specification:',
@@ -241,12 +241,12 @@ c    see which room is on top (if any) - this is like a bubble sort
           endif
 
           ! if room is connected to the outside then ignore it
-          if(iroom1.eq.nm1+1.or.iroom2.eq.nm1+1)then
+          if(iroom1==nm1+1.or.iroom2==nm1+1)then
               nswall2 = nswall2 - 1
               cycle
           else
               ii = ii + 1
-              if(i.ne.ii)then
+              if(i/=ii)then
                   izswal(ii,1) = izswal(i,1)
                   izswal(ii,2) = izswal(i,2)
                   izswal(ii,3) = izswal(i,3)
@@ -257,8 +257,8 @@ c    see which room is on top (if any) - this is like a bubble sort
           ! floor of one room must be adjacent to ceiling of the other
           dwall1 = abs(hrl(iroom1) - hrp(iroom2))
           dwall2 = abs(hrl(iroom2) - hrp(iroom1))
-          if(dwall1.lt.vfmaxdz.or.dwall2.le.vfmaxdz)then
-              if(dwall1.lt.vfmaxdz)then
+          if(dwall1<vfmaxdz.or.dwall2<=vfmaxdz)then
+              if(dwall1<vfmaxdz)then
                   izswal(ii,2) = 2
                   izswal(ii,4) = 1
               else
@@ -299,7 +299,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 
       ! check shafts
       do iroom = nm1 + 1, nr
-          if(izshaft(iroom).ne.0)then
+          if(izshaft(iroom)/=0)then
               call xerror(' invalid SHAFT specification:',0,1,1)
               ifail = 42
               write (messg,206)iroom,nm1
@@ -313,12 +313,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 
       ! initialize the mechanical ventilation
       call hvinit (ierror)
-      if (ierror.ne.0) return
+      if (ierror/=0) return
 
       ! check detectors
       do i = 1, ndtect
           iroom = ixdtect(i,droom)
-          if(iroom.lt.1.or.iroom.gt.nm1)then
+          if(iroom<1.or.iroom>nm1)then
               write (messg,104)iroom 
   104         format('Invalid DETECTOR specification: room ',
      +        i3, ' is not a valid')
@@ -326,7 +326,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               call xerror(messg,0,1,1)
           endif
           rti = xdtect(i,drti)
-          if(rti.le.0.0d0.and.ixdtect(i,dtype).ne.smoked)then
+          if(rti<=0.0d0.and.ixdtect(i,dtype)/=smoked)then
               write (messg,101)rti 
   101         format('Invalid DETECTOR specification - rti= ',
      +        e11.4, ' is not a valid.')
@@ -335,16 +335,16 @@ c    see which room is on top (if any) - this is like a bubble sort
           xloc = xdtect(i,dxloc)
           yloc = xdtect(i,dyloc)
           zloc = xdtect(i,dzloc)
-          if(xloc.lt.0.0d0.or.xloc.gt.br(iroom).or.
-     .    yloc.lt.0.0d0.or.yloc.gt.dr(iroom).or.
-     .    zloc.lt.0.0d0.or.zloc.gt.hrp(iroom))then
+          if(xloc<0.0d0.or.xloc>br(iroom).or.
+     .    yloc<0.0d0.or.yloc>dr(iroom).or.
+     .    zloc<0.0d0.or.zloc>hrp(iroom))then
               write(messg,102)xloc,yloc,zloc
   102         format('Invalid DETECTOR specification - x,y,z,location',
      +        'x,y,z=',3e11.4,' is out of bounds')
               ifail = 45
           endif
           idtype = ixdtect(i,dtype)
-          if(idtype.lt.1.or.idtype.gt.3)then
+          if(idtype<1.or.idtype>3)then
               write(messg,103)idtype
   103         format('Invalid DETECTOR specification - type= ',
      +        i2,' is not a valid')
@@ -361,10 +361,10 @@ c    see which room is on top (if any) - this is like a bubble sort
       ! check variable cross-sectional area specs and convert to volume
       do i = 1, nm1
           npts = izrvol(i)
-          if(npts.ne.0)then
+          if(npts/=0)then
 
               ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
-              if(zzrhgt(1,i).ne.0.0d0)then
+              if(zzrhgt(1,i)/=0.0d0)then
                   temparea(1) = zzrarea(1,i)
                   temphgt(1) = 0.0d0
                   ioff = 1
@@ -379,7 +379,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               end do
 
               ! force last elevation to be at the ceiling (as defined by hr(i)
-              if(hr(i).ne.zzrhgt(npts,i))then
+              if(hr(i)/=zzrhgt(npts,i))then
                   ioff2 = 1
                   temparea(npts+ioff+ioff2) = zzrarea(npts,i)
                   temphgt(npts+ioff+ioff2) = hr(i)
@@ -430,7 +430,7 @@ c    see which room is on top (if any) - this is like a bubble sort
       ! 0. .25 .25 .25 .25
 
       ! force all rooms to transfer heat between connected rooms
-      if(izheat(0).eq.1)then
+      if(izheat(0)==1)then
           do i = 1, nm1
               izheat(i) = 1
           end do
@@ -439,26 +439,26 @@ c    see which room is on top (if any) - this is like a bubble sort
       do i = 1, nm1
 
           ! force heat transfer between rooms connected by vents.
-          if(izheat(i).eq.1)then
+          if(izheat(i)==1)then
               do j = 1, nm1+1
                   nventij = 0
                   do k = 1, 4
                       nventij = nventij + ijk(i,j,k)
                   end do
-                  if(nventij.ne.0)zzhtfrac(i,j) = 1.0d0
+                  if(nventij/=0)zzhtfrac(i,j) = 1.0d0
 
                   ! if the back wall is not active then don't consider its contribution
-                  if(j.le.nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0d0
+                  if(j<=nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0d0
               end do
           endif
 
           ! normalize zzhtfrac fraction matrix so that rows sum to one
-          if(izheat(i).ne.0)then
+          if(izheat(i)/=0)then
               sum = 0.0d0
               do j = 1, nm1+1
                   sum = sum + zzhtfrac(i,j)
               end do
-              if(sum.lt.1.d-5)then
+              if(sum<1.d-5)then
                   do j = 1, nm1
                       zzhtfrac(i,j) = 0.0d0
                   end do
@@ -470,7 +470,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               endif
               jj = 0
               do j = 1, nm1
-                  if(zzhtfrac(i,j).ne.0.0d0)then
+                  if(zzhtfrac(i,j)/=0.0d0)then
                       izhtfrac(i,0) = izhtfrac(i,0) + 1
                       jj = jj + 1
                       izhtfrac(i,jj) = j
@@ -479,11 +479,11 @@ c    see which room is on top (if any) - this is like a bubble sort
           endif
       end do
 
-      if(ifail.gt.0) then
+      if(ifail>0) then
           call xerror('Input error in readinputfile',0,1,1)
           ierror = ifail
           return
-      end if
+      endif
       close (iofili)
       return
 
@@ -541,7 +541,7 @@ c    see which room is on top (if any) - this is like a bubble sort
       LOGICAL LFUPDAT, eof, countargs
       INTEGER OBPNT,compartment,lrowcount,xnumr,xnumc,nx, i1, i2,
      +fannumber, iecfrom, iecto, mid
-      DOUBLE PRECISION NTER(NR), initialopening, lrarray(ncol),
+      real*8 NTER(NR), initialopening, lrarray(ncol),
      +inter(nr), minpres, maxpres, heightfrom, heightto, areafrom, 
      +areato
       CHARACTER ORIENTYP*1, MESSG*133, lcarray*128(ncol), cjtype*1,
@@ -572,12 +572,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 
    40 lrowcount = lrowcount + 1
 !	If we reach the end of the file, then we are done
-      if (lrowcount.gt.xnumr) return
+      if (lrowcount>xnumr) return
 
 !	Copy a single row into local arrays for processing in readin; start with column two, assuming that the key word is the first entry!
 
       label = carray(lrowcount,1)
-      if (label.eq.' ') go to 40
+      if (label==' ') go to 40
       do i = 2, xnumc
           lcarray(i-1) = carray(lrowcount,i)
           lrarray(i-1) = rarray(lrowcount,i)
@@ -596,7 +596,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           nsmax =  lrarray(1)
           lprint = lrarray(2)
           ldiago = lrarray(3)
-          if (ldiago.gt.0) ndumpr = 1
+          if (ldiago>0) ndumpr = 1
           ldiagp = lrarray(4)
           lcopyss =  lrarray(5)
 
@@ -615,7 +615,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               expa = pa
               exra = ra
               exsal = sal
-          end if
+          endif
 
           ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE, REFERENCE EXTERNAL AMBIENT HEIGHT
       case ("EAMB")
@@ -662,7 +662,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           else
               ierror = 4
               return
-          end if
+          endif
 
           ! MATL short_name conductivity specific_heat density thickness emissivity long_name
           ! HCl deposition constants are only available for gypsum so we just add the automatically if the name of the material contains gypsum
@@ -670,14 +670,14 @@ c    see which room is on top (if any) - this is like a bubble sort
           if(.not.countargs(label,7,lcarray,xnumc-1,nret)) then
               ierror = 6
               return
-          end if
+          endif
           maxct = maxct + 1
-          if (maxct.gt.nthmx) then
+          if (maxct>nthmx) then
               write (logerr,'(a,i3)') 'Too many thermal properties',
      .        ' in input data file. Limit is ',nthmx
               ierror = 203
               return
-          end if
+          endif
 
           nlist(maxct) = lcarray(1)
           lnslb(maxct) = 1
@@ -686,10 +686,10 @@ c    see which room is on top (if any) - this is like a bubble sort
           lrw(1,maxct) = lrarray(4)
           lflw(1,maxct) = lrarray(5)
           lepw(maxct) = lrarray(6)
-          if (index(lcarray(1),'gypsum').ne.0.or.
-     .    index(lcarray(1),'GYPSUM').ne.0.or.
-     .    index(lcarray(7),'gypsum').ne.0.or.
-     .    index(lcarray(7),'GYPSUM').ne.0) then
+          if (index(lcarray(1),'gypsum')/=0.or.
+     .    index(lcarray(1),'GYPSUM')/=0.or.
+     .    index(lcarray(7),'gypsum')/=0.or.
+     .    index(lcarray(7),'GYPSUM')/=0) then
               lhclbf(1,maxct) = 0.0063
               lhclbf(2,maxct) = 191.8
               lhclbf(3,maxct) = 0.0587
@@ -701,7 +701,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               do i = 1, 7
                   lhclbf(i,maxct) = 0.0
               end do
-          end if
+          endif
 
           ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
       case ('COMPA')
@@ -711,7 +711,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           endif
 
           compartment = compartment + 1
-          if (compartment.gt.nr) then
+          if (compartment>nr) then
               write (logerr, 5062) compartment
               ierror = 9
               return
@@ -730,32 +730,32 @@ c    see which room is on top (if any) - this is like a bubble sort
 
           ! Ceiling
           tcname = lcarray(8)
-          if (tcname.ne.'OFF') then
+          if (tcname/='OFF') then
               switch(1,compartment) = .true.
               cname(1,compartment) = tcname
               ! keep track of the total number of thermal properties used
               numthrm = numthrm + 1
-          end if
+          endif
 
           ! floor
           tcname = lcarray(9)
-          if (tcname.ne.'OFF') then
+          if (tcname/='OFF') then
               switch(2,compartment) = .true.
               cname(2,compartment) = tcname   
               ! keep track of the total number of thermal properties used
               numthrm = numthrm + 1
-          end if
+          endif
 
           ! walls
           tcname = lcarray(10)
-          if (tcname.ne.'OFF') then
+          if (tcname/='OFF') then
               switch(3,compartment) = .true.
               cname(3,compartment) = tcname
               switch(4,compartment) = .true.
               cname(4,compartment) = tcname
               ! keep track of the total number of thermal properties used
               numthrm = numthrm + 1
-          END IF
+          endif
 
           ! Reset this each time in case this is the last entry
           n = compartment+1
@@ -783,18 +783,18 @@ c    see which room is on top (if any) - this is like a bubble sort
           k = lrarray(3)
           imin = min(i,j)
           jmax = max(i,j)
-          if (imin.gt.nr-1.or.jmax.gt.nr.or.imin.eq.jmax) then
+          if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
               write (logerr,5070) i, j
               ierror = 78
               return
-          end if
-          if (k.gt.mxccv) then
+          endif
+          if (k>mxccv) then
               write (logerr,5080) i, j, k, nw(i,j)
               ierror = 78
               return
-          end if
+          endif
           nventijk = nventijk + 1
-          if (nventijk.gt.mxvents) then
+          if (nventijk>mxvents) then
               write(logerr,5081) i,j,k
               ierror = 78
               return
@@ -804,7 +804,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           iijk = ijk(i,j,k)
           jik = iijk
           koffst = 2 ** k
-          if (iand(koffst,nw(i,j)).ne.0) write (iofilo,5090) i, j, k
+          if (iand(koffst,nw(i,j))/=0) write (iofilo,5090) i, j, k
           nw(i,j) = ior(nw(i,j),koffst)
           bw(iijk) = lrarray(4)
           hh(iijk) = lrarray(5)
@@ -889,7 +889,7 @@ c    see which room is on top (if any) - this is like a bubble sort
                   return
               endif
               fannumber = lrarray(4)
-              if (fannumber.gt.nfan) then
+              if (fannumber>nfan) then
                   ierror = 82
                   write(logerr,5196) fannumber
                   return
@@ -912,17 +912,17 @@ c    see which room is on top (if any) - this is like a bubble sort
           i = lrarray(1)
           j = lrarray(2)
           ! check for outside of compartment space; self pointers are covered in readinputfile
-          if (i.gt.nr.or.j.gt.nr) then
+          if (i>nr.or.j>nr) then
               write (logerr,5070) i, j
               ierror = 79
               return
-          end if
+          endif
 
           ! readinputfile will verify the orientation (i is on top of j)
           nwv(i,j) = 1
           vvarea(i,j) = lrarray(3)
           ! check the shape parameter. the default (1) is a circle)
-          if (lrarray(4).lt.1.or.lrarray(4).gt.2) then
+          if (lrarray(4)<1.or.lrarray(4)>2) then
               vshape(i,j) = 1
           else
               vshape(i,j) = lrarray(4)
@@ -949,25 +949,25 @@ c    see which room is on top (if any) - this is like a bubble sort
               ierror = 25
               return
           endif
-          if ((nret/2)*2.ne.nret) then   ! There have to be pairs of numbers
+          if ((nret/2)*2/=nret) then   ! There have to be pairs of numbers
               write (iofilo,5130) nret
               ierror = 73
               return
-          end if
+          endif
           do i = 1, nret - 1, 2
               j = lrarray(i)
-              if (j.gt.n.or.j.lt.1) then
+              if (j>n.or.j<1) then
                   write (iofilo,5140) i, j
                   ierror = 26
                   return
               else
                   xxlocal = lrarray(i+1)
-                  if(xxlocal.lt.xx0.or.xxlocal.gt.hr(j)) then
+                  if(xxlocal<xx0.or.xxlocal>hr(j)) then
                       ierror = 72
                       return
                   endif
                   inter(j) = xxlocal
-              end if
+              endif
           end do
 
           ! MVENT - simplified mechanical ventilation
@@ -985,7 +985,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           mid = lrarray(3)
           iecfrom = lrarray(1)
           iecto = lrarray(2)
-          if (iecfrom.gt.n.or.iecto.gt.n) then
+          if (iecfrom>n.or.iecto>n) then
               write(logerr,5191) iecfrom, iecto
               ierror = 67
               return
@@ -1006,16 +1006,16 @@ c    see which room is on top (if any) - this is like a bubble sort
           ! first compartment/node opening
           next = next + 1
           nnode = nnode + 1
-          if (next.gt.mext.or.nnode.gt.mnode) then
+          if (next>mext.or.nnode>mnode) then
               write (logerr,5192) next,nnode
               ierror = 68
               return
-          end if
-          if (orientypefrom.eq.'V') then
+          endif
+          if (orientypefrom=='V') then
               hvorien(next) = 1
           else
               hvorien(next) = 2
-          end if
+          endif
           hvnode(1,next) = iecfrom
           hvnode(2,next) = nnode
           hvelxt(next) = heightfrom
@@ -1024,16 +1024,16 @@ c    see which room is on top (if any) - this is like a bubble sort
           ! second compartment/node opening
           next = next + 1
           nnode = nnode + 1
-          if (next.gt.mext.or.nnode.gt.mnode) then
+          if (next>mext.or.nnode>mnode) then
               write (logerr,5192) next,nnode
               ierror = 68
               return
-          end if
-          if (orientypeto.eq.'V') then
+          endif
+          if (orientypeto=='V') then
               hvorien(next) = 1
           else
               hvorien(next) = 2
-          end if
+          endif
           hvnode(1,next) = iecto
           hvnode(2,next) = nnode
           hvelxt(next) = heightto
@@ -1041,25 +1041,25 @@ c    see which room is on top (if any) - this is like a bubble sort
 
           ! now connect nodes 1 and 2 with a fan
 
-          if (minpres.gt.maxpres) then
+          if (minpres>maxpres) then
               write (logerr,5194) minpres,maxpres
               ierror = 70
               return
-          end if
+          endif
 
           nfan = nfan + 1
-          if (mid.ne.nfan) then
+          if (mid/=nfan) then
               write(logerr,5193) mid,nfan
               ierror = 68
               return
           endif
 
           nbr = nbr + 1
-          if (nfan.gt.mfan.or.nbr.gt.mbr) then
+          if (nfan>mfan.or.nbr>mbr) then
               write (iofilo,5195) mfan
               ierror = 70
               return
-          end if
+          endif
 
           nf(nbr) = nfan
           nfc(nfan) = 1
@@ -1092,22 +1092,22 @@ c    see which room is on top (if any) - this is like a bubble sort
               ierror = 32
               return
           endif
-          if (numobjl.ge.mxoin) then
+          if (numobjl>=mxoin) then
               write(logerr,5300)
               go to 10
-          end if
+          endif
           iroom = lrarray(1)
-          if (iroom.lt.1.or.iroom.gt.n-1) then
+          if (iroom<1.or.iroom>n-1) then
               write(logerr,5320)iroom
               ierror = 33
               return
-          end if
+          endif
           obpnt = numobjl + 1
           numobjl = obpnt
 
           ! Only constrained fires
           objtyp(numobjl) = 2
-          if (objtyp(numobjl).gt.2) then
+          if (objtyp(numobjl)>2) then
               write(logerr,5321) objtyp(numobjl)
               ierror = 63
               return
@@ -1116,20 +1116,20 @@ c    see which room is on top (if any) - this is like a bubble sort
           objpos(1,obpnt) = lrarray(2)
           objpos(2,obpnt) = lrarray(3)
           objpos(3,obpnt) = lrarray(4)
-          if (objpos(1,obpnt).gt.br(iroom).or.
-     .    objpos(2,obpnt).gt.dr(iroom).or.
-     .    objpos(3,obpnt).gt.hr(iroom)) then
+          if (objpos(1,obpnt)>br(iroom).or.
+     .    objpos(2,obpnt)>dr(iroom).or.
+     .    objpos(3,obpnt)>hr(iroom)) then
               write(logerr,5323) obpnt
               ierror = 82
               return
           endif
 
           fplume(numobjl) = lrarray(5)
-          if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
+          if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
               write(logerr,5402) fplume(numobjl)
               ierror = 78
               return 
-          end if
+          endif
           write(logerr,5403) plumemodel(fplume(numobjl))	
           objign(obpnt) =   lrarray(6)
           tmpcond =         lrarray(7)
@@ -1138,7 +1138,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           objort(3,obpnt) = lrarray(10)
 
           ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-          if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
+          if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
               write(logerr,5322)
               ierror = 216
               return
@@ -1154,16 +1154,16 @@ c    see which room is on top (if any) - this is like a bubble sort
           ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
           ! The critiria for temperature and flux are stored backupwards - this is historical
           ! See corresponding code in updobj
-          if (tmpcond.gt.0.0d0) then
-              if (objign(obpnt).eq.1) then
+          if (tmpcond>0.0d0) then
+              if (objign(obpnt)==1) then
                   objcri(1,obpnt) = tmpcond
                   objcri(2,obpnt) = 1.0d30
                   objcri(3,obpnt) = 1.0d30
-              else if (objign(obpnt).eq.2) then
+              else if (objign(obpnt)==2) then
                   objcri(1,obpnt) = 1.0d30
                   objcri(2,obpnt) = 1.0d30
                   objcri(3,obpnt) = tmpcond
-              else if (objign(obpnt).eq.3) then
+              else if (objign(obpnt)==3) then
                   objcri(1,obpnt) = 1.0d30
                   objcri(2,obpnt) = tmpcond
                   objcri(3,obpnt) = 1.0d30
@@ -1171,22 +1171,22 @@ c    see which room is on top (if any) - this is like a bubble sort
                   write(logerr,5358) objign(obpnt)
                   ierror = 13
                   return
-              end if
+              endif
           else
               objon(obpnt) = .true.
-          end if
-          if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
-              if (stpmax.gt.0.0d0) then
+          endif
+          if (option(fbtobj)==off.and.objign(obpnt)/=1.) then
+              if (stpmax>0.0d0) then
                   stpmax = min(stpmax,1.d0)
               else
                   stpmax = 1.d0
-              end if
-          end if 
+              endif
+          endif 
 
           ! read and set the other stuff for this fire
           call inputembeddedfire(objnin(obpnt), objrm(obpnt), 
      .    lrowcount, xnumr, xnumc, obpnt, ierror)
-          if (ierror.ne.0) return
+          if (ierror/=0) return
 
           ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
       case ('OBJEC')
@@ -1196,23 +1196,23 @@ c    see which room is on top (if any) - this is like a bubble sort
               ierror = 32
               return
           endif
-          if (numobjl.ge.mxoin) then
+          if (numobjl>=mxoin) then
               write(logerr,5300)
               go to 10
-          end if
+          endif
           tcname = lcarray(1)
           iroom = lrarray(2)
-          if (iroom.lt.1.or.iroom.gt.n-1) then
+          if (iroom<1.or.iroom>n-1) then
               write(logerr,5320)iroom
               ierror = 33
               return
-          end if
+          endif
           obpnt = numobjl + 1
           numobjl = obpnt
 
           ! Only constrained fires
           objtyp(numobjl) = 2
-          if (objtyp(numobjl).gt.2) then
+          if (objtyp(numobjl)>2) then
               write(logerr,5321) objtyp(numobjl)
               ierror = 63
               return
@@ -1221,20 +1221,20 @@ c    see which room is on top (if any) - this is like a bubble sort
           objpos(1,obpnt) = lrarray(3)
           objpos(2,obpnt) = lrarray(4)
           objpos(3,obpnt) = lrarray(5)
-          if (objpos(1,obpnt).gt.br(iroom).or.
-     .    objpos(2,obpnt).gt.dr(iroom).or.
-     .    objpos(3,obpnt).gt.hr(iroom)) then
+          if (objpos(1,obpnt)>br(iroom).or.
+     .    objpos(2,obpnt)>dr(iroom).or.
+     .    objpos(3,obpnt)>hr(iroom)) then
               write(logerr,5323) obpnt
               ierror = 82
               return
           endif
 
           fplume(numobjl) = lrarray(6)
-          if(fplume(numobjl).lt.1.or.fplume(numobjl).gt.2) then
+          if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
               write(logerr,5402) fplume(numobjl)
               ierror = 78
               return 
-          end if
+          endif
           write(logerr,5403) plumemodel(fplume(numobjl))	
           objign(obpnt) =   lrarray(7)
           tmpcond =         lrarray(8)
@@ -1242,7 +1242,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           objort(2,obpnt) = lrarray(10)
           objort(3,obpnt) = lrarray(11)
           ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-          if (dnrm2(3,objort(1,obpnt),1).le.0.0) then
+          if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
               write(logerr,5322)
               ierror = 216
               return
@@ -1257,16 +1257,16 @@ c    see which room is on top (if any) - this is like a bubble sort
           !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
           !!!!! The critiria for temperature and flux are stored backupwards - this is historical
           !!!!! See corresponding code in updobj
-          if (tmpcond.gt.0.0d0) then
-              if (objign(obpnt).eq.1) then
+          if (tmpcond>0.0d0) then
+              if (objign(obpnt)==1) then
                   objcri(1,obpnt) = tmpcond
                   objcri(2,obpnt) = 1.0d30
                   objcri(3,obpnt) = 1.0d30
-              else if (objign(obpnt).eq.2) then
+              else if (objign(obpnt)==2) then
                   objcri(1,obpnt) = 1.0d30
                   objcri(2,obpnt) = 1.0d30
                   objcri(3,obpnt) = tmpcond
-              else if (objign(obpnt).eq.3) then
+              else if (objign(obpnt)==3) then
                   objcri(1,obpnt) = 1.0d30
                   objcri(2,obpnt) = tmpcond
                   objcri(3,obpnt) = 1.0d30
@@ -1274,17 +1274,17 @@ c    see which room is on top (if any) - this is like a bubble sort
                   write(logerr,5358) objign(obpnt)
                   ierror = 13
                   return
-              end if
+              endif
           else
               objon(obpnt) = .true.
-          end if
-          if (option(fbtobj).eq.off.and.objign(obpnt).ne.1.) then
-              if (stpmax.gt.0.0d0) then
+          endif
+          if (option(fbtobj)==off.and.objign(obpnt)/=1.) then
+              if (stpmax>0.0d0) then
                   stpmax = min(stpmax,1.d0)
               else
                   stpmax = 1.d0
-              end if
-          end if
+              endif
+          endif
 
           ! CJET - Ceiling jet for walls, ceiling, all, or off
       case ('CJET')
@@ -1296,15 +1296,15 @@ c    see which room is on top (if any) - this is like a bubble sort
               cjeton(i) = .false.
           end do
           cjtype = lcarray(1)(1:1)
-          if (cjtype.ne.' ') then
-              if (cjtype.eq.'C') then
+          if (cjtype/=' ') then
+              if (cjtype=='C') then
                   cjeton(1) = .true.
                   cjeton(5) = .true.
-              else if (cjtype.eq.'W') then
+              else if (cjtype=='W') then
                   cjeton(1) = .true.
                   cjeton(3) = .true.
                   cjeton(5) = .true.
-              else if (cjtype.eq.'A') then
+              else if (cjtype=='A') then
                   cjeton(1) = .true.
                   cjeton(3) = .true.
                   cjeton(4) = .true.
@@ -1329,7 +1329,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           endif
 
           ndtect = ndtect + 1
-          if (ndtect.gt.mxdtect) then
+          if (ndtect>mxdtect) then
               write (logerr, 5338)
               ierror = 81
               return
@@ -1338,11 +1338,11 @@ c    see which room is on top (if any) - this is like a bubble sort
           i1 = lrarray(1)
           i2 = lrarray(2)
           ! force to heat detector if out of range
-          if (i1.gt.3) i1 = heatd
+          if (i1>3) i1 = heatd
           ixdtect(ndtect,dtype) = i1
           iroom = i2
           ixdtect(ndtect,droom) = iroom
-          if(iroom.lt.1.or.iroom.gt.nr)then
+          if(iroom<1.or.iroom>nr)then
               write (logerr,5342) i2
               ierror = 35
               return
@@ -1356,18 +1356,18 @@ c    see which room is on top (if any) - this is like a bubble sort
           ixdtect(ndtect,dquench) = lrarray(8)
           xdtect(ndtect,dspray) = lrarray(9)*1000.d0
           ! if spray density is zero, then turn off the sprinkler
-          if(xdtect(ndtect,dspray).eq.0.0d0)then
+          if(xdtect(ndtect,dspray)==0.0d0)then
               ixdtect(ndtect,dquench) = 0
           endif
-          if(option(fbtdtect).eq.off.
-     .    and.ixdtect(ndtect,dquench).gt.0)then
-              if (stpmax.gt.0) then
+          if(option(fbtdtect)==off.
+     .    and.ixdtect(ndtect,dquench)>0)then
+              if (stpmax>0) then
                   stpmax = min(stpmax,1.d0)
               else
                   stpmax = 1.d0
-              end if
-          end if
-          if (compartmentnames(i2).eq.' ') then
+              endif
+          endif
+          if (compartmentnames(i2)==' ') then
               write(logerr,5344) i2
               ierror = 36
               return
@@ -1381,9 +1381,9 @@ c    see which room is on top (if any) - this is like a bubble sort
               write(*,*)
           endif
 
-          if(xdtect(ndtect,dxloc).gt.br(i2).or.
-     .    xdtect(ndtect,dyloc).gt.dr(i2).or.
-     .    xdtect(ndtect,dzloc).gt.hr(i2)) then
+          if(xdtect(ndtect,dxloc)>br(i2).or.
+     .    xdtect(ndtect,dyloc)>dr(i2).or.
+     .    xdtect(ndtect,dzloc)>hr(i2)) then
               write(logerr,5339) ndtect,compartmentnames(i2)
               ierror = 80
               return
@@ -1398,7 +1398,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 
           i1 = lrarray(1)
           i2 = lrarray(2)
-          if (i1.lt.1.or.i2.lt.1.or.i1.gt.n.or.i2.gt.n) then
+          if (i1<1.or.i2<1.or.i1>n.or.i2>n) then
               write(logerr,5345) i1, i2
               ierror = 38
               return
@@ -1418,7 +1418,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           endif
 
           iroom = lrarray(1)
-          if(iroom.lt.1.or.iroom.gt.n)then
+          if(iroom<1.or.iroom>n)then
               write(logerr, 5001) i1
               ierror = 40
               return
@@ -1428,7 +1428,7 @@ c    see which room is on top (if any) - this is like a bubble sort
       case ('TARGE')
           if (countargs(label,10,lcarray, xnumc-1, nret).or.
      .    countargs(label,11,lcarray, xnumc-1, nret)) then
-              if(ntarg+1.gt.mxtarg)then
+              if(ntarg+1>mxtarg)then
                   write(logerr,5002) 
                   ierror = 42
                   return
@@ -1438,7 +1438,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 
               ! The target can exist, now for the compartment
               IROOM = lrarray(1)
-              IF(IROOM.LT.1.OR.IROOM.GT.N)THEN
+              IF(IROOM<1.OR.IROOM>N)THEN
                   write(logerr,5003) iroom
                   ierror = 43
                   return
@@ -1454,11 +1454,11 @@ c    see which room is on top (if any) - this is like a bubble sort
                   xxtarg(trginterior,ntarg) = lrarray(11)
               else
                   xxtarg(trginterior,ntarg) = 0.5
-              end if
+              endif
 
               ! material type
               tcname = lcarray(8)
-              if(tcname.eq.' ') tcname='DEFAULT'
+              if(tcname==' ') tcname='DEFAULT'
               cxtarg(ntarg) = tcname
               ixtarg(trgwall,ntarg) = 0
 
@@ -1466,13 +1466,13 @@ c    see which room is on top (if any) - this is like a bubble sort
               method = ' '
               method = lcarray(9)
               call upperall(method,method)
-              if(method.ne.' ')then
-                  if(method(1:3).eq.'STE') then
+              if(method/=' ')then
+                  if(method(1:3)=='STE') then
                       ixtarg(trgmeth,ntarg) = STEADY
                       method = ' '
-                  elseif (method(1:3).eq.'IMP') then
+                  elseif (method(1:3)=='IMP') then
                       ixtarg(trgmeth,ntarg) = MPLICIT
-                  elseif (method(1:3).eq.'EXP') then
+                  elseif (method(1:3)=='EXP') then
                       ixtarg(trgmeth,ntarg) = XPLICIT
                   else
                       write(logerr,912) method
@@ -1485,12 +1485,12 @@ c    see which room is on top (if any) - this is like a bubble sort
               eqtype = ' '
               eqtype = lcarray(10)
               call upperall(eqtype,eqtype)
-              if(eqtype.ne.' '.and.method.ne.' ')then
-                  if (eqtype(1:3).eq.'ODE') then
+              if(eqtype/=' '.and.method/=' ')then
+                  if (eqtype(1:3)=='ODE') then
                       ixtarg(trgeq,ntarg) = ODE
-                  elseif (eqtype(1:3).eq.'PDE') then
+                  elseif (eqtype(1:3)=='PDE') then
                       ixtarg(trgeq,ntarg) = PDE
-                  elseif (eqtype(1:3).eq.'CYL') then
+                  elseif (eqtype(1:3)=='CYL') then
                       ixtarg(trgeq,ntarg) = CYLPDE
                   else
                       write(logerr,913) eqtype
@@ -1512,7 +1512,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           IROOM = lrarray(1)
 
           ! check that specified room is valid
-          if(iroom.lt.0.or.iroom.gt.n)then
+          if(iroom<0.or.iroom>n)then
               write(logerr,5346) iroom
               ierror = 63
               return
@@ -1528,19 +1528,19 @@ c    see which room is on top (if any) - this is like a bubble sort
           zzhall(iroom,ihhalf) = -1.0d0
 
           ! HALL velocity; not set if negative
-          if(lrarray(2).ge.0) then
+          if(lrarray(2)>=0) then
               zzhall(iroom,ihvel) = lrarray(2)
               izhall(iroom,ihvelflag) = 1
           endif
 
           ! HALL layer depth; not set if negative
-          if (lrarray(3).ge.0) then
+          if (lrarray(3)>=0) then
               zzhall(iroom,ihdepth) = lrarray(3)
               izhall(iroom,ihdepthflag) = 1
           endif
 
           ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
-          if (lrarray(4).ge.0) then
+          if (lrarray(4)>=0) then
               zzhall(iroom,ihhalf) = lrarray(4)
               izhall(iroom,ihhalfflag) = 1
               izhall(iroom,ihmode) = ihbefore
@@ -1557,7 +1557,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           IROOM = lrarray(1)
 
           ! make sure the room number is valid
-          if(iroom.lt.1.or.iroom.gt.n)then
+          if(iroom<1.or.iroom>n)then
               write(logerr,5347) iroom
               ierror = 48
               return
@@ -1565,17 +1565,17 @@ c    see which room is on top (if any) - this is like a bubble sort
 
           ! make sure the number of points is valid
           npts = lrarray(2)
-          if(npts.gt.mxpts.or.npts.le.0.or.npts.ne.nret-2) then
+          if(npts>mxpts.or.npts<=0.or.npts/=nret-2) then
               write (logerr,5347) npts
               ierror = 49
               return
           endif
-          if(izrvol(iroom).ne.0) npts = min(izrvol(iroom),npts)
+          if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
           izrvol(iroom) = npts
 
           ! make sure all data is positive 
           do  i = 1, npts
-              if(lrarray(i+2).lt.0.0d0)then
+              if(lrarray(i+2)<0.0d0)then
                   write(logerr,5348) lrarray(i+2)
                   ierror = 50
                   return
@@ -1599,7 +1599,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           iroom = lrarray(1)
 
           ! make sure the room number is valid
-          if(iroom.lt.1.or.iroom.gt.n)then
+          if(iroom<1.or.iroom>n)then
               write(logerr,5349) iroom
               ierror = 52
               return
@@ -1607,17 +1607,17 @@ c    see which room is on top (if any) - this is like a bubble sort
 
           ! make sure the number of points is valid
           npts = lrarray(2)
-          if(npts.gt.mxpts.or.npts.lt.0.or.npts.ne.nret-2)then
+          if(npts>mxpts.or.npts<0.or.npts/=nret-2)then
               write(logerr,5350) npts
               ierror = 53
               return
           endif
-          if(izrvol(iroom).ne.0)npts = min(izrvol(iroom),npts)
+          if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
           izrvol(iroom) = npts
 
           ! make sure all data is positive 
           do i = 1, npts
-              if(lrarray(i+2).lt.0.0d0)then
+              if(lrarray(i+2)<0.0d0)then
                   write(logerr,5348) lrarray(i+2)
                   ierror = 54
                   return
@@ -1640,7 +1640,7 @@ c    see which room is on top (if any) - this is like a bubble sort
           zzdtcrit = abs(lrarray(1))
           izdtmax = abs(lrarray(2))
           ! a negative turns off the check
-          if(lrarray(2).le.0)izdtflag = .false.
+          if(lrarray(2)<=0)izdtflag = .false.
 
           ! SETP file_name
       case ('SETP')
@@ -1649,7 +1649,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               return
           endif
 
-          if (iflgsetp.gt.0) then
+          if (iflgsetp>0) then
               ierror = 57
               write (logerr,5353) setpfile
               return
@@ -1657,7 +1657,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               iflgsetp = 1
               setpfile = lcarray(1)
               write (logerr,5340) setpfile
-          end if
+          endif
 
           ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
 
@@ -1673,12 +1673,12 @@ c    see which room is on top (if any) - this is like a bubble sort
           nto = 0
           ifrom = lrarray(1)
 
-          if (nret.eq.1) then
+          if (nret==1) then
               izheat(ifrom) = 1
               go to 10
           else
               nto = lrarray(2)
-              if(nto.lt.1.or.nto.gt.n)then
+              if(nto<1.or.nto>n)then
                   write(logerr,5354) nto
                   ierror = 59
                   return
@@ -1687,7 +1687,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               izheat(ifrom) = 2
           endif
 
-          if (2*nto.ne.(nret-2)) then
+          if (2*nto/=(nret-2)) then
               write(logerr,	5355) ifrom, nto
               ierror = 60
               return
@@ -1698,12 +1698,12 @@ c    see which room is on top (if any) - this is like a bubble sort
               i2 = 2*i+2
               ito = lrarray(i1)
               frac = lrarray(i2)
-              if(ito.lt.1.or.ito.eq.ifrom.or.ito.gt.n)then
+              if(ito<1.or.ito==ifrom.or.ito>n)then
                   write(logerr, 5356) ifrom,ito
                   ierror = 61
                   return
               endif
-              if(frac.lt.0.0d0.or.frac.gt.1.0d0)then
+              if(frac<0.0d0.or.frac>1.0d0)then
                   write(logerr, 5357) ifrom,ito,frac
                   ierror = 62
                   return
@@ -1726,7 +1726,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               return
           endif
           heatfr = lrarray(1)
-          if(heatfr.lt.1.or.heatfr.gt.n-1) then
+          if(heatfr<1.or.heatfr>n-1) then
               ierror = 66
               return
           endif
@@ -1856,14 +1856,14 @@ c    see which room is on top (if any) - this is like a bubble sort
       integer lrowcount, xnumr, xnumc, iobj
       integer logerr/3/, midpoint/1/, base/2/, errorcode, ierror
       character lcarray*128(ncol), label*5, objname*(*)
-      double precision lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3,
+      real*8 lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3,
      .minimumheight/1.d-3/
 
       ! there are eight required inputs for each fire
       do ir = 1, 8
           lrowcount = lrowcount + 1
           label = carray(lrowcount,1)
-          if (label.eq.' ') cycle
+          if (label==' ') cycle
           do i = 2, xnumc
               lcarray(i-1) = carray(lrowcount,i)
               lrarray(i-1) = rarray(lrowcount,i)
@@ -1876,7 +1876,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               if (.not.countargs(label,8,lcarray,xnumc-1,nret)) then
                   ierror = 4
                   return
-              end if
+              endif
 
               ! define chemical formula
               obj_c(iobj) = lrarray(1)
@@ -1890,11 +1890,11 @@ c    see which room is on top (if any) - this is like a bubble sort
 
               radconsplit(iobj) = lrarray(6)
               ohcomb = lrarray(7)
-              if (ohcomb.le.0.0d0) then
+              if (ohcomb<=0.0d0) then
                   write(logerr,5001) ohcomb
                   ierror = 32
                   return
-              end if  
+              endif  
               omatl(iobj) = lcarray(8)
           case ('TIME')
               lstat = countargs(label,2,lcarray,xnumc-1,nret)
@@ -1960,13 +1960,13 @@ c    see which room is on top (if any) - this is like a bubble sort
       ! Position the object
       call positionobject(objpos,1,iobj,objrm(iobj),br,
      .midpoint,minimumheight,errorcode)
-      if (errorcode.ne.0) return
+      if (errorcode/=0) return
       call positionobject(objpos,2,iobj,objrm(iobj),dr,
      .midpoint,minimumheight,errorcode)
-      if (errorcode.ne.0) return
+      if (errorcode/=0) return
       call positionobject(objpos,3,iobj,objrm(iobj),hr,
      .base,minimumheight,errorcode)
-      if (errorcode.ne.0) return
+      if (errorcode/=0) return
 
       ! diagnostic - check for the maximum heat release per unit volume.
       ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1976,11 +1976,11 @@ c    see which room is on top (if any) - this is like a bubble sort
       flamelenght = max (xx0, flamelength)
       ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
       hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
-      if (hrrpm3.gt.4.0d+6) then
+      if (hrrpm3>4.0d+6) then
           write (logerr,5106)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
           errorcode = 221
           return
-      else if (hrrpm3.gt.2.0d+6) then
+      else if (hrrpm3>2.0d+6) then
           write (logerr,5107)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
       else 
           write (logerr,5100)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
@@ -2009,12 +2009,12 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "fltarget.fi"
 
       ntarg = ntarg + 1
-      if (ntarg.gt.mxtarg) then
+      if (ntarg>mxtarg) then
           write(logerr, *)
      .    'Too many targets created for fire objects'
           ierror = 201
           return
-      end if
+      endif
       obtarg(iobj) = ntarg
       cxtarg(ntarg) = omatl(iobj)
 
@@ -2057,13 +2057,13 @@ C
 C
       IERR = 0
       READ (IOUNIT,END=30,IOSTAT=IOS) HEADER, IVERS0
-      IF (HEADER.EQ.RHEADER(1)) THEN
+      IF (HEADER==RHEADER(1)) THEN
 #ifdef pp_ibmpc
           CNVRT = .FALSE.
 #else
           CNVRT = .TRUE.
 #endif
-      ELSE IF (HEADER.EQ.RHEADER(2)) THEN
+      ELSE IF (HEADER==RHEADER(2)) THEN
 #ifdef pp_ibmpc
           CNVRT = .TRUE.
 #else
@@ -2072,7 +2072,7 @@ C
       ELSE
           IERR = 9999
           RETURN
-      END IF
+      endif
       IF (CNVRT) IVERS0 = FLOP(IVERS0)
       IF (CNVRT) THEN
           READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
@@ -2081,18 +2081,18 @@ C
       ELSE
           READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
      +    INPUT(1))
-      END IF
-      IF (INPUT(1).GT.MXDMP) THEN
+      endif
+      IF (INPUT(1)>MXDMP) THEN
           CALL XERROR('DREADIN - overwrite input buffer; fatal error',
      .    0,1,1)
           IERR = 7
           RETURN
-      END IF
+      endif
       IF (CNVRT) THEN
           DO 10 I = 2, INPUT(1)
               INPUT(I) = FLOP(INPUT(I))
    10     CONTINUE
-      END IF
+      endif
       CALL UNPACK(INPUT,OUTPUT)
       IF (CNVRT) THEN
           CALL LENOCO(((IVERS0-1800)/10),ITOT,IFLT,IINT)
@@ -2101,12 +2101,12 @@ C
               OUTPUT(2*I-1) = OUTPUT(2*I)
               OUTPUT(2*I) = ITEMP
    20     CONTINUE
-      END IF
-   30 IF (IOS.NE.0) THEN
+      endif
+   30 IF (IOS/=0) THEN
           IERR = IOS
       ELSE
           IERR = 0
-      END IF
+      endif
       RETURN
       END
 
@@ -2142,30 +2142,30 @@ C
       INLEN = INPUT(1)
    10 IF (.TRUE.) THEN
           INIDX = INIDX + 1
-          IF (INIDX.GT.INLEN) GO TO 30
+          IF (INIDX>INLEN) GO TO 30
           INTGR = INPUT(INIDX)
-          IF (INTGR.EQ.MRKR) THEN
+          IF (INTGR==MRKR) THEN
               INIDX = INIDX + 1
-              IF (INIDX.GT.INLEN) GO TO 30
+              IF (INIDX>INLEN) GO TO 30
               INTGR = INPUT(INIDX)
-              IF (INTGR.EQ.MRKR) THEN
+              IF (INTGR==MRKR) THEN
                   OUTIDX = OUTIDX + 1
                   OUTPUT(OUTIDX) = INTGR
               ELSE
                   INIDX = INIDX + 1
-                  IF (INIDX.GT.INLEN) GO TO 30
+                  IF (INIDX>INLEN) GO TO 30
                   CNTR = INPUT(INIDX)
                   DO 20, I = 1, CNTR
                       OUTIDX = OUTIDX + 1
                       OUTPUT(OUTIDX) = INTGR
    20             CONTINUE
-              END IF
+              endif
           ELSE
               OUTIDX = OUTIDX + 1
               OUTPUT(OUTIDX) = INTGR
-          END IF
+          endif
           GO TO 10
-      END IF
+      endif
    30 RETURN
       END
 
@@ -2226,7 +2226,7 @@ C
 
       errorcode = 0
       call exehandle (exepath, datapath, project, errorcode)
-      if (errorcode.gt.0) return
+      if (errorcode>0) return
 
 ! form the file names
 
@@ -2324,7 +2324,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       INTEGER ILOCAL(2)
       logical exists, doesthefileexist, eof
 
-      DOUBLE PRECISION LOCAL(2)
+      real*8 LOCAL(2)
 
       IP0(0) = OFF
       IERROR = 0
@@ -2333,7 +2333,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           IP0(I) = OFF
    10 CONTINUE
 
-      IF (SETPFILE.EQ.'   ') RETURN
+      IF (SETPFILE=='   ') RETURN
 
 ! First we try the local directory
 
@@ -2366,17 +2366,17 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DO 30 I = 1, 5
           LABEL(I:I) = TOUPPER(LABEL(I:I))
    30 CONTINUE
-      IF (LABEL(1:4).NE.'FILE') THEN
+      IF (LABEL(1:4)/='FILE') THEN
           IERROR = 75
           CLOSE(IO)
           RETURN
-      END IF
+      endif
       CALL READFL(TESTFILE)
-      IF (TESTFILE.NE.NNFILE) THEN
+      IF (TESTFILE/=NNFILE) THEN
           IERROR = 50
           CLOSE(IO)
           RETURN
-      END IF
+      endif
 
    20 CONTINUE
 
@@ -2393,28 +2393,28 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           CALL READFL(MXMN)
           MXMN = TOUPPER(MXMN)
 
-          IF (LABEL(1:4).EQ.'TEMP') THEN
-              IF (PLACE.EQ.'U') THEN
+          IF (LABEL(1:4)=='TEMP') THEN
+              IF (PLACE=='U') THEN
                   CALL DOP0(NOFTU,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
-              ELSE IF (PLACE.EQ.'L') THEN
+              ELSE IF (PLACE=='L') THEN
                   CALL DOP0(NOFTL,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
               ELSE
                   write(logerr,*) 'Parameter not supported by SETP'
                   ierror = 77
                   CLOSE(IO)
                   return
-              END IF
-          ELSE IF (LABEL.EQ.'PRESS') THEN
+              endif
+          ELSE IF (LABEL=='PRESS') THEN
               MXMN = PLACE
               CALL DOP0(NOFP,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
-          ELSE IF (LABEL.EQ.'INTER') THEN
+          ELSE IF (LABEL=='INTER') THEN
               MXMN = PLACE
               X = (HR(IROOM) - X)*AR(IROOM)
               CALL DOP0(NOFVU,IROOM,MXMN,X,P0,IP0,PMXMN,IPMXMN)
           ELSE
               CLOSE(IO)
               RETURN
-          END IF
+          endif
 
           GOTO 20
 
@@ -2463,11 +2463,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DIMENSION PMXMN(MAXTEQ,2), IPMXMN(0:MAXTEQ,2)
       CHARACTER MXMN*1
 
-      IF (MXMN.EQ.'X') THEN
+      IF (MXMN=='X') THEN
           IPMXMN(0,1) = ON
           PMXMN(NOFLG+IROOM,1) = X
           IPMXMN(NOFLG+IROOM,1) = ON
-      ELSE IF (MXMN.EQ.'M') THEN
+      ELSE IF (MXMN=='M') THEN
           IPMXMN(0,2) = ON
           PMXMN(NOFLG+IROOM,2) = X
           IPMXMN(NOFLG+IROOM,2) = ON
@@ -2475,7 +2475,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           IP0(0) = ON
           P0(NOFLG+IROOM) = X
           IP0(NOFLG+IROOM) = ON
-      END IF
+      endif
 
       RETURN
       END
@@ -2484,7 +2484,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      .defaultposition,minimumseparation,errorcode)
 
       integer index, defaultposition, opoint,rpoint, errorcode
-      double precision xyz(3,0:*), xx0/0.d0/, minimumseparation,
+      real*8 xyz(3,0:*), xx0/0.d0/, minimumseparation,
      .criterion(*)
 
 !       Position an object in a compartment
@@ -2496,8 +2496,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !		defaultposition is to set to zero (base)(2) or midpoint(1)
 !		minimumseparation is the closest the object can be to a wall
 
-      IF((xyz(index,opoint).lt.xx0).or.
-     .(xyz(index,opoint).gt.criterion(rpoint))) THEN
+      IF((xyz(index,opoint)<xx0).or.
+     .(xyz(index,opoint)>criterion(rpoint))) THEN
           select case (defaultposition)
           case (1) 
               xyz(index,opoint) = criterion(rpoint)/2.0d0
@@ -2506,11 +2506,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           case default
               errorcode = 222
           end select
-      else if (xyz(index,opoint).eq.xx0) then
+      else if (xyz(index,opoint)==xx0) then
           xyz(index,opoint) = minimumseparation
-      else if (xyz(index,opoint).eq.criterion(rpoint)) then
+      else if (xyz(index,opoint)==criterion(rpoint)) then
           xyz(index,opoint) = criterion(rpoint)-minimumseparation
-      END IF
+      endif
 
       return
 
@@ -2583,7 +2583,7 @@ c
       include "cparams.fi"
       include "cshell.fi"
 
-      double precision x(numr,numc)
+      real*8 x(numr,numc)
       character in*10000,token*128, c(numr,numc)*(*)
       integer ierror
 
@@ -2599,11 +2599,11 @@ c
 
 ! if we have header rows, then skip them
 
-      if (nstart.gt.1) then
+      if (nstart>1) then
           do  i=1,nstart-1
               read (iunit,'(A)') in
           end do 
-      end if
+      endif
 
 ! read the data
 
@@ -2611,7 +2611,7 @@ c
 20    read (iunit,'(A)',end=100) in
 
 ! Skip comments
-      if (in(1:1).eq.'!'.or.in(1:1).eq.'#') then
+      if (in(1:1)=='!'.or.in(1:1)=='#') then
           go to 20
       endif
 
@@ -2619,7 +2619,7 @@ c
       maxr=max(maxr,nrcurrent)
 
 ! Cannot exceed work array
-      if(maxr.gt.numr) then
+      if(maxr>numr) then
           ierror = 207
           return
       endif
@@ -2627,32 +2627,32 @@ c
       nc=0
       ic=1
 30    icomma=index(in,',')
-      if (icomma.ne.0) then
-          if (icomma.eq.ic) then
+      if (icomma/=0) then
+          if (icomma==ic) then
               token=' '
           else
               token=in(ic:icomma-1)
-          end if
+          endif
           ic = icomma+1
           nc = nc + 1
           in(1:ic-1)=' '
-          if (nrcurrent.le.numr.and.nc.le.numc) then
+          if (nrcurrent<=numr.and.nc<=numc) then
               c(nrcurrent,nc) = token
               read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
-              if (ios.ne.0) x(nrcurrent,nc) = 0
+              if (ios/=0) x(nrcurrent,nc) = 0
           else
               write (logerr,*) 'Array exceeded (readcsv), r,c=',nrcurrent,nc
               ierror = 207
               return
-          end if
+          endif
           go to 30
-      end if
+      endif
       nc = nc + 1
       maxc=max(maxc,nc)
       token = in(ic:ic+100)
       c(nrcurrent,nc) = token
       read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
-      if (ios.ne.0) x(nrcurrent,nc) = 0
+      if (ios/=0) x(nrcurrent,nc) = 0
       go to 20
 
 100   continue

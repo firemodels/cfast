@@ -36,7 +36,7 @@ C
       SAVE FIRST,TMP
       DATA FIRST/.TRUE./
       
-      IF(METHOD.EQ.STEADY)RETURN
+      IF(METHOD==STEADY)RETURN
 
 C*** INITIALIZE NON-DIMENSIONAL TARGET NODE LOCATIONS THE FIRST TIME TRHEAT IS CALLED
 
@@ -49,7 +49,7 @@ C*** INITIALIZE NON-DIMENSIONAL TARGET NODE LOCATIONS THE FIRST TIME TRHEAT IS C
           TMP(I) = TMP(I-1)*1.50D0
           TMP(NNN+1-I) = TMP(I)
    10   CONTINUE
-        IF(MOD(NNN,2).EQ.1)TMP(NNN/2+1)=TMP(NNN/2)*1.50D0
+        IF(MOD(NNN,2)==1)TMP(NNN/2+1)=TMP(NNN/2)*1.50D0
         SUM = 0.0D0
         DO 20 I = 1, NNN
           SUM = SUM + TMP(I)
@@ -67,7 +67,7 @@ C*** FOR EACH TARGET CALCULATE ODE OR PDE RESIDUAL AND UPDATE TARGET
 C    TEMPERATURE (IF UPDATE=1 OR 1)
 
       DO 40 ITARG = 1, NTARG
-         IF(IXTARG(TRGMETH,ITARG).NE.METHOD)GO TO 40
+         IF(IXTARG(TRGMETH,ITARG)/=METHOD)GO TO 40
          WFLUXIN = XXTARG(TRGNFLUXF,ITARG)
          WFLUXOUT = XXTARG(TRGNFLUXB,ITARG)
          WSPEC(1) = XXTARG(TRGCP,ITARG)
@@ -79,8 +79,8 @@ C    TEMPERATURE (IF UPDATE=1 OR 1)
 
 C*** COMPUTE THE PDE RESIDUAL 
 
-         IF(IIEQ.EQ.PDE.OR.IIEQ.EQ.CYLPDE)THEN
-           IF(IIMETH.EQ.MPLICIT)THEN
+         IF(IIEQ==PDE.OR.IIEQ==CYLPDE)THEN
+           IF(IIMETH==MPLICIT)THEN
              TEMPIN = XXTARG(TRGTEMPF,ITARG)
              IWBOUND = 3
             ELSE
@@ -89,7 +89,7 @@ C*** COMPUTE THE PDE RESIDUAL
            NMNODE(1) = TRGTNUM
            NMNODE(2) = TRGTNUM - 2
            NSLAB = 1
-           IF(IIEQ.EQ.PDE)THEN
+           IF(IIEQ==PDE)THEN
              DO 60 I = 1, TRGTNUM - 1
                WALLDX(I) = XL*TMP(I)
    60        CONTINUE
@@ -97,11 +97,11 @@ C*** COMPUTE THE PDE RESIDUAL
              CALL CNDUCT(UPDATE,TEMPIN,TEMPOUT,DT,WK,WSPEC,WRHO,
      +        XXTARG(TRGTEMPF,ITARG),WALLDX,NMNODE,NSLAB,
      +        WFLUXIN,WFLUXOUT,IWBOUND,TGRAD,TDERV)
-             IF(IIMETH.EQ.MPLICIT)THEN
+             IF(IIMETH==MPLICIT)THEN
                IEQ = IZTARG(ITARG)
                DELTA(NOFTT+IEQ) = XXTARG(TRGNFLUXF,ITARG)+WK(1)*TGRAD(1)
              ENDIF
-           ELSE IF(IIEQ.EQ.CYLPDE)THEN
+           ELSE IF(IIEQ==CYLPDE)THEN
              CALL CYLCNDUCT(XXTARG(TRGTEMPF,ITARG),NMNODE(1),
      +                  (WFLUXIN+WFLUXOUT),DT,WK(1),WRHO(1),WSPEC(1),XL)
 !             write(33,61)stime,xxtarg(trgtempf,itarg),wfluxin
@@ -110,13 +110,13 @@ C*** COMPUTE THE PDE RESIDUAL
 
 C*** COMPUTE THE ODE RESIDUAL
 
-          ELSEIF(IIEQ.EQ.ODE)THEN
+          ELSEIF(IIEQ==ODE)THEN
             DDTEMP = (WFLUXIN+WFLUXOUT)/(WSPEC(1)*WRHO(1)*XL)
-            IF(IIMETH.EQ.MPLICIT)THEN
+            IF(IIMETH==MPLICIT)THEN
               IEQ = IZTARG(ITARG)
               DELTA(NOFTT+IEQ) = DDTEMP - XPSOLVE(NOFTT+IEQ) 
-             ELSEIF(IIMETH.EQ.XPLICIT)THEN
-              IF(UPDATE.NE.0)THEN
+             ELSEIF(IIMETH==XPLICIT)THEN
+              IF(UPDATE/=0)THEN
                 TTOLD = XXTARG(TRGTEMPF,ITARG)
                 TTNEW = TTOLD + DT*DDTEMP
                 XXTARG(TRGTEMPF,ITARG) = TTNEW
@@ -177,12 +177,12 @@ C
       ENDIF
 
 C     CALCULATE FLUX TO USER SPECIFIED TARGETS, ASSUMING TARGET IS AT THERMAL EQUILIBRIUM
-      IF (NTARG.GT.NM1) THEN
+      IF (NTARG>NM1) THEN
         DO 10 ITARG = 1, NTARG
           METHTARG = IXTARG(TRGMETH,ITARG)
-          IF(METHOD.NE.METHTARG)GO TO 10
+          IF(METHOD/=METHTARG)GO TO 10
           IROOM = IXTARG(TRGROOM,ITARG)
-          IF(METHTARG.EQ.STEADY)THEN
+          IF(METHTARG==STEADY)THEN
              NITER = 10
             ELSE
              NITER = 1
@@ -191,14 +191,14 @@ C     CALCULATE FLUX TO USER SPECIFIED TARGETS, ASSUMING TARGET IS AT THERMAL EQ
           TTARG(2) = XXTARG(TRGTEMPB,ITARG)
           DO 20 ITER = 1, NITER
             CALL TARGFLUX(ITER,ITARG,TTARG,FLUX,DFLUX)
-            IF(DFLUX(1).NE.0.0D0.AND.METHTARG.EQ.STEADY)THEN
+            IF(DFLUX(1)/=0.0D0.AND.METHTARG==STEADY)THEN
                DDIF = FLUX(1)/DFLUX(1)
                TTARG(1) = TTARG(1) - DDIF
-               IF(ABS(DDIF).LE.1.0D-5*TTARG(1))GO TO 30
+               IF(ABS(DDIF)<=1.0D-5*TTARG(1))GO TO 30
             ENDIF
    20     CONTINUE
    30     CONTINUE
-          IF(METHTARG.EQ.STEADY)THEN
+          IF(METHTARG==STEADY)THEN
             XXTARG(TRGTEMPF,ITARG) = TTARG(1)
             XXTARG(TRGTEMPB,ITARG) = TTARG(2)
           ENDIF
@@ -210,11 +210,11 @@ C     CALCULATE FLUX TO USER SPECIFIED TARGETS, ASSUMING TARGET IS AT THERMAL EQ
           XXTARG(TRGNFLUXF,ITARG) = FLUX(1)
           XXTARG(TRGNFLUXB,ITARG) = FLUX(2)
    10   CONTINUE
-      END IF
+      endif
 
 C     CALCULATE FLUX TO FLOOR TARGETS FOR THE PRE-EXISTING DATA STRUCTURE, 
 C     ONTARGET, AND A FLASHOVER INDICATOR ON THE FLOOR
-      IF(METHOD.EQ.STEADY)THEN
+      IF(METHOD==STEADY)THEN
       DO 40 IROOM = 1, NM1
         ITARG = NTARG - NM1 + IROOM
 
@@ -299,7 +299,7 @@ C
 
 C*** TERMS THAT DO NOT DEPEND UPON THE TARGET TEMPERATURE ONLY NEED TO BE CALCULATED ONCE
 
-      IF(ITER.EQ.1)THEN
+      IF(ITER==1)THEN
 
 C*** INITIALIZE FLUX COUNTERS: TOTAL, FIRE, WALL, GAS 
 
@@ -320,7 +320,7 @@ C*** COMPUTE RADIATIVE FLUX FROM FIRE
           SVECT(3) = XXTARG(TRGCENZ,ITARG) - XFIRE(IFIRE,3)
           COSANG = 0.0D0
           S = max(DNRM2(3,SVECT,1),objclen(ifire))
-          IF(S.NE.0.0D0)THEN
+          IF(S/=0.0D0)THEN
             COSANG = -DDOT(3,SVECT,1,XXTARG(TRGNORMX,ITARG),1)/S
           ENDIF
           ZFIRE = XFIRE(IFIRE,3)
@@ -330,7 +330,7 @@ C*** COMPUTE RADIATIVE FLUX FROM FIRE
 C*** COMPUTE PORTION OF PATH IN LOWER AND UPPER LAYERS
 
           CALL GETYLYU(ZFIRE,ZLAY,ZTARG,S,ZL,ZU)
-          IF(nfurn.gt.0)THEN
+          IF(nfurn>0)THEN
             ABSL=0.0
             ABSU=0.0
             TAUL = 1.0D0
@@ -343,7 +343,7 @@ C*** COMPUTE PORTION OF PATH IN LOWER AND UPPER LAYERS
             TAUU = EXP(-ABSU*ZU)
             QFIRE = XFIRE(IFIRE,8)
           ENDIF
-          IF(S.NE.0.0D0)THEN
+          IF(S/=0.0D0)THEN
             QFT = QFIRE*ABS(COSANG)*TAUU*TAUL/(4.0D0*PI*S**2)
            ELSE
             QFT = 0.0D0
@@ -353,10 +353,10 @@ C*** DECIDE WHETHER FLUX IS HITTING FRONT OR BACK OF TARGET
 C    IF IT'S HITTING THE BACK TARGET ONLY ADD CONTRIBUTION IF THE TARGET
 C    IS INTERIOR TO THE ROOM
 
-          IF(COSANG.GE.0.0D0)THEN
+          IF(COSANG>=0.0D0)THEN
              QTFFLUX(ITARG,1) = QTFFLUX(ITARG,1) + QFT
             ELSE
-             IF(IXTARG(TRGBACK,ITARG).EQ.INT)THEN
+             IF(IXTARG(TRGBACK,ITARG)==INT)THEN
                QTFFLUX(ITARG,2) = QTFFLUX(ITARG,2) + QFT
              ENDIF
           ENDIF
@@ -371,7 +371,7 @@ C    IS INTERIOR TO THE ROOM
           QGASSUM(I) = 0.0D0
   215   CONTINUE
         DO 220 IWALL = 1, 10
-          if(nfurn.gt.0)then
+          if(nfurn>0)then
              qout=qfurnout
             ELSE
              QOUT = RDQOUT(MAP10(IWALL),IROOM)
@@ -381,7 +381,7 @@ C    IS INTERIOR TO THE ROOM
           SVECT(3) = XXTARG(TRGCENZ,ITARG) - ZZWCEN(IROOM,IWALL,3)
           COSANGT = 0.0D0
           S = DNRM2(3,SVECT,1)
-          IF(S.NE.0.0D0)THEN
+          IF(S/=0.0D0)THEN
             COSANGT = -DDOT(3,SVECT,1,XXTARG(TRGNORMX,ITARG),1)/S
           ENDIF
           ZWALL = ZZWCEN(IROOM,IWALL,3)
@@ -403,13 +403,13 @@ C*** FIND FRACTIONS TRANSMITTED AND ABSORBED IN LOWER AND UPPER LAYER
 
           AWALL = ZZWAREA2(IROOM,IWALL)
           QWT = QOUT*TAUL*TAUU
-          IF(IWALL.LE.5)THEN
+          IF(IWALL<=5)THEN
             QGAS = TL**4*ALPHAL*TAUU + TU**4*ALPHAU
            ELSE
             QGAS = TU**4*ALPHAU*TAUL + TL**4*ALPHAL
           ENDIF
           QGT = SIGMA*QGAS
-          IF(COSANGT.GE.0.0D0)THEN
+          IF(COSANGT>=0.0D0)THEN
             JJ = 1
            ELSE 
             JJ = 2
@@ -418,21 +418,21 @@ C*** FIND FRACTIONS TRANSMITTED AND ABSORBED IN LOWER AND UPPER LAYER
 C*** CALCULATE FLUX ON THE TARGET FRONT.  CALCULATE FLUX ON THE TARGET BACK ONLY IF THE 
 C    REAR OF THE TARGET IS INTERIOR TO THE ROOM.
 
-          IF(JJ.EQ.1.OR.IXTARG(TRGBACK,ITARG).EQ.INT)THEN
+          IF(JJ==1.OR.IXTARG(TRGBACK,ITARG)==INT)THEN
             QWTSUM(JJ) = QWTSUM(JJ) + QWT*AWALL
             QGASSUM(JJ) = QGASSUM(JJ) + QGT*AWALL
             AWALLSUM(JJ) = AWALLSUM(JJ) + AWALL
           ENDIF
   220   CONTINUE
         DO 225 I = 1, 2
-          IF(AWALLSUM(I).EQ.0.0D0)AWALLSUM(I) = 1.0D0
+          IF(AWALLSUM(I)==0.0D0)AWALLSUM(I) = 1.0D0
           QTWFLUX(ITARG,I) = QWTSUM(I)/AWALLSUM(I)
           QTGFLUX(ITARG,I) = QGASSUM(I)/AWALLSUM(I)
   225   CONTINUE        
 
 C*** IF THE TARGET REAR WAS EXTERIOR THEN CALCULATE THE FLUX ASSUMING AMBIENT OUTSIDE CONDITIONS
 
-        IF(IXTARG(TRGBACK,ITARG).EQ.EXT.or.qtgflux(itarg,2).eq.0.0)THEN
+        IF(IXTARG(TRGBACK,ITARG)==EXT.or.qtgflux(itarg,2)==0.0)THEN
           QTGFLUX(ITARG,2) = SIGMA*TAMB(IROOM)**4
         ENDIF
       ENDIF
@@ -442,10 +442,10 @@ C*** COMPUTE CONVECTIVE FLUX
 C  ASSUME TARGET IS A 'FLOOR', 'CEILING' OR 'WALL' DEPENDING ON HOW MUCH THE TARGET IS TILTED.  
 
       ZZNORM = XXTARG(TRGNORMZ,ITARG)
-      IF(ZZNORM.LE.1.0D0.AND.ZZNORM.GE.COS45)THEN
+      IF(ZZNORM<=1.0D0.AND.ZZNORM>=COS45)THEN
         IW = 2
         IWB = 1
-       ELSEIF(ZZNORM.GE.-1.0D0.AND.ZZNORM.LE.-COS45)THEN
+       ELSEIF(ZZNORM>=-1.0D0.AND.ZZNORM<=-COS45)THEN
         IW = 1
         IWB = 2
        ELSE
@@ -458,7 +458,7 @@ C  ASSUME TARGET IS A 'FLOOR', 'CEILING' OR 'WALL' DEPENDING ON HOW MUCH THE TAR
       ZTARG = XXTARG(TRGCENZ,ITARG)
       CALL GETTGAS(IRTARG,XTARG,YTARG,ZTARG,TG)
       TGTARG(ITARG) = TG
-      IF(IXTARG(TRGBACK,ITARG).EQ.INT)THEN
+      IF(IXTARG(TRGBACK,ITARG)==INT)THEN
          TGB = TG
         ELSE
          TGB = TAMB(IROOM)
@@ -527,18 +527,18 @@ C*** CONVECTION FOR THE BACK
       endif
       
       ! default is the appropriate layer temperature
-      if (ztarg.ge.zzhlay(irtarg,lower)) then
+      if (ztarg>=zzhlay(irtarg,lower)) then
         tg = zztemp(irtarg,upper)
       else
         tg = zztemp(irtarg,lower)
-      end if
+      endif
       
       ! if there is a fire in the room and the target is 
       ! DIRECTLY above the fire, use plume temperature
       do i = 1,nfire
-        if (ifroom(i).eq.irtarg) then
-            if (xtarg.eq.xfire(i,1).and.ytarg.eq.xfire(i,2).and.
-     *          ztarg.gt.xfire(i,3)) then
+        if (ifroom(i)==irtarg) then
+            if (xtarg==xfire(i,1).and.ytarg==xfire(i,2).and.
+     *          ztarg>xfire(i,3)) then
                 qdot = fqf(i)
                 xrad = radconsplit(i)
                 dfire = dsqrt(farea(i)*four/pi)
@@ -550,8 +550,8 @@ C*** CONVECTION FOR THE BACK
                 call plumetemp (qdot, xrad, dfire, tu, tl, zfire, 
      *                          zlayer, z, tplume)
                 tg = tplume
-            end if
-        end if
+            endif
+        endif
       end do 
       end subroutine gettgas 
 
@@ -581,14 +581,14 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       include "precis.fi"
 
-      IF(YO.LE.Y)THEN
-         IF(YT.LE.Y)THEN
+      IF(YO<=Y)THEN
+         IF(YT<=Y)THEN
             YL = 1.0D0
            ELSE
             YL = (Y-YO)/(YT-YO)
          ENDIF
         ELSE
-         IF(YT.GE.Y)THEN
+         IF(YT>=Y)THEN
             YL = 0.0D0
            ELSE
             YL = (Y-YT)/(YO-YT)
@@ -660,7 +660,7 @@ C
         TLINKO = XDTECT(I,DTEMP)
 
         ZDETECT = XDTECT(I,DZLOC)
-        IF(ZDETECT.GT.ZZHLAY(IROOM,LOWER))THEN
+        IF(ZDETECT>ZZHLAY(IROOM,LOWER))THEN
           TLAY = ZZTEMP(IROOM,UPPER)
          ELSE
           TLAY = ZZTEMP(IROOM,LOWER)
@@ -673,9 +673,9 @@ C
 
         RTI = XDTECT(I,DRTI)
         TRIG = XDTECT(I,DTRIG)
-        IF(IXDTECT(I,DTYPE).EQ.SMOKED)THEN
+        IF(IXDTECT(I,DTYPE)==SMOKED)THEN
           TLINK = TJET
-         ELSEIF(IXDTECT(I,DTYPE).EQ.HEATD)THEN
+         ELSEIF(IXDTECT(I,DTYPE)==HEATD)THEN
           BN = SQRT(VELO)/RTI
           AN = BN*TJETO
           BNP1 = SQRT(VEL)/RTI
@@ -691,19 +691,19 @@ C    SET IT TO ZERO FOR NOW.
 
            TLINK = 0.0D0
         ENDIF
-        IF (IMODE.GT.0) THEN
+        IF (IMODE>0) THEN
           XDTECT(I,DTEMPO) = TLINKO
           XDTECT(I,DTEMP) = TLINK
         ENDIF
 C*** DETERMINE IF DETECTOR HAS ACTIVATED IN THIS TIME INTERVAL (and not earlier)
 
-        IF(TLINKO.LT.TRIG.AND.TRIG.LE.TLINK.AND.
-     .                        IXDTECT(I,DACT).EQ.0)THEN
+        IF(TLINKO<TRIG.AND.TRIG<=TLINK.AND.
+     .                        IXDTECT(I,DACT)==0)THEN
           DELTA = (TRIG-TLINKO)/(TLINK-TLINKO)
           TMP = TCUR+DSTEP*DELTA
           TDTECT = MIN(TMP,TDTECT)
           IFDTECT = I
-          IF (IMODE.GT.0) THEN
+          IF (IMODE>0) THEN
             XDTECT(I,DTACT)= TCUR+DSTEP*DELTA
             IXDTECT(I,DACT) = 1
 
@@ -711,10 +711,10 @@ C*** DETERMINE IF THIS IS THE FIRST DETECTOR TO HAVE ACTIVATED IN THIS ROOM
 
             IDOLD = IQUENCH(IROOM)
             IQU = 0
-            IF(IDOLD.EQ.0)THEN
+            IF(IDOLD==0)THEN
               IQU = I
              ELSE
-              IF(XDTECT(I,DTACT).LT.XDTECT(IDOLD,DTACT))THEN
+              IF(XDTECT(I,DTACT)<XDTECT(IDOLD,DTACT))THEN
 
 C*** THIS CAN ONLY HAPPEN IF TWO DETECTORS HAVE ACTIVATED IN THE SAME
 C    ROOM IN THE SAME (POSSIBLY VERY SHORT) TIME INTERVAL
@@ -726,7 +726,7 @@ C*** IF THIS DETECTOR HAS ACTIVATED BEFORE ALL OTHERS IN THIS ROOM
 C    AND THE QUENCHING FLAG WAS TURNED ON THEN LET THE SPRINKLER
 C    QUENCH THE FIRE
 
-            IF(IQU.NE.0.AND.IXDTECT(I,DQUENCH).EQ.1)THEN
+            IF(IQU/=0.AND.IXDTECT(I,DQUENCH)==1)THEN
               IQUENCH(IROOM)=IQU
               IDSET = IROOM
             ENDIF

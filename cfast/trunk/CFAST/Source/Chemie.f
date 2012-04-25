@@ -14,7 +14,7 @@
 
 !         care should be exercised in making changes either here or in the source interface routine.
 
-!     revision: $revision: 352 $
+!     revision: $Revision: 352 $
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  pyrolysis_rate: calculated pyrolysis rate of the fuel (kg/s)
 !                 molar_mass: molar mass of the fuel (kg/mol)
@@ -38,27 +38,27 @@
       implicit none
       integer, intent(in) :: source_room, activated_room,
      . activated_sprinkler
-      double precision, intent(in) :: pyrolysis_rate, molar_mass,
+      real*8, intent(in) :: pyrolysis_rate, molar_mass,
      . entrainment_rate, h_c, y_soot, y_co, 
      . n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit,
      . activated_time, activated_rate, model_time
-      double precision, intent(out) :: hrr_constrained, 
+      real*8, intent(out) :: hrr_constrained, 
      . hrr_at_activation, 
      . pyrolysis_rate_constrained, species_rates(:)
       
       logical :: first=.TRUE.
-      double precision :: o2f, o2fi, o2_entrained, o2_factor, 
+      real*8 :: o2f, o2fi, o2_entrained, o2_factor, 
      . o2_available, quenching_factor
-      double precision :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,
+      real*8 :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,
      . nu_hcn
-      double precision :: net_o2, net_co2, net_h2o, net_co, net_soot, 
+      real*8 :: net_o2, net_co2, net_h2o, net_co, net_soot, 
      . net_hcl, net_hcn, net_fuel, net_ct, net_trace
       
       if (first) then
           o2f = 1.31d+7
           o2fi = 1.0d0 / o2f
           first = .false.
-      end if
+      endif
       
       ! calculate the actual burning rate constrained by available o2.
 
@@ -89,8 +89,8 @@
      .         exp(-(model_time-activated_time)/activated_rate)
               if (hrr_at_activation>0.0d0) hrr_constrained = 
      .         min(hrr_constrained,quenching_factor*hrr_at_activation)
-          end if
-      end if
+          endif
+      endif
       
       ! now do the chemistry balance with supplied inputs.  
       nu_soot = molar_mass/0.01201d0*y_soot

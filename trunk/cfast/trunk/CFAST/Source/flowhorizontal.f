@@ -53,7 +53,7 @@ C
       DIMENSION UFLW0(NR,NS+2,2)
       LOGICAL VENTFLG(MXVENT), ROOMFLG(NR), anyvents
       SAVE UFLW0
-	double precision factor2, qchfraction, height, width
+	real*8 factor2, qchfraction, height, width
 
 C    TEMPORARY DECLARATION
 
@@ -66,7 +66,7 @@ C
           UFLW(IFROM,IPROD,UPPER) = XX0
    10   CONTINUE
    20 CONTINUE
-      IF (OPTION(FHFLOW).NE.ON) RETURN
+      IF (OPTION(FHFLOW)/=ON) RETURN
 
       CALL VENTFLAG(VENTFLG,ROOMFLG,ANYVENTS)
       IF(ANYVENTS)THEN
@@ -106,7 +106,7 @@ C*** augment floor pressure in the second room by the pressure induced by wind.
 C***  (note this augmentation will be different for each vent)
 
         PFLOR(2) = PFLOR(2) + ZZVENT(I,6)
-        IF (AVENT.GE.1.D-10) THEN
+        IF (AVENT>=1.D-10) THEN
           CALL VENT(YFLOR,YLAY,TU,TL,DENL,DENU,PFLOR,YVTOP,YVBOT,AVENT,
      +        CP,CONL,CONU,NPROD,MXPRD,MXSLAB,EPSP,CSLAB,PSLAB,QSLAB,
      +        VSS(1,I),VSA(1,I),VAS(1,I),VAA(1,I),DIRS12,DPV1M2,RSLAB,
@@ -116,15 +116,15 @@ C*** UPDATE HALL INFO FOR VENTS CONNECTED FROM FIRE ROOM TO HALL
 
           IF(UPDATEHALL)THEN
             VENTHEIGHT = YVTOP - YVBOT
-            IF(IZVENT(I,4).EQ.1)THEN
+            IF(IZVENT(I,4)==1)THEN
               VLAYERDEPTH = YVTOP - YLAY(2)
-              IF(VLAYERDEPTH.GT.VENTHEIGHT)VLAYERDEPTH = VENTHEIGHT
+              IF(VLAYERDEPTH>VENTHEIGHT)VLAYERDEPTH = VENTHEIGHT
               CALL SETHALL(1,I,IROOM1,TSEC,WIDTH,
      .              TSLAB(NSLAB),-VENTVEL,VLAYERDEPTH)
             ENDIF
-            IF(IZVENT(I,5).EQ.1)THEN
+            IF(IZVENT(I,5)==1)THEN
               VLAYERDEPTH = YVTOP - YLAY(1)
-              IF(VLAYERDEPTH.GT.VENTHEIGHT)VLAYERDEPTH = VENTHEIGHT
+              IF(VLAYERDEPTH>VENTHEIGHT)VLAYERDEPTH = VENTHEIGHT
               CALL SETHALL(1,I,IROOM2,TSEC,WIDTH,
      .               TSLAB(NSLAB),VENTVEL,VLAYERDEPTH)
             ENDIF
@@ -153,7 +153,7 @@ C	This data structure is for reporting purposes only;
 
 C         CALCULATE ENTRAINMENT TYPE MIXING AT THE VENTS
 
-          IF (OPTION(FENTRAIN).EQ.ON) THEN
+          IF (OPTION(FENTRAIN)==ON) THEN
 			CALL ENTRAIN(DIRS12,YSLAB,XMSLAB,NSLAB,TU,TL,CP,YLAY,CONL,
      +          CONU,PMIX,MXPRD,NPROD,YVBOT,YVTOP,UFLW3,VSAS(1,I),
      +          VASA(1,I))
@@ -166,49 +166,49 @@ C         CALCULATE ENTRAINMENT TYPE MIXING AT THE VENTS
             SAU2(IIJK) = XX0
             ASL1(IIJK) = XX0
             ASL2(IIJK) = XX0
-          END IF
+          endif
 
 C         SUM FLOWS FROM BOTH ROOMS FOR EACH LAYER AND TYPE OF PRODUCT
 C         (BUT ONLY IF THE ROOM IS AN INSIDE ROOM)
 
-          IF (IROOM1.GE.1.AND.IROOM1.LE.NIRM) THEN
+          IF (IROOM1>=1.AND.IROOM1<=NIRM) THEN
             DO 40 IPROD = 1, NPROD + 2
               UFLW(IROOM1,IPROD,LOWER) = UFLW(IROOM1,IPROD,LOWER) +
      +            UFLW2(1,IPROD,L)
               UFLW(IROOM1,IPROD,UPPER) = UFLW(IROOM1,IPROD,UPPER) +
      +            UFLW2(1,IPROD,U)
    40       CONTINUE
-            IF (OPTION(FENTRAIN).EQ.ON) THEN
+            IF (OPTION(FENTRAIN)==ON) THEN
               DO 50 IPROD = 1, NPROD + 2
                 UFLW(IROOM1,IPROD,LOWER) = UFLW(IROOM1,IPROD,LOWER) +
      +              UFLW3(1,IPROD,L)
                 UFLW(IROOM1,IPROD,UPPER) = UFLW(IROOM1,IPROD,UPPER) +
      +              UFLW3(1,IPROD,U)
    50         CONTINUE
-            END IF
-          END IF
-          IF (IROOM2.GE.1.AND.IROOM2.LE.NIRM) THEN
+            endif
+          endif
+          IF (IROOM2>=1.AND.IROOM2<=NIRM) THEN
             DO 60 IPROD = 1, NPROD + 2
               UFLW(IROOM2,IPROD,LOWER) = UFLW(IROOM2,IPROD,LOWER) +
      +            UFLW2(2,IPROD,L)
               UFLW(IROOM2,IPROD,UPPER) = UFLW(IROOM2,IPROD,UPPER) +
      +            UFLW2(2,IPROD,U)
    60       CONTINUE
-            IF (OPTION(FENTRAIN).EQ.ON) THEN
+            IF (OPTION(FENTRAIN)==ON) THEN
               DO 70 IPROD = 1, NPROD + 2
                 UFLW(IROOM2,IPROD,LOWER) = UFLW(IROOM2,IPROD,LOWER) +
      +              UFLW3(2,IPROD,L)
                 UFLW(IROOM2,IPROD,UPPER) = UFLW(IROOM2,IPROD,UPPER) +
      +              UFLW3(2,IPROD,U)
    70         CONTINUE
-            END IF
-          END IF
-        END IF
+            endif
+          endif
+        endif
    80 CONTINUE
       endif
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
-        IF(JACCOL.EQ.0)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
+        IF(JACCOL==0)THEN
 
 C*** we need to save the solution for later jacobian calculations
 
@@ -218,7 +218,7 @@ C*** we need to save the solution for later jacobian calculations
               UFLW0(IROOM,IPROD,UPPER) = UFLW(IROOM,IPROD,UPPER)
   150       CONTINUE
   140     CONTINUE
-         ELSEIF(JACCOL.GT.0)THEN
+         ELSEIF(JACCOL>0)THEN
 
 C*** we are computing a jacobian, so get previously save solution for rooms
 C    that are not affected by perturbed solution variable
@@ -303,33 +303,33 @@ C*** ELIMINATE CASES WHERE ENTRAINMENT DOES NOT OCCUR
 C    I.E. A SLAB WHICH IS ADJACENT TO THE UPPER LAYER ON BOTH SIDES
 C      OR A SLAB WHICH IS ADJACENT TO THE LOWER LAYER ON BOTH SIDES
 C
-        IF (YSLAB(N).LT.YLAY(1).OR.YSLAB(N).LT.YLAY(2)) THEN
-          IF (YSLAB(N).GE.YLAY(1).OR.YSLAB(N).GE.YLAY(2)) THEN
+        IF (YSLAB(N)<YLAY(1).OR.YSLAB(N)<YLAY(2)) THEN
+          IF (YSLAB(N)>=YLAY(1).OR.YSLAB(N)>=YLAY(2)) THEN
 C
 C*** SLABS WITH NO FLOW CAUSE NO ENTRAINMENT
 C
-            IF (XMSLAB(N).NE.XX0) THEN
+            IF (XMSLAB(N)/=XX0) THEN
 C
 C*** DETERMINE WHAT ROOM FLOW IS COMING FROM
 C
-              IF (DIRS12(N).EQ.1) THEN
+              IF (DIRS12(N)==1) THEN
                 IFROM = 1
                 ITO = 2
-              ELSE IF (DIRS12(N).EQ.0) THEN
+              ELSE IF (DIRS12(N)==0) THEN
 C
 C*** NO FLOW IN THIS SLAB SO WE CAN SKIP IT
 C    (WE SHOULD NEVER GET HERE)
 C
                 GO TO 60
-              ELSE IF (DIRS12(N).EQ.-1) THEN
+              ELSE IF (DIRS12(N)==-1) THEN
                 IFROM = 2
                 ITO = 1
-              END IF
+              endif
 C
 C***  DETERMINE TEMPERATURE AND PRODUCT CONCENTRATIONS
 C     OF ENTRAINED FLOW
 C
-              IF (YSLAB(N).LT.YLAY(ITO)) THEN
+              IF (YSLAB(N)<YLAY(ITO)) THEN
                 TMIX = TL(ITO)
                 DO 30 IPROD = 1, NPROD
                   PMIX(IPROD) = CONL(IPROD,ITO)
@@ -339,26 +339,26 @@ C
                 DO 40 IPROD = 1, NPROD
                   PMIX(IPROD) = CONU(IPROD,ITO)
    40           CONTINUE
-              END IF
+              endif
 C         
 C*** COMPUTE THE SIZE OF THE ENTRAINED MASS FLOW
 C
-              IF (YSLAB(N).GE.YLAY(IFROM)) THEN
+              IF (YSLAB(N)>=YLAY(IFROM)) THEN
 C
 C*** INTO UPPER
 C
-                IF (TU(IFROM).GT.TL(ITO).AND.XMSLAB(N).NE.XX0) THEN
+                IF (TU(IFROM)>TL(ITO).AND.XMSLAB(N)/=XX0) THEN
                   ZD = MAX(XX0,YLAY(ITO)-MAX(YVBOT,YLAY(IFROM)))
                   CALL ENTRFL(TU(IFROM),TL(ITO),XMSLAB(N),ZD,
      +                UFLW3(ITO,M,U))
                   UFLW3(ITO,M,L) = -UFLW3(ITO,M,U)
                   VSAS(ITO) = UFLW3(ITO,M,U)
-                END IF
+                endif
               ELSE
 C
 C*** INTO LOWER
 C
-                IF (TL(IFROM).LT.TU(ITO).AND.XMSLAB(N).NE.XX0) THEN
+                IF (TL(IFROM)<TU(ITO).AND.XMSLAB(N)/=XX0) THEN
 C               ZD = MAX(XX0,YLAY(IFROM)-MAX(YVBOT,YLAY(ITO)))
 
 C*** need to re-work distance zd for both into upper and into
@@ -375,8 +375,8 @@ C*** case temper1.dat.  This needs to be researched carefully!
                   UFLW3(ITO,M,L) = UFLW3(ITO,M,L) * 0.25D0
                   VASA(ITO) = UFLW3(ITO,M,L)
                   UFLW3(ITO,M,U) = -UFLW3(ITO,M,L)
-                END IF
-              END IF
+                endif
+              endif
 C
 C*** COMPUTE ENTHALPY AND PRODUCT FLOW RATES OF ENTRAINED FLOW
 C    FROM THE MASS FLOW RATE
@@ -387,9 +387,9 @@ C
                  UFLW3(ITO,IPROD,L) = UFLW3(ITO,M,L) * PMIX(IPROD-2)
                  UFLW3(ITO,IPROD,U) = UFLW3(ITO,M,U) * PMIX(IPROD-2)
    50         CONTINUE
-            END IF
-          END IF
-        END IF
+            endif
+          endif
+        endif
    60 CONTINUE
       RETURN
       END
@@ -460,27 +460,27 @@ C*** BREAKPOINTS FOR "INVERSE" CORRELATION
 C
         F1 = A1 * FM1(T1)
         F2 = A2 * FM2(T2)
-      END IF
+      endif
 C
       XQJ = CP * (TU-TL) * 0.001D0
       QJ = XQJ * FMD
       FMDQJ = 1.D0 / XQJ
-      IF (FMDQJ.GE.0.0D0.AND.FMDQJ.LE.F1) THEN
+      IF (FMDQJ>=0.0D0.AND.FMDQJ<=F1) THEN
         Z0DQ = (FMDQJ/A1) ** E1
-      ELSE IF (FMDQJ.GT.F1.AND.FMDQJ.LE.F2) THEN
+      ELSE IF (FMDQJ>F1.AND.FMDQJ<=F2) THEN
         Z0DQ = (FMDQJ/A2) ** E2
       ELSE
         Z0DQ = (FMDQJ/A3) ** E3
-      END IF
+      endif
 C
       ZDQ = Z / QJ ** 0.4D0 + Z0DQ
-      IF (ZDQ.GT.0.2D0) THEN
+      IF (ZDQ>0.2D0) THEN
         FMZ = A3 * FM3(ZDQ) * QJ
-      ELSE IF (ZDQ.GT.0.08D0) THEN
+      ELSE IF (ZDQ>0.08D0) THEN
         FMZ = A2 * FM2(ZDQ) * QJ
       ELSE
         FMZ = A1 * FM1(ZDQ) * QJ
-      END IF
+      endif
 C
       XX0 = 0.0D0
       FMZ = MAX(XX0,FMZ-FMD)
@@ -511,8 +511,8 @@ C    (JACCOL>0) then compute vent flows only for vents that that are connected
 C    to rooms whose pressure, layer height, layer temperature,  or oxygen level
 C    is being perturbed.
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
-        IF(JACCOL.GT.0)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
+        IF(JACCOL>0)THEN
 
 C*** we are computing a Jacobian
 
@@ -525,15 +525,15 @@ C*** we are computing a Jacobian
           DO 120 I = 1, NM1
             ROOMFLG(I) = .FALSE.
   120     CONTINUE
-          IF(IEQTYP.EQ.EQP.OR.IEQTYP.EQ.EQTU.OR.IEQTYP.EQ.EQVU.OR.
-     .       IEQTYP.EQ.EQTL.OR.IEQTYP.EQ.EQOXYL.OR.IEQTYP.EQ.EQOXYU)THEN
+          IF(IEQTYP==EQP.OR.IEQTYP==EQTU.OR.IEQTYP==EQVU.OR.
+     .       IEQTYP==EQTL.OR.IEQTYP==EQOXYL.OR.IEQTYP==EQOXYU)THEN
 
 C*** determine all rooms connected to perturbed rooms
 
             DO 130 I = 1, NVENTS
               IROOM1 = IZVENT(I,1)
               IROOM2 = IZVENT(I,2)
-              IF(IROOM.EQ.IROOM1.OR.IROOM.EQ.IROOM2)THEN
+              IF(IROOM==IROOM1.OR.IROOM==IROOM2)THEN
                 ROOMFLG(IROOM1) = .TRUE.
                 ROOMFLG(IROOM2) = .TRUE.
               ENDIF
@@ -663,19 +663,19 @@ C*** FIND NEUTRAL PLANES
 C     A NEUTRAL PLANE LIES BETWEEN TWO ELEVATIONS HAVING 
 C     OPPOSITE SIGNED PRESSURE DROPS
 
-        IF (DP1M2(I)*DP1M2(I+1).LT.0.0D0) THEN
+        IF (DP1M2(I)*DP1M2(I+1)<0.0D0) THEN
           NNEUT = NNEUT + 1
           DPP = DP1M2(I) - DP1M2(I+1)
           YN(NNEUT) = (YELEV(I+1)*DP1M2(I)-YELEV(I)*DP1M2(I+1)) / DPP
 C     FAIL SAFE IN CASE INTERPOLATION CALCULATION FAILS
 
-          IF (YN(NNEUT).LT.YELEV(I).OR.YN(NNEUT).GT.YELEV(I+1)) THEN
+          IF (YN(NNEUT)<YELEV(I).OR.YN(NNEUT)>YELEV(I+1)) THEN
             YN(NNEUT) = (YELEV(I)+YELEV(I+1)) / 2.0D0
-          END IF
+          endif
           YVELEV(NVELEV) = YN(NNEUT)
           DPV1M2(NVELEV) = 0.0D0
           NVELEV = NVELEV + 1
-        END IF
+        endif
    10 CONTINUE
       YVELEV(NVELEV) = YELEV(NELEV)
       DPV1M2(NVELEV) = DP1M2(NELEV)
@@ -691,21 +691,21 @@ C     INITIALIZE CFAST DATA STRUCTURES FOR FLOW STORAGE
 C     DETERMINE WHETHER TEMPERATURE AND DENSITY PROPERTIES SHOULD COME FROM ROOM 1 OR ROOM 2
 
         PTEST = DPV1M2(N+1) + DPV1M2(N)
-        IF (PTEST.GT.0.0D0) THEN
+        IF (PTEST>0.0D0) THEN
           JROOM = 1
           DIRS12(N) = 1
-        ELSE IF (PTEST.LT.0.0D0) THEN
+        ELSE IF (PTEST<0.0D0) THEN
           DIRS12(N) = -1
           JROOM = 2
         ELSE
           DIRS12(N) = 0
           JROOM = 1
-        END IF
+        endif
 
 C    DETERMINE WHETHER TEMPERATURE AND DENSITY PROPERTIES
 C    SHOULD COME FROM UPPER OR LOWER LAYER
 
-        IF (YSLAB(N).LE.YLAY(JROOM)) THEN
+        IF (YSLAB(N)<=YLAY(JROOM)) THEN
           TSLAB(N) = TL(JROOM)
           RSLAB(N) = DENL(JROOM)
           DO 30 IPROD = 1, NPROD
@@ -717,7 +717,7 @@ C    SHOULD COME FROM UPPER OR LOWER LAYER
           DO 40 IPROD = 1, NPROD
             CSLAB(N,IPROD) = CONU(IPROD,JROOM)
    40     CONTINUE
-        END IF
+        endif
 
 C    FOR NONZERO-FLOW SLABS DETERMINE XMSLAB(N) AND YSLAB(N)
 
@@ -732,7 +732,7 @@ C    FOR NONZERO-FLOW SLABS DETERMINE XMSLAB(N) AND YSLAB(N)
         P2RT = SQRT(P2)
 
 C    IF BOTH CROSS PRESSURES ARE 0 THEN THEN THERE IS NO FLOW
-        IF (P1.GT.XX0.OR.P2.GT.XX0) THEN
+        IF (P1>XX0.OR.P2>XX0) THEN
           R1 = MAX(RSLAB(N),XX0)
           Y2 = YVELEV(N+1)
           Y1 = YVELEV(N)
@@ -743,10 +743,10 @@ C    IF BOTH CROSS PRESSURES ARE 0 THEN THEN THERE IS NO FLOW
           XMSLAB(N) = CVENT * SQRT(R1M8) * AREA * (P2+P1RT*P2RT+P1) / (
      +        P2RT+P1RT) / 3.0D0
           VENTVEL = 0.0D0
-          IF(N.EQ.NSLAB)THEN
-            IF(AREA.NE.0.0D0.AND.R1.NE.0.0D0)THEN
+          IF(N==NSLAB)THEN
+            IF(AREA/=0.0D0.AND.R1/=0.0D0)THEN
               VENTVEL = XMSLAB(N)/(AREA*R1)
-	      IF(DIRS12(N).LT.0)VENTVEL = -VENTVEL
+	      IF(DIRS12(N)<0)VENTVEL = -VENTVEL
             ENDIF
           ENDIF
           QSLAB(N) = CP * XMSLAB(N) * TSLAB(N)
@@ -755,36 +755,36 @@ C    IF BOTH CROSS PRESSURES ARE 0 THEN THEN THERE IS NO FLOW
             PSLAB(N,IPROD) = CSLAB(N,IPROD) * XMSLAB(N)
             SUM = SUM + PSLAB(N,IPROD)
    60     CONTINUE
-        END IF
+        endif
 
 C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
 
         YS = YSLAB(N)
-        IF (YS.GT.MAX(YLAY(1),YLAY(2))) THEN
-          IF (DIRS12(N).GT.0) THEN
+        IF (YS>MAX(YLAY(1),YLAY(2))) THEN
+          IF (DIRS12(N)>0) THEN
             VSS(1) = XMSLAB(N)
           ELSE
             VSS(2) = XMSLAB(N)
-          END IF
-        ELSE IF (YS.LT.MIN(YLAY(1),YLAY(2))) THEN
-          IF (DIRS12(N).GT.0) THEN
+          endif
+        ELSE IF (YS<MIN(YLAY(1),YLAY(2))) THEN
+          IF (DIRS12(N)>0) THEN
             VAA(1) = XMSLAB(N)
           ELSE
             VAA(2) = XMSLAB(N)
-          END IF
-        ELSE IF (YS.GT.YLAY(1)) THEN
-          IF (DIRS12(N).GT.0) THEN
+          endif
+        ELSE IF (YS>YLAY(1)) THEN
+          IF (DIRS12(N)>0) THEN
             VSA(1) = XMSLAB(N)
           ELSE
             VAS(2) = XMSLAB(N)
-          END IF
-        ELSE IF (YS.GT.YLAY(2)) THEN
-          IF (DIRS12(N).GT.0) THEN
+          endif
+        ELSE IF (YS>YLAY(2)) THEN
+          IF (DIRS12(N)>0) THEN
             VAS(1) = XMSLAB(N)
           ELSE
             VSA(2) = XMSLAB(N)
-          END IF
-        END IF
+          endif
+        endif
    70 CONTINUE
       RETURN
       END
@@ -794,21 +794,21 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
       DIMENSION YELEV(*), YLAY(*)
       YMIN = MIN(YLAY(1),YLAY(2))
       YMAX = MAX(YLAY(1),YLAY(2))
-      IF (YMAX.GE.YVTOP.AND.(YMIN.GE.YVTOP.OR.YMIN.LE.YVBOT)) THEN
+      IF (YMAX>=YVTOP.AND.(YMIN>=YVTOP.OR.YMIN<=YVBOT)) THEN
         NELEV = 2
         YELEV(1) = YVBOT
         YELEV(2) = YVTOP
-      ELSE IF (YMAX.LE.YVBOT) THEN
+      ELSE IF (YMAX<=YVBOT) THEN
         NELEV = 2
         YELEV(1) = YVBOT
         YELEV(2) = YVTOP
       ELSE
-        IF (YMAX.GE.YVTOP.AND.YMIN.GT.YVBOT) THEN
+        IF (YMAX>=YVTOP.AND.YMIN>YVBOT) THEN
           NELEV = 3
           YELEV(1) = YVBOT
           YELEV(2) = YMIN
           YELEV(3) = YVTOP
-        ELSE IF (YMIN.LE.YVBOT.AND.YMAX.LT.YVTOP) THEN
+        ELSE IF (YMIN<=YVBOT.AND.YMAX<YVTOP) THEN
           NELEV = 3
           YELEV(1) = YVBOT
           YELEV(2) = YMAX
@@ -819,8 +819,8 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
           YELEV(2) = YMIN
           YELEV(3) = YMAX
           YELEV(4) = YVTOP
-        END IF
-      END IF
+        endif
+      endif
       RETURN
       END
 
@@ -876,21 +876,21 @@ C    if the ceiling jet is beyond the vent
 
       UP = UPPER
 C
-      IF (IROOM.LT.N) THEN
+      IF (IROOM<N) THEN
         YFLOR = ZZYFLOR(IROOM)
         PFLOR = ZZRELP(IROOM)
         YLAY = ZZHLAY(IROOM,LOWER)
 
 C*** this is a hall, the vent number is defined and flow is occuring
 
-        IF(IZHALL(IROOM,IHROOM).EQ.1.AND.IVENT.NE.0.AND.
-     .                             IZHALL(IROOM,IHMODE).EQ.IHDURING)THEN
+        IF(IZHALL(IROOM,IHROOM)==1.AND.IVENT/=0.AND.
+     .                             IZHALL(IROOM,IHMODE)==IHDURING)THEN
           VENTDIST = ZZVENTDIST(IROOM,IVENT)
-          IF(VENTDIST.GT.XX0)THEN
+          IF(VENTDIST>XX0)THEN
             TIME0 = ZZHALL(IROOM,IHTIME0)
             VEL = ZZHALL(IROOM,IHVEL)
             CJETDIST = VEL*(STIME-TIME0)
-            IF(CJETDIST.LT.VENTDIST)THEN
+            IF(CJETDIST<VENTDIST)THEN
               UP = LOWER
              ELSE
               UP = UPPER
@@ -927,7 +927,7 @@ C*** this is a hall, the vent number is defined and flow is occuring
    20   CONTINUE
         TU = ETA(IROOM2)
         TL = ETA(IROOM2)
-      END IF
+      endif
       RETURN
       END
 
@@ -994,10 +994,10 @@ C
 C
 C*** DETERMINE WHERE ROOM FLOW IS COMING FROM
 C
-        IF (DIRS12(N).EQ.1) THEN
+        IF (DIRS12(N)==1) THEN
           IFROM = 1
           ITO = 2
-        ELSE IF (DIRS12(N).EQ.-1) THEN
+        ELSE IF (DIRS12(N)==-1) THEN
           IFROM = 2
           ITO = 1
         ELSE
@@ -1005,15 +1005,15 @@ C
 C*** NO FLOW IN THIS SLAB SO WE CAN SKIP IT
 C
           GO TO 70
-        END IF
+        endif
 C
 C*** LOWER TO LOWER OR UPPER TO UPPER
 C
-        IF (YSLAB(N).GE.YLAY(IFROM)) THEN
+        IF (YSLAB(N)>=YLAY(IFROM)) THEN
           FU = 1.0D0
         ELSE
           FU = 0.0D0
-        END IF
+        endif
         FL = 1.0D0 - FU
         FF(L) = FL
         FF(U) = FU
@@ -1033,7 +1033,7 @@ C
 C
 C*** TAKE IT OUT OF THE ORIGIN ROOM
 C
-        IF (YSLAB(N).GE.YLAY(IFROM)) THEN
+        IF (YSLAB(N)>=YLAY(IFROM)) THEN
           UFLW2(IFROM,M,U) = UFLW2(IFROM,M,U) - XMTERM
           UFLW2(IFROM,Q,U) = UFLW2(IFROM,Q,U) - QTERM
           DO 50 IPROD = 1, NPROD
@@ -1047,7 +1047,7 @@ C
             UFLW2(IFROM,2+IPROD,L) = UFLW2(IFROM,2+IPROD,L) - 
      +          PSLAB(N,IPROD)
    60     CONTINUE
-        END IF
+        endif
    70 CONTINUE
       RETURN
       END
@@ -1106,13 +1106,13 @@ C
 C
       DO 30 I = 1, NELEV
         DO 20 IROOM = 1, 2
-          IF (YFLOR(IROOM).LE.Y(I).AND.Y(I).LE.YLAY(IROOM)) THEN
+          IF (YFLOR(IROOM)<=Y(I).AND.Y(I)<=YLAY(IROOM)) THEN
 C
 C*** THE HEIGHT, Y, IS IN THE LOWER LAYER
 C
             PROOM(IROOM) = (Y(I)-YFLOR(IROOM)) * GDENL(IROOM)
 C
-          ELSE IF (Y(I).GT.YLAY(IROOM)) THEN
+          ELSE IF (Y(I)>YLAY(IROOM)) THEN
 C
 C*** THE HEIGHT, Y, IS IN THE UPPER LAYER
 C
@@ -1120,7 +1120,7 @@ C
      +          YLAY(IROOM))
           ELSE
             PROOM(IROOM) = 0.0D0
-          END IF
+          endif
    20   CONTINUE
 C
 C*** CHANGE IN PRESSURE IS DIFFERENCE IN PRESSURES IN TWO ROOMS
@@ -1137,12 +1137,12 @@ C
 C
 C*** TEST FOR UNDERFLOW
 C
-        IF (ABS(DPOLD/EPSCUT).LE.130.0D0) THEN
+        IF (ABS(DPOLD/EPSCUT)<=130.0D0) THEN
             ZZ = 1.D0 - EXP(-ABS(DPOLD/EPSCUT))
             DP(I) = ZZ * DPOLD
           ELSE
             DP(I) = DPOLD
-          END IF
+          endif
    30   CONTINUE
         RETURN
         END
@@ -1162,16 +1162,16 @@ C
 
 !	The open/close function is done in the physical/mode interface, HFLOW, VFLOW and HVFAN
 
-	double precision function qchfraction (points, index, time)
+	real*8 function qchfraction (points, index, time)
 
 !	This is the open/close function for buoyancy driven horizontal flow
 
-	double precision points(4,*), time, dt, dy, dydt, mintime
+	real*8 points(4,*), time, dt, dy, dydt, mintime
 	data mintime/1.0e-6/
 
-	if (time.lt.points(1,index)) then
+	if (time<points(1,index)) then
 		qchfraction = points(2,index)
-	else if (time.gt.points(3,index)) then
+	else if (time>points(3,index)) then
 		qchfraction = points(4,index)
 	else
 	    dt = max(points(3,index) - points(1,index),mintime)
@@ -1183,16 +1183,16 @@ C
 	return
 	end function qchfraction
 
-	double precision function qcvfraction (points, index, time)
+	real*8 function qcvfraction (points, index, time)
 
 !	This is the open/close function for buoyancy driven vertical flow
 
-	double precision points(4,*), time, dt, dy, dydt, mintime
+	real*8 points(4,*), time, dt, dy, dydt, mintime
 	data mintime/1.0e-6/
 
-	if (time.lt.points(1,index)) then
+	if (time<points(1,index)) then
 		qcvfraction = points(2,index)
-	else if (time.gt.points(3,index)) then
+	else if (time>points(3,index)) then
 		qcvfraction = points(4,index)
 	else
 	    dt = max(points(3,index) - points(1,index),mintime)
@@ -1204,16 +1204,16 @@ C
 	return
 	end function qcvfraction
 
-	double precision function qcffraction (points, index, time)
+	real*8 function qcffraction (points, index, time)
 
 !	This is the open/close function for mechanical ventilation
 
-	double precision points(4,*), time, dt, dy, dydt, mintime
+	real*8 points(4,*), time, dt, dy, dydt, mintime
 	data mintime/1.0d-6/
 
-	if (time.lt.points(1,index)) then
+	if (time<points(1,index)) then
 		qcffraction = points(2,index)
-	else if (time.gt.points(3,index)) then
+	else if (time>points(3,index)) then
 		qcffraction = points(4,index)
 	else
 	    dt = max(points(3,index) - points(1,index), mintime)
@@ -1225,16 +1225,16 @@ C
 	return
 	end function qcffraction
 
-	double precision function qcifraction (points, index, time)
+	real*8 function qcifraction (points, index, time)
 
 !	This is the open/close function for filtering
 
-	double precision points(4,*), time, dt, dy, dydt, mintime
+	real*8 points(4,*), time, dt, dy, dydt, mintime
 	data mintime/1.0d-6/
 
-	if (time.lt.points(1,index)) then
+	if (time<points(1,index)) then
 		qcifraction = points(2,index)
-	else if (time.gt.points(3,index)) then
+	else if (time>points(3,index)) then
 		qcifraction = points(4,index)
 	else
 	    dt = max(points(3,index) - points(1,index),mintime)

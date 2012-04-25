@@ -14,7 +14,7 @@
 	character*16 headline(3,maxhead)
 	character*16 compartmentlabel(7)
 	character*16 firelabel(7)
-	double precision time, outarray(maxhead)
+	real*8 time, outarray(maxhead)
 	logical firstc
 	integer position, errorcode
 
@@ -36,10 +36,10 @@
         ITARG = NTARG - NM1 + I
         IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
         CALL SSaddtolist (position,ZZTEMP(I,UPPER)-273.15,outarray)
-        if (izshaft(i).eq.0) then
+        if (izshaft(i)==0) then
           CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
           CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
-        end if
+        endif
         CALL SSaddtolist (position,ZZVOL(I,UPPER),outarray)
         CALL SSaddtolist (position,ZZRELP(I) - PAMB(I),outarray)
         CALL SSaddtolist (position,ONTARGET(I),outarray)
@@ -49,7 +49,7 @@
 ! Fires
 
       XX0 = 0.0D0
-      IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
+      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
         CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
         CALL SSaddtolist (position,FEMS(0),outarray)
         CALL SSaddtolist (position,FEMP(0),outarray)
@@ -58,9 +58,9 @@
         CALL SSaddtolist (position,FQFC(0),outarray)
         CALL SSaddtolist (position,objmaspy(0),outarray)
         CALL SSaddtolist (position,radio(0),outarray)
-      END IF
+      endif
 
-      IF (NUMOBJL.NE.0) THEN
+      IF (NUMOBJL/=0) THEN
         DO 200 I = 1, NUMOBJL
           CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
           CALL SSaddtolist (position,FEMS(I),outarray)
@@ -71,7 +71,7 @@
           CALL SSaddtolist (position,objmaspy(i),outarray)
           CALL SSaddtolist (position,radio(i),outarray)          
   200   CONTINUE
-      END IF
+      endif
 
       CALL SSprintresults (21, position, outarray)
 
@@ -86,12 +86,12 @@
       include "cshell.fi"
       include "cfin.fi"
 
-	double precision array(*), valu
+	real*8 array(*), valu
 	integer ic
 
       IC = IC + 1
 !	We are imposing an arbitrary limit of 32000 columns
-	if (ic.gt.32000) return
+	if (ic>32000) return
       array(IC) = valu
       return
       
@@ -112,7 +112,7 @@
       include "vents.fi"
 
 	parameter (maxoutput = 512)
-	double precision time, outarray(maxoutput),sum1,sum2,sum3,sum4,
+	real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,
      . sum5,sum6, flow(6), sumin, sumout
 	logical firstc/.true./
 	integer position, errorcode
@@ -137,9 +137,9 @@
       DO 20 J = 1, N
           DO 10 K = 1, mxccv
             I = IRM
-            IF (IAND(1,ISHFT(NW(I,J),-K)).NE.0) THEN
+            IF (IAND(1,ISHFT(NW(I,J),-K))/=0) THEN
                IIJK = IJK(I,J,K)
-               IF (I.LT.J)THEN
+               IF (I<J)THEN
                  SUM1 = SS2(IIJK) + SA2(IIJK)
                  SUM2 = SS1(IIJK) + SA1(IIJK)
                  SUM3 = AA2(IIJK) + AS2(IIJK)
@@ -150,13 +150,13 @@
                  SUM3 = AA1(IIJK) + AS1(IIJK)
                  SUM4 = AA2(IIJK) + AS2(IIJK)
               ENDIF
-              IF (J.EQ.N) THEN
+              IF (J==N) THEN
 				  sumin = sum1 + sum3
 				  sumout = sum2 + sum4
                  CALL SSAddtolist (position,SUMin,outarray)
                  CALL SSAddtolist (position,SUMout,outarray)
               ELSE
-                 IF (I.LT.J)THEN
+                 IF (I<J)THEN
                     SUM5 = SAU2(IIJK)
                     SUM6 = ASL2(IIJK)
                  ELSE
@@ -170,44 +170,44 @@
                  CALL SSAddtolist (position,SUMout,outarray)
                  CALL SSAddtolist (position,SUM5,outarray)
                  CALL SSAddtolist (position,SUM6,outarray)
-              END IF
-            END IF
+              endif
+            endif
    10     CONTINUE
    20   CONTINUE
 
 !	Next natural flow through horizontal vents (vertical flow)
 
         DO 40 J = 1, N
-          IF (NWV(I,J).NE.0.OR.NWV(J,I).NE.0) THEN
+          IF (NWV(I,J)/=0.OR.NWV(J,I)/=0) THEN
             DO 30 II = 1, 6
               FLOW(II) = XX0
    30       CONTINUE
-            IF (VMFLO(J,I,UPPER).GE.XX0) FLOW(1) = VMFLO(J,I,UPPER)
-            IF (VMFLO(J,I,UPPER).LT.XX0) FLOW(2) = -VMFLO(J,I,UPPER)
-            IF (VMFLO(J,I,LOWER).GE.XX0) FLOW(3) = VMFLO(J,I,LOWER)
-            IF (VMFLO(J,I,LOWER).LT.XX0) FLOW(4) = -VMFLO(J,I,LOWER)
+            IF (VMFLO(J,I,UPPER)>=XX0) FLOW(1) = VMFLO(J,I,UPPER)
+            IF (VMFLO(J,I,UPPER)<XX0) FLOW(2) = -VMFLO(J,I,UPPER)
+            IF (VMFLO(J,I,LOWER)>=XX0) FLOW(3) = VMFLO(J,I,LOWER)
+            IF (VMFLO(J,I,LOWER)<XX0) FLOW(4) = -VMFLO(J,I,LOWER)
 !	We show only net flow in the spreadsheets
 		    sumin = flow(1) + flow(3)
 			sumout = flow(2) + flow(4)
             CALL SSAddtolist (position,sumin,outarray)
             CALL SSAddtolist (position,sumout,outarray)
-          END IF
+          endif
    40   CONTINUE
 
 !	Finally, mechanical ventilation
 
-        IF (NNODE.NE.0.AND.NEXT.NE.0) THEN
+        IF (NNODE/=0.AND.NEXT/=0) THEN
           DO 60 I = 1, NEXT
             II = HVNODE(1,I)
-            IF (II.EQ.IRM) THEN
+            IF (II==IRM) THEN
               INODE = HVNODE(2,I)
               DO 50 III = 1, 6
                 FLOW(III) = XX0
    50         CONTINUE
-              IF (HVEFLO(UPPER,I).GE.XX0) FLOW(1) = HVEFLO(UPPER,I)
-              IF (HVEFLO(UPPER,I).LT.XX0) FLOW(2) = -HVEFLO(UPPER,I)
-              IF (HVEFLO(LOWER,I).GE.XX0) FLOW(3) = HVEFLO(LOWER,I)
-              IF (HVEFLO(LOWER,I).LT.XX0) FLOW(4) = -HVEFLO(LOWER,I)
+              IF (HVEFLO(UPPER,I)>=XX0) FLOW(1) = HVEFLO(UPPER,I)
+              IF (HVEFLO(UPPER,I)<XX0) FLOW(2) = -HVEFLO(UPPER,I)
+              IF (HVEFLO(LOWER,I)>=XX0) FLOW(3) = HVEFLO(LOWER,I)
+              IF (HVEFLO(LOWER,I)<XX0) FLOW(4) = -HVEFLO(LOWER,I)
 			  sumin = flow(1) + flow(3)
 			  sumout = flow(2) + flow(4)
               flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
@@ -216,9 +216,9 @@
 			  call SSAddtolist (position, sumout, outarray)
 			  call SSAddtolist (position, flow(5), outarray)
 			  call SSAddtolist (position, flow(6), outarray)
-            END IF
+            endif
    60     CONTINUE
-        END IF
+        endif
    70 CONTINUE
 
 	call ssprintresults(22, position, outarray)
@@ -237,7 +237,7 @@
       include "fltarget.fi"
 
 	parameter (maxoutput=512)
-	double precision outarray(maxoutput), time, xiroom, zdetect,
+	real*8 outarray(maxoutput), time, xiroom, zdetect,
      . tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal,
      . ctotal, tttemp, tctemp, tlay
       INTEGER IWPTR(4), errorcode, position
@@ -271,11 +271,11 @@
 
 ! Now do the additional targets if defined
 	do 40 i = 1, nm1
-        IF (NTARG.GT.NM1) THEN
+        IF (NTARG>NM1) THEN
           DO 20 ITARG = 1, NTARG-NM1
-            IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
+            IF (IXTARG(TRGROOM,ITARG)==I) THEN
               TGTEMP = TGTARG(ITARG)
-              if (IXTARG(TRGEQ,ITARG).eq.CYLPDE) then
+              if (IXTARG(TRGEQ,ITARG)==CYLPDE) then
                 tttemp = xxtarg(trgtempb,itarg)
                 ITCTEMP = TRGTEMPF+ xxtarg(trginterior,itarg)*
      +              (TRGTEMPB-TRGTEMPF)
@@ -284,9 +284,9 @@
 			    TTTEMP = XXTARG(TRGTEMPF,ITARG)
                 ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
                 TCTEMP = XXTARG(ITCTEMP,ITARG)
-              end if
-              IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
-              IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
+              endif
+              IF (IXTARG(TRGEQ,ITARG)==ODE) TCTEMP = TTTEMP
+              IF (IXTARG(TRGMETH,ITARG)==STEADY) TCTEMP = TTTEMP
 			  if (validate.or.netheatflux) then
                 TOTAL = GTFLUX(ITARG,1) /1000.d0
                 FTOTAL = GTFLUX(ITARG,2) /1000.d0
@@ -301,7 +301,7 @@
                 GTOTAL = QTGFLUX(ITARG,1)
                 CTOTAL = QTCFLUX(ITARG,1)
                 RTOTAL = TOTAL - CTOTAL
-              end if
+              endif
               call SSaddtolist (position, tgtemp-273.15, outarray)
 			  call SSaddtolist (position, tttemp-273.15, outarray)
 			  call SSaddtolist (position, tctemp-273.15, outarray)
@@ -311,20 +311,20 @@
               call SSaddtolist (position, ftotal, outarray)
               call SSaddtolist (position, wtotal, outarray)
               call SSaddtolist (position, gtotal, outarray)
-            END IF
+            endif
    20     CONTINUE
-        END IF
+        endif
    40 continue
 
 !     Hallways
 
 c      DO 40 I = 1, NM1
-c        IF(IZHALL(I,IHROOM).EQ.0)GO TO 40
+c        IF(IZHALL(I,IHROOM)==0)GO TO 40
 c        TSTART = ZZHALL(I,IHTIME0)
 c        VEL = ZZHALL(I,IHVEL)
 c        DEPTH = ZZHALL(I,IHDEPTH)
 c        DIST = ZZHALL(I,IHDIST)
-c        IF(DIST.GT.ZZHALL(I,IHMAXLEN))DIST = ZZHALL(I,IHMAXLEN)
+c        IF(DIST>ZZHALL(I,IHMAXLEN))DIST = ZZHALL(I,IHMAXLEN)
 c        WRITE(IOFILO,5050)I,TSTART,VEL,DEPTH,DIST
 c   40 CONTINUE
 
@@ -334,7 +334,7 @@ c   40 CONTINUE
       do 60 i = 1, ndtect
 		 iroom = ixdtect(i,droom)
 		 zdetect = xdtect(i,dzloc)
-		 if(zdetect.gt.zzhlay(iroom,lower))then
+		 if(zdetect>zzhlay(iroom,lower))then
 			  tlay = zztemp(iroom,upper)
 		 else	
 			  tlay = zztemp(iroom,lower)
@@ -367,7 +367,7 @@ c   40 CONTINUE
 
 	parameter (maxhead = 1+22*nr)
 	character*16 heading(3,maxhead)
-	double precision time, outarray(maxhead)
+	real*8 time, outarray(maxhead)
 	integer position, errorcode
 
 	integer layer
@@ -378,7 +378,7 @@ c   40 CONTINUE
 	save outarray, firstc
 
 ! If there are no species, then don't do the output
-	if (nlspct.eq.0) return
+	if (nlspct==0) return
 
 ! Set up the headings
 	if (firstc) then
@@ -395,16 +395,16 @@ c   40 CONTINUE
       DO 70 I = 1, NM1
         DO 50 LAYER = UPPER, LOWER
 	    DO 80 LSP = 1, NS
-	      if (layer.eq.upper.or.IZSHAFT(I).EQ.0) then
+	      if (layer==upper.or.IZSHAFT(I)==0) then
               IF (tooutput(LSP)) THEN
                 ssvalue = TOXICT(I,LAYER,LSP)
                 if (validate.and.molfrac(LSP))ssvalue = ssvalue*0.01D0 ! Converts PPM to  molar fraction
-                if (validate.and.lsp.eq.9) ssvalue = ssvalue *264.6903 ! Converts OD to mg/m^3 (see TOXICT OD calculation)
+                if (validate.and.lsp==9) ssvalue = ssvalue *264.6903 ! Converts OD to mg/m^3 (see TOXICT OD calculation)
 	          CALL SSaddtolist (position,ssvalue,outarray)
 ! We can only output to the maximum array size; this is not deemed to be a fatal error!
-			    if (position.ge.maxhead) go to 90
-              END IF
-            end if
+			    if (position>=maxhead) go to 90
+              endif
+            endif
    80	    CONTINUE
    50   CONTINUE
    70 CONTINUE
@@ -430,7 +430,7 @@ c   40 CONTINUE
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)
-	double precision time, outarray(maxhead)
+	real*8 time, outarray(maxhead)
 	logical firstc
 	integer position, errorcode
       integer toprm, botrm
@@ -454,29 +454,29 @@ c   40 CONTINUE
         ITARG = NTARG - NM1 + I
         IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
         CALL SSaddtolist (position,ZZTEMP(I,UPPER)-273.15,outarray)
-        if (izshaft(i).eq.0) then
+        if (izshaft(i)==0) then
           CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
           CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
           CALL SSaddtolist (position,ZZRELP(I) - PAMB(I),outarray)
           CALL SSaddtolist (position,TOXICT(I,UPPER,9),outarray)
           CALL SSaddtolist (position,TOXICT(I,LOWER,9),outarray)
-        end if
+        endif
   100 CONTINUE
 
 ! Fires
 
       XX0 = 0.0D0
       nfire = 0
-      IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
+      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
         nfire = nfire + 1
         CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
         CALL SSaddtolist (position,FQF(0)/1000.,outarray)
         CALL SSaddtolist (position,FHEIGHT,outarray)
         CALL SSaddtolist (position,XFIRE(1,3),outarray)
         CALL SSaddtolist (position,FAREA(0),outarray)
-      END IF
+      endif
 
-      IF (NUMOBJL.NE.0) THEN
+      IF (NUMOBJL/=0) THEN
         DO 200 I = 1, NUMOBJL
           nfire = nfire + 1
           CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
@@ -485,7 +485,7 @@ c   40 CONTINUE
           CALL SSaddtolist (position,XFIRE(nfire,3),outarray)
           CALL SSaddtolist (position,FAREA(I),outarray)          
   200   CONTINUE
-      END IF
+      endif
 
 ! Vents
       DO 300 I = 1, NVENTS

@@ -72,8 +72,8 @@ C*** SOLVE CONDUCTION PROBLEM FOR ALL WALLS
 C*** If the reduced jacobian option is on and dassl is computing a jacobian
 C    then solve a conduction problem only if dassl is varying a wall temperature
 
-      IF(OPTION(FMODJAC).EQ.ON.AND.JACCOL.GT.0)THEN
-        IF(IZEQMAP(JACCOL,1).EQ.EQWT)THEN
+      IF(OPTION(FMODJAC)==ON.AND.JACCOL>0)THEN
+        IF(IZEQMAP(JACCOL,1)==EQWT)THEN
 
 C  a wall temperatuer is being perturbed so solve that walls conduction problem
 
@@ -104,14 +104,14 @@ C*** use exterior wall temperature from last time step to ...
 
 C*** compute flux seen by exterior of wall
 
-            IF (IWB.EQ.3) THEN
+            IF (IWB==3) THEN
 
 c*** back wall is connected to the outside
 
               CALL CONVEC(IREVWC(IWALL),TGAS,TWEXT,WFLUXOUT)
               WFLUXOUT = WFLUXOUT + SIGMA * (TGAS**4-TWEXT**4)
               WFLUXSAVE = WFLUXOUT
-              IF(IZHEAT(IROOM).NE.0.AND.IWALL.NE.1.AND.IWALL.NE.2)THEN
+              IF(IZHEAT(IROOM)/=0.AND.IWALL/=1.AND.IWALL/=2)THEN
 
 c*** back wall is connected to rooms defined by izhtfrac with fractions
 c         defined by zzhtfrac.  If izheat(iroom) is not zero then
@@ -123,22 +123,22 @@ c         for iwall=3 and iwall=4
                 DO 50 JJ = 1, NWROOM
                   J = IZHTFRAC(IROOM,JJ)
                   FRAC = ZZHTFRAC(IROOM,J)
-                  IF(IWALL.EQ.3)THEN
+                  IF(IWALL==3)THEN
                     YB = ZZHLAY(IROOM,LOWER)
                     YT = ZZYCEIL(IROOM)
-                   ELSEIF(IWALL.EQ.4)THEN
+                   ELSEIF(IWALL==4)THEN
                     YB = 0.0D0
                     YT = ZZHLAY(IROOM,LOWER)
                   ENDIF
                   DFLOR = ZZYFLOR(J) - ZZYFLOR(IROOM)
                   YY = ZZHLAY(J,LOWER) + DFLOR
-                  IF(J.NE.NM1+1)THEN
-                    IF(YY.GT.YT)THEN
+                  IF(J/=NM1+1)THEN
+                    IF(YY>YT)THEN
                       FU = 0.0D0
-                     ELSEIF(YY.LT.YB)THEN
+                     ELSEIF(YY<YB)THEN
                       FU = 1.0D0
                      ELSE
-                      IF(YB.NE.YT)THEN
+                      IF(YB/=YT)THEN
                         FU = (YT-YY)/(YT-YB)
                        ELSE
                         FU = 0.0D0
@@ -153,7 +153,7 @@ c         for iwall=3 and iwall=4
                   WFLUXOUT = WFLUXOUT + FRAC*(FLUXU + FLUXL)
    50           CONTINUE
               ENDIF
-            END IF
+            endif
             CALL CNDUCT(UPDATE,TWINT,TWEXT,DT,
      +          FKW(1,IWALL,IROOM),CW(1,IWALL,IROOM),RW(1,IWALL,IROOM),
      +          TWJ(1,IROOM,IWALL),WALLDX(1,IROOM,IWALL),
@@ -175,26 +175,26 @@ C    HEAT FLUX STRIKING THE WALL!
 
 C*** save wall gradients during base call to resid (cnduct)
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
 
 c*** store wall gradient for later use
 
-        IF(JACCOL.EQ.0)THEN
+        IF(JACCOL==0)THEN
           DO 20 IW = 1, NWALLS
             VTGRAD0(IW) = VTGRAD(IW)
    20     CONTINUE
-         ELSEIF(JACCOL.GT.0)THEN
+         ELSEIF(JACCOL>0)THEN
 
 c*** use saved wall temperature gradient except for conduction problem
 c    corresponding to the perturbed wall temperature
 
-          IF(IZEQMAP(JACCOL,1).EQ.EQWT)THEN
+          IF(IZEQMAP(JACCOL,1)==EQWT)THEN
             IEQ = JACCOL - NOFWT
            ELSE
             IEQ = 0
           ENDIF
           DO 30 IW = 1, NWALLS
-            IF(IW.NE.IEQ)VTGRAD(IW) = VTGRAD0(IW)
+            IF(IW/=IEQ)VTGRAD(IW) = VTGRAD0(IW)
    30     CONTINUE
         ENDIF
       ENDIF                 
@@ -202,7 +202,7 @@ c    corresponding to the perturbed wall temperature
 C*** DASSL WILL TRY TO FORCE DELTA TO BE ZERO, SO THAT FOURIER'S
 C    LAW, Q = -K DT/DX, IS SATISFIED AT THE WALL SURFACE 
 
-      IF(UPDATE.NE.2)THEN
+      IF(UPDATE/=2)THEN
         DO 40 IW = 1, NWALLS
           ICOND = NOFWT + IW
           IROOM = IZWALL(IW,1)
@@ -297,7 +297,7 @@ C    nodes.  rhs at boundary and slab break points are defined farther down.
 C*** set up tri-diagonal coefficient matrix
 
 C*** setup first row
-      IF(IWBOUND.NE.4)THEN
+      IF(IWBOUND/=4)THEN
          A(1) = 1.0D0
          B(1) = 0.0D0
          C(1) = 0.0D0
@@ -341,7 +341,7 @@ C*** do break points between each slab
 
 C*** setup last row, note: last row depends on form of boundary condition
 
-      IF (IWBOUND.EQ.1) THEN
+      IF (IWBOUND==1) THEN
 
 C*** constant temperature boundary condition
 C    (if we ever solve for both interior and exterior wall temperatures
@@ -351,7 +351,7 @@ C     then use change TNEW(NX) = tamb to TNEW(NX) = tempout)
         B(NX) = 0.0D0
         C(NX) = 0.0D0
         TNEW(NX) = TEMPOUT
-      ELSE IF (IWBOUND.EQ.2) THEN
+      ELSE IF (IWBOUND==2) THEN
 
 C*** insulated boundary condition
 
@@ -359,7 +359,7 @@ C*** insulated boundary condition
         B(NX) = -1.0D0
         C(NX) = 0.0D0
         TNEW(NX) = 0.0D0
-      ELSE IF (IWBOUND.EQ.3.OR.IWBOUND.EQ.4) THEN
+      ELSE IF (IWBOUND==3.OR.IWBOUND==4) THEN
 
 C*** flux boundary condition (using lagged temperatures
 
@@ -367,7 +367,7 @@ C*** flux boundary condition (using lagged temperatures
         B(NX) = -1.0D0
         C(NX) = 0.0D0
         TNEW(NX) = WALLDX(NX-1) * WFLUXOUT / WK(NSLAB)
-      END IF
+      endif
 C     
 C*** NOW PERFORM AN L-U FACTORIZATION OF THIS MATRIX (see atkinson p.455)
 C    NOTE: MATRIX IS DIAGONALLY DOMINANT SO WE DON'T HAVE TO PIVOT
@@ -405,11 +405,11 @@ C*** BACKWARD SUBSTITION
 
 C***  WE DON'T KEEP solution UNLESS UPDATE IS 1 OR 2
 
-      IF (UPDATE.NE.0) THEN
+      IF (UPDATE/=0) THEN
         DO 80 I = 1, NX
           WTEMP(I) = TNEW(I)
    80   CONTINUE
-      END IF
+      endif
 
 C*** estimate temperature gradient at wall surface by constructing a 
 C    quadratic polynomial that interpolates first three data points in 

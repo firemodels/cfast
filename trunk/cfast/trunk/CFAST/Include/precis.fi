@@ -1,1 +1,1 @@
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IMPLICIT real*8 (A-H,O-Z)

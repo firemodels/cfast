@@ -4,7 +4,7 @@
 !     purpose: physical interface routine to calculate the current
 !              rates of mass and energy flows into the layers from
 !              all fires in the building.
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: tsec   current simulation time (s)
 !                flwf   mass and energy flows into layers due to fires.
@@ -40,7 +40,7 @@
       dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
       dimension xxfire(1), yyfire(1), zzfire(1), zzloc(1)
       dimension ftemp(1), fvel(1)
-      double precision n_C,n_H,n_O,n_N,n_Cl
+      real*8 n_C,n_H,n_O,n_N,n_Cl
       integer cjetopt
       integer update
 
@@ -59,7 +59,7 @@
       if (lfbo>0.and.lfbo<n.and.lfbt>0) then
           write (logerr,*) 'Stop MAINF keyword is outdated. ',
      .        'Update input file'
-      end if
+      endif
 
       nobj = 0
       do i = 1, numobjl
@@ -142,7 +142,7 @@
                   fopos (j,nobj) = objpos(j,iobj)
               end do
 
-          end if
+          endif
       end do
 
       return
@@ -158,7 +158,7 @@
 !     purpose: do heat release from a fire for both main fire and objects. pyrolysis 
 !         and kinetics are separate operations.  pyrolysis: tuhc, hcl, hcn, ct and ts - source 
 !         is from pyrols ; plume to ul is done below. combustion kinetics applies to o2, co2, co, od - chemie
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  ifire: fire number (ifire=0 is the main fire)
 !                 iroom: room containing the fire
@@ -192,7 +192,7 @@
       include "fireptrs.fi"
 
       dimension xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
-      double precision n_C,n_H,n_O,n_N,n_Cl,mol_mass
+      real*8 n_C,n_H,n_O,n_N,n_Cl,mol_mass
 
       x1 = 1.0d0
       x0 = 0.0d0
@@ -265,7 +265,7 @@
               else
                   activated_time = 0
                   activated_rate = 0.0
-              end if
+              endif
               call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,
      .        n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,
      .        iquench(iroom),activated_time,
@@ -281,7 +281,7 @@
 !                  write (*,'(a,f10.6)') 'H2O = ',xmass(8)*1000.0d0
 !                  write (*,'(a,f10.6)') 'soot = ',xmass(9)*1000.0d0
 !                  continue
-!              end if
+!              endif
 
               ! limit the amount entrained to that actually entrained by the
               ! fuel burned
@@ -292,7 +292,7 @@
                   qheatl = xqpyrl
                   ipass = ipass + 1
                   cycle
-              end if
+              endif
               exit
           end do
           xqpyrl = xqpyrl/(x1-chirad)
@@ -315,7 +315,7 @@
                   xnet = xeme * stmass(lower,lsp) / xtemp
                   xntms(upper,lsp) = xntms(upper,lsp) + xnet
                   xntms(lower,lsp) = xntms(lower,lsp) - xnet
-              end if
+              endif
           end do
           xqfr = xqpyrl * chirad
           xqfc(upper) = xqpyrl * (x1-chirad)
@@ -357,9 +357,9 @@
               do i = 1, ns
                   xntms(upper,i) = xmass(i) + xntms(upper,i)
               end do
-          end if
+          endif
 
-      end if
+      endif
       return
       end
 
@@ -370,7 +370,7 @@
       
 !     routine: pyrols
 !     purpose: returns yields for object fires interpolated from user input  
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  objn: the object pointer number, 
 !                 time: current simulation time (s)
@@ -392,9 +392,9 @@
       include "objects2.fi"
 
       integer objn
-      double precision n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace
+      real*8 n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace
 
-      if (.not.objon(objn).or.objset(objn).gt.0) then
+      if (.not.objon(objn).or.objset(objn)>0) then
           xx0 = 0.0d0
           omasst = xx0
           oareat = xx0
@@ -473,7 +473,7 @@
      .qjl,zz,xemp,xems,xeme,xfx,xfy)
 
 !     routine: fireplm
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: physical interface between dofire and the plume models
 
@@ -495,7 +495,7 @@
       subroutine mccaffrey (qjl,zz,xemp,xems,xeme,xfx,xfy,od)
 
 !     routine: mccaffrey
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: calculates plume entrainment for a fire from mccaffrey's correlation
 !     inputs:    qjl    fire size (w)
@@ -529,7 +529,7 @@
           a1 = .011d0
           a2 = a1 * fm1(t1) / fm2(t1)
           a3 = a2 * fm2(t2) / fm3(t2)
-      end if
+      endif
       x0 = 0.0d0
 
       ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
@@ -545,20 +545,20 @@
               xems = a2 * fm2(zdq) * qj
           else
               xems = a1 * fm1(zdq) * qj
-          end if
+          endif
           xems = max(xemp,xems/xf)
           xeme = max(xems-xemp,x0)
       else
           xems = xemp
           xeme = 0.0d0
-      end if
+      endif
       return
       end subroutine mccaffrey
 
       subroutine heskestad (q, z, emp, ems, eme, x, y, od)
 
 !     routine: mccaffrey
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
 !     inputs:    q    fire size (w)
@@ -572,7 +572,7 @@
 
       include "precis.fi"
 
-      double precision q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
+      real*8 q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
 
       qj = 0.001d0 * q
       z0 = -1.02d0 * od + 0.083d0 * qj**0.4
@@ -588,7 +588,7 @@
 !     routine:  integrate_mass
 !     description: Routine to integrate the pyrolosate of objects
 !         we also integrate the trace species release and total for all fires
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     Arguments:  time    current simulation time
 !                 deltt   current time step
@@ -599,7 +599,7 @@
       include "cenviro.fi"    
 
       integer i, j
-      double precision xx0,xx1,filter,qcifraction,time,deltt
+      real*8 xx0,xx1,filter,qcifraction,time,deltt
       data xx0/0.0d0/, xx1/1.0d0/
 
       do i = 0, numobjl
@@ -682,7 +682,7 @@
       ! initialize summations and local data
       djetflg = .false.
       xx0 = 0.0d0
-      if (option(fdfire)/=on.or.nfire.le.0) return
+      if (option(fdfire)/=on.or.nfire<=0) return
 
 
       ! if no vents have a door jet fire then exit
@@ -690,9 +690,9 @@
 
           ! is there a door jet fire into room iroom1
           iroom1 = izvent(i,1)
-          if(zztemp(iroom1,upper).ge.tgignt)then
+          if(zztemp(iroom1,upper)>=tgignt)then
               flw1to2 = vss(1,i)+vsa(1,i)
-              if(vsas(2,i).gt.xx0.and.flw1to2.gt.xx0)then
+              if(vsas(2,i)>xx0.and.flw1to2>xx0)then
                   djetflg = .true.
                   exit
               endif
@@ -700,9 +700,9 @@
 
           !is there a door jet fire into room iroom2
           iroom2 = izvent(i,2)
-          if(zztemp(iroom2,upper).ge.tgignt)then
+          if(zztemp(iroom2,upper)>=tgignt)then
               flw2to1 = vss(2,i)+vsa(2,i)
-              if(vsas(1,i).gt.xx0.and.flw2to1.gt.xx0)then
+              if(vsas(1,i)>xx0.and.flw2to1>xx0)then
                   djetflg = .true.
                   exit
               endif
@@ -754,7 +754,7 @@
      .                    flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
                       end do
                   endif
-              end if
+              endif
           end do
       endif
 
@@ -797,7 +797,7 @@
 
 !     routine: djfire
 !     purpose: calculate heat and combustion chemistry for a door jet fire  
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  ito: room number door jet is flowing into
 !                 tjet: temperature of the door jet gas
@@ -843,7 +843,7 @@
               xntms(upper,i) = xmass(i)
               xntms(lower,i) = x0
           end do
-      end if
+      endif
       return
       end
 
@@ -851,7 +851,7 @@
 
 !     routine: flamhgt
 !     purpose: Calculates flame height for a given fire size and area 
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  qdot: Fire Size (W)
 !                 area: Area of the base of the fire (m^2)
@@ -869,7 +869,7 @@
           d = 0.09d0
       else
           d = sqrt(four*area/pi)
-      end if
+      endif
       fheight = -1.02*d + 0.235*(qdot/1.0d3)**0.4d0
       fheight = max (zero, fheight)
       return
@@ -884,7 +884,7 @@
 !     Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
 !     Uses Evan's method to determine virtual fire size and fire origin when fire
 !     is in the lower layer and position is in the upper layer
-!     revision: $revision: 352 $
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  qdot: total heat release rate of the fire (W)
 !                 xrad: fraction of fire HRR released as radiation
@@ -940,34 +940,30 @@
                   call PlumeTemp_M (q_eff, tu, z_eff, tplume)
               else
                   tplume = tu
-              end if
-          end if
+              endif
+          endif
       else
           if (zin<=zlayer) then
               tplume = tl
           else
               tplume = tu
-          end if
-      end if  
+          endif
+      endif  
       return
       end subroutine PlumeTemp
 
       subroutine PlumeTemp_H (qdot, xrad, dfire, tgas, z, tplume)
 
-! Calculates plume centerline temperature at a specified height above
-! the fire using Heskestad's correlation
-
-! Inputs:
-!
-! qdot    total heat release rate of the fire (W)
-! xrad    fraction of fire HRR released as radiation
-! dfire   fire diamater (m)
-! tgas    surrounding gas temperature (K)
-! z       distance from fire to position to calculate plume centerline temperature (m)
-
-! Output:
-!
-! tplume  plume centerline temperature
+!     routine: PlumeTemp_H
+!     purpose: Calculates plume centerline temperature at a specified height above the fire using Heskestad's correlation
+!     Revision: $Revision$
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  qdot: total heat release rate of the fire (W)
+!                 xrad: fraction of fire HRR released as radiation
+!                 dfire: fire diamater (m)
+!                 tgas: surrounding gas temperature (K)
+!                 z: distance from fire to position to calculate plume centerline temperature (m)
+!                 tplume (output):  plume centerline temperature
 
       implicit none
       real*8 qdot, xrad, dfire, tgas, tl, z
@@ -976,15 +972,15 @@
       real*8 cp, fheight, rhoamb, z0, qdot_c, dt
       real*8 dstar, zp1, zp2, tp1, tp2, a, b
 
-!     plume temperature correlation is only valid above the mean flame height      
+      ! plume temperature correlation is only valid above the mean flame height      
       call flamhgt (qdot,piov4*dfire**2,fheight)
 
-!     z0 = virtual origin, qdot_c = convective HRR
+      ! z0 = virtual origin, qdot_c = convective HRR
       if (dfire>0.d0) then
           z0 = -1.02d0*dfire + 0.083d0*(qdot/1000.d0)**0.4d0
       else
           z0 = 0.d0
-      end if
+      endif
       qdot_c = qdot*(1.0d0 - xrad)/1000.d0
 
       rhoamb = 352.981915d0/tgas
@@ -1005,25 +1001,21 @@
       else
           dt = 9.1d0*(tgas/(g*cp**2*rhoamb**2))**(1.d0/3.d0)*
      *    qdot_c**(2.d0/3.d0)*(z-z0)**(-5.d0/3.d0)
-      end if
+      endif
       tplume = tgas + dt
 
       end subroutine PlumeTemp_H
 
       subroutine PlumeTemp_M (qdot, tgas, z, tplume)
 
-! Calculates plume centerline temperature at a specified height above
-! the fire using McCaffrey's correlation
-
-! Inputs:
-!
-! qdot    total heat release rate of the fire (W)
-! tgas    surrounding gas temperature (K)
-! z       distance from fire to position to calculate plume centerline temperature (m)
-
-! Output:
-!
-! tplume  plume centerline temperature
+!     routine: PlumeTemp_M
+!     purpose: Calculates plume centerline temperature at a specified height above the fire using McCaffrey's correlation
+!     Revision: $Revision$
+!     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+!     arguments:  qdot: total heat release rate of the fire (W)
+!                 tgas: surrounding gas temperature (K)
+!                 z: distance from fire to position to calculate plume centerline temperature (m)
+!                 tplume (output):  plume centerline temperature
 
       implicit none
       real*8 qdot, dfire, tgas, z
@@ -1056,8 +1048,8 @@
 
 !     routine: toxic
 !     purpose: calculate species concentrations (ppm), mass density (kg/m^3), opacity (1/m), 
-c              ct (g-min/m^3), heat flux to target on floor (w)
-!     revision: $revision: 352 $
+!              ct (g-min/m^3), heat flux to target on floor (w)
+!     Revision: $Revision$
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  deltt  length of the latest time step (s)
 
@@ -1094,7 +1086,7 @@ c              ct (g-min/m^3), heat flux to target on floor (w)
                   do k = upper, lower
                       ppmdv(k,i,lsp) = zzgspec(i,k,lsp) / v(k)
                   end do
-              end if
+              endif
           end do
 
           ! calculate the molar density
@@ -1107,9 +1099,9 @@ c              ct (g-min/m^3), heat flux to target on floor (w)
                       else
                           toxict(i,k,lsp) = 100.d0 * zzgspec(i,k,lsp) / 
      +                    (air(k)*aweigh(lsp))
-                      end if
+                      endif
                   end do
-              end if
+              endif
           end do
 
           ! opacity is calculated from seder's work
@@ -1121,7 +1113,7 @@ c              ct (g-min/m^3), heat flux to target on floor (w)
               do k = upper, lower
                   toxict(i,k,lsp) = ppmdv(k,i,lsp) * 3778.0d0
               end do
-          end if
+          endif
 
           ! ct is the integration of the total "junk" being transported
           lsp = 10
@@ -1130,7 +1122,7 @@ c              ct (g-min/m^3), heat flux to target on floor (w)
                   toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp) * 
      +            1000.0d0 * deltt / 60.0d0
               end do
-          end if
+          endif
 
           ! ts (trace species) is the filtered concentration - this is the total mass. 
           ! it is converted to fraction of the total generated by all fires.
@@ -1140,7 +1132,7 @@ c              ct (g-min/m^3), heat flux to target on floor (w)
               do k = upper, lower
                   toxict(i,k,lsp) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
               end do
-          end if
+          endif
 
       end do
 
@@ -1152,11 +1144,11 @@ c              ct (g-min/m^3), heat flux to target on floor (w)
       return
       end subroutine toxic
 
-      SUBROUTINE REMAPFIRES (NFIRES, FLOCAL, FXLOCAL, FYLOCAL, 
-     .FZLOCAL, FQLOCAL, FHLOCAL)
+      subroutine remapfires (nfires, flocal, fxlocal, fylocal, 
+     .fzlocal, fqlocal, fhlocal)
 
-C	This routine is to combine the main fire (in lfbo) and any objects into a single list
-C	There does not have to be a main fire nor any objects, so NFIRES may be zero
+c	this routine is to combine the main fire (in lfbo) and any objects into a single list
+c	there does not have to be a main fire nor any objects, so nfires may be zero
 
       include "precis.fi"
       include "cfast.fi"
@@ -1165,35 +1157,35 @@ C	There does not have to be a main fire nor any objects, so NFIRES may be zero
       include "objects1.fi"
       include "objects2.fi"
 
-C	First, the mainfire if there is one
+c	first, the mainfire if there is one
 
-      IF (LFBO>0) THEN
+      if (lfbo>0) then
           nfires = 1
-          FLOCAL(1) = FROOM(0)
-          FXLOCAL(1) = fopos(1,0)
-          FYLOCAL(1) = fopos(2,0)
-          FZLOCAL(1) = fopos(3,0)
-          CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
-          FQLOCAL(1) = FQF(0)
-          FHLOCAL(1) = FHEIGHT
-      ELSE
-          NFIRES = 0
-      ENDIF
+          flocal(1) = froom(0)
+          fxlocal(1) = fopos(1,0)
+          fylocal(1) = fopos(2,0)
+          fzlocal(1) = fopos(3,0)
+          call flamhgt (fqf(0),farea(0),fheight)
+          fqlocal(1) = fqf(0)
+          fhlocal(1) = fheight
+      else
+          nfires = 0
+      endif
 
-C	Now the other objects
+c	now the other objects
 
-      DO I = 1, NUMOBJL
-          NFIRES = NFIRES + 1
-          FXLOCAL(NFIRES) = fopos(1,i)
-          FYLOCAL(NFIRES) = fopos(2,i)
-          FZLOCAL(NFIRES) = fopos(3,i)
-          CALL FLAMHGT (fqf(i),FAREA(I),FHEIGHT)
-          FQLOCAL(NFIRES) = fqf(i)
-          FHLOCAL(NFIRES) = FHEIGHT
+      do i = 1, numobjl
+          nfires = nfires + 1
+          fxlocal(nfires) = fopos(1,i)
+          fylocal(nfires) = fopos(2,i)
+          fzlocal(nfires) = fopos(3,i)
+          call flamhgt (fqf(i),farea(i),fheight)
+          fqlocal(nfires) = fqf(i)
+          fhlocal(nfires) = fheight
           flocal(nfires) = froom(i)
-      END DO
-      RETURN
-      END
+      end do
+      return
+      end
 
       subroutine sethoc (maxint, mdot, qdot, hdot, hinitial)
 
@@ -1201,7 +1193,7 @@ C	Now the other objects
 
       include "precis.fi"
 
-      double precision mdot(maxint), qdot(maxint), hdot(maxint)
+      real*8 mdot(maxint), qdot(maxint), hdot(maxint)
 
       data hcmax /1.0D8/, hcmin /1.0D+6/
 
@@ -1221,31 +1213,31 @@ C	Now the other objects
       return
       end subroutine sethoc
 
-      SUBROUTINE UPDOBJ(IFLAG, TOLD, DT, IFOBJ, TOBJ, IERROR)
+      subroutine updobj(iflag, told, dt, ifobj, tobj, ierror)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     UPDOBJ
-C
-C     Source File: UPDOBJ.f
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: IFLAG   Flags if check, set, or update variables
-C                TOLD    Time previous to this time step
-C                DT      Length of last time step
-C                IFOBJ   Object number that ignites (return)
-C                TOBJ    Time object ignites
-C                IERROR  Returns error codes
-C
-C     Revision History:
-C        Created:  8/15/1995 at 13:08 by PAR
-C        Modified: 9/5/1995 at 10:29 by PAR:
-C                  Added support for IERROR and returns of stops to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+c--------------------------------- nist/bfrl ---------------------------------
+c
+c     routine:     updobj
+c
+c     source file: updobj.f
+c
+c     functional class:  
+c
+c     description:  
+c
+c     arguments: iflag   flags if check, set, or update variables
+c                told    time previous to this time step
+c                dt      length of last time step
+c                ifobj   object number that ignites (return)
+c                tobj    time object ignites
+c                ierror  returns error codes
+c
+c     revision history:
+c        created:  8/15/1995 at 13:08 by par
+c        modified: 9/5/1995 at 10:29 by par:
+c                  added support for ierror and returns of stops to main
+c
+c---------------------------- all rights reserved ----------------------------
 
       include "precis.fi"
       include "cfast.fi"
@@ -1254,341 +1246,328 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "fltarget.fi"
       include "opt.fi"
 
-      DIMENSION TMPOB(2,MXOIN)
+      dimension tmpob(2,mxoin)
 
-      IFOBJ = 0
-      TOBJ = TOLD + 2.D0*DT
-      TNOBJ = TOLD + DT
+      ifobj = 0
+      tobj = told + 2.d0*dt
+      tnobj = told + dt
 
-!!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
-!!!!! The critiria for temperature and flux are stored backupwards - this historical
-!!!!! See corresponding code in keywordcases
-      DO 10 IOBJ = 1, NUMOBJL
-          IF (OBJON(IOBJ)) GOTO 10
-          IGNFLG = OBJIGN(IOBJ)
-          IOBTARG = OBTARG(IOBJ)
-          IF (IGNFLG==1) THEN
-              IF (OBJCRI(1,IOBJ)<=TNOBJ) THEN
-                  TOBJ = MIN(OBJCRI(1,IOBJ),TOBJ)
-                  IFOBJ = IOBJ
-                  TMPOB(1,IOBJ) = 1.D0
-                  TMPOB(2,IOBJ) = OBJCRI(1,IOBJ)
-              ELSE
-                  TMPOB(1,IOBJ) = 0.0D0
-                  TMPOB(2,IOBJ) = TNOBJ + DT
-              END IF
-          ELSE IF (IGNFLG==2) THEN
-              CALL DO_OBJCK(IFLAG, TOLD, DT, XXTARG(TRGTEMPF,IOBTARG), 
-     .        OBJCRI(3,IOBJ), OBCOND(OBOTEMP,IOBJ), IOBJ, IFOBJ, TOBJ,
-     .        TMPOB(1,IOBJ))
-          ELSE IF (IGNFLG==3) THEN
-              CALL DO_OBJCK(IFLAG, TOLD, DT, XXTARG(TRGTFLUXF,IOBTARG), 
-     .        OBJCRI(2,IOBJ), OBCOND(OBOFLUX,IOBJ), IOBJ, IFOBJ, TOBJ,
-     .        TMPOB(1,IOBJ))
-          ELSE
-              CALL XERROR('UPDOBJ - Incorrectly defined object type',
+!!!!! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
+!!!!! the critiria for temperature and flux are stored backupwards - this historical
+!!!!! see corresponding code in keywordcases
+      do iobj = 1, numobjl
+          if (.not.objon(iobj)) then
+              ignflg = objign(iobj)
+              iobtarg = obtarg(iobj)
+              if (ignflg==1) then
+                  if (objcri(1,iobj)<=tnobj) then
+                      tobj = min(objcri(1,iobj),tobj)
+                      ifobj = iobj
+                      tmpob(1,iobj) = 1.d0
+                      tmpob(2,iobj) = objcri(1,iobj)
+                  else
+                      tmpob(1,iobj) = 0.0d0
+                      tmpob(2,iobj) = tnobj + dt
+                  endif
+              else if (ignflg==2) then
+                  call do_objck(iflag,told,dt,xxtarg(trgtempf,iobtarg),
+     .            objcri(3,iobj),obcond(obotemp,iobj),iobj,ifobj,tobj,
+     .            tmpob(1,iobj))
+              else if (ignflg==3) then
+                  call do_objck(iflag,told,dt,xxtarg(trgtfluxf,iobtarg),
+     .            objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,
+     .            tmpob(1,iobj))
+              else
+                  call xerror('updobj-incorrectly defined object type',
      .            0,1,1)
-              IERROR = 20
-              RETURN
-          ENDIF
-   10 CONTINUE
+                  ierror = 20
+                  return
+              endif
+          endif
+      end do
 
-      IF (IFLAG/=MDCHK) THEN
-          DO 20 IOBJ = 1, NUMOBJL
-              IF (.NOT.OBJON(IOBJ)) THEN
-                  IOBTARG = OBTARG(IOBJ)
-                  OBCOND(OBOTEMP,IOBJ) = XXTARG(TRGTEMPF,IOBTARG)
-                  OBCOND(OBOFLUX,IOBJ) = XXTARG(TRGTFLUXF,IOBTARG)
-                  IF (IFLAG==MDSET.AND.TMPOB(1,IOBJ)>0.0D0) THEN
-                      IF (TMPOB(2,IOBJ)<=TOBJ) THEN
-                          OBJON(IOBJ) = .TRUE.
-                          IF (OPTION(FBTOBJ)==ON) THEN
-                              OBJSET(IOBJ) = 1
-                          ELSE
-                              OBJSET(IOBJ) = 0
-                          END IF
-                          OBJCRI(1,IOBJ) = TMPOB(2,IOBJ)
-                      END IF
-                  END IF
-              END IF
-   20     CONTINUE
-      END IF
+      if (iflag/=mdchk) then
+          do iobj = 1, numobjl
+              if (.not.objon(iobj)) then
+                  iobtarg = obtarg(iobj)
+                  obcond(obotemp,iobj) = xxtarg(trgtempf,iobtarg)
+                  obcond(oboflux,iobj) = xxtarg(trgtfluxf,iobtarg)
+                  if (iflag==mdset.and.tmpob(1,iobj)>0.0d0) then
+                      if (tmpob(2,iobj)<=tobj) then
+                          objon(iobj) = .true.
+                          if (option(fbtobj)==on) then
+                              objset(iobj) = 1
+                          else
+                              objset(iobj) = 0
+                          endif
+                          objcri(1,iobj) = tmpob(2,iobj)
+                      endif
+                  endif
+              endif
+          end do
+      endif
 
-      RETURN
-      END
+      return
+      end
 
-      SUBROUTINE DO_OBJCK(IFLAG,TOLD, DT, COND, TRIP, OLDCOND, IOBJ,
-     .IFOBJ, TOBJ, TMPOB)
+      subroutine do_objck(iflag,told, dt, cond, trip, oldcond, iobj,
+     .ifobj, tobj, tmpob)
 
       include "precis.fi"
 
-      DIMENSION TMPOB(2)
+      dimension tmpob(2)
 
-      IF (COND>TRIP) THEN
-          DELTA = (TRIP-OLDCOND)/(COND-OLDCOND)
-          TMPOB(1) = 1.0D0
-          TMPOB(2) = TOLD + DT*DELTA
-          TOBJ = MIN(TOBJ,TMPOB(2))
-          IFOBJ = IOBJ
-      ELSE
-          TMPOB(1) = 0.0D0
-          TMPOB(2) = TOLD + 2.D0*DT
-      END IF
+      if (cond>trip) then
+          delta = (trip-oldcond)/(cond-oldcond)
+          tmpob(1) = 1.0d0
+          tmpob(2) = told + dt*delta
+          tobj = min(tobj,tmpob(2))
+          ifobj = iobj
+      else
+          tmpob(1) = 0.0d0
+          tmpob(2) = told + 2.d0*dt
+      endif
 
-      RETURN
-      END
+      return
+      end
 
-      SUBROUTINE HCL (FLWHCL, FLXHCL,IERROR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     HCL
-C
-C     Source File: HCL.SOR
-C
-C     Functional Class:  Physical interface routine
-C
-C     Description:       Physical Interface routine to do HCl deposition
-C                        on wall surfaces.
-C
-C     Arguments: FLWHCL  Mass and energy flows into layers due to HCl
-C                        deposition.  Standard source routine data 
-C                        structure.
-C                FLXHCL  HCl surface concentration flux.
-C                IERROR  Returns error codes
-C
-C     Commons:
-C        USED:  Activs   Ar       Br       Dr       Hr       Hwj     
-C               Hwjdot   Mass     N        Nm1      Qscnv    Switch  
-C               Twj      Zzhlay   Zzrho    Zztemp   Zzvol   
-C
-C     Revision History:
-C        Created:  9/5/1995 at 9:32 by PAR
-C        Modified: 9/5/1995 at 9:35 by PAR:
-C                  Added support for IERROR and returning stops to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      subroutine hcl (flwhcl, flxhcl,ierror)
+c
+c--------------------------------- nist/bfrl ---------------------------------
+c
+c     routine:     hcl
+c
+c     source file: hcl.sor
+c
+c     functional class:  physical interface routine
+c
+c     description:       physical interface routine to do hcl deposition
+c                        on wall surfaces.
+c
+c     arguments: flwhcl  mass and energy flows into layers due to hcl
+c                        deposition.  standard source routine data 
+c                        structure.
+c                flxhcl  hcl surface concentration flux.
+c                ierror  returns error codes
+c
+c     commons:
+c        used:  activs   ar       br       dr       hr       hwj     
+c               hwjdot   mass     n        nm1      qscnv    switch  
+c               twj      zzhlay   zzrho    zztemp   zzvol   
+c
+c     revision history:
+c        created:  9/5/1995 at 9:32 by par
+c        modified: 9/5/1995 at 9:35 by par:
+c                  added support for ierror and returning stops to main
+c
+c---------------------------- all rights reserved ----------------------------
+c
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
       include "opt.fi"
-      DIMENSION FLWHCL(NR,NS+2,2), FLXHCL(NR,4)
+      dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
-C     INITIALIZE SUMMATIONS AND LOCAL DATA
+      ! initialize summations and local data
+      x0 = 0.0d0
 
-      X0 = 0.0D0
+      ! only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
+      do iroom = 1, n
+          do j = 1, ns+2
+              flwhcl(iroom,j,upper) = x0
+              flwhcl(iroom,j,lower) = x0
+          end do
+          flxhcl(iroom,1) = x0
+          flxhcl(iroom,2) = x0
+          flxhcl(iroom,3) = x0
+          flxhcl(iroom,4) = x0
+      end do
+      if (option(fhcl)==off) return
 
-C*** only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
+      ! calculate the hcl "added" to the layers from each surface
+      if (activs(6)) then
+          do iroom = 1, nm1
+              do iwall = 1, 4
+                  if (switch(iwall,iroom)) then
+                      if (iwall==1) then
+                          arw = ar(iroom)
+                          layer = upper
+                      else if (iwall==2) then
+                          arw = ar(iroom)
+                          layer = lower
+                      else if (iwall==3) then
+                          arw = (br(iroom)+dr(iroom)) * 
+     +                    zzhlay(iroom,upper) * 2.0d0
+                          layer = upper
+                      else if (iwall==4) then
+                          arw = (br(iroom)+dr(iroom)) * (hr(iroom)-
+     +                    zzhlay(iroom,upper)) * 2.0d0
+                          arw = max(x0,arw)
+                          layer = lower
+                      endif
 
-      DO 10 IROOM = 1, N
-          DO 11 J = 1, NS+2
-              FLWHCL(IROOM,J,UPPER) = X0
-   11         FLWHCL(IROOM,J,LOWER) = X0
-              FLXHCL(IROOM,1) = X0
-              FLXHCL(IROOM,2) = X0
-              FLXHCL(IROOM,3) = X0
-              FLXHCL(IROOM,4) = X0
-   10 CONTINUE
-      IF (OPTION(FHCL)==OFF) RETURN
+                      ! use environment variables
+                      hclg = zzcspec(iroom,layer,6)
+                      h2o = zzcspec(iroom,layer,8)
+                      rho = zzrho(iroom,layer)
+                      tg = zztemp(iroom,layer)
+                      hclw = zzwspec(iroom,iwall)
+                      flux = qscnv(iwall,iroom)
+                      tw = twj(1,iroom,iwall)
+                      call hcltran(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,
+     +                    flux,tw,hwdot,hnet,ierror)
+                      if (ierror/=0) return
 
-C     CALCULATE THE HCL "ADDED" TO THE LAYERS FROM EACH SURFACE
+                      ! sum up the flows and fluxes for the source routine
+                      flwhcl(iroom,1,layer) = flwhcl(iroom,1,layer)+hnet
+                      flwhcl(iroom,2+6,layer) = flwhcl(iroom,2+6,layer) 
+     .                    + hnet
+                      flxhcl(iroom,iwall) = hwdot
 
-      IF (ACTIVS(6)) THEN
-          DO 30 IROOM = 1, NM1
-              DO 20 IWALL = 1, 4
-                  IF (SWITCH(IWALL,IROOM)) THEN
-                      IF (IWALL==1) THEN
-                          ARW = AR(IROOM)
-                          LAYER = UPPER
-                      ELSE IF (IWALL==2) THEN
-                          ARW = AR(IROOM)
-                          LAYER = LOWER
-                      ELSE IF (IWALL==3) THEN
-                          ARW = (BR(IROOM)+DR(IROOM)) * 
-     +                    ZZHLAY(IROOM,UPPER) * 2.0D0
-                          LAYER = UPPER
-                      ELSE IF (IWALL==4) THEN
-                          ARW = (BR(IROOM)+DR(IROOM)) * (HR(IROOM)-
-     +                    ZZHLAY(IROOM,UPPER)) * 2.0D0
-                          ARW = MAX(X0,ARW)
-                          LAYER = LOWER
-                      END IF
-C              Hclg = Mass(Layer,iroom,6) / Zzvol(iroom,Layer)
-C              H2o = Mass(Layer,iroom,8) / Zzvol(iroom,Layer)
+                  endif
+              end do
+          end do
+      endif
+      return
+      end
 
-C*** use environment variables
-
-                      HCLG = ZZCSPEC(IROOM,LAYER,6)
-                      H2O = ZZCSPEC(IROOM,LAYER,8)
-                      RHO = ZZRHO(IROOM,LAYER)
-                      TG = ZZTEMP(IROOM,LAYER)
-                      HCLW = ZZWSPEC(IROOM,IWALL)
-                      FLUX = QSCNV(IWALL,IROOM)
-                      TW = TWJ(1,IROOM,IWALL)
-                      CALL HCLTRAN(IROOM,IWALL,ARW,HCLG,H2O,RHO,TG,HCLW,
-     +                    FLUX,TW,HWDOT,HNET,IERROR)
-                      IF (IERROR/=0) RETURN
-
-C             SUM UP THE FLOWS AND FLUXES FOR THE SOURCE ROUTINE
-
-                      FLWHCL(IROOM,1,LAYER) = FLWHCL(IROOM,1,LAYER)+HNET
-                      FLWHCL(IROOM,2+6,LAYER) = FLWHCL(IROOM,2+6,LAYER) 
-     .                    + HNET
-                      FLXHCL(IROOM,IWALL) = HWDOT
-
-                  END IF
-   20         CONTINUE
-   30     CONTINUE
-      END IF
-      RETURN
-      END
-
-      SUBROUTINE HCLTRAN(ICOMP,IWALL,ARW,HCLG,H2O,RHO,TG,HCLW,FLUX,TW,
-     +HWDOT,HNET,IERROR)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     HCLTRAN
-C
-C     Source File: HCLTRAN.SOR
-C
-C     Functional Class:  
-C
-C     Description: routine to calculate the hydrogen chloride balance 
-C                  in the gas and on the wall surface.
-C
-C     Arguments: ICOMP   Compartment number (input)
-C                IWALL   Wall surface number (input)
-C                ARW     Area of the wall surface (m^2) (input)
-C                HCLG    Current HCL gas concentration (kg/m^3) (input)
-C                H2O     Current H2O gas concentration (kg/m^3) (input)
-C                RHO     Current gas density (kg/m^3) (input)
-C                TG      Gas layer temperature (K) (input)
-C                HCLW    Current HCL wall density (kg/m^2) (input)
-C                FLUX    Current convective heat flux on wall (W/m^2) (input)
-C                TW      Corresponding wall temperature (K) (input)
-C                HWDOT   Time derivative of the HCl wall concentration (output)
-C                HNET    Time derivative of the HCL gas concentration (output)
-C                IERROR  Returns error codes (output)
-C
-C     Commons:
-C        USED:  Cp       Hclbf   
-C
-C     Revision History:
-C        Created:  10/29/1989 at 9:36 by WWJ:
-C        Modified: 10/29/1989 at 9:46 by WWJ:
-C                  fix the coefficient for deposition, 
-C                  optimize the numerics
-C        Modified: 2/27/1990 at 9:46 by WWJ:
-C                  fix the constants, and add wall absorption 
-C                  coefficents to the thermal database
-C        Modified: 9/5/1995 at 9:46 by PAR:
-C                  Added support for IERROR and returning stops to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      subroutine hcltran(icomp,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,
+     +hwdot,hnet,ierror)
+c
+c--------------------------------- nist/bfrl ---------------------------------
+c
+c     routine:     hcltran
+c
+c     source file: hcltran.sor
+c
+c     functional class:  
+c
+c     description: routine to calculate the hydrogen chloride balance 
+c                  in the gas and on the wall surface.
+c
+c     arguments: icomp   compartment number (input)
+c                iwall   wall surface number (input)
+c                arw     area of the wall surface (m^2) (input)
+c                hclg    current hcl gas concentration (kg/m^3) (input)
+c                h2o     current h2o gas concentration (kg/m^3) (input)
+c                rho     current gas density (kg/m^3) (input)
+c                tg      gas layer temperature (k) (input)
+c                hclw    current hcl wall density (kg/m^2) (input)
+c                flux    current convective heat flux on wall (w/m^2) (input)
+c                tw      corresponding wall temperature (k) (input)
+c                hwdot   time derivative of the hcl wall concentration (output)
+c                hnet    time derivative of the hcl gas concentration (output)
+c                ierror  returns error codes (output)
+c
+c     commons:
+c        used:  cp       hclbf   
+c
+c     revision history:
+c        created:  10/29/1989 at 9:36 by wwj:
+c        modified: 10/29/1989 at 9:46 by wwj:
+c                  fix the coefficient for deposition, 
+c                  optimize the numerics
+c        modified: 2/27/1990 at 9:46 by wwj:
+c                  fix the constants, and add wall absorption 
+c                  coefficents to the thermal database
+c        modified: 9/5/1995 at 9:46 by par:
+c                  added support for ierror and returning stops to main
+c
+c---------------------------- all rights reserved ----------------------------
+c
       include "precis.fi"
       include "cfast.fi"
 
-      XX0 = 0.0D0
-      HWDOT = XX0
-      HNET = XX0
-      IF ((HCLG==0.).AND.(HCLW==0.)) RETURN
-C
-C     NOTE THAT WE CALCULATE DENSITY ON THE FLY, SINCE PPMDV IS NOT UPDATED
-C     OFTEN ENOUGH
-C
-      XHCLF = HCLG * TG * 2.25D-3
-      HCLP = XHCLF * 1.0D6
-      TWC = TW - 273.0D0
-C
-C     SPECIFIC VALUES FOR PAINTED GYPSUM - B1 AND B2 ARE FOR GAS PHASE
-C     REACTIONS, AND B3 AND B4 ARE FOR THE WALL ITSELF
-C
-      B1 = HCLBF(1,IWALL,ICOMP)
-      B2 = HCLBF(2,IWALL,ICOMP)
-      B3 = HCLBF(3,IWALL,ICOMP)
-      B4 = HCLBF(4,IWALL,ICOMP)
-      B5 = HCLBF(5,IWALL,ICOMP)
-      B6 = HCLBF(6,IWALL,ICOMP)
-      B7 = HCLBF(7,IWALL,ICOMP)
+      xx0 = 0.0d0
+      hwdot = xx0
+      hnet = xx0
+      if ((hclg==0.).and.(hclw==0.)) return
 
-      IF (B1<=0) RETURN
+      ! note that we calculate density on the fly, since ppmdv is not updated often enough
+      xhclf = hclg * tg * 2.25d-3
+      hclp = xhclf * 1.0d6
+      twc = tw - 273.0d0
 
-C     CALCULATE HCL GAS-SURFACE PARTITION COEFFICIENT
-C     H2OS IS THE SATURATION CONCENTRATION OF WATER.
+      ! specific values for painted gypsum - b1 and b2 are for gas phase reactions, and b3 and b4 are for the wall itself
+      b1 = hclbf(1,iwall,icomp)
+      b2 = hclbf(2,iwall,icomp)
+      b3 = hclbf(3,iwall,icomp)
+      b4 = hclbf(4,iwall,icomp)
+      b5 = hclbf(5,iwall,icomp)
+      b6 = hclbf(6,iwall,icomp)
+      b7 = hclbf(7,iwall,icomp)
 
-      IF (TWC<=40.D0) THEN
-          IF (HCLP>10.D0) THEN
-              H2OS = (1.8204D0-0.18890D0*LOG(HCLP)+0.06466D0*TWC+
-     +        1.650D-3*TWC**2+7.408D-5*TWC**3) / TW
-          ELSE
-              XTEMP = 17.64262D0 - 5164.1D0 / TW
-              EXPTW = EXP(XTEMP)
-              BCOEF = (7.696D-5+3.5920D-6*TWC+9.166D-8*TWC**2+4.116D-
-     +        9*TWC**3) / TW - 1.D-7 * EXPTW
-              H2OS = 0.018D0 * EXPTW + 1.8D4 * BCOEF * HCLP
-          END IF
-      ELSE IF ((TWC>40.0D0).AND.(TWC<=60.0D0)) THEN
-          H2OS = (7.044D0-2.2416D3*XHCLF-3.874D-3*TWC**2+2.328D-4*TWC**3
-     +    +2.376D6*XHCLF**2-5.527D8*XHCLF**3+4.918D10*XHCLF**4-
-     +    1.359D12*XHCLF**5-1.4033D2*TWC*XHCLF+2.431D4*TWC*XHCLF**2-
-     +    1.6023D6*TWC*XHCLF**3) / TW
-      ELSE IF ((TWC>60.0D0).AND.(TWC<=80.0D0)) THEN
-          H2OS = (107.46D0-4.129D0*TWC+5.096D-2*TWC**2-3.1915D8*XHCLF**3
-     +    +1.0408D10*XHCLF**4-2.2793D11*XHCLF**5-5.8194D0*TWC**2*
-     +    XHCLF+7.6883D4*TWC*XHCLF**2-7.4363D2*TWC**2*XHCLF**2+
-     +    .059067D0*TWC**3*XHCLF+1.8132D6*TWC*XHCLF**3) / TW
-      ELSE IF ((TWC>80.0D0).AND.(TWC<=95.0D0)) THEN
-          H2OS = (2.583D2-8.0386D0*TWC+1.739D5*XHCLF+7.608D-2*TWC**2-
-     +    1.5492D7*XHCLF**2+3.956D9*XHCLF**3-2.065D11*XHCLF**4+
-     +    1.3747D13*XHCLF**5-4.086D3*TWC*XHCLF+24.06D0*TWC**2*XHCLF+
-     +    1.3558D5*TWC*XHCLF**2-3.076D7*TWC*XHCLF**3) / TW
-      ELSE IF ((TWC>95.0D0).AND.(TWC<=110.0D0)) THEN
-          H2OS = (6.431D2-16.374D0*TWC+2.822D5*XHCLF+0.12117D0*TWC**2-
-     +    8.224D7*XHCLF**2-7.387D6*XHCLF**3-5.247D3*TWC*XHCLF+
-     +    24.30D0*TWC**2*XHCLF+1.5465D6*TWC*XHCLF**2-7.250D3*TWC**2*
-     +    XHCLF**2) / TW
-      ELSE IF (TWC>110.0D0) THEN
-          XTEMP = 18.3036D0 - 3816.44D0 / (TW-46.13D0)
-          H2OS = 0.2885D0 * EXP(XTEMP) / TW
-      ELSE
-C        STOP 'Error in hcltran - H2O out of range'
-          CALL XERROR('HCLTRAN - H2O out of range',0,1,1)
-          IERROR = 12
-          RETURN
-      END IF
-C
-C     CALCULATE THE COEFFICIENTS
-C
-C     RK IS THE CONSTANT "kc" WHICH IS THE DEPOSITION COEFFICIENT (M/S)
-C     RKE IS THE EQUILIBRIUM COEFFIENT BETWEEN THE GAS AND SOLID PHASE
-C
-      IF (TW>=TG) THEN
-          RK = 8.33D-3
-      ELSE
-          X001 = .001D0
-          RK = ABS(FLUX/(MAX(X001,TG-TW)*RHO*CP))
-      END IF
-      IF (H2OS>H2O) THEN
-          XTEMP = 1500.0D0 / TW
-          EXPTW = EXP(XTEMP)
-          RKE = B1 * EXPTW / (1.0D0+B2*EXPTW*HCLG) * (1.0D0+B5*H2O**B6/(
-     +    (H2OS-H2O)**B7))
-      ELSE
-          RKE = 1.0D4
-      END IF
-C
-C     CALCULATE THE DERIVATIVES
-C
-      HCLCOF = RK * (HCLG-HCLW/(RKE+1.0D-20))
-      HNET = -HCLCOF * ARW
-      XTEMP = -B4 / (8.31D0*TW)
-      HWDOT = HCLCOF - B3 * EXP(XTEMP) * HCLW
-      RETURN
-      END
+      if (b1<=0) return
+
+      ! calculate hcl gas-surface partition coefficient h2os is the saturation concentration of water.
+      if (twc<=40.d0) then
+          if (hclp>10.d0) then
+              h2os = (1.8204d0-0.18890d0*log(hclp)+0.06466d0*twc+
+     +        1.650d-3*twc**2+7.408d-5*twc**3) / tw
+          else
+              xtemp = 17.64262d0 - 5164.1d0 / tw
+              exptw = exp(xtemp)
+              bcoef = (7.696d-5+3.5920d-6*twc+9.166d-8*twc**2+4.116d-
+     +        9*twc**3) / tw - 1.d-7 * exptw
+              h2os = 0.018d0 * exptw + 1.8d4 * bcoef * hclp
+          endif
+      else if ((twc>40.0d0).and.(twc<=60.0d0)) then
+          h2os = (7.044d0-2.2416d3*xhclf-3.874d-3*twc**2+2.328d-4*twc**3
+     +    +2.376d6*xhclf**2-5.527d8*xhclf**3+4.918d10*xhclf**4-
+     +    1.359d12*xhclf**5-1.4033d2*twc*xhclf+2.431d4*twc*xhclf**2-
+     +    1.6023d6*twc*xhclf**3) / tw
+      else if ((twc>60.0d0).and.(twc<=80.0d0)) then
+          h2os = (107.46d0-4.129d0*twc+5.096d-2*twc**2-3.1915d8*xhclf**3
+     +    +1.0408d10*xhclf**4-2.2793d11*xhclf**5-5.8194d0*twc**2*
+     +    xhclf+7.6883d4*twc*xhclf**2-7.4363d2*twc**2*xhclf**2+
+     +    .059067d0*twc**3*xhclf+1.8132d6*twc*xhclf**3) / tw
+      else if ((twc>80.0d0).and.(twc<=95.0d0)) then
+          h2os = (2.583d2-8.0386d0*twc+1.739d5*xhclf+7.608d-2*twc**2-
+     +    1.5492d7*xhclf**2+3.956d9*xhclf**3-2.065d11*xhclf**4+
+     +    1.3747d13*xhclf**5-4.086d3*twc*xhclf+24.06d0*twc**2*xhclf+
+     +    1.3558d5*twc*xhclf**2-3.076d7*twc*xhclf**3) / tw
+      else if ((twc>95.0d0).and.(twc<=110.0d0)) then
+          h2os = (6.431d2-16.374d0*twc+2.822d5*xhclf+0.12117d0*twc**2-
+     +    8.224d7*xhclf**2-7.387d6*xhclf**3-5.247d3*twc*xhclf+
+     +    24.30d0*twc**2*xhclf+1.5465d6*twc*xhclf**2-7.250d3*twc**2*
+     +    xhclf**2) / tw
+      else if (twc>110.0d0) then
+          xtemp = 18.3036d0 - 3816.44d0 / (tw-46.13d0)
+          h2os = 0.2885d0 * exp(xtemp) / tw
+      else
+c        stop 'error in hcltran - h2o out of range'
+          call xerror('hcltran - h2o out of range',0,1,1)
+          ierror = 12
+          return
+      endif
+
+      ! calculate the coefficients
+      ! rk is the constant "kc" which is the deposition coefficient (m/s)
+      ! rke is the equilibrium coeffient between the gas and solid phase
+      if (tw>=tg) then
+          rk = 8.33d-3
+      else
+          x001 = .001d0
+          rk = abs(flux/(max(x001,tg-tw)*rho*cp))
+      endif
+      if (h2os>h2o) then
+          xtemp = 1500.0d0 / tw
+          exptw = exp(xtemp)
+          rke = b1 * exptw / (1.0d0+b2*exptw*hclg) * (1.0d0+b5*h2o**b6/(
+     +    (h2os-h2o)**b7))
+      else
+          rke = 1.0d4
+      endif
+
+      ! calculate the derivatives
+      hclcof = rk * (hclg-hclw/(rke+1.0d-20))
+      hnet = -hclcof * arw
+      xtemp = -b4 / (8.31d0*tw)
+      hwdot = hclcof - b3 * exp(xtemp) * hclw
+      return
+      end
+
       integer function rev_fire
 
       INTEGER :: MODULE_REV

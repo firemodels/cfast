@@ -114,9 +114,9 @@ C     WORK AND DUMMY ARRAYS PASSED TO RAD2 AND RAD4
         FLWRAD(I,2) = 0.0D0
    20 CONTINUE
 
-      IF (OPTION(FRAD).EQ.OFF) RETURN
+      IF (OPTION(FRAD)==OFF) RETURN
       BLACK = .FALSE.
-      IF(OPTION(FRAD).EQ.3)BLACK = .TRUE.
+      IF(OPTION(FRAD)==3)BLACK = .TRUE.
 
 C*** Initially assume that we compute radiation transfer in every room
 
@@ -124,8 +124,8 @@ C*** Initially assume that we compute radiation transfer in every room
         ROOMFLG(I) = .TRUE.
    15 CONTINUE
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
-        IF(JACCOL.GT.0)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
+        IF(JACCOL>0)THEN
 
 C*** If 2nd modified jacobian is active and dassl is computing a jacobian then
 C    only compute the radiation heat transfer in the room where the dassl 
@@ -136,9 +136,9 @@ C    solution variable has been perturbed
    16     CONTINUE
           IEQTYP = IZEQMAP(JACCOL,1)
           IROOM = IZEQMAP(JACCOL,2)
-          IF(IEQTYP.EQ.EQVU.OR.IEQTYP.EQ.EQTU.OR.IEQTYP.EQ.EQTL.OR.
-     .       IEQTYP.EQ.EQWT)THEN
-             IF(IEQTYP.EQ.EQWT)IROOM = IZWALL(IROOM,1)
+          IF(IEQTYP==EQVU.OR.IEQTYP==EQTU.OR.IEQTYP==EQTL.OR.
+     .       IEQTYP==EQWT)THEN
+             IF(IEQTYP==EQWT)IROOM = IZWALL(IROOM,1)
              ROOMFLG(IROOM) = .TRUE.
           ENDIF
         ENDIF
@@ -153,7 +153,7 @@ C    solution variable has been perturbed
 
       DEFABSUP = 0.5D0
       DEFABSLOW = 0.01D0
-      IF(LFBO.NE.0.AND.OPTION(FRAD).NE.4.AND.LFBT.NE.1)THEN
+      IF(LFBO/=0.AND.OPTION(FRAD)/=4.AND.LFBT/=1)THEN
          DEFABSUP = ABSORB(LFBO,UPPER)
       ENDIF
 
@@ -166,7 +166,7 @@ C    solution variable has been perturbed
         ZZBEAM(UPPER,I) = (1.8 * ZZVOL(I, UPPER)) / 
      +   (AR(I) + ZZHLAY(I, UPPER) * (DR(I) + BR(I)))
         DO 50 IWALL = 1, 4
-          IF(MOD(IWALL,2).EQ.1)THEN
+          IF(MOD(IWALL,2)==1)THEN
             ILAY = UPPER
            ELSE
             ILAY = LOWER
@@ -178,13 +178,13 @@ C    solution variable has been perturbed
            ELSE
             TWALL(IMAP) = ZZTEMP(I,ILAY)
             EMIS(IMAP) = 1.0D0
-          END IF
+          endif
    50   CONTINUE
         IFIRE = IFRPNT(I,2)
         NRMFIRE = IFRPNT(I,1)
-        IF (NRMFIRE.NE.0) THEN
+        IF (NRMFIRE/=0) THEN
           IF(.NOT.BLACK)THEN
-            IF(OPTION(FRAD).EQ.4.OR.LFBT.EQ.1)THEN
+            IF(OPTION(FRAD)==4.OR.LFBT==1)THEN
               ZZABSB(UPPER,I) = DEFABSUP
               ZZABSB(LOWER,I) = DEFABSLOW
              ELSE
@@ -199,8 +199,8 @@ C    solution variable has been perturbed
      +        RDQOUT(1,I),BLACK,IERROR)
          ELSE
           IF(.NOT.BLACK)THEN
-            IF(OPTION(FRAD).EQ.2.OR.OPTION(FRAD).EQ.4.OR.
-     .         LFBT.EQ.1)THEN
+            IF(OPTION(FRAD)==2.OR.OPTION(FRAD)==4.OR.
+     .         LFBT==1)THEN
               ZZABSB(UPPER,I) = DEFABSUP
               ZZABSB(LOWER,I) = DEFABSLOW
              ELSE
@@ -215,7 +215,7 @@ C    solution variable has been perturbed
      +        RDQOUT(1,I),BLACK,IERROR)
 
         ENDIF
-        IF (IERROR.NE.0) RETURN
+        IF (IERROR/=0) RETURN
         DO 30 J = 1, NWAL
           FLXRAD(I,J) = QFLXW(MAP(J))
    30   CONTINUE
@@ -226,8 +226,8 @@ C    solution variable has been perturbed
         QR(2,I) = QLAY(2)
    40 CONTINUE
 
-      IF(OPTION(FMODJAC).EQ.ON)THEN
-        IF(JACCOL.EQ.0)THEN
+      IF(OPTION(FMODJAC)==ON)THEN
+        IF(JACCOL==0)THEN
 
 C*** if the jacobian option is active and dassl is computing the base vector for
 C    the jacobian calculation then save the flow and flux calculation for later use
@@ -239,7 +239,7 @@ C    the jacobian calculation then save the flow and flux calculation for later 
             FLWRAD0(IROOM,1) = FLWRAD(IROOM,1)
             FLWRAD0(IROOM,2) = FLWRAD(IROOM,2)
    55     CONTINUE
-         ELSEIF(JACCOL.GT.0)THEN
+         ELSEIF(JACCOL>0)THEN
 
 C***  dassl is computing the JACCOL'th column of a jacobian.  copy values into
 C     the flow and flux vectors that have not changed from the base vector
@@ -359,7 +359,7 @@ C
         PI = 4.0D0 * ATAN(X1)
         THIRD = 1.0D0 / 3.0D0
         ONE = 1.0D0
-      END IF
+      endif
 
 C*** DEFINE AREAS OF UPPER AND LOWER PLATES
 
@@ -408,7 +408,7 @@ C*** DEFINE TRANSMISSION FACTORS FOR SURFACES WITH RESPECT TO THEMSELVES
 C*** DEFINE TRANMISSION FACTORS FOR SURFACES WITH RESPECT TO FIRE
 
       DO 20 IFIRE = 1, NFIRE
-        IF (ZFIRE(IFIRE).GT.HLAY) THEN
+        IF (ZFIRE(IFIRE)>HLAY) THEN
           XXU(1) = ZROOM - ZFIRE(IFIRE)
           XXU(2) = ZFIRE(IFIRE) - HLAY
           XXL(1) = 0.0D0
@@ -418,7 +418,7 @@ C*** DEFINE TRANMISSION FACTORS FOR SURFACES WITH RESPECT TO FIRE
           XXU(2) = 0.0D0
           XXL(1) = HLAY - ZFIRE(IFIRE)
           XXL(2) = ZFIRE(IFIRE)
-        END IF
+        endif
         DO 10 I = 1, 2
           IF(.NOT.BLACK)THEN 
             TAUFU(IFIRE,I) = EXP(-ABSORB(1)*XXU(I))
@@ -474,11 +474,11 @@ C*** CONSTRUCT RIGHT HAND SIDE (RHS) OF LINEAR SYSTEM TO BE SOLVED
       RHS(2) = B(2,1) * E(1) + B(2,2) * E(2) - C(2)
       CALL DGEFA(A,2,2,IPVT,INFO)
       CALL DGESL(A,2,2,IPVT,RHS,0)
-      IF(INFO.NE.0) THEN
+      IF(INFO/=0) THEN
         CALL XERROR('RAD2 - Singular matrix',0,1,1)
         IERROR = 17
         RETURN
-      END IF
+      endif
 
 C*** NOTE: EACH ROW K OF THE A MATRIX AS DEFINED BY SEIGAL AND HOWELL 
 C    WAS DIVIDED BY EMIS2(K) (IN ORDER TO INSURE THAT THIS NEW 'A' WAS
@@ -617,11 +617,11 @@ C*** DEFINE LOCAL CONSTANTS FIRST TIME RAD4 IS CALLED
       IF (FIRST) THEN
         SIGMA = 5.67D-8
         FIRST = .FALSE.
-      END IF
-      IF (IFLAG(IROOM).EQ.0) THEN
+      endif
+      IF (IFLAG(IROOM)==0) THEN
         F14(IROOM) = RDPARFIG(XROOM,YROOM,ZROOM)
         IFLAG(IROOM) = 1
-      END IF
+      endif
       F14(IROOM) = RDPARFIG(XROOM,YROOM,ZROOM)
 
 C*** DEFINE AREAS
@@ -699,17 +699,17 @@ C    BUT FIRST DEFINE BEAM LENGTHS
 
 C*** DEFINE TRANSMISSION FACTORS FOR FIRES
 
-      IF (NFIRE.NE.0) THEN
+      IF (NFIRE/=0) THEN
         CALL RDFTRAN(MXFIRE,4,2,ABSORB,HLAY,ZZ,NFIRE,ZFIRE,TAUFU,
      +      TAUFL,BLACK)
-      END IF
+      endif
 
 C*** DEFINE SOLID ANGLES FOR FIRES
 
-      IF (NFIRE.NE.0) THEN
+      IF (NFIRE/=0) THEN
         CALL RDFANG(MXFIRE,XROOM,YROOM,ZROOM,HLAY,NFIRE,XFIRE,YFIRE,
      +      ZFIRE,FIRANG)
-      END IF
+      endif
 
 C*** NOTE: WE WANT TO SOLVE THE LINEAR SYSTEM
 C          A*DQ = B*E + C
@@ -749,7 +749,7 @@ C    I.E. COMPUTE B*E - C
 C*** SOLVE THE LINEAR SYSTEM
 
       CALL DGEFA(A,4,4,IPVT,INFO)
-      IF(INFO.NE.0) THEN
+      IF(INFO/=0) THEN
         CALL XERROR('RAD4 - Singular matrix',0,1,1)
         IERROR = 18
         DO 65 K = 1, 4
@@ -846,7 +846,7 @@ C
         FIRST = .FALSE.
         PI = 4.0D0 * ATAN(XX1)
         SIGMA = 5.67D-8
-      END IF
+      endif
 C
 C*** DEFINE C VECTOR
 C
@@ -881,13 +881,13 @@ C
         DO 30 IFIRE = 1, NFIRE
           QFFLUX = 0.25D0*QFIRE(IFIRE) * FIRANG(IFIRE,K) / (PI*AREA(K))
           C(K) = C(K) + QFFLUX * TAUFL(IFIRE,K) * TAUFU(IFIRE,K)
-          IF (ZFIRE(IFIRE).GT.HLAY) THEN
+          IF (ZFIRE(IFIRE)>HLAY) THEN
             FACTU = XX1 - TAUFU(IFIRE,K)
             FACTL = 0.0D0
           ELSE
             FACTU = (XX1-TAUFU(IFIRE,K)) * TAUFL(IFIRE,K)
             FACTL = XX1 - TAUFL(IFIRE,K)
-          END IF
+          endif
           QULAY = QULAY + FACTU * QFFLUX * AREA(K)
           QLLAY = QLLAY + FACTL * QFFLUX * AREA(K)
    30   CONTINUE
@@ -920,13 +920,13 @@ C
         DO 70 IFIRE = 1, NFIRE
           QFFLUX = 0.25D0*QFIRE(IFIRE) * FIRANG(IFIRE,K) / (PI*AREA(K))
           C(K) = C(K) + QFFLUX * TAUFL(IFIRE,K) * TAUFU(IFIRE,K)
-          IF (ZFIRE(IFIRE).GT.HLAY) THEN
+          IF (ZFIRE(IFIRE)>HLAY) THEN
             FACTU = XX1 - TAUFU(IFIRE,K)
             FACTL = (XX1-TAUFL(IFIRE,K)) * TAUFU(IFIRE,K)
           ELSE
             FACTU = 0.0D0
             FACTL = XX1 - TAUFL(IFIRE,K)
-          END IF
+          endif
           QULAY = QULAY + FACTU * QFFLUX * AREA(K)
           QLLAY = QLLAY + FACTL * QFFLUX * AREA(K)
    70   CONTINUE
@@ -1004,7 +1004,7 @@ C
       RETURN
       END
 
-      DOUBLE PRECISION FUNCTION RDPARFIG(X,Y,Z)
+      real*8 FUNCTION RDPARFIG(X,Y,Z)
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -1031,15 +1031,15 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       SAVE IFIRST, PI, XX0, XX1, XXH
       DATA IFIRST /0/
-      IF (IFIRST.EQ.0) THEN
+      IF (IFIRST==0) THEN
         XX1 = 1.0D0
         XXH = 0.5D0
         XX0 = 0.0D0
         PI = 4.0D0 * ATAN(XX1)
         IFIRST = 1
-      END IF
+      endif
       RDPARFIG = XX0
-      IF (Z.EQ.XX0.OR.X.EQ.XX0.OR.Y.EQ.XX0) RETURN
+      IF (Z==XX0.OR.X==XX0.OR.Y==XX0) RETURN
       XX = X / Z
       YY = Y / Z
       F1 = XXH*LOG((XX1+XX**2)*(XX1+YY**2)/(XX1+XX**2+YY**2))
@@ -1052,7 +1052,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       RDPARFIG = 2.0D0 * (F1+F2+F3-F4-F5) / (PI*XX*YY)
       RETURN
       END
-      DOUBLE PRECISION FUNCTION RDPRPFIG(X,Y,Z)
+      real*8 FUNCTION RDPRPFIG(X,Y,Z)
  
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -1083,9 +1083,9 @@ C
       IF (FIRST) THEN
         PI = 4.0D0 * ATAN(XX1)
         FIRST = .FALSE.
-      END IF
+      endif
       RDPRPFIG = XX0
-      IF (Y.EQ.XX0.OR.X.EQ.XX0.OR.Z.EQ.XX0) RETURN
+      IF (Y==XX0.OR.X==XX0.OR.Z==XX0) RETURN
       H = X / Y
       W = Z / Y
       F1 = W * ATAN(XX1/W)
@@ -1164,17 +1164,17 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         F4 = RDSANG(ARG1,ARG2,ARG3,ARG4,ZFIRE(I))
         FIRANG(I,1) = F1
         FIRANG(I,4) = F4
-        IF (ZFIRE(I).LT.HLAY) THEN
+        IF (ZFIRE(I)<HLAY) THEN
           FIRANG(I,2) = FD - F1
           FIRANG(I,3) = FOURPI - FD - F4
         ELSE
           FIRANG(I,2) = FOURPI - FD - F1
           FIRANG(I,3) = FD - F4
-        END IF
+        endif
    10 CONTINUE
       RETURN
       END
-      DOUBLE PRECISION FUNCTION RDSANG(X1,X2,Y1,Y2,R)
+      real*8 FUNCTION RDSANG(X1,X2,Y1,Y2,R)
  
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -1205,7 +1205,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       RDSANG = F1 - F2 - F3 + F4
       RETURN
       END
-      DOUBLE PRECISION FUNCTION RDSANG1(X,Y,R)
+      real*8 FUNCTION RDSANG1(X,Y,R)
  
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -1243,8 +1243,8 @@ C
         FIRST = .FALSE.
         PI = 4.0D0 * ATAN(XX1)
         PIO2 = PI / 2.0D0
-      END IF
-      IF (X.LE.XX0.OR.Y.LE.XX0) THEN
+      endif
+      IF (X<=XX0.OR.Y<=XX0) THEN
         RDSANG1 = XX0
       ELSE
         XR = X * X + R * R
@@ -1254,7 +1254,7 @@ C
         F1 = MIN(XX1, Y * SQRT(XYR/XY/YR))
         F2 = MIN(XX1, X * SQRT(XYR/XY/XR))
         RDSANG1 = (ASIN(F1)+ASIN(F2)-PIO2)
-      END IF
+      endif
       RETURN
       END
 
@@ -1298,7 +1298,7 @@ C
       LOGICAL BLACK
       DO 30 I = 1, NFIRE
         DO 10 J = 1, NUP
-          IF (ZFIRE(I).GT.HLAY) THEN
+          IF (ZFIRE(I)>HLAY) THEN
             BEAM = ABS(ZZ(J)-ZFIRE(I))
             TAUFL(I,J) = 1.0D0
             IF(.NOT.BLACK)THEN
@@ -1317,10 +1317,10 @@ C
               TAUFU(I,J) = 0.0D0
               TAUFL(I,J) = 0.0D0
             ENDIF
-          END IF
+          endif
    10   CONTINUE
         DO 20 J = NUP + 1, NZONE
-          IF (ZFIRE(I).LE.HLAY) THEN
+          IF (ZFIRE(I)<=HLAY) THEN
             BEAM = ABS(ZZ(J)-ZFIRE(I))
             TAUFU(I,J) = 1.0D0
             IF(.NOT.BLACK)THEN
@@ -1339,7 +1339,7 @@ C
               TAUFU(I,J) = 0.0D0
               TAUFL(I,J) = 0.0D0
             ENDIF
-          END IF
+          endif
    20   CONTINUE
    30 CONTINUE
       RETURN
@@ -1473,7 +1473,7 @@ C
       RETURN
       END
 
-      DOUBLE PRECISION FUNCTION ABSORB (CMPT, LAYER)
+      real*8 FUNCTION ABSORB (CMPT, LAYER)
 C
 C  FUNCTION CALCULATES ABSORBANCE, DUE TO GASES (CO2 AND H2O) AND SOOT,
 C  FOR THE SPECIFIED COMPARTMENT AND LAYER.
@@ -1529,7 +1529,7 @@ C      Note new code is equivalent mathematically to the old.  This version is
 C      better because it removes the need for an EXP calculation and eliminates 
 C      a cancellation error.  This cancellation error was causing the code bomb.
 C    MODIFIED 10/19/97 GPF
-C      Converted code to double precision.
+C      Converted code to real*8.
 C
 C  DECLARE COMMON BLOCK VARIABLES (AR, BR, ZZ????, ETC) AND CONSTANTS
 C  (UPPER & LOWER). ORDER OF 'INCLUDE' FILES IS CRITICAL.
@@ -1573,7 +1573,7 @@ C
       DIMENSION ECO2(CO2XSIZE,CO2YSIZE)
       DIMENSION TH2O(H2OXSIZE)
       DIMENSION PLH2O(H2OYSIZE), EH2O(H2OXSIZE,H2OYSIZE)
-      DOUBLE PRECISION MWCO2,MWH2O, K, RHOS, L, NG
+      real*8 MWCO2,MWH2O, K, RHOS, L, NG
 
 C  DECLARE MODULE DATA
 C
@@ -1698,7 +1698,7 @@ C  CALCULATE ABSORBANCE FOR CO2
 
       NG = ZZGSPEC(CMPT, LAYER, CO2) / MWCO2
       PLG = NG * RTV * L
-      IF (PLG.GT.1.0D-3) THEN
+      IF (PLG>1.0D-3) THEN
         CPLG = LOG10(PLG)
         TGLOG = LOG10(TG)
         CALL LINTERP(CO2XSIZE, CO2YSIZE, TCO2, PLCO2, ECO2, TGLOG,
@@ -1711,7 +1711,7 @@ C  CALCULATE ABSORBANCE FOR H2O
 
       NG = ZZGSPEC(CMPT, LAYER, H2O) / MWH2O
       PLG = NG * RTV * L
-      IF (PLG.GT.1.0D-3) THEN
+      IF (PLG>1.0D-3) THEN
         CPLG = LOG10(PLG)
         TGLOG = LOG10(TG)
         CALL LINTERP(H2OXSIZE, H2OYSIZE, TH2O, PLH2O, EH2O, TGLOG,
@@ -1777,14 +1777,14 @@ C  AND SET THE ERROR VALUE, AS APPROPRIATE.
 C
 C  CHECK THE SPECIAL CASE OF XVAL < X(1)
 C
-      IF (XVAL .LT. X(1)) THEN
+      IF (XVAL < X(1)) THEN
         XERR = LOERR
         XVAL = X(1)
         I = 1
 C
 C  CHECK THE SPECIAL CASE OF XVAL > X(XDIM)
 C
-      ELSE IF (XVAL .GT. X(XDIM)) THEN
+      ELSE IF (XVAL > X(XDIM)) THEN
         XERR = HIERR
         XVAL = X(XDIM)
         I = XDIM
@@ -1794,28 +1794,28 @@ C
       ELSE
         XERR = NOERR
         DO 10 COUNT=2,XDIM
-          IF (XVAL .LT. X(COUNT)) THEN
+          IF (XVAL < X(COUNT)) THEN
             I = COUNT - 1
             GO TO 20
-          END IF 
+          endif 
    10   CONTINUE
 C
 C  THEN XVAL = X(XDIM)
 C
         I = XDIM
    20   CONTINUE
-      END IF
+      endif
 C
 C  CHECK THE SPECIAL CASE OF YVAL < Y(1)
 C
-      IF (YVAL .LT. Y(1)) THEN
+      IF (YVAL < Y(1)) THEN
         YERR = LOERR
         YVAL = Y(1)
         J = 1
 C
 C  CHECK THE SPECIAL CASE OF YVAL > Y(YDIM)
 C
-      ELSE IF (YVAL .GT. Y(YDIM)) THEN
+      ELSE IF (YVAL > Y(YDIM)) THEN
         YERR = HIERR
         YVAL = Y(YDIM)
         J = YDIM
@@ -1825,17 +1825,17 @@ C
       ELSE
         YERR = NOERR
         DO 30 COUNT=2,YDIM
-          IF (YVAL .LT. Y(COUNT)) THEN
+          IF (YVAL < Y(COUNT)) THEN
             J = COUNT - 1
             GO TO 40
-          END IF
+          endif
    30 CONTINUE
 C
 C  THEN YVAL = Y(YDIM)
 C
       J = YDIM
    40 CONTINUE
-      END IF
+      endif
 C
 C  CALCULATE DELTA X, SLOPE X AND THE Z INCREMENT DUE TO A CHANGE IN X.
 C  IF XVAL = X(XDIM), THEN (I+1) IS UNDEFINED AND THE SLOPE CAN NOT BE
@@ -1844,22 +1844,22 @@ C  CONTRIBUTION DUE TO THE CHANGE IN X AND THE ENTIRE TERM MAY BE SET
 C  EQUAL TO ZERO.
 C
       DELTAX = XVAL - X(I)
-      IF (DELTAX .NE. 0.0D0) THEN
+      IF (DELTAX /= 0.0D0) THEN
         DZDX = (Z(I+1,J) - Z(I,J)) / (X(I+1) - X(I))
         DELX = DZDX * DELTAX
       ELSE
         DELX = 0.
-      END IF
+      endif
 C
 C  CALCULATE THE Z INCREMENT DUE TO A CHANGE IN Y AS ABOVE.
 C
       DELTAY = YVAL - Y(J)
-      IF (DELTAY .NE. 0.0D0) THEN
+      IF (DELTAY /= 0.0D0) THEN
         DZDY = (Z(I,J+1) - Z(I,J)) / (Y(J+1) - Y(J))
         DELY = DZDY * DELTAY
       ELSE
         DELY = 0.
-      END IF
+      endif
 C
 C  INTERPOLATE A VALUE FOR F(X,Y)
 C

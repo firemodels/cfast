@@ -14,7 +14,7 @@
       errorcode = 0
       do i = 1, maxct
           tp = i
-          if (name.eq.nlist(i)) return
+          if (name==nlist(i)) return
       end do
       missingtpp = name
       errorcode = 205
@@ -51,16 +51,16 @@
       do i = nalg + 1, nequals
           p2(i) = pinit(i)
       end do
-      if(iprtalg.ne.0)then
+      if(iprtalg/=0)then
           write(iofilo,*)'room pressures'
           do i = 1, nm1
               write(iofilo,*)i,p2(i)
           end do
-          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressures'
+          if(nhvpvar>0)write (iofilo,*) 'hvac pressures'
           do i = 1, nhvpvar
               write(iofilo,*)i,p2(i+nofpmv)
           end do
-          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperatures'
+          if(nhvtvar>0)write (iofilo,*) 'hvac temperatures'
           do i = 1, nhvtvar
               write(iofilo,*)i,p2(i+noftmv)
           end do
@@ -73,16 +73,16 @@
       do i = 1, nm1
           if(.not.izcon(i))deltamv(i) = 0.0d0
       end do
-      if(iprtalg.ne.0)then
+      if(iprtalg/=0)then
           write(iofilo,*)'room pressure residuals'
           do i = 1, nm1
               write(iofilo,*)i,delta(i)
           end do
-          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressure residuals'
+          if(nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
           do i = 1, nhvpvar
               write(iofilo,*)i,delta(i+nofpmv)
           end do
-          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperature residuals'
+          if(nhvtvar>0)write (iofilo,*) 'hvac temperature residuals'
           do i = 1, nhvtvar
               write(iofilo,*)i,delta(i+noftmv)
           end do
@@ -124,16 +124,16 @@
       do i = 1, nhvtvar
           p2(i+noftmv) = hvsolv(nhvpvar+i)
       end do
-      if (iprtalg.ne.0) then
-          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressures'
+      if (iprtalg/=0) then
+          if(nhvpvar>0)write (iofilo,*) 'hvac pressures'
           do i = 1, nhvpvar
               write (iofilo,*) i, hvsolv(i)
           end do
-          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperatures'
+          if(nhvtvar>0)write (iofilo,*) 'hvac temperatures'
           do i = 1, nhvtvar
               write (iofilo,*) i, hvsolv(nhvpvar+i)
           end do
-      end if
+      endif
       t = stime
       call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
       do i = 1, nhvpvar
@@ -142,19 +142,19 @@
       do i = 1, nhvtvar
           deltamv(i+nhvpvar) = delta(i+noftmv)
       end do
-      if (iprtalg.ne.0) then
+      if (iprtalg/=0) then
           write (iofilo,*) ' '
-          if(nhvpvar.gt.0)write (iofilo,*) 'hvac pressure residuals'
+          if(nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
           do i = 1, nhvpvar
               write (iofilo,*) i, deltamv(i)
           end do
-          if(nhvtvar.gt.0)write (iofilo,*) 'hvac temperature residuals'
+          if(nhvtvar>0)write (iofilo,*) 'hvac temperature residuals'
           do i = 1, nhvtvar
               write (iofilo,*) i, deltamv(i+nhvpvar)
           end do
           write(iofilo,*)' '
           pause
-      end if
+      endif
       return
       end
 
@@ -203,16 +203,16 @@
       ii = 0
       ieq1 = izwmap2(1,lfbo)
       ieq2 = izwmap2(3,lfbo)
-      if(ieq1.ne.0)then
+      if(ieq1/=0)then
           ii = ii + 1
           p2(ieq1) = hvpsolv(ii+nalg+1)
       endif
-      if(ieq2.ne.0)then
+      if(ieq2/=0)then
           ii = ii + 1
           p2(ieq2) = hvpsolv(ii+nalg+1)
       endif
 
-      if(iprtalg.ne.0)then
+      if(iprtalg/=0)then
           write(iofilo,*)' *** guesses ***'
           write(iofilo,*)'room pressures'
           do i = 1, nm1
@@ -227,13 +227,13 @@
           write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(lfbo+noftu)
           ieq1 = izwmap2(1,lfbo)
           ieq3 = izwmap2(3,lfbo)
-          if(ieq1.ne.0.or.ieq3.ne.0)then
+          if(ieq1/=0.or.ieq3/=0)then
               write(iofilo,*)'wall temperatures'
-              if(ieq1.ne.0)then
+              if(ieq1/=0)then
                   ii = ii + 1
                   write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(ieq1)
               endif
-              if(ieq3.ne.0)then
+              if(ieq3/=0)then
                   ii = ii + 1
                   write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(ieq3)
               endif
@@ -249,15 +249,15 @@
       end do
       deltamv(1+nalg) = delta(lfbo+noftu)
       ii = 0
-      if(ieq1.ne.0)then
+      if(ieq1/=0)then
           ii = ii + 1
           deltamv(ii+1+nalg) = delta(ieq1)
       endif
-      if(ieq2.ne.0)then
+      if(ieq2/=0)then
           ii = ii + 1
           deltamv(ii+1+nalg) = delta(ieq2)
       endif
-      if(iprtalg.ne.0)then
+      if(iprtalg/=0)then
           write(iofilo,*)' '
           write(iofilo,*)' *** residuals ***'
           write(iofilo,*)'room pressure'
@@ -272,13 +272,13 @@
           write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(lfbo+noftu)
           ieq1 = izwmap2(1,lfbo)
           ieq3 = izwmap2(3,lfbo)
-          if(ieq1.ne.0.or.ieq3.ne.0)then
+          if(ieq1/=0.or.ieq3/=0)then
               write(iofilo,*)'wall temperatures'
-              if(ieq1.ne.0)then
+              if(ieq1/=0)then
                   ii = ii + 1
                   write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(ieq1)
               endif
-              if(ieq3.ne.0)then
+              if(ieq3/=0)then
                   ii = ii + 1
                   write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(ieq3)
               endif
@@ -347,40 +347,40 @@
 
       ! if there are no connections between the hvac system and the
       ! outside world, we do not need to go any further
-      if (next.le.0) return
+      if (next<=0) return
 
       ! arrange data on node basis
       do i = 1, nnode
           k = 0
           do ib = 1, nbr
-              if (i.eq.na(ib)) then
+              if (i==na(ib)) then
                   k = k + 1
                   icmv(i,k) = ib
                   mvintnode(i,k) = ne(ib)
-              else if (i.eq.ne(ib)) then
+              else if (i==ne(ib)) then
                   k = k + 1
                   icmv(i,k) = ib
                   mvintnode(i,k) = na(ib)
-              end if
+              endif
           end do
           ncnode(i) = k
       end do
 
       ! check interior nodes
       do i = 1, nnode
-          if (ncnode(i).lt.1.or.ncnode(i).gt.mcon) then
+          if (ncnode(i)<1.or.ncnode(i)>mcon) then
               call xerror('hvinit - interior node has too many or too fe
      .w connections',0,1,1)
               ierror = 223
               return
-          end if
+          endif
       end do
 
       ! limit the range of hvelxt and set the absolute height of the interior node
       do ii = 1, next
           i = hvnode(1,ii)
           j = hvnode(2,ii)
-          if (ncnode(j).gt.1) then
+          if (ncnode(j)>1) then
               ierror = 223
               return
           endif
@@ -409,7 +409,7 @@
           j = hvnode(2,ii)
           ib = icmv(j,1)
           ! the outside is defined to be at the base of the structure for mv
-          if (i.lt.n) then
+          if (i<n) then
               hvextt(ii,upper) = tamb(i)
               hvextt(ii,lower) = tamb(i)
               hvp(j) = zzrelp(i) - hvgrav * ramb(i) * hvelxt(ii)
@@ -417,19 +417,19 @@
               hvextt(ii,upper) = exta
               hvextt(ii,lower) = exta
               hvp(j) = expa - hvgrav * exra * hvelxt(ii)
-          end if
+          endif
           tbr(ib) = hvextt(ii,upper)
           s1 = s1 + hvp(j)
           s2 = s2 + tbr(ib)
           do lsp = 1, ns
               ! the outside is defined to be at the base of the structure for mv
-              if (i.lt.n) then
+              if (i<n) then
                   hvexcn(ii,lsp,upper) = o2n2(lsp) * ramb(i)
                   hvexcn(ii,lsp,lower) = o2n2(lsp) * ramb(i)
               else
                   hvexcn(ii,lsp,upper) = o2n2(lsp) * exra
                   hvexcn(ii,lsp,lower) = o2n2(lsp) * exra
-              end if
+              endif
               hvconc(j,lsp) = hvexcn(ii,lsp,upper)
               c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
           end do
@@ -444,17 +444,17 @@
           c3(lsp) = c3(lsp) / xnext
       end do
       do i = 1, nnode
-          if (hvp(i).lt.x0) then
+          if (hvp(i)<x0) then
               hvp(i) = pav
-          end if
+          endif
       end do
       do i = 1, nbr
-          if (tbr(i).le.x0) tbr(i) = tav
-          if (hvconc(i,1).lt.x0) then
+          if (tbr(i)<=x0) tbr(i) = tav
+          if (hvconc(i,1)<x0) then
               do lsp = 1, ns
                   hvconc(i,lsp) = c3(lsp)
               end do
-          end if
+          endif
       end do
 
       ! calculate area, relative roughness, effective diameter and volume of ducts
@@ -516,10 +516,10 @@
       ! and fill in the holes vacated by the exterior nodes
       ii = 0
       do i = 1, nnode
-          if (izhvmapi(i).ne.0) then
+          if (izhvmapi(i)/=0) then
               ii = ii + 1
               izhvmapi(ii) = izhvmapi(i)
-          end if
+          endif
       end do
 
       ! construct inverse of izhvmapi
@@ -548,29 +548,29 @@
    90 continue
       icurnod = 0
       do i = 1, nnode
-          if (izhvsys(i).eq.0) then
+          if (izhvsys(i)==0) then
               icurnod = i
               exit
-          end if
+          endif
       end do
-      if (icurnod.ne.0) then
+      if (icurnod/=0) then
           icursys = icursys + 1
           iptr = iptr + 1
           istack(iptr) = icurnod
   120     continue
-          if (iptr.eq.0) go to 90
+          if (iptr==0) go to 90
           icurnod = istack(iptr)
           iptr = iptr - 1
           izhvsys(icurnod) = icursys
           do j = 1, ncnode(icurnod)
               nxtnode = mvintnode(icurnod,j)
-              if (izhvsys(nxtnode).eq.0) then
+              if (izhvsys(nxtnode)==0) then
                   iptr = iptr + 1
                   istack(iptr) = nxtnode
-              end if
+              endif
           end do
           go to 120
-      end if
+      endif
       nhvsys = icursys
 
       ! we have to update nequals.  nequals was originally defined in 
@@ -653,16 +653,16 @@
           p(i+noftu) = tamb(i)
 
           ! check for a special setting of the interface height
-          if (iflag.eq.1) then
-              if (yinter(i).lt.0.d0) then
+          if (iflag==1) then
+              if (yinter(i)<0.d0) then
                   p(i+nofvu) = zzvmin(i)
               else
                   p(i+nofvu) = 
      .            min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
-              end if
+              endif
               yinter(i) = xx0
-          end if
-          if(izshaft(i).eq.1)p(i+nofvu) = zzvmax(i)
+          endif
+          if(izshaft(i)==1)p(i+nofvu) = zzvmax(i)
           p(i+noftl) = tamb(i)
       end do
 
@@ -682,16 +682,16 @@
               if (switch(iwall,i)) then
                   ii = ii + 1
                   p(ii) = tamb(i)
-              end if
+              endif
           end do
       end do
 
       ! establish default values for detector data
       do i = 1, ndtect
           iroom=ixdtect(i,droom)
-          if(xdtect(i,dxloc).lt.0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
-          if(xdtect(i,dyloc).lt.0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
-          if(xdtect(i,dzloc).lt.0.0d0)then
+          if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
+          if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
+          if(xdtect(i,dzloc)<0.0d0)then
               xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
           endif
           tdspray = xdtect(i,dspray)
@@ -701,9 +701,9 @@
           ! if tdspray < 0 then interpret abs(tdspray) as the time
           ! required to reduce the fire size by 50 per cent
           ! if tdspray = 0 then turn the sprinkler off
-          if(tdspray.gt.0.0d0)then
+          if(tdspray>0.0d0)then
               tdrate = 3.0d0/tdspray**1.8d0
-          elseif(tdspray.lt.0.0d0)then
+          elseif(tdspray<0.0d0)then
               tdrate = abs(tdspray)/log(xx2)
               tdspray = (3.0d0/tdrate)**(1.0d0/1.8d0)
           else
@@ -732,7 +732,7 @@
       ! initialize target temperatures
       do itarg = 1, ntarg
           iroom = ixtarg(trgroom,itarg)
-          if(ixtarg(trgmeth,itarg).eq.mplicit)then
+          if(ixtarg(trgmeth,itarg)==mplicit)then
               ieq = iztarg(itarg)
               p(noftt+ieq) = tamb(iroom)
           endif  
@@ -748,7 +748,7 @@
 
       ! initialize solver oxygen values if required.   (must be initialized
       ! after zzmass is defined)
-      if(option(foxygen).eq.on)then
+      if(option(foxygen)==on)then
           do iroom = 1, nm1
               p(iroom+nofoxyu)=0.23d0*zzmass(iroom,upper)
               p(iroom+nofoxyl)=0.23d0*zzmass(iroom,lower)
@@ -757,8 +757,8 @@
 
       ! define ihxy in izhall (dimension that is longest)
       do i = 1, nm1
-          if(izhall(i,ihroom).eq.1)then
-              if(dr(i).gt.br(i))then
+          if(izhall(i,ihroom)==1)then
+              if(dr(i)>br(i))then
                   izhall(i,ihxy) = 1
               else
                   izhall(i,ihxy) = 2
@@ -1234,13 +1234,13 @@
       option(fkeyeval) = 1
 
       ! set debug print
-      if (option(fdebug).eq.2) then
+      if (option(fdebug)==2) then
           option(fdebug) = off
           switch(1,nr) = .true.
-      else if (option(fdebug).ge.3) then
+      else if (option(fdebug)>=3) then
           option(fdebug) = on
           switch(1,nr) = .true.
-      end if
+      endif
 
       ! read in wall info
       read (iofili,*)
@@ -1371,11 +1371,11 @@ c
                       p(isof) = mass(k,i,lsp) + minmas
                   end do
               end do
-          end if
+          endif
       end do
 
       ! hvinit define initial products for hvac systems (if any)
-      if(nhvsys.ne.0)then
+      if(nhvsys/=0)then
           isof = nofhvpr
           do lsp = 1, min(ns,9)
               if(activs(lsp))then
@@ -1395,11 +1395,11 @@ c
                   p(isof) = minmas
               end do
           end do
-      end if
+      endif
 
       ! placeholder for smoke agglomeration if smoke is tracked
       if (activs(9)) then
-      end if
+      endif
 
       ! connect hvac to the rest of the world
       hvdelt = deltat
@@ -1412,7 +1412,7 @@ c
           if (activs(iprod)) then
               ip = ip + 1
               izpmap(ip) = iprod + 2
-          end if
+          endif
       end do
       
       return
@@ -1440,7 +1440,7 @@ c
 
           ! room number must be between 1 and nm1
           iroom = ixtarg(trgroom,itarg)
-          if(iroom.lt.1.or.iroom.gt.nm1)then
+          if(iroom<1.or.iroom>nm1)then
               write(logerr,'(a,i3)') 
      .            'Target assigned to non-existent compartment',iroom
               ierror = 213
@@ -1457,49 +1457,49 @@ c
           ysize = dr(iroom)
           zsize = hrp(iroom)
           !*** if the locator is -1, set to center of room on the floor
-          if(xloc.eq.xm1) xloc = 0.5 * xsize
-          if(yloc.eq.xm1) yloc = 0.5 * ysize
-          if(zloc.eq.xm1) zloc = x0
-          if(iwall.ne.0)then
+          if(xloc==xm1) xloc = 0.5 * xsize
+          if(yloc==xm1) yloc = 0.5 * ysize
+          if(zloc==xm1) zloc = x0
+          if(iwall/=0)then
               xxnorm = 0.0d0
               yynorm = 0.0d0
               zznorm = 0.0d0
           endif
-          if(iwall.eq.1)then
+          if(iwall==1)then
               zznorm = -1.0d0
               xx = xloc
               yy = yloc
               zz = zsize
-          elseif(iwall.eq.2)then
+          elseif(iwall==2)then
               yynorm = -1.0d0
 c          xx = xsize - xloc
               xx = xsize
               yy = ysize
               zz = yloc
-          elseif(iwall.eq.3)then
+          elseif(iwall==3)then
               xxnorm = -1.0d0
               xx = xsize
               yy = xloc
               zz = yloc
-          elseif(iwall.eq.4)then
+          elseif(iwall==4)then
               yynorm = 1.0d0
               xx = xloc
               yy = 0.0d0
               zz = yloc
-          elseif(iwall.eq.5)then
+          elseif(iwall==5)then
               xxnorm = 1.0d0
               xx = 0.0d0
 c          yy = ysize - xloc
               yy = ysize
               zz = yloc
-          elseif(iwall.eq.6)then
+          elseif(iwall==6)then
               zznorm = 1.0d0
               xx = xloc
 c          yy = ysize - yloc
               yy = ysize
               zz = 0.0d0
           endif
-          if(iwall.ne.0)then
+          if(iwall/=0)then
               xxtarg(trgcenx,itarg) = xx
               xxtarg(trgceny,itarg) = yy
               xxtarg(trgcenz,itarg) = zz
@@ -1518,9 +1518,9 @@ c          yy = ysize - yloc
           endif
 
           ! center coordinates need to be within room
-          if(xloc.lt.0.0d0.or.xloc.gt.xsize.or.
-     .    yloc.lt.0.0d0.or.yloc.gt.ysize.or.
-     .    zloc.lt.0.0d0.or.zloc.gt.zsize)then
+          if(xloc<0.0d0.or.xloc>xsize.or.
+     .    yloc<0.0d0.or.yloc>ysize.or.
+     .    zloc<0.0d0.or.zloc>zsize)then
               write(logerr,'(a,i3,1x,3f10.3)') 
      .            'Target located outside of compartment',
      .            iroom,xloc,yloc,zloc
@@ -1600,11 +1600,11 @@ c          yy = ysize - yloc
           do j = 1, nm1
               thset(i,j) = .false.
               if (switch(i,j)) then
-                  if (cname(i,j).eq.off.or.cname(i,j).eq.none) then
+                  if (cname(i,j)==off.or.cname(i,j)==none) then
                       switch(i,j) = .false.
                   else
                       call gettpp(cname(i,j),tp,ierror)
-                      if (ierror.ne.0) return
+                      if (ierror/=0) return
                       nslb(i,j) = lnslb(tp)
                       do k = 1, nslb(i,j)
                           fkw(k,i,j) = lfkw(k,tp)
@@ -1616,8 +1616,8 @@ c          yy = ysize - yloc
                       do k = 1, 7
                           hclbf(k,i,j) = lhclbf(k,tp)
                       end do
-                  end if
-              end if
+                  endif
+              endif
       end do
       end do
 
@@ -1638,7 +1638,7 @@ c          yy = ysize - yloc
                   call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j)
      +            ,wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),
      +            wlength(i,j),twj(1,i,j),tamb(i),eta(i))
-              end if
+              endif
           end do
       end do
 
@@ -1702,13 +1702,13 @@ c          yy = ysize - yloc
       ! initialize target data structures
       do itarg = 1, ntarg
           tcname = cxtarg(itarg)
-          if(tcname.eq.' ')then
+          if(tcname==' ')then
               tcname = 'DEFAULT'
               cxtarg(itarg) = tcname
           endif
           icode = 0
           call gettpp(tcname,tp,ierror)
-          if (ierror.ne.0) return
+          if (ierror/=0) return
           xxtarg(trgk,itarg) = lfkw(1,tp)
           xxtarg(trgcp,itarg) = lcw(1,tp)
           xxtarg(trgrho,itarg) = lrw(1,tp)
@@ -1798,11 +1798,11 @@ C     COUNT THE OF NODES (LARGEST OF NS AND NE)
       DO 50 IB = 2, NBR
           NNODE = MAX(NNODE,NA(IB),NE(IB))
    50 CONTINUE
-      IF (NNODE.GT.MNODE) THEN
+      IF (NNODE>MNODE) THEN
           CALL XERROR('OFFSET - Node range exceeded for HVAC',0,1,1)
           IERROR = 16
           RETURN
-      END IF
+      endif
 
 C     SET THE NUMBER OF COMPARTMENTS AND OFFSETS
 
@@ -1812,21 +1812,21 @@ C     COUNT THE SPECIES
 
       NLSPCT = 0
 
-      IF (LFBT.EQ.1) THEN
+      IF (LFBT==1) THEN
           DO 90 I = 1, NS
               IF (ALLOWED(I).AND.ACTIVS(I)) THEN
                   NLSPCT = NLSPCT + 1
-              END IF
+              endif
    90     CONTINUE
-      ELSE IF (LFBT.EQ.2.OR.LFBT.EQ.0) THEN
+      ELSE IF (LFBT==2.OR.LFBT==0) THEN
           DO 110 I = 1, NS
               IF (ALLOWED(I)) THEN
                   IF (ACTIVS(I)) THEN
                       NLSPCT = NLSPCT + 1
-                  END IF
-              ELSE IF (I.NE.7) THEN
+                  endif
+              ELSE IF (I/=7) THEN
                   NLSPCT = NLSPCT + 1
-              END IF
+              endif
   110     CONTINUE
           NLSPCT = NLSPCT + 1
       ELSE
@@ -1840,8 +1840,8 @@ C     COUNT THE NUMBER OF WALLS
           DO 260 J = 1, NWAL
               IF (SWITCH(J,I)) THEN
                   NWALLS = NWALLS + 1
-              END IF
-              IF (NWPTS.NE.0) NUMNODE(1,J,I) = NWPTS
+              endif
+              IF (NWPTS/=0) NUMNODE(1,J,I) = NWPTS
   260     CONTINUE
   270 CONTINUE
 
@@ -1852,12 +1852,12 @@ C     count the number of implicit targets
       NEQTARG(STEADY) = 0
       NEQTARG(XPLICIT) = 0
       DO 300 ITARG = 1, NTARG
-          IF(IXTARG(TRGMETH,ITARG).EQ.MPLICIT)THEN
+          IF(IXTARG(TRGMETH,ITARG)==MPLICIT)THEN
               NIMTARG = NIMTARG + 1
               NEQTARG(MPLICIT) = NEQTARG(MPLICIT) + 1
-          ELSEIF(IXTARG(TRGMETH,ITARG).EQ.STEADY)THEN
+          ELSEIF(IXTARG(TRGMETH,ITARG)==STEADY)THEN
               NEQTARG(STEADY) = NEQTARG(STEADY) + 1
-          ELSEIF(IXTARG(TRGMETH,ITARG).EQ.XPLICIT)THEN
+          ELSEIF(IXTARG(TRGMETH,ITARG)==XPLICIT)THEN
               NEQTARG(XPLICIT) = NEQTARG(STEADY) + 1
           ENDIF
   300 CONTINUE
@@ -1866,8 +1866,8 @@ C    SET NUMBER OF IMPLICIT OXYGEN VARIABLES
 
 C*** note we never let dassl solve for oxygen when we have a type 1 fire
 
-      IF(LFBT.EQ.1)OPTION(FOXYGEN) = OFF
-      IF(OPTION(FOXYGEN).EQ.ON)THEN
+      IF(LFBT==1)OPTION(FOXYGEN) = OFF
+      IF(OPTION(FOXYGEN)==ON)THEN
           NOXYGEN = NM1
       ELSE
           NOXYGEN = 0
@@ -1959,7 +1959,7 @@ C*** check horizontal vent flow
           HEIGHT = ZZVENT(I,2) - ZZVENT(I,1)
           WIDTH = ZZVENT(I,3)
           avent = factor2 * height * width
-          IF(AVENT.NE.0.0D0)THEN
+          IF(AVENT/=0.0D0)THEN
               ROOMC(IROOM1,IROOM2) = 1
               ROOMC(IROOM2,IROOM1) = 1
           ENDIF
@@ -1970,7 +1970,7 @@ C*** check vertical vent flow
       DO 50 I = 1, NVVENT
           IROOM1 = IVVENT(I,TOPRM)
           IROOM2 = IVVENT(I,BOTRM)
-          IF(VVAREA(IROOM1,IROOM2).NE.0.0D0)THEN
+          IF(VVAREA(IROOM1,IROOM2)/=0.0D0)THEN
               ROOMC(IROOM1,IROOM2) = 1
               ROOMC(IROOM2,IROOM1) = 1
           ENDIF
@@ -1991,14 +1991,14 @@ C           through several other intermediate rooms).
 
       MATITER = 1
       DO 60 I = 1, N
-          IF(N.LE.MATITER)GO TO 70
+          IF(N<=MATITER)GO TO 70
           CALL MAT2MULT(ROOMC,TEMPMAT,NR,N,matiter)
           MATITER = MATITER*2
    60 CONTINUE
    70 CONTINUE
 
       DO 80 I = 1, NM1
-          IF(ROOMC(I,N).NE.0)THEN
+          IF(ROOMC(I,N)/=0)THEN
               IZCON(I) = .TRUE.
           ELSE
               IZCON(I) = .FALSE.
@@ -2062,11 +2062,11 @@ C
       XXNX = NX
 C      
       NINTX = NX - (NSLAB+1)
-      IF (NSLAB.LE.2) THEN
+      IF (NSLAB<=2) THEN
           NSPLIT = (WSPLIT(1)+WSPLIT(2)) * XXNX
       ELSE
           NSPLIT = WSPLIT(1) * XXNX
-      END IF
+      endif
 C
 C*** calculate total walldepth
 C
@@ -2082,8 +2082,8 @@ C
       XKRHOC = WK(1) / (WSPEC(1)*WRHO(1))
       ALPHA = SQRT(XKRHOC)
       XB = 2.0D0 * ALPHA * SQRT(TSTOP) * ERRFC05 * WLEN
-      IF (XB.GT..50D0*WLEN) XB = .5D0 * WLEN
-      IF (NSLAB.EQ.1) THEN
+      IF (XB>.50D0*WLEN) XB = .5D0 * WLEN
+      IF (NSLAB==1) THEN
 C
 C*** SET UP WALL NODE LOCATIONS for 1 slab case
 C    bunch points at interior and exterior boundary
@@ -2112,24 +2112,24 @@ C*** calculate number of points interior to each slab
 C
           XXNINTX = NINTX
           NUMPTS(1) = WSPLIT(1) * XXNINTX * MIN(XB,WTHICK(1)) / WLEN
-          IF (NUMPTS(1).LT.1) NUMPTS(1) = 1
+          IF (NUMPTS(1)<1) NUMPTS(1) = 1
           WMXB = WLEN - XB
           NUMPTS(NSLAB) = WSPLIT(3) * XXNINTX * MIN(WMXB,WTHICK(NSLAB))/ 
      +    WLEN
-          IF (NUMPTS(NSLAB).LT.1) NUMPTS(NSLAB) = 1
+          IF (NUMPTS(NSLAB)<1) NUMPTS(NSLAB) = 1
           ISUM = NINTX - NUMPTS(1) - NUMPTS(NSLAB)
           XXNSLABM2 = NSLAB - 2
           DO 50 I = 2, NSLAB - 1
               NUMPTS(I) = XXNX * WSPLIT(2)*WTHICK(NSLAB)/XXNSLABM2/WLEN
-              IF (NUMPTS(I).LT.1) NUMPTS(I) = 1
+              IF (NUMPTS(I)<1) NUMPTS(I) = 1
               ISUM = ISUM - NUMPTS(I)
    50     CONTINUE
           NUMPTS(1) = NUMPTS(1) + (ISUM-ISUM/2)
           NUMPTS(NSLAB) = NUMPTS(NSLAB) + ISUM / 2
-          IF (NUMPTS(NSLAB).LT.1) THEN
+          IF (NUMPTS(NSLAB)<1) THEN
               NUMPTS(1) = NUMPTS(1) + NUMPTS(NSLAB) - 1
               NUMPTS(NSLAB) = 1
-          END IF
+          endif
 C
 C*** copy numpts data into numnode and keep a running total
 C
@@ -2166,7 +2166,7 @@ C
 C
 C*** calculate wall positions for last slab (bunched near right)
 C
-          IF (NSLAB.GE.2) THEN
+          IF (NSLAB>=2) THEN
               IBEG = CUMPTS(NSLAB)
 
 !*** include last point for last slab
@@ -2178,8 +2178,8 @@ C
                   XWALL(I) = XPOS(NSLAB+1) - XXI1 ** 2 * (XPOS(NSLAB+1)-
      +            XPOS(NSLAB)) / XXI3 ** 2
   100         CONTINUE
-          END IF
-      END IF
+          endif
+      endif
 C
 C*** finally calculate distances between each point
 C    these distances are used by cnduct to setup discretization

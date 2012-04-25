@@ -27,7 +27,7 @@ C
         XX = XDTECT(ID,DXLOC)
         YY = XDTECT(ID,DYLOC)
         ZZ = XDTECT(ID,DZLOC)
-        IF(IZHALL(IROOM,IHXY).EQ.1)THEN
+        IF(IZHALL(IROOM,IHXY)==1)THEN
           XLEN = XX
          ELSE
           XLEN = YY
@@ -44,13 +44,13 @@ C
       include "cfast.fi"
       include "cenviro.fi"
 
-      IF(IZHALL(IROOM,IHMODE).EQ.IHDURING)THEN
+      IF(IZHALL(IROOM,IHMODE)==IHDURING)THEN
         D0 = ZZHALL(IROOM,IHDEPTH)
         CJETHEIGHT = HR(IROOM) - D0
 
 C*** location is in hall ceiling jet
 
-        IF(ZLOC.GE.CJETHEIGHT.AND.XLOC.LE.ZZHALL(IROOM,IHDIST))THEN
+        IF(ZLOC>=CJETHEIGHT.AND.XLOC<=ZZHALL(IROOM,IHDIST))THEN
           C1 = 1.0D0
           IHALF = IZHALL(IROOM,IHHALFFLAG)
           HHALF = ZZHALL(IROOM,IHHALF)
@@ -60,7 +60,7 @@ C*** check to see if the user specified a HHALF value on the command line.
 C    if not (ie if IHALF==0) then calculate it 
 C    using the correlations.
 
-          IF(IHALF.EQ.0)THEN
+          IF(IHALF==0)THEN
 c***  hhalf = -log10(2)/.018
             HHALF = 16.70D0
             ZZHALL(IROOM,IHHALF) = HHALF
@@ -69,7 +69,7 @@ c***  hhalf = -log10(2)/.018
 C*** if HHALF < 0.0 then assume that the temperature does not decay
 C    (ie flow is adiabatic)
 
-          IF(HHALF.GT.0.0D0)THEN
+          IF(HHALF>0.0D0)THEN
             FACT = 0.5D0**(XLOC/HHALF)
            ELSE
             FACT = 1.0D0
@@ -88,7 +88,7 @@ C    (ie flow is adiabatic)
 C*** hall jet is not flowing (either has not started or has finished)
 C    so, use regular layer temperatures and densities
 
-        IF(ZLOC.GT.ZZHLAY(IROOM,LOWER))THEN
+        IF(ZLOC>ZZHLAY(IROOM,LOWER))THEN
           HALLTEMP = ZZTEMP(IROOM,UPPER)
           HALLRHO = ZZRHO(IROOM,UPPER)
          ELSE
@@ -118,8 +118,8 @@ C    IVENT'th vent
 
 C     gpfrn 4/21/98: change the flow coefficient, based on latest les3d results
 
-      IF(IZHALL(IHALL,IHVENTNUM).NE.0.AND.
-     .             IZHALL(IHALL,IHVENTNUM).NE.INUM)RETURN
+      IF(IZHALL(IHALL,IHVENTNUM)/=0.AND.
+     .             IZHALL(IHALL,IHVENTNUM)/=INUM)RETURN
       ROOMWIDTH = MIN(BR(IHALL),DR(IHALL))
       ROOMLENGTH = MAX(BR(IHALL),DR(IHALL))
       VENTWIDTH = MIN(WIDTH,ROOMWIDTH)
@@ -130,28 +130,28 @@ C     gpfrn 4/21/98: change the flow coefficient, based on latest les3d results
 
 C*** hall flow has not started yet
 
-      IF(IZHALL(IHALL,IHVENTNUM).EQ.0)THEN
+      IF(IZHALL(IHALL,IHVENTNUM)==0)THEN
 
 C*** flow is going into the hall room and flow is below the soffit
 
-        IF(HALLVEL.GT.XX0.AND.HALLDEPTH.GT.XX0)THEN
+        IF(HALLVEL>XX0.AND.HALLDEPTH>XX0)THEN
           IZHALL(IHALL,IHVENTNUM) = INUM
           IZHALL(IHALL,IHMODE) = IHDURING
           ZZHALL(IHALL,IHTIME0) = TSEC
           ZZHALL(IHALL,IHTEMP) = HHTEMP
           ZZHALL(IHALL,IHDIST) = 0.0D0
-          IF(IZHALL(IHALL,IHVELFLAG).EQ.0)ZZHALL(IHALL,IHVEL) = HALLVEL
-          IF(IZHALL(IHALL,IHDEPTHFLAG).EQ.0)THEN
+          IF(IZHALL(IHALL,IHVELFLAG)==0)ZZHALL(IHALL,IHVEL) = HALLVEL
+          IF(IZHALL(IHALL,IHDEPTHFLAG)==0)THEN
             ZZHALL(IHALL,IHDEPTH) = HALLDEPTH
           ENDIF
           VENTDIST0 = -1.
 
 C*** corridor flow coming from a vent 
 
-          IF(ITYPE.EQ.1)THEN
-            IF(IZVENT(INUM,1).EQ.IHALL)THEN
+          IF(ITYPE==1)THEN
+            IF(IZVENT(INUM,1)==IHALL)THEN
               VENTDIST0 = ZZVENT(INUM,4)
-             ELSEIF(IZVENT(INUM,2).EQ.IHALL)THEN
+             ELSEIF(IZVENT(INUM,2)==IHALL)THEN
               VENTDIST0 = ZZVENT(INUM,5)
             ENDIF
           ENDIF
@@ -160,8 +160,8 @@ C*** corridor flow coming from the main fire.
 C    this is a restriction, but lets get it right for the main
 C    fire before we worry about objects
 
-          IF(ITYPE.EQ.2)THEN
-            IF(IZHALL(IHALL,IHXY).EQ.1)THEN
+          IF(ITYPE==2)THEN
+            IF(IZHALL(IHALL,IHXY)==1)THEN
               VENTDIST0 = XFIRE(1,1)
              ELSE
               VENTDIST0 = XFIRE(1,2)
@@ -176,23 +176,23 @@ C*** compute distances relative to vent where flow is coming from.
 C    also compute the maximum distance
 
           DO 10 I = 1, NVENTS
-            IF(IZVENT(I,1).EQ.IHALL)THEN
+            IF(IZVENT(I,1)==IHALL)THEN
 
 C*** if distances are not defined for the origin or destination vent
 C    then assume that the vent at the "far" end of the corridor
 
-              IF(ZZVENT(I,4).GT.0.0D0.AND.VENTDIST0.GE.0.0D0)THEN
+              IF(ZZVENT(I,4)>0.0D0.AND.VENTDIST0>=0.0D0)THEN
                 VENTDIST = ABS(ZZVENT(I,4) - VENTDIST0)
                ELSE
                 VENTDIST = ROOMLENGTH - VENTDIST0
               ENDIF
               ZZVENTDIST(IHALL,I) = VENTDIST
-             ELSEIF(IZVENT(I,2).EQ.IHALL)THEN
+             ELSEIF(IZVENT(I,2)==IHALL)THEN
 
 C*** if distances are not defined for the origin or destination vent
 C    then assume that the vent at the "far" end of the corridor
 
-              IF(ZZVENT(I,5).GT.0.0D0.AND.VENTDIST0.GE.0.0D0)THEN
+              IF(ZZVENT(I,5)>0.0D0.AND.VENTDIST0>=0.0D0)THEN
                 VENTDIST = ABS(ZZVENT(I,5) - VENTDIST0)
                ELSE
                 VENTDIST = ROOMLENGTH - VENTDIST0
@@ -216,14 +216,14 @@ C         the width of the room, ie:
 
 C*** hall flow is coming from a vent or a fire
 
-      IF(IZHALL(IHALL,IHVENTNUM).EQ.INUM)THEN
+      IF(IZHALL(IHALL,IHVENTNUM)==INUM)THEN
         THALL0 = ZZHALL(IHALL,IHTIME0)
         F1 = (TOLD - THALL0)/(STIME-THALL0)
         F2 = (STIME - TOLD)/(STIME-THALL0)
-        IF(IZHALL(IHALL,IHVELFLAG).EQ.0)THEN
+        IF(IZHALL(IHALL,IHVELFLAG)==0)THEN
           ZZHALL(IHALL,IHVEL) = ZZHALL(IHALL,IHVEL)*F1 + ABS(HALLVEL)*F2
         ENDIF
-        IF(IZHALL(IHALL,IHDEPTHFLAG).EQ.0)THEN
+        IF(IZHALL(IHALL,IHDEPTHFLAG)==0)THEN
           ZZHALL(IHALL,IHDEPTH) = ZZHALL(IHALL,IHDEPTH)*F1 + 
      .                            HALLDEPTH*F2
         ENDIF
@@ -236,7 +236,7 @@ C*** hall flow is coming from a vent or a fire
 C*** If ceiling jet has reached the end of the hall then 
 C    indicate this fact in IZHALL  
 
-        IF(CJETDIST.GE.VENTDISTMAX)THEN
+        IF(CJETDIST>=VENTDISTMAX)THEN
           IZHALL(IHALL,IHMODE) = IHAFTER
           CJETDIST = VENTDISTMAX
         ENDIF

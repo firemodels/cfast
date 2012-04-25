@@ -17,10 +17,10 @@ C***DESCRIPTION
 C
 C *Usage:
 C
-C      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C      IMPLICIT real*8(A-H,O-Z)
 C      EXTERNAL RES, JAC
 C      INTEGER NEQ, INFO(N), IDID, LRW, LIW, IWORK(LIW), IPAR
-C      DOUBLE PRECISION T, Y(NEQ), YPRIME(NEQ), TOUT, RTOL, ATOL,
+C      real*8 T, Y(NEQ), YPRIME(NEQ), TOUT, RTOL, ATOL,
 C     *   RWORK(LRW), RPAR
 C
 C      CALL DDASSL (RES, NEQ, T, Y, YPRIME, TOUT, INFO, RTOL, ATOL,
@@ -138,7 +138,7 @@ C         dimension them in your calling program and in RES as arrays
 C         of appropriate length.
 C
 C  NEQ -- Set it to the number of differential equations.
-C         (NEQ .GE. 1)
+C         (NEQ >= 1)
 C
 C  T -- Set it to the initial point of the integration.
 C       T must be defined as a variable.
@@ -157,8 +157,8 @@ C               components, see the explanation of INFO(11).
 C
 C  TOUT - Set it to the first point at which a solution
 C         is desired. You can not take TOUT = T.
-C         integration either forward in T (TOUT .GT. T) or
-C         backward in T (TOUT .LT. T) is permitted.
+C         integration either forward in T (TOUT > T) or
+C         backward in T (TOUT < T) is permitted.
 C
 C         The code advances the solution from T to TOUT using
 C         step sizes which are automatically selected so as to
@@ -272,7 +272,7 @@ C              and a number of important algorithms will execute much
 C              faster. The differential equation is said to have
 C              half-bandwidths ML (lower) and MU (upper) if equation i
 C              involves only unknowns Y(J) with
-C                             I-ML .LE. J .LE. I+MU
+C                             I-ML <= J <= I+MU
 C              for all I=1,2,...,NEQ. Thus, ML and MU are the widths
 C              of the lower and upper parts of the band, respectively,
 C              with the main diagonal being excluded. If you do not
@@ -280,7 +280,7 @@ C              indicate that the equation has a banded matrix of partial
 C              derivatives, the code works with a full matrix of NEQ**2
 C              elements (stored in the conventional way). Computations
 C              with banded matrices cost less time and storage than with
-C              full matrices if 2*ML+MU .LT. NEQ. If you tell the
+C              full matrices if 2*ML+MU < NEQ. If you tell the
 C              code that the matrix of partial derivatives has a banded
 C              structure and you want to provide subroutine JAC to
 C              compute the partial derivatives, then you must be careful
@@ -332,7 +332,7 @@ C              the default value is 5. for each
 C              order decrease below 5, the code
 C              requires NEQ fewer locations, however
 C              it is likely to be slower. In any
-C              case, you must have 1 .LE. MAXORD .LE. 5
+C              case, you must have 1 <= MAXORD <= 5
 C          ****  Do you want the maximum order to
 C                default to 5?
 C                Yes - Set INFO(9)=0
@@ -378,7 +378,7 @@ C               in either case all components must be non-negative.
 C
 C               The tolerances are used by the code in a local error
 C               test at each step which requires roughly that
-C                     ABS(LOCAL ERROR) .LE. RTOL*ABS(Y)+ATOL
+C                     ABS(LOCAL ERROR) <= RTOL*ABS(Y)+ATOL
 C               for each vector component.
 C               (More specifically, a root-mean-square norm is used to
 C               measure the size of vectors, and the error test uses the
@@ -417,12 +417,12 @@ C               calling program.
 C
 C  LRW -- Set it to the declared length of the RWORK array.
 C               You must have
-C                    LRW .GE. 40+(MAXORD+4)*NEQ+NEQ**2
+C                    LRW >= 40+(MAXORD+4)*NEQ+NEQ**2
 C               for the full (dense) JACOBIAN case (when INFO(6)=0), or
-C                    LRW .GE. 40+(MAXORD+4)*NEQ+(2*ML+MU+1)*NEQ
+C                    LRW >= 40+(MAXORD+4)*NEQ+(2*ML+MU+1)*NEQ
 C               for the banded user-defined JACOBIAN case
 C               (when INFO(5)=1 and INFO(6)=1), or
-C                     LRW .GE. 40+(MAXORD+4)*NEQ+(2*ML+MU+1)*NEQ
+C                     LRW >= 40+(MAXORD+4)*NEQ+(2*ML+MU+1)*NEQ
 C                           +2*(NEQ/(ML+MU+1)+1)
 C               for the banded finite-difference-generated JACOBIAN case
 C               (when INFO(5)=0 and INFO(6)=1)
@@ -431,7 +431,7 @@ C  IWORK(*) --  Dimension this integer work array of length LIW in
 C               your calling program.
 C
 C  LIW -- Set it to the declared length of the IWORK array.
-C               you must have LIW .GE. 20+NEQ
+C               you must have LIW >= 20+NEQ
 C
 C  RPAR, IPAR -- These are parameter arrays, of real and integer
 C               type, respectively. You can use them for communication
@@ -497,7 +497,7 @@ C  OPTIONALLY REPLACEABLE NORM ROUTINE:
 C  DDASSL uses a weighted norm DDANRM to measure the size
 C  of vectors such as the estimated error in each step.
 C  A FUNCTION subprogram
-C    DOUBLE PRECISION FUNCTION DDANRM(NEQ,V,WT,RPAR,IPAR)
+C    real*8 FUNCTION DDANRM(NEQ,V,WT,RPAR,IPAR)
 C    DIMENSION V(NEQ),WT(NEQ)
 C  is used to define this norm. Here, V is the vector
 C  whose norm is to be computed, and WT is a vector of
@@ -694,7 +694,7 @@ C***END PROLOGUE  DDASSL
 C
 C**End
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       LOGICAL DONE
       EXTERNAL RES,JAC
       DIMENSION Y(*),YPRIME(*)
@@ -724,7 +724,7 @@ C
       SAVE
 C
 C***FIRST EXECUTABLE STATEMENT  DDASSL
-      IF(INFO(1).NE.0)GO TO 100
+      IF(INFO(1)/=0)GO TO 100
 C
 C-----------------------------------------------------------------------
 C     THIS BLOCK IS EXECUTED FOR THE INITIAL CALL ONLY.
@@ -737,46 +737,46 @@ C     ARE EITHER ZERO OR ONE.
 C
 C     ADDED BY PAR 01/08/93 TO ALLOW AND ADDED OPTION FOR SOLVING THE JACOBIAN
 C
-         IF (I.EQ.5) THEN
-            IF (INFO(5).NE.0.AND.INFO(5).NE.1.AND.INFO(5).NE.2) 
+         IF (I==5) THEN
+            IF (INFO(5)/=0.AND.INFO(5)/=1.AND.INFO(5)/=2) 
      .                GO TO 701
             GO TO 10
-         END IF
-         IF(INFO(I).NE.0.AND.INFO(I).NE.1)GO TO 701
+         endif
+         IF(INFO(I)/=0.AND.INFO(I)/=1)GO TO 701
 10       CONTINUE
 C
-      IF(NEQ.LE.0)GO TO 702
+      IF(NEQ<=0)GO TO 702
 C
 C     CHECK AND COMPUTE MAXIMUM ORDER
       MXORD=5
-      IF(INFO(9).EQ.0)GO TO 20
+      IF(INFO(9)==0)GO TO 20
          MXORD=IWORK(LMXORD)
-         IF(MXORD.LT.1.OR.MXORD.GT.5)GO TO 703
+         IF(MXORD<1.OR.MXORD>5)GO TO 703
 20       IWORK(LMXORD)=MXORD
 C
 C     COMPUTE MTYPE,LENPD,LENRW.CHECK ML AND MU.
-      IF(INFO(6).NE.0)GO TO 40
+      IF(INFO(6)/=0)GO TO 40
          LENPD=NEQ**2
          LENRW=40+(IWORK(LMXORD)+4)*NEQ+LENPD
-         IF(INFO(5).NE.0)GO TO 30
+         IF(INFO(5)/=0)GO TO 30
             IWORK(LMTYPE)=2
             GO TO 60
 C
 C     MODIFIED BY PAR 01/08/93 TO ALLOW FOR CUSTOM SOLUTION OF JACOBIAN
 C
-30          IF (INFO(5).EQ.1) THEN
+30          IF (INFO(5)==1) THEN
                IWORK(LMTYPE)=1
             ELSE
                IWORK(LMTYPE)=6
                JACDIM = JACD()
                LENPD = JACDIM**2
                LENRW=40+(IWORK(LMXORD)+4)*NEQ+LENPD
-            END IF
+            endif
             GO TO 60
-40    IF(IWORK(LML).LT.0.OR.IWORK(LML).GE.NEQ)GO TO 717
-      IF(IWORK(LMU).LT.0.OR.IWORK(LMU).GE.NEQ)GO TO 718
+40    IF(IWORK(LML)<0.OR.IWORK(LML)>=NEQ)GO TO 717
+      IF(IWORK(LMU)<0.OR.IWORK(LMU)>=NEQ)GO TO 718
       LENPD=(2*IWORK(LML)+IWORK(LMU)+1)*NEQ
-      IF(INFO(5).NE.0)GO TO 50
+      IF(INFO(5)/=0)GO TO 50
          IWORK(LMTYPE)=5
          MBAND=IWORK(LML)+IWORK(LMU)+1
          MSAVE=(NEQ/MBAND)+1
@@ -788,16 +788,16 @@ C
 C     CHECK LENGTHS OF RWORK AND IWORK
 60    LENIW=20+NEQ
       IWORK(LNPD)=LENPD
-      IF(LRW.LT.LENRW)GO TO 704
-      IF(LIW.LT.LENIW)GO TO 705
+      IF(LRW<LENRW)GO TO 704
+      IF(LIW<LENIW)GO TO 705
 C
 C     CHECK TO SEE THAT TOUT IS DIFFERENT FROM T
-      IF(TOUT .EQ. T)GO TO 719
+      IF(TOUT == T)GO TO 719
 C
 C     CHECK HMAX
-      IF(INFO(7).EQ.0)GO TO 70
+      IF(INFO(7)==0)GO TO 70
          HMAX=RWORK(LHMAX)
-         IF(HMAX.LE.0.0D0)GO TO 710
+         IF(HMAX<=0.0D0)GO TO 710
 70    CONTINUE
 C
 C     INITIALIZE COUNTERS
@@ -817,8 +817,8 @@ C     APPROPRIATE ACTION WAS TAKEN.
 C-----------------------------------------------------------------------
 C
 100   CONTINUE
-      IF(INFO(1).EQ.1)GO TO 110
-      IF(INFO(1).NE.-1)GO TO 701
+      IF(INFO(1)==1)GO TO 110
+      IF(INFO(1)/=-1)GO TO 701
 C     IF WE ARE HERE, THE LAST STEP WAS INTERRUPTED
 C     BY AN ERROR CONDITION FROM DDASTP,AND
 C     APPROPRIATE ACTION WAS NOT TAKEN. THIS
@@ -846,13 +846,13 @@ C     CHECK RTOL,ATOL
       RTOLI=RTOL(1)
       ATOLI=ATOL(1)
       DO 210 I=1,NEQ
-         IF(INFO(2).EQ.1)RTOLI=RTOL(I)
-         IF(INFO(2).EQ.1)ATOLI=ATOL(I)
-         IF(RTOLI.GT.0.0D0.OR.ATOLI.GT.0.0D0)NZFLG=1
-         IF(RTOLI.LT.0.0D0)GO TO 706
-         IF(ATOLI.LT.0.0D0)GO TO 707
+         IF(INFO(2)==1)RTOLI=RTOL(I)
+         IF(INFO(2)==1)ATOLI=ATOL(I)
+         IF(RTOLI>0.0D0.OR.ATOLI>0.0D0)NZFLG=1
+         IF(RTOLI<0.0D0)GO TO 706
+         IF(ATOLI<0.0D0)GO TO 707
 210      CONTINUE
-      IF(NZFLG.EQ.0)GO TO 708
+      IF(NZFLG==0)GO TO 708
 C
 C     SET UP RWORK STORAGE.IWORK STORAGE IS FIXED
 C     IN DATA STATEMENT.
@@ -862,7 +862,7 @@ C     IN DATA STATEMENT.
       LPD=LPHI+(IWORK(LMXORD)+1)*NEQ
       LWM=LPD
       NTEMP=NPD+IWORK(LNPD)
-      IF(INFO(1).EQ.1)GO TO 400
+      IF(INFO(1)==1)GO TO 400
 C
 C-----------------------------------------------------------------------
 C     THIS BLOCK IS EXECUTED ON THE INITIAL CALL
@@ -878,7 +878,7 @@ C
 C     SET ERROR WEIGHT VECTOR WT
       CALL DDAWTS(NEQ,INFO(2),RTOL,ATOL,Y,RWORK(LWT),RPAR,IPAR)
       DO 305 I = 1,NEQ
-         IF(RWORK(LWT+I-1).LE.0.0D0) GO TO 713
+         IF(RWORK(LWT+I-1)<=0.0D0) GO TO 713
 305      CONTINUE
 C
 C     COMPUTE UNIT ROUNDOFF AND HMIN
@@ -888,13 +888,13 @@ C     COMPUTE UNIT ROUNDOFF AND HMIN
 C
 C     CHECK INITIAL INTERVAL TO SEE THAT IT IS LONG ENOUGH
       TDIST = DABS(TOUT - T)
-      IF(TDIST .LT. HMIN) GO TO 714
+      IF(TDIST < HMIN) GO TO 714
 C
 C     CHECK HO, IF THIS WAS INPUT
-      IF (INFO(8) .EQ. 0) GO TO 310
+      IF (INFO(8) == 0) GO TO 310
          HO = RWORK(LH)
-         IF ((TOUT - T)*HO .LT. 0.0D0) GO TO 711
-         IF (HO .EQ. 0.0D0) GO TO 712
+         IF ((TOUT - T)*HO < 0.0D0) GO TO 711
+         IF (HO == 0.0D0) GO TO 712
          GO TO 320
 310    CONTINUE
 C
@@ -902,27 +902,27 @@ C     COMPUTE INITIAL STEPSIZE, TO BE USED BY EITHER
 C     DDASTP OR DDAINI, DEPENDING ON INFO(11)
       HO = 0.001D0*TDIST
       YPNORM = DDANRM(NEQ,YPRIME,RWORK(LWT),RPAR,IPAR)
-      IF (YPNORM .GT. 0.5D0/HO) HO = 0.5D0/YPNORM
+      IF (YPNORM > 0.5D0/HO) HO = 0.5D0/YPNORM
       HO = DSIGN(HO,TOUT-T)
 C     ADJUST HO IF NECESSARY TO MEET HMAX BOUND
-320   IF (INFO(7) .EQ. 0) GO TO 330
+320   IF (INFO(7) == 0) GO TO 330
          RH = DABS(HO)/RWORK(LHMAX)
-         IF (RH .GT. 1.0D0) HO = HO/RH
+         IF (RH > 1.0D0) HO = HO/RH
 C     COMPUTE TSTOP, IF APPLICABLE
-330   IF (INFO(4) .EQ. 0) GO TO 340
+330   IF (INFO(4) == 0) GO TO 340
          TSTOP = RWORK(LTSTOP)
-         IF ((TSTOP - T)*HO .LT. 0.0D0) GO TO 715
-         IF ((T + HO - TSTOP)*HO .GT. 0.0D0) HO = TSTOP - T
-         IF ((TSTOP - TOUT)*HO .LT. 0.0D0) GO TO 709
+         IF ((TSTOP - T)*HO < 0.0D0) GO TO 715
+         IF ((T + HO - TSTOP)*HO > 0.0D0) HO = TSTOP - T
+         IF ((TSTOP - TOUT)*HO < 0.0D0) GO TO 709
 C
 C     COMPUTE INITIAL DERIVATIVE, UPDATING TN AND Y, IF APPLICABLE
-340   IF (INFO(11) .EQ. 0) GO TO 350
+340   IF (INFO(11) == 0) GO TO 350
       CALL DDAINI(TN,Y,YPRIME,NEQ,
      *  RES,JAC,HO,RWORK(LWT),IDID,RPAR,IPAR,
      *  RWORK(LPHI),RWORK(LDELTA),RWORK(LE),
      *  RWORK(LWM),IWORK(LIWM),HMIN,RWORK(LROUND),
      *  INFO(10),NTEMP)
-      IF (IDID .LT. 0) GO TO 390
+      IF (IDID < 0) GO TO 390
 C
 C     LOAD H WITH HO.  STORE H IN RWORK(LH)
 350   H = HO
@@ -948,23 +948,23 @@ C
       DONE = .FALSE.
       TN=RWORK(LTN)
       H=RWORK(LH)
-      IF(INFO(7) .EQ. 0) GO TO 410
+      IF(INFO(7) == 0) GO TO 410
          RH = DABS(H)/RWORK(LHMAX)
-         IF(RH .GT. 1.0D0) H = H/RH
+         IF(RH > 1.0D0) H = H/RH
 410   CONTINUE
-      IF(T .EQ. TOUT) GO TO 719
-      IF((T - TOUT)*H .GT. 0.0D0) GO TO 711
-      IF(INFO(4) .EQ. 1) GO TO 430
-      IF(INFO(3) .EQ. 1) GO TO 420
-      IF((TN-TOUT)*H.LT.0.0D0)GO TO 490
+      IF(T == TOUT) GO TO 719
+      IF((T - TOUT)*H > 0.0D0) GO TO 711
+      IF(INFO(4) == 1) GO TO 430
+      IF(INFO(3) == 1) GO TO 420
+      IF((TN-TOUT)*H<0.0D0)GO TO 490
       CALL DDATRP(TN,TOUT,Y,YPRIME,NEQ,IWORK(LKOLD),
      *  RWORK(LPHI),RWORK(LPSI))
       T=TOUT
       IDID = 3
       DONE = .TRUE.
       GO TO 490
-420   IF((TN-T)*H .LE. 0.0D0) GO TO 490
-      IF((TN - TOUT)*H .GT. 0.0D0) GO TO 425
+420   IF((TN-T)*H <= 0.0D0) GO TO 490
+      IF((TN - TOUT)*H > 0.0D0) GO TO 425
       CALL DDATRP(TN,TN,Y,YPRIME,NEQ,IWORK(LKOLD),
      *  RWORK(LPHI),RWORK(LPSI))
       T = TN
@@ -978,11 +978,11 @@ C
       IDID = 3
       DONE = .TRUE.
       GO TO 490
-430   IF(INFO(3) .EQ. 1) GO TO 440
+430   IF(INFO(3) == 1) GO TO 440
       TSTOP=RWORK(LTSTOP)
-      IF((TN-TSTOP)*H.GT.0.0D0) GO TO 715
-      IF((TSTOP-TOUT)*H.LT.0.0D0)GO TO 709
-      IF((TN-TOUT)*H.LT.0.0D0)GO TO 450
+      IF((TN-TSTOP)*H>0.0D0) GO TO 715
+      IF((TSTOP-TOUT)*H<0.0D0)GO TO 709
+      IF((TN-TOUT)*H<0.0D0)GO TO 450
       CALL DDATRP(TN,TOUT,Y,YPRIME,NEQ,IWORK(LKOLD),
      *   RWORK(LPHI),RWORK(LPSI))
       T=TOUT
@@ -990,10 +990,10 @@ C
       DONE = .TRUE.
       GO TO 490
 440   TSTOP = RWORK(LTSTOP)
-      IF((TN-TSTOP)*H .GT. 0.0D0) GO TO 715
-      IF((TSTOP-TOUT)*H .LT. 0.0D0) GO TO 709
-      IF((TN-T)*H .LE. 0.0D0) GO TO 450
-      IF((TN - TOUT)*H .GT. 0.0D0) GO TO 445
+      IF((TN-TSTOP)*H > 0.0D0) GO TO 715
+      IF((TSTOP-TOUT)*H < 0.0D0) GO TO 709
+      IF((TN-T)*H <= 0.0D0) GO TO 450
+      IF((TN - TOUT)*H > 0.0D0) GO TO 445
       CALL DDATRP(TN,TN,Y,YPRIME,NEQ,IWORK(LKOLD),
      *  RWORK(LPHI),RWORK(LPSI))
       T = TN
@@ -1009,14 +1009,14 @@ C
       GO TO 490
 450   CONTINUE
 C     CHECK WHETHER WE ARE WITH IN ROUNDOFF OF TSTOP
-      IF(DABS(TN-TSTOP).GT.100.0D0*UROUND*
+      IF(DABS(TN-TSTOP)>100.0D0*UROUND*
      *   (DABS(TN)+DABS(H)))GO TO 460
       IDID=2
       T=TSTOP
       DONE = .TRUE.
       GO TO 490
 460   TNEXT=TN+H*(1.0D0+4.0D0*UROUND)
-      IF((TNEXT-TSTOP)*H.LE.0.0D0)GO TO 490
+      IF((TNEXT-TSTOP)*H<=0.0D0)GO TO 490
       H=(TSTOP-TN)*(1.0D0-4.0D0*UROUND)
       RWORK(LH)=H
 C
@@ -1034,10 +1034,10 @@ C-------------------------------------------------------
 C
 500   CONTINUE
 C     CHECK FOR FAILURE TO COMPUTE INITIAL YPRIME
-      IF (IDID .EQ. -12) GO TO 527
+      IF (IDID == -12) GO TO 527
 C
 C     CHECK FOR TOO MANY STEPS
-      IF((IWORK(LNST)-IWORK(LNSTL)).LT.500)
+      IF((IWORK(LNST)-IWORK(LNSTL))<500)
      *   GO TO 510
            IDID=-1
            GO TO 527
@@ -1046,7 +1046,7 @@ C     UPDATE WT
 510   CALL DDAWTS(NEQ,INFO(2),RTOL,ATOL,RWORK(LPHI),
      *  RWORK(LWT),RPAR,IPAR)
       DO 520 I=1,NEQ
-         IF(RWORK(I+LWT-1).GT.0.0D0)GO TO 520
+         IF(RWORK(I+LWT-1)>0.0D0)GO TO 520
            IDID=-3
            GO TO 527
 520   CONTINUE
@@ -1054,9 +1054,9 @@ C
 C     TEST FOR TOO MUCH ACCURACY REQUESTED.
       R=DDANRM(NEQ,RWORK(LPHI),RWORK(LWT),RPAR,IPAR)*
      *   100.0D0*UROUND
-      IF(R.LE.1.0D0)GO TO 525
+      IF(R<=1.0D0)GO TO 525
 C     MULTIPLY RTOL AND ATOL BY R AND RETURN
-      IF(INFO(2).EQ.1)GO TO 523
+      IF(INFO(2)==1)GO TO 523
            RTOL(1)=R*RTOL(1)
            ATOL(1)=R*ATOL(1)
            IDID=-2
@@ -1081,22 +1081,22 @@ C
      *   RWORK(LS),HMIN,RWORK(LROUND),
      *   IWORK(LPHASE),IWORK(LJCALC),IWORK(LK),
      *   IWORK(LKOLD),IWORK(LNS),INFO(10),NTEMP)
-527   IF(IDID.LT.0)GO TO 600
+527   IF(IDID<0)GO TO 600
 C
 C--------------------------------------------------------
 C     THIS BLOCK HANDLES THE CASE OF A SUCCESSFUL RETURN
 C     FROM DDASTP (IDID=1).  TEST FOR STOP CONDITIONS.
 C--------------------------------------------------------
 C
-      IF(INFO(4).NE.0)GO TO 540
-           IF(INFO(3).NE.0)GO TO 530
-             IF((TN-TOUT)*H.LT.0.0D0)GO TO 500
+      IF(INFO(4)/=0)GO TO 540
+           IF(INFO(3)/=0)GO TO 530
+             IF((TN-TOUT)*H<0.0D0)GO TO 500
              CALL DDATRP(TN,TOUT,Y,YPRIME,NEQ,
      *         IWORK(LKOLD),RWORK(LPHI),RWORK(LPSI))
              IDID=3
              T=TOUT
              GO TO 580
-530          IF((TN-TOUT)*H.GE.0.0D0)GO TO 535
+530          IF((TN-TOUT)*H>=0.0D0)GO TO 535
              T=TN
              IDID=1
              GO TO 580
@@ -1105,24 +1105,24 @@ C
              IDID=3
              T=TOUT
              GO TO 580
-540   IF(INFO(3).NE.0)GO TO 550
-      IF((TN-TOUT)*H.LT.0.0D0)GO TO 542
+540   IF(INFO(3)/=0)GO TO 550
+      IF((TN-TOUT)*H<0.0D0)GO TO 542
          CALL DDATRP(TN,TOUT,Y,YPRIME,NEQ,
      *     IWORK(LKOLD),RWORK(LPHI),RWORK(LPSI))
          T=TOUT
          IDID=3
          GO TO 580
-542   IF(DABS(TN-TSTOP).LE.100.0D0*UROUND*
+542   IF(DABS(TN-TSTOP)<=100.0D0*UROUND*
      *   (DABS(TN)+DABS(H)))GO TO 545
       TNEXT=TN+H*(1.0D0+4.0D0*UROUND)
-      IF((TNEXT-TSTOP)*H.LE.0.0D0)GO TO 500
+      IF((TNEXT-TSTOP)*H<=0.0D0)GO TO 500
       H=(TSTOP-TN)*(1.0D0-4.0D0*UROUND)
       GO TO 500
 545   IDID=2
       T=TSTOP
       GO TO 580
-550   IF((TN-TOUT)*H.GE.0.0D0)GO TO 555
-      IF(DABS(TN-TSTOP).LE.100.0D0*UROUND*(DABS(TN)+DABS(H)))GO TO 552
+550   IF((TN-TOUT)*H>=0.0D0)GO TO 555
+      IF(DABS(TN-TSTOP)<=100.0D0*UROUND*(DABS(TN)+DABS(H)))GO TO 552
       T=TN
       IDID=1
       GO TO 580
@@ -1168,7 +1168,7 @@ C     TOO MUCH ACCURACY FOR MACHINE PRECISION
       GO TO 690
 
 630   mesg = 'AT T (=R1) SOME ELEMENT OF WT'
-     . // ' HAS BECOME .LE. 0.0'
+     . // ' HAS BECOME <= 0.0'
       CALL XERRmod(mesg,38,630,1,TN,0.0D0)
       GO TO 690
 
@@ -1234,7 +1234,7 @@ C-------------------------------------------------------------------------
 701   MSG = 'DASSL--  SOME ELEMENT OF INFO VECTOR IS NOT ZERO OR ONE'
       CALL XERRWV(MSG,55,1,0,0,0,0,0,0.0D0,0.0D0)
       GO TO 750
-702   MSG = 'DASSL--  NEQ (=I1) .LE. 0'
+702   MSG = 'DASSL--  NEQ (=I1) <= 0'
       CALL XERRWV(MSG,25,2,0,1,NEQ,0,0,0.0D0,0.0D0)
       GO TO 750
 703   MSG = 'DASSL--  MAXORD (=I1) NOT IN RANGE'
@@ -1246,10 +1246,10 @@ C-------------------------------------------------------------------------
 705   MSG='DASSL--  IWORK LENGTH NEEDED, LENIW (=I1), EXCEEDS LIW (=I2)'
       CALL XERRWV(MSG,60,5,0,2,LENIW,LIW,0,0.0D0,0.0D0)
       GO TO 750
-706   MSG = 'DASSL--  SOME ELEMENT OF RTOL IS .LT. 0'
+706   MSG = 'DASSL--  SOME ELEMENT OF RTOL IS < 0'
       CALL XERRWV(MSG,39,6,0,0,0,0,0,0.0D0,0.0D0)
       GO TO 750
-707   MSG = 'DASSL--  SOME ELEMENT OF ATOL IS .LT. 0'
+707   MSG = 'DASSL--  SOME ELEMENT OF ATOL IS < 0'
       CALL XERRWV(MSG,39,7,0,0,0,0,0,0.0D0,0.0D0)
       GO TO 750
 708   MSG = 'DASSL--  ALL ELEMENTS OF RTOL AND ATOL ARE ZERO'
@@ -1258,7 +1258,7 @@ C-------------------------------------------------------------------------
 709   MSG='DASSL--  INFO(4) = 1 AND TSTOP (=R1) BEHIND TOUT (=R2)'
       CALL XERRWV(MSG,54,9,0,0,0,0,2,TSTOP,TOUT)
       GO TO 750
-710   MSG = 'DASSL--  HMAX (=R1) .LT. 0.0'
+710   MSG = 'DASSL--  HMAX (=R1) < 0.0'
       CALL XERRWV(MSG,28,10,0,0,0,0,1,HMAX,0.0D0)
       GO TO 750
 711   MSG = 'DASSL--  TOUT (=R1) BEHIND T (=R2)'
@@ -1267,7 +1267,7 @@ C-------------------------------------------------------------------------
 712   MSG = 'DASSL--  INFO(8)=1 AND H0=0.0'
       CALL XERRWV(MSG,29,12,0,0,0,0,0,0.0D0,0.0D0)
       GO TO 750
-713   MSG = 'DASSL--  SOME ELEMENT OF WT IS .LE. 0.0'
+713   MSG = 'DASSL--  SOME ELEMENT OF WT IS <= 0.0'
       CALL XERRWV(MSG,39,13,0,0,0,0,0,0.0D0,0.0D0)
       GO TO 750
 714   MSG='DASSL-- TOUT (=R1) TOO CLOSE TO T (=R2) TO START INTEGRATION'
@@ -1276,16 +1276,16 @@ C-------------------------------------------------------------------------
 715   MSG = 'DASSL--  INFO(4)=1 AND TSTOP (=R1) BEHIND T (=R2)'
       CALL XERRWV(MSG,49,15,0,0,0,0,2,TSTOP,T)
       GO TO 750
-717   MSG = 'DASSL--  ML (=I1) ILLEGAL. EITHER .LT. 0 OR .GT. NEQ'
+717   MSG = 'DASSL--  ML (=I1) ILLEGAL. EITHER < 0 OR > NEQ'
       CALL XERRWV(MSG,52,17,0,1,IWORK(LML),0,0,0.0D0,0.0D0)
       GO TO 750
-718   MSG = 'DASSL--  MU (=I1) ILLEGAL. EITHER .LT. 0 OR .GT. NEQ'
+718   MSG = 'DASSL--  MU (=I1) ILLEGAL. EITHER < 0 OR > NEQ'
       CALL XERRWV(MSG,52,18,0,1,IWORK(LMU),0,0,0.0D0,0.0D0)
       GO TO 750
 719   MSG = 'DASSL--  TOUT (=R1) IS EQUAL TO T (=R2)'
       CALL XERRWV(MSG,39,19,0,0,0,0,2,TOUT,T)
       GO TO 750
-750   IF(INFO(1).EQ.-1) GO TO 760
+750   IF(INFO(1)==-1) GO TO 760
       INFO(1)=-1
       IDID=-33
       RETURN
@@ -1313,7 +1313,7 @@ C     RTOL AND ATOL ARE SCALARS IF IWT = 0,
 C     AND VECTORS IF IWT = 1.
 C-----------------------------------------------------------------------
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       DIMENSION RTOL(*),ATOL(*),Y(*),WT(*)
       DIMENSION RPAR(*),IPAR(*)
 C
@@ -1324,7 +1324,7 @@ C
       RTOLI=RTOL(1)
       ATOLI=ATOL(1)
       DO 20 I=1,NEQ
-         IF (IWT .EQ.0) GO TO 10
+         IF (IWT ==0) GO TO 10
            RTOLI=RTOL(I)
            ATOLI=ATOL(I)
 10         WT(I)=RTOLI*DABS(Y(I))+ATOLI
@@ -1332,7 +1332,7 @@ C
       RETURN
 C-----------END OF SUBROUTINE DDAWTS------------------------------------
       END
-      DOUBLE PRECISION FUNCTION DDANRM(NEQ,V,WT,RPAR,IPAR)
+      real*8 FUNCTION DDANRM(NEQ,V,WT,RPAR,IPAR)
 C
 C***BEGIN PROLOGUE  DDANRM
 C***REFER TO  DDASSL
@@ -1348,19 +1348,19 @@ C     CONTAINED IN THE ARRAY WT OF LENGTH NEQ.
 C        DDANRM=SQRT((1/NEQ)*SUM(V(I)/WT(I))**2)
 C-----------------------------------------------------------------------
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       DIMENSION V(NEQ),WT(NEQ)
       DIMENSION RPAR(*),IPAR(*)
       DDANRM = 0.0D0
       VMAX = 0.0D0
       IPAR(3) = 1
       DO 10 I = 1,NEQ
-        IF(DABS(V(I)/WT(I)) .GT. VMAX) THEN
+        IF(DABS(V(I)/WT(I)) > VMAX) THEN
            VMAX = DABS(V(I)/WT(I))
            IPAR(3) = I
         ENDIF
 10      CONTINUE
-      IF(VMAX .LE. 0.0D0) GO TO 30
+      IF(VMAX <= 0.0D0) GO TO 30
       SUM = 0.0D0
       DO 20 I = 1,NEQ
 20      SUM = SUM + ((V(I)/WT(I))/VMAX)**2
@@ -1418,7 +1418,7 @@ C
 C-----------------------------------------------------------------
 C
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       LOGICAL CONVGD
       DIMENSION Y(*),YPRIME(*),WT(*)
       DIMENSION PHI(NEQ,*),DELTA(*),E(*)
@@ -1486,11 +1486,11 @@ C
       CALL RES(X,Y,YPRIME,DELTA,IRES,RPAR,IPAR)
       CALL SETDERV(0)
 
-      IF (IRES.LT.0) GO TO 430
+      IF (IRES<0) GO TO 430
 C
 C
 C     EVALUATE THE ITERATION MATRIX
-      IF (JCALC.NE.-1) GO TO 310
+      IF (JCALC/=-1) GO TO 310
       IWM(LNJE)=IWM(LNJE)+1
       JCALC=0
       CALL DDAJAC(NEQ,X,Y,YPRIME,DELTA,CJ,H,
@@ -1498,8 +1498,8 @@ C     EVALUATE THE ITERATION MATRIX
      *   UROUND,JAC,RPAR,IPAR,NTEMP)
 C
       S=1000000.D0
-      IF (IRES.LT.0) GO TO 430
-      IF (IER.NE.0) GO TO 430
+      IF (IRES<0) GO TO 430
+      IF (IER/=0) GO TO 430
       NSF=0
 C
 C
@@ -1522,18 +1522,18 @@ C
 C     TEST FOR CONVERGENCE OF THE ITERATION.
 C
       DELNRM=DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
-      IF (DELNRM.LE.100.D0*UROUND*YNORM)
+      IF (DELNRM<=100.D0*UROUND*YNORM)
      *   GO TO 400
 C
-      IF (M.GT.0) GO TO 340
+      IF (M>0) GO TO 340
          OLDNRM=DELNRM
          GO TO 350
 C
 340   RATE=(DELNRM/OLDNRM)**(1.0D0/DFLOAT(M))
-      IF (RATE.GT.0.90D0) GO TO 430
+      IF (RATE>0.90D0) GO TO 430
       S=RATE/(1.0D0-RATE)
 C
-350   IF (S*DELNRM .LE. 0.33D0) GO TO 400
+350   IF (S*DELNRM <= 0.33D0) GO TO 400
 C
 C
 C     THE CORRECTOR HAS NOT YET CONVERGED. UPDATE
@@ -1543,20 +1543,20 @@ C     EVERY MJAC ITERATIONS, GET A NEW
 C     ITERATION MATRIX.
 C
       M=M+1
-      IF (M.GE.MAXIT) GO TO 430
+      IF (M>=MAXIT) GO TO 430
 C
-      IF ((M/MJAC)*MJAC.EQ.M) JCALC=-1
+      IF ((M/MJAC)*MJAC==M) JCALC=-1
       GO TO 300
 C
 C
 C     THE ITERATION HAS CONVERGED.
 C     CHECK NONNEGATIVITY CONSTRAINTS
-400   IF (NONNEG.EQ.0) GO TO 450
+400   IF (NONNEG==0) GO TO 450
       DO 410 I=1,NEQ
 410      DELTA(I)=DMIN1(Y(I),0.0D0)
 C
       DELNRM=DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
-      IF (DELNRM.GT.0.33D0) GO TO 430
+      IF (DELNRM>0.33D0) GO TO 430
 C
       DO 420 I=1,NEQ
          Y(I)=Y(I)-DELTA(I)
@@ -1580,7 +1580,7 @@ C
 510      E(I)=Y(I)-PHI(I,1)
       ERR=DDANRM(NEQ,E,WT,RPAR,IPAR)
 C
-      IF (ERR.LE.1.0D0) RETURN
+      IF (ERR<=1.0D0) RETURN
 C
 C
 C
@@ -1599,18 +1599,18 @@ C
 610      YPRIME(I)=PHI(I,2)
 C
       IF (CONVGD) GO TO 640
-      IF (IER.EQ.0) GO TO 620
+      IF (IER==0) GO TO 620
          NSF=NSF+1
          H=H*0.25D0
-         IF (NSF.LT.3.AND.DABS(H).GE.HMIN) GO TO 690
+         IF (NSF<3.AND.DABS(H)>=HMIN) GO TO 690
          IDID=-12
          RETURN
-620   IF (IRES.GT.-2) GO TO 630
+620   IF (IRES>-2) GO TO 630
          IDID=-12
          RETURN
 630   NCF=NCF+1
       H=H*0.25D0
-      IF (NCF.LT.10.AND.DABS(H).GE.HMIN) GO TO 690
+      IF (NCF<10.AND.DABS(H)>=HMIN) GO TO 690
          IDID=-12
          RETURN
 C
@@ -1618,7 +1618,7 @@ C
       R=0.90D0/(2.0D0*ERR+0.0001D0)
       R=DMAX1(0.1D0,DMIN1(0.5D0,R))
       H=H*R
-      IF (DABS(H).GE.HMIN.AND.NEF.LT.10) GO TO 690
+      IF (DABS(H)>=HMIN.AND.NEF<10) GO TO 690
          IDID=-12
          RETURN
 690      GO TO 200
@@ -1655,7 +1655,7 @@ C     PHI   ARRAY OF SCALED DIVIDED DIFFERENCES OF Y
 C     PSI   ARRAY OF PAST STEPSIZE HISTORY
 C-----------------------------------------------------------------------
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       DIMENSION YOUT(*),YPOUT(*)
       DIMENSION PHI(NEQ,*),PSI(*)
 C
@@ -1774,7 +1774,7 @@ C-----------------------------------------------------------------------
 C
 C
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       LOGICAL CONVGD
       DIMENSION Y(*),YPRIME(*),WT(*)
       DIMENSION PHI(NEQ,*),DELTA(*),E(*)
@@ -1815,7 +1815,7 @@ C     INITIALIZATIONS FOR ALL CALLS
       NCF=0
       NSF=0
       NEF=0
-      IF(JSTART .NE. 0) GO TO 120
+      IF(JSTART /= 0) GO TO 120
 C
 C     IF THIS IS THE FIRST STEP,PERFORM
 C     OTHER INITIALIZATIONS
@@ -1849,10 +1849,10 @@ C-----------------------------------------------------------------------
       KP2=K+2
       KM1=K-1
       XOLD=X
-      IF(H.NE.HOLD.OR.K .NE. KOLD) NS = 0
+      IF(H/=HOLD.OR.K /= KOLD) NS = 0
       NS=MIN0(NS+1,KOLD+2)
       NSP1=NS+1
-      IF(KP1 .LT. NS)GO TO 230
+      IF(KP1 < NS)GO TO 230
 C
       BETA(1)=1.0D0
       ALPHA(1)=1.0D0
@@ -1890,11 +1890,11 @@ C
 C     DECIDE WHETHER NEW JACOBIAN IS NEEDED
       TEMP1 = (1.0D0 - XRATE)/(1.0D0 + XRATE)
       TEMP2 = 1.0D0/TEMP1
-      IF (CJ/CJOLD .LT. TEMP1 .OR. CJ/CJOLD .GT. TEMP2) JCALC = -1
-      IF (CJ .NE. CJLAST) S = 100.D0
+      IF (CJ/CJOLD < TEMP1 .OR. CJ/CJOLD > TEMP2) JCALC = -1
+      IF (CJ /= CJLAST) S = 100.D0
 C
 C     CHANGE PHI TO PHI STAR
-      IF(KP1 .LT. NSP1) GO TO 280
+      IF(KP1 < NSP1) GO TO 280
       DO 270 J=NSP1,KP1
          DO 260 I=1,NEQ
 260         PHI(I,J)=BETA(J)*PHI(I,J)
@@ -1942,7 +1942,7 @@ C
 C
       CALL RES(X,Y,YPRIME,DELTA,IRES,RPAR,IPAR)
       CALL SETDERV(0)
-      IF (IRES .LT. 0) GO TO 380
+      IF (IRES < 0) GO TO 380
 C
 C
 C     IF INDICATED,REEVALUATE THE
@@ -1950,7 +1950,7 @@ C     ITERATION MATRIX PD = DG/DY + CJ*DG/DYPRIME
 C     (WHERE G(X,Y,YPRIME)=0). SET
 C     JCALC TO 0 AS AN INDICATOR THAT
 C     THIS HAS BEEN DONE.
-      IF(JCALC .NE. -1)GO TO 340
+      IF(JCALC /= -1)GO TO 340
       IWM(LNJE)=IWM(LNJE)+1
       JCALC=0
       CALL DDAJAC(NEQ,X,Y,YPRIME,DELTA,CJ,H,
@@ -1958,8 +1958,8 @@ C     THIS HAS BEEN DONE.
      * IPAR,NTEMP)
       CJOLD=CJ
       S = 100.D0
-      IF (IRES .LT. 0) GO TO 380
-      IF(IER .NE. 0)GO TO 380
+      IF (IRES < 0) GO TO 380
+      IF(IER /= 0)GO TO 380
       NSF=0
 C
 C
@@ -1989,21 +1989,21 @@ C     UPDATE Y,E,AND YPRIME
 C
 C     TEST FOR CONVERGENCE OF THE ITERATION
       DELNRM=DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
-      IF (DELNRM .LE. 100.D0*UROUND*PNORM) GO TO 375
-      IF (M .GT. 0) GO TO 365
+      IF (DELNRM <= 100.D0*UROUND*PNORM) GO TO 375
+      IF (M > 0) GO TO 365
          OLDNRM = DELNRM
          GO TO 367
 365   RATE = (DELNRM/OLDNRM)**(1.0D0/DFLOAT(M))
-      IF (RATE .GT. 0.90D0) GO TO 370
+      IF (RATE > 0.90D0) GO TO 370
       S = RATE/(1.0D0 - RATE)
-367   IF (S*DELNRM .LE. 0.33D0) GO TO 375
+367   IF (S*DELNRM <= 0.33D0) GO TO 375
 C
 C     THE CORRECTOR HAS NOT YET CONVERGED.
 C     UPDATE M AND TEST WHETHER THE
 C     MAXIMUM NUMBER OF ITERATIONS HAVE
 C     BEEN TRIED.
       M=M+1
-      IF(M.GE.MAXIT)GO TO 370
+      IF(M>=MAXIT)GO TO 370
 C
 C     EVALUATE THE RESIDUAL
 C     AND GO BACK TO DO ANOTHER ITERATION
@@ -2011,7 +2011,7 @@ C     AND GO BACK TO DO ANOTHER ITERATION
       IRES = 0
       CALL RES(X,Y,YPRIME,DELTA,IRES,
      *  RPAR,IPAR)
-      IF (IRES .LT. 0) GO TO 380
+      IF (IRES < 0) GO TO 380
       GO TO 350
 C
 C
@@ -2020,7 +2020,7 @@ C     ITERATIONS. IF THE ITERATION MATRIX
 C     IS NOT CURRENT,RE-DO THE STEP WITH
 C     A NEW ITERATION MATRIX.
 370   CONTINUE
-      IF(JCALC.EQ.0)GO TO 380
+      IF(JCALC==0)GO TO 380
       JCALC=-1
       GO TO 300
 C
@@ -2029,11 +2029,11 @@ C     THE ITERATION HAS CONVERGED.  IF NONNEGATIVITY OF SOLUTION IS
 C     REQUIRED, SET THE SOLUTION NONNEGATIVE, IF THE PERTURBATION
 C     TO DO IT IS SMALL ENOUGH.  IF THE CHANGE IS TOO LARGE, THEN
 C     CONSIDER THE CORRECTOR ITERATION TO HAVE FAILED.
-375   IF(NONNEG .EQ. 0) GO TO 390
+375   IF(NONNEG == 0) GO TO 390
       DO 377 I = 1,NEQ
 377      DELTA(I) = DMIN1(Y(I),0.0D0)
       DELNRM = DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
-      IF(DELNRM .GT. 0.33D0) GO TO 380
+      IF(DELNRM > 0.33D0) GO TO 380
       DO 378 I = 1,NEQ
 378      E(I) = E(I) - DELTA(I)
       GO TO 390
@@ -2064,20 +2064,20 @@ C     ESTIMATE ERRORS AT ORDERS K,K-1,K-2
       TERK = FLOAT(K+1)*ERK
       EST = ERK
       KNEW=K
-      IF(K .EQ. 1)GO TO 430
+      IF(K == 1)GO TO 430
       DO 405 I = 1,NEQ
 405     DELTA(I) = PHI(I,KP1) + E(I)
       ERKM1=SIGMA(K)*DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
       TERKM1 = FLOAT(K)*ERKM1
-      IF(K .GT. 2)GO TO 410
-      IF(TERKM1 .LE. 0.5D0*TERK)GO TO 420
+      IF(K > 2)GO TO 410
+      IF(TERKM1 <= 0.5D0*TERK)GO TO 420
       GO TO 430
 410   CONTINUE
       DO 415 I = 1,NEQ
 415     DELTA(I) = PHI(I,K) + DELTA(I)
       ERKM2=SIGMA(K-1)*DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
       TERKM2 = FLOAT(K-1)*ERKM2
-      IF(DMAX1(TERKM1,TERKM2).GT.TERK)GO TO 430
+      IF(DMAX1(TERKM1,TERKM2)>TERK)GO TO 430
 C     LOWER THE ORDER
 420   CONTINUE
       KNEW=K-1
@@ -2088,7 +2088,7 @@ C     CALCULATE THE LOCAL ERROR FOR THE CURRENT STEP
 C     TO SEE IF THE STEP WAS SUCCESSFUL
 430   CONTINUE
       ERR = CK * ENORM
-      IF(ERR .GT. 1.0D0)GO TO 600
+      IF(ERR > 1.0D0)GO TO 600
 C
 C
 C
@@ -2113,20 +2113,20 @@ C        ALREADY DECIDED TO LOWER ORDER, OR
 C        ALREADY USING MAXIMUM ORDER, OR
 C        STEPSIZE NOT CONSTANT, OR
 C        ORDER RAISED IN PREVIOUS STEP
-      IF(KNEW.EQ.KM1.OR.K.EQ.IWM(LMXORD))IPHASE=1
-      IF(IPHASE .EQ. 0)GO TO 545
-      IF(KNEW.EQ.KM1)GO TO 540
-      IF(K.EQ.IWM(LMXORD)) GO TO 550
-      IF(KP1.GE.NS.OR.KDIFF.EQ.1)GO TO 550
+      IF(KNEW==KM1.OR.K==IWM(LMXORD))IPHASE=1
+      IF(IPHASE == 0)GO TO 545
+      IF(KNEW==KM1)GO TO 540
+      IF(K==IWM(LMXORD)) GO TO 550
+      IF(KP1>=NS.OR.KDIFF==1)GO TO 550
       DO 510 I=1,NEQ
 510      DELTA(I)=E(I)-PHI(I,KP2)
       ERKP1 = (1.0D0/DFLOAT(K+2))*DDANRM(NEQ,DELTA,WT,RPAR,IPAR)
       TERKP1 = FLOAT(K+2)*ERKP1
-      IF(K.GT.1)GO TO 520
-      IF(TERKP1.GE.0.5D0*TERK)GO TO 550
+      IF(K>1)GO TO 520
+      IF(TERKP1>=0.5D0*TERK)GO TO 550
       GO TO 530
-520   IF(TERKM1.LE.DMIN1(TERK,TERKP1))GO TO 540
-      IF(TERKP1.GE.TERK.OR.K.EQ.IWM(LMXORD))GO TO 550
+520   IF(TERKM1<=DMIN1(TERK,TERKP1))GO TO 540
+      IF(TERKP1>=TERK.OR.K==IWM(LMXORD))GO TO 550
 C
 C     RAISE ORDER
 530   K=KP1
@@ -2151,10 +2151,10 @@ C     THE NEXT STEP.
 550   HNEW=H
       TEMP2=K+1
       R=(2.0D0*EST+0.0001D0)**(-1.0D0/TEMP2)
-      IF(R .LT. 2.0D0) GO TO 555
+      IF(R < 2.0D0) GO TO 555
       HNEW = 2.0D0*H
       GO TO 560
-555   IF(R .GT. 1.0D0) GO TO 560
+555   IF(R > 1.0D0) GO TO 560
       R = DMAX1(0.5D0,DMIN1(0.9D0,R))
       HNEW = H*R
 560   H=HNEW
@@ -2162,7 +2162,7 @@ C
 C
 C     UPDATE DIFFERENCES FOR NEXT STEP
 575   CONTINUE
-      IF(KOLD.EQ.IWM(LMXORD))GO TO 585
+      IF(KOLD==IWM(LMXORD))GO TO 585
       DO 580 I=1,NEQ
 580      PHI(I,KP2)=E(I)
 585   CONTINUE
@@ -2190,7 +2190,7 @@ C-----------------------------------------------------------------------
 C
 C     RESTORE X,PHI,PSI
       X=XOLD
-      IF(KP1.LT.NSP1)GO TO 630
+      IF(KP1<NSP1)GO TO 630
       DO 620 J=NSP1,KP1
          TEMP1=1.0D0/BETA(J)
          DO 610 I=1,NEQ
@@ -2210,7 +2210,7 @@ C
 C     THE NEWTON ITERATION FAILED TO CONVERGE WITH
 C     A CURRENT ITERATION MATRIX.  DETERMINE THE CAUSE
 C     OF THE FAILURE AND TAKE APPROPRIATE ACTION.
-      IF(IER.EQ.0)GO TO 650
+      IF(IER==0)GO TO 650
 C
 C     THE ITERATION MATRIX IS SINGULAR. REDUCE
 C     THE STEPSIZE BY A FACTOR OF 4. IF
@@ -2219,7 +2219,7 @@ C     THE SAME STEP, RETURN WITH AN ERROR FLAG
       NSF=NSF+1
       R = 0.25D0
       H=H*R
-      IF (NSF .LT. 3 .AND. DABS(H) .GE. HMIN) GO TO 690
+      IF (NSF < 3 .AND. DABS(H) >= HMIN) GO TO 690
       IDID=-8
       GO TO 675
 C
@@ -2229,16 +2229,16 @@ C     OTHER THAN A SINGULAR ITERATION MATRIX.  IF IRES = -2, THEN
 C     RETURN.  OTHERWISE, REDUCE THE STEPSIZE AND TRY AGAIN, UNLESS
 C     TOO MANY FAILURES HAVE OCCURED.
 650   CONTINUE
-      IF (IRES .GT. -2) GO TO 655
+      IF (IRES > -2) GO TO 655
       IDID = -11
       GO TO 675
 655   NCF = NCF + 1
       R = 0.25D0
       H = H*R
-      IF (NCF .LT. 10 .AND. DABS(H) .GE. HMIN) GO TO 690
+      IF (NCF < 10 .AND. DABS(H) >= HMIN) GO TO 690
       IDID = -7
-      IF (IRES .LT. 0) IDID = -10
-      IF (NEF .GE. 3) IDID = -9
+      IF (IRES < 0) IDID = -10
+      IF (NEF >= 3) IDID = -9
       GO TO 675
 C
 C
@@ -2247,7 +2247,7 @@ C     OF THE FAILURE WAS THE ERROR ESTIMATE
 C     EXCEEDING THE TOLERANCE.
 660   NEF=NEF+1
       IWM(LETF)=IWM(LETF)+1
-      IF (NEF .GT. 1) GO TO 665
+      IF (NEF > 1) GO TO 665
 C
 C     ON FIRST ERROR TEST FAILURE, KEEP CURRENT ORDER OR LOWER
 C     ORDER BY ONE.  COMPUTE NEW STEPSIZE BASED ON DIFFERENCES
@@ -2257,17 +2257,17 @@ C     OF THE SOLUTION.
       R = 0.90D0*(2.0D0*EST+0.0001D0)**(-1.0D0/TEMP2)
       R = DMAX1(0.25D0,DMIN1(0.9D0,R))
       H = H*R
-      IF (DABS(H) .GE. HMIN) GO TO 690
+      IF (DABS(H) >= HMIN) GO TO 690
       IDID = -6
       GO TO 675
 C
 C     ON SECOND ERROR TEST FAILURE, USE THE CURRENT ORDER OR
 C     DECREASE ORDER BY ONE.  REDUCE THE STEPSIZE BY A FACTOR OF
 C     ONE QUARTER.
-665   IF (NEF .GT. 2) GO TO 670
+665   IF (NEF > 2) GO TO 670
       K = KNEW
       H = 0.25D0*H
-      IF (DABS(H) .GE. HMIN) GO TO 690
+      IF (DABS(H) >= HMIN) GO TO 690
       IDID = -6
       GO TO 675
 C
@@ -2275,7 +2275,7 @@ C     ON THIRD AND SUBSEQUENT ERROR TEST FAILURES, SET THE ORDER TO
 C     ONE AND REDUCE THE STEPSIZE BY A FACTOR OF ONE QUARTER
 670   K = 1
       H = 0.25D0*H
-      IF (DABS(H) .GE. HMIN) GO TO 690
+      IF (DABS(H) >= HMIN) GO TO 690
       IDID = -6
       GO TO 675
 C
@@ -2318,7 +2318,7 @@ C     DELTA    = RESIDUAL EVALUATED AT (X,Y,YPRIME)
 C                (USED ONLY IF IWM(MTYPE)=2 OR 5)
 C     CJ       = SCALAR PARAMETER DEFINING ITERATION MATRIX
 C     H        = CURRENT STEPSIZE IN INTEGRATION
-C     IER      = VARIABLE WHICH IS .NE. 0
+C     IER      = VARIABLE WHICH IS /= 0
 C                IF ITERATION MATRIX IS SINGULAR,
 C                AND 0 OTHERWISE.
 C     WT       = VECTOR OF WEIGHTS FOR COMPUTING NORMS
@@ -2333,14 +2333,14 @@ C                TO EVALUATE THE RESIDUAL FUNCTION G(X,Y,YPRIME)
 C     IRES     = FLAG WHICH IS EQUAL TO ZERO IF NO ILLEGAL VALUES
 C                IN RES, AND LESS THAN ZERO OTHERWISE.  (IF IRES
 C                IS LESS THAN ZERO, THE MATRIX WAS NOT COMPLETED)
-C                IN THIS CASE (IF IRES .LT. 0), THEN IER = 0.
+C                IN THIS CASE (IF IRES < 0), THEN IER = 0.
 C     UROUND   = THE UNIT ROUNDOFF ERROR OF THE MACHINE BEING USED.
 C     JAC      = NAME OF THE EXTERNAL USER-SUPPLIED ROUTINE
 C                TO EVALUATE THE ITERATION MATRIX (THIS ROUTINE
 C                IS ONLY USED IF IWM(MTYPE) IS 1 OR 4)
 C-----------------------------------------------------------------------
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       EXTERNAL RES,JAC
       DIMENSION Y(*),YPRIME(*),DELTA(*),WT(*),E(*)
       DIMENSION WM(*),IWM(*),RPAR(*),IPAR(*)
@@ -2388,7 +2388,7 @@ C     DENSE FINITE-DIFFERENCE-GENERATED MATRIX
          YPRIME(I)=YPRIME(I)+CJ*DEL
          CALL SETDERV(I)
          CALL RES(X,Y,YPRIME,E,IRES,RPAR,IPAR)
-         IF (IRES .LT. 0) RETURN
+         IF (IRES < 0) RETURN
          DELINV=1.0D0/DEL
          DO 220 L=1,NEQ
 220      WM(NROW+L)=(E(L)-DELTA(L))*DELINV
@@ -2446,7 +2446,7 @@ C     BANDED FINITE-DIFFERENCE-GENERATED MATRIX
           Y(N)=Y(N)+DEL
 510       YPRIME(N)=YPRIME(N)+CJ*DEL
       CALL RES(X,Y,YPRIME,E,IRES,RPAR,IPAR)
-      IF (IRES .LT. 0) RETURN
+      IF (IRES < 0) RETURN
       DO 530 N=J,NEQ,MBAND
           K= (N-J)/MBAND + 1
           Y(N)=WM(ISAVE+K)
@@ -2499,7 +2499,7 @@ C     FOR A BANDED MATRIX,THE LINPACK ROUTINE
 C     DGBSL IS CALLED.
 C-----------------------------------------------------------------------
 C
-      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      IMPLICIT real*8(A-H,O-Z)
       DIMENSION DELTA(*),WM(*),IWM(*)
 C
       PARAMETER (NPD=1)
@@ -2702,7 +2702,7 @@ C
 C       Convergence Test.  If ENORM(Z) denotes the Euclidean norm of a
 C         vector Z, then this test attempts to guarantee that
 C
-C               ENORM(X-XSOL) .LE.  TOL*ENORM(XSOL).
+C               ENORM(X-XSOL) <=  TOL*ENORM(XSOL).
 C
 C         If this condition is satisfied with TOL = 10**(-K), then the
 C         larger components of X have K significant decimal digits and
@@ -2718,9 +2718,9 @@ C       parameters, arithmetic interrupts, an excessive number of func-
 C       tion evaluations, errors in the functions, or lack of good prog-
 C       ress.
 C
-C       Improper Input Parameters.  INFO is set to 0 if IOPT .LT. 1, or
-C         IOPT .GT. 2, or N .LE. 0, or TOL .LT. 0.E0, or
-C         LWA .LT. (3*N**2+13*N)/2.
+C       Improper Input Parameters.  INFO is set to 0 if IOPT < 1, or
+C         IOPT > 2, or N <= 0, or TOL < 0.E0, or
+C         LWA < (3*N**2+13*N)/2.
 C
 C       Arithmetic Interrupts.  If these interrupts occur in the FCN
 C         subroutine during an early stage of the computation, they may
@@ -2842,9 +2842,9 @@ C C
 C       DO 10 K = 1, N
 C          TEMP = (THREE - TWO*X(K))*X(K)
 C          TEMP1 = ZERO
-C          IF (K .NE. 1) TEMP1 = X(K-1)
+C          IF (K /= 1) TEMP1 = X(K-1)
 C          TEMP2 = ZERO
-C          IF (K .NE. N) TEMP2 = X(K+1)
+C          IF (K /= N) TEMP2 = X(K+1)
 C          FVEC(K) = TEMP - TEMP1 - TWO*TEMP2 + ONE
 C    10    CONTINUE
 C       RETURN
@@ -2879,14 +2879,14 @@ C***FIRST EXECUTABLE STATEMENT  SNSQE
 C
 C     CHECK THE INPUT PARAMETERS FOR ERRORS.
 C
-      IF (IOPT .LT. 1 .OR. IOPT .GT. 2 .OR. N .LE. 0
-     1    .OR. TOL .LT. ZERO .OR. LWA .LT. (3*N**2 +13*N)/2)
+      IF (IOPT < 1 .OR. IOPT > 2 .OR. N <= 0
+     1    .OR. TOL < ZERO .OR. LWA < (3*N**2 +13*N)/2)
      2   GO TO 20
 C
 C     CALL SNSQ.
 C
       MAXFEV = 100*(N + 1)
-      IF (IOPT .EQ. 2) MAXFEV = 2*MAXFEV
+      IF (IOPT == 2) MAXFEV = 2*MAXFEV
       XTOL = TOL
       ML = N - 1
       MU = N - 1
@@ -2901,9 +2901,9 @@ C
      1           EPSFCN,WA(1),MODE,FACTOR,NPRINT,INFO,NFEV,NJEV,
      2           WA(6*N+1),LR,WA(N+1),WA(2*N+1),WA(3*N+1),WA(4*N+1),
      3           WA(5*N+1))
-      IF (INFO .EQ. 5) INFO = 4
+      IF (INFO == 5) INFO = 4
    20 CONTINUE
-      IF (INFO .EQ. 0) CALL XERROR( 'SNSQE  -- INVALID INPUT PARAMETER.'
+      IF (INFO == 0) CALL XERROR( 'SNSQE  -- INVALID INPUT PARAMETER.'
      1,34,2,1)
       RETURN
 C
@@ -2988,21 +2988,21 @@ C
          JJ = JJ - K
          L = JJ + 1
          SUM = ZERO
-         IF (N .LT. JP1) GO TO 20
+         IF (N < JP1) GO TO 20
          DO 10 I = JP1, N
             SUM = SUM + R(L)*X(I)
             L = L + 1
    10       CONTINUE
    20    CONTINUE
          TEMP = R(JJ)
-         IF (TEMP .NE. ZERO) GO TO 40
+         IF (TEMP /= ZERO) GO TO 40
          L = J
          DO 30 I = 1, J
             TEMP = MAX(TEMP,ABS(R(L)))
             L = L + N - I
    30       CONTINUE
          TEMP = EPSMCH*TEMP
-         IF (TEMP .EQ. ZERO) TEMP = EPSMCH
+         IF (TEMP == ZERO) TEMP = EPSMCH
    40    CONTINUE
          X(J) = (QTB(J) - SUM)/TEMP
    50    CONTINUE
@@ -3014,7 +3014,7 @@ C
          WA2(J) = DIAG(J)*X(J)
    60    CONTINUE
       QNORM = ENORM(N,WA2)
-      IF (QNORM .LE. DELTA) GO TO 140
+      IF (QNORM <= DELTA) GO TO 140
 C
 C     THE GAUSS-NEWTON DIRECTION IS NOT ACCEPTABLE.
 C     NEXT, CALCULATE THE SCALED GRADIENT DIRECTION.
@@ -3035,7 +3035,7 @@ C
       GNORM = ENORM(N,WA1)
       SGNORM = ZERO
       ALPHA = DELTA/QNORM
-      IF (GNORM .EQ. ZERO) GO TO 120
+      IF (GNORM == ZERO) GO TO 120
       DO 90 J = 1, N
          WA1(J) = (WA1(J)/GNORM)/DIAG(J)
    90    CONTINUE
@@ -3058,7 +3058,7 @@ C
 C     TEST WHETHER THE SCALED GRADIENT DIRECTION IS ACCEPTABLE.
 C
       ALPHA = ZERO
-      IF (SGNORM .GE. DELTA) GO TO 120
+      IF (SGNORM >= DELTA) GO TO 120
 C
 C     THE SCALED GRADIENT DIRECTION IS NOT ACCEPTABLE.
 C     FINALLY, CALCULATE THE POINT ALONG THE DOGLEG
@@ -3085,7 +3085,7 @@ C
 C     LAST CARD OF SUBROUTINE DOGLEG.
 C
       END
-      DOUBLE PRECISION FUNCTION ENORM(N,X)
+      real*8 FUNCTION ENORM(N,X)
 C***BEGIN PROLOGUE  ENORM
 C***REFER TO  SNLS1,SNLS1E,SNSQ,SNSQE
 C
@@ -3141,12 +3141,12 @@ C***FIRST EXECUTABLE STATEMENT  ENORM
       AGIANT = RGIANT/FLOATN
       DO 90 I = 1, N
          XABS = ABS(X(I))
-         IF (XABS .GT. RDWARF .AND. XABS .LT. AGIANT) GO TO 70
-            IF (XABS .LE. RDWARF) GO TO 30
+         IF (XABS > RDWARF .AND. XABS < AGIANT) GO TO 70
+            IF (XABS <= RDWARF) GO TO 30
 C
 C              SUM FOR LARGE COMPONENTS.
 C
-               IF (XABS .LE. X1MAX) GO TO 10
+               IF (XABS <= X1MAX) GO TO 10
                   S1 = ONE + S1*(X1MAX/XABS)**2
                   X1MAX = XABS
                   GO TO 20
@@ -3158,12 +3158,12 @@ C
 C
 C              SUM FOR SMALL COMPONENTS.
 C
-               IF (XABS .LE. X3MAX) GO TO 40
+               IF (XABS <= X3MAX) GO TO 40
                   S3 = ONE + S3*(X3MAX/XABS)**2
                   X3MAX = XABS
                   GO TO 50
    40          CONTINUE
-                  IF (XABS .NE. ZERO) S3 = S3 + (XABS/X3MAX)**2
+                  IF (XABS /= ZERO) S3 = S3 + (XABS/X3MAX)**2
    50          CONTINUE
    60       CONTINUE
             GO TO 80
@@ -3177,14 +3177,14 @@ C
 C
 C     CALCULATION OF NORM.
 C
-      IF (S1 .EQ. ZERO) GO TO 100
+      IF (S1 == ZERO) GO TO 100
          ENORM = X1MAX*SQRT(S1+(S2/X1MAX)/X1MAX)
          GO TO 130
   100 CONTINUE
-         IF (S2 .EQ. ZERO) GO TO 110
-            IF (S2 .GE. X3MAX)
+         IF (S2 == ZERO) GO TO 110
+            IF (S2 >= X3MAX)
      1         ENORM = SQRT(S2*(ONE+(X3MAX/S2)*(X3MAX*S3)))
-            IF (S2 .LT. X3MAX)
+            IF (S2 < X3MAX)
      1         ENORM = SQRT(X3MAX*((S2/X3MAX)+(X3MAX*S3)))
             GO TO 120
   110    CONTINUE
@@ -3295,17 +3295,17 @@ C***FIRST EXECUTABLE STATEMENT  FDJAC1
 C
       EPS = SQRT(MAX(EPSFCN,EPSMCH))
       MSUM = ML + MU + 1
-      IF (MSUM .LT. N) GO TO 40
+      IF (MSUM < N) GO TO 40
 C
 C        COMPUTATION OF DENSE APPROXIMATE JACOBIAN.
 C
          DO 20 J = 1, N
             TEMP = X(J)
             H = EPS*ABS(TEMP)
-            IF (H .EQ. ZERO) H = EPS
+            IF (H == ZERO) H = EPS
             X(J) = TEMP + H
             CALL FCN(N,X,WA1,IFLAG)
-            IF (IFLAG .LT. 0) GO TO 30
+            IF (IFLAG < 0) GO TO 30
             X(J) = TEMP
             DO 10 I = 1, N
                FJAC(I,J) = (WA1(I) - FVEC(I))/H
@@ -3321,18 +3321,18 @@ C
             DO 60 J = K, N, MSUM
                WA2(J) = X(J)
                H = EPS*ABS(WA2(J))
-               IF (H .EQ. ZERO) H = EPS
+               IF (H == ZERO) H = EPS
                X(J) = WA2(J) + H
    60          CONTINUE
             CALL FCN(N,X,WA1,IFLAG)
-            IF (IFLAG .LT. 0) GO TO 100
+            IF (IFLAG < 0) GO TO 100
             DO 80 J = K, N, MSUM
                X(J) = WA2(J)
                H = EPS*ABS(WA2(J))
-               IF (H .EQ. ZERO) H = EPS
+               IF (H == ZERO) H = EPS
                DO 70 I = 1, N
                   FJAC(I,J) = ZERO
-                  IF (I .GE. J - MU .AND. I .LE. J + ML)
+                  IF (I >= J - MU .AND. I <= J + ML)
      1               FJAC(I,J) = (WA1(I) - FVEC(I))/H
    70             CONTINUE
    80          CONTINUE
@@ -3392,7 +3392,7 @@ C***END PROLOGUE  QFORM
       DATA ONE,ZERO /1.0D0,0.0D0/
 C***FIRST EXECUTABLE STATEMENT  QFORM
       MINMN = MIN0(M,N)
-      IF (MINMN .LT. 2) GO TO 30
+      IF (MINMN < 2) GO TO 30
       DO 20 J = 2, MINMN
          JM1 = J - 1
          DO 10 I = 1, JM1
@@ -3404,7 +3404,7 @@ C
 C     INITIALIZE REMAINING COLUMNS TO THOSE OF THE IDENTITY MATRIX.
 C
       NP1 = N + 1
-      IF (M .LT. NP1) GO TO 60
+      IF (M < NP1) GO TO 60
       DO 50 J = NP1, M
          DO 40 I = 1, M
             Q(I,J) = ZERO
@@ -3422,7 +3422,7 @@ C
             Q(I,K) = ZERO
    70       CONTINUE
          Q(K,K) = ONE
-         IF (WA(K) .EQ. ZERO) GO TO 110
+         IF (WA(K) == ZERO) GO TO 110
          DO 100 J = K, M
             SUM = ZERO
             DO 80 I = K, M
@@ -3547,9 +3547,9 @@ C        BRING THE COLUMN OF LARGEST NORM INTO THE PIVOT POSITION.
 C
          KMAX = J
          DO 20 K = J, N
-            IF (SIGMA(K) .GT. SIGMA(KMAX)) KMAX = K
+            IF (SIGMA(K) > SIGMA(KMAX)) KMAX = K
    20       CONTINUE
-         IF (KMAX .EQ. J) GO TO 40
+         IF (KMAX == J) GO TO 40
          DO 30 I = 1, M
             TEMP = A(I,J)
             A(I,J) = A(I,KMAX)
@@ -3566,8 +3566,8 @@ C        COMPUTE THE HOUSEHOLDER TRANSFORMATION TO REDUCE THE
 C        J-TH COLUMN OF A TO A MULTIPLE OF THE J-TH UNIT VECTOR.
 C
          AJNORM = ENORM(M-J+1,A(J,J))
-         IF (AJNORM .EQ. ZERO) GO TO 100
-         IF (A(J,J) .LT. ZERO) AJNORM = -AJNORM
+         IF (AJNORM == ZERO) GO TO 100
+         IF (A(J,J) < ZERO) AJNORM = -AJNORM
          DO 50 I = J, M
             A(I,J) = A(I,J)/AJNORM
    50       CONTINUE
@@ -3577,7 +3577,7 @@ C        APPLY THE TRANSFORMATION TO THE REMAINING COLUMNS
 C        AND UPDATE THE NORMS.
 C
          JP1 = J + 1
-         IF (N .LT. JP1) GO TO 100
+         IF (N < JP1) GO TO 100
          DO 90 K = JP1, N
             SUM = ZERO
             DO 60 I = J, M
@@ -3587,10 +3587,10 @@ C
             DO 70 I = J, M
                A(I,K) = A(I,K) - TEMP*A(I,J)
    70          CONTINUE
-            IF (.NOT.PIVOT .OR. SIGMA(K) .EQ. ZERO) GO TO 80
+            IF (.NOT.PIVOT .OR. SIGMA(K) == ZERO) GO TO 80
             TEMP = A(J,K)/SIGMA(K)
             SIGMA(K) = SIGMA(K)*SQRT(MAX(ZERO,ONE-TEMP**2))
-            IF (P05*(SIGMA(K)/WA(K))**2 .GT. EPSMCH) GO TO 80
+            IF (P05*(SIGMA(K)/WA(K))**2 > EPSMCH) GO TO 80
             SIGMA(K) = ENORM(M-J,A(JP1,K))
             WA(K) = SIGMA(K)
    80       CONTINUE
@@ -3663,13 +3663,13 @@ C***END PROLOGUE  R1MPYQ
       DATA ONE /1.0D0/
 C***FIRST EXECUTABLE STATEMENT  R1MPYQ
       NM1 = N - 1
-      IF (NM1 .LT. 1) GO TO 50
+      IF (NM1 < 1) GO TO 50
       DO 20 NMJ = 1, NM1
          J = N - NMJ
-         IF (ABS(V(J)) .GT. ONE) COS = ONE/V(J)
-         IF (ABS(V(J)) .GT. ONE) SIN = SQRT(ONE-COS**2)
-         IF (ABS(V(J)) .LE. ONE) SIN = V(J)
-         IF (ABS(V(J)) .LE. ONE) COS = SQRT(ONE-SIN**2)
+         IF (ABS(V(J)) > ONE) COS = ONE/V(J)
+         IF (ABS(V(J)) > ONE) SIN = SQRT(ONE-COS**2)
+         IF (ABS(V(J)) <= ONE) SIN = V(J)
+         IF (ABS(V(J)) <= ONE) COS = SQRT(ONE-SIN**2)
          DO 10 I = 1, M
             TEMP = COS*A(I,J) - SIN*A(I,N)
             A(I,N) = SIN*A(I,J) + COS*A(I,N)
@@ -3680,10 +3680,10 @@ C
 C     APPLY THE SECOND SET OF GIVENS ROTATIONS TO A.
 C
       DO 40 J = 1, NM1
-         IF (ABS(W(J)) .GT. ONE) COS = ONE/W(J)
-         IF (ABS(W(J)) .GT. ONE) SIN = SQRT(ONE-COS**2)
-         IF (ABS(W(J)) .LE. ONE) SIN = W(J)
-         IF (ABS(W(J)) .LE. ONE) COS = SQRT(ONE-SIN**2)
+         IF (ABS(W(J)) > ONE) COS = ONE/W(J)
+         IF (ABS(W(J)) > ONE) SIN = SQRT(ONE-COS**2)
+         IF (ABS(W(J)) <= ONE) SIN = W(J)
+         IF (ABS(W(J)) <= ONE) COS = SQRT(ONE-SIN**2)
          DO 30 I = 1, M
             TEMP = COS*A(I,J) + SIN*A(I,N)
             A(I,N) = -SIN*A(I,J) + COS*A(I,N)
@@ -3792,22 +3792,22 @@ C     ROTATE THE VECTOR V INTO A MULTIPLE OF THE N-TH UNIT VECTOR
 C     IN SUCH A WAY THAT A SPIKE IS INTRODUCED INTO W.
 C
       NM1 = N - 1
-      IF (NM1 .LT. 1) GO TO 70
+      IF (NM1 < 1) GO TO 70
       DO 60 NMJ = 1, NM1
          J = N - NMJ
          JJ = JJ - (M - J + 1)
          W(J) = ZERO
-         IF (V(J) .EQ. ZERO) GO TO 50
+         IF (V(J) == ZERO) GO TO 50
 C
 C        DETERMINE A GIVENS ROTATION WHICH ELIMINATES THE
 C        J-TH ELEMENT OF V.
 C
-         IF (ABS(V(N)) .GE. ABS(V(J))) GO TO 20
+         IF (ABS(V(N)) >= ABS(V(J))) GO TO 20
             COTAN = V(N)/V(J)
             SIN = P5/SQRT(P25+P25*COTAN**2)
             COS = SIN*COTAN
             TAU = ONE
-            IF (ABS(COS)*GIANT .GT. ONE) TAU = ONE/COS
+            IF (ABS(COS)*GIANT > ONE) TAU = ONE/COS
             GO TO 30
    20    CONTINUE
             TAN = V(J)/V(N)
@@ -3844,19 +3844,19 @@ C
 C     ELIMINATE THE SPIKE.
 C
       SING = .FALSE.
-      IF (NM1 .LT. 1) GO TO 140
+      IF (NM1 < 1) GO TO 140
       DO 130 J = 1, NM1
-         IF (W(J) .EQ. ZERO) GO TO 120
+         IF (W(J) == ZERO) GO TO 120
 C
 C        DETERMINE A GIVENS ROTATION WHICH ELIMINATES THE
 C        J-TH ELEMENT OF THE SPIKE.
 C
-         IF (ABS(S(JJ)) .GE. ABS(W(J))) GO TO 90
+         IF (ABS(S(JJ)) >= ABS(W(J))) GO TO 90
             COTAN = S(JJ)/W(J)
             SIN = P5/SQRT(P25+P25*COTAN**2)
             COS = SIN*COTAN
             TAU = ONE
-            IF (ABS(COS)*GIANT .GT. ONE) TAU = ONE/COS
+            IF (ABS(COS)*GIANT > ONE) TAU = ONE/COS
             GO TO 100
    90    CONTINUE
             TAN = W(J)/S(JJ)
@@ -3883,7 +3883,7 @@ C
 C
 C        TEST FOR ZERO DIAGONAL ELEMENTS IN THE OUTPUT S.
 C
-         IF (S(JJ) .EQ. ZERO) SING = .TRUE.
+         IF (S(JJ) == ZERO) SING = .TRUE.
          JJ = JJ + (M - J + 1)
   130    CONTINUE
   140 CONTINUE
@@ -3895,7 +3895,7 @@ C
          S(L) = W(I)
          L = L + 1
   150    CONTINUE
-      IF (S(JJ) .EQ. ZERO) SING = .TRUE.
+      IF (S(JJ) == ZERO) SING = .TRUE.
       RETURN
 C
 C     LAST CARD OF SUBROUTINE R1UPDT.
@@ -4130,7 +4130,7 @@ C         vector Z and D is the diagonal matrix whose entries are
 C         defined by the array DIAG, then this test attempts to guaran-
 C         tee that
 C
-C               ENORM(D*(X-XSOL)) .LE. XTOL*ENORM(D*XSOL).
+C               ENORM(D*(X-XSOL)) <= XTOL*ENORM(D*XSOL).
 C
 C         If this condition is satisfied with XTOL = 10**(-K), then the
 C         larger components of D*X have K significant decimal digits and
@@ -4147,10 +4147,10 @@ C       Unsuccessful termination of SNSQ can be due to improper input
 C       parameters, arithmetic interrupts, an excessive number of func-
 C       tion evaluations, or lack of good progress.
 C
-C       Improper Input Parameters.  INFO is set to 0 if IOPT .LT. 1,
-C         or IOPT .GT. 2, or N .LE. 0, or LDFJAC .LT. N, or
-C         XTOL .LT. 0.E0, or MAXFEV .LE. 0, or ML .LT. 0, or MU .LT. 0,
-C         or FACTOR .LE. 0.E0, or LR .LT. (N*(N+1))/2.
+C       Improper Input Parameters.  INFO is set to 0 if IOPT < 1,
+C         or IOPT > 2, or N <= 0, or LDFJAC < N, or
+C         XTOL < 0.E0, or MAXFEV <= 0, or ML < 0, or MU < 0,
+C         or FACTOR <= 0.E0, or LR < (N*(N+1))/2.
 C
 C       Arithmetic Interrupts.  If these interrupts occur in the FCN
 C         subroutine during an early stage of the computation, they may
@@ -4276,7 +4276,7 @@ C       INTEGER K
 C       REAL ONE,TEMP,TEMP1,TEMP2,THREE,TWO,ZERO
 C       DATA ZERO,ONE,TWO,THREE /0.E0,1.E0,2.E0,3.E0/
 C C
-C       IF (IFLAG .NE. 0) GO TO 5
+C       IF (IFLAG /= 0) GO TO 5
 C C
 C C     Insert print statements here when NPRINT is positive.
 C C
@@ -4285,9 +4285,9 @@ C     5 CONTINUE
 C       DO 10 K = 1, N
 C          TEMP = (THREE - TWO*X(K))*X(K)
 C          TEMP1 = ZERO
-C          IF (K .NE. 1) TEMP1 = X(K-1)
+C          IF (K /= 1) TEMP1 = X(K-1)
 C          TEMP2 = ZERO
-C          IF (K .NE. N) TEMP2 = X(K+1)
+C          IF (K /= N) TEMP2 = X(K+1)
 C          FVEC(K) = TEMP - TEMP1 - TWO*TEMP2 + ONE
 C    10    CONTINUE
 C       RETURN
@@ -4335,13 +4335,13 @@ C
 C
 C     CHECK THE INPUT PARAMETERS FOR ERRORS.
 C
-      IF (IOPT .LT. 1 .OR. IOPT .GT. 2 .OR.
-     1    N .LE. 0 .OR. XTOL .LT. ZERO .OR. MAXFEV .LE. 0
-     2    .OR. ML .LT. 0 .OR. MU .LT. 0 .OR. FACTOR .LE. ZERO
-     3    .OR. LDFJAC .LT. N .OR. LR .LT. (N*(N + 1))/2) GO TO 300
-      IF (MODE .NE. 2) GO TO 20
+      IF (IOPT < 1 .OR. IOPT > 2 .OR.
+     1    N <= 0 .OR. XTOL < ZERO .OR. MAXFEV <= 0
+     2    .OR. ML < 0 .OR. MU < 0 .OR. FACTOR <= ZERO
+     3    .OR. LDFJAC < N .OR. LR < (N*(N + 1))/2) GO TO 300
+      IF (MODE /= 2) GO TO 20
       DO 10 J = 1, N
-         IF (DIAG(J) .LE. ZERO) GO TO 300
+         IF (DIAG(J) <= ZERO) GO TO 300
    10    CONTINUE
    20 CONTINUE
 C
@@ -4351,7 +4351,7 @@ C
       IFLAG = 1
       CALL FCN(N,X,FVEC,IFLAG)
       NFEV = 1
-      IF (IFLAG .LT. 0) GO TO 300
+      IF (IFLAG < 0) GO TO 300
       FNORM = ENORM(N,FVEC)
 C
 C     INITIALIZE ITERATION COUNTER AND MONITORS.
@@ -4369,7 +4369,7 @@ C
 C
 C        CALCULATE THE JACOBIAN MATRIX.
 C
-         IF (IOPT .EQ. 2) GO TO 31
+         IF (IOPT == 2) GO TO 31
 C
 C        USER SUPPLIES JACOBIAN
 C
@@ -4384,7 +4384,7 @@ C
      1               WA2)
             NFEV = NFEV + MIN0(ML+MU+1,N)
 C
-   32    IF (IFLAG .LT. 0) GO TO 300
+   32    IF (IFLAG < 0) GO TO 300
 C
 C        COMPUTE THE QR FACTORIZATION OF THE JACOBIAN.
 C
@@ -4393,11 +4393,11 @@ C
 C        ON THE FIRST ITERATION AND IF MODE IS 1, SCALE ACCORDING
 C        TO THE NORMS OF THE COLUMNS OF THE INITIAL JACOBIAN.
 C
-         IF (ITER .NE. 1) GO TO 70
-         IF (MODE .EQ. 2) GO TO 50
+         IF (ITER /= 1) GO TO 70
+         IF (MODE == 2) GO TO 50
          DO 40 J = 1, N
             DIAG(J) = WA2(J)
-            IF (WA2(J) .EQ. ZERO) DIAG(J) = ONE
+            IF (WA2(J) == ZERO) DIAG(J) = ONE
    40       CONTINUE
    50    CONTINUE
 C
@@ -4409,7 +4409,7 @@ C
    60       CONTINUE
          XNORM = ENORM(N,WA3)
          DELTA = FACTOR*XNORM
-         IF (DELTA .EQ. ZERO) DELTA = FACTOR
+         IF (DELTA == ZERO) DELTA = FACTOR
    70    CONTINUE
 C
 C        FORM (Q TRANSPOSE)*FVEC AND STORE IN QTF.
@@ -4418,7 +4418,7 @@ C
             QTF(I) = FVEC(I)
    80       CONTINUE
          DO 120 J = 1, N
-            IF (FJAC(J,J) .EQ. ZERO) GO TO 110
+            IF (FJAC(J,J) == ZERO) GO TO 110
             SUM = ZERO
             DO 90 I = J, N
                SUM = SUM + FJAC(I,J)*QTF(I)
@@ -4436,14 +4436,14 @@ C
          DO 150 J = 1, N
             L = J
             JM1 = J - 1
-            IF (JM1 .LT. 1) GO TO 140
+            IF (JM1 < 1) GO TO 140
             DO 130 I = 1, JM1
                R(L) = FJAC(I,J)
                L = L + N - I
   130          CONTINUE
   140       CONTINUE
             R(L) = WA1(J)
-            IF (WA1(J) .EQ. ZERO) SING = .TRUE.
+            IF (WA1(J) == ZERO) SING = .TRUE.
   150       CONTINUE
 C
 C        ACCUMULATE THE ORTHOGONAL FACTOR IN FJAC.
@@ -4452,7 +4452,7 @@ C
 C
 C        RESCALE IF NECESSARY.
 C
-         IF (MODE .EQ. 2) GO TO 170
+         IF (MODE == 2) GO TO 170
          DO 160 J = 1, N
             DIAG(J) = MAX(DIAG(J),WA2(J))
   160       CONTINUE
@@ -4464,10 +4464,10 @@ C
 C
 C           IF REQUESTED, CALL FCN TO ENABLE PRINTING OF ITERATES.
 C
-            IF (NPRINT .LE. 0) GO TO 190
+            IF (NPRINT <= 0) GO TO 190
             IFLAG = 0
-            IF (MOD(ITER-1,NPRINT) .EQ. 0) CALL FCN(N,X,FVEC,IFLAG)
-            IF (IFLAG .LT. 0) GO TO 300
+            IF (MOD(ITER-1,NPRINT) == 0) CALL FCN(N,X,FVEC,IFLAG)
+            IF (IFLAG < 0) GO TO 300
   190       CONTINUE
 C
 C           DETERMINE THE DIRECTION P.
@@ -4485,20 +4485,20 @@ C
 C
 C           ON THE FIRST ITERATION, ADJUST THE INITIAL STEP BOUND.
 C
-            IF (ITER .EQ. 1) DELTA = MIN(DELTA,PNORM)
+            IF (ITER == 1) DELTA = MIN(DELTA,PNORM)
 C
 C           EVALUATE THE FUNCTION AT X + P AND CALCULATE ITS NORM.
 C
             IFLAG = 1
             CALL FCN(N,WA2,WA4,IFLAG)
             NFEV = NFEV + 1
-            IF (IFLAG .LT. 0) GO TO 300
+            IF (IFLAG < 0) GO TO 300
             FNORM1 = ENORM(N,WA4)
 C
 C           COMPUTE THE SCALED ACTUAL REDUCTION.
 C
             ACTRED = -ONE
-            IF (FNORM1 .LT. FNORM) ACTRED = ONE - (FNORM1/FNORM)**2
+            IF (FNORM1 < FNORM) ACTRED = ONE - (FNORM1/FNORM)**2
 C
 C           COMPUTE THE SCALED PREDICTED REDUCTION.
 C
@@ -4513,17 +4513,17 @@ C
   220          CONTINUE
             TEMP = ENORM(N,WA3)
             PRERED = ZERO
-            IF (TEMP .LT. FNORM) PRERED = ONE - (TEMP/FNORM)**2
+            IF (TEMP < FNORM) PRERED = ONE - (TEMP/FNORM)**2
 C
 C           COMPUTE THE RATIO OF THE ACTUAL TO THE PREDICTED
 C           REDUCTION.
 C
             RATIO = ZERO
-            IF (PRERED .GT. ZERO) RATIO = ACTRED/PRERED
+            IF (PRERED > ZERO) RATIO = ACTRED/PRERED
 C
 C           UPDATE THE STEP BOUND.
 C
-            IF (RATIO .GE. P1) GO TO 230
+            IF (RATIO >= P1) GO TO 230
                NCSUC = 0
                NCFAIL = NCFAIL + 1
                DELTA = P5*DELTA
@@ -4531,14 +4531,14 @@ C
   230       CONTINUE
                NCFAIL = 0
                NCSUC = NCSUC + 1
-               IF (RATIO .GE. P5 .OR. NCSUC .GT. 1)
+               IF (RATIO >= P5 .OR. NCSUC > 1)
      1            DELTA = MAX(DELTA,PNORM/P5)
-               IF (ABS(RATIO-ONE) .LE. P1) DELTA = PNORM/P5
+               IF (ABS(RATIO-ONE) <= P1) DELTA = PNORM/P5
   240       CONTINUE
 C
 C           TEST FOR SUCCESSFUL ITERATION.
 C
-            IF (RATIO .LT. P0001) GO TO 260
+            IF (RATIO < P0001) GO TO 260
 C
 C           SUCCESSFUL ITERATION. UPDATE X, FVEC, AND THEIR NORMS.
 C
@@ -4555,26 +4555,26 @@ C
 C           DETERMINE THE PROGRESS OF THE ITERATION.
 C
             NSLOW1 = NSLOW1 + 1
-            IF (ACTRED .GE. P001) NSLOW1 = 0
+            IF (ACTRED >= P001) NSLOW1 = 0
             IF (JEVAL) NSLOW2 = NSLOW2 + 1
-            IF (ACTRED .GE. P1) NSLOW2 = 0
+            IF (ACTRED >= P1) NSLOW2 = 0
 C
 C           TEST FOR CONVERGENCE.
 C
-            IF (DELTA .LE. XTOL*XNORM+XTOL .OR. FNORM .EQ. ZERO)INFO = 1
-            IF (INFO .NE. 0) GO TO 300
+            IF (DELTA <= XTOL*XNORM+XTOL .OR. FNORM == ZERO)INFO = 1
+            IF (INFO /= 0) GO TO 300
 C
 C           TESTS FOR TERMINATION AND STRINGENT TOLERANCES.
 C
-            IF (NFEV .GE. MAXFEV) INFO = 2
-            IF (P1*MAX(P1*DELTA,PNORM) .LE. EPSMCH*XNORM) INFO = 3
-            IF (NSLOW2 .EQ. 5) INFO = 4
-            IF (NSLOW1 .EQ. 10) INFO = 5
-            IF (INFO .NE. 0) GO TO 300
+            IF (NFEV >= MAXFEV) INFO = 2
+            IF (P1*MAX(P1*DELTA,PNORM) <= EPSMCH*XNORM) INFO = 3
+            IF (NSLOW2 == 5) INFO = 4
+            IF (NSLOW1 == 10) INFO = 5
+            IF (INFO /= 0) GO TO 300
 C
 C           CRITERION FOR RECALCULATING JACOBIAN
 C
-            IF (NCFAIL .EQ. 2) GO TO 290
+            IF (NCFAIL == 2) GO TO 290
 C
 C           CALCULATE THE RANK ONE MODIFICATION TO THE JACOBIAN
 C           AND UPDATE QTF IF NECESSARY.
@@ -4586,7 +4586,7 @@ C
   270             CONTINUE
                WA2(J) = (SUM - WA3(J))/PNORM
                WA1(J) = DIAG(J)*((DIAG(J)*WA1(J))/PNORM)
-               IF (RATIO .GE. P0001) QTF(J) = SUM
+               IF (RATIO >= P0001) QTF(J) = SUM
   280          CONTINUE
 C
 C           COMPUTE THE QR FACTORIZATION OF THE UPDATED JACOBIAN.
@@ -4608,18 +4608,18 @@ C
 C
 C     TERMINATION, EITHER NORMAL OR USER IMPOSED.
 C
-      IF (IFLAG .LT. 0) INFO = IFLAG
+      IF (IFLAG < 0) INFO = IFLAG
       IFLAG = 0
-      IF (NPRINT .GT. 0) CALL FCN(N,X,FVEC,IFLAG)
-      IF (INFO .LT. 0) CALL XERROR( 'SNSQ   -- EXECUTION TERMINATED BECA
+      IF (NPRINT > 0) CALL FCN(N,X,FVEC,IFLAG)
+      IF (INFO < 0) CALL XERROR( 'SNSQ   -- EXECUTION TERMINATED BECA
      1USE USER SET IFLAG NEGATIVE.',63,1,1)
-      IF (INFO .EQ. 0) CALL XERROR( 'SNSQ   -- INVALID INPUT PARAMETER.'
+      IF (INFO == 0) CALL XERROR( 'SNSQ   -- INVALID INPUT PARAMETER.'
      1 ,34,2,1)
-      IF (INFO .EQ. 2) CALL XERROR( 'SNSQ   -- TOO MANY FUNCTION EVALUAT
+      IF (INFO == 2) CALL XERROR( 'SNSQ   -- TOO MANY FUNCTION EVALUAT
      1IONS.',40,9,1)
-      IF (INFO .EQ. 3) CALL XERROR( 'SNSQ   -- XTOL TOO SMALL. NO FURTHE
+      IF (INFO == 3) CALL XERROR( 'SNSQ   -- XTOL TOO SMALL. NO FURTHE
      1R IMPROVEMENT POSSIBLE.',58,3,1)
-      IF (INFO .GT. 4) CALL XERROR( 'SNSQ   -- ITERATION NOT MAKING GOOD
+      IF (INFO > 4) CALL XERROR( 'SNSQ   -- ITERATION NOT MAKING GOOD
      1 PROGRESS.',45,1,1)
       RETURN
 C
@@ -4633,7 +4633,7 @@ C***BEGIN PROLOGUE  IDAMAX
 C***DATE WRITTEN   791001   (YYMMDD)
 C***REVISION DATE  820801   (YYMMDD)
 C***CATEGORY NO.  D1A2
-C***KEYWORDS  BLAS,DOUBLE PRECISION,LINEAR ALGEBRA,MAXIMUM COMPONENT, 
+C***KEYWORDS  BLAS,real*8,LINEAR ALGEBRA,MAXIMUM COMPONENT, 
 C             VECTOR
 C***AUTHOR  LAWSON, C. L., (JPL)
 C           HANSON, R. J., (SNLA)
@@ -4647,13 +4647,13 @@ C    DESCRIPTION OF PARAMETERS
 C
 C     --INPUT--
 C        N  NUMBER OF ELEMENTS IN INPUT VECTOR(S) 
-C       DX  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DX  real*8 VECTOR WITH N ELEMENTS
 C     INCX  STORAGE SPACING BETWEEN ELEMENTS OF DX
 C
 C     --OUTPUT--
-C   IDAMAX  SMALLEST INDEX (ZERO IF N .LE. 0)
+C   IDAMAX  SMALLEST INDEX (ZERO IF N <= 0)
 C
-C     FIND SMALLEST INDEX OF MAXIMUM MAGNITUDE OF DOUBLE PRECISION DX.
+C     FIND SMALLEST INDEX OF MAXIMUM MAGNITUDE OF real*8 DX.
 C     IDAMAX =  FIRST I, I = 1 TO N, TO MINIMIZE  ABS(DX(1-INCX+I*INCX)
 C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
 C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
@@ -4662,13 +4662,13 @@ C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  IDAMAX
 C
-      DOUBLE PRECISION DX(*),DMAX,XMAG
+      real*8 DX(*),DMAX,XMAG
 C***FIRST EXECUTABLE STATEMENT  IDAMAX
       IDAMAX = 0
-      IF(N.LE.0) RETURN
+      IF(N<=0) RETURN
       IDAMAX = 1
-      IF(N.LE.1)RETURN
-      IF(INCX.EQ.1)GOTO 20
+      IF(N<=1)RETURN
+      IF(INCX==1)GOTO 20
 C
 C        CODE FOR INCREMENTS NOT EQUAL TO 1.
 C
@@ -4677,7 +4677,7 @@ C
       II = 1
           DO 10 I = 1,NS,INCX 
           XMAG = DABS(DX(I))
-          IF(XMAG.LE.DMAX) GO TO 5
+          IF(XMAG<=DMAX) GO TO 5
           IDAMAX = II
           DMAX = XMAG
     5     II = II + 1
@@ -4689,19 +4689,19 @@ C
    20 DMAX = DABS(DX(1))
       DO 30 I = 2,N 
           XMAG = DABS(DX(I))
-          IF(XMAG.LE.DMAX) GO TO 30
+          IF(XMAG<=DMAX) GO TO 30
           IDAMAX = I
           DMAX = XMAG
    30 CONTINUE
       RETURN
       END 
 
-      DOUBLE PRECISION FUNCTION DASUM(N,DX,INCX)
+      real*8 FUNCTION DASUM(N,DX,INCX)
 C***BEGIN PROLOGUE  DASUM
 C***DATE WRITTEN   791001   (YYMMDD)
 C***REVISION DATE  820801   (YYMMDD)
 C***CATEGORY NO.  D1A3A
-C***KEYWORDS  ADD,BLAS,DOUBLE PRECISION,LINEAR ALGEBRA,MAGNITUDE,SUM,
+C***KEYWORDS  ADD,BLAS,real*8,LINEAR ALGEBRA,MAGNITUDE,SUM,
 C             VECTOR
 C***AUTHOR  LAWSON, C. L., (JPL)
 C           HANSON, R. J., (SNLA)
@@ -4715,13 +4715,13 @@ C    Description of Parameters
 C
 C     --Input--
 C        N  number of elements in input vector(s)
-C       DX  double precision vector with N elements
+C       DX  real*8 vector with N elements
 C     INCX  storage spacing between elements of DX
 C
 C     --Output--
-C    DASUM  double precision result (zero if N .LE. 0)
+C    DASUM  real*8 result (zero if N <= 0)
 C
-C     Returns sum of magnitudes of double precision DX.
+C     Returns sum of magnitudes of real*8 DX.
 C     DASUM = sum from 0 to N-1 of DABS(DX(1+I*INCX))
 C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
 C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
@@ -4730,11 +4730,11 @@ C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  DASUM
 C
-      DOUBLE PRECISION DX(*)
+      real*8 DX(*)
 C***FIRST EXECUTABLE STATEMENT  DASUM
       DASUM = 0.D0
-      IF(N.LE.0)RETURN
-      IF(INCX.EQ.1)GOTO 20
+      IF(N<=0)RETURN
+      IF(INCX==1)GOTO 20
 C
 C        CODE FOR INCREMENTS NOT EQUAL TO 1.
 C
@@ -4750,11 +4750,11 @@ C
 C        CLEAN-UP LOOP SO REMAINING VECTOR LENGTH IS A MULTIPLE OF 6.
 C
    20 M = MOD(N,6)
-      IF( M .EQ. 0 ) GO TO 40
+      IF( M == 0 ) GO TO 40
       DO 30 I = 1,M
          DASUM = DASUM + DABS(DX(I))
    30 CONTINUE
-      IF( N .LT. 6 ) RETURN
+      IF( N < 6 ) RETURN
    40 MP1 = M + 1
       DO 50 I = MP1,N,6
          DASUM = DASUM + DABS(DX(I)) + DABS(DX(I+1)) + DABS(DX(I+2))
@@ -4768,7 +4768,7 @@ C***BEGIN PROLOGUE  DAXPY
 C***DATE WRITTEN   791001   (YYMMDD)
 C***REVISION DATE  820801   (YYMMDD)
 C***CATEGORY NO.  D1A7
-C***KEYWORDS  BLAS,DOUBLE PRECISION,LINEAR ALGEBRA,TRIAD,VECTOR
+C***KEYWORDS  BLAS,real*8,LINEAR ALGEBRA,TRIAD,VECTOR
 C***AUTHOR  LAWSON, C. L., (JPL)
 C           HANSON, R. J., (SNLA)
 C           KINCAID, D. R., (U. OF TEXAS)
@@ -4781,18 +4781,18 @@ C    DESCRIPTION OF PARAMETERS
 C
 C     --INPUT--
 C        N  NUMBER OF ELEMENTS IN INPUT VECTOR(S) 
-C       DA  DOUBLE PRECISION SCALAR MULTIPLIER
-C       DX  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DA  real*8 SCALAR MULTIPLIER
+C       DX  real*8 VECTOR WITH N ELEMENTS
 C     INCX  STORAGE SPACING BETWEEN ELEMENTS OF DX
-C       DY  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DY  real*8 VECTOR WITH N ELEMENTS
 C     INCY  STORAGE SPACING BETWEEN ELEMENTS OF DY
 C
 C     --OUTPUT--
-C       DY  DOUBLE PRECISION RESULT (UNCHANGED IF N .LE. 0) 
+C       DY  real*8 RESULT (UNCHANGED IF N <= 0) 
 C
-C     OVERWRITE DOUBLE PRECISION DY WITH DOUBLE PRECISION DA*DX + DY. 
+C     OVERWRITE real*8 DY WITH real*8 DA*DX + DY. 
 C     FOR I = 0 TO N-1, REPLACE  DY(LY+I*INCY) WITH DA*DX(LX+I*INCX) +
-C       DY(LY+I*INCY), WHERE LX = 1 IF INCX .GE. 0, ELSE LX = (-INCX)*N
+C       DY(LY+I*INCY), WHERE LX = 1 IF INCX >= 0, ELSE LX = (-INCX)*N
 C       AND LY IS DEFINED IN A SIMILAR WAY USING INCY.
 C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
 C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
@@ -4801,18 +4801,18 @@ C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  DAXPY
 C
-      DOUBLE PRECISION DX(*),DY(*),DA
+      real*8 DX(*),DY(*),DA
 C***FIRST EXECUTABLE STATEMENT  DAXPY
-      IF(N.LE.0.OR.DA.EQ.0.D0) RETURN
-      IF(INCX.EQ.INCY) IF(INCX-1) 5,20,60
+      IF(N<=0.OR.DA==0.D0) RETURN
+      IF(INCX==INCY) IF(INCX-1) 5,20,60
     5 CONTINUE
 C
 C        CODE FOR NONEQUAL OR NONPOSITIVE INCREMENTS.
 C
       IX = 1
       IY = 1
-      IF(INCX.LT.0)IX = (-N+1)*INCX + 1 
-      IF(INCY.LT.0)IY = (-N+1)*INCY + 1 
+      IF(INCX<0)IX = (-N+1)*INCX + 1 
+      IF(INCY<0)IY = (-N+1)*INCY + 1 
       DO 10 I = 1,N 
         DY(IY) = DY(IY) + DA*DX(IX)
         IX = IX + INCX
@@ -4826,11 +4826,11 @@ C
 C        CLEAN-UP LOOP SO REMAINING VECTOR LENGTH IS A MULTIPLE OF 4. 
 C
    20 M = MOD(N,4)
-      IF( M .EQ. 0 ) GO TO 40 
+      IF( M == 0 ) GO TO 40 
       DO 30 I = 1,M 
         DY(I) = DY(I) + DA*DX(I)
    30 CONTINUE
-      IF( N .LT. 4 ) RETURN
+      IF( N < 4 ) RETURN
    40 MP1 = M + 1
       DO 50 I = MP1,N,4
         DY(I) = DY(I) + DA*DX(I)
@@ -4850,13 +4850,13 @@ C
       RETURN
       END 
 
-      DOUBLE PRECISION FUNCTION DDOT(N,DX,INCX,DY,INCY)
+      real*8 FUNCTION DDOT(N,DX,INCX,DY,INCY)
 
 C***BEGIN PROLOGUE  DDOT
 C***DATE WRITTEN   791001   (YYMMDD)
 C***REVISION DATE  820801   (YYMMDD)
 C***CATEGORY NO.  D1A4
-C***KEYWORDS  BLAS,DOUBLE PRECISION,INNER PRODUCT,LINEAR ALGEBRA,VECTOR
+C***KEYWORDS  BLAS,real*8,INNER PRODUCT,LINEAR ALGEBRA,VECTOR
 C***AUTHOR  LAWSON, C. L., (JPL)
 C           HANSON, R. J., (SNLA)
 C           KINCAID, D. R., (U. OF TEXAS)
@@ -4869,17 +4869,17 @@ C    DESCRIPTION OF PARAMETERS
 C
 C     --INPUT--
 C        N  NUMBER OF ELEMENTS IN INPUT VECTOR(S) 
-C       DX  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DX  real*8 VECTOR WITH N ELEMENTS
 C     INCX  STORAGE SPACING BETWEEN ELEMENTS OF DX
-C       DY  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DY  real*8 VECTOR WITH N ELEMENTS
 C     INCY  STORAGE SPACING BETWEEN ELEMENTS OF DY
 C
 C     --OUTPUT--
-C     DDOT  DOUBLE PRECISION DOT PRODUCT (ZERO IF N .LE. 0) 
+C     DDOT  real*8 DOT PRODUCT (ZERO IF N <= 0) 
 C
-C     RETURNS THE DOT PRODUCT OF DOUBLE PRECISION DX AND DY.
+C     RETURNS THE DOT PRODUCT OF real*8 DX AND DY.
 C     DDOT = SUM FOR I = 0 TO N-1 OF  DX(LX+I*INCX) * DY(LY+I*INCY)
-C     WHERE LX = 1 IF INCX .GE. 0, ELSE LX = (-INCX)*N, AND LY IS
+C     WHERE LX = 1 IF INCX >= 0, ELSE LX = (-INCX)*N, AND LY IS
 C     DEFINED IN A SIMILAR WAY USING INCY.
 C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
 C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
@@ -4888,19 +4888,19 @@ C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  DDOT
 C
-      DOUBLE PRECISION DX(*),DY(*)
+      real*8 DX(*),DY(*)
 C***FIRST EXECUTABLE STATEMENT  DDOT
       DDOT = 0.D0
-      IF(N.LE.0)RETURN
-      IF(INCX.EQ.INCY) IF(INCX-1) 5,20,60
+      IF(N<=0)RETURN
+      IF(INCX==INCY) IF(INCX-1) 5,20,60
     5 CONTINUE
 C
 C         CODE FOR UNEQUAL OR NONPOSITIVE INCREMENTS.
 C
       IX = 1
       IY = 1
-      IF(INCX.LT.0)IX = (-N+1)*INCX + 1 
-      IF(INCY.LT.0)IY = (-N+1)*INCY + 1 
+      IF(INCX<0)IX = (-N+1)*INCX + 1 
+      IF(INCY<0)IY = (-N+1)*INCY + 1 
       DO 10 I = 1,N 
          DDOT = DDOT + DX(IX)*DY(IY)
         IX = IX + INCX
@@ -4914,11 +4914,11 @@ C
 C        CLEAN-UP LOOP SO REMAINING VECTOR LENGTH IS A MULTIPLE OF 5. 
 C
    20 M = MOD(N,5)
-      IF( M .EQ. 0 ) GO TO 40 
+      IF( M == 0 ) GO TO 40 
       DO 30 I = 1,M 
          DDOT = DDOT + DX(I)*DY(I)
    30 CONTINUE
-      IF( N .LT. 5 ) RETURN
+      IF( N < 5 ) RETURN
    40 MP1 = M + 1
       DO 50 I = MP1,N,5
          DDOT = DDOT + DX(I)*DY(I) + DX(I+1)*DY(I+1) +
@@ -4926,7 +4926,7 @@ C
    50 CONTINUE
       RETURN
 C
-C         CODE FOR POSITIVE EQUAL INCREMENTS .NE.1.
+C         CODE FOR POSITIVE EQUAL INCREMENTS /=1.
 C
    60 CONTINUE
       NS = N*INCX
@@ -4936,12 +4936,12 @@ C
       RETURN
       END 
 
-      DOUBLE PRECISION FUNCTION DNRM2(N,DX,INCX)
+      real*8 FUNCTION DNRM2(N,DX,INCX)
 C***BEGIN PROLOGUE  DNRM2
 C***DATE WRITTEN   791001   (YYMMDD)
 C***REVISION DATE  820801   (YYMMDD)
 C***CATEGORY NO.  D1A3B
-C***KEYWORDS  BLAS,DOUBLE PRECISION,EUCLIDEAN,L2,LENGTH,LINEAR ALGEBRA,
+C***KEYWORDS  BLAS,real*8,EUCLIDEAN,L2,LENGTH,LINEAR ALGEBRA,
 C             NORM,VECTOR
 C***AUTHOR  LAWSON, C. L., (JPL)
 C           HANSON, R. J., (SNLA)
@@ -4955,16 +4955,16 @@ C    DESCRIPTION OF PARAMETERS
 C
 C     --INPUT--
 C        N  NUMBER OF ELEMENTS IN INPUT VECTOR(S) 
-C       DX  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DX  real*8 VECTOR WITH N ELEMENTS
 C     INCX  STORAGE SPACING BETWEEN ELEMENTS OF DX
 C
 C     --OUTPUT--
-C    DNRM2  DOUBLE PRECISION RESULT (ZERO IF N .LE. 0)
+C    DNRM2  real*8 RESULT (ZERO IF N <= 0)
 C
 C     EUCLIDEAN NORM OF THE N-VECTOR STORED IN DX() WITH STORAGE
 C     INCREMENT INCX .
-C     IF    N .LE. 0 RETURN WITH RESULT = 0.
-C     IF N .GE. 1 THEN INCX MUST BE .GE. 1
+C     IF    N <= 0 RETURN WITH RESULT = 0.
+C     IF N >= 1 THEN INCX MUST BE >= 1
 C
 C           C.L. LAWSON, 1978 JAN 08
 C
@@ -4973,16 +4973,16 @@ C     HOPEFULLY APPLICABLE TO ALL MACHINES.
 C         CUTLO = MAXIMUM OF  DSQRT(U/EPS)  OVER ALL KNOWN MACHINES.
 C         CUTHI = MINIMUM OF  DSQRT(V)      OVER ALL KNOWN MACHINES.
 C     WHERE
-C         EPS = SMALLEST NO. SUCH THAT EPS + 1. .GT. 1.
+C         EPS = SMALLEST NO. SUCH THAT EPS + 1. > 1.
 C         U   = SMALLEST POSITIVE NO.   (UNDERFLOW LIMIT)
 C         V   = LARGEST  NO.            (OVERFLOW  LIMIT)
 C
 C     BRIEF OUTLINE OF ALGORITHM..
 C
 C     PHASE 1    SCANS ZERO COMPONENTS. 
-C     MOVE TO PHASE 2 WHEN A COMPONENT IS NONZERO AND .LE. CUTLO
-C     MOVE TO PHASE 3 WHEN A COMPONENT IS .GT. CUTLO
-C     MOVE TO PHASE 4 WHEN A COMPONENT IS .GE. CUTHI/M
+C     MOVE TO PHASE 2 WHEN A COMPONENT IS NONZERO AND <= CUTLO
+C     MOVE TO PHASE 3 WHEN A COMPONENT IS > CUTLO
+C     MOVE TO PHASE 4 WHEN A COMPONENT IS >= CUTHI/M
 C     WHERE M = N FOR X() REAL AND M = 2*N FOR COMPLEX.
 C
 C     VALUES FOR CUTLO AND CUTHI..
@@ -5005,12 +5005,12 @@ C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  DNRM2
       INTEGER          NEXT
-      DOUBLE PRECISION   DX(*), CUTLO, CUTHI, HITEST, SUM, XMAX,ZERO,ONE
+      real*8   DX(*), CUTLO, CUTHI, HITEST, SUM, XMAX,ZERO,ONE
       DATA   ZERO, ONE /0.0D0, 1.0D0/
 C
       DATA CUTLO, CUTHI / 8.232D-11,  1.304D19 /
 C***FIRST EXECUTABLE STATEMENT  DNRM2
-      IF(N .GT. 0) GO TO 10
+      IF(N > 0) GO TO 10
          DNRM2  = ZERO
          GO TO 300
 C
@@ -5020,14 +5020,14 @@ C
 C                                                 BEGIN MAIN LOOP
       I = 1
    20    GO TO NEXT,(30, 50, 70, 110)
-   30 IF( DABS(DX(I)) .GT. CUTLO) GO TO 85
+   30 IF( DABS(DX(I)) > CUTLO) GO TO 85
       ASSIGN 50 TO NEXT
       XMAX = ZERO
 C
 C                        PHASE 1.  SUM IS ZERO
 C
-   50 IF( DX(I) .EQ. ZERO) GO TO 200
-      IF( DABS(DX(I)) .GT. CUTLO) GO TO 85
+   50 IF( DX(I) == ZERO) GO TO 200
+      IF( DABS(DX(I)) > CUTLO) GO TO 85
 C
 C                                PREPARE FOR PHASE 2.
       ASSIGN 70 TO NEXT
@@ -5044,12 +5044,12 @@ C
 C                   PHASE 2.  SUM IS SMALL.
 C                             SCALE TO AVOID DESTRUCTIVE UNDERFLOW.
 C
-   70 IF( DABS(DX(I)) .GT. CUTLO ) GO TO 75
+   70 IF( DABS(DX(I)) > CUTLO ) GO TO 75
 C
 C                     COMMON CODE FOR PHASES 2 AND 4.
 C                     IN PHASE 4 SUM IS LARGE.  SCALE TO AVOID OVERFLOW.
 C
-  110 IF( DABS(DX(I)) .LE. XMAX ) GO TO 115
+  110 IF( DABS(DX(I)) <= XMAX ) GO TO 115
          SUM = ONE + SUM * (XMAX / DX(I))**2
          XMAX = DABS(DX(I))
          GO TO 200
@@ -5071,14 +5071,14 @@ C
 C                   PHASE 3.  SUM IS MID-RANGE.  NO SCALING.
 C
       DO 95 J =I,NN,INCX
-      IF(DABS(DX(J)) .GE. HITEST) GO TO 100
+      IF(DABS(DX(J)) >= HITEST) GO TO 100
    95    SUM = SUM + DX(J)**2 
       DNRM2 = DSQRT( SUM )
       GO TO 300
 C
   200 CONTINUE
       I = I + INCX
-      IF ( I .LE. NN ) GO TO 20
+      IF ( I <= NN ) GO TO 20
 C
 C              END OF MAIN LOOP.
 C
@@ -5107,14 +5107,14 @@ C    DESCRIPTION OF PARAMETERS
 C
 C     --INPUT--
 C        N  NUMBER OF ELEMENTS IN INPUT VECTOR(S) 
-C       DA  DOUBLE PRECISION SCALE FACTOR
-C       DX  DOUBLE PRECISION VECTOR WITH N ELEMENTS
+C       DA  real*8 SCALE FACTOR
+C       DX  real*8 VECTOR WITH N ELEMENTS
 C     INCX  STORAGE SPACING BETWEEN ELEMENTS OF DX
 C
 C     --OUTPUT--
-C       DX  DOUBLE PRECISION RESULT (UNCHANGED IF N.LE.0)
+C       DX  real*8 RESULT (UNCHANGED IF N<=0)
 C
-C     REPLACE DOUBLE PRECISION DX BY DOUBLE PRECISION DA*DX.
+C     REPLACE real*8 DX BY real*8 DA*DX.
 C     FOR I = 0 TO N-1, REPLACE DX(1+I*INCX) WITH  DA * DX(1+I*INCX)
 C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
 C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
@@ -5123,10 +5123,10 @@ C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  DSCAL
 C
-      DOUBLE PRECISION DA,DX(*)
+      real*8 DA,DX(*)
 C***FIRST EXECUTABLE STATEMENT  DSCAL
-      IF(N.LE.0)RETURN
-      IF(INCX.EQ.1)GOTO 20
+      IF(N<=0)RETURN
+      IF(INCX==1)GOTO 20
 C
 C        CODE FOR INCREMENTS NOT EQUAL TO 1.
 C
@@ -5142,11 +5142,11 @@ C
 C        CLEAN-UP LOOP SO REMAINING VECTOR LENGTH IS A MULTIPLE OF 5. 
 C
    20 M = MOD(N,5)
-      IF( M .EQ. 0 ) GO TO 40 
+      IF( M == 0 ) GO TO 40 
       DO 30 I = 1,M 
         DX(I) = DA*DX(I)
    30 CONTINUE
-      IF( N .LT. 5 ) RETURN
+      IF( N < 5 ) RETURN
    40 MP1 = M + 1
       DO 50 I = MP1,N,5
         DX(I) = DA*DX(I)
@@ -5160,11 +5160,11 @@ C
       SUBROUTINE DGEMV ( TRANS, M, N, ALPHA, A, LDA, X, INCX,
      $                   BETA, Y, INCY )
 *     .. Scalar Arguments ..
-      DOUBLE PRECISION   ALPHA, BETA
+      real*8   ALPHA, BETA
       INTEGER            INCX, INCY, LDA, M, N
       CHARACTER*1        TRANS
 *     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), X( * ), Y( * )
+      real*8   A( LDA, * ), X( * ), Y( * )
 *     ..
 *
 *  Purpose
@@ -5202,11 +5202,11 @@ C
 *           N must be at least zero.
 *           Unchanged on exit.
 *
-*  ALPHA  - DOUBLE PRECISION.
+*  ALPHA  - real*8.
 *           On entry, ALPHA specifies the scalar alpha.
 *           Unchanged on exit.
 *
-*  A      - DOUBLE PRECISION array of DIMENSION ( LDA, n ).
+*  A      - real*8 array of DIMENSION ( LDA, n ).
 *           Before entry, the leading m by n part of the array A must
 *           contain the matrix of coefficients.
 *           Unchanged on exit.
@@ -5217,7 +5217,7 @@ C
 *           max( 1, m ).
 *           Unchanged on exit.
 *
-*  X      - DOUBLE PRECISION array of DIMENSION at least
+*  X      - real*8 array of DIMENSION at least
 *           ( 1 + ( n - 1 )*abs( INCX ) ) when TRANS = 'N' or 'n'
 *           and at least
 *           ( 1 + ( m - 1 )*abs( INCX ) ) otherwise.
@@ -5230,12 +5230,12 @@ C
 *           X. INCX must not be zero.
 *           Unchanged on exit.
 *
-*  BETA   - DOUBLE PRECISION.
+*  BETA   - real*8.
 *           On entry, BETA specifies the scalar beta. When BETA is
 *           supplied as zero then Y need not be set on input.
 *           Unchanged on exit.
 *
-*  Y      - DOUBLE PRECISION array of DIMENSION at least
+*  Y      - real*8 array of DIMENSION at least
 *           ( 1 + ( m - 1 )*abs( INCY ) ) when TRANS = 'N' or 'n'
 *           and at least
 *           ( 1 + ( n - 1 )*abs( INCY ) ) otherwise.
@@ -5259,10 +5259,10 @@ C
 *
 *
 *     .. Parameters ..
-      DOUBLE PRECISION   ONE         , ZERO
+      real*8   ONE         , ZERO
       PARAMETER        ( ONE = 1.0D+0, ZERO = 0.0D+0 )
 *     .. Local Scalars ..
-      DOUBLE PRECISION   TEMP
+      real*8   TEMP
       INTEGER            I, INFO, IX, IY, J, JX, JY, KX, KY, LENX, LENY
 *     .. External Functions ..
       LOGICAL            LSAME
@@ -5281,26 +5281,26 @@ C
      $         .NOT.LSAME( TRANS, 'T' ).AND.
      $         .NOT.LSAME( TRANS, 'C' )      )THEN
          INFO = 1
-      ELSE IF( M.LT.0 )THEN
+      ELSE IF( M<0 )THEN
          INFO = 2
-      ELSE IF( N.LT.0 )THEN
+      ELSE IF( N<0 )THEN
          INFO = 3
-      ELSE IF( LDA.LT.MAX( 1, M ) )THEN
+      ELSE IF( LDA<MAX( 1, M ) )THEN
          INFO = 6
-      ELSE IF( INCX.EQ.0 )THEN
+      ELSE IF( INCX==0 )THEN
          INFO = 8
-      ELSE IF( INCY.EQ.0 )THEN
+      ELSE IF( INCY==0 )THEN
          INFO = 11
-      END IF
-      IF( INFO.NE.0 )THEN
+      endif
+      IF( INFO/=0 )THEN
          CALL XERBLA( 'DGEMV ', INFO )
          RETURN
-      END IF
+      endif
 *
 *     Quick return if possible.
 *
-      IF( ( M.EQ.0 ).OR.( N.EQ.0 ).OR.
-     $    ( ( ALPHA.EQ.ZERO ).AND.( BETA.EQ.ONE ) ) )
+      IF( ( M==0 ).OR.( N==0 ).OR.
+     $    ( ( ALPHA==ZERO ).AND.( BETA==ONE ) ) )
      $   RETURN
 *
 *     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
@@ -5312,26 +5312,26 @@ C
       ELSE
          LENX = M
          LENY = N
-      END IF
-      IF( INCX.GT.0 )THEN
+      endif
+      IF( INCX>0 )THEN
          KX = 1
       ELSE
          KX = 1 - ( LENX - 1 )*INCX
-      END IF
-      IF( INCY.GT.0 )THEN
+      endif
+      IF( INCY>0 )THEN
          KY = 1
       ELSE
          KY = 1 - ( LENY - 1 )*INCY
-      END IF
+      endif
 *
 *     Start the operations. In this version the elements of A are
 *     accessed sequentially with one pass through A.
 *
 *     First form  y := beta*y.
 *
-      IF( BETA.NE.ONE )THEN
-         IF( INCY.EQ.1 )THEN
-            IF( BETA.EQ.ZERO )THEN
+      IF( BETA/=ONE )THEN
+         IF( INCY==1 )THEN
+            IF( BETA==ZERO )THEN
                DO 10, I = 1, LENY
                   Y( I ) = ZERO
    10          CONTINUE
@@ -5339,10 +5339,10 @@ C
                DO 20, I = 1, LENY
                   Y( I ) = BETA*Y( I )
    20          CONTINUE
-            END IF
+            endif
          ELSE
             IY = KY
-            IF( BETA.EQ.ZERO )THEN
+            IF( BETA==ZERO )THEN
                DO 30, I = 1, LENY
                   Y( IY ) = ZERO
                   IY      = IY   + INCY
@@ -5352,45 +5352,45 @@ C
                   Y( IY ) = BETA*Y( IY )
                   IY      = IY           + INCY
    40          CONTINUE
-            END IF
-         END IF
-      END IF
-      IF( ALPHA.EQ.ZERO )
+            endif
+         endif
+      endif
+      IF( ALPHA==ZERO )
      $   RETURN
       IF( LSAME( TRANS, 'N' ) )THEN
 *
 *        Form  y := alpha*A*x + y.
 *
          JX = KX
-         IF( INCY.EQ.1 )THEN
+         IF( INCY==1 )THEN
             DO 60, J = 1, N
-               IF( X( JX ).NE.ZERO )THEN
+               IF( X( JX )/=ZERO )THEN
                   TEMP = ALPHA*X( JX )
                   DO 50, I = 1, M
                      Y( I ) = Y( I ) + TEMP*A( I, J )
    50             CONTINUE
-               END IF
+               endif
                JX = JX + INCX
    60       CONTINUE
          ELSE
             DO 80, J = 1, N
-               IF( X( JX ).NE.ZERO )THEN
+               IF( X( JX )/=ZERO )THEN
                   TEMP = ALPHA*X( JX )
                   IY   = KY
                   DO 70, I = 1, M
                      Y( IY ) = Y( IY ) + TEMP*A( I, J )
                      IY      = IY      + INCY
    70             CONTINUE
-               END IF
+               endif
                JX = JX + INCX
    80       CONTINUE
-         END IF
+         endif
       ELSE
 *
 *        Form  y := alpha*A'*x + y.
 *
          JY = KY
-         IF( INCX.EQ.1 )THEN
+         IF( INCX==1 )THEN
             DO 100, J = 1, N
                TEMP = ZERO
                DO 90, I = 1, M
@@ -5410,8 +5410,8 @@ C
                Y( JY ) = Y( JY ) + ALPHA*TEMP
                JY      = JY      + INCY
   120       CONTINUE
-         END IF
-      END IF
+         endif
+      endif
 *
       RETURN
 *
@@ -5423,9 +5423,9 @@ C
 *     .. Scalar Arguments ..
       CHARACTER*1        TRANSA, TRANSB
       INTEGER            M, N, K, LDA, LDB, LDC
-      DOUBLE PRECISION   ALPHA, BETA
+      real*8   ALPHA, BETA
 *     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      real*8   A( LDA, * ), B( LDB, * ), C( LDC, * )
 *     ..
 *
 *  Purpose
@@ -5486,11 +5486,11 @@ C
 *           be at least  zero.
 *           Unchanged on exit.
 *
-*  ALPHA  - DOUBLE PRECISION.
+*  ALPHA  - real*8.
 *           On entry, ALPHA specifies the scalar alpha.
 *           Unchanged on exit.
 *
-*  A      - DOUBLE PRECISION array of DIMENSION ( LDA, ka ), where ka is
+*  A      - real*8 array of DIMENSION ( LDA, ka ), where ka is
 *           k  when  TRANSA = 'N' or 'n',  and is  m  otherwise.
 *           Before entry with  TRANSA = 'N' or 'n',  the leading  m by k
 *           part of the array  A  must contain the matrix  A,  otherwise
@@ -5505,7 +5505,7 @@ C
 *           least  max( 1, k ).
 *           Unchanged on exit.
 *
-*  B      - DOUBLE PRECISION array of DIMENSION ( LDB, kb ), where kb is
+*  B      - real*8 array of DIMENSION ( LDB, kb ), where kb is
 *           n  when  TRANSB = 'N' or 'n',  and is  k  otherwise.
 *           Before entry with  TRANSB = 'N' or 'n',  the leading  k by n
 *           part of the array  B  must contain the matrix  B,  otherwise
@@ -5520,12 +5520,12 @@ C
 *           least  max( 1, n ).
 *           Unchanged on exit.
 *
-*  BETA   - DOUBLE PRECISION.
+*  BETA   - real*8.
 *           On entry,  BETA  specifies the scalar  beta.  When  BETA  is
 *           supplied as zero then C need not be set on input.
 *           Unchanged on exit.
 *
-*  C      - DOUBLE PRECISION array of DIMENSION ( LDC, n ).
+*  C      - real*8 array of DIMENSION ( LDC, n ).
 *           Before entry, the leading  m by n  part of the array  C must
 *           contain the matrix  C,  except when  beta  is zero, in which
 *           case C need not be set on entry.
@@ -5558,9 +5558,9 @@ C
 *     .. Local Scalars ..
       LOGICAL            NOTA, NOTB
       INTEGER            I, INFO, J, L, NCOLA, NROWA, NROWB
-      DOUBLE PRECISION   TEMP
+      real*8   TEMP
 *     .. Parameters ..
-      DOUBLE PRECISION   ONE         , ZERO
+      real*8   ONE         , ZERO
       PARAMETER        ( ONE = 1.0D+0, ZERO = 0.0D+0 )
 *     ..
 *     .. Executable Statements ..
@@ -5577,12 +5577,12 @@ C
       ELSE
          NROWA = K
          NCOLA = M
-      END IF
+      endif
       IF( NOTB )THEN
          NROWB = K
       ELSE
          NROWB = N
-      END IF
+      endif
 *
 *     Test the input parameters.
 *
@@ -5595,34 +5595,34 @@ C
      $         ( .NOT.LSAME( TRANSB, 'C' ) ).AND.
      $         ( .NOT.LSAME( TRANSB, 'T' ) )      )THEN
          INFO = 2
-      ELSE IF( M  .LT.0               )THEN
+      ELSE IF( M  <0               )THEN
          INFO = 3
-      ELSE IF( N  .LT.0               )THEN
+      ELSE IF( N  <0               )THEN
          INFO = 4
-      ELSE IF( K  .LT.0               )THEN
+      ELSE IF( K  <0               )THEN
          INFO = 5
-      ELSE IF( LDA.LT.MAX( 1, NROWA ) )THEN
+      ELSE IF( LDA<MAX( 1, NROWA ) )THEN
          INFO = 8
-      ELSE IF( LDB.LT.MAX( 1, NROWB ) )THEN
+      ELSE IF( LDB<MAX( 1, NROWB ) )THEN
          INFO = 10
-      ELSE IF( LDC.LT.MAX( 1, M     ) )THEN
+      ELSE IF( LDC<MAX( 1, M     ) )THEN
          INFO = 13
-      END IF
-      IF( INFO.NE.0 )THEN
+      endif
+      IF( INFO/=0 )THEN
          CALL XERBLA( 'DGEMM ', INFO )
          RETURN
-      END IF
+      endif
 *
 *     Quick return if possible.
 *
-      IF( ( M.EQ.0 ).OR.( N.EQ.0 ).OR.
-     $    ( ( ( ALPHA.EQ.ZERO ).OR.( K.EQ.0 ) ).AND.( BETA.EQ.ONE ) ) )
+      IF( ( M==0 ).OR.( N==0 ).OR.
+     $    ( ( ( ALPHA==ZERO ).OR.( K==0 ) ).AND.( BETA==ONE ) ) )
      $   RETURN
 *
-*     And if  alpha.eq.zero.
+*     And if  alpha==zero.
 *
-      IF( ALPHA.EQ.ZERO )THEN
-         IF( BETA.EQ.ZERO )THEN
+      IF( ALPHA==ZERO )THEN
+         IF( BETA==ZERO )THEN
             DO 20, J = 1, N
                DO 10, I = 1, M
                   C( I, J ) = ZERO
@@ -5634,9 +5634,9 @@ C
                   C( I, J ) = BETA*C( I, J )
    30          CONTINUE
    40       CONTINUE
-         END IF
+         endif
          RETURN
-      END IF
+      endif
 *
 *     Start the operations.
 *
@@ -5646,22 +5646,22 @@ C
 *           Form  C := alpha*A*B + beta*C.
 *
             DO 90, J = 1, N
-               IF( BETA.EQ.ZERO )THEN
+               IF( BETA==ZERO )THEN
                   DO 50, I = 1, M
                      C( I, J ) = ZERO
    50             CONTINUE
-               ELSE IF( BETA.NE.ONE )THEN
+               ELSE IF( BETA/=ONE )THEN
                   DO 60, I = 1, M
                      C( I, J ) = BETA*C( I, J )
    60             CONTINUE
-               END IF
+               endif
                DO 80, L = 1, K
-                  IF( B( L, J ).NE.ZERO )THEN
+                  IF( B( L, J )/=ZERO )THEN
                      TEMP = ALPHA*B( L, J )
                      DO 70, I = 1, M
                         C( I, J ) = C( I, J ) + TEMP*A( I, L )
    70                CONTINUE
-                  END IF
+                  endif
    80          CONTINUE
    90       CONTINUE
          ELSE
@@ -5674,36 +5674,36 @@ C
                   DO 100, L = 1, K
                      TEMP = TEMP + A( L, I )*B( L, J )
   100             CONTINUE
-                  IF( BETA.EQ.ZERO )THEN
+                  IF( BETA==ZERO )THEN
                      C( I, J ) = ALPHA*TEMP
                   ELSE
                      C( I, J ) = ALPHA*TEMP + BETA*C( I, J )
-                  END IF
+                  endif
   110          CONTINUE
   120       CONTINUE
-         END IF
+         endif
       ELSE
          IF( NOTA )THEN
 *
 *           Form  C := alpha*A*B' + beta*C
 *
             DO 170, J = 1, N
-               IF( BETA.EQ.ZERO )THEN
+               IF( BETA==ZERO )THEN
                   DO 130, I = 1, M
                      C( I, J ) = ZERO
   130             CONTINUE
-               ELSE IF( BETA.NE.ONE )THEN
+               ELSE IF( BETA/=ONE )THEN
                   DO 140, I = 1, M
                      C( I, J ) = BETA*C( I, J )
   140             CONTINUE
-               END IF
+               endif
                DO 160, L = 1, K
-                  IF( B( J, L ).NE.ZERO )THEN
+                  IF( B( J, L )/=ZERO )THEN
                      TEMP = ALPHA*B( J, L )
                      DO 150, I = 1, M
                         C( I, J ) = C( I, J ) + TEMP*A( I, L )
   150                CONTINUE
-                  END IF
+                  endif
   160          CONTINUE
   170       CONTINUE
          ELSE
@@ -5716,15 +5716,15 @@ C
                   DO 180, L = 1, K
                      TEMP = TEMP + A( L, I )*B( J, L )
   180             CONTINUE
-                  IF( BETA.EQ.ZERO )THEN
+                  IF( BETA==ZERO )THEN
                      C( I, J ) = ALPHA*TEMP
                   ELSE
                      C( I, J ) = ALPHA*TEMP + BETA*C( I, J )
-                  END IF
+                  endif
   190          CONTINUE
   200       CONTINUE
-         END IF
-      END IF
+         endif
+      endif
 *
       RETURN
 *
@@ -5734,9 +5734,9 @@ C
 
       SUBROUTINE DGEFA(A,LDA,N,IPVT,INFO)
       INTEGER LDA, N, IPVT(*), INFO
-      DOUBLE PRECISION A(LDA,*)
+      real*8 A(LDA,*)
 C
-C     dgefa factors a double precision matrix by gaussian elimination.
+C     dgefa factors a real*8 matrix by gaussian elimination.
 C
 C     dgefa is usually called by dgeco, but it can be called
 C     directly with a saving in time if  rcond  is not needed.
@@ -5744,7 +5744,7 @@ C     (time for dgeco) = (1 + 9/n)*(time for dgefa) .
 C
 C     on entry
 C
-C        a       double precision(lda, n)
+C        a       real*8(lda, n)
 C                the matrix to be factored.
 C
 C        lda     integer
@@ -5766,7 +5766,7 @@ C                an integer vector of pivot indices.
 C
 C        info    integer
 C                = 0  normal value.
-C                = k  if  u(k,k) .eq. 0.0 .  this is not an error
+C                = k  if  u(k,k) == 0.0 .  this is not an error
 C                     condition for this subroutine, but it does
 C                     indicate that dgesl or dgedi will divide by zero
 C                     if called.  use  rcond  in dgeco for a reliable
@@ -5781,7 +5781,7 @@ C     blas daxpy,dscal,idamax
 C
 C     internal variables
 C
-      DOUBLE PRECISION T
+      real*8 T
       INTEGER IDAMAX, J, K, KP1, L, NM1
 C
 C
@@ -5789,7 +5789,7 @@ C     gaussian elimination with partial pivoting
 C
       INFO = 0
       NM1 = N - 1
-      IF (NM1.GE.1) THEN
+      IF (NM1>=1) THEN
         DO 20 K = 1, NM1
           KP1 = K + 1
 C
@@ -5800,15 +5800,15 @@ C
 C
 C        zero pivot implies this column already triangularized
 C
-          IF (A(L,K).NE.0.0D0) THEN
+          IF (A(L,K)/=0.0D0) THEN
 C
 C           interchange if necessary
 C
-            IF (L.NE.K) THEN
+            IF (L/=K) THEN
               T = A(L,K)
               A(L,K) = A(K,K)
               A(K,K) = T
-            END IF
+            endif
 C
 C           compute multipliers
 C
@@ -5819,32 +5819,32 @@ C           row elimination with column indexing
 C
             DO 10 J = KP1, N
               T = A(L,J)
-              IF (L.NE.K) THEN
+              IF (L/=K) THEN
                 A(L,J) = A(K,J)
                 A(K,J) = T
-              END IF
+              endif
               CALL DAXPY(N-K,T,A(K+1,K),1,A(K+1,J),1)
    10       CONTINUE
           ELSE
             INFO = K
-          END IF
+          endif
    20   CONTINUE
-      END IF
+      endif
       IPVT(N) = N
-      IF (A(N,N).EQ.0.0D0) INFO = N
+      IF (A(N,N)==0.0D0) INFO = N
       RETURN
       END
       SUBROUTINE DGESL(A,LDA,N,IPVT,B,JOB)
       INTEGER LDA, N, IPVT(*), JOB
-      DOUBLE PRECISION A(LDA,*), B(*)
+      real*8 A(LDA,*), B(*)
 C
-C     dgesl solves the double precision system
+C     dgesl solves the real*8 system
 C     a * x = b  or  trans(a) * x = b
 C     using the factors computed by dgeco or dgefa.
 C
 C     on entry
 C
-C        a       double precision(lda, n)
+C        a       real*8(lda, n)
 C                the output from dgeco or dgefa.
 C
 C        lda     integer
@@ -5856,7 +5856,7 @@ C
 C        ipvt    integer(n)
 C                the pivot vector from dgeco or dgefa.
 C
-C        b       double precision(n)
+C        b       real*8(n)
 C                the right hand side vector.
 C
 C        job     integer
@@ -5874,8 +5874,8 @@ C        a division by zero will occur if the input factor contains a
 C        zero on the diagonal.  technically this indicates singularity
 C        but it is often caused by improper arguments or improper
 C        setting of lda .  it will not occur if the subroutines are
-C        called correctly and if dgeco has set rcond .gt. 0.0
-C        or dgefa has set info .eq. 0 .
+C        called correctly and if dgeco has set rcond > 0.0
+C        or dgefa has set info == 0 .
 C
 C     to compute  inverse(a) * c  where  c  is a matrix
 C     with  p  columns
@@ -5894,26 +5894,26 @@ C     blas daxpy,ddot
 C
 C     internal variables
 C
-      DOUBLE PRECISION DDOT, T
+      real*8 DDOT, T
       INTEGER K, KB, L, NM1
 C
       NM1 = N - 1
-      IF (JOB.EQ.0) THEN
+      IF (JOB==0) THEN
 C
 C        job = 0 , solve  a * x = b
 C        first solve  l*y = b
 C
-        IF (NM1.GE.1) THEN
+        IF (NM1>=1) THEN
           DO 10 K = 1, NM1
             L = IPVT(K)
             T = B(L)
-            IF (L.NE.K) THEN
+            IF (L/=K) THEN
               B(L) = B(K)
               B(K) = T
-            END IF
+            endif
             CALL DAXPY(N-K,T,A(K+1,K),1,B(K+1),1)
    10     CONTINUE
-        END IF
+        endif
 C
 C        now solve  u*x = y
 C
@@ -5935,33 +5935,33 @@ C
 C
 C        now solve trans(l)*x = y
 C
-        IF (NM1.GE.1) THEN
+        IF (NM1>=1) THEN
           DO 40 KB = 1, NM1
             K = N - KB
             B(K) = B(K) + DDOT(N-K,A(K+1,K),1,B(K+1),1)
             L = IPVT(K)
-            IF (L.NE.K) THEN
+            IF (L/=K) THEN
               T = B(L)
               B(L) = B(K)
               B(K) = T
-            END IF
+            endif
    40     CONTINUE
-        END IF
-      END IF
+        endif
+      endif
       RETURN
       END
       SUBROUTINE DGBFA(ABD,LDA,N,ML,MU,IPVT,INFO)
       INTEGER LDA, N, ML, MU, IPVT(*), INFO
-      DOUBLE PRECISION ABD(LDA,*)
+      real*8 ABD(LDA,*)
 C
-C     dgbfa factors a double precision band matrix by elimination.
+C     dgbfa factors a real*8 band matrix by elimination.
 C
 C     dgbfa is usually called by dgbco, but it can be called
 C     directly with a saving in time if  rcond  is not needed.
 C
 C     on entry
 C
-C        abd     double precision(lda, n)
+C        abd     real*8(lda, n)
 C                contains the matrix in band storage.  the columns
 C                of the matrix are stored in the columns of  abd  and
 C                the diagonals of the matrix are stored in rows
@@ -5970,19 +5970,19 @@ C                see the comments below for details.
 C
 C        lda     integer
 C                the leading dimension of the array  abd .
-C                lda must be .ge. 2*ml + mu + 1 .
+C                lda must be >= 2*ml + mu + 1 .
 C
 C        n       integer
 C                the order of the original matrix.
 C
 C        ml      integer
 C                number of diagonals below the main diagonal.
-C                0 .le. ml .lt. n .
+C                0 <= ml < n .
 C
 C        mu      integer
 C                number of diagonals above the main diagonal.
-C                0 .le. mu .lt. n .
-C                more efficient if  ml .le. mu .
+C                0 <= mu < n .
+C                more efficient if  ml <= mu .
 C     on return
 C
 C        abd     an upper triangular matrix in band storage and
@@ -5996,7 +5996,7 @@ C                an integer vector of pivot indices.
 C
 C        info    integer
 C                = 0  normal value.
-C                = k  if  u(k,k) .eq. 0.0 .  this is not an error
+C                = k  if  u(k,k) == 0.0 .  this is not an error
 C                     condition for this subroutine, but it does
 C                     indicate that dgbsl will divide by zero if
 C                     called.  use  rcond  in dgbco for a reliable
@@ -6036,7 +6036,7 @@ C     fortran max0,min0
 C
 C     internal variables
 C
-      DOUBLE PRECISION T
+      real*8 T
       INTEGER I, IDAMAX, I0, J, JU, JZ, J0, J1, K, KP1, L, LM, M, MM, 
      +    NM1
 C
@@ -6048,34 +6048,34 @@ C     zero initial fill-in columns
 C
       J0 = MU + 2
       J1 = MIN0(N,M) - 1
-      IF (J1.GE.J0) THEN
+      IF (J1>=J0) THEN
         DO 20 JZ = J0, J1
           I0 = M + 1 - JZ
           DO 10 I = I0, ML
             ABD(I,JZ) = 0.0D0
    10     CONTINUE
    20   CONTINUE
-      END IF
+      endif
       JZ = J1
       JU = 0
 C
 C     gaussian elimination with partial pivoting
 C
       NM1 = N - 1
-      IF (NM1.GE.1) THEN
+      IF (NM1>=1) THEN
         DO 50 K = 1, NM1
           KP1 = K + 1
 C
 C        zero next fill-in column
 C
           JZ = JZ + 1
-          IF (JZ.LE.N) THEN
-            IF (ML.GE.1) THEN
+          IF (JZ<=N) THEN
+            IF (ML>=1) THEN
               DO 30 I = 1, ML
                 ABD(I,JZ) = 0.0D0
    30         CONTINUE
-            END IF
-          END IF
+            endif
+          endif
 C
 C        find l = pivot index
 C
@@ -6085,15 +6085,15 @@ C
 C
 C        zero pivot implies this column already triangularized
 C
-          IF (ABD(L,K).NE.0.0D0) THEN
+          IF (ABD(L,K)/=0.0D0) THEN
 C
 C           interchange if necessary
 C
-            IF (L.NE.M) THEN
+            IF (L/=M) THEN
               T = ABD(L,K)
               ABD(L,K) = ABD(M,K)
               ABD(M,K) = T
-            END IF
+            endif
 C
 C           compute multipliers
 C
@@ -6104,38 +6104,38 @@ C           row elimination with column indexing
 C
             JU = MIN0(MAX0(JU,MU+IPVT(K)),N)
             MM = M
-            IF (JU.GE.KP1) THEN
+            IF (JU>=KP1) THEN
               DO 40 J = KP1, JU
                 L = L - 1
                 MM = MM - 1
                 T = ABD(L,J)
-                IF (L.NE.MM) THEN
+                IF (L/=MM) THEN
                   ABD(L,J) = ABD(MM,J)
                   ABD(MM,J) = T
-                END IF
+                endif
                 CALL DAXPY(LM,T,ABD(M+1,K),1,ABD(MM+1,J),1)
    40         CONTINUE
-            END IF
+            endif
           ELSE
             INFO = K
-          END IF
+          endif
    50   CONTINUE
-      END IF
+      endif
       IPVT(N) = N
-      IF (ABD(M,N).EQ.0.0D0) INFO = N
+      IF (ABD(M,N)==0.0D0) INFO = N
       RETURN
       END
       SUBROUTINE DGBSL(ABD,LDA,N,ML,MU,IPVT,B,JOB)
       INTEGER LDA, N, ML, MU, IPVT(*), JOB
-      DOUBLE PRECISION ABD(LDA,*), B(*)
+      real*8 ABD(LDA,*), B(*)
 C
-C     dgbsl solves the double precision band system
+C     dgbsl solves the real*8 band system
 C     a * x = b  or  trans(a) * x = b
 C     using the factors computed by dgbco or dgbfa.
 C
 C     on entry
 C
-C        abd     double precision(lda, n)
+C        abd     real*8(lda, n)
 C                the output from dgbco or dgbfa.
 C
 C        lda     integer
@@ -6153,7 +6153,7 @@ C
 C        ipvt    integer(n)
 C                the pivot vector from dgbco or dgbfa.
 C
-C        b       double precision(n)
+C        b       real*8(n)
 C                the right hand side vector.
 C
 C        job     integer
@@ -6171,8 +6171,8 @@ C        a division by zero will occur if the input factor contains a
 C        zero on the diagonal.  technically this indicates singularity
 C        but it is often caused by improper arguments or improper
 C        setting of lda .  it will not occur if the subroutines are
-C        called correctly and if dgbco has set rcond .gt. 0.0
-C        or dgbfa has set info .eq. 0 .
+C        called correctly and if dgbco has set rcond > 0.0
+C        or dgbfa has set info == 0 .
 C
 C     to compute  inverse(a) * c  where  c  is a matrix
 C     with  p  columns
@@ -6192,30 +6192,30 @@ C     fortran min0
 C
 C     internal variables
 C
-      DOUBLE PRECISION DDOT, T
+      real*8 DDOT, T
       INTEGER K, KB, L, LA, LB, LM, M, NM1
 C
       M = MU + ML + 1
       NM1 = N - 1
-      IF (JOB.EQ.0) THEN
+      IF (JOB==0) THEN
 C
 C        job = 0 , solve  a * x = b
 C        first solve l*y = b
 C
-        IF (ML.NE.0) THEN
-          IF (NM1.GE.1) THEN
+        IF (ML/=0) THEN
+          IF (NM1>=1) THEN
             DO 10 K = 1, NM1
               LM = MIN0(ML,N-K)
               L = IPVT(K)
               T = B(L)
-              IF (L.NE.K) THEN
+              IF (L/=K) THEN
                 B(L) = B(K)
                 B(K) = T
-              END IF
+              endif
               CALL DAXPY(LM,T,ABD(M+1,K),1,B(K+1),1)
    10       CONTINUE
-          END IF
-        END IF
+          endif
+        endif
 C
 C        now solve  u*x = y
 C
@@ -6243,22 +6243,22 @@ C
 C
 C        now solve trans(l)*x = y
 C
-        IF (ML.NE.0) THEN
-          IF (NM1.GE.1) THEN
+        IF (ML/=0) THEN
+          IF (NM1>=1) THEN
             DO 40 KB = 1, NM1
               K = N - KB
               LM = MIN0(ML,N-K)
               B(K) = B(K) + DDOT(LM,ABD(M+1,K),1,B(K+1),1)
               L = IPVT(K)
-              IF (L.NE.K) THEN
+              IF (L/=K) THEN
                 T = B(L)
                 B(L) = B(K)
                 B(K) = T
-              END IF
+              endif
    40       CONTINUE
-          END IF
-        END IF
-      END IF
+          endif
+        endif
+      endif
       RETURN
       END
 
@@ -6365,7 +6365,7 @@ C
       include "cenviro.fi"
       include "opt.fi"
 C
-      IF(J.GT.-10)JACCOL = J
+      IF(J>-10)JACCOL = J
       RETURN
       END
       SUBROUTINE INCJAC

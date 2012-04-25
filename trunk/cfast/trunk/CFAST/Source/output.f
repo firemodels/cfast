@@ -18,13 +18,13 @@ C     FIRST THE DATE
 C     NOW THE VERSION
 
 	call splitversion (version,majver,minver,minrev)
-      IF (MINREV.GT.10) THEN
+      IF (MINREV>10) THEN
         write (aminrev,'(a2)') minrev
-      else if (minrev.gt.0) then
+      else if (minrev>0) then
         write (aminrev,'(a1)') minrev
       else
         aminrev = '  '
-      end if
+      endif
 
       WRITE (IOFILO,1) NAME, MAJVER,MINVER,AMINREV, OBUF
       RETURN
@@ -52,13 +52,13 @@ C     NOW THE VERSION
 !>>>>> IV should be the same as version
       call splitversion(version,imajor,iminor,iminorrev)
 	
-      if (iminorrev.ge.10) then
+      if (iminorrev>=10) then
         WRITE (logerr,10) imajor, iminor, iminorrev, CRDATE(1), 
      +      CRDATE(2), CRDATE(3)
       else
         WRITE (logerr,20) imajor, iminor, iminorrev, CRDATE(1), 
      +      CRDATE(2), CRDATE(3)
-      end if
+      endif
 	RETURN
 
 10    FORMAT ('Version ',i1,'.',i1,'.',I2,' Created ',I4.4,'/',I2.2,
@@ -69,7 +69,7 @@ C     NOW THE VERSION
 
 	subroutine splitversion(version,imajor,iminor,iminorrev)
 	integer version,imajor,iminor,iminorrev
-	if (version.ge.1000) then
+	if (version>=1000) then
 	  imajor = version / 1000
 	  iminor = mod(version,1000) / 100
 	  iminorrev = mod(version,100)
@@ -77,7 +77,7 @@ C     NOW THE VERSION
 	  imajor = version / 100
 	  iminor = mod(version,100) / 10
 	  iminorrev = mod(version,10)
-	end if
+	endif
 	return
 	end
 
@@ -200,7 +200,7 @@ C*RE
       include "precis.fi"
       include "cparams.fi"
       include "cshell.fi"
-      IF (outputformat.gt.1) THEN
+      IF (outputformat>1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTLAY
         CALL RSLTFIR(ISW)
@@ -213,10 +213,10 @@ C*RE
         else
             call rsltflw (time)
         endif
-      ELSE IF (outputformat.eq.1) THEN
+      ELSE IF (outputformat==1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTCMP (iofilo)
-      END IF
+      endif
 
  5000 FORMAT (//,' Time = ',F8.1,' seconds.')
       END
@@ -253,7 +253,7 @@ C
       DO 10 I = 1, NM1
         ITARG = NTARG - NM1 + I
         IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
-	IF (IZSHAFT(I).EQ.1) THEN
+	IF (IZSHAFT(I)==1) THEN
         	WRITE (IOFILO,5071) compartmentnames(I), 
      +		ZZTEMP(I,UPPER)-273.15,
      +		ZZVOL(I,UPPER),
@@ -308,27 +308,27 @@ C
       EXTERNAL LENGTH
       XX0 = 0.0D0
       WRITE (IOFILO,5000)
-      IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
+      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
         CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
         WRITE (IOFILO,5010) 'Main', FEMS(0), FEMP(0), FQF(0),
      +      FHEIGHT, FQFC(0), FQF(0) - FQFC(0)
-      END IF
-      IF (NUMOBJL.NE.0) THEN
+      endif
+      IF (NUMOBJL/=0) THEN
         DO 10 I = 1, NUMOBJL
           CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
-          IF (ISW.NE.0) THEN
-            IF (OBJPNT(I).NE.0) THEN
+          IF (ISW/=0) THEN
+            IF (OBJPNT(I)/=0) THEN
               J = OBJPNT(I)
               WRITE (IOFILO,5010) OBJNIN(J)(1:LENGTH(OBJNIN(J))),
      +            FEMS(I), FEMP(I), FQF(I),
      +            FHEIGHT,FQFC(I),FQF(I)-FQFC(I),objmaspy(i),radio(i)
-            END IF
+            endif
           ELSE
             WRITE (IOFILO,5020) I, FEMS(I), FEMP(I), FQF(I),
      +          FHEIGHT,FQFC(I),FQF(I)-FQFC(I),objmaspy(i),radio(i)
-          END IF
+          endif
    10   CONTINUE
-      END IF
+      endif
       WRITE (IOFILO,'(A)') ' '
       DO 30 IR = 1, NM1
         XEMS = XX0
@@ -337,21 +337,21 @@ C
         XQUPR = XX0
         XQLOW = XX0
         DO 20 I = 0, NUMOBJL
-          IF (IR.EQ.FROOM(I)) THEN
+          IF (IR==FROOM(I)) THEN
             XEMS = XEMS + FEMS(I)
             XEMP = XEMP + FEMP(I)
             XQF = XQF + FQF(I)
             XQUPR = XQUPR + FQUPR(I)
             XQLOW = XQLOW + FQLOW(I)
-          END IF
+          endif
    20   CONTINUE
         XQF = XQF + FQDJ(IR)
-        IF (XEMS+XEMP+XQF+XQUPR+XQLOW+FQDJ(IR).NE.XX0)
+        IF (XEMS+XEMP+XQF+XQUPR+XQLOW+FQDJ(IR)/=XX0)
      +      WRITE (IOFILO,5030) compartmentnames(IR), XEMS, XEMP, XQF,
      +      XQUPR, XQLOW,
      +      FQDJ(IR)
    30 CONTINUE
-      IF (FQDJ(N).NE.XX0) WRITE (IOFILO,5040) FQDJ(N)
+      IF (FQDJ(N)/=XX0) WRITE (IOFILO,5040) FQDJ(N)
       RETURN
  5000 FORMAT (//,' Fires',/,
      +    '0Compartment    Fire      Plume     Pyrol     ',
@@ -400,7 +400,7 @@ C
      +    '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
      +    'OD', 'CT', ' TS'/
-      IF (NLSPCT.NE.0) THEN
+      IF (NLSPCT/=0) THEN
         DO 20 I = 1, NWAL
           SWL(I) = .FALSE.
           DO 10 J = 1, NM1
@@ -418,7 +418,7 @@ C
               WRITE (CIOUT(IC:IC+9),5000) STYPE(LSP)
               WRITE (CJOUT(IC:IC+9),5000) SUNITS(LSP)
               IC = IC + 11
-            END IF
+            endif
    30     CONTINUE
           IF (ACTIVS(6)) THEN
             DO 40 IW = 1, 4
@@ -426,9 +426,9 @@ C
                 WRITE (CIOUT(IC:IC+9),5000) WTYPE(IW)
                 WRITE (CJOUT(IC:IC+9),5000) '(mg/m^2)  '
                 IC = IC + 10
-              END IF
+              endif
    40       CONTINUE
-          END IF
+          endif
           WRITE (IOFILO,5020) CIOUT(1:LENGTH(CIOUT))
           WRITE (IOFILO,5020) CJOUT(1:LENGTH(CJOUT))
           WRITE (IOFILO,5030) ('-',I = 1,IC)
@@ -436,7 +436,7 @@ C
           DO 70 I = 1, NM1
             WRITE (CIOUT,5060) compartmentnames(i)
             IC = 14
-            if (LAYER.EQ.UPPER.OR.IZSHAFT(I).EQ.0) THEN
+            if (LAYER==UPPER.OR.IZSHAFT(I)==0) THEN
               DO 50 LSP = 1, NS
                 WRITE (CIOUT(IC:IC+9),5040) TOXICT(I,LAYER,LSP)
                 IC = IC + 11
@@ -446,14 +446,14 @@ C
                   IF (SWL(IWPTR(IW))) THEN
                     WRITE (CIOUT(IC:IC+9),5040) ZZWSPEC(I,IWPTR(IW))
                     IC = IC + 10
-                  END IF
+                  endif
    60           CONTINUE
-              END IF
-            END IF
+              endif
+            endif
             WRITE (IOFILO,5020) CIOUT(1:LENGTH(CIOUT))
    70     CONTINUE
    80   CONTINUE
-      END IF
+      endif
       RETURN
  5000 FORMAT (A10)
  5010 FORMAT (' ')
@@ -500,21 +500,21 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         I = IRM
         FIRST = .TRUE.
         WRITE (CIOUT,'(A8)') compartmentnames(IRM)
-        IF (IRM.EQ.N) CIOUT = 'Outside'
+        IF (IRM==N) CIOUT = 'Outside'
 
 C     HORIZONTAL FLOW NATURAL VENTS
 
         DO 20 J = 1, N
           DO 10 K = 1, mxccv
             IIJK = IJK(I,J,K)
-            IF (IAND(1,ISHFT(NW(I,J),-K)).NE.0) THEN
-              IF (J.EQ.N) THEN
+            IF (IAND(1,ISHFT(NW(I,J),-K))/=0) THEN
+              IF (J==N) THEN
                 WRITE (CJOUT,'(A1,1X,A7,A2,I1)') 'H', 'Outside', ' #', K
               ELSE
                 WRITE (CJOUT,'(A1,1X,A4,I3,A2,I1)') 'H', 'Comp', J,
      +              ' #', K
-              END IF
-              IF(I.LT.J)THEN
+              endif
+              IF(I<J)THEN
                 SUM1 = SS2(IIJK) + SA2(IIJK)
                 SUM2 = SS1(IIJK) + SA1(IIJK)
                 SUM3 = AA2(IIJK) + AS2(IIJK)
@@ -525,10 +525,10 @@ C     HORIZONTAL FLOW NATURAL VENTS
                 SUM3 = AA1(IIJK) + AS1(IIJK)
                 SUM4 = AA2(IIJK) + AS2(IIJK)
               ENDIF
-              IF (I.EQ.N) THEN
+              IF (I==N) THEN
                 CALL FLWOUT(OUTBUF,SUM1,SUM2,SUM3,SUM4,XX0,XX0,xx0,xx0)
               ELSE
-                IF(I.LT.J)THEN
+                IF(I<J)THEN
                   SUM5 = SAU2(IIJK)
                   SUM6 = ASL2(IIJK)
                  ELSE
@@ -537,75 +537,75 @@ C     HORIZONTAL FLOW NATURAL VENTS
                 ENDIF
                 CALL FLWOUT(OUTBUF,SUM1,SUM2,SUM3,SUM4,SUM5,SUM6,
      .                      xx0,xx0)
-              END IF
+              endif
               IF (FIRST) THEN
-                IF (I.NE.1) WRITE (IOFILO,5010)
+                IF (I/=1) WRITE (IOFILO,5010)
                 WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
                 FIRST = .FALSE.
               ELSE
                 WRITE (IOFILO,5020) ' ', CJOUT, OUTBUF
-              END IF
-            END IF
+              endif
+            endif
    10     CONTINUE
    20   CONTINUE
 
 C     VERTICAL FLOW NATURAL VENTS
 
         DO 40 J = 1, N
-          IF (NWV(I,J).NE.0.OR.NWV(J,I).NE.0) THEN
-            IF (J.EQ.N) THEN
+          IF (NWV(I,J)/=0.OR.NWV(J,I)/=0) THEN
+            IF (J==N) THEN
               WRITE (CJOUT,'(A1,1X,A7)') 'V', 'Outside'
             ELSE
               WRITE (CJOUT,'(A1,1X,A4,I3)') 'V', 'Comp', J
-            END IF
+            endif
             DO 30 II = 1, 4
               FLOW(II) = XX0
    30       CONTINUE
-            IF (VMFLO(J,I,UPPER).GE.XX0) FLOW(1) = VMFLO(J,I,UPPER)
-            IF (VMFLO(J,I,UPPER).LT.XX0) FLOW(2) = -VMFLO(J,I,UPPER)
-            IF (VMFLO(J,I,LOWER).GE.XX0) FLOW(3) = VMFLO(J,I,LOWER)
-            IF (VMFLO(J,I,LOWER).LT.XX0) FLOW(4) = -VMFLO(J,I,LOWER)
+            IF (VMFLO(J,I,UPPER)>=XX0) FLOW(1) = VMFLO(J,I,UPPER)
+            IF (VMFLO(J,I,UPPER)<XX0) FLOW(2) = -VMFLO(J,I,UPPER)
+            IF (VMFLO(J,I,LOWER)>=XX0) FLOW(3) = VMFLO(J,I,LOWER)
+            IF (VMFLO(J,I,LOWER)<XX0) FLOW(4) = -VMFLO(J,I,LOWER)
             CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),XX0,XX0,
      .                  xx0,xx0)
             IF (FIRST) THEN
-              IF (I.NE.1) WRITE (IOFILO,5010)
+              IF (I/=1) WRITE (IOFILO,5010)
               WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
               FIRST = .FALSE.
             ELSE
               WRITE (IOFILO,5020) ' ', CJOUT, OUTBUF
-            END IF
-          END IF
+            endif
+          endif
    40   CONTINUE
 
 C     MECHANICAL VENTS
 
-        IF (NNODE.NE.0.AND.NEXT.NE.0) THEN
+        IF (NNODE/=0.AND.NEXT/=0) THEN
           DO 60 I = 1, NEXT
             II = HVNODE(1,I)
-            IF (II.EQ.IRM) THEN
+            IF (II==IRM) THEN
               INODE = HVNODE(2,I)
               WRITE (CJOUT,'(A1,1X,A4,I3)') 'M', 'Node', INODE
               DO 50 IIi = 1, 6
                 FLOW(IIi) = XX0
    50         CONTINUE
-              IF (HVEFLO(UPPER,I).GE.XX0) FLOW(1) = HVEFLO(UPPER,I)
-              IF (HVEFLO(UPPER,I).LT.XX0) FLOW(2) = -HVEFLO(UPPER,I)
-              IF (HVEFLO(LOWER,I).GE.XX0) FLOW(3) = HVEFLO(LOWER,I)
-              IF (HVEFLO(LOWER,I).LT.XX0) FLOW(4) = -HVEFLO(LOWER,I)
+              IF (HVEFLO(UPPER,I)>=XX0) FLOW(1) = HVEFLO(UPPER,I)
+              IF (HVEFLO(UPPER,I)<XX0) FLOW(2) = -HVEFLO(UPPER,I)
+              IF (HVEFLO(LOWER,I)>=XX0) FLOW(3) = HVEFLO(LOWER,I)
+              IF (HVEFLO(LOWER,I)<XX0) FLOW(4) = -HVEFLO(LOWER,I)
               flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
               flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
               CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),
      .                    XX0,XX0,flow(5),flow(6))
               IF (FIRST) THEN
-                IF (I.NE.1) WRITE (IOFILO,5010)
+                IF (I/=1) WRITE (IOFILO,5010)
                 WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
                 FIRST = .FALSE.
               ELSE
                 WRITE (IOFILO,5020) ' ', CJOUT, OUTBUF
-              END IF
-            END IF
+              endif
+            endif
    60     CONTINUE
-        END IF
+        endif
    70 CONTINUE
 
  5000 FORMAT (//,' Flow Through Vents (kg/s)',/,
@@ -655,7 +655,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         I = IRM
         FIRST = .TRUE.
         WRITE (CIOUT,'(A14)') compartmentnames(IRM)
-        IF (IRM.EQ.N) CIOUT = 'Outside'
+        IF (IRM==N) CIOUT = 'Outside'
 
 C     HORIZONTAL FLOW NATURAL VENTS
 
@@ -665,33 +665,33 @@ C     VERTICAL FLOW NATURAL VENTS
 
 C     MECHANICAL VENTS
 
-        IF (NNODE.NE.0.AND.NEXT.NE.0) THEN
+        IF (NNODE/=0.AND.NEXT/=0) THEN
           DO 60 I = 1, NEXT
             II = HVNODE(1,I)
-            IF (II.EQ.IRM) THEN
+            IF (II==IRM) THEN
               INODE = HVNODE(2,I)
               WRITE (CJOUT,'(A1,1X,A4,I3)') 'M', 'Node', INODE
               DO 50 IIi = 1, 4
                 FLOW(IIi) = XX0
    50         CONTINUE
-              IF (HVEFLOt(UPPER,I).GE.XX0) FLOW(1) = HVEFLOt(UPPER,I)
-              IF (HVEFLOt(UPPER,I).LT.XX0) FLOW(2) = -HVEFLOt(UPPER,I)
-              IF (HVEFLOt(LOWER,I).GE.XX0) FLOW(3) = HVEFLOt(LOWER,I)
-              IF (HVEFLOt(LOWER,I).LT.XX0) FLOW(4) = -HVEFLOt(LOWER,I)
+              IF (HVEFLOt(UPPER,I)>=XX0) FLOW(1) = HVEFLOt(UPPER,I)
+              IF (HVEFLOt(UPPER,I)<XX0) FLOW(2) = -HVEFLOt(UPPER,I)
+              IF (HVEFLOt(LOWER,I)>=XX0) FLOW(3) = HVEFLOt(LOWER,I)
+              IF (HVEFLOt(LOWER,I)<XX0) FLOW(4) = -HVEFLOt(LOWER,I)
               flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
               flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
               CALL FLWOUT(OUTBUF,FLOW(1),FLOW(2),FLOW(3),FLOW(4),
      +                    flow(5),flow(6),xx0,xx0)
               IF (FIRST) THEN
-                IF (I.NE.1) WRITE (IOFILO,5010)
+                IF (I/=1) WRITE (IOFILO,5010)
                 WRITE (IOFILO,5020) CIOUT, CJOUT, OUTBUF
                 FIRST = .FALSE.
               ELSE
                 WRITE (IOFILO,5020) ' ', CJOUT, OUTBUF
-              END IF
-            END IF
+              endif
+            endif
    60     CONTINUE
-        END IF
+        endif
    70 CONTINUE
 
  5000 FORMAT (//,' Total mass flow through vents (kg)',/,
@@ -730,13 +730,13 @@ C
         XEMP = XX0
         XQF = XX0
         DO 10 I = 0, NUMOBJL
-          IF (IR.EQ.FROOM(I)) THEN
+          IF (IR==FROOM(I)) THEN
             XEMP = XEMP + FEMP(I)
             XQF = XQF + FQF(I)
-          END IF
+          endif
    10   CONTINUE
         XQF = XQF + FQDJ(IR)
-        IF (IZSHAFT(IR).EQ.1) THEN
+        IF (IZSHAFT(IR)==1) THEN
         WRITE (iounit,5031) IR, ZZTEMP(IR,UPPER)-273.15,
      +      XEMP, XQF, ZZRELP(IR) - PAMB(IR),
      +      ONTARGET(IR)
@@ -798,7 +798,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DATA IWPTR /1, 3, 4, 2/
       XX0 = 0.0D0
       X100 = 100.0D0
-      IF ((ITPRT.EQ.0.AND.NTARG.LE.NM1).OR.NTARG.EQ.0) RETURN
+      IF ((ITPRT==0.AND.NTARG<=NM1).OR.NTARG==0) RETURN
       WRITE (IOFILO,5000)
       DO 10 I=1,NM1
         ITARG = NTARG-NM1+I
@@ -814,8 +814,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           WTOTAL = QTWFLUX(ITARG,1)
           GTOTAL = QTGFLUX(ITARG,1)
           CTOTAL = QTCFLUX(ITARG,1)
-        end if
-        IF (RTOTAL.NE.XX0) THEN
+        endif
+        IF (RTOTAL/=XX0) THEN
           WRITE (iofilo,5010) compartmentnames(I),
      +        ((TWJ(1,I,IWPTR(IW))-273.15),IW=1,4),
      +        TWJ(1,I,2)-273.15,RTOTAL,FTOTAL/RTOTAL*X100,
@@ -825,19 +825,19 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
           WRITE (iofilo,5010) compartmentnames(I),
      +        (TWJ(1,I,IWPTR(IW))-273.15,IW=1,4),
      +        TWJ(1,I,2)-273.15
-        END IF
-        IF (NTARG.GT.NM1) THEN
+        endif
+        IF (NTARG>NM1) THEN
           DO 20 ITARG = 1, NTARG-NM1
-            IF (IXTARG(TRGROOM,ITARG).EQ.I) THEN
+            IF (IXTARG(TRGROOM,ITARG)==I) THEN
               TG = TGTARG(ITARG)
               TTTEMP = XXTARG(TRGTEMPF,ITARG)
               ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
-              if (IXTARG(TRGEQ,ITARG).EQ.CYLPDE) 
+              if (IXTARG(TRGEQ,ITARG)==CYLPDE) 
      +            ITCTEMP = TRGTEMPF+ xxtarg(trginterior,itarg)*
      +              (TRGTEMPB-TRGTEMPF)
               TCTEMP = XXTARG(ITCTEMP,ITARG)
-              IF (IXTARG(TRGEQ,ITARG).EQ.ODE) TCTEMP = TTTEMP
-              IF (IXTARG(TRGMETH,ITARG).EQ.STEADY) TCTEMP = TTTEMP
+              IF (IXTARG(TRGEQ,ITARG)==ODE) TCTEMP = TTTEMP
+              IF (IXTARG(TRGMETH,ITARG)==STEADY) TCTEMP = TTTEMP
               if (validate.or.netheatflux) then
                 RTOTAL = GTFLUX(ITARG,1)
                 FTOTAL = GTFLUX(ITARG,2)
@@ -850,8 +850,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
                 WTOTAL = QTWFLUX(ITARG,1)
                 GTOTAL = QTGFLUX(ITARG,1)
                 CTOTAL = QTCFLUX(ITARG,1)
-              end if
-              IF (RTOTAL.NE.XX0) THEN
+              endif
+              IF (RTOTAL/=XX0) THEN
                 WRITE(IOFILO,5030)ITARG,TG-273.15,TTTEMP-273.15,
      +              TCTEMP-273.15,
      +              RTOTAL,FTOTAL/RTOTAL*X100,
@@ -860,10 +860,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
               ELSE
                 WRITE(IOFILO,5030)ITARG,TG-273.15,TTTEMP-273.15,
      +              TCTEMP-273.15
-              END IF
-            END IF
+              endif
+            endif
    20     CONTINUE
-        END IF
+        endif
    10 CONTINUE
       RETURN
 5000  FORMAT (//,' Surfaces and Targets',/,
@@ -905,7 +905,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       CHARACTER*5 CTYPE
       CHARACTER*3 CACT
 
-      IF(NDTECT.EQ.0)RETURN
+      IF(NDTECT==0)RETURN
       write(iofilo,5000)
  5000 format(//' Sensors',/,
      .  '0                             Sensor    ',
@@ -919,7 +919,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         IROOM = IXDTECT(I,DROOM)
 
         ZDETECT = XDTECT(I,DZLOC)
-        IF(ZDETECT.GT.ZZHLAY(IROOM,LOWER))THEN
+        IF(ZDETECT>ZZHLAY(IROOM,LOWER))THEN
           TLAY = ZZTEMP(IROOM,UPPER)
          ELSE
           TLAY = ZZTEMP(IROOM,LOWER)
@@ -930,15 +930,15 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         TLINK =  XDTECT(I,DTEMP)-273.15
 
         ITYPE = IXDTECT(I,DTYPE)
-        IF(ITYPE.EQ.SMOKED)THEN
+        IF(ITYPE==SMOKED)THEN
           CTYPE = 'SMOKE'
-         ELSEIF(ITYPE.EQ.HEATD)THEN
+         ELSEIF(ITYPE==HEATD)THEN
           CTYPE = 'HEAT'
          ELSE
           CTYPE = 'OTHER'
         ENDIF
         CACT = 'NO'
-        IF(IXDTECT(I,DACT).EQ.1)CACT = 'YES'
+        IF(IXDTECT(I,DACT)==1)CACT = 'YES'
         WRITE(IOFILO,5010)I,IROOM,CTYPE,TLINK,CACT,TJET,VEL
  5010   FORMAT(T2,I2,T10,I3,T24,A5,T31,1PE10.3,T42,A3,
      .        T58,1PE10.3,T69,1PE10.3)
@@ -971,9 +971,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       NHALLS = 0
       DO 10 I = 1, NM1
-        IF(IZHALL(I,IHROOM).EQ.1)NHALLS = NHALLS + 1
+        IF(IZHALL(I,IHROOM)==1)NHALLS = NHALLS + 1
    10 CONTINUE
-      IF(NHALLS.EQ.0)RETURN
+      IF(NHALLS==0)RETURN
       WRITE(IOFILO,5000)
  5000 FORMAT (//,' Hall Flow',//
      .' Compartment  Start Time     Velocity       ',
@@ -984,12 +984,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      .'--------------------')
 
       DO 20 I = 1, NM1
-        IF(IZHALL(I,IHROOM).EQ.0)GO TO 20
+        IF(IZHALL(I,IHROOM)==0)GO TO 20
         TSTART = ZZHALL(I,IHTIME0)
         VEL = ZZHALL(I,IHVEL)
         DEPTH = ZZHALL(I,IHDEPTH)
         DIST = ZZHALL(I,IHDIST)
-        IF(DIST.GT.ZZHALL(I,IHMAXLEN))DIST = ZZHALL(I,IHMAXLEN)
+        IF(DIST>ZZHALL(I,IHMAXLEN))DIST = ZZHALL(I,IHMAXLEN)
         WRITE(IOFILO,30)I,TSTART,VEL,DEPTH,DIST
    30   FORMAT(4x,I2,7x,1PG10.3,5x,1PG10.3,3x,1PG10.3,5x,1PG10.3)
    20 CONTINUE
@@ -1024,17 +1024,17 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       call splitversion(version,imajor,iminor,iminorrev)
 
       IF (.not.HEADER) THEN
-        if (iminorrev.ge.10) then
+        if (iminorrev>=10) then
             WRITE (iofilo,10) imajor, iminor, iminorrev, CRDATE(1), 
      +      CRDATE(2), CRDATE(3), MPSDAT(1), MPSDAT(2), MPSDAT(3)
         else
             WRITE (iofilo,20) imajor, iminor, iminorrev, CRDATE(1), 
      +      CRDATE(2), CRDATE(3), MPSDAT(1), MPSDAT(2), MPSDAT(3)
-        end if
-      end if
+        endif
+      endif
 
       WRITE (IOFILO,5000) trim(inputfile), trim(title)
-      IF (outputformat.gt.1) THEN
+      IF (outputformat>1) THEN
         CALL OUTOVER
         CALL OUTAMB
         CALL OUTCOMP
@@ -1043,7 +1043,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         CALL OUTTARG (1)
         CALL OUTFIRE
         CALL OUTOBJ
-      END IF
+      endif
 
       RETURN
 C
@@ -1090,16 +1090,16 @@ C
             JPOS = 3
           ELSE
             JPOS = 1
-          END IF
+          endif
         ELSE IF (CJETON(3)) THEN
           JPOS = 2
-        END IF
+        endif
         WRITE (CJBUF,'(''on for '',A7)') CHJET(JPOS+1)
       ELSE
         WRITE (CJBUF,'(''off for all surfaces.'')')
-      END IF
+      endif
       WRITE (IOFILO,5030) CJBUF
-      IF (NDUMPR.GT.0.AND.DUMPF.NE.' ') WRITE (IOFILO,5040) DUMPF
+      IF (NDUMPR>0.AND.DUMPF/=' ') WRITE (IOFILO,5040) DUMPF
       RETURN
 C
  5000 FORMAT (//,' OVERVIEW',/)
@@ -1226,7 +1226,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
 C     HORIZONTAL FLOW VENTS
 
-      IF (NVENTS.EQ.0) THEN
+      IF (NVENTS==0) THEN
         WRITE (IOFILO,5000)
       ELSE
         WRITE (IOFILO,5010)
@@ -1234,51 +1234,51 @@ C     HORIZONTAL FLOW VENTS
           DO 20 J = I + 1, N
             DO 10 K = 1, 4
               WRITE (CJOUT,'(a14)') compartmentnames(J)
-              IF (J.EQ.N) CJOUT = ' Outside'
-              IF (IAND(1,ISHFT(NW(I,J),-K)).NE.0) THEN
+              IF (J==N) CJOUT = ' Outside'
+              IF (IAND(1,ISHFT(NW(I,J),-K))/=0) THEN
                 IIJK = IJK(I,J,K)
                 WRITE (IOFILO,5020) compartmentnames(I), CJOUT, K,
      +              BW(IIJK), HL(IIJK), 
      +              HH(IIJK), HLP(IIJK), HHP(IIJK), (HHP(IIJK)-
      +              HLP(IIJK)) * BW(IIJK)
-              END IF
+              endif
    10       CONTINUE
    20     CONTINUE
    30   CONTINUE
-      END IF
+      endif
 
 C     VERTICAL FLOW VENTS
 
-      IF (NVVENT.EQ.0) THEN
+      IF (NVVENT==0) THEN
         WRITE (IOFILO,5030)
       ELSE
         WRITE (IOFILO,5040)
         DO 50 I = 1, N
           DO 40 J = 1, N
-            IF (NWV(I,J).NE.0) THEN
+            IF (NWV(I,J)/=0) THEN
               WRITE (CIOUT,'(I5,3X)') I
-              IF (I.EQ.N) CIOUT = ' Outside'
+              IF (I==N) CIOUT = ' Outside'
               WRITE (CJOUT,'(I5,3X)') J
-              IF (J.EQ.N) CJOUT = ' Outside'
+              IF (J==N) CJOUT = ' Outside'
               CSOUT = 'Round'
-              IF (VSHAPE(I,J).EQ.2) CSOUT = 'Square'
-              IF (J.LT.N) THEN
+              IF (VSHAPE(I,J)==2) CSOUT = 'Square'
+              IF (J<N) THEN
                 HRX = HR(J)
                 HRPX = HRP(J)
               ELSE
                 HRX = HRL(I)
                 HRPX = HRL(I)
-              END IF
+              endif
               WRITE (IOFILO,5050) CIOUT, CJOUT, CSOUT, VVAREA(I,J), HRX,
      +            HRPX
-            END IF
+            endif
    40     CONTINUE
    50   CONTINUE
-      END IF
+      endif
 
 C     MECHANICAL VENTS
 
-      IF (NNODE.EQ.0.AND.NEXT.EQ.0) THEN
+      IF (NNODE==0.AND.NEXT==0) THEN
         WRITE (IOFILO,5060)
       ELSE
 
@@ -1288,12 +1288,12 @@ C     FANS
         DO 100 ISYS = 1, NHVSYS
           FIRST = .TRUE.
           DO 90 IBR = 1, NBR
-            IF (IZHVBSYS(IBR).EQ.ISYS) THEN
-              IF (NF(IBR).NE.0) THEN
+            IF (IZHVBSYS(IBR)==ISYS) THEN
+              IF (NF(IBR)/=0) THEN
                 CALL CHKEXT(NA(IBR),IRM,IEXT)
-                IF (IRM.GE.1.AND.IRM.LE.N) THEN
+                IF (IRM>=1.AND.IRM<=N) THEN
                   WRITE (CIOUT,'(A4,I3)') 'Comp', IRM
-                  IF (IRM.EQ.N) CIOUT = 'Outside'
+                  IF (IRM==N) CIOUT = 'Outside'
                   WRITE (CJOUT,'(A4,I3)') 'Node', NA(IBR)
                   IF (FIRST) THEN
                     WRITE (IOFILO,5100) ISYS, CIOUT, HVELXT(IEXT), 
@@ -1302,8 +1302,8 @@ C     FANS
                   ELSE
                     WRITE (IOFILO,5110) CIOUT, HVELXT(IEXT), CJOUT, 
      +                  HVGHT(NA(IBR)), AREXT(IEXT)
-                  END IF
-                END IF
+                  endif
+                endif
                 IF (FIRST) THEN
                   WRITE (IOFILO,5130) ISYS, 'Node', NA(IBR), 
      +                HVGHT(NA(IBR)), 'Node', NE(IBR), HVGHT(NE(IBR)), 
@@ -1315,12 +1315,12 @@ C     FANS
      +                'Node', NE(IBR), HVGHT(NE(IBR)), NF(IBR), 
      +                HMIN(NF(IBR)), HMAX(NF(IBR)), (HVBCO(NF(IBR),J),J
      +                = 1,NFC(NF(IBR)))
-                END IF
+                endif
                 CALL CHKEXT(NE(IBR),IRM,IEXT)
-                IF (IRM.GE.1.AND.IRM.LE.N) THEN
+                IF (IRM>=1.AND.IRM<=N) THEN
                   WRITE (CIOUT,'(A4,I3)') 'Node', NE(IBR)
                   WRITE (CJOUT,'(A4,I3)') 'Comp', IRM
-                  IF (IRM.EQ.N) CJOUT = 'Outside'
+                  IF (IRM==N) CJOUT = 'Outside'
                   IF (FIRST) THEN
                     WRITE (IOFILO,5100) ISYS, CIOUT, HVGHT(NE(IBR)), 
      +                  CJOUT, HVELXT(IEXT), AREXT(IEXT)
@@ -1328,13 +1328,13 @@ C     FANS
                   ELSE
                     WRITE (IOFILO,5110) CIOUT, HVGHT(NE(IBR)), CJOUT, 
      +                  HVELXT(IEXT), AREXT(IEXT)
-                  END IF
-                END IF
-              END IF
-            END IF
+                  endif
+                endif
+              endif
+            endif
    90     CONTINUE
   100   CONTINUE
-      END IF
+      endif
       RETURN
 
  5000 FORMAT (//,' VENT CONNECTIONS',//,' There are no horizontal',
@@ -1407,11 +1407,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "params.fi"
       include "cshell.fi"
       DO 10 I = 1, NEXT
-        IF (HVNODE(2,I).EQ.IND) THEN
+        IF (HVNODE(2,I)==IND) THEN
           IEXT = I
           IRM = HVNODE(1,I)
           RETURN
-        END IF
+        endif
    10 CONTINUE
       IRM = 0
       IEXT = 0
@@ -1450,7 +1450,7 @@ C     CHECK TO SEE IF ANY HEAT TRANSFER IS ON
 
       DO 20 I = 1, NM1
         DO 10 J = 1, NWAL
-          IF (SWITCH(J,I).AND.CNAME(J,I).NE.' ') GO TO 30
+          IF (SWITCH(J,I).AND.CNAME(J,I)/=' ') GO TO 30
    10   CONTINUE
    20 CONTINUE
       WRITE (IOFILO,5000)
@@ -1521,22 +1521,22 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      +    'OD', 'CT', 'TS'/
 
       WRITE (IOFILO,5020)
-      IF (LFMAX.GT.0.AND.LFBT.GT.0.AND.LFBO.GT.0) THEN
+      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
         WRITE (IOFILO,5030) 'Main Fire'
         WRITE (IOFILO,5040) LFBO, FTYPE(LFBT), FPOS, RELHUM * 100., 
      +      LIMO2 * 100., TE
         WRITE (CBUF,5050)
-        IF (LFBT.EQ.1) THEN
+        IF (LFBT==1) THEN
           IS = 51
         ELSE
           WRITE (CBUF(51:110),5060)
           IS = 111
-        END IF
+        endif
         DO 10 LSP = 1, NS
           IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
             CBUF(IS:IS+9) = STYPE(LSP)
             IS = IS + 10
-          END IF
+          endif
    10   CONTINUE
         WRITE (IOFILO,'(3X,A)') CBUF(1:LENGTH(CBUF))
         WRITE (IOFILO,5000) ('(kg/kg)',I = 1,(IS-51)/10)
@@ -1544,22 +1544,22 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         DO 30 I = 1, LFMAX
           WRITE (CBUF,5070) TFIRED(I), BFIRED(I), HOCBMB(I), QFIRED(I),
      +        HFIRED(I)
-          IF (LFBT.EQ.1) THEN
+          IF (LFBT==1) THEN
             IS = 41
           ELSE
             WRITE (CBUF(51:110),5080) CCO2(I), COCO2(I), HCRATIO(I), 
      +          OCRATI(I), HCNF(I), HCLF(I)
             IS = 111
-          END IF
+          endif
           DO 20 LSP = 1, NS
             IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
               WRITE (CBUF(IS:),5080) MPRODR(I,LSP)
               IS = IS + 10
-            END IF
+            endif
    20     CONTINUE
           WRITE (IOFILO,'(1X,A)') CBUF(1:LENGTH(CBUF))
    30   CONTINUE
-      END IF
+      endif
       RETURN
  5000 FORMAT ('   (s)       (kg/s)    (J/kg)    (W)       (m)       ',15
      +    (A7,3X))
@@ -1609,9 +1609,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
      +    'OD', 'CT', 'TS'/
 
-      IF (NUMOBJL.GT.0) THEN
+      IF (NUMOBJL>0) THEN
         DO 40 IO = 1, MXOIN
-          IF (OBJPNT(IO).NE.0) THEN
+          IF (OBJPNT(IO)/=0) THEN
             J = OBJPNT(IO)
             NNV = OBJLFM(J)
             WRITE (IOFILO,5020) OBJNIN(J)(1:LENGTH(OBJNIN(J))), J
@@ -1636,13 +1636,13 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
                 IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
                   WRITE (CBUF(IS:),5070) OMPRODR(I,LSP,J)
                   IS = IS + 10
-                END IF
+                endif
    20         CONTINUE
               WRITE (IOFILO,'(1X,A)') CBUF(1:LENGTH(CBUF))
    30       CONTINUE
-          END IF
+          endif
    40   CONTINUE
-      END IF
+      endif
       RETURN
  5000 FORMAT ('   (s)       (kg/s)    (J/kg)    (W)       (m)       ',15
      +    (A7,3X))
@@ -1682,23 +1682,23 @@ C
       include "fltarget.fi"
       CHARACTER CBUF*255
 
-      IF(NTARG.NE.0)WRITE(IOFILO,5000)
+      IF(NTARG/=0)WRITE(IOFILO,5000)
  5000 FORMAT(//,' TARGETS'//
      .         ' Target',T9,'Compartment',T24,'Position (x, y, z)',
      .         T51,'Direction (x, y, z)',T76,'Material'/
      .         1X,82('-'))
 
       DO 10 ITARG = 1, NTARG
-        IF (ITARG.LT.NTARG-NM1+1) THEN
+        IF (ITARG<NTARG-NM1+1) THEN
           CBUF = CXTARG(ITARG)
-        ELSE IF (ITARG.GE.NTARG-NM1+1.AND.ISW.NE.1) THEN
+        ELSE IF (ITARG>=NTARG-NM1+1.AND.ISW/=1) THEN
           WRITE (CBUF,5004) ITARG-(NTARG-NM1)
         ELSE 
           WRITE (CBUF,5005) CXTARG(ITARG),ITARG-(NTARG-NM1)
-        END IF
+        endif
 5004  FORMAT ('Floor, compartment ',I2)
 5005  FORMAT (A8,'  Floor, compartment ',I2)
-!      IF (ITARG.EQ.NTARG-NM1+1) WRITE (IOFILO,5006)
+!      IF (ITARG==NTARG-NM1+1) WRITE (IOFILO,5006)
 5006  FORMAT (' ')
         WRITE(IOFILO,5010)ITARG,compartmentnames(IXTARG(TRGROOM,ITARG)),
      .      (XXTARG(TRGCENX+J,ITARG),J=0,2),
@@ -1747,20 +1747,20 @@ C
       X1 = 1.0D0
       X01 = 0.1D0
       DO 10 I = 1, 8
-        IF (FLOW(I).GE.X1000) THEN
+        IF (FLOW(I)>=X1000) THEN
           WRITE (OUTBUF(13*(I-1)+1:13*I),5000) FLOW(I)
-        ELSE IF (FLOW(I).GE.X100) THEN
+        ELSE IF (FLOW(I)>=X100) THEN
           WRITE (OUTBUF(13*(I-1)+1:13*I),5010) FLOW(I)
-        ELSE IF (FLOW(I).GE.X10) THEN
+        ELSE IF (FLOW(I)>=X10) THEN
           WRITE (OUTBUF(13*(I-1)+1:13*I),5020) FLOW(I)
-        ELSE IF (FLOW(I).GE.X1) THEN
+        ELSE IF (FLOW(I)>=X1) THEN
           WRITE (OUTBUF(13*(I-1)+1:13*I),5030) FLOW(I)
-        ELSE IF (FLOW(I).GE.X01) THEN
+        ELSE IF (FLOW(I)>=X01) THEN
           WRITE (OUTBUF(13*(I-1)+1:13*I),5040) FLOW(I)
         ELSE
           WRITE (OUTBUF(13*(I-1)+1:13*I),5000) FLOW(I)
-        END IF
-        IF (FLOW(I).LE.ATOL) OUTBUF(13*(I-1)+1:13*I) = ' '
+        endif
+        IF (FLOW(I)<=ATOL) OUTBUF(13*(I-1)+1:13*I) = ' '
    10 CONTINUE
       RETURN
  5000 FORMAT (2X,1PG11.3)
@@ -1781,7 +1781,7 @@ C
       include "cfast.fi"
       include "fltarget.fi"
 
-      double precision positionvector(*)
+      real*8 positionvector(*)
       integer targetnumber
 
       do i = 1, 6
@@ -1854,35 +1854,35 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
    10 CONTINUE
       READ(IOFILI,*,END=100,err=10) KEYWORD, IROOM, ILAYER
       DO 20 I = 1, 15
-         IF (KEYWORD.EQ.DBUGKY(I)) THEN
-            IF (ILAYER.GT.0.AND.ILAYER.LE.2.AND.
-     .                      IROOM.GT.0.AND.IROOM.LT.NR) THEN
+         IF (KEYWORD==DBUGKY(I)) THEN
+            IF (ILAYER>0.AND.ILAYER<=2.AND.
+     .                      IROOM>0.AND.IROOM<NR) THEN
                IOUNIT = FUNIT(70)
-               IF (ILAYER.EQ.UPPER) THEN
+               IF (ILAYER==UPPER) THEN
                   LY = 'UP'
                ELSE
                   LY = 'LW'
-               END IF
-               IF (I.NE.2) THEN
+               endif
+               IF (I/=2) THEN
                   WRITE(DBUGFIL,'(A4,A2,I2.2)')DBUGKY(I)
      .                                              ,LY,IROOM
                ELSE
                   WRITE(DBUGFIL,'(A4,I2.2,I2.2)')DBUGKY(I)
      .                                              ,ILAYER,IROOM
-               END IF
+               endif
                CALL OPNOTPT(DBUGFIL,IOUNIT)
                DBUGSW(I,ILAYER,IROOM) = IOUNIT
-            END IF
-         END IF
+            endif
+         endif
    20 CONTINUE
-      IF (KEYWORD.EQ.DBUGKY(D_JAC)) THEN
+      IF (KEYWORD==DBUGKY(D_JAC)) THEN
          CALL OPNDBG(IROOM,ILAYER)
-      ELSE IF (KEYWORD.EQ.DBUGKY(16)) THEN
+      ELSE IF (KEYWORD==DBUGKY(16)) THEN
          IOUNIT = FUNIT(70)
          CALL OPNOTPT('ERRVECTR',IOUNIT)
          DBUGSW(16,1,1) = IOUNIT
       ELSE
-      END IF
+      endif
       GO TO 10
   100 CONTINUE
       CLOSE (IOFILI)
@@ -1934,7 +1934,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
 C     NORMAL PROCESSING OF THE DEBUG OUTPUT
 
-      IF (DBUGSW(D_JAC,D_PRN,1).LE.0) RETURN
+      IF (DBUGSW(D_JAC,D_PRN,1)<=0) RETURN
       IF (FIRSTC) THEN
          FIRSTC = .FALSE.
          IOFFST(1) = NOFP
@@ -1948,13 +1948,13 @@ C     NORMAL PROCESSING OF THE DEBUG OUTPUT
          HDER = '  '
          ITMP2 = 0
          DO 111 I = 1, 7
-            IF (IOFFST(I)-IOFFST(I+1).EQ.0) GO TO 111
+            IF (IOFFST(I)-IOFFST(I+1)==0) GO TO 111
             ITMP2 = ITMP2 + 1
             ITMP = IOFFST(I)*2 + 7 + ITMP2*2
             HDER(ITMP:(ITMP+2)) = LBLS(I)
   111    CONTINUE
          IOUNIT = DBUGSW(D_JAC,D_PRN,1)
-      END IF
+      endif
       XX0 = 0.0D0
       WRITE(IOUNIT,*)' '
       WRITE(IOUNIT,*)'JACOBIAN',NUMJAC + TOTJAC,' TIME ',TSEC
@@ -1962,68 +1962,68 @@ C     NORMAL PROCESSING OF THE DEBUG OUTPUT
       WRITE(IOUNIT,'(A256)')HDER
       IRDX = 1
       DO 10 I = 1, NEQS
-         IF (I.GT.IOFFST(IRDX))THEN
+         IF (I>IOFFST(IRDX))THEN
             IRDX = IRDX + 1
   101       CONTINUE   
-            IF (I.GT.IOFFST(IRDX)) THEN
+            IF (I>IOFFST(IRDX)) THEN
                IRDX = IRDX + 1
                GO TO 101
-            END IF
+            endif
             ITCOL = NEQS + 8
             DO 103 K = 1, ITCOL + 2
                ENTRY(K) = '--'
   103       CONTINUE
             WRITE(IOUNIT,*)(ENTRY(K),K=1,ITCOL)
-         END IF
+         endif
          ENTRY(1) = LBLS(IRDX-1)(1:2)
          ICDX = 1
          ITCOL = 1
          WMII = WM(I,I)
-         IF(WMII.NE.XX0)THEN
+         IF(WMII/=XX0)THEN
             IITMP = LOG(ABS(WMII))
            ELSE
             IITMP = 11
          ENDIF
-         IF (IITMP.LT.VERYSM) THEN
+         IF (IITMP<VERYSM) THEN
             DDIAG = ' .'
-         ELSE IF (IITMP.GT.VERYBG) THEN
+         ELSE IF (IITMP>VERYBG) THEN
             DDIAG = ' Û'
          ELSE
             WRITE(DDIAG,'(I2)')IITMP
-         END IF
+         endif
 
          DO 20 J = 1, NEQS
             ITCOL = ITCOL + 1
-            IF (J.GT.IOFFST(ICDX)) THEN
+            IF (J>IOFFST(ICDX)) THEN
                ICDX = ICDX + 1
   102          CONTINUE   
-               IF (J.GT.IOFFST(ICDX)) THEN
+               IF (J>IOFFST(ICDX)) THEN
                   ICDX = ICDX + 1
                   GO TO 102
-               END IF
+               endif
                ENTRY(ITCOL) = ' |'
                ITCOL = ITCOL + 1
-            END IF
+            endif
             WMIJ = BUF(J)
-            IF (WMIJ.NE.XX0.AND.WMII.NE.XX0) THEN
+            IF (WMIJ/=XX0.AND.WMII/=XX0) THEN
                TMP1 = ABS(WMIJ/WMII)
                TMP = LOG(TMP1)
-            ELSE IF (WMII.EQ.XX0) THEN
+            ELSE IF (WMII==XX0) THEN
                TMP = 11
             ELSE
                TMP = -11
             ENDIF
             ITMP = INT(TMP + 0.5D0)
 
-            IF (WMIJ.EQ.0.0D0) THEN
+            IF (WMIJ==0.0D0) THEN
                ENTRY(ITCOL) = '  '
-            ELSE IF (ITMP.LT.VERYSM) THEN
+            ELSE IF (ITMP<VERYSM) THEN
                ENTRY(ITCOL) = ' .'
-            ELSE IF (ITMP.GT.VERYBG) THEN
+            ELSE IF (ITMP>VERYBG) THEN
                ENTRY(ITCOL) = ' Û'
             ELSE
                WRITE(ENTRY(ITCOL),'(I2)')ITMP
-            END IF
+            endif
    20    CONTINUE
          WRITE(IOUNIT,*)DDIAG,':',(ENTRY(K),K=1,ITCOL)
    10 CONTINUE
@@ -2062,7 +2062,7 @@ C
       DATA FIRSTC/.TRUE./
       SAVE IOUNIT
 
-      IF (DBUGSW(D_JAC,D_CNT,1).LE.0) RETURN
+      IF (DBUGSW(D_JAC,D_CNT,1)<=0) RETURN
       IF (FIRSTC) THEN
          FIRSTC = .FALSE.
          IOUNIT = DBUGSW(D_JAC,D_CNT,1)
@@ -2072,7 +2072,7 @@ C
      .   4X,'TIME',4X,'CUR',4X,'CUM',2X,'CUR',4X,'CUM',
      .             2X,'CUR',4X,'CUM',2X,'CUR',4X,'CUM',
      .             4X,'CUR',8X,'CUM',6X,'CUR',7X,'CUM')
-      END IF
+      endif
       TOTJAC = TOTJAC + NUMJAC
       TOTSTEP = TOTSTEP + NUMSTEP
       TOTRESD = TOTRESD + NUMRESD
@@ -2120,17 +2120,17 @@ C
 
       IF (FIRSTC) THEN
          FIRSTC = .FALSE.
-         IF (JACCNT.GT.0) THEN
+         IF (JACCNT>0) THEN
             IOUNIT = FUNIT(70)
             CALL OPNOTPT(CNTFIL,IOUNIT)
             DBUGSW(D_JAC,D_CNT,1) = IOUNIT
-         END IF
-         IF (JACPRN.GT.0) THEN
+         endif
+         IF (JACPRN>0) THEN
             IOUNIT = FUNIT(70)
             CALL OPNOTPT(PRNFIL,IOUNIT)
             DBUGSW(D_JAC,D_PRN,1) = IOUNIT
-         END IF
-      END IF
+         endif
+      endif
       RETURN
       END
 
@@ -2173,26 +2173,26 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       WRITE(LBUF,*)'Solution component with the greatest error is'
       CALL XERROR(LBUF,0,1,0)
-      IF (ICOMP.LE.NOFP+NM1) THEN
+      IF (ICOMP<=NOFP+NM1) THEN
          WRITE(LBUF,'(A18,I2)')' pressure in room ',icomp
          CALL XERROR(LBUF,0,1,0)
-      ELSE IF (ICOMP.LE.NOFTU) THEN
+      ELSE IF (ICOMP<=NOFTU) THEN
          WRITE(LBUF,'(A18,I2)')' either HVAC or FSM ',icomp-nm1
          CALL XERROR(LBUF,0,1,0)
-      ELSE IF (ICOMP.LE.NOFVU) THEN
+      ELSE IF (ICOMP<=NOFVU) THEN
          WRITE(LBUF,'(A27,I2)')' upper layer temp in room ',
      .            icomp-noftu
          CALL XERROR(LBUF,0,1,0)
-      ELSE IF (ICOMP.LE.NOFTL) THEN
+      ELSE IF (ICOMP<=NOFTL) THEN
          WRITE(LBUF,'(A26,I2)')' upper layer vol in room ',
      .            icomp-nofvu
          CALL XERROR(LBUF,0,1,0)
-      ELSE IF (ICOMP.LE.NOFTL+NM1) THEN
+      ELSE IF (ICOMP<=NOFTL+NM1) THEN
          WRITE(LBUF,'(A27,I2)')' lower layer temp in room ',
      .            icomp-noftl
          CALL XERROR(LBUF,0,1,0)
-      ELSE IF (ICOMP.LE.NOFWT) THEN
-         IF (OPTION(FOXYGEN).EQ.ON) THEN
+      ELSE IF (ICOMP<=NOFWT) THEN
+         IF (OPTION(FOXYGEN)==ON) THEN
             WRITE(LBUF,'(A18,I2)')' oxygen component ',icomp-nofoxyl
             CALL XERROR(LBUF,0,1,0)
          ELSE
@@ -2200,28 +2200,28 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
      .             icomp-noftt
             CALL XERROR(LBUF,0,1,0)
          ENDIF
-      ELSE IF (ICOMP.LE.NOFPRD) THEN
+      ELSE IF (ICOMP<=NOFPRD) THEN
          ITMP = ICOMP - NOFWT
          IRM = IZWALL(ITMP,1)
          IW = IZWALL(ITMP,2)
-         IF (IW.EQ.1) THEN
+         IF (IW==1) THEN
             WRITE(LBUF,'(A18,I2,A9,I1)')
      .      ' wall temp in room ',IRM,' ceiling '
             CALL XERROR(LBUF,0,1,0)
-         ELSE IF(IW.EQ.2) THEN
+         ELSE IF(IW==2) THEN
             WRITE(LBUF,'(A18,I2,A9,I1)')
      .      ' wall temp in room ',IRM,' floor   '
             CALL XERROR(LBUF,0,1,0)
-         ELSE IF(IW.EQ.3) THEN
+         ELSE IF(IW==3) THEN
             WRITE(LBUF,'(A18,I2,A12,I1)')
      .      ' wall temp in room ',IRM,' upper wall '
             CALL XERROR(LBUF,0,1,0)
-         ELSE IF(IW.EQ.4) THEN
+         ELSE IF(IW==4) THEN
             WRITE(LBUF,'(A18,I2,A12,I1)')
      .      ' wall temp in room ',IRM,' lower wall '
             CALL XERROR(LBUF,0,1,0)
-         END IF
-      END IF
+         endif
+      endif
 
       RETURN
       END
@@ -2278,23 +2278,23 @@ C     DEBUG PRINTING
         FIRSTC = .FALSE.
         DO 30 I = 1, NBR
           DO 10 J = 1, NCNODE(NA(I))
-            IF (I.EQ.ICMV(NA(I),J)) THEN
+            IF (I==ICMV(NA(I),J)) THEN
               BMAP(I) = J
               GO TO 20
-            END IF
+            endif
    10     CONTINUE
    20     CONTINUE
    30   CONTINUE
-      END IF
+      endif
 
-      IF (IKEY.EQ.1) THEN
+      IF (IKEY==1) THEN
         WRITE (*,*) 'Pause at time = ', T,
      +      ',  Press any key to continue'
    40   CALL GRABKY(CH,HIT)
-        IF (HIT.EQ.0) GO TO 40
+        IF (HIT==0) GO TO 40
         WRITE (*,*) 'Continuing'
         WRITE (*,*)
-      ELSE IF (IKEY.EQ.2) THEN
+      ELSE IF (IKEY==2) THEN
         WRITE (IOFILO,5000) T, DT
         DO 60 I = 1, NM1
           WRITE (*,5010) I
@@ -2302,27 +2302,27 @@ C     DEBUG PRINTING
           WRITE (*,5020) '   Lower temp(K)', ZZTEMP(I,LOWER)
           WRITE (*,5020) ' Interface ht(m)', ZZHLAY(I,LOWER)
           WRITE (*,5020) '   Pressure (pa)', ZZRELP(I)
-          IF (NLSPCT.GT.0) WRITE (*,*) ' SPECIES MASS FRACTIONS ',
+          IF (NLSPCT>0) WRITE (*,*) ' SPECIES MASS FRACTIONS ',
      +        ' UPPER           LOWER'
           DO 50 IPROD = 1, NS
             IF (ACTIVS(IPROD)) THEN
               WRITE (*,5030) SPNAME(IPROD), (ZZCSPEC(I,IL,IPROD),IL
      +            = UPPER,LOWER)
-            END IF
+            endif
    50     CONTINUE
-          IF (NWALLS.NE.0) WRITE (*,*) ' WALL TEMPERATURES'
+          IF (NWALLS/=0) WRITE (*,*) ' WALL TEMPERATURES'
           IF (SWITCH(1,I)) THEN
             WRITE (*,5040) ZZWTEMP(I,1,1)
-          END IF
+          endif
           IF (SWITCH(3,I)) THEN
             WRITE (*,5060) ZZWTEMP(I,3,1)
-          END IF
+          endif
           IF (SWITCH(4,I)) THEN
             WRITE (IOFILO,5070) ZZWTEMP(I,4,1)
-          END IF
+          endif
           IF (SWITCH(2,I)) THEN
             WRITE (IOFILO,5050) ZZWTEMP(I,2,1)
-          END IF
+          endif
    60   CONTINUE
         WRITE (*,*) ' '
         WRITE (*,*) 'HVAC PRINT BY SYSTEMS'
@@ -2335,19 +2335,19 @@ C     DEBUG PRINTING
      +          ZZHVPR(ISYS,IPROD)
    70     CONTINUE
           DO 80 IDT = 1, NBR
-            IF (IZHVBSYS(IDT).EQ.ISYS) THEN
+            IF (IZHVBSYS(IDT)==ISYS) THEN
               WRITE (*,5080) NA(IDT), HVP(NA(IDT)), NE(IDT),
      +            HVP(NE(IDT)), HVFLOW(NA(IDT),BMAP(IDT)), TBR(IDT)
-            END IF
+            endif
    80     CONTINUE
    90   CONTINUE
-        IF (NDTECT.NE.0)THEN
+        IF (NDTECT/=0)THEN
            WRITE(*,*)'DETECTOR INFO'
            WRITE(*,100)
   100      FORMAT('  N ',3X,'D TEMP',6X,'J TEMP',6X,' ACT')
            DO 101 I = 1, NDTECT
               IROOM = IXDTECT(I,DROOM)
-              IF (IQUENCH(IROOM).EQ.I)THEN
+              IF (IQUENCH(IROOM)==I)THEN
                  CCC='***'
               ELSE
                  CCC = '   '
@@ -2358,7 +2358,7 @@ C     DEBUG PRINTING
   101      CONTINUE
         ENDIF
         WRITE (*,*) ' '
-      ELSE IF (IKEY.EQ.3) THEN
+      ELSE IF (IKEY==3) THEN
         WRITE (*,5090) T, DT
         CALL FND_COMP(IOFILO,IEQMAX)
         WRITE(*,6030)
@@ -2367,9 +2367,9 @@ C     DEBUG PRINTING
      .                       ZZTEMP(IROOM,LOWER),ZZTEMP(IROOM,UPPER),
      .                   ZZCSPEC(IROOM,LOWER,2),ZZCSPEC(IROOM,UPPER,2)
   201   CONTINUE
-        IF(NHVPVAR.GT.0)WRITE(*,6010)(P(NOFPMV+I),I=1,NHVPVAR)
-        IF(NHVTVAR.GT.0)WRITE(*,6020)(P(NOFTMV+I),I=1,NHVTVAR)
-        IF(NNODE.GT.0)WRITE(*,6040)
+        IF(NHVPVAR>0)WRITE(*,6010)(P(NOFPMV+I),I=1,NHVPVAR)
+        IF(NHVTVAR>0)WRITE(*,6020)(P(NOFTMV+I),I=1,NHVTVAR)
+        IF(NNODE>0)WRITE(*,6040)
         DO 210 I = 1, NNODE
           DO 220 J = 1, NCNODE(I)
              DP = HVP(MVINTNODE(I,J)) - HVP(I) + DPZ(I,J)
@@ -2381,26 +2381,26 @@ C     DEBUG PRINTING
         DO 230 IROOM = 1, NM1
            XQF = 0.
            DO 202 IOBJ = 0, NUMOBJL
-             IF (IROOM.EQ.FROOM(IOBJ))XQF = XQF + FQF(IOBJ)
+             IF (IROOM==FROOM(IOBJ))XQF = XQF + FQF(IOBJ)
   202      CONTINUE
            XQF = XQF + FQDJ(IROOM)
           WRITE(*,6060)IROOM,ZZWTEMP(IROOM,1,1),ZZWTEMP(IROOM,3,1),
      .                            ZZWTEMP(IROOM,4,1),ZZWTEMP(IROOM,2,1),
      .                            XQF
   230   CONTINUE
-        IF(NUMOBJL.GT.0)THEN
+        IF(NUMOBJL>0)THEN
           WRITE(*,6080)
           DO 240 IOBJ = 1, NUMOBJL
            WRITE(*,6085)IOBJ,XFIRE(IOBJ,10),XFIRE(IOBJ,11)
   240     CONTINUE
         ENDIF
-        IF(NTARG.GT.0)THEN
+        IF(NTARG>0)THEN
           WRITE(*,6090)
           DO 250 ITARG = 1, NTARG
             WRITE(*,6095)ITARG,XXTARG(TRGTEMPF,ITARG)
   250     CONTINUE
         ENDIF
-      END IF
+      endif
       RETURN
 
  5000 FORMAT (' T = ',1PG12.4,' DT = ',1PG12.4)
@@ -2473,16 +2473,16 @@ C
       DATA IOUNIT /11/, FIRSTC /.TRUE./
       SAVE ITOT, FIRSTC
 
-      IF (NDUMPR.EQ.0) stop 106
+      IF (NDUMPR==0) stop 106
  
       TERMXX = ITMSTP - 1
       ITERMXX = ITMSTP - 1
       CALL LENOCO(version/10,ITOT,IFLT,IINT)
       CALL WRITEOT(OUTPUT,ITOT,IOUNIT,IERR,version)
-      IF (IERR.EQ.0) THEN
+      IF (IERR==0) THEN
         if (debugging) WRITE (LOGERR,5020) ISTEP, ITOT * 4
         RETURN
-      END IF
+      endif
 	 
 C     ERROR PROCESSING
  
@@ -2576,11 +2576,11 @@ C
       WRITE (IOUNIT,IOSTAT=IOS) HEADER, IVERS0
       WRITE (IOUNIT,IOSTAT=IOS) PARRAY(1), (PARRAY(I),I = 2,PARRAY(1))
 
-      IF (IOS.NE.0) THEN
+      IF (IOS/=0) THEN
         IERR = IOS
       ELSE
         IERR = 0
-      END IF
+      endif
       RETURN
       END
 
@@ -2630,7 +2630,7 @@ C     fairly well.
  
 C     CHECKING TO MAKE SURE THE FIRST NUMBERS ARE NOT THE MARKER
  
-   10 IF (IC.EQ.MRKR) THEN
+   10 IF (IC==MRKR) THEN
         RIDX = RIDX + 1
         RETBUF(RIDX) = MRKR
         RIDX = RIDX + 1
@@ -2638,120 +2638,120 @@ C     CHECKING TO MAKE SURE THE FIRST NUMBERS ARE NOT THE MARKER
         IC = DOIT(IDX)
         IDX = IDX + 1
         GO TO 10
-      END IF
+      endif
  
       LC = IC
       COUNT = 1
  
 C     MAIN LOOP
  
-   20 IF (IDX.LE.ITIN) THEN
+   20 IF (IDX<=ITIN) THEN
         IC = DOIT(IDX)
         IDX = IDX + 1
  
 C     IF NEXT NUMBER = MARKER THEN STORE WHAT YOU HAVE
  
-   30   IF (IC.EQ.MRKR) THEN
-          IF (COUNT.GT.3) THEN
-            IF ((RIDX+5).GE.MXDMP) THEN
+   30   IF (IC==MRKR) THEN
+          IF (COUNT>3) THEN
+            IF ((RIDX+5)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
             CALL OPUT(LC,COUNT,ITIN,MXDMP,RIDX,RETBUF)
           ELSE
-            IF ((RIDX+COUNT+2).GE.MXDMP) THEN
+            IF ((RIDX+COUNT+2)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
             DO 40, I = 1, COUNT
               RIDX = RIDX + 1
               RETBUF(RIDX) = LC
    40       CONTINUE
-          END IF
+          endif
           COUNT = 0
           RIDX = RIDX + 1
           RETBUF(RIDX) = MRKR
           RIDX = RIDX + 1
           RETBUF(RIDX) = MRKR
-          IF (IDX.GT.ITIN) GO TO 60
+          IF (IDX>ITIN) GO TO 60
           IC = DOIT(IDX)
           IDX = IDX + 1
           LC = IC
           GO TO 30
-        END IF
-        IF (IC.EQ.LC) THEN
+        endif
+        IF (IC==LC) THEN
           COUNT = COUNT + 1
-          IF (COUNT.EQ.(2**30)) THEN
-            IF ((RIDX+5).GE.MXDMP) THEN
+          IF (COUNT==(2**30)) THEN
+            IF ((RIDX+5)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
             CALL OPUT(LC,COUNT,ITIN,MXDMP,RIDX,RETBUF)
             COUNT = 0
-          END IF
+          endif
         ELSE
-          IF (COUNT.GT.3) THEN
-            IF ((RIDX+5).GE.MXDMP) THEN
+          IF (COUNT>3) THEN
+            IF ((RIDX+5)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
             CALL OPUT(LC,COUNT,ITIN,MXDMP,RIDX,RETBUF)
             LC = IC
             COUNT = 1
           ELSE
-            IF ((RIDX+COUNT+2).GE.MXDMP) THEN
+            IF ((RIDX+COUNT+2)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
             DO 50, I = 1, COUNT
               RIDX = RIDX + 1
               RETBUF(RIDX) = LC
    50       CONTINUE
             LC = IC
             COUNT = 1
-          END IF
-        END IF
+          endif
+        endif
         GO TO 20
-      END IF
-   60 IF (COUNT.GT.3) THEN
-        IF ((RIDX+5).GE.MXDMP) THEN
+      endif
+   60 IF (COUNT>3) THEN
+        IF ((RIDX+5)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
         CALL OPUT(LC,COUNT,ITIN,MXDMP,RIDX,RETBUF)
         LC = IC
         COUNT = 1
       ELSE
-        IF ((RIDX+COUNT+2).GE.MXDMP) THEN
+        IF ((RIDX+COUNT+2)>=MXDMP) THEN
               WRITE (MSG,*) 
      .  'PACKOT - Overwrite, input and index = ', ITIN, IDX
               CALL XERROR(MSG,0,1,1)
               IERR = 19
               RETURN
-            END IF
+            endif
         DO 70, I = 1, COUNT
           RIDX = RIDX + 1
           RETBUF(RIDX) = LC
    70   CONTINUE
-      END IF
+      endif
       RETBUF(1) = RIDX
       RETURN
       END
@@ -2800,7 +2800,7 @@ C
       include "cfast.fi"
 
 	integer errocode	
-	double precision T, dT
+	real*8 T, dT
 
 	rewind (12)
 	write(12,5001) t, dt
@@ -2920,7 +2920,7 @@ C
       WRITE(IUNIT,141) JACCHK, CUTJAC, IPRTALG
   141 FORMAT(1X,I3,1X,1PG11.4,I3)
 
-      IF(1.EQ.1)STOP
+      IF(1==1)STOP
       RETURN
       END
 
@@ -2953,30 +2953,30 @@ C
       include "cshell.fi"
 
 ! first the file for "printed" output
-	if (lprint.lt.0) then
+	if (lprint<0) then
 		 open (unit=iofilo,file=outputfile,status='new',
      .		  carriagecontrol='fortran')
 		 lprint = abs(lprint)
 		 WRITE (LOGERR,5002) trim(outputfile)
-		 if (outputformat.eq.0) outputformat = 2
+		 if (outputformat==0) outputformat = 2
 	else
 		 OPEN (UNIT=IOFILO,FILE='CON',CARRIAGECONTROL='FORTRAN')
 		 write (logerr,5004)
-		 if (outputformat.eq.0) outputformat = 1
-	END IF
+		 if (outputformat==0) outputformat = 1
+	endif
 
 ! next the history file
-      IF (ldiago.gt.0) THEN
+      IF (ldiago>0) THEN
 	   write(logerr,5001) trim(historyfile)
          OPEN (UNIT=11,FILE=historyfile,ERR=10,
      +		IOSTAT=IOS,FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
-      END IF 
+      endif 
 
 ! Next create the status file
 	open (12,file=statusfile,ACCESS='APPEND',ERR=81,iostat=ios)
 
 ! Now the smokeview files
-	if (ldiagp.gt.0) then
+	if (ldiagp>0) then
 		 write(logerr,5003) trim(smvhead),trim(smvdata)
 	    OPEN (UNIT=13,FILE=smvhead,form='formatted',err=11,
      .          iostat=ios)
@@ -2986,7 +2986,7 @@ C
 	endif
  
 ! Next the spread sheet files
-	if (lcopyss.gt.0) then
+	if (lcopyss>0) then
 		 write(logerr,5005) trim(ssnormal),trim(ssflow),
      .                       trim(ssspecies),trim(sswall)
 		 open (unit=21, file=ssnormal,form='formatted')
@@ -3034,7 +3034,7 @@ C ERROR PROCESSING
 
       if (doesthefileexist(outputfile)) then
 	  filecount = delfilesqq(outputfile)
-	  if (filecount.lt.1) stop 104
+	  if (filecount<1) stop 104
       endif
 
       return

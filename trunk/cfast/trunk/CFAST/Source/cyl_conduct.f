@@ -1,20 +1,20 @@
       SUBROUTINE GETCYLTEMP(X,WTEMP,NX,RAD,TEMPX)
       IMPLICIT NONE
-      DOUBLE PRECISION, INTENT(IN) :: X, RAD
+      real*8, INTENT(IN) :: X, RAD
       INTEGER, INTENT(IN) :: NX
-      DOUBLE PRECISION, INTENT(IN), DIMENSION(NX) :: WTEMP
-      DOUBLE PRECISION, INTENT(OUT) :: TEMPX
+      real*8, INTENT(IN), DIMENSION(NX) :: WTEMP
+      real*8, INTENT(OUT) :: TEMPX
       
-      DOUBLE PRECISION :: DR, R, RINT, FACTOR
+      real*8 :: DR, R, RINT, FACTOR
       INTEGER :: LEFT, RIGHT
       
       DR = RAD/NX
       R = RAD-X
-      IF(R.LE.DR/2.0)THEN
+      IF(R<=DR/2.0)THEN
         TEMPX = WTEMP(1)
         RETURN
       ENDIF
-      IF(R.GE.RAD-DR/2.0)THEN
+      IF(R>=RAD-DR/2.0)THEN
         TEMPX = WTEMP(NX)
         RETURN
       ENDIF
@@ -52,17 +52,17 @@ C
       IMPLICIT NONE
       
       INTEGER, INTENT(IN) :: NX
-      DOUBLE PRECISION, INTENT(IN)  :: DT,WRHO, WK, WSPEC, DIAM
-      DOUBLE PRECISION, INTENT(IN)  :: WFLUXIN
-      DOUBLE PRECISION, INTENT(INOUT), DIMENSION(NX) :: WTEMP
+      real*8, INTENT(IN)  :: DT,WRHO, WK, WSPEC, DIAM
+      real*8, INTENT(IN)  :: WFLUXIN
+      real*8, INTENT(INOUT), DIMENSION(NX) :: WTEMP
 
 C*** DECLARE LOCAL VARIABLES
 
       INTEGER :: NN, I, II, NR, NITER, ITER
       PARAMETER (NN = 50)
-      DOUBLE PRECISION, DIMENSION(NN) :: AIM1, AI, AIP1, TNEW
-      DOUBLE PRECISION, DIMENSION(NN) :: CC, DD
-      DOUBLE PRECISION :: ALPHA, DR, FACTOR, DT_ITER
+      real*8, DIMENSION(NN) :: AIM1, AI, AIP1, TNEW
+      real*8, DIMENSION(NN) :: CC, DD
+      real*8 :: ALPHA, DR, FACTOR, DT_ITER
       
       
       NR = NN
@@ -131,24 +131,24 @@ C*** BACKWARD SUBSTITION
       END
       subroutine get_flux(t,temp_cable,temp_amb,temp_shroud,flux_out)
       
-      double precision, intent(in) :: t,temp_cable,temp_amb
-      double precision, intent(out) :: flux_out,temp_shroud
+      real*8, intent(in) :: t,temp_cable,temp_amb
+      real*8, intent(out) :: flux_out,temp_shroud
       
-      double precision :: factor, factor2, sigma, temp_gas
+      real*8 :: factor, factor2, sigma, temp_gas
       
       sigma = 5.67/10.0**8
 
-      if(t.ge.0.0.and.t.le.70.0)then
+      if(t>=0.0.and.t<=70.0)then
         factor = (t-0.0)/70.0
         factor2 = ((t-0.0)*210.0 + (70.0-t)*24.0)/70.0
-c      else if(t.gt.70.0.and.t.le.820.0)then
-      else if(t.gt.70.0)then
+c      else if(t>70.0.and.t<=820.0)then
+      else if(t>70.0)then
         factor = 1.0
         factor2 = 210.0
-c      else if(t.gt.820.0.and.t.le.1240.0)then
+c      else if(t>820.0.and.t<=1240.0)then
 c        factor = ((t-820.0)*0.62 + (1240.0-t)*1.0)/(1240.0-820.0)
 c        factor2 = ((t-820.0)*150.0 + (1240.0-t)*210.0)/(1240.0-820.0)
-c      else if(t.gt.1240.0)then
+c      else if(t>1240.0)then
 c        factor = 0.62
 c        factor2 = 150.0
       else

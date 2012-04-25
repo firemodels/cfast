@@ -15,6 +15,6 @@
 !     Work arrays for the csv input routines
 
 	integer, parameter :: nrow=200, ncol=200
-	double precision rarray(nrow,ncol)
+	real*8 rarray(nrow,ncol)
 	character carray(nrow,ncol)*128
       common /iofilearrays/ rarray, carray

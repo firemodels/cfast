@@ -690,7 +690,7 @@ Module IO
         End If
         'thermf
         If TestVersion <> True Then
-            If myThermalProperties.FileName <> "Thermal" Then
+            If myThermalProperties.FileName <> "thermal" Then
                 csv.str(i, CFASTlnNum.keyWord) = "THRMF"
                 csv.str(i, 2) = myThermalProperties.FileName
                 i += 1

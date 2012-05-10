@@ -1042,7 +1042,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
         CALL OUTTHE
         CALL OUTTARG (1)
         CALL OUTFIRE
-        CALL OUTOBJ
       endif
 
       RETURN
@@ -1492,109 +1491,9 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 
       SUBROUTINE OUTFIRE
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     OUTFIRE
-C
-C     Source File: NPUTO.SOR
-C
-C     Functional Class:  
-C
-C     Description:  Output initial test case main fire specification
-C
-C     Arguments: none
-C
-C     Revision History:
-C        Created:  7/7/1993 at 14:48 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-
-      include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
-      include "cshell.fi"
-      CHARACTER CBUF*255, STYPE(NS)*5, FTYPE(0:4)*13
-      EXTERNAL LENGTH
-      DATA FTYPE /'Undefined', 'Unconstrained', 'Constrained', 
-     +    'Pool Fire', 'Furniture'/
-      DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT', 'TS'/
-
-      WRITE (IOFILO,5020)
-      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
-        WRITE (IOFILO,5030) 'Main Fire'
-        WRITE (IOFILO,5040) LFBO, FTYPE(LFBT), FPOS, RELHUM * 100., 
-     +      LIMO2 * 100., TE
-        WRITE (CBUF,5050)
-        IF (LFBT==1) THEN
-          IS = 51
-        ELSE
-          WRITE (CBUF(51:110),5060)
-          IS = 111
-        endif
-        DO 10 LSP = 1, NS
-          IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
-            CBUF(IS:IS+9) = STYPE(LSP)
-            IS = IS + 10
-          endif
-   10   CONTINUE
-        WRITE (IOFILO,'(3X,A)') CBUF(1:LENGTH(CBUF))
-        WRITE (IOFILO,5000) ('(kg/kg)',I = 1,(IS-51)/10)
-        WRITE (IOFILO,5010) ('-',I = 1,IS-1)
-        DO 30 I = 1, LFMAX
-          WRITE (CBUF,5070) TFIRED(I), BFIRED(I), HOCBMB(I), QFIRED(I),
-     +        HFIRED(I)
-          IF (LFBT==1) THEN
-            IS = 41
-          ELSE
-            WRITE (CBUF(51:110),5080) CCO2(I), COCO2(I), HCRATIO(I), 
-     +          OCRATI(I), HCNF(I), HCLF(I)
-            IS = 111
-          endif
-          DO 20 LSP = 1, NS
-            IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
-              WRITE (CBUF(IS:),5080) MPRODR(I,LSP)
-              IS = IS + 10
-            endif
-   20     CONTINUE
-          WRITE (IOFILO,'(1X,A)') CBUF(1:LENGTH(CBUF))
-   30   CONTINUE
-      endif
-      RETURN
- 5000 FORMAT ('   (s)       (kg/s)    (J/kg)    (W)       (m)       ',15
-     +    (A7,3X))
- 5010 FORMAT (' ',255A1)
- 5020 FORMAT (//,' FIRES')
- 5030 FORMAT ('0Name: ',A,//,' Compartment    Fire Type    ',
-     +    '   Position (x,y,z)     Relative    Lower O2',
-     +    '    Pyrolysis',/,' ',52X,
-     +    'Humidity    Limit       Temperature')
- 5040 FORMAT (I5,11X,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.0,//)
- 5050 FORMAT ('Time      Fmass     Hcomb     Fqdot     Fhigh     ')
- 5060 FORMAT ('C/CO2     CO/CO2    H/C       O/C       HCN       ',
-     +    'HCL       ')
- 5070 FORMAT (F7.0,3X,1P4G10.2)
- 5080 FORMAT (1P10G10.2)
-      END
-
-      SUBROUTINE OUTOBJ
-
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     OUTOBJ
-C
-C     Source File: NPUTO.SOR
-C
-C     Functional Class:  
-C
-C     Description:  Output initial test case object fire specification
-C
-C     Arguments: none
-C
-C     Revision History:
-C        Created:  7/7/1993 at 14:48 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: outfire
+!     purpose: This routine outputs the fire specification for all the object fires
+!     Arguments: none
 
       include "precis.fi"
       include "cfast.fi"
@@ -1602,63 +1501,61 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
-      CHARACTER CBUF*255, STYPE(NS)*5, FTYPE(0:4)*13
-      EXTERNAL LENGTH
-      DATA FTYPE /'Undefined', 'Unconstrained', 'Constrained', 
-     +    'Pool Fire', 'Furniture'/
-      DATA STYPE /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
-     +    'OD', 'CT', 'TS'/
-
-      IF (NUMOBJL>0) THEN
-        DO 40 IO = 1, MXOIN
-          IF (OBJPNT(IO)/=0) THEN
-            J = OBJPNT(IO)
-            NNV = OBJLFM(J)
-            WRITE (IOFILO,5020) OBJNIN(J)(1:LENGTH(OBJNIN(J))), J
-            WRITE (IOFILO,5030) compartmentnames(OBJRM(J)),
-     +		  FTYPE(OBJTYP(J)), 
-     +          OBJPOS(1,J), OBJPOS(2,J), OBJPOS(3,J), RELHUM * 100., 
-     +          LIMO2 * 100., OBJVT(J)
-            WRITE (CBUF,5040)
-            WRITE (CBUF(51:132),5050)
-            IS = 133
-            WRITE (IOFILO,'(3X,A)') CBUF(1:LENGTH(CBUF))
-            WRITE (IOFILO,5000) ('(kg/kg)',I = 1,(IS-51)/10)
-            WRITE (IOFILO,5010) ('-',I = 1,IS-1)
-            DO 30 I = 1, NNV
-              WRITE (CBUF,5060) OTIME(I,J), OMASS(I,J), OBJHC(I,J), 
-     +            OQDOT(I,J), OHIGH(I,J)
-              WRITE (CBUF(51:132),5070) OOD(I,J), OCO(I,J), OHCR(I,J), 
-     +            OOC(I,J), OMPRODR(I,6,J), OMPRODR(I,5,J),
-     +            omprodr(i,10,j),omprodr(i,11,j)
-              IS = 111
-              DO 20 LSP = 1, NS
-                IF (ACTIVS(LSP).AND.ALLOWED(LSP)) THEN
-                  WRITE (CBUF(IS:),5070) OMPRODR(I,LSP,J)
-                  IS = IS + 10
-                endif
-   20         CONTINUE
-              WRITE (IOFILO,'(1X,A)') CBUF(1:LENGTH(CBUF))
-   30       CONTINUE
-          endif
-   40   CONTINUE
+      character cbuf*255, stype(ns)*5, ftype(0:4)*13
+      external length
+      data ftype /'Undefined', 'Unconstrained', 'Constrained', 
+     +'Pool Fire', 'Furniture'/
+      data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O',
+     +'OD', 'CT', 'TS'/
+      
+      if (numobjl>0) then
+          do io = 1, mxoin
+              if (objpnt(io)/=0) then
+                  j = objpnt(io)
+                  nnv = objlfm(j)
+                  write (iofilo,5020) objnin(j)(1:length(objnin(j))), j
+                  write (iofilo,5030) compartmentnames(objrm(j)),
+     +            ftype(objtyp(j)), 
+     +            objpos(1,j), objpos(2,j), objpos(3,j), relhum * 100., 
+     +            limo2 * 100.,radconsplit(j)
+                  write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), 
+     +             obj_n(j), obj_cl(j)
+                  write (cbuf,5040)
+                  write (cbuf(51:132),5050)
+                  is = 113
+                  write (iofilo,'(3x,a)') cbuf(1:length(cbuf))
+                  write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
+                  write (iofilo,5010) ('-',i = 1,is-1)
+                  do i = 1, nnv
+                  write (cbuf,5060) otime(i,j), omass(i,j), objhc(i,j), 
+     +                oqdot(i,j), ohigh(i,j)
+                  y_HCN = obj_n(j)*0.027028d0/objgmw(j)
+                  y_HCl = obj_cl(j)*0.036458d0/objgmw(j)
+                  write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, 
+     +                y_HCl,omprodr(i,10,j),omprodr(i,11,j)
+                      write (iofilo,'(1x,a)') cbuf(1:length(cbuf))
+                  end do
+              endif
+          end do
       endif
-      RETURN
+      return
  5000 FORMAT ('   (s)       (kg/s)    (J/kg)    (W)       (m)       ',15
-     +    (A7,3X))
+     +(A7,3X))
  5010 FORMAT (' ',255A1)
  5020 FORMAT (//,' Name: ',A,'   Referenced as object #',I3,//,
-     +    ' Compartment    Fire Type    ',
-     +    '   Position (x,y,z)     Relative    Lower O2',
-     +    '    Pyrolysis',/,' ',52X,
-     +    'Humidity    Limit       Temperature')
- 5030 FORMAT (1x,a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.0,//)
- 5040 FORMAT ('Time      Fmass     Hcomb     Fqdot     Fhigh     ')
- 5050 FORMAT ('C/CO2     CO/CO2    H/C       O/C       HCN       ',
-     +    'HCL         CT        TS')
- 5060 FORMAT (F7.0,3X,1P4G10.2)
- 5070 FORMAT (1P10G10.2,2x,2g10.2)
-      END
+     +' Compartment    Fire Type    ',
+     +'   Position (x,y,z)     Relative    Lower O2    Radiative',
+     +/,' ',52X,
+     +'Humidity    Limit       Fraction')
+ 5030 format (1x,a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.2//)
+ 5031 format (' Chemical formula of the fuel',/,3x,
+     + 'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/,
+     + 1x,5(f7.3,3x),//)
+ 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
+ 5050 format ('Soot      CO        HCN       HCl       CT        TS')
+ 5060 format (F7.0,3X,1P4G10.2)
+ 5070 format (1P10G10.2,2x,2g10.2)
+      end subroutine outfire
 
       CHARACTER*8 FUNCTION CHKSUM(FILE)
       CHARACTER*(*) FILE

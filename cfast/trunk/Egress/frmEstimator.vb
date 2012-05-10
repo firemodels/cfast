@@ -107,6 +107,7 @@ Public Class frmEstimator
         Dim sflr, eflr As Integer
         Dim x As Integer
         Dim y As Integer
+        Dim anum_cols As Integer
         Dim strarray(1, 1) As String
 
         ' Load the file.
@@ -126,13 +127,17 @@ Public Class frmEstimator
 
         ' Copy the data into the array.
         For x = 0 To num_rows - 1
-            strline = strlines(x).Split(",")
-
-            For y = 0 To num_cols - 1
-                strarray(x, y) = strline(y)
-            Next
+                strline = strlines(x).Split(",")
+            anum_cols = UBound(strline) + 1
+            If anum_cols = 6 Then
+                For y = 0 To num_cols - 1
+                    strarray(x, y) = strline(y)
+                Next
+            ElseIf anum_cols <> 1 Then
+                errMsg = "Building file must have 6 columns current file has " + anum_cols.ToString + " in row " + (x + 1).ToString
+                Return False
+            End If
         Next
-
         If num_cols <> 6 Then
             errMsg = "Building file must have 6 columns current file has " + num_cols.ToString
             Return False
@@ -158,7 +163,7 @@ Public Class frmEstimator
                     strDelay(y) = Val(strarray(x, 4))
                     lbyDelay(y) = Val(strarray(x, 5))
                 Next
-            Else
+            ElseIf sflr <> 0 Or eflr <> 0 Then
                 errMsg = "Start floor, " + sflr.ToString + ", must be >= 2 and end floor. " + eflr.ToString + ", must be > start floor and <= top floor, " + aNumFloors.ToString
                 Return False
             End If

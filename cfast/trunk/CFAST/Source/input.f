@@ -1887,6 +1887,7 @@ c    see which room is on top (if any) - this is like a bubble sort
               objgmw(iobj) = (12.01 * obj_c(iobj) + 
      .        1.008 * obj_h(iobj) + 16.0 * obj_o(iobj) + 
      .        14.01 * obj_n(iobj) + 35.45 * obj_cl(iobj)) / 1000.0
+              objvt(iobj) = te
 
               radconsplit(iobj) = lrarray(6)
               ohcomb = lrarray(7)
@@ -1920,8 +1921,8 @@ c    see which room is on top (if any) - this is like a bubble sort
           case ('TRACE')
               ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
               do ii = 1, nret
-                  omprodr(ii,7,iobj) = 1.0d0
-                  omprodr(ii,10,iobj) = 0.0d0
+                  omprodr(ii,7,iobj) = 0.0d0
+                  omprodr(ii,10,iobj) = 1.0d0
                   omprodr(ii,11,iobj) = lrarray(ii)   
               end do
           case ('AREA')

@@ -92,7 +92,11 @@
       IC = IC + 1
 !	We are imposing an arbitrary limit of 32000 columns
 	if (ic>32000) return
-      array(IC) = valu
+      if (abs(valu)<=1.0d-100) then
+          array(ic) = 0.0d0
+      else
+          array(ic) = valu
+      end if
       return
       
       entry SSprintresults (iounit,ic,array)

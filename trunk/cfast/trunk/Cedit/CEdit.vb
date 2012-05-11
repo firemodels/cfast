@@ -140,7 +140,6 @@ Public Class CeditMain
     Friend WithEvents Label76 As System.Windows.Forms.Label
     Friend WithEvents Label77 As System.Windows.Forms.Label
     Friend WithEvents Label28 As System.Windows.Forms.Label
-    Friend WithEvents GroupBox9 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox8 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox12 As System.Windows.Forms.GroupBox
     Friend WithEvents Label29 As System.Windows.Forms.Label
@@ -246,8 +245,6 @@ Public Class CeditMain
     Friend WithEvents TargetMoveUp As System.Windows.Forms.Button
     Friend WithEvents TargetDup As System.Windows.Forms.Button
     Friend WithEvents StatusBar As System.Windows.Forms.StatusBar
-    Friend WithEvents EnvTPFLookup As System.Windows.Forms.Button
-    Friend WithEvents EnvTPFileName As System.Windows.Forms.TextBox
     Friend WithEvents HVentMoveDown As System.Windows.Forms.Button
     Friend WithEvents TargetMaterial As System.Windows.Forms.ComboBox
     Friend WithEvents TargetZNormal As System.Windows.Forms.TextBox
@@ -460,9 +457,6 @@ Public Class CeditMain
         Me.TabEnvironment = New System.Windows.Forms.TabPage()
         Me.EnvTitle = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
-        Me.EnvTPFLookup = New System.Windows.Forms.Button()
-        Me.EnvTPFileName = New System.Windows.Forms.TextBox()
         Me.GroupBox8 = New System.Windows.Forms.GroupBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
         Me.Label29 = New System.Windows.Forms.Label()
@@ -794,7 +788,6 @@ Public Class CeditMain
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
-        Me.GroupBox9.SuspendLayout()
         Me.GroupBox8.SuspendLayout()
         Me.GroupBox12.SuspendLayout()
         Me.GroupBox11.SuspendLayout()
@@ -1075,7 +1068,6 @@ Public Class CeditMain
         '
         Me.TabEnvironment.Controls.Add(Me.EnvTitle)
         Me.TabEnvironment.Controls.Add(Me.Label28)
-        Me.TabEnvironment.Controls.Add(Me.GroupBox9)
         Me.TabEnvironment.Controls.Add(Me.GroupBox8)
         Me.TabEnvironment.Controls.Add(Me.GroupBox7)
         Me.TabEnvironment.Controls.Add(Me.EnvGroupErrors)
@@ -1101,33 +1093,6 @@ Public Class CeditMain
         Me.Label28.TabIndex = 101
         Me.Label28.Text = "Title:"
         Me.Label28.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'GroupBox9
-        '
-        Me.GroupBox9.Controls.Add(Me.EnvTPFLookup)
-        Me.GroupBox9.Controls.Add(Me.EnvTPFileName)
-        Me.GroupBox9.Location = New System.Drawing.Point(120, 272)
-        Me.GroupBox9.Name = "GroupBox9"
-        Me.GroupBox9.Size = New System.Drawing.Size(304, 48)
-        Me.GroupBox9.TabIndex = 8
-        Me.GroupBox9.TabStop = False
-        Me.GroupBox9.Text = "Thermal Properties File"
-        '
-        'EnvTPFLookup
-        '
-        Me.EnvTPFLookup.Location = New System.Drawing.Point(272, 16)
-        Me.EnvTPFLookup.Name = "EnvTPFLookup"
-        Me.EnvTPFLookup.Size = New System.Drawing.Size(24, 23)
-        Me.EnvTPFLookup.TabIndex = 10
-        Me.EnvTPFLookup.Text = "..."
-        '
-        'EnvTPFileName
-        '
-        Me.EnvTPFileName.Location = New System.Drawing.Point(8, 16)
-        Me.EnvTPFileName.Name = "EnvTPFileName"
-        Me.EnvTPFileName.Size = New System.Drawing.Size(264, 20)
-        Me.EnvTPFileName.TabIndex = 9
-        Me.EnvTPFileName.Text = "thermal.csv"
         '
         'GroupBox8
         '
@@ -1360,7 +1325,7 @@ Public Class CeditMain
         Me.GroupBox7.Controls.Add(Me.EnvTextOutInterval)
         Me.GroupBox7.Controls.Add(Me.Label1)
         Me.GroupBox7.Controls.Add(Me.EnvSimTime)
-        Me.GroupBox7.Location = New System.Drawing.Point(120, 64)
+        Me.GroupBox7.Location = New System.Drawing.Point(120, 74)
         Me.GroupBox7.Name = "GroupBox7"
         Me.GroupBox7.Size = New System.Drawing.Size(304, 192)
         Me.GroupBox7.TabIndex = 2
@@ -4409,8 +4374,6 @@ Public Class CeditMain
         CType(Me.Message, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabEnvironment.ResumeLayout(False)
         Me.TabEnvironment.PerformLayout()
-        Me.GroupBox9.ResumeLayout(False)
-        Me.GroupBox9.PerformLayout()
         Me.GroupBox8.ResumeLayout(False)
         Me.GroupBox12.ResumeLayout(False)
         Me.GroupBox12.PerformLayout()
@@ -4530,9 +4493,8 @@ Public Class CeditMain
     End Sub
 
     ' This section of code handles events related to the environment tab
-    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvBinaryOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvTPFileName.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvIntAmbRH.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvWindSpeed.Leave, EnvPowerLaw.Leave, EnvWindHeight.Leave
+    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvBinaryOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvIntAmbRH.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvWindSpeed.Leave, EnvPowerLaw.Leave, EnvWindHeight.Leave
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
-        If sender Is Me.EnvTPFileName Then Me.EnvTPFileName.Text = myThermalProperties.FileName ' This field is set with the lookup button
         If sender Is Me.EnvSimTime Then myEnvironment.SimulationTime = Val(Me.EnvSimTime.Text)
         If sender Is Me.EnvTextOutInterval Then myEnvironment.OutputInterval = Val(Me.EnvTextOutInterval.Text)
         If sender Is Me.EnvBinaryOutInterval Then myEnvironment.BinaryOutputInterval = Val(Me.EnvBinaryOutInterval.Text)
@@ -4550,26 +4512,6 @@ Public Class CeditMain
         If sender Is Me.EnvWindHeight Then myEnvironment.ExtScaleHeight = Val(Me.EnvWindHeight.Text)
         UpdateGUI.Environment()
     End Sub
-    Private Sub EnvTPFLookup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvTPFLookup.Click
-        Me.OpenDataFileDialog.FilterIndex = 2
-        Me.OpenDataFileDialog.ShowDialog()
-        If OpenDataFileDialog.FileNames.Length > 0 Then
-            Dim FileName As String
-            For Each FileName In OpenDataFileDialog.FileNames
-                myThermalProperties.Clear()
-                myUnits.SI = True
-                IO.ReadThermalProperties(FileName)
-                myThermalProperties.FileName = System.IO.Path.GetFileNameWithoutExtension(FileName)
-                myUnits.SI = False
-            Next
-        End If
-        UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-        UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-        UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-        UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
-        UpdateAll()
-    End Sub
-
     ' This section of code handles events related to the compartments tab
     Private Sub CompAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompAdd.Click
         ' Add a compartment to the end of the list of compartments
@@ -5587,7 +5529,7 @@ Public Class CeditMain
         SaveDataFile(False)
     End Sub
     Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
-        Dim FileName As String
+        Dim FileName As String, PathName As String
         myUnits.SI = True
         Me.SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
         Me.SaveDataFileDialog.Title = "Save As"
@@ -5604,6 +5546,8 @@ Public Class CeditMain
             WriteFireObjects(".\")
             FileName = myThermalProperties.FileName + ".csv"
             WriteThermalProperties(FileName)
+            PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
+            ChDir(PathName)
         End If
         myUnits.SI = False
         UpdateGUI.Menu()

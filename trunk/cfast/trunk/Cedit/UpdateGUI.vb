@@ -66,7 +66,6 @@ Public Class UpdateGUI
         MainWin.EnvBinaryOutInterval.Text = myEnvironment.BinaryOutputInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvSpreadOutInterval.Text = myEnvironment.SpreadsheetInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvSmokeviewInterval.Text = myEnvironment.SmokeviewInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
-        MainWin.EnvTPFileName.Text = myThermalProperties.FileName + ".csv"
         MainWin.EnvIntAmbTemp.Text = myEnvironment.IntAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         MainWin.EnvIntAmbPress.Text = myEnvironment.IntAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvIntAmbElevation.Text = myEnvironment.IntAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units

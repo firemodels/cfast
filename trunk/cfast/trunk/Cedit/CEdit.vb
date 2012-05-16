@@ -47,6 +47,8 @@ Public Class CeditMain
     Friend WithEvents MainOpen As System.Windows.Forms.Button
     Friend WithEvents MenuValidationOutput As System.Windows.Forms.MenuItem
     Friend WithEvents FirePeakHCl As System.Windows.Forms.Label
+    Friend WithEvents FireNewt2 As System.Windows.Forms.Button
+    Friend WithEvents FireNewObject As System.Windows.Forms.Button
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -673,6 +675,7 @@ Public Class CeditMain
         Me.FireLOL = New System.Windows.Forms.TextBox()
         Me.Label55 = New System.Windows.Forms.Label()
         Me.GroupFireObject = New System.Windows.Forms.GroupBox()
+        Me.FireNewt2 = New System.Windows.Forms.Button()
         Me.FirePeakHCl = New System.Windows.Forms.Label()
         Me.FireObjectEdit = New System.Windows.Forms.Button()
         Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D()
@@ -785,6 +788,7 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.MainOpen = New System.Windows.Forms.Button()
+        Me.FireNewObject = New System.Windows.Forms.Button()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -3223,6 +3227,8 @@ Public Class CeditMain
         '
         'GroupFireObject
         '
+        Me.GroupFireObject.Controls.Add(Me.FireNewObject)
+        Me.GroupFireObject.Controls.Add(Me.FireNewt2)
         Me.GroupFireObject.Controls.Add(Me.FirePeakHCl)
         Me.GroupFireObject.Controls.Add(Me.FireObjectEdit)
         Me.GroupFireObject.Controls.Add(Me.FireObjectPlot)
@@ -3244,6 +3250,14 @@ Public Class CeditMain
         Me.GroupFireObject.TabIndex = 17
         Me.GroupFireObject.TabStop = False
         Me.GroupFireObject.Text = "Fire Object"
+        '
+        'FireNewt2
+        '
+        Me.FireNewt2.Location = New System.Drawing.Point(288, 58)
+        Me.FireNewt2.Name = "FireNewt2"
+        Me.FireNewt2.Size = New System.Drawing.Size(75, 23)
+        Me.FireNewt2.TabIndex = 147
+        Me.FireNewt2.Text = "Create t²"
         '
         'FirePeakHCl
         '
@@ -4348,6 +4362,14 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 105
         Me.MainOpen.Text = "Open"
         '
+        'FireNewObject
+        '
+        Me.FireNewObject.Location = New System.Drawing.Point(288, 91)
+        Me.FireNewObject.Name = "FireNewObject"
+        Me.FireNewObject.Size = New System.Drawing.Size(75, 23)
+        Me.FireNewObject.TabIndex = 148
+        Me.FireNewObject.Text = "Create New"
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -5439,14 +5461,27 @@ Public Class CeditMain
     End Sub
     Private Sub FireObjectEdit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireObjectEdit.Click
         If CurrentFireObject >= 0 Then
-            EditFireObjects(CurrentFireObject)
+            EditFireObject(CurrentFireObject)
         Else
             EditFireObjects(0)
         End If
     End Sub
+    Private Sub EditFireObject(ByVal aCurrentFireObject As Integer)
+        If myFireObjects.Count > 0 Then
+            Dim ObjectWindow As New EditFireObject
+            Dim iReturn As Integer, i As Integer
+            ObjectWindow.CurrentFireObject = aCurrentFireObject
+            iReturn = ObjectWindow.ShowDialog(Me)
+            If iReturn = OK Then
+                FireCopy(ObjectWindow.aFireObject, myFireObjects(aCurrentFireObject))
+                UpdateGUI.InitFireObjectList(Me.FireName)
+                UpdateAll()
+            End If
+        End If
+    End Sub
     Private Sub EditFireObjects(ByVal aCurrentFireObject As Integer)
         If myFireObjects.Count > 0 Then
-            Dim ObjectsWindow As New FireObjectsEdit
+            Dim ObjectsWindow As New AllFireObjects
             Dim iReturn As Integer, i As Integer
             ObjectsWindow.CurrentFireObject = aCurrentFireObject
             iReturn = ObjectsWindow.ShowDialog(Me)
@@ -5823,5 +5858,37 @@ Public Class CeditMain
         End If
         Me.MenuValidationOutput.Checked = ValidationOutput
         SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
+    End Sub
+    Private Sub FireNew_Click(sender As System.Object, e As System.EventArgs) Handles FireNewt2.Click, FireNewObject.Click
+        If myFireObjects.Count + 1 <= Fire.MaximumFireObjects Then
+            Dim aFireObject As New Fire
+            If sender Is FireNewt2 Then
+                Dim t2FireDialog As New t2Fire
+                Dim iReturn As Integer
+                iReturn = t2FireDialog.ShowDialog(Me)
+                If iReturn = Windows.Forms.DialogResult.OK Then
+                    Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
+                    myFireObjects.Add(aFire)
+                    UpdateGUI.InitFireObjectList(Me.FireName)
+                    Me.FireName.SelectedIndex = myFireObjects.Count - 1
+                    CurrentFireObject = Me.FireName.SelectedIndex
+                    aFire.FireObject = CurrentFireObject
+                    aFireObject = myFireObjects(CurrentFireObject)
+                    aFire.Name = aFireObject.Name
+                    UpdateGUI.Fires(CurrentFire)
+                End If
+            ElseIf sender Is FireNewObject Then
+                Dim aFire As New Fire(Fire.TypeFireObject)
+                myFireObjects.Add(aFire)
+                UpdateGUI.InitFireObjectList(Me.FireName)
+                Me.FireName.SelectedIndex = myFireObjects.Count - 1
+                CurrentFireObject = Me.FireName.SelectedIndex
+                aFire.FireObject = CurrentFireObject
+                aFireObject = myFireObjects(CurrentFireObject)
+                aFire.Name = aFireObject.Name
+                UpdateGUI.Fires(CurrentFire)
+            End If
+
+        End If
     End Sub
 End Class

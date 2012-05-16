@@ -1,4 +1,4 @@
-Public Class FireObjectsEdit
+Public Class AllFireObjects
     Inherits System.Windows.Forms.Form
     Friend CurrentFireObject As Integer
 
@@ -66,7 +66,7 @@ Public Class FireObjectsEdit
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FireObjectsEdit))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(AllFireObjects))
         Me.GroupFireObject = New System.Windows.Forms.GroupBox()
         Me.FireCOYield = New System.Windows.Forms.TextBox()
         Me.Label3 = New System.Windows.Forms.Label()

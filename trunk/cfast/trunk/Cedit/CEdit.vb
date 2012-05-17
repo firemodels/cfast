@@ -675,6 +675,7 @@ Public Class CeditMain
         Me.FireLOL = New System.Windows.Forms.TextBox()
         Me.Label55 = New System.Windows.Forms.Label()
         Me.GroupFireObject = New System.Windows.Forms.GroupBox()
+        Me.FireNewObject = New System.Windows.Forms.Button()
         Me.FireNewt2 = New System.Windows.Forms.Button()
         Me.FirePeakHCl = New System.Windows.Forms.Label()
         Me.FireObjectEdit = New System.Windows.Forms.Button()
@@ -788,7 +789,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.MainOpen = New System.Windows.Forms.Button()
-        Me.FireNewObject = New System.Windows.Forms.Button()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -3251,9 +3251,17 @@ Public Class CeditMain
         Me.GroupFireObject.TabStop = False
         Me.GroupFireObject.Text = "Fire Object"
         '
+        'FireNewObject
+        '
+        Me.FireNewObject.Location = New System.Drawing.Point(291, 87)
+        Me.FireNewObject.Name = "FireNewObject"
+        Me.FireNewObject.Size = New System.Drawing.Size(75, 23)
+        Me.FireNewObject.TabIndex = 148
+        Me.FireNewObject.Text = "Create New"
+        '
         'FireNewt2
         '
-        Me.FireNewt2.Location = New System.Drawing.Point(288, 58)
+        Me.FireNewt2.Location = New System.Drawing.Point(291, 57)
         Me.FireNewt2.Name = "FireNewt2"
         Me.FireNewt2.Size = New System.Drawing.Size(75, 23)
         Me.FireNewt2.TabIndex = 147
@@ -3262,7 +3270,7 @@ Public Class CeditMain
         'FirePeakHCl
         '
         Me.FirePeakHCl.AutoSize = True
-        Me.FirePeakHCl.Location = New System.Drawing.Point(24, 166)
+        Me.FirePeakHCl.Location = New System.Drawing.Point(24, 154)
         Me.FirePeakHCl.Name = "FirePeakHCl"
         Me.FirePeakHCl.Size = New System.Drawing.Size(81, 13)
         Me.FirePeakHCl.TabIndex = 146
@@ -3271,7 +3279,7 @@ Public Class CeditMain
         '
         'FireObjectEdit
         '
-        Me.FireObjectEdit.Location = New System.Drawing.Point(288, 28)
+        Me.FireObjectEdit.Location = New System.Drawing.Point(291, 27)
         Me.FireObjectEdit.Name = "FireObjectEdit"
         Me.FireObjectEdit.Size = New System.Drawing.Size(75, 23)
         Me.FireObjectEdit.TabIndex = 19
@@ -3303,7 +3311,7 @@ Public Class CeditMain
         'FireMaterial
         '
         Me.FireMaterial.AutoSize = True
-        Me.FireMaterial.Location = New System.Drawing.Point(24, 68)
+        Me.FireMaterial.Location = New System.Drawing.Point(24, 209)
         Me.FireMaterial.Name = "FireMaterial"
         Me.FireMaterial.Size = New System.Drawing.Size(47, 13)
         Me.FireMaterial.TabIndex = 134
@@ -3321,7 +3329,7 @@ Public Class CeditMain
         'FirePeakHeight
         '
         Me.FirePeakHeight.AutoSize = True
-        Me.FirePeakHeight.Location = New System.Drawing.Point(24, 180)
+        Me.FirePeakHeight.Location = New System.Drawing.Point(24, 168)
         Me.FirePeakHeight.Name = "FirePeakHeight"
         Me.FirePeakHeight.Size = New System.Drawing.Size(69, 13)
         Me.FirePeakHeight.TabIndex = 130
@@ -3331,7 +3339,7 @@ Public Class CeditMain
         'FireHoC
         '
         Me.FireHoC.AutoSize = True
-        Me.FireHoC.Location = New System.Drawing.Point(24, 110)
+        Me.FireHoC.Location = New System.Drawing.Point(24, 98)
         Me.FireHoC.Name = "FireHoC"
         Me.FireHoC.Size = New System.Drawing.Size(103, 13)
         Me.FireHoC.TabIndex = 116
@@ -3351,7 +3359,7 @@ Public Class CeditMain
         'FireFormula
         '
         Me.FireFormula.AutoSize = True
-        Me.FireFormula.Location = New System.Drawing.Point(24, 82)
+        Me.FireFormula.Location = New System.Drawing.Point(24, 70)
         Me.FireFormula.Name = "FireFormula"
         Me.FireFormula.Size = New System.Drawing.Size(47, 13)
         Me.FireFormula.TabIndex = 118
@@ -3361,7 +3369,7 @@ Public Class CeditMain
         'FirePeakSoot
         '
         Me.FirePeakSoot.AutoSize = True
-        Me.FirePeakSoot.Location = New System.Drawing.Point(24, 124)
+        Me.FirePeakSoot.Location = New System.Drawing.Point(24, 112)
         Me.FirePeakSoot.Name = "FirePeakSoot"
         Me.FirePeakSoot.Size = New System.Drawing.Size(86, 13)
         Me.FirePeakSoot.TabIndex = 122
@@ -3371,7 +3379,7 @@ Public Class CeditMain
         'FirePeakHCN
         '
         Me.FirePeakHCN.AutoSize = True
-        Me.FirePeakHCN.Location = New System.Drawing.Point(24, 152)
+        Me.FirePeakHCN.Location = New System.Drawing.Point(24, 140)
         Me.FirePeakHCN.Name = "FirePeakHCN"
         Me.FirePeakHCN.Size = New System.Drawing.Size(87, 13)
         Me.FirePeakHCN.TabIndex = 119
@@ -3381,7 +3389,7 @@ Public Class CeditMain
         'FirePeakCO
         '
         Me.FirePeakCO.AutoSize = True
-        Me.FirePeakCO.Location = New System.Drawing.Point(24, 138)
+        Me.FirePeakCO.Location = New System.Drawing.Point(24, 126)
         Me.FirePeakCO.Name = "FirePeakCO"
         Me.FirePeakCO.Size = New System.Drawing.Size(79, 13)
         Me.FirePeakCO.TabIndex = 116
@@ -3391,7 +3399,7 @@ Public Class CeditMain
         'FireRadiativeFraction
         '
         Me.FireRadiativeFraction.AutoSize = True
-        Me.FireRadiativeFraction.Location = New System.Drawing.Point(24, 208)
+        Me.FireRadiativeFraction.Location = New System.Drawing.Point(24, 196)
         Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
         Me.FireRadiativeFraction.Size = New System.Drawing.Size(96, 13)
         Me.FireRadiativeFraction.TabIndex = 124
@@ -3401,7 +3409,7 @@ Public Class CeditMain
         'FirePeakArea
         '
         Me.FirePeakArea.AutoSize = True
-        Me.FirePeakArea.Location = New System.Drawing.Point(24, 194)
+        Me.FirePeakArea.Location = New System.Drawing.Point(24, 182)
         Me.FirePeakArea.Name = "FirePeakArea"
         Me.FirePeakArea.Size = New System.Drawing.Size(60, 13)
         Me.FirePeakArea.TabIndex = 114
@@ -3411,7 +3419,7 @@ Public Class CeditMain
         'FireMolarMass
         '
         Me.FireMolarMass.AutoSize = True
-        Me.FireMolarMass.Location = New System.Drawing.Point(24, 96)
+        Me.FireMolarMass.Location = New System.Drawing.Point(24, 84)
         Me.FireMolarMass.Name = "FireMolarMass"
         Me.FireMolarMass.Size = New System.Drawing.Size(64, 13)
         Me.FireMolarMass.TabIndex = 128
@@ -4361,14 +4369,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 105
         Me.MainOpen.Text = "Open"
-        '
-        'FireNewObject
-        '
-        Me.FireNewObject.Location = New System.Drawing.Point(288, 91)
-        Me.FireNewObject.Name = "FireNewObject"
-        Me.FireNewObject.Size = New System.Drawing.Size(75, 23)
-        Me.FireNewObject.TabIndex = 148
-        Me.FireNewObject.Text = "Create New"
         '
         'CeditMain
         '
@@ -5356,6 +5356,38 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
+    Private Sub FireNew_Click(sender As System.Object, e As System.EventArgs) Handles FireNewt2.Click, FireNewObject.Click
+        If myFireObjects.Count + 1 <= Fire.MaximumFireObjects Then
+            Dim aFireObject As New Fire
+            If sender Is FireNewt2 Then
+                Dim t2FireDialog As New t2Fire
+                Dim iReturn As Integer
+                iReturn = t2FireDialog.ShowDialog(Me)
+                If iReturn = Windows.Forms.DialogResult.OK Then
+                    Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
+                    myFireObjects.Add(aFire)
+                    UpdateGUI.InitFireObjectList(Me.FireName)
+                    Me.FireName.SelectedIndex = myFireObjects.Count - 1
+                    CurrentFireObject = Me.FireName.SelectedIndex
+                    aFire.FireObject = CurrentFireObject
+                    aFireObject = myFireObjects(CurrentFireObject)
+                    aFire.Name = aFireObject.Name
+                    UpdateGUI.Fires(CurrentFire)
+                End If
+            ElseIf sender Is FireNewObject Then
+                Dim aFire As New Fire(Fire.TypeFireObject)
+                myFireObjects.Add(aFire)
+                UpdateGUI.InitFireObjectList(Me.FireName)
+                Me.FireName.SelectedIndex = myFireObjects.Count - 1
+                CurrentFireObject = Me.FireName.SelectedIndex
+                aFire.FireObject = CurrentFireObject
+                aFireObject = myFireObjects(CurrentFireObject)
+                aFire.Name = aFireObject.Name
+                UpdateGUI.Fires(CurrentFire)
+            End If
+
+        End If
+    End Sub
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireType.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FirePlumeType.SelectedIndexChanged, FireName.SelectedIndexChanged, FireCeilingJet.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
         Dim aFire As New Fire, aFireObject As New Fire
         If sender Is Me.FireCeilingJet Then myEnvironment.CeilingJet = Me.FireCeilingJet.SelectedIndex
@@ -5394,13 +5426,14 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
+
+    ' This section handles things related to the buttons, etc. on the main screen
     Private Sub TabMain_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles TabMain.Click
         ' Anytime your change tab pages, you need to update everything to make it consistent
         UpdateGUI.DoErrorCheck = False
         UpdateAll()
         UpdateGUI.DoErrorCheck = True
     End Sub
-
     Private Sub MainGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainGeometry.Click
         MainGeometry.Enabled = False
         RunSMVGeometry()
@@ -5858,37 +5891,5 @@ Public Class CeditMain
         End If
         Me.MenuValidationOutput.Checked = ValidationOutput
         SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
-    End Sub
-    Private Sub FireNew_Click(sender As System.Object, e As System.EventArgs) Handles FireNewt2.Click, FireNewObject.Click
-        If myFireObjects.Count + 1 <= Fire.MaximumFireObjects Then
-            Dim aFireObject As New Fire
-            If sender Is FireNewt2 Then
-                Dim t2FireDialog As New t2Fire
-                Dim iReturn As Integer
-                iReturn = t2FireDialog.ShowDialog(Me)
-                If iReturn = Windows.Forms.DialogResult.OK Then
-                    Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
-                    myFireObjects.Add(aFire)
-                    UpdateGUI.InitFireObjectList(Me.FireName)
-                    Me.FireName.SelectedIndex = myFireObjects.Count - 1
-                    CurrentFireObject = Me.FireName.SelectedIndex
-                    aFire.FireObject = CurrentFireObject
-                    aFireObject = myFireObjects(CurrentFireObject)
-                    aFire.Name = aFireObject.Name
-                    UpdateGUI.Fires(CurrentFire)
-                End If
-            ElseIf sender Is FireNewObject Then
-                Dim aFire As New Fire(Fire.TypeFireObject)
-                myFireObjects.Add(aFire)
-                UpdateGUI.InitFireObjectList(Me.FireName)
-                Me.FireName.SelectedIndex = myFireObjects.Count - 1
-                CurrentFireObject = Me.FireName.SelectedIndex
-                aFire.FireObject = CurrentFireObject
-                aFireObject = myFireObjects(CurrentFireObject)
-                aFire.Name = aFireObject.Name
-                UpdateGUI.Fires(CurrentFire)
-            End If
-
-        End If
     End Sub
 End Class

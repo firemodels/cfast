@@ -7,6 +7,7 @@ CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
 
+#export CFASTEXE=$SVNROOT/CFAST/intel_osx_32/cfast6_osx_32
 export CFASTEXE=$SVNROOT/CFAST/intel_linux_32/cfast6_linux_32
 export CFAST=$CFASTEXE
 export RUNCFAST=$SVNROOT/Verification/scripts/runcfast.sh

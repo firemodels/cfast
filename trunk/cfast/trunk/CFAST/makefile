@@ -13,7 +13,7 @@ VPATH = Source
 
 # Definition of the object variables
 
-objf = cfast.o auxiliary.o initialization.o input.o numerics.o \
+objf = datamodules.o cfast.o auxiliary.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssheaders.o \
               conduction.o cyl_conduct.o convection.o radiation.o target.o \
               fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o 

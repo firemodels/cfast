@@ -99,10 +99,10 @@ intel_linux_64_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 32 bit
-intel_osx_32 : FFLAGS = -O3  -m32 -axSSSE3 -heap-arrays -static-intel -vec_report0
+intel_osx_32 : FFLAGS = -fpp -O3  -m32 -heap-arrays -static-intel -vec_report0 -I $(INCLUDE)
 intel_osx_32 : FCOMPL = ifort
 intel_osx_32 : obj = cfast6_intel_osx_32
-intel_osx_32 : setup $(obj)
+intel_osx_32 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
 intel_osx_32_db : FFLAGS = -check -warn unused -O0 -m32 -g -traceback -fpe:0 -fltconsistency -FR -WB -vec_report0
@@ -112,10 +112,10 @@ intel_osx_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
 # 64 bit
-intel_osx_64 : FFLAGS = -O3 -m64 -heap-arrays -axSSSE3 -static-intel
+intel_osx_64 : FFLAGS = -fpp -O3 -m64 -heap-arrays -static-intel -I $(INCLUDE)
 intel_osx_64 : FCOMPL = ifort
 intel_osx_64 : obj = cfast6_intel_osx_64
-intel_osx_64 : setup $(obj)
+intel_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
 intel_osx_64_db : FFLAGS = -check -warn unused -O0 -m64 -g -traceback -save-temps -fpe:0 -fltconsistency -fp-stack-check -FR -WB -vec_report0

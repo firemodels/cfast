@@ -39,6 +39,11 @@
 
       logical error
       integer errorcode, rev_cfast
+
+!      if(command_argument_count().eq.0)then
+! put CFAST version and svn revision info here      
+!        write(6,*)"no arguments"
+!      endif
       errorcode = 0
 
 !     initialize the basic memory configuration

@@ -1941,6 +1941,7 @@
 		<row><td>kiosk.o</td><td>ISX_DEFAULTCOMPONENT</td><td>kiosk.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\kiosk.o</td><td>1</td><td/></row>
 		<row><td>mattress_and_boxspring.o</td><td>ISX_DEFAULTCOMPONENT</td><td>mattress and boxspring.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\mattress and boxspring.o</td><td>1</td><td/></row>
 		<row><td>nplot.dll</td><td>NPlot.dll</td><td>NPlot.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\NPlot.dll</td><td>1</td><td/></row>
+		<row><td>objects.svo</td><td>ISX_DEFAULTCOMPONENT</td><td>objects.svo</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\objects.svo</td><td>1</td><td/></row>
 		<row><td>pthreadvc.dll</td><td>pthreadVC.dll</td><td>pthreadVC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\pthreadVC.dll</td><td>1</td><td/></row>
 		<row><td>smokediff_win_32.exe</td><td>smokediff_win_32.exe</td><td>smokediff_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokediff_win_32.exe</td><td>1</td><td/></row>
 		<row><td>smokeview.exe</td><td>smokeview.exe</td><td>smokeview.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\smokeview.exe</td><td>1</td><td/></row>

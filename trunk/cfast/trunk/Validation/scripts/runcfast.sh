@@ -17,4 +17,7 @@ if ! [ -e $fulldir/$infile.in ]; then
   exit
 fi
 cd $fulldir
+echo -----------------------------
+echo running $infile in $fulldir
 $CFAST $infile 
+echo -----------------------------

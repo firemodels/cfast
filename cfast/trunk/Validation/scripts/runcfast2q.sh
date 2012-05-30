@@ -7,5 +7,5 @@ fulldir=$BASEDIR/$dir/$dir2
 
 echo -----------------------------
 echo running $infile in $fulldir
-$QEXE $fulldir $CFAST $infile 
+$QEXE $dir/$dir2 $CFAST $infile 
 echo -----------------------------

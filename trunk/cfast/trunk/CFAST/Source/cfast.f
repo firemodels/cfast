@@ -40,11 +40,12 @@
       logical error
       integer errorcode, rev_cfast
 
-!      if(command_argument_count().eq.0)then
-! put CFAST version and svn revision info here      
-!        write(6,*)"no arguments"
-!      endif
       errorcode = 0
+
+      if(command_argument_count().eq.0)then
+          call versionout(0)
+          write (*,*) 'No input file specified'
+      endif
 
 !     initialize the basic memory configuration
 
@@ -67,7 +68,7 @@
       mpsdat(2) = rundat(2)
       mpsdat(3) = rundat(3)
 
-      call versionout (version)
+      call versionout (logerr)
       irev = rev_cfast()
 
       call initslv
@@ -150,7 +151,7 @@
      .    trace/.false./,
      .    validate/.false./
 
-     .    version/6200/
+     .    version/6300/
 
       end block data initcs
 
@@ -159,7 +160,7 @@
           include "precis.fi"
           include "cfast.fi"
 
-          data crdate/2011,11,1/
+          data crdate/2012,5,30/
           
       end block data initcf
 

@@ -6,8 +6,8 @@ set BASEDIR=%CD%\..
 set SVNROOT=%BASEDIR%\..\
 set TIME_FILE=%SCRIPT_DIR%\smv_case_times.txt
 
-Rem set CFASTEXE=%SVNROOT%\CFAST\intel_win_32\cfast6_win_32
-set CFASTEXE=cfast
+set CFASTEXE=%SVNROOT%\CFAST\intel_win_32\cfast6_win_32
+Rem set CFASTEXE=cfast
 set CFAST=%CFASTEXE%
 set RUNCFAST=call %SVNROOT%\Validation\scripts\runcfast_win32.bat
 set RUNCFAST2=call %SVNROOT%\Validation\scripts\runcfast2_win32.bat

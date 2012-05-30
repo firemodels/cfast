@@ -44,46 +44,43 @@ setup_win:
 .f90.obj:
 	$(FCOMPL) -c $(FFLAGS) $<
 
-# Windows Intel Compiler, version 11
+# run make_fds.sh or make_fds.bat scripts in individual build directories
 
- #*** note: the following scripts (located in ..\Scripts directory) must be run before running make with this target
- #    ..\Scripts\iclvars ia32
- #    ..\Scripts\ifortvars ia32
+# ------------- Windows -------------------
 
-intel_win_32_db : FFLAGS = -fpp -D pp_ibmpc /Qvec_report0 /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+# 32 bit
+intel_win_32_db : FFLAGS = -fpp -D pp_ibmpc /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_32_db : FCOMPL = ifort
 intel_win_32_db : obj = cfast6_win_32_db
 intel_win_32_db : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
-intel_win_32 : FFLAGS = -O2 -fpp -D pp_ibmpc /Qvec_report0
+intel_win_32 : FFLAGS = -O2 -fpp -D pp_ibmpc /Qvec_report0 /Qsave /Qzero
 intel_win_32 : FCOMPL = ifort
 intel_win_32 : obj = cfast6_win_32
 intel_win_32 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
-intel_win_64 : FFLAGS = -O2 -fpp -D pp_ibmpc /Qvec_report0
+# 64 bit
+intel_win_64 : FFLAGS = -O2 -fpp -D pp_ibmpc /Qvec_report0  /Qsave /Qzero
 intel_win_64 : FCOMPL = ifort
 intel_win_64 : obj = cfast6_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = -fpp -D pp_ibmpc /Qvec_report0 /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+intel_win_64_db : FFLAGS = -fpp -D pp_ibmpc /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_64_db : FCOMPL = ifort
 intel_win_64_db : obj = cfast6_win_64_db
 intel_win_64_db : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin)  	
 
+# ------------- Linux -------------------
+
+# 32 bit
 intel_linux_32 : FFLAGS = -fpp -m32 -O3 -static -vec_report0 -I $(INCLUDE)
 intel_linux_32 : FCOMPL = ifort
 intel_linux_32 : obj = cfast6_linux_32
 intel_linux_32 : $(objf)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
-
-intel_linux_64 : FFLAGS = -fpp -m64 -O3 -static -vec_report0 -I $(INCLUDE)
-intel_linux_64 : FCOMPL = ifort
-intel_linux_64 : obj = cfast6_linux_64
-intel_linux_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 intel_linux_32_db : FFLAGS = -m32 -check all -warn unused -O0 -auto -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0 -ftrapuv -debug full
@@ -92,11 +89,20 @@ intel_linux_32_db : obj = cfast6_linux_32_db
 intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
+# 64 bit
+intel_linux_64 : FFLAGS = -fpp -m64 -O3 -static -vec_report0 -I $(INCLUDE)
+intel_linux_64 : FCOMPL = ifort
+intel_linux_64 : obj = cfast6_linux_64
+intel_linux_64 : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
+
 intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -auto -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0
 intel_linux_64_db : FCOMPL = ifort
 intel_linux_64_db : obj = cfast6_linux_64_db
 intel_linux_64_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
+
+# ------------- OSX -------------------
 
 # 32 bit
 intel_osx_32 : FFLAGS = -fpp -O3  -m32 -heap-arrays -static-intel -vec_report0 -I $(INCLUDE)

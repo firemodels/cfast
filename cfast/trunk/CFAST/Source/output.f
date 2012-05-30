@@ -39,33 +39,43 @@ C     NOW THE VERSION
 
       END
 
-	SUBROUTINE VERSIONOUT (IV)
+      subroutine versionout (iunit)
 
-!	A routine to put the header information in the output file. 
-!	We assume the file is open
+!	a routine to put the header information in the output file. 
+!	we assume the file is open
 
       include "precis.fi"
       include "cfast.fi"
       include "cfin.fi"
       include "cshell.fi"
+      integer rev_cfast
 
-!>>>>> IV should be the same as version
       call splitversion(version,imajor,iminor,iminorrev)
-	
-      if (iminorrev>=10) then
-        WRITE (logerr,10) imajor, iminor, iminorrev, CRDATE(1), 
-     +      CRDATE(2), CRDATE(3)
-      else
-        WRITE (logerr,20) imajor, iminor, iminorrev, CRDATE(1), 
-     +      CRDATE(2), CRDATE(3)
-      endif
-	RETURN
 
-10    FORMAT ('Version ',i1,'.',i1,'.',I2,' Created ',I4.4,'/',I2.2,
-     +        '/',I2.2)
-20    FORMAT ('Version ',i1,'.',i1,'.',I1,' Created ',I4.4,'/',I2.2,
-     +        '/',I2.2)
-	END
+      if (iminorrev>=10) then
+          if (iunit==0) then
+              write (*,10) imajor, iminor, iminorrev, crdate(1), 
+     +        crdate(2), crdate(3), rev_cfast()
+          else
+              write (iunit,10) imajor, iminor, iminorrev, crdate(1), 
+     +        crdate(2), crdate(3), rev_cfast()
+          endif
+      else
+          if (iunit==0) then
+              write (*,20) imajor, iminor, iminorrev, crdate(1), 
+     +        crdate(2), crdate(3), rev_cfast()
+          else
+              write (iunit,20) imajor, iminor, iminorrev, crdate(1), 
+     +        crdate(2), crdate(3), rev_cfast()
+          endif
+      endif
+      return
+
+10    format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,
+     +        '/',I2.2,', Revision ',i5)
+20    format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,
+     +        '/',I2.2,', Revision ',i5)
+	end subroutine versionout
 
 	subroutine splitversion(version,imajor,iminor,iminorrev)
 	integer version,imajor,iminor,iminorrev

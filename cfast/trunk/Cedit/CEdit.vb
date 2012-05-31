@@ -5002,6 +5002,9 @@ Public Class CeditMain
             aTarget = myTargets.Item(CurrentTarget)
             If sender Is Me.TargetComp Then
                 aTarget.Compartment = Me.TargetComp.SelectedIndex - 1
+                If Val(Me.TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(Me.TargetXPosition.Text)
+                If Val(Me.TargetYPosition.Text) = -1 Then aTarget.YPosition = Val(Me.TargetYPosition.Text)
+                If Val(Me.TargetZPosition.Text) = -1 Then aTarget.ZPosition = Val(Me.TargetZPosition.Text)
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
             If sender Is Me.TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
@@ -5164,7 +5167,12 @@ Public Class CeditMain
                     aDetector.RTI = Target.SmokeDetectorRTI
                 End If
             End If
-            If sender Is Me.DetectorComp Then aDetector.Compartment = Me.DetectorComp.SelectedIndex - 1
+            If sender Is Me.DetectorComp Then
+                aDetector.Compartment = Me.DetectorComp.SelectedIndex - 1
+                If Val(Me.DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
+                If Val(Me.DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
+                If Val(Me.DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)
+            End If
             If sender Is Me.DetectorActivation Then aDetector.ActivationTemperature = Val(Me.DetectorActivation.Text)
             If sender Is Me.DetectorXPosition Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
             If sender Is Me.DetectorYPosition Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)

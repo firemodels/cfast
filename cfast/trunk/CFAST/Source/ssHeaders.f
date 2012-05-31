@@ -550,23 +550,25 @@ C     Natural flow through vertical vents (horizontal flow)
       headertext(2,1) = LabelsShort(1)
       call smvDeviceTag('TIME')
       position = 1
-        
+
       ! Compartment variables
       do j = 1, nm1
-        do i = 1, 6
-          if (i/=2.or.izshaft(j)==0) then
-            if (i/=3.or.izshaft(j)==0) then
-              position = position + 1
-              cRoom = toIntString(j)
-              headertext(1,position) = LabelUnits(i+1)
-              headertext(2,position) = trim(LabelsShort(i+1)) // 
-     *                                 trim(cRoom)
-              call smvDeviceTag(headertext(2,position))
-            endif
-          endif
-        end do
+          do i = 1, 6
+              if (i/=2.or.izshaft(j)==0) then
+                  if (i/=3.or.izshaft(j)==0) then
+                      if (i/=6.or.izshaft(j)==0) then
+                          position = position + 1
+                          cRoom = toIntString(j)
+                          headertext(1,position) = LabelUnits(i+1)
+                          headertext(2,position) =  
+     *                    trim(LabelsShort(i+1)) //trim(cRoom)
+                          call smvDeviceTag(headertext(2,position))
+                      endif
+                  endif
+              endif
+          end do
       end do
-        
+
       ! Fire variables. Main fire first, then object fires
       if (lfbo>0) then
         do i = 1, 4

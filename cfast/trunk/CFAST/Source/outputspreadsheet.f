@@ -443,7 +443,7 @@ c   40 CONTINUE
 	data firstc/.true./
 	save firstc
 
-! Headers
+      ! Headers
 	if (firstc) then
         call ssHeadersSMV(.true.)
 	  firstc = .false.
@@ -452,23 +452,23 @@ c   40 CONTINUE
 	position = 0
       CALL SSaddtolist (position,TIME,outarray)
 
-! Compartment information
+      ! compartment information
+      do i = 1, nm1
+          itarg = ntarg - nm1 + i
+          izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
+          call ssaddtolist(position,zztemp(i,upper)-273.15,outarray)
+          if (izshaft(i)==0) then
+              call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
+              call ssaddtolist(position,zzhlay(i,lower),outarray)
+          endif
+          call ssaddtolist(position,zzrelp(i) - pamb(i),outarray)
+          call ssaddtolist(position,toxict(i,upper,9),outarray)
+          if (izshaft(i)==0) then
+              call ssaddtolist(position,toxict(i,lower,9),outarray)
+          endif
+      end do
 
-        DO 100 I = 1, NM1
-        ITARG = NTARG - NM1 + I
-        IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
-        CALL SSaddtolist (position,ZZTEMP(I,UPPER)-273.15,outarray)
-        if (izshaft(i)==0) then
-          CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
-          CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
-          CALL SSaddtolist (position,ZZRELP(I) - PAMB(I),outarray)
-          CALL SSaddtolist (position,TOXICT(I,UPPER,9),outarray)
-          CALL SSaddtolist (position,TOXICT(I,LOWER,9),outarray)
-        endif
-  100 CONTINUE
-
-! Fires
-
+      ! Fires
       XX0 = 0.0D0
       nfire = 0
       IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN

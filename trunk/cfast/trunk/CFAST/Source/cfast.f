@@ -160,7 +160,7 @@
           include "precis.fi"
           include "cfast.fi"
 
-          data crdate/2012,5,30/
+          data crdate/2012,5,31/
           
       end block data initcf
 

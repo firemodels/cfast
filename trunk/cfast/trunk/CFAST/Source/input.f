@@ -101,7 +101,7 @@
           ierror = 218
       endif
 
-      IF (IERROR/=0) RETURN
+      if (ierror/=0) return
 
       ! We now know what output is going to be generated, so create the files
       call openoutputfiles
@@ -2002,6 +2002,11 @@ c    see which room is on top (if any) - this is like a bubble sort
       end subroutine inputembeddedfire
 
       subroutine initfireobject (iobj,ierror)
+    
+!     routine: initfireobject
+!     purpose: This routine sets default values for new fire object targets created to monitor temperature and flux of the object prior to ignition
+!     Arguments: iobj: fire object number
+!                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
       use iofiles
       include "precis.fi"
@@ -2024,196 +2029,149 @@ c    see which room is on top (if any) - this is like a bubble sort
       return
       end subroutine initfireobject
 
-      SUBROUTINE DREADIN(OUTPUT,IOUNIT,IERR,IVERS0)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     DREADIN
-C
-C     Source File: DREADIN.SOR
-C
-C     Functional Class:  
-C
-C     Description:  Read routine for compacted history files
-C
-C     Arguments: OUTPUT   Starting location for I/O
-C                LENF     Length of floating point section in words
-C                IOUNIT   Logical unit assigned for read
-C                IERR     Status of read (zero if OK)
-C                IVERS0   Version number of history file
-C
-C     Revision History:
-C        Created:  9/14/1993 at 10:05 by RDP
-C        Modified: 9/5/1995 at 9:26 by PAR:
-C                  Added support for IERROR and returning error codes to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+      subroutine dreadin(output,iounit,ierr,ivers0)
 
-      PARAMETER (MXDMP = 36000)
-      LOGICAL CNVRT
-      CHARACTER HEADER*6, RHEADER(2)*6
-      INTEGER OUTPUT(*), INPUT(MXDMP), FLOP
+!     routine: dreadin
+!     purpose: Read routine for compacted history files
+!     Arguments: OUTPUT   Starting location for I/O
+!                IOUNIT   Logical unit assigned for read
+!                IERR     Status of read (zero if OK)
+!                IVERS0   Version number of history file
+
+
+
+      parameter (mxdmp = 36000)
+      logical cnvrt
+      character header*6, rheader(2)*6
+      integer output(*), input(mxdmp), flop
       DATA RHEADER /'$$CFL$', '$$CFH$'/
 C
-      IERR = 0
-      READ (IOUNIT,END=30,IOSTAT=IOS) HEADER, IVERS0
-      IF (HEADER==RHEADER(1)) THEN
+      ierr = 0
+      read (iounit,end=30,iostat=ios) header, ivers0
+      if (header==rheader(1)) then
 #ifdef pp_ibmpc
-          CNVRT = .FALSE.
+          cnvrt = .false.
 #else
-          CNVRT = .TRUE.
+          cnvrt = .true.
 #endif
-      ELSE IF (HEADER==RHEADER(2)) THEN
+      else if (header==rheader(2)) then
 #ifdef pp_ibmpc
-          CNVRT = .TRUE.
+          cnvrt = .true.
 #else
-          CNVRT = .FALSE.
+          cnvrt = .false.
 #endif
-      ELSE
-          IERR = 9999
-          RETURN
+      else
+          ierr = 9999
+          return
       endif
-      IF (CNVRT) IVERS0 = FLOP(IVERS0)
-      IF (CNVRT) THEN
-          READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
-     +    FLOP(INPUT(1)))
-          INPUT(1) = FLOP(INPUT(1))
-      ELSE
-          READ (IOUNIT,END=30,IOSTAT=IOS) INPUT(1), (INPUT(I),I = 2,
-     +    INPUT(1))
+      if (cnvrt) ivers0 = flop(ivers0)
+      if (cnvrt) then
+          read (iounit,end=30,iostat=ios) input(1), (input(i),i = 2,
+     +    flop(input(1)))
+          input(1) = flop(input(1))
+      else
+          read (iounit,end=30,iostat=ios) input(1), (input(i),i = 2,
+     +    input(1))
       endif
-      IF (INPUT(1)>MXDMP) THEN
-          CALL XERROR('DREADIN - overwrite input buffer; fatal error',
+      if (input(1)>mxdmp) then
+          call xerror('DREADIN - overwrite input buffer; fatal error',
      .    0,1,1)
-          IERR = 7
-          RETURN
+          ierr = 7
+          return
       endif
-      IF (CNVRT) THEN
-          DO 10 I = 2, INPUT(1)
-              INPUT(I) = FLOP(INPUT(I))
-   10     CONTINUE
+      if (cnvrt) then
+          do i = 2, input(1)
+              input(i) = flop(input(i))
+          end do
       endif
-      CALL UNPACK(INPUT,OUTPUT)
-      IF (CNVRT) THEN
-          CALL LENOCO(((IVERS0-1800)/10),ITOT,IFLT,IINT)
-          DO 20 I = 1, IFLT / 2
-              ITEMP = OUTPUT(2*I-1)
-              OUTPUT(2*I-1) = OUTPUT(2*I)
-              OUTPUT(2*I) = ITEMP
-   20     CONTINUE
+      call unpack(input,output)
+      if (cnvrt) then
+          call lenoco(((ivers0-1800)/10),itot,iflt,iint)
+          do  i = 1, iflt / 2
+              itemp = output(2*i-1)
+              output(2*i-1) = output(2*i)
+              output(2*i) = itemp
+          end do
       endif
-   30 IF (IOS/=0) THEN
-          IERR = IOS
-      ELSE
-          IERR = 0
+   30 if (ios/=0) then
+          ierr = ios
+      else
+          ierr = 0
       endif
-      RETURN
-      END
+      return
+      end subroutine dreadin
 
       SUBROUTINE UNPACK(INPUT,OUTPUT)
 
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     UNPACK
-C
-C     Source File: DREADIN.SOR
-C
-C     Functional Class:  
-C     
-C     Description:  This routine is to uncrunch the packed binary history file.
-C                   The length of the record is contained in the first word, 
-C                   and does NOT include the first word itself.  
-C                   See WRITEOT for the reference information.
-C
-C     Arguments: INPUT    Packed array
-C                OUTPUT   Unpack array returned
-C
-C     Revision History:
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      INTEGER OUTPUT(*), INPUT(*)
-      INTEGER I, INTGR, CNTR, MRKR, INLEN, INIDX, OUTIDX
+!     routine: unpack
+!     purpose: this routine is to uncrunch the packed binary history file.
+!              the length of the record is contained in the first word and does not include the first word itself.  
+!              see writeot for the reference information
+!     arguments: input    packed array
+!                output   unpack array returned
 
-      MRKR = 106
-      INIDX = 1
-      OUTIDX = 0
-      INLEN = INPUT(1)
-   10 IF (.TRUE.) THEN
-          INIDX = INIDX + 1
-          IF (INIDX>INLEN) GO TO 30
-          INTGR = INPUT(INIDX)
-          IF (INTGR==MRKR) THEN
-              INIDX = INIDX + 1
-              IF (INIDX>INLEN) GO TO 30
-              INTGR = INPUT(INIDX)
-              IF (INTGR==MRKR) THEN
-                  OUTIDX = OUTIDX + 1
-                  OUTPUT(OUTIDX) = INTGR
-              ELSE
-                  INIDX = INIDX + 1
-                  IF (INIDX>INLEN) GO TO 30
-                  CNTR = INPUT(INIDX)
-                  DO 20, I = 1, CNTR
-                      OUTIDX = OUTIDX + 1
-                      OUTPUT(OUTIDX) = INTGR
-   20             CONTINUE
+      integer output(*), input(*)
+      integer i, intgr, cntr, mrkr, inlen, inidx, outidx
+
+      mrkr = 106
+      inidx = 1
+      outidx = 0
+      inlen = input(1)
+   10 if (.true.) then
+          inidx = inidx + 1
+          if (inidx>inlen) go to 30
+          intgr = input(inidx)
+          if (intgr==mrkr) then
+              inidx = inidx + 1
+              if (inidx>inlen) go to 30
+              intgr = input(inidx)
+              if (intgr==mrkr) then
+                  outidx = outidx + 1
+                  output(outidx) = intgr
+              else
+                  inidx = inidx + 1
+                  if (inidx>inlen) go to 30
+                  cntr = input(inidx)
+                  do i = 1, cntr
+                      outidx = outidx + 1
+                      output(outidx) = intgr
+                  end do
               endif
-          ELSE
-              OUTIDX = OUTIDX + 1
-              OUTPUT(OUTIDX) = INTGR
+          else
+              outidx = outidx + 1
+              output(outidx) = intgr
           endif
-          GO TO 10
+          go to 10
       endif
-   30 RETURN
-      END
+   30 return
+      end
 
-      INTEGER FUNCTION FLOP(INUM)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     FLOP
-C
-C     Source File: FCONV.FOR
-C
-C     Functional Class:  UTILITY
-C
-C     Description:  Flip bytes in an integer word PC - IRIS or back
-C
-C     Arguments: INUM
-C
-C     Revision History:
-C        Created:  8/6/1993 at 14:08 by RDP
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      INTEGER*1 B(4), C(4)
-      INTEGER I, J
-      EQUIVALENCE (B,I), (C,J)
-      I = INUM
-      C(1) = B(4)
-      C(2) = B(3)
-      C(3) = B(2)
-      C(4) = B(1)
-      FLOP = J
-      RETURN
-      END
+      integer function flop(inum)
+
+!     routine: flop
+!     purpose: this routine flips bytes in an integer word big-endian to little endian or back
+!     arguments: inum: number to be flipped
+
+      integer*1 b(4), c(4)
+      integer i, j
+      equivalence (b,i), (c,j)
+      i = inum
+      c(1) = b(4)
+      c(2) = b(3)
+      c(3) = b(2)
+      c(4) = b(1)
+      flop = j
+      return
+      end function flop
 
       subroutine readcf1 (errorcode)
 
-!     Routines:    READCF1, 2 AND 3
-!
-!     Source File: READCF1.F
-!
-!     Functional Class:
-
-! 	get the paths and project base name
-! 	open the input file for reading (1)
-! 	delete the output files
-! 	open the log file (3)
-! 	call the input routines
+!     routine: readcf1
+!     purpose: get the paths and project base name open the input file for reading (1)
+! 	         delete the output files
+! 	         open the log file (3)
+! 	         call the input routines
+!     arguments: errorcode: return error indication if non-zero
 
       use iofiles
 
@@ -2223,16 +2181,12 @@ C
 
       character*256 testpath, testproj 
 
-! get the path and project names
-
+      ! get the path and project names
       errorcode = 0
       call exehandle (exepath, datapath, project, errorcode)
       if (errorcode>0) return
 
-! form the file names
-
-! datafiles: inputfile, outputfile, smvhead, smvdata, smvcsv, ssflow, ssnormal, ssspecies, sswall
-
+      ! form the file names for datafiles: inputfile, outputfile, smvhead, smvdata, smvcsv, ssflow, ssnormal, ssspecies, sswall
       testpath = trim (datapath)
       lp = len_trim (testpath)
       testproj = trim (project)
@@ -2276,9 +2230,8 @@ C
       call deleteoutputfiles (queryfile)
       call deleteoutputfiles (kernelisrunning)
 
-! since we have reached this point, the output files are avaiable and stop has been turned off.
-! open the log file and return the correct project name
-
+      ! since we have reached this point, the output files are available and stop has been turned off.
+      ! open the log file and return the correct project name
       open (unit=3, file=errorlogging, action='write', iostat=ios, 
      *status='new')
 
@@ -2286,8 +2239,7 @@ C
       errorcode = ios
 
       return
-
-      end
+      end subroutine readcf1
 
       SUBROUTINE SETP0(P0, IP0, PMXMN, IPMXMN, iounit, IERROR)
 

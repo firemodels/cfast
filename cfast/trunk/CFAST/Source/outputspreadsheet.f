@@ -1,4 +1,4 @@
-      SUBROUTINE SpreadSheetNormal (time, errorcode)
+      subroutine SpreadSheetNormal (time, errorcode)
 
 ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
@@ -21,62 +21,60 @@
 	data firstc/.true./
 	save firstc
 
-! Headers
+      ! headers
 	if (firstc) then
         call ssHeadersNormal
 	  firstc = .false.
 	endif
 
 	position = 0
-      CALL SSaddtolist (position,TIME,outarray)
+      CALL ssaddtolist (position,TIME,outarray)
 
-! Compartment information
+      ! compartment information
+      do i = 1, nm1
+          itarg = ntarg - nm1 + i
+          izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
+          call ssaddtolist (position,zztemp(i,upper)-273.15,outarray)
+          if (izshaft(i)==0) then
+              call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
+              call ssaddtolist (position,zzhlay(i,lower),outarray)
+          endif
+          call ssaddtolist (position,zzvol(i,upper),outarray)
+          call ssaddtolist (position,zzrelp(i) - pamb(i),outarray)
+          call ssaddtolist (position,ontarget(i),outarray)
+          call ssaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
+      end do
 
-        DO 100 I = 1, NM1
-        ITARG = NTARG - NM1 + I
-        IZZVOL = ZZVOL(I,UPPER)/VR(I)*100.D0+0.5D0
-        CALL SSaddtolist (position,ZZTEMP(I,UPPER)-273.15,outarray)
-        if (izshaft(i)==0) then
-          CALL SSaddtolist (position,ZZTEMP(I,LOWER)-273.15,outarray)
-          CALL SSaddtolist (position,ZZHLAY(I,LOWER),outarray)
-        endif
-        CALL SSaddtolist (position,ZZVOL(I,UPPER),outarray)
-        CALL SSaddtolist (position,ZZRELP(I) - PAMB(I),outarray)
-        CALL SSaddtolist (position,ONTARGET(I),outarray)
-        CALL SSaddtolist (position,XXTARG(TRGNFLUXF,ITARG),outarray)
-  100 CONTINUE
-
-! Fires
-
-      XX0 = 0.0D0
-      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
-        CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
-        CALL SSaddtolist (position,FEMS(0),outarray)
-        CALL SSaddtolist (position,FEMP(0),outarray)
-        CALL SSaddtolist (position,FQF(0),outarray)
-        CALL SSaddtolist (position,FHEIGHT,outarray)
-        CALL SSaddtolist (position,FQFC(0),outarray)
-        CALL SSaddtolist (position,objmaspy(0),outarray)
-        CALL SSaddtolist (position,radio(0),outarray)
+      ! Fires
+      xx0 = 0.0d0
+      if (lfmax>0.and.lfbt>0.and.lfbo>0) then
+          call flamhgt (fqf(0),farea(0),fheight)
+          call ssaddtolist (position,fems(0),outarray)
+          call ssaddtolist (position,femp(0),outarray)
+          call ssaddtolist (position,fqf(0),outarray)
+          call ssaddtolist (position,fheight,outarray)
+          call ssaddtolist (position,fqfc(0),outarray)
+          call ssaddtolist (position,objmaspy(0),outarray)
+          call ssaddtolist (position,radio(0),outarray)
       endif
 
-      IF (NUMOBJL/=0) THEN
-        DO 200 I = 1, NUMOBJL
-          CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
-          CALL SSaddtolist (position,FEMS(I),outarray)
-          CALL SSaddtolist (position,FEMP(I),outarray)
-          CALL SSaddtolist (position,FQF(I),outarray)
-          CALL SSaddtolist (position,FHEIGHT,outarray)
-          CALL SSaddtolist (position,FQFC(I),outarray)
-          CALL SSaddtolist (position,objmaspy(i),outarray)
-          CALL SSaddtolist (position,radio(i),outarray)          
-  200   CONTINUE
+      if (numobjl/=0) then
+          do i = 1, numobjl
+              call flamhgt (fqf(i),farea(i),fheight)
+              call ssaddtolist (position,fems(i),outarray)
+              call ssaddtolist (position,femp(i),outarray)
+              call ssaddtolist (position,fqf(i),outarray)
+              call ssaddtolist (position,fheight,outarray)
+              call ssaddtolist (position,fqfc(i),outarray)
+              call ssaddtolist (position,objmaspy(i),outarray)
+              call ssaddtolist (position,radio(i),outarray)
+          end do
       endif
 
       CALL SSprintresults (21, position, outarray)
 
-      RETURN
-      END
+      return
+      end subroutine spreadsheetnormal
 
       subroutine SSaddtolist (ic, valu, array)
 
@@ -89,8 +87,8 @@
 	real*8 array(*), valu
 	integer ic
 
-      IC = IC + 1
-!	We are imposing an arbitrary limit of 32000 columns
+      ic = ic + 1
+      ! We are imposing an arbitrary limit of 32000 columns
 	if (ic>32000) return
       if (abs(valu)<=1.0d-100) then
           array(ic) = 0.0d0
@@ -115,120 +113,117 @@
       include "cshell.fi"
       include "vents.fi"
 
-	parameter (maxoutput = 512)
-	real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,
-     . sum5,sum6, flow(6), sumin, sumout
-	logical firstc/.true./
-	integer position, errorcode
-	save firstc
+      parameter (maxoutput = 512)
+      real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,
+     .sum5,sum6, flow(6), sumin, sumout
+      logical firstc/.true./
+      integer position, errorcode
+      save firstc
 
-	if (firstc) then
-		 call ssHeadersFlow
-		 firstc = .false.
-	endif
-		 
-      XX0 = 0.0D0
-	position = 0
+      if (firstc) then
+          call ssheadersflow
+          firstc = .false.
+      endif
 
-!	First the time
+      xx0 = 0.0d0
+      position = 0
 
-      CALL SSaddtolist (position,TIME,outarray)
+      ! first the time
+      call ssaddtolist (position,time,outarray)
 
-      DO 70 IRM = 1, N
+      do irm = 1, n
 
-!	Next the horizontal flow through vertical vents
+          ! next the horizontal flow through vertical vents
+          do j = 1, n
+              do k = 1, mxccv
+                  i = irm
+                  if (iand(1,ishft(nw(i,j),-k))/=0) then
+                      iijk = ijk(i,j,k)
+                      if (i<j)then
+                          sum1 = ss2(iijk) + sa2(iijk)
+                          sum2 = ss1(iijk) + sa1(iijk)
+                          sum3 = aa2(iijk) + as2(iijk)
+                          sum4 = aa1(iijk) + as1(iijk)
+                      else
+                          sum1 = ss1(iijk) + sa1(iijk)
+                          sum2 = ss2(iijk) + sa2(iijk)
+                          sum3 = aa1(iijk) + as1(iijk)
+                          sum4 = aa2(iijk) + as2(iijk)
+                      endif
+                      if (j==n) then
+                          sumin = sum1 + sum3
+                          sumout = sum2 + sum4
+                          call ssaddtolist (position,sumin,outarray)
+                          call ssaddtolist (position,sumout,outarray)
+                      else
+                          if (i<j)then
+                              sum5 = sau2(iijk)
+                              sum6 = asl2(iijk)
+                          else
+                              sum5 = sau1(iijk)
+                              sum6 = asl1(iijk)
+                          endif
+                          ! we show only net flow in the spreadsheets
+                          sumin = sum1 + sum3
+                          sumout = sum2 + sum4
+                          call ssaddtolist (position,sumin,outarray)
+                          call ssaddtolist (position,sumout,outarray)
+                          call ssaddtolist (position,sum5,outarray)
+                          call ssaddtolist (position,sum6,outarray)
+                      endif
+                  endif
+              end do
+          end do
 
-      DO 20 J = 1, N
-          DO 10 K = 1, mxccv
-            I = IRM
-            IF (IAND(1,ISHFT(NW(I,J),-K))/=0) THEN
-               IIJK = IJK(I,J,K)
-               IF (I<J)THEN
-                 SUM1 = SS2(IIJK) + SA2(IIJK)
-                 SUM2 = SS1(IIJK) + SA1(IIJK)
-                 SUM3 = AA2(IIJK) + AS2(IIJK)
-                 SUM4 = AA1(IIJK) + AS1(IIJK)
-               ELSE
-                 SUM1 = SS1(IIJK) + SA1(IIJK)
-                 SUM2 = SS2(IIJK) + SA2(IIJK)
-                 SUM3 = AA1(IIJK) + AS1(IIJK)
-                 SUM4 = AA2(IIJK) + AS2(IIJK)
-              ENDIF
-              IF (J==N) THEN
-				  sumin = sum1 + sum3
-				  sumout = sum2 + sum4
-                 CALL SSAddtolist (position,SUMin,outarray)
-                 CALL SSAddtolist (position,SUMout,outarray)
-              ELSE
-                 IF (I<J)THEN
-                    SUM5 = SAU2(IIJK)
-                    SUM6 = ASL2(IIJK)
-                 ELSE
-                    SUM5 = SAU1(IIJK)
-                    SUM6 = ASL1(IIJK)
-                 ENDIF
-!	We show only net flow in the spreadsheets
-				  sumin = sum1 + sum3
-				  sumout = sum2 + sum4
-                 CALL SSAddtolist (position,SUMin,outarray)
-                 CALL SSAddtolist (position,SUMout,outarray)
-                 CALL SSAddtolist (position,SUM5,outarray)
-                 CALL SSAddtolist (position,SUM6,outarray)
+          ! next natural flow through horizontal vents (vertical flow)
+          do j = 1, n
+              if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
+                  do ii = 1, 6
+                      flow(ii) = xx0
+                  end do
+                  if (vmflo(j,i,upper)>=xx0) flow(1) = vmflo(j,i,upper)
+                  if (vmflo(j,i,upper)<xx0) flow(2) = -vmflo(j,i,upper)
+                  if (vmflo(j,i,lower)>=xx0) flow(3) = vmflo(j,i,lower)
+                  if (vmflo(j,i,lower)<xx0) flow(4) = -vmflo(j,i,lower)
+                  ! we show only net flow in the spreadsheets
+                  sumin = flow(1) + flow(3)
+                  sumout = flow(2) + flow(4)
+                  call ssaddtolist (position,sumin,outarray)
+                  call ssaddtolist (position,sumout,outarray)
               endif
-            endif
-   10     CONTINUE
-   20   CONTINUE
+          end do
 
-!	Next natural flow through horizontal vents (vertical flow)
-
-        DO 40 J = 1, N
-          IF (NWV(I,J)/=0.OR.NWV(J,I)/=0) THEN
-            DO 30 II = 1, 6
-              FLOW(II) = XX0
-   30       CONTINUE
-            IF (VMFLO(J,I,UPPER)>=XX0) FLOW(1) = VMFLO(J,I,UPPER)
-            IF (VMFLO(J,I,UPPER)<XX0) FLOW(2) = -VMFLO(J,I,UPPER)
-            IF (VMFLO(J,I,LOWER)>=XX0) FLOW(3) = VMFLO(J,I,LOWER)
-            IF (VMFLO(J,I,LOWER)<XX0) FLOW(4) = -VMFLO(J,I,LOWER)
-!	We show only net flow in the spreadsheets
-		    sumin = flow(1) + flow(3)
-			sumout = flow(2) + flow(4)
-            CALL SSAddtolist (position,sumin,outarray)
-            CALL SSAddtolist (position,sumout,outarray)
+          ! finally, mechanical ventilation
+          if (nnode/=0.and.next/=0) then
+              do i = 1, next
+                  ii = hvnode(1,i)
+                  if (ii==irm) then
+                      inode = hvnode(2,i)
+                      do iii = 1, 6
+                          flow(iii) = xx0
+                      end do
+                      if (hveflo(upper,i)>=xx0) flow(1)=hveflo(upper,i)
+                      if (hveflo(upper,i)<xx0) flow(2)=-hveflo(upper,i)
+                      if (hveflo(lower,i)>=xx0) flow(3)=hveflo(lower,i)
+                      if (hveflo(lower,i)<xx0) flow(4)=-hveflo(lower,i)
+                      sumin = flow(1) + flow(3)
+                      sumout = flow(2) + flow(4)
+                      flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
+                      flow(6) =abs(traces(upper,i))+abs(traces(lower,i))
+                      call ssaddtolist (position, sumin, outarray)
+                      call ssaddtolist (position, sumout, outarray)
+                      call ssaddtolist (position, flow(5), outarray)
+                      call ssaddtolist (position, flow(6), outarray)
+                  endif
+              end do
           endif
-   40   CONTINUE
 
-!	Finally, mechanical ventilation
-
-        IF (NNODE/=0.AND.NEXT/=0) THEN
-          DO 60 I = 1, NEXT
-            II = HVNODE(1,I)
-            IF (II==IRM) THEN
-              INODE = HVNODE(2,I)
-              DO 50 III = 1, 6
-                FLOW(III) = XX0
-   50         CONTINUE
-              IF (HVEFLO(UPPER,I)>=XX0) FLOW(1) = HVEFLO(UPPER,I)
-              IF (HVEFLO(UPPER,I)<XX0) FLOW(2) = -HVEFLO(UPPER,I)
-              IF (HVEFLO(LOWER,I)>=XX0) FLOW(3) = HVEFLO(LOWER,I)
-              IF (HVEFLO(LOWER,I)<XX0) FLOW(4) = -HVEFLO(LOWER,I)
-			  sumin = flow(1) + flow(3)
-			  sumout = flow(2) + flow(4)
-              flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
-              flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))			  
-			  call SSAddtolist (position, sumin, outarray)
-			  call SSAddtolist (position, sumout, outarray)
-			  call SSAddtolist (position, flow(5), outarray)
-			  call SSAddtolist (position, flow(6), outarray)
-            endif
-   60     CONTINUE
-        endif
-   70 CONTINUE
+      end do
 
 	call ssprintresults(22, position, outarray)
 	return
 
-	END
+	end subroutine SpreadSheetFlow
 
 	subroutine SpreadSheetFlux (Time, errorcode)
 	
@@ -244,10 +239,10 @@
 	real*8 outarray(maxoutput), time, xiroom, zdetect,
      . tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal,
      . ctotal, tttemp, tctemp, tlay
-      INTEGER IWPTR(4), errorcode, position
-      EXTERNAL LENGTH
-      DATA IWPTR /1, 3, 4, 2/
-      CHARACTER CTYPE*5, cact*3
+      integer iwptr(4), errorcode, position
+      external length
+      data iwptr /1, 3, 4, 2/
+      character ctype*5, cact*3
 	logical firstc/.true./
 	save firstc
 
@@ -256,8 +251,8 @@
 		 firstc = .false.
 	endif
 
-      XX0 = 0.0D0
-      X100 = 100.0D0
+      xx0 = 0.0d0
+      x100 = 100.0d0
 
 	position = 0
 
@@ -273,52 +268,55 @@
         end do
       end do
 
-! Now do the additional targets if defined
-	do 40 i = 1, nm1
-        IF (NTARG>NM1) THEN
-          DO 20 ITARG = 1, NTARG-NM1
-            IF (IXTARG(TRGROOM,ITARG)==I) THEN
-              TGTEMP = TGTARG(ITARG)
-              if (IXTARG(TRGEQ,ITARG)==CYLPDE) then
-                tttemp = xxtarg(trgtempb,itarg)
-                ITCTEMP = TRGTEMPF+ xxtarg(trginterior,itarg)*
-     +              (TRGTEMPB-TRGTEMPF)
-                tctemp = xxtarg(itctemp,itarg)
-              else
-			    TTTEMP = XXTARG(TRGTEMPF,ITARG)
-                ITCTEMP = (TRGTEMPF+TRGTEMPB)/2
-                TCTEMP = XXTARG(ITCTEMP,ITARG)
-              endif
-              IF (IXTARG(TRGEQ,ITARG)==ODE) TCTEMP = TTTEMP
-              IF (IXTARG(TRGMETH,ITARG)==STEADY) TCTEMP = TTTEMP
-			  if (validate.or.netheatflux) then
-                TOTAL = GTFLUX(ITARG,1) /1000.d0
-                FTOTAL = GTFLUX(ITARG,2) /1000.d0
-                WTOTAL = GTFLUX(ITARG,3) /1000.d0
-                GTOTAL = GTFLUX(ITARG,4) /1000.d0
-                CTOTAL = GTFLUX(itarg,5) /1000.d0
-                RTOTAL = TOTAL - CTOTAL
-              else
-                TOTAL = XXTARG(TRGTFLUXF,ITARG)
-                FTOTAL = QTFFLUX(ITARG,1)
-                WTOTAL = QTWFLUX(ITARG,1)
-                GTOTAL = QTGFLUX(ITARG,1)
-                CTOTAL = QTCFLUX(ITARG,1)
-                RTOTAL = TOTAL - CTOTAL
-              endif
-              call SSaddtolist (position, tgtemp-273.15, outarray)
-			  call SSaddtolist (position, tttemp-273.15, outarray)
-			  call SSaddtolist (position, tctemp-273.15, outarray)
-              call SSaddtolist (position, total, outarray)
-              call SSaddtolist (position, ctotal, outarray)
-              call SSaddtolist (position, rtotal, outarray)
-              call SSaddtolist (position, ftotal, outarray)
-              call SSaddtolist (position, wtotal, outarray)
-              call SSaddtolist (position, gtotal, outarray)
-            endif
-   20     CONTINUE
-        endif
-   40 continue
+      ! now do the additional targets if defined
+      do i = 1, nm1
+          if (ntarg>nm1) then
+              do itarg = 1, ntarg-nm1
+                  if (ixtarg(trgroom,itarg)==i) then
+                      tgtemp = tgtarg(itarg)
+                      if (ixtarg(trgeq,itarg)==cylpde) then
+                          tttemp = xxtarg(trgtempb,itarg)
+                          itctemp = trgtempf+ xxtarg(trginterior,itarg)*
+     +                    (trgtempb-trgtempf)
+                          tctemp = xxtarg(itctemp,itarg)
+                      else
+                          tttemp = xxtarg(trgtempf,itarg)
+                          itctemp = (trgtempf+trgtempb)/2
+                          tctemp = xxtarg(itctemp,itarg)
+                      endif
+                      if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
+                      if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
+                      if (validate.or.netheatflux) then
+                          total = gtflux(itarg,1) /1000.d0
+                          ftotal = gtflux(itarg,2) /1000.d0
+                          wtotal = gtflux(itarg,3) /1000.d0
+                          gtotal = gtflux(itarg,4) /1000.d0
+                          ctotal = gtflux(itarg,5) /1000.d0
+                          rtotal = total - ctotal
+                      else
+                          total = xxtarg(trgtfluxf,itarg)
+                          ftotal = qtfflux(itarg,1)
+                          wtotal = qtwflux(itarg,1)
+                          gtotal = qtgflux(itarg,1)
+                          ctotal = qtcflux(itarg,1)
+                          rtotal = total - ctotal
+                      endif
+                      call ssaddtolist (position, tgtemp-273.15, 
+     *                 outarray)
+                      call ssaddtolist (position, tttemp-273.15, 
+     *                 outarray)
+                      call ssaddtolist (position, tctemp-273.15, 
+     *                 outarray)
+                      call ssaddtolist (position, total, outarray)
+                      call ssaddtolist (position, ctotal, outarray)
+                      call ssaddtolist (position, rtotal, outarray)
+                      call ssaddtolist (position, ftotal, outarray)
+                      call ssaddtolist (position, wtotal, outarray)
+                      call ssaddtolist (position, gtotal, outarray)
+                  endif
+              end do
+          endif
+      end do
 
 !     Hallways
 
@@ -332,33 +330,31 @@ c        IF(DIST>ZZHALL(I,IHMAXLEN))DIST = ZZHALL(I,IHMAXLEN)
 c        WRITE(IOFILO,5050)I,TSTART,VEL,DEPTH,DIST
 c   40 CONTINUE
 
-!    Detectors (including sprinklers)
-
+      ! detectors (including sprinklers)
       cjetmin = 0.10d0
-      do 60 i = 1, ndtect
-		 iroom = ixdtect(i,droom)
-		 zdetect = xdtect(i,dzloc)
-		 if(zdetect>zzhlay(iroom,lower))then
-			  tlay = zztemp(iroom,upper)
-		 else	
-			  tlay = zztemp(iroom,lower)
-		 endif
-		 xact = ixdtect(i,dact)
-		 tjet = max(xdtect(i,dtjet),tlay)
-		 vel = max(xdtect(i,dvel),cjetmin)
-		 tlink =  xdtect(i,dtemp)
-		 call ssaddtolist(position, tlink-273.15, outarray)
-		 call ssaddtolist(position, xact, outarray)
-		 call ssaddtolist(position, tjet-273.15, outarray)
-		 call ssaddtolist(position, vel, outarray)
-   60 continue
+      do i = 1, ndtect
+          iroom = ixdtect(i,droom)
+          zdetect = xdtect(i,dzloc)
+          if(zdetect>zzhlay(iroom,lower))then
+              tlay = zztemp(iroom,upper)
+          else	
+              tlay = zztemp(iroom,lower)
+          endif
+          xact = ixdtect(i,dact)
+          tjet = max(xdtect(i,dtjet),tlay)
+          vel = max(xdtect(i,dvel),cjetmin)
+          tlink =  xdtect(i,dtemp)
+          call ssaddtolist(position, tlink-273.15, outarray)
+          call ssaddtolist(position, xact, outarray)
+          call ssaddtolist(position, tjet-273.15, outarray)
+          call ssaddtolist(position, vel, outarray)
+      end do
 
-	call SSPrintResults (24, position, outarray)
+	call ssprintresults (24, position, outarray)
+      return
 
-      RETURN
-
- 5050 FORMAT(4x,I2,7x,1PG10.3,5x,1PG10.3,3x,1PG10.3,5x,1PG10.3)
-      END
+ 5050 format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
+      end subroutine spreadsheetflux
 	
       SUBROUTINE SpreadSheetSpecies (time, errorcode)
 
@@ -381,44 +377,45 @@ c   40 CONTINUE
 	
 	save outarray, firstc
 
-! If there are no species, then don't do the output
+      ! If there are no species, then don't do the output
 	if (nlspct==0) return
 
-! Set up the headings
+      ! Set up the headings
 	if (firstc) then
 	  call ssHeadersSpecies
 		firstc = .false.
 	endif
 
-!	From now on, just the data, please
-
+      ! From now on, just the data, please
 	position = 0
-
       CALL SSaddtolist (position,TIME,outarray)
 
-      DO 70 I = 1, NM1
-        DO 50 LAYER = UPPER, LOWER
-	    DO 80 LSP = 1, NS
-	      if (layer==upper.or.IZSHAFT(I)==0) then
-              IF (tooutput(LSP)) THEN
-                ssvalue = TOXICT(I,LAYER,LSP)
-                if (validate.and.molfrac(LSP))ssvalue = ssvalue*0.01D0 ! Converts PPM to  molar fraction
-                if (validate.and.lsp==9) ssvalue = ssvalue *264.6903 ! Converts OD to mg/m^3 (see TOXICT OD calculation)
-	          CALL SSaddtolist (position,ssvalue,outarray)
-! We can only output to the maximum array size; this is not deemed to be a fatal error!
-			    if (position>=maxhead) go to 90
-              endif
-            endif
-   80	    CONTINUE
-   50   CONTINUE
-   70 CONTINUE
+      do i = 1, nm1
+          do layer = upper, lower
+              do lsp = 1, ns
+                  if (layer==upper.or.izshaft(i)==0) then
+                      if (tooutput(lsp)) then
+                          ssvalue = toxict(i,layer,lsp)
+                          if (validate.and.molfrac(lsp)) 
+     *                    ssvalue = ssvalue*0.01d0 ! converts ppm to  molar fraction
+                          if (validate.and.lsp==9) 
+     *                    ssvalue = ssvalue *264.6903 ! converts od to mg/m^3 (see toxict od calculation)
+                          call ssaddtolist (position,ssvalue,outarray)
+! we can only output to the maximum array size; this is not deemed to be a fatal error!
+                          if (position>=maxhead) go to 90
+                      endif
+                  endif
+              end do
+          end do
+      end do
 
    90	call SSprintresults (23,position, outarray)
 
       RETURN
 
   110	format('Exceeded size of output files in species spread sheet')
-      END
+      END subroutine SpreadSheetSpecies
+      
       SUBROUTINE SpreadSheetSMV (time, errorcode)
 
 ! This routine writes to the {project}_zone.csv file, the smokeview information
@@ -468,54 +465,54 @@ c   40 CONTINUE
           endif
       end do
 
-      ! Fires
-      XX0 = 0.0D0
+      ! fires
+      xx0 = 0.0d0
       nfire = 0
-      IF (LFMAX>0.AND.LFBT>0.AND.LFBO>0) THEN
-        nfire = nfire + 1
-        CALL FLAMHGT (FQF(0),FAREA(0),FHEIGHT)
-        CALL SSaddtolist (position,FQF(0)/1000.,outarray)
-        CALL SSaddtolist (position,FHEIGHT,outarray)
-        CALL SSaddtolist (position,XFIRE(1,3),outarray)
-        CALL SSaddtolist (position,FAREA(0),outarray)
-      endif
-
-      IF (NUMOBJL/=0) THEN
-        DO 200 I = 1, NUMOBJL
+      if (lfmax>0.and.lfbt>0.and.lfbo>0) then
           nfire = nfire + 1
-          CALL FLAMHGT (FQF(I),FAREA(I),FHEIGHT)
-          CALL SSaddtolist (position,FQF(I)/1000.,outarray)
-          CALL SSaddtolist (position,FHEIGHT,outarray)
-          CALL SSaddtolist (position,XFIRE(nfire,3),outarray)
-          CALL SSaddtolist (position,FAREA(I),outarray)          
-  200   CONTINUE
+          call flamhgt (fqf(0),farea(0),fheight)
+          call ssaddtolist (position,fqf(0)/1000.,outarray)
+          call ssaddtolist (position,fheight,outarray)
+          call ssaddtolist (position,xfire(1,3),outarray)
+          call ssaddtolist (position,farea(0),outarray)
       endif
 
-! Vents
-      DO 300 I = 1, NVENTS
-        IROOM1 = IZVENT(I,1)
-        IROOM2 = IZVENT(I,2)
-        IK = IZVENT(I,3)
-        IM = MIN(IROOM1,IROOM2)
-        IX = MAX(IROOM1,IROOM2)
-	  factor2 = qchfraction (qcvh, ijk(im,ix,ik),time)
-        HEIGHT = ZZVENT(I,2) - ZZVENT(I,1)
-        WIDTH = ZZVENT(I,3)
-	  avent = factor2 * height * width
-        call SSaddtolist (position,avent,outarray)       
-  300 CONTINUE
+      if (numobjl/=0) then
+          do i = 1, numobjl
+              nfire = nfire + 1
+              call flamhgt (fqf(i),farea(i),fheight)
+              call ssaddtolist (position,fqf(i)/1000.,outarray)
+              call ssaddtolist (position,fheight,outarray)
+              call ssaddtolist (position,xfire(nfire,3),outarray)
+              call ssaddtolist (position,farea(i),outarray)          
+          end do
+      endif
 
-      DO 400 i = 1, nvvent
-        ITOP = IVVENT(I,TOPRM)
-        IBOT = IVVENT(I,BOTRM)
-	  avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
-        call SSaddtolist (position,avent,outarray)
-  400 CONTINUE
+      ! vents
+      do i = 1, nvents
+          iroom1 = izvent(i,1)
+          iroom2 = izvent(i,2)
+          ik = izvent(i,3)
+          im = min(iroom1,iroom2)
+          ix = max(iroom1,iroom2)
+          factor2 = qchfraction (qcvh, ijk(im,ix,ik),time)
+          height = zzvent(i,2) - zzvent(i,1)
+          width = zzvent(i,3)
+          avent = factor2 * height * width
+          call ssaddtolist (position,avent,outarray)       
+      end do
 
-      CALL SSprintresults (15, position, outarray)
+      do i = 1, nvvent
+          itop = ivvent(i,toprm)
+          ibot = ivvent(i,botrm)
+          avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
+          call ssaddtolist (position,avent,outarray)
+      end do
 
-      RETURN
-      END
+      call ssprintresults (15, position, outarray)
+
+      return
+      end subroutine SpreadSheetSMV
 
       integer function rev_outputspreadsheet
           

@@ -524,7 +524,7 @@ C     Natural flow through vertical vents (horizontal flow)
 
       subroutine ssHeadersSMV(lMode)
       
-      ! This is the header information for the normal spreadsheet output
+      ! This is the header information for the smokeview spreadsheet output
       
       include "precis.fi"
       include "cfast.fi"
@@ -534,7 +534,7 @@ C     Natural flow through vertical vents (horizontal flow)
       include "vents.fi"
       
       logical lmode
-      ! local variables     
+    
       parameter (maxhead = 1+6*nr+5+2*mxfire)
       character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent,
      *  LabelsShort(13), LabelUnits(13), toIntString
@@ -554,17 +554,14 @@ C     Natural flow through vertical vents (horizontal flow)
       ! Compartment variables
       do j = 1, nm1
           do i = 1, 6
-              if (i/=2.or.izshaft(j)==0) then
-                  if (i/=3.or.izshaft(j)==0) then
-                      if (i/=6.or.izshaft(j)==0) then
-                          position = position + 1
-                          cRoom = toIntString(j)
-                          headertext(1,position) = LabelUnits(i+1)
-                          headertext(2,position) =  
-     *                    trim(LabelsShort(i+1)) //trim(cRoom)
-                          call smvDeviceTag(headertext(2,position))
-                      endif
-                  endif
+              if (i==1.or.i==4.or.i==5.or.izshaft(j)==0) then
+                  position = position + 1
+                  cRoom = toIntString(j)
+                  headertext(1,position) = LabelUnits(i+1)
+                  headertext(2,position) =  
+     *            trim(LabelsShort(i+1)) //trim(cRoom)
+                  call smvDeviceTag(headertext(2,position))
+
               endif
           end do
       end do

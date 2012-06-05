@@ -1,0 +1,33 @@
+VERSN,6,57_PHGW_200kW
+!!
+!!Environmental Keywords
+!!
+TIMES,6000,-50,0,1,1
+EAMB,302.15,101325,0
+TAMB,302.15,101325,0,50
+CJET,WALLS
+CHEMI,10,393.15
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,Lower Test Cell,4,6,3,0,0,0,LLNL Marinite,LLNL Ceil,LLNL Walls
+COMPA,Plenum,4,6,1.5,0,0,3,LLNL Ceil,LLNL Marinite,LLNL Walls
+!!
+!!vent keywords
+!!
+HVENT,1,3,1,0.2357,3,2.7,1,1,1,1,1
+HVENT,1,3,2,0.00511,3,0,1,0,0,1,1
+HVENT,2,3,1,0.65,0.925,0.275,1,1,1,3,0
+HVENT,1,3,3,0.76,2.06,0,1,4.45,4.45,2,0
+HVENT,2,3,2,0.00511,1.5,0,1,0,0,1,1
+VVENT,2,1,0.18,2,1
+MVENT,2,3,1,H,0.6,0.4225,V,0.75,0.0731,0.215,2000,3000,1
+!!
+!!fire keywords
+!!
+OBJECT,200kW,1,2,3,0,1,1,30,0,0,1
+!!
+!!heat flow keywords
+!!
+VHEAT,2,1

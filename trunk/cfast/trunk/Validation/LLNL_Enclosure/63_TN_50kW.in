@@ -1,0 +1,25 @@
+VERSN,6,63_TN_50kW
+!!
+!!Environmental Keywords
+!!
+TIMES,4000,-50,0,1,1
+EAMB,301.15,101325,0
+TAMB,301.15,101325,0,50
+CJET,WALLS
+CHEMI,10,393.15
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,Full Test Cell,4,6,4.5,0,0,0,LLNL Ceil,LLNL Ceil,LLNL Walls
+!!
+!!vent keywords
+!!
+HVENT,1,2,1,0.2357,0.65,0.35,1,1,1,1,1
+HVENT,1,2,2,0.00511,4.5,0,1,0,0,1,1
+HVENT,1,2,3,0.65,3.925,3.275,1,1,1,3,1
+HVENT,1,2,4,0.76,2.06,0,1,4.45,4.45,2,1
+!!
+!!fire keywords
+!!
+OBJECT,50kW,1,2,3,0,1,1,30,0,0,1

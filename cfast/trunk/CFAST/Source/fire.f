@@ -166,7 +166,7 @@
 !                 xhr: height of the room (m)
 !                 xbr: breadth of the room (m)
 !                 xdr: Depth of the room (m)
-!                 hcombt  - current heat of combustion (j/kg)
+!                 hcombt: current heat of combustion (j/kg)
 !                 y_soot, y_co, y_trace: species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
 !                 molar_mass: molar mass of the fuel (kg/mol)

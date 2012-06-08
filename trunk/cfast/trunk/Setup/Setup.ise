@@ -355,6 +355,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{4DD890B7-B293-4776-B01B-3E50B413F016}</td><td>PersonalFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{D1F81593-3D5A-4E11-BF4E-F55837DE4341}</td><td>MY_DOCUMENTS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{FDC74D2B-7DCC-43F4-A7B3-2B97AD31AFE1}</td><td>CFASTDATA</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{FA1A0F0E-0766-4936-A1DF-C598D2C623A8}</td><td>TEXTURES</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>NPlot.dll</td><td>{9CB7290E-D249-48B1-9F31-1FEFD700697F}</td><td>INSTALLDIR</td><td>2</td><td/><td>nplot.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>System.Windows.Forms.DataVisualization.dll</td><td>{F5356216-9C74-4764-ACA6-3EA72917E5FB}</td><td>INSTALLDIR</td><td>10</td><td/><td>system.windows.forms.datavis</td><td>17</td><td>This component consists of a Windows dynamic link library.</td><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>background.exe</td><td>{15C18888-88AE-401D-9E04-55A250539E6E}</td><td>INSTALLDIR</td><td>2</td><td/><td>background.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1190,6 +1191,7 @@
 		<row><td>System16Folder</td><td>TARGETDIR</td><td>.:System</td><td/><td>0</td><td/></row>
 		<row><td>SystemFolder</td><td>TARGETDIR</td><td>.:System32</td><td/><td>0</td><td/></row>
 		<row><td>TARGETDIR</td><td/><td>SourceDir</td><td/><td>0</td><td/></row>
+		<row><td>TEXTURES</td><td>INSTALLDIR</td><td>textures</td><td/><td>0</td><td/></row>
 		<row><td>TempFolder</td><td>TARGETDIR</td><td>.:Temp</td><td/><td>0</td><td/></row>
 		<row><td>TemplateFolder</td><td>TARGETDIR</td><td>.:ShellNew</td><td/><td>0</td><td/></row>
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
@@ -1902,6 +1904,7 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>AlwaysInstall</td><td>NPlot.dll</td></row>
 		<row><td>AlwaysInstall</td><td>System.Windows.Forms.DataVisualization.dll</td></row>
 		<row><td>AlwaysInstall</td><td>background.exe</td></row>
@@ -1932,21 +1935,36 @@
 		<row><td>c1.win.c1flexgrid.4.dll</td><td>C1.Win.C1FlexGrid.4.dll</td><td>C1.Win.C1FlexGrid.4.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\C1.Win.C1FlexGrid.4.dll</td><td>1</td><td/></row>
 		<row><td>c1.win.c1report.4.dll</td><td>C1.Win.C1Report.4.dll</td><td>C1.Win.C1Report.4.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\C1.Win.C1Report.4.dll</td><td>1</td><td/></row>
 		<row><td>c1.win.c1sizer.4.dll</td><td>C1.Win.C1Sizer.4.dll</td><td>C1.Win.C1Sizer.4.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\C1.Win.C1Sizer.4.dll</td><td>1</td><td/></row>
+		<row><td>cb4052t.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>Cb4052t.JPG</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\Cb4052t.JPG</td><td>1</td><td/></row>
 		<row><td>cedit.exe</td><td>CEdit.exe</td><td>CEdit.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\CEdit.exe</td><td>1</td><td/></row>
 		<row><td>cfast.exe</td><td>CFAST.exe</td><td>CFAST.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\CFAST.exe</td><td>1</td><td/></row>
 		<row><td>cfast6.chm</td><td>CFAST6.chm</td><td>CFAST6.chm</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\CFAST6.chm</td><td>1</td><td/></row>
+		<row><td>csv2023t.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>Csv2023t.JPG</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\Csv2023t.JPG</td><td>1</td><td/></row>
 		<row><td>curtains.o</td><td>ISX_DEFAULTCOMPONENT</td><td>curtains.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\curtains.o</td><td>1</td><td/></row>
+		<row><td>day2.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>day2.jpg</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\day2.jpg</td><td>1</td><td/></row>
 		<row><td>glew32.dll</td><td>glew32.dll</td><td>glew32.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\glew32.dll</td><td>1</td><td/></row>
+		<row><td>grass.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>grass.JPG</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\grass.JPG</td><td>1</td><td/></row>
 		<row><td>hazard.tbl</td><td>ISX_DEFAULTCOMPONENT</td><td>HAZARD.TBL</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\HAZARD.TBL</td><td>1</td><td/></row>
 		<row><td>kiosk.o</td><td>ISX_DEFAULTCOMPONENT</td><td>kiosk.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\kiosk.o</td><td>1</td><td/></row>
 		<row><td>mattress_and_boxspring.o</td><td>ISX_DEFAULTCOMPONENT</td><td>mattress and boxspring.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\mattress and boxspring.o</td><td>1</td><td/></row>
+		<row><td>nistleft.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>nistleft.jpg</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\nistleft.jpg</td><td>1</td><td/></row>
 		<row><td>nplot.dll</td><td>NPlot.dll</td><td>NPlot.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\NPlot.dll</td><td>1</td><td/></row>
 		<row><td>objects.svo</td><td>ISX_DEFAULTCOMPONENT</td><td>objects.svo</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\objects.svo</td><td>1</td><td/></row>
+		<row><td>peach2_54_.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>Peach2(54).JPG</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\Peach2(54).JPG</td><td>1</td><td/></row>
+		<row><td>pine_36_.jpg</td><td>ISX_DEFAULTCOMPONENT5</td><td>Pine(36).JPG</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\Pine(36).JPG</td><td>1</td><td/></row>
 		<row><td>pthreadvc.dll</td><td>pthreadVC.dll</td><td>pthreadVC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\pthreadVC.dll</td><td>1</td><td/></row>
 		<row><td>smokediff_win_32.exe</td><td>smokediff_win_32.exe</td><td>smokediff_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokediff_win_32.exe</td><td>1</td><td/></row>
 		<row><td>smokeview.exe</td><td>smokeview.exe</td><td>smokeview.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\smokeview.exe</td><td>1</td><td/></row>
+		<row><td>smokeview_de.po</td><td>ISX_DEFAULTCOMPONENT</td><td>smokeview_de.po</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokeview_de.po</td><td>1</td><td/></row>
+		<row><td>smokeview_es.po</td><td>ISX_DEFAULTCOMPONENT</td><td>smokeview_es.po</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokeview_es.po</td><td>1</td><td/></row>
+		<row><td>smokeview_fr.po</td><td>ISX_DEFAULTCOMPONENT</td><td>smokeview_fr.po</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokeview_fr.po</td><td>1</td><td/></row>
+		<row><td>smokeview_pl.po</td><td>ISX_DEFAULTCOMPONENT</td><td>smokeview_pl.po</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokeview_pl.po</td><td>1</td><td/></row>
+		<row><td>smokeview_template.po</td><td>ISX_DEFAULTCOMPONENT</td><td>smokeview_template.po</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokeview_template.po</td><td>1</td><td/></row>
 		<row><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>smokezip_win_32.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\smokezip_win_32.exe</td><td>1</td><td/></row>
 		<row><td>sofa.o</td><td>ISX_DEFAULTCOMPONENT</td><td>sofa.o</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\sofa.o</td><td>1</td><td/></row>
+		<row><td>sphere_cover_01.png</td><td>ISX_DEFAULTCOMPONENT5</td><td>sphere_cover_01.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\sphere_cover_01.png</td><td>1</td><td/></row>
+		<row><td>sphere_cover_02.png</td><td>ISX_DEFAULTCOMPONENT5</td><td>sphere_cover_02.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\sphere_cover_02.png</td><td>1</td><td/></row>
+		<row><td>sphere_cover_03.png</td><td>ISX_DEFAULTCOMPONENT5</td><td>sphere_cover_03.png</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\textures\sphere_cover_03.png</td><td>1</td><td/></row>
 		<row><td>standard.in</td><td>ISX_DEFAULTCOMPONENT4</td><td>standard.in</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\Data\standard.in</td><td>1</td><td/></row>
 		<row><td>system.windows.forms.datavis</td><td>System.Windows.Forms.DataVisualization.dll</td><td>System.Windows.Forms.DataVisualization.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;WindowsFolder&gt;\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.DataVisualization.dll</td><td>1</td><td/></row>
 		<row><td>thermal.csv</td><td>ISX_DEFAULTCOMPONENT</td><td>thermal.csv</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\thermal.csv</td><td>1</td><td/></row>
@@ -2226,6 +2244,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_DD96ADA2_E927_40D8_99F5_9EAE57665B5F_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_68A21D85_F5CB_4AEC_8E56_50CE76D64A8D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_382D9E37_610B_4182_B8C9_35F64CAD0F47_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_700EE00E_4A82_41CD_86F9_1841303ABB83_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>NPlot.dll</td><td/><td/><td>_2A4E0135_1E4E_4DFE_AE2E_9F8B65E0C453_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>System.Windows.Forms.DataVisualization.dll</td><td/><td/><td>_56875F39_A3C4_45F9_B318_6CD56D2AE67B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>background.exe</td><td/><td/><td>_41C7D75B_644C_4F4C_88A7_B3B625B58D63_FILTER</td><td/><td/><td/><td/></row>

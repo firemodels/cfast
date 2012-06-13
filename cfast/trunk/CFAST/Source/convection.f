@@ -79,6 +79,7 @@ c               a jacobian calculation (option(fmodjac)==2)
 c     gpf 2/5/96   removed reduced jacobian option added on 2/5/93.
 c*re
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -960,6 +961,7 @@ C                  the hall.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

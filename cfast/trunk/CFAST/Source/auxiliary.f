@@ -71,8 +71,8 @@ C     10/14/93   ADAPTED FOR USE WITH CFAST (WRITE OUT TO LOG FILE) GPF
 C
 C***ROUTINES CALLED  XERRWV
 C***END PROLOGUE  XERROR
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cshell.fi"
       CHARACTER*(*) MESSG
 C***FIRST EXECUTABLE STATEMENT  XERROR
@@ -91,8 +91,8 @@ C***FIRST EXECUTABLE STATEMENT  XERROR
 C***TAKEN FROM KAHANER LIBRARY, BILL MOSS 2-91
       END
       SUBROUTINE XERRWV(MSG,NMES,NERR,LEVEL,NI,I1,I2,NNR,R1,R2)
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cshell.fi"
       INTEGER NMES, NERR, LEVEL, NI, I1, I2, NNR
       real*8 R1, R2
@@ -409,8 +409,8 @@ C***TAKEN FROM KAHANER LIBRARY, BILL MOSS, 2-91
 
       SUBROUTINE XERRmod(mesg,NMES,NERR,NNR,R1,R2)
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cshell.fi"
 
       INTEGER NMES, NERR, NNR
@@ -468,7 +468,7 @@ C
       subroutine cfastexit (name, errorcode)
 
       use iofiles
-      include "cparams.fi"
+      use cparams
       include "cshell.fi"
 
       character name*(*)
@@ -858,8 +858,8 @@ C
       ! Should be tocount. If not, then return an error (logical false)
       ! If tocount is zero or less, just count them
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cshell.fi"
 
 	integer tocount, i,numc,nret
@@ -1023,7 +1023,8 @@ C     Description:  Part of the panel project output
 C
 C     Revision History: new 12/16/99
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-      include "cparams.fi"
+      
+      use cparams
       include "cshell.fi"
       include "cfin.fi"
 
@@ -1419,7 +1420,8 @@ C        Created:  9/14/1993 at 14:50 by RDP
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      include "cparams.fi"
+
+      use cparams
       include "cshell.fi"
 
       INTEGER Z, L
@@ -1433,7 +1435,8 @@ C Note that both format statements have to be present
       END
 C 
       SUBROUTINE MESSNRF (STRING, L)
-      include "cparams.fi"
+
+      use cparams
       include "cshell.fi"
 
       CHARACTER STRING*(*), FORMATT*100
@@ -1454,8 +1457,8 @@ C     (READAS) EXCEPT THAT THIS CONTAINS AUTOMATIC CONVERSION TO UPPER CASE.
 C     THIS IS TO FILTER COMMANDS FROM THE CONSOLE SO THAT THEY ARE NOT CASE
 C     SENSITIVE.
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cshell.fi"
 
       INTEGER START, COUNT
@@ -1557,8 +1560,8 @@ C                                   were consolidated into this version
 
 C     READ IN A STRING AND PROCESS IT INTO THE INTEGER AND FLOATING VARIABLES "FIXED" AND "FLTNG"
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cfin.fi"
       include "cfio.fi"
       include "cshell.fi"
@@ -1756,8 +1759,9 @@ C        5/16/1991 by WWJ, include the precision file PRECIS.INC
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "cshell.fi"
 C
 C     READ IN A STRING
@@ -1833,8 +1837,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !     12 is used to write the status file (project.status)
 !     13 smokeview output
 !     14 spreadsheet output
-!
-      include "cparams.fi"
+
+      use cparams
       include "cshell.fi"
 
       INTEGER (2) YEAR, MONTH, DAY
@@ -2038,8 +2042,8 @@ C                  The radiation routines expect to receive info for each
 C                  fire in a room.  Therefore, XFIRE a 2-d array must have 
 C                  the number of fires as the first subscript.
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       DIMENSION IFROOM(MXFIRE), XFIRE(MXFIRE,MXFIRP), IPERM(MXFIRE), 
      +    IWORK(MXFIRE), WORK(MXFIRE), IFRPNT(NR,2)
 

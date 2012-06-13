@@ -28,6 +28,7 @@
 
 
       use iofiles
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -138,11 +139,11 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-          include "cparams.fi"
-          include "cshell.fi"
 
-          data thrmfile/'thermal'/,  
+      use cparams
+      include "cshell.fi"
 
+      data thrmfile/'thermal'/,  
      .    nnfile/' '/,
      .    dumpf/' '/,header/.false./, 
      .    nokbd/.false./, 
@@ -157,6 +158,7 @@
 
       block data initcf
 
+      use cparams
           include "precis.fi"
           include "cfast.fi"
 
@@ -177,6 +179,7 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -367,7 +370,9 @@
 !     is presently used by DASSL. The important point is that NODES is set to
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
+      use cparams
       use iofiles
+      use fltarget 
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -377,7 +382,6 @@
       include "wnodes.fi"
       include "solvprm.fi"
       include "dervs.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "cfin.fi"
@@ -901,9 +905,9 @@
 !     revision: $revision: 290 $
 !     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
+      use cparams
+      use fltarget
       include "precis.fi"
-      include "cparams.fi"
-      include "fltarget.fi"
 
       dimension p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
 
@@ -941,6 +945,7 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1010,6 +1015,7 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1050,8 +1056,8 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "solvprm.fi"
       include "opt.fi"
       DIMENSION INFO(*), RWORK(*)
@@ -1120,6 +1126,9 @@ C     SETTING JACOBIAN FLAG
 !                        a partial / total flag for solution of the
 !                        species equations.
 
+
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1128,7 +1137,6 @@ C     SETTING JACOBIAN FLAG
       include "dervs.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
-      include "fltarget.fi"
       include "objects2.fi"
 
       ! temporaray declarations and assignments
@@ -1512,6 +1520,9 @@ C     SETTING JACOBIAN FLAG
 !     iflag = odevarc  ==> species data and wall temperature profile.
 !                          use pdif array for species
 
+ 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1521,7 +1532,6 @@ C     SETTING JACOBIAN FLAG
       include "params.fi"
       include "wdervs.fi"
       include "opt.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -2102,6 +2112,7 @@ c     order of variables is defined in the routine offset
 !     arguments: pdif   the p array to resync
 !                ibeg   the point at which species are started in p array
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

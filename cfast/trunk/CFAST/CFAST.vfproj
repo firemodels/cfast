@@ -57,7 +57,6 @@
 		<File RelativePath="Include\fireptrs.fi"/>
 		<File RelativePath="Include\fltarget.fi"/>
 		<File RelativePath="Include\flwptrs.fi"/>
-		<File RelativePath="Include\iofiles77.fi"/>
 		<File RelativePath="Include\objects1.fi"/>
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>

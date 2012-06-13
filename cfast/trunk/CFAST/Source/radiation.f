@@ -10,13 +10,14 @@
 !                flxrad      net enthalphy flux into surface
 !                ierror      returns error codes
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "wdervs.fi"
       include "opt.fi"
-      include "fltarget.fi"
 
       dimension flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal)
 
@@ -41,9 +42,9 @@
           flwrad(i,2) = 0.0d0
       end do
 
-      IF (OPTION(FRAD)==OFF) RETURN
-      BLACK = .FALSE.
-      IF(OPTION(FRAD)==3)BLACK = .TRUE.
+      if (option(frad)==off) return
+      black = .false.
+      if(option(frad)==3)black = .true.
 
       ! initially assume that we compute radiation transfer in every room
       do i = 1, nm1
@@ -405,9 +406,9 @@
 !                zroom: size of the room [m] in the z'th coordinate direction.
 !                hlay: height of smoke layer interface above the floor [m]
 !                qfire: array of length nfire, qfire(ifire) is the energy release rate due to radiation of the ifire'th fire [w]
-!                xfire: x coordinate of fire location [m]
-!                yfire: y coordinate of fire location [m]
-!                zfire: z coordinate of fire location [m]
+!                xfire: x coordinates of fire locations [m]
+!                yfire: y coordinates of fire locations [m]
+!                zfire: z coordinates of fire locations [m]
 !                qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
 !                                the lower wall and the floor respectively
 !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the upper, lower layers respectively
@@ -520,8 +521,8 @@
 
       ! define transmission factors for fires
       if (nfire/=0) then
-          call rdftran(mxfire,4,2,absorb,hlay,zz,nfire,zfire,taufu,
-     +    taufl,black)
+          call rdftran(mxfire,4,2,absorb,hlay,zz,nfire,zfire,black,
+     +    taufu,taufl)
       endif
 
       ! define solid angles for fires
@@ -599,7 +600,7 @@
       subroutine rdflux(mxfire,nzone,nup,area,hlay,tlay,zfire,qfire,
      +figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
 
-!     routine: rad4
+!     routine: radflux
 !     purpose: this routine calculates the 'c' vector in the net radiation equations of seigel and howell and the 
 !        heat absorbed by the lower and upper layer fires due to gas layer emission and fires..
 !     arguments: mxfire
@@ -726,17 +727,17 @@
 !     purpose: This routine computes the energy absorbed by the upper and lower layer due to radiation given off by heat emiiting rectangles
 !              forming the enclosure.  Coming into this routine, qllay and qulay were previously defined to be the heat absorbed by the lower and
 !              upper layers due to gas emissions and fires.  this routine just adds onto these values.
-!     arguments: NZONE
-!                NUP
-!                E
-!                DQDE
-!                EMIS2
-!                AREA
-!                FIGS
-!                TAUU
-!                TAUL
-!                QLLAY(output)
-!                QULAY (output)
+!     arguments: nzone
+!                nup
+!                e
+!                dqde
+!                emis2
+!                area
+!                figs
+!                tauu
+!                taul
+!                qllay(output)
+!                qulay (output)
 
       include "precis.fi"
 
@@ -770,868 +771,685 @@
       return
       end subroutine rdabs
 
-      real*8 FUNCTION RDPARFIG(X,Y,Z)
+      real*8 function rdparfig(x,y,z)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDPARFIG
-C
-C     Source File: RDFIGSOL.SOR
-C
-C     Functional Class:  
-C
-C     Description:  This routine calculates the configuration factor 
-C          between two paralell plates a distance z a part.  Each 
-C          plate has a dimension of x by y.  the units of x, y and z 
-C          are un-important except that they must be consistent.
-C
-C     Arguments: X
-C                Y
-C                Z
-C
-C     Revision History:
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: rdparfig
+!     purpose: This routine calculates the configuration factor between two parallel plates a distance z a part.  Each 
+!              plate has a dimension of x by y.  the units of x, y and z are un-important except that they must be consistent.
+!     arguments: x: size of parallel plate in one direction
+!                y: size of parallel plate in the other direction
+!                z: distance between parallel plates
 
       include "precis.fi"
 
-      SAVE IFIRST, PI, XX0, XX1, XXH
-      DATA IFIRST /0/
-      IF (IFIRST==0) THEN
-          XX1 = 1.0D0
-          XXH = 0.5D0
-          XX0 = 0.0D0
-          PI = 4.0D0 * ATAN(XX1)
-          IFIRST = 1
+      save ifirst, pi, xx0, xx1, xxh
+      data ifirst /0/
+      if (ifirst==0) then
+          xx1 = 1.0d0
+          xxh = 0.5d0
+          xx0 = 0.0d0
+          pi = 4.0d0 * atan(xx1)
+          ifirst = 1
       endif
-      RDPARFIG = XX0
-      IF (Z==XX0.OR.X==XX0.OR.Y==XX0) RETURN
-      XX = X / Z
-      YY = Y / Z
-      F1 = XXH*LOG((XX1+XX**2)*(XX1+YY**2)/(XX1+XX**2+YY**2))
-      YSQ = SQRT(XX1+YY**2)
-      F2 = XX * YSQ * ATAN(XX/YSQ)
-      XSQ = SQRT(XX1+XX**2)
-      F3 = YY * XSQ * ATAN(YY/XSQ)
-      F4 = XX * ATAN(XX)
-      F5 = YY * ATAN(YY)
-      RDPARFIG = 2.0D0 * (F1+F2+F3-F4-F5) / (PI*XX*YY)
-      RETURN
-      END
-      real*8 FUNCTION RDPRPFIG(X,Y,Z)
-
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDPRPFIG
-C
-C     Source File: RDFIGSOL.SOR
-C
-C     Functional Class:  
-C
-C     Description:  this routine calculates the configuration
-C          factor between two perpindular plates with a common edge.
-C
-C     Arguments: X
-C                Y
-C                Z
-C
-C     Revision History:
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+      rdparfig = xx0
+      if (z==xx0.or.x==xx0.or.y==xx0) return
+      xx = x / z
+      yy = y / z
+      f1 = xxh*log((xx1+xx**2)*(xx1+yy**2)/(xx1+xx**2+yy**2))
+      ysq = sqrt(xx1+yy**2)
+      f2 = xx * ysq * atan(xx/ysq)
+      xsq = sqrt(xx1+xx**2)
+      f3 = yy * xsq * atan(yy/xsq)
+      f4 = xx * atan(xx)
+      f5 = yy * atan(yy)
+      rdparfig = 2.0d0 * (f1+f2+f3-f4-f5) / (pi*xx*yy)
+      return
+      end function rdparfig
+      
+      real*8 function rdprpfig(x,y,z)
+      
+!     routine: rdprpfig
+!     purpose: this routine calculates the configuration factor between two perpindular plates with a common edge.
+!              the units of x, y and z are un-important except that they must be consistent.
+!     arguments: X: length of one face
+!                Y: length of common edge
+!                Z: length of other face
 
       include "precis.fi"
-C    
-      LOGICAL FIRST
-      SAVE FIRST, PI
-      DATA FIRST /.TRUE./
-      XX1 = 1.0D0
-      XX0 = 0.0D0
-      IF (FIRST) THEN
-          PI = 4.0D0 * ATAN(XX1)
-          FIRST = .FALSE.
+  
+      logical first
+      save first, pi
+      data first /.true./
+      xx1 = 1.0d0
+      xx0 = 0.0d0
+      if (first) then
+          pi = 4.0d0 * atan(xx1)
+          first = .false.
       endif
-      RDPRPFIG = XX0
-      IF (Y==XX0.OR.X==XX0.OR.Z==XX0) RETURN
-      H = X / Y
-      W = Z / Y
-      F1 = W * ATAN(XX1/W)
-      F2 = H * ATAN(XX1/H)
-C      
-      HWSUM = H ** 2 + W ** 2
-      HWNORM = SQRT(HWSUM)
-      RHWNORM = 1.0D0/HWNORM
-      F3 = HWNORM * ATAN(RHWNORM)
+      rdprpfig = xx0
+      if (y==xx0.or.x==xx0.or.z==xx0) return
+      h = x / y
+      w = z / y
+      f1 = w * atan(xx1/w)
+      f2 = h * atan(xx1/h)
+     
+      hwsum = h ** 2 + w ** 2
+      hwnorm = sqrt(hwsum)
+      rhwnorm = 1.0d0/hwnorm
+      f3 = hwnorm * atan(rhwnorm)
 
-      WSUM1 = XX1 + W ** 2
-      HSUM1 = XX1 + H ** 2
-      HWSUM2 = XX1 + HWSUM
-      F4A = WSUM1 * HSUM1 / HWSUM2
-      F4B = (W**2*HWSUM2/WSUM1/HWSUM)
-      F4C = (H**2*HWSUM2/HSUM1/HWSUM)
-      F4 = 0.25D0*(LOG(F4A)+LOG(F4B)*W**2+LOG(F4C)*H**2) 
-      RDPRPFIG = (F1+F2-F3+F4) / PI / W
-      RETURN
-      END
+      wsum1 = xx1 + w ** 2
+      hsum1 = xx1 + h ** 2
+      hwsum2 = xx1 + hwsum
+      f4a = wsum1 * hsum1 / hwsum2
+      f4b = (w**2*hwsum2/wsum1/hwsum)
+      f4c = (h**2*hwsum2/hsum1/hwsum)
+      f4 = 0.25d0*(log(f4a)+log(f4b)*w**2+log(f4c)*h**2) 
+      rdprpfig = (f1+f2-f3+f4) / pi / w
+      return
+      end function rdprpfig
 
       SUBROUTINE RDFANG(MXFIRE,XROOM,YROOM,ZROOM,HLAY,NFIRE,XFIRE,YFIRE,
      +ZFIRE,FIRANG)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDFANG
-C
-C     Source File: RDFIGSOL.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: MXFIRE
-C                XROOM
-C                YROOM
-C                ZROOM
-C                HLAY
-C                NFIRE
-C                XFIRE
-C                YFIRE
-C                ZFIRE
-C                FIRANG
-C
-C     Revision History:
-C                Modified by gpf 6/28/95:
-C                   Changed constant in solid angle identity from 1 to 4 pi 
-C                   since the underlying solid angle calculation is not 
-C                   normalized to one any more.
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+      
+!     routine: rdfang
+!     purpose: this routine calculates solid angles for fires
+!     arguments: mxfire: maximum number of fires (dimension limit)
+!                xroom: size of the room [m] in the x'th coordinate direction.
+!                yroom: size of the room [m] in the y'th coordinate direction.
+!                zroom: size of the room [m] in the z'th coordinate direction.
+!                hlay: height of smoke layer interface above the floor [m]
+!                nfire: actual number of fires in the simulation
+!                xfire: x coordinates of fire locations [m]
+!                yfire: y coordinates of fire locations [m]
+!                zfire: z coordinates of fire locations [m]
+!                firang (output): solid angles for each fire
 
       include "precis.fi"
 
-      DIMENSION XFIRE(*), YFIRE(*), ZFIRE(*)
-      DIMENSION FIRANG(MXFIRE,*)
-      LOGICAL FIRST
-      SAVE FIRST, FOURPI
-      DATA FIRST/.TRUE./
+      dimension xfire(*), yfire(*), zfire(*)
+      dimension firang(mxfire,*)
+      logical first
+      save first, fourpi
+      data first/.true./
 
-      IF(FIRST)THEN
-          FIRST = .FALSE.
-          XX1 = 1.0D0
-          PI = 4.0D0*ATAN(XX1)
-          FOURPI = 4.0D0*PI
-      ENDIF
+      if(first)then
+          first = .false.
+          xx1 = 1.0d0
+          pi = 4.0d0*atan(xx1)
+          fourpi = 4.0d0*pi
+      endif
 
-      DO 10 I = 1, NFIRE
-          ARG1 = -XFIRE(I)
-          ARG2 = XROOM - XFIRE(I)
-          ARG3 = -YFIRE(I)
-          ARG4 = YROOM - YFIRE(I)
-          F1 = RDSANG(ARG1,ARG2,ARG3,ARG4,ZROOM-ZFIRE(I))
-          FD = RDSANG(ARG1,ARG2,ARG3,ARG4,HLAY-ZFIRE(I))
-          F4 = RDSANG(ARG1,ARG2,ARG3,ARG4,ZFIRE(I))
-          FIRANG(I,1) = F1
-          FIRANG(I,4) = F4
-          IF (ZFIRE(I)<HLAY) THEN
-              FIRANG(I,2) = FD - F1
-              FIRANG(I,3) = FOURPI - FD - F4
-          ELSE
-              FIRANG(I,2) = FOURPI - FD - F1
-              FIRANG(I,3) = FD - F4
+      do i = 1, nfire
+          arg1 = -xfire(i)
+          arg2 = xroom - xfire(i)
+          arg3 = -yfire(i)
+          arg4 = yroom - yfire(i)
+          f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
+          fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
+          f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
+          firang(i,1) = f1
+          firang(i,4) = f4
+          if (zfire(i)<hlay) then
+              firang(i,2) = fd - f1
+              firang(i,3) = fourpi - fd - f4
+          else
+              firang(i,2) = fourpi - fd - f1
+              firang(i,3) = fd - f4
           endif
-   10 CONTINUE
-      RETURN
-      END
-      real*8 FUNCTION RDSANG(X1,X2,Y1,Y2,R)
+      end do
+      return
+      end subroutine rdfang
+     
+      real*8 function rdsang(x1,x2,y1,y2,r)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDSANG
-C
-C     Source File: RDFIGSOL.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: X1
-C                X2
-C                Y1
-C                Y2
-C                R
-C
-C     Revision History:
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+!     routine: rdsang
+!     purpose: this routine calculates solid angles
+!     arguments: x1
+!                x2
+!                y1
+!                y2
+!                r
 
       include "precis.fi"
 
-      F1 = SIGN(RDSANG1(ABS(X2),ABS(Y2),R),X2*Y2)
-      F2 = SIGN(RDSANG1(ABS(X1),ABS(Y2),R),X1*Y2)
-      F3 = SIGN(RDSANG1(ABS(X2),ABS(Y1),R),X2*Y1)
-      F4 = SIGN(RDSANG1(ABS(X1),ABS(Y1),R),X1*Y1)
-      RDSANG = F1 - F2 - F3 + F4
-      RETURN
-      END
-      real*8 FUNCTION RDSANG1(X,Y,R)
+      f1 = sign(rdsang1(abs(x2),abs(y2),r),x2*y2)
+      f2 = sign(rdsang1(abs(x1),abs(y2),r),x1*y2)
+      f3 = sign(rdsang1(abs(x2),abs(y1),r),x2*y1)
+      f4 = sign(rdsang1(abs(x1),abs(y1),r),x1*y1)
+      rdsang = f1 - f2 - f3 + f4
+      return
+      end function rdsang
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDSANG1
-C
-C     Source File: RDFIGSOL.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: X
-C                Y
-C                R
-C
-C     Revision History:
-C           gpf 5/24/95  Eliminated a division by 4*pi.  This division was done
-C                        elsewhere resulting in a double division by 4*pi.
-C                        Now this routine computes a solid angle (maximum
-C                        esult 4*pi) rather than a configuration factor
-C                        (maximum result 1).
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
+      real*8 function rdsang1(x,y,r)
+
+!     routine: rdsang1
+!     purpose: this routine computes a solid angle (maximum result 4*pi)
+!     arguments: x
+!                y
+!                r
 
       include "precis.fi"
-C
-      LOGICAL FIRST
-      SAVE FIRST, PI, PIO2
-C     
-      DATA FIRST /.TRUE./
-C     
-      XX0 = 0.0D0
-      XX1 = 1.0D0
-      IF (FIRST) THEN
-          FIRST = .FALSE.
-          PI = 4.0D0 * ATAN(XX1)
-          PIO2 = PI / 2.0D0
+
+      logical first
+      save first, pi, pio2
+      data first /.true./     
+      xx0 = 0.0d0
+      xx1 = 1.0d0
+      if (first) then
+          first = .false.
+          pi = 4.0d0 * atan(xx1)
+          pio2 = pi / 2.0d0
       endif
-      IF (X<=XX0.OR.Y<=XX0) THEN
-          RDSANG1 = XX0
-      ELSE
-          XR = X * X + R * R
-          XYR = X * X + Y * Y + R * R
-          XY = X * X + Y * Y
-          YR = Y * Y + R * R
-          F1 = MIN(XX1, Y * SQRT(XYR/XY/YR))
-          F2 = MIN(XX1, X * SQRT(XYR/XY/XR))
-          RDSANG1 = (ASIN(F1)+ASIN(F2)-PIO2)
+      if (x<=xx0.or.y<=xx0) then
+          rdsang1 = xx0
+      else
+          xr = x * x + r * r
+          xyr = x * x + y * y + r * r
+          xy = x * x + y * y
+          yr = y * y + r * r
+          f1 = min(xx1, y * sqrt(xyr/xy/yr))
+          f2 = min(xx1, x * sqrt(xyr/xy/xr))
+          rdsang1 = (asin(f1)+asin(f2)-pio2)
       endif
-      RETURN
-      END
+      return
+      end function rdsang1
 
-      SUBROUTINE RDFTRAN(MXFIRE,NZONE,NUP,ABSORB,HLAY,ZZ,NFIRE,
-     +ZFIRE,TAUFU,TAUFL,BLACK)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDFTRAN
-C
-C     Source File: RDTRAN.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: MXFIRE
-C                NZONE
-C                NUP
-C                ABSORB
-C                HLAY
-C                ZZ
-C                NFIRE
-C                ZFIRE
-C                TAUFU
-C                TAUFL
-C
-C     Revision History:
-C
-C        Modified: 4/21/97 by gpf
-C                  Added BLACK option for the gas to allow better simulations
-C                  for furnaces
-C        Modified: 10/10/97 by gpf
-C                  fixed subscript error in TAU's
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      include "precis.fi"
-C     
-      DIMENSION ABSORB(*), ZZ(*), ZFIRE(*)
-      DIMENSION TAUFU(MXFIRE,*), TAUFL(MXFIRE,*)
-      LOGICAL BLACK
-      DO 30 I = 1, NFIRE
-          DO 10 J = 1, NUP
-              IF (ZFIRE(I)>HLAY) THEN
-                  BEAM = ABS(ZZ(J)-ZFIRE(I))
-                  TAUFL(I,J) = 1.0D0
-                  IF(.NOT.BLACK)THEN
-                      TAUFU(I,J) = EXP(-ABSORB(1)*BEAM)
-                  ELSE
-                      TAUFU(I,J) = 0.0D0
-                      TAUFL(I,J) = 0.0D0
-                  ENDIF
-              ELSE
-                  BEAMU = ZZ(J) - HLAY
-                  BEAML = HLAY - ZFIRE(I)
-                  IF(.NOT.BLACK)THEN
-                      TAUFU(I,J) = EXP(-ABSORB(1)*BEAMU)
-                      TAUFL(I,J) = EXP(-ABSORB(2)*BEAML)
-                  ELSE
-                      TAUFU(I,J) = 0.0D0
-                      TAUFL(I,J) = 0.0D0
-                  ENDIF
-              endif
-   10     CONTINUE
-          DO 20 J = NUP + 1, NZONE
-              IF (ZFIRE(I)<=HLAY) THEN
-                  BEAM = ABS(ZZ(J)-ZFIRE(I))
-                  TAUFU(I,J) = 1.0D0
-                  IF(.NOT.BLACK)THEN
-                      TAUFL(I,J) = EXP(-ABSORB(2)*BEAM)
-                  ELSE
-                      TAUFL(I,J) = 0.0D0
-                      TAUFU(I,J) = 0.0D0
-                  ENDIF
-              ELSE
-                  BEAMU = ZFIRE(I) - HLAY
-                  BEAML = HLAY - ZZ(J)
-                  IF(.NOT.BLACK)THEN
-                      TAUFU(I,J) = EXP(-ABSORB(1)*BEAMU)
-                      TAUFL(I,J) = EXP(-ABSORB(2)*BEAML)
-                  ELSE
-                      TAUFU(I,J) = 0.0D0
-                      TAUFL(I,J) = 0.0D0
-                  ENDIF
-              endif
-   20     CONTINUE
-   30 CONTINUE
-      RETURN
-      END
-C
-      SUBROUTINE RDRTRAN(NZONE,NUP,ABSORB,BEAM,HLAY,ZZ,TAUU,TAUL,BLACK)
-C
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     RDRTRAN
-C
-C     Source File: RDTRAN.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C
-C     Arguments: NZONE
-C                NUP
-C                ABSORB
-C                BEAM
-C                HLAY
-C                ZZ
-C                TAUU
-C                TAUL
-C
-C     Revision History:
-C        Created:  5/5/1995 at 15:16 by GPF
-C        Modified: 4/21/97 by gpf
-C                  Added BLACK option for the gas to allow better simulations
-C                  for furnaces
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      include "precis.fi"
-      DIMENSION ABSORB(*), BEAM(NZONE,NZONE), ZZ(*)
-      DIMENSION TAUU(NZONE,NZONE), TAUL(NZONE,NZONE)
-      LOGICAL BLACK
-C
-C*** DEFINE UPPER LAYER TRANSMISSION FACTORS
-C
-C ** UPPER TO UPPER
-C
-      DO 20 I = 1, NUP
-          DO 10 J = I + 1, NUP
-              IF(.NOT.BLACK)THEN
-                  TAUU(I,J) = EXP(-ABSORB(1)*BEAM(I,J))
-              ELSE
-                  TAUU(I,J) = 0.0D0
-              ENDIF
-              TAUU(J,I) = TAUU(I,J)
-   10     CONTINUE
-          IF(.NOT.BLACK)THEN
-              TAUU(I,I) = EXP(-ABSORB(1)*BEAM(I,I))
-          ELSE
-              TAUU(I,I) = 0.0D0
-          ENDIF
-   20 CONTINUE
-C
-C*** UPPER TO LOWER AND LOWER TO UPPER
-C
-      DO 40 I = 1, NUP
-          DO 30 J = NUP + 1, NZONE
-              FU = (ZZ(I)-HLAY) / (ZZ(I)-ZZ(J))
-              IF(.NOT.BLACK)THEN
-                  TAUU(I,J) = EXP(-ABSORB(1)*BEAM(I,J)*FU)
-              ELSE
-                  TAUU(I,J) = 0.0D0
-              ENDIF
-              TAUU(J,I) = TAUU(I,J)
-   30     CONTINUE
-   40 CONTINUE
-C
-C*** LOWER TO LOWER
-C
-      DO 60 I = NUP + 1, NZONE
-          DO 50 J = NUP + 1, NZONE
-              IF(.NOT.BLACK)THEN
-                  TAUU(I,J) = 1.0D0
-              ELSE
-                  TAUU(I,J) = 0.0D0
-              ENDIF
-   50     CONTINUE
-   60 CONTINUE
-C
-C*** DEFINE LOWER LAYER TRANSMISSION FACTORS
-C
-C ** LOWER TO LOWER
-C
-      DO 80 I = NUP + 1, NZONE
-          DO 70 J = I + 1, NZONE
-              IF(.NOT.BLACK)THEN
-                  TAUL(I,J) = EXP(-ABSORB(2)*BEAM(I,J))
-              ELSE
-                  TAUL(I,J) = 0.0D0
-              ENDIF
-              TAUL(J,I) = TAUL(I,J)
-   70     CONTINUE
-          IF(.NOT.BLACK)THEN
-              TAUL(I,I) = EXP(-ABSORB(2)*BEAM(I,I))
-          ELSE
-              TAUL(I,I) = 0.0D0
-          ENDIF
-   80 CONTINUE
-C
-C*** UPPER TO UPPER
-C
-      DO 100 I = 1, NUP
-          DO 90 J = 1, NUP
-              IF(.NOT.BLACK)THEN
-                  TAUL(I,J) = 1.0D0
-              ELSE
-                  TAUL(I,J) = 0.0D0
-              ENDIF
-   90     CONTINUE
-  100 CONTINUE
-C
-C*** UPPER TO LOEWR AND LOWER TO UPPER
-C
-      DO 120 I = NUP + 1, NZONE
-          DO 110 J = 1, NUP
-              FL = (HLAY-ZZ(I)) / (ZZ(J)-ZZ(I))
-              IF(.NOT.BLACK)THEN
-                  TAUL(I,J) = EXP(-ABSORB(2)*BEAM(I,J)*FL)
-              ELSE
-                  TAUL(I,J) = 0.0D0
-              ENDIF
-              TAUL(J,I) = TAUL(I,J)
-  110     CONTINUE
-  120 CONTINUE
-      RETURN
-      END
+      subroutine rdftran(mxfire,nzone,nup,absorb,hlay,zz,nfire,
+     +zfire,black,taufu,taufl)
+      
+!     routine: rdftran
+!     purpose: this routine calculates radaitive heat transfer from fires
+!     arguments: mxfire: maximum number of fires (dimension limit)
+!                nzone: number of calculation surfaces
+!                nup: number of calculation surfaces in the upper layer
+!                absorb: layer absrobances
+!                hlay: height of the layer interface
+!                zz: height of each calculation surface
+!                nfire: actual number of fire
+!                zfire: height of each fire
+!                taufu (output): transmission factor for upper layer
+!                taufl (output): transmission factor for lower layer
+!                black: true if layer are assumed to absorb 100% of fire energy
 
-      real*8 FUNCTION ABSORB (CMPT, LAYER)
-C
-C  FUNCTION CALCULATES ABSORBANCE, DUE TO GASES (CO2 AND H2O) AND SOOT,
-C  FOR THE SPECIFIED COMPARTMENT AND LAYER.
-C
-C  ABSORBANCES ARE ASSUMED TO BE EQUAL TO EMISSIVITIES. PER SPFE 
-C  HANDBOOK (1988 ED., PAGES 1-99 - 1-101), GAS ABSORBANCE IS
-C  CALCULATED AS
-C
-C  AG = CH2O * EH2O + CCO2 * ECO2 - DELTAE ~ EH2O + 0.5 * ECO2;
-C
-C  WHERE CH2O AND CCO2 ARE CONCENTRATIONS AND DELTAE IS A CORRECTION
-C  FOR OVERLAP OF THE ABSORBANCE BANDS.
-C
-C  ECO2 AND EH2O ARE INTERPOLATED FROM SPFE HANDBOOK GRAPHS WHICH SHOW 
-C  E = F(T,PL), WHERE T IS THE GAS TEMPERATURE (KELVINS) AND PL IS THE
-C  PARTIAL PRESSURE-PATH LENGTH PRODUCT (ATM-M). TEMPERATURE AND GAS 
-C  PARTIAL PRESSURES ARE BASED ON DATA CALCULATED ELSEWHERE AND STORED IN
-C  COMMON BLOCKS. USING HANDBOOK FORMULAE, PATH LENGTH IS ESTIMATED AS
-C
-C  L = C * 4 * V/A; WHERE C ~ 0.9 FOR TYPICAL GEOMETRIES, V IS THE GAS 
-C      VOLUME AND A IS THE SURFACE AREA OF THE GAS VOLUME.
-C
-C  TOTAL ABSORBANCE IS CALCULATED AS
-C
-C  AT = AS + AG * TRANS = (1 - EXP(-AS)) + AG * EXP(-AS);
-C
-C  WHERE AS IS SOOT ABSORPION, AG IS GAS ABSORPTION, TRANS IS SOOT
-C  TRANSMISSION, A IS THE EFFECTIVE ABSORBANCE COEFFICIENT FOR SOOT AND
-C  S IS THE PHYSICAL PATHLENGTH. S IS APPRXOMINATED BY L, THE MEAN BEAM
-C  LENGTH, AND A ~ K*VFS*TG, WHERE VFS IS THE SOOT VOLUME FRACTION, TG THE
-C  GAS TEMPERATURE AND K IS A CONSTANT. FOR TYPICAL FUELS, K ~ 1195.5.
-C
-C  VERSION 1.0.3
-C
-C  REVISION HISTORY:
-C    CREATED 12/09/94 - JBH
-C    MODIFIED 08/14/95 - JBH
-C       REPLACED GAS MASS CALCULATION (LAYER MASS * GAS MASS FRACTION) WITH
-C       REFERENCE TO SPECIES MASS GLOBAL VARIABLE, ZZGSPEC, IN GAS ABSORB-
-C       ANCE TERM.
-C    MODIFIED 08/17/95 - JBH
-C      CORRECTED VALUE OF GAS CONSTANT PER CRC HNDBK OF CHEM. & PHY.; 52ND ED.
-C    MODIFIED 09/28/95
-C      PER GLENN FORNEY, THE RADX ROUTINES EXPECT AN EXTINCTION COEFFICIENT, RATHER
-C      THAN AN ABSORBANCE, THEREFORE, ABSORB WAS MODIFIED TO RETURN [- LOG(1 - ABSORB)/L]
-C    MODIFIED 9/12/96  - GPF
-C      LOG(TG) was passed in argument list to LINTERP routine.  But LINTERP routine may
-C      modify it.  Therefore, a this value is stored in a variable, TGLOG and TGLOG is
-C      now passed to LINTERP.
-C    MODIFIED 7/3/97 - GPF
-C      Eliminated a catastrophic cancellation in the absorbance calculation.  
-C      Note new code is equivalent mathematically to the old.  This version is 
-C      better because it removes the need for an EXP calculation and eliminates 
-C      a cancellation error.  This cancellation error was causing the code bomb.
-C    MODIFIED 10/19/97 GPF
-C      Converted code to real*8.
-C
-C  DECLARE COMMON BLOCK VARIABLES (AR, BR, ZZ????, ETC) AND CONSTANTS
-C  (UPPER & LOWER). ORDER OF 'INCLUDE' FILES IS CRITICAL.
-C  CFAST.INC INVOKES CPARAMS.INC & DSIZE.INC
-C
+      include "precis.fi"
+     
+      dimension absorb(*), zz(*), zfire(*)
+      dimension taufu(mxfire,*), taufl(mxfire,*)
+      logical black
+      do i = 1, nfire
+          do j = 1, nup
+              if (zfire(i)>hlay) then
+                  beam = abs(zz(j)-zfire(i))
+                  taufl(i,j) = 1.0d0
+                  if(.not.black)then
+                      taufu(i,j) = exp(-absorb(1)*beam)
+                  else
+                      taufu(i,j) = 0.0d0
+                      taufl(i,j) = 0.0d0
+                  endif
+              else
+                  beamu = zz(j) - hlay
+                  beaml = hlay - zfire(i)
+                  if(.not.black)then
+                      taufu(i,j) = exp(-absorb(1)*beamu)
+                      taufl(i,j) = exp(-absorb(2)*beaml)
+                  else
+                      taufu(i,j) = 0.0d0
+                      taufl(i,j) = 0.0d0
+                  endif
+              endif
+          end do
+          do j = nup + 1, nzone
+              if (zfire(i)<=hlay) then
+                  beam = abs(zz(j)-zfire(i))
+                  taufu(i,j) = 1.0d0
+                  if(.not.black)then
+                      taufl(i,j) = exp(-absorb(2)*beam)
+                  else
+                      taufl(i,j) = 0.0d0
+                      taufu(i,j) = 0.0d0
+                  endif
+              else
+                  beamu = zfire(i) - hlay
+                  beaml = hlay - zz(j)
+                  if(.not.black)then
+                      taufu(i,j) = exp(-absorb(1)*beamu)
+                      taufl(i,j) = exp(-absorb(2)*beaml)
+                  else
+                      taufu(i,j) = 0.0d0
+                      taufl(i,j) = 0.0d0
+                  endif
+              endif
+          end do
+      end do
+      return
+      end subroutine rdftran
+c
+      subroutine rdrtran(nzone,nup,absorb,beam,hlay,zz,tauu,taul,black)
+
+!     routine: rdftran
+!     purpose: this routine calculates radaitive heat transfer for gas layers
+!     arguments: nzone
+!                nup
+!                absorb
+!                beam
+!                hlay
+!                zz
+!                tauu
+!                taul
+
+      include "precis.fi"
+      dimension absorb(*), beam(nzone,nzone), zz(*)
+      dimension tauu(nzone,nzone), taul(nzone,nzone)
+      logical black
+
+      ! define upper layer transmission factors
+      ! upper to upper
+      do i = 1, nup
+          do j = i + 1, nup
+              if(.not.black)then
+                  tauu(i,j) = exp(-absorb(1)*beam(i,j))
+              else
+                  tauu(i,j) = 0.0d0
+              endif
+              tauu(j,i) = tauu(i,j)
+          end do
+          if(.not.black)then
+              tauu(i,i) = exp(-absorb(1)*beam(i,i))
+          else
+              tauu(i,i) = 0.0d0
+          endif
+      end do
+
+      ! upper to lower and lower to upper
+      do i = 1, nup
+          do j = nup + 1, nzone
+              fu = (zz(i)-hlay) / (zz(i)-zz(j))
+              if(.not.black)then
+                  tauu(i,j) = exp(-absorb(1)*beam(i,j)*fu)
+              else
+                  tauu(i,j) = 0.0d0
+              endif
+              tauu(j,i) = tauu(i,j)
+          end do
+      end do
+
+      ! lower to lower
+      do i = nup + 1, nzone
+          do j = nup + 1, nzone
+              if(.not.black)then
+                  tauu(i,j) = 1.0d0
+              else
+                  tauu(i,j) = 0.0d0
+              endif
+          end do
+      end do
+
+      ! define lower layer transmission factors
+      ! lower to lower
+      do i = nup + 1, nzone
+          do j = i + 1, nzone
+              if(.not.black)then
+                  taul(i,j) = exp(-absorb(2)*beam(i,j))
+              else
+                  taul(i,j) = 0.0d0
+              endif
+              taul(j,i) = taul(i,j)
+          end do
+          if(.not.black)then
+              taul(i,i) = exp(-absorb(2)*beam(i,i))
+          else
+              taul(i,i) = 0.0d0
+          endif
+      end do
+
+      ! upper to upper
+      do i = 1, nup
+          do j = 1, nup
+              if(.not.black)then
+                  taul(i,j) = 1.0d0
+              else
+                  taul(i,j) = 0.0d0
+              endif
+          end do
+      end do
+
+      ! upper to loewr and lower to upper
+      do i = nup + 1, nzone
+          do j = 1, nup
+              fl = (hlay-zz(i)) / (zz(j)-zz(i))
+              if(.not.black)then
+                  taul(i,j) = exp(-absorb(2)*beam(i,j)*fl)
+              else
+                  taul(i,j) = 0.0d0
+              endif
+              taul(j,i) = taul(i,j)
+          end do
+      end do
+      return
+      end subroutine rdrtran
+
+      real*8 function absorb (cmpt, layer)
+
+!     routine: absorb
+!     purpose: function calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
+!
+!              absorbances are assumed to be equal to emissivities. per spfe handbook (1988 ed., pages 1-99 - 1-101), gas absorbance is
+!              calculated as
+!
+!                 ag = ch2o * eh2o + cco2 * eco2 - deltae ~ eh2o + 0.5 * eco2;
+!
+!              where ch2o and cco2 are concentrations and deltae is a correction for overlap of the absorbance bands.
+!
+!              eco2 and eh2o are interpolated from spfe handbook graphs which show e = f(t,pl), where t is the gas temperature (kelvins) and pl is the
+!              partial pressure-path length product (atm-m). temperature and gas partial pressures are based on data calculated elsewhere and stored in
+!              common blocks. using handbook formulae, path length is estimated as
+!
+!                 l = c * 4 * v/a; where c ~ 0.9 for typical geometries, v is the gas volume and a is the surface area of the gas volume.
+!
+!              total absorbance is calculated as
+!
+!                 at = as + ag * trans = (1 - exp(-as)) + ag * exp(-as);
+!
+!              where as is soot absorpion, ag is gas absorption, trans is soot transmission, a is the effective absorbance coefficient for soot and
+!              s is the physical pathlength. s is apprxominated by l, the mean beam length, and a ~ k*vfs*tg, where vfs is the soot volume fraction, tg the
+!              gas temperature and k is a constant. for typical fuels, k ~ 1195.5.
+!     arguments: cmpt: compartment for the calculation
+!                layer: upper or lower layer calculaiton
+
+      ! declare common block variables (ar, br, zz????, etc) and constants (upper & lower). order of 'include' files is critical. cfast.inc invokes cparams.inc & dsize.inc
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-C
-C  DECLARE PARAMETERS
-C
-      INTEGER NOERR, HIERR, LOERR
-      PARAMETER (NOERR=0, HIERR=+1, LOERR=-1)
-C
-      INTEGER CO2XSIZE, CO2YSIZE, H2OXSIZE, H2OYSIZE
-      PARAMETER (CO2XSIZE=11, CO2YSIZE=12, H2OXSIZE=11, H2OYSIZE=12)
-C
-      INTEGER CO2, H2O, SOOT
-      PARAMETER (CO2=3, H2O=8, SOOT=9)	
-C
-C  DECLARE I/O VARIABLES
-C
-      INTEGER CMPT, LAYER
-C
-C  DECLARE INTERNAL VARIABLES
-C  UNITS:
-C    TG = KELVINS; TCO2, TH2O = LOG(KELVINS)
-C    PLG = ATM-M; PLCO2, PLH2O = LOG(ATM-M)
-C    L = M; NG = MOL; RTV = ATM/MOL
-C    AG, ABSORB = NUMBER (ABSORBANCE)
-C    ACO2, AH2O, ECO2, EH2O = LOG(EMISS)
-C    VFS = NUMBER (SOOT VOLUME FRACTION)
-C    RHOS = KG/CUBIC METER (SOOT DENSITY)
-C    TRANS = NUMBER (SOOT TRANSMISSION = EXP(-K*VFS*TG*L))
-C    K = 1/(KELVIN-METER) (SSOT ABSORPTION CONSTANT)
-C    MWCO2, MWH2O = GAS MOLECULAR WEIGHT (KG/GM-MOLE)
-C    RG = IDEAL GAS CONSTANT (ATM-M^3/MOL-K)
-C
-      INTEGER XCO2, YCO2, XH2O, YH2O
-      DIMENSION TCO2(CO2XSIZE), PLCO2(CO2YSIZE)
-      DIMENSION ECO2(CO2XSIZE,CO2YSIZE)
-      DIMENSION TH2O(H2OXSIZE)
-      DIMENSION PLH2O(H2OYSIZE), EH2O(H2OXSIZE,H2OYSIZE)
-      real*8 MWCO2,MWH2O, K, RHOS, L, NG
 
-C  DECLARE MODULE DATA
-C
-C  PHYSICAL CONSTANTS [MW IN KG/MOL; RG IN M^3-ATM/MOL-KELVIN]
+      ! declare parameters
+      integer noerr, hierr, loerr
+      parameter (noerr=0, hierr=+1, loerr=-1)
 
-      DATA MWCO2, MWH2O, RG, K, RHOS
-     +/44.0088D-3, 18.0153D-3, 82.0562D-6, 1195.5D0, 1800.0D0/
-C
-C  LOG(T) DATA FOR CO2 [T IN K] 
-C 
-      DATA TCO2  /2.3010D0, 2.4771D0, 2.6021D0, 2.6990D0, 
-     +2.7782D0, 2.8451D0, 2.9031D0, 2.9542D0,
-     +3.0000D0, 3.3010D0, 3.4771D0        /
-C
-C  LOG(PL) DATA FOR CO2 [PL IN ATM-M]
-C
-      DATA PLCO2 /-3.0000D0, -2.6990D0, -2.3979D0, -2.0000D0,
-     +-1.6990D0, -1.3979D0, -1.0000D0, -0.6990D0,
-     +-0.3979D0,  0.0000D0,  0.3010D0,  0.6021D0/
-C
-C  LOG(EMISS) DATA FOR CO2 [STORED IN E(T,PL) FORMAT (ASCENDING ORDER 
-C  BY TEMPERATURE, THEN BY PRESSURE-LENGTH)]
-C
-      DATA ECO2  /-1.8508D0, -1.8416D0, -1.8508D0, -1.7799D0,
-     +-1.6990D0, -1.6799D0, -1.6904D0, -1.6990D0,
-     +-1.7399D0, -2.3706D0, -2.8996D0,
-     +-1.6990D0, -1.6799D0, -1.6904D0, -1.6308D0,
-     +-1.5498D0, -1.5302D0, -1.5302D0, -1.5498D0, 
-     +-1.5800D0, -2.1002D0, -2.6108D0,
-     +-1.5406D0, -1.5200D0, -1.5498D0, -1.4895D0,
-     +-1.4401D0, -1.3904D0, -1.3904D0, -1.4101D0,
-     +-1.4202D0, -1.8894D0, -2.3002D0,
-     +-1.3799D0, -1.3298D0, -1.3497D0, -1.3298D0,
-     +-1.2700D0, -1.2403D0, -1.2403D0, -1.2503D0,
-     +-1.2700D0, -1.6596D0, -2.0400D0,
-     +-1.2403D0, -1.2000D0, -1.2403D0, -1.2104D0,
-     +-1.1599D0, -1.1403D0, -1.1302D0, -1.1403D0,
-     +-1.1500D0, -1.5200D0, -1.8894D0,
-     +-1.1403D0, -1.1002D0, -1.1403D0, -1.1203D0,
-     +-1.0799D0, -1.0400D0, -1.0301D0, -1.0301D0,
-     +-1.0600D0, -1.3799D0, -1.7305D0, 
-     +-1.0400D0, -0.9914D0, -1.0200D0, -1.0200D0,
-     +-0.9706D0, -0.9547D0, -0.9431D0, -0.9355D0,
-     +-0.9431D0, -1.1599D0, -1.4802D0,
-     +-0.9914D0, -0.9431D0, -0.9547D0, -0.9508D0,
-     +-0.9136D0, -0.8827D0, -0.8666D0, -0.8539D0,
-     +-0.8601D0, -1.1002D0, -1.3706D0, 
-     +-0.9355D0, -0.8697D0, -0.8928D0, -0.8827D0,
-     +-0.8477D0, -0.8097D0, -0.7932D0, -0.7852D0,
-     +-0.7932D0, -1.0000D0, -1.2700D0,
-     +-0.8762D0, -0.8013D0, -0.8097D0, -0.8013D0,
-     +-0.7645D0, -0.7352D0, -0.7100D0, -0.6990D0,
-     +-0.6990D0, -0.8962D0, -1.1331D0,
-     +-0.8297D0, -0.7496D0, -0.7645D0, -0.7472D0,
-     +-0.7055D0, -0.6696D0, -0.6421D0, -0.6326D0,
-     +-0.6402D0, -0.8097D0, -1.0301D0,
-     +-0.8013D0, -0.7144D0, -0.7144D0, -0.6840D0,
-     +-0.6478D0, -0.6108D0, -0.5884D0, -0.5817D0,
-     +-0.5817D0, -0.7352D0, -0.9431D0         /
-C
-C  LOG(T) DATA FOR H2O [T IN K] 
-C 
-      DATA TH2O  /2.3201D0, 2.4771D0, 2.6021D0, 2.6990D0,
-     +2.7782D0, 2.8451D0, 2.9031D0, 2.9542D0,
-     +3.0000D0, 3.3010D0, 3.4771D0        /
-C
-C  LOG(PL) DATA FOR H2O [PL IN ATM-M]
-C
-      DATA PLH2O /-3.0000D0, -2.6990D0, -2.3979D0, -2.0000D0,
-     +-1.6990D0, -1.3979D0, -1.0000D0, -0.6990D0,
-     +-0.3979D0,  0.0000D0,  0.3010D0,  0.6021D0/
-C
-C  LOG(EMISS) DATA FOR H2O [STORED IN E(T,PL) FORMAT (ASCENDING ORDER 
-C  BY TEMPERATURE, THEN BY PRESSURE-LENGTH)]
-C
-      DATA EH2O  /-1.1500D0, -1.5200D0, -1.7496D0, -1.8996D0,
-     +-2.0000D0, -2.1002D0, -2.1898D0, -2.2798D0,
-     +-2.3706D0, -3.0555D0, -3.4437D0,
-     +-1.0200D0, -1.3298D0, -1.5302D0, -1.6596D0,
-     +-1.7595D0, -1.8416D0, -1.9208D0, -2.0000D0,
-     +-2.0799D0, -2.7496D0, -3.1871D0,
-     +-0.8962D0, -1.1701D0, -1.3242D0, -1.4597D0,
-     +-1.5406D0, -1.6003D0, -1.6596D0, -1.7305D0,
-     +-1.7905D0, -2.4202D0, -2.8794D0,
-     +-0.7696D0, -1.0000D0, -1.1302D0, -1.2204D0,
-     +-1.3002D0, -1.3497D0, -1.4001D0, -1.4401D0,
-     +-1.4802D0, -1.9914D0, -2.5200D0,
-     +-0.6402D0, -0.8729D0, -0.9957D0, -1.0799D0,
-     +-1.1302D0, -1.1701D0, -1.2104D0, -1.2503D0,
-     +-1.2899D0, -1.6904D0, -2.1500D0,
-     +-0.5884D0, -0.7645D0, -0.8729D0, -0.9355D0,
-     +-0.9788D0, -1.0200D0, -1.0400D0, -1.0701D0,
-     +-1.1002D0, -1.4101D0, -1.8210D0,
-     +-0.5003D0, -0.6556D0, -0.7258D0, -0.7545D0,
-     +-0.7932D0, -0.8153D0, -0.8447D0, -0.8665D0,
-     +-0.8894D0, -1.0799D0, -1.4401D0,
-     +-0.4437D0, -0.5670D0, -0.6271D0, -0.6402D0,
-     +-0.6517D0, -0.6696D0, -0.6861D0, -0.6990D0,
-     +-0.7190D0, -0.8729D0, -1.1403D0,
-     +-0.3936D0, -0.5086D0, -0.5302D0, -0.5376D0,
-     +-0.5482D0, -0.5528D0, -0.5670D0, -0.5719D0,
-     +-0.5817D0, -0.7122D0, -0.9431D0,
-     +-0.3458D0, -0.4295D0, -0.4401D0, -0.4365D0,
-     +-0.4401D0, -0.4413D0, -0.4510D0, -0.4535D0,
-     +-0.4584D0, -0.5376D0, -0.7144D0,
-     +-0.2958D0, -0.3686D0, -0.3686D0, -0.3645D0,
-     +-0.3645D0, -0.3686D0, -0.3706D0, -0.3757D0,
-     +-0.3757D0, -0.4510D0, -0.5952D0,
-     +-0.2620D0, -0.3307D0, -0.3233D0, -0.3045D0,
-     +-0.3010D0, -0.3045D0, -0.3045D0, -0.3054D0,
-     +-0.3080D0, -0.3605D0, -0.5086D0         /
-C
-C  CALCULATE LAYER-SPECIFIC FACTORS
-C
-      TG = ZZTEMP(CMPT, LAYER)
-      RTV = (RG * TG) / ZZVOL(CMPT, LAYER)
-      L = ZZBEAM(LAYER,CMPT)
+      integer co2xsize, co2ysize, h2oxsize, h2oysize
+      parameter (co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12)
 
-      AG = 0.0D0
+      integer co2, h2o, soot
+      parameter (co2=3, h2o=8, soot=9)	
 
-C  CALCULATE ABSORBANCE FOR CO2
+      ! declare i/o variables
+      integer cmpt, layer
 
-      NG = ZZGSPEC(CMPT, LAYER, CO2) / MWCO2
-      PLG = NG * RTV * L
-      IF (PLG>1.0D-3) THEN
-          CPLG = LOG10(PLG)
-          TGLOG = LOG10(TG)
-          CALL LINTERP(CO2XSIZE, CO2YSIZE, TCO2, PLCO2, ECO2, TGLOG,
-     +    CPLG, ACO2, XCO2, YCO2)
-          AG = AG + 0.50D0*10.0D0**ACO2
-      ENDIF
+      ! declare internal variables
+      ! units:
+      !   tg = kelvins; tco2, th2o = log(kelvins)
+      !   plg = atm-m; plco2, plh2o = log(atm-m)
+      !   l = m; ng = mol; rtv = atm/mol
+      !   ag, absorb = number (absorbance)
+      !   aco2, ah2o, eco2, eh2o = log(emiss)
+      !   vfs = number (soot volume fraction)
+      !   rhos = kg/cubic meter (soot density)
+      !   trans = number (soot transmission = exp(-k*vfs*tg*l))
+      !   k = 1/(kelvin-meter) (ssot absorption constant)
+      !   mwco2, mwh2o = gas molecular weight (kg/gm-mole)
+      !   rg = ideal gas constant (atm-m^3/mol-k)
+      integer xco2, yco2, xh2o, yh2o
+      dimension tco2(co2xsize), plco2(co2ysize)
+      dimension eco2(co2xsize,co2ysize)
+      dimension th2o(h2oxsize)
+      dimension plh2o(h2oysize), eh2o(h2oxsize,h2oysize)
+      real*8 mwco2,mwh2o, k, rhos, l, ng
 
 
-C  CALCULATE ABSORBANCE FOR H2O
+      ! physical constants [mw in kg/mol; rg in m^3-atm/mol-kelvin]
+      data mwco2, mwh2o, rg, k, rhos
+     +/44.0088d-3, 18.0153d-3, 82.0562d-6, 1195.5d0, 1800.0d0/
 
-      NG = ZZGSPEC(CMPT, LAYER, H2O) / MWH2O
-      PLG = NG * RTV * L
-      IF (PLG>1.0D-3) THEN
-          CPLG = LOG10(PLG)
-          TGLOG = LOG10(TG)
-          CALL LINTERP(H2OXSIZE, H2OYSIZE, TH2O, PLH2O, EH2O, TGLOG,
-     +    CPLG, AH2O, XH2O, YH2O)
-          AG = AG + 10.0D0**AH2O
-      ENDIF
+      ! log(t) data for co2 [t in k] 
+      data tco2  /2.3010d0, 2.4771d0, 2.6021d0, 2.6990d0, 
+     +2.7782d0, 2.8451d0, 2.9031d0, 2.9542d0,
+     +3.0000d0, 3.3010d0, 3.4771d0        /
 
+      ! log(pl) data for co2 [pl in atm-m]
+      data plco2 /-3.0000d0, -2.6990d0, -2.3979d0, -2.0000d0,
+     +-1.6990d0, -1.3979d0, -1.0000d0, -0.6990d0,
+     +-0.3979d0,  0.0000d0,  0.3010d0,  0.6021d0/
 
-C  CALCULATE TOTAL ABSORBANCE
+      ! log(emiss) data for co2 [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
+      data eco2  /-1.8508d0, -1.8416d0, -1.8508d0, -1.7799d0,
+     +-1.6990d0, -1.6799d0, -1.6904d0, -1.6990d0,
+     +-1.7399d0, -2.3706d0, -2.8996d0,
+     +-1.6990d0, -1.6799d0, -1.6904d0, -1.6308d0,
+     +-1.5498d0, -1.5302d0, -1.5302d0, -1.5498d0, 
+     +-1.5800d0, -2.1002d0, -2.6108d0,
+     +-1.5406d0, -1.5200d0, -1.5498d0, -1.4895d0,
+     +-1.4401d0, -1.3904d0, -1.3904d0, -1.4101d0,
+     +-1.4202d0, -1.8894d0, -2.3002d0,
+     +-1.3799d0, -1.3298d0, -1.3497d0, -1.3298d0,
+     +-1.2700d0, -1.2403d0, -1.2403d0, -1.2503d0,
+     +-1.2700d0, -1.6596d0, -2.0400d0,
+     +-1.2403d0, -1.2000d0, -1.2403d0, -1.2104d0,
+     +-1.1599d0, -1.1403d0, -1.1302d0, -1.1403d0,
+     +-1.1500d0, -1.5200d0, -1.8894d0,
+     +-1.1403d0, -1.1002d0, -1.1403d0, -1.1203d0,
+     +-1.0799d0, -1.0400d0, -1.0301d0, -1.0301d0,
+     +-1.0600d0, -1.3799d0, -1.7305d0, 
+     +-1.0400d0, -0.9914d0, -1.0200d0, -1.0200d0,
+     +-0.9706d0, -0.9547d0, -0.9431d0, -0.9355d0,
+     +-0.9431d0, -1.1599d0, -1.4802d0,
+     +-0.9914d0, -0.9431d0, -0.9547d0, -0.9508d0,
+     +-0.9136d0, -0.8827d0, -0.8666d0, -0.8539d0,
+     +-0.8601d0, -1.1002d0, -1.3706d0, 
+     +-0.9355d0, -0.8697d0, -0.8928d0, -0.8827d0,
+     +-0.8477d0, -0.8097d0, -0.7932d0, -0.7852d0,
+     +-0.7932d0, -1.0000d0, -1.2700d0,
+     +-0.8762d0, -0.8013d0, -0.8097d0, -0.8013d0,
+     +-0.7645d0, -0.7352d0, -0.7100d0, -0.6990d0,
+     +-0.6990d0, -0.8962d0, -1.1331d0,
+     +-0.8297d0, -0.7496d0, -0.7645d0, -0.7472d0,
+     +-0.7055d0, -0.6696d0, -0.6421d0, -0.6326d0,
+     +-0.6402d0, -0.8097d0, -1.0301d0,
+     +-0.8013d0, -0.7144d0, -0.7144d0, -0.6840d0,
+     +-0.6478d0, -0.6108d0, -0.5884d0, -0.5817d0,
+     +-0.5817d0, -0.7352d0, -0.9431d0         /
 
-      VFS = ZZGSPEC(CMPT,LAYER,SOOT)/(ZZVOL(CMPT,LAYER) * RHOS)
-c      TRANS = EXP(-1. * K * VFS * TG * L) 
-c      ABSORB = (1 - TRANS) + AG * TRANS
-c      ABSORB = - LOG(1 - ABSORB)/L
-c
-c*** The following line of code is equivalent
-c    to the previous three lines and has the virture of
-c    eliminating an exp calculation and the cancellation
-c    error caused by the subtraction in (1-TRANS) gpf 7/3/97
+      ! log(t) data for h2o [t in k] 
+      data th2o  /2.3201d0, 2.4771d0, 2.6021d0, 2.6990d0,
+     +2.7782d0, 2.8451d0, 2.9031d0, 2.9542d0,
+     +3.0000d0, 3.3010d0, 3.4771d0        /
 
-      ABSORB = MAX(K*VFS*TG - LOG(1.0D0-AG)/L,0.01D0)
-      RETURN
- 1000 FORMAT ('ERROR IN ',A3,' ABSORBANCE: XERROR = 'I2,
-     +'; YERROR = ',I2)
-      END
+      ! log(pl) data for h2o [pl in atm-m]
+      data plh2o /-3.0000d0, -2.6990d0, -2.3979d0, -2.0000d0,
+     +-1.6990d0, -1.3979d0, -1.0000d0, -0.6990d0,
+     +-0.3979d0,  0.0000d0,  0.3010d0,  0.6021d0/
 
-      SUBROUTINE LINTERP(XDIM, YDIM, X, Y, Z, XVAL, YVAL, ZVAL,
-     +XERR, YERR)
-C
-C  SUBROUTINE CALCULATES A 2-D LINEAR INTERPOLATION OF F(X,Y); WHERE KNOWN
-C  F(X,Y) VALUES ARE IN Z, ALLOWED X AND Y VALUES ARE IN X AND Y, THE POINT
-C  TO BE INTERPOLATED IS (XVAL,YVAL) AND THE INTERPOLATED RESULT IS RETURNED
-C  AS ZVAL. ARRAY DIMENSIONS ARE SPECIFIED BY XDIM AND YDIM, XERR AND YERR
-C  ARE ERROR VALUES RETURNED TO THE CALLING FUNCTION.
-C
-C  THE EQUATION IMPLIMENTED BY THIS FUNCTION IS:
-C
-C  F(X,Y) = Z(I,J) + {[Z(I+1,J) - Z(I,J)] / [X(I+1) - X(I)]} * [X - X(I)] 
-C           + {[Z(I,J+1) - Z(I,J)] / [Y(J+1) - Y(I)]} * [Y - Y(J)]
-C
-C  VERSION 1.0
-C
-C  REVISION HISTORY:
-C     CREATED 12/07/94 - JBH
-C
-C      IMPLICIT NONE
+      ! log(emiss) data for h2o [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
+      data eh2o  /-1.1500d0, -1.5200d0, -1.7496d0, -1.8996d0,
+     +-2.0000d0, -2.1002d0, -2.1898d0, -2.2798d0,
+     +-2.3706d0, -3.0555d0, -3.4437d0,
+     +-1.0200d0, -1.3298d0, -1.5302d0, -1.6596d0,
+     +-1.7595d0, -1.8416d0, -1.9208d0, -2.0000d0,
+     +-2.0799d0, -2.7496d0, -3.1871d0,
+     +-0.8962d0, -1.1701d0, -1.3242d0, -1.4597d0,
+     +-1.5406d0, -1.6003d0, -1.6596d0, -1.7305d0,
+     +-1.7905d0, -2.4202d0, -2.8794d0,
+     +-0.7696d0, -1.0000d0, -1.1302d0, -1.2204d0,
+     +-1.3002d0, -1.3497d0, -1.4001d0, -1.4401d0,
+     +-1.4802d0, -1.9914d0, -2.5200d0,
+     +-0.6402d0, -0.8729d0, -0.9957d0, -1.0799d0,
+     +-1.1302d0, -1.1701d0, -1.2104d0, -1.2503d0,
+     +-1.2899d0, -1.6904d0, -2.1500d0,
+     +-0.5884d0, -0.7645d0, -0.8729d0, -0.9355d0,
+     +-0.9788d0, -1.0200d0, -1.0400d0, -1.0701d0,
+     +-1.1002d0, -1.4101d0, -1.8210d0,
+     +-0.5003d0, -0.6556d0, -0.7258d0, -0.7545d0,
+     +-0.7932d0, -0.8153d0, -0.8447d0, -0.8665d0,
+     +-0.8894d0, -1.0799d0, -1.4401d0,
+     +-0.4437d0, -0.5670d0, -0.6271d0, -0.6402d0,
+     +-0.6517d0, -0.6696d0, -0.6861d0, -0.6990d0,
+     +-0.7190d0, -0.8729d0, -1.1403d0,
+     +-0.3936d0, -0.5086d0, -0.5302d0, -0.5376d0,
+     +-0.5482d0, -0.5528d0, -0.5670d0, -0.5719d0,
+     +-0.5817d0, -0.7122d0, -0.9431d0,
+     +-0.3458d0, -0.4295d0, -0.4401d0, -0.4365d0,
+     +-0.4401d0, -0.4413d0, -0.4510d0, -0.4535d0,
+     +-0.4584d0, -0.5376d0, -0.7144d0,
+     +-0.2958d0, -0.3686d0, -0.3686d0, -0.3645d0,
+     +-0.3645d0, -0.3686d0, -0.3706d0, -0.3757d0,
+     +-0.3757d0, -0.4510d0, -0.5952d0,
+     +-0.2620d0, -0.3307d0, -0.3233d0, -0.3045d0,
+     +-0.3010d0, -0.3045d0, -0.3045d0, -0.3054d0,
+     +-0.3080d0, -0.3605d0, -0.5086d0         /
+
+      ! calculate layer-specific factors
+      tg = zztemp(cmpt, layer)
+      rtv = (rg * tg) / zzvol(cmpt, layer)
+      l = zzbeam(layer,cmpt)
+
+      ag = 0.0d0
+
+      ! calculate absorbance for co2
+      ng = zzgspec(cmpt, layer, co2) / mwco2
+      plg = ng * rtv * l
+      if (plg>1.0d-3) then
+          cplg = log10(plg)
+          tglog = log10(tg)
+          call linterp(co2xsize, co2ysize, tco2, plco2, eco2, tglog,
+     +    cplg, aco2, xco2, yco2)
+          ag = ag + 0.50d0*10.0d0**aco2
+      endif
+
+      ! calculate absorbance for h2o
+      ng = zzgspec(cmpt, layer, h2o) / mwh2o
+      plg = ng * rtv * l
+      if (plg>1.0d-3) then
+          cplg = log10(plg)
+          tglog = log10(tg)
+          call linterp(h2oxsize, h2oysize, th2o, plh2o, eh2o, tglog,
+     +    cplg, ah2o, xh2o, yh2o)
+          ag = ag + 10.0d0**ah2o
+      endif
+
+      ! calculate total absorbance
+      vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer) * rhos)
+      absorb = max(k*vfs*tg - log(1.0d0-ag)/l,0.01d0)
+      return
+
+ 1000 format ('Error in ',a3,' absorbance: xerror = 'i2,
+     +'; yerror = ',i2)
+      end function absorb
+
+      subroutine linterp(xdim, ydim, x, y, z, xval, yval, zval,
+     +xerr, yerr)
+
+      !     routine: absorb
+!     purpose: subroutine calculates a 2-d linear interpolation of f(x,y); where known f(x,y) values are in z, allowed x and y values are in x and y, the point
+!              to be interpolated is (xval,yval) and the interpolated result is returned as zval. array dimensions are specified by xdim and ydim, xerr and yerr
+!              are error values returned to the calling function.
+
+!              the equation implimented by this function is:
+
+!                 f(x,y) = z(i,j) + {[z(i+1,j) - z(i,j)] / [x(i+1) - x(i)]} * [x - x(i)] 
+!                 + {[z(i,j+1) - z(i,j)] / [y(j+1) - y(i)]} * [y - y(j)]
+!     arguments: xdim: upper bound for x data
+!                ydim: upper bound for y data
+!                x: x values for interpolation
+!                y: y values for interpolation
+!                z: f(x,y) data for range of x and y
+!                xval, yval: desired location in x and y for interpolaiton
+!                zval (output): interpolated value of f(x,y) at data point (xval,yval)
+!                xerr (output): error in requested x value if non-zero
+!                yerr (output): error in requested y value if non-zero
+
       include "precis.fi"
-      INTEGER HIERR
-      PARAMETER (NOERR=0, HIERR=+1, LOERR=-1) 
-C
-C  DECLARE I/O PARAMETERS 
-C
-      INTEGER XDIM, YDIM, XERR, YERR
-      DIMENSION X(XDIM), Y(YDIM), Z(XDIM,YDIM)
-C
-C  DECLARE INTERNAL VARIABLES
-C
-      INTEGER COUNT
-C
-C  FIND THE VALUE OF I SUCH THAT X(1) <= XVAL <= X(XDIM).
-C  IF XVAL IS OUTSIDE THAT RANGE, SET IT TO THE CLOSEST LEGAL VALUE
-C  AND SET THE ERROR VALUE, AS APPROPRIATE.
-C
-C  CHECK THE SPECIAL CASE OF XVAL < X(1)
-C
-      IF (XVAL < X(1)) THEN
-          XERR = LOERR
-          XVAL = X(1)
-          I = 1
-C
-C  CHECK THE SPECIAL CASE OF XVAL > X(XDIM)
-C
-      ELSE IF (XVAL > X(XDIM)) THEN
-          XERR = HIERR
-          XVAL = X(XDIM)
-          I = XDIM
-C
-C  CHECK THE CASES WHERE X(1) <= XVAL < X(XDIM)
-C
-      ELSE
-          XERR = NOERR
-          DO 10 COUNT=2,XDIM
-              IF (XVAL < X(COUNT)) THEN
-                  I = COUNT - 1
-                  GO TO 20
+      integer hierr
+      parameter (noerr=0, hierr=+1, loerr=-1) 
+
+      ! declare i/o parameters 
+      integer xdim, ydim, xerr, yerr
+      dimension x(xdim), y(ydim), z(xdim,ydim)
+
+      ! declare internal variables
+      integer count
+
+      ! find the value of i such that x(1) <= xval <= x(xdim). if xval is outside that range, set it to the closest legal value
+      ! and set the error value, as appropriate.
+
+      ! check the special case of xval < x(1)
+      if (xval < x(1)) then
+          xerr = loerr
+          xval = x(1)
+          i = 1
+          
+      ! check the special case of xval > x(xdim)
+      else if (xval > x(xdim)) then
+          xerr = hierr
+          xval = x(xdim)
+          i = xdim
+          
+      ! check the cases where x(1) <= xval < x(xdim)
+      else
+          xerr = noerr
+          do count=2,xdim
+              if (xval < x(count)) then
+                  i = count - 1
+                  go to 10
               endif 
-   10     CONTINUE
-C
-C  THEN XVAL = X(XDIM)
-C
-          I = XDIM
-   20     CONTINUE
+          end do
+
+          ! then xval = x(xdim)
+          i = xdim
+10        continue
       endif
-C
-C  CHECK THE SPECIAL CASE OF YVAL < Y(1)
-C
-      IF (YVAL < Y(1)) THEN
-          YERR = LOERR
-          YVAL = Y(1)
-          J = 1
-C
-C  CHECK THE SPECIAL CASE OF YVAL > Y(YDIM)
-C
-      ELSE IF (YVAL > Y(YDIM)) THEN
-          YERR = HIERR
-          YVAL = Y(YDIM)
-          J = YDIM
-C
-C  CHECK THE CASES OF Y(1) <= YVAL < Y(YDIM)
-C
-      ELSE
-          YERR = NOERR
-          DO 30 COUNT=2,YDIM
-              IF (YVAL < Y(COUNT)) THEN
-                  J = COUNT - 1
-                  GO TO 40
+
+      ! check the special case of yval < y(1)
+      if (yval < y(1)) then
+          yerr = loerr
+          yval = y(1)
+          j = 1
+
+      ! check the special case of yval > y(ydim)
+      else if (yval > y(ydim)) then
+          yerr = hierr
+          yval = y(ydim)
+          j = ydim
+
+      ! check the cases of y(1) <= yval < y(ydim)
+      else
+          yerr = noerr
+          do count=2,ydim
+              if (yval < y(count)) then
+                  j = count - 1
+                  go to 20
               endif
-   30     CONTINUE
-C
-C  THEN YVAL = Y(YDIM)
-C
-          J = YDIM
-   40     CONTINUE
+          end do
+
+          ! then yval = y(ydim)
+          j = ydim
+20        continue
       endif
-C
-C  CALCULATE DELTA X, SLOPE X AND THE Z INCREMENT DUE TO A CHANGE IN X.
-C  IF XVAL = X(XDIM), THEN (I+1) IS UNDEFINED AND THE SLOPE CAN NOT BE
-C  CALCULATED. HOWEVER, IN THOSE CASES, DELTA X IS ZERO, THERE IS NO 
-C  CONTRIBUTION DUE TO THE CHANGE IN X AND THE ENTIRE TERM MAY BE SET
-C  EQUAL TO ZERO.
-C
-      DELTAX = XVAL - X(I)
-      IF (DELTAX /= 0.0D0) THEN
-          DZDX = (Z(I+1,J) - Z(I,J)) / (X(I+1) - X(I))
-          DELX = DZDX * DELTAX
-      ELSE
-          DELX = 0.
+
+      ! calculate delta x, slope x and the z increment due to a change in x. if xval = x(xdim), then (i+1) is undefined and the slope can not be
+      ! calculated. however, in those cases, delta x is zero, there is no contribution due to the change in x and the entire term may be set equal to zero.
+      deltax = xval - x(i)
+      if (deltax /= 0.0d0) then
+          dzdx = (z(i+1,j) - z(i,j)) / (x(i+1) - x(i))
+          delx = dzdx * deltax
+      else
+          delx = 0.
       endif
-C
-C  CALCULATE THE Z INCREMENT DUE TO A CHANGE IN Y AS ABOVE.
-C
-      DELTAY = YVAL - Y(J)
-      IF (DELTAY /= 0.0D0) THEN
-          DZDY = (Z(I,J+1) - Z(I,J)) / (Y(J+1) - Y(J))
-          DELY = DZDY * DELTAY
-      ELSE
-          DELY = 0.
+
+      ! calculate the z increment due to a change in y as above.
+      deltay = yval - y(j)
+      if (deltay /= 0.0d0) then
+          dzdy = (z(i,j+1) - z(i,j)) / (y(j+1) - y(j))
+          dely = dzdy * deltay
+      else
+          dely = 0.
       endif
-C
-C  INTERPOLATE A VALUE FOR F(X,Y)
-C
-      ZVAL = Z(I,J) + DELX + DELY
-      RETURN
-      END
+
+      ! interpolate a value for f(x,y)
+      zval = z(i,j) + delx + dely
+      return
+      end subroutine linterp
 
       integer function rev_radiation
 

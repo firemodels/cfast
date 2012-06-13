@@ -47,6 +47,7 @@ C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

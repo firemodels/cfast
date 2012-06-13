@@ -32,6 +32,7 @@ C			5/7/03 by wwj : move initialization of reporting structure (vss ...) from ve
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -412,6 +413,7 @@ C     July 24, 1990 modified coefiscients so that McCaffrey correlation is
 C                   continuous.  the coeff's are calculated the first time
 C                   this routine is called.  gpf
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       LOGICAL FIRSTC
@@ -489,6 +491,7 @@ C
 
       subroutine ventflag(ventflg,roomflg,anyvents)
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -826,6 +829,7 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
 
       SUBROUTINE GETVAR(IVENT,IROOM,IROOM2,NPROD,YFLOR,YLAY,PFLOR,
      +                  DENL,DENU,CONL,CONU,TL,TU)
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1251,6 +1255,7 @@ C
 
 !       This is a routine to get the shape data for horizontal flow vents
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "vents.fi"

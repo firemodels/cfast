@@ -19,6 +19,7 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -40,6 +41,7 @@ C
       END
 
       SUBROUTINE HALLTRV(IROOM,XLOC,ZLOC,HALLTEMP,HALLRHO,HALLVEL)
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -103,6 +105,7 @@ C    so, use regular layer temperatures and densities
 
       SUBROUTINE SETHALL(ITYPE,INUM,IHALL,TSEC,WIDTH,
      .                   HTEMP,HVEL,HDEPTH)
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

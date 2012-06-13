@@ -44,6 +44,7 @@ C                  the flow vector.)
 !        04/19/2007 calculate a filtered amount to remove in RESID
 C
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -253,6 +254,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -365,6 +367,7 @@ C                   for smoke (species) are now performed in hvtoex.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -455,6 +458,7 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -518,6 +522,7 @@ C                  area is in the compartment
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -622,6 +627,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 C
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"

@@ -5,6 +5,7 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cparams
       include "cfast.fi"
       include "thermp.fi"
 
@@ -33,6 +34,7 @@
 !                deltamv
 !                iflag
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -104,6 +106,7 @@
 !                DELTAMV
 !                IFLAG
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -173,6 +176,7 @@
 !                deltamv
 !                iflag
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -303,6 +307,7 @@
 !     the flow is allowed to be negative (flow reversal) then this statement
 !     must be removed.
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -495,6 +500,8 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: 
 
+ 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -600,11 +607,12 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: yinter, iflag
 
+      use cparams 
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
       include "cenviro.fi"
-      include "fltarget.fi"
       include "opt.fi"
 
       dimension yinter(*), dummy(1)
@@ -776,6 +784,8 @@
 !              all modules that will run the model kernel
 !     Arguments: none
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -783,7 +793,6 @@
       include "cfin.fi"
       include "params.fi"
       include "thermp.fi"
-      include "fltarget.fi"
       include "vents.fi"
 
       ! set some initialization - simple control stuff
@@ -1159,6 +1168,7 @@
 !     purpose: this routine initializes the fire objects
 !     arguments: none
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "objects1.fi"
@@ -1190,6 +1200,7 @@
 !     purpose: this routine initializes the solver variables from solver.ini if it exists
 !     arguments: none
 
+      use cparams
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -1275,8 +1286,8 @@
 !              it may be modified by solver.ini if it exists
 !     arguments: none
 
+      use cparams
           include "precis.fi"
-          include "cparams.fi"
           include "opt.fi"
           include "wnodes.fi"
           include "solvprm.fi"
@@ -1320,6 +1331,7 @@ c
 !              to one subroutine to make maintenance easier
 !     Arguments: none
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1424,9 +1436,10 @@ c
 !     purpose: Initialize target data structures
 !     Arguments: IERROR  Returns error codes
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "fltarget.fi"
       include "thermp.fi"
       include "cshell.fi"
       character*133 messg
@@ -1579,13 +1592,14 @@ c          yy = ysize - yloc
 !        thset is set if a name in the list of requested data sets matches one of the names in the list of data set names (nlist).
 !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "wnodes.fi"
       include "thermp.fi"
-      include "fltarget.fi"
 
       character off*8, none*8, tcname*8
       
@@ -1783,12 +1797,13 @@ C                  Added support for IERROR and returning stops to main
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "params.fi"
       include "wnodes.fi"
-      include "fltarget.fi"
       include "opt.fi"
       include "objects2.fi"
 
@@ -1928,6 +1943,7 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"

@@ -2,6 +2,7 @@
 
 !	Read the input file and set up the data for processing
 
+      use cparams
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -521,7 +522,9 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                xnumc    number of columns in input file spreadsheet
 !                ierror  Returns error codes
 
+      use cparams
       use iofiles
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -532,7 +535,6 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
-      include "fltarget.fi"
       include "opt.fi"
       include "vents.fi"
       include "wnodes.fi"
@@ -1846,11 +1848,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror:  error return index
 
 
+      use cparams
       use iofiles
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "objects2.fi"
-      include "fltarget.fi"
 
       logical countargs, lstat
       integer lrowcount, xnumr, xnumc, iobj
@@ -2008,11 +2011,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 !     Arguments: iobj: fire object number
 !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
+      use cparams
       use iofiles
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "objects2.fi"
-      include "fltarget.fi"
 
       ntarg = ntarg + 1
       if (ntarg>mxtarg) then
@@ -2262,6 +2266,7 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -2406,6 +2411,7 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -2495,12 +2501,13 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "fltarget.fi"
 
       IXTARG(TRGROOM,ITARG) = OBJRM(IOBJ)
       DO 10 I = 0,2
@@ -2533,7 +2540,7 @@ c     maxr     = actual number of rows read
 c     maxcc    = actual number of columns read
 c
 
-      include "cparams.fi"
+      use cparams
       include "cshell.fi"
 
       real*8 x(numr,numc)

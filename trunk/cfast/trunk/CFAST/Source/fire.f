@@ -26,7 +26,8 @@
 !                                fire i
 !					   (i,19) characteristic length of the burning volume
 
-
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "flwptrs.fi"
@@ -35,7 +36,6 @@
       include "objects1.fi"
       include "objects2.fi"
       include "opt.fi"
-      include "fltarget.fi"
 
       dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
       dimension xxfire(1), yyfire(1), zzfire(1), zzloc(1)
@@ -185,6 +185,7 @@
 !                 xqlp (output): heat release in the lower plume (w)
 !                 xqup (output): heat release rate in the upper plume (w)
 
+      use cparams
       use interfaces
       include "precis.fi"
       include "cfast.fi"
@@ -510,11 +511,13 @@
 !                 n_C, n_H, n_O, n_N, n_Cl (output): molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
 !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
+ 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "fireptrs.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -604,6 +607,7 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: physical interface between dofire and the plume models
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       integer plumetype, objectnumber
@@ -720,6 +724,7 @@
 !     Arguments:  time    current simulation time
 !                 deltt   current time step
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -791,6 +796,7 @@
 !      passed:  vsas     zzgspec  zztemp
 !        used:  izvent   n        nvents
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -934,6 +940,7 @@
 !                 qpyrol (output): total heat released by door jet fire
 !                 xntms (output): net change in mass of species in door jet
 
+      use cparams
       use interfaces
       include "precis.fi"
       include "cfast.fi"
@@ -1180,6 +1187,7 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  deltt  length of the latest time step (s)
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1277,6 +1285,7 @@
 c	this routine is to combine the main fire (in lfbo) and any objects into a single list
 c	there does not have to be a main fire nor any objects, so nfires may be zero
 
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1366,11 +1375,12 @@ c                  added support for ierror and returns of stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 
+      use cparams
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "fltarget.fi"
       include "opt.fi"
 
       dimension tmpob(2,mxoin)
@@ -1489,6 +1499,7 @@ c                  added support for ierror and returning stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 c
+      use cparams
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1603,6 +1614,7 @@ c                  added support for ierror and returning stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 c
+      use cparams
       include "precis.fi"
       include "cfast.fi"
 

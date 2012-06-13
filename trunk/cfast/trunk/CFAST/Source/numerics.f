@@ -6332,8 +6332,8 @@ C        Created:  2/4/1993 at 17:13 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "wdervs.fi"
       JACD = JACDIM
       RETURN
@@ -6359,8 +6359,8 @@ C        Modified: 2/2/1995 by gpf  Removed IDERV set option
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "wdervs.fi"
       include "cenviro.fi"
       include "opt.fi"
@@ -6388,8 +6388,8 @@ C        Created:  2/14/1993 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
+      use cparams
       include "precis.fi"
-      include "cparams.fi"
       include "opt.fi"
 C
       NUMJAC = NUMJAC + 1

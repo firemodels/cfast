@@ -1,3 +1,29 @@
+module params
+
+    use cparams
+    implicit none
+
+!   these are temporary work arrays
+
+!   ex... are the settings for the external ambient
+!   qfr,... are the heat balance calculations for resid and cnduct. it is now indexed by fire rather than by compartment
+!   the variables ht.. and hf.. are for vertical flow
+!   the volume fractions volfru and volfrl are calculated by resid at the beginning of a time step
+!   hvfrac is the fraction that a mv duct is in the upper or lower layer
+
+    logical allowed(ns), exset
+    integer mapltw(nwal), ihmlar(2,nr,nr), izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
+
+    real*8 qfr(mxfire), qfc(2,nr), qscnv(nwal,nr), qdout(nwal,nr), qsradw(nwal,nr), qdin(nwal,nr), qcvent(mxvents,nv), o2n2(ns), hwjdot(nwal,nr), exsal, &
+        htot(nr), htflow(nr,2), hmflow(nr,2), htfnet(2,nr,nr), volfru(nr), volfrl(nr), hvfrac(2,mext), expa, exta, exra, &
+        hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), hvt, ductcv
+
+    common exsal, qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, expa, exta, exra, qcvent, o2n2, hwjdot, &
+        htot, htflow, htfnet, volfru, volfrl, hvfrac, hcratt, ihmlar, hvmfsys,dhvprsys,hvtm,hvdara,hvt,chv,ductcv, &
+        exset, allowed, izhvmapi,izhvmape,izhvie,nhvpvar,nhvtvar, izhvsys,izhvbsys,nhvsys
+
+end module params
+    
 module  iofiles
 
     implicit none
@@ -67,65 +93,92 @@ module fltarget
       integer, dimension(3) :: NEQTARG
 end module fltarget
 
-module cparams
+module vents
 
-    ! geometry parameters
-    integer, parameter :: nr = 31           ! maximum number of compartments
-    integer, parameter :: nn = 61           ! number of nodes in a material for conduction calculation
-    integer, parameter :: mxslb = 6         ! maximum number of slabs in a surface material (at the moment, the gui only support 1)
-    integer, parameter :: nwal = 4          ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
+    use cparams, only: nr, mxvent
+    implicit none
     
-    ! fire related input parameters    
-    integer, parameter :: nv = 199          ! maximum number of data points in a time-dependent input curve
-    integer, parameter :: ns = 11           ! number of species
-    integer, parameter :: mxoin = nr        ! maximum number of fire objects
-    integer, parameter :: mxfirp = 19       ! number of parameters for each fire object
-    integer, parameter :: mxfire = 2*mxoin  ! maximum number of fires in a single simulation
+    integer, dimension(mxvent,2) :: ivvent
+    integer nvents, nvvent
     
-    integer, parameter :: nthmx = 125       ! maximum number of thermal properties
- 
-    ! ventilation parameters
-    integer, parameter :: mxccv = 25        ! maximum number of vent connections between compartment pairs
-    integer, parameter :: mxvents = mxccv*nr    ! maximum number of horizontal flow vents
-    integer, parameter :: mxvent = mxvents*2    ! maximum number of connections in horizontal flow vents (one for "from" one to "to")
-    integer, parameter :: mxslab = 10       ! number of slabs in a horizontal flow calculation
-    integer, parameter :: mxprd = 11        ! maximum number of products tracked in the horizontal flow calculation (should be the same as ns)
-    
-    integer, parameter :: mxvv=2*nr         ! maximum number of vertical flow vents
-    integer, parameter :: mxhvsys=60        ! maximum number of mechanical ventilation systems
-    integer, parameter :: mfan = 15         ! maximum number of fans
-    integer, parameter :: mfcoe = 5         ! maximum order of fan curve (here, 5th order polynomial. at the moment, the gui limits to constant flow)
-    integer, parameter :: mcon = 3          ! maximum number of connections to a single node in a mechanical ventilation system
-    integer, parameter :: mdt = nr+2        ! maximum number of ducts
-    integer, parameter :: mnode = 2*mdt     ! maximum number of nodes      !
-    integer, parameter :: mext = 2*nr       ! maximum number of external connections
-    integer, parameter :: mbr = mfan+mdt    ! maximum number of branches in a system
-    
-    real(8), parameter :: vfmaxdz=0.01    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
-    
-    ! target parameters
-    integer, parameter :: mxtarg = 3*nr     ! maximum number of targets
-    integer, parameter :: trgtempf=17       ! position of front temperature of target (front surface temperature)
-    integer, parameter :: trgtnum=50        ! number of interior nodes in a target for conduction calculation
-    integer, parameter :: trgtempb=trgtempf+trgtnum-1   ! position of back temperature of target (back surface temperature)
-    integer, parameter :: trgxrow=trgtempb  ! upper bound of real target array 
-    integer, parameter :: trgirow=7         ! upper bound of integer target array
-    
-    integer, parameter :: mdchk = 0         ! index to check state of detectors and targets
-    integer, parameter :: mdset = 1         ! index to calculate full state of detectors and targets
-    integer, parameter :: mdupdt = 2        ! index to update state of detectors and targets on successful equation set solution
-    
-    integer, parameter :: upper = 1         ! index for upper layer
-    integer, parameter :: lower = 2         ! index for lower layer
-    
-    ! parameters for equation solver
-    ! nt = 4*nr(main equ) + 2*nr*ns(species) * 4*nr(hcl) + 4*nr(smoke) + mxhvsys*ns(hvac species)
-    integer, parameter :: nt = 12*nr + 2*nr*ns + mxhvsys*ns ! total number of main equations for dae solver
-    integer, parameter :: maxjeq = 6*nr + mnode + mbr
-    integer, parameter :: maxeq = maxjeq + nwal*nr
-    integer, parameter :: maxteq = maxeq+2*nr*ns+mxhvsys*ns+4*nr*3
+    ! zzvent(1) = sill
+    ! zzvent(2) = soffit
+    ! zzvent(3) = width
+    ! zzvent(4 and 5) = hall offsets
 
-end module cparams
+    ! izvent(1) = from
+    ! izvent(2) = to
+    ! izvent(3) = pairwise counter
+    ! izvent(4 and 5) = hall (yes or no)
+    ! izvent(6) = face (smokeview)
+    real*8, dimension(mxvent,6) :: zzvent, izvent
+    real*8, dimension(nr,mxvent) :: zzventdist
+    real*8, dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    
+end module vents
+module cfast_main
+    use cparams
+    use dsize
+    INTEGER HVORIEN(MEXT), HVNODE(2,MEXT), CRDATE(3), MPSDAT(3), NEUTRAL(NR,NR), NWV(NR,NR), NA(MBR), NOFSETS(17), &
+        NCNODE(MNODE), NE(MBR), MVINTNODE(MNODE,MCON), ICMV(MNODE,MCON), NFC(MFAN), NW(NR,NR), NSLB(NWAL,NR), &
+        NF(MBR), HCLDEP, SMKAGL, VSHAPE(NR,NR), OBJRM(0:MXOIN), OBJIGN(MXOIN), NUMNODE(MXSLB+1,4,NR), &
+        FROOM(0:MXFIRE), NUMOBJL, IXTARG(TRGIROW,MXTARG), IXDTECT(MXDTECT,DTICOL), IQUENCH(NR), IDTPNT(NR,2), &
+        NDTECT, IDSET, NTARG, IFROOM(MXFIRE), IFRPNT(NR,2), IBRD(MDT), NFIRE, IPNTFSM, IJK(NR,NR,mxccv), &
+        NVENTIJK,NFOPT,VFACE(MXVENTS),ITERMXX, fplume(0:mxfire), lcopyss,heatfr, nfilter
+    
+    EQUIVALENCE (NOFP,NOFSETS(1)), (NOFPMV,NOFSETS(2)), (NOFTMV,NOFSETS(3)), (NOFTU,NOFSETS(4)), (NOFVU,NOFSETS(5)), &
+        (NOFTL,NOFSETS(6)), (NOFOXYL,NOFSETS(7)), (NOFOXYU,NOFSETS(8)),(NOFTT,NOFSETS(9)), (NOFWT,NOFSETS(10)), (NOFPRD,NOFSETS(11)), &
+        (NOFHCL,NOFSETS(12)), (NOFSMKW,NOFSETS(13)), (NOFSMK,NOFSETS(14)), (NOFHVPR,NOFSETS(15)), (NEQUALS,NOFSETS(16)), (NOFFSM,NOFSETS(17))
+
+    real*8 MASS(2,NR,NS), MPRODR(NV,NS), MFIRET(NS), MINMAS, LIMO2, QF(NR), P(MAXTEQ), objmaspy(0:mxfire),tradio, &
+        SS1(MXVENTS), SA1(MXVENTS), SS2(MXVENTS), SA2(MXVENTS), AS1(MXVENTS), AA1(MXVENTS), AS2(MXVENTS), AA2(MXVENTS), &
+        SAU1(MXVENTS), ASL1(MXVENTS), SAU2(MXVENTS), ASL2(MXVENTS), QR(2,NR), QC(2,NR), HEATUP(NR), HEATLP(NR), HEATVF(NR), &
+        EMP(NR), EMS(NR), EME(NR), APS(NR), VVAREA(NR,NR), HWJ(NWAL,NR), HOCBMB(NV), HVEFLO(2,MEXT), hveflot(2,mext), &
+        BFIRED(NV), AFIRED(NV), HFIRED(NV), TFIRED(NV), HHP(MXVENTS), BW(MXVENTS), HH(MXVENTS), HL(MXVENTS), WINDC(MXVENTS), &
+        HALLDIST(MXVENTS,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), OPLUME(3,MXOIN), BR(NR), DR(NR), HR(NR), AR(NR), HRP(NR), &
+        VR(NR), HRL(NR), VMFLO(NR,NR,2), XDTECT(MXDTECT,DTXCOL), QSPRAY(0:mxfire,2), radio(0:mxfire), &
+        XFIRE(MXFIRE,MXFIRP), RDQOUT(4,NR),OBJXYZ(4,MXOIN), OBJSTRT(2,MXOIN),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
+
+    real*8 PPMDV(2,NR,NS), TAMB(NR), RAMB(NR), PAMB(NR), ETA(NR), ERA(NR), FKW(MXSLB,NWAL,NR), CW(MXSLB,NWAL,NR), &
+        RW(MXSLB,NWAL,NR), EPA(NR), FLW(MXSLB,NWAL,NR), EPW(NWAL,NR), QFIRED(NV), TWJ(NN,NR,NWAL), TWE(NWAL,NR), fopos(3,0:mxfire), &
+        HFLR(NR),ONTARGET(NR),CCO2(NV),TOXICT(NR,2,NS),femr(0:mxfire), HCRATIO(NV), COCO2(NV), HLP(MXVENTS), HVEXTT(MEXT,2), &
+        AREXT(MEXT), HVELXT(MEXT), OCRATI(NV), OBJMA1(MXOIN), CE(MBR), HVDVOL(MBR), TBR(MBR), ROHB(MBR), BFLO(MBR), &
+        HVP(MNODE), HVGHT(MNODE), HMFNET(2,NR,NR), DPZ(MNODE,MCON), HVFLOW(MNODE,MCON), HCLBF(7,NWAL,NR), &
+        QMAX(MFAN), HMIN(MFAN), HMAX(MFAN), HVBCO(MFAN,MFCOE), DFMIN(MFAN), DFMAX(MFAN), QMIN(MFAN), DE(MDT), DA(MDT), &
+        DL(MDT), RR(MDT), DUCTAR(MDT), HVCONC(MBR,NS),qcvpp(4,nr,nr), HVEXCN(MEXT,NS,2),OBJPOS(3,0:MXOIN),FPOS(3),HCNF(NV),hcrf(nv), &
+        HCLF(NV),FEMP(0:MXFIRE),FEMS(0:MXFIRE),FQF(0:MXFIRE), FQFC(0:MXFIRE), FQLOW(0:MXFIRE), FQUPR(0:MXFIRE),FQDJ(NR), &
+        FAREA(0:MXFIRE),XXTARG(TRGXROW,MXTARG),CXABS(NR),CYABS(NR)
+
+    real*8 CP, DELTAT, heatfq, tracet(2,mext)
+    real*8 G, GAMMA, GMWF, HCOMBA, HVDELT, traces(2,mext)
+    real*8 HVGRAV, HVRGAS, PA, POFSET, PREF, QRADRL
+    real*8 RA, RELHUM, RGAS, SAL, SAL2, SIGM, STIME, TA, TE
+    real*8 TERMXX, TFIRET, TFMAXT, TGIGNT
+    real*8 TREF, WINDPW, WINDRF, WINDV
+
+    LOGICAL ACTIVS(NS), SWITCH(NWAL,NR), MVCALC, OBJON(0:MXOIN), CJETON(NWAL+1), heatfl
+
+    COMMON /CFASTN/ GAMMA,G,SIGM,CP,TA,RA,PREF,RGAS,POFSET,PA,TREF,SAL,SAL2,SS1,SS2,SA1,SA2,AS1,AS2,AA1,AA2,SAU1,SAU2, &
+        ASL1,ASL2,MINMAS,QF,QR,QC,HEATUP,HEATLP,HEATVF,EMP,EMS,EME,APS,VVAREA,QRADRL,HCOMBA,HVDELT, &
+        HVGRAV,HVRGAS,CE,HWJ,BFIRED,AFIRED,HFIRED,TFIRED,TFMAXT,TFIRET,MPRODR,MFIRET,P,BW,HH,HL,WINDC,HALLDIST,HHP, &
+        HLP,WINDV,WINDRF,WINDPW,DELTAT,TGIGNT,STIME,LIMO2,RELHUM,GMWF,HOCBMB,COCO2,HVEFLO,BR,DR,HR,AR,HRP,VR,HRL,TE, &
+        PPMDV,TAMB,RAMB,PAMB,ETA,ERA,FKW,CW,RW,EPA,FLW,EPW,QFIRED,TWJ,TWE,HFLR,ONTARGET,CCO2,MASS,TOXICT,HCRATIO,HVEXTT,AREXT, &
+        HVELXT,HVDVOL,TBR,ROHB,BFLO,HVP,HVGHT,OBJXYZ,OBJSTRT,DPZ,HVFLOW,QMAX,HMIN,HMAX,HVBCO,DFMIN,DFMAX,QMIN,DE,DA,DL,RR, &
+        DUCTAR,HVCONC,HVEXCN,HCLBF,OCRATI,OBJPOS,hcrf,OBJMA1,OPLUME,HMFNET,FPOS,HCNF,HCLF,FEMP,FEMS,FQF,FQFC,FQLOW, &
+        FQUPR,FAREA,FQDJ,XDTECT,QSPRAY,VMFLO,XXTARG,XFIRE,RDQOUT,CXABS,CYABS,radconsplit,heatfp,qcvh,qcvv,qcvm,heatfq, &
+        qcvpp,fopos,qcvf,tradio, femr, radio, objmaspy, hveflot,tracet,traces,TERMXX, &
+        NEUTRAL,NLSPCT,IVERS,LFMAX, NUMNODE,NSLB,HVORIEN, LFBO,LFBT,SWITCH,NOPMX,NRFLOW,LPRINT,NSMAX,LDIAGP,LDIAGO,ITMMAX,IDIAG,NM1,N,N2,N3,N4,ITMSTP,ACTIVS, &
+        NCONFG,NDUMPR,NRESTR,LCOPYss,CRDATE,MPSDAT,NDT,NEXT,NA,NE,NF,MVCALC,NNODE,NFT,NFAN,NBR,NCNODE,MVINTNODE,NFC,NWV,NW,HVNODE, &
+        ICMV,SMKAGL,OBJIGN,OBJON,CJETON,HCLDEP,OBJRM,VSHAPE,NOFSETS,FROOM,NUMOBJL,IXDTECT,IQUENCH,IDTPNT,NDTECT, IDSET, &
+        IXTARG,NTARG,NFIRE,IFROOM,IFRPNT,IBRD,IPNTFSM,IJK,NVENTIJK,NFOPT,VFACE,heatfl,heatfr,fplume,nfilter,ITERMXX
+    SAVE /CFASTN/
+
+    CHARACTER TITLE*128, compartmentnames(nr)*128
+
+    COMMON /CFASTC/ TITLE, compartmentnames
+    SAVE /CFASTC/
+      
+end module cfast_main
 
 module  interfaces
 

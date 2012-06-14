@@ -19,9 +19,8 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
 
       DO 10 ID = IDSTART, IDSTART + ND - 1
@@ -41,9 +40,8 @@ C
       END
 
       SUBROUTINE HALLTRV(IROOM,XLOC,ZLOC,HALLTEMP,HALLRHO,HALLVEL)
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
 
       IF(IZHALL(IROOM,IHMODE)==IHDURING)THEN
@@ -105,11 +103,10 @@ C    so, use regular layer temperatures and densities
 
       SUBROUTINE SETHALL(ITYPE,INUM,IHALL,TSEC,WIDTH,
      .                   HTEMP,HVEL,HDEPTH)
-      use cparams
+      use cfast_main 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
-      include "vents.fi"
       include "dervs.fi"
 
       XX0 = 0.0D0

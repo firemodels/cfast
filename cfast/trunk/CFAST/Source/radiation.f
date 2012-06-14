@@ -10,10 +10,9 @@
 !                flxrad      net enthalphy flux into surface
 !                ierror      returns error codes
 
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "wdervs.fi"
@@ -1160,9 +1159,8 @@ c
 !                layer: upper or lower layer calculaiton
 
       ! declare common block variables (ar, br, zz????, etc) and constants (upper & lower). order of 'include' files is critical. cfast.inc invokes cparams.inc & dsize.inc
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
 
       ! declare parameters

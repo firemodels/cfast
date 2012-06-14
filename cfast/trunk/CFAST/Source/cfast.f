@@ -28,12 +28,11 @@
 
 
       use iofiles
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
-      include "params.fi"
       include "thermp.fi"
       include "objects1.fi"
       include "cenviro.fi"
@@ -41,6 +40,10 @@
       logical error
       integer errorcode, rev_cfast
 
+      ! comile date and program version
+      crdate = (/2012,6,14/)
+      version = 6300
+      
       errorcode = 0
 
       if(command_argument_count().eq.0)then
@@ -152,19 +155,8 @@
      .    trace/.false./,
      .    validate/.false./
 
-     .    version/6300/
 
       end block data initcs
-
-      block data initcf
-
-      use cparams
-          include "precis.fi"
-          include "cfast.fi"
-
-          data crdate/2012,5,31/
-          
-      end block data initcf
 
       subroutine initsoln(t,pdold,pdzero,rpar,ipar)
 
@@ -179,12 +171,11 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "wnodes.fi"
-      include "params.fi"
       include "solvprm.fi"
       include "opt.fi"
       include "objects1.fi"
@@ -370,13 +361,13 @@
 !     is presently used by DASSL. The important point is that NODES is set to
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
-      use cparams
+      use cfast_main
+      use params
       use iofiles
       use fltarget 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "opt.fi"
       include "wnodes.fi"
@@ -385,7 +376,6 @@
       include "objects1.fi"
       include "objects2.fi"
       include "cfin.fi"
-      include "vents.fi"
       include "smkview.fi"
 
       parameter (maxord = 5)
@@ -945,9 +935,8 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "opt.fi"
       include "dervs.fi"
@@ -1015,9 +1004,8 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "opt.fi"
@@ -1127,13 +1115,12 @@ C     SETTING JACOBIAN FLAG
 !                        species equations.
 
 
-      use cparams
+      use cfast_main
+      use params
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "opt.fi"
-      include "params.fi"
       include "dervs.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
@@ -1521,15 +1508,14 @@ C     SETTING JACOBIAN FLAG
 !                          use pdif array for species
 
  
-      use cparams
-      use fltarget
+      use cfast_main
+      use params
+      use fltarget 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
-      include "vents.fi"
       include "wnodes.fi"
       include "dervs.fi"
-      include "params.fi"
       include "wdervs.fi"
       include "opt.fi"
       include "objects1.fi"
@@ -2112,9 +2098,8 @@ c     order of variables is defined in the routine offset
 !     arguments: pdif   the p array to resync
 !                ibeg   the point at which species are started in p array
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       dimension pdif(*)

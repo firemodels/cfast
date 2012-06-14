@@ -34,15 +34,14 @@ C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      use cparams
+      use cfast_main
+      use params 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
-      include "vents.fi"
 C
       DIMENSION FLWVF(NR,NS+2,2)
       DIMENSION XMVENT(2), ILAY(2), TMVENT(2)
@@ -226,9 +225,8 @@ C     May 15, 1991 the pressure was calculated incorrectly change pref->pofset
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
 C
 C
@@ -422,10 +420,9 @@ C
 
 !       This is a routine to get the shape data for vertical flow (horizontal) vents
 
-      use cparams
+      use cfast_main 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "vents.fi"
 
 	integer itop, ibot, hshape, hface, iinvvent
 	real*8 harea

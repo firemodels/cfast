@@ -2,11 +2,10 @@
 
 ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
-      use cparams
+      use cfast_main
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
@@ -79,9 +78,8 @@
 
       subroutine SSaddtolist (ic, valu, array)
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "cfin.fi"
@@ -109,12 +107,11 @@
 
 !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
-      use cparams
+      use cfast_main 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "vents.fi"
 
       parameter (maxoutput = 512)
       real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,
@@ -232,10 +229,9 @@
 	
 !     Output the temperatures and fluxes on surfaces and targets at the current time
 
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
 
@@ -364,9 +360,8 @@ c   40 CONTINUE
 
 !	Write out the species to the spread sheet file
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
 
@@ -425,15 +420,14 @@ c   40 CONTINUE
 
 ! This routine writes to the {project}_zone.csv file, the smokeview information
 
-      use cparams
+      use cfast_main
       use iofiles
-      use fltarget
+      use fltarget 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
-      include "vents.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)

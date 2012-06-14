@@ -32,15 +32,14 @@ C			5/7/03 by wwj : move initialization of reporting structure (vss ...) from ve
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      use cparams
+      use cfast_main
+      use params 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
-      include "vents.fi"
 C
       DIMENSION CONL(MXPRD,2), CONU(MXPRD,2), PMIX(MXPRD)
       DIMENSION UFLW(NR,MXPRD+2,2)
@@ -413,9 +412,8 @@ C     July 24, 1990 modified coefiscients so that McCaffrey correlation is
 C                   continuous.  the coeff's are calculated the first time
 C                   this routine is called.  gpf
 C
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       LOGICAL FIRSTC
       SAVE FIRSTC, A1, A2, A3, E1, E2, E3, F1, F2
       DATA FIRSTC /.TRUE./
@@ -491,15 +489,14 @@ C
 
       subroutine ventflag(ventflg,roomflg,anyvents)
 
-      use cparams
+      use cfast_main
+      use params 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
-      include "vents.fi"
 
       LOGICAL VENTFLG(MXVENT), ROOMFLG(NR), anyvents
 
@@ -829,11 +826,10 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
 
       SUBROUTINE GETVAR(IVENT,IROOM,IROOM2,NPROD,YFLOR,YLAY,PFLOR,
      +                  DENL,DENU,CONL,CONU,TL,TU)
-      use cparams
+      use cfast_main 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
-      include "vents.fi"
 C*BEG
 C
 C***  GETVAR  SPECIFIC - ROUTINE TO INTERFACE BETWEEN CCFM.VENTS GLOBAL
@@ -1255,10 +1251,9 @@ C
 
 !       This is a routine to get the shape data for horizontal flow vents
 
-      use cparams
+      use cfast_main 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "vents.fi"
       
       ifrom =IZVENT(i,1)
       ito = IZVENT(i,2)

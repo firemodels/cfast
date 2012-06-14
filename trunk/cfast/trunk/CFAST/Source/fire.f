@@ -26,12 +26,11 @@
 !                                fire i
 !					   (i,19) characteristic length of the burning volume
 
-      use cparams
+      use cfast_main
+      use params
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -185,10 +184,9 @@
 !                 xqlp (output): heat release in the lower plume (w)
 !                 xqup (output): heat release rate in the upper plume (w)
 
-      use cparams
+      use cfast_main
       use interfaces
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "fireptrs.fi"
 
@@ -512,10 +510,9 @@
 !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
  
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "fireptrs.fi"
       include "objects1.fi"
@@ -607,9 +604,8 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: physical interface between dofire and the plume models
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       integer plumetype, objectnumber
 
       select case (plumetype)
@@ -724,10 +720,9 @@
 !     Arguments:  time    current simulation time
 !                 deltt   current time step
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"    
 
       integer i, j
@@ -796,14 +791,13 @@
 !      passed:  vsas     zzgspec  zztemp
 !        used:  izvent   n        nvents
 
-      use cparams
+      use cfast_main
+      use params 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
-      include "vents.fi"
 
       dimension flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns)
       dimension flwdjf0(nr,ns+2,2)
@@ -940,10 +934,9 @@
 !                 qpyrol (output): total heat released by door jet fire
 !                 xntms (output): net change in mass of species in door jet
 
-      use cparams
+      use cfast_main
       use interfaces
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
 
       dimension xntms(2,ns), xmass(ns)
@@ -1187,10 +1180,9 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments:  deltt  length of the latest time step (s)
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       dimension aweigh(ns), air(2), v(2)
@@ -1285,9 +1277,8 @@
 c	this routine is to combine the main fire (in lfbo) and any objects into a single list
 c	there does not have to be a main fire nor any objects, so nfires may be zero
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "smkview.fi"
       include "objects1.fi"
@@ -1375,10 +1366,9 @@ c                  added support for ierror and returns of stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "opt.fi"
@@ -1499,10 +1489,9 @@ c                  added support for ierror and returning stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 c
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "opt.fi"
       dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)
@@ -1614,9 +1603,8 @@ c                  added support for ierror and returning stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 c
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
 
       xx0 = 0.0d0
       hwdot = xx0

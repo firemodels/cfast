@@ -44,10 +44,9 @@ C                  the flow vector.)
 !        04/19/2007 calculate a filtered amount to remove in RESID
 C
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
@@ -254,10 +253,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
 
       DIMENSION DELTPMV(*)
 	real*8 tsec
@@ -367,10 +365,9 @@ C                   for smoke (species) are now performed in hvtoex.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "opt.fi"
 
       DIMENSION TPRIME(*), DELTTMV(*)
@@ -458,9 +455,8 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       LOGICAL firstc
 	real*8 hvfanl, openfraction, qcffraction, tsec,
@@ -522,10 +518,9 @@ C                  area is in the compartment
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
@@ -627,10 +622,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 C
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       DIMENSION PRPRIME(*)

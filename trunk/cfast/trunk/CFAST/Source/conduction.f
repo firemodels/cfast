@@ -47,9 +47,8 @@ C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "wnodes.fi"
       include "wdervs.fi"

@@ -5,8 +5,7 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cparams
-      include "cfast.fi"
+      use cfast_main
       include "thermp.fi"
 
       character name*(*), missingtpp*64
@@ -34,12 +33,11 @@
 !                deltamv
 !                iflag
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "solvprm.fi"
-      include "params.fi"
       include "cshell.fi"
       include "opt.fi"
 
@@ -106,12 +104,11 @@
 !                DELTAMV
 !                IFLAG
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "solvprm.fi"
-      include "params.fi"
       include "opt.fi"
       include "cshell.fi"
 
@@ -176,12 +173,11 @@
 !                deltamv
 !                iflag
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "solvprm.fi"
-      include "params.fi"
       include "cshell.fi"
       include "wnodes.fi"
       include "opt.fi"
@@ -307,10 +303,9 @@
 !     the flow is allowed to be negative (flow reversal) then this statement
 !     must be removed.
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "cshell.fi"
 
@@ -501,10 +496,9 @@
 !     arguments: 
 
  
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       dimension istack(100)
@@ -607,11 +601,10 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: yinter, iflag
 
-      use cparams 
+      use cfast_main 
+      use params
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "opt.fi"
 
@@ -784,16 +777,15 @@
 !              all modules that will run the model kernel
 !     Arguments: none
 
-      use cparams
-      use fltarget
+      use cfast_main
+      use params
+      use fltarget 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "cfin.fi"
-      include "params.fi"
       include "thermp.fi"
-      include "vents.fi"
 
       ! set some initialization - simple control stuff
       exset = .false.
@@ -1168,9 +1160,8 @@
 !     purpose: this routine initializes the fire objects
 !     arguments: none
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -1200,16 +1191,15 @@
 !     purpose: this routine initializes the solver variables from solver.ini if it exists
 !     arguments: none
 
-      use cparams
+      use cfast_main
+      use params
       use iofiles
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
       include "cfin.fi"
       include "cshell.fi"
-      include "params.fi"
 
       logical existed
 
@@ -1287,13 +1277,13 @@
 !     arguments: none
 
       use cparams
+      use params
           include "precis.fi"
           include "opt.fi"
           include "wnodes.fi"
           include "solvprm.fi"
           include "cfin.fi"
           include "cshell.fi"
-          include "params.fi"
 
 c     abs pressure tol, rel pressure tol, abs other tol, rel other tol
           data aptol, rptol, atol, rtol/1.0d-6, 1.0d-6, 1.0d-5, 1.0d-5/
@@ -1331,11 +1321,10 @@ c
 !              to one subroutine to make maintenance easier
 !     Arguments: none
 
-      use cparams
+      use cfast_main
+      use params
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
-      include "params.fi"
       include "thermp.fi"
       include "cenviro.fi"
       include "wnodes.fi"
@@ -1436,10 +1425,9 @@ c
 !     purpose: Initialize target data structures
 !     Arguments: IERROR  Returns error codes
 
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "thermp.fi"
       include "cshell.fi"
       character*133 messg
@@ -1592,10 +1580,9 @@ c          yy = ysize - yloc
 !        thset is set if a name in the list of requested data sets matches one of the names in the list of data set names (nlist).
 !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "wnodes.fi"
@@ -1797,12 +1784,11 @@ C                  Added support for IERROR and returning stops to main
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+      use cfast_main
+      use params
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
-      include "params.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
@@ -1943,12 +1929,11 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+      use cfast_main
+      use params 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
-      include "vents.fi"
 
       DIMENSION VNTOPN(NV)
       INTEGER ROOMC(NR,NR), TEMPMAT(NR,NR)

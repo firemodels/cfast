@@ -60,6 +60,7 @@
 		<File RelativePath="Include\objects1.fi"/>
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
+		<File RelativePath=".\parameter_modules.f90"/>
 		<File RelativePath=".\Include\params.fi"/>
 		<File RelativePath="Include\precis.fi"/>
 		<File RelativePath="Include\smkview.fi"/>

@@ -2,12 +2,11 @@
 
 !	Read the input file and set up the data for processing
 
-      use cparams
+      use cfast_main
+      use params
       use iofiles
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
-      include "params.fi"
       include "cshell.fi"
       include "cfin.fi"
       include "objects1.fi"
@@ -19,7 +18,7 @@
       character*133 messg
       character aversion*5
       dimension yinter(nr)
-      equivalence (yinter,qfr)
+!      equivalence (yinter,qfr)
       dimension temparea(mxpts), temphgt(mxpts)
 
 !	Unit numbers defined in readop, openoutputfiles, readinputfiles
@@ -522,21 +521,20 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                xnumc    number of columns in input file spreadsheet
 !                ierror  Returns error codes
 
-      use cparams
+      use cfast_main
+      use params
       use iofiles
-      use fltarget
+      use fltarget 
+      use vents
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "cfin.fi"
       include "cshell.fi"
       include "thermp.fi"
-      include "params.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
       include "opt.fi"
-      include "vents.fi"
       include "wnodes.fi"
 
       PARAMETER (MAXIN = 37)
@@ -551,7 +549,7 @@ c    see which room is on top (if any) - this is like a bubble sort
      +orientypefrom*1, orientypeto*1, compfrom*128, compto*128
       character*10 plumemodel(2)/'McCaffrey','Heskestad'/
 
-      EQUIVALENCE (INTER,QFR)
+!      EQUIVALENCE (INTER,QFR)
 
 !	Start with a clean slate
       xx0 = 0.0d0
@@ -1848,11 +1846,10 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror:  error return index
 
 
-      use cparams
+      use cfast_main
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects2.fi"
 
       logical countargs, lstat
@@ -2011,11 +2008,10 @@ c    see which room is on top (if any) - this is like a bubble sort
 !     Arguments: iobj: fire object number
 !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
-      use cparams
+      use cfast_main
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects2.fi"
 
       ntarg = ntarg + 1
@@ -2266,10 +2262,9 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+      use cfast_main
       use iofiles
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
       include "opt.fi"
@@ -2411,9 +2406,8 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+      use cfast_main
       include "precis.fi"
-      include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
       include "opt.fi"
@@ -2501,10 +2495,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
-      use cparams
+      use cfast_main
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "cenviro.fi"
       include "objects1.fi"
       include "objects2.fi"

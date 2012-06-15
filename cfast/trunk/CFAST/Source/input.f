@@ -4,14 +4,14 @@
 
       use cfast_main
       use params
+      use cfin
+      use cshell
+      use cenviro
       use iofiles
+      use thermp
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "cfin.fi"
-      include "objects1.fi"
       include "objects2.fi"
-      include "thermp.fi"
 
       integer numr, numc
       logical exists
@@ -523,15 +523,15 @@ c    see which room is on top (if any) - this is like a bubble sort
 
       use cfast_main
       use params
+      use cfin
+      use cshell
+      use cenviro
       use iofiles
       use fltarget 
       use vents
+      use thermp
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "cfin.fi"
-      include "cshell.fi"
-      include "thermp.fi"
-      include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
       include "opt.fi"
@@ -672,9 +672,9 @@ c    see which room is on top (if any) - this is like a bubble sort
               return
           endif
           maxct = maxct + 1
-          if (maxct>nthmx) then
+          if (maxct>nthmax) then
               write (logerr,'(a,i3)') 'Too many thermal properties',
-     .        ' in input data file. Limit is ',nthmx
+     .        ' in input data file. Limit is ',nthmax
               ierror = 203
               return
           endif
@@ -2264,9 +2264,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use iofiles
+      use cfin
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
-      include "cfin.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2407,9 +2407,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cfin
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
-      include "cfin.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2496,10 +2496,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cfast_main
+      use cenviro
       use fltarget
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "objects1.fi"
       include "objects2.fi"
 
       IXTARG(TRGROOM,ITARG) = OBJRM(IOBJ)
@@ -2534,7 +2534,7 @@ c     maxcc    = actual number of columns read
 c
 
       use cparams
-      include "cshell.fi"
+      use cshell
 
       real*8 x(numr,numc)
       character in*10000,token*128, c(numr,numc)*(*)

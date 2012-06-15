@@ -36,9 +36,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
       use params 
+      use cenviro
       use vents
-      include "precis.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -226,8 +225,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
 C
 C
 C     Procedure arguments:

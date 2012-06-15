@@ -48,8 +48,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "wdervs.fi"
       include "opt.fi"

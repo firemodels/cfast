@@ -3,12 +3,12 @@
 ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
       use cfast_main
+      use cshell
+      use cenviro
       use iofiles
       use fltarget
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)
@@ -78,14 +78,10 @@
 
       subroutine SSaddtolist (ic, valu, array)
 
-      use cfast_main
-      include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "cfin.fi"
+      implicit none
 
 	real*8 array(*), valu
-	integer ic
+	integer i, ic, iounit
 
       ic = ic + 1
       ! We are imposing an arbitrary limit of 32000 columns
@@ -108,10 +104,10 @@
 !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
       use cfast_main 
+      use cshell
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
       parameter (maxoutput = 512)
       real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,
@@ -230,10 +226,10 @@
 !     Output the temperatures and fluxes on surfaces and targets at the current time
 
       use cfast_main
+      use cshell
+      use cenviro
       use fltarget
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
 	parameter (maxoutput=512)
 	real*8 outarray(maxoutput), time, xiroom, zdetect,
@@ -361,9 +357,9 @@ c   40 CONTINUE
 !	Write out the species to the spread sheet file
 
       use cfast_main
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
 	parameter (maxhead = 1+22*nr)
 	character*16 heading(3,maxhead)
@@ -421,13 +417,13 @@ c   40 CONTINUE
 ! This routine writes to the {project}_zone.csv file, the smokeview information
 
       use cfast_main
+      use cshell
+      use cenviro
       use iofiles
       use fltarget 
       use vents
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)

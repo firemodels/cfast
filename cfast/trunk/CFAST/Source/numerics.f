@@ -6360,9 +6360,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cparams
+      use cenviro
       include "precis.fi"
       include "wdervs.fi"
-      include "cenviro.fi"
       include "opt.fi"
 C
       IF(J>-10)JACCOL = J

@@ -6,7 +6,7 @@
 !     Revision Date: $Date$
 
       use cfast_main
-      include "thermp.fi"
+      use thermp
 
       character name*(*), missingtpp*64
       integer tp, errorcode
@@ -35,10 +35,10 @@
 
       use cfast_main
       use params
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
       include "solvprm.fi"
-      include "cshell.fi"
       include "opt.fi"
 
       dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), 
@@ -106,11 +106,11 @@
 
       use cfast_main
       use params
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
       include "solvprm.fi"
       include "opt.fi"
-      include "cshell.fi"
 
       dimension hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq)
       dimension pdzero(maxteq)
@@ -175,10 +175,10 @@
 
       use cfast_main
       use params
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
       include "solvprm.fi"
-      include "cshell.fi"
       include "wnodes.fi"
       include "opt.fi"
 
@@ -305,9 +305,9 @@
 
       use cfast_main
       use params
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
       dimension c3(ns)
 
@@ -498,8 +498,8 @@
  
       use cfast_main
       use params
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
 
       dimension istack(100)
 
@@ -603,9 +603,9 @@
 
       use cfast_main 
       use params
+      use cenviro
       use fltarget
       include "precis.fi"
-      include "cenviro.fi"
       include "opt.fi"
 
       dimension yinter(*), dummy(1)
@@ -779,13 +779,13 @@
 
       use cfast_main
       use params
+      use cfin
+      use cshell
+      use cenviro
       use fltarget 
       use vents
+      use thermp
       include "precis.fi"
-      include "cshell.fi"
-      include "cenviro.fi"
-      include "cfin.fi"
-      include "thermp.fi"
 
       ! set some initialization - simple control stuff
       exset = .false.
@@ -1161,8 +1161,8 @@
 !     arguments: none
 
       use cfast_main
+      use objects1
       include "precis.fi"
-      include "objects1.fi"
       include "objects2.fi"
 
       ! turn off objects
@@ -1193,13 +1193,13 @@
 
       use cfast_main
       use params
+      use cfin
       use iofiles
+      use cshell
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "cfin.fi"
-      include "cshell.fi"
 
       logical existed
 
@@ -1278,12 +1278,12 @@
 
       use cparams
       use params
+      use cfin
+      use cshell
           include "precis.fi"
           include "opt.fi"
           include "wnodes.fi"
           include "solvprm.fi"
-          include "cfin.fi"
-          include "cshell.fi"
 
 c     abs pressure tol, rel pressure tol, abs other tol, rel other tol
           data aptol, rptol, atol, rtol/1.0d-6, 1.0d-6, 1.0d-5, 1.0d-5/
@@ -1323,10 +1323,10 @@ c
 
       use cfast_main
       use params
+      use cshell
+      use cenviro
+      use thermp
       include "precis.fi"
-      include "cshell.fi"
-      include "thermp.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
 
       DIMENSION XM(2)
@@ -1427,9 +1427,9 @@ c
 
       use cfast_main
       use fltarget
+      use cshell
+      use thermp
       include "precis.fi"
-      include "thermp.fi"
-      include "cshell.fi"
       character*133 messg
       integer map6(6)
       data map6/1,3,3,3,3,2/
@@ -1582,11 +1582,11 @@ c          yy = ysize - yloc
 
       use cfast_main
       use fltarget
+      use cshell
+      use cenviro
+      use thermp
       include "precis.fi"
-      include "cshell.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
-      include "thermp.fi"
 
       character off*8, none*8, tcname*8
       
@@ -1786,9 +1786,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use params
+      use cenviro
       use fltarget
       include "precis.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
@@ -1931,9 +1931,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use params 
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
 
       DIMENSION VNTOPN(NV)
       INTEGER ROOMC(NR,NR), TEMPMAT(NR,NR)

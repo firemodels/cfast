@@ -29,10 +29,10 @@
       use cfast_main
       use params
       use fltarget
+      use cenviro
+      use objects1
       include "precis.fi"
       include "flwptrs.fi"
-      include "cenviro.fi"
-      include "objects1.fi"
       include "objects2.fi"
       include "opt.fi"
 
@@ -186,8 +186,8 @@
 
       use cfast_main
       use interfaces
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
       include "fireptrs.fi"
 
       dimension xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
@@ -511,11 +511,11 @@
 
  
       use cfast_main
+      use cenviro
       use fltarget
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
       include "fireptrs.fi"
-      include "objects1.fi"
       include "objects2.fi"
 
       integer objn
@@ -722,8 +722,8 @@
 
       use cfast_main
       use params
-      include "precis.fi"
-      include "cenviro.fi"    
+      use cenviro
+      include "precis.fi"  
 
       integer i, j
       real*8 xx0,xx1,filter,qcifraction,time,deltt
@@ -792,10 +792,10 @@
 !        used:  izvent   n        nvents
 
       use cfast_main
+      use cenviro
       use params 
       use vents
       include "precis.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
 
@@ -935,9 +935,9 @@
 !                 xntms (output): net change in mass of species in door jet
 
       use cfast_main
+      use cenviro
       use interfaces
       include "precis.fi"
-      include "cenviro.fi"
 
       dimension xntms(2,ns), xmass(ns)
       logical djflowflg
@@ -1182,8 +1182,8 @@
 
       use cfast_main
       use params
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
 
       dimension aweigh(ns), air(2), v(2)
       logical ppmcal(ns)
@@ -1278,10 +1278,10 @@ c	this routine is to combine the main fire (in lfbo) and any objects into a sing
 c	there does not have to be a main fire nor any objects, so nfires may be zero
 
       use cfast_main
+      use cenviro
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
       include "smkview.fi"
-      include "objects1.fi"
       include "objects2.fi"
 
 c	first, the mainfire if there is one
@@ -1368,8 +1368,8 @@ c---------------------------- all rights reserved ----------------------------
 
       use cfast_main
       use fltarget
+      use objects1
       include "precis.fi"
-      include "objects1.fi"
       include "objects2.fi"
       include "opt.fi"
 
@@ -1490,9 +1490,9 @@ c
 c---------------------------- all rights reserved ----------------------------
 c
       use cfast_main
+      use cenviro
       use params
       include "precis.fi"
-      include "cenviro.fi"
       include "opt.fi"
       dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)
 

@@ -2,11 +2,11 @@
       
       ! This is the header information for the normal spreadsheet output
  
-      use cfast_main     
+      use cfast_main
+      use cshell 
+      use cenviro  
+      use objects1 
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "objects1.fi"
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -114,10 +114,10 @@
       
       ! This is the header information for the spreadsheet output
 
-      use cfast_main      
+      use cfast_main 
+      use cshell  
+      use cenviro   
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -226,10 +226,10 @@
 
 
       use cfast_main
+      use cshell
+      use cenviro
       use fltarget
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
       
       ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
@@ -365,10 +365,10 @@
 !	The logic is identical to SpreadSheetFlow so the output should be parallel
 
       use cfast_main 
+      use cshell
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
       ! local variables     
       parameter (maxhead = mxvents+2*mxvv+2*mxhvsys+mfan)
@@ -527,11 +527,11 @@ C     Natural flow through vertical vents (horizontal flow)
       ! This is the header information for the smokeview spreadsheet output
  
       use cfast_main
-      use vents   
+      use cshell
+      use cenviro
+      use vents 
+      use objects1  
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "objects1.fi"
       
       logical lmode
     

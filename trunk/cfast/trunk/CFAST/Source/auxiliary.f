@@ -72,8 +72,8 @@ C
 C***ROUTINES CALLED  XERRWV
 C***END PROLOGUE  XERROR
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       CHARACTER*(*) MESSG
 C***FIRST EXECUTABLE STATEMENT  XERROR
       XX0 = 0.0D0
@@ -92,8 +92,8 @@ C***TAKEN FROM KAHANER LIBRARY, BILL MOSS 2-91
       END
       SUBROUTINE XERRWV(MSG,NMES,NERR,LEVEL,NI,I1,I2,NNR,R1,R2)
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       INTEGER NMES, NERR, LEVEL, NI, I1, I2, NNR
       real*8 R1, R2
       CHARACTER*1 MSG(NMES)
@@ -410,8 +410,8 @@ C***TAKEN FROM KAHANER LIBRARY, BILL MOSS, 2-91
       SUBROUTINE XERRmod(mesg,NMES,NERR,NNR,R1,R2)
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
 
       INTEGER NMES, NERR, NNR
       real*8 R1, R2
@@ -469,7 +469,7 @@ C
 
       use iofiles
       use cparams
-      include "cshell.fi"
+      use cshell
 
       character name*(*)
       integer errorcode
@@ -665,7 +665,7 @@ C        Created:  11/16/1992 at 10:06 by RDP
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      include "cfin.fi"
+      use cfin
       CHARACTER CMDLIN*127
       INTEGER FIRST, LAST, LPOINT
       LOGICAL VALID
@@ -723,7 +723,7 @@ C
 C     CONVERT NEXT ENTRY IN STRING COORD TO A NUMBER OF CORRECT TYPE
 C
 C
-      include "cfin.fi"
+      use cfin
 
       CHARACTER COORD*(*)
       CHARACTER*20 DECOD
@@ -859,8 +859,8 @@ C
       ! If tocount is zero or less, just count them
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
 
 	integer tocount, i,numc,nret
 	character lcarray*128(numc), label*5
@@ -1023,13 +1023,9 @@ C     Description:  Part of the panel project output
 C
 C     Revision History: new 12/16/99
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-      
-      use cparams
-      include "cshell.fi"
-      include "cfin.fi"
 
-	CHARACTER (*) CHECKFILE
-	INTEGER LOGERR
+      implicit none	
+      CHARACTER (*) CHECKFILE
 	LOGICAL YESORNO
 	
 C	"checkfile" is the file to be checked for existence
@@ -1422,7 +1418,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cparams
-      include "cshell.fi"
+      use cshell
 
       INTEGER Z, L
       CHARACTER(len=z) P
@@ -1437,7 +1433,7 @@ C
       SUBROUTINE MESSNRF (STRING, L)
 
       use cparams
-      include "cshell.fi"
+      use cshell
 
       CHARACTER STRING*(*), FORMATT*100
       WRITE (FORMATT,4000) L
@@ -1458,8 +1454,8 @@ C     THIS IS TO FILTER COMMANDS FROM THE CONSOLE SO THAT THEY ARE NOT CASE
 C     SENSITIVE.
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
 
       INTEGER START, COUNT
       LOGICAL VALID
@@ -1561,10 +1557,10 @@ C                                   were consolidated into this version
 C     READ IN A STRING AND PROCESS IT INTO THE INTEGER AND FLOATING VARIABLES "FIXED" AND "FLTNG"
 
       use cparams
+      use cfin
+      use cfio
+      use cshell
       include "precis.fi"
-      include "cfin.fi"
-      include "cfio.fi"
-      include "cshell.fi"
 
       DIMENSION FLTING(*)
       INTEGER FIXED(*)
@@ -1761,8 +1757,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
 C
 C     READ IN A STRING
 C
@@ -1839,7 +1835,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !     14 spreadsheet output
 
       use cparams
-      include "cshell.fi"
+      use cshell
 
       INTEGER (2) YEAR, MONTH, DAY
       LOGICAL EXISTS

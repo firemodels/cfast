@@ -45,27 +45,15 @@
 				<Tool Name="VFPostBuildEventTool"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd">
-		<File RelativePath="Include\cenviro.fi"/>
-		<File RelativePath="Include\cfast.fi"/>
-		<File RelativePath="Include\cfin.fi"/>
-		<File RelativePath="Include\cfio.fi"/>
-		<File RelativePath="Include\cparams.fi"/>
-		<File RelativePath="Include\cshell.fi"/>
 		<File RelativePath=".\Include\datamodules.f90"/>
-		<File RelativePath="Include\dervs.fi"/>
-		<File RelativePath="Include\dsize.fi"/>
 		<File RelativePath="Include\fireptrs.fi"/>
-		<File RelativePath="Include\fltarget.fi"/>
 		<File RelativePath="Include\flwptrs.fi"/>
-		<File RelativePath="Include\objects1.fi"/>
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
-		<File RelativePath=".\parameter_modules.f90"/>
-		<File RelativePath=".\Include\params.fi"/>
+		<File RelativePath=".\Include\parameter_modules.f90"/>
 		<File RelativePath="Include\precis.fi"/>
 		<File RelativePath="Include\smkview.fi"/>
 		<File RelativePath="Include\solvprm.fi"/>
-		<File RelativePath="Include\thermp.fi"/>
 		<File RelativePath="Include\vents.fi"/>
 		<File RelativePath="Include\vntslb.fi"/>
 		<File RelativePath="Include\wdervs.fi"/>

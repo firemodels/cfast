@@ -1,8 +1,8 @@
       SUBROUTINE DISCLAIM (NAME)
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       CHARACTER NAME*(*), OBUF*14
 
 C     December 15, 1989 - created to specify version, model name and run date
@@ -45,9 +45,9 @@ C     NOW THE VERSION
 !	we assume the file is open
 
       use cfast_main
+      use cfin
+      use cshell
       include "precis.fi"
-      include "cfin.fi"
-      include "cshell.fi"
       integer rev_cfast
 
       call splitversion(version,imajor,iminor,iminorrev)
@@ -208,8 +208,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
 C*RE
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       IF (outputformat>1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTLAY
@@ -253,9 +253,9 @@ C
 
       use cfast_main
       use fltarget
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
       WRITE (IOFILO,5000)
       WRITE (IOFILO,5010)
@@ -311,10 +311,10 @@ C        Created:  7/12/1993 at 12:51 by RDP
 C
 
       use cfast_main
+      use cshell
+      use cenviro
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "objects1.fi"
       include "objects2.fi"
 
       EXTERNAL LENGTH
@@ -397,9 +397,10 @@ C
 !
 
       use cfast_main
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
+
       LOGICAL SWL(4)
       INTEGER IWPTR(4)
       CHARACTER STYPE(NS)*10, SUNITS(NS)*11, CIOUT*255, CJOUT*255,
@@ -497,11 +498,12 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfast_main 
+      use cfast_main
+      use cshell 
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
+
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
@@ -652,11 +654,12 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfast_main 
+      use cfast_main
+      use cshell 
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
+
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
@@ -730,11 +733,12 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
+      use cshell
+      use cenviro
+      use objects1
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
-      include "objects1.fi"
       include "objects2.fi"
+      
       XX0 = 0.0D0
       WRITE (iounit,5000)
       WRITE (iounit,5010)
@@ -800,10 +804,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
+      use cenviro
       use fltarget
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
       INTEGER IWPTR(4)
       EXTERNAL LENGTH
@@ -911,9 +915,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
+
       CHARACTER*5 CTYPE
       CHARACTER*3 CACT
 
@@ -975,10 +980,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main 
+      use cshell
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
 
       NHALLS = 0
       DO 10 I = 1, NM1
@@ -1025,8 +1030,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use params
       use iofiles
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
 
       CHARACTER CHKSUM*8
       EXTERNAL LENGTH
@@ -1085,9 +1090,9 @@ C
 
       use cfast_main
       use params 
+      use cshell
       use vents
       include "precis.fi"
-      include "cshell.fi"
       CHARACTER CHJET(4)*7, CJBUF*51
       DATA CHJET /'off', 'ceiling', 'wall', 'all'/
 
@@ -1143,10 +1148,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
       use params 
       use vents
       include "precis.fi"
-      include "cshell.fi"
 
       WRITE (IOFILO,5000) TA-273.15, PA + POFSET, EXTA-273.15, 
      +    EXPA + POFSET, SAL, 
@@ -1184,10 +1189,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
       use params 
       use vents
       include "precis.fi"
-      include "cshell.fi"
 
       WRITE (IOFILO,5000)
       DO 10 I = 1, NM1
@@ -1227,10 +1232,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
       use params 
       use vents
       include "precis.fi"
-      include "cshell.fi"
       CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
       LOGICAL FIRST
 
@@ -1413,9 +1418,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
       use params
       include "precis.fi"
-      include "cshell.fi"
       DO 10 I = 1, NEXT
         IF (HVNODE(2,I)==IND) THEN
           IEXT = I
@@ -1450,9 +1455,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
+      use thermp
       include "precis.fi"
-      include "cshell.fi"
-      include "thermp.fi"
       CHARACTER WALL(4)*7
       DATA WALL /'ceiling', 'floor', 'wall', 'wall'/
 
@@ -1507,10 +1512,10 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 !     Arguments: none
 
       use cfast_main
+      use cshell
       use params
+      use objects1
       include "precis.fi"
-      include "cshell.fi"
-      include "objects1.fi"
       include "objects2.fi"
       character cbuf*255, stype(ns)*5, ftype(0:4)*13
       external length
@@ -1585,9 +1590,9 @@ C     Arguments: none
 C
 
       use cfast_main
+      use cshell
       use fltarget
       include "precis.fi"
-      include "cshell.fi"
       CHARACTER CBUF*255
 
       IF(NTARG/=0)WRITE(IOFILO,5000)
@@ -1727,10 +1732,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cfin
+      use cshell
       include "precis.fi"
-      include "cfin.fi"
       include "opt.fi"
-      include "cshell.fi"
 
       INTEGER FUNIT
       CHARACTER DBUGFIL*8
@@ -1824,8 +1829,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
       include "wdervs.fi"
       include "opt.fi"
 
@@ -2074,9 +2079,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cfin
+      use cenviro
       include "precis.fi"
-      include "cfin.fi"
-      include "cenviro.fi"
       include "opt.fi"
 
       WRITE(LBUF,*)'Solution component with the greatest error is'
@@ -2162,11 +2167,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cfast_main
+      use cshell
+      use cenviro
       use params
       use fltarget
       include "precis.fi"
-      include "cshell.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
@@ -2370,10 +2375,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
+      use cfin
+      use cshell
       use iofiles
       include "precis.fi"
-      include "cshell.fi"
-      include "cfin.fi"
 
       INTEGER IOUNIT, ITOT, ld
       LOGICAL FIRSTC, EXISTS
@@ -2745,12 +2750,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cparams
       use params
+      use cfin
+      use cshell
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "cfin.fi"
-      include "cshell.fi"
 
       CHARACTER*(*) FILE
       INTEGER FUNIT
@@ -2856,8 +2861,8 @@ C
 !!!! Note that we assume that the default carraigecontrol for formatted files is of type LIST (no fortran controls)
 
       use cfast_main
+      use cshell
       use iofiles
-      include "cshell.fi"
 
 ! first the file for "printed" output
 	if (lprint<0) then

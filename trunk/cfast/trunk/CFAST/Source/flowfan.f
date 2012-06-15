@@ -45,9 +45,9 @@ C                  the flow vector.)
 C
 
       use cfast_main
+      use cenviro
       use params
       include "precis.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
 
@@ -456,8 +456,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       LOGICAL firstc
 	real*8 hvfanl, openfraction, qcffraction, tsec,
      . minimumopen
@@ -519,9 +519,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
+      use cenviro
       use params
       include "precis.fi"
-      include "cenviro.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
 	real*8 tsec, xx1, xx0
@@ -624,8 +624,8 @@ C
 C
       use cfast_main
       use params
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
 
       DIMENSION PRPRIME(*)
 	real*8 tsec, xx1, xx0

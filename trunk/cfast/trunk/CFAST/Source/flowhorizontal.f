@@ -34,9 +34,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
       use cfast_main
       use params 
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -491,9 +491,9 @@ C
 
       use cfast_main
       use params 
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -827,9 +827,9 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
       SUBROUTINE GETVAR(IVENT,IROOM,IROOM2,NPROD,YFLOR,YLAY,PFLOR,
      +                  DENL,DENU,CONL,CONU,TL,TU)
       use cfast_main 
+      use cenviro
       use vents
       include "precis.fi"
-      include "cenviro.fi"
 C*BEG
 C
 C***  GETVAR  SPECIFIC - ROUTINE TO INTERFACE BETWEEN CCFM.VENTS GLOBAL

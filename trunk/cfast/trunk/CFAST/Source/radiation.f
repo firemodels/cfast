@@ -11,10 +11,10 @@
 !                ierror      returns error codes
 
       use cfast_main
+      use cshell
+      use cenviro
       use fltarget
       include "precis.fi"
-      include "cenviro.fi"
-      include "cshell.fi"
       include "wdervs.fi"
       include "opt.fi"
 
@@ -1160,8 +1160,8 @@ c
 
       ! declare common block variables (ar, br, zz????, etc) and constants (upper & lower). order of 'include' files is critical. cfast.inc invokes cparams.inc & dsize.inc
       use cfast_main
+      use cenviro
       include "precis.fi"
-      include "cenviro.fi"
 
       ! declare parameters
       integer noerr, hierr, loerr

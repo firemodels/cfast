@@ -44,10 +44,11 @@ C                  the flow vector.)
 !        04/19/2007 calculate a filtered amount to remove in RESID
 C
 
-      use cfast_main
-      use cenviro
-      use params
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "params.fi"
+      include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
 
@@ -253,9 +254,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
-      use cfast_main
-      use params
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "params.fi"
 
       DIMENSION DELTPMV(*)
 	real*8 tsec
@@ -365,9 +367,10 @@ C                   for smoke (species) are now performed in hvtoex.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfast_main
-      use params
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "params.fi"
       include "opt.fi"
 
       DIMENSION TPRIME(*), DELTTMV(*)
@@ -455,9 +458,10 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfast_main
-      use cshell
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
       LOGICAL firstc
 	real*8 hvfanl, openfraction, qcffraction, tsec,
      . minimumopen
@@ -517,11 +521,12 @@ C                  Changed the calculation of the HVFRAC to make sure the vent
 C                  area is in the compartment
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      use cfast_main
-      use cenviro
-      use params
+
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "params.fi"
+      include "cenviro.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
 	real*8 tsec, xx1, xx0
@@ -620,12 +625,12 @@ C                  equations are time split just like the gas layer species
 C                  equations.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-C
-      use cfast_main
-      use params
-      use cenviro
+
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "params.fi"
+      include "cenviro.fi"
 
       DIMENSION PRPRIME(*)
 	real*8 tsec, xx1, xx0

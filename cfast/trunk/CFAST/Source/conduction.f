@@ -46,10 +46,11 @@ C        Modified by GPF 2/5/99   added wall to wall heat transfer
 C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      use cfast_main
-      use cenviro
+
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
       include "wnodes.fi"
       include "wdervs.fi"
       include "opt.fi"

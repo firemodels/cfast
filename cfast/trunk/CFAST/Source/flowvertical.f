@@ -33,14 +33,16 @@ C                  the flow vector.)
 C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      use cfast_main
-      use params 
-      use cenviro
-      use vents
+
+      use cparams
+      include "precis.fi"
+      include "cfast.fi"
+      include "params.fi"
+      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
+      include "vents.fi"
 C
       DIMENSION FLWVF(NR,NS+2,2)
       DIMENSION XMVENT(2), ILAY(2), TMVENT(2)
@@ -223,10 +225,11 @@ C     Revision History:
 C     May 15, 1991 the pressure was calculated incorrectly change pref->pofset
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      use cfast_main
-      use cenviro
+
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
 C
 C
 C     Procedure arguments:
@@ -419,9 +422,10 @@ C
 
 !       This is a routine to get the shape data for vertical flow (horizontal) vents
 
-      use cfast_main 
-      use vents
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "vents.fi"
 
 	integer itop, ibot, hshape, hface, iinvvent
 	real*8 harea

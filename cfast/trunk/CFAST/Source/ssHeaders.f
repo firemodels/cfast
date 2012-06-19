@@ -1,12 +1,13 @@
       subroutine ssHeadersNormal
       
       ! This is the header information for the normal spreadsheet output
- 
-      use cfast_main
-      use cshell 
-      use cenviro  
-      use objects1 
+      
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "objects1.fi"
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -113,11 +114,12 @@
       subroutine ssHeadersSpecies
       
       ! This is the header information for the spreadsheet output
-
-      use cfast_main 
-      use cshell  
-      use cenviro   
+      
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -225,11 +227,12 @@
 !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
 
 
-      use cfast_main
-      use cshell
-      use cenviro
-      use fltarget
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "fltarget.fi"
       
       ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
@@ -364,11 +367,12 @@
 !	This is the header information for the flow spreadsheet and is called once
 !	The logic is identical to SpreadSheetFlow so the output should be parallel
 
-      use cfast_main 
-      use cshell
-      use cenviro
-      use vents
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "vents.fi"
 
       ! local variables     
       parameter (maxhead = mxvents+2*mxvv+2*mxhvsys+mfan)
@@ -525,13 +529,14 @@ C     Natural flow through vertical vents (horizontal flow)
       subroutine ssHeadersSMV(lMode)
       
       ! This is the header information for the smokeview spreadsheet output
- 
-      use cfast_main
-      use cshell
-      use cenviro
-      use vents 
-      use objects1  
+      
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
+      include "objects1.fi"
+      include "vents.fi"
       
       logical lmode
     

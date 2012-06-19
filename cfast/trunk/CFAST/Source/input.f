@@ -2,23 +2,24 @@
 
 !	Read the input file and set up the data for processing
 
-      use cfast_main
-      use params
-      use cfin
-      use cshell
-      use cenviro
+      use cparams
       use iofiles
-      use thermp
-      use objects1
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "params.fi"
+      include "cshell.fi"
+      include "cfin.fi"
+      include "objects1.fi"
       include "objects2.fi"
+      include "thermp.fi"
 
       integer numr, numc
       logical exists
       character*133 messg
       character aversion*5
       dimension yinter(nr)
-!      equivalence (yinter,qfr)
+      equivalence (yinter,qfr)
       dimension temparea(mxpts), temphgt(mxpts)
 
 !	Unit numbers defined in readop, openoutputfiles, readinputfiles
@@ -521,20 +522,21 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                xnumc    number of columns in input file spreadsheet
 !                ierror  Returns error codes
 
-      use cfast_main
-      use params
-      use cfin
-      use cshell
-      use cenviro
+      use cparams
       use iofiles
-      use fltarget 
-      use vents
-      use thermp
-      use objects1
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cfin.fi"
+      include "cshell.fi"
+      include "thermp.fi"
+      include "params.fi"
+      include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
+      include "fltarget.fi"
       include "opt.fi"
+      include "vents.fi"
       include "wnodes.fi"
 
       PARAMETER (MAXIN = 37)
@@ -549,7 +551,7 @@ c    see which room is on top (if any) - this is like a bubble sort
      +orientypefrom*1, orientypeto*1, compfrom*128, compto*128
       character*10 plumemodel(2)/'McCaffrey','Heskestad'/
 
-!      EQUIVALENCE (INTER,QFR)
+      EQUIVALENCE (INTER,QFR)
 
 !	Start with a clean slate
       xx0 = 0.0d0
@@ -672,9 +674,9 @@ c    see which room is on top (if any) - this is like a bubble sort
               return
           endif
           maxct = maxct + 1
-          if (maxct>nthmax) then
+          if (maxct>nthmx) then
               write (logerr,'(a,i3)') 'Too many thermal properties',
-     .        ' in input data file. Limit is ',nthmax
+     .        ' in input data file. Limit is ',nthmx
               ierror = 203
               return
           endif
@@ -1845,12 +1847,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                iobj:    pointer to the fire object that will contain all the data we read in here
 !                ierror:  error return index
 
-
-      use cfast_main
+      use cparams
       use iofiles
-      use fltarget
       include "precis.fi"
+      include "cfast.fi"
       include "objects2.fi"
+      include "fltarget.fi"
 
       logical countargs, lstat
       integer lrowcount, xnumr, xnumc, iobj
@@ -2008,11 +2010,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 !     Arguments: iobj: fire object number
 !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
-      use cfast_main
+      use cparams
       use iofiles
-      use fltarget
       include "precis.fi"
+      include "cfast.fi"
       include "objects2.fi"
+      include "fltarget.fi"
 
       ntarg = ntarg + 1
       if (ntarg>mxtarg) then
@@ -2262,11 +2265,12 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfast_main
+      use cparams
       use iofiles
-      use cfin
-      use cshell
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
+      include "cfin.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2406,10 +2410,11 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfast_main
-      use cfin
-      use cshell
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
+      include "cfin.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2495,12 +2500,13 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
-      use cfast_main
-      use cenviro
-      use fltarget
-      use objects1
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "objects1.fi"
       include "objects2.fi"
+      include "fltarget.fi"
 
       IXTARG(TRGROOM,ITARG) = OBJRM(IOBJ)
       DO 10 I = 0,2
@@ -2532,9 +2538,8 @@ c     nstart = starting row of spreadsheet to read
 c     maxr     = actual number of rows read
 c     maxcc    = actual number of columns read
 c
-
       use cparams
-      use cshell
+      include "cshell.fi"
 
       real*8 x(numr,numc)
       character in*10000,token*128, c(numr,numc)*(*)

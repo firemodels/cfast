@@ -22,12 +22,12 @@ C     Revision History:
 C        Created:  5/5/1995 at 13:51 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
 
-      use cfast_main
-      use cenviro
-      use fltarget
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "fltarget.fi"
+      include "cenviro.fi"
       
       DIMENSION TMP(TRGTNUM), WALLDX(TRGTNUM), NMNODE(2), DELTA(*)
       DIMENSION XPSOLVE(*), TGRAD(2)
@@ -160,12 +160,12 @@ C                  expanded this routine to compute transient in addition to
 C                  steady state target temperatures
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
 
-      use cfast_main
-      use cenviro
-      use fltarget
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "fltarget.fi"
 
       LOGICAL FIRST
       DIMENSION FLUX(2), DFLUX(2), TTARG(2)
@@ -271,12 +271,12 @@ C                  expanded this routine to handle fluxes for both the transient
 C                  steady state target temperatures
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
 
-      use cfast_main
-      use cenviro
-      use fltarget
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "fltarget.fi"
       include "objects2.fi"
       include "wnodes.fi"
 
@@ -511,10 +511,11 @@ C*** CONVECTION FOR THE BACK
       END
       subroutine gettgas(irtarg,xtarg,ytarg,ztarg,tg)
 
-      use cfast_main
-      use cenviro
-      use fltarget
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "fltarget.fi"
       include "objects2.fi"
 
       logical first
@@ -645,7 +646,7 @@ C        MODIFIED: 10/9/97 by GPF:
 C                return sensor number instead of "1" in IFDTECT 
 C                if a sensor has activated
 C                
-C
+
       use cparams
       include "precis.fi"
       include "dsize.fi"

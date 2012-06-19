@@ -6358,11 +6358,11 @@ C        Created:  2/14/1993 by GPF
 C        Modified: 2/2/1995 by gpf  Removed IDERV set option
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
       use cparams
-      use cenviro
       include "precis.fi"
       include "wdervs.fi"
+      include "cenviro.fi"
       include "opt.fi"
 C
       IF(J>-10)JACCOL = J
@@ -6387,7 +6387,7 @@ C     Revision History:
 C        Created:  2/14/1993 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
       use cparams
       include "precis.fi"
       include "opt.fi"

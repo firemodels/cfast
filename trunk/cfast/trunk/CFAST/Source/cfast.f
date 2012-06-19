@@ -26,24 +26,20 @@
 !     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 !     OTHER DEALINGS IN THE SOFTWARE.
 
-
+      use cparams
       use iofiles
-      use cfast_main
-      use params
-      use cenviro
-      use cfin
-      use cshell
-      use thermp
-      use objects1
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
+      include "cfin.fi"
+      include "params.fi"
+      include "thermp.fi"
+      include "objects1.fi"
+      include "cenviro.fi"
 
       logical error
       integer errorcode, rev_cfast
 
-      ! comile date and program version
-      crdate = (/2012,6,14/)
-      version = 6300
-      
       errorcode = 0
 
       if(command_argument_count().eq.0)then
@@ -135,6 +131,40 @@
  5020 format ('Error exit during initialization from CFAST main')
       end program cfast
 
+      block data initcs
+
+!     Routine: initcs
+!     Purpose: data structure to define basic parameters for cfast
+!     Revision: $Revision$
+!     Revision Date: $Date$
+
+      use cparams
+          include "cshell.fi"
+
+          data thrmfile/'thermal'/,  
+
+     .    nnfile/' '/,
+     .    dumpf/' '/,header/.false./, 
+     .    nokbd/.false./, 
+     .    initializeonly/.false./,
+     .    outputformat /0/, iofilo/6/,iofili/1/, logerr/3/,
+     .    trace/.false./,
+     .    validate/.false./
+
+     .    version/6300/
+
+      end block data initcs
+
+      block data initcf
+
+      use cparams
+          include "precis.fi"
+          include "cfast.fi"
+
+          data crdate/2012,5,31/
+          
+      end block data initcf
+
       subroutine initsoln(t,pdold,pdzero,rpar,ipar)
 
 !     Routine: initsoln
@@ -148,14 +178,15 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cfast_main
-      use params
-      use cenviro
-      use objects1
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
       include "wnodes.fi"
+      include "params.fi"
       include "solvprm.fi"
       include "opt.fi"
+      include "objects1.fi"
       include "objects2.fi"
 
       dimension ipar(*), pdold(*), pdzero(*), rpar(*)
@@ -338,21 +369,22 @@
 !     is presently used by DASSL. The important point is that NODES is set to
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
-      use cfast_main
-      use params
-      use cenviro
-      use cfin
+      use cparams
       use iofiles
-      use fltarget 
-      use vents
-      use cshell
-      use dervs
-      use objects1
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
+      include "params.fi"
+      include "cenviro.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
+      include "dervs.fi"
+      include "fltarget.fi"
+      include "objects1.fi"
       include "objects2.fi"
+      include "cfin.fi"
+      include "vents.fi"
       include "smkview.fi"
 
       parameter (maxord = 5)
@@ -873,8 +905,8 @@
 !     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
       use cparams
-      use fltarget
       include "precis.fi"
+      include "fltarget.fi"
 
       dimension p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
 
@@ -912,12 +944,13 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cfast_main
-      use cshell
-      use cenviro
-      use dervs
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
       include "opt.fi"
+      include "dervs.fi"
+      include "cenviro.fi"
 
       LOGICAL SLVHELP
       INTEGER*2 CH, HIT
@@ -981,10 +1014,11 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cfast_main
-      use cshell
-      use cenviro
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cshell.fi"
+      include "cenviro.fi"
       include "opt.fi"
 
       integer*2 ch, hit
@@ -1091,16 +1125,16 @@ C     SETTING JACOBIAN FLAG
 !                        a partial / total flag for solution of the
 !                        species equations.
 
-
-      use cfast_main
-      use params
-      use cenviro
-      use fltarget
-      use dervs
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
       include "opt.fi"
+      include "params.fi"
+      include "dervs.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
+      include "fltarget.fi"
       include "objects2.fi"
 
       ! temporaray declarations and assignments
@@ -1484,18 +1518,18 @@ C     SETTING JACOBIAN FLAG
 !     iflag = odevarc  ==> species data and wall temperature profile.
 !                          use pdif array for species
 
- 
-      use cfast_main
-      use params
-      use cenviro
-      use fltarget 
-      use vents
-      use dervs
-      use objects1
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "vents.fi"
       include "wnodes.fi"
+      include "dervs.fi"
+      include "params.fi"
       include "wdervs.fi"
       include "opt.fi"
+      include "fltarget.fi"
+      include "objects1.fi"
       include "objects2.fi"
 
 c     order of variables is defined in the routine offset
@@ -2075,10 +2109,11 @@ c     order of variables is defined in the routine offset
 !     arguments: pdif   the p array to resync
 !                ibeg   the point at which species are started in p array
 
-      use cfast_main
-      use cshell
-      use cenviro
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "cshell.fi"
       dimension pdif(*)
       dimension factor(nr,2)
 

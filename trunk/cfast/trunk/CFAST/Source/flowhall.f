@@ -18,10 +18,11 @@ C                ND - number of detectors in room IROOM
 C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
-      use cfast_main
-      use cenviro
+
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
 
       DO 10 ID = IDSTART, IDSTART + ND - 1
         XX = XDTECT(ID,DXLOC)
@@ -40,9 +41,10 @@ C
       END
 
       SUBROUTINE HALLTRV(IROOM,XLOC,ZLOC,HALLTEMP,HALLRHO,HALLVEL)
-      use cfast_main
-      use cenviro
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
 
       IF(IZHALL(IROOM,IHMODE)==IHDURING)THEN
         D0 = ZZHALL(IROOM,IHDEPTH)
@@ -103,11 +105,12 @@ C    so, use regular layer temperatures and densities
 
       SUBROUTINE SETHALL(ITYPE,INUM,IHALL,TSEC,WIDTH,
      .                   HTEMP,HVEL,HDEPTH)
-      use cfast_main 
-      use cenviro
-      use dervs
-      use vents
+      use cparams
       include "precis.fi"
+      include "cfast.fi"
+      include "cenviro.fi"
+      include "vents.fi"
+      include "dervs.fi"
 
       XX0 = 0.0D0
       HHTEMP = HTEMP - ZZTEMP(IHALL,LOWER)

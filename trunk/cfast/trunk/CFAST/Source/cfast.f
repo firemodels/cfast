@@ -29,11 +29,11 @@
       use cparams
       use dsize
       use iofiles
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cfin.fi"
-      include "params.fi"
       include "thermp.fi"
       include "objects1.fi"
       include "cenviro.fi"
@@ -182,11 +182,11 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "wnodes.fi"
-      include "params.fi"
       include "solvprm.fi"
       include "opt.fi"
       include "objects1.fi"
@@ -375,10 +375,10 @@
       use cparams
       use dsize
       use iofiles
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "opt.fi"
       include "wnodes.fi"
@@ -1133,11 +1133,11 @@ C     SETTING JACOBIAN FLAG
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "opt.fi"
-      include "params.fi"
       include "dervs.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
@@ -1527,13 +1527,13 @@ C     SETTING JACOBIAN FLAG
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "vents.fi"
       include "wnodes.fi"
       include "dervs.fi"
-      include "params.fi"
       include "wdervs.fi"
       include "opt.fi"
       include "fltarget.fi"

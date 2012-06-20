@@ -37,11 +37,11 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "solvprm.fi"
-      include "params.fi"
       include "cshell.fi"
       include "opt.fi"
 
@@ -110,11 +110,11 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "solvprm.fi"
-      include "params.fi"
       include "opt.fi"
       include "cshell.fi"
 
@@ -181,11 +181,11 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "solvprm.fi"
-      include "params.fi"
       include "cshell.fi"
       include "wnodes.fi"
       include "opt.fi"
@@ -313,9 +313,9 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "cshell.fi"
 
@@ -507,9 +507,9 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       dimension istack(100)
@@ -614,9 +614,9 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "fltarget.fi"
       include "opt.fi"
@@ -792,12 +792,12 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "cfin.fi"
-      include "params.fi"
       include "thermp.fi"
       include "fltarget.fi"
       include "vents.fi"
@@ -1211,6 +1211,7 @@
       use cparams
       use dsize
       use iofiles
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "opt.fi"
@@ -1218,7 +1219,6 @@
       include "solvprm.fi"
       include "cfin.fi"
       include "cshell.fi"
-      include "params.fi"
 
       logical existed
 
@@ -1296,13 +1296,13 @@
 !     arguments: none
 
       use cparams
+      use params
           include "precis.fi"
           include "opt.fi"
           include "wnodes.fi"
           include "solvprm.fi"
           include "cfin.fi"
           include "cshell.fi"
-          include "params.fi"
 
 c     abs pressure tol, rel pressure tol, abs other tol, rel other tol
           data aptol, rptol, atol, rtol/1.0d-6, 1.0d-6, 1.0d-5, 1.0d-5/
@@ -1342,10 +1342,10 @@ c
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "params.fi"
       include "thermp.fi"
       include "cenviro.fi"
       include "wnodes.fi"
@@ -1811,10 +1811,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "params.fi"
       include "wnodes.fi"
       include "fltarget.fi"
       include "opt.fi"
@@ -1958,9 +1958,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "vents.fi"
 

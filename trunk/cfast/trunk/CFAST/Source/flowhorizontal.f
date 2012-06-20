@@ -33,6 +33,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -414,6 +415,7 @@ C                   continuous.  the coeff's are calculated the first time
 C                   this routine is called.  gpf
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       LOGICAL FIRSTC
@@ -492,6 +494,7 @@ C
       subroutine ventflag(ventflg,roomflg,anyvents)
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -830,6 +833,7 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
       SUBROUTINE GETVAR(IVENT,IROOM,IROOM2,NPROD,YFLOR,YLAY,PFLOR,
      +                  DENL,DENU,CONL,CONU,TL,TU)
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1256,6 +1260,7 @@ C
 !       This is a routine to get the shape data for horizontal flow vents
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "vents.fi"

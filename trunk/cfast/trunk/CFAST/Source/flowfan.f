@@ -45,6 +45,7 @@ C                  the flow vector.)
 C
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -255,6 +256,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -368,6 +370,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -459,6 +462,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -523,6 +527,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -627,6 +632,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"

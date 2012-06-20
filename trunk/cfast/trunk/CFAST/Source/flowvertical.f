@@ -35,6 +35,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -227,6 +228,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -423,6 +425,7 @@ C
 !       This is a routine to get the shape data for vertical flow (horizontal) vents
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "vents.fi"

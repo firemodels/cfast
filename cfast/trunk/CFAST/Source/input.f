@@ -2,6 +2,7 @@
 
 !	Read the input file and set up the data for processing
 
+      use cfin
       use cparams
       use dsize
       use iofiles
@@ -10,7 +11,6 @@
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "cfin.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "thermp.fi"
@@ -522,6 +522,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                xnumc    number of columns in input file spreadsheet
 !                ierror  Returns error codes
 
+      use cfin
       use cparams
       use dsize
       use iofiles
@@ -530,7 +531,6 @@ c    see which room is on top (if any) - this is like a bubble sort
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "cfin.fi"
       include "cshell.fi"
       include "thermp.fi"
       include "objects1.fi"
@@ -2266,13 +2266,13 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cfin.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2412,12 +2412,12 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cfin.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)

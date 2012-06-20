@@ -26,6 +26,7 @@
 !     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 !     OTHER DEALINGS IN THE SOFTWARE.
 
+      use cfin
       use cparams
       use dsize
       use iofiles
@@ -33,7 +34,6 @@
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cfin.fi"
       include "thermp.fi"
       include "objects1.fi"
       include "cenviro.fi"
@@ -372,6 +372,8 @@
 !     is presently used by DASSL. The important point is that NODES is set to
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
+
+      use cfin
       use cparams
       use dsize
       use fltarget
@@ -387,7 +389,6 @@
       include "dervs.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "cfin.fi"
       include "vents.fi"
       include "smkview.fi"
 

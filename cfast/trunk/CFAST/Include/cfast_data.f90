@@ -1,4 +1,26 @@
-module fltarget
+module cfin
+    
+    implicit none
+    
+    integer, parameter :: lbufln=1024
+    character(lbufln) :: lbuf, cbuf
+    
+end module cfin
+
+module cfio
+
+    use cfin    
+    implicit none
+    
+    ! input/output data for readas, readin, ...
+      integer :: start, first, last, count, type, ix
+      logical :: valid
+      character(lbufln) :: inbuf
+      real :: xi
+
+end module cfio
+    
+    module fltarget
     use cparams
     implicit none
     

@@ -27,6 +27,7 @@
 !     OTHER DEALINGS IN THE SOFTWARE.
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -158,6 +159,7 @@
       block data initcf
 
       use cparams
+      use dsize
           include "precis.fi"
           include "cfast.fi"
 
@@ -179,6 +181,7 @@
 !     Revision Date: $Date$
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -370,6 +373,7 @@
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -945,6 +949,7 @@ c
 !     Revision Date: $Date$
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1015,6 +1020,7 @@ c
 !     Revision Date: $Date$
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1126,6 +1132,7 @@ C     SETTING JACOBIAN FLAG
 !                        species equations.
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1519,6 +1526,7 @@ C     SETTING JACOBIAN FLAG
 !                          use pdif array for species
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -2110,6 +2118,7 @@ c     order of variables is defined in the routine offset
 !                ibeg   the point at which species are started in p array
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

@@ -28,6 +28,7 @@
 
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "flwptrs.fi"
@@ -188,6 +189,7 @@
 
 
       use cparams
+      use dsize
       use interfaces
       include "precis.fi"
       include "cfast.fi"
@@ -514,6 +516,7 @@
 !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -609,6 +612,7 @@
 !     purpose: physical interface between dofire and the plume models
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       integer plumetype, objectnumber
@@ -726,6 +730,7 @@
 !                 deltt   current time step
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -798,6 +803,7 @@
 !        used:  izvent   n        nvents
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -942,6 +948,7 @@
 !                 xntms (output): net change in mass of species in door jet
 
       use cparams
+      use dsize
       use interfaces
       include "precis.fi"
       include "cfast.fi"
@@ -1189,6 +1196,7 @@
 !     arguments:  deltt  length of the latest time step (s)
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1287,6 +1295,7 @@ c	this routine is to combine the main fire (in lfbo) and any objects into a sing
 c	there does not have to be a main fire nor any objects, so nfires may be zero
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1377,6 +1386,7 @@ c
 c---------------------------- all rights reserved ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "objects1.fi"
@@ -1501,6 +1511,7 @@ c
 c---------------------------- all rights reserved ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1616,6 +1627,7 @@ c
 c---------------------------- all rights reserved ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
 

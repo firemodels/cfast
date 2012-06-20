@@ -80,6 +80,7 @@ c     gpf 2/5/96   removed reduced jacobian option added on 2/5/93.
 c*re
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -962,6 +963,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

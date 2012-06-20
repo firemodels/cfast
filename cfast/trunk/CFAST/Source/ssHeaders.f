@@ -3,6 +3,7 @@
       ! This is the header information for the normal spreadsheet output
       
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -116,6 +117,7 @@
       ! This is the header information for the spreadsheet output
       
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -228,6 +230,7 @@
 
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -368,6 +371,7 @@
 !	The logic is identical to SpreadSheetFlow so the output should be parallel
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -531,6 +535,7 @@ C     Natural flow through vertical vents (horizontal flow)
       ! This is the header information for the smokeview spreadsheet output
       
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

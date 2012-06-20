@@ -24,6 +24,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "fltarget.fi"
@@ -162,6 +163,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -273,6 +275,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -512,6 +515,7 @@ C*** CONVECTION FOR THE BACK
       subroutine gettgas(irtarg,xtarg,ytarg,ztarg,tg)
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -648,8 +652,8 @@ C                if a sensor has activated
 C                
 
       use cparams
+      use dsize
       include "precis.fi"
-      include "dsize.fi"
 
       DIMENSION ZZTEMP(NR,2), ZZHLAY(NR,2)
 

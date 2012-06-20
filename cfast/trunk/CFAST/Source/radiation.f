@@ -11,6 +11,7 @@
 !                ierror      returns error codes
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1303,6 +1304,7 @@ C  (UPPER & LOWER). ORDER OF 'INCLUDE' FILES IS CRITICAL.
 C  CFAST.INC INVOKES CPARAMS.INC & DSIZE.INC
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

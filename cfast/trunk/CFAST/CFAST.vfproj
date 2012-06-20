@@ -45,12 +45,15 @@
 				<Tool Name="VFPostBuildEventTool"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd">
-		<File RelativePath=".\Include\datamodules.f90"/>
+		<File RelativePath=".\Include\cfast.fi"/>
+		<File RelativePath=".\Include\cfast_data.f90"/>
+		<File RelativePath=".\Include\cfast_interfaces.f90"/>
+		<File RelativePath=".\Include\cfast_parameters.f90"/>
+		<File RelativePath=".\Include\dsize.fi"/>
 		<File RelativePath="Include\fireptrs.fi"/>
 		<File RelativePath="Include\flwptrs.fi"/>
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
-		<File RelativePath=".\Include\parameter_modules.f90"/>
 		<File RelativePath="Include\precis.fi"/>
 		<File RelativePath="Include\smkview.fi"/>
 		<File RelativePath="Include\solvprm.fi"/>

@@ -374,6 +374,7 @@
 
       use cparams
       use dsize
+      use fltarget
       use iofiles
       use params
       include "precis.fi"
@@ -384,7 +385,6 @@
       include "wnodes.fi"
       include "solvprm.fi"
       include "dervs.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "cfin.fi"
@@ -909,8 +909,8 @@
 !     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
       use cparams
+      use fltarget
       include "precis.fi"
-      include "fltarget.fi"
 
       dimension p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
 
@@ -1133,6 +1133,7 @@ C     SETTING JACOBIAN FLAG
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
@@ -1141,7 +1142,6 @@ C     SETTING JACOBIAN FLAG
       include "dervs.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
-      include "fltarget.fi"
       include "objects2.fi"
 
       ! temporaray declarations and assignments
@@ -1527,6 +1527,7 @@ C     SETTING JACOBIAN FLAG
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
@@ -1536,7 +1537,6 @@ C     SETTING JACOBIAN FLAG
       include "dervs.fi"
       include "wdervs.fi"
       include "opt.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "objects2.fi"
 

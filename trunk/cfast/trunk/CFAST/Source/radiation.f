@@ -12,13 +12,13 @@
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
       include "wdervs.fi"
       include "opt.fi"
-      include "fltarget.fi"
 
       dimension flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal)
 

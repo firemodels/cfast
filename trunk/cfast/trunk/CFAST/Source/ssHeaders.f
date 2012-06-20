@@ -231,11 +231,11 @@
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "fltarget.fi"
       
       ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)

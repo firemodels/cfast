@@ -29,6 +29,7 @@
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
@@ -37,7 +38,6 @@
       include "objects1.fi"
       include "objects2.fi"
       include "opt.fi"
-      include "fltarget.fi"
 
       dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
       dimension xxfire(1), yyfire(1), zzfire(1), zzloc(1)
@@ -517,11 +517,11 @@
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "fireptrs.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -1387,11 +1387,11 @@ c---------------------------- all rights reserved ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "fltarget.fi"
       include "opt.fi"
 
       dimension tmpob(2,mxoin)

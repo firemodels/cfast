@@ -5,11 +5,11 @@
       use cparams
       use dsize
       use iofiles
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "fltarget.fi"
       include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -237,11 +237,11 @@
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "fltarget.fi"
 
 	parameter (maxoutput=512)
 	real*8 outarray(maxoutput), time, xiroom, zdetect,
@@ -433,11 +433,11 @@ c   40 CONTINUE
       use cparams
       use dsize
       use iofiles
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "fltarget.fi"
       include "objects1.fi"
       include "vents.fi"
 

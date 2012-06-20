@@ -1,4 +1,53 @@
-module  iofiles
+module fltarget
+    use cparams
+    implicit none
+    
+    ! variables for calculation of flux to a target
+      
+    ! indices into floating point target data structure (XXTARG)      
+    integer, parameter :: trgcenx = 1
+    integer, parameter :: trgceny = 2
+    integer, parameter :: trgcenz = 3
+    integer, parameter :: trgnormx = 4
+    integer, parameter :: trgnormy = 5
+    integer, parameter :: trgnormz = 6
+    integer, parameter :: trgk = 7
+    integer, parameter :: trgrho = 8
+    integer, parameter :: trgcp = 9
+    integer, parameter :: trgl = 10
+    integer, parameter :: trginterior = 11
+    integer, parameter :: trgemis = 12
+    integer, parameter :: trgtfluxf = 13
+    integer, parameter :: trgtfluxb = 14
+    integer, parameter :: trgnfluxf = 15
+    integer, parameter :: trgnfluxb = 16
+
+    ! indices into integer target data structure (IXTARG)
+    integer, parameter :: trgroom = 1
+    integer, parameter :: trglayer = 2
+    integer, parameter :: trgwall = 3
+    integer, parameter :: trgmeth = 4
+    integer, parameter :: trgeq = 5
+    integer, parameter :: trgback = 6
+    
+    integer, parameter :: ode = 1
+    integer, parameter :: pde = 2
+    integer, parameter :: cylpde = 3
+    integer, parameter :: steady = 1
+    integer, parameter :: mplicit = 2
+    integer, parameter :: xplicit = 3
+    integer, parameter :: int = 1
+    integer, parameter :: ext =2
+
+    character(8) :: cxtarg(mxtarg)
+
+    real(8), dimension(mxtarg,2) :: qtflux, qtcflux, qtfflux, qtwflux, qtgflux
+    real(8), dimension(mxtarg) :: tgtarg
+    real(8), dimension(mxtarg,5)  :: gtflux
+    integer, dimension(3) :: neqtarg
+end module fltarget
+    
+    module  iofiles
 
     implicit none
     

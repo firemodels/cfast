@@ -134,9 +134,9 @@ C     NOW THE VERSION
 
       use cparams
       use dsize
+      use fltarget
       include "cfast.fi"
       include "objects2.fi"
-      include "fltarget.fi"
 
 	write(*,5) OBJGMW(IOBJ), objvt(iobj),objmas(iobj)
 5	format('gmwf,te,m ',3f8.3)
@@ -257,11 +257,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "fltarget.fi"
       WRITE (IOFILO,5000)
       WRITE (IOFILO,5010)
       WRITE (IOFILO,5020)
@@ -816,11 +816,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "fltarget.fi"
 
       INTEGER IWPTR(4)
       EXTERNAL LENGTH
@@ -1624,10 +1624,10 @@ C
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "fltarget.fi"
       CHARACTER CBUF*255
 
       IF(NTARG/=0)WRITE(IOFILO,5000)
@@ -1727,9 +1727,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "fltarget.fi"
 
       real*8 positionvector(*)
       integer targetnumber
@@ -2208,6 +2208,7 @@ C
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
@@ -2216,7 +2217,6 @@ C
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
-      include "fltarget.fi"
 
       INTEGER*2 CH, HIT
       CHARACTER SPNAME(NS)*5, CCC*3

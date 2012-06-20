@@ -614,11 +614,11 @@
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "fltarget.fi"
       include "opt.fi"
 
       dimension yinter(*), dummy(1)
@@ -792,6 +792,7 @@
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
@@ -799,7 +800,6 @@
       include "cenviro.fi"
       include "cfin.fi"
       include "thermp.fi"
-      include "fltarget.fi"
       include "vents.fi"
 
       ! set some initialization - simple control stuff
@@ -1448,9 +1448,9 @@ c
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "fltarget.fi"
       include "thermp.fi"
       include "cshell.fi"
       character*133 messg
@@ -1605,13 +1605,13 @@ c          yy = ysize - yloc
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "wnodes.fi"
       include "thermp.fi"
-      include "fltarget.fi"
 
       character off*8, none*8, tcname*8
       
@@ -1811,12 +1811,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "wnodes.fi"
-      include "fltarget.fi"
       include "opt.fi"
       include "objects2.fi"
 

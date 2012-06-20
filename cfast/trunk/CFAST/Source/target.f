@@ -25,9 +25,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "fltarget.fi"
       include "cenviro.fi"
       
       DIMENSION TMP(TRGTNUM), WALLDX(TRGTNUM), NMNODE(2), DELTA(*)
@@ -164,10 +164,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "fltarget.fi"
 
       LOGICAL FIRST
       DIMENSION FLUX(2), DFLUX(2), TTARG(2)
@@ -276,10 +276,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "fltarget.fi"
       include "objects2.fi"
       include "wnodes.fi"
 
@@ -516,10 +516,10 @@ C*** CONVECTION FOR THE BACK
 
       use cparams
       use dsize
+      use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "fltarget.fi"
       include "objects2.fi"
 
       logical first

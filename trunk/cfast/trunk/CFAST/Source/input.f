@@ -3,6 +3,7 @@
 !	Read the input file and set up the data for processing
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -523,6 +524,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror  Returns error codes
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -1848,6 +1850,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror:  error return index
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -2011,6 +2014,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -2266,6 +2270,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -2411,6 +2416,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -2501,6 +2507,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"

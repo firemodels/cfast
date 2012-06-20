@@ -45,6 +45,7 @@ C     NOW THE VERSION
 !	we assume the file is open
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cfin.fi"
@@ -95,6 +96,7 @@ C     NOW THE VERSION
 	subroutine printfireparameters
 
       use cparams
+      use dsize
       include "cfast.fi"
 
 	write(*,5) gmwf,hcomba,te,tgignt,qradrl,limo2
@@ -131,6 +133,7 @@ C     NOW THE VERSION
 	subroutine printobjectparameters (iobj)
 
       use cparams
+      use dsize
       include "cfast.fi"
       include "objects2.fi"
       include "fltarget.fi"
@@ -253,6 +256,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -312,6 +316,7 @@ C        Created:  7/12/1993 at 12:51 by RDP
 C
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -399,6 +404,7 @@ C
 !
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -501,6 +507,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -657,6 +664,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -735,6 +743,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -806,6 +815,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -918,6 +928,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -983,6 +994,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1033,6 +1045,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -1095,6 +1108,7 @@ C
 !
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1155,6 +1169,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1197,6 +1212,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1241,6 +1257,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1428,6 +1445,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1466,6 +1484,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1524,6 +1543,7 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 !     Arguments: none
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -1603,6 +1623,7 @@ C     Arguments: none
 C
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1705,6 +1726,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !	This is the protocol between cfast and smokeview
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "fltarget.fi"
@@ -1844,6 +1866,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -2094,6 +2117,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cfin.fi"
@@ -2183,6 +2207,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -2392,6 +2417,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -2462,6 +2488,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
 
@@ -2729,6 +2756,7 @@ C
 !  Write the status information to the "statusfile"
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
 
@@ -2882,6 +2910,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !!!! Note that we assume that the default carraigecontrol for formatted files is of type LIST (no fortran controls)
 
       use cparams
+      use dsize
       use iofiles
       include "cfast.fi"
       include "cshell.fi"

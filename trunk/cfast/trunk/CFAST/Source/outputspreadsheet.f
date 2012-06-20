@@ -3,6 +3,7 @@
 ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -80,6 +81,7 @@
       subroutine SSaddtolist (ic, valu, array)
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -110,6 +112,7 @@
 !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -233,6 +236,7 @@
 !     Output the temperatures and fluxes on surfaces and targets at the current time
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -365,6 +369,7 @@ c   40 CONTINUE
 !	Write out the species to the spread sheet file
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -426,6 +431,7 @@ c   40 CONTINUE
 ! This routine writes to the {project}_zone.csv file, the smokeview information
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"

@@ -10,8 +10,6 @@ C	  Jan 28, 2002 added vface for smokeview orientation
 !     Add hvac flow summation table (hveflot): tracet is trace through a vent, traces is flow stopped by a vent
 !     Add hvac interpolation points qfmm and dpmm
 
-      include "dsize.fi"
-
       INTEGER HVORIEN(MEXT), HVNODE(2,MEXT), CRDATE(3), MPSDAT(3),
      +    NEUTRAL(NR,NR), NWV(NR,NR), NA(MBR), NOFSETS(17),
      +    NCNODE(MNODE), NE(MBR), MVINTNODE(MNODE,MCON),

@@ -6,6 +6,7 @@
 !     Revision Date: $Date$
 
       use cparams
+      use dsize
       include "cfast.fi"
       include "thermp.fi"
 
@@ -35,6 +36,7 @@
 !                iflag
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -107,6 +109,7 @@
 !                IFLAG
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -177,6 +180,7 @@
 !                iflag
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -308,6 +312,7 @@
 !     must be removed.
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -501,6 +506,7 @@
 !     arguments: 
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -607,6 +613,7 @@
 !     arguments: yinter, iflag
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"
@@ -784,6 +791,7 @@
 !     Arguments: none
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1168,6 +1176,7 @@
 !     arguments: none
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "objects1.fi"
@@ -1200,6 +1209,7 @@
 !     arguments: none
 
       use cparams
+      use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
@@ -1331,6 +1341,7 @@ c
 !     Arguments: none
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1436,6 +1447,7 @@ c
 !     Arguments: IERROR  Returns error codes
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "fltarget.fi"
@@ -1592,6 +1604,7 @@ c          yy = ysize - yloc
 !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
@@ -1797,6 +1810,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
@@ -1943,6 +1957,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use dsize
       include "precis.fi"
       include "cfast.fi"
       include "params.fi"

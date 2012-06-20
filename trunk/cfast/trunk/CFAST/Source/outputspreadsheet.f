@@ -80,13 +80,13 @@
 
       subroutine SSaddtolist (ic, valu, array)
 
+      use cfin
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cshell.fi"
-      include "cfin.fi"
 
 	real*8 array(*), valu
 	integer ic

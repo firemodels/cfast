@@ -44,11 +44,11 @@ C     NOW THE VERSION
 !	a routine to put the header information in the output file. 
 !	we assume the file is open
 
+      use cfin
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cfin.fi"
       include "cshell.fi"
       integer rev_cfast
 
@@ -1768,9 +1768,9 @@ C        Created:  12/4/1992 at 10:43 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       include "precis.fi"
-      include "cfin.fi"
       include "opt.fi"
       include "cshell.fi"
 
@@ -2116,11 +2116,11 @@ C                  Change the messages so that they "read" better
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cfin.fi"
       include "cenviro.fi"
       include "opt.fi"
 
@@ -2416,13 +2416,13 @@ C                  main
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cfin.fi"
 
       INTEGER IOUNIT, ITOT, OUTPUT(4096), ld
       LOGICAL FIRSTC, EXISTS
@@ -2797,13 +2797,13 @@ C        Created:  10/21/97 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       use params
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "cfin.fi"
       include "cshell.fi"
 
       CHARACTER*(*) FILE

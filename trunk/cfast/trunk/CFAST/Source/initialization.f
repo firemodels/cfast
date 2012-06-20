@@ -790,6 +790,7 @@
 !              all modules that will run the model kernel
 !     Arguments: none
 
+      use cfin
       use cparams
       use dsize
       use fltarget
@@ -798,7 +799,6 @@
       include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
-      include "cfin.fi"
       include "thermp.fi"
       include "vents.fi"
 
@@ -1208,6 +1208,7 @@
 !     purpose: this routine initializes the solver variables from solver.ini if it exists
 !     arguments: none
 
+      use cfin
       use cparams
       use dsize
       use iofiles
@@ -1217,7 +1218,6 @@
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "cfin.fi"
       include "cshell.fi"
 
       logical existed
@@ -1295,13 +1295,13 @@
 !              it may be modified by solver.ini if it exists
 !     arguments: none
 
+      use cfin
       use cparams
       use params
           include "precis.fi"
           include "opt.fi"
           include "wnodes.fi"
           include "solvprm.fi"
-          include "cfin.fi"
           include "cshell.fi"
 
 c     abs pressure tol, rel pressure tol, abs other tol, rel other tol

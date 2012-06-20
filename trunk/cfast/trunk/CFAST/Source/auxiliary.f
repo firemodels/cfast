@@ -665,7 +665,7 @@ C        Created:  11/16/1992 at 10:06 by RDP
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      include "cfin.fi"
+      use cfin
       CHARACTER CMDLIN*127
       INTEGER FIRST, LAST, LPOINT
       LOGICAL VALID
@@ -721,9 +721,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 C
 C     CONVERT NEXT ENTRY IN STRING COORD TO A NUMBER OF CORRECT TYPE
-C
-C
-      include "cfin.fi"
+
+      use cfin
 
       CHARACTER COORD*(*)
       CHARACTER*20 DECOD
@@ -1024,9 +1023,9 @@ C
 C     Revision History: new 12/16/99
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfin
       use cparams
       include "cshell.fi"
-      include "cfin.fi"
 
 	CHARACTER (*) CHECKFILE
 	INTEGER LOGERR
@@ -1560,10 +1559,9 @@ C                                   were consolidated into this version
 
 C     READ IN A STRING AND PROCESS IT INTO THE INTEGER AND FLOATING VARIABLES "FIXED" AND "FLTNG"
 
+      use cfin
+      use cfio
       use cparams
-      include "precis.fi"
-      include "cfin.fi"
-      include "cfio.fi"
       include "cshell.fi"
 
       DIMENSION FLTING(*)

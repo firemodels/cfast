@@ -29,10 +29,10 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "flwptrs.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -731,9 +731,9 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"    
 
       integer i, j
@@ -804,9 +804,9 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
@@ -1197,9 +1197,9 @@
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       dimension aweigh(ns), air(2), v(2)
@@ -1512,9 +1512,9 @@ c---------------------------- all rights reserved ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "opt.fi"
       dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)

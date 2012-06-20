@@ -36,9 +36,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"

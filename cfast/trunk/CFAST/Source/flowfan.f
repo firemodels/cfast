@@ -46,9 +46,9 @@ C
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
@@ -257,9 +257,9 @@ C
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
 
       DIMENSION DELTPMV(*)
 	real*8 tsec
@@ -371,9 +371,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "opt.fi"
 
       DIMENSION TPRIME(*), DELTTMV(*)
@@ -528,9 +528,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
@@ -633,9 +633,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cenviro.fi"
 
       DIMENSION PRPRIME(*)

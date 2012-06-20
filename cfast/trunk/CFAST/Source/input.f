@@ -5,10 +5,10 @@
       use cparams
       use dsize
       use iofiles
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
-      include "params.fi"
       include "cshell.fi"
       include "cfin.fi"
       include "objects1.fi"
@@ -20,7 +20,6 @@
       character*133 messg
       character aversion*5
       dimension yinter(nr)
-      equivalence (yinter,qfr)
       dimension temparea(mxpts), temphgt(mxpts)
 
 !	Unit numbers defined in readop, openoutputfiles, readinputfiles
@@ -526,13 +525,13 @@ c    see which room is on top (if any) - this is like a bubble sort
       use cparams
       use dsize
       use iofiles
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cenviro.fi"
       include "cfin.fi"
       include "cshell.fi"
       include "thermp.fi"
-      include "params.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
@@ -552,8 +551,6 @@ c    see which room is on top (if any) - this is like a bubble sort
      +LABEL*5, TCNAME*64, METHOD*8, EQTYPE*3, venttype,
      +orientypefrom*1, orientypeto*1, compfrom*128, compto*128
       character*10 plumemodel(2)/'McCaffrey','Heskestad'/
-
-      EQUIVALENCE (INTER,QFR)
 
 !	Start with a clean slate
       xx0 = 0.0d0

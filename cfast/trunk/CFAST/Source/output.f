@@ -1047,9 +1047,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use dsize
       use iofiles
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
 
       CHARACTER CHKSUM*8
@@ -1109,9 +1109,9 @@ C
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
       include "vents.fi"
       CHARACTER CHJET(4)*7, CJBUF*51
@@ -1170,9 +1170,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
       include "vents.fi"
 
@@ -1213,9 +1213,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
       include "vents.fi"
 
@@ -1258,9 +1258,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
       include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
@@ -1446,9 +1446,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
       DO 10 I = 1, NEXT
         IF (HVNODE(2,I)==IND) THEN
@@ -1544,9 +1544,9 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
-      include "params.fi"
       include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -2208,13 +2208,13 @@ C
 
       use cparams
       use dsize
+      use params
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "cenviro.fi"
       include "wnodes.fi"
       include "opt.fi"
-      include "params.fi"
       include "objects2.fi"
       include "fltarget.fi"
 
@@ -2798,13 +2798,13 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use params
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
       include "cfin.fi"
       include "cshell.fi"
-      include "params.fi"
 
       CHARACTER*(*) FILE
       INTEGER FUNIT

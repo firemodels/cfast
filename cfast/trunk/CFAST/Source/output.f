@@ -1485,10 +1485,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use dsize
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "thermp.fi"
       CHARACTER WALL(4)*7
       DATA WALL /'ceiling', 'floor', 'wall', 'wall'/
 

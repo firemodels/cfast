@@ -32,10 +32,10 @@
       use dsize
       use iofiles
       use params
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "thermp.fi"
       include "objects1.fi"
 
       logical error

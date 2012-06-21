@@ -167,3 +167,20 @@ module params
         exset, allowed, izhvmapi,izhvmape,izhvie,nhvpvar,nhvtvar, izhvsys,izhvbsys,nhvsys
 
 end module params
+
+module thermp
+
+    use cparams
+    implicit none
+    
+    real*8, dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
+    real*8, dimension(nthmax) :: lepw
+    real*8, dimension(7,nthmax) :: lhclbf
+
+    logical, dimension(nwal,nr) :: thset
+    integer maxct, numthrm
+    integer, dimension(nthmax) :: lnslb
+    character(8), dimension(nwal,nr) :: cname
+    character(8), dimension(nthmax) :: nlist
+
+end module thermp

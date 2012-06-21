@@ -37,12 +37,12 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
       include "solvprm.fi"
-      include "cshell.fi"
       include "opt.fi"
 
       dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), 
@@ -110,13 +110,13 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
       include "solvprm.fi"
       include "opt.fi"
-      include "cshell.fi"
 
       dimension hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq)
       dimension pdzero(maxteq)
@@ -181,12 +181,12 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
       include "solvprm.fi"
-      include "cshell.fi"
       include "wnodes.fi"
       include "opt.fi"
 
@@ -313,11 +313,11 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
 
       dimension c3(ns)
 
@@ -793,13 +793,13 @@
       use cenviro
       use cfin
       use cparams
+      use cshell
       use dsize
       use fltarget
       use params
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
 
       ! set some initialization - simple control stuff
@@ -1210,6 +1210,7 @@
 
       use cfin
       use cparams
+      use cshell
       use dsize
       use iofiles
       use params
@@ -1218,7 +1219,6 @@
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "cshell.fi"
 
       logical existed
 
@@ -1297,12 +1297,12 @@
 
       use cfin
       use cparams
+      use cshell
       use params
           include "precis.fi"
           include "opt.fi"
           include "wnodes.fi"
           include "solvprm.fi"
-          include "cshell.fi"
 
 c     abs pressure tol, rel pressure tol, abs other tol, rel other tol
           data aptol, rptol, atol, rtol/1.0d-6, 1.0d-6, 1.0d-5, 1.0d-5/
@@ -1342,12 +1342,12 @@ c
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use params
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "wnodes.fi"
 
       DIMENSION XM(2)
@@ -1447,12 +1447,12 @@ c
 !     Arguments: IERROR  Returns error codes
 
       use cparams
+      use cshell
       use dsize
       use fltarget
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       character*133 messg
       integer map6(6)
       data map6/1,3,3,3,3,2/
@@ -1605,12 +1605,12 @@ c          yy = ysize - yloc
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "wnodes.fi"
 
       character off*8, none*8, tcname*8

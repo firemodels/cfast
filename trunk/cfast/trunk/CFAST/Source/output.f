@@ -1,8 +1,8 @@
       SUBROUTINE DISCLAIM (NAME)
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       CHARACTER NAME*(*), OBUF*14
 
 C     December 15, 1989 - created to specify version, model name and run date
@@ -46,10 +46,10 @@ C     NOW THE VERSION
 
       use cfin
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       integer rev_cfast
 
       call splitversion(version,imajor,iminor,iminorrev)
@@ -213,8 +213,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       include "precis.fi"
-      include "cshell.fi"
       IF (outputformat>1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTLAY
@@ -257,11 +257,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       WRITE (IOFILO,5000)
       WRITE (IOFILO,5010)
       WRITE (IOFILO,5020)
@@ -317,10 +317,10 @@ C
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -405,10 +405,10 @@ C
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       LOGICAL SWL(4)
       INTEGER IWPTR(4)
       CHARACTER STYPE(NS)*10, SUNITS(NS)*11, CIOUT*255, CJOUT*255,
@@ -508,10 +508,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
@@ -665,10 +665,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
@@ -744,10 +744,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
       XX0 = 0.0D0
@@ -816,12 +816,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
-
       INTEGER IWPTR(4)
       EXTERNAL LENGTH
       DATA IWPTR /1, 3, 4, 2/
@@ -929,10 +928,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       CHARACTER*5 CTYPE
       CHARACTER*3 CACT
 
@@ -995,10 +994,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
 
 
@@ -1045,12 +1044,12 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       use iofiles
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
 
       CHARACTER CHKSUM*8
       EXTERNAL LENGTH
@@ -1108,11 +1107,11 @@ C
 !
 
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
       CHARACTER CHJET(4)*7, CJBUF*51
       DATA CHJET /'off', 'ceiling', 'wall', 'all'/
@@ -1169,11 +1168,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
 
       WRITE (IOFILO,5000) TA-273.15, PA + POFSET, EXTA-273.15, 
@@ -1212,11 +1211,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
 
       WRITE (IOFILO,5000)
@@ -1257,11 +1256,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
       LOGICAL FIRST
@@ -1445,11 +1444,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       DO 10 I = 1, NEXT
         IF (HVNODE(2,I)==IND) THEN
           IEXT = I
@@ -1484,11 +1483,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       CHARACTER WALL(4)*7
       DATA WALL /'ceiling', 'floor', 'wall', 'wall'/
 
@@ -1543,11 +1542,11 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 !     Arguments: none
 
       use cparams
+      use cshell
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
       character cbuf*255, stype(ns)*5, ftype(0:4)*13
@@ -1623,11 +1622,11 @@ C     Arguments: none
 C
 
       use cparams
+      use cshell
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       CHARACTER CBUF*255
 
       IF(NTARG/=0)WRITE(IOFILO,5000)
@@ -1770,9 +1769,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfin
       use cparams
+      use cshell
       include "precis.fi"
       include "opt.fi"
-      include "cshell.fi"
 
       INTEGER FUNIT
       CHARACTER DBUGFIL*8
@@ -2207,12 +2206,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
@@ -2417,11 +2416,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfin
       use cparams
+      use cshell
       use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
 
       INTEGER IOUNIT, ITOT, OUTPUT(4096), ld
       LOGICAL FIRSTC, EXISTS
@@ -2798,12 +2797,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfin
       use cparams
+      use cshell
       use params
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "cshell.fi"
 
       CHARACTER*(*) FILE
       INTEGER FUNIT
@@ -2909,10 +2908,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !!!! Note that we assume that the default carraigecontrol for formatted files is of type LIST (no fortran controls)
 
       use cparams
+      use cshell
       use dsize
       use iofiles
       include "cfast.fi"
-      include "cshell.fi"
 
 ! first the file for "printed" output
 	if (lprint<0) then

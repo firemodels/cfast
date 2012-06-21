@@ -111,11 +111,11 @@ C    so, use regular layer temperatures and densities
       
       use cenviro
       use cparams
+      use dervs
       use dsize
       include "precis.fi"
       include "cfast.fi"
       include "vents.fi"
-      include "dervs.fi"
 
       XX0 = 0.0D0
       HHTEMP = HTEMP - ZZTEMP(IHALL,LOWER)

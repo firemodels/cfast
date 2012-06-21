@@ -12,11 +12,11 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "wdervs.fi"
       include "opt.fi"
 

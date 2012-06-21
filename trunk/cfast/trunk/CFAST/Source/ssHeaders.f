@@ -4,10 +4,10 @@
      
       use cenviro 
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       
       ! local variables     
@@ -118,10 +118,10 @@
 
       use cenviro 
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -231,11 +231,11 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       
       ! local variables     
       parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
@@ -372,10 +372,10 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
 
       ! local variables     
@@ -536,10 +536,10 @@ C     Natural flow through vertical vents (horizontal flow)
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "vents.fi"
       

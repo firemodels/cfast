@@ -29,18 +29,20 @@
       use cenviro
       use cfin
       use cparams
+      use cshell
       use dsize
       use iofiles
       use params
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
 
       logical error
       integer errorcode, rev_cfast
 
+      version = "6300"    ! Current CFAST version number
+      
       errorcode = 0
 
       if(command_argument_count().eq.0)then
@@ -131,30 +133,6 @@
  5003 format ('Total execution time = ',1pg10.3,' seconds')
  5020 format ('Error exit during initialization from CFAST main')
       end program cfast
-
-      block data initcs
-
-!     Routine: initcs
-!     Purpose: data structure to define basic parameters for cfast
-!     Revision: $Revision$
-!     Revision Date: $Date$
-
-      use cparams
-          include "cshell.fi"
-
-          data thrmfile/'thermal'/,  
-
-     .    nnfile/' '/,
-     .    dumpf/' '/,header/.false./, 
-     .    nokbd/.false./, 
-     .    initializeonly/.false./,
-     .    outputformat /0/, iofilo/6/,iofili/1/, logerr/3/,
-     .    trace/.false./,
-     .    validate/.false./
-
-     .    version/6300/
-
-      end block data initcs
 
       block data initcf
 
@@ -375,17 +353,17 @@
       use cenviro
       use cfin
       use cparams
+      use cshell
+      use dervs
       use dsize
       use fltarget
       use iofiles
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "dervs.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "vents.fi"
@@ -950,12 +928,12 @@ c
 
       use cenviro
       use cparams
+      use cshell
+      use dervs
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "opt.fi"
-      include "dervs.fi"
 
       LOGICAL SLVHELP
       INTEGER*2 CH, HIT
@@ -1021,10 +999,10 @@ c
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "opt.fi"
 
       integer*2 ch, hit
@@ -1133,13 +1111,13 @@ C     SETTING JACOBIAN FLAG
 
       use cenviro
       use cparams
+      use dervs
       use dsize
       use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
       include "opt.fi"
-      include "dervs.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
       include "objects2.fi"
@@ -1527,6 +1505,7 @@ C     SETTING JACOBIAN FLAG
 
       use cenviro
       use cparams
+      use dervs
       use dsize
       use fltarget
       use params
@@ -1534,7 +1513,6 @@ C     SETTING JACOBIAN FLAG
       include "cfast.fi"
       include "vents.fi"
       include "wnodes.fi"
-      include "dervs.fi"
       include "wdervs.fi"
       include "opt.fi"
       include "objects1.fi"
@@ -2119,10 +2097,10 @@ c     order of variables is defined in the routine offset
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       dimension pdif(*)
       dimension factor(nr,2)
 

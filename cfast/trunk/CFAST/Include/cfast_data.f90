@@ -72,6 +72,33 @@ module cfio
       real :: xi
 
 end module cfio
+
+module cshell
+
+    implicit none
+
+    ! rundat is today's date, crdate is the creation date of the module, and is kept in the main cfast data module.  
+    ! rundat is copied to mpsdat as soon as the model kernel is started. done in initfs and cfast body.
+    ! trace determines the type of output (print file) for mechanical ventilation - current or total
+    logical :: header=.false., nokbd=.false., initializeonly=.false., debugging=.false., trace=.false., validate=.false., netheatflux=.false.
+    integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
+    integer, dimension(3) :: rundat
+    character(128) :: thrmfile="thermal", setpfile
+    character(60) :: nnfile=" ", dumpf=" ", datafile
+    character(32) :: mpsdatc
+    
+end module cshell
+
+module dervs
+
+    use cparams    
+    implicit none
+
+    logical produp
+    real*8, dimension(maxteq) :: pdold, pold
+    real*8 :: told, dt
+
+end module dervs
     
     module fltarget
     use cparams

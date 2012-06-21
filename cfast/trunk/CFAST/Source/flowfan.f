@@ -462,10 +462,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       LOGICAL firstc
 	real*8 hvfanl, openfraction, qcffraction, tsec,
      . minimumopen

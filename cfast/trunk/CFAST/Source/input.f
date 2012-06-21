@@ -5,13 +5,13 @@
       use cenviro
       use cfin
       use cparams
+      use cshell
       use dsize
       use iofiles
       use params
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -525,6 +525,7 @@ c    see which room is on top (if any) - this is like a bubble sort
       use cenviro
       use cfin
       use cparams
+      use cshell
       use dsize
       use iofiles
       use fltarget
@@ -532,7 +533,6 @@ c    see which room is on top (if any) - this is like a bubble sort
       use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
@@ -2268,11 +2268,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfin
       use cparams
+      use cshell
       use dsize
       use iofiles
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2414,10 +2414,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfin
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2543,7 +2543,7 @@ c     maxr     = actual number of rows read
 c     maxcc    = actual number of columns read
 c
       use cparams
-      include "cshell.fi"
+      use cshell
 
       real*8 x(numr,numc)
       character in*10000,token*128, c(numr,numc)*(*)

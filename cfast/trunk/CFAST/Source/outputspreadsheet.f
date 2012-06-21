@@ -4,12 +4,12 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use iofiles
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -83,11 +83,11 @@
       use cenviro
       use cfin
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Check to see if ANY of these are needed
 	real*8 array(*), valu
 	integer ic
 
@@ -113,10 +113,10 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "vents.fi"
 
       parameter (maxoutput = 512)
@@ -237,11 +237,11 @@
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
 
 	parameter (maxoutput=512)
 	real*8 outarray(maxoutput), time, xiroom, zdetect,
@@ -370,10 +370,10 @@ c   40 CONTINUE
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
 
 	parameter (maxhead = 1+22*nr)
 	character*16 heading(3,maxhead)
@@ -432,12 +432,12 @@ c   40 CONTINUE
 
       use cenviro
       use cparams
+      use cshell
       use dsize
       use iofiles
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cshell.fi"
       include "objects1.fi"
       include "vents.fi"
 

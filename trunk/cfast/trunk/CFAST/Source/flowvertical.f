@@ -35,11 +35,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -228,10 +228,10 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
 C
 C
 C     Procedure arguments:
@@ -424,10 +424,10 @@ C
 
 !       This is a routine to get the shape data for vertical flow (horizontal) vents
 
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "vents.fi"
 
 	integer itop, ibot, hshape, hface, iinvvent

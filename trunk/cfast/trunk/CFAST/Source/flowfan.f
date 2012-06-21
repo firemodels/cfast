@@ -45,11 +45,11 @@ C                  the flow vector.)
 C
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
       include "opt.fi"
 
@@ -255,11 +255,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
 
       DIMENSION DELTPMV(*)
 	real*8 tsec
@@ -369,11 +369,11 @@ C                   for smoke (species) are now performed in hvtoex.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
 
       DIMENSION TPRIME(*), DELTTMV(*)
@@ -461,11 +461,11 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfast_main
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       LOGICAL firstc
 	real*8 hvfanl, openfraction, qcffraction, tsec,
      . minimumopen
@@ -527,11 +527,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
 	real*8 tsec, xx1, xx0
@@ -632,11 +632,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
 
       DIMENSION PRPRIME(*)
 	real*8 tsec, xx1, xx0

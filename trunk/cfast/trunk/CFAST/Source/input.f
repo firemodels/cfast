@@ -3,6 +3,7 @@
 !	Read the input file and set up the data for processing
 
       use cenviro
+      use cfast_main
       use cfin
       use cparams
       use cshell
@@ -11,7 +12,6 @@
       use params
       use thermp
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -523,6 +523,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror  Returns error codes
 
       use cenviro
+      use cfast_main
       use cfin
       use cparams
       use cshell
@@ -532,7 +533,6 @@ c    see which room is on top (if any) - this is like a bubble sort
       use params
       use thermp
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
@@ -1846,12 +1846,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                iobj:    pointer to the fire object that will contain all the data we read in here
 !                ierror:  error return index
 
+      use cfast_main
       use cparams
       use dsize
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects2.fi"
 
       logical countargs, lstat
@@ -2010,12 +2010,12 @@ c    see which room is on top (if any) - this is like a bubble sort
 !     Arguments: iobj: fire object number
 !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
+      use cfast_main
       use cparams
       use dsize
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects2.fi"
 
       ntarg = ntarg + 1
@@ -2266,13 +2266,13 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfast_main
       use cfin
       use cparams
       use cshell
       use dsize
       use iofiles
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2412,12 +2412,12 @@ C        Created:  1/28/1998 at 9:57 by PAR
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cfast_main
       use cfin
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
@@ -2503,12 +2503,12 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
+      use cfast_main
       use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
 

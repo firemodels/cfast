@@ -24,11 +24,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       
       DIMENSION TMP(TRGTNUM), WALLDX(TRGTNUM), NMNODE(2), DELTA(*)
       DIMENSION XPSOLVE(*), TGRAD(2)
@@ -163,11 +163,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
 
       LOGICAL FIRST
       DIMENSION FLUX(2), DFLUX(2), TTARG(2)
@@ -275,11 +275,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects2.fi"
       include "wnodes.fi"
 
@@ -514,12 +514,12 @@ C*** CONVECTION FOR THE BACK
       END
       subroutine gettgas(irtarg,xtarg,ytarg,ztarg,tg)
 
+      use cfast_main
       use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects2.fi"
 
       logical first

@@ -23,12 +23,12 @@ C        Created:  5/5/1995 at 13:51 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       
       DIMENSION TMP(TRGTNUM), WALLDX(TRGTNUM), NMNODE(2), DELTA(*)
       DIMENSION XPSOLVE(*), TGRAD(2)
@@ -162,12 +162,12 @@ C                  steady state target temperatures
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 
       LOGICAL FIRST
       DIMENSION FLUX(2), DFLUX(2), TTARG(2)
@@ -274,12 +274,12 @@ C                  steady state target temperatures
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "objects2.fi"
       include "wnodes.fi"
 
@@ -514,12 +514,12 @@ C*** CONVECTION FOR THE BACK
       END
       subroutine gettgas(irtarg,xtarg,ytarg,ztarg,tg)
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "objects2.fi"
 
       logical first

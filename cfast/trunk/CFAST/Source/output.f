@@ -255,12 +255,12 @@ C        Created:  7/12/1993 at 12:51 by RDP
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       WRITE (IOFILO,5000)
       WRITE (IOFILO,5010)
@@ -315,11 +315,11 @@ C     Revision History:
 C        Created:  7/12/1993 at 12:51 by RDP
 C
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -403,11 +403,11 @@ C
 !        Modified May, 2007 to output trace species
 !
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       LOGICAL SWL(4)
       INTEGER IWPTR(4)
@@ -506,11 +506,11 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
@@ -663,11 +663,11 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "vents.fi"
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
@@ -742,11 +742,11 @@ C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -814,12 +814,12 @@ C        Created:  10/10/94 by gpf
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
 
       INTEGER IWPTR(4)
@@ -927,11 +927,11 @@ C        Created:  5/24/96
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       CHARACTER*5 CTYPE
       CHARACTER*3 CACT
@@ -993,11 +993,11 @@ C        Created:  7/24/96
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "vents.fi"
 
@@ -1865,11 +1865,11 @@ C        Modified 7/4/97 by WWJ add call to display routines
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "wdervs.fi"
       include "opt.fi"
 
@@ -2116,12 +2116,12 @@ C                  Change the messages so that they "read" better
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cfin
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "opt.fi"
 
       WRITE(LBUF,*)'Solution component with the greatest error is'
@@ -2204,8 +2204,8 @@ C        Modified: 1/24/1996 at 14:38 by RWP:
 C                  Call XERROR to display messages
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
@@ -2213,7 +2213,6 @@ C
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"

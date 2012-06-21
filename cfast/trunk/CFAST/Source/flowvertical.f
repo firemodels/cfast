@@ -34,12 +34,12 @@ C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -227,11 +227,11 @@ C     May 15, 1991 the pressure was calculated incorrectly change pref->pofset
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 C
 C
 C     Procedure arguments:

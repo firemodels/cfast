@@ -35,12 +35,12 @@
 !                deltamv
 !                iflag
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "solvprm.fi"
       include "cshell.fi"
       include "opt.fi"
@@ -108,12 +108,12 @@
 !                DELTAMV
 !                IFLAG
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "solvprm.fi"
       include "opt.fi"
       include "cshell.fi"
@@ -179,12 +179,12 @@
 !                deltamv
 !                iflag
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "solvprm.fi"
       include "cshell.fi"
       include "wnodes.fi"
@@ -311,12 +311,12 @@
 !     the flow is allowed to be negative (flow reversal) then this statement
 !     must be removed.
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
 
       dimension c3(ns)
@@ -505,12 +505,12 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: 
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 
       dimension istack(100)
 
@@ -612,13 +612,13 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: yinter, iflag
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "opt.fi"
 
       dimension yinter(*), dummy(1)
@@ -790,6 +790,7 @@
 !              all modules that will run the model kernel
 !     Arguments: none
 
+      use cenviro
       use cfin
       use cparams
       use dsize
@@ -798,7 +799,6 @@
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cenviro.fi"
       include "thermp.fi"
       include "vents.fi"
 
@@ -1340,6 +1340,7 @@ c
 !              to one subroutine to make maintenance easier
 !     Arguments: none
 
+      use cenviro
       use cparams
       use dsize
       use params
@@ -1347,7 +1348,6 @@ c
       include "cfast.fi"
       include "cshell.fi"
       include "thermp.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
 
       DIMENSION XM(2)
@@ -1603,13 +1603,13 @@ c          yy = ysize - yloc
 !        thset is set if a name in the list of requested data sets matches one of the names in the list of data set names (nlist).
 !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "thermp.fi"
 
@@ -1809,13 +1809,13 @@ C                  Added support for IERROR and returning stops to main
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
@@ -1956,12 +1956,12 @@ C                  use o(n) vent datastructures instead of o(n**2)
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "vents.fi"
 
       DIMENSION VNTOPN(NV)

@@ -26,6 +26,7 @@
 !     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 !     OTHER DEALINGS IN THE SOFTWARE.
 
+      use cenviro
       use cfin
       use cparams
       use dsize
@@ -36,7 +37,6 @@
       include "cshell.fi"
       include "thermp.fi"
       include "objects1.fi"
-      include "cenviro.fi"
 
       logical error
       integer errorcode, rev_cfast
@@ -180,12 +180,12 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "solvprm.fi"
       include "opt.fi"
@@ -372,7 +372,7 @@
 !     is presently used by DASSL. The important point is that NODES is set to
 !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
-
+      use cenviro
       use cfin
       use cparams
       use dsize
@@ -382,7 +382,6 @@
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cenviro.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
@@ -949,6 +948,7 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
@@ -956,7 +956,6 @@ c
       include "cshell.fi"
       include "opt.fi"
       include "dervs.fi"
-      include "cenviro.fi"
 
       LOGICAL SLVHELP
       INTEGER*2 CH, HIT
@@ -1020,12 +1019,12 @@ c
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "cenviro.fi"
       include "opt.fi"
 
       integer*2 ch, hit
@@ -1132,13 +1131,13 @@ C     SETTING JACOBIAN FLAG
 !                        a partial / total flag for solution of the
 !                        species equations.
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "opt.fi"
       include "dervs.fi"
       include "wnodes.fi"
@@ -1526,13 +1525,13 @@ C     SETTING JACOBIAN FLAG
 !     iflag = odevarc  ==> species data and wall temperature profile.
 !                          use pdif array for species
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "vents.fi"
       include "wnodes.fi"
       include "dervs.fi"
@@ -2118,11 +2117,11 @@ c     order of variables is defined in the routine offset
 !     arguments: pdif   the p array to resync
 !                ibeg   the point at which species are started in p array
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       dimension pdif(*)
       dimension factor(nr,2)

@@ -19,11 +19,11 @@ C     Revision History:
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 
       DO 10 ID = IDSTART, IDSTART + ND - 1
         XX = XDTECT(ID,DXLOC)
@@ -42,11 +42,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       END
 
       SUBROUTINE HALLTRV(IROOM,XLOC,ZLOC,HALLTEMP,HALLRHO,HALLVEL)
+      
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 
       IF(IZHALL(IROOM,IHMODE)==IHDURING)THEN
         D0 = ZZHALL(IROOM,IHDEPTH)
@@ -107,11 +108,12 @@ C    so, use regular layer temperatures and densities
 
       SUBROUTINE SETHALL(ITYPE,INUM,IHALL,TSEC,WIDTH,
      .                   HTEMP,HVEL,HDEPTH)
+      
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "vents.fi"
       include "dervs.fi"
 

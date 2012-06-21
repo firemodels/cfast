@@ -44,12 +44,12 @@ C                  the flow vector.)
 !        04/19/2007 calculate a filtered amount to remove in RESID
 C
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "opt.fi"
 
@@ -526,12 +526,12 @@ C                  area is in the compartment
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 
       DIMENSION HVPSOLV(*), HVTSOLV(*)
 	real*8 tsec, xx1, xx0
@@ -631,12 +631,12 @@ C                  equations.
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 
       DIMENSION PRPRIME(*)
 	real*8 tsec, xx1, xx0

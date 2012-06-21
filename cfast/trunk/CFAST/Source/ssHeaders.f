@@ -1,12 +1,12 @@
       subroutine ssHeadersNormal
       
       ! This is the header information for the normal spreadsheet output
-      
+     
+      use cenviro 
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
       
@@ -115,12 +115,12 @@
       subroutine ssHeadersSpecies
       
       ! This is the header information for the spreadsheet output
-      
+
+      use cenviro 
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       
       ! local variables     
@@ -229,12 +229,12 @@
 !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
 
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       
       ! local variables     
@@ -370,11 +370,11 @@
 !	This is the header information for the flow spreadsheet and is called once
 !	The logic is identical to SpreadSheetFlow so the output should be parallel
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "vents.fi"
 
@@ -533,12 +533,12 @@ C     Natural flow through vertical vents (horizontal flow)
       subroutine ssHeadersSMV(lMode)
       
       ! This is the header information for the smokeview spreadsheet output
-      
+
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
       include "vents.fi"

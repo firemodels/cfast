@@ -7,8 +7,8 @@
 
       use cparams
       use dsize
+      use thermp
       include "cfast.fi"
-      include "thermp.fi"
 
       character name*(*), missingtpp*64
       integer tp, errorcode
@@ -796,10 +796,10 @@
       use dsize
       use fltarget
       use params
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "thermp.fi"
       include "vents.fi"
 
       ! set some initialization - simple control stuff
@@ -1344,10 +1344,10 @@ c
       use cparams
       use dsize
       use params
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "thermp.fi"
       include "wnodes.fi"
 
       DIMENSION XM(2)
@@ -1449,9 +1449,9 @@ c
       use cparams
       use dsize
       use fltarget
+      use thermp
       include "precis.fi"
       include "cfast.fi"
-      include "thermp.fi"
       include "cshell.fi"
       character*133 messg
       integer map6(6)
@@ -1607,11 +1607,11 @@ c          yy = ysize - yloc
       use cparams
       use dsize
       use fltarget
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "wnodes.fi"
-      include "thermp.fi"
 
       character off*8, none*8, tcname*8
       

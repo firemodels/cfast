@@ -8,12 +8,12 @@
       use dsize
       use iofiles
       use params
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "thermp.fi"
 
       integer numr, numc
       logical exists
@@ -529,10 +529,10 @@ c    see which room is on top (if any) - this is like a bubble sort
       use iofiles
       use fltarget
       use params
+      use thermp
       include "precis.fi"
       include "cfast.fi"
       include "cshell.fi"
-      include "thermp.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
@@ -673,9 +673,9 @@ c    see which room is on top (if any) - this is like a bubble sort
               return
           endif
           maxct = maxct + 1
-          if (maxct>nthmx) then
+          if (maxct>nthmax) then
               write (logerr,'(a,i3)') 'Too many thermal properties',
-     .        ' in input data file. Limit is ',nthmx
+     .        ' in input data file. Limit is ',nthmax
               ierror = 203
               return
           endif

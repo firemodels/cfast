@@ -14,7 +14,7 @@ module cparams
     integer, parameter :: mxfirp = 19       ! number of parameters for each fire object
     integer, parameter :: mxfire = 2*mxoin  ! maximum number of fires in a single simulation
     
-    integer, parameter :: nthmx = 125       ! maximum number of thermal properties
+    integer, parameter :: nthmax = 125      ! maximum number of thermal properties
  
     ! ventilation parameters
     integer, parameter :: mxccv = 25        ! maximum number of vent connections between compartment pairs

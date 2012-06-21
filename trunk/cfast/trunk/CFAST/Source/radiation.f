@@ -10,12 +10,12 @@
 !                flxrad      net enthalphy flux into surface
 !                ierror      returns error codes
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "wdervs.fi"
       include "opt.fi"
@@ -1303,11 +1303,11 @@ C  DECLARE COMMON BLOCK VARIABLES (AR, BR, ZZ????, ETC) AND CONSTANTS
 C  (UPPER & LOWER). ORDER OF 'INCLUDE' FILES IS CRITICAL.
 C  CFAST.INC INVOKES CPARAMS.INC & DSIZE.INC
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
 C
 C  DECLARE PARAMETERS
 C

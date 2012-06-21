@@ -2,6 +2,7 @@
 
 !	Read the input file and set up the data for processing
 
+      use cenviro
       use cfin
       use cparams
       use dsize
@@ -9,7 +10,6 @@
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -522,6 +522,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                xnumc    number of columns in input file spreadsheet
 !                ierror  Returns error codes
 
+      use cenviro
       use cfin
       use cparams
       use dsize
@@ -530,7 +531,6 @@ c    see which room is on top (if any) - this is like a bubble sort
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "cshell.fi"
       include "thermp.fi"
       include "objects1.fi"
@@ -2503,12 +2503,12 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
+      use cenviro
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "objects1.fi"
       include "objects2.fi"
 

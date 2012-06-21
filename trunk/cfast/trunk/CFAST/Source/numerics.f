@@ -6359,10 +6359,10 @@ C        Modified: 2/2/1995 by gpf  Removed IDERV set option
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       include "precis.fi"
       include "wdervs.fi"
-      include "cenviro.fi"
       include "opt.fi"
 C
       IF(J>-10)JACCOL = J

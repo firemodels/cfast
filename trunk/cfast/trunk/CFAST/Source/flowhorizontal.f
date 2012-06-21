@@ -32,12 +32,12 @@ C			5/7/03 by wwj : move initialization of reporting structure (vss ...) from ve
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -493,12 +493,12 @@ C
 
       subroutine ventflag(ventflg,roomflg,anyvents)
 
+      use cenviro
       use cparams
       use dsize
       use params
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -832,11 +832,12 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
 
       SUBROUTINE GETVAR(IVENT,IROOM,IROOM2,NPROD,YFLOR,YLAY,PFLOR,
      +                  DENL,DENU,CONL,CONU,TL,TU)
+      
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "vents.fi"
 C*BEG
 C

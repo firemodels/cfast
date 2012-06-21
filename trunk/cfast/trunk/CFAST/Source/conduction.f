@@ -47,11 +47,11 @@ C
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
+      use cenviro
       use cparams
       use dsize
       include "precis.fi"
       include "cfast.fi"
-      include "cenviro.fi"
       include "wnodes.fi"
       include "wdervs.fi"
       include "opt.fi"

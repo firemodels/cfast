@@ -1,4 +1,57 @@
-module cfin
+module cenviro
+    
+    use cparams
+    implicit none
+    
+    integer :: jaccol, neqoff
+
+    integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
+    integer, parameter :: eqp = 1, eqpmv = 2, eqtmv = 3, eqtu = 4, eqvu = 5, eqtl = 6, eqoxyl = 7, eqoxyu = 8, eqtt = 9, eqwt = 10
+
+    ! index into izhall
+    integer, parameter :: ihroom = 1, ihvelflag = 2, ihdepthflag = 3, ihventnum = 4, ihhalfflag = 5, ihmode = 6, ihxy = 7
+
+    ! index into zzhall
+    integer, parameter :: ihtime0 = 1, ihvel = 2, ihdepth = 3, ihmaxlen = 4, ihhalf = 5, ihtemp = 6, ihorg = 7, ihdist = 8
+
+    ! index for hall models
+    integer, parameter :: ihbefore = 1, ihduring = 2, ihafter = 3
+
+    logical updatehall, izdtflag
+
+    real*8, dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs, zzyflor, zzyceil
+    real*8, dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real*8, dimension(nr,2,ns) :: zzgspec, zzcspec
+    real*8, dimension(nr,nwal) :: zzwspec
+    real*8, dimension(nr,nwal,2) :: zzwtemp
+    real*8, dimension(mxhvsys,ns) :: zzhvpr
+    real*8, dimension(mxhvsys) :: zzhvm
+    real*8, dimension(nr,4) :: zzwarea
+    real*8, dimension(nr,10,3) :: zzwcen
+    real*8, dimension(nr,10) :: zzwarea2
+    real*8, dimension(nr,8) :: zzhall
+    real*8, dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
+    real*8, dimension(2,nr) :: zzabsb, zzbeam
+    real*8, dimension(0:nv+1) :: zzdisc
+    real*8, dimension(nr,nr) :: zzhtfrac
+    real*8 :: zzdtcrit
+ 
+    integer, dimension(ns+2) :: izpmap
+    integer, dimension(2,nr) :: izwmap
+    integer, dimension(4,nr) :: izwmap2
+    integer, dimension(nr,4) :: izswal
+    integer, dimension(4*nr,5) :: izwall
+    integer, dimension(mxtarg) :: iztarg
+    integer, dimension(maxeq,2) :: izeqmap
+    integer, dimension(nr) :: izrvol, izhvac(nr), izcon(nr), iznwall(nr), izshaft(nr)
+    integer, dimension(nr,7) :: izhall
+    integer, dimension(0:nr) :: izheat
+    integer, dimension(nr,0:nr) :: izhtfrac
+    integer :: izdtnum,izdtmax, izndisc, nswal
+    
+end module cenviro
+   
+    module cfin
     
     implicit none
     

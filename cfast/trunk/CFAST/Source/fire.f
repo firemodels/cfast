@@ -27,12 +27,12 @@
 !					   (i,19) characteristic length of the burning volume
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -187,11 +187,11 @@
 !                 xqup (output): heat release rate in the upper plume (w)
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use interfaces
       include "precis.fi"
-      include "cfast.fi"
       include "fireptrs.fi"
 
       dimension xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
@@ -514,11 +514,11 @@
 !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "fireptrs.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -609,10 +609,10 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: physical interface between dofire and the plume models
 
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       integer plumetype, objectnumber
 
       select case (plumetype)
@@ -728,11 +728,11 @@
 !                 deltt   current time step
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
-      include "precis.fi"
-      include "cfast.fi"   
+      include "precis.fi"   
 
       integer i, j
       real*8 xx0,xx1,filter,qcifraction,time,deltt
@@ -801,11 +801,11 @@
 !        used:  izvent   n        nvents
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
       include "opt.fi"
       include "vents.fi"
@@ -946,11 +946,11 @@
 !                 xntms (output): net change in mass of species in door jet
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use interfaces
       include "precis.fi"
-      include "cfast.fi"
 
       dimension xntms(2,ns), xmass(ns)
       logical djflowflg
@@ -1194,11 +1194,11 @@
 !     arguments:  deltt  length of the latest time step (s)
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
 
       dimension aweigh(ns), air(2), v(2)
       logical ppmcal(ns)
@@ -1293,10 +1293,10 @@ c	this routine is to combine the main fire (in lfbo) and any objects into a sing
 c	there does not have to be a main fire nor any objects, so nfires may be zero
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "smkview.fi"
       include "objects1.fi"
       include "objects2.fi"
@@ -1384,10 +1384,10 @@ c
 c---------------------------- all rights reserved ----------------------------
 
       use cparams
+      use cfast_main
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "opt.fi"
@@ -1509,11 +1509,11 @@ c
 c---------------------------- all rights reserved ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
       dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
@@ -1624,10 +1624,10 @@ c                  added support for ierror and returning stops to main
 c
 c---------------------------- all rights reserved ----------------------------
 
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
 
       xx0 = 0.0d0
       hwdot = xx0

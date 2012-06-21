@@ -1558,6 +1558,7 @@ C     READ IN A STRING AND PROCESS IT INTO THE INTEGER AND FLOATING VARIABLES "F
       use cfio
       use cparams
       use cshell
+      include "precis.fi"
 
       DIMENSION FLTING(*)
       INTEGER FIXED(*)

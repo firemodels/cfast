@@ -5,10 +5,10 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
+      use cfast_main
       use cparams
       use dsize
       use thermp
-      include "cfast.fi"
 
       character name*(*), missingtpp*64
       integer tp, errorcode
@@ -36,12 +36,12 @@
 !                iflag
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "solvprm.fi"
       include "opt.fi"
 
@@ -109,12 +109,12 @@
 !                IFLAG
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "solvprm.fi"
       include "opt.fi"
 
@@ -180,12 +180,12 @@
 !                iflag
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "solvprm.fi"
       include "wnodes.fi"
       include "opt.fi"
@@ -312,12 +312,12 @@
 !     must be removed.
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
 
       dimension c3(ns)
 
@@ -506,11 +506,11 @@
 !     arguments: 
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
 
       dimension istack(100)
 
@@ -613,12 +613,12 @@
 !     arguments: yinter, iflag
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
 
       dimension yinter(*), dummy(1)
@@ -791,6 +791,7 @@
 !     Arguments: none
 
       use cenviro
+      use cfast_main
       use cfin
       use cparams
       use cshell
@@ -799,7 +800,6 @@
       use params
       use thermp
       include "precis.fi"
-      include "cfast.fi"
       include "vents.fi"
 
       ! set some initialization - simple control stuff
@@ -1175,10 +1175,10 @@
 !     purpose: this routine initializes the fire objects
 !     arguments: none
 
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "objects2.fi"
 
@@ -1208,6 +1208,7 @@
 !     purpose: this routine initializes the solver variables from solver.ini if it exists
 !     arguments: none
 
+      use cfast_main
       use cfin
       use cparams
       use cshell
@@ -1215,7 +1216,6 @@
       use iofiles
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
@@ -1341,13 +1341,13 @@ c
 !     Arguments: none
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use params
       use thermp
       include "precis.fi"
-      include "cfast.fi"
       include "wnodes.fi"
 
       DIMENSION XM(2)
@@ -1446,13 +1446,13 @@ c
 !     purpose: Initialize target data structures
 !     Arguments: IERROR  Returns error codes
 
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use fltarget
       use thermp
       include "precis.fi"
-      include "cfast.fi"
       character*133 messg
       integer map6(6)
       data map6/1,3,3,3,3,2/
@@ -1604,13 +1604,13 @@ c          yy = ysize - yloc
 !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use fltarget
       use thermp
       include "precis.fi"
-      include "cfast.fi"
       include "wnodes.fi"
 
       character off*8, none*8, tcname*8
@@ -1810,12 +1810,12 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use fltarget
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "wnodes.fi"
       include "opt.fi"
       include "objects2.fi"
@@ -1957,11 +1957,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "vents.fi"
 
       DIMENSION VNTOPN(NV)

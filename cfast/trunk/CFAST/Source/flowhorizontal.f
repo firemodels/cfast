@@ -33,11 +33,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -414,10 +414,10 @@ C     July 24, 1990 modified coefiscients so that McCaffrey correlation is
 C                   continuous.  the coeff's are calculated the first time
 C                   this routine is called.  gpf
 
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       LOGICAL FIRSTC
       SAVE FIRSTC, A1, A2, A3, E1, E2, E3, F1, F2
       DATA FIRSTC /.TRUE./
@@ -494,11 +494,11 @@ C
       subroutine ventflag(ventflg,roomflg,anyvents)
 
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       use params
       include "precis.fi"
-      include "cfast.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
@@ -834,10 +834,10 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
      +                  DENL,DENU,CONL,CONU,TL,TU)
       
       use cenviro
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "vents.fi"
 C*BEG
 C
@@ -1260,10 +1260,10 @@ C
 
 !       This is a routine to get the shape data for horizontal flow vents
 
+      use cfast_main
       use cparams
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "vents.fi"
       
       ifrom =IZVENT(i,1)

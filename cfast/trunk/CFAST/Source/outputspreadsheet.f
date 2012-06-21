@@ -3,13 +3,13 @@
 ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -81,12 +81,12 @@
       subroutine SSaddtolist (ic, valu, array)
 
       use cenviro
+      use cfast_main
       use cfin
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Check to see if ANY of these are needed
 	real*8 array(*), valu
 	integer ic
@@ -112,11 +112,11 @@
 !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "vents.fi"
 
       parameter (maxoutput = 512)
@@ -236,12 +236,12 @@
 !     Output the temperatures and fluxes on surfaces and targets at the current time
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
 
 	parameter (maxoutput=512)
 	real*8 outarray(maxoutput), time, xiroom, zdetect,
@@ -369,11 +369,11 @@ c   40 CONTINUE
 !	Write out the species to the spread sheet file
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
 
 	parameter (maxhead = 1+22*nr)
 	character*16 heading(3,maxhead)
@@ -431,13 +431,13 @@ c   40 CONTINUE
 ! This routine writes to the {project}_zone.csv file, the smokeview information
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       use iofiles
       use fltarget
       include "precis.fi"
-      include "cfast.fi"
       include "objects1.fi"
       include "vents.fi"
 

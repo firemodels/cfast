@@ -80,11 +80,11 @@ c     gpf 2/5/96   removed reduced jacobian option added on 2/5/93.
 c*re
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "wdervs.fi"
       include "opt.fi"
       include "wnodes.fi"
@@ -963,11 +963,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
+      use cfast_main
       use cparams
       use cshell
       use dsize
       include "precis.fi"
-      include "cfast.fi"
       include "opt.fi"
       include "wdervs.fi"
 C

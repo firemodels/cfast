@@ -805,10 +805,10 @@
       use cparams
       use dsize
       use params
+      use vents
       include "precis.fi"
       include "flwptrs.fi"
       include "opt.fi"
-      include "vents.fi"
 
       dimension flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns)
       dimension flwdjf0(nr,ns+2,2)

@@ -350,13 +350,13 @@
       use fltarget
       use iofiles
       use params
+      use vents
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "vents.fi"
       include "smkview.fi"
 
       parameter (maxord = 5)
@@ -1500,8 +1500,8 @@ C     SETTING JACOBIAN FLAG
       use dsize
       use fltarget
       use params
+      use vents
       include "precis.fi"
-      include "vents.fi"
       include "wnodes.fi"
       include "wdervs.fi"
       include "opt.fi"

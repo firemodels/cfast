@@ -282,3 +282,27 @@ module thermp
     character(8), dimension(nthmax) :: nlist
 
 end module thermp
+
+module vents
+
+    use cparams, only: nr, mxvent
+    implicit none
+    
+    integer, dimension(mxvent,2) :: ivvent
+    integer nvents, nvvent
+    
+    ! zzvent(1) = sill
+    ! zzvent(2) = soffit
+    ! zzvent(3) = width
+    ! zzvent(4 and 5) = hall offsets
+
+    ! izvent(1) = from
+    ! izvent(2) = to
+    ! izvent(3) = pairwise counter
+    ! izvent(4 and 5) = hall (yes or no)
+    ! izvent(6) = face (smokeview)
+    real*8, dimension(mxvent,6) :: zzvent, izvent
+    real*8, dimension(nr,mxvent) :: zzventdist
+    real*8, dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    
+end module vents

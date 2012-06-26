@@ -114,8 +114,8 @@ C    so, use regular layer temperatures and densities
       use cparams
       use dervs
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
       XX0 = 0.0D0
       HHTEMP = HTEMP - ZZTEMP(IHALL,LOWER)

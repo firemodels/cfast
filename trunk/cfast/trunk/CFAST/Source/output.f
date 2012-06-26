@@ -511,8 +511,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use cshell
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
@@ -668,8 +668,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use cshell
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
@@ -997,8 +997,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use cshell
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
 
       NHALLS = 0
@@ -1111,8 +1111,8 @@ C
       use cshell
       use dsize
       use params
+      use vents
       include "precis.fi"
-      include "vents.fi"
       CHARACTER CHJET(4)*7, CJBUF*51
       DATA CHJET /'off', 'ceiling', 'wall', 'all'/
 
@@ -1172,8 +1172,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cshell
       use dsize
       use params
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
       WRITE (IOFILO,5000) TA-273.15, PA + POFSET, EXTA-273.15, 
      +    EXPA + POFSET, SAL, 
@@ -1215,8 +1215,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cshell
       use dsize
       use params
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
       WRITE (IOFILO,5000)
       DO 10 I = 1, NM1
@@ -1260,8 +1260,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cshell
       use dsize
       use params
+      use vents
       include "precis.fi"
-      include "vents.fi"
       CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
       LOGICAL FIRST
 

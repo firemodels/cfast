@@ -37,11 +37,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use dsize
       use params
+      use vents
       include "precis.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
-      include "vents.fi"
 C
       DIMENSION CONL(MXPRD,2), CONU(MXPRD,2), PMIX(MXPRD)
       DIMENSION UFLW(NR,MXPRD+2,2)
@@ -498,11 +498,11 @@ C
       use cparams
       use dsize
       use params
+      use vents
       include "precis.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
-      include "vents.fi"
 
       LOGICAL VENTFLG(MXVENT), ROOMFLG(NR), anyvents
 
@@ -837,8 +837,8 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
       use cfast_main
       use cparams
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
 C*BEG
 C
 C***  GETVAR  SPECIFIC - ROUTINE TO INTERFACE BETWEEN CCFM.VENTS GLOBAL
@@ -1263,8 +1263,8 @@ C
       use cfast_main
       use cparams
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
       
       ifrom =IZVENT(i,1)
       ito = IZVENT(i,2)

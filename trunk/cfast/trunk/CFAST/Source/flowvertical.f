@@ -39,11 +39,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use dsize
       use params
+      use vents
       include "precis.fi"
       include "flwptrs.fi"
       include "vntslb.fi"
       include "opt.fi"
-      include "vents.fi"
 C
       DIMENSION FLWVF(NR,NS+2,2)
       DIMENSION XMVENT(2), ILAY(2), TMVENT(2)
@@ -427,8 +427,8 @@ C
       use cfast_main
       use cparams
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
 	integer itop, ibot, hshape, hface, iinvvent
 	real*8 harea

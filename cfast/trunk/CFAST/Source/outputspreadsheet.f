@@ -116,8 +116,8 @@
       use cparams
       use cshell
       use dsize
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
       parameter (maxoutput = 512)
       real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,
@@ -437,9 +437,9 @@ c   40 CONTINUE
       use dsize
       use iofiles
       use fltarget
+      use vents
       include "precis.fi"
       include "objects1.fi"
-      include "vents.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)

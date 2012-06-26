@@ -799,8 +799,8 @@
       use fltarget
       use params
       use thermp
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
       ! set some initialization - simple control stuff
       exset = .false.
@@ -1961,8 +1961,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use dsize
       use params
+      use vents
       include "precis.fi"
-      include "vents.fi"
 
       DIMENSION VNTOPN(NV)
       INTEGER ROOMC(NR,NR), TEMPMAT(NR,NR)

@@ -532,12 +532,12 @@ c    see which room is on top (if any) - this is like a bubble sort
       use fltarget
       use params
       use thermp
+      use vents
       include "precis.fi"
       include "objects1.fi"
       include "objects2.fi"
       include "solvprm.fi"
       include "opt.fi"
-      include "vents.fi"
       include "wnodes.fi"
 
       PARAMETER (MAXIN = 37)

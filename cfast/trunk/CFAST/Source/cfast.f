@@ -350,6 +350,7 @@
       use fltarget
       use iofiles
       use params
+      use smkview
       use vents
       include "precis.fi"
       include "opt.fi"
@@ -357,7 +358,6 @@
       include "solvprm.fi"
       include "objects1.fi"
       include "objects2.fi"
-      include "smkview.fi"
 
       parameter (maxord = 5)
       parameter (lrw = 40+(maxord+4)*maxeq+maxeq**2,liw = 20+maxeq)
@@ -517,8 +517,7 @@
       if (initializeonly) then
           call target(steady)
           ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
-          call remapfires (nfires, flocal, fxlocal, fylocal, 
-     .    fzlocal, fqlocal, fhlocal)
+          call remapfires (nfires)
           call svout(smvdata, pref, pa, ta, 
      .    nm1, cxabs, cyabs, hrl, br, dr, hr,
      .    nvents,

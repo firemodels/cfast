@@ -266,6 +266,18 @@ module params
 
 end module params
 
+module smkview
+
+    use cparams
+    implicit none
+
+    integer :: smkunit, spltunit, flocal(mxfire+1)
+    character(60) :: smkgeom, smkplot, smkplottrunc
+    logical :: remapfiresdone
+    real*8, dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+  
+end module smkview
+
 module thermp
 
     use cparams

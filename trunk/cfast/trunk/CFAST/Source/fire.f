@@ -31,11 +31,11 @@
       use cparams
       use dsize
       use fltarget
+      use objects1
+      use objects2
       use params
       include "precis.fi"
       include "flwptrs.fi"
-      include "objects1.fi"
-      include "objects2.fi"
       include "opt.fi"
 
       dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
@@ -518,10 +518,10 @@
       use cparams
       use dsize
       use fltarget
+      use objects1
+      use objects2
       include "precis.fi"
       include "fireptrs.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       integer objn
       real*8 n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace
@@ -1288,20 +1288,19 @@
 
       subroutine remapfires (nfires)
 
-c	this routine is to combine the main fire (in lfbo) and any objects into a single list
-c	there does not have to be a main fire nor any objects, so nfires may be zero
+      ! this routine is to combine the main fire (in lfbo) and any objects into a single list
+      ! there does not have to be a main fire nor any objects, so nfires may be zero
 
       use cenviro
       use cfast_main
       use cparams
       use dsize
+      use objects1
+      use objects2
       use smkview
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
-c	first, the mainfire if there is one
-
+      ! first, the mainfire if there is one
       if (lfbo>0) then
           nfires = 1
           flocal(1) = froom(0)
@@ -1315,8 +1314,7 @@ c	first, the mainfire if there is one
           nfires = 0
       endif
 
-c	now the other objects
-
+      ! now the other objects
       do i = 1, numobjl
           nfires = nfires + 1
           fxlocal(nfires) = fopos(1,i)
@@ -1386,9 +1384,9 @@ c---------------------------- all rights reserved ----------------------------
       use cfast_main
       use dsize
       use fltarget
+      use objects1
+      use objects2
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
       include "opt.fi"
 
       dimension tmpob(2,mxoin)

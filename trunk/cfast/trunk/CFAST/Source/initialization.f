@@ -1178,9 +1178,9 @@
       use cfast_main
       use cparams
       use dsize
+      use objects1
+      use objects2
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       ! turn off objects
       numobjl = 0
@@ -1814,11 +1814,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use dsize
       use fltarget
+      use objects2
       use params
       include "precis.fi"
       include "wnodes.fi"
       include "opt.fi"
-      include "objects2.fi"
 
 C     COUNT THE OF NODES (LARGEST OF NS AND NE)
 

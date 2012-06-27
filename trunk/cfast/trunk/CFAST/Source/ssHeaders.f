@@ -7,8 +7,8 @@
       use cparams
       use cshell
       use dsize
+      use objects1
       include "precis.fi"
-      include "objects1.fi"
       
       ! local variables     
       parameter (maxhead = 1+7*nr+5+7*mxfire)
@@ -539,9 +539,9 @@ C     Natural flow through vertical vents (horizontal flow)
       use cparams
       use cshell
       use dsize
+      use objects1
       use vents
       include "precis.fi"
-      include "objects1.fi"
       
       logical lmode
     

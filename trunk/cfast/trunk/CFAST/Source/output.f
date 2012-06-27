@@ -136,7 +136,7 @@ C     NOW THE VERSION
       use cparams
       use dsize
       use fltarget
-      include "objects2.fi"
+      use objects2
 
 	write(*,5) OBJGMW(IOBJ), objvt(iobj),objmas(iobj)
 5	format('gmwf,te,m ',3f8.3)
@@ -320,9 +320,9 @@ C
       use cparams
       use cshell
       use dsize
+      use objects1
+      use objects2
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       EXTERNAL LENGTH
       XX0 = 0.0D0
@@ -747,9 +747,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use cshell
       use dsize
+      use objects1
+      use objects2
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
       XX0 = 0.0D0
       WRITE (iounit,5000)
       WRITE (iounit,5010)
@@ -1547,11 +1547,10 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
       use cparams
       use cshell
       use dsize
+      use objects1
+      use objects2
       use params
       include "precis.fi"
-      
-      include "objects1.fi"
-      include "objects2.fi"
       
       character cbuf*255, stype(ns)*5, ftype(0:4)*13
       external length
@@ -2215,11 +2214,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cshell
       use dsize
       use fltarget
+      use objects2
       use params
       include "precis.fi"
       include "wnodes.fi"
       include "opt.fi"
-      include "objects2.fi"
 
       INTEGER*2 CH, HIT
       CHARACTER SPNAME(NS)*5, CCC*3

@@ -33,10 +33,10 @@
       use cshell
       use dsize
       use iofiles
+      use objects1
       use params
       use thermp
       include "precis.fi"
-      include "objects1.fi"
 
       logical error
       integer errorcode, rev_cfast
@@ -152,13 +152,13 @@
       use cfast_main
       use cparams
       use dsize
+      use objects1
+      use objects2
       use params
       include "precis.fi"
       include "wnodes.fi"
       include "solvprm.fi"
       include "opt.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       dimension ipar(*), pdold(*), pdzero(*), rpar(*)
       external gres, gres2, gres3
@@ -349,6 +349,8 @@
       use dsize
       use fltarget
       use iofiles
+      use objects1
+      use objects2
       use params
       use smkview
       use vents
@@ -356,8 +358,6 @@
       include "opt.fi"
       include "wnodes.fi"
       include "solvprm.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       parameter (maxord = 5)
       parameter (lrw = 40+(maxord+4)*maxeq+maxeq**2,liw = 20+maxeq)
@@ -1104,12 +1104,12 @@ C     SETTING JACOBIAN FLAG
       use dervs
       use dsize
       use fltarget
+      use objects2
       use params
       include "precis.fi"
       include "opt.fi"
       include "wnodes.fi"
       include "flwptrs.fi"
-      include "objects2.fi"
 
       ! temporaray declarations and assignments
       integer all, some, uu, ll
@@ -1498,14 +1498,14 @@ C     SETTING JACOBIAN FLAG
       use dervs
       use dsize
       use fltarget
+      use objects1
+      use objects2
       use params
       use vents
       include "precis.fi"
       include "wnodes.fi"
       include "wdervs.fi"
       include "opt.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
 c     order of variables is defined in the routine offset
 

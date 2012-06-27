@@ -53,9 +53,7 @@
 		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
 		<File RelativePath="Include\precis.fi"/>
-		<File RelativePath="Include\smkview.fi"/>
 		<File RelativePath="Include\solvprm.fi"/>
-		<File RelativePath="Include\vents.fi"/>
 		<File RelativePath="Include\vntslb.fi"/>
 		<File RelativePath="Include\wdervs.fi"/>
 		<File RelativePath="Include\wnodes.fi"/></Filter>

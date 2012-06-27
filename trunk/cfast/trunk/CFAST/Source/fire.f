@@ -1286,8 +1286,7 @@
       return
       end subroutine toxic
 
-      subroutine remapfires (nfires, flocal, fxlocal, fylocal, 
-     .fzlocal, fqlocal, fhlocal)
+      subroutine remapfires (nfires)
 
 c	this routine is to combine the main fire (in lfbo) and any objects into a single list
 c	there does not have to be a main fire nor any objects, so nfires may be zero
@@ -1296,8 +1295,8 @@ c	there does not have to be a main fire nor any objects, so nfires may be zero
       use cfast_main
       use cparams
       use dsize
+      use smkview
       include "precis.fi"
-      include "smkview.fi"
       include "objects1.fi"
       include "objects2.fi"
 

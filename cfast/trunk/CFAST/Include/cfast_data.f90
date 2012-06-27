@@ -239,6 +239,39 @@ end module fltarget
     character(128) :: carray(nrow,ncol)
 
 end module iofiles
+    
+module objects1
+
+    use cparams
+    implicit none
+
+    logical, dimension(0:mxoin) :: objld
+    character(64), dimension(0:mxoin) :: odbnam
+    character(256), dimension(0:mxoin) :: objnin
+    integer, dimension(0:mxoin) :: objpnt
+
+end module objects1
+
+module objects2
+
+    use cparams
+    implicit none
+
+    logical, dimension(0:mxoin) :: objdef
+    character(60), dimension(mxoin) :: objnam(mxoin)
+    character(60), dimension(0:mxoin) :: omatl
+    integer, dimension(mxoin) :: objlfm,objtyp,obtarg, objset
+    
+    real*8, dimension(mxoin) :: obj_c, obj_h, obj_o, obj_n, obj_cl
+    real*8, dimension(3,0:mxoin) :: objcri, objort
+    real*8, dimension(0:mxoin) :: objmas, objgmw, objvt, objclen
+    real*8, dimension(nv,0:mxoin) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
+    real*8, dimension(nv,ns,mxoin) :: omprodr
+    real*8, dimension(nv,mxoin) :: otime
+    real*8, dimension(2,0:mxoin) :: obcond
+    real*8 :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
+
+end module objects2
 
 module params
 

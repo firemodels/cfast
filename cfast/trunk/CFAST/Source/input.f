@@ -9,11 +9,11 @@
       use cshell
       use dsize
       use iofiles
+      use objects1
+      use objects2
       use params
       use thermp
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       integer numr, numc
       logical exists
@@ -530,12 +530,12 @@ c    see which room is on top (if any) - this is like a bubble sort
       use dsize
       use iofiles
       use fltarget
+      use objects1
+      use objects2
       use params
       use thermp
       use vents
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
       include "solvprm.fi"
       include "opt.fi"
       include "wnodes.fi"
@@ -1851,8 +1851,8 @@ c    see which room is on top (if any) - this is like a bubble sort
       use dsize
       use iofiles
       use fltarget
+      use objects2
       include "precis.fi"
-      include "objects2.fi"
 
       logical countargs, lstat
       integer lrowcount, xnumr, xnumc, iobj
@@ -2015,8 +2015,8 @@ c    see which room is on top (if any) - this is like a bubble sort
       use dsize
       use iofiles
       use fltarget
+      use objects2
       include "precis.fi"
-      include "objects2.fi"
 
       ntarg = ntarg + 1
       if (ntarg>mxtarg) then
@@ -2508,9 +2508,9 @@ C
       use cparams
       use dsize
       use fltarget
+      use objects1
+      use objects2
       include "precis.fi"
-      include "objects1.fi"
-      include "objects2.fi"
 
       IXTARG(TRGROOM,ITARG) = OBJRM(IOBJ)
       DO 10 I = 0,2

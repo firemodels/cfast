@@ -9,8 +9,8 @@
       use dsize
       use iofiles
       use fltarget
+      use objects1
       include "precis.fi"
-      include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)
@@ -437,9 +437,9 @@ c   40 CONTINUE
       use dsize
       use iofiles
       use fltarget
+      use objects1
       use vents
       include "precis.fi"
-      include "objects1.fi"
 
 	parameter (maxhead = 1+7*nr+5+7*mxfire)
 	character*16 headline(3,maxhead)

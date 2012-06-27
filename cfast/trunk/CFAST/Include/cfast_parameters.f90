@@ -13,6 +13,8 @@ module cparams
     integer, parameter :: mxoin = nr        ! maximum number of fire objects
     integer, parameter :: mxfirp = 19       ! number of parameters for each fire object
     integer, parameter :: mxfire = 2*mxoin  ! maximum number of fires in a single simulation
+    integer, parameter :: obotemp = 1       ! object ignition criteria index for temperature
+    integer, parameter :: oboflux = 2       ! object ignition criteria index for heat flux
     
     integer, parameter :: nthmax = 125      ! maximum number of thermal properties
  

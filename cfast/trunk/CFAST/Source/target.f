@@ -279,8 +279,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cparams
       use dsize
       use fltarget
+      use objects2
       include "precis.fi"
-      include "objects2.fi"
       include "wnodes.fi"
 
       DIMENSION MAP10(10), SVECT(3), FLUX(2), DFLUX(2)
@@ -519,8 +519,8 @@ C*** CONVECTION FOR THE BACK
       use cparams
       use dsize
       use fltarget
+      use objects2
       include "precis.fi"
-      include "objects2.fi"
 
       logical first
       save first, pi, four

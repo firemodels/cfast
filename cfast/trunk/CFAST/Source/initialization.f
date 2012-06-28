@@ -5,9 +5,6 @@
 !     Revision: $Revision$
 !     Revision Date: $Date$
 
-      use cfast_main
-      use cparams
-      use dsize
       use thermp
 
       character name*(*), missingtpp*64
@@ -37,9 +34,7 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use params
       include "precis.fi"
       include "solvprm.fi"
@@ -110,9 +105,7 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use params
       include "precis.fi"
       include "solvprm.fi"
@@ -181,13 +174,10 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use params
       include "precis.fi"
       include "solvprm.fi"
-      include "wnodes.fi"
       include "opt.fi"
 
       dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq),
@@ -313,9 +303,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       use params
       include "precis.fi"
 
@@ -505,10 +492,7 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     arguments: 
 
-      use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
 
@@ -614,8 +598,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
       use params
       include "precis.fi"
@@ -793,9 +775,7 @@
       use cenviro
       use cfast_main
       use cfin
-      use cparams
       use cshell
-      use dsize
       use fltarget
       use params
       use thermp
@@ -1176,8 +1156,6 @@
 !     arguments: none
 
       use cfast_main
-      use cparams
-      use dsize
       use objects1
       use objects2
       include "precis.fi"
@@ -1210,9 +1188,7 @@
 
       use cfast_main
       use cfin
-      use cparams
       use cshell
-      use dsize
       use iofiles
       use params
       include "precis.fi"
@@ -1295,9 +1271,7 @@
 !              it may be modified by solver.ini if it exists
 !     arguments: none
 
-      use cfin
       use cparams
-      use cshell
       use params
           include "precis.fi"
           include "opt.fi"
@@ -1342,13 +1316,9 @@ c
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       use params
       use thermp
       include "precis.fi"
-      include "wnodes.fi"
 
       DIMENSION XM(2)
 
@@ -1447,9 +1417,7 @@ c
 !     Arguments: IERROR  Returns error codes
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use fltarget
       use thermp
       include "precis.fi"
@@ -1605,9 +1573,6 @@ c          yy = ysize - yloc
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       use fltarget
       use thermp
       include "precis.fi"
@@ -1811,10 +1776,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
-      use objects2
       use params
       include "precis.fi"
       include "wnodes.fi"
@@ -1958,8 +1920,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       use vents
       include "precis.fi"

@@ -4,13 +4,8 @@
 
       use cenviro
       use cfast_main
-      use cfin
-      use cparams
       use cshell
-      use dsize
       use iofiles
-      use objects1
-      use objects2
       use params
       use thermp
       include "precis.fi"
@@ -524,10 +519,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 
       use cenviro
       use cfast_main
-      use cfin
-      use cparams
       use cshell
-      use dsize
       use iofiles
       use fltarget
       use objects1
@@ -1754,28 +1746,19 @@ c    see which room is on top (if any) - this is like a bubble sort
      +'STEADY, IMPLICIT OR EXPLICIT')
   913 format('Invalid equation type specified in TARGET:',A3,
      +' Valid choices are:ODE, PDE or CYL')
- 5000 format ('Keyword ',A5)
  5001 format ('ONEZ requires a defined compartment ',i3)
  5002 format ('Too many targets are being defined')
  5003 format ('The compartment specified by TARGET does not exist',i3)
- 5030 format ('Thermal count does not match compartment count ',2I5)
  5051 format ('The key word ',a5,' is not recognized')
- 5060 format ('THERE MUST BE SIX PARAMETERS TO SPECIFY A VENT',I5)
- 5061 format ('NEED SIX PARAMETERS TO SPECIFY THE MAINFIRE',I5)
  5062 format ('Compartment number outside of allowable range',i5)
  5063 format ('Compartment ',i3,1x,a8,1x,6f6.1,4l,1x,4a10)
  5070 format ('VENT parameter(s) outside of allowable range',2I4)
  5080 format ('Too many pairwise horizontal connections',4I5)
  5081 format ('Too many horizontal connections ',3i5)
  5090 format ('The connection',3I3,' is being redefined')
- 5100 format (' There must be at least 3 parameters to specify ',
-     +' vertical flow (VVENT).',I4)
- 5120 format ('NOT ENOUGH DATA FOR WIND INPUT ROUTINE ???')
  5130 format ('THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
  5140 format ('Specification for interface height is outside of',
      +' allowable range',2I4)
- 5170 format ('MVOPN must define both sides of a duct opening')
- 5180 format ('Specified node number too large for this system',2I2)
  5191 format ('Compartments specified in MVENT have not been defined ',
      .2i3)
  5192 format ('Exceeded maximum number of nodes/openings in MVENT ',2i3)
@@ -1784,18 +1767,6 @@ c    see which room is on top (if any) - this is like a bubble sort
      .f10.2)
  5195 format ('Too many fan systems',i3)
  5196 format ('Fan (MID) has not been defined for this filter ',i3)
- 5200 format ('Redefinition for node ',2I3)
- 5210 format ('Exceed max external connections',I3)
- 5220 format ('Only ',I2,' specified for an mv duct, 5 required')
- 5230 format ('Exceeded maximum number of mv ducts =',I2)
- 5250 format ('Fan data in wrong format (>4)')
- 5260 format ('Exceeded allowed number of fans',I3)
- 5270 format ('Fan curve has incorrect specification',1P2G12.3)
- 5271 format ('Fan between nodes:',i3,' and ',i3,' is being redefined')
- 5272 format ('Define fan ',i2,' from ',i3,' to ',i3,
-     +' over the pressure range ',2f6.1,' with ',i2,
-     +' coefficients')
- 5290 format ('Too many internal nodes specified')
  5300 format ('Too many objects defined in datafile')
  5310 format ('Incorrect number of parameters for OBJECT')
  5320 format ('Object specification error, room ',I4,' out of range')
@@ -1816,9 +1787,9 @@ c    see which room is on top (if any) - this is like a bubble sort
  5349 format ('Compartment specified by ROOMH is not defined ',i3)
  5350 format ('ROOMH error on data line ',i3)
  5351 format ('Compartment',i3,' has been redefined as a variable space'
-     +'- area: ',20f8.1)
+     + ,'- area: ',20f8.1)
  5352 format ('Compartment',i3,' has been redefined as a variable space'
-     +'- height: ',20f8.1)
+     + ,'- height: ',20f8.1)
  5353 format ('Trying to reset the point file name is - ',A)
  5354 format ('HHEAT to compartment out of bounds or not defined - ',i3)
  5355 format ('HHEAT fraction pairs is not consistent ',2i3)
@@ -1847,10 +1818,7 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror:  error return index
 
       use cfast_main
-      use cparams
-      use dsize
       use iofiles
-      use fltarget
       use objects2
       include "precis.fi"
 
@@ -1992,7 +1960,6 @@ c    see which room is on top (if any) - this is like a bubble sort
       return
 5001  format ('Invalid heat of combustion, must be greater than zero, ',
      .1pg12.3)
-5002  format ('Too many targets are being defined in a fire definition')
 5100  format ('Object ',a,' position set to ',3F7.3, 
      .'; Maximum HRR per m^3 is ',1pg10.3)
 5106  format ('Object ',a,' position set to ',3F7.3,
@@ -2011,9 +1978,6 @@ c    see which room is on top (if any) - this is like a bubble sort
 !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
       use cfast_main
-      use cparams
-      use dsize
-      use iofiles
       use fltarget
       use objects2
       include "precis.fi"
@@ -2267,10 +2231,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cfin
-      use cparams
       use cshell
-      use dsize
       use iofiles
       include "precis.fi"
       include "opt.fi"
@@ -2377,7 +2338,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
           GOTO 20
 
- 1000     CONTINUE
           write(logerr,*)'Error Reading the "SETP" file'
           IERROR = 76
           RETURN
@@ -2413,10 +2373,6 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cfin
-      use cparams
-      use cshell
-      use dsize
       include "precis.fi"
       include "opt.fi"
 
@@ -2504,9 +2460,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cfast_main
-      use cenviro
-      use cparams
-      use dsize
       use fltarget
       use objects1
       use objects2
@@ -2542,7 +2495,7 @@ c     nstart = starting row of spreadsheet to read
 c     maxr     = actual number of rows read
 c     maxcc    = actual number of columns read
 c
-      use cparams
+
       use cshell
 
       real*8 x(numr,numc)

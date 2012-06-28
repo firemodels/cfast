@@ -46,8 +46,6 @@ C
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
       include "flwptrs.fi"
@@ -256,8 +254,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 C
 
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
 
@@ -370,8 +366,6 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
       include "opt.fi"
@@ -462,9 +456,6 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       include "precis.fi"
       LOGICAL firstc
 	real*8 hvfanl, openfraction, qcffraction, tsec,
@@ -528,8 +519,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
 
@@ -633,8 +622,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
 

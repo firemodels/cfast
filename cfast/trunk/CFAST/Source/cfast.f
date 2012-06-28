@@ -26,19 +26,15 @@
 !     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 !     OTHER DEALINGS IN THE SOFTWARE.
 
-      use cenviro
+
       use cfast_main
-      use cfin
       use cparams
       use cshell
       use dsize
       use iofiles
-      use objects1
-      use params
       use thermp
       include "precis.fi"
 
-      logical error
       integer errorcode, rev_cfast
 
       version = 6300          ! Current CFAST version number
@@ -107,7 +103,6 @@
 
               stime = 0.0d0
               itmstp = 1
-              ih = -1
               xdelt = nsmax / deltat
               itmmax = xdelt + 1
               tstop = itmmax - 1
@@ -132,7 +127,6 @@
  5001 format ('Error encountered in opening data files; code = ',i4)
  5002 format ('The project files are based on the root: ',a64)
  5003 format ('Total execution time = ',1pg10.3,' seconds')
- 5020 format ('Error exit during initialization from CFAST main')
       end program cfast
 
       subroutine initsoln(t,pdold,pdzero,rpar,ipar)
@@ -150,10 +144,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
-      use objects1
-      use objects2
       use params
       include "precis.fi"
       include "wnodes.fi"
@@ -166,7 +156,6 @@
       dimension deltamv(mxalg), hhvp(mxalg)
       parameter (lrw = (3*mxalg**2+13*mxalg)/2)
       dimension work(lrw)
-      character*132 messg
       external gjac
 
 
@@ -343,10 +332,8 @@
       use cenviro
       use cfast_main
       use cfin
-      use cparams
       use cshell
       use dervs
-      use dsize
       use fltarget
       use iofiles
       use objects1
@@ -875,7 +862,6 @@
 !     revision: $revision: 290 $
 !     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
-      use cparams
       use fltarget
       include "precis.fi"
 
@@ -917,10 +903,7 @@ c
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
       use dervs
-      use dsize
       include "precis.fi"
       include "opt.fi"
 
@@ -988,9 +971,7 @@ c
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       include "precis.fi"
       include "opt.fi"
 
@@ -1031,7 +1012,6 @@ c
       use cparams
       include "precis.fi"
       include "solvprm.fi"
-      include "opt.fi"
       DIMENSION INFO(*), RWORK(*)
       XX0 = 0.0D0
       DO I = 1, 11
@@ -1100,15 +1080,11 @@ C     SETTING JACOBIAN FLAG
 
       use cenviro
       use cfast_main
-      use cparams
       use dervs
-      use dsize
       use fltarget
-      use objects2
       use params
       include "precis.fi"
       include "opt.fi"
-      include "wnodes.fi"
       include "flwptrs.fi"
 
       ! temporaray declarations and assignments
@@ -1494,12 +1470,8 @@ C     SETTING JACOBIAN FLAG
 
       use cenviro
       use cfast_main
-      use cparams
       use dervs
-      use dsize
       use fltarget
-      use objects1
-      use objects2
       use params
       use vents
       include "precis.fi"
@@ -2086,9 +2058,6 @@ c     order of variables is defined in the routine offset
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       include "precis.fi"
       dimension pdif(*)
       dimension factor(nr,2)

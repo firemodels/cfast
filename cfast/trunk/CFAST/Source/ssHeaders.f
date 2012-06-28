@@ -4,9 +4,7 @@
      
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use objects1
       include "precis.fi"
       
@@ -118,9 +116,7 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       include "precis.fi"
       
       ! local variables     
@@ -231,9 +227,7 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use fltarget
       include "precis.fi"
       
@@ -372,9 +366,7 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use vents
       include "precis.fi"
 
@@ -536,9 +528,7 @@ C     Natural flow through vertical vents (horizontal flow)
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use objects1
       use vents
       include "precis.fi"
@@ -650,5 +640,5 @@ C     Natural flow through vertical vents (horizontal flow)
       endif
       toIntString = trim(string)
       return
-      end function to IntString
+      end function toIntString
       

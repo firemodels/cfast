@@ -25,8 +25,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
       include "precis.fi"
       
@@ -164,8 +162,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
       include "precis.fi"
 
@@ -276,8 +272,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
       use objects2
       include "precis.fi"
@@ -516,9 +510,6 @@ C*** CONVECTION FOR THE BACK
 
       use cfast_main
       use cenviro
-      use cparams
-      use dsize
-      use fltarget
       use objects2
       include "precis.fi"
 

@@ -81,11 +81,7 @@ c*re
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       include "precis.fi"
-      include "wdervs.fi"
       include "opt.fi"
       include "wnodes.fi"
 
@@ -964,9 +960,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       include "precis.fi"
       include "opt.fi"
       include "wdervs.fi"

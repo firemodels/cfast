@@ -4,10 +4,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
-      use iofiles
       use fltarget
       use objects1
       include "precis.fi"
@@ -80,14 +76,6 @@
 
       subroutine SSaddtolist (ic, valu, array)
 
-      use cenviro
-      use cfast_main
-      use cfin
-      use cparams
-      use cshell
-      use dsize
-      include "precis.fi"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Check to see if ANY of these are needed
 	real*8 array(*), valu
 	integer ic
 
@@ -113,9 +101,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       use vents
       include "precis.fi"
 
@@ -237,9 +222,7 @@
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use fltarget
       include "precis.fi"
 
@@ -370,9 +353,7 @@ c   40 CONTINUE
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       include "precis.fi"
 
 	parameter (maxhead = 1+22*nr)
@@ -432,12 +413,6 @@ c   40 CONTINUE
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
-      use iofiles
-      use fltarget
-      use objects1
       use vents
       include "precis.fi"
 

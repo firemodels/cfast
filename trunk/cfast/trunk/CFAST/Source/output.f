@@ -1,6 +1,5 @@
       SUBROUTINE DISCLAIM (NAME)
 
-      use cparams
       use cshell
       include "precis.fi"
       CHARACTER NAME*(*), OBUF*14
@@ -45,10 +44,7 @@ C     NOW THE VERSION
 !	we assume the file is open
 
       use cfast_main
-      use cfin
-      use cparams
       use cshell
-      use dsize
       include "precis.fi"
       integer rev_cfast
 
@@ -96,9 +92,7 @@ C     NOW THE VERSION
 	subroutine printfireparameters
 
       use cfast_main
-      use cparams
-      use dsize
-
+      
 	write(*,5) gmwf,hcomba,te,tgignt,qradrl,limo2
 5	format('gmwf,h,te,tg,q,o2 ',f8.3,1pg12.3,0p4f8.2)
 
@@ -133,8 +127,6 @@ C     NOW THE VERSION
 	subroutine printobjectparameters (iobj)
 
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
       use objects2
 
@@ -212,7 +204,6 @@ C                  Added RESLTHALL to report results for halls
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
       use cshell
       include "precis.fi"
       IF (outputformat>1) THEN
@@ -257,9 +248,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use cenviro
-      use cparams
       use cshell
-      use dsize
       use fltarget
       include "precis.fi"
       WRITE (IOFILO,5000)
@@ -315,13 +304,9 @@ C     Revision History:
 C        Created:  7/12/1993 at 12:51 by RDP
 C
 
-      use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use objects1
-      use objects2
       include "precis.fi"
 
       EXTERNAL LENGTH
@@ -405,9 +390,7 @@ C
 
       use cfast_main
       use cenviro
-      use cparams
       use cshell
-      use dsize
       include "precis.fi"
       LOGICAL SWL(4)
       INTEGER IWPTR(4)
@@ -507,10 +490,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cenviro
-      use cparams
       use cshell
-      use dsize
       use vents
       include "precis.fi"
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
@@ -664,10 +644,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cenviro
-      use cparams
       use cshell
-      use dsize
       use vents
       include "precis.fi"
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
@@ -744,10 +721,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
-      use objects1
       use objects2
       include "precis.fi"
       XX0 = 0.0D0
@@ -816,9 +789,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use fltarget
       include "precis.fi"
       INTEGER IWPTR(4)
@@ -928,9 +899,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       include "precis.fi"
       CHARACTER*5 CTYPE
       CHARACTER*3 CACT
@@ -994,10 +963,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
-      use vents
       include "precis.fi"
 
 
@@ -1044,11 +1010,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use iofiles
-      use params
       include "precis.fi"
 
       CHARACTER CHKSUM*8
@@ -1107,10 +1070,7 @@ C
 !
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
-      use params
       use vents
       include "precis.fi"
       CHARACTER CHJET(4)*7, CJBUF*51
@@ -1168,11 +1128,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use params
-      use vents
       include "precis.fi"
 
       WRITE (IOFILO,5000) TA-273.15, PA + POFSET, EXTA-273.15, 
@@ -1211,11 +1168,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
-      use params
-      use vents
       include "precis.fi"
 
       WRITE (IOFILO,5000)
@@ -1256,9 +1209,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use params
       use vents
       include "precis.fi"
@@ -1444,10 +1395,6 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
-      use params
       include "precis.fi"
       
       DO 10 I = 1, NEXT
@@ -1484,9 +1431,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use thermp
       include "precis.fi"
       
@@ -1544,9 +1489,7 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
 !     Arguments: none
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use objects1
       use objects2
       use params
@@ -1625,9 +1568,7 @@ C     Arguments: none
 C
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use fltarget
       include "precis.fi"
       
@@ -1729,8 +1670,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !	This is the protocol between cfast and smokeview
 
       use cfast_main
-      use cparams
-      use dsize
       use fltarget
       include "precis.fi"
 
@@ -1870,8 +1809,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use cenviro
-      use cparams
-      use dsize
       include "precis.fi"
       include "wdervs.fi"
       include "opt.fi"
@@ -2122,8 +2059,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cenviro
       use cfin
-      use cparams
-      use dsize
       include "precis.fi"
       include "opt.fi"
 
@@ -2210,15 +2145,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
       use cshell
-      use dsize
-      use fltarget
-      use objects2
       use params
       include "precis.fi"
       include "wnodes.fi"
-      include "opt.fi"
 
       INTEGER*2 CH, HIT
       CHARACTER SPNAME(NS)*5, CCC*3
@@ -2419,15 +2349,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cfin
-      use cparams
       use cshell
-      use dsize
       use iofiles
       include "precis.fi"
 
-      INTEGER IOUNIT, ITOT, ld
-      LOGICAL FIRSTC, EXISTS
+      INTEGER IOUNIT, ITOT
       DATA IOUNIT /11/, FIRSTC /.TRUE./
       SAVE ITOT, FIRSTC
 
@@ -2444,7 +2370,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 	 
 C     ERROR PROCESSING
  
-   10 WRITE (LOGERR,5030) MOD(ierr,256), historyfile
+      WRITE (LOGERR,5030) MOD(ierr,256), historyfile
       STOP
 
  5020 FORMAT ('Write to the history file at',I5,I7)
@@ -2489,8 +2415,6 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
 
       IINT = (LOC(ITERMXX) - LOC(NEUTRAL))/4 + 1
@@ -2756,12 +2680,8 @@ C
 	
 !  Write the status information to the "statusfile"
 
-      use cfast_main
-      use cparams
-      use dsize
-      include "precis.fi"
-
-	integer errocode	
+      implicit none
+      integer errorcode	
 	real*8 T, dT
 
 	rewind (12)
@@ -2798,9 +2718,7 @@ C        Created:  10/21/97 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cfin
       use cparams
-      use cshell
       use params
       include "precis.fi"
       include "opt.fi"
@@ -2911,9 +2829,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 !!!! Note that we assume that the default carraigecontrol for formatted files is of type LIST (no fortran controls)
 
       use cfast_main
-      use cparams
       use cshell
-      use dsize
       use iofiles
 
 ! first the file for "printed" output

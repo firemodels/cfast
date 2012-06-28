@@ -28,9 +28,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
-      use fltarget
       use objects1
       use objects2
       use params
@@ -188,8 +185,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use interfaces
       include "precis.fi"
       include "fireptrs.fi"
@@ -513,15 +508,9 @@
 !                 n_C, n_H, n_O, n_N, n_Cl (output): molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
 !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
-      use cenviro
       use cfast_main
-      use cparams
-      use dsize
-      use fltarget
-      use objects1
       use objects2
       include "precis.fi"
-      include "fireptrs.fi"
 
       integer objn
       real*8 n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace
@@ -609,9 +598,6 @@
 !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 !     purpose: physical interface between dofire and the plume models
 
-      use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
       integer plumetype, objectnumber
 
@@ -729,8 +715,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"   
 
@@ -802,8 +786,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       use vents
       include "precis.fi"
@@ -947,8 +929,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use interfaces
       include "precis.fi"
 
@@ -1195,8 +1175,6 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
 
@@ -1291,12 +1269,7 @@
       ! this routine is to combine the main fire (in lfbo) and any objects into a single list
       ! there does not have to be a main fire nor any objects, so nfires may be zero
 
-      use cenviro
       use cfast_main
-      use cparams
-      use dsize
-      use objects1
-      use objects2
       use smkview
       include "precis.fi"
 
@@ -1382,9 +1355,7 @@ c---------------------------- all rights reserved ----------------------------
 
       use cparams
       use cfast_main
-      use dsize
       use fltarget
-      use objects1
       use objects2
       include "precis.fi"
       include "opt.fi"
@@ -1507,8 +1478,6 @@ c---------------------------- all rights reserved ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       include "precis.fi"
       include "opt.fi"
@@ -1622,8 +1591,6 @@ c
 c---------------------------- all rights reserved ----------------------------
 
       use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
 
       xx0 = 0.0d0

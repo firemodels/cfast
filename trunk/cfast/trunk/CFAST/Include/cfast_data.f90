@@ -122,7 +122,7 @@ module cfast_main
       
 end module cfast_main
    
-    module cfin
+module cfin
     
     implicit none
     
@@ -171,7 +171,7 @@ module dervs
 
 end module dervs
     
-    module fltarget
+module fltarget
     use cparams
     implicit none
     
@@ -220,7 +220,7 @@ end module dervs
     integer, dimension(3) :: neqtarg
 end module fltarget
     
-    module  iofiles
+module  iofiles
 
     implicit none
     

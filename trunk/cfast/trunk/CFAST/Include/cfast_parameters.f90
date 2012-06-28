@@ -35,7 +35,7 @@ module cparams
     integer, parameter :: mext = 2*nr       ! maximum number of external connections
     integer, parameter :: mbr = mfan+mdt    ! maximum number of branches in a system
     
-    real(8), parameter :: vfmaxdz=0.01    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
+    real(8), parameter :: vfmaxdz=0.01d0    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
     
     ! target parameters
     integer, parameter :: mxtarg = 3*nr     ! maximum number of targets

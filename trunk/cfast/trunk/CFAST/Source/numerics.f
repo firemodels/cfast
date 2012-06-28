@@ -6332,7 +6332,7 @@ C        Created:  2/4/1993 at 17:13 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
-      use cparams
+
       include "precis.fi"
       include "wdervs.fi"
       JACD = JACDIM
@@ -6360,10 +6360,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
-      use cparams
       include "precis.fi"
-      include "wdervs.fi"
-      include "opt.fi"
 C
       IF(J>-10)JACCOL = J
       RETURN

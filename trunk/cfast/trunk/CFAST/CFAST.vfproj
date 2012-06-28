@@ -50,7 +50,6 @@
 		<File RelativePath=".\Include\cfast_parameters.f90"/>
 		<File RelativePath="Include\fireptrs.fi"/>
 		<File RelativePath="Include\flwptrs.fi"/>
-		<File RelativePath="Include\objects2.fi"/>
 		<File RelativePath="Include\opt.fi"/>
 		<File RelativePath="Include\precis.fi"/>
 		<File RelativePath="Include\solvprm.fi"/>

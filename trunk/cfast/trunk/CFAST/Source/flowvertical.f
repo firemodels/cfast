@@ -36,13 +36,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       use vents
       include "precis.fi"
       include "flwptrs.fi"
-      include "vntslb.fi"
       include "opt.fi"
 C
       DIMENSION FLWVF(NR,NS+2,2)
@@ -229,8 +226,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
 C
 C
@@ -425,8 +420,6 @@ C
 !       This is a routine to get the shape data for vertical flow (horizontal) vents
 
       use cfast_main
-      use cparams
-      use dsize
       use vents
       include "precis.fi"
 

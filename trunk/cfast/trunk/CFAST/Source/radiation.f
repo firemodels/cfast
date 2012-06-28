@@ -12,12 +12,8 @@
 
       use cenviro
       use cfast_main
-      use cparams
-      use cshell
-      use dsize
       use fltarget
       include "precis.fi"
-      include "wdervs.fi"
       include "opt.fi"
 
       dimension flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal)
@@ -1304,9 +1300,6 @@ C  (UPPER & LOWER). ORDER OF 'INCLUDE' FILES IS CRITICAL.
 C  CFAST.INC INVOKES CPARAMS.INC & DSIZE.INC
 
       use cenviro
-      use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
 C
 C  DECLARE PARAMETERS

@@ -21,8 +21,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
 
       DO 10 ID = IDSTART, IDSTART + ND - 1
@@ -45,8 +43,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
 
       IF(IZHALL(IROOM,IHMODE)==IHDURING)THEN
@@ -111,9 +107,7 @@ C    so, use regular layer temperatures and densities
       
       use cenviro
       use cfast_main
-      use cparams
       use dervs
-      use dsize
       use vents
       include "precis.fi"
 

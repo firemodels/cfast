@@ -34,8 +34,6 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use params
       use vents
       include "precis.fi"
@@ -415,8 +413,6 @@ C                   continuous.  the coeff's are calculated the first time
 C                   this routine is called.  gpf
 
       use cfast_main
-      use cparams
-      use dsize
       include "precis.fi"
       LOGICAL FIRSTC
       SAVE FIRSTC, A1, A2, A3, E1, E2, E3, F1, F2
@@ -495,9 +491,6 @@ C
 
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
-      use params
       use vents
       include "precis.fi"
       include "flwptrs.fi"
@@ -835,8 +828,6 @@ C    CONSTRUCT CFAST DATA STRUCTURES SS, SA, AS, AA
       
       use cenviro
       use cfast_main
-      use cparams
-      use dsize
       use vents
       include "precis.fi"
 C*BEG
@@ -1260,9 +1251,6 @@ C
 
 !       This is a routine to get the shape data for horizontal flow vents
 
-      use cfast_main
-      use cparams
-      use dsize
       use vents
       include "precis.fi"
       

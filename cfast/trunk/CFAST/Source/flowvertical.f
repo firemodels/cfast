@@ -36,11 +36,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
+      use flwptrs
+      use opt
       use params
       use vents
       include "precis.fi"
-      include "flwptrs.fi"
-      include "opt.fi"
 C
       DIMENSION FLWVF(NR,NS+2,2)
       DIMENSION XMVENT(2), ILAY(2), TMVENT(2)

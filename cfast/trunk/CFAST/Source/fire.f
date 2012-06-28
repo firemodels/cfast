@@ -28,12 +28,12 @@
 
       use cenviro
       use cfast_main
+      use flwptrs
       use objects1
       use objects2
+      use opt
       use params
       include "precis.fi"
-      include "flwptrs.fi"
-      include "opt.fi"
 
       dimension flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns)
       dimension xxfire(1), yyfire(1), zzfire(1), zzloc(1)
@@ -185,9 +185,9 @@
 
       use cenviro
       use cfast_main
+      use fireptrs
       use interfaces
       include "precis.fi"
-      include "fireptrs.fi"
 
       dimension xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns)
       real*8 n_C,n_H,n_O,n_N,n_Cl,mol_mass
@@ -786,11 +786,11 @@
 
       use cenviro
       use cfast_main
+      use flwptrs
+      use opt
       use params
       use vents
       include "precis.fi"
-      include "flwptrs.fi"
-      include "opt.fi"
 
       dimension flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns)
       dimension flwdjf0(nr,ns+2,2)
@@ -1357,8 +1357,8 @@ c---------------------------- all rights reserved ----------------------------
       use cfast_main
       use fltarget
       use objects2
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       dimension tmpob(2,mxoin)
 
@@ -1478,9 +1478,9 @@ c---------------------------- all rights reserved ----------------------------
 
       use cenviro
       use cfast_main
+      use opt
       use params
       include "precis.fi"
-      include "opt.fi"
       dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
       ! initialize summations and local data

@@ -34,12 +34,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
+      use flwptrs
+      use opt
       use params
       use vents
+      use vent_slab
       include "precis.fi"
-      include "flwptrs.fi"
-      include "vntslb.fi"
-      include "opt.fi"
 C
       DIMENSION CONL(MXPRD,2), CONU(MXPRD,2), PMIX(MXPRD)
       DIMENSION UFLW(NR,MXPRD+2,2)
@@ -274,9 +274,9 @@ C
 C        Created:  
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-C
+
+      use flwptrs
       include "precis.fi"
-      include "flwptrs.fi"
       INTEGER DIRS12(10)
       DIMENSION YSLAB(10), XMSLAB(10), PMIX(MXPRD)
       DIMENSION TU(2), TL(2), YLAY(2)
@@ -491,11 +491,11 @@ C
 
       use cenviro
       use cfast_main
+      use flwptrs
+      use opt
       use vents
+      use vent_slab
       include "precis.fi"
-      include "flwptrs.fi"
-      include "vntslb.fi"
-      include "opt.fi"
 
       LOGICAL VENTFLG(MXVENT), ROOMFLG(NR), anyvents
 
@@ -933,7 +933,7 @@ C*** this is a hall, the vent number is defined and flow is occuring
 
       SUBROUTINE FLOGO1(DIRS12,YSLAB,XMSLAB,NSLAB,YLAY,QSLAB,PSLAB,
      +    MXPRD,NPROD,MXSLAB,UFLW2)
-      include "precis.fi"
+
 C*BEG
 C***  FLOGO1  GENERIC - DEPOSITION OF MASS, ENTHALPY, OXYGEN, AND OTHER
 C             PRODUCT-OF-COMBUSTION FLOWS PASSING BETWEEN TWO ROOMS
@@ -972,7 +972,9 @@ C   UFLW2(I,3+K,J), I=1 OR 2, K=2 TO NPROD, J=1 OR 2 - PRODUCT K FLOW
 C            RATE TO UPPER (J=2) OR LOWER (J=1) LAYER OF ROOM I DUE
 C            TO ALL SLAB FLOWS OF VENT [(UNIT PRODUCT K)/S]
 C*END
-      include "flwptrs.fi"
+
+      use flwptrs
+      include "precis.fi"
       INTEGER DIRS12(*)
       DIMENSION YSLAB(*), XMSLAB(*), QSLAB(*), YLAY(*), 
      +    PSLAB(MXSLAB,*)

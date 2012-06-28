@@ -49,9 +49,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
+      use opt
+      use wnodes
       include "precis.fi"
-      include "wnodes.fi"
-      include "opt.fi"
 
       DIMENSION TGRAD(2), DELTA(*)
       DIMENSION FLXTOT(NR,NWAL), IREVWC(NWAL)

@@ -1619,8 +1619,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use solver_parameters
       include "precis.fi"
-      include "solvprm.fi"
       DIMENSION FLOW(8)
       CHARACTER OUTBUF*(*)
 
@@ -1713,8 +1713,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfin
       use cparams
       use cshell
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       INTEGER FUNIT
       CHARACTER DBUGFIL*8
@@ -1809,9 +1809,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use cenviro
+      use opt
+      use wdervs
       include "precis.fi"
-      include "wdervs.fi"
-      include "opt.fi"
 
       DIMENSION WM(JACDIM,*), BUF(MAXEQ)
       CHARACTER*2 ENTRY(MAXEQ)
@@ -1946,9 +1946,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use opt
+      use wdervs
       include "precis.fi"
-      include "opt.fi"
-      include "wdervs.fi"
 
       LOGICAL FIRSTC
       DATA FIRSTC/.TRUE./
@@ -1999,8 +1999,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       INTEGER FUNIT
       LOGICAL FIRSTC
@@ -2024,17 +2024,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       endif
       RETURN
       END
-
-      BLOCKDATA INITDBUG
-
-      use cparams
-      include "precis.fi"
-      include "opt.fi"
-
-      DATA NUMJAC/0/, NUMSTEP/0/, NUMRESD/0/, NUMITR/0/
-      DATA TOTJAC/0/, TOTSTEP/0/, TOTRESD/0/, TOTITR/0/
-      END
-
+      
       SUBROUTINE FND_COMP(IOUNIT,ICOMP)
 
 C--------------------------------- NIST/BFRL ---------------------------------
@@ -2059,8 +2049,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cenviro
       use cfin
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       WRITE(LBUF,*)'Solution component with the greatest error is'
       CALL XERROR(LBUF,0,1,0)
@@ -2147,8 +2137,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use params
+      use wnodes
       include "precis.fi"
-      include "wnodes.fi"
 
       INTEGER*2 CH, HIT
       CHARACTER SPNAME(NS)*5, CCC*3
@@ -2719,11 +2709,11 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use opt
       use params
+      use solver_parameters
+      use wnodes
       include "precis.fi"
-      include "opt.fi"
-      include "wnodes.fi"
-      include "solvprm.fi"
 
       CHARACTER*(*) FILE
       INTEGER FUNIT

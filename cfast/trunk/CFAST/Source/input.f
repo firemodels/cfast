@@ -524,13 +524,13 @@ c    see which room is on top (if any) - this is like a bubble sort
       use fltarget
       use objects1
       use objects2
+      use opt
       use params
+      use solver_parameters
       use thermp
       use vents
+      use wnodes
       include "precis.fi"
-      include "solvprm.fi"
-      include "opt.fi"
-      include "wnodes.fi"
 
       PARAMETER (MAXIN = 37)
       LOGICAL LFUPDAT, eof, countargs
@@ -2233,8 +2233,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use iofiles
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
       DIMENSION PMXMN(MAXTEQ,2), IPMXMN(0:MAXTEQ,2)
@@ -2373,8 +2373,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       DIMENSION P0(*), IP0(0:*)
       DIMENSION PMXMN(MAXTEQ,2), IPMXMN(0:MAXTEQ,2)

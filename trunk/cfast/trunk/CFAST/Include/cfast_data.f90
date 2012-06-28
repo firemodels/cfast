@@ -273,6 +273,71 @@ module objects2
 
 end module objects2
 
+module opt
+
+    use cparams
+    implicit none
+    
+    integer, parameter :: mxdebug = 19
+    integer, parameter :: mxopt = 21
+
+    integer, parameter :: off = 0
+    integer, parameter :: on = 1
+
+    integer, parameter :: fccfm = 1
+    integer, parameter :: fcfast = 2
+
+    integer, parameter :: ffire = 1
+    integer, parameter :: fhflow = 2
+    integer, parameter :: fentrain = 3
+    integer, parameter :: fvflow = 4
+    integer, parameter :: fcjet = 5
+    integer, parameter :: fdfire = 6
+    integer, parameter :: fconvec = 7
+    integer, parameter :: frad = 8
+    integer, parameter :: fconduc = 9
+    integer, parameter :: fdebug = 10
+    integer, parameter :: fode=11
+    integer, parameter :: fhcl=12
+    integer, parameter :: fmvent=13
+    integer, parameter :: fkeyeval=14
+    integer, parameter :: fpsteady=15
+    integer, parameter :: fhvloss=16
+    integer, parameter :: fmodjac=17
+    integer, parameter :: fpdassl=18
+    integer, parameter :: foxygen=19
+    integer, parameter :: fbtdtect=20
+    integer, parameter :: fbtobj=21
+ 
+    integer, parameter :: d_jac = 17
+    integer, parameter :: d_cnt = 1
+    integer, parameter :: d_prn = 2
+    integer, parameter :: d_mass = 1
+    integer, parameter :: d_hvac = 2
+    integer, parameter :: d_hflw = 3
+    integer, parameter :: d_vflw = 4
+    integer, parameter :: d_mvnt = 5
+    integer, parameter :: d_dpdt = 18
+    integer, parameter :: d_diag = 19
+
+    integer, parameter :: verysm = -9
+    integer, parameter :: verybg = 9
+
+    integer, dimension(mxopt) :: option = &
+        ! fire, hflow, entrain, vflow, cjet, door-fire, convec, rad, conduct, debug, exact ode,  hcl , mflow, keyboard, type of initialization,  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
+        (/ 2,   1,      1,       1,     2,    1,         1,      2,   1,       0,     1,          1,    1,     1,        1,                       0,            1,       0,           0,                  0,                   0/)
+    integer, dimension(mxopt) :: debug = 0
+    
+    real*8 :: cutjac, stptime, prttime, tottime, ovtime, tovtime
+    
+    integer :: iprtalg = 0, jacchk = 0
+    integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0
+ 
+    integer*2, dimension(mxdebug,2,nr) :: dbugsw
+    
+
+      end module opt
+
 module params
 
     use cparams
@@ -310,6 +375,30 @@ module smkview
     real*8, dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
   
 end module smkview
+
+module solver_parameters
+
+    use cparams
+    implicit none
+    real*8, dimension(nt) :: pinit
+    real*8, dimension(1) :: rpar2
+    integer, dimension(3) :: ipar2
+    real*8 :: aptol = 1.0d-6    ! absolute pressure tolerance
+    real*8 :: rptol = 1.0d-6    ! relative pressure tolerance
+    real*8 :: atol = 1.0d-5     ! absolute other tolerance
+    real*8 :: rtol = 1.0d-5     ! relative other tolerance
+    real*8 :: awtol = 1.0d-2    ! absolute wall tolerance
+    real*8 :: rwtol = 1.0d-2    ! relative wall tolerance
+    real*8 :: algtol = 1.0d-8   ! initialization tolerance
+    real*8 :: ahvptol = 1.0d-6      ! absolute HVAC pressure tolerance
+    real*8 :: rhvptol = 1.0d-6      ! relative HVAC pressure tolerance
+    real*8 :: ahvttol = 1.0d-5      ! absolute HVAC temperature tolerance
+    real*8 :: rhvttol = 1.0d-5      ! relative HVAC temperature tolerance
+    
+    real*8 :: stpmax = 1.0d0        ! maximum solver time step, if negative, then solver will decide
+    real*8 :: dasslfts = 0.005d0    ! maximum first time step
+
+end module solver_parameters
 
 module thermp
 
@@ -351,3 +440,35 @@ module vents
     real*8, dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
     
 end module vents
+
+module vent_slab
+    
+    implicit none
+    real*8, dimension(10) :: yvelev, dpv1m2
+    integer, dimension(10) ::  dirs12
+    integer :: nvelev, ioutf
+      
+end module vent_slab
+
+module wdervs
+
+    real*8 :: jacn1, jacn2, jacn3, jacdim
+      
+end module wdervs
+
+module wnodes
+
+    use cparams
+    implicit none
+    
+    integer :: nwpts = 30                                   ! number of wall nodes
+    integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)
+    real*8, dimension(3) :: wsplit = (/0.50, 0.17, 0.33/)   ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
+    
+    integer nwalls, nfurn
+    real*8, dimension (nr,4) :: wlength
+    real*8, dimension (nn,nr,4) :: walldx
+    real*8, dimension(nv) :: furn_time, furn_temp
+    real*8 qfurnout
+      
+end module wnodes

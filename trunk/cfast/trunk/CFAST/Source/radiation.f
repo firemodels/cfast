@@ -13,8 +13,8 @@
       use cenviro
       use cfast_main
       use fltarget
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       dimension flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal)
 

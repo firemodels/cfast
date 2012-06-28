@@ -33,9 +33,10 @@
       use dsize
       use iofiles
       use thermp
-      include "precis.fi"
+      implicit none
 
-      integer errorcode, rev_cfast
+      integer errorcode, rev_cfast, irev, i
+      real*8 :: xdelt, tstop, tbeg, tend
 
       version = 6300          ! Current CFAST version number
       crdate = (/2012,6,21/)  ! Current CFAST executable creation date
@@ -139,31 +140,30 @@
 !              is modeled then HVAC node pressures and hvac duct
 !              temperatures are also determined to force mass and energy
 !              conservation.
-!     Revision: $Revision$
-!     Revision Date: $Date$
 
       use cenviro
       use cfast_main
+      use opt
       use params
-      include "precis.fi"
-      include "wnodes.fi"
-      include "solvprm.fi"
-      include "opt.fi"
+      use solver_parameters
+      use wnodes
+      implicit none
 
-      dimension ipar(*), pdold(*), pdzero(*), rpar(*)
-      external gres, gres2, gres3
-      parameter (mxalg = 4*nr+mnode+mbr)
-      dimension deltamv(mxalg), hhvp(mxalg)
-      parameter (lrw = (3*mxalg**2+13*mxalg)/2)
-      dimension work(lrw)
-      external gjac
-
+      external gres, gres2, gres3, gjac
+      real*8 :: ipar(*), pdold(*), pdzero(*), rpar(*)
+      
+      integer, parameter :: mxalg = 4*nr+mnode+mbr
+      real*8 deltamv(mxalg), hhvp(mxalg)
+      integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
+      real*8 :: work(lrw)
+      integer :: ires, iopt, nhvalg, nalg0, nalg1, nalg2, nprint, i
+      integer :: ioff0,  info, ii, ieq1, ieq2, nodes
+      real*8 :: t, xx0 = 0.0d0, tol
 
     1 continue
 
       call roomcon(t)
 
-      xx0 = 0.0d0
       rpar2(1) = rpar(1)
       ipar2(1) = ipar(1)
       ipar2(2) = ipar(2)
@@ -338,13 +338,13 @@
       use iofiles
       use objects1
       use objects2
+      use opt
       use params
       use smkview
+      use solver_parameters
       use vents
+      use wnodes
       include "precis.fi"
-      include "opt.fi"
-      include "wnodes.fi"
-      include "solvprm.fi"
 
       parameter (maxord = 5)
       parameter (lrw = 40+(maxord+4)*maxeq+maxeq**2,liw = 20+maxeq)
@@ -904,8 +904,8 @@ c
       use cenviro
       use cfast_main
       use dervs
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       LOGICAL SLVHELP
       INTEGER*2 CH, HIT
@@ -972,8 +972,8 @@ c
       use cenviro
       use cfast_main
       use cshell
+      use opt
       include "precis.fi"
-      include "opt.fi"
 
       integer*2 ch, hit
 
@@ -1010,8 +1010,8 @@ c
 !     Revision Date: $Date$
 
       use cparams
+      use solver_parameters
       include "precis.fi"
-      include "solvprm.fi"
       DIMENSION INFO(*), RWORK(*)
       XX0 = 0.0D0
       DO I = 1, 11
@@ -1081,11 +1081,11 @@ C     SETTING JACOBIAN FLAG
       use cenviro
       use cfast_main
       use dervs
+      use flwptrs
       use fltarget
+      use opt
       use params
       include "precis.fi"
-      include "opt.fi"
-      include "flwptrs.fi"
 
       ! temporaray declarations and assignments
       integer all, some, uu, ll
@@ -1472,12 +1472,12 @@ C     SETTING JACOBIAN FLAG
       use cfast_main
       use dervs
       use fltarget
+      use opt
       use params
       use vents
+      use wdervs
+      use wnodes
       include "precis.fi"
-      include "wnodes.fi"
-      include "wdervs.fi"
-      include "opt.fi"
 
 c     order of variables is defined in the routine offset
 

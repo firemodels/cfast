@@ -6311,7 +6311,7 @@ C     DUMMY ROUTINE TO KEEP THE LINKER HAPPY
       STOP 'internal error in dassl - jac not instantiated'
       END
 
-      FUNCTION JACD()
+      real*8 FUNCTION JACD()
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C
@@ -6331,13 +6331,13 @@ C     Revision History:
 C        Created:  2/4/1993 at 17:13 by GPF
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-
-
-      include "precis.fi"
-      include "wdervs.fi"
-      JACD = JACDIM
-      RETURN
-      END
+    
+      use wdervs
+      implicit none
+      
+      jacd = jacdim
+      return
+      end function jacd
 
       SUBROUTINE SETDERV(J)
 C
@@ -6386,8 +6386,8 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
+      use opt
       include "precis.fi"
-      include "opt.fi"
 C
       NUMJAC = NUMJAC + 1
       RETURN

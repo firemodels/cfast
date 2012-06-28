@@ -35,10 +35,10 @@
       use cenviro
       use cfast_main
       use cshell
+      use opt
       use params
+      use solver_parameters
       include "precis.fi"
-      include "solvprm.fi"
-      include "opt.fi"
 
       dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), 
      +pdzero(maxteq)
@@ -106,10 +106,10 @@
       use cenviro
       use cfast_main
       use cshell
+      use opt
       use params
+      use solver_parameters
       include "precis.fi"
-      include "solvprm.fi"
-      include "opt.fi"
 
       dimension hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq)
       dimension pdzero(maxteq)
@@ -175,10 +175,10 @@
       use cenviro
       use cfast_main
       use cshell
+      use opt
       use params
+      use solver_parameters
       include "precis.fi"
-      include "solvprm.fi"
-      include "opt.fi"
 
       dimension hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq),
      +pdzero(maxteq)
@@ -599,9 +599,9 @@
       use cenviro
       use cfast_main
       use fltarget
+      use opt
       use params
       include "precis.fi"
-      include "opt.fi"
 
       dimension yinter(*), dummy(1)
 
@@ -1190,11 +1190,11 @@
       use cfin
       use cshell
       use iofiles
+      use opt
       use params
+      use solver_parameters
+      use wnodes
       include "precis.fi"
-      include "opt.fi"
-      include "wnodes.fi"
-      include "solvprm.fi"
 
       logical existed
 
@@ -1262,48 +1262,6 @@
       close (iofili)
 
       return
-      end
-
-      blockdata initslvb
-
-!     routine: initslvv
-!     purpose: this common block data initializes the solver variables
-!              it may be modified by solver.ini if it exists
-!     arguments: none
-
-      use cparams
-      use params
-          include "precis.fi"
-          include "opt.fi"
-          include "wnodes.fi"
-          include "solvprm.fi"
-
-c     abs pressure tol, rel pressure tol, abs other tol, rel other tol
-          data aptol, rptol, atol, rtol/1.0d-6, 1.0d-6, 1.0d-5, 1.0d-5/
-c     abs wall tol, rel wall tol
-          data awtol, rwtol, algtol/1.0d-2, 1.0d-2, 1.0d-8/
-c     abs hvac press, rel hvac press, abs hvac temp, rel hvac temp
-          data ahvptol,rhvptol,ahvttol,rhvttol/2*1.0d-6,2*1.0d-5/
-c     options fire, hflow, entrain, vflow, cjet, door-fire, convec, rad,
-          data (option(j),j=1,21)/ 2, 1, 1, 1, 2, 1, 1, 2, 
-c         conduct, debug, exact ode,  hcl , mflow, keyboard, 
-     +    1,     0,     1,         1,     1,      1,
-c         type of initialization,   mv heat loss, mod jac, dassl debug
-     +    1,                       0,          1,     0,
-c         oxygen dassl solve, back track on dtect,  back track on objects
-     .    0,                       0,                 0    /
-c     number of wall nodes, fractions for first, middle and last wall slab
-          data nwpts /30/
-c     boundary condition type (1=constant temperature, 2=insulated 3=flux)
-          data iwbound /3/
-c     computed values for boundary thickness
-          data (wsplit(j),j=1,3)  /0.50, 0.17, 0.33/
-c     turn debugging options off - this is not currently used
-          data debug /mxopt*0/
-c     maximum step size, if negative then solver will decide
-          data stpmax /1.0d0/, dasslfts/0.005d0/
-c
-          data jacchk/0/, cutjac/0.0d0/, iprtalg/0/
       end
 
       subroutine initspec
@@ -1575,8 +1533,8 @@ c          yy = ysize - yloc
       use cfast_main
       use fltarget
       use thermp
+      use wnodes
       include "precis.fi"
-      include "wnodes.fi"
 
       character off*8, none*8, tcname*8
       
@@ -1777,10 +1735,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cenviro
       use cfast_main
       use fltarget
+      use opt
       use params
+      use wnodes
       include "precis.fi"
-      include "wnodes.fi"
-      include "opt.fi"
 
 C     COUNT THE OF NODES (LARGEST OF NS AND NE)
 

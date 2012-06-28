@@ -97,3 +97,24 @@ module dsize
     integer, parameter :: dact=4
 
 end module dsize
+
+module fireptrs
+
+    integer, parameter :: free = 1
+    integer, parameter :: cont = 2
+    integer, parameter :: fsm = 3
+    integer, parameter :: pool = 4
+      
+end module fireptrs
+
+module flwptrs
+
+    ! define indexes for use with product arrays
+    integer, parameter :: l = 2
+    integer, parameter :: u = 1
+    integer, parameter :: m = 1
+    integer, parameter :: q = 2
+    integer, parameter :: o = 3
+    integer, parameter :: pp = 3
+      
+end module flwptrs

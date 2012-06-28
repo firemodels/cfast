@@ -274,8 +274,8 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use fltarget
       use objects2
+      use wnodes
       include "precis.fi"
-      include "wnodes.fi"
 
       DIMENSION MAP10(10), SVECT(3), FLUX(2), DFLUX(2)
       DIMENSION TTARG(2),QWTSUM(2),AWALLSUM(2),QGASSUM(2)

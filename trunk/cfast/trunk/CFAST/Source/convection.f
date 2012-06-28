@@ -81,9 +81,9 @@ c*re
 
       use cenviro
       use cfast_main
+      use opt
+      use wnodes
       include "precis.fi"
-      include "opt.fi"
-      include "wnodes.fi"
 
       dimension flwcv(nr,2), flxcv(nr,nwal)
       dimension flwcv0(nr,2), flxcv0(nr,nwal)
@@ -960,9 +960,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
       use cfast_main
+      use opt
+      use wdervs
       include "precis.fi"
-      include "opt.fi"
-      include "wdervs.fi"
 C
       DIMENSION FLWCJT(NR,2), FLXCJT(NR,NWAL)
       INTEGER CJETOPT

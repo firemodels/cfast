@@ -46,10 +46,10 @@ C
 
       use cenviro
       use cfast_main
+      use flwptrs
+      use opt
       use params
       include "precis.fi"
-      include "flwptrs.fi"
-      include "opt.fi"
 
       DIMENSION FLWMV(NR,NS+2,2)
       DIMENSION HVPSOLV(*), HVTSOLV(*), DELTPMV(*), DELTTMV(*)
@@ -366,9 +366,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
+      use opt
       use params
       include "precis.fi"
-      include "opt.fi"
 
       DIMENSION TPRIME(*), DELTTMV(*)
 

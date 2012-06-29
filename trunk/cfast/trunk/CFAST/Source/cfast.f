@@ -1450,8 +1450,6 @@ c     setting jacobian flag
 
 !     routine: cfast (main program)
 !     purpose: calculate environment variables from the solver vector
-!     revision: $revision: 290 $
-!     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
 !     arguments: pdif   solver vector
 !                iflag  action flag:
@@ -1473,12 +1471,19 @@ c     setting jacobian flag
       use vents
       use wdervs
       use wnodes
-      include "precis.fi"
-
-c     order of variables is defined in the routine offset
+      implicit none
 
       dimension pdif(*)
       integer frmask(mxccv)
+      
+      integer :: iflag, iroom, lsp, layer, i, j, k, iijk, itstop, iii
+      integer :: icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor
+      integer :: itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts
+      integer :: iwalleq, iwalleq2, iinode, ilay, isys, isof
+      real*8 :: wtemp, xx0, xx1, xx2, vminfrac, xx, yy, yy2, zz, pdif
+      real*8 :: wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl
+      real*8 :: ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu
+      real*8 :: ppwgas, pphv
 
       if(nfurn>0)then
           call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -2046,17 +2051,17 @@ c     order of variables is defined in the routine offset
 !     routine: resync
 !     purpose: resyncronize the total mass of the
 !              species with that of the total mass to insure overall and individual mass balance
-!     revision: $revision: 290 $
-!     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
 !     arguments: pdif   the p array to resync
 !                ibeg   the point at which species are started in p array
 
       use cenviro
       use cfast_main
-      include "precis.fi"
-      dimension pdif(*)
-      dimension factor(nr,2)
+      implicit none
+
+      real*8 :: pdif(*), factor(nr,2)
+      integer :: i, iroom, isof, ibeg, iprod
+      real*8 :: xx0 = 0.0d0
 
       xx0 = 0.0d0
       do iroom = 1,nm1

@@ -1081,7 +1081,7 @@ c     setting jacobian flag
       use fltarget
       use opt
       use params
-      include "precis.fi"
+      implicit none
 
       integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
 
@@ -1115,6 +1115,11 @@ c     setting jacobian flag
       integer :: update
 
       logical :: vflowflg, hvacflg, djetflg
+      integer :: ii, nprod, nirm, i, ires, iroom, iprod, ip, ierror, j
+      integer :: iwall, nprodsv, iprodu, iprodl, iwhcl
+      real*8 :: xx0 = 0.0d0, tsec, epsp, xqu, xql, aroom, hceil, pabs
+      real*8 :: hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot
+      real*8 :: tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
       ierror = 0
       xx0 = 0.0d0

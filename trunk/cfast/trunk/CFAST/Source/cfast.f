@@ -344,27 +344,29 @@
       use solver_parameters
       use vents
       use wnodes
-      include "precis.fi"
+      implicit none
 
-      parameter (maxord = 5)
-      parameter (lrw = 40+(maxord+4)*maxeq+maxeq**2,liw = 20+maxeq)
+      integer, parameter :: maxord = 5
+      integer, parameter :: lrw = 40+(maxord+4)*maxeq+maxeq**2
+      integer, parameter :: liw = 20+maxeq
+      integer, parameter :: all = 1, some = 0
 
-      dimension rwork(lrw), iwork(liw), info(15), ipar(3), rpar(1)
-      dimension info2(15)
-      dimension pprime(maxteq)
-      dimension pdnew(maxteq)
-      dimension p0(maxteq), izp0(0:maxteq)
-      dimension pmxmn(maxteq,2), izpmxmn(0:maxteq,2)
-      dimension vatol(maxeq), vrtol(maxeq), pdzero(maxteq)
+      real*8 :: rwork(lrw), rpar(1)
+      integer :: iwork(liw), info(15), ipar(3), info2(15)
+      integer :: izp0(0:maxteq), izpmxmn(0:maxteq,2)
+      real*8 :: pprime(maxteq), pdnew(maxteq), p0(maxteq)
+      real*8 ::  pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
+      real*8 :: pdzero(maxteq) = 0.0d0
       logical iprint, idump, iplot, ltarg, exists, ispread, 
      .firstpassforsmokeview
-      integer all, some, ios, ierror
-      integer*2 filecount
-      real*8 ton, toff
+      integer :: ios, ierror, idid, i, nodes, nfires, icode, ieqmax
+      integer :: idisc, ires, idsave, ifdtect, ifobj, isensor, isroom
+      integer*2 filecount, delfilesqq
+      real*8 :: ton, toff, xx0, xx1, x0001, tpaws, tstop, tstart, tdout
+      real*8 :: dprint, dplot, ddump, dspread, t, tprint, tdump, td
+      real*8 :: tplot, tspread, tout, errorcode, ostptime, tdtect, tobj
       character*133 messg
-      parameter (all = 1,some = 0)
-      external resid, jac
-      data pdzero /maxteq * 0.0d0/
+      external resid, jac, delfilesqq
 
       call cptime(toff)
       xx0 = 0.0d0
@@ -856,32 +858,27 @@
       subroutine updrest(nodes, nequals, nlspct,  t, told, p, pold,
      .pdnew, pdold, pdzero)
 
-
 !     routine: updrest
 !     purpose: update solution returned by dassl
-!     revision: $revision: 290 $
-!     revision date: $date: 2011-11-02 10:27:49 -0400 (wed, 02 nov 2011) $
 
       use fltarget
-      include "precis.fi"
+      implicit none
 
-      dimension p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
+      real*8 :: p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
+      integer i, nodes, nequals, nlspct
+      real*8 :: dt, t, told, xx0 = 0.0d0
 
       dt = t - told
       xx0 = 0.d0
 
-c    advance species
-
+      ! advance species
       do i = nodes + 1, nequals
           p(i) = p(i) + dt*pdold(i)
           p(i) = max (xx0, p(i))
           pdold(i) = pdnew(i)
       end do
 
-c
-c*** advance explicit target temperatures and update implicit temperatures
-c
-
+      ! advance explicit target temperatures and update implicit temperatures
       call trheat(1,xplicit,dt,pdzero,pdnew)
       call trheat(1,mplicit,dt,pdzero,pdnew)
       if (nlspct>0) call resync(p,nodes+1)
@@ -891,91 +888,88 @@ c
       end do
 
       return
-      end
+      end subroutine updrest
 
-      SUBROUTINE NTRACT(T,ICODE,TPAWS,TOUT,IEQMAX)
+      subroutine ntract(t,icode,tpaws,tout,ieqmax)
 
-
-!     Routine: ntract
-!     Purpose: keyboard routine for user interaction during simulation
-!     Revision: $Revision$
-!     Revision Date: $Date$
+!     routine: ntract
+!     purpose: keyboard routine for user interaction during simulation
 
       use cenviro
       use cfast_main
       use dervs
       use opt
-      include "precis.fi"
+      implicit none
 
-      LOGICAL SLVHELP
-      INTEGER*2 CH, HIT
+      logical :: slvhelp
+      integer*2 :: ch, hit
+      integer :: icode, ieqmax
+      real*8 :: t, rcode, tpaws, tout
 
-      ICODE = 0
-      CALL GRABKY(CH,HIT)
-      IF (HIT>0) THEN
-          IF (CH==27) THEN
-              ICODE = 1
-              RETURN
-          ELSEIF (HIT>1) THEN
-              IF (OPTION(FKEYEVAL)==ON) THEN
-                  IF (CH==59) THEN
-                      WRITE (*,5010) T, DT
-                      IF (SLVHELP()) ICODE = 1
-                  ELSE IF (CH==60) THEN
-                      IF (OPTION(FDEBUG)==ON) THEN
-                          OPTION(FDEBUG) = OFF
-                          WRITE (*,*) 'Debug is now off'
-                          WRITE (*,*)
-                      ELSE
-                          OPTION(FDEBUG) = ON
+      icode = 0
+      call grabky(ch,hit)
+      if (hit>0) then
+          if (ch==27) then
+              icode = 1
+              return
+          elseif (hit>1) then
+              if (option(fkeyeval)==on) then
+                  if (ch==59) then
+                      write (*,5010) t, dt
+                      if (slvhelp()) icode = 1
+                  else if (ch==60) then
+                      if (option(fdebug)==on) then
+                          option(fdebug) = off
+                          write (*,*) 'debug is now off'
+                          write (*,*)
+                      else
+                          option(fdebug) = on
                       endif
-                  ELSE IF (CH==61) THEN
-                      SWITCH(1,NR) = .NOT. SWITCH(1,NR)
-                      WRITE (*,*) 'Toggle flow field printing to ',
-     +                SWITCH(1,NR)
-                  ELSE IF (CH==62) THEN
-                      CALL DEBUGPR(1,T,DT,IEQMAX)
-                  ELSE IF (CH==63) THEN
-                      WRITE (*,5010) T, DT
-                  ELSE IF (CH==64) THEN
-                      WRITE (*,5010) T, DT
-                      WRITE (*,*) 'Enter time at which to pause: '
-                      READ (*,*) RCODE
-                      TPAWS = RCODE
-                      TOUT = MIN(TPAWS,TOUT)
-                  ELSE IF (CH==65) THEN
-                      IF (OPTION(FPDASSL)==ON) THEN
-                          OPTION(FPDASSL) = OFF
-                          WRITE (*,*) 'DASSL debug is now off'
-                      ELSE
-                          OPTION(FPDASSL) = ON
+                  else if (ch==61) then
+                      switch(1,nr) = .not. switch(1,nr)
+                      write (*,*) 'toggle flow field printing to ',
+     +                switch(1,nr)
+                  else if (ch==62) then
+                      call debugpr(1,t,dt,ieqmax)
+                  else if (ch==63) then
+                      write (*,5010) t, dt
+                  else if (ch==64) then
+                      write (*,5010) t, dt
+                      write (*,*) 'enter time at which to pause: '
+                      read (*,*) rcode
+                      tpaws = rcode
+                      tout = min(tpaws,tout)
+                  else if (ch==65) then
+                      if (option(fpdassl)==on) then
+                          option(fpdassl) = off
+                          write (*,*) 'dassl debug is now off'
+                      else
+                          option(fpdassl) = on
                       endif
                   endif
-              ELSE
-                  WRITE (*,5010) T, DT
+              else
+                  write (*,5010) t, dt
               endif
           endif
       endif
 
-      RETURN
- 5010 FORMAT (' Time = ',1PG12.4,', dt = ',1PG12.4)
-      END
+      return
+ 5010 format (' time = ',1pg12.4,', dt = ',1pg12.4)
+      end subroutine ntract
 
       logical function slvhelp()
 
-
 !     Routine: slvhelp
 !     Purpose: quick output of keyboard shortcuts available during simulaiton
-!     Revision: $Revision$
-!     Revision Date: $Date$
 
       use cenviro
       use cfast_main
       use cshell
       use opt
-      include "precis.fi"
+      implicit none
 
       integer*2 ch, hit
+      integer ii
 
       write (iofilo,*) '***Options Set***'
       write (iofilo,'(1x,20i3)') (option(ii),ii = 1,mxopt)
@@ -1001,43 +995,45 @@ c
       return
       end
 
-      SUBROUTINE SETINFO(INFO,RWORK)
+      subroutine setinfo(info,rwork)
 
-
-!     Routine: setinfo
-!     Purpose: update solution flags for dassl solver
-!     Revision: $Revision$
-!     Revision Date: $Date$
+!     routine: setinfo
+!     purpose: update solution flags for dassl solver
 
       use cparams
       use solver_parameters
-      include "precis.fi"
-      DIMENSION INFO(*), RWORK(*)
-      XX0 = 0.0D0
-      DO I = 1, 11
-          INFO(I) = 0
+      implicit none
+
+      integer :: info(*)
+      real*8 :: rwork(*)
+      integer :: i
+      real*8 :: xx0 = 0.0d0
+      
+      xx0 = 0.0d0
+      do i = 1, 11
+          info(i) = 0
       end do
-      INFO(3) = 1
-      INFO(2) = 1
-      IF (STPMAX<=XX0) THEN
-          INFO(7) = 0
-      ELSE
-          INFO(7) = 1
-          RWORK(2) = STPMAX
+      info(3) = 1
+      info(2) = 1
+      if (stpmax<=xx0) then
+          info(7) = 0
+      else
+          info(7) = 1
+          rwork(2) = stpmax
       endif
-      IF (DASSLFTS<XX0) THEN
-          INFO(8) = 0
-      ELSE
-          INFO(8) = 1
-          RWORK(3) = DASSLFTS
+      if (dasslfts<xx0) then
+          info(8) = 0
+      else
+          info(8) = 1
+          rwork(3) = dasslfts
       endif
 
-C     SETTING JACOBIAN FLAG
+c     setting jacobian flag
 
-      INFO(5) = 0
-      INFO(11) = 1
-      RETURN
-      END
+      info(5) = 0
+      info(11) = 1
+      return
+      end
 
       SUBROUTINE RESID (TSEC,X,XPSOLVE,DELTA,IRES,RPAR,IPAR)
 
@@ -1087,40 +1083,38 @@ C     SETTING JACOBIAN FLAG
       use params
       include "precis.fi"
 
-      ! temporaray declarations and assignments
-      integer all, some, uu, ll
-      parameter (all = 1,some = 0, uu = upper,ll = lower)
+      integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
 
       ! data structures for dassl, the numerical solver
-      dimension ipar(*), rpar(*)
-      dimension x(*), xpsolve(*), xprime(maxteq), delta(*)
+      integer :: ipar(*)
+      real*8 :: rpar(*), x(*), xpsolve(*), xprime(maxteq), delta(*)
 
       ! data structure for total flows and fluxes
-      dimension flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+      real*8 :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
 
       ! data structures for flow through vents
-      dimension flwnvnt(nr,mxprd+2,2)
-      dimension flwhvnt(nr,ns+2,2)
+      real*8 :: flwnvnt(nr,mxprd+2,2)
+      real*8 :: flwhvnt(nr,ns+2,2)
 
       ! data structures for fires
-      dimension flwf(nr,ns+2,2)
+      real*8 :: flwf(nr,ns+2,2)
 
       ! data structures for convection, radiation, and ceiling jets
-      dimension flwcv(nr,2), flxcv(nr,nwal)
-      dimension flwrad(nr,2), flxrad(nr,nwal)
-      dimension flwcjet(nr,2), flxcjet(nr,nwal)
+      real*8 :: flwcv(nr,2), flxcv(nr,nwal)
+      real*8 :: flwrad(nr,2), flxrad(nr,nwal)
+      real*8 :: flwcjet(nr,2), flxcjet(nr,nwal)
 
       ! data structures for mechanical vents
-      dimension flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+      real*8 :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
 
       ! data structures for hcl deposition
-      dimension flwhcl(nr,ns+2,2), flxhcl(nr,4)
+      real*8 :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
       ! data structures for door jet fires
-      dimension flwdjf(nr,ns+2,2)
-      integer update
+      real*8 :: flwdjf(nr,ns+2,2)
+      integer :: update
 
-      logical vflowflg, hvacflg, djetflg
+      logical :: vflowflg, hvacflg, djetflg
 
       ierror = 0
       xx0 = 0.0d0
@@ -1160,9 +1154,9 @@ C     SETTING JACOBIAN FLAG
      .flwmv,delta(nofpmv+1),delta(noftmv+1),
      .xprime(nofhvpr+1),nprod,ierror,hvacflg,filtered)
 
-      IF (IERROR/=0) THEN
-          IRES = -2
-          RETURN
+      if (ierror/=0) then
+          ires = -2
+          return
       endif
 
       ! calculate heat and mass flows due to fires
@@ -1171,7 +1165,6 @@ C     SETTING JACOBIAN FLAG
       call djet (flwdjf,djetflg)
 
       ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation
-
       call cjet (flwcjet,flxcjet)
       call cvheat (flwcv,flxcv)
       call rdheat (flwrad,flxrad,ierror)
@@ -1181,7 +1174,6 @@ C     SETTING JACOBIAN FLAG
       endif
 
       ! calculate hcl deposition to walls
-
       call hcl (flwhcl, flxhcl,ierror)
       if (ierror/=0) then
           ires = -2
@@ -1189,7 +1181,6 @@ C     SETTING JACOBIAN FLAG
       endif
 
       ! reset parallel data structures
-
       do i = 1, nm1
           qc(ll,i) = flwcjet(i,ll) + flwcv(i,ll)
           qc(uu,i) = flwcjet(i,uu) + flwcv(i,uu)

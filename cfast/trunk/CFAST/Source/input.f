@@ -510,7 +510,6 @@ c    see which room is on top (if any) - this is like a bubble sort
 
       SUBROUTINE keywordcases(xnumr,xnumc,IERROR)
 
-
 !     routine:  keywordcases (remaned from NPUTQ)
 !     purpose: Handles CFAST datafile keywords
 !     Arguments: xnumr    number of rows in input file spreadsheet

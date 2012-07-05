@@ -1,6 +1,0 @@
-      DIMENSION WLENGTH(NR,4), WALLDX(NN,NR,4)
-      DIMENSION WSPLIT(3)
-      DIMENSION furn_time(100), furn_temp(100)
-      COMMON /WNODES/ WLENGTH, WALLDX, WSPLIT, furn_time, furn_temp,
-     +    qfurnout, NWALLS, IWBOUND, NWPTS, nfurn
-      SAVE /WNODES/

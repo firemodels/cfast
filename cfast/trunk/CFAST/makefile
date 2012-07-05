@@ -14,7 +14,7 @@ INCLUDE = ../Include
 
 # Definition of the object variables
 
-objf = datamodules.o cfast.o auxiliary.o initialization.o input.o numerics.o \
+objf = cfast_parameters.o cfast_data.o cfast_interfaces.o cfast.o auxiliary.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               conduction.o cyl_conduct.o convection.o radiation.o target.o \
               fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o 
@@ -135,13 +135,13 @@ intel_osx_64_db : setup $(obj)
 # *** Object Dependencies ***
 
 
-cfast.o : datamodules.o auxiliary.o initialization.o input.o numerics.o \
+cfast.o : auxiliary.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               conduction.o cyl_conduct.o convection.o radiation.o target.o \
               fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o
 
 
-cfast.obj : datamodules.obj auxiliary.obj initialization.obj input.obj numerics.obj \
+cfast.obj : auxiliary.obj initialization.obj input.obj numerics.obj \
               output.obj outputsmv.obj outputspreadsheet.obj ssHeaders.obj \
               conduction.obj cyl_conduct.obj convection.obj radiation.obj target.obj \
               fire.obj flowfan.obj flowhall.obj flowhorizontal.obj flowvertical.obj

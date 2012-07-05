@@ -1,15 +1,10 @@
       SUBROUTINE DISCLAIM (NAME)
 
       use cshell
-      include "precis.fi"
-      CHARACTER NAME*(*), OBUF*14
+      implicit none
+      CHARACTER NAME*(*), OBUF*14, aminrev*2
+      integer majver, minver, minrev
 
-C     December 15, 1989 - created to specify version, model name and run date
-C     Modified 2-11-93 - Arithmetic on PC was giving wrong version numbers.
-C                       ( .9999999999 instead 1.00000). Changed calculations
-C                        to use integer arithmetic with MOD functions. This
-C                        was probably a compiler bug.
-C
 C     FIRST THE DATE
      
       WRITE(OBUF,2) RUNDAT(1),RUNDAT(2),RUNDAT(3)
@@ -45,8 +40,8 @@ C     NOW THE VERSION
 
       use cfast_main
       use cshell
-      include "precis.fi"
-      integer rev_cfast
+      implicit none
+      integer rev_cfast, imajor, iminor, iminorrev, iunit
 
       call splitversion(version,imajor,iminor,iminorrev)
 
@@ -203,9 +198,12 @@ C        Modifed: 7/22/96 by GPF
 C                  Added RESLTHALL to report results for halls
 C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
-
       use cshell
-      include "precis.fi"
+      implicit none
+      
+      integer isw
+      real*8 :: time
+      
       IF (outputformat>1) THEN
         WRITE (IOFILO,5000) TIME
         CALL RSLTLAY
@@ -250,7 +248,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cenviro
       use cshell
       use fltarget
-      include "precis.fi"
+      implicit none
+      
+      integer :: i, itarg, izzvol
+      
       WRITE (IOFILO,5000)
       WRITE (IOFILO,5010)
       WRITE (IOFILO,5020)
@@ -307,7 +308,10 @@ C
       use cfast_main
       use cshell
       use objects1
-      include "precis.fi"
+      implicit none
+      
+      integer length, i, isw, ir, j
+      real*8 xx0, fheight, xems, xemp, xqf, xqupr, xqlow
 
       EXTERNAL LENGTH
       XX0 = 0.0D0
@@ -391,12 +395,15 @@ C
       use cfast_main
       use cenviro
       use cshell
-      include "precis.fi"
+      implicit none
+      
       LOGICAL SWL(4)
       INTEGER IWPTR(4)
       CHARACTER STYPE(NS)*10, SUNITS(NS)*11, CIOUT*255, CJOUT*255,
      +    LNAMES(2)*5, WTYPE(4)*10
       EXTERNAL LENGTH
+      integer length, i, j, layer, ic, lsp, iw
+      
       DATA LNAMES /'Upper', 'Lower'/
       DATA IWPTR /1, 3, 4, 2/
       DATA WTYPE /'HCl c', 'HCl f', 'HCl uw', 'HCl lw'/
@@ -492,7 +499,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use vents
-      include "precis.fi"
+      implicit none
+      
+      integer :: irm, i, j, k, iijk, ii, inode, iii
+      real*8 :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow, time
+      
       CHARACTER CIOUT*8, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
@@ -646,7 +657,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use vents
-      include "precis.fi"
+      implicit none
+      
+      integer irm, i, ii, iii, inode
+      real*8 xx0, flow, time
+      
       CHARACTER CIOUT*14, CJOUT*12, OUTBUF*132
       DIMENSION FLOW(6)
       LOGICAL FIRST
@@ -722,7 +737,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cenviro
       use cfast_main
       use objects2
-      include "precis.fi"
+      implicit none
+      
+      integer i, iounit, ir
+      real*8 xx0, xemp, xqf
+      
       XX0 = 0.0D0
       WRITE (iounit,5000)
       WRITE (iounit,5010)
@@ -791,7 +810,12 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use fltarget
-      include "precis.fi"
+      implicit none
+      
+      integer length, itprt, i, iw, itarg, itctemp, isw
+      real*8 xx0, x100, ctotal, rtotal, ftotal, wtotal, gtotal, tg, 
+     *  tttemp, tctemp
+      
       INTEGER IWPTR(4)
       EXTERNAL LENGTH
       DATA IWPTR /1, 3, 4, 2/
@@ -900,7 +924,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cenviro
       use cfast_main
       use cshell
-      include "precis.fi"
+      implicit none
+      
+      integer i, iroom, itype
+      real*8 ctotal, tctemp, cjetmin, zdetect, tlay, tjet, vel, tlink
+      
       CHARACTER*5 CTYPE
       CHARACTER*3 CACT
 
@@ -964,7 +992,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cenviro
       use cfast_main
       use cshell
-      include "precis.fi"
+      implicit none
+      
+      integer :: nhalls, i
+      real*8 :: tstart, vel, depth, dist, time
 
 
       NHALLS = 0
@@ -1012,11 +1043,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use iofiles
-      include "precis.fi"
+      implicit none
 
       CHARACTER CHKSUM*8
       EXTERNAL LENGTH
-      integer imajor, iminor, iminorrev
+      integer imajor, iminor, iminorrev, isw, length
 
       call splitversion(version,imajor,iminor,iminorrev)
 
@@ -1072,9 +1103,11 @@ C
       use cfast_main
       use cshell
       use vents
-      include "precis.fi"
+      implicit none
+      
       CHARACTER CHJET(4)*7, CJBUF*51
       DATA CHJET /'off', 'ceiling', 'wall', 'all'/
+      integer :: jpos
 
       WRITE (IOFILO,5000) 
       WRITE (IOFILO,5010) NM1, NVENTS, NVVENT, NEXT
@@ -1130,7 +1163,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use params
-      include "precis.fi"
+      implicit none
 
       WRITE (IOFILO,5000) TA-273.15, PA + POFSET, EXTA-273.15, 
      +    EXPA + POFSET, SAL, 
@@ -1169,7 +1202,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use cshell
-      include "precis.fi"
+      implicit none
+      
+      integer i
 
       WRITE (IOFILO,5000)
       DO 10 I = 1, NM1
@@ -1212,7 +1247,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cshell
       use params
       use vents
-      include "precis.fi"
+      implicit none
+      
+      integer :: i,j,k,iijk, isys, ibr, irm, iext
+      real*8 hrx, hrpx
+      
       CHARACTER CIOUT*8, CJOUT*14, CSOUT*6
       LOGICAL FIRST
 
@@ -1395,7 +1434,9 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
-      include "precis.fi"
+      implicit none
+      
+      integer :: i, ind, iext, irm
       
       DO 10 I = 1, NEXT
         IF (HVNODE(2,I)==IND) THEN
@@ -1433,7 +1474,9 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use cfast_main
       use cshell
       use thermp
-      include "precis.fi"
+      implicit none
+      
+      integer i, j, k
       
       CHARACTER WALL(4)*7
       DATA WALL /'ceiling', 'floor', 'wall', 'wall'/
@@ -1493,7 +1536,10 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
       use objects1
       use objects2
       use params
-      include "precis.fi"
+      implicit none
+      
+      integer io, i, j, nnv, length, is
+      real*8 y_hcn, y_hcl
       
       character cbuf*255, stype(ns)*5, ftype(0:4)*13
       external length
@@ -1552,6 +1598,7 @@ C     PRINT OUT THE PROPERTIES OF THE MATERIALS USED
       end subroutine outfire
 
       CHARACTER*8 FUNCTION CHKSUM(FILE)
+      implicit none
       CHARACTER*(*) FILE
       CHKSUM = '00000000'
       RETURN
@@ -1570,7 +1617,9 @@ C
       use cfast_main
       use cshell
       use fltarget
-      include "precis.fi"
+      implicit none
+      
+      integer :: itarg, isw, j
       
       CHARACTER CBUF*255
 
@@ -1620,8 +1669,11 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use solver_parameters
-      include "precis.fi"
-      DIMENSION FLOW(8)
+      implicit none
+      
+      integer :: i
+      real*8 FLOW(8), flow1, flow2, flow3, flow4, flow5, flow6, flow7, 
+     *  flow8, x1000,x100,x10,x1,x01
       CHARACTER OUTBUF*(*)
 
       OUTBUF = ' '
@@ -1671,10 +1723,10 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cfast_main
       use fltarget
-      include "precis.fi"
+      implicit none
 
       real*8 positionvector(*)
-      integer targetnumber
+      integer targetnumber, i
 
       do i = 1, 6
       positionvector (i) = xxtarg(i,targetnumber)

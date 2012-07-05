@@ -64,7 +64,7 @@
 		<File RelativePath=".\Source\initialization.f"/>
 		<File RelativePath=".\Source\input.f"/>
 		<File RelativePath=".\Source\numerics.f"/>
-		<File RelativePath=".\Source\output.f"/>
+		<File RelativePath=".\Source\output.f90"/>
 		<File RelativePath=".\Source\outputsmv.f90"/>
 		<File RelativePath=".\Source\outputspreadsheet.f"/>
 		<File RelativePath=".\Source\radiation.f"/>

@@ -5596,7 +5596,7 @@ Public Class CeditMain
         ' Initialize fire objects with ones from the current directory, if they exist
         myFireObjects.Clear()
         IO.ReadFireObjects(PathName)
-        IO.ReadFireObjects(Application.StartupPath & "\")
+        IO.ReadFireObjects(Application.StartupPath + "\")
         UpdateGUI.InitFireObjectList(Me.FireName)
         ' Now we should be ready to read the input file
         ReadInputFile(FileName)

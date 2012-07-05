@@ -52,9 +52,9 @@
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\Source\auxiliary.f"/>
-		<File RelativePath=".\Source\cfast.f"/>
-		<File RelativePath=".\Source\conduction.f"/>
-		<File RelativePath=".\Source\convection.f"/>
+		<File RelativePath=".\Source\cfast.f90"/>
+		<File RelativePath=".\Source\conduction.f90"/>
+		<File RelativePath=".\Source\convection.f90"/>
 		<File RelativePath=".\Source\cyl_conduct.f"/>
 		<File RelativePath=".\Source\fire.f"/>
 		<File RelativePath=".\Source\flowfan.f"/>

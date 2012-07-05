@@ -383,20 +383,20 @@ module solver_parameters
     real*8, dimension(nt) :: pinit
     real*8, dimension(1) :: rpar2
     integer, dimension(3) :: ipar2
-    real*8 :: aptol = 1.0d-6    ! absolute pressure tolerance
-    real*8 :: rptol = 1.0d-6    ! relative pressure tolerance
-    real*8 :: atol = 1.0d-5     ! absolute other tolerance
-    real*8 :: rtol = 1.0d-5     ! relative other tolerance
-    real*8 :: awtol = 1.0d-2    ! absolute wall tolerance
-    real*8 :: rwtol = 1.0d-2    ! relative wall tolerance
-    real*8 :: algtol = 1.0d-8   ! initialization tolerance
+    real*8 :: aptol = 1.0d-6        ! absolute pressure tolerance
+    real*8 :: rptol = 1.0d-6        ! relative pressure tolerance
+    real*8 :: atol = 1.0d-5         ! absolute other tolerance
+    real*8 :: rtol = 1.0d-5         ! relative other tolerance
+    real*8 :: awtol = 1.0d-2        ! absolute wall tolerance
+    real*8 :: rwtol = 1.0d-2        ! relative wall tolerance
+    real*8 :: algtol = 1.0d-8       ! initialization tolerance
     real*8 :: ahvptol = 1.0d-6      ! absolute HVAC pressure tolerance
     real*8 :: rhvptol = 1.0d-6      ! relative HVAC pressure tolerance
     real*8 :: ahvttol = 1.0d-5      ! absolute HVAC temperature tolerance
     real*8 :: rhvttol = 1.0d-5      ! relative HVAC temperature tolerance
     
     real*8 :: stpmax = 1.0d0        ! maximum solver time step, if negative, then solver will decide
-    real*8 :: dasslfts = 0.005d0    ! maximum first time step
+    real*8 :: dasslfts = 0.005d0    ! first time step for DASSL
 
 end module solver_parameters
 

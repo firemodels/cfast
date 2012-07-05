@@ -6311,7 +6311,7 @@ C     DUMMY ROUTINE TO KEEP THE LINKER HAPPY
       STOP 'internal error in dassl - jac not instantiated'
       END
 
-      real*8 FUNCTION JACD()
+      integer FUNCTION JACD()
 
 C--------------------------------- NIST/BFRL ---------------------------------
 C

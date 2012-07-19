@@ -457,6 +457,7 @@ Public Class TargetCollection
         ToTarget.ActivationTemperature = FromTarget.ActivationTemperature
         ToTarget.RTI = FromTarget.RTI
         ToTarget.SprayDensity = FromTarget.SprayDensity
+        ToTarget.InternalLocation = FromTarget.InternalLocation
         List.Item(indexTo) = ToTarget
     End Sub
     Public Sub Swap(ByVal index1 As Integer, ByVal index2 As Integer)

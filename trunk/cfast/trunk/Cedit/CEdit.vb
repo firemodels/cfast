@@ -1455,7 +1455,7 @@ Public Class CeditMain
         Me.TabHorizontalFlow.Name = "TabHorizontalFlow"
         Me.TabHorizontalFlow.Size = New System.Drawing.Size(976, 558)
         Me.TabHorizontalFlow.TabIndex = 4
-        Me.TabHorizontalFlow.Text = "Horizontal Flow Vents"
+        Me.TabHorizontalFlow.Text = "Wall Vents"
         '
         'HVentSummary
         '
@@ -1764,7 +1764,7 @@ Public Class CeditMain
         Me.TabVerticalFlow.Name = "TabVerticalFlow"
         Me.TabVerticalFlow.Size = New System.Drawing.Size(976, 558)
         Me.TabVerticalFlow.TabIndex = 5
-        Me.TabVerticalFlow.Text = "Vertical Flow Vents"
+        Me.TabVerticalFlow.Text = "Ceiling/Floor Vents"
         '
         'VVentSummary
         '

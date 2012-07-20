@@ -6594,13 +6594,13 @@ Public Class EgressCalculation
 
             'PT changed: IF structure to include the option with building file
             If Me.valid Then
-                If Me.firstFloorExit Then Me.StairCase(i).RoomPop(0) = Me.stairPopPerFlr
-                For j As Integer = 1 To Me.numFloors - 1
+                If Me.firstFloorExit Then Me.StairCase(i).RoomPop(1) = flrPop(0)
+                For j As Integer = 2 To Me.numFloors
                     'If aBuildingfile = True Then
                     'Me.StairCase(i).RoomPop(j) = Me.PopulationPF(j)
-                    Me.DividePop(flrPop(j), elFrac(j), Me.numStairs, stairPopPerFlr, elPopPerFlr, valid)
+                    Me.DividePop(flrPop(j - 1), elFrac(j - 1), Me.numStairs, stairPopPerFlr, elPopPerFlr, valid)
                     Me.StairCase(i).RoomPop(j) = stairPopPerFlr
-                    Me.StairCase(i).RoomDelay(j) = strDlay(j)
+                    Me.StairCase(i).RoomDelay(j) = strDlay(j - 1)
                     'Else
                     'Me.StairCase(i).RoomPop(j) = Me.stairPopPerFlr
                     'End If

@@ -23,7 +23,7 @@ Each subdirectory under the Validation directory of the Repository represents an
 =Running the Cases=
 In Windows, the CFAST validation suite is run using the batch file runall.bat located in the validation directory.  This batch files will delete any old simulation results and plots and run all of the CFAST cases included in the validation suite.  Allow 15 - 30 minutes for the suite to run, depending on your computer speed.
 
-=Compiling the FDS Validation Guide=
+=Compiling the CFAST Validation Guide=
 You do not have to rerun the Validation Suite if you just want to compile the FDS Validation Guide. But you do have to run the Matlab script master_validation_script.m to make all the figures. Here is how you do it:
 
 Start up Matlab and cd to the Validation/Matlab folder of the Repository.

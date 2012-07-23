@@ -38,7 +38,7 @@ if nargin>=1
         vdir = [pwd,'/../../Verification/'];
         plotdir = [pwd,'/../../Manuals/'];
     elseif strcmp(varargin{1},'validation')|strcmp(varargin{1},'Validation')
-        cfil = [pwd,'/validation_data_config_matlab.csv'];
+        cfil = [pwd,'/CFAST_validation_dataplot_inputs.csv'];
         vdir = [pwd,'/../../Validation/'];
         plotdir = [pwd,'/../../Docs/Validation_Guide/FIGURES/'];
     elseif strcmp(varargin{1},'training')

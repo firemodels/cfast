@@ -1,3 +1,5 @@
+#summary How to run the CFAST Validation Suite.
+
 =Introduction=
 This is a summary of how to run the CFAST Validation Suite. The Suite consists of simulations of a variety of experiments. These cases are run and processed with each minor release of CFAST.
 

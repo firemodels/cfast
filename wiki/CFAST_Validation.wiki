@@ -28,9 +28,9 @@ In Windows, the CFAST validation suite is run using the batch file runall.bat lo
 =Compiling the CFAST Validation Guide=
 You do not have to rerun the Validation Suite if you just want to compile the FDS Validation Guide. But you do have to run the Matlab script master_validation_script.m to make all the figures. Here is how you do it:
 
-Start up Matlab and cd to the Validation/Matlab folder of the Repository.
-Type: master_validation_script at the Matlab command prompt.
-After about 15 to 30 minutes (depending on your computer speed), cd to docs/Validation_Guide and at the command prompt type: pdflatex Validation_Guide.tex, or invoke PDFLaTeX from within your LaTeX editor/processor.
-Type: bibtex Validation_Guide, noting that the .tex is not needed by bibtex, or just remember to run BibTeX from within your LaTeX editor/processor.
-Type: pdflatex Validation_Guide.tex twice again to fully establish all the cross-linked references.
+Start up Matlab and cd to the Validation/Matlab folder of the Repository.<br>
+Type: master_validation_script at the Matlab command prompt.<br>
+After about 15 to 30 minutes (depending on your computer speed), cd to docs/Validation_Guide and at the command prompt type: pdflatex Validation_Guide.tex, or invoke PDFLaTeX from within your LaTeX editor/processor.<br>
+Type: bibtex Validation_Guide, noting that the .tex is not needed by bibtex, or just remember to run BibTeX from within your LaTeX editor/processor.<br>
+Type: pdflatex Validation_Guide.tex twice again to fully establish all the cross-linked references.<br>
 Inspect the various plots and graphs in the Guide for accuracy.

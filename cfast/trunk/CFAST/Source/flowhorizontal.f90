@@ -68,6 +68,9 @@
             im = min(iroom1,iroom2)
             ix = max(iroom1,iroom2)
             factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
+            if (tsec>55.0) then
+                continue
+            end if
             height = zzvent(i,2) - zzvent(i,1)
             width = zzvent(i,3)
             avent = factor2 * height * width
@@ -156,6 +159,20 @@
                         end do
                     endif
                 endif
+            else
+                iijk = ijk(iroom1,iroom2,ik)
+                ss1(iijk) = xx0
+                ss2(iijk) = xx0
+                sa1(iijk) = xx0
+                sa2(iijk) = xx0
+                as1(iijk) = xx0
+                as2(iijk) = xx0
+                aa1(iijk) = xx0
+                aa2(iijk) = xx0
+                sau1(iijk) = xx0
+                sau2(iijk) = xx0
+                asl1(iijk) = xx0
+                asl2(iijk) = xx0
             endif
 80          continue
         end do
@@ -415,28 +432,28 @@
             end do
             if(ieqtyp==eqp.or.ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqoxyl.or.ieqtyp==eqoxyu)then
 
-            ! determine all rooms connected to perturbed rooms
-            do i = 1, nvents
-                iroom1 = izvent(i,1)
-                iroom2 = izvent(i,2)
-                if(iroom==iroom1.or.iroom==iroom2)then
-                    roomflg(iroom1) = .true.
-                    roomflg(iroom2) = .true.
-                endif
-            end do
-            roomflg(nm1+1) = .false.
+                ! determine all rooms connected to perturbed rooms
+                do i = 1, nvents
+                    iroom1 = izvent(i,1)
+                    iroom2 = izvent(i,2)
+                    if(iroom==iroom1.or.iroom==iroom2)then
+                        roomflg(iroom1) = .true.
+                        roomflg(iroom2) = .true.
+                    endif
+                end do
+                roomflg(nm1+1) = .false.
 
-            ! determine all vents connected to the above rooms
-            do i = 1, nvents
-                iroom1 = izvent(i,1)
-                iroom2 = izvent(i,2)
-                if(roomflg(iroom1).or.roomflg(iroom2))then
-                    ventflg(i) = .true.
-                    anyvents = .true.
-                endif
-            end do
+                ! determine all vents connected to the above rooms
+                do i = 1, nvents
+                    iroom1 = izvent(i,1)
+                    iroom2 = izvent(i,2)
+                    if(roomflg(iroom1).or.roomflg(iroom2))then
+                        ventflg(i) = .true.
+                        anyvents = .true.
+                    endif
+                end do
+            endif
         endif
-    endif
     endif
 
     return
@@ -628,7 +645,7 @@
     implicit none
     real*8 yelev(*), ylay(*), ymin, ymax, yvbot, yvtop
     integer :: nelev
-    
+
     ymin = min(ylay(1),ylay(2))
     ymax = max(ylay(1),ylay(2))
     if (ymax>=yvtop.and.(ymin>=yvtop.or.ymin<=yvbot)) then
@@ -898,138 +915,138 @@
     return
     end subroutine delp
 
-!	The following functions are to implement the open/close function for vents.
-!	This is done with a really simple, linear interpolation
-!	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mfan),
-!         and qcvi(4,mfan). 
+    !	The following functions are to implement the open/close function for vents.
+    !	This is done with a really simple, linear interpolation
+    !	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mfan),
+    !         and qcvi(4,mfan). 
 
-!	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
+    !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
 
-!   The qcv{x} arrays are of the form
-!		(1,...) Is start of time to change
-!		(2,...) Is the initial fraction (set in HVENT, VVENT and MVENT)
-!		(3,...) Is the time to complete the change, Time+Decay_time, and
-!		(4,...) Is the final fraction
+    !   The qcv{x} arrays are of the form
+    !		(1,...) Is start of time to change
+    !		(2,...) Is the initial fraction (set in HVENT, VVENT and MVENT)
+    !		(3,...) Is the time to complete the change, Time+Decay_time, and
+    !		(4,...) Is the final fraction
 
-!	The open/close function is done in the physical/mode interface, HFLOW, VFLOW and HVFAN
+    !	The open/close function is done in the physical/mode interface, HFLOW, VFLOW and HVFAN
 
-	real*8 function qchfraction (points, index, time)
+    real*8 function qchfraction (points, index, time)
 
-!	This is the open/close function for buoyancy driven horizontal flow
+    !	This is the open/close function for buoyancy driven horizontal flow
 
-	real*8 points(4,*), time, dt, dy, dydt, mintime
-	data mintime/1.0e-6/
+    real*8 points(4,*), time, dt, dy, dydt, mintime
+    data mintime/1.0e-6/
 
-	if (time<points(1,index)) then
-		qchfraction = points(2,index)
-	else if (time>points(3,index)) then
-		qchfraction = points(4,index)
-	else
-	    dt = max(points(3,index) - points(1,index),mintime)
-	    deltat = max(time - points(1,index),mintime)
-		dy = points(4,index) - points(2,index)
-		dydt = dy / dt
-		qchfraction = points(2,index) + dydt * deltat
-	endif
-	return
-	end function qchfraction
+    if (time<points(1,index)) then
+        qchfraction = points(2,index)
+    else if (time>points(3,index)) then
+        qchfraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index),mintime)
+        deltat = max(time - points(1,index),mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy / dt
+        qchfraction = points(2,index) + dydt * deltat
+    endif
+    return
+    end function qchfraction
 
-	real*8 function qcvfraction (points, index, time)
+    real*8 function qcvfraction (points, index, time)
 
-!	This is the open/close function for buoyancy driven vertical flow
+    !	This is the open/close function for buoyancy driven vertical flow
 
-	real*8 points(4,*), time, dt, dy, dydt, mintime
-	data mintime/1.0e-6/
+    real*8 points(4,*), time, dt, dy, dydt, mintime
+    data mintime/1.0e-6/
 
-	if (time<points(1,index)) then
-		qcvfraction = points(2,index)
-	else if (time>points(3,index)) then
-		qcvfraction = points(4,index)
-	else
-	    dt = max(points(3,index) - points(1,index),mintime)
-	    deltat = max(time - points(1,index),mintime)
-		dy = points(4,index) - points(2,index)
-		dydt = dy / dt
-		qcvfraction = points(2,index) + dydt * deltat
-	endif
-	return
-	end function qcvfraction
+    if (time<points(1,index)) then
+        qcvfraction = points(2,index)
+    else if (time>points(3,index)) then
+        qcvfraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index),mintime)
+        deltat = max(time - points(1,index),mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy / dt
+        qcvfraction = points(2,index) + dydt * deltat
+    endif
+    return
+    end function qcvfraction
 
-	real*8 function qcffraction (points, index, time)
+    real*8 function qcffraction (points, index, time)
 
-!	This is the open/close function for mechanical ventilation
+    !	This is the open/close function for mechanical ventilation
 
-	real*8 points(4,*), time, dt, dy, dydt, mintime
-	data mintime/1.0d-6/
+    real*8 points(4,*), time, dt, dy, dydt, mintime
+    data mintime/1.0d-6/
 
-	if (time<points(1,index)) then
-		qcffraction = points(2,index)
-	else if (time>points(3,index)) then
-		qcffraction = points(4,index)
-	else
-	    dt = max(points(3,index) - points(1,index), mintime)
-	    deltat = max(time - points(1,index), mintime)
-		dy = points(4,index) - points(2,index)
-		dydt = dy / dt
-		qcffraction = points(2,index) + dydt * deltat
-	endif
-	return
-	end function qcffraction
+    if (time<points(1,index)) then
+        qcffraction = points(2,index)
+    else if (time>points(3,index)) then
+        qcffraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index), mintime)
+        deltat = max(time - points(1,index), mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy / dt
+        qcffraction = points(2,index) + dydt * deltat
+    endif
+    return
+    end function qcffraction
 
-	real*8 function qcifraction (points, index, time)
+    real*8 function qcifraction (points, index, time)
 
-!	This is the open/close function for filtering
+    !	This is the open/close function for filtering
 
-	real*8 points(4,*), time, dt, dy, dydt, mintime
-	data mintime/1.0d-6/
+    real*8 points(4,*), time, dt, dy, dydt, mintime
+    data mintime/1.0d-6/
 
-	if (time<points(1,index)) then
-		qcifraction = points(2,index)
-	else if (time>points(3,index)) then
-		qcifraction = points(4,index)
-	else
-	    dt = max(points(3,index) - points(1,index),mintime)
-	    deltat = max(time - points(1,index), mintime)
-		dy = points(4,index) - points(2,index)
-		dydt = dy / dt
-		qcifraction = points(2,index) + dydt * deltat
-	endif
-	return
-	end function qcifraction
-	
-	subroutine getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
+    if (time<points(1,index)) then
+        qcifraction = points(2,index)
+    else if (time>points(3,index)) then
+        qcifraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index),mintime)
+        deltat = max(time - points(1,index), mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy / dt
+        qcifraction = points(2,index) + dydt * deltat
+    endif
+    return
+    end function qcifraction
 
-!       This is a routine to get the shape data for horizontal flow vents
+    subroutine getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
 
-      use vents
-      implicit none
-      integer :: i,ifrom,ito,iface
-      real*8 :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue
-      
-      ifrom =IZVENT(i,1)
-      ito = IZVENT(i,2)
-      iface = izvent(i,6)
-      vwidth = zzvent(i,3)
-      voffset = zzvent(i,4)
-      vbottom = zzvent(i,1)
-      vtop = zzvent(i,2)
-      vred = 1.0d0
-      vgreen = 0.0d0
-      vblue = 1.0d0
+    !       This is a routine to get the shape data for horizontal flow vents
 
-      RETURN
-      END
+    use vents
+    implicit none
+    integer :: i,ifrom,ito,iface
+    real*8 :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue
 
-      integer function rev_flowhorizontal
-          
-      INTEGER :: MODULE_REV
-      CHARACTER(255) :: MODULE_DATE 
-      CHARACTER(255), PARAMETER :: mainrev='$Revision: 461 $'
-      CHARACTER(255), PARAMETER :: maindate='$Date: 2012-06-28 16:38:31 -0400 (Thu, 28 Jun 2012) $'
-      
-      WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
-      READ (MODULE_DATE,'(I5)') MODULE_REV
-      rev_flowhorizontal = module_rev
-      WRITE(MODULE_DATE,'(A)') maindate
-      return
-      end function rev_flowhorizontal
+    ifrom =IZVENT(i,1)
+    ito = IZVENT(i,2)
+    iface = izvent(i,6)
+    vwidth = zzvent(i,3)
+    voffset = zzvent(i,4)
+    vbottom = zzvent(i,1)
+    vtop = zzvent(i,2)
+    vred = 1.0d0
+    vgreen = 0.0d0
+    vblue = 1.0d0
+
+    RETURN
+    END
+
+    integer function rev_flowhorizontal
+
+    INTEGER :: MODULE_REV
+    CHARACTER(255) :: MODULE_DATE 
+    CHARACTER(255), PARAMETER :: mainrev='$Revision: 461 $'
+    CHARACTER(255), PARAMETER :: maindate='$Date: 2012-06-28 16:38:31 -0400 (Thu, 28 Jun 2012) $'
+
+    WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
+    READ (MODULE_DATE,'(I5)') MODULE_REV
+    rev_flowhorizontal = module_rev
+    WRITE(MODULE_DATE,'(A)') maindate
+    return
+    end function rev_flowhorizontal

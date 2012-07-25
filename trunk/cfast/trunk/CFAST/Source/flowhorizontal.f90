@@ -68,9 +68,6 @@
             im = min(iroom1,iroom2)
             ix = max(iroom1,iroom2)
             factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
-            if (tsec>55.0) then
-                continue
-            end if
             height = zzvent(i,2) - zzvent(i,1)
             width = zzvent(i,3)
             avent = factor2 * height * width

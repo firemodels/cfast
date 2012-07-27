@@ -380,26 +380,15 @@
     !                qout (output): qout(i) is the output flux from the i'th wall
     !                ierror - returns error codes
 
-    include "precis.fi"
+    implicit none
 
-    dimension tlay(2), twall(4), emis(4), absorb(2)
-    dimension xfire(*), yfire(*), zfire(*)
-    dimension qlay(2), qflux(4), qfire(*)
-    dimension taul(4,4), tauu(4,4), beam(4,4)
-    dimension taufl(mxfire,*), taufu(mxfire,*)
-    dimension firang(mxfire,*), area(4)
-    dimension figs(4,4), qout(4)
-    dimension zz(4)
-    logical black
+    integer, parameter :: u = 1, l = 2, mxroom = 100
+    real*8 :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(4,4), tauu(4,4), beam(4,4), &
+        taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(4), figs(4,4), qout(4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom), &
+        sigma, rdparfig, xroom, yroom, zroom, hlay, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14
+    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, ierror, mxfire
 
-    dimension a(4,4), b(4,4), e(4), c(4)
-    dimension ipvt(4), rhs(4), dq(4), dqde(4)
-
-    integer l, u
-    parameter (u = 1,l = 2,mxroom = 100)
-    dimension iflag(mxroom), f14(mxroom)
-
-    logical first
+    logical first, black
 
     save first,sigma
 
@@ -583,15 +572,12 @@
     !                qulay
     !                c
 
-    include "precis.fi"
+    implicit none
 
-    integer l, u
-    parameter (u = 1,l = 2)
-    dimension c(*)
-    dimension figs(nzone,*), taul(nzone,*), tauu(nzone,*)
-    dimension taufl(mxfire,*), taufu(mxfire,*)
-    dimension firang(mxfire,*), zfire(*)
-    dimension area(*), qfire(mxfire), tlay(2)
+    integer, parameter ::u = 1, l = 2
+    real*8 :: c(*), figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), zfire(*), area(*), qfire(mxfire), tlay(2), &
+        pi, sigma, xx1, qulay, qllay, eu, el, qugas, qlgas, wf, qfflux, hlay, factu, factl
+    integer :: j, k, nup, ifire, mxfire, nzone, nfire
     logical first
     save first, pi, sigma
     data first /.true./
@@ -699,10 +685,10 @@
     !                QLLAY(output)
     !                QULAY (output)
 
-    include "precis.fi"
+    implicit none
 
-    dimension e(*), emis2(*), area(*),dqde(*)
-    dimension figs(nzone,*), tauu(nzone,*),taul(nzone,*)
+    real*8 :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*), qout, qulay, qllay, qk
+    integer :: j, k, nup, nzone
 
     do k = 1, nup
         qout = e(k) - dqde(k)*(1.0d0-emis2(k))
@@ -731,7 +717,7 @@
     return
     end subroutine rdabs
 
-    real*8 FUNCTION RDPARFIG(X,Y,Z)
+    real*8 function rdparfig(x,y,z)
 
     !     routine: rdparfig
     !     purpose: This routine calculates the configuration factor between two paralell plates a distance z a part.  Each 
@@ -740,134 +726,141 @@
     !                Y
     !                Z
 
-    include "precis.fi"
+    implicit none
+    
+    real*8 :: xx1, xxh, xx0, pi, x, y, z, xx, yy, xsq, ysq, f1, f2, f3, f4, f5
+    logical :: first=.true.
 
-    SAVE IFIRST, PI, XX0, XX1, XXH
-    DATA IFIRST /0/
-    IF (IFIRST==0) THEN
-        XX1 = 1.0D0
-        XXH = 0.5D0
-        XX0 = 0.0D0
-        PI = 4.0D0 * ATAN(XX1)
-        IFIRST = 1
+    save first, pi, xx0, xx1, xxh
+
+    if (first) then
+        xx1 = 1.0d0
+        xxh = 0.5d0
+        xx0 = 0.0d0
+        pi = 4.0d0 * atan(xx1)
+        first = .true.
     endif
-    RDPARFIG = XX0
-    IF (Z==XX0.OR.X==XX0.OR.Y==XX0) RETURN
-    XX = X / Z
-    YY = Y / Z
-    F1 = XXH*LOG((XX1+XX**2)*(XX1+YY**2)/(XX1+XX**2+YY**2))
-    YSQ = SQRT(XX1+YY**2)
-    F2 = XX * YSQ * ATAN(XX/YSQ)
-    XSQ = SQRT(XX1+XX**2)
-    F3 = YY * XSQ * ATAN(YY/XSQ)
-    F4 = XX * ATAN(XX)
-    F5 = YY * ATAN(YY)
-    RDPARFIG = 2.0D0 * (F1+F2+F3-F4-F5) / (PI*XX*YY)
-    RETURN
-    END
-    real*8 FUNCTION RDPRPFIG(X,Y,Z)
+    rdparfig = xx0
+    if (z==xx0.or.x==xx0.or.y==xx0) return
+    xx = x / z
+    yy = y / z
+    f1 = xxh*log((xx1+xx**2)*(xx1+yy**2)/(xx1+xx**2+yy**2))
+    ysq = sqrt(xx1+yy**2)
+    f2 = xx * ysq * atan(xx/ysq)
+    xsq = sqrt(xx1+xx**2)
+    f3 = yy * xsq * atan(yy/xsq)
+    f4 = xx * atan(xx)
+    f5 = yy * atan(yy)
+    rdparfig = 2.0d0 * (f1+f2+f3-f4-f5) / (pi*xx*yy)
+    return
+    end function rdparfig
+    
+    real*8 function rdprpfig(x,y,z)
 
     !     routine: rdparfig
     !     purpose: this routine calculates the configuration factor between two perpindular plates with a common edge.
-    !     arguments: X
-    !                Y
-    !                Z
+    !     arguments: x
+    !                y
+    !                z
 
-    include "precis.fi"
+    implicit none
 
-    LOGICAL FIRST
-    SAVE FIRST, PI
-    DATA FIRST /.TRUE./
-    XX1 = 1.0D0
-    XX0 = 0.0D0
-    IF (FIRST) THEN
-        PI = 4.0D0 * ATAN(XX1)
-        FIRST = .FALSE.
+    real*8 :: xx1, xx0, pi, x, y, z, h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
+    logical :: first = .true.
+    save first, pi
+
+    xx1 = 1.0d0
+    xx0 = 0.0d0
+    if (first) then
+        pi = 4.0d0 * atan(xx1)
+        first = .false.
     endif
-    RDPRPFIG = XX0
-    IF (Y==XX0.OR.X==XX0.OR.Z==XX0) RETURN
-    H = X / Y
-    W = Z / Y
-    F1 = W * ATAN(XX1/W)
-    F2 = H * ATAN(XX1/H)
+    rdprpfig = xx0
+    if (y==xx0.or.x==xx0.or.z==xx0) return
+    h = x / y
+    w = z / y
+    f1 = w * atan(xx1/w)
+    f2 = h * atan(xx1/h)
 
-    HWSUM = H ** 2 + W ** 2
-    HWNORM = SQRT(HWSUM)
-    RHWNORM = 1.0D0/HWNORM
-    F3 = HWNORM * ATAN(RHWNORM)
+    hwsum = h ** 2 + w ** 2
+    hwnorm = sqrt(hwsum)
+    rhwnorm = 1.0d0/hwnorm
+    f3 = hwnorm * atan(rhwnorm)
 
-    WSUM1 = XX1 + W ** 2
-    HSUM1 = XX1 + H ** 2
-    HWSUM2 = XX1 + HWSUM
-    F4A = WSUM1 * HSUM1 / HWSUM2
-    F4B = (W**2*HWSUM2/WSUM1/HWSUM)
-    F4C = (H**2*HWSUM2/HSUM1/HWSUM)
-    F4 = 0.25D0*(LOG(F4A)+LOG(F4B)*W**2+LOG(F4C)*H**2) 
-    RDPRPFIG = (F1+F2-F3+F4) / PI / W
-    RETURN
-    END
+    wsum1 = xx1 + w ** 2
+    hsum1 = xx1 + h ** 2
+    hwsum2 = xx1 + hwsum
+    f4a = wsum1 * hsum1 / hwsum2
+    f4b = (w**2*hwsum2/wsum1/hwsum)
+    f4c = (h**2*hwsum2/hsum1/hwsum)
+    f4 = 0.25d0*(log(f4a)+log(f4b)*w**2+log(f4c)*h**2) 
+    rdprpfig = (f1+f2-f3+f4) / pi / w
+    return
+    end function rdprpfig
 
-    SUBROUTINE RDFANG(MXFIRE,XROOM,YROOM,ZROOM,HLAY,NFIRE,XFIRE,YFIRE,ZFIRE,FIRANG)
+    subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
 
     !     routine: rdfang
     !     purpose: 
-    !     arguments: MXFIRE
-    !                XROOM
-    !                YROOM
-    !                ZROOM
-    !                HLAY
-    !                NFIRE
-    !                XFIRE
-    !                YFIRE
-    !                ZFIRE
-    !                FIRANG
+    !     arguments: mxfire
+    !                xroom
+    !                yroom
+    !                zroom
+    !                hlay
+    !                nfire
+    !                xfire
+    !                yfire
+    !                zfire
+    !                firang
 
-    include "precis.fi"
+    implicit none
 
-    DIMENSION XFIRE(*), YFIRE(*), ZFIRE(*)
-    DIMENSION FIRANG(MXFIRE,*)
-    LOGICAL FIRST
-    SAVE FIRST, FOURPI
-    DATA FIRST/.TRUE./
+    real*8 :: xfire(*), yfire(*), zfire(*), firang(mxfire,*), xx1, pi, fourpi, arg1, arg2, arg3, arg4, xroom, yroom, zroom, f1, f4, fd, rdsang, hlay
+    integer :: i, nfire, mxfire
+    logical :: first = .true.
+    save first, fourpi
 
-    IF(FIRST)THEN
-        FIRST = .FALSE.
-        XX1 = 1.0D0
-        PI = 4.0D0*ATAN(XX1)
-        FOURPI = 4.0D0*PI
-    ENDIF
+    if(first)then
+        first = .false.
+        xx1 = 1.0d0
+        pi = 4.0d0*atan(xx1)
+        fourpi = 4.0d0*pi
+    endif
 
-    DO I = 1, NFIRE
-        ARG1 = -XFIRE(I)
-        ARG2 = XROOM - XFIRE(I)
-        ARG3 = -YFIRE(I)
-        ARG4 = YROOM - YFIRE(I)
-        F1 = RDSANG(ARG1,ARG2,ARG3,ARG4,ZROOM-ZFIRE(I))
-        FD = RDSANG(ARG1,ARG2,ARG3,ARG4,HLAY-ZFIRE(I))
-        F4 = RDSANG(ARG1,ARG2,ARG3,ARG4,ZFIRE(I))
-        FIRANG(I,1) = F1
-        FIRANG(I,4) = F4
-        IF (ZFIRE(I)<HLAY) THEN
-            FIRANG(I,2) = FD - F1
-            FIRANG(I,3) = FOURPI - FD - F4
-        ELSE
-            FIRANG(I,2) = FOURPI - FD - F1
-            FIRANG(I,3) = FD - F4
+    do i = 1, nfire
+        arg1 = -xfire(i)
+        arg2 = xroom - xfire(i)
+        arg3 = -yfire(i)
+        arg4 = yroom - yfire(i)
+        f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
+        fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
+        f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
+        firang(i,1) = f1
+        firang(i,4) = f4
+        if (zfire(i)<hlay) then
+            firang(i,2) = fd - f1
+            firang(i,3) = fourpi - fd - f4
+        else
+            firang(i,2) = fourpi - fd - f1
+            firang(i,3) = fd - f4
         endif
     end do
-    RETURN
-    END
-    real*8 FUNCTION RDSANG(X1,X2,Y1,Y2,R)
+    return
+    end  subroutine rdfang
+
+    real*8 function rdsang(x1,x2,y1,y2,r)
 
     !     routine: rdsang
     !     purpose: 
-    !     arguments: X1
-    !                X2
-    !                Y1
-    !                Y2
-    !                R
+    !     arguments: x1
+    !                x2
+    !                y1
+    !                y2
+    !                r
 
-    include "precis.fi"
+    implicit none
+    
+    real*8 :: x1, x2, y1, y2, f1, f2, f3, f4, rdsang1, r
 
     f1 = sign(rdsang1(abs(x2),abs(y2),r),x2*y2)
     f2 = sign(rdsang1(abs(x1),abs(y2),r),x1*y2)
@@ -875,216 +868,217 @@
     f4 = sign(rdsang1(abs(x1),abs(y1),r),x1*y1)
     rdsang = f1 - f2 - f3 + f4
     return
-    end
+    end function rdsang
 
-    real*8 FUNCTION RDSANG1(X,Y,R)
+    real*8 function rdsang1(x,y,r)
 
     !     routine: rdsang1
     !     purpose: 
-    !     arguments: X
-    !                Y
-    !                R
+    !     arguments: x
+    !                y
+    !                r
 
-    include "precis.fi"
+    implicit none
 
-    LOGICAL FIRST
-    SAVE FIRST, PI, PIO2
+    real*8 :: x, y, r, xx0, xx1, pi, pio2, xr, yr, xy, xyr, f1, f2
+    logical :: first = .true.
+    save first, pi, pio2
 
-    DATA FIRST /.TRUE./
-
-    XX0 = 0.0D0
-    XX1 = 1.0D0
-    IF (FIRST) THEN
-        FIRST = .FALSE.
-        PI = 4.0D0 * ATAN(XX1)
-        PIO2 = PI / 2.0D0
+    xx0 = 0.0d0
+    xx1 = 1.0d0
+    if (first) then
+        pi = 4.0d0 * atan(xx1)
+        pio2 = pi / 2.0d0
+        first = .false.
     endif
-    IF (X<=XX0.OR.Y<=XX0) THEN
-        RDSANG1 = XX0
-    ELSE
-        XR = X * X + R * R
-        XYR = X * X + Y * Y + R * R
-        XY = X * X + Y * Y
-        YR = Y * Y + R * R
-        F1 = MIN(XX1, Y * SQRT(XYR/XY/YR))
-        F2 = MIN(XX1, X * SQRT(XYR/XY/XR))
-        RDSANG1 = (ASIN(F1)+ASIN(F2)-PIO2)
+    if (x<=xx0.or.y<=xx0) then
+        rdsang1 = xx0
+    else
+        xr = x * x + r * r
+        xyr = x * x + y * y + r * r
+        xy = x * x + y * y
+        yr = y * y + r * r
+        f1 = min(xx1, y * sqrt(xyr/xy/yr))
+        f2 = min(xx1, x * sqrt(xyr/xy/xr))
+        rdsang1 = (asin(f1)+asin(f2)-pio2)
     endif
-    RETURN
-    END
+    return
+    end function rdsang1
 
-    SUBROUTINE RDFTRAN(MXFIRE,NZONE,NUP,ABSORB,HLAY,ZZ,NFIRE,ZFIRE,TAUFU,TAUFL,BLACK)
+    subroutine rdftran(mxfire,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
 
     !     routine: rdftran
     !     purpose: 
-    !     arguments: MXFIRE
-    !                NZONE
-    !                NUP
-    !                ABSORB
-    !                HLAY
-    !                ZZ
-    !                NFIRE
-    !                ZFIRE
-    !                TAUFU
-    !                TAUFL
+    !     arguments: mxfire
+    !                nzone
+    !                nup
+    !                absorb
+    !                hlay
+    !                zz
+    !                nfire
+    !                zfire
+    !                taufu
+    !                taufl
 
-    include "precis.fi"
+    implicit none
 
-    DIMENSION ABSORB(*), ZZ(*), ZFIRE(*)
-    DIMENSION TAUFU(MXFIRE,*), TAUFL(MXFIRE,*)
-    LOGICAL BLACK
-    DO I = 1, NFIRE
-        DO J = 1, NUP
-            IF (ZFIRE(I)>HLAY) THEN
-                BEAM = ABS(ZZ(J)-ZFIRE(I))
-                TAUFL(I,J) = 1.0D0
-                IF(.NOT.BLACK)THEN
-                    TAUFU(I,J) = EXP(-ABSORB(1)*BEAM)
-                ELSE
-                    TAUFU(I,J) = 0.0D0
-                    TAUFL(I,J) = 0.0D0
-                ENDIF
-            ELSE
-                BEAMU = ZZ(J) - HLAY
-                BEAML = HLAY - ZFIRE(I)
-                IF(.NOT.BLACK)THEN
-                    TAUFU(I,J) = EXP(-ABSORB(1)*BEAMU)
-                    TAUFL(I,J) = EXP(-ABSORB(2)*BEAML)
-                ELSE
-                    TAUFU(I,J) = 0.0D0
-                    TAUFL(I,J) = 0.0D0
-                ENDIF
+    real*8 :: absorb(*), zz(*), zfire(*), taufu(mxfire,*), taufl(mxfire,*), hlay, beam, beamu, beaml
+    integer :: i, j, nfire, nzone, mxfire, nup
+    logical black
+    
+    do i = 1, nfire
+        do j = 1, nup
+            if (zfire(i)>hlay) then
+                beam = abs(zz(j)-zfire(i))
+                taufl(i,j) = 1.0d0
+                if(.not.black)then
+                    taufu(i,j) = exp(-absorb(1)*beam)
+                else
+                    taufu(i,j) = 0.0d0
+                    taufl(i,j) = 0.0d0
+                endif
+            else
+                beamu = zz(j) - hlay
+                beaml = hlay - zfire(i)
+                if(.not.black)then
+                    taufu(i,j) = exp(-absorb(1)*beamu)
+                    taufl(i,j) = exp(-absorb(2)*beaml)
+                else
+                    taufu(i,j) = 0.0d0
+                    taufl(i,j) = 0.0d0
+                endif
             endif
         end do
-        DO J = NUP + 1, NZONE
-            IF (ZFIRE(I)<=HLAY) THEN
-                BEAM = ABS(ZZ(J)-ZFIRE(I))
-                TAUFU(I,J) = 1.0D0
-                IF(.NOT.BLACK)THEN
-                    TAUFL(I,J) = EXP(-ABSORB(2)*BEAM)
-                ELSE
-                    TAUFL(I,J) = 0.0D0
-                    TAUFU(I,J) = 0.0D0
-                ENDIF
-            ELSE
-                BEAMU = ZFIRE(I) - HLAY
-                BEAML = HLAY - ZZ(J)
-                IF(.NOT.BLACK)THEN
-                    TAUFU(I,J) = EXP(-ABSORB(1)*BEAMU)
-                    TAUFL(I,J) = EXP(-ABSORB(2)*BEAML)
-                ELSE
-                    TAUFU(I,J) = 0.0D0
-                    TAUFL(I,J) = 0.0D0
-                ENDIF
+        do j = nup + 1, nzone
+            if (zfire(i)<=hlay) then
+                beam = abs(zz(j)-zfire(i))
+                taufu(i,j) = 1.0d0
+                if(.not.black)then
+                    taufl(i,j) = exp(-absorb(2)*beam)
+                else
+                    taufl(i,j) = 0.0d0
+                    taufu(i,j) = 0.0d0
+                endif
+            else
+                beamu = zfire(i) - hlay
+                beaml = hlay - zz(j)
+                if(.not.black)then
+                    taufu(i,j) = exp(-absorb(1)*beamu)
+                    taufl(i,j) = exp(-absorb(2)*beaml)
+                else
+                    taufu(i,j) = 0.0d0
+                    taufl(i,j) = 0.0d0
+                endif
             endif
         end do
     end do
-    RETURN
-    END
+    return
+    end
 
-    SUBROUTINE RDRTRAN(NZONE,NUP,ABSORB,BEAM,HLAY,ZZ,TAUU,TAUL,BLACK)
+    subroutine rdrtran(nzone,nup,absorb,beam,hlay,zz,tauu,taul,black)
 
     !     routine: rdftran
     !     purpose: 
-    !     arguments: NZONE
-    !                NUP
-    !                ABSORB
-    !                BEAM
-    !                HLAY
-    !                ZZ
-    !                TAUU
-    !                TAUL
+    !     arguments: nzone
+    !                nup
+    !                absorb
+    !                beam
+    !                hlay
+    !                zz
+    !                tauu
+    !                taul
 
-    include "precis.fi"
-    DIMENSION ABSORB(*), BEAM(NZONE,NZONE), ZZ(*)
-    DIMENSION TAUU(NZONE,NZONE), TAUL(NZONE,NZONE)
-    LOGICAL BLACK
+    implicit none
+    
+    real*8 :: absorb(*), beam(nzone,nzone), zz(*), tauu(nzone,nzone), taul(nzone,nzone), fu, fl, hlay
+    integer i, j, nup, nzone
+    logical black
 
-    ! DEFINE UPPER LAYER TRANSMISSION FACTORS
-    ! UPPER TO UPPER
-    DO I = 1, NUP
-        DO J = I + 1, NUP
-            IF(.NOT.BLACK)THEN
-                TAUU(I,J) = EXP(-ABSORB(1)*BEAM(I,J))
-            ELSE
-                TAUU(I,J) = 0.0D0
-            ENDIF
-            TAUU(J,I) = TAUU(I,J)
+    ! define upper layer transmission factors
+    ! upper to upper
+    do i = 1, nup
+        do j = i + 1, nup
+            if(.not.black)then
+                tauu(i,j) = exp(-absorb(1)*beam(i,j))
+            else
+                tauu(i,j) = 0.0d0
+            endif
+            tauu(j,i) = tauu(i,j)
         end do
-        IF(.NOT.BLACK)THEN
-            TAUU(I,I) = EXP(-ABSORB(1)*BEAM(I,I))
-        ELSE
-            TAUU(I,I) = 0.0D0
-        ENDIF
+        if(.not.black)then
+            tauu(i,i) = exp(-absorb(1)*beam(i,i))
+        else
+            tauu(i,i) = 0.0d0
+        endif
     end do
 
-    ! UPPER TO LOWER AND LOWER TO UPPER
-    DO I = 1, NUP
-        DO J = NUP + 1, NZONE
-            FU = (ZZ(I)-HLAY) / (ZZ(I)-ZZ(J))
-            IF(.NOT.BLACK)THEN
-                TAUU(I,J) = EXP(-ABSORB(1)*BEAM(I,J)*FU)
-            ELSE
-                TAUU(I,J) = 0.0D0
-            ENDIF
-            TAUU(J,I) = TAUU(I,J)
-        end do
-    end do
-
-    ! LOWER TO LOWER
-    DO I = NUP + 1, NZONE
-        DO J = NUP + 1, NZONE
-            IF(.NOT.BLACK)THEN
-                TAUU(I,J) = 1.0D0
-            ELSE
-                TAUU(I,J) = 0.0D0
-            ENDIF
+    ! upper to lower and lower to upper
+    do i = 1, nup
+        do j = nup + 1, nzone
+            fu = (zz(i)-hlay) / (zz(i)-zz(j))
+            if(.not.black)then
+                tauu(i,j) = exp(-absorb(1)*beam(i,j)*fu)
+            else
+                tauu(i,j) = 0.0d0
+            endif
+            tauu(j,i) = tauu(i,j)
         end do
     end do
 
-    ! DEFINE LOWER LAYER TRANSMISSION FACTORS
-    ! LOWER TO LOWER
-    DO I = NUP + 1, NZONE
-        DO J = I + 1, NZONE
-            IF(.NOT.BLACK)THEN
-                TAUL(I,J) = EXP(-ABSORB(2)*BEAM(I,J))
-            ELSE
-                TAUL(I,J) = 0.0D0
-            ENDIF
-            TAUL(J,I) = TAUL(I,J)
-        end do
-        IF(.NOT.BLACK)THEN
-            TAUL(I,I) = EXP(-ABSORB(2)*BEAM(I,I))
-        ELSE
-            TAUL(I,I) = 0.0D0
-        ENDIF
-    end do
-
-    ! UPPER TO UPPER
-    DO I = 1, NUP
-        DO J = 1, NUP
-            IF(.NOT.BLACK)THEN
-                TAUL(I,J) = 1.0D0
-            ELSE
-                TAUL(I,J) = 0.0D0
-            ENDIF
+    ! lower to lower
+    do i = nup + 1, nzone
+        do j = nup + 1, nzone
+            if(.not.black)then
+                tauu(i,j) = 1.0d0
+            else
+                tauu(i,j) = 0.0d0
+            endif
         end do
     end do
 
-    ! UPPER TO LOEWR AND LOWER TO UPPER
-    DO I = NUP + 1, NZONE
-        DO J = 1, NUP
-            FL = (HLAY-ZZ(I)) / (ZZ(J)-ZZ(I))
-            IF(.NOT.BLACK)THEN
-                TAUL(I,J) = EXP(-ABSORB(2)*BEAM(I,J)*FL)
-            ELSE
-                TAUL(I,J) = 0.0D0
-            ENDIF
-            TAUL(J,I) = TAUL(I,J)
+    ! define lower layer transmission factors
+    ! lower to lower
+    do i = nup + 1, nzone
+        do j = i + 1, nzone
+            if(.not.black)then
+                taul(i,j) = exp(-absorb(2)*beam(i,j))
+            else
+                taul(i,j) = 0.0d0
+            endif
+            taul(j,i) = taul(i,j)
+        end do
+        if(.not.black)then
+            taul(i,i) = exp(-absorb(2)*beam(i,i))
+        else
+            taul(i,i) = 0.0d0
+        endif
+    end do
+
+    ! upper to upper
+    do i = 1, nup
+        do j = 1, nup
+            if(.not.black)then
+                taul(i,j) = 1.0d0
+            else
+                taul(i,j) = 0.0d0
+            endif
         end do
     end do
-    RETURN
-    END
+
+    ! upper to loewr and lower to upper
+    do i = nup + 1, nzone
+        do j = 1, nup
+            fl = (hlay-zz(i)) / (zz(j)-zz(i))
+            if(.not.black)then
+                taul(i,j) = exp(-absorb(2)*beam(i,j)*fl)
+            else
+                taul(i,j) = 0.0d0
+            endif
+            taul(j,i) = taul(i,j)
+        end do
+    end do
+    return
+    end
 
     real*8 function absorb (cmpt, layer)
 
@@ -1117,18 +1111,15 @@
     include "precis.fi"
 
     ! declare parameters
-    integer noerr, hierr, loerr
-    parameter (noerr=0, hierr=+1, loerr=-1)
+    integer, parameter :: noerr=0, hierr=+1, loerr=-1
 
-    integer co2xsize, co2ysize, h2oxsize, h2oysize
-    parameter (co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12)
+    integer, parameter :: co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12
 
-    integer co2, h2o, soot
-    parameter (co2=3, h2o=8, soot=9)	
+    integer, parameter :: co2=3, h2o=8, soot=9
 
     ! declare i/o variables
 
-    integer cmpt, layer
+    integer :: cmpt, layer
 
     !  declare internal variables
     !  units:
@@ -1144,12 +1135,8 @@
     !    mwco2, mwh2o = gas molecular weight (kg/gm-mole)
     !    rg = ideal gas constant (atm-m^3/mol-k)
 
-    integer xco2, yco2, xh2o, yh2o
-    dimension tco2(co2xsize), plco2(co2ysize)
-    dimension eco2(co2xsize,co2ysize)
-    dimension th2o(h2oxsize)
-    dimension plh2o(h2oysize), eh2o(h2oxsize,h2oysize)
-    real*8 mwco2,mwh2o, k, rhos, l, ng
+    integer :: xco2, yco2, xh2o, yh2o
+    real*8 :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
 
     ! declare module data
 

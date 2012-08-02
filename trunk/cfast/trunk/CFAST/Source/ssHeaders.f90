@@ -6,11 +6,12 @@
     use cfast_main
     use cshell
     use objects1
-    include "precis.fi"
+    implicit none
 
     ! local variables     
-    parameter (maxhead = 1+7*nr+5+7*mxfire)
+    integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     character*35 headertext(3,maxhead), cTemp, cRoom, cFire, Labels(15), LabelsShort(15), LabelUnits(15), toIntString
+    integer position, i, j
 
     data Labels / 'Time', 'Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
     'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'Flame Height', 'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
@@ -96,14 +97,14 @@
     use cenviro
     use cfast_main
     use cshell
-    include "precis.fi"
+    implicit none
 
     ! local variables     
-    parameter (maxhead = 1+7*nr+5+7*mxfire)
+    integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     character*35 headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23), toIntString
     logical tooutput(NS)/.false.,5*.true.,.false.,4*.true./
     logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./
-    integer position
+    integer position, i, j, lsp
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', 'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', 'C-T Product Upper Layer', 'Trace Species Upper Layer',&
     'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', 'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer', 'C-T Product Lower Layer', 'Trace Species Lower Layer' / 
@@ -176,12 +177,12 @@
     use cfast_main
     use cshell
     use fltarget
-    include "precis.fi"
+    implicit none
 
     ! local variables     
-    parameter (maxhead = 1+9*nr+8*mxtarg+4*mxdtect)
+    integer, parameter :: maxhead = 1+9*nr+8*mxtarg+4*mxdtect
     character*35 headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
-    integer position 
+    integer position, i, j, itarg, itype
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', 'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', 'Target Total Flux', 'Target Convective Flux', &
     'Target Radiative Flux', 'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', 'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
@@ -220,11 +221,10 @@
     end do
 
     !	All the additional targets
-
     do i = 1, nm1
-        IF (NTARG>NM1) then
-            DO ITARG = 1, NTARG-NM1
-                if (IXTARG(TRGROOM,ITARG)==I) then
+        if (ntarg>nm1) then
+            do itarg = 1, ntarg-nm1
+                if (ixtarg(trgroom,itarg)==i) then
                     cDet = toIntString(itarg)
                     do j = 1, 9
                         position = position + 1
@@ -247,7 +247,6 @@
     !	Hall flow needs to go here
 
     !	Detectors
-
     do i = 1, ndtect
         cDet = toIntString(i)
         itype = ixdtect(i,dtype)
@@ -290,12 +289,12 @@
     use cfast_main
     use cshell
     use vents
-    include "precis.fi"
+    implicit none
 
     ! local variables     
-    parameter (maxhead = mxvents+2*mxvv+2*mxhvsys+mfan)
+    integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
     character*35 headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(11), LabelsShort(11), LabelUnits(11), toIntString
-    integer position  
+    integer position, i, j, k, ih, ii, iijk, inode, irm
 
     data Labels / 'Time', 'HVENT Inflow', 'HVENT Outflow', 'HVENT Mixing to Upper Layer', 'HVENT Mixing to Lower Layer', 'VVENT Inflow', 'VVENT Outflow', 'MVENT Inflow', 'MVENT Outflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
 
@@ -384,7 +383,7 @@
                 if (ii==irm) then
                     inode = hvnode(2,i)
                     cFrom = toIntString(ii)
-                    if (ii==n) cnum = 'Outside'
+                    if (ii==n) cfrom = 'Outside'
                     cTo = toIntString(inode)
                     do ih = 1,4
                         position = position + 1
@@ -429,12 +428,13 @@
     use cshell
     use objects1
     use vents
-    include "precis.fi"
+    implicit none
 
     logical lmode
 
-    parameter (maxhead = 1+6*nr+5+2*mxfire)
+    integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
     character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(13), LabelUnits(13), toIntString
+    integer position, i, j
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2' /
@@ -505,6 +505,7 @@
     end subroutine ssHeadersSMV
 
     subroutine smvDeviceTag(string)
+    implicit none
     character string*(*)
     write (13,'(a)') 'DEVICE'
     write (13,'(4x,a)') trim(string)
@@ -514,6 +515,7 @@
 
 
     character*(*) function toIntString(i)
+    implicit none
     integer i
     character string*256
     if (i<10) then

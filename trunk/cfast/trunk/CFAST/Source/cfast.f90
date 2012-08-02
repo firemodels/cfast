@@ -283,9 +283,6 @@
 
     !     Routine: solve
     !     Purpose: main solution loop for the model
-    !     Revision: $Revision: 464 $
-    !     Revision Date: $Date: 2012-06-29 15:41:23 -0400 (Fri, 29 Jun 2012) $
-
     !     Arguments: TSTOP   The final time to which CFAST should run to
     !                IERROR  Returns error codes
 

@@ -1,6 +1,6 @@
     subroutine hallht(iroom,idstart,nd)
 
-    !     routine: cnheat (main conduction routine)
+    !     routine: hallht
     !     purpose: this routine computes the velocity and temperature
     !               of the ceiling jet at each detector location in
     !               a corridor.

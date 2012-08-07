@@ -13,15 +13,12 @@
     use cenviro
     use cfast_main
     use fltarget
-    include "precis.fi"
+    implicit none
 
-    dimension tmp(trgtnum), walldx(trgtnum), nmnode(2), delta(*)
-    dimension xpsolve(*), tgrad(2)
-    logical first
-    integer update
-    dimension wk(1),wspec(1),wrho(1)
+    logical :: first=.true.
+    real*8 :: tmp(trgtnum), walldx(trgtnum), delta(*), xpsolve(*), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout, dt, tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, xl
+    integer :: update, method, nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
-    data first/.true./
 
     if(method==steady)return
 
@@ -118,13 +115,12 @@
     use cenviro
     use cfast_main
     use fltarget
-    include "precis.fi"
+    implicit none
 
-    logical first
-    dimension flux(2), dflux(2), ttarg(2)
+    logical :: first = .true.
+    real*8 :: flux(2), dflux(2), ttarg(2), sigma, ddif
+    integer :: itarg, methtarg, method, iroom, niter, iter
     save first, sigma
-
-    data first/.true./
 
     if(first)then
         first = .false.
@@ -205,10 +201,12 @@
     use fltarget
     use objects2
     use wnodes
-    include "precis.fi"
+    implicit none
 
-    dimension map10(10), svect(3), flux(2), dflux(2)
-    dimension ttarg(2),qwtsum(2),awallsum(2),qgassum(2)
+    real*8 :: svect(3), flux(2), dflux(2), ttarg(2), qwtsum(2), awallsum(2), qgassum(2), pi, sigma, cos45, xx1, absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
+        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, &
+        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
+    integer :: map10(10), iroom, itarg, iter, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     logical first
     save first, pi, sigma, cos45
 
@@ -427,12 +425,12 @@
     use cfast_main
     use cenviro
     use objects2
-    include "precis.fi"
+    implicit none
 
-    logical first
+    logical :: first = .true.
+    real*8 :: xx1, four, pi, xtarg, ytarg, ztarg, tg, qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
+    integer :: irtarg, i
     save first, pi, four
-
-    data first/.true./
 
     if(first)then
         first = .false.
@@ -448,8 +446,7 @@
         tg = zztemp(irtarg,lower)
     endif
 
-    ! if there is a fire in the room and the target is 
-    ! DIRECTLY above the fire, use plume temperature
+    ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
     do i = 1,nfire
         if (ifroom(i)==irtarg) then
             if (xtarg==xfire(i,1).and.ytarg==xfire(i,2).and. ztarg>xfire(i,3)) then
@@ -479,7 +476,9 @@
     !                yl
     !                yu
 
-    include "precis.fi"
+    implicit none
+    real*8 :: yo, y, yt, s, yl, yu
+
 
     if(yo<=y)then
         if(yt<=y)then
@@ -497,7 +496,7 @@
     yl = yl*s
     yu = s - yl
     return
-    end
+    end subroutine getylyu
 
     subroutine updtect(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
 
@@ -514,11 +513,10 @@
 
     use cparams
     use dsize
-    include "precis.fi"
+    implicit none
 
-    dimension zztemp(nr,2), zzhlay(nr,2)
-
-    dimension xdtect(mxdtect,*), ixdtect(mxdtect,*), iquench(*)
+    real*8 :: zztemp(nr,2), zzhlay(nr,2), xdtect(mxdtect,*), tdtect, tcur, dstep, cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
+    integer :: ixdtect(mxdtect,*), iquench(*), idset, ifdtect, i, ndtect, iroom, imode, idold, iqu
 
     idset = 0
     ifdtect = 0

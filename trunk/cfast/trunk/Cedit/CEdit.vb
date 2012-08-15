@@ -5829,6 +5829,7 @@ Public Class CeditMain
         myFires.Clear()
         myFireObjects.Clear()
         myThermalProperties.Clear()
+        myErrors.Queue.Clear()
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)
         Loop

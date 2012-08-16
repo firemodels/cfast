@@ -433,11 +433,11 @@
     logical lmode
 
     integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
-    character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(13), LabelUnits(13), toIntString
+    character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15), toIntString
     integer position, i, j
 
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2' /
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENTA_', 'VVENTA_', 'VVENTIN_',' VVENT_OUT_' /
+    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2', 'kg/s', 'kg/s' /
 
     !  spreadsheet header
     headertext(1,1) = LabelUnits(1)
@@ -488,11 +488,13 @@
         call smvDeviceTag(headertext(2,position))
     end do
     do i = 1, nvvent
-        position = position + 1
-        cVent = toIntString(i)
-        headertext(1,position) = LabelUnits(13)
-        headertext(2,position) = trim(LabelsShort(13))//trim(cVent)
-        call smvDeviceTag(headertext(2,position))
+        do j = 1,3
+            position = position + 1
+            cVent = toIntString(i)
+            headertext(1,position) = LabelUnits(13+j-1)
+            headertext(2,position) = trim(LabelsShort(13+j-1))//trim(cVent)
+            call smvDeviceTag(headertext(2,position))
+        end do
     end do
 
     ! write out header if called from outputspreadsheet 

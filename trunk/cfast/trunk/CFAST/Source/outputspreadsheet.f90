@@ -408,8 +408,7 @@
 
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     character*16 headline(3,maxhead)
-    real*8 time, outarray(maxhead), fheight, factor2, qchfraction,  height
-    real*8 width, avent, tsec, qcvfraction, xx0
+    real*8 time, outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
     logical firstc
     integer position, errorcode
     integer toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
@@ -486,6 +485,15 @@
         ibot = ivvent(i,botrm)
         avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
         call ssaddtolist (position,avent,outarray)
+        flow = 0
+        if (vmflo(itop,ibot,upper)>=xx0) flow(1) = vmflo(itop,ibot,upper)
+        if (vmflo(itop,ibot,upper)<xx0) flow(2) = -vmflo(itop,ibot,upper)
+        if (vmflo(itop,ibot,lower)>=xx0) flow(3) = vmflo(itop,ibot,lower)
+        if (vmflo(itop,ibot,lower)<xx0) flow(4) = -vmflo(itop,ibot,lower)
+        sumin = flow(1) + flow(3)
+        sumout = flow(2) + flow(4)
+        call ssaddtolist (position,sumin,outarray)
+        call ssaddtolist (position,sumout,outarray)
     end do
 
     call ssprintresults (15, position, outarray)

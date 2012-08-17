@@ -1670,68 +1670,36 @@ c          yy = ysize - yloc
 
       SUBROUTINE OFFSET (IERROR)
 
-C--------------------------------- NIST/BFRL ---------------------------------
-C
-C     Routine:     OFFSET
-C
-C     Source File: OFFSET.SOR
-C
-C     Functional Class:  
-C
-C     Description:  
-C     Offset in the following context is the beginning of the vector for
-C     that particular variable minus one.  Thus, the actual pressure array
-C     goes from NOFP+1 to NOFP+nm1.  The total number of equations to be
-C     considered is NEQUALS, and is the last element in the last vector.
-C     Each physical interface routine is responsible for the COUNT of the
-C     number of elements in the vector for which it is resonsible.
+      ! routine: initspec
+      ! purpose: Offset in the following context is the beginning of the vector for that particular variable minus one.  Thus, the actual pressure array
+      !          goes from NOFP+1 to NOFP+nm1.  The total number of equations to be considered is NEQUALS, and is the last element in the last vector.
+      !          Each physical interface routine is responsible for the COUNT of the number of elements in the vector for which it is resonsible.
+      ! Arguments:  IERROR  Returns error codes
+      
+      ! This set of parameters is set by NPUTP and is kept in the environment module CENVIRO.  To index a variable, the list is something
+      ! like (for temperature in this case)
 
-C     This set of parameters is set by NPUTP and is kept in the environment
-C     common block CENVIRO.INC.  To index a variable, the list is something
-C     like (for temperature in this case)
+      ! NOFTU+1, NOFTU+NM1
 
-C     NOFTU+1, NOFTU+NM1
+      ! The structure of the solver array is
 
-C     The structure of the solver array is
+      ! NOFP = offset for the main pressure; the array of base pressures for each compartment
+      ! NOFPMV = offset for HVAC node pressuers
+      ! NOFTMV = offset for HVAC branch temperatures
+      ! NOFTU = upper layer temperature
+      ! NOFVU = upper layer volume
+      ! NOFTL = lower layer temperature
+      ! NOFTT = target temperatures
+      ! NOFWT = wall surface temperatures (equivalent to the number of profiles)
+      ! NOFPRD = species
+      ! NOFHCL = surface deposition of hydrogen chloride
+      ! NOFSMKW = surface deposition of soot
+      ! NOFSMK = gas phase agglomeration of soot
+      ! NEQUALS = last element in the array.
 
-C     NOFP = offset for the main pressure; the array of base pressures for each compartment
-C     NOFPMV = offset for HVAC node pressuers
-C     NOFTMV = offset for HVAC branch temperatures
-C     NOFTU = upper layer temperature
-C     NOFVU = upper layer volume
-C     NOFTL = lower layer temperature
-C     NOFTT = target temperatures
-C     NOFWT = wall surface temperatures (equivalent to the number of profiles)
-C     NOFPRD = species
-C     NOFHCL = surface deposition of hydrogen chloride
-C     NOFSMKW = surface deposition of soot
-C     NOFSMK = gas phase agglomeration of soot
-C     NEQUALS = last element in the array.
+      ! The arrays which use this structure are VATOL, VRTOL, P, PDOLD, PPRIME and PDZERO
 
-C     The arrays which use this structure are VATOL, VRTOL, P, PDOLD, PPRIME and PDZERO
-
-C     An important note - solve sets the last variable to be solved to NOFPRD
-C     which is the beginning of the species (-1) and the end of the array which
-C     is presently used by DASSL.
-C
-C     Arguments: IERROR  Returns error codes
-C
-C     Revision History:
-C
-C     created May 19, 1992
-C             June 14, 1992 added offsets for HVAC duct temperatures
-C        Modified: 4/26/1995 gpf:
-C                  added offset parameter, NOFTT, for implicit targets
-C        Modified: 6/30/1995 gpf:
-C                  added oxygen offsets
-C        Modified: 8/15/1995 par:
-C                  added flame spread offsets.  Fixed for LFBT = 0 to
-C	             treated as a type 2 fire.
-C        Modified: 9/5/1995 at 10:12 by PAR:
-C                  Added support for IERROR and returning stops to main
-C
-C---------------------------- ALL RIGHTS RESERVED ----------------------------
-
+      ! An important note - solve sets the last variable to be solved to NOFPRD which is the beginning of the species (-1) and the end of the array which is presently used by DASSL
       use cenviro
       use cfast_main
       use fltarget
@@ -1740,8 +1708,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
       use wnodes
       include "precis.fi"
 
-C     COUNT THE OF NODES (LARGEST OF NS AND NE)
-
+      ! COUNT THE OF NODES (LARGEST OF NS AND NE)
       NNODE = MAX(NA(1),NE(1))
       DO 50 IB = 2, NBR
           NNODE = MAX(NNODE,NA(IB),NE(IB))

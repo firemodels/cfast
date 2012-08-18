@@ -4,8 +4,8 @@
     !     purpose: physical interface routine to calculate the current
     !              rates of mass and energy flows into the layers from
     !              all fires in the building.
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+    !     revision: $Revision$
+    !     revision date: $Date$
     !     arguments: tsec   current simulation time (s)
     !                flwf   mass and energy flows into layers due to fires.
     !                       standard source routine data structure.
@@ -132,11 +132,7 @@
     subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,objectsize,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
 
     !     routine: dofire
-    !     purpose: do heat release from a fire for both main fire and objects. pyrolysis 
-    !         and kinetics are separate operations.  pyrolysis: tuhc, hcl, hcn, ct and ts - source 
-    !         is from pyrols ; plume to ul is done below. combustion kinetics applies to o2, co2, co, od - chemie
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+    !     purpose: do heat release and species from a fire
     !     arguments:  ifire: fire number (ifire=0 is the main fire)
     !                 iroom: room containing the fire
     !                 xemp: pyrolysis rate of the fire (kg/s)
@@ -324,11 +320,7 @@
     !         note that the kinetics scheme is implemented here.  however, applying it to the
     !         various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is 
     !         somewhat complex.
-
     !         care should be exercised in making changes either here or in the source interface routine.
-
-    !     revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments:  pyrolysis_rate: calculated pyrolysis rate of the fuel (kg/s)
     !                 molar_mass: molar mass of the fuel (kg/mol)
     !                 entrainment_rate: calculated entrainment rate (kg/s)
@@ -428,9 +420,7 @@
     subroutine pyrols (objn,time,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
 
     !     routine: pyrols
-    !     purpose: returns yields for object fires interpolated from user input  
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+    !     purpose: returns yields for object fires interpolated from user input 
     !     arguments:  objn: the object pointer number, 
     !                 time: current simulation time (s)
     !                 iroom: room contining the object
@@ -526,8 +516,6 @@
     subroutine firplm (plumetype, objectnumber, objectsize, qjl, zz, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     purpose: physical interface between dofire and the plume models
 
     implicit none
@@ -563,6 +551,7 @@
 
     logical :: first = .true.
     real*8 :: fm1, fm2, fm3, t1, t2, a1, a2, a3, x0, xf, xfx, xfy, qj, qjl, zz, zq, zdq, xemp, xeme, xems, od
+    real*8, parameter :: fire_at_wall = 1.0d-3
     save first, a1, a2, a3, t1, t2
 
     ! define assignment statement subroutines to compute three parts of correlation
@@ -586,8 +575,8 @@
 
     ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     xf = 1.0d0
-    if (xfx==x0.or.xfy==x0) xf = 2.0d0
-    if (xfx==x0.and.xfy==x0) xf = 4.0d0
+    if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0d0
+    if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0d0
     qj = 0.001d0 * qjl
     if (zz>0.d0.and.qj>0.0d0) then
         zdq = zz / (xf*qj) ** 0.4d0
@@ -637,8 +626,6 @@
     !     routine:  integrate_mass
     !     description: Routine to integrate the pyrolosate of objects
     !         we also integrate the trace species release and total for all fires
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     Arguments:  time    current simulation time
     !                 deltt   current time step
 
@@ -905,8 +892,6 @@
     !     Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
     !     Uses Evan's method to determine virtual fire size and fire origin when fire
     !     is in the lower layer and position is in the upper layer
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments:  qdot: total heat release rate of the fire (W)
     !                 xrad: fraction of fire HRR released as radiation
     !                 dfire: fire diamater (m)
@@ -1019,8 +1004,6 @@
 
     !     routine: PlumeTemp_M
     !     purpose: Calculates plume centerline temperature at a specified height above the fire using McCaffrey's correlation
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments:  qdot: total heat release rate of the fire (W)
     !                 tgas: surrounding gas temperature (K)
     !                 z: distance from fire to position to calculate plume centerline temperature (m)

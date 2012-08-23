@@ -241,8 +241,7 @@
             endif
             call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass) 
 
-            ! limit the amount entrained to that actually entrained by the
-            ! fuel burned
+            ! limit the amount entrained to that actually entrained by the fuel burned
             xqpyrl = max(x0, (xqpyrl+cp*(te-xtl)*xemp)*(x1-chirad))
 
             if (xqpyrl<qheatl) then
@@ -275,18 +274,19 @@
                 xntms(lower,lsp) = xntms(lower,lsp) - xnet
             endif
         end do
+        
+        ! add in the fuel. everything else is done by chemie.
+        xntms(upper,7) = xntms(upper,7) + xemp
+        
         xqfr = xqpyrl * chirad
         xqfc(upper) = xqpyrl * (x1-chirad)
         xqlp = xqpyrl
         xqf = xqpyrl
 
-        ! add burning in the upper layer to the fire. the heat which
-        ! drives entrainment in the upper layer is the sum of the
-        ! heat released in the lower layer and what can be released
-        ! in the upper layer.
+        ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
+        ! heat released in the lower layer and what can be released in the upper layer.
 
-        ! start with the fuel removed by lower layer burning, xntfl
-        ! umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
+        ! start with the fuel removed by lower layer burning, xntfl umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
 90      xqup = 0.0d0
         uplmep = max(x0,xemp-xntfl)
 

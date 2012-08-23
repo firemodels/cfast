@@ -1,5 +1,6 @@
 Scatter_Plot_Title,Ind_Title,Dep_Title,Plot_Min,Plot_Max,Title_Position,Key_Position,Plot_Width,Sigma_2_E,Model_Error,Plot_Filename
 Hot Gas Layer Temperature,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,800,0.015 0.94,SouthEast,4,14,yes,ScatterPlots/HGL_Temperature
+HGL Temperature LLNL Enclosures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,300,0.03 0.95,SouthEast,4,14,yes,ScatterPlots/HGL_Temperature_LLNL
 Hot Gas Layer Depth,Measured Layer Depth (m),Predicted Layer Depth (m),0,20,0.015 0.94,SouthEast,4,13,yes,ScatterPlots/HGL_Depth
 Ceiling Jet Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.015 0.94,SouthEast,4,10,yes,ScatterPlots/Ceiling_Jet_Temperature
 Plume Temperatures,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,500,0.015 0.94,SouthEast,4,14,yes,ScatterPlots/Plume_Temperature

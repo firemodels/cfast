@@ -140,9 +140,6 @@ cd ..
 cd LLNL_61
 ..\..\..\bin\cfast LLNL_61 /V
 cd ..
-cd LLNL_62
-..\..\..\bin\cfast LLNL_62 /V
-cd ..
 cd LLNL_63
 ..\..\..\bin\cfast LLNL_63 /V
 cd ..

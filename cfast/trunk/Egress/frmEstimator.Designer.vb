@@ -88,9 +88,14 @@ Partial Class frmEstimator
         Me.EndEstimateTime = New System.Windows.Forms.TextBox()
         Me.Batchmode = New System.Windows.Forms.Button()
         Me.BatchRunCounter = New System.Windows.Forms.Label()
+        Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
+        Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileMenuOpenItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FileMenuSaveItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
+        Me.MenuStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'GroupBox1
@@ -124,9 +129,9 @@ Partial Class frmEstimator
         Me.GroupBox1.Controls.Add(Me.Label10)
         Me.GroupBox1.Controls.Add(Me.Label5)
         Me.GroupBox1.Controls.Add(Me.Label4)
-        Me.GroupBox1.Location = New System.Drawing.Point(13, 70)
+        Me.GroupBox1.Location = New System.Drawing.Point(13, 80)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(489, 295)
+        Me.GroupBox1.Size = New System.Drawing.Size(489, 285)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Stairwells"
@@ -376,7 +381,7 @@ Partial Class frmEstimator
         Me.GroupBox2.Controls.Add(Me.NumFloors)
         Me.GroupBox2.Controls.Add(Me.Label2)
         Me.GroupBox2.Controls.Add(Me.Label1)
-        Me.GroupBox2.Location = New System.Drawing.Point(12, 12)
+        Me.GroupBox2.Location = New System.Drawing.Point(13, 22)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Size = New System.Drawing.Size(990, 52)
         Me.GroupBox2.TabIndex = 3
@@ -669,6 +674,35 @@ Partial Class frmEstimator
         Me.BatchRunCounter.TabIndex = 48
         Me.BatchRunCounter.Text = "Run: "
         '
+        'MenuStrip1
+        '
+        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem})
+        Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
+        Me.MenuStrip1.Name = "MenuStrip1"
+        Me.MenuStrip1.Size = New System.Drawing.Size(1014, 24)
+        Me.MenuStrip1.TabIndex = 49
+        Me.MenuStrip1.Text = "MenuStrip1"
+        '
+        'FileToolStripMenuItem
+        '
+        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileMenuOpenItem, Me.FileMenuSaveItem})
+        Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
+        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(35, 20)
+        Me.FileToolStripMenuItem.Text = "File"
+        '
+        'FileMenuOpenItem
+        '
+        Me.FileMenuOpenItem.Name = "FileMenuOpenItem"
+        Me.FileMenuOpenItem.Size = New System.Drawing.Size(152, 22)
+        Me.FileMenuOpenItem.Text = "Open"
+        '
+        'FileMenuSaveItem
+        '
+        Me.FileMenuSaveItem.Name = "FileMenuSaveItem"
+        Me.FileMenuSaveItem.RightToLeftAutoMirrorImage = True
+        Me.FileMenuSaveItem.Size = New System.Drawing.Size(152, 22)
+        Me.FileMenuSaveItem.Text = "Save"
+        '
         'frmEstimator
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -687,6 +721,7 @@ Partial Class frmEstimator
         Me.Controls.Add(Me.Estimate)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
+        Me.Controls.Add(Me.MenuStrip1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         Me.HelpButton = True
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -700,6 +735,8 @@ Partial Class frmEstimator
         Me.GroupBox2.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
+        Me.MenuStrip1.ResumeLayout(False)
+        Me.MenuStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -770,6 +807,10 @@ Partial Class frmEstimator
     Friend WithEvents BuildingFile As System.Windows.Forms.CheckBox
     Friend WithEvents Batchmode As System.Windows.Forms.Button
     Friend WithEvents BatchRunCounter As System.Windows.Forms.Label
+    Friend WithEvents MenuStrip1 As System.Windows.Forms.MenuStrip
+    Friend WithEvents FileToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FileMenuOpenItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents FileMenuSaveItem As System.Windows.Forms.ToolStripMenuItem
 
 
 End Class

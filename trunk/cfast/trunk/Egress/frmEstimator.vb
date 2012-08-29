@@ -28,21 +28,22 @@ Public Class frmEstimator
     Dim s, tmp As String
     Dim ElevatorCapacitiesinPeople() As Integer = {12, 16, 19, 21, 24, 0}
     ' Variables for values in fields
-    Dim aNumFloors, aNumOccupants, aNumStairs As Integer
-    Dim aElevatorFrac As Double
-    Dim aHallLength, aHallWidth, aHallEntryRate As Double
-    Dim aFirstFloorUseStairwells As Boolean
-    Dim aMergingFlow, aFlightsPerFloor, aStairsPerFlight As Integer
-    Dim aStairWidth, aStairRiserHeight, aStairTreadDepth, aStairEntryRate As Double
-    Dim aStairHasHandrails As Boolean
-    Dim aExitHallLength, aExitHallWidth, aExitHallEntryRate, aExitHallExitRate As Double
-    Dim aElExitHallLength, aElExitHallWidth, aElExitHallExitRate As Double
-    Dim aEndEstimate As Integer
-    Dim aNumElevators, aMaxElevatorCarCap As Integer
-    Dim aElevatorVel, aElevatorAcc, aElevatorRecallDelay As Double
-    Dim aElevatorLoadRate, aElevatorUnloadRate As Double
-    Dim aElevatorDoorType As Integer
-    Dim aBuildingfile As Boolean
+    Dim ee As EgressEstimatorInput
+    'Dim aNumFloors, aNumOccupants, aNumStairs As Integer
+    'Dim aElevatorFrac As Double
+    'Dim aHallLength, aHallWidth, aHallEntryRate As Double
+    'Dim aFirstFloorUseStairwells As Boolean
+    'Dim aMergingFlow, aFlightsPerFloor, aStairsPerFlight As Integer
+    'Dim aStairWidth, aStairRiserHeight, aStairTreadDepth, aStairEntryRate As Double
+    'Dim aStairHasHandrails As Boolean
+    'Dim aExitHallLength, aExitHallWidth, aExitHallEntryRate, aExitHallExitRate As Double
+    'Dim aElExitHallLength, aElExitHallWidth, aElExitHallExitRate As Double
+    'Dim aEndEstimate As Integer
+    'Dim aNumElevators, aMaxElevatorCarCap As Integer
+    'Dim aElevatorVel, aElevatorAcc, aElevatorRecallDelay As Double
+    'Dim aElevatorLoadRate, aElevatorUnloadRate As Double
+    'Dim aElevatorDoorType As Integer
+    'Dim aBuildingfile As Boolean
     Dim IOParameters As Integer = 27
     'lbl is defined in SetDefaultValues
     Dim lbl(IOParameters) As String
@@ -141,7 +142,8 @@ Public Class frmEstimator
         ' Redimension the array.
         num_rows = UBound(strlines) + 1
         strline = strlines(0).Split(",")
-        num_cols = UBound(strline) + 1
+        'num_cols = UBound(strline) + 1
+        num_cols = 6
         ReDim strarray(num_rows, num_cols)
 
         ' Copy the data into the array.
@@ -152,15 +154,11 @@ Public Class frmEstimator
                 For y = 0 To num_cols - 1
                     strarray(x, y) = strline(y)
                 Next
-            ElseIf anum_cols <> 1 Then
+            ElseIf anum_cols <> 6 Then
                 errMsg = "Building file must have 6 columns current file has " + anum_cols.ToString + " in row " + (x + 1).ToString
                 Return False
             End If
         Next
-        If num_cols <> 6 Then
-            errMsg = "Building file must have 6 columns current file has " + num_cols.ToString
-            Return False
-        End If
         ReDim strPop(aNumFloors - 1)
         ReDim lbyFrac(aNumFloors - 1)
         ReDim strDelay(aNumFloors - 1)
@@ -182,7 +180,7 @@ Public Class frmEstimator
                     strDelay(y) = Val(strarray(x, 4))
                     lbyDelay(y) = Val(strarray(x, 5))
                 Next
-            ElseIf sflr <> 0 Or eflr <> 0 Then
+            Else
                 errMsg = "Start floor, " + sflr.ToString + ", must be >= 2 and end floor. " + eflr.ToString + ", must be > start floor and <= top floor, " + aNumFloors.ToString
                 Return False
             End If
@@ -192,107 +190,212 @@ Public Class frmEstimator
 
     End Function
 
-    Private Sub ReadFields()
+    Private Sub ReadFieldsEE()
 
         'Sub for taking data from the fields on the interface
 
-        aNumFloors = Val(NumFloors.Text)
-        aNumOccupants = Val(NumOccupants.Text)
-        aElevatorFrac = Val(Me.ElevatorFraction.Text)
-        aHallLength = Val(HallLength.Text)
-        aHallWidth = Val(HallWidth.Text)
-        aHallEntryRate = Val(HallEntryRate.Text)
-        aFirstFloorUseStairwells = FirstFloorUseStairwells.Checked
-        aBuildingfile = BuildingFile.Checked
+        ee.aNumFloors = Val(NumFloors.Text)
+        ee.aNumOccupants = Val(NumOccupants.Text)
+        ee.aElevatorFrac = Val(Me.ElevatorFraction.Text)
+        ee.aHallLength = Val(HallLength.Text)
+        ee.aHallWidth = Val(HallWidth.Text)
+        ee.aHallEntryRate = Val(HallEntryRate.Text)
+        ee.aFirstFloorUseStairwells = FirstFloorUseStairwells.Checked
+        ee.aBuildingFile = BuildingFile.Checked
 
         ' Properties of the stairwells
 
-        aNumStairs = Val(Me.NumStairwells.Text)
-        aStairWidth = Val(StairWidth.Text)
-        aFlightsPerFloor = Val(FlightsPerFloor.Text)
-        aStairsPerFlight = Val(StairsPerFlight.Text)
-        aStairRiserHeight = Val(StairRiserHeight.Text) / 1000.0
-        aStairTreadDepth = Val(StairTreadDepth.Text) / 1000.0
-        aStairEntryRate = Val(StairEntryRate.Text)
+        ee.aNumStairs = Val(Me.NumStairwells.Text)
+        ee.aStairWidth = Val(StairWidth.Text)
+        ee.aFlightsPerFloor = Val(FlightsPerFloor.Text)
+        ee.aStairsPerFlight = Val(StairsPerFlight.Text)
+        ee.aStairRiserHeight = Val(StairRiserHeight.Text) / 1000.0
+        ee.aStairTreadDepth = Val(StairTreadDepth.Text) / 1000.0
+        ee.aStairEntryRate = Val(StairEntryRate.Text)
 
         'Properties of the exit hallways
 
-        aExitHallLength = Val(StairHallLength.Text)
-        aExitHallWidth = Val(StairHallWidth.Text)
-        aExitHallEntryRate = Val(ExitHallEntryRate.Text)
-        aExitHallExitRate = Val(StairHallExitRate.Text)
+        ee.aExitHallLength = Val(StairHallLength.Text)
+        ee.aExitHallWidth = Val(StairHallWidth.Text)
+        ee.aExitHallEntryRate = Val(ExitHallEntryRate.Text)
+        ee.aExitHallExitRate = Val(StairHallExitRate.Text)
 
         'When to end estimate
 
         If EndEstimate.SelectedIndex = 1 Then
-            aEndEstimate = Val(EndEstimateTime.Text)
+            ee.aEndEstimate = Val(EndEstimateTime.Text)
         Else
-            aEndEstimate = -0
+            ee.aEndEstimate = -0
         End If
 
-        aNumElevators = Val(Me.NumElevators.Text)
+        ee.aNumElevators = Val(Me.NumElevators.Text)
         If Me.ElevatorCapacity.SelectedIndex >= 0 And Me.ElevatorCapacity.SelectedIndex <= 4 Then
-            aMaxElevatorCarCap = ElevatorCapacitiesinPeople(Me.ElevatorCapacity.SelectedIndex)
+            ee.aMaxElevatorCarCap = ElevatorCapacitiesinPeople(Me.ElevatorCapacity.SelectedIndex)
         Else
-            aMaxElevatorCarCap = Math.Round(Val(ElevatorCustomCapacity.Text) * Me.ElevatorCapFactor)
+            ee.aMaxElevatorCarCap = Math.Round(Val(ElevatorCustomCapacity.Text) * Me.ElevatorCapFactor)
         End If
-        aElevatorVel = Val(Me.ElevatorVelocity.Text)
-        aElevatorAcc = Val(Me.ElevatorAcceleration.Text)
-        aElevatorRecallDelay = Val(Me.ElevatorStartup.Text)
-        aElevatorDoorType = Me.DoorType.SelectedIndex
-        aElevatorLoadRate = EgressElevator.defaultLoadRate
-        aElevatorUnloadRate = EgressElevator.defaultUnloadRate
+        ee.aElevatorVel = Val(Me.ElevatorVelocity.Text)
+        ee.aElevatorAcc = Val(Me.ElevatorAcceleration.Text)
+        ee.aElevatorRecallDelay = Val(Me.ElevatorStartup.Text)
+        ee.aElevatorDoorType = Me.DoorType.SelectedIndex
+        ee.aElevatorLoadRate = EgressElevator.defaultLoadRate
+        ee.aElevatorUnloadRate = EgressElevator.defaultUnloadRate
 
     End Sub
+
+    Private Sub ReadFields()
+
+        'Sub for taking data from the fields on the interface
+
+        ee.aNumFloors = Val(NumFloors.Text)
+        ee.aNumOccupants = Val(NumOccupants.Text)
+        ee.aElevatorFrac = Val(Me.ElevatorFraction.Text)
+        ee.aHallLength = Val(HallLength.Text)
+        ee.aHallWidth = Val(HallWidth.Text)
+        ee.aHallEntryRate = Val(HallEntryRate.Text)
+        ee.aFirstFloorUseStairwells = FirstFloorUseStairwells.Checked
+        ee.aBuildingFile = BuildingFile.Checked
+
+        ' Properties of the stairwells
+
+        ee.aNumStairs = Val(Me.NumStairwells.Text)
+        ee.aStairWidth = Val(StairWidth.Text)
+        ee.aFlightsPerFloor = Val(FlightsPerFloor.Text)
+        ee.aStairsPerFlight = Val(StairsPerFlight.Text)
+        ee.aStairRiserHeight = Val(StairRiserHeight.Text) / 1000.0
+        ee.aStairTreadDepth = Val(StairTreadDepth.Text) / 1000.0
+        ee.aStairEntryRate = Val(StairEntryRate.Text)
+
+        'Properties of the exit hallways
+
+        ee.aExitHallLength = Val(StairHallLength.Text)
+        ee.aExitHallWidth = Val(StairHallWidth.Text)
+        ee.aExitHallEntryRate = Val(ExitHallEntryRate.Text)
+        ee.aExitHallExitRate = Val(StairHallExitRate.Text)
+
+        'When to end estimate
+
+        If EndEstimate.SelectedIndex = 1 Then
+            ee.aEndEstimate = Val(EndEstimateTime.Text)
+        Else
+            ee.aEndEstimate = -0
+        End If
+
+        ee.aNumElevators = Val(Me.NumElevators.Text)
+        If Me.ElevatorCapacity.SelectedIndex >= 0 And Me.ElevatorCapacity.SelectedIndex <= 4 Then
+            ee.aMaxElevatorCarCap = ElevatorCapacitiesinPeople(Me.ElevatorCapacity.SelectedIndex)
+        Else
+            ee.aMaxElevatorCarCap = Math.Round(Val(ElevatorCustomCapacity.Text) * Me.ElevatorCapFactor)
+        End If
+        ee.aElevatorVel = Val(Me.ElevatorVelocity.Text)
+        ee.aElevatorAcc = Val(Me.ElevatorAcceleration.Text)
+        ee.aElevatorRecallDelay = Val(Me.ElevatorStartup.Text)
+        ee.aElevatorDoorType = Me.DoorType.SelectedIndex
+        ee.aElevatorLoadRate = EgressElevator.defaultLoadRate
+        ee.aElevatorUnloadRate = EgressElevator.defaultUnloadRate
+
+    End Sub
+
+    Private Function LoadFieldsTMP(ByRef errMsg As String) As Boolean
+        ' Tbis function currently assumes that all the values have been validated
+
+        errMsg = ""
+
+        Me.NumFloors.Text = ee.aNumFloors.ToString
+        Me.NumOccupants.Text = ee.aNumOccupants.ToString
+        Me.ElevatorFraction.Text = ee.aElevatorFrac.ToString
+        Me.HallLength.Text = ee.aHallLength.ToString
+        Me.HallWidth.Text = ee.aHallWidth.ToString
+        Me.HallEntryRate.Text = ee.aHallEntryRate.ToString
+        Me.FirstFloorUseStairwells.Checked = ee.aFirstFloorUseStairwells
+
+        ' Properties of the stairwells
+
+        Me.NumStairwells.Text = ee.aNumStairs.ToString
+        Me.StairWidth.Text = ee.aStairWidth.ToString
+        Me.FlightsPerFloor.Text = ee.aFlightsPerFloor.ToString
+        Me.StairsPerFlight.Text = ee.aStairsPerFlight.ToString
+        Me.StairRiserHeight.Text = (ee.aStairRiserHeight * 1000.0).ToString
+        Me.StairTreadDepth.Text = (ee.aStairTreadDepth * 1000.0).ToString
+        Me.StairEntryRate.Text = ee.aStairEntryRate.ToString
+
+        'Properties of the exit hallways
+
+        Me.StairHallLength.Text = ee.aExitHallLength.ToString
+        Me.StairHallWidth.Text = ee.aExitHallWidth.ToString
+        Me.ExitHallEntryRate.Text = ee.aExitHallEntryRate.ToString
+        Me.StairHallExitRate.Text = ee.aExitHallExitRate.ToString
+
+        'When to end estimate
+
+        If ee.aEndEstimate > 0 Then
+            Me.EndEstimate.SelectedIndex = 1
+        Else
+            Me.EndEstimate.SelectedIndex = 0
+        End If
+
+        Me.NumElevators.Text = ee.aNumElevators.ToString
+        Me.ElevatorCapacity.SelectedIndex = IndexFromElevatorCapacity(ee.aMaxElevatorCarCap)
+        If Me.ElevatorCapacity.SelectedIndex = 5 Then
+            Me.ElevatorCustomCapacity.Text = Math.Round(ee.aMaxElevatorCarCap / ee.aElevatorCapFactor).ToString
+        End If
+
+        Me.ElevatorVelocity.Text = ee.aElevatorVel.ToString
+        Me.ElevatorAcceleration.Text = ee.aElevatorAcc.ToString
+        Me.ElevatorStartup.Text = ee.aElevatorRecallDelay.ToString
+        Me.DoorType.SelectedIndex = ee.aElevatorDoorType
+
+        Return True
+    End Function
 
     Private Function LoadFields(ByRef errMsg As String) As Boolean
         ' Tbis function currently assumes that all the values have been validated
 
         errMsg = ""
 
-        Me.NumFloors.Text = Me.aNumFloors.ToString
-        Me.NumOccupants.Text = Me.aNumOccupants.ToString
-        Me.ElevatorFraction.Text = Me.aElevatorFrac.ToString
-        Me.HallLength.Text = Me.aHallLength.ToString
-        Me.HallWidth.Text = Me.aHallWidth.ToString
-        Me.HallEntryRate.Text = Me.aHallEntryRate.ToString
-        Me.FirstFloorUseStairwells.Checked = Me.aFirstFloorUseStairwells
+        Me.NumFloors.Text = ee.aNumFloors.ToString
+        Me.NumOccupants.Text = ee.aNumOccupants.ToString
+        Me.ElevatorFraction.Text = ee.aElevatorFrac.ToString
+        Me.HallLength.Text = ee.aHallLength.ToString
+        Me.HallWidth.Text = ee.aHallWidth.ToString
+        Me.HallEntryRate.Text = ee.aHallEntryRate.ToString
+        Me.FirstFloorUseStairwells.Checked = ee.aFirstFloorUseStairwells
 
         ' Properties of the stairwells
 
-        Me.NumStairwells.Text = Me.aNumStairs.ToString
-        Me.StairWidth.Text = Me.aStairWidth.ToString
-        Me.FlightsPerFloor.Text = Me.aFlightsPerFloor.ToString
-        Me.StairsPerFlight.Text = Me.aStairsPerFlight.ToString
-        Me.StairRiserHeight.Text = (Me.aStairRiserHeight * 1000.0).ToString
-        Me.StairTreadDepth.Text = (Me.aStairTreadDepth * 1000.0).ToString
-        Me.StairEntryRate.Text = Me.aStairEntryRate.ToString
+        Me.NumStairwells.Text = ee.aNumStairs.ToString
+        Me.StairWidth.Text = ee.aStairWidth.ToString
+        Me.FlightsPerFloor.Text = ee.aFlightsPerFloor.ToString
+        Me.StairsPerFlight.Text = ee.aStairsPerFlight.ToString
+        Me.StairRiserHeight.Text = (ee.aStairRiserHeight * 1000.0).ToString
+        Me.StairTreadDepth.Text = (ee.aStairTreadDepth * 1000.0).ToString
+        Me.StairEntryRate.Text = ee.aStairEntryRate.ToString
 
         'Properties of the exit hallways
 
-        Me.StairHallLength.Text = Me.aExitHallLength.ToString
-        Me.StairHallWidth.Text = Me.aExitHallWidth.ToString
-        Me.ExitHallEntryRate.Text = Me.aExitHallEntryRate.ToString
-        Me.StairHallExitRate.Text = Me.aExitHallExitRate.ToString
+        Me.StairHallLength.Text = ee.aExitHallLength.ToString
+        Me.StairHallWidth.Text = ee.aExitHallWidth.ToString
+        Me.ExitHallEntryRate.Text = ee.aExitHallEntryRate.ToString
+        Me.StairHallExitRate.Text = ee.aExitHallExitRate.ToString
 
         'When to end estimate
 
-        If Me.aEndEstimate > 0 Then
+        If ee.aEndEstimate > 0 Then
             Me.EndEstimate.SelectedIndex = 1
         Else
             Me.EndEstimate.SelectedIndex = 0
         End If
 
-        Me.NumElevators.Text = Me.aNumElevators.ToString
-        Me.ElevatorCapacity.SelectedIndex = IndexFromElevatorCapacity(Me.aMaxElevatorCarCap)
+        Me.NumElevators.Text = ee.aNumElevators.ToString
+        Me.ElevatorCapacity.SelectedIndex = IndexFromElevatorCapacity(ee.aMaxElevatorCarCap)
         If Me.ElevatorCapacity.SelectedIndex = 5 Then
-            Me.ElevatorCustomCapacity.Text = Math.Round(Me.aMaxElevatorCarCap / Me.ElevatorCapFactor).ToString
+            Me.ElevatorCustomCapacity.Text = Math.Round(ee.aMaxElevatorCarCap / Me.ElevatorCapFactor).ToString
         End If
 
-        Me.ElevatorVelocity.Text = Me.aElevatorVel.ToString
-        Me.ElevatorAcceleration.Text = Me.aElevatorAcc.ToString
-        Me.ElevatorStartup.Text = Me.aElevatorRecallDelay.ToString
-        Me.DoorType.SelectedIndex = Me.aElevatorDoorType
+        Me.ElevatorVelocity.Text = ee.aElevatorVel.ToString
+        Me.ElevatorAcceleration.Text = ee.aElevatorAcc.ToString
+        Me.ElevatorStartup.Text = ee.aElevatorRecallDelay.ToString
+        Me.DoorType.SelectedIndex = ee.aElevatorDoorType
 
         Return True
     End Function
@@ -312,7 +415,7 @@ Public Class frmEstimator
         Dim x As Integer
         Dim y As Integer
         Dim anum_cols As Integer
-        Dim strarray(1, 1) As String
+        Dim strarray(,) As String
 
         ' Load the file.
 
@@ -339,7 +442,7 @@ Public Class frmEstimator
             anum_cols = UBound(strline) + 1
             If anum_cols >= col Then
                 For y = 0 To num_cols - 1
-                    strarray(x, y) = strline(y)
+                    strarray(x - skipRows, y) = strline(y)
                 Next
             Else
                 errMsg = "Must have at least " + col.ToString + " columns in each row"
@@ -350,79 +453,79 @@ Public Class frmEstimator
         'Sub for taking data from the fields on the interface
 
         Dim icol As Integer = col - 1
-        aNumFloors = Val(strarray(0, icol))
-        aNumOccupants = Val(strarray(1, icol))
-        aElevatorFrac = Val(strarray(2, icol))
-        aHallLength = Val(strarray(3, icol))
-        aHallWidth = Val(strarray(4, icol))
-        aHallEntryRate = Val(strarray(5, icol))
+        ee.aNumFloors = Val(strarray(0, icol))
+        ee.aNumOccupants = Val(strarray(1, icol))
+        ee.aElevatorFrac = Val(strarray(2, icol))
+        ee.aHallLength = Val(strarray(3, icol))
+        ee.aHallWidth = Val(strarray(4, icol))
+        ee.aHallEntryRate = Val(strarray(5, icol))
         If strarray(6, icol) = "TRUE" Then
-            Me.aFirstFloorUseStairwells = True
+            ee.aFirstFloorUseStairwells = True
         Else
-            Me.aFirstFloorUseStairwells = False
+            ee.aFirstFloorUseStairwells = False
         End If
         If strarray(7, icol) = "TRUE" Then
-            Me.aBuildingfile = True
+            ee.aBuildingFile = True
         Else
-            Me.aBuildingfile = False
+            ee.aBuildingFile = False
         End If
 
         ' Properties of the stairwells
 
-        aNumStairs = Val(strarray(9, icol))
-        aStairWidth = Val(strarray(10, icol))
-        aFlightsPerFloor = Val(strarray(11, icol))
-        aStairsPerFlight = Val(strarray(12, icol))
-        aStairRiserHeight = Val(strarray(13, icol))
-        aStairTreadDepth = Val(strarray(14, icol))
-        aStairEntryRate = Val(strarray(15, icol))
+        ee.aNumStairs = Val(strarray(9, icol))
+        ee.aStairWidth = Val(strarray(10, icol))
+        ee.aFlightsPerFloor = Val(strarray(11, icol))
+        ee.aStairsPerFlight = Val(strarray(12, icol))
+        ee.aStairRiserHeight = Val(strarray(13, icol))
+        ee.aStairTreadDepth = Val(strarray(14, icol))
+        ee.aStairEntryRate = Val(strarray(15, icol))
 
         'Properties of the exit hallways
 
-        aExitHallLength = Val(strarray(16, icol))
-        aExitHallWidth = Val(strarray(17, icol))
-        aExitHallEntryRate = Val(strarray(18, icol))
-        aExitHallExitRate = Val(strarray(19, icol))
+        ee.aExitHallLength = Val(strarray(16, icol))
+        ee.aExitHallWidth = Val(strarray(17, icol))
+        ee.aExitHallEntryRate = Val(strarray(18, icol))
+        ee.aExitHallExitRate = Val(strarray(19, icol))
 
         'When to end estimate
 
-        aEndEstimate = Val(strarray(20, icol))
+        ee.aEndEstimate = Val(strarray(20, icol))
 
         ' Properties of Elevators
 
-        aNumElevators = Val(strarray(21, icol))
-        Me.aMaxElevatorCarCap = Val(strarray(22, icol))
-        aElevatorVel = Val(strarray(23, icol))
-        aElevatorAcc = Val(strarray(24, icol))
-        aElevatorRecallDelay = Val(strarray(25, icol))
-        aElevatorDoorType = Val(strarray(26, icol))
+        ee.aNumElevators = Val(strarray(21, icol))
+        ee.aMaxElevatorCarCap = Val(strarray(22, icol))
+        ee.aElevatorVel = Val(strarray(23, icol))
+        ee.aElevatorAcc = Val(strarray(24, icol))
+        ee.aElevatorRecallDelay = Val(strarray(25, icol))
+        ee.aElevatorDoorType = Val(strarray(26, icol))
 
         Return True
     End Function
 
     Private Function SaveInput(ByVal FileName As String, ByVal ReadFieldsFlg As Boolean)
         Dim s As String = ",EgressEstimator Output"
-        Dim el As String = estimator.EndLine
+        Dim el As String = EgressCalculation.EndLine
 
         If ReadFieldsFlg Then
             ReadFields()
         End If
         My.Computer.FileSystem.WriteAllText(FileName, s + el, False)
-        s = Me.lbl(0) + aNumFloors.ToString + el
-        s = s + Me.lbl(1) + aNumOccupants.ToString + el + Me.lbl(2) + aElevatorFrac.ToString + el + Me.lbl(3) + aHallLength.ToString + el + Me.lbl(4) + aHallWidth.ToString + el
-        s = s + Me.lbl(5) + aHallEntryRate.ToString + el + Me.lbl(6) + aFirstFloorUseStairwells.ToString + el + Me.lbl(7) + aBuildingfile.ToString + el
-        If aBuildingfile Then
-            s = s + Me.lbl(8) + Me.BuildDataFile + el
+        s = Me.lbl(0) + ee.aNumFloors.ToString + el
+        s = s + Me.lbl(1) + ee.aNumOccupants.ToString + el + Me.lbl(2) + ee.aElevatorFrac.ToString + el + Me.lbl(3) + ee.aHallLength.ToString + el + Me.lbl(4) + ee.aHallWidth.ToString + el
+        s = s + Me.lbl(5) + ee.aHallEntryRate.ToString + el + Me.lbl(6) + ee.aFirstFloorUseStairwells.ToString + el + Me.lbl(7) + ee.aBuildingFile.ToString + el
+        If ee.aBuildingFile Then
+            s = s + Me.lbl(8) + ee.aBuildingFile + el
         Else
             s = s + Me.lbl(8) + "No Building File" + el
         End If
-        s = s + Me.lbl(9) + aNumStairs.ToString + el + Me.lbl(10) + aStairWidth.ToString + el + Me.lbl(11) + aFlightsPerFloor.ToString + el + Me.lbl(12) + aStairsPerFlight.ToString + el
-        s = s + Me.lbl(13) + aStairRiserHeight.ToString + el + Me.lbl(14) + aStairTreadDepth.ToString + el + Me.lbl(15) + aStairEntryRate.ToString + el + Me.lbl(16) + aExitHallLength.ToString + el
-        s = s + Me.lbl(17) + Me.aExitHallWidth.ToString + el + Me.lbl(18) + aExitHallEntryRate.ToString + el + Me.lbl(19) + aExitHallExitRate.ToString + el + Me.lbl(20) + Me.aEndEstimate.ToString + el
-        s = s + Me.lbl(21) + aNumElevators.ToString + el + Me.lbl(22) + aMaxElevatorCarCap.ToString + el
-        s = s + Me.lbl(23) + aElevatorVel.ToString + el + Me.lbl(24) + aElevatorAcc.ToString + el + Me.lbl(25) + aElevatorRecallDelay.ToString + el + Me.lbl(26) + aElevatorDoorType.ToString + estimator.EndLine
+        s = s + Me.lbl(9) + ee.aNumStairs.ToString + el + Me.lbl(10) + ee.aStairWidth.ToString + el + Me.lbl(11) + ee.aFlightsPerFloor.ToString + el + Me.lbl(12) + ee.aStairsPerFlight.ToString + el
+        s = s + Me.lbl(13) + ee.aStairRiserHeight.ToString + el + Me.lbl(14) + ee.aStairTreadDepth.ToString + el + Me.lbl(15) + ee.aStairEntryRate.ToString + el + Me.lbl(16) + ee.aExitHallLength.ToString + el
+        s = s + Me.lbl(17) + ee.aExitHallWidth.ToString + el + Me.lbl(18) + ee.aExitHallEntryRate.ToString + el + Me.lbl(19) + ee.aExitHallExitRate.ToString + el + Me.lbl(20) + ee.aEndEstimate.ToString + el
+        s = s + Me.lbl(21) + ee.aNumElevators.ToString + el + Me.lbl(22) + ee.aMaxElevatorCarCap.ToString + el
+        s = s + Me.lbl(23) + ee.aElevatorVel.ToString + el + Me.lbl(24) + ee.aElevatorAcc.ToString + el + Me.lbl(25) + ee.aElevatorRecallDelay.ToString + el + Me.lbl(26) + ee.aElevatorDoorType.ToString + el
         My.Computer.FileSystem.WriteAllText(FileName, s, True)
-        s = "" + estimator.EndLine
+        s = "" + el
         My.Computer.FileSystem.WriteAllText(FileName, s, True)
         Return True
     End Function
@@ -433,6 +536,7 @@ Public Class frmEstimator
         FileBase = "EgressEstimate"
         fileIdx = 1
         FileExtension = ".csv"
+        ee = New EgressEstimatorInput(1)
         Dim path As String = My.Computer.FileSystem.CurrentDirectory
         Me.SaveFileDialog.InitialDirectory = path
         CompleteFlg = True
@@ -486,54 +590,50 @@ Public Class frmEstimator
             SaveFileDialog.OverwritePrompt = True
             If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                 FileName = SaveFileDialog.FileName
-                'PT Code
+                If ee.aBuildingFile = True Then
 
-                If aBuildingfile = True Then
-
-                    Dim PopulationPF(aNumFloors) As Integer
-                    Dim LobbyFractionPF(aNumFloors) As Double
-                    Dim LobbyDelay(aNumFloors) As Double
-                    Dim StairDelay(aNumFloors) As Double
+                    Dim PopulationPF(ee.aNumFloors) As Integer
+                    Dim LobbyFractionPF(ee.aNumFloors) As Double
+                    Dim LobbyDelay(ee.aNumFloors) As Double
+                    Dim StairDelay(ee.aNumFloors) As Double
                     Dim errMsg As String = " "
-                    If Not ReadBuildFile(BuildDataFile, aNumFloors, aNumOccupants, aElevatorFrac, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
+                    If Not ReadBuildFile(BuildDataFile, ee.aNumFloors, ee.aNumOccupants, ee.aElevatorFrac, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
                         MsgBox("Error with Building file: " + errMsg)
                         Return
                     End If
 
-                    estimator = New EgressCalculation(aNumFloors, PopulationPF, LobbyFractionPF, aNumStairs, _
-                                    aMergingFlow, aFlightsPerFloor, aStairRiserHeight, aStairTreadDepth, _
-                                    aStairsPerFlight, aStairWidth, aStairHasHandrails, aStairWidth, _
-                                    1.5 * aStairWidth, EgressElement.Bndry.StairHandrails, aStairEntryRate, _
-                                    aHallLength, aHallWidth, EgressElement.Bndry.Corridor, aHallEntryRate, _
-                                    aExitHallLength, aExitHallWidth, EgressElement.Bndry.Corridor, _
-                                    aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
-                                    aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
-                                    aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
-                                    EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay, StairDelay, LobbyDelay)
+                    estimator = New EgressCalculation(ee.aNumFloors, PopulationPF, LobbyFractionPF, ee.aNumStairs, _
+                                    EgressElement.MergeType.Interleve, ee.aFlightsPerFloor, ee.aStairRiserHeight, ee.aStairTreadDepth, _
+                                    ee.aStairsPerFlight, ee.aStairWidth, EgressElement.Bndry.StairWalls, ee.aStairWidth, _
+                                    1.5 * ee.aStairWidth, EgressElement.Bndry.StairHandrails, ee.aStairEntryRate, _
+                                    ee.aHallLength, ee.aHallWidth, EgressElement.Bndry.Corridor, ee.aHallEntryRate, _
+                                    ee.aExitHallLength, ee.aExitHallWidth, EgressElement.Bndry.Corridor, _
+                                    ee.aExitHallEntryRate, ee.aExitHallExitRate, ee.aFirstFloorUseStairwells, _
+                                    ee.aNumElevators, ee.aElevatorDoorType, ee.aElevatorVel, ee.aNumElevators, _
+                                    ee.aMaxElevatorCarCap, ee.aElevatorAcc, 1.0, 1.0, _
+                                    EgressElement.Bndry.Corridor, 1.0, ee.aElevatorRecallDelay, StairDelay, LobbyDelay)
                 Else
 
-                    estimator = New EgressCalculation(aNumFloors, aNumOccupants, aElevatorFrac, aNumStairs, _
-                                    aMergingFlow, aFlightsPerFloor, aStairRiserHeight, aStairTreadDepth, _
-                                    aStairsPerFlight, aStairWidth, aStairHasHandrails, aStairWidth, _
-                                    1.5 * aStairWidth, EgressElement.Bndry.StairHandrails, aStairEntryRate, _
-                                    aHallLength, aHallWidth, EgressElement.Bndry.Corridor, aHallEntryRate, _
-                                    aExitHallLength, aExitHallWidth, EgressElement.Bndry.Corridor, _
-                                    aExitHallEntryRate, aExitHallExitRate, aFirstFloorUseStairwells, _
-                                    aNumElevators, aElevatorDoorType, aElevatorVel, aNumElevators, _
-                                    aMaxElevatorCarCap, aElevatorAcc, aElExitHallLength, aElExitHallWidth, _
-                                    EgressElement.Bndry.Corridor, aElExitHallExitRate, aElevatorRecallDelay)
+                    estimator = New EgressCalculation(ee.aNumFloors, ee.aNumOccupants, ee.aElevatorFrac, ee.aNumStairs, _
+                                    EgressElement.MergeType.Interleve, ee.aFlightsPerFloor, ee.aStairRiserHeight, ee.aStairTreadDepth, _
+                                    ee.aStairsPerFlight, ee.aStairWidth, EgressElement.Bndry.StairWalls, ee.aStairWidth, _
+                                    1.5 * ee.aStairWidth, EgressElement.Bndry.StairHandrails, ee.aStairEntryRate, _
+                                    ee.aHallLength, ee.aHallWidth, EgressElement.Bndry.Corridor, ee.aHallEntryRate, _
+                                    ee.aExitHallLength, ee.aExitHallWidth, EgressElement.Bndry.Corridor, _
+                                    ee.aExitHallEntryRate, ee.aExitHallExitRate, ee.aFirstFloorUseStairwells, _
+                                    ee.aNumElevators, ee.aElevatorDoorType, ee.aElevatorVel, ee.aNumElevators, _
+                                    ee.aMaxElevatorCarCap, ee.aElevatorAcc, 1.0, 1.0, _
+                                    EgressElement.Bndry.Corridor, 1.0, ee.aElevatorRecallDelay)
                 End If
-
-                'End PT code
 
                 If Not estimator.IsValid Then
                     MsgBox("Error not a validly defined simulation")
                     Return
                 End If
 
-                If aEndEstimate > 0 Then
-                    If Not estimator.InitializeCalc(aEndEstimate, 1) Then
-                        MsgBox("Error in Initializing on time criteria t = " + aEndEstimate.ToString)
+                If ee.aEndEstimate > 0 Then
+                    If Not estimator.InitializeCalc(ee.aEndEstimate, 1) Then
+                        MsgBox("Error in Initializing on time criteria t = " + ee.aEndEstimate.ToString)
                         Return
                     End If
                 Else
@@ -549,13 +649,13 @@ Public Class frmEstimator
                 End If
 
                 If Not Debug Then
-                    s = "Time(s)," + estimator.ElementTotPopNamesCSV + estimator.EndLine
+                    s = "Time(s)," + estimator.ElementTotPopNamesCSV + EgressCalculation.EndLine
                     My.Computer.FileSystem.WriteAllText(FileName, s, True)
-                    s = estimator.DoElementTotPopsCSV + estimator.EndLine
+                    s = estimator.DoElementTotPopsCSV + EgressCalculation.EndLine()
                     My.Computer.FileSystem.WriteAllText(FileName, s, True)
                 Else
                     estimator.DoDebug = Debug
-                    s = "Time(s)," + estimator.PDEElementTotPopNamesCSV + "Total Egress, Total In," + estimator.EndLine
+                    s = "Time(s)," + estimator.PDEElementTotPopNamesCSV + "Total Egress, Total In," + EgressCalculation.EndLine
                     My.Computer.FileSystem.WriteAllText(FileName, s, True)
                     's = "," + estimator.EgressElementNameListCSV + estimator.EndLine
                     'My.Computer.FileSystem.WriteAllText(FileName, s, True)
@@ -587,7 +687,7 @@ Public Class frmEstimator
         If estimatingFlg Then
             If Not estimator.StepForwardPDE(dt) Then
                 s = "Error in taking step foward at time = " + estimator.CurrentTime.ToString
-                s = s + estimator.EndLine + estimator.ErrMsg()
+                s = s + EgressCalculation.EndLine + estimator.ErrMsg()
                 estimatingFlg = False
                 MsgBox(s)
             End If
@@ -601,7 +701,7 @@ Public Class frmEstimator
                 otot = estimator.TotalPDEOut + estimator.PDEElevatorOut()
                 time = estimator.CurrentTime
                 's = time.ToString + "," + estimator.PDEElementTotPopsCSV + otot.ToString + "," + tot.ToString + "," + itot.ToString + "," + estimator.EndLine
-                s = time.ToString + "," + estimator.ElementTotPopsCSV + estimator.EndLine '+ otot.ToString + "," + tot.ToString + "," + itot.ToString + "," + estimator.EndLine
+                s = time.ToString + "," + estimator.ElementTotPopsCSV + EgressCalculation.EndLine '+ otot.ToString + "," + tot.ToString + "," + itot.ToString + "," + estimator.EndLine
                 My.Computer.FileSystem.WriteAllText(FileName, s, True)
                 EgressTime.Text = "Total Egress Time(s) = " + time.ToString("    .")
                 NumberEvacuated.Text = "Evacuated (persons) = " + Math.Max(0.0, otot).ToString("    .")
@@ -1156,6 +1256,34 @@ Public Class frmEstimator
         BuildingFile.Checked = False
         BuildingFile.Text = "Use building data file"
         Me.Text = "Egress Estimator"
+    End Sub
+
+    Private Sub FileMenuOpenItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileMenuOpenItem.Click
+        Dim err As String = ""
+        SaveFileDialog.FileName = ""
+        SaveFileDialog.OverwritePrompt = False
+        If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            FileName = SaveFileDialog.FileName
+            If ReadInput(FileName, 1, 2, err) Then
+                If Not Me.LoadFields(err) Then
+                    MsgBox(err)
+                End If
+            Else
+                MsgBox(err)
+            End If
+        End If
+    End Sub
+
+    Private Sub FileMenuSaveItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileMenuSaveItem.Click
+        Dim err As String = ""
+        SaveFileDialog.FileName = ""
+        SaveFileDialog.OverwritePrompt = True
+        If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            FileName = SaveFileDialog.FileName
+            If Not SaveInput(FileName, True) Then
+                MsgBox("Error Saving input file")
+            End If
+        End If
     End Sub
 End Class
 

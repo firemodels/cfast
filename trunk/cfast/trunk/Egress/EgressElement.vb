@@ -6280,7 +6280,7 @@ Public Class EgressCalculation
             Return "Time(s)," + f.NameListCSV
         End Get
     End Property
-    Public ReadOnly Property EndLine() As String
+    Public Shared ReadOnly Property EndLine() As String
         Get
             Return Chr(13) + Chr(10)
         End Get
@@ -6537,6 +6537,7 @@ Public Class EgressCalculation
                                 numCars, maxCarCap, eMxFin, Me.elPopPerFlr, recallDelay, 0.0)
             If Not Me.ElBank(i).IsValid Then
                 Me.valid = False
+                Return
             End If
             Me.ElBank(i).ElementName = "Bank " + i.ToString
 
@@ -6573,7 +6574,7 @@ Public Class EgressCalculation
             End If
             '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         Next
-
+        If Not Me.valid Then Return
         For i As Integer = 0 To Me.numStairCase - 1
             If Not Me.valid Then Return
             Me.StairCase(i) = New EgressStairWay(Me.numFloors, 1, mergeType, numFlights, _

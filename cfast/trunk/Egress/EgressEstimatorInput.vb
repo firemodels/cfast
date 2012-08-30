@@ -737,7 +737,7 @@ Public Class EgressEstimatorInput
             End If
         End Get
         Set(ByVal value As Boolean)
-            If i >= 0 And i > Me.maxIdx Then
+            If i >= 0 And i < Me.maxIdx Then
                 Me.useBuildingfile(i) = value
             End If
         End Set
@@ -759,7 +759,7 @@ Public Class EgressEstimatorInput
             End If
         End Get
         Set(ByVal value As String)
-            If i >= 0 And i > Me.maxIdx Then
+            If i >= 0 And i < Me.maxIdx Then
                 Me.buildingF(i) = value
             End If
         End Set

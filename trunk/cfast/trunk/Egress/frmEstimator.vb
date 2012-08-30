@@ -190,59 +190,6 @@ Public Class frmEstimator
 
     End Function
 
-    Private Sub ReadFieldsEE()
-
-        'Sub for taking data from the fields on the interface
-
-        ee.aNumFloors = Val(NumFloors.Text)
-        ee.aNumOccupants = Val(NumOccupants.Text)
-        ee.aElevatorFrac = Val(Me.ElevatorFraction.Text)
-        ee.aHallLength = Val(HallLength.Text)
-        ee.aHallWidth = Val(HallWidth.Text)
-        ee.aHallEntryRate = Val(HallEntryRate.Text)
-        ee.aFirstFloorUseStairwells = FirstFloorUseStairwells.Checked
-        ee.aBuildingFile = BuildingFile.Checked
-
-        ' Properties of the stairwells
-
-        ee.aNumStairs = Val(Me.NumStairwells.Text)
-        ee.aStairWidth = Val(StairWidth.Text)
-        ee.aFlightsPerFloor = Val(FlightsPerFloor.Text)
-        ee.aStairsPerFlight = Val(StairsPerFlight.Text)
-        ee.aStairRiserHeight = Val(StairRiserHeight.Text) / 1000.0
-        ee.aStairTreadDepth = Val(StairTreadDepth.Text) / 1000.0
-        ee.aStairEntryRate = Val(StairEntryRate.Text)
-
-        'Properties of the exit hallways
-
-        ee.aExitHallLength = Val(StairHallLength.Text)
-        ee.aExitHallWidth = Val(StairHallWidth.Text)
-        ee.aExitHallEntryRate = Val(ExitHallEntryRate.Text)
-        ee.aExitHallExitRate = Val(StairHallExitRate.Text)
-
-        'When to end estimate
-
-        If EndEstimate.SelectedIndex = 1 Then
-            ee.aEndEstimate = Val(EndEstimateTime.Text)
-        Else
-            ee.aEndEstimate = -0
-        End If
-
-        ee.aNumElevators = Val(Me.NumElevators.Text)
-        If Me.ElevatorCapacity.SelectedIndex >= 0 And Me.ElevatorCapacity.SelectedIndex <= 4 Then
-            ee.aMaxElevatorCarCap = ElevatorCapacitiesinPeople(Me.ElevatorCapacity.SelectedIndex)
-        Else
-            ee.aMaxElevatorCarCap = Math.Round(Val(ElevatorCustomCapacity.Text) * Me.ElevatorCapFactor)
-        End If
-        ee.aElevatorVel = Val(Me.ElevatorVelocity.Text)
-        ee.aElevatorAcc = Val(Me.ElevatorAcceleration.Text)
-        ee.aElevatorRecallDelay = Val(Me.ElevatorStartup.Text)
-        ee.aElevatorDoorType = Me.DoorType.SelectedIndex
-        ee.aElevatorLoadRate = EgressElevator.defaultLoadRate
-        ee.aElevatorUnloadRate = EgressElevator.defaultUnloadRate
-
-    End Sub
-
     Private Sub ReadFields()
 
         'Sub for taking data from the fields on the interface
@@ -296,58 +243,6 @@ Public Class frmEstimator
 
     End Sub
 
-    Private Function LoadFieldsTMP(ByRef errMsg As String) As Boolean
-        ' Tbis function currently assumes that all the values have been validated
-
-        errMsg = ""
-
-        Me.NumFloors.Text = ee.aNumFloors.ToString
-        Me.NumOccupants.Text = ee.aNumOccupants.ToString
-        Me.ElevatorFraction.Text = ee.aElevatorFrac.ToString
-        Me.HallLength.Text = ee.aHallLength.ToString
-        Me.HallWidth.Text = ee.aHallWidth.ToString
-        Me.HallEntryRate.Text = ee.aHallEntryRate.ToString
-        Me.FirstFloorUseStairwells.Checked = ee.aFirstFloorUseStairwells
-
-        ' Properties of the stairwells
-
-        Me.NumStairwells.Text = ee.aNumStairs.ToString
-        Me.StairWidth.Text = ee.aStairWidth.ToString
-        Me.FlightsPerFloor.Text = ee.aFlightsPerFloor.ToString
-        Me.StairsPerFlight.Text = ee.aStairsPerFlight.ToString
-        Me.StairRiserHeight.Text = (ee.aStairRiserHeight * 1000.0).ToString
-        Me.StairTreadDepth.Text = (ee.aStairTreadDepth * 1000.0).ToString
-        Me.StairEntryRate.Text = ee.aStairEntryRate.ToString
-
-        'Properties of the exit hallways
-
-        Me.StairHallLength.Text = ee.aExitHallLength.ToString
-        Me.StairHallWidth.Text = ee.aExitHallWidth.ToString
-        Me.ExitHallEntryRate.Text = ee.aExitHallEntryRate.ToString
-        Me.StairHallExitRate.Text = ee.aExitHallExitRate.ToString
-
-        'When to end estimate
-
-        If ee.aEndEstimate > 0 Then
-            Me.EndEstimate.SelectedIndex = 1
-        Else
-            Me.EndEstimate.SelectedIndex = 0
-        End If
-
-        Me.NumElevators.Text = ee.aNumElevators.ToString
-        Me.ElevatorCapacity.SelectedIndex = IndexFromElevatorCapacity(ee.aMaxElevatorCarCap)
-        If Me.ElevatorCapacity.SelectedIndex = 5 Then
-            Me.ElevatorCustomCapacity.Text = Math.Round(ee.aMaxElevatorCarCap / ee.aElevatorCapFactor).ToString
-        End If
-
-        Me.ElevatorVelocity.Text = ee.aElevatorVel.ToString
-        Me.ElevatorAcceleration.Text = ee.aElevatorAcc.ToString
-        Me.ElevatorStartup.Text = ee.aElevatorRecallDelay.ToString
-        Me.DoorType.SelectedIndex = ee.aElevatorDoorType
-
-        Return True
-    End Function
-
     Private Function LoadFields(ByRef errMsg As String) As Boolean
         ' Tbis function currently assumes that all the values have been validated
 
@@ -360,6 +255,12 @@ Public Class frmEstimator
         Me.HallWidth.Text = ee.aHallWidth.ToString
         Me.HallEntryRate.Text = ee.aHallEntryRate.ToString
         Me.FirstFloorUseStairwells.Checked = ee.aFirstFloorUseStairwells
+        Me.BuildingFile.Checked = ee.aBuildingFile
+        If ee.aBuildingFile Then
+            Dim dFile As New System.IO.FileInfo(ee.buildingFile)
+            BuildingFile.Text = "Data file: " + dFile.Name
+            Me.Text = "Egress Estimator: " + dFile.DirectoryName
+        End If
 
         ' Properties of the stairwells
 
@@ -425,6 +326,7 @@ Public Class frmEstimator
 
         'Load content of file to strLines array
         strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
+        tmpstream.Close()
 
         ' Redimension the array.
         num_rows = UBound(strlines) + 1
@@ -459,16 +361,17 @@ Public Class frmEstimator
         ee.aHallLength = Val(strarray(3, icol))
         ee.aHallWidth = Val(strarray(4, icol))
         ee.aHallEntryRate = Val(strarray(5, icol))
-        If strarray(6, icol) = "TRUE" Then
+        If strarray(6, icol) = "True" Then
             ee.aFirstFloorUseStairwells = True
         Else
             ee.aFirstFloorUseStairwells = False
         End If
-        If strarray(7, icol) = "TRUE" Then
+        If strarray(7, icol) = "True" Then
             ee.aBuildingFile = True
         Else
             ee.aBuildingFile = False
         End If
+        ee.buildingFile = strarray(8, icol)
 
         ' Properties of the stairwells
 
@@ -515,7 +418,7 @@ Public Class frmEstimator
         s = s + Me.lbl(1) + ee.aNumOccupants.ToString + el + Me.lbl(2) + ee.aElevatorFrac.ToString + el + Me.lbl(3) + ee.aHallLength.ToString + el + Me.lbl(4) + ee.aHallWidth.ToString + el
         s = s + Me.lbl(5) + ee.aHallEntryRate.ToString + el + Me.lbl(6) + ee.aFirstFloorUseStairwells.ToString + el + Me.lbl(7) + ee.aBuildingFile.ToString + el
         If ee.aBuildingFile Then
-            s = s + Me.lbl(8) + ee.aBuildingFile + el
+            s = s + Me.lbl(8) + ee.buildingFile + el
         Else
             s = s + Me.lbl(8) + "No Building File" + el
         End If
@@ -597,7 +500,7 @@ Public Class frmEstimator
                     Dim LobbyDelay(ee.aNumFloors) As Double
                     Dim StairDelay(ee.aNumFloors) As Double
                     Dim errMsg As String = " "
-                    If Not ReadBuildFile(BuildDataFile, ee.aNumFloors, ee.aNumOccupants, ee.aElevatorFrac, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
+                    If Not ReadBuildFile(ee.buildingFile, ee.aNumFloors, ee.aNumOccupants, ee.aElevatorFrac, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
                         MsgBox("Error with Building file: " + errMsg)
                         Return
                     End If
@@ -1230,16 +1133,19 @@ Public Class frmEstimator
 
     Private Sub BuildingFile_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BuildingFile.CheckedChanged
 
+        If ee.aBuildingFile Then Return
         If BuildingFile.Checked = True Then
             Dim path As String = Me.SaveFileDialog.InitialDirectory
             My.Computer.FileSystem.CurrentDirectory = path
-            BuildDataFile = "buildfile.csv"
-            SaveFileDialog.FileName = BuildDataFile
+            ee.aBuildingFile = True
+            ee.buildingFile = "buildfile.csv"
+            SaveFileDialog.FileName = ee.buildingFile
+            BuildingFile.Checked = True
             SaveFileDialog.OverwritePrompt = False
             If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-                BuildDataFile = SaveFileDialog.FileName
-                If My.Computer.FileSystem.FileExists(BuildDataFile) Then
-                    Dim dFile As New System.IO.FileInfo(BuildDataFile)
+                ee.buildingFile = SaveFileDialog.FileName
+                If My.Computer.FileSystem.FileExists(ee.buildingFile) Then
+                    Dim dFile As New System.IO.FileInfo(ee.buildingFile)
                     BuildingFile.Text = "Data file: " + dFile.Name
                     Me.Text = "Egress Estimator: " + dFile.DirectoryName
                 Else
@@ -1254,6 +1160,8 @@ Public Class frmEstimator
     End Sub
     Private Sub NoBuildingDataFile()
         BuildingFile.Checked = False
+        ee.aBuildingFile = False
+        ee.buildingFile = "No Building File"
         BuildingFile.Text = "Use building data file"
         Me.Text = "Egress Estimator"
     End Sub

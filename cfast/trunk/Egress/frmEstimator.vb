@@ -119,77 +119,6 @@ Public Class frmEstimator
 
     End Sub
 
-    Private Function ReadBuildFile(ByVal strfilename As String, ByVal aNumFloors As Integer, ByVal PopPerFlr As Integer, ByVal ElFracPerFlr As Double, _
-                                   ByRef strPop() As Integer, ByRef lbyFrac() As Double, ByRef strDelay() As Double, ByRef lbyDelay() As Double, ByRef errMsg As String) As Boolean
-
-        Dim num_rows As Long
-        Dim num_cols As Long
-        Dim sflr, eflr As Integer
-        Dim x As Integer
-        Dim y As Integer
-        Dim anum_cols As Integer
-        Dim strarray(1, 1) As String
-
-        ' Load the file.
-
-        Dim tmpstream As StreamReader = System.IO.File.OpenText(strfilename)
-        Dim strlines() As String
-        Dim strline() As String
-
-        'Load content of file to strLines array
-        strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
-
-        ' Redimension the array.
-        num_rows = UBound(strlines) + 1
-        strline = strlines(0).Split(",")
-        'num_cols = UBound(strline) + 1
-        num_cols = 6
-        ReDim strarray(num_rows, num_cols)
-
-        ' Copy the data into the array.
-        For x = 0 To num_rows - 1
-                strline = strlines(x).Split(",")
-            anum_cols = UBound(strline) + 1
-            If anum_cols = 6 Then
-                For y = 0 To num_cols - 1
-                    strarray(x, y) = strline(y)
-                Next
-            ElseIf anum_cols <> 6 Then
-                errMsg = "Building file must have 6 columns current file has " + anum_cols.ToString + " in row " + (x + 1).ToString
-                Return False
-            End If
-        Next
-        ReDim strPop(aNumFloors - 1)
-        ReDim lbyFrac(aNumFloors - 1)
-        ReDim strDelay(aNumFloors - 1)
-        ReDim lbyDelay(aNumFloors - 1)
-        For x = 0 To aNumFloors - 1
-            strPop(x) = PopPerFlr
-            strDelay(x) = 0.0
-            lbyFrac(x) = ElFracPerFlr
-            lbyDelay(x) = 0.0
-        Next
-
-        For x = 1 To num_rows - 1
-            sflr = Val(strarray(x, 0))
-            eflr = Val(strarray(x, 1))
-            If sflr >= 2 And eflr >= sflr And eflr <= aNumFloors Then
-                For y = sflr - 1 To eflr - 1
-                    strPop(y) = Val(strarray(x, 2))
-                    lbyFrac(y) = Val(strarray(x, 3))
-                    strDelay(y) = Val(strarray(x, 4))
-                    lbyDelay(y) = Val(strarray(x, 5))
-                Next
-            Else
-                errMsg = "Start floor, " + sflr.ToString + ", must be >= 2 and end floor. " + eflr.ToString + ", must be > start floor and <= top floor, " + aNumFloors.ToString
-                Return False
-            End If
-        Next
-        errMsg = "No errors"
-        Return True
-
-    End Function
-
     Private Sub ReadFields()
 
         'Sub for taking data from the fields on the interface
@@ -257,9 +186,7 @@ Public Class frmEstimator
         Me.FirstFloorUseStairwells.Checked = ee.aFirstFloorUseStairwells
         Me.BuildingFile.Checked = ee.aBuildingFile
         If ee.aBuildingFile Then
-            Dim dFile As New System.IO.FileInfo(ee.buildingFile)
-            BuildingFile.Text = "Data file: " + dFile.Name
-            Me.Text = "Egress Estimator: " + dFile.DirectoryName
+            Me.SetBuildFileText()
         End If
 
         ' Properties of the stairwells
@@ -300,6 +227,11 @@ Public Class frmEstimator
 
         Return True
     End Function
+    Private Sub SetBuildFileText()
+        Dim dFile As New System.IO.FileInfo(ee.buildingFile)
+        BuildingFile.Text = "Data file: " + dFile.Name
+        Me.Text = "Egress Estimator: " + dFile.DirectoryName
+    End Sub
 
     Private Function IndexFromElevatorCapacity(ByVal cap As Integer) As Integer
         For i As Integer = 0 To 4
@@ -310,127 +242,13 @@ Public Class frmEstimator
         Return 5
     End Function
 
-    Private Function ReadInput(ByVal EgressIOFile As String, ByVal skipRows As Integer, ByVal col As Integer, ByVal errMsg As String) As Boolean
-        Dim num_rows As Long
-        Dim num_cols As Long
-        Dim x As Integer
-        Dim y As Integer
-        Dim anum_cols As Integer
-        Dim strarray(,) As String
-
-        ' Load the file.
-
-        Dim tmpstream As StreamReader = System.IO.File.OpenText(EgressIOFile)
-        Dim strlines() As String
-        Dim strline() As String
-
-        'Load content of file to strLines array
-        strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
-        tmpstream.Close()
-
-        ' Redimension the array.
-        num_rows = UBound(strlines) + 1
-        If num_rows < Me.IOParameters + skipRows Then
-            errMsg = "must have " + Me.IOParameters + " rows in io file of input data and " + skipRows.ToString + " rows of before input data starts"
-            Return False
-        End If
-        strline = strlines(0).Split(",")
-        num_cols = UBound(strline) + 1
-        ReDim strarray(Me.IOParameters, num_cols)
-
-        ' Copy the data into the array.
-        For x = skipRows To Me.IOParameters + skipRows - 1
-            strline = strlines(x).Split(",")
-            anum_cols = UBound(strline) + 1
-            If anum_cols >= col Then
-                For y = 0 To num_cols - 1
-                    strarray(x - skipRows, y) = strline(y)
-                Next
-            Else
-                errMsg = "Must have at least " + col.ToString + " columns in each row"
-                Return False
-            End If
-        Next
-
-        'Sub for taking data from the fields on the interface
-
-        Dim icol As Integer = col - 1
-        ee.aNumFloors = Val(strarray(0, icol))
-        ee.aNumOccupants = Val(strarray(1, icol))
-        ee.aElevatorFrac = Val(strarray(2, icol))
-        ee.aHallLength = Val(strarray(3, icol))
-        ee.aHallWidth = Val(strarray(4, icol))
-        ee.aHallEntryRate = Val(strarray(5, icol))
-        If strarray(6, icol) = "True" Then
-            ee.aFirstFloorUseStairwells = True
-        Else
-            ee.aFirstFloorUseStairwells = False
-        End If
-        If strarray(7, icol) = "True" Then
-            ee.aBuildingFile = True
-        Else
-            ee.aBuildingFile = False
-        End If
-        ee.buildingFile = strarray(8, icol)
-
-        ' Properties of the stairwells
-
-        ee.aNumStairs = Val(strarray(9, icol))
-        ee.aStairWidth = Val(strarray(10, icol))
-        ee.aFlightsPerFloor = Val(strarray(11, icol))
-        ee.aStairsPerFlight = Val(strarray(12, icol))
-        ee.aStairRiserHeight = Val(strarray(13, icol))
-        ee.aStairTreadDepth = Val(strarray(14, icol))
-        ee.aStairEntryRate = Val(strarray(15, icol))
-
-        'Properties of the exit hallways
-
-        ee.aExitHallLength = Val(strarray(16, icol))
-        ee.aExitHallWidth = Val(strarray(17, icol))
-        ee.aExitHallEntryRate = Val(strarray(18, icol))
-        ee.aExitHallExitRate = Val(strarray(19, icol))
-
-        'When to end estimate
-
-        ee.aEndEstimate = Val(strarray(20, icol))
-
-        ' Properties of Elevators
-
-        ee.aNumElevators = Val(strarray(21, icol))
-        ee.aMaxElevatorCarCap = Val(strarray(22, icol))
-        ee.aElevatorVel = Val(strarray(23, icol))
-        ee.aElevatorAcc = Val(strarray(24, icol))
-        ee.aElevatorRecallDelay = Val(strarray(25, icol))
-        ee.aElevatorDoorType = Val(strarray(26, icol))
-
-        Return True
-    End Function
-
-    Private Function SaveInput(ByVal FileName As String, ByVal ReadFieldsFlg As Boolean)
-        Dim s As String = ",EgressEstimator Output"
-        Dim el As String = EgressCalculation.EndLine
+    Private Function SaveInput(ByVal FileName As String, ByVal ReadFieldsFlg As Boolean, ByRef err As String) As Boolean
 
         If ReadFieldsFlg Then
             ReadFields()
         End If
-        My.Computer.FileSystem.WriteAllText(FileName, s + el, False)
-        s = Me.lbl(0) + ee.aNumFloors.ToString + el
-        s = s + Me.lbl(1) + ee.aNumOccupants.ToString + el + Me.lbl(2) + ee.aElevatorFrac.ToString + el + Me.lbl(3) + ee.aHallLength.ToString + el + Me.lbl(4) + ee.aHallWidth.ToString + el
-        s = s + Me.lbl(5) + ee.aHallEntryRate.ToString + el + Me.lbl(6) + ee.aFirstFloorUseStairwells.ToString + el + Me.lbl(7) + ee.aBuildingFile.ToString + el
-        If ee.aBuildingFile Then
-            s = s + Me.lbl(8) + ee.buildingFile + el
-        Else
-            s = s + Me.lbl(8) + "No Building File" + el
-        End If
-        s = s + Me.lbl(9) + ee.aNumStairs.ToString + el + Me.lbl(10) + ee.aStairWidth.ToString + el + Me.lbl(11) + ee.aFlightsPerFloor.ToString + el + Me.lbl(12) + ee.aStairsPerFlight.ToString + el
-        s = s + Me.lbl(13) + ee.aStairRiserHeight.ToString + el + Me.lbl(14) + ee.aStairTreadDepth.ToString + el + Me.lbl(15) + ee.aStairEntryRate.ToString + el + Me.lbl(16) + ee.aExitHallLength.ToString + el
-        s = s + Me.lbl(17) + ee.aExitHallWidth.ToString + el + Me.lbl(18) + ee.aExitHallEntryRate.ToString + el + Me.lbl(19) + ee.aExitHallExitRate.ToString + el + Me.lbl(20) + ee.aEndEstimate.ToString + el
-        s = s + Me.lbl(21) + ee.aNumElevators.ToString + el + Me.lbl(22) + ee.aMaxElevatorCarCap.ToString + el
-        s = s + Me.lbl(23) + ee.aElevatorVel.ToString + el + Me.lbl(24) + ee.aElevatorAcc.ToString + el + Me.lbl(25) + ee.aElevatorRecallDelay.ToString + el + Me.lbl(26) + ee.aElevatorDoorType.ToString + el
-        My.Computer.FileSystem.WriteAllText(FileName, s, True)
-        s = "" + el
-        My.Computer.FileSystem.WriteAllText(FileName, s, True)
-        Return True
+        Return ee.WriteInput(FileName, err)
+
     End Function
 
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -468,6 +286,7 @@ Public Class frmEstimator
     End Sub
 
     Private Sub Estimate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Estimate.Click
+        Dim errMsg As String = ""
 
         ' Properties of the building and it's occupants
 
@@ -499,8 +318,7 @@ Public Class frmEstimator
                     Dim LobbyFractionPF(ee.aNumFloors) As Double
                     Dim LobbyDelay(ee.aNumFloors) As Double
                     Dim StairDelay(ee.aNumFloors) As Double
-                    Dim errMsg As String = " "
-                    If Not ReadBuildFile(ee.buildingFile, ee.aNumFloors, ee.aNumOccupants, ee.aElevatorFrac, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
+                    If Not ee.ReadBuildFile(ee.buildingFile, PopulationPF, LobbyFractionPF, StairDelay, LobbyDelay, errMsg) Then
                         MsgBox("Error with Building file: " + errMsg)
                         Return
                     End If
@@ -546,8 +364,8 @@ Public Class frmEstimator
                     End If
                 End If
 
-                If Not SaveInput(FileName, False) Then
-                    MsgBox("Error in SaveInput in Estimate_Click")
+                If Not SaveInput(FileName, False, errMsg) Then
+                    MsgBox("Error in SaveInput in Estimate_Click" + errMsg)
                     Return
                 End If
 
@@ -707,33 +525,9 @@ Public Class frmEstimator
         Me.ElevatorAcceleration.Text = "3.0"
         Me.ElevatorStartup.Text = "42.5"
 
-        Me.lbl(0) = "Number of floors,"
-        Me.lbl(1) = "Occupants per floor,"
-        Me.lbl(2) = "Fraction using elevator,"
-        Me.lbl(3) = "Hall length,"
-        Me.lbl(4) = "Hall width,"
-        Me.lbl(5) = "Hall entry rate,"
-        Me.lbl(6) = "First floor exits in stairs,"
-        Me.lbl(7) = "Use building file,"
-        Me.lbl(8) = "Building file,"
-        Me.lbl(9) = "Number of stairs,"
-        Me.lbl(10) = "Stair width,"
-        Me.lbl(11) = "Flights per floor,"
-        Me.lbl(12) = "Stairs per flight,"
-        Me.lbl(13) = "Riser height,"
-        Me.lbl(14) = "Tread depth,"
-        Me.lbl(15) = "Stair entry rate,"
-        Me.lbl(16) = "Exit hall length,"
-        Me.lbl(17) = "Exit hall width,"
-        Me.lbl(18) = "Exit hall entry rate,"
-        Me.lbl(19) = "Exit hall exit rate,"
-        Me.lbl(20) = "End criteria,"
-        Me.lbl(21) = "Number of elevator cars,"
-        Me.lbl(22) = "Max capacity of car,"
-        Me.lbl(23) = "Elevator velocity,"
-        Me.lbl(24) = "Elevator acceleration,"
-        Me.lbl(25) = "Elevator recall delay,"
-        Me.lbl(26) = "Elevator door type,"
+        Me.BuildingFile.Checked = False
+
+        Me.ReadFields()
 
     End Sub
 
@@ -1145,9 +939,7 @@ Public Class frmEstimator
             If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                 ee.buildingFile = SaveFileDialog.FileName
                 If My.Computer.FileSystem.FileExists(ee.buildingFile) Then
-                    Dim dFile As New System.IO.FileInfo(ee.buildingFile)
-                    BuildingFile.Text = "Data file: " + dFile.Name
-                    Me.Text = "Egress Estimator: " + dFile.DirectoryName
+                    Me.SetBuildFileText() 'routine is after LoadFields
                 Else
                     NoBuildingDataFile()
                 End If
@@ -1172,7 +964,7 @@ Public Class frmEstimator
         SaveFileDialog.OverwritePrompt = False
         If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             FileName = SaveFileDialog.FileName
-            If ReadInput(FileName, 1, 2, err) Then
+            If ee.ReadInput(FileName, 1, 2, err) Then
                 If Not Me.LoadFields(err) Then
                     MsgBox(err)
                 End If
@@ -1188,10 +980,14 @@ Public Class frmEstimator
         SaveFileDialog.OverwritePrompt = True
         If SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             FileName = SaveFileDialog.FileName
-            If Not SaveInput(FileName, True) Then
-                MsgBox("Error Saving input file")
+            If Not SaveInput(FileName, True, err) Then
+                MsgBox("Error Saving input file" + err)
             End If
         End If
+    End Sub
+
+    Private Sub NewToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NewToolStripMenuItem.Click
+        Me.SetDefaultValues()
     End Sub
 End Class
 

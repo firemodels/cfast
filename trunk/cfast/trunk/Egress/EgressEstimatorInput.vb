@@ -18,9 +18,8 @@ Public Class EgressEstimatorInput
     Protected elevatorDoorType() As Integer
     Protected useBuildingfile() As Boolean
     Protected buildingF() As String
-    Protected iOParameters As Integer = 27
-    'lbl is defined in SetDefaultValues
-    Protected lbl(IOParameters) As String
+    Protected iOP As Integer = 27 'iOP for IOParameter
+    Protected lbl(iOP) As String
     Protected elevatorCapFactor As Double = 0.01333
     Protected idx As Integer
     Protected maxIdx As Integer
@@ -28,6 +27,12 @@ Public Class EgressEstimatorInput
     Protected errMsg As String
     Protected strarray(,) As String
     Protected straRows, straCols As Integer
+
+    Public ReadOnly Property IOParameter As Integer
+        Get
+            Return iOP
+        End Get
+    End Property
 
     Public Overloads Property aNumFloors() As Integer
         Get
@@ -774,7 +779,7 @@ Public Class EgressEstimatorInput
     End Property
     Public ReadOnly Property numInputs() As Integer
         Get
-            Return Me.iOParameters
+            Return Me.IOParameter
         End Get
     End Property
     Public Property CurrentCol() As Integer
@@ -822,7 +827,7 @@ Public Class EgressEstimatorInput
     Public Sub New(ByVal filenm As String, ByVal skipRows As Integer)
         Dim emsg As String = ""
 
-        Me.rdFileFlg = Me.ReadInput(filenm, 1, emsg)
+        Me.rdFileFlg = Me.ReadInput(filenm, 1, 2, emsg)
         Me.errMsg = emsg
         Me.SetLabels()
 
@@ -897,33 +902,33 @@ Public Class EgressEstimatorInput
 
     Private Sub SetLabels()
 
-        Me.lbl(0) = "Number of floors,"
-        Me.lbl(1) = "Occupants per floor,"
-        Me.lbl(2) = "Fraction using elevator,"
-        Me.lbl(3) = "Hall length,"
-        Me.lbl(4) = "Hall width,"
-        Me.lbl(5) = "Hall entry rate,"
-        Me.lbl(6) = "First floor exits in stairs,"
-        Me.lbl(7) = "Use building file,"
-        Me.lbl(8) = "Building file,"
-        Me.lbl(9) = "Number of stairs,"
-        Me.lbl(10) = "Stair width,"
-        Me.lbl(11) = "Flights per floor,"
-        Me.lbl(12) = "Stairs per flight,"
-        Me.lbl(13) = "Riser height,"
-        Me.lbl(14) = "Tread depth,"
-        Me.lbl(15) = "Stair entry rate,"
-        Me.lbl(16) = "Exit hall length,"
-        Me.lbl(17) = "Exit hall width,"
-        Me.lbl(18) = "Exit hall entry rate,"
-        Me.lbl(19) = "Exit hall exit rate,"
-        Me.lbl(20) = "End criteria,"
-        Me.lbl(21) = "Number of elevator cars,"
-        Me.lbl(22) = "Max capacity of car,"
-        Me.lbl(23) = "Elevator velocity,"
-        Me.lbl(24) = "Elevator acceleration,"
-        Me.lbl(25) = "Elevator recall delay,"
-        Me.lbl(26) = "Elevator door type,"
+        Me.lbl(0) = "Number of floors"
+        Me.lbl(1) = "Occupants per floor"
+        Me.lbl(2) = "Fraction using elevator"
+        Me.lbl(3) = "Hall length"
+        Me.lbl(4) = "Hall width"
+        Me.lbl(5) = "Hall entry rate"
+        Me.lbl(6) = "First floor exits in stairs"
+        Me.lbl(7) = "Use building file"
+        Me.lbl(8) = "Building file"
+        Me.lbl(9) = "Number of stairs"
+        Me.lbl(10) = "Stair width"
+        Me.lbl(11) = "Flights per floor"
+        Me.lbl(12) = "Stairs per flight"
+        Me.lbl(13) = "Riser height"
+        Me.lbl(14) = "Tread depth"
+        Me.lbl(15) = "Stair entry rate"
+        Me.lbl(16) = "Exit hall length"
+        Me.lbl(17) = "Exit hall width"
+        Me.lbl(18) = "Exit hall entry rate"
+        Me.lbl(19) = "Exit hall exit rate"
+        Me.lbl(20) = "End criteria"
+        Me.lbl(21) = "Number of elevator cars"
+        Me.lbl(22) = "Max capacity of car"
+        Me.lbl(23) = "Elevator velocity"
+        Me.lbl(24) = "Elevator acceleration"
+        Me.lbl(25) = "Elevator recall delay"
+        Me.lbl(26) = "Elevator door type"
 
     End Sub
 
@@ -942,6 +947,7 @@ Public Class EgressEstimatorInput
 
         'Load content of file to strLines array
         strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
+        tmpstream.Close()
 
         ' Redimension the array.
         num_rows = UBound(strlines) + 1
@@ -972,9 +978,10 @@ Public Class EgressEstimatorInput
         Return True
     End Function
 
-    Public Overloads Function ReadInput(ByVal fileName As String, ByVal skipRows As Integer, ByRef errMsg As String) As Boolean
+    Public Overloads Function ReadInput(ByVal fileName As String, ByVal skipRows As Integer, ByVal col As Integer, ByRef errMsg As String) As Boolean
+        Dim idx As Integer = -1
 
-        If Not Me.LoadFile(fileName, skipRows, Me.iOParameters, -1, Me.errMsg) Then
+        If Not Me.LoadFile(fileName, skipRows, Me.iOP, -1, Me.errMsg) Then
             Me.errMsg = "In ReadInput: " + Me.errMsg
             errMsg = Me.errMsg
             Return False
@@ -982,92 +989,212 @@ Public Class EgressEstimatorInput
 
         'Sub for taking data from the fields on the interface
 
-        For icol As Integer = 1 To Me.straCols - 1
-            Me.aNumFloors(icol) = Val(Me.strarray(0, icol))
-            Me.aNumOccupants(icol) = Val(Me.strarray(1, icol))
-            Me.aElevatorFrac(icol) = Val(Me.strarray(2, icol))
-            Me.aHallLength(icol) = Val(Me.strarray(3, icol))
-            Me.aHallWidth(icol) = Val(Me.strarray(4, icol))
-            Me.aHallEntryRate(icol) = Val(Me.strarray(5, icol))
-            If Me.strarray(6, icol) = "TRUE" Then
-                Me.aFirstFloorUseStairwells(icol) = True
-            Else
-                Me.aFirstFloorUseStairwells(icol) = False
-            End If
-            If Me.strarray(7, icol) = "TRUE" Then
-                Me.aBuildingFile(icol) = True
-                Me.buildingFile(icol) = Me.strarray(8, icol)
-            Else
-                Me.aBuildingFile(icol) = False
-                Me.buildingFile(icol) = ""
-            End If
+        Dim icol As Integer = col - 1
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aNumFloors = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aNumOccupants = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aElevatorFrac = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aHallLength = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aHallWidth = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aHallEntryRate = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        If strarray(idx, icol) = "True" Then
+            Me.aFirstFloorUseStairwells = True
+        Else
+            Me.aFirstFloorUseStairwells = False
+        End If
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        If strarray(idx, icol) = "True" Then
+            Me.aBuildingFile = True
+        Else
+            Me.aBuildingFile = False
+        End If
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.buildingFile = strarray(idx, icol)
 
-            ' Properties of the stairwells
+        ' Properties of the stairwells
 
-            Me.aNumStairs(icol) = Val(Me.strarray(9, icol))
-            Me.aStairWidth(icol) = Val(Me.strarray(10, icol))
-            Me.aFlightsPerFloor(icol) = Val(Me.strarray(11, icol))
-            Me.aStairsPerFlight(icol) = Val(Me.strarray(12, icol))
-            Me.aStairRiserHeight(icol) = Val(Me.strarray(13, icol))
-            Me.aStairTreadDepth(icol) = Val(Me.strarray(14, icol))
-            Me.aStairEntryRate(icol) = Val(Me.strarray(15, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aNumStairs = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aStairWidth = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aFlightsPerFloor = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aStairsPerFlight = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aStairRiserHeight = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aStairTreadDepth = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aStairEntryRate = Val(strarray(idx, icol))
 
-            'Properties of the exit hallways
+        'Properties of the exit hallways
 
-            Me.aExitHallLength(icol) = Val(strarray(16, icol))
-            Me.aExitHallWidth(icol) = Val(strarray(17, icol))
-            Me.aExitHallEntryRate(icol) = Val(strarray(18, icol))
-            Me.aExitHallExitRate(icol) = Val(strarray(19, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aExitHallLength = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aExitHallWidth = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aExitHallEntryRate = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aExitHallExitRate = Val(strarray(idx, icol))
 
-            'When to end estimate
+        'When to end estimate
 
-            Me.aEndEstimate(icol) = Val(strarray(20, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aEndEstimate = Val(strarray(idx, icol))
 
-            ' Properties of Elevators
+        ' Properties of Elevators
 
-            Me.aNumElevators(icol) = Val(strarray(21, icol))
-            Me.aMaxElevatorCarCap(icol) = Val(strarray(22, icol))
-            Me.aElevatorVel(icol) = Val(strarray(23, icol))
-            Me.aElevatorAcc(icol) = Val(strarray(24, icol))
-            Me.aElevatorRecallDelay(icol) = Val(strarray(25, icol))
-            Me.aElevatorDoorType(icol) = Val(strarray(26, icol))
-        Next
-        Me.errMsg = "In ReadInput: " + Me.errMsg
-        errMsg = Me.errMsg
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aNumElevators = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aMaxElevatorCarCap = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aElevatorVel = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aElevatorAcc = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aElevatorRecallDelay = Val(strarray(idx, icol))
+        If Not Me.TokenCk(idx, errMsg) Then
+            Return False
+        End If
+        Me.aElevatorDoorType = Val(strarray(idx, icol))
+
         Return True
     End Function
 
-    Public Overloads Function ReadInput(ByVal fileName As String, ByRef errMsg As String) As Boolean
-        Return Me.ReadInput(fileName, 1, errMsg)
-    End Function
-
-    Public Overloads Function ReadBuildFile(ByVal fileName As String, ByVal skipRows As Integer, ByVal icol As Integer, _
-                                   ByRef strPop() As Integer, ByRef lbyFrac() As Double, ByRef strDelay() As Double, ByRef lbyDelay() As Double, ByRef errMsg As String) As Boolean
-
-        Dim x, y, sflr, eflr As Integer
-
-        If Not Me.LoadFile(fileName, skipRows, -1, 6, Me.errMsg) Then
-            Me.errMsg = "In ReadBuildFile: " + Me.errMsg
-            errMsg = Me.errMsg
+    Private Function TokenCk(ByRef idx As Integer, ByRef err As String) As Boolean
+        idx = idx + 1
+        If String.Compare(Me.strarray(idx, 0), Me.lbl(idx)) Then
+            Return True
+        Else
+            err = "EgressEstimatorInput:ReadInput: error in row " + (idx + 1).ToString + " label doesn't match"
             Return False
         End If
+    End Function
 
-        'Sub for taking data from the fields on the interface
+    Public Overloads Function ReadInput(ByVal fileName As String, ByRef errMsg As String) As Boolean
+        Return Me.ReadInput(fileName, 1, 2, errMsg)
+    End Function
+
+    Public Overloads Function ReadBuildFile(ByVal fileName As String, ByVal skipRows As Integer, _
+                                   ByRef strPop() As Integer, ByRef lbyFrac() As Double, ByRef strDelay() As Double, ByRef lbyDelay() As Double, ByRef errMsg As String) As Boolean
+
+        Dim num_rows As Long
+        Dim num_cols As Long
+        Dim sflr, eflr As Integer
+        Dim x As Integer
+        Dim y As Integer
+        Dim anum_cols As Integer
+        Dim strarray(1, 1) As String
+
+        ' Load the file.
+
+        Dim tmpstream As StreamReader = System.IO.File.OpenText(fileName)
+        Dim strlines() As String
+        Dim strline() As String
+
+        'Load content of file to strLines array
+        strlines = tmpstream.ReadToEnd().Split(Environment.NewLine)
+        tmpstream.Close()
+
+        ' Redimension the array.
+        num_rows = UBound(strlines) + 1
+        strline = strlines(0).Split(",")
+        'num_cols = UBound(strline) + 1
+        num_cols = 6
+        ReDim strarray(num_rows, num_cols)
+
+        ' Copy the data into the array.
+        For x = 0 To num_rows - 1
+            strline = strlines(x).Split(",")
+            anum_cols = UBound(strline) + 1
+            If anum_cols = 6 Then
+                For y = 0 To num_cols - 1
+                    strarray(x, y) = strline(y)
+                Next
+            ElseIf String.Compare(strline(0), "End") Then
+                Exit For
+            ElseIf anum_cols <> 6 Then
+                errMsg = "Building file must have 6 columns current file has " + anum_cols.ToString + " in row " + (x + 1).ToString
+                Return False
+            End If
+        Next
+        num_rows = x
         ReDim strPop(Me.aNumFloors - 1)
-        ReDim lbyFrac(aNumFloors - 1)
-        ReDim strDelay(aNumFloors - 1)
-        ReDim lbyDelay(aNumFloors - 1)
-        For x = 0 To aNumFloors - 1
-            strPop(x) = Me.aNumOccupants(icol)
+        ReDim lbyFrac(Me.aNumFloors - 1)
+        ReDim strDelay(Me.aNumFloors - 1)
+        ReDim lbyDelay(Me.aNumFloors - 1)
+        For x = 0 To Me.aNumFloors - 1
+            strPop(x) = Me.aNumOccupants
             strDelay(x) = 0.0
-            lbyFrac(x) = Me.aElevatorFrac(icol)
+            lbyFrac(x) = Me.aElevatorFrac
             lbyDelay(x) = 0.0
         Next
 
-        For x = 1 To Me.straRows - 1
+        For x = skipRows To num_rows - 1
             sflr = Val(strarray(x, 0))
             eflr = Val(strarray(x, 1))
-            If sflr >= 2 And eflr >= sflr And eflr <= aNumFloors Then
+            If sflr >= 2 And eflr >= sflr And eflr <= Me.aNumFloors Then
                 For y = sflr - 1 To eflr - 1
                     strPop(y) = Val(strarray(x, 2))
                     lbyFrac(y) = Val(strarray(x, 3))
@@ -1075,39 +1202,38 @@ Public Class EgressEstimatorInput
                     lbyDelay(y) = Val(strarray(x, 5))
                 Next
             Else
-                Me.errMsg = "In ReadBuildFile: Start floor, " + sflr.ToString + ", must be >= 2 and end floor. " + eflr.ToString + ", must be > start floor and <= top floor, " + aNumFloors.ToString
-                errMsg = Me.errMsg
+                errMsg = "Start floor, " + sflr.ToString + ", must be >= 2 and end floor. " + eflr.ToString + ", must be > start floor and <= top floor, " + aNumFloors.ToString
                 Return False
             End If
         Next
-        Me.errMsg = "In ReadBuildFile: " + Me.errMsg
-        Return True
+        errMsg = "No errors"
         Return True
     End Function
 
     Public Overloads Function ReadBuildFile(ByVal fileName As String, _
                                    ByRef strPop() As Integer, ByRef lbyFrac() As Double, ByRef strDelay() As Double, ByRef lbyDelay() As Double, ByRef errMsg As String) As Boolean
-        Return Me.ReadBuildFile(fileName, 1, Me.idx, strPop, lbyFrac, strDelay, lbyDelay, errMsg)
+        Return Me.ReadBuildFile(fileName, 1, strPop, lbyFrac, strDelay, lbyDelay, errMsg)
     End Function
 
-    Public Overloads Function WriteInput(ByVal fileName As String, ByVal icol As Integer, ByRef errMsg As String)
+    Public Overloads Function WriteInput(ByVal fileName As String, ByVal icol As Integer, ByRef errMsg As String) As Boolean
         Dim s As String = ",EgressEstimator Output"
         Dim el As String = Chr(13) + Chr(10)
+        Dim c As String = ","
 
         My.Computer.FileSystem.WriteAllText(fileName, s + el, False)
-        s = Me.lbl(0) + Me.aNumFloors(icol).ToString + el
-        s = s + Me.lbl(1) + Me.aNumOccupants(icol).ToString + el + Me.lbl(2) + Me.aElevatorFrac(icol).ToString + el + Me.lbl(3) + Me.aHallLength(icol).ToString + el + Me.lbl(4) + Me.aHallWidth(icol).ToString + el
-        s = s + Me.lbl(5) + Me.aHallEntryRate(icol).ToString + el + Me.lbl(6) + Me.aFirstFloorUseStairwells(icol).ToString + el + Me.lbl(7) + Me.aBuildingFile(icol).ToString + el
+        s = Me.lbl(0) + c + Me.aNumFloors(icol).ToString + el
+        s = s + Me.lbl(1) + c + Me.aNumOccupants(icol).ToString + el + Me.lbl(2) + c + Me.aElevatorFrac(icol).ToString + el + Me.lbl(3) + c + Me.aHallLength(icol).ToString + el + Me.lbl(4) + c + Me.aHallWidth(icol).ToString + el
+        s = s + Me.lbl(5) + c + Me.aHallEntryRate(icol).ToString + el + Me.lbl(6) + c + Me.aFirstFloorUseStairwells(icol).ToString + el + Me.lbl(7) + c + Me.aBuildingFile(icol).ToString + el
         If Me.aBuildingFile(icol) Then
-            s = s + Me.lbl(8) + Me.buildingFile(icol) + el
+            s = s + Me.lbl(8) + c + Me.buildingFile(icol) + el
         Else
-            s = s + Me.lbl(8) + "No Building File" + el
+            s = s + Me.lbl(8) + c + "No Building File" + el
         End If
-        s = s + Me.lbl(9) + Me.aNumStairs(icol).ToString + el + Me.lbl(10) + Me.aStairWidth(icol).ToString + el + Me.lbl(11) + Me.aFlightsPerFloor(icol).ToString + el + Me.lbl(12) + Me.aStairsPerFlight(icol).ToString + el
-        s = s + Me.lbl(13) + Me.aStairRiserHeight(icol).ToString + el + Me.lbl(14) + Me.aStairTreadDepth(icol).ToString + el + Me.lbl(15) + Me.aStairEntryRate(icol).ToString + el + Me.lbl(16) + Me.aExitHallLength(icol).ToString + el
-        s = s + Me.lbl(17) + Me.aExitHallWidth(icol).ToString + el + Me.lbl(18) + Me.aExitHallEntryRate(icol).ToString + el + Me.lbl(19) + Me.aExitHallExitRate(icol).ToString + el + Me.lbl(20) + Me.aEndEstimate(icol).ToString + el
-        s = s + Me.lbl(21) + Me.aNumElevators(icol).ToString + el + Me.lbl(22) + Me.aMaxElevatorCarCap(icol).ToString + el
-        s = s + Me.lbl(23) + Me.aElevatorVel(icol).ToString + el + Me.lbl(24) + Me.aElevatorAcc(icol).ToString + el + Me.lbl(25) + Me.aElevatorRecallDelay(icol).ToString + el + Me.lbl(26) + Me.aElevatorDoorType(icol).ToString + el
+        s = s + Me.lbl(9) + c + Me.aNumStairs(icol).ToString + el + Me.lbl(10) + c + Me.aStairWidth(icol).ToString + el + Me.lbl(11) + c + Me.aFlightsPerFloor(icol).ToString + el + Me.lbl(12) + c + Me.aStairsPerFlight(icol).ToString + el
+        s = s + Me.lbl(13) + c + Me.aStairRiserHeight(icol).ToString + el + Me.lbl(14) + c + Me.aStairTreadDepth(icol).ToString + el + Me.lbl(15) + c + Me.aStairEntryRate(icol).ToString + el + Me.lbl(16) + c + Me.aExitHallLength(icol).ToString + el
+        s = s + Me.lbl(17) + c + Me.aExitHallWidth(icol).ToString + el + Me.lbl(18) + c + Me.aExitHallEntryRate(icol).ToString + el + Me.lbl(19) + c + Me.aExitHallExitRate(icol).ToString + el + Me.lbl(20) + c + Me.aEndEstimate(icol).ToString + el
+        s = s + Me.lbl(21) + c + Me.aNumElevators(icol).ToString + el + Me.lbl(22) + c + Me.aMaxElevatorCarCap(icol).ToString + el
+        s = s + Me.lbl(23) + c + Me.aElevatorVel(icol).ToString + el + Me.lbl(24) + c + Me.aElevatorAcc(icol).ToString + el + Me.lbl(25) + c + Me.aElevatorRecallDelay(icol).ToString + el + Me.lbl(26) + c + Me.aElevatorDoorType(icol).ToString + el
         My.Computer.FileSystem.WriteAllText(fileName, s, True)
         s = "" + el
         My.Computer.FileSystem.WriteAllText(fileName, s, True)
@@ -1116,7 +1242,7 @@ Public Class EgressEstimatorInput
         Return True
     End Function
 
-    Public Overloads Function WriteInput(ByVal fileName As String, ByRef errMsg As String)
+    Public Overloads Function WriteInput(ByVal fileName As String, ByRef errMsg As String) As Boolean
         Return Me.WriteInput(fileName, Me.idx, errMsg)
     End Function
 End Class

@@ -92,6 +92,7 @@ Partial Class frmEstimator
         Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FileMenuOpenItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.FileMenuSaveItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.NewToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
@@ -685,7 +686,7 @@ Partial Class frmEstimator
         '
         'FileToolStripMenuItem
         '
-        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileMenuOpenItem, Me.FileMenuSaveItem})
+        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NewToolStripMenuItem, Me.FileMenuOpenItem, Me.FileMenuSaveItem})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
         Me.FileToolStripMenuItem.Size = New System.Drawing.Size(35, 20)
         Me.FileToolStripMenuItem.Text = "File"
@@ -702,6 +703,12 @@ Partial Class frmEstimator
         Me.FileMenuSaveItem.RightToLeftAutoMirrorImage = True
         Me.FileMenuSaveItem.Size = New System.Drawing.Size(152, 22)
         Me.FileMenuSaveItem.Text = "Save"
+        '
+        'NewToolStripMenuItem
+        '
+        Me.NewToolStripMenuItem.Name = "NewToolStripMenuItem"
+        Me.NewToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.NewToolStripMenuItem.Text = "New"
         '
         'frmEstimator
         '
@@ -811,6 +818,7 @@ Partial Class frmEstimator
     Friend WithEvents FileToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FileMenuOpenItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents FileMenuSaveItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents NewToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 
 
 End Class

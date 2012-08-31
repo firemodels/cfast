@@ -54,7 +54,7 @@
     real*8 :: r1, r2
     character :: msg(nmes)*1, cc*1, foutnm*60
 
-    ! define message print flag and logical unit number. -------------------
+    ! define message print flag and logical unit number
     mesflg = 1
     lunit = logerr
     if (mesflg/=0) then
@@ -105,6 +105,7 @@
     !           i1mach(11) = t, the number of base-b digits.
     !           i1mach(12) = emin, the smallest exponent e.
     !           i1mach(13) = emax, the largest exponent e.
+    
     implicit none
     integer :: i
     double precision :: b, x
@@ -141,15 +142,13 @@
 
     use cparams
     use cshell
-    include "precis.fi"
+    implicit none
 
-    integer :: nmes, nerr, nnr
+    integer :: nmes, nerr, nnr, lm, i, lunit, mesflg
     real*8 :: r1, r2
     character :: mesg*(*)
 
-    integer i, lunit, mesflg
-    character*1  cc
-    character*60 foutnm
+    character  cc*1, foutnm*60
 
     lm = len_trim(mesg)
 
@@ -189,7 +188,7 @@
 
     end subroutine cfastexit
 
-    SUBROUTINE CMDLINE (NARGS,STRS,IARG,IOPT)
+    subroutine cmdline (nargs,strs,iarg,iopt)
 
     !     routine: cmdline
     !     purpose: gets argument list and options from command line. options may be of the form c:<string> where <c> is the desired option a-z and <string> is a character string associated with that option.
@@ -198,89 +197,91 @@
     !                iarg  returned list of pointers to elements in strs corresponding to arguments 1..nargs
     !                iopt  returned list of pointers to elements in strs corresponding to options a-z
 
-    CHARACTER STRS(NARGS)*(*), CMDLIN*127, OPTSEP
-    INTEGER IARG(NARGS), IOPT(26)
+    implicit none
+    
+    character strs(nargs)*(*), cmdlin*127, optsep
+    integer iarg(nargs), iopt(26), ic, ia, i, nargs
 
-    OPTSEP = '/'
+    optsep = '/'
 
-    DO 10 IC = 1, MAX0(NARGS,26)
-        IF (IC<=NARGS) THEN
-            STRS(IC) = ' '
-            IARG(IC) = 0
+    do ic = 1, max0(nargs,26)
+        if (ic<=nargs) then
+            strs(ic) = ' '
+            iarg(ic) = 0
         endif
-        IOPT(IC) = 0
-10  CONTINUE
+        iopt(ic) = 0
+    end do
 
-    ! GET THE COMMAND LINE TO DECIPHER
-    CALL GETCL(CMDLIN)
-    IF (CMDLIN/=' ') THEN
+    ! get the command line to decipher
+    call getcl(cmdlin)
+    if (cmdlin/=' ') then
 
-        ! GET RID OF EXTRA SPACES IN THE COMMAND LINE
-        IC = 1
-20      IF (CMDLIN(IC:IC+1)=='  ') THEN
-            CALL CMOVE(CMDLIN,IC,126,IC+1,127,127,' ')
-        ELSE
-            IC = IC + 1
+        ! get rid of extra spaces in the command line
+        ic = 1
+20      if (cmdlin(ic:ic+1)=='  ') then
+            call cmove(cmdlin,ic,126,ic+1,127,127,' ')
+        else
+            ic = ic + 1
         endif
-        IF (CMDLIN(IC:127)/=' '.AND.IC<=126) GO TO 20
-        IF (CMDLIN(1:1)==' ') THEN
-            CALL CMOVE(CMDLIN,1,126,2,127,127,' ')
+        if (cmdlin(ic:127)/=' '.and.ic<=126) go to 20
+        if (cmdlin(1:1)==' ') then
+            call cmove(cmdlin,1,126,2,127,127,' ')
         endif
 
-        ! PUT IN COMMAS WHERE APPROPRIATE TO DELIMIT ALL FIELDS
-        IC = 2
-30      IF (CMDLIN(IC:IC)==' ') THEN
-            IF (CMDLIN(IC-1:IC-1)/=','.AND.CMDLIN(IC+1:IC+1)/=',') THEN
-                CMDLIN(IC:IC) = ','
-                IC = IC + 1
-            ELSE
-                CALL CMOVE(CMDLIN,IC,126,IC+1,127,127,' ')
+        ! put in commas where appropriate to delimit all fields
+        ic = 2
+30      if (cmdlin(ic:ic)==' ') then
+            if (cmdlin(ic-1:ic-1)/=','.and.cmdlin(ic+1:ic+1)/=',') then
+                cmdlin(ic:ic) = ','
+                ic = ic + 1
+            else
+                call cmove(cmdlin,ic,126,ic+1,127,127,' ')
             endif
-        ELSE IF ((CMDLIN(IC:IC)==OPTSEP).AND.CMDLIN(IC-1:IC-1)/=',') THEN
-            CALL CMOVE(CMDLIN,IC+1,127,IC,126,IC,',')
-            IC = IC + 2
-        ELSE
-            IC = IC + 1
+        else if ((cmdlin(ic:ic)==optsep).and.cmdlin(ic-1:ic-1)/=',') then
+            call cmove(cmdlin,ic+1,127,ic,126,ic,',')
+            ic = ic + 2
+        else
+            ic = ic + 1
         endif
-        IF (CMDLIN(IC:127)/=' '.AND.IC<=126) GO TO 30
+        if (cmdlin(ic:127)/=' '.and.ic<=126) go to 30
     endif
 
-    ! PARSE COMMAND LINE INTO SEPARATE FIELDS AND PROCESS OPTIONS
-    IA = 0
-40  IC = INDEX(CMDLIN,',')
-    IF (IC==0.AND.CMDLIN/=' ') IC = INDEX(CMDLIN,' ')
-    IF (IC/=0) THEN
-        IA = IA + 1
-        STRS(IA) = ' '
-        IF (IC>1) STRS(IA) = CMDLIN(1:IC-1)
-        CALL CMOVE(CMDLIN,1,127,IC+1,127,127,' ')
-        GO TO 40
+    ! parse command line into separate fields and process options
+    ia = 0
+40  ic = index(cmdlin,',')
+    if (ic==0.and.cmdlin/=' ') ic = index(cmdlin,' ')
+    if (ic/=0) then
+        ia = ia + 1
+        strs(ia) = ' '
+        if (ic>1) strs(ia) = cmdlin(1:ic-1)
+        call cmove(cmdlin,1,127,ic+1,127,127,' ')
+        go to 40
     endif
 
-    ! ASSIGN THE PARSED FIELDS TO APPROPRIATE ARGUMENTS AND OPTIONS
-    NARGS = 0
-    IF (IA>0) THEN
-        DO 50 I = 1, IA
-            IF (STRS(I)(1:1)==OPTSEP) THEN
-                IF (STRS(I)(2:2)>='A'.AND.STRS(I)(2:2)<='Z') THEN
-                    IOPT(ICHAR(STRS(I)(2:2))-ICHAR('A')+1) = I
-                ELSE IF (STRS(I)(2:2)>='a'.AND.STRS(I)(2:2)<='z') THEN
-                    IOPT(ICHAR(STRS(I)(2:2))-ICHAR('a')+1) = I
+    ! assign the parsed fields to appropriate arguments and options
+    nargs = 0
+    if (ia>0) then
+        do i = 1, ia
+            if (strs(i)(1:1)==optsep) then
+                if (strs(i)(2:2)>='A'.and.strs(i)(2:2)<='Z') then
+                    iopt(ichar(strs(i)(2:2))-ichar('A')+1) = i
+                else if (strs(i)(2:2)>='a'.and.strs(i)(2:2)<='z') then
+                    iopt(ichar(strs(i)(2:2))-ichar('a')+1) = i
                 endif
-                CMDLIN = STRS(I)
-                CALL CMOVE(CMDLIN,1,127,3,127,127,' ')
-                IF (CMDLIN(1:1)==':') CALL CMOVE(CMDLIN,1,127,2,127,127,' ')
-                STRS(I) = CMDLIN
-            ELSE
-                NARGS = NARGS + 1
-                IARG(NARGS) = I
+                cmdlin = strs(i)
+                call cmove(cmdlin,1,127,3,127,127,' ')
+                if (cmdlin(1:1)==':') call cmove(cmdlin,1,127,2,127,127,' ')
+                strs(i) = cmdlin
+            else
+                nargs = nargs + 1
+                iarg(nargs) = i
             endif
-50      CONTINUE
+        end do
     endif
-    RETURN
-    END
+    return
+    end subroutine cmdline
 
-    SUBROUTINE CMOVE(CMDLIN,I1,I2,I3,I4,I5,CHR)
+    subroutine cmove(cmdlin,i1,i2,i3,i4,i5,chr)
 
     !     routine: cmove
     !     purpose: move a substring in the command line to remove spaces.
@@ -292,15 +293,15 @@
     !                i5     position of newly vacated space in the string
     !                chr    character to fill that space
 
-    CHARACTER TEMP*127, CMDLIN*(*), CHR
-    TEMP = CMDLIN
-    TEMP(I1:I2) = CMDLIN(I3:I4)
-    TEMP(I5:I5) = CHR
-    CMDLIN = TEMP
-    RETURN
-    END
+    character temp*127, cmdlin*(*), chr
+    temp = cmdlin
+    temp(i1:i2) = cmdlin(i3:i4)
+    temp(i5:i5) = chr
+    cmdlin = temp
+    return
+    end subroutine cmove
 
-    SUBROUTINE GETCL(CMDLIN)
+    subroutine getcl(cmdlin)
 
     !     routine: getcl
     !     purpose: get command line as a single string
@@ -309,33 +310,33 @@
     use ifport
     use cfin
 
-    CHARACTER CMDLIN*127
-    INTEGER FIRST, LAST, LPOINT
-    LOGICAL VALID
+    character cmdlin*127
+    integer first, last, lpoint
+    logical valid
 
-    MAXARG = 5 + 2
-    LPOINT = 0
-    IAR = IARGC()
-    IF (IAR==0) THEN
-        CMDLIN = ' '
-    ELSE
-        CMDLIN = ' '
-        DO 10 I = 1, MIN(IAR,MAXARG)
-            CALL GETARG(I,LBUF)
-            CALL SSTRNG(LBUF,60,1,FIRST,LAST,VALID)
-            IF (VALID) THEN
-                IC = LAST - FIRST + 1
-                LPOINT = LPOINT + 1
-                CMDLIN(LPOINT:LPOINT+IC) = LBUF(FIRST:LAST)
-                LPOINT = LPOINT + IC
+    maxarg = 5 + 2
+    lpoint = 0
+    iar = iargc()
+    if (iar==0) then
+        cmdlin = ' '
+    else
+        cmdlin = ' '
+        do i = 1, min(iar,maxarg)
+            call getarg(i,lbuf)
+            call sstrng(lbuf,60,1,first,last,valid)
+            if (valid) then
+                ic = last - first + 1
+                lpoint = lpoint + 1
+                cmdlin(lpoint:lpoint+ic) = lbuf(first:last)
+                lpoint = lpoint + ic
             endif
-10      CONTINUE
+        end do
     endif
-    RETURN
-    END
+    return
+    end
 
 
-    SUBROUTINE CONVRT(COORD,FIRST,LAST,TYPE,I0,X0)
+    subroutine convrt(coord,first,last,type,i0,x0)
 
     !     routine: convrt
     !     purpose: convert next entry in string coord to a number of correct type.
@@ -348,98 +349,99 @@
 
     use cfin
 
-    CHARACTER COORD*(*)
-    CHARACTER*20 DECOD
-    INTEGER FIRST, LAST, TYPE, I0
-    REAL X0
+    character coord*(*)
+    character*20 decod
+    integer first, last, type, i0
+    real x0
 
-    ! GET DATA TYPE
-    CALL DATYPE(COORD,FIRST,LAST,TYPE)
-    DECOD = ' '
-    LFIRST = MIN(FIRST,LBUFLN)
-    LLAST = MIN(LAST,FIRST+20,LBUFLN)
-    DECOD = COORD(LFIRST:LLAST)
+    ! get data type
+    call datype(coord,first,last,type)
+    decod = ' '
+    lfirst = min(first,lbufln)
+    llast = min(last,first+20,lbufln)
+    decod = coord(lfirst:llast)
 
-    ! DECODE BY TYPE
-    IF (TYPE==1) THEN
-        X0 = RNUM(DECOD)
-    ELSE IF (TYPE==2) THEN
-        I0 = INUM(DECOD)
+    ! decode by type
+    if (type==1) then
+        x0 = rnum(decod)
+    else if (type==2) then
+        i0 = inum(decod)
     endif
-    RETURN
-    END
-    INTEGER FUNCTION INUM(STRNG)
+    return
+    end subroutine convrt
+
+    integer function inum(strng)
 
     !     routine: inum
     !     purpose: convert string into an integer
     !     arguments: strng - string containing number to be converted.
 
-    CHARACTER STRNG*(*)
-    IVAL = 0
-    ISGN = 1
-    DO 10 I = 1, LEN(STRNG)
-        IF (STRNG(I:I)=='-') ISGN = -1
-        IC = ICHAR(STRNG(I:I)) - ICHAR('0')
-        IF (IC>=0.AND.IC<=9) IVAL = IVAL * 10 + IC
-10  CONTINUE
-    INUM = ISGN * IVAL
-    RETURN
-    END
+    character strng*(*)
+    ival = 0
+    isgn = 1
+    do i = 1, len(strng)
+        if (strng(i:i)=='-') isgn = -1
+        ic = ichar(strng(i:i)) - ichar('0')
+        if (ic>=0.and.ic<=9) ival = ival * 10 + ic
+    end do
+    inum = isgn * ival
+    return
+    end function inum
 
-    REAL FUNCTION RNUM(STRNG)
+    real function rnum(strng)
 
     !     routine: rnum
     !     purpose: convert string into an real number
     !     arguments: strng - string containing number to be converted.
 
-    CHARACTER STRNG*(*), CHR
-    RVAL = 0.0
-    ISGN = 0
-    IDEC = 0
-    IESGN = 0
-    IEXP = 0
-    IP = 1
-10  CHR = STRNG(IP:IP)
+    character strng*(*), chr
+    rval = 0.0
+    isgn = 0
+    idec = 0
+    iesgn = 0
+    iexp = 0
+    ip = 1
+10  chr = strng(ip:ip)
 
-    ! FIRST COMES A SIGN OR MANTISSA
-    IC = ICHAR(CHR) - ICHAR('0')
-    IF (ISGN==0) THEN
-        ISGN = 1
-        IF (CHR=='-') ISGN = -1
-        IF (CHR=='.') IDEC = 1
-        IF (IC>=0.AND.IC<=9) THEN
-            RVAL = RVAL * 10. + IC
+    ! first comes a sign or mantissa
+    ic = ichar(chr) - ichar('0')
+    if (isgn==0) then
+        isgn = 1
+        if (chr=='-') isgn = -1
+        if (chr=='.') idec = 1
+        if (ic>=0.and.ic<=9) then
+            rval = rval * 10. + ic
         endif
 
-        ! IF WE'VE FOUND THE MANTISSA, CHECK FOR EXPONENT
-    ELSE IF (CHR=='E'.OR.CHR=='e'.OR.CHR=='D'.OR.CHR=='d'.OR.CHR=='+'.OR.CHR=='-') THEN
-        IESGN = 1
-        IF (CHR=='-') IESGN = -1
-        ELSE
+        ! if we've found the mantissa, check for exponent
+    else if (chr=='E'.or.chr=='e'.or.chr=='D'.or.chr=='d'.or.chr=='+'.or.chr=='-') then
+        iesgn = 1
+        if (chr=='-') iesgn = -1
+        else
 
-        ! IF NO EXPONENT, KEEP TRACK OF DECIMAL POINT
-        IF (IESGN==0) THEN
-        IF (CHR=='.') THEN
-        IDEC = 1
-    ELSE IF (IC>=0.AND.IC<=9) THEN
-        RVAL = RVAL * 10. + IC
-        IF (IDEC/=0) IDEC = IDEC + 1
+        ! if no exponent, keep track of decimal point
+        if (iesgn==0) then
+        if (chr=='.') then
+        idec = 1
+    else if (ic>=0.and.ic<=9) then
+        rval = rval * 10. + ic
+        if (idec/=0) idec = idec + 1
     endif
 
-    ! IF EXPONENT JUST KEEP TRACK OF IT
-    ELSE
-        IF (IC>=0.AND.IC<=9) IEXP = IEXP * 10 + IC
+    ! if exponent just keep track of it
+    else
+        if (ic>=0.and.ic<=9) iexp = iexp * 10 + ic
     endif
     endif
-    IP = IP + 1
-    IF (IP<LEN(STRNG)) GO TO 10
-    IF (IDEC/=0) IDEC = IDEC - 1
-    EVAL = 10. ** (ABS(IESGN*IEXP-IDEC))
-    IESGN = ISIGN(1,IESGN*IEXP-IDEC)
-    IF (IESGN==1) RNUM = ISGN * RVAL * EVAL
-    IF (IESGN==-1) RNUM = ISGN * RVAL / EVAL
-    RETURN
-    END
+    ip = ip + 1
+    if (ip<len(strng)) go to 10
+    if (idec/=0) idec = idec - 1
+    eval = 10. ** (abs(iesgn*iexp-idec))
+    iesgn = isign(1,iesgn*iexp-idec)
+    if (iesgn==1) rnum = isgn * rval * eval
+    if (iesgn==-1) rnum = isgn * rval / eval
+    return
+    end function rnum
 
     logical function countargs (label,tocount,lcarray,numc,nret)
 
@@ -490,23 +492,24 @@
 5002 FORMAT('Key word (ext) ',a5,' parameter(s) = ',128a10)
 5003 FORMAT('Error for key word: ',a5,' Required count = ',i2,' and there were no entries')
 5004 FORMAT('Error for key word: ',a5,' Required count = ',i2,' and there was only 1 entry')
-    end
+    end function countargs
 
-    SUBROUTINE CPTIME(CPUTIM)
+    subroutine cptime (cputim)
 
     !     routine: cptime
     !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.  this routine will generally be different for each computer.
     !     arguments: cputim (output) - elapsed cpu time 
 
     use ifport
-    real*8 CPUTIM
-    INTEGER*2 HRS, MINS, SECS, HSECS
+    real*8 cputim
+    integer*2 hrs, mins, secs, hsecs
 
-    CALL GETTIM(HRS,MINS,SECS,HSECS)
-    CPUTIM = HRS * 3600 + MINS * 60 + SECS + HSECS / 100.0
-    RETURN
-    END
-    SUBROUTINE DATYPE(CRD,N1,N2,DTYPE)
+    call gettim(hrs,mins,secs,hsecs)
+    cputim = hrs * 3600 + mins * 60 + secs + hsecs / 100.0
+    return
+    end subroutine cptime
+    
+    subroutine datype (crd,n1,n2,dtype)
 
     !     routine: datype
     !     purpose: this routine determines the data type of a string. the character string is examined between given starting and ending positions to determine if the substring is an integer, a real number, or a non-numeric string.
@@ -516,71 +519,71 @@
     !                dtype (output) - returned type (1=real, 2=integer, 3=non-numeric)
 
     include "precis.fi"
-    LOGICAL PERIOD, EFMT
-    INTEGER N1, N2, DTYPE
-    CHARACTER CRD*(*), NUM(12)*1
-    DATA NUM /'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/
-    PERIOD = .FALSE.
-    EFMT = .FALSE.
+    logical period, efmt
+    integer n1, n2, dtype
+    character crd*(*), num(12)*1
+    data num /'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/
+    period = .false.
+    efmt = .false.
 
-    ! DETERMINE DATA TYPE.  ASSUME A NUMERIC ENTRY UNTIL A NON-NUMERIC CHARACTER IS FOUND.
-    DO 20 I = N1, N2
-        IF (CRD(I:I)=='.') THEN
-            IF (PERIOD) THEN
+    ! determine data type.  assume a numeric entry until a non-numeric character is found.
+    do 20 i = n1, n2
+        if (crd(i:i)=='.') then
+            if (period) then
 
-                ! second PERIOD IN STRING - NON NUMERIC
-                GO TO 30
-            ELSE
-                PERIOD = .TRUE.
+                ! second period in string - non numeric
+                go to 30
+            else
+                period = .true.
             endif
-            GO TO 20
+            go to 20
         endif
 
-        ! CHECK FOR DIGITS
-        DO 10 J = 1, 12
-            IF (CRD(I:I)==NUM(J)) GO TO 20
-10      CONTINUE
-        IF (INDEX('EeDd',CRD(I:I))==0.OR.EFMT) GO TO 30
-        EFMT = .TRUE.
-20  CONTINUE
+        ! check for digits
+        do 10 j = 1, 12
+            if (crd(i:i)==num(j)) go to 20
+10      continue
+        if (index('EeDd',crd(i:i))==0.or.efmt) go to 30
+        efmt = .true.
+20  continue
 
-    ! DETERMINE TYPE OF NUMERIC ENTRY
-    IF (PERIOD.OR.EFMT) THEN
+    ! determine type of numeric entry
+    if (period.or.efmt) then
 
-        ! REAL
-        DTYPE = 1
-    ELSE
+        ! real
+        dtype = 1
+    else
 
-        ! INTEGER
-        DTYPE = 2
+        ! integer
+        dtype = 2
     endif
-    RETURN
+    return
 
-    ! NON-NUMERIC
-30  DTYPE = 3
-    RETURN
-    END
+    ! non-numeric
+30  dtype = 3
+    return
+    end subroutine datype
 
-    LOGICAL FUNCTION DOESTHEFILEEXIST (CHECKFILE)
+    logical function doesthefileexist (checkfile)
 
     !     routine: doesthefileexist
     !     purpose: checks for the existence of given file name
     !     arguments: checkfile - file name
 
-    CHARACTER (*) CHECKFILE
-    LOGICAL YESORNO
+    character (*) checkfile
+    logical yesorno
 
 
-    INQUIRE (FILE=CHECKFILE, EXIST=YESORNO)
-    IF (YESORNO) THEN
-        DOESTHEFILEEXIST = .TRUE.
+    inquire (file=checkfile, exist=yesorno)
+    if (yesorno) then
+        doesthefileexist = .true.
     else
         doesthefileexist = .false.
-    ENDIF
+    endif
 
-    RETURN
+    return
 
-    END
+    end function doesthefileexist
 
     subroutine exehandle (exepath, datapath, project, errorcode)
 
@@ -678,33 +681,34 @@
     endif
     return
 
-    end
-    SUBROUTINE GRABKY(ICH,IT)
+    end subroutine exehandle
+    
+    subroutine grabky (ich,it)
 
-    USE ifport
-    CHARACTER*1 CH, getcharqq
-    INTEGER*2 ICH, IT
+    use ifport
+    character*1 ch, getcharqq
+    integer*2 ich, it
     logical peekcharqq
 
-    ICH = 0
-    IT = 0
+    ich = 0
+    it = 0
 
-    IF (PEEKCHARQQ()) THEN
-        CH = GETCHARQQ()
-        ICH = ICHAR(CH)
-        IF (ICH==0) THEN
-            CH = GETCHARQQ()
-            ICH = ICHAR (CH)
-            IT = 2
-        ELSE
-            IT = 1
-        ENDIF
-    ENDIF
+    if (peekcharqq()) then
+        ch = getcharqq()
+        ich = ichar(ch)
+        if (ich==0) then
+            ch = getcharqq()
+            ich = ichar (ch)
+            it = 2
+        else
+            it = 1
+        endif
+    endif
 
-    RETURN
-    END
+    return
+    end subroutine grabky
 
-    SUBROUTINE MAT2MULT(MAT1,MAT2,IDIM,N,MATITER)
+    subroutine mat2mult(mat1,mat2,idim,n,matiter)
 
     !     routine: mat2mult
     !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
@@ -714,40 +718,40 @@
     !                n - size of matrix
     !                matiter - unused
 
-    DIMENSION MAT1(IDIM,N),MAT2(IDIM,N)
-    DO 10 I = 1, N
-        DO 20 J = 1, N
-            MAT2(I,J) = IDOT(MAT1(I,1),IDIM,MAT1(1,J),1,N)
-            IF(MAT2(I,J)>=1)MAT2(I,J) = 1
-20      CONTINUE
-10  CONTINUE
-    DO 30 I = 1, N
-        DO 40 J = 1, N
-            MAT1(I,J) = MAT2(I,J)
-40      CONTINUE
-30  CONTINUE
-    RETURN
-    END
+    dimension mat1(idim,n),mat2(idim,n)
+    do i = 1, n
+        do j = 1, n
+            mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
+            if(mat2(i,j)>=1)mat2(i,j) = 1
+        end do
+    end do
+    do i = 1, n
+        do j = 1, n
+            mat1(i,j) = mat2(i,j)
+        end do
+    end do
+    return
+    end subroutine mat2mult
 
-    INTEGER FUNCTION IDOT(IX,INX,IY,INY,N)
+    integer function idot(ix,inx,iy,iny,n)
 
     !     routine: idot
     !     purpose: this routine computes the integer dot product of two integer vectors.
     !     arguments: ix, iy - two integer vectors
 
-    INTEGER IX(*), IY(*)
-    IDOT = 0
-    II = 1 - INX
-    JJ = 1 - INY
-    DO 10 I = 1, N
-        II = II + INX
-        JJ = JJ + INY
-        IDOT = IDOT + IX(II)*IY(JJ)
-10  CONTINUE
-    RETURN
-    END
+    integer ix(*), iy(*)
+    idot = 0
+    ii = 1 - inx
+    jj = 1 - iny
+    do i = 1, n
+        ii = ii + inx
+        jj = jj + iny
+        idot = idot + ix(ii)*iy(jj)
+    end do
+    return
+    end
 
-    SUBROUTINE INDEXI(N,ARRIN,INDX)
+    subroutine indexi (n,arrin,indx)
 
     !     routine: indexi
     !     purpose: this routines sorts the array arrin passively via the permuation array indx.  the elements arrin(indx(i)), i=1, ..., n are in increasing order. this routine uses a bubble sort.  it should not be used
@@ -756,34 +760,35 @@
     !                arrin array to be passively sorted
     !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
-    INTEGER ARRIN(*), INDX(*), AI, AIP1
-    DO 10 I = 1, N
-        INDX(I) = I
-10  CONTINUE
-5   CONTINUE
-    ISWITCH = 0
-    DO 20 I = 1, N-1, 2
-        AI = ARRIN(INDX(I))
-        AIP1 = ARRIN(INDX(I+1))
-        IF(AI<=AIP1)GO TO 20
-        ISWITCH = 1
-        ITEMP = INDX(I)
-        INDX(I) = INDX(I+1)
-        INDX(I+1) = ITEMP
-20  CONTINUE
-    DO 30 I = 2, N-1, 2
-        AI = ARRIN(INDX(I))
-        AIP1 = ARRIN(INDX(I+1))
-        IF(AI<=AIP1)GO TO 30
-        ISWITCH = 1
-        ITEMP = INDX(I)
-        INDX(I) = INDX(I+1)
-        INDX(I+1) = ITEMP
-30  CONTINUE
-    IF(ISWITCH==1)GO TO 5
-    RETURN
-    END
-    SUBROUTINE INTERP(X,Y,N,T,ICODE,YINT)
+    integer arrin(*), indx(*), ai, aip1
+    do i = 1, n
+        indx(i) = i
+    end do
+5   continue
+    iswitch = 0
+    do i = 1, n-1, 2
+        ai = arrin(indx(i))
+        aip1 = arrin(indx(i+1))
+        if(ai<=aip1) cycle
+        iswitch = 1
+        itemp = indx(i)
+        indx(i) = indx(i+1)
+        indx(i+1) = itemp
+    end do
+    do  i = 2, n-1, 2
+        ai = arrin(indx(i))
+        aip1 = arrin(indx(i+1))
+        if(ai<=aip1) cycle
+        iswitch = 1
+        itemp = indx(i)
+        indx(i) = indx(i+1)
+        indx(i+1) = itemp
+    end do
+    if(iswitch==1) go to 5
+    return
+    end subroutine indexi
+    
+    subroutine interp (x,y,n,t,icode,yint)
 
     !     routine: indexi
     !     purpose: routine interpolates a table of numbers found in the arrays, x and y.  
@@ -795,72 +800,69 @@
 
     include "precis.fi"
 
-    DIMENSION X(*), Y(*)
-    SAVE
-    DATA ILAST /1/
-    IF (N==1) THEN
-        YINT = Y(1)
-        RETURN
+    dimension x(*), y(*)
+    save
+    data ilast /1/
+    if (n==1) then
+        yint = y(1)
+        return
     endif
-    IF (T<=X(1)) THEN
-        IF (ICODE==1) THEN
-            YINT = Y(1)
-            RETURN
-        ELSE
-            IMID = 1
-            GO TO 20
+    if (t<=x(1)) then
+        if (icode==1) then
+            yint = y(1)
+            return
+        else
+            imid = 1
+            go to 20
         endif
     endif
-    IF (T>=X(N)) THEN
-        IF (ICODE==1) THEN
-            YINT = Y(N)
-            RETURN
-        ELSE
-            IMID = N - 1
-            GO TO 20
+    if (t>=x(n)) then
+        if (icode==1) then
+            yint = y(n)
+            return
+        else
+            imid = n - 1
+            go to 20
         endif
     endif
-    IF (ILAST+1<=N) THEN
-        IMID = ILAST
-        IF (X(IMID)<=T.AND.T<=X(IMID+1)) GO TO 20
+    if (ilast+1<=n) then
+        imid = ilast
+        if (x(imid)<=t.and.t<=x(imid+1)) go to 20
     endif
-    IF (ILAST+2<=N) THEN
-        IMID = ILAST + 1
-        IF (X(IMID)<=T.AND.T<=X(IMID+1)) GO TO 20
+    if (ilast+2<=n) then
+        imid = ilast + 1
+        if (x(imid)<=t.and.t<=x(imid+1)) go to 20
     endif
-    IA = 1
-    IZ = N - 1
-10  CONTINUE
-    IMID = (IA+IZ) / 2
-    IF (T<X(IMID)) THEN
-        IZ = IMID - 1
-        GO TO 10
+    ia = 1
+    iz = n - 1
+10  continue
+    imid = (ia+iz) / 2
+    if (t<x(imid)) then
+        iz = imid - 1
+        go to 10
     endif
-    IF (T>=X(IMID+1)) THEN
-        IA = IMID + 1
-        GO TO 10
+    if (t>=x(imid+1)) then
+        ia = imid + 1
+        go to 10
     endif
-20  CONTINUE
-    DYDX = (Y(IMID+1)-Y(IMID)) / (X(IMID+1)-X(IMID))
-    YINT = Y(IMID) + DYDX * (T-X(IMID))
-    ILAST = IMID
-    RETURN
-    END
-    INTEGER FUNCTION LENGTH(STRING)
-    CHARACTER STRING*(*)
-    IF (LEN(STRING)/=0) THEN
-        DO 10 I=LEN(STRING),1,-1
-            IF (STRING(I:I)/=' ') THEN
-                LENGTH=I
-                RETURN
-            endif
-10      CONTINUE
-    endif
-    LENGTH=0
-    RETURN
-    END
+20  continue
+    dydx = (y(imid+1)-y(imid)) / (x(imid+1)-x(imid))
+    yint = y(imid) + dydx * (t-x(imid))
+    ilast = imid
+    return
+    end subroutine interp
 
-    SUBROUTINE MESS(P,Z)
+    integer function length(string)
+    character string*(*)
+    if (len(string)/=0) then
+        length = len_trim(string)
+    else
+        length = 0
+    endif
+    return
+    end function length
+
+    subroutine mess (p,z)
 
     !     routine: mess
     !     purpose: write a literal string of characters.  this is a write to stdout with a return/linefeed at the end 
@@ -870,15 +872,15 @@
     use cparams
     use cshell
 
-    INTEGER Z, L
-    CHARACTER(len=z) P
-    IF (Z>2048) STOP 'Error in message handler'
-    WRITE (IOFILO,'(1x,2048A1)') (P(I:I),I=1,Z)
-    RETURN
+    integer z, l
+    character(len=z) p
+    if (z>2048) stop 'error in message handler'
+    write (iofilo,'(1x,2048a1)') (p(i:i),i=1,z)
+    return
 
-    END
+    end subroutine mess
 
-    SUBROUTINE MESSNRF (STRING, L)
+    subroutine messnrf (string, l)
 
     !     routine: messnrf
     !     purpose: write a literal string of characters.  this is a write to stdout with a return/linefeed at the end 
@@ -888,15 +890,16 @@
     use cparams
     use cshell
 
-    CHARACTER STRING*(*), FORMATT*100
-    WRITE (FORMATT,4000) L
-    WRITE (IOFILO,FORMATT) STRING(1:L)
-    RETURN
+    character string*(*), formatt*100
+    write (formatt,4000) l
+    write (iofilo,formatt) string(1:l)
+    return
 
-4000 FORMAT('(1X,A',I2.2,',$)')
+4000 format('(1x,a',i2.2,',$)')
 
-    END
-    SUBROUTINE READASTU (IN, COUNT, START, MAX, VALID)
+    end subroutine messnrf
+
+    subroutine readastu (in, count, start, max, valid)
 
     !     routine: readastu
     !     purpose: read in a string from the standard input device
@@ -907,73 +910,73 @@
     use cshell
     include "precis.fi"
 
-    INTEGER START, COUNT
-    LOGICAL VALID
-    CHARACTER CH,INN*256,IN(MAX),C
+    integer start, count
+    logical valid
+    character ch,inn*256,in(max),c
 
-10  INN = ' '
-    READ(IOFILI,4,END=5) INN
-4   FORMAT(A256)
+10  inn = ' '
+    read(iofili,'(a256)',end=5) inn
 
-    ! FILTER COMMENTS
+    ! filter comments
+    c = inn(1:1)
+    if (c=='!'.or.c=='#') go to 10
 
-    C = INN(1:1)
-    IF (C=='!'.OR.C=='#') GO TO 10
+    do i = 255,1,-1
+        count = i
+        if (inn(i:i)/=' ') go to 6
+    end do
+5   count = 0
+    valid = .false.
+    return
 
-    DO 7 I = 255,1,-1
-        COUNT = I
-        IF (INN(I:I)/=' ') GO TO 6
-7   CONTINUE
-5   COUNT = 0
-    VALID = .FALSE.
-    RETURN
+    ! check for control characters
+6   nc = 0
+    count = min(max,count)
+    do 1 i = 1,count
+        ich = ichar(inn(i:i))
+        if (ich<32.or.ich>125) go to 3
+        nc = i
+1   continue
+3   count = nc
 
-    ! CHECK FOR CONTROL CHARACTERS
-6   NC = 0
-    COUNT = MIN(MAX,COUNT)
-    DO 1 I = 1,COUNT
-        ICH = ICHAR(INN(I:I))
-        IF (ICH<32.OR.ICH>125) GO TO 3
-        NC = I
-1   CONTINUE
-3   COUNT = NC
-
-    ! CONVERT TO UPPER CASE
-    DO 2 I = 1,COUNT
-        CH = INN(I:I)
-        ICH = ICHAR(CH)
-        IF (ICH>96.AND.ICH<123) ICH = ICH - 32
-        IN(I) = CHAR(ICH)
-2   CONTINUE
-    START=1
-    IF (COUNT>0) THEN
-        VALID = .TRUE.
-    ELSE
-        VALID = .FALSE.
+    ! convert to upper case
+    do i = 1,count
+        ch = inn(i:i)
+        ich = ichar(ch)
+        if (ich>96.and.ich<123) ich = ich - 32
+        in(i) = char(ich)
+    end do
+    start=1
+    if (count>0) then
+        valid = .true.
+    else
+        valid = .false.
     endif
-    RETURN
-    END
-    SUBROUTINE READCV1 (IN,COUNT,START,IX,XI,TYPE,VALID)
+    return
+    end subroutine readastu
+
+    subroutine readcv1 (in,count,start,ix,xi,type,valid)
 
     !     routine: readastu
     !     purpose: string conversion to integers or real numbers
     !     arguments: 
 
-    INTEGER START,FIRST,LAST,COUNT,TYPE
-    LOGICAL VALID
-    CHARACTER*128 IN
-    REAL XI
+    integer start,first,last,count,type
+    logical valid
+    character*128 in
+    real xi
 
-    CALL SSTRNGP (IN,COUNT,START,FIRST,LAST,VALID)
-    IF (.NOT.VALID) THEN
-        GO TO 5
+    call sstrngp (in,count,start,first,last,valid)
+    if (.not.valid) then
+        go to 5
     endif
-    CALL CONVRT (IN,FIRST,LAST,TYPE,IX,XI)
-    COUNT = COUNT - (LAST-START+1)
-    START = LAST + 1
-5   RETURN
-    END
-    SUBROUTINE READIN (NREQ, NRET, FIXED, FLTING)
+    call convrt (in,first,last,type,ix,xi)
+    count = count - (last-start+1)
+    start = last + 1
+5   return
+    end subroutine readcv1
+
+    subroutine readin (nreq, nret, fixed, flting)
 
     !     routine: readin
     !     purpose: read in a string and process it into the integer and floating variables "fixed" and "fltng"
@@ -988,120 +991,119 @@
     use cshell
     include "precis.fi"
 
-    DIMENSION FLTING(*)
-    INTEGER FIXED(*)
-    REAL X0, XXBIG
-    LOGICAL MULTI, eof
-    CHARACTER LABEL*5, LABLE*5, SLASH*1, FILE*(*)
-    SAVE INPUT, LSTART
+    dimension flting(*)
+    integer fixed(*)
+    real x0, xxbig
+    logical multi, eof
+    character label*5, lable*5, slash*1, file*(*)
+    save input, lstart
 
-    DATA INPUT/0/, LSTART/0/, SLASH/'/'/
+    data input/0/, lstart/0/, slash/'/'/
 
-    NRET = 0
-    MULTI = .FALSE.
-    XXBIG = 10000000.0D0
-    DO 4 I = 1, NREQ
-        CALL SSTRNG (INBUF, COUNT, START, FIRST, LAST, VALID)
-        IF (.NOT.VALID) THEN
-            START = 257
-            RETURN
-        ENDIF
-1       DO 2 J = FIRST, LAST
-            IF (INBUF(J:J)==SLASH) THEN
-                LLAST = J - 1
-                MULTI = .TRUE.
-                GO TO 3
-            ENDIF
-2       CONTINUE
-        LLAST = LAST
-3       CALL CONVRT (INBUF, FIRST, LLAST, TYPE, I0, X0)
-        IF (TYPE==1) THEN
-            FLTING(NRET+1) = X0
-            FIXED(NRET+1) = IFIX (MIN (X0, XXBIG))
-        ELSE IF (TYPE==2) THEN
-            FIXED(NRET+1) = I0
-            FLTING(NRET+1) = FLOAT(I0)
-        ELSE
-            IF (LOGERR>0) THEN
-                WRITE(LOGERR,12) FIRST,LLAST,(INBUF(J:J),J=1,50)
-12              FORMAT(' WARNING!! NON-NUMERIC DATA IN ',2I3,50A1)
-            ENDIF
-            NRET = NRET - 1
-        ENDIF
-        IF (MULTI) THEN
+    nret = 0
+    multi = .false.
+    xxbig = 10000000.0d0
+    do i = 1, nreq
+        call sstrng (inbuf, count, start, first, last, valid)
+        if (.not.valid) then
+            start = 257
+            return
+        endif
+1       do j = first, last
+            if (inbuf(j:j)==slash) then
+                llast = j - 1
+                multi = .true.
+                go to 3
+            endif
+        end do
+        llast = last
+3       call convrt (inbuf, first, llast, type, i0, x0)
+        if (type==1) then
+            flting(nret+1) = x0
+            fixed(nret+1) = ifix (min (x0, xxbig))
+        else if (type==2) then
+            fixed(nret+1) = i0
+            flting(nret+1) = float(i0)
+        else
+            if (logerr>0) then
+                write(logerr,12) first,llast,(inbuf(j:j),j=1,50)
+12              format(' warning!! non-numeric data in ',2i3,50a1)
+            endif
+            nret = nret - 1
+        endif
+        if (multi) then
 
-            ! LOOP FOR A CONTINUATION
-            FIRST = LLAST + 2
-            MULTI = .FALSE.
-            NRET = NRET + 1
-            GO TO 1
-        ENDIF
-        COUNT = COUNT - (LAST-START+1)
-        START = LAST + 1
-        NRET = NRET + 1
-4   CONTINUE
+            ! loop for a continuation
+            first = llast + 2
+            multi = .false.
+            nret = nret + 1
+            go to 1
+        endif
+        count = count - (last-start+1)
+        start = last + 1
+        nret = nret + 1
+    end do
 
-    RETURN
+    return
 
-    ! READ IN A BUFFER
-    ENTRY READBF(IU,LABLE, eof)
+    ! read in a buffer
+    entry readbf(iu,lable, eof)
 
-    ! CHECK TO SEE IF THE BUFFER IS CURRENT AND FULL
+    ! check to see if the buffer is current and full
 
-    IF (IU==INPUT.AND.START==LSTART) THEN
-        LABLE = LABEL
-        RETURN
-    ENDIF
-    INPUT = IU
-    CALL READAS (IU, INBUF, COUNT, START, VALID)
-    IF (.NOT.VALID) GO TO 11
-    CALL SSTRNG (INBUF, COUNT, START, FIRST, LAST, VALID)
-    IF (.NOT.VALID) GO TO 11
-    LLAST = MIN(LAST, FIRST+5)
-    LABEL = ' '
-    LABEL = INBUF(FIRST:LLAST)
-    LABLE = LABEL
-    COUNT = COUNT - (LAST-START+1)
-    START = LAST + 1
-    LSTART = START
+    if (iu==input.and.start==lstart) then
+        lable = label
+        return
+    endif
+    input = iu
+    call readas (iu, inbuf, count, start, valid)
+    if (.not.valid) go to 11
+    call sstrng (inbuf, count, start, first, last, valid)
+    if (.not.valid) go to 11
+    llast = min(last, first+5)
+    label = ' '
+    label = inbuf(first:llast)
+    lable = label
+    count = count - (last-start+1)
+    start = last + 1
+    lstart = start
     eof = .false.
     write(logerr,14) label
-14  format ('Label = ',a5)
-    RETURN
+14  format ('label = ',a5)
+    return
 
-11  LABEL = '     '
-    LABLE = LABEL
-    START = 1
-    COUNT = 0
+11  label = '     '
+    lable = label
+    start = 1
+    count = 0
     eof = .true.
-    RETURN
+    return
 
-    ! ENTRY TO FORCE A CONTEXT SWITCH
+    ! entry to force a context switch
+    entry readrs
 
-    ENTRY READRS
+    ! set start to its initial value
+    start = 257
+    return
 
-    ! SET START TO ITS INITIAL VALUE
-    START = 257
-    RETURN
+    ! read in a file name
+    entry readfl (file)
 
-    ! READ IN A FILE NAME
-    ENTRY READFL (FILE)
+    call sstrng (inbuf, count, start, first, last, valid)
+    if (.not.valid) then
+        start = 257
+        file = ' '
+        return
+    endif
+    lenofch = len (file)
+    llast = min(last, first+lenofch)
+    file = inbuf(first:llast)
+    count = count - (last-start+1)
+    start = last + 1
+    return
+    end  subroutine readin
 
-    CALL SSTRNG (INBUF, COUNT, START, FIRST, LAST, VALID)
-    IF (.NOT.VALID) THEN
-        START = 257
-        FILE = ' '
-        RETURN
-    ENDIF
-    LENOFCH = LEN (FILE)
-    LLAST = MIN(LAST, FIRST+LENOFCH)
-    FILE = INBUF(FIRST:LLAST)
-    COUNT = COUNT - (LAST-START+1)
-    START = LAST + 1
-    RETURN
-    END
-
-    SUBROUTINE READAS(INFILE, INBUF, COUNT, START, VALID)
+    subroutine readas (infile, inbuf, count, start, valid)
 
     !     routine: readas
     !     purpose:  read in a string from the input file, filtering out comments
@@ -1115,41 +1117,40 @@
     use cshell
     include "precis.fi"
 
-    ! READ IN A STRING
-    INTEGER START, COUNT, IREC
-    CHARACTER INBUF*(*), CMT1*1, CMT2*1, frmt*30
-    LOGICAL VALID
-    DATA CMT1/'!'/, CMT2/'#'/, IREC/0/
-    SAVE IREC
+    ! read in a string
+    integer start, count, irec
+    character inbuf*(*), cmt1*1, cmt2*1, frmt*30
+    logical valid
+    data cmt1/'!'/, cmt2/'#'/, irec/0/
+    save irec
 
-    ! IF WE HAVE REACHED AN END OF FILE, RETURN NOTHING
-10  INBUF = ' '
-    IF (IREC==0) THEN
-        READ(INFILE,1,END=2,ERR=2) INBUF
-    ELSE
-        READ(INFILE,1,REC=IREC,ERR=2) INBUF
-        IREC = IREC + 1
+    ! if we have reached an end of file, return nothing
+10  inbuf = ' '
+    if (irec==0) then
+        read(infile,'(a)',end=2,err=2) inbuf
+    else
+        read(infile,'(a)',rec=irec,err=2) inbuf
+        irec = irec + 1
     endif
-1   FORMAT(A)
     ls = len_trim (inbuf)
     write (frmt, 9) ls
-    WRITE (LOGERR,frmt) INBUF
-9   format('(''Buffer input = '',A',i3,')')
+    write (logerr,frmt) inbuf
+9   format('(''buffer input = '',a',i3,')')
 
-    ! FILTER COMMENTS
-    IF (INBUF(1:1)==CMT1.OR.INBUF(1:1)==CMT2) GO TO 10
-    COUNT = LEN(INBUF)
-    START = 1
-    VALID = .TRUE.
-    RETURN
-2   VALID = .FALSE.
-    COUNT = 0
-    START = 1
-    WRITE(LOGERR,*) 'END OF FILE FOR UNIT ',INFILE
-    RETURN
-    END
+    ! filter comments
+    if (inbuf(1:1)==cmt1.or.inbuf(1:1)==cmt2) go to 10
+    count = len(inbuf)
+    start = 1
+    valid = .true.
+    return
+2   valid = .false.
+    count = 0
+    start = 1
+    write(logerr,*) 'end of file for unit ',infile
+    return
+    end subroutine readas
 
-    SUBROUTINE READOP
+    subroutine readop
 
     !     routine: readop
     !     purpose:  retrieve and process command line options and date
@@ -1211,19 +1212,19 @@
     if (cmdflag('C')/=0) outputformat = 1
     if (cmdflag('F')/=0) outputformat = 2
 
-    IF (cmdflag('S')/=0) THEN
-        IF (STRS(cmdflag('S'))/=' ') THEN
-            SOLVEINI = STRS(cmdflag('S'))
-        ELSE
-            SOLVEINI = 'SOLVE.INI'
-        ENDIF
-        CALL WRITEINI(SOLVEINI)
-    ENDIF
+    IF (cmdflag('S')/=0) then
+        if (strs(cmdflag('S'))/=' ') then
+            solveini = strs(cmdflag('s'))
+        else
+            solveini = 'SOLVE.INI'
+        endif
+        call writeini(solveini)
+    endif
 
-    RETURN
+    return
 
-5010 FORMAT (I4.4,'/',I2.2,'/',I2.2)
-    END
+5010 format (i4.4,'/',i2.2,'/',i2.2)
+    end   subroutine readop
 
     subroutine shellsort (ra, n)
 
@@ -1249,8 +1250,9 @@
     enddo
     if(inc>1) go to 2
     return
-    end
-    SUBROUTINE SORTBRM(X,LX,IX,LIX,NROW,NCOLX,NCOLIX,ISORT,LDP,NROOM,IPOINT)
+    end  subroutine shellsort
+
+    subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
 
     !     routine: sortbrm
     !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is based on the
@@ -1270,57 +1272,58 @@
     !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
 
     include "precis.fi"
-    DIMENSION X(LX,NCOLX), IX(LIX,NCOLIX)
+    dimension x(lx,ncolx), ix(lix,ncolix)
 
-    ! IF THE NUMBER OF FIRES, DETECTORS OR ROOMS EVER EXCEEDS 200 THEN THE FOLLOWING DIMENSION STATEMENT NEEDS TO BE CHANGED
-    PARAMETER (LWORK=100)
-    DIMENSION IPOINT(LDP,*), WORK(LWORK), IWORK(LWORK), IPERM(LWORK)
+    ! if the number of fires, detectors or rooms ever exceeds 200 then the following dimension statement needs to be changed
+    parameter (lwork=100)
+    dimension ipoint(ldp,*), work(lwork), iwork(lwork), iperm(lwork)
 
-    ! CREATE A PERMUTATION VECTOR USING THE ISORT'TH COLUMN OF IX
-    IF(NROW>LWORK)THEN
-        CALL XERROR('NOT ENOUGH WORK SPACE IN SORTBRM',0,1,2)
-    ENDIF
-    DO 2 I = 1, NROW
-2   IPERM(I) = I
-    CALL INDEXI(NROW,IX(1,ISORT),IPERM)
+    ! create a permutation vector using the isort'th column of ix
+    if(nrow>lwork)then
+        call xerror('not enough work space in sortbrm',0,1,2)
+    endif
+    do i = 1, nrow
+        iperm(i) = i
+    end do
+        call indexi(nrow,ix(1,isort),iperm)
 
-    ! REORDER INTEGER ARRAY USING THE PERMUTATION VECTOR
-    DO 5 J = 1, NCOLIX
-    DO 10 I = 1, NROW
-    IWORK(I) = IX(IPERM(I),J)
-10  CONTINUE
-    DO 20 I = 1, NROW
-    IX(I,J) = IWORK(I)
-20  CONTINUE
-5   CONTINUE
+        ! reorder integer array using the permutation vector
+        do j = 1, ncolix
+            do i = 1, nrow
+                iwork(i) = ix(iperm(i),j)
+            end do
+            do i = 1, nrow
+                ix(i,j) = iwork(i)
+            end do
+        end do
 
-    ! REORDER THE FLOATING POINT ARRAYS USING THE PERMUTATION VECTOR
-    DO 50 J = 1, NCOLX
-    DO 30 I = 1, NROW
-    WORK(I) = X(IPERM(I),J)
-30  CONTINUE
-    DO 40 I = 1, NROW
-    X(I,J) = WORK(I)
-40  CONTINUE
-50  CONTINUE
+        ! reorder the floating point arrays using the permutation vector
+        do j = 1, ncolx
+            do i = 1, nrow
+                work(i) = x(iperm(i),j)
+            end do
+            do i = 1, nrow
+                x(i,j) = work(i)
+            end do
+        end do
 
-    ! CONSTRUCT THE POINTER ARRAY
-    DO 60 I = 1, NROOM
-    IPOINT(I,1) = 0
-    IPOINT(I,2) = 0
-60  CONTINUE
-    DO 70 I = 1, NROW
-    IROOM = IX(I,ISORT)
-    IPOINT(IROOM,1) = IPOINT(IROOM,1) + 1
-    IF (IPOINT(IROOM,2)==0) IPOINT(IROOM,2) = I
-70  CONTINUE
-    DO 80 I = 1, NROOM
-    IF (IPOINT(I,2)==0) IPOINT(I,2) = 1
-80  CONTINUE
-    RETURN
-    END
+        ! construct the pointer array
+        do i = 1, nroom
+            ipoint(i,1) = 0
+            ipoint(i,2) = 0
+        end do
+        do i = 1, nrow
+            iroom = ix(i,isort)
+            ipoint(iroom,1) = ipoint(iroom,1) + 1
+            if (ipoint(iroom,2)==0) ipoint(iroom,2) = i
+        end do
+        do i = 1, nroom
+            if (ipoint(i,2)==0) ipoint(i,2) = 1
+        end do
+        return
+    end
 
-    SUBROUTINE SORTFR(NFIRE,IFROOM,XFIRE,IFRPNT,NM1)
+    subroutine sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
 
     !     routine: sortbrm
     !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used in this order by the ceiling jet and radiation algorithms
@@ -1331,47 +1334,48 @@
 
     use cparams
     include "precis.fi"
-    DIMENSION IFROOM(MXFIRE), XFIRE(MXFIRE,MXFIRP), IPERM(MXFIRE), IWORK(MXFIRE), WORK(MXFIRE), IFRPNT(NR,2)
+    dimension ifroom(mxfire), xfire(mxfire,mxfirp), iperm(mxfire), iwork(mxfire), work(mxfire), ifrpnt(nr,2)
 
-    ! CREATE A PERMUTATION VECTOR FROM THE LIST OF FIRE ROOMS WHICH IS ORDERED BY INCREASING ROOM NUMBER
-    DO 2 I = 1, NFIRE
-2   IPERM(I) = I
-    CALL INDEXI(NFIRE,IFROOM,IPERM)
+    ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
+    do i = 1, nfire
+        iperm(i) = i
+    end do
+    call indexi(nfire,ifroom,iperm)
 
-    ! REORDER THE TWO ARRAYS WITH THE PERMUTATION VECTOR
-    DO 10 I = 1, NFIRE
-    IWORK(I) = IFROOM(IPERM(I))
-10  CONTINUE
-    DO 20 I = 1, NFIRE
-    IFROOM(I) = IWORK(I)
-20  CONTINUE
+    ! reorder the two arrays with the permutation vector
+    do i = 1, nfire
+        iwork(i) = ifroom(iperm(i))
+    end do
+    do i = 1, nfire
+        ifroom(i) = iwork(i)
+    end do
 
-    DO 50 J = 1, MXFIRP
-    DO 30 I = 1, NFIRE
-    WORK(I) = XFIRE(IPERM(I),J)
-30  CONTINUE
-    DO 40 I = 1, NFIRE
-    XFIRE(I,J) = WORK(I)
-40  CONTINUE
-50  CONTINUE
+    do j = 1, mxfirp
+        do i = 1, nfire
+            work(i) = xfire(iperm(i),j)
+        end do
+        do i = 1, nfire
+            xfire(i,j) = work(i)
+        end do
+    end do
 
-    ! DO THE POINTER ARRAYS FOR THE RADIATION AND CEILING JET ROUTINES
-    DO 60 I = 1, NM1
-    IFRPNT(I,1) = 0
-    IFRPNT(I,2) = 0
-60  CONTINUE
-    DO 70 I = 1, NFIRE
-    IRM = IFROOM(I)
-    IFRPNT(IRM,1) = IFRPNT(IRM,1) + 1
-    IF (IFRPNT(IRM,2)==0) IFRPNT(IRM,2) = I
-70  CONTINUE
-    DO 80 I = 1, NM1
-    IF (IFRPNT(I,2)==0) IFRPNT(I,2) = 1
-80  CONTINUE
-    RETURN
-    END
+    ! do the pointer arrays for the radiation and ceiling jet routines
+    do i = 1, nm1
+        ifrpnt(i,1) = 0
+        ifrpnt(i,2) = 0
+    end do
+    do i = 1, nfire
+        irm = ifroom(i)
+        ifrpnt(irm,1) = ifrpnt(irm,1) + 1
+        if (ifrpnt(irm,2)==0) ifrpnt(irm,2) = i
+    end do
+    do i = 1, nm1
+        if (ifrpnt(i,2)==0) ifrpnt(i,2) = 1
+    end do
+    return
+    end subroutine sortfr
 
-    SUBROUTINE SSTRNG(STRING,WCOUNT,SSTART,SFIRST,SLAST,SVALID)
+    subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrng
     !     purpose: this routine finds positions of substrings within a character string.  a space, comma, - , (, or ) indicates the beginning or end of a substring.  
@@ -1384,46 +1388,46 @@
     !                slast - ending position of the substring
     !                svalid - true if a valid substring is found
 
-    LOGICAL SVALID
-    INTEGER SFIRST, SLAST, SSTART, WCOUNT, ENDSTR
-    CHARACTER*1 STRING(*), SPACE, COMMA
+    logical svalid
+    integer sfirst, slast, sstart, wcount, endstr
+    character*1 string(*), space, comma
 
-    DATA SPACE/' '/, COMMA/','/
+    data space/' '/, comma/','/
 
-    SVALID = .TRUE.
+    svalid = .true.
 
-    ! INVALID STARTING POSITION - PAST END OF STRING
-    ENDSTR = SSTART + WCOUNT - 1
+    ! invalid starting position - past end of string
+    endstr = sstart + wcount - 1
 
-    ! FIND POSITION OF FIRST ELEMENT OF SUBSTRING
-    DO 20 I = SSTART, ENDSTR
+    ! find position of first element of substring
+    do i = sstart, endstr
 
-    ! MOVE TO THE BEGINNING OF THE SUBSTRING
-    SFIRST = I
-    IF((STRING(I)/=SPACE).AND.(STRING(I)/=COMMA)) GOTO 60
-20  CONTINUE
+    ! move to the beginning of the substring
+    sfirst = i
+    if((string(i)/=space).and.(string(i)/=comma)) goto 60
+    end do
 
-    ! NO SUBSTRING FOUND - ONLY DELIMITER
-    GO TO 40
+    ! no substring found - only delimiter
+    go to 40
 
-    ! FIND POSITION OF LAST CHARACTER OF SUBSTRING
-60  DO 50 J = SFIRST, ENDSTR
+    ! find position of last character of substring
+60  do j = sfirst, endstr
 
-    ! POSITION OF LAST ELEMENT OF SUBSTRING
-    SLAST = J-1
-    IF((STRING(J)==SPACE).OR.(STRING(J)==COMMA)) GO TO 100
-50  CONTINUE
+    ! position of last element of substring
+    slast = j-1
+    if((string(j)==space).or.(string(j)==comma)) go to 100
+    end do
 
-    ! NO SUBSTRING DELIMITER => LAST CHARACTER OF SUBSTRING IS THE LAST CHARACTER OF THE STRING
-    SLAST = ENDSTR
-    RETURN
+    ! no substring delimiter => last character of substring is the last character of the string
+    slast = endstr
+    return
 
-    ! NO SUBSTRING FOUND
-40  SVALID = .FALSE.
-100 RETURN
-    END
+    ! no substring found
+40  svalid = .false.
+100 return
+    end subroutine sstrng
 
-    SUBROUTINE SSTRNGP (STRING,WCOUNT,SSTART,SFIRST,SLAST,SVALID)
+    subroutine sstrngp (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrngp
     !     purpose: this routine finds positions of substrings within a character string.  similar to sstrng, except entries can be grouped with parenthesis
@@ -1434,140 +1438,141 @@
     !                slast - ending position of the substring
     !                svalid - true if a valid substring is found
 
-    LOGICAL SVALID
-    INTEGER SFIRST,SLAST,SSTART,WCOUNT,ENDSTR
-    CHARACTER*1 STRING(128),SPACE,COMMA,RPAREN,LPAREN
-    DATA SPACE /' '/, COMMA /','/,RPAREN /')'/, LPAREN /'('/
+    logical svalid
+    integer sfirst,slast,sstart,wcount,endstr
+    character*1 string(128),space,comma,rparen,lparen
+    data space /' '/, comma /','/,rparen /')'/, lparen /'('/
 
-    SVALID = .TRUE.
-    ENDSTR = SSTART + WCOUNT - 1
+    svalid = .true.
+    endstr = sstart + wcount - 1
 
-    ! FIND POSITION OF FIRST ELEMENT OF SUBSTRING
-    DO 20 I = SSTART, ENDSTR
+    ! find position of first element of substring
+    do i = sstart, endstr
 
-    ! MOVE TO THE BEGINNING OF THE SUBSTRING
-    SFIRST = I
-    IF ((STRING(I)/=SPACE).AND.(STRING(I)/=COMMA).AND.(STRING(I)/=RPAREN).AND.(STRING(I)/=LPAREN)) GO TO 60
-20  CONTINUE
+        ! move to the beginning of the substring
+        sfirst = i
+        if ((string(i)/=space).and.(string(i)/=comma).and.(string(i)/=rparen).and.(string(i)/=lparen)) go to 60
+    end do
 
-    ! NO SUBSTRING FOUND - ONLY DELIMITER
-    GO TO 40
+    ! no substring found - only delimiter
+    go to 40
 
-    ! FIND POSITION OF LAST CHARACTER OF SUBSTRING
-60  DO 50 J = SFIRST, ENDSTR
+    ! find position of last character of substring
+60  do j = sfirst, endstr
 
-    ! POSITION OF LAST ELEMENT OF SUBSTRING
-    SLAST = J-1
-    IF ((STRING(J)==SPACE).OR.(STRING(J)==COMMA).OR.(STRING(J)==RPAREN).OR.(STRING(J)==LPAREN)) GO TO 100
-50  CONTINUE
+        ! position of last element of substring
+        slast = j-1
+        if ((string(j)==space).or.(string(j)==comma).or.(string(j)==rparen).or.(string(j)==lparen)) go to 100
+    end do
 
-    ! NO SUBSTRING DELIMITER => LAST CHARACTER OF SUBSTRING IS THE LAST CHARACTER OF THE STRING
-    SLAST = ENDSTR
-    RETURN
+    ! no substring delimiter => last character of substring is the last character of the string
+    slast = endstr
+    return
 
-    ! NO SUBSTRING FOUND
-40  SVALID = .FALSE.
-    RETURN
-100 IF (SLAST<SFIRST) SVALID = .FALSE.
-    END
+    ! no substring found
+40  svalid = .false.
+    return
+100 if (slast<sfirst) svalid = .false.
+    end subroutine sstrngp
 
-    CHARACTER FUNCTION TOUPPER(CH)
+    character function toupper(ch)
 
     !     routine: toupper / tolower
     !     purpose: convert a single ascii character to upper or lower case
     !     arguments: ch - character to be converted
 
-    CHARACTER*1 CH, TOLOWER
+    character*1 ch, tolower
 
-    ! CONVERT TO UPPER CASE
-    ICH = ICHAR(CH)
-    IF (ICH>96.AND.ICH<123) ICH = ICH - 32
-    TOUPPER = CHAR(ICH)
-    RETURN
+    ! convert to upper case
+    ich = ichar(ch)
+    if (ich>96.and.ich<123) ich = ich - 32
+    toupper = char(ich)
+    return
 
-    ! COVERT TO LOWER CASE
-    ENTRY TOLOWER(CH)
-    ICH = ICHAR(CH)
-    IF (ICH>64.AND.ICH<91) ICH = ICH + 32
-    TOLOWER = CHAR(ICH)
-    RETURN
-    END
+    ! covert to lower case
+    entry tolower(ch)
+    ich = ichar(ch)
+    if (ich>64.and.ich<91) ich = ich + 32
+    tolower = char(ich)
+    return
+    end function toupper
 
-    SUBROUTINE UPPERALL(FROM,TO)
+    subroutine upperall(from,to)
 
     !     routine: upperall
     !     purpose: convert a string to upper case
     !     arguments: from - string to be converted
     !                to (output) - converted string
 
-    CHARACTER*(*) FROM, TO
-    CHARACTER*1 C
-    EXTERNAL LENGTH
-    NFROM = LENGTH (FROM)
-    NTO = LEN(TO)
-    NN = MIN(NFROM,NTO)
-    DO 10 I = 1, NN
-    C = FROM(I:I)
-    IF(C>='a'.AND.C<='z')THEN
-    C = CHAR(ICHAR(C) + ICHAR('A')-ICHAR('a'))
-    ENDIF
-    TO(I:I) = C
-10  CONTINUE
-    IF(NTO>NN)TO(NN+1:NTO)=' '
-    RETURN
-    END
-    INTEGER FUNCTION FUNIT (IO)
+    character*(*) from, to
+    character*1 c
+    external length
+    nfrom = length (from)
+    nto = len(to)
+    nn = min(nfrom,nto)
+    do i = 1, nn
+    c = from(i:i)
+    if(c>='a'.and.c<='z')then
+    c = char(ichar(c) + ichar('A')-ichar('a'))
+    endif
+    to(i:i) = c
+    end do
+    if(nto>nn)to(nn+1:nto)=' '
+    return
+    end subroutine upperall
+
+    integer function funit (io)
 
     !     routine: funit
     !     purpose: finds first avalable i/o unit starting at unit number io
     !     arguments: io - beginning unit number for search
 
-    PARAMETER(MXIO=32767)
-    LOGICAL OPEND
+    parameter(mxio=32767)
+    logical opend
 
-    ITMP = IO-1
-10  CONTINUE
-    ITMP = ITMP+1
-    IF (ITMP>MXIO) THEN
-    FUNIT = -1
-    RETURN
+    itmp = io-1
+10  continue
+    itmp = itmp+1
+    if (itmp>mxio) then
+        funit = -1
+        return
     endif
-    INQUIRE(UNIT=ITMP,OPENED = OPEND)
-    IF (OPEND) GO TO 10
-    FUNIT = ITMP
-    RETURN
-    END
+    inquire(unit=itmp,opened = opend)
+    if (opend) go to 10
+    funit = itmp
+    return
+    end function funit
 
-    SUBROUTINE OPNOTPT (FILNAME, IOUNIT)
+    subroutine opnotpt (filname, iounit)
 
     !     routine: opnotpt
     !     purpose: opens a file using the extension to distinguish previous open files
     !     arguments: filname - base filename for file to be opened
     !                iounit - desired unit number for file
 
-    CHARACTER FILNAME*(*)
-    INTEGER IOUNIT, FIRST, LAST
-    LOGICAL EXISTED, VALID
-    CHARACTER NAMEFIL*60, WORKFIL*60, FMT*14
+    character filname*(*)
+    integer iounit, first, last
+    logical existed, valid
+    character namefil*60, workfil*60, fmt*14
 
-    LENGTH = LEN (FILNAME)
-    CALL SSTRNG (FILNAME, LENGTH, 1, FIRST, LAST, VALID)
-    IF (.NOT.VALID) STOP 'CANNOT OPEN DEBUG FILE'
-    ILEN = LAST - FIRST + 1
-    NAMEFIL = ' '
-    NAMEFIL(1:ILEN) = FILNAME(FIRST:LAST)
+    length = len (filname)
+    call sstrng (filname, length, 1, first, last, valid)
+    if (.not.valid) stop 'Cannot open debug file'
+    ilen = last - first + 1
+    namefil = ' '
+    namefil(1:ilen) = filname(first:last)
 
-    ITMP = 0
-30  CONTINUE
-    ITMP = ITMP + 1
-    WRITE(FMT,10) ILEN
-10  FORMAT('(A',I2.2,',',1H','.',1H',',I3.3)')
-    WRITE(WORKFIL,FMT) NAMEFIL, ITMP
-    INQUIRE (FILE = WORKFIL, EXIST = EXISTED)
-    IF (EXISTED) GO TO 30
-    OPEN (UNIT = IOUNIT, FILE = WORKFIL,RECL=255)
-    RETURN
-    END
+    itmp = 0
+30  continue
+    itmp = itmp + 1
+    write(fmt,10) ilen
+10  format('(a',i2.2,',',1h','.',1h',',i3.3)')
+    write(workfil,fmt) namefil, itmp
+    inquire (file = workfil, exist = existed)
+    if (existed) go to 30
+    open (unit = iounit, file = workfil,recl=255)
+    return
+    end subroutine opnotpt
 
 
     subroutine xerbla ( srname, info )

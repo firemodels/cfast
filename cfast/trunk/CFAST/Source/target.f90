@@ -205,7 +205,7 @@
 
     real*8 :: svect(3), flux(2), dflux(2), ttarg(2), qwtsum(2), awallsum(2), qgassum(2), pi, sigma, cos45, xx1, absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, &
-        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
+        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, itarg, iter, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     logical first
     save first, pi, sigma, cos45
@@ -396,9 +396,21 @@
     gtflux(itarg,2) = qtfflux(itarg,1)
     gtflux(itarg,3) = qtwflux(itarg,1)
     gtflux(itarg,4) = qtgflux(itarg,1)
+    
+    ! Adjust each one for the ambient losses
+    total_radiation = gtflux(itarg,2) + gtflux(itarg,3) + gtflux(itarg,4)
+    re_radiation = sigma*tamb(iroom)**4
+    gtflux(itarg,2) = gtflux(itarg,2) - re_radiation*gtflux(itarg,2)/total_radiation
+    gtflux(itarg,3) = gtflux(itarg,3) - re_radiation*gtflux(itarg,3)/total_radiation
+    gtflux(itarg,4) = gtflux(itarg,4) - re_radiation*gtflux(itarg,4)/total_radiation
+    
+    !add in the convection 
     call convec(iw,tg,tamb(iroom),q1g)
     gtflux(itarg,5) = q1g
-    gtflux(itarg,1) = gtflux(itarg,2) + gtflux(itarg,3) + gtflux(itarg,4) + gtflux(itarg,5) - sigma*tamb(iroom)**4
+    
+    ! and the total is just the sum of these
+    gtflux(itarg,1) = gtflux(itarg,2) + gtflux(itarg,3) + gtflux(itarg,4) + gtflux(itarg,5)
+
 
     ! convection for the back
     call convec(iwb,tgb,ttargb,q1b)

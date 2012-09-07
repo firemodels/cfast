@@ -436,7 +436,7 @@
     character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15), toIntString
     integer position, i, j
 
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENTA_', 'VVENTA_', 'VVENTIN_',' VVENT_OUT_' /
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2', 'kg/s', 'kg/s' /
 
     !  spreadsheet header

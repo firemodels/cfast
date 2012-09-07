@@ -4106,6 +4106,7 @@
 		<row><td>_5C9F1F4B_D64F_4E7E_802C_E603A3CE3F14</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\sv5_icon.ico</td><td>0</td></row>
 		<row><td>_9E6B9ECD_636B_427C_BCF3_D2C5A795F86C</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
 		<row><td>_C47EF883_1623_4569_8516_14583EA08914</td><td/><td>&lt;ISProjectFolder&gt;\sv5_icon.ico</td><td>0</td></row>
+		<row><td>_D1F71A4D_7AC8_4C18_A665_215E52142421</td><td/><td>C:\InstallShield 2012 Projects\ellogob.ico</td><td>0</td></row>
 		<row><td>_F87D79E8_E2CE_421A_866D_2F0A87B51958</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\CEdit.exe</td><td>0</td></row>
 	</table>
 
@@ -4571,7 +4572,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="I2">IconIndex</col>
 		<col def="I4">ISAttributes</col>
 		<row><td>cft.File</td><td/><td/><td>CFAST 7 input file</td><td/><td>0</td><td/></row>
-		<row><td>in.File</td><td/><td/><td>CFAST 6.2 and earlier input file</td><td/><td/><td/></row>
+		<row><td>in.File</td><td/><td/><td>CFAST 6.3 and earlier input file</td><td>_D1F71A4D_7AC8_4C18_A665_215E52142421</td><td>0</td><td/></row>
 		<row><td>smv.File</td><td/><td/><td>Smokeview file</td><td>_C47EF883_1623_4569_8516_14583EA08914</td><td>0</td><td/></row>
 	</table>
 
@@ -4945,7 +4946,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="L255">Command</col>
 		<col def="L255">Argument</col>
 		<row><td>.cft</td><td>open</td><td/><td/><td>"%1"</td></row>
-		<row><td>.in</td><td>Open</td><td/><td/><td>"%1"</td></row>
+		<row><td>.in</td><td>Open</td><td/><td>&amp;Open CFAST input file for editing with CEdit</td><td>"%1"</td></row>
 		<row><td>.smv</td><td>open</td><td/><td/><td>"%1"</td></row>
 	</table>
 

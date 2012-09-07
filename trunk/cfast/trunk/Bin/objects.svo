@@ -1,5 +1,5 @@
-// $Date: 2012-06-15 22:14:15 -0400 (Fri, 15 Jun 2012) $ 
-// $Revision: 11066 $
+// $Date: 2012-08-15 15:35:06 -0400 (Wed, 15 Aug 2012) $ 
+// $Revision: 12003 $
 // $Author: gforney $
 
 // ************ object file format ********************
@@ -91,16 +91,16 @@ OBJECTDEF  // draw a plane intersecting through FDS meshes
 OBJECTDEF
  sensor
  "GREEN" setcolor
-0.01 SCALEAUTO 1.0 drawsphere
+0.25 SCALEGRID 1.0 drawsphere
  NEWFRAME
  "RED" setcolor
-0.01 SCALEAUTO 1.0 drawsphere
+0.25 SCALEGRID 1.0 drawsphere
  NEWFRAME
  "BLUE" setcolor
-0.01 SCALEAUTO 1.0 drawsphere
+0.25 SCALEGRID 1.0 drawsphere
  NEWFRAME
  "WHITE" setcolor
-0.01 SCALEAUTO 1.0 drawsphere
+0.25 SCALEGRID 1.0 drawsphere
 
 OBJECTDEF
  heat_detector         // label, name of object

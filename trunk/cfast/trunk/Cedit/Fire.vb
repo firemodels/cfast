@@ -525,27 +525,6 @@ Public Class Fire
             Me.ZNormal = ZNormal
         End If
     End Sub
-    Public Sub SetFire(ByVal FireType As Integer, ByVal MolarMass As Single, ByVal TotalMass As Single, ByVal IgnitionTemp As Single, ByVal VolitilTemp As Single, ByVal RadiativeFraction As Single, ByVal IgnitionType As Integer, ByVal IgnitionValue As Single)
-        If FireType = TypeConstrained Then
-            If aFireType <> TypeConstrained Then
-                aFireType = TypeConstrained
-                aChanged = True
-            End If
-        ElseIf FireType = TypeFireObject Then
-            If aFireType <> TypeFireObject Then
-                aFireType = TypeFireObject
-                aChanged = True
-            End If
-        Else
-            If aFireType <> TypeUnconstrained Then
-                aFireType = TypeUnconstrained
-                aChanged = True
-            End If
-        End If
-        Me.RadiativeFraction = RadiativeFraction
-        Me.IgnitionType = IgnitionType
-        Me.IgnitionValue = IgnitionValue
-    End Sub
     Public Sub GetFireData(ByRef FireTimeSeries(,) As Single, ByRef NumDataPoints As Integer)
         Dim i As Integer, j As Integer
         If aFireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then

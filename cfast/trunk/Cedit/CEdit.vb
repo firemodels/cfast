@@ -15,7 +15,6 @@ Public Class CeditMain
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents MVentFilterEfficiency As System.Windows.Forms.TextBox
     Friend WithEvents MainGeometry As System.Windows.Forms.Button
-    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents Label56 As System.Windows.Forms.Label
     Friend WithEvents Label57 As System.Windows.Forms.Label
     Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
@@ -49,6 +48,7 @@ Public Class CeditMain
     Friend WithEvents FirePeakHCl As System.Windows.Forms.Label
     Friend WithEvents FireNewt2 As System.Windows.Forms.Button
     Friend WithEvents FireNewObject As System.Windows.Forms.Button
+    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -787,8 +787,8 @@ Public Class CeditMain
         Me.MainSave = New System.Windows.Forms.Button()
         Me.MainRun = New System.Windows.Forms.Button()
         Me.MainGeometry = New System.Windows.Forms.Button()
-        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.MainOpen = New System.Windows.Forms.Button()
+        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()

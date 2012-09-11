@@ -1868,9 +1868,9 @@
 		<col def="S255">ProgId_</col>
 		<col def="S64">MIME_</col>
 		<col def="s38">Feature_</col>
-		<row><td>.cft</td><td>CEdit.exe</td><td>cft.File</td><td/><td>AlwaysInstall</td></row>
-		<row><td>.in</td><td>CEdit.exe</td><td>in.File</td><td/><td>AlwaysInstall</td></row>
-		<row><td>.smv</td><td>smokeview.exe</td><td>smv.File</td><td/><td>AlwaysInstall</td></row>
+		<row><td>cft</td><td>CEdit.exe</td><td>cft.File</td><td/><td>AlwaysInstall</td></row>
+		<row><td>in</td><td>CEdit.exe</td><td>in.File</td><td/><td>AlwaysInstall</td></row>
+		<row><td>smv</td><td>smokeview.exe</td><td>smv.File</td><td/><td>AlwaysInstall</td></row>
 	</table>
 
 	<table name="Feature">
@@ -3994,6 +3994,9 @@
 		<row><td>NEW_STRING2</td><td>1033</td><td>smv</td><td>0</td><td/><td>-165769366</td></row>
 		<row><td>NEW_STRING3</td><td>1033</td><td>.smv</td><td>0</td><td/><td>1562335403</td></row>
 		<row><td>NEW_STRING4</td><td>1033</td><td>.cft</td><td>0</td><td/><td>-165694451</td></row>
+		<row><td>NEW_STRING5</td><td>1033</td><td>cft</td><td>0</td><td/><td>1017174507</td></row>
+		<row><td>NEW_STRING6</td><td>1033</td><td>in</td><td>0</td><td/><td>1017119243</td></row>
+		<row><td>NEW_STRING7</td><td>1033</td><td>smv</td><td>0</td><td/><td>1017125387</td></row>
 	</table>
 
 	<table name="ISSwidtagProperty">
@@ -4105,7 +4108,7 @@
 		<row><td>_53D97906_C18A_43EB_A82E_576350D19A29</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
 		<row><td>_5C9F1F4B_D64F_4E7E_802C_E603A3CE3F14</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\sv5_icon.ico</td><td>0</td></row>
 		<row><td>_9E6B9ECD_636B_427C_BCF3_D2C5A795F86C</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
-		<row><td>_C47EF883_1623_4569_8516_14583EA08914</td><td/><td>&lt;ISProjectFolder&gt;\sv5_icon.ico</td><td>0</td></row>
+		<row><td>_C47EF883_1623_4569_8516_14583EA08914</td><td/><td>C:\InstallShield 2012 Projects\svicon.ico</td><td>0</td></row>
 		<row><td>_D1F71A4D_7AC8_4C18_A665_215E52142421</td><td/><td>C:\InstallShield 2012 Projects\ellogob.ico</td><td>0</td></row>
 		<row><td>_F87D79E8_E2CE_421A_866D_2F0A87B51958</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\cfast\Bin\CEdit.exe</td><td>0</td></row>
 	</table>
@@ -4652,7 +4655,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{8C3CB364-5BC9-4067-8F9A-C54D3ED8506A}</td><td/></row>
 		<row><td>ProductName</td><td>CFAST</td><td/></row>
-		<row><td>ProductVersion</td><td>6.2.0.341</td><td/></row>
+		<row><td>ProductVersion</td><td>6.3.0.539</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4945,9 +4948,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="I2">Sequence</col>
 		<col def="L255">Command</col>
 		<col def="L255">Argument</col>
-		<row><td>.cft</td><td>open</td><td/><td/><td>"%1"</td></row>
-		<row><td>.in</td><td>Open</td><td/><td>&amp;Open CFAST input file for editing with CEdit</td><td>"%1"</td></row>
-		<row><td>.smv</td><td>open</td><td/><td/><td>"%1"</td></row>
+		<row><td>cft</td><td>open</td><td/><td/><td>"%1"</td></row>
+		<row><td>in</td><td>Open</td><td/><td>&amp;Open CFAST input file for editing with CEdit</td><td>"%1"</td></row>
+		<row><td>smv</td><td>open</td><td/><td>&amp;View simulation results with Smokeview</td><td>"%1"</td></row>
 	</table>
 
 	<table name="_Validation">

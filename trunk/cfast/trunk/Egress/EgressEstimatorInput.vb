@@ -1225,7 +1225,7 @@ Public Class EgressEstimatorInput
         s = s + Me.lbl(1) + c + Me.aNumOccupants(icol).ToString + el + Me.lbl(2) + c + Me.aElevatorFrac(icol).ToString + el + Me.lbl(3) + c + Me.aHallLength(icol).ToString + el + Me.lbl(4) + c + Me.aHallWidth(icol).ToString + el
         s = s + Me.lbl(5) + c + Me.aHallEntryRate(icol).ToString + el + Me.lbl(6) + c + Me.aFirstFloorUseStairwells(icol).ToString + el + Me.lbl(7) + c + Me.aBuildingFile(icol).ToString + el
         If Me.aBuildingFile(icol) Then
-            s = s + Me.lbl(8) + c + Me.buildingFile(icol) + el
+            s = s + Me.lbl(8) + c + System.IO.Path.GetFileName(Me.buildingFile(icol)) + el
         Else
             s = s + Me.lbl(8) + c + "No Building File" + el
         End If

@@ -1,4 +1,4 @@
-    subroutine convec(iw,tg,tw,qdinl)
+    subroutine convec (iw,tg,tw,qdinl)
 
     !     routine: convec
     !     purpose: calculate convective heat transfer for a wall segment. note that we have simplified the convection calculation
@@ -57,11 +57,10 @@
     nuoverl = c * (g*abstwtg*pr/(tf*alpha**2)) ** xthird
     qdinl = nuoverl * k * (tg-tw)
     return
-    end
+    end subroutine convec
 
-    subroutine cvheat(flwcv,flxcv)
-    !
-    !
+    subroutine cvheat (flwcv,flxcv)
+
     !     routine:    cfcnvc
     !     function:   interface between resid and convec.  loops over rooms
     !                 setting up varibles.  passes to convec if ceiling jet for
@@ -177,7 +176,7 @@
         endif
     endif      
     return
-    end
+    end subroutine cvheat
 
     subroutine ceilht(mplume,qconv,atc,tl,tu,tw,xw,yw,zc,axf,ayf,zf,zlay,rhol,rhou,cjetopt,xd,yd,zd,nd,qceil,qfclga, &
     qfwla,qfwua,td,vd,tdmax,vdmax,ddmax)
@@ -275,9 +274,9 @@
     integer cjetopt, id, nd, ntab, n
     real*8 :: awl(8), awu(8), qfwcl(4), qfwcu(4), qfwlan(8), qfwuan(8), qfwsl(4), qfwsu(4), rc(4), rs(4), xd(*), yd(*), zd(*), td(*), vd(*)
     real*8 xx0, qceil, qfclga, qfwla, qfwua, mplume, qconv, tu, one, pi, g, ct, cp, pr, gsqrt, x2d3, x1d3, two, rk1, xf, axf, ayf, yf, &
-        rfmin, zc, zf, xw, wy, tc, atc, alpha, tl, zlay, qeq, zeq, rhol, alfm1, sigma, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, rhou, &
-        h, sqrtgh, qh, qhp, yw, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rmax, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
-        rlamr, tmaxmtu, ths, thta, tcj, tdmax, tw, sumaql, sumaqu, sumal, sumau, qfclg
+    rfmin, zc, zf, xw, wy, tc, atc, alpha, tl, zlay, qeq, zeq, rhol, alfm1, sigma, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, rhou, &
+    h, sqrtgh, qh, qhp, yw, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rmax, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
+    rlamr, tmaxmtu, ths, thta, tcj, tdmax, tw, sumaql, sumaqu, sumal, sumau, qfclg
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
     logical first
@@ -548,407 +547,415 @@
     endif
 
     return
-    end
+    end subroutine ceilht
 
-      subroutine int2d(xc,yc,xrect,yrect,r,ans)
-!
-!--------------------------------- NIST/BFRL ---------------------------------
-!
-!     Routine:     INT2D
-!
-!     Source File: CEILHT.SOR
-!
-!     Functional Class:  
-!
-!     Description:  Integrates a function over a region formed by 
-!         intersecting a rectangle with dimension (xrect,yrect) 
-!         and a circle with center (xc,yc) and radius r.  
-!
-!     Arguments: XC
-!                YC
-!                XRECT
-!                YRECT
-!                R
-!                ANS
+    subroutine int2d(xc,yc,xrect,yrect,r,ans)
+    !
+    !--------------------------------- NIST/BFRL ---------------------------------
+    !
+    !     Routine:     INT2D
+    !
+    !     Source File: CEILHT.SOR
+    !
+    !     Functional Class:  
+    !
+    !     Description:  Integrates a function over a region formed by 
+    !         intersecting a rectangle with dimension (xrect,yrect) 
+    !         and a circle with center (xc,yc) and radius r.  
+    !
+    !     Arguments: XC
+    !                YC
+    !                XRECT
+    !                YRECT
+    !                R
+    !                ANS
 
-      implicit none
-      logical :: first = .true.
-      real*8 pi, one, x1, xrect, xc, x2, y1, yrect, yc, y2, r, frint, ans, ans1, ans2, ans3, ans4
-      save pi
+    implicit none
+    logical :: first = .true.
+    real*8 pi, one, x1, xrect, xc, x2, y1, yrect, yc, y2, r, frint, ans, ans1, ans2, ans3, ans4
+    save pi
 
-      if (first) then
-          first = .false.
-          one = 1.0d0
-          pi = 4.0d0 * atan(one)
-      endif
+    if (first) then
+        first = .false.
+        one = 1.0d0
+        pi = 4.0d0 * atan(one)
+    endif
 
-      x1 = xrect - xc
-      x2 = xc
-      y1 = yrect - yc
-      y2 = yc
+    x1 = xrect - xc
+    x2 = xc
+    y1 = yrect - yc
+    y2 = yc
 
-      if (r<min(x1,x2,y1,y2)) then
-          call inttabl(r,frint)
-          ans = 2.0d0 * pi * frint
-      else
-          call intsq(x1,y1,r,ans1)
-          call intsq(x2,y1,r,ans2)
-          call intsq(x1,y2,r,ans3)
-          call intsq(x2,y2,r,ans4)
-          ans = ans1 + ans2 + ans3 + ans4
-      endif
-      return
-      end subroutine int2d
+    if (r<min(x1,x2,y1,y2)) then
+        call inttabl(r,frint)
+        ans = 2.0d0 * pi * frint
+    else
+        call intsq(x1,y1,r,ans1)
+        call intsq(x2,y1,r,ans2)
+        call intsq(x1,y2,r,ans3)
+        call intsq(x2,y2,r,ans4)
+        ans = ans1 + ans2 + ans3 + ans4
+    endif
+    return
+    end subroutine int2d
 
-      subroutine intsq(s1,s2,r,ans)
+    subroutine intsq (s1,s2,r,ans)
 
-      !     routine:     intsq
-      !
-      !     source file: ceilht.sor
-      !
-      !     functional class:  
-      !
-      !     description:  
-      !
-      !     arguments: s1
-      !                s2
-      !                r
-      !                ans
+    !     routine:     intsq
+    !
+    !     source file: ceilht.sor
+    !
+    !     functional class:  
+    !
+    !     description:  
+    !
+    !     arguments: s1
+    !                s2
+    !                r
+    !                ans
 
-      implicit none
-      logical :: first = .true.
-      real*8 :: pi
-      save first, pi
+    implicit none
+    logical :: first = .true.
+    real*8 :: pi
+    save first, pi
     real*8 one, r, s1, s2, frint, ans, ans1, ans2
 
-      if (first) then
-          first = .false.
-          one = 1.0d0
-          pi = 4.0d0 * atan(one)
-      endif
+    if (first) then
+        first = .false.
+        one = 1.0d0
+        pi = 4.0d0 * atan(one)
+    endif
 
-      if (r<=min(s1,s2)) then
-          call inttabl(r,frint)
-          ans = pi * frint / 2.0d0
-      else
-          call inttri(s1,s2,r,ans1)
-          call inttri(s2,s1,r,ans2)
-          ans = ans1 + ans2
-      endif
-      return
-      end
+    if (r<=min(s1,s2)) then
+        call inttabl(r,frint)
+        ans = pi * frint / 2.0d0
+    else
+        call inttri(s1,s2,r,ans1)
+        call inttri(s2,s1,r,ans2)
+        ans = ans1 + ans2
+    endif
+    return
+    end subroutine intsq
 
-      subroutine inttri(x,y,r,ans)
+    subroutine inttri (x,y,r,ans)
 
-      !--------------------------------- nist/bfrl ---------------------------------
-      !
-      !     routine:     inttri
-      !
-      !     source file: ceilht.sor
-      !
-      !     functional class:  
-      !
-      !     description:  
-      !
-      !     arguments: x
-      !                y
-      !                r
-      !                ans
-      !
+    !--------------------------------- nist/bfrl ---------------------------------
+    !
+    !     routine:     inttri
+    !
+    !     source file: ceilht.sor
+    !
+    !     functional class:  
+    !
+    !     description:  
+    !
+    !     arguments: x
+    !                y
+    !                r
+    !                ans
+    !
 
-      implicit none
-      integer :: n, j  
-      real*8 :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, theatj, thetaj, rj, arj, theta
-
-
-      xx0 = 0.0d0
-      if (abs(x)<1.d-5.or.abs(y)<1.d-5) then
-          ans = xx0
-          return
-      endif
-      theta = atan(y/x)
-      if (r<x) then
-          call inttabl(r,frint)
-          ans = frint * theta
-          return
-      else
-          diag = sqrt(x**2+y**2)
-          if (r>diag) then
-              yl = y
-          else
-              yl = sqrt(r**2-x**2)
-          endif
-          thetal = atan(yl/x)
-          n = 1
-          xxn = n
-          dth = thetal / xxn
-          ans = xx0
-          do 10 j = 1, n
-              xxjm1 = j - 1
-              thetaj = dth / 2.0d0 + xxjm1 * dth
-              rj = x / cos(thetaj)
-              call inttabl(rj,arj)
-              ans = ans + arj
-10        continue
-          ans = ans * dth
-          thetau = theta - thetal
-          call inttabl(r,frintu)
-          ans = ans + thetau * frintu
-      endif
-      return
-      end
-
-      SUBROUTINE MAKTABL(R,N,FUNC)
-
-!     Routine:     MAKTABL
-!
-!     Source File: CEILHT.SOR
-!
-!     Functional Class:  
-!
-!     Description:  
-!
-!     Arguments: R
-!                N
-!                FUNC
+    implicit none
+    integer :: n, j  
+    real*8 :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, theatj, thetaj, rj, arj, theta
 
 
-      include "precis.fi"
+    xx0 = 0.0d0
+    if (abs(x)<1.d-5.or.abs(y)<1.d-5) then
+        ans = xx0
+        return
+    endif
+    theta = atan(y/x)
+    if (r<x) then
+        call inttabl(r,frint)
+        ans = frint * theta
+        return
+    else
+        diag = sqrt(x**2+y**2)
+        if (r>diag) then
+            yl = y
+        else
+            yl = sqrt(r**2-x**2)
+        endif
+        thetal = atan(yl/x)
+        n = 1
+        xxn = n
+        dth = thetal / xxn
+        ans = xx0
+        do j = 1, n
+            xxjm1 = j - 1
+            thetaj = dth / 2.0d0 + xxjm1 * dth
+            rj = x / cos(thetaj)
+            call inttabl(rj,arj)
+            ans = ans + arj
+        end do
+        ans = ans * dth
+        thetau = theta - thetal
+        call inttabl(r,frintu)
+        ans = ans + thetau * frintu
+    endif
+    return
+    end subroutine inttri
 
-      external func
-      dimension tabl(100), fun(100)
-      common /trptabl/ tabl, rmax, ntab
-      save /trptabl/
+    subroutine maktabl (r,n,func)
 
-      xx0 = 0.0d0
-      ntab = n
-      rmax = r
-      xxntabm1 = ntab - 1
-      dr = rmax / xxntabm1
-      dr2 = dr / 2.0d0
-      tabl(1) = xx0
-      fun(1) = xx0
-      do i = 2, ntab
-          xxim1 = i - 1
-          rr = xxim1 * dr
-          fun(i) = rr * func(rr)
-          tabl(i) = tabl(i-1) + (fun(i)+fun(i-1)) * dr2
-      end do
-      return
-      end
-      SUBROUTINE INTTABL(R,ANS)
+    !     Routine:     MAKTABL
+    !
+    !     Source File: CEILHT.SOR
+    !
+    !     Functional Class:  
+    !
+    !     Description:  
+    !
+    !     Arguments: R
+    !                N
+    !                FUNC
 
-!     Routine:     INTTABL
-!
-!     Source File: CEILHT.SOR
-!
-!     Functional Class:  
-!
-!     Description:  
-!
-!     Arguments: R
-!                ANS
 
-      include "precis.fi"
-      dimension tabl(100)
-      common /trptabl/ tabl, rmax, ntab
-      save /trptabl/
-      xxntabm1 = ntab - 1
-      dr = rmax / xxntabm1 
-      ir = 1.0d0 + r / dr
-      if (ir<1) ir = 1
-      if (ir>ntab-1) ir = ntab - 1
-      tab1 = tabl(ir)
-      tab2 = tabl(ir+1)
-      xxir = ir
-      rr1 = (xxir-1.0d0) * dr
-      rr2 = xxir * dr
-      ans = (tab1*(rr2-r)+tab2*(r-rr1)) / dr
-      return
-      end
-      
-      real*8 FUNCTION QFCLG(R)
+    implicit none
 
-!     Description: This function computes the convective heat transfer 
-!                  flux to the ceiling at location (X,Y)=(Z(1),Z(2)) 
-!
-!     Arguments: R
-!
+    external func
+    real*8 :: tabl(100), fun(100), xx0, rmax, r, xxntabm1, dr, dr2, xxim1, func, rr
+    integer :: i, ntab, n
+    common /trptabl/ tabl, rmax, ntab
+    save /trptabl/
 
-      include "precis.fi"
-      common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
-      save /aintch/
-      rdh = r / h
-      t0 = rdh ** (.8d0)
-      t1 = 1.d0 - 1.1d0 * t0
-      t2 = t0 ** 2
-      t3 = t0 ** 3
-      ff = (t1+0.808d0*t2) / (t1+2.2d0*t2+0.69d0*t3)
-      if (rdh<0.2d0) then
-          htcldh = c1 * (1.d0-c2*rdh)
-          taddim = 10.22d0 - 14.9d0 * rdh
-      else
-          htcldh = c3 * (rdh-0.0771d0) / ((rdh+0.279d0)*rdh**1.2d0)
-          taddim = 8.390913361d0 * ff
-      endif
-      htcl = htcldh * htct
-      tad = taddim * thtqhp + tht
-      qfclg = htcl * (tad-tc)
-      return
-      end
-      SUBROUTINE SQFWST(RDH,H,C4,THT,HTCT,THTQHP,TW,QFWLOW,QFWUP,ZC,ZLAY)
-!
-!     Routine:     SQFWST
-
-!   Description:  Calculate average heat transfer fluxes to lower and 
-!            upper walls along a vertical line passing through a 
-!            wall/ceiling-jet stagnation point
-!     Arguments: RDH
-!                H
-!                C4
-!                THT
-!                HTCT
-!                THTQHP
-!                TW
-!                QFWLOW
-!                QFWUP
-!                ZC
-!                ZLAY 
-
-     include "precis.fi"
-     t1 = rdh ** (.8d0)
-     t2 = t1 * t1
-     t3 = t2 * t1
-     f = (1.d0-1.1d0*t1+0.808d0*t2) / (1.d0-1.1d0*t1+2.2d0*t2+0.69d0*t3)
-     if (rdh<0.2d0) then
-         taddim = 10.22d0 - 14.9d0 * rdh
-     else
-         taddim = 8.39d0 * f
-     endif
-     htcl = c4 * htct / rdh
-     tad = taddim * thtqhp + tht
-     qfwst = htcl * (tad-tw)
-     h8 = .80d0 * h
-     h16 = h8 + h8
-     if (zc<=h8) then
-         qfwlow = qfwst * (h16-(zc-zlay)-zc) / h16
-         qfwup = qfwst * (1.d0-(zc-zlay)/h16)
-     else
-         if ((zc-zlay)>h8) then
-             qfwlow = 0.0d0
-             qfwup = qfwst * (zc-h8) / (2.0d0*(zc-zlay))
-         else
-             qfwlow = qfwst * (h8-(zc-zlay)) / (2.0d0*zlay)
-             qfwup = qfwst * (1.d0-(zc-zlay)/h16)
-         endif
-     endif
-     return
-      end
-
-      SUBROUTINE CJET(FLWCJT,FLXCJT)
-
-!     Routine:     CJET
-
-!     Description:  Interface between RESID and CEILHT.  Loops over
-!                 rooms setting up varibles to pass.  Calls CEILHT
-!                 only when fires are in a room otherwise sets zeros
-!                 for FLXCJT.  Then uses FLXCJT to figure FLWCJT.
-!
-!     Arguments: FLWCJT  Net enthalphy into each layer
-!                FLXCJT  Net enthalphy flux onto surface
-
-      use cenviro
-      use cfast_main
-      use opt
-      use wdervs
-      include "precis.fi"
-
-      DIMENSION FLWCJT(NR,2), FLXCJT(NR,NWAL)
-      INTEGER CJETOPT
-      DIMENSION DUMMY(100)
-
-      XX0 = 0.0D0
-      DO I = 1, NM1
-          FLXCJT(I,1) = XX0
-          FLXCJT(I,2) = XX0
-          FLXCJT(I,3) = XX0
-          FLXCJT(I,4) = XX0
-          FLWCJT(I,1) = XX0
-          FLWCJT(I,2) = XX0
+    xx0 = 0.0d0
+    ntab = n
+    rmax = r
+    xxntabm1 = ntab - 1
+    dr = rmax / xxntabm1
+    dr2 = dr / 2.0d0
+    tabl(1) = xx0
+    fun(1) = xx0
+    do i = 2, ntab
+        xxim1 = i - 1
+        rr = xxim1 * dr
+        fun(i) = rr * func(rr)
+        tabl(i) = tabl(i-1) + (fun(i)+fun(i-1)) * dr2
     end do
-      DO ID = 1, NDTECT
-          IROOM = IXDTECT(ID,DROOM)
-          XDTECT(ID,DVEL) = 0.0D0
-          ZLOC = XDTECT(ID,DZLOC)
-          IF(ZLOC>ZZHLAY(IROOM,LOWER))THEN
-              XDTECT(ID,DTJET) = ZZTEMP(IROOM,UPPER)
-          ELSE
-              XDTECT(ID,DTJET) = ZZTEMP(IROOM,LOWER)
-          ENDIF
+    return
+    end subroutine maktabl
+    
+    subroutine inttabl (r,ans)
+
+    !     Routine:     INTTABL
+    !
+    !     Source File: CEILHT.SOR
+    !
+    !     Functional Class:  
+    !
+    !     Description:  
+    !
+    !     Arguments: R
+    !                ANS
+
+    implicit none
+
+    real*8 :: tabl(100), xxntabm1, dr, rmax, r, tab1, tab2, xxir, rr1, rr2, ans
+    integer :: ir, ntab
+    common /trptabl/ tabl, rmax, ntab
+    save /trptabl/
+    xxntabm1 = ntab - 1
+    dr = rmax / xxntabm1 
+    ir = 1.0d0 + r / dr
+    if (ir<1) ir = 1
+    if (ir>ntab-1) ir = ntab - 1
+    tab1 = tabl(ir)
+    tab2 = tabl(ir+1)
+    xxir = ir
+    rr1 = (xxir-1.0d0) * dr
+    rr2 = xxir * dr
+    ans = (tab1*(rr2-r)+tab2*(r-rr1)) / dr
+    return
+    end subroutine inttabl
+
+    real*8 function qfclg (r)
+
+    !     Description: This function computes the convective heat transfer 
+    !                  flux to the ceiling at location (X,Y)=(Z(1),Z(2)) 
+    !
+    !     Arguments: R
+    !
+
+    implicit none
+
+    real*8 :: rdh, r, h, t0, t1, t2, t3, ff, htcldh, c1, c2, c3, taddim, htcl, htct, tad, thtqhp, tht, tc, xf, yf
+    common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
+    save /aintch/
+    rdh = r / h
+    t0 = rdh ** (.8d0)
+    t1 = 1.d0 - 1.1d0 * t0
+    t2 = t0 ** 2
+    t3 = t0 ** 3
+    ff = (t1+0.808d0*t2) / (t1+2.2d0*t2+0.69d0*t3)
+    if (rdh<0.2d0) then
+        htcldh = c1 * (1.d0-c2*rdh)
+        taddim = 10.22d0 - 14.9d0 * rdh
+    else
+        htcldh = c3 * (rdh-0.0771d0) / ((rdh+0.279d0)*rdh**1.2d0)
+        taddim = 8.390913361d0 * ff
+    endif
+    htcl = htcldh * htct
+    tad = taddim * thtqhp + tht
+    qfclg = htcl * (tad-tc)
+    return
+    end function qfclg
+    
+    subroutine sqfwst(rdh,h,c4,tht,htct,thtqhp,tw,qfwlow,qfwup,zc,zlay)
+    !
+    !     routine: sqfwst
+    !   description: calculate average heat transfer fluxes to lower and upper walls along a vertical line passing through a 
+    !                wall/ceiling-jet stagnation point
+    !     arguments: rdh
+    !                h
+    !                c4
+    !                tht
+    !                htct
+    !                thtqhp
+    !                tw
+    !                qfwlow
+    !                qfwup
+    !                zc
+    !                zlay 
+
+    implicit none
+
+    real*8 :: t1, t2, t3, rdh, f, taddim, htcl, c4, htct, tad, thtqhp, tht, qfwst, tw, h8, h, h16, zc, qfwlow, qfwup, zlay 
+
+    t1 = rdh ** (.8d0)
+    t2 = t1 * t1
+    t3 = t2 * t1
+    f = (1.d0-1.1d0*t1+0.808d0*t2) / (1.d0-1.1d0*t1+2.2d0*t2+0.69d0*t3)
+    if (rdh<0.2d0) then
+        taddim = 10.22d0 - 14.9d0 * rdh
+    else
+        taddim = 8.39d0 * f
+    endif
+    htcl = c4 * htct / rdh
+    tad = taddim * thtqhp + tht
+    qfwst = htcl * (tad-tw)
+    h8 = .80d0 * h
+    h16 = h8 + h8
+    if (zc<=h8) then
+        qfwlow = qfwst * (h16-(zc-zlay)-zc) / h16
+        qfwup = qfwst * (1.d0-(zc-zlay)/h16)
+    else
+        if ((zc-zlay)>h8) then
+            qfwlow = 0.0d0
+            qfwup = qfwst * (zc-h8) / (2.0d0*(zc-zlay))
+        else
+            qfwlow = qfwst * (h8-(zc-zlay)) / (2.0d0*zlay)
+            qfwup = qfwst * (1.d0-(zc-zlay)/h16)
+        endif
+    endif
+    return
+    end subroutine sqfwst
+
+    subroutine cjet (flwcjt,flxcjt)
+
+    !     routine:     cjet
+
+    !     description:  interface between resid and ceilht.  loops over
+    !                 rooms setting up varibles to pass.  calls ceilht
+    !                 only when fires are in a room otherwise sets zeros
+    !                 for flxcjt.  then uses flxcjt to figure flwcjt.
+    !
+    !     arguments: flwcjt  net enthalphy into each layer
+    !                flxcjt  net enthalphy flux onto surface
+
+    use cenviro
+    use cfast_main
+    use opt
+    use wdervs
+
+    implicit none
+
+    real*8 :: flwcjt(nr,2), flxcjt(nr,nwal), dummy(100), xx0, zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
+    integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
+
+    xx0 = 0.0d0
+    do i = 1, nm1
+        flxcjt(i,1) = xx0
+        flxcjt(i,2) = xx0
+        flxcjt(i,3) = xx0
+        flxcjt(i,4) = xx0
+        flwcjt(i,1) = xx0
+        flwcjt(i,2) = xx0
     end do
-      IF (OPTION(FCJET)==OFF) RETURN
-      CJETOPT = OPTION(FCJET)
-
-      DO I = 1, NM1
-          NRMFIRE = IFRPNT(I,1)
-          ID = IDTPNT(I,2)
-          ND = IDTPNT(I,1)
-
-    ! handle ceiling jets that are not in active halls
-
-          IF (CJETON(NWAL+1).AND.NRMFIRE>0.AND.IZHALL(I,IHMODE)/=IHDURING) THEN
-              DO IFIRE = 1, NRMFIRE
-                  IFPNT = IFRPNT(I,2) + IFIRE - 1
-                  IF (SWITCH(1,I)) THEN
-                      TCEIL = TWJ(1,I,1)
-                  ELSE
-                      TCEIL = ZZTEMP(I,UPPER)
-                  endif
-                  IF (SWITCH(3,I)) THEN
-                      TUWALL = TWJ(1,I,3)
-                  ELSE
-                      TUWALL = ZZTEMP(I,UPPER)
-                  endif
-                  CALL CEILHT(XFIRE(IFPNT,4),XFIRE(IFPNT,7),TCEIL,ZZTEMP(I,LOWER),ZZTEMP(I,UPPER),TUWALL,bR(I),dR(I), &
-                    HR(I),XFIRE(IFPNT,1),XFIRE(IFPNT,2),XFIRE(IFPNT,3),ZZHLAY(I,LOWER),ZZRHO(I,LOWER),ZZRHO(I,UPPER),CJETOPT, &
-                    XDTECT(ID,DXLOC),XDTECT(ID,DYLOC),XDTECT(ID,DZLOC),ND,QCEIL,QFCLGA,QFWLA,QFWUA,XDTECT(ID,DTJET),XDTECT(ID,DVEL),FTMAX,FVMAX,FDMAX)
-                  FLXCJT(I,1) = FLXCJT(I,1) + QFCLGA
-                  FLXCJT(I,3) = FLXCJT(I,3) + QFWUA
-                  FLXCJT(I,4) = FLXCJT(I,4) + QFWLA
+    do id = 1, ndtect
+        iroom = ixdtect(id,droom)
+        xdtect(id,dvel) = 0.0d0
+        zloc = xdtect(id,dzloc)
+        if(zloc>zzhlay(iroom,lower))then
+            xdtect(id,dtjet) = zztemp(iroom,upper)
+        else
+            xdtect(id,dtjet) = zztemp(iroom,lower)
+        endif
     end do
-          ENDIF
+    if (option(fcjet)==off) return
+    cjetopt = option(fcjet)
 
-    ! handle ceiling jets that are in active halls
-          IF(IZHALL(I,IHMODE)==IHDURING)CALL HALLHT(I,ID,ND)
+    do i = 1, nm1
+        nrmfire = ifrpnt(i,1)
+        id = idtpnt(i,2)
+        nd = idtpnt(i,1)
 
-          DO IWALL = 1, 4
-              IF(MOD(IWALL,2)==1)THEN
-                  ILAY = UPPER
-              ELSE
-                  ILAY = LOWER
-              ENDIF
+        ! handle ceiling jets that are not in active halls
 
-    ! if (.not.(ceiling jet in fire room)) then flux to IWALL = 0.
+        if (cjeton(nwal+1).and.nrmfire>0.and.izhall(i,ihmode)/=ihduring) then
+            do ifire = 1, nrmfire
+                ifpnt = ifrpnt(i,2) + ifire - 1
+                if (switch(1,i)) then
+                    tceil = twj(1,i,1)
+                else
+                    tceil = zztemp(i,upper)
+                endif
+                if (switch(3,i)) then
+                    tuwall = twj(1,i,3)
+                else
+                    tuwall = zztemp(i,upper)
+                endif
+                call ceilht(xfire(ifpnt,4),xfire(ifpnt,7),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,br(i),dr(i), &
+                hr(i),xfire(ifpnt,1),xfire(ifpnt,2),xfire(ifpnt,3),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
+                xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
+                flxcjt(i,1) = flxcjt(i,1) + qfclga
+                flxcjt(i,3) = flxcjt(i,3) + qfwua
+                flxcjt(i,4) = flxcjt(i,4) + qfwla
+            end do
+        endif
 
-              IF (.NOT.(SWITCH(IWALL,I).AND.CJETON(IWALL).AND.NRMFIRE>0)) THEN
-                  FLXCJT(I,IWALL) = XX0
-              endif
-              FLWCJT(I,ILAY) = FLWCJT(I,ILAY) - ZZWAREA(I,IWALL)*FLXCJT(I,IWALL)
+        ! handle ceiling jets that are in active halls
+        if(izhall(i,ihmode)==ihduring)call hallht(i,id,nd)
+
+        do iwall = 1, 4
+            if(mod(iwall,2)==1)then
+                ilay = upper
+            else
+                ilay = lower
+            endif
+
+            ! if (.not.(ceiling jet in fire room)) then flux to iwall = 0.
+
+            if (.not.(switch(iwall,i).and.cjeton(iwall).and.nrmfire>0)) then
+                flxcjt(i,iwall) = xx0
+            endif
+            flwcjt(i,ilay) = flwcjt(i,ilay) - zzwarea(i,iwall)*flxcjt(i,iwall)
         end do
     end do
-      RETURN
-      END
-      
-      integer function rev_convection
+    return
+    end subroutine cjet
 
-      INTEGER :: MODULE_REV
-      CHARACTER(255) :: MODULE_DATE 
-      CHARACTER(255), PARAMETER :: mainrev='$Revision: 461 $'
-      CHARACTER(255), PARAMETER :: maindate='$Date: 2012-06-28 16:38:31 -0400 (Thu, 28 Jun 2012) $'
+    integer function rev_convection
 
-      WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
-      READ (MODULE_DATE,'(I5)') MODULE_REV
-      rev_convection = module_rev
-      WRITE(MODULE_DATE,'(A)') maindate
-      return
-      end function rev_convection
+    integer :: module_rev
+    character(255) :: module_date 
+    character(255), parameter :: mainrev='$Revision: 461 $'
+    character(255), parameter :: maindate='$Date: 2012-06-28 16:38:31 -0400 (Thu, 28 Jun 2012) $'
+
+    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
+    read (module_date,'(i5)') module_rev
+    rev_convection = module_rev
+    write(module_date,'(a)') maindate
+    return
+    end function rev_convection

@@ -328,10 +328,11 @@
 
     use cfast_main
     use vents
-    include "precis.fi"
+    
+    implicit none
 
-    integer itop, ibot, hshape, hface, iinvvent
-    real*8 harea
+    integer :: itop, ibot, hshape, hface, iinvvent
+    real*8 :: harea
 
     itop = ivvent(iinvvent,1)
     ibot = ivvent(iinvvent,2)

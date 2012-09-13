@@ -2868,7 +2868,7 @@ C                 NUMERICAL METHODS FOR NONLINEAR ALGEBRAIC EQUATIONS,
 C                 P. RABINOWITZ, EDITOR.  GORDON AND BREACH, 1970.
 C***ROUTINES CALLED  SNSQ,XERROR
 C***END PROLOGUE  SNSQE
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER IOPT,N,NPRINT,INFO,LWA
       DIMENSION X(N),FVEC(N),WA(LWA)
       EXTERNAL FCN,JAC
@@ -2971,7 +2971,7 @@ C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
 C     **********
 C***ROUTINES CALLED  ENORM,R1MACH
 C***END PROLOGUE  DOGLEG
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER N,LR
       DIMENSION R(LR),DIAG(N),QTB(N),X(N),WA1(N),WA2(N)
       INTEGER I,J,JJ,JP1,K,L
@@ -3126,7 +3126,7 @@ C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
 C     **********
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  ENORM
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER N
       DIMENSION X(N)
       INTEGER I
@@ -3285,7 +3285,7 @@ C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
 C     **********
 C***ROUTINES CALLED  R1MACH
 C***END PROLOGUE  FDJAC1
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER N,LDFJAC,IFLAG,ML,MU
       DIMENSION X(N),FVEC(N),FJAC(LDFJAC,N),WA1(N),WA2(N)
       INTEGER I,J,K,MSUM
@@ -3385,7 +3385,7 @@ C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
 C     **********
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  QFORM
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER M,N,LDQ
       DIMENSION Q(LDQ,M),WA(M)
       INTEGER I,J,JM1,K,L,MINMN,NP1
@@ -3518,7 +3518,7 @@ C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
 C     **********
 C***ROUTINES CALLED  ENORM,R1MACH
 C***END PROLOGUE  QRFAC
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER M,N,LDA,LIPVT
       INTEGER IPVT(LIPVT)
       LOGICAL PIVOT
@@ -3656,7 +3656,7 @@ C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
 C     **********
 C***ROUTINES CALLED  (NONE)
 C***END PROLOGUE  R1MPYQ
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER M,N,LDA
       DIMENSION A(LDA,N),V(N),W(N)
       INTEGER I,J,NMJ,NM1
@@ -3767,7 +3767,7 @@ C     John L. Nazareth
 C     **********
 C***ROUTINES CALLED  R1MACH
 C***END PROLOGUE  R1UPDT
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER M,N,LS
       LOGICAL SING
       DIMENSION S(LS),U(M),V(N),W(M)
@@ -4314,7 +4314,7 @@ C                 P. RABINOWITZ, EDITOR.  GORDON AND BREACH, 1970.
 C***ROUTINES CALLED  DOGLEG,ENORM,FDJAC1,QFORM,QRFAC,R1MACH,R1MPYQ,
 C                    R1UPDT,XERROR
 C***END PROLOGUE  SNSQ
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
       INTEGER IOPT,N,MAXFEV,ML,MU,MODE,NPRINT,INFO,NFEV,LDFJAC,LR,NJEV
       DIMENSION X(N),FVEC(N),DIAG(N),FJAC(LDFJAC,N),R(LR),QTF(N),WA1(N),
      1     WA2(N),WA3(N),WA4(N)
@@ -6360,7 +6360,7 @@ C
 C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cenviro
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
 C
       IF(J>-10)JACCOL = J
       RETURN
@@ -6387,7 +6387,7 @@ C---------------------------- ALL RIGHTS RESERVED ----------------------------
 
       use cparams
       use opt
-      include "precis.fi"
+      IMPLICIT real*8 (A-H,O-Z)
 C
       NUMJAC = NUMJAC + 1
       RETURN

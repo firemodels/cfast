@@ -454,10 +454,11 @@
     !                nret - actual number of arguments
 
     use cshell
-    include "precis.fi"
+    
+    implicit none
 
-    integer tocount, i,numc,nret
-    character lcarray*128(numc), label*5
+    integer :: tocount, i,numc,nret
+    character :: lcarray*128(numc), label*5
 
     countargs = .false.
     nret = 0.
@@ -501,8 +502,11 @@
     !     arguments: cputim (output) - elapsed cpu time 
 
     use ifport
-    real*8 cputim
-    integer*2 hrs, mins, secs, hsecs
+    
+    implicit none
+    
+    real*8 :: cputim
+    integer*2 :: hrs, mins, secs, hsecs
 
     call gettim(hrs,mins,secs,hsecs)
     cputim = hrs * 3600 + mins * 60 + secs + hsecs / 100.0
@@ -518,11 +522,12 @@
     !                n2     ending position
     !                dtype (output) - returned type (1=real, 2=integer, 3=non-numeric)
 
-    include "precis.fi"
-    logical period, efmt
-    integer n1, n2, dtype
-    character crd*(*), num(12)*1
-    data num /'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/
+    implicit none
+    
+    logical :: period, efmt
+    integer n1, n2, dtype, i, j
+    character :: crd*(*), num(12)*1 = (/'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/)
+    
     period = .false.
     efmt = .false.
 
@@ -540,9 +545,9 @@
         endif
 
         ! check for digits
-        do 10 j = 1, 12
+        do j = 1, 12
             if (crd(i:i)==num(j)) go to 20
-10      continue
+        end do
         if (index('EeDd',crd(i:i))==0.or.efmt) go to 30
         efmt = .true.
 20  continue
@@ -570,6 +575,8 @@
     !     purpose: checks for the existence of given file name
     !     arguments: checkfile - file name
 
+    implicit none
+    
     character (*) checkfile
     logical yesorno
 
@@ -599,16 +606,19 @@
     !					103 total file name length includ path >256
     !					0 okay
 
-    INTEGER(2) n, status, loop, ld(2), li(2), ln(2), le(2), lb
-    CHARACTER(256) buf, xname
+    implicit none
+    
+    integer :: i
+    integer(2) n, status, loop, ld(2), li(2), ln(2), le(2), lb
+    character(256) buf, xname
     character *(*) exepath, datapath, project
     character (64) name(2)
     logical exists, doesthefileexist
 
-    CHARACTER(3) drive(2)
-    CHARACTER(256) dir(2)
-    CHARACTER(64) ext(2)
-    INTEGER(4) length, errorcode, pathcount, splitpathqq
+    character(3) drive(2)
+    character(256) dir(2)
+    character(64) ext(2)
+    integer(4) length, errorcode, pathcount, splitpathqq
 
     n = nargs ()
     project = ' '
@@ -627,11 +637,9 @@
     exepath = ' '
     datapath = ' '
 
-    do 1 i = 1, 2
-
+    do i = 1, 2
         loop = i - 1
         call getarg (loop, buf, status)
-
         if(status>0) then
             xname = buf
 
@@ -649,13 +657,10 @@
                 errorcode = 103
                 return
             endif
-
         endif
-
-1   continue
+    end do
 
     ! Now check that the project.in file exists - this is the data file
-
     buf = ' '
     if (le(2)/=0) then
         buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2)) // '.in'
@@ -686,6 +691,9 @@
     subroutine grabky (ich,it)
 
     use ifport
+    
+    implicit none
+    
     character*1 ch, getcharqq
     integer*2 ich, it
     logical peekcharqq
@@ -718,7 +726,9 @@
     !                n - size of matrix
     !                matiter - unused
 
-    dimension mat1(idim,n),mat2(idim,n)
+    implicit none
+    
+    integer :: mat1(idim,n), mat2(idim,n), i, j, idot, idim, n, matiter
     do i = 1, n
         do j = 1, n
             mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
@@ -739,7 +749,9 @@
     !     purpose: this routine computes the integer dot product of two integer vectors.
     !     arguments: ix, iy - two integer vectors
 
-    integer ix(*), iy(*)
+    implicit none
+    
+    integer ix(*), iy(*), i, inx, iny, ii, jj, n
     idot = 0
     ii = 1 - inx
     jj = 1 - iny
@@ -760,7 +772,10 @@
     !                arrin array to be passively sorted
     !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
-    integer arrin(*), indx(*), ai, aip1
+    implicit none
+    
+    integer arrin(*), indx(*), ai, aip1, i, n, iswitch, itemp
+    
     do i = 1, n
         indx(i) = i
     end do
@@ -798,9 +813,10 @@
     !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n) and by extrapolation if t < x(1) or    t > x(n)
     !                yint (output) - interpolated value of the y array at t
 
-    include "precis.fi"
+    implicit none
 
-    dimension x(*), y(*)
+    real*8 :: x(*), y(*), yint, t, dydx
+    integer n, icode, ilast, imid, ia, iz
     save
     data ilast /1/
     if (n==1) then
@@ -871,9 +887,12 @@
 
     use cparams
     use cshell
+    
+    implicit none
 
-    integer z, l
+    integer z, l, i
     character(len=z) p
+    
     if (z>2048) stop 'error in message handler'
     write (iofilo,'(1x,2048a1)') (p(i:i),i=1,z)
     return
@@ -889,8 +908,12 @@
 
     use cparams
     use cshell
+    
+    implicit none
 
-    character string*(*), formatt*100
+    integer :: l
+    character :: string*(*), formatt*100
+    
     write (formatt,4000) l
     write (iofilo,formatt) string(1:l)
     return
@@ -908,11 +931,12 @@
 
     use cparams
     use cshell
-    include "precis.fi"
+    
+    implicit none
 
-    integer start, count
-    logical valid
-    character ch,inn*256,in(max),c
+    integer :: start, count, i, ich, nc, max
+    logical :: valid
+    character :: ch, inn*256, in(max), c
 
 10  inn = ' '
     read(iofili,'(a256)',end=5) inn
@@ -955,27 +979,6 @@
     return
     end subroutine readastu
 
-    subroutine readcv1 (in,count,start,ix,xi,type,valid)
-
-    !     routine: readastu
-    !     purpose: string conversion to integers or real numbers
-    !     arguments: 
-
-    integer start,first,last,count,type
-    logical valid
-    character*128 in
-    real xi
-
-    call sstrngp (in,count,start,first,last,valid)
-    if (.not.valid) then
-        go to 5
-    endif
-    call convrt (in,first,last,type,ix,xi)
-    count = count - (last-start+1)
-    start = last + 1
-5   return
-    end subroutine readcv1
-
     subroutine readin (nreq, nret, fixed, flting)
 
     !     routine: readin
@@ -989,16 +992,15 @@
     use cfio
     use cparams
     use cshell
-    include "precis.fi"
+    
+    implicit none
 
-    dimension flting(*)
-    integer fixed(*)
-    real x0, xxbig
-    logical multi, eof
-    character label*5, lable*5, slash*1, file*(*)
+    real*8 :: flting(*)
+    integer :: fixed(*), input = 0, lstart = 0, nret, i, j, nreq, llast, i0, iu, lenofch
+    real :: x0, xxbig
+    logical :: multi, eof
+    character :: label*5, lable*5, slash*1 = '/', file*(*)
     save input, lstart
-
-    data input/0/, lstart/0/, slash/'/'/
 
     nret = 0
     multi = .false.
@@ -1115,13 +1117,12 @@
 
     use cparams
     use cshell
-    include "precis.fi"
+    
+    implicit none
 
-    ! read in a string
-    integer start, count, irec
-    character inbuf*(*), cmt1*1, cmt2*1, frmt*30
-    logical valid
-    data cmt1/'!'/, cmt2/'#'/, irec/0/
+    integer :: start, count, irec = 0, infile, ls
+    character :: inbuf*(*), cmt1*1 = '!', cmt2*1 = '#', frmt*30
+    logical :: valid
     save irec
 
     ! if we have reached an end of file, return nothing
@@ -1180,41 +1181,43 @@
     use ifport
     use cparams
     use cshell
+    
+    implicit none
 
-    INTEGER (2) YEAR, MONTH, DAY
-    LOGICAL EXISTS
-    CHARACTER STRS(8)*60, IC, TOUPPER*1, LOGFILE*60
-    CHARACTER*60 SOLVEINI
-    INTEGER IARG(8), IOPT(26), OPTION
-    cmdflag(IC) = IOPT(ICHAR(IC)-ICHAR('A')+1)
+    integer (2) year, month, day
+    logical exists
+    character strs(8)*60, ic, toupper*1, logfile*60
+    character*60 solveini
+    integer iarg(8), iopt(26), option, cmdflag, nargs
+    cmdflag(ic) = iopt(ichar(ic)-ichar('A')+1)
 
-    ! CURRENT DATE
-    CALL GETDAT(YEAR,MONTH,DAY)
-    RUNDAT(3) = DAY
-    RUNDAT(2) = MONTH
-    RUNDAT(1) = YEAR
-    WRITE (MPSDATC,5010) RUNDAT(1), RUNDAT(2), RUNDAT(3)
+    ! current date
+    call getdat(year,month,day)
+    rundat(3) = day
+    rundat(2) = month
+    rundat(1) = year
+    write (mpsdatc,5010) rundat(1), rundat(2), rundat(3)
 
-    ! Command LINE ARGUMENTS
-    NARGS = 8
-    CALL CMDLINE(NARGS,STRS,IARG,IOPT)
+    ! command line arguments
+    nargs = 8
+    call cmdline(nargs,strs,iarg,iopt)
 
-    IF (cmdflag('H')/=0) HEADER = .TRUE.
-    IF (cmdflag('K')/=0) NOKBD = .TRUE.
-    IF (cmdflag('I')/=0) INITIALIZEONLY = .TRUE.
-    IF (cmdflag('D')/=0) DEBUGGING = .TRUE.
+    if (cmdflag('H')/=0) header = .true.
+    if (cmdflag('K')/=0) nokbd = .true.
+    if (cmdflag('I')/=0) initializeonly = .true.
+    if (cmdflag('D')/=0) debugging = .true.
     if (cmdflag('T')/=0) trace = .true.
     if (cmdflag('V')/=0) validate = .true.
     if (cmdflag('N')/=0) netheatflux = .true.
-    LOGERR = 3
+    logerr = 3
 
-    IF (cmdflag('F')/=0.and.cmdflag('C')/=0) stop 107
+    if (cmdflag('F')/=0.and.cmdflag('c')/=0) stop 107
     if (cmdflag('C')/=0) outputformat = 1
     if (cmdflag('F')/=0) outputformat = 2
 
-    IF (cmdflag('S')/=0) then
+    if (cmdflag('S')/=0) then
         if (strs(cmdflag('S'))/=' ') then
-            solveini = strs(cmdflag('s'))
+            solveini = strs(cmdflag('S'))
         else
             solveini = 'SOLVE.INI'
         endif
@@ -1229,6 +1232,7 @@
     subroutine shellsort (ra, n)
 
     implicit none
+    
     integer n, j, i, inc
     real*8 ra(n), rra
 
@@ -1271,12 +1275,12 @@
     !                                 (r,1) = number of items (fires or detectors so far) in room r
     !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
 
-    include "precis.fi"
-    dimension x(lx,ncolx), ix(lix,ncolix)
-
-    ! if the number of fires, detectors or rooms ever exceeds 200 then the following dimension statement needs to be changed
-    parameter (lwork=100)
-    dimension ipoint(ldp,*), work(lwork), iwork(lwork), iperm(lwork)
+    implicit none
+  
+    ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
+    integer, parameter :: lwork=100  
+    real*8 :: x(lx,ncolx), work(lwork)
+    integer :: ix(lix,ncolix), nrow, i, j, isort, iroom, nroom, lx, lix, ncolx, ncolix, ldp, ipoint(ldp,*), iwork(lwork), iperm(lwork)
 
     ! create a permutation vector using the isort'th column of ix
     if(nrow>lwork)then
@@ -1331,10 +1335,14 @@
     !                ifroom (output)  room numbers for each of the fires
     !                xfire   fire related quantities used by other routines. see routine fires for definition.
     !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r. (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
+    !                nm1 number of compartments minus 1
 
     use cparams
-    include "precis.fi"
-    dimension ifroom(mxfire), xfire(mxfire,mxfirp), iperm(mxfire), iwork(mxfire), work(mxfire), ifrpnt(nr,2)
+    
+    implicit none
+    
+    real*8 :: xfire(mxfire,mxfirp), work(mxfire)
+    integer :: ifroom(mxfire), iperm(mxfire), iwork(mxfire), ifrpnt(nr,2), i, j, irm, nm1, nfire
 
     ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
     do i = 1, nfire
@@ -1388,11 +1396,11 @@
     !                slast - ending position of the substring
     !                svalid - true if a valid substring is found
 
-    logical svalid
-    integer sfirst, slast, sstart, wcount, endstr
-    character*1 string(*), space, comma
+    implicit none
 
-    data space/' '/, comma/','/
+    integer :: sfirst, slast, sstart, wcount, endstr, i, j
+    character :: string(*), space = ' ', comma = ','
+    logical :: svalid
 
     svalid = .true.
 
@@ -1438,11 +1446,10 @@
     !                slast - ending position of the substring
     !                svalid - true if a valid substring is found
 
-    logical svalid
-    integer sfirst,slast,sstart,wcount,endstr
-    character*1 string(128),space,comma,rparen,lparen
-    data space /' '/, comma /','/,rparen /')'/, lparen /'('/
-
+    integer :: sfirst, slast, sstart, wcount, endstr, i, j
+    character :: string(128), space = ' ', comma = ',', rparen = ')', lparen = '('
+    logical :: svalid
+    
     svalid = .true.
     endstr = sstart + wcount - 1
 
@@ -1481,7 +1488,10 @@
     !     purpose: convert a single ascii character to upper or lower case
     !     arguments: ch - character to be converted
 
-    character*1 ch, tolower
+    implicit none
+    
+    integer :: ich
+    character :: ch, tolower
 
     ! convert to upper case
     ich = ichar(ch)
@@ -1504,18 +1514,20 @@
     !     arguments: from - string to be converted
     !                to (output) - converted string
 
-    character*(*) from, to
-    character*1 c
-    external length
-    nfrom = length (from)
+    implicit none
+    
+    integer nfrom, nto, nn, i
+    character :: from*(*), to*(*), c
+
+    nfrom = len_trim(from)
     nto = len(to)
     nn = min(nfrom,nto)
     do i = 1, nn
-    c = from(i:i)
-    if(c>='a'.and.c<='z')then
-    c = char(ichar(c) + ichar('A')-ichar('a'))
-    endif
-    to(i:i) = c
+        c = from(i:i)
+        if(c>='a'.and.c<='z')then
+            c = char(ichar(c) + ichar('A')-ichar('a'))
+        endif
+        to(i:i) = c
     end do
     if(nto>nn)to(nn+1:nto)=' '
     return
@@ -1527,7 +1539,10 @@
     !     purpose: finds first avalable i/o unit starting at unit number io
     !     arguments: io - beginning unit number for search
 
-    parameter(mxio=32767)
+    implicit none
+    
+    integer, parameter :: mxio=32767
+    integer :: io, itmp
     logical opend
 
     itmp = io-1
@@ -1550,10 +1565,11 @@
     !     arguments: filname - base filename for file to be opened
     !                iounit - desired unit number for file
 
-    character filname*(*)
-    integer iounit, first, last
-    logical existed, valid
-    character namefil*60, workfil*60, fmt*14
+    implicit none
+
+    integer :: iounit, first, last , length, ilen, itmp   
+    character :: filname*(*), namefil*60, workfil*60, fmt*14
+    logical :: existed, valid
 
     length = len (filname)
     call sstrng (filname, length, 1, first, last, valid)
@@ -1582,7 +1598,8 @@
     !     arguments: srname - specifies the name of the routine which called xerbla
     !                info - on entry, info specifies the position of the invalid parameter in the parameter-list of the calling routine.
 
-
+    implicit none
+    
     integer            info
     character*6        srname
 
@@ -1600,6 +1617,8 @@
     !     arguments: ca - first character
     !                cb - second character
 
+    implicit none
+    
     character*1 :: ca, cb
     integer, parameter :: ioff = 32
     intrinsic ichar

@@ -263,8 +263,9 @@
     !       ddmax   estimate of ceiling jet depth at r/h = .2
     !               (given by:  ddmax/(.23*delta) = 2)
 
-    !implicit real*8 (a-h,m,o-z)
+
     implicit none
+    
     ! 
     !********************************************************************
     !   	this subroutine and the function qfclg used in its called subroutines use the common blocks aintch
@@ -571,6 +572,7 @@
     !                ANS
 
     implicit none
+    
     logical :: first = .true.
     real*8 pi, one, x1, xrect, xc, x2, y1, yrect, yc, y2, r, frint, ans, ans1, ans2, ans3, ans4
     save pi
@@ -615,6 +617,7 @@
     !                ans
 
     implicit none
+    
     logical :: first = .true.
     real*8 :: pi
     save first, pi
@@ -656,6 +659,7 @@
     !
 
     implicit none
+    
     integer :: n, j  
     real*8 :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, theatj, thetaj, rj, arj, theta
 

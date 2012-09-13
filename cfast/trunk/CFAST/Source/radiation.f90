@@ -1108,7 +1108,8 @@
     !  version 1.0.3
 
     use cenviro
-    include "precis.fi"
+    
+    implicit none
 
     ! declare parameters
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
@@ -1137,6 +1138,7 @@
 
     integer :: xco2, yco2, xh2o, yh2o
     real*8 :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
+    real*8 :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
 
     ! declare module data
 
@@ -1217,108 +1219,109 @@
 1000 format ('error in ',a3,' absorbance: xerror = 'i2,'; yerror = ',i2)
     end function absorb
 
-    SUBROUTINE LINTERP(XDIM, YDIM, X, Y, Z, XVAL, YVAL, ZVAL, XERR, YERR)
+    subroutine linterp (xdim, ydim, x, y, z, xval, yval, zval, xerr, yerr)
 
     !     routine: linterp
-    !     purpose: SUBROUTINE CALCULATES A 2-D LINEAR INTERPOLATION OF F(X,Y); WHERE KNOWN F(X,Y) VALUES ARE IN Z, ALLOWED X AND Y VALUES ARE IN X AND Y, THE POINT
-    !              TO BE INTERPOLATED IS (XVAL,YVAL) AND THE INTERPOLATED RESULT IS RETURNED AS ZVAL. ARRAY DIMENSIONS ARE SPECIFIED BY XDIM AND YDIM, XERR AND YERR
-    !              ARE ERROR VALUES RETURNED TO THE CALLING FUNCTION.
+    !     purpose: subroutine calculates a 2-d linear interpolation of f(x,y); where known f(x,y) values are in z, allowed x and y values are in x and y, the point
+    !              to be interpolated is (xval,yval) and the interpolated result is returned as zval. array dimensions are specified by xdim and ydim, xerr and yerr
+    !              are error values returned to the calling function.
 
-    !  THE EQUATION IMPLIMENTED BY THIS FUNCTION IS:
+    !  the equation implimented by this function is:
 
-    !  F(X,Y) = Z(I,J) + {[Z(I+1,J) - Z(I,J)] / [X(I+1) - X(I)]} * [X - X(I)] 
-    !          + {[Z(I,J+1) - Z(I,J)] / [Y(J+1) - Y(I)]} * [Y - Y(J)]
+    !  f(x,y) = z(i,j) + {[z(i+1,j) - z(i,j)] / [x(i+1) - x(i)]} * [x - x(i)] 
+    !          + {[z(i,j+1) - z(i,j)] / [y(j+1) - y(i)]} * [y - y(j)]
     !     arguments: 
 
-    include "precis.fi"
-    INTEGER HIERR
-    PARAMETER (NOERR=0, HIERR=+1, LOERR=-1) 
+    implicit none
 
-    ! DECLARE I/O PARAMETERS 
-    INTEGER XDIM, YDIM, XERR, YERR
-    DIMENSION X(XDIM), Y(YDIM), Z(XDIM,YDIM)
+    integer, parameter :: noerr=0, hierr=+1, loerr=-1
 
-    ! DECLARE INTERNAL VARIABLES
-    INTEGER COUNT
+    ! declare i/o parameters 
+    integer :: xdim, ydim, xerr, yerr
+    real*8 :: x(xdim), y(ydim), z(xdim,ydim)
 
-    ! FIND THE VALUE OF I SUCH THAT X(1) <= XVAL <= X(XDIM). IF XVAL IS OUTSIDE THAT RANGE, SET IT TO THE CLOSEST LEGAL VALUE AND SET THE ERROR VALUE, AS APPROPRIATE.
+    ! declare internal variables
+    real*8 :: xval, yval, deltax, deltay, delx, dely, dzdx, dzdy, zval
+    integer count, i, j
 
-    ! CHECK THE SPECIAL CASE OF XVAL < X(1)
-    IF (XVAL < X(1)) THEN
-        XERR = LOERR
-        XVAL = X(1)
-        I = 1
+    ! find the value of i such that x(1) <= xval <= x(xdim). if xval is outside that range, set it to the closest legal value and set the error value, as appropriate.
 
-        ! CHECK THE SPECIAL CASE OF XVAL > X(XDIM)
-    ELSE IF (XVAL > X(XDIM)) THEN
-        XERR = HIERR
-        XVAL = X(XDIM)
-        I = XDIM
+    ! check the special case of xval < x(1)
+    if (xval < x(1)) then
+        xerr = loerr
+        xval = x(1)
+        i = 1
 
-        ! CHECK THE CASES WHERE X(1) <= XVAL < X(XDIM)
-    ELSE
-        XERR = NOERR
-        DO COUNT=2,XDIM
-            IF (XVAL < X(COUNT)) THEN
-                I = COUNT - 1
-                GO TO 20
+        ! check the special case of xval > x(xdim)
+    else if (xval > x(xdim)) then
+        xerr = hierr
+        xval = x(xdim)
+        i = xdim
+
+        ! check the cases where x(1) <= xval < x(xdim)
+    else
+        xerr = noerr
+        do count=2,xdim
+            if (xval < x(count)) then
+                i = count - 1
+                go to 20
             endif 
         end do
-        ! THEN XVAL = X(XDIM)
-        I = XDIM
-20      CONTINUE
+        ! then xval = x(xdim)
+        i = xdim
+20      continue
     endif
 
-    ! CHECK THE SPECIAL CASE OF YVAL < Y(1)
-    IF (YVAL < Y(1)) THEN
-        YERR = LOERR
-        YVAL = Y(1)
-        J = 1
+    ! check the special case of yval < y(1)
+    if (yval < y(1)) then
+        yerr = loerr
+        yval = y(1)
+        j = 1
 
-        ! CHECK THE SPECIAL CASE OF YVAL > Y(YDIM)
-    ELSE IF (YVAL > Y(YDIM)) THEN
-        YERR = HIERR
-        YVAL = Y(YDIM)
-        J = YDIM
+        ! check the special case of yval > y(ydim)
+    else if (yval > y(ydim)) then
+        yerr = hierr
+        yval = y(ydim)
+        j = ydim
 
-        ! CHECK THE CASES OF Y(1) <= YVAL < Y(YDIM)
-    ELSE
-        YERR = NOERR
-        DO COUNT=2,YDIM
-            IF (YVAL < Y(COUNT)) THEN
-                J = COUNT - 1
-                GO TO 40
+        ! check the cases of y(1) <= yval < y(ydim)
+    else
+        yerr = noerr
+        do count=2,ydim
+            if (yval < y(count)) then
+                j = count - 1
+                go to 40
             endif
         end do
 
-        ! THEN YVAL = Y(YDIM)
-        J = YDIM
-40      CONTINUE
+        ! then yval = y(ydim)
+        j = ydim
+40      continue
     endif
 
-    ! CALCULATE DELTA X, SLOPE X AND THE Z INCREMENT DUE TO A CHANGE IN X. IF XVAL = X(XDIM), THEN (I+1) IS UNDEFINED AND THE SLOPE CAN NOT BE
-    ! CALCULATED. HOWEVER, IN THOSE CASES, DELTA X IS ZERO, THERE IS NO CONTRIBUTION DUE TO THE CHANGE IN X AND THE ENTIRE TERM MAY BE SET EQUAL TO ZERO.
-    DELTAX = XVAL - X(I)
-    IF (DELTAX /= 0.0D0) THEN
-        DZDX = (Z(I+1,J) - Z(I,J)) / (X(I+1) - X(I))
-        DELX = DZDX * DELTAX
-    ELSE
-        DELX = 0.
+    ! calculate delta x, slope x and the z increment due to a change in x. if xval = x(xdim), then (i+1) is undefined and the slope can not be
+    ! calculated. however, in those cases, delta x is zero, there is no contribution due to the change in x and the entire term may be set equal to zero.
+    deltax = xval - x(i)
+    if (deltax /= 0.0d0) then
+        dzdx = (z(i+1,j) - z(i,j)) / (x(i+1) - x(i))
+        delx = dzdx * deltax
+    else
+        delx = 0.
     endif
 
-    ! CALCULATE THE Z INCREMENT DUE TO A CHANGE IN Y AS ABOVE.
-    DELTAY = YVAL - Y(J)
-    IF (DELTAY /= 0.0D0) THEN
-        DZDY = (Z(I,J+1) - Z(I,J)) / (Y(J+1) - Y(J))
-        DELY = DZDY * DELTAY
-    ELSE
-        DELY = 0.
+    ! calculate the z increment due to a change in y as above.
+    deltay = yval - y(j)
+    if (deltay /= 0.0d0) then
+        dzdy = (z(i,j+1) - z(i,j)) / (y(j+1) - y(j))
+        dely = dzdy * deltay
+    else
+        dely = 0.
     endif
 
-    ! INTERPOLATE A VALUE FOR F(X,Y)
-    ZVAL = Z(I,J) + DELX + DELY
-    RETURN
-    END
+    ! interpolate a value for f(x,y)
+    zval = z(i,j) + delx + dely
+    return
+    end subroutine linterp
 
     integer function rev_radiation
 

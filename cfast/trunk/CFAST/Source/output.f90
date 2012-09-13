@@ -1325,9 +1325,10 @@
     use cparams
     use cshell
     use opt
-    include "precis.fi"
+    
+    implicit none
 
-    integer funit
+    integer funit, iroom, ilayer, i, iounit
     character dbugfil*8
 
     character keyword*7, dbugky(mxdebug)*7, dummy*1, ly*2
@@ -1380,15 +1381,14 @@
     use cenviro
     use opt
     use wdervs
-    include "precis.fi"
+    
+    implicit none
 
-    dimension wm(jacdim,*), buf(maxeq)
-    character*2 entry(maxeq)
-    logical firstc
-    integer ioffst(8)
-    character lbls(8)*3
-    character hder*256
-    character*2 ddiag
+    real*8 :: wm(jacdim,*), buf(maxeq), xx0, tsec, wmii, wmij, tmp, tmp1
+    integer :: ioffst(8), itmp, itmp2, i, j, k, itemp, iounit, irdx, neqs, itcol, icdx, iitmp
+    logical :: firstc
+    character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
+
     data firstc/.true./
     data lbls/'p  ','pmv','tmv','tu ','vu ','tl ','wt ','prd'/
     save ioffst, hder, iounit
@@ -1498,10 +1498,12 @@
     use cparams
     use opt
     use wdervs
-    include "precis.fi"
+    
+    implicit none
 
-    logical firstc
-    data firstc/.true./
+    real*8 :: t
+    integer :: iounit
+    logical :: firstc = .true.
     save iounit
 
     if (dbugsw(d_jac,d_cnt,1)<=0) return
@@ -1531,14 +1533,14 @@
 
     use cparams
     use opt
-    include "precis.fi"
+    
+    implicit none
 
-    integer funit
-    logical firstc
-    character*6 cntfil, prnfil
+    integer funit, jaccnt, jacprn, iounit
+    logical :: firstc = .true.
+    character :: cntfil*6 = 'JACCNT', prnfil*6 = 'JACPRN'
 
     save firstc
-    data firstc/.true./,cntfil/'JACCNT'/,prnfil/'JACPRN'/
 
     if (firstc) then
         firstc = .false.
@@ -1565,7 +1567,10 @@
     use cenviro
     use cfin
     use opt
-    include "precis.fi"
+    
+    implicit none
+    
+    integer :: icomp, itmp, irm, iw, iounit
 
     write(lbuf,*)'Solution component with the greatest error is'
     call xerror(lbuf,0,1,0)
@@ -1621,14 +1626,14 @@
     use cshell
     use params
     use wnodes
-    include "precis.fi"
+    
+    implicit none
 
+    real*8 :: xqf, dp, dt, t
+    integer :: bmap(mbr), i, j, ikey, iprod, il, isys, idt, iroom, ieqmax, iobj, itarg
     integer*2 ch, hit
-    character spname(ns)*5, ccc*3
-    integer bmap(mbr)
-    logical firstc
-    data spname /'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', 'TS'/
-    data firstc /.true./
+    character :: spname(ns)*5 = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', 'TS'/), ccc*3
+    logical :: firstc = .true.
     save bmap
 
     !     debug printing
@@ -1785,11 +1790,11 @@
     use cfast_main
     use cshell
     use iofiles
-    include "precis.fi"
+    
+    implicit none
 
-    integer iounit, itot
-    data iounit /11/, firstc /.true./
-    save itot, firstc
+    integer :: iounit = 11, itot, iflt, iint, ierr, istep, ierror
+    save itot
 
     if (ndumpr==0) stop 106
 
@@ -1820,7 +1825,10 @@
     !                iint   length of the integer portion in numeric storage units
 
     use cfast_main
-    include "precis.fi"
+    
+    implicit none
+    
+    integer :: iint, iflt, itot, iv
 
     iint = (loc(itermxx) - loc(neutral))/4 + 1
     iflt = (loc(termxx) - loc(gamma))/4
@@ -1840,8 +1848,10 @@
     !                ierr
     !                ivers0
 
-    parameter (mxdmp = 36000)
-    integer input(len), parray(mxdmp)
+    implicit none
+    
+    integer, parameter :: mxdmp = 36000
+    integer :: input(len), parray(mxdmp), ierr, iounit, ios, ivers0, i, len
     character header*6
     data header /'$$CFL$'/
 
@@ -1871,10 +1881,10 @@
     !     the history file in CFAST stays the same, 0 for example, this works
     !     fairly well.
 
-    integer ic, itin, idx, ridx, mxdmp
-    integer doit(itin), retbuf(mxdmp)
-    integer lc, count, mrkr
-    character msg*80
+    implicit none 
+    
+    integer :: ic, itin, idx, ridx, mxdmp, doit(itin), retbuf(mxdmp), lc, count, mrkr, ierr, i
+    character :: msg*80
 
     idx = 1
     ridx = 1
@@ -1918,10 +1928,10 @@
                     ierr = 19
                     return
                 endif
-                do 40, i = 1, count
+                do, i = 1, count
                     ridx = ridx + 1
                     retbuf(ridx) = lc
-40              continue
+                end do
             endif
             count = 0
             ridx = ridx + 1
@@ -2010,7 +2020,9 @@
     !                retbuf
     !
 
-    integer :: ic, count, mrkr, itin, ridx, retbuf(itin)
+    implicit none
+    
+    integer :: ic, count, mrkr, itin, ridx, retbuf(itin), mxdmp
     mrkr = 106
     ridx = ridx + 1
     retbuf(ridx) = mrkr
@@ -2026,6 +2038,7 @@
     !  Write the status information to the "statusfile"
 
     implicit none
+    
     integer errorcode	
     real*8 T, dT
 
@@ -2053,10 +2066,11 @@
     use params
     use solver_parameters
     use wnodes
-    include "precis.fi"
+    
+    implicit none
 
     character*(*) file
-    integer funit
+    integer :: funit, nnnopt, i, j, iunit
 
     nnnopt = 21
 
@@ -2137,6 +2151,10 @@
     use cfast_main
     use cshell
     use iofiles
+    
+    implicit none
+    
+    integer :: ios
 
     ! first the file for "printed" output
     if (lprint<0) then
@@ -2207,10 +2225,12 @@
     subroutine deleteoutputfiles (outputfile)
 
     use ifport
+    
+    implicit none
 
-    character (*) outputfile
-    logical exists, doesthefileexist
-    integer (2) filecount
+    character (*) :: outputfile
+    logical :: exists, doesthefileexist
+    integer(2) :: filecount
 
     if (doesthefileexist(outputfile)) then
         filecount = delfilesqq(outputfile)

@@ -648,7 +648,7 @@ Public Class UpdateGUI
     Public Sub Fires(ByVal index As Integer)
         Me.General()
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
-        Dim PeakHRR As Single
+        Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single
         Dim IgnitionTypeLabel As String = ""
         If index < 0 Or index >= myFires.Count Then
             ClearGrid(MainWin.FireSummary)
@@ -661,14 +661,24 @@ Public Class UpdateGUI
             MainWin.FireIgnitionTemperature.Text = myEnvironment.IgnitionTemp.ToString + myUnits.Convert(UnitsNum.Temperature).Units
 
             MainWin.GroupFire.Enabled = True
-            MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
+            MainWin.GroupFire.Text = "Location, Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
             MainWin.GroupFireObject.Enabled = True
+            MainWin.FireType.Text = "Constrained"
             Dim aFire As New Fire
             aFire = myFires(index)
             If aFire.Compartment <= myCompartments.Count - 1 Then
                 MainWin.FireComp.SelectedIndex = aFire.Compartment + 1
+                Dim aCompartment As New Compartment
+                aCompartment = myCompartments(aFire.Compartment)
+                xFire = aFire.XPosition
+                yFire = aFire.YPosition
+                xRoom = aCompartment.RoomWidth
+                yRoom = aCompartment.RoomDepth
+                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.FireType.Text = "Constrained, Wall Fire"
+                If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.FireType.Text = "Constrained, Corner Fire"
+
             End If
-            MainWin.FireType.SelectedIndex = aFire.FireType
+
             MainWin.FireXPosition.Text = aFire.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFire.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireZPosition.Text = aFire.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
@@ -692,7 +702,7 @@ Public Class UpdateGUI
                 MainWin.FirePeakCO.Text = "Peak CO Yield:"
                 MainWin.FirePeakHCN.Text = "Peak HCN Yield:"
                 MainWin.FirePeakHCl.Text = "Peak HCl Yield:"
-                MainWin.FirePeakSoot.Text = "Peak Soot Yield:
+                MainWin.FirePeakSoot.Text = "Peak Soot Yield:"
                 MainWin.FirePeakHeight.Text = "Peak Fire Height:"
                 MainWin.FirePeakArea.Text = "Peak Area::"
                 MainWin.FireRadiativeFraction.Text = "Radiative Fraction:"

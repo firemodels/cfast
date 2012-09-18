@@ -1,0 +1,28 @@
+VERSN,6,Cable tray fire -- base case
+!!
+!!Environmental Keywords
+!!
+TIMES,1800,-120,0,10,30
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+CHEMI,10,393.15
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+!!
+!!vent keywords
+!!
+HVENT,1,2,1,1,2.4,0,1,0,0,1,1
+VVENT,2,1,1,1,1
+!!
+!!fire keywords
+!!
+OBJECT,bunsen,1,4.55,2.5,0,1,1,0,0,0,1
+OBJECT,Wood_Wall,1,4.55,2.5,0,1,1,0,0,0,1
+!!
+!!target and detector keywords
+!!
+TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5

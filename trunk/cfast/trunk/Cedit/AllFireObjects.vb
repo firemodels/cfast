@@ -355,7 +355,7 @@ Public Class AllFireObjects
         '
         'FireName
         '
-        Me.FireName.Location = New System.Drawing.Point(452, 224)
+        Me.FireName.Location = New System.Drawing.Point(424, 224)
         Me.FireName.Name = "FireName"
         Me.FireName.Size = New System.Drawing.Size(208, 20)
         Me.FireName.TabIndex = 5
@@ -364,11 +364,11 @@ Public Class AllFireObjects
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(332, 224)
+        Me.Label9.Location = New System.Drawing.Point(360, 227)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(92, 13)
+        Me.Label9.Size = New System.Drawing.Size(58, 13)
         Me.Label9.TabIndex = 139
-        Me.Label9.Text = "Fire Object Name:"
+        Me.Label9.Text = "Fire Name:"
         Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'FireRemoveObject
@@ -428,7 +428,7 @@ Public Class AllFireObjects
         Me.FireNewt2.TabIndex = 145
         Me.FireNewt2.Text = "New t²"
         '
-        'FireObjectsEdit
+        'AllFireObjects
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
@@ -447,10 +447,10 @@ Public Class AllFireObjects
         Me.Controls.Add(Me.FireDupObject)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MinimumSize = New System.Drawing.Size(800, 490)
-        Me.Name = "FireObjectsEdit"
+        Me.Name = "AllFireObjects"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Fire Objects"
+        Me.Text = "Fires"
         Me.GroupFireObject.ResumeLayout(False)
         Me.GroupFireObject.PerformLayout()
         CType(Me.FireDataSS, System.ComponentModel.ISupportInitialize).EndInit()
@@ -566,9 +566,9 @@ Public Class AllFireObjects
 
         UpdateFirePlot(CurrentFireObject)
         If TempFireObjects.Changed Then
-            Me.Text = "Fire Objects *"
+            Me.Text = "Fires *"
         Else
-            Me.Text = "Fire Objects"
+            Me.Text = "Fires"
         End If
     End Sub
     Private Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)

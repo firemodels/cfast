@@ -346,7 +346,7 @@ Partial Class EditFireObject
         Me.Controls.Add(Me.GroupFireObject)
         Me.Name = "EditFireObject"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Add Fire Object"
+        Me.Text = "Define New Fire"
         CType(Me.FireDataSS, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupFireObject.ResumeLayout(False)
         Me.GroupFireObject.PerformLayout()

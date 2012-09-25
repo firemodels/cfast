@@ -1211,7 +1211,7 @@
     if (cmdflag('N')/=0) netheatflux = .true.
     logerr = 3
 
-    if (cmdflag('F')/=0.and.cmdflag('c')/=0) stop 107
+    if (cmdflag('F')/=0.and.cmdflag('C')/=0) stop 107
     if (cmdflag('C')/=0) outputformat = 1
     if (cmdflag('F')/=0) outputformat = 2
 

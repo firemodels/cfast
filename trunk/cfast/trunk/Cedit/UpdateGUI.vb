@@ -666,7 +666,7 @@ Public Class UpdateGUI
             MainWin.FireType.Text = "Constrained"
             Dim aFire As New Fire
             aFire = myFires(index)
-            If aFire.Compartment <= myCompartments.Count - 1 Then
+            If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
                 MainWin.FireComp.SelectedIndex = aFire.Compartment + 1
                 Dim aCompartment As New Compartment
                 aCompartment = myCompartments(aFire.Compartment)

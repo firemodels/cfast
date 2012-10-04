@@ -1168,14 +1168,14 @@ Public Class EgressEstimatorInput
         For x = 0 To num_rows - 1
             strline = strlines(x).Split(",")
             anum_cols = UBound(strline) + 1
-            If anum_cols = 6 Then
+            If anum_cols >= 6 Then
                 For y = 0 To num_cols - 1
                     strarray(x, y) = strline(y)
                 Next
             ElseIf String.Compare(strline(0), "End") Then
                 Exit For
-            ElseIf anum_cols <> 6 Then
-                errMsg = "Building file must have 6 columns current file has " + anum_cols.ToString + " in row " + (x + 1).ToString
+            ElseIf anum_cols < 6 Then
+                errMsg = "Building file must have at least 6 columns current file has " + anum_cols.ToString + " in row " + (x + 1).ToString
                 Return False
             End If
         Next

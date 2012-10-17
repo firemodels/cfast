@@ -745,7 +745,7 @@
         fqdj(i) = xx0
     end do
 
-    hcombt = xfire(1,12)
+    hcombt = 5.005d+07
 
     ! calculate the heat for each of the door jet fires
     call ventflag(ventflg,roomflg,anyvents)
@@ -849,6 +849,7 @@
         xxmol_mass = 0.01201d0 ! we assume it's just complete combustion of methane
         xxqspray = 0.0d0
         call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0d0,0.0d0,1.0d0,4.0d0,0.0d0,0.0d0,0.0d0,source_o2,limo2,0,0,0.0d0,0.0d0,stime,xxqspray,xqpyrl,xntfl,xmass)
+        qpyrol = xqpyrl
 
         do i = 1, ns
             xntms(upper,i) = xmass(i)

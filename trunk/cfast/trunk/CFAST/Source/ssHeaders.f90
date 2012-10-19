@@ -9,14 +9,14 @@
     implicit none
 
     ! local variables     
-    integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character*35 headertext(3,maxhead), cTemp, cRoom, cFire, Labels(15), LabelsShort(15), LabelUnits(15), toIntString
+    integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
+    character*35 headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
     integer position, i, j
 
-    data Labels / 'Time', 'Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
-    'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'Flame Height', 'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'ATARG_', 'FTARG_', 'PLUM_', 'PYROL_', 'HRR_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W/m^2', 'W/m^2', 'kg/s', 'kg/s', 'W', 'm', 'W', 'kg', 'kg' /
+    data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
+    'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'ATARG_', 'FTARG_', 'DJET_', 'PLUM_', 'PYROL_', 'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
+    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W/m^2', 'W/m^2', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
     !  spreadsheet header
     if (validate) then
@@ -40,7 +40,7 @@
                         cRoom = toIntString(j)
                         headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
                         headertext(2,position) = LabelUnits(i+1)
-                        headertext(3,1) = ' '
+                        headertext(3,position) = ' '
                     else
                         headertext(1,position) = Labels(i+1)
                         headertext(2,position) = compartmentnames(j)
@@ -51,34 +51,49 @@
         end do
     end do
 
+    ! Door jet fires
+    do i = 1, nm1
+        position = position + 1
+        if (validate) then
+            cRoom = toIntString(i)
+            headertext(1,position) = trim(LabelsShort(9)) // trim(cRoom)
+            headertext(2,position) = LabelUnits(9)
+            headertext(3,position) = ' '
+        else
+            headertext(1,position) = Labels(9)
+            headertext(2,position) = compartmentnames(i)
+            headertext(3,position) = LabelUnits(9)
+        endif
+    end do
+
     ! Fire variables. Main fire first, then object fires
     if (lfbo>0) then
-        do i = 1, 7
+        do i = 1, 9
             position = position + 1
             if (validate) then
-                write (cTemp,'(a,i1)') trim(LabelsShort(i+8)), 0
+                write (cTemp,'(a,i1)') trim(LabelsShort(i+9)), 0
                 headertext(1,position) = cTemp
-                headertext(2,position) = LabelUnits(i+8)
+                headertext(2,position) = LabelUnits(i+9)
                 headertext(3,1) = ' '
             else
-                headertext(1,position) = Labels(i+8)
+                headertext(1,position) = Labels(i+9)
                 headertext(2,position) = 'Mainfire'
-                headertext(3,position) = LabelUnits(i+8)
+                headertext(3,position) = LabelUnits(i+9)
             endif  
         end do
     endif
     do j = 1, numobjl
-        do i = 1, 7
+        do i = 1, 9
             position = position + 1
             if (validate) then
                 cFire = toIntString(j)
-                headertext(1,position) = trim(LabelsShort(i+8))//trim(cFire)
-                headertext(2,position) = LabelUnits(i+8)
+                headertext(1,position) = trim(LabelsShort(i+9))//trim(cFire)
+                headertext(2,position) = LabelUnits(i+9)
                 headertext(3,1) = ' '
             else
-                headertext(1,position) = Labels(i+8)
+                headertext(1,position) = Labels(i+9)
                 headertext(2,position) = objnin(j)
-                headertext(3,position) = LabelUnits(i+8)
+                headertext(3,position) = LabelUnits(i+9)
             endif
         end do
     end do

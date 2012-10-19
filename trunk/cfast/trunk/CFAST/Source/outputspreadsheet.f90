@@ -8,13 +8,10 @@
     use objects1
     implicit none
 
-    integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character*16 headline(3,maxhead)
-    character*16 compartmentlabel(7)
-    character*16 firelabel(7)
+    integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     real*8 time, outarray(maxhead), xx0, fheight
     logical firstc
-    integer position, errorcode, i, itarg, izzvol
+    integer position, errorcode, i, itarg, izzvol, ifire
 
     data firstc/.true./
     save firstc
@@ -44,6 +41,10 @@
     end do
 
     ! Fires
+    do i = 1,nm1
+        call SSaddtolist (position,fqdj(i),outarray)
+    end do
+    
     xx0 = 0.0d0
     if (lfmax>0.and.lfbt>0.and.lfbo>0) then
         call flamhgt (fqf(0),farea(0),fheight)
@@ -62,6 +63,8 @@
             call ssaddtolist (position,fems(i),outarray)
             call ssaddtolist (position,femp(i),outarray)
             call ssaddtolist (position,fqf(i),outarray)
+            call SSaddtolist (position,fqlow(i),outarray)
+            call SSaddtolist (position,fqupr(i),outarray)
             call ssaddtolist (position,fheight,outarray)
             call ssaddtolist (position,fqfc(i),outarray)
             call ssaddtolist (position,objmaspy(i),outarray)

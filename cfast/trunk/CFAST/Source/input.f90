@@ -615,12 +615,10 @@
         tgignt = lrarray(2)
 
         ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
-    case ('CHEMI')
+    case ('GLOBA')
         if (countargs(label,2,lcarray,xnumc-1, nret)) then
             limo2 = lrarray(1) * 0.01d0
             tgignt = lrarray(2)
-        else if (countargs(label,8,lcarray,xnumc-1,nret)) then
-            ! fire object CHEMI input here
         else
             ierror = 4
             return

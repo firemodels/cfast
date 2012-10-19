@@ -648,6 +648,8 @@ Public Class CeditMain
         Me.FireAdd = New System.Windows.Forms.Button()
         Me.FireDup = New System.Windows.Forms.Button()
         Me.GroupFire = New System.Windows.Forms.GroupBox()
+        Me.Label53 = New System.Windows.Forms.Label()
+        Me.FireType = New System.Windows.Forms.Label()
         Me.Label66 = New System.Windows.Forms.Label()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.FirePlumeType = New System.Windows.Forms.ComboBox()
@@ -787,8 +789,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.FireType = New System.Windows.Forms.Label()
-        Me.Label53 = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -2982,6 +2982,26 @@ Public Class CeditMain
         Me.GroupFire.TabStop = False
         Me.GroupFire.Text = "Location, Fire 1"
         '
+        'Label53
+        '
+        Me.Label53.AutoSize = True
+        Me.Label53.Location = New System.Drawing.Point(549, 49)
+        Me.Label53.Name = "Label53"
+        Me.Label53.Size = New System.Drawing.Size(92, 13)
+        Me.Label53.TabIndex = 122
+        Me.Label53.Text = "Plume Correlation:"
+        Me.Label53.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireType
+        '
+        Me.FireType.AutoSize = True
+        Me.FireType.Location = New System.Drawing.Point(646, 25)
+        Me.FireType.Name = "FireType"
+        Me.FireType.Size = New System.Drawing.Size(102, 13)
+        Me.FireType.TabIndex = 121
+        Me.FireType.Text = "Constrained, Normal"
+        Me.FireType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
         'Label66
         '
         Me.Label66.AutoSize = True
@@ -4349,26 +4369,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
-        '
-        'FireType
-        '
-        Me.FireType.AutoSize = True
-        Me.FireType.Location = New System.Drawing.Point(646, 25)
-        Me.FireType.Name = "FireType"
-        Me.FireType.Size = New System.Drawing.Size(102, 13)
-        Me.FireType.TabIndex = 121
-        Me.FireType.Text = "Constrained, Normal"
-        Me.FireType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'Label53
-        '
-        Me.Label53.AutoSize = True
-        Me.Label53.Location = New System.Drawing.Point(549, 49)
-        Me.Label53.Name = "Label53"
-        Me.Label53.Size = New System.Drawing.Size(92, 13)
-        Me.Label53.TabIndex = 122
-        Me.Label53.Text = "Plume Correlation:"
-        Me.Label53.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'CeditMain
         '

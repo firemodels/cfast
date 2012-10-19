@@ -280,43 +280,30 @@ Module IO
         If myEnvironment.CeilingJet = 2 Then csv.str(i, cjetNum.type) = "WALLS"
         If myEnvironment.CeilingJet = 3 Then csv.str(i, cjetNum.type) = "ALL"
         i += 1
-        If TestVersion = False Then
-            'door jet ignition temperature
-            'csv.str(i, CFASTlnNum.keyWord) = "DJIGN"
-            'csv.Num(i, djignNum.igntemp) = myEnvironment.IgnitionTemp
-            'i += 1
-            ' global chemistry parameters (LIMO2 + DJIGN + CJET)
-            csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
-            csv.Num(i, chemieNum.limo2) = myEnvironment.LowerOxygenLimit
-            csv.Num(i, chemieNum.igntemp) = myEnvironment.IgnitionTemp
-            i += 1
-        End If
         'wind
         csv.str(i, CFASTlnNum.keyWord) = "WIND"
         csv.Num(i, windNum.velocity) = myEnvironment.ExtWindSpeed
         csv.Num(i, windNum.refHeight) = myEnvironment.ExtScaleHeight
         csv.Num(i, windNum.expLapseRate) = myEnvironment.ExtPowerLawCoefficient
         i += 1
-        If TestVersion Then
-            'comment header of material properties section
-            If myThermalProperties.Count > 0 Then AddHeadertoOutput(csv, i, "Material Properties")
-            Dim aThermalProperty As ThermalProperty
-            'thermal properties
-            For j = 0 To myThermalProperties.Count - 1
-                aThermalProperty = myThermalProperties.Item(j)
-                If myThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
-                    csv.str(i, CFASTlnNum.keyWord) = "MATL"
-                    csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
-                    csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
-                    csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
-                    csv.Num(i, MaterialNum.density) = aThermalProperty.Density
-                    csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
-                    csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
-                    csv.str(i, MaterialNum.longName) = aThermalProperty.Name
-                    i += 1
-                End If
-            Next
-        End If
+        'comment header of material properties section
+        If myThermalProperties.Count > 0 Then AddHeadertoOutput(csv, i, "Material Properties")
+        Dim aThermalProperty As ThermalProperty
+        'thermal properties
+        For j = 0 To myThermalProperties.Count - 1
+            aThermalProperty = myThermalProperties.Item(j)
+            If myThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
+                csv.str(i, CFASTlnNum.keyWord) = "MATL"
+                csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
+                csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
+                csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
+                csv.Num(i, MaterialNum.density) = aThermalProperty.Density
+                csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
+                csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
+                csv.str(i, MaterialNum.longName) = aThermalProperty.Name
+                i += 1
+            End If
+        Next
         'comment header of compartment section
         If myCompartments.Count > 0 Then AddHeadertoOutput(csv, i, "Compartment keywords")
         'compartments
@@ -513,88 +500,58 @@ Module IO
         Next
         'comment header for fire keywords
         If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "Fire keywords")
-        If TestVersion Then
-            Dim aFire As New Fire, aFireObject As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
-            For j = 0 To myFires.Count - 1
-                aFire = myFires.Item(j)
-                If myFireObjects.GetFireIndex(aFire.Name) >= 0 Then
-                    csv.str(i, CFASTlnNum.keyWord) = "!!" + aFire.Name
-                    i += 1
-                    ' FIRE keyword, geometry information
-                    csv.str(i, CFASTlnNum.keyWord) = "FIRE"
-                    csv.Num(i, fireNum.compartment) = aFire.Compartment + 1
-                    csv.Num(i, fireNum.xPosition) = aFire.XPosition
-                    csv.Num(i, fireNum.yPosition) = aFire.YPosition
-                    csv.Num(i, fireNum.zposition) = aFire.ZPosition
-                    csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
-                    csv.Num(i, fireNum.ignType) = aFire.IgnitionType + 1
-                    csv.Num(i, fireNum.ignCriterion) = aFire.IgnitionValue
-                    csv.Num(i, fireNum.xNormal) = aFire.XNormal
-                    csv.Num(i, fireNum.yNormal) = aFire.YNormal
-                    csv.Num(i, fireNum.zNormal) = aFire.ZNormal
-                    csv.str(i, fireNum.name) = aFire.Name
-                    i += 1
-                    ' CHEMI keyword, chemistry information
-                    aFireObject = myFireObjects.Item(myFireObjects.GetFireIndex(aFire.Name))
-                    csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
-                    csv.Num(i, chemieNum.C) = aFireObject.ChemicalFormula(formula.C)
-                    csv.Num(i, chemieNum.H) = aFireObject.ChemicalFormula(formula.H)
-                    csv.Num(i, chemieNum.O) = aFireObject.ChemicalFormula(formula.O)
-                    csv.Num(i, chemieNum.N) = aFireObject.ChemicalFormula(formula.N)
-                    csv.Num(i, chemieNum.Cl) = aFireObject.ChemicalFormula(formula.Cl)
-                    csv.Num(i, chemieNum.chiR) = aFireObject.RadiativeFraction
-                    csv.Num(i, chemieNum.HoC) = aFireObject.HeatofCombustion
-                    csv.str(i, chemieNum.Material) = aFireObject.Material
-                    i += 1
-                    ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
-                    aFireObject.GetFireData(firedata, numFireDataPoints)
-                    For k = 1 To NumFireCurves
-                        csv.str(i, CFASTlnNum.keyWord) = Trim(FireCurveTypes.Substring(5 * (k - 1), 5))
-                        For l = 0 To numFireDataPoints
-                            csv.Num(i, l + 2) = firedata(FireCurveColumns(k), l)
-                        Next
-                        i += 1
+
+        ' GLOBAL fire information
+        csv.str(i, CFASTlnNum.keyWord) = "GLOBA"
+        csv.Num(i, chemieNum.limo2) = myEnvironment.LowerOxygenLimit
+        csv.Num(i, chemieNum.igntemp) = myEnvironment.IgnitionTemp
+        i += 1
+
+        Dim aFire As New Fire, aFireObject As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
+        For j = 0 To myFires.Count - 1
+            aFire = myFires.Item(j)
+            If myFireObjects.GetFireIndex(aFire.Name) >= 0 Then
+                csv.str(i, CFASTlnNum.keyWord) = "!!" + aFire.Name
+                i += 1
+                ' FIRE keyword, geometry information
+                csv.str(i, CFASTlnNum.keyWord) = "FIRE"
+                csv.Num(i, fireNum.compartment) = aFire.Compartment + 1
+                csv.Num(i, fireNum.xPosition) = aFire.XPosition
+                csv.Num(i, fireNum.yPosition) = aFire.YPosition
+                csv.Num(i, fireNum.zposition) = aFire.ZPosition
+                csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
+                csv.Num(i, fireNum.ignType) = aFire.IgnitionType + 1
+                csv.Num(i, fireNum.ignCriterion) = aFire.IgnitionValue
+                csv.Num(i, fireNum.xNormal) = aFire.XNormal
+                csv.Num(i, fireNum.yNormal) = aFire.YNormal
+                csv.Num(i, fireNum.zNormal) = aFire.ZNormal
+                csv.str(i, fireNum.name) = aFire.Name
+                i += 1
+                ' CHEMI keyword, chemistry information
+                aFireObject = myFireObjects.Item(myFireObjects.GetFireIndex(aFire.Name))
+                csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
+                csv.Num(i, chemieNum.C) = aFireObject.ChemicalFormula(formula.C)
+                csv.Num(i, chemieNum.H) = aFireObject.ChemicalFormula(formula.H)
+                csv.Num(i, chemieNum.O) = aFireObject.ChemicalFormula(formula.O)
+                csv.Num(i, chemieNum.N) = aFireObject.ChemicalFormula(formula.N)
+                csv.Num(i, chemieNum.Cl) = aFireObject.ChemicalFormula(formula.Cl)
+                csv.Num(i, chemieNum.chiR) = aFireObject.RadiativeFraction
+                csv.Num(i, chemieNum.HoC) = aFireObject.HeatofCombustion
+                csv.str(i, chemieNum.Material) = aFireObject.Material
+                i += 1
+                ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
+                aFireObject.GetFireData(firedata, numFireDataPoints)
+                For k = 1 To NumFireCurves
+                    csv.str(i, CFASTlnNum.keyWord) = Trim(FireCurveTypes.Substring(5 * (k - 1), 5))
+                    For l = 0 To numFireDataPoints
+                        csv.Num(i, l + 2) = firedata(FireCurveColumns(k), l)
                     Next
-                End If  
-            Next
-            aFire.Changed = False
-        Else
-            'mainf
-            Dim aFire As New Fire
-            For j = 0 To myFires.Count - 1
-                aFire = myFires.Item(j)
-                If aFire.Name = "mainfire" And aFire.FireObject >= 0 Then
-                    csv.str(i, CFASTlnNum.keyWord) = "MAINF"
-                    csv.Num(i, fireNum.compartment) = aFire.Compartment + 1
-                    csv.Num(i, fireNum.xPosition) = aFire.XPosition
-                    csv.Num(i, fireNum.yPosition) = aFire.YPosition
-                    csv.Num(i, fireNum.zposition) = aFire.ZPosition
-                    csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
-                    aFire.Changed = False
                     i += 1
-                End If
-            Next
-            'objects
-            For j = 0 To myFires.Count - 1
-                aFire = myFires.Item(j)
-                If aFire.Name <> "mainfire" And aFire.FireObject >= 0 Then
-                    csv.str(i, CFASTlnNum.keyWord) = "OBJECT"
-                    csv.str(i, objfireNum.name) = aFire.Name
-                    csv.Num(i, objfireNum.compartment) = aFire.Compartment + 1
-                    csv.Num(i, objfireNum.xPosition) = aFire.XPosition
-                    csv.Num(i, objfireNum.yPosition) = aFire.YPosition
-                    csv.Num(i, objfireNum.zposition) = aFire.ZPosition
-                    csv.Num(i, objfireNum.xNormal) = aFire.XNormal
-                    csv.Num(i, objfireNum.yNormal) = aFire.YNormal
-                    csv.Num(i, objfireNum.zNormal) = aFire.ZNormal
-                    csv.Num(i, objfireNum.plumeType) = aFire.PlumeType + 1
-                    csv.Num(i, objfireNum.ignType) = aFire.IgnitionType + 1
-                    csv.Num(i, objfireNum.ignCriterion) = aFire.IgnitionValue
-                    aFire.Changed = False
-                    i += 1
-                End If
-            Next
-        End If
+                Next
+            End If
+        Next
+        aFire.Changed = False
+
         'comment header for heat transfer section
         If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
         'HHeat and VHeat
@@ -689,14 +646,6 @@ Module IO
             csv.str(i, CFASTlnNum.keyWord) = "STPMAX"
             csv.Num(i, 2) = myEnvironment.MaximumTimeStep
             i += 1
-        End If
-        'thermf
-        If TestVersion <> True Then
-            If myThermalProperties.FileName <> "thermal" Then
-                csv.str(i, CFASTlnNum.keyWord) = "THRMF"
-                csv.str(i, 2) = myThermalProperties.FileName
-                i += 1
-            End If
         End If
         myEnvironment.Changed = False
         'comments and dead keywords
@@ -874,7 +823,7 @@ Module IO
                     Case "VERSN"
                         myEnvironment.Title = csv.str(i, CFASTlnNum.title)
                         myEnvironment.Changed = False
-                    Case "CHEMI"
+                    Case "GLOBA"
                         If csv.Num(i, 0) <= 3 Then
                             ' only process sshort form here ... sets global parameters
                             myEnvironment.LowerOxygenLimit = csv.Num(i, chemieNum.limo2)

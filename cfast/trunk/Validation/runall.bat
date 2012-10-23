@@ -1,5 +1,6 @@
 call cleanall.bat
 echo.| time
+echo Running CFAST simulations. $Revision: 464 $
 echo LLNL Tests
 cd LLNL_Enclosure
 cd LLNL_01
@@ -310,3 +311,4 @@ cd High_Bay
 ..\..\bin\cfast Keflavik_7 /V
 cd ..\
 echo.| time
+echo CFAST simulations complete.

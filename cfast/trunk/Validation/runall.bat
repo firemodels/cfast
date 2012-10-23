@@ -1,6 +1,6 @@
 call cleanall.bat
 echo.| time
-echo Running CFAST simulations. $Revision: 464 $
+echo Running CFAST simulations. $Rev$
 echo LLNL Tests
 cd LLNL_Enclosure
 cd LLNL_01

@@ -39,7 +39,7 @@
     real*8 :: xdelt, tstop, tbeg, tend
 
     version = 6300          ! Current CFAST version number
-    crdate = (/2012,10,20/)  ! Current CFAST executable creation date
+    crdate = (/2012,10,25/)  ! Current CFAST executable creation date
 
     errorcode = 0
 
@@ -495,7 +495,7 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(smvdata, pref, pa, ta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(smvdata, pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0d0, 1)
         icode = 0
         write (logerr, 5004)
@@ -583,7 +583,7 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(smvdata, pref, pa, ta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(smvdata, pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point

@@ -204,7 +204,7 @@
 
     data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', 'TARGGAST_', 'TARGSURT_', 'TARGCENT_', 'TARGFLUXT_', 'TARGFLUXC_', 'TARGFLUXR_','TARGFLUXF_', 'TARGFLUXS_', 'TARGFLUXG_',  'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
-    data LabelUnits / 's', 7*'C', 6*'W', 'C', '1=yes', 'C', 'm/s' /
+    data LabelUnits / 's', 7*'C', 6*'W/m^2', 'C', '1=yes', 'C', 'm/s' /
 
     !  spreadsheet header.  Add time first
     if (validate) then

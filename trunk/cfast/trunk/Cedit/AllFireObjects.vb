@@ -62,8 +62,8 @@ Public Class AllFireObjects
     Friend WithEvents FireCOYield As System.Windows.Forms.TextBox
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents FireSootYield As System.Windows.Forms.TextBox
-    Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
+    Friend WithEvents Label2 As System.Windows.Forms.Label
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(AllFireObjects))
@@ -98,8 +98,8 @@ Public Class AllFireObjects
         Me.FireObjectPlot = New NPlot.Windows.PlotSurface2D()
         Me.FireObjectsOK = New System.Windows.Forms.Button()
         Me.FireObjectsCancel = New System.Windows.Forms.Button()
-        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.FireNewt2 = New System.Windows.Forms.Button()
+        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.GroupFireObject.SuspendLayout()
         CType(Me.FireDataSS, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.FireObjectSummary, System.ComponentModel.ISupportInitialize).BeginInit()

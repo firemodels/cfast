@@ -3,6 +3,7 @@ Public Class Thermal_Properties_Edit
     Inherits System.Windows.Forms.Form
     Private CurrentThermalProperty As Integer
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
 
 #Region " Windows Form Designer generated code "
 
@@ -67,7 +68,6 @@ Public Class Thermal_Properties_Edit
     Friend WithEvents ThermalRemove As System.Windows.Forms.Button
     Friend WithEvents ThermalAdd As System.Windows.Forms.Button
     Friend WithEvents ThermalDup As System.Windows.Forms.Button
-    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Thermal_Properties_Edit))
@@ -102,14 +102,14 @@ Public Class Thermal_Properties_Edit
         Me.Label13 = New System.Windows.Forms.Label()
         Me.ThermalHclb7 = New System.Windows.Forms.TextBox()
         Me.Label14 = New System.Windows.Forms.Label()
-        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         Me.GroupThermal = New System.Windows.Forms.GroupBox()
         Me.ThermalRemove = New System.Windows.Forms.Button()
         Me.ThermalAdd = New System.Windows.Forms.Button()
         Me.ThermalDup = New System.Windows.Forms.Button()
+        Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupThermal.SuspendLayout()
+        CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'ThermalSummary
@@ -461,9 +461,9 @@ Public Class Thermal_Properties_Edit
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Thermal Properties"
         CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupThermal.ResumeLayout(False)
         Me.GroupThermal.PerformLayout()
+        CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub

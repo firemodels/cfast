@@ -48,9 +48,9 @@ Public Class CeditMain
     Friend WithEvents FirePeakHCl As System.Windows.Forms.Label
     Friend WithEvents FireNewt2 As System.Windows.Forms.Button
     Friend WithEvents FireNewObject As System.Windows.Forms.Button
-    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents FireType As System.Windows.Forms.Label
     Friend WithEvents Label53 As System.Windows.Forms.Label
+    Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -4387,7 +4387,7 @@ Public Class CeditMain
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximumSize = New System.Drawing.Size(1280, 1024)
         Me.Menu = Me.MainMenu
-        Me.MinimumSize = New System.Drawing.Size(800, 600)
+        Me.MinimumSize = New System.Drawing.Size(1022, 715)
         Me.Name = "CeditMain"
         Me.HelpProvider.SetShowHelp(Me, True)
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
@@ -5514,7 +5514,7 @@ Public Class CeditMain
     Private Sub EditFireObject(ByVal aCurrentFireObject As Integer)
         If myFireObjects.Count > 0 Then
             Dim ObjectWindow As New EditFireObject
-            Dim iReturn As Integer, i As Integer
+            Dim iReturn As Integer
             ObjectWindow.CurrentFireObject = aCurrentFireObject
             iReturn = ObjectWindow.ShowDialog(Me)
             If iReturn = OK Then

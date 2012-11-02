@@ -122,13 +122,13 @@ Public Class Fire
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
     End Sub
-    Public Sub New(ByVal Timeto1MW As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
+    Public Sub New(ByVal TimetoPeak As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
         ' New to define a t^2 fire object
         Me.New(TypeFireObject)
         Dim ir As Integer
-        Dim FireTimeSeries(12, 22) As Single, AlphaGrowth As Single, AlphaDecay As Single, TimetoPeakHRR As Single
-        Dim aTimeto1MW As Single, aPeakHRR As Single, aSteadyBurningTime As Single, aDecayTime As Single
-        aTimeto1MW = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(Timeto1MW)
+        Dim FireTimeSeries(12, 22) As Single, AlphaGrowth As Single, AlphaDecay As Single
+        Dim aTimetoPeak As Single, aPeakHRR As Single, aSteadyBurningTime As Single, aDecayTime As Single
+        aTimetoPeak = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(TimetoPeak)
         aPeakHRR = myUnits.ConvertFireData(UnitsNum.FireQdot).ToSI(PeakHRR)
         aSteadyBurningTime = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(SteadyBurningTime)
         aDecayTime = myUnits.ConvertFireData(UnitsNum.FireTime).ToSI(DecayTime)
@@ -147,20 +147,19 @@ Public Class Fire
         FireTimeSeries(FireTime, 0) = 0.0
         FireTimeSeries(FireMdot, 0) = 0.0
         FireTimeSeries(FireHRR, 0) = 0
-        AlphaGrowth = 1054000.0 / aTimeto1MW ^ 2
-        TimetoPeakHRR = Math.Sqrt(aPeakHRR / AlphaGrowth)
+        AlphaGrowth = aPeakHRR / aTimetoPeak ^ 2
         For ir = 1 To 10
-            FireTimeSeries(FireTime, ir) = ir / 10.0 * TimetoPeakHRR
+            FireTimeSeries(FireTime, ir) = ir / 10.0 * aTimetoPeak
             FireTimeSeries(FireHRR, ir) = AlphaGrowth * FireTimeSeries(FireTime, ir) ^ 2
             FireTimeSeries(FireMdot, ir) = FireTimeSeries(FireHRR, ir) / aHeatofCombustion
         Next
         AlphaDecay = aPeakHRR / aDecayTime ^ 2
         For ir = 11 To 21
-            FireTimeSeries(FireTime, ir) = TimetoPeakHRR + aSteadyBurningTime + (10 - (21 - ir)) / 10.0 * aDecayTime
-            FireTimeSeries(FireHRR, ir) = AlphaDecay * (TimetoPeakHRR + aSteadyBurningTime + aDecayTime - FireTimeSeries(FireTime, ir)) ^ 2
+            FireTimeSeries(FireTime, ir) = aTimetoPeak + aSteadyBurningTime + (10 - (21 - ir)) / 10.0 * aDecayTime
+            FireTimeSeries(FireHRR, ir) = AlphaDecay * (aTimetoPeak + aSteadyBurningTime + aDecayTime - FireTimeSeries(FireTime, ir)) ^ 2
             FireTimeSeries(FireMdot, ir) = FireTimeSeries(FireHRR, ir) / aHeatofCombustion
         Next
-        FireTimeSeries(FireTime, 22) = TimetoPeakHRR + aSteadyBurningTime + aDecayTime + 10.0
+        FireTimeSeries(FireTime, 22) = aTimetoPeak + aSteadyBurningTime + aDecayTime + 10.0
         FireTimeSeries(FireMdot, 22) = 0.0
         FireTimeSeries(FireHRR, 22) = 0
         myUnits.SI = True

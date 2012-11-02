@@ -20,6 +20,7 @@
         If sender Is Me.FireC Or sender Is Me.FireH Or sender Is Me.FireO Or sender Is Me.FireN Or sender Is Me.FireCl Then
             numPoints = CountGridPoints(Me.FireDataSS)
             For ir = 1 To numPoints
+                ' Note that though these are calculated, they are actually hidden from the user since they only support the older format CFAST input
                 Me.FireDataSS(ir, Fire.FireHC) = aFireObject.ChemicalFormula(formula.H) * 1.00794 / (aFireObject.ChemicalFormula(formula.C) * 12.0107)
                 Me.FireDataSS(ir, Fire.FireHCN) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.N)
                 Me.FireDataSS(ir, Fire.FireHCl) = (1.00794 + 35.453) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.Cl)

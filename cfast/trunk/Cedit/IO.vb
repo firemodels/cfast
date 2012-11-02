@@ -149,7 +149,7 @@ Module IO
         ' Write fire object specified by the index
         Dim aFireObject As Fire
         Dim csv As New CSVsheet
-        Dim i, j, k, l As Integer
+        Dim i, k, l As Integer
         Dim firedata(12, 0) As Single, numFireDataPoints As Integer
 
         i = 1

@@ -79,11 +79,11 @@ Partial Class t2Fire
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(186, 55)
+        Me.Label1.Location = New System.Drawing.Point(190, 55)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(77, 13)
+        Me.Label1.Size = New System.Drawing.Size(73, 13)
         Me.Label1.TabIndex = 8
-        Me.Label1.Text = "Time to 1 MW:"
+        Me.Label1.Text = "Time to Peak:"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         't2GrowthTime
@@ -103,11 +103,11 @@ Partial Class t2Fire
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(189, 133)
+        Me.Label2.Location = New System.Drawing.Point(196, 133)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(74, 13)
+        Me.Label2.Size = New System.Drawing.Size(67, 13)
         Me.Label2.TabIndex = 10
-        Me.Label2.Text = "Decay Period:"
+        Me.Label2.Text = "Decay Time:"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         't2SteadyTime
@@ -137,11 +137,11 @@ Partial Class t2Fire
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(182, 81)
+        Me.Label5.Location = New System.Drawing.Point(201, 81)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(81, 13)
+        Me.Label5.Size = New System.Drawing.Size(62, 13)
         Me.Label5.TabIndex = 14
-        Me.Label5.Text = "Maximum HRR:"
+        Me.Label5.Text = "Peak HRR:"
         Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'FireObjectPlot

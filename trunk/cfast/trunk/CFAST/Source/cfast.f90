@@ -2,8 +2,8 @@
 
     !     Routine: cfast (main program)
     !     Purpose: main program for the model
-    !     Revision: $Revision: 464 $
-    !     Revision Date: $Date: 2012-06-29 15:41:23 -0400 (Fri, 29 Jun 2012) $
+    !     Revision: $Revision$
+    !     Revision Date: $Date$
 
     !     Permission is hereby granted, free of charge, to any person
     !     obtaining a copy of this software and associated documentation
@@ -39,7 +39,7 @@
     real*8 :: xdelt, tstop, tbeg, tend
 
     version = 6300          ! Current CFAST version number
-    crdate = (/2012,10,25/)  ! Current CFAST executable creation date
+    crdate = (/2012,11,6/)  ! Current CFAST executable creation date
 
     errorcode = 0
 
@@ -1006,8 +1006,8 @@
     !              where q'' is the flux striking the wall, K is the wall's
     !              thermal conductivity and dT/dx is the surface wall
     !              temperature gradient.
-    !     Revision: $Revision: 464 $
-    !     Revision Date: $Date: 2012-06-29 15:41:23 -0400 (Fri, 29 Jun 2012) $
+    !     Revision: $Revision$
+    !     Revision Date: $Date$
     !     Arguments: TSEC    Current simulation time (T above in s)
     !                X       Current guess at solution vector (Y above)
     !                XPSOLVE XPSOLVE Current guess at derivative of solution
@@ -2031,14 +2031,14 @@
 
     !     Routine: rev_cfast
     !     Purpose: return current SVN revision or date
-    !     Revision: $Revision: 464 $
-    !     Revision Date: $Date: 2012-06-29 15:41:23 -0400 (Fri, 29 Jun 2012) $
+    !     Revision: $Revision$
+    !     Revision Date: $Date$
 
     INTEGER :: MODULE_REV, rev_auxilliary, rev_conduction, rev_convection, rev_fire, rev_flowfan, rev_flowhall, rev_flowhorizontal, rev_flowvertical, rev_initialization, &
     rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_target
     CHARACTER(255) :: MODULE_DATE 
-    CHARACTER(255), PARAMETER :: mainrev='$Revision: 464 $'
-    CHARACTER(255), PARAMETER :: maindate='$Date: 2012-06-29 15:41:23 -0400 (Fri, 29 Jun 2012) $'
+    CHARACTER(255), PARAMETER :: mainrev='$Revision$'
+    CHARACTER(255), PARAMETER :: maindate='$Date$'
 
     WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
     READ (MODULE_DATE,'(I5)') MODULE_REV

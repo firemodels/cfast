@@ -846,11 +846,11 @@ Public Class CeditMain
         '
         'StatusBar
         '
-        Me.StatusBar.Location = New System.Drawing.Point(0, 634)
+        Me.StatusBar.Location = New System.Drawing.Point(0, 663)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.Errors, Me.Message})
         Me.StatusBar.ShowPanels = True
-        Me.StatusBar.Size = New System.Drawing.Size(1006, 22)
+        Me.StatusBar.Size = New System.Drawing.Size(1014, 22)
         Me.StatusBar.TabIndex = 2
         '
         'Errors
@@ -2639,7 +2639,7 @@ Public Class CeditMain
         Me.Label100.Name = "Label100"
         Me.Label100.Size = New System.Drawing.Size(128, 24)
         Me.Label100.TabIndex = 56
-        Me.Label100.Text = "Final Opening Fraction:"
+        Me.Label100.Text = "Final Flow Fraction:"
         Me.Label100.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'MVentInitialFraction
@@ -2656,7 +2656,7 @@ Public Class CeditMain
         Me.Label101.Name = "Label101"
         Me.Label101.Size = New System.Drawing.Size(128, 24)
         Me.Label101.TabIndex = 54
-        Me.Label101.Text = "Initial Opening Fraction:"
+        Me.Label101.Text = "Initial Flow Fraction:"
         Me.Label101.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'MVentZero
@@ -3503,7 +3503,7 @@ Public Class CeditMain
         Me.DetectorRTI.Name = "DetectorRTI"
         Me.DetectorRTI.Size = New System.Drawing.Size(96, 20)
         Me.DetectorRTI.TabIndex = 3
-        Me.DetectorRTI.Text = "100 m^1/2 s^1/2"
+        Me.DetectorRTI.Text = "5 m^1/2 s^1/2"
         '
         'Label83
         '
@@ -3521,7 +3521,7 @@ Public Class CeditMain
         Me.DetectorActivation.Name = "DetectorActivation"
         Me.DetectorActivation.Size = New System.Drawing.Size(96, 20)
         Me.DetectorActivation.TabIndex = 2
-        Me.DetectorActivation.Text = "73.89"
+        Me.DetectorActivation.Text = "30"
         '
         'Label92
         '
@@ -4375,7 +4375,7 @@ Public Class CeditMain
         Me.C1SizerLight1.SetAutoResize(Me, True)
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(1006, 656)
+        Me.ClientSize = New System.Drawing.Size(1014, 685)
         Me.Controls.Add(Me.MainOpen)
         Me.Controls.Add(Me.MainView)
         Me.Controls.Add(Me.MainGeometry)
@@ -5165,6 +5165,12 @@ Public Class CeditMain
                 If aDetector.DetectorType = Target.TypeSmokeDetector Then
                     aDetector.ActivationTemperature = Target.SmokeDetectorActivationTemperature
                     aDetector.RTI = Target.SmokeDetectorRTI
+                ElseIf aDetector.DetectorType = Target.TypeHeatDetector Then
+                    aDetector.ActivationTemperature = Target.HeatDetectorActiviationTemperature
+                    aDetector.RTI = Target.HeatDetectorRTI
+                ElseIf aDetector.DetectorType = Target.TypeSprinkler Then
+                    aDetector.ActivationTemperature = Target.SprinklerActivationTemperature
+                    aDetector.RTI = Target.SprinklerRTI
                 End If
             End If
             If sender Is Me.DetectorComp Then

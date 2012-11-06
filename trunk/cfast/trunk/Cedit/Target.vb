@@ -2,8 +2,12 @@ Public Class Target
 
     Friend Const TypeTarget As Integer = 0
     Friend Const TypeDetector As Integer = 1
-    Friend Const SmokeDetectorActivationTemperature As Single = 25.0 ' Smoke detector simulated as a heat detector with 5 °C rise trigger
-    Friend Const SmokeDetectorRTI As Single = 5.0                    ' Smoke detector simulated as a heat detector with RTI = 5 
+    Friend Const SmokeDetectorActivationTemperature As Single = 30.0    ' Smoke detector simulated as a heat detector with 10 °C rise trigger with RTI = 5
+    Friend Const SmokeDetectorRTI As Single = 5.0
+    Friend Const HeatDetectorActiviationTemperature As Single = 57.22   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1085, table 12-2
+    Friend Const HeatDetectorRTI As Single = 404.0
+    Friend Const SprinklerActivationTemperature As Single = 73.89       ' Default sprinkler is standard response link, ordinary sprinkler, RTI = 130 and 165 °F
+    Friend Const SprinklerRTI As Single = 130
     Friend Const Implicit As Integer = 0
     Friend Const Explicit As Integer = 1
     Friend Const Steady As Integer = 2
@@ -48,8 +52,8 @@ Public Class Target
         aMaterial = "Off"
         aSolutionThickness = 0
         aSolutionMethod = 0
-        aDetectorType = 0
-        aActivationTemperature = 73.89 + 273.15
+        aDetectorType = 1
+        aActivationTemperature = 10.0 + 273.15
         aRTI = 100
         aSprayDensity = 0.00007
     End Sub

@@ -548,9 +548,9 @@ Module IO
                     Next
                     i += 1
                 Next
+                aFire.Changed = False
             End If
         Next
-        aFire.Changed = False
 
         'comment header for heat transfer section
         If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")

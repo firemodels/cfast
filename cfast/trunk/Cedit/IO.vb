@@ -828,6 +828,7 @@ Module IO
                             ' only process sshort form here ... sets global parameters
                             myEnvironment.LowerOxygenLimit = csv.Num(i, chemieNum.limo2)
                             myEnvironment.IgnitionTemp = csv.Num(i, chemieNum.igntemp)
+                            myEnvironment.Changed = False
                         End If
                     Case "CJET"
                         Dim iCjet As Integer

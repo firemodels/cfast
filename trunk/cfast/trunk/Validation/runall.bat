@@ -3,141 +3,51 @@ echo.| time
 echo Running CFAST simulations. $Rev$
 echo Running Vettori Flat Sinulations
 cd Vettori_Flat
-cd Test_1
-..\..\..\bin\cfast Test_1 /V
-cd ..
-cd Test_2
-..\..\..\bin\cfast Test_2 /V
-cd ..
-cd Test_3
-..\..\..\bin\cfast Test_3 /V
-cd ..
-cd Test_4
-..\..\..\bin\cfast Test_4 /V
-cd ..
-cd Test_5
-..\..\..\bin\cfast Test_5 /V
-cd ..
-cd Test_6
-..\..\..\bin\cfast Test_6 /V
-cd ..
-cd Test_7
-..\..\..\bin\cfast Test_7 /V
-cd ..
-cd Test_8
-..\..\..\bin\cfast Test_8 /V
-cd ..
-cd Test_9
-..\..\..\bin\cfast Test_9 /V
-cd ..
-cd Test_10
-..\..\..\bin\cfast Test_10 /V
-cd ..
-cd Test_11
-..\..\..\bin\cfast Test_11 /V
-cd ..
-cd Test_12
-..\..\..\bin\cfast Test_12 /V
-cd ..
-cd Test_13
-..\..\..\bin\cfast Test_13 /V
-cd ..
-cd Test_14
-..\..\..\bin\cfast Test_14 /V
-cd ..
-cd Test_15
-..\..\..\bin\cfast Test_15 /V
-cd ..
-cd Test_16
-..\..\..\bin\cfast Test_16 /V
-cd ..
-cd Test_17
-..\..\..\bin\cfast Test_17 /V
-cd ..
-cd Test_18
-..\..\..\bin\cfast Test_18 /V
-cd ..
-cd Test_19
-..\..\..\bin\cfast Test_19 /V
-cd ..
-cd Test_20
-..\..\..\bin\cfast Test_20 /V
-cd ..
-cd Test_21
-..\..\..\bin\cfast Test_21 /V
-cd ..
-cd Test_22
-..\..\..\bin\cfast Test_22 /V
-cd ..
-cd Test_23
-..\..\..\bin\cfast Test_23 /V
-cd ..
-cd Test_24
-..\..\..\bin\cfast Test_24 /V
-cd ..
-cd Test_25
-..\..\..\bin\cfast Test_25 /V
-cd ..
-cd Test_26
-..\..\..\bin\cfast Test_26 /V
-cd ..
-cd Test_27
-..\..\..\bin\cfast Test_27 /V
-cd ..
-cd Test_28
-..\..\..\bin\cfast Test_28 /V
-cd ..
-cd Test_29
-..\..\..\bin\cfast Test_29 /V
-cd ..
-cd Test_30
-..\..\..\bin\cfast Test_30 /V
-cd ..
-cd Test_31
-..\..\..\bin\cfast Test_31 /V
-cd ..
-cd Test_32
-..\..\..\bin\cfast Test_32 /V
-cd ..
-cd Test_33
-..\..\..\bin\cfast Test_33 /V
-cd ..
-cd Test_34
-..\..\..\bin\cfast Test_34 /V
-cd ..
-cd Test_35
-..\..\..\bin\cfast Test_35 /V
-cd ..
-cd Test_36
-..\..\..\bin\cfast Test_36 /V
-cd ..
-cd Test_37
-..\..\..\bin\cfast Test_37 /V
-cd ..
-cd Test_38
-..\..\..\bin\cfast Test_38 /V
-cd ..
-cd Test_39
-..\..\..\bin\cfast Test_39 /V
-cd ..
-cd Test_40
-..\..\..\bin\cfast Test_40 /V
-cd ..
-cd Test_41
-..\..\..\bin\cfast Test_41 /V
-cd ..
-cd Test_42
-..\..\..\bin\cfast Test_42 /V
-cd ..
-cd Test_43
-..\..\..\bin\cfast Test_43 /V
-cd ..
-cd Test_44
-..\..\..\bin\cfast Test_44 /V
-cd ..
-cd Test_45
-..\..\..\bin\cfast Test_45 /V
-cd ..
+..\..\bin\cfast Test_1 /V
+..\..\bin\cfast Test_2 /V
+..\..\bin\cfast Test_3 /V
+..\..\bin\cfast Test_4 /V
+..\..\bin\cfast Test_5 /V
+..\..\bin\cfast Test_6 /V
+..\..\bin\cfast Test_7 /V
+..\..\bin\cfast Test_8 /V
+..\..\bin\cfast Test_9 /V
+..\..\bin\cfast Test_10 /V
+..\..\bin\cfast Test_11 /V
+..\..\bin\cfast Test_12 /V
+..\..\bin\cfast Test_13 /V
+..\..\bin\cfast Test_14 /V
+..\..\bin\cfast Test_15 /V
+..\..\bin\cfast Test_16 /V
+..\..\bin\cfast Test_17 /V
+..\..\bin\cfast Test_18 /V
+..\..\bin\cfast Test_19 /V
+..\..\bin\cfast Test_20 /V
+..\..\bin\cfast Test_21 /V
+..\..\bin\cfast Test_22 /V
+..\..\bin\cfast Test_23 /V
+..\..\bin\cfast Test_24 /V
+..\..\bin\cfast Test_25 /V
+..\..\bin\cfast Test_26 /V
+..\..\bin\cfast Test_27 /V
+..\..\bin\cfast Test_28 /V
+..\..\bin\cfast Test_29 /V
+..\..\bin\cfast Test_30 /V
+..\..\bin\cfast Test_31 /V
+..\..\bin\cfast Test_32 /V
+..\..\bin\cfast Test_33 /V
+..\..\bin\cfast Test_34 /V
+..\..\bin\cfast Test_35 /V
+..\..\bin\cfast Test_36 /V
+..\..\bin\cfast Test_37 /V
+..\..\bin\cfast Test_38 /V
+..\..\bin\cfast Test_39 /V
+..\..\bin\cfast Test_40 /V
+..\..\bin\cfast Test_41 /V
+..\..\bin\cfast Test_42 /V
+..\..\bin\cfast Test_43 /V
+..\..\bin\cfast Test_44 /V
+..\..\bin\cfast Test_45 /V
 cd ..
 echo LLNL Tests
 cd LLNL_Enclosure

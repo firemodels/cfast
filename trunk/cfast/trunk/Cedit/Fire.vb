@@ -677,7 +677,7 @@ Public Class Fire
                         If FireCurveErrors(FireLPF) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxLPF.ToString + ".", ErrorMessages.TypeWarning)
                     End If
                 Case TypeUnconstrained, TypeConstrained
-                    If myEnvironment.LowerOxygenLimit <= 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
+                    If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
                         myErrors.Add("Lower oxygen limit is less than 0 or greater than 21 %.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If

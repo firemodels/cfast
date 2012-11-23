@@ -5159,20 +5159,8 @@ Public Class CeditMain
     Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivation.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave
         Dim aDetector As New Target
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then
-            aDetector = myDetectors.Item(CurrentDetector)
-            If sender Is Me.DetectorType Then
-                aDetector.DetectorType = Me.DetectorType.SelectedIndex
-                If aDetector.DetectorType = Target.TypeSmokeDetector Then
-                    aDetector.ActivationTemperature = Target.SmokeDetectorActivationTemperature
-                    aDetector.RTI = Target.SmokeDetectorRTI
-                ElseIf aDetector.DetectorType = Target.TypeHeatDetector Then
-                    aDetector.ActivationTemperature = Target.HeatDetectorActiviationTemperature
-                    aDetector.RTI = Target.HeatDetectorRTI
-                ElseIf aDetector.DetectorType = Target.TypeSprinkler Then
-                    aDetector.ActivationTemperature = Target.SprinklerActivationTemperature
-                    aDetector.RTI = Target.SprinklerRTI
-                End If
-            End If
+            aDetector = myDetectors(CurrentDetector)
+            If sender Is Me.DetectorType Then aDetector.DetectorType = Me.DetectorType.SelectedIndex
             If sender Is Me.DetectorComp Then
                 aDetector.Compartment = Me.DetectorComp.SelectedIndex - 1
                 If Val(Me.DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)

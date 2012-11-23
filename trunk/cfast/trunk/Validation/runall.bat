@@ -1,8 +1,21 @@
-call cleanall.bat
+echo off
 echo.| time
 echo Running CFAST simulations. $Rev$
-echo Running Vettori Flat Sinulations
+if %1==Vettori_Flat goto Vettori_Flat
+if %1==LLNL_Enclosure goto LLNL_Enclosure
+if %1==NBS_1Room goto NBS_1Room
+if %1==FM_NBS goto FM_NBS
+if %1==PLAZA goto PLAZA
+if %1==VTT goto VTT
+if %1==NIST_NRC goto NIST_NRC
+if %1==iBMB goto iBMB
+if %1==FM_SNL goto FM_SNL
+if %1==NBS goto NBS
+if %1==HighBay goto HighBay
+:Vettori_Flat
+echo Running Vettori Flat Simulations
 cd Vettori_Flat
+call ..\cleancfast.bat
 ..\..\bin\cfast Test_1 /V
 ..\..\bin\cfast Test_2 /V
 ..\..\bin\cfast Test_3 /V
@@ -49,8 +62,11 @@ cd Vettori_Flat
 ..\..\bin\cfast Test_44 /V
 ..\..\bin\cfast Test_45 /V
 cd ..
+if %1==Vettori_Flat goto end
+:LLNL_Enclosure
 echo LLNL Tests
 cd LLNL_Enclosure
+call ..\cleancfast.bat
 cd LLNL_01
 ..\..\..\bin\cfast LLNL_01 /V
 cd ..
@@ -195,8 +211,11 @@ cd ..
 cd LLNL_64
 ..\..\..\bin\cfast LLNL_64 /V
 cd ..\..\
+if %1==LLNL_Enclosure goto end
+:NBS_1Room
 echo NBS 1 room furniture tests 1, 6
 cd 1rfurn
+call ..\cleancfast.bat
 ..\..\bin\cfast 1rfurn1 /V
 ..\..\bin\cfast 1rfurn6 /V
 cd ..\
@@ -205,15 +224,24 @@ cd 1rwall
 ..\..\bin\cfast 1rwall1 /V
 ..\..\bin\cfast 1rwall2 /V
 cd ..\
+if %1==NBS_1Room goto end
+:FM_NBS
+call ..\cleancfast.bat
 echo FM NBS 4 room tests 19, 21
 cd fm_nbs
 ..\..\bin\cfast fm19 /V
 ..\..\bin\cfast fm21 /V
 cd ..\
+if %1==FM_NBS goto end
+:PLAZA
+call ..\cleancfast.bat
 echo NBS Plaza Hotel test 7
 cd multi
 ..\..\bin\cfast multi /V
 cd ..\
+if %1==PLAZA goto end
+:VTT
+call ..\cleancfast.bat
 echo VTT Cases 1, 2, 3
 cd VTT\Case_1
 ..\..\..\bin\cfast VTT_C1 /V
@@ -224,6 +252,9 @@ cd ..\..
 cd VTT\Case_3
 ..\..\..\bin\cfast VTT_C3 /V
 cd ..\..
+if %1==VTT goto end
+:NIST_NRC
+call ..\cleancfast.bat
 echo NIST_NRC tests 1-5, 7-10, 13-18
 cd NIST_NRC\Test_1\
 ..\..\..\bin\cfast NIST_NRC_T1 /V
@@ -270,15 +301,24 @@ cd ..\..
 cd NIST_NRC\Test_18\
 ..\..\..\bin\cfast NIST_NRC_T18 /V
 cd ..\..
+if %1==NIST_NRC goto end
+:iBMB
 echo iBMB_4 Test 1
 cd iBMB_4\
+call ..\..\cleanCFAST.bat
 ..\..\bin\cfast iBMB_4_T1 /V
 cd ..\
 echo iBMB_5 Test 4
 cd iBMB_5\
+call ..\..\cleanCFAST.bat
 ..\..\bin\cfast iBMB_5_T4 /V
 cd ..\
+if %1==iBMB goto end
+:FM_SNL
 echo FM SNL Tests
+cd FM_SNL
+call ..\cleanCFAST.bat
+cd ..\
 cd FM_SNL\Test_1
 ..\..\..\bin\cfast FMSNL_1 /V
 cd ..\..\
@@ -336,7 +376,12 @@ cd ..\..\
 cd FM_SNL\Test_22
 ..\..\..\bin\cfast FMSNL_22 /V
 cd ..\..\
+if %1==fm_SNL goto end
+:NBS
 echo NBS Tests MV100A, MV100O, MV100Z
+cd NBS
+call ..\cleanCFAST.bat
+cd ..
 cd NBS\MV100A
 ..\..\..\bin\cfast MV100A /V
 cd ..\..\
@@ -346,8 +391,11 @@ cd ..\..\
 cd NBS\MV100Z
 ..\..\..\bin\cfast MV100Z /V
 cd ..\..\
+if %1==NBS goto end
+:HighBay
 echo High Bay Tests
 cd High_Bay
+call ..\cleanCFAST.bat
 ..\..\bin\cfast Keflavik_14 /V
 ..\..\bin\cfast Keflavik_15 /V
 ..\..\bin\cfast Keflavik_17 /V
@@ -358,5 +406,7 @@ cd High_Bay
 ..\..\bin\cfast Keflavik_6 /V
 ..\..\bin\cfast Keflavik_7 /V
 cd ..\
+if %1==HighBay goto end
+:end
 echo.| time
 echo CFAST simulations complete.

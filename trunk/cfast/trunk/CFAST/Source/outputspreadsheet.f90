@@ -41,7 +41,7 @@
     end do
 
     ! Fires
-    do i = 1,nm1
+    do i = 1,n
         call SSaddtolist (position,fqdj(i),outarray)
     end do
     

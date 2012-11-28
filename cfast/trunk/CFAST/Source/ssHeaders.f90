@@ -52,16 +52,24 @@
     end do
 
     ! Door jet fires
-    do i = 1, nm1
+    do i = 1, n
         position = position + 1
         if (validate) then
             cRoom = toIntString(i)
-            headertext(1,position) = trim(LabelsShort(9)) // trim(cRoom)
+            if (i==n) then
+                headertext(1,position) = trim(LabelsShort(9)) // 'Out'
+            else
+                headertext(1,position) = trim(LabelsShort(9)) // trim(cRoom)
+            endif
             headertext(2,position) = LabelUnits(9)
             headertext(3,position) = ' '
         else
             headertext(1,position) = Labels(9)
-            headertext(2,position) = compartmentnames(i)
+            if (i==n) then
+                headertext(2,position) = 'Outside'
+            else
+                headertext(2,position) = compartmentnames(i)
+            end if
             headertext(3,position) = LabelUnits(9)
         endif
     end do

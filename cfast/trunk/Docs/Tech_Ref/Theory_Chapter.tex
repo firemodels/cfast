@@ -211,8 +211,6 @@ pyrolysis due to radiative feedback from the flame or compartment, in theory the
 be prescribed by the user. In an actual fire, this is an important consideration, and the
 specification used should consider the experimental conditions as closely as possible.
 
-\subsubsection{Constrained Fire}
-
 A fire releases energy based on the pyrolysis of fuel, but may be constrained by the oxygen
 available for combustion depending on the compartment conditions. Complete burning will take
 place only where there is sufficient oxygen. When insufficient oxygen is entrained into the fire
@@ -533,9 +531,18 @@ respectively.
 
 The criterion that the density in the plume region be lower than the upper layer implies that $T_u~<~T_p$. Solving eq \ref{eq:plume_energy} for $T_p$ and substituting for $\dm_p$ from \ref{eq:plume_mass} yields
 
-\be T_p = \frac{T_f\dm_f + T_l\dm_e}{\dm_f + \dm_e} > T_u \ee
+\be T_p = \frac{\dm_f c_pT_f+ dm_lc_pT_l}{\brackets{\dm_f + \dm_e}c_p} > T_u \ee
 or
-\be \dm_e < \brackets{\frac{T_f - T_u}{T_u - T_l}}\dm_f < \frac{T_f}{T_u - T_l} \dm_f \label{eq:entrainment_limit} \ee
+\be T_p = \frac{T_f\dm_f + T_l\dm_e}{\dm_f + \dm_e} > T_u \ee
+assuming that the specific heat is the same for the gaseous fuel, lower layer, and the plume.
+Rearranging
+\be T_f\dm_f+T_l\dm_e > \brackets{\dm_f+\dm_e}T_u \ee
+\be T_f\dm_f+T_l\dm_e > T_u\dm_f+T_u\dm_e \ee
+\be T_f\dm_f-T_u\dm_f > T_u\dm_e-T_l\dm_e \ee
+\be \dm_f \frac{T_f-T_u}{T_u-T_l} > \dm_e \ee
+Assuming the temperature of the fire is much larger than the temperature of the upper layer,
+
+\be \dm_e < \frac{T_f}{T_u - T_l} \dm_f \label{eq:entrainment_limit} \ee
  Substituting the convective energy released by the fire, $Q_{f,C} = \dm_fc_pT_f$, into eq \ref {eq:entrainment_limit} yields the form of the  entrainment limit use in the CFAST model:
 
  \be \dm_e < \frac{Q_{f,C}}{c_p\brackets{T_u - T_l}} \ee
@@ -627,9 +634,9 @@ Flow through vents can be modified, that is turned on or off. This applies to th
  \label{fig:Opening_Fraction}
 \end{figure}
 
-\subsubsection{Horizontal Flow Through Vertical Vents}
+\subsubsection{Horizontal Flow Through Vertically-Oriented Vents (Doors and Windows)}
 
-Flow through normal vents such as windows and doors is governed by the pressure difference across a vent.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using an integrated form of Euler's equation, namely Bernoulli's solution for the velocity equation.  This solution is augmented for restricted openings by using flow coefficients \cite{Quintiere:1984} to allow for constriction from finite size doors.  The flow (or orifice) coefficient is an empirical term which addresses the problem of constriction of velocity streamlines at an orifice.
+Flow through normal vents such as windows and doors is governed by the pressure difference across a vent.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using an integrated form of Euler's equation, namely Bernoulli's solution for the velocity equation.  This solution is augmented for restricted openings by using flow coefficients \cite{Quintiere:1984, Steckler_Coefficients} to allow for constriction from finite size doors.  The flow (or orifice) coefficient is an empirical term which addresses the problem of constriction of velocity streamlines at an orifice.
 
 Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.
 
@@ -642,7 +649,7 @@ v(h) = C \sqrt{\frac{2 \Delta P(h)}{\rho}}
 \label{eq:vent_velocity}
 \ee
 
-\noindent where $C$ is the constriction (or flow) coefficient (0.7), $\rho$ is the gas density on the source side, and $\Delta P(h)$ is the pressure across the interface
+\noindent where $C$ is the constriction (or flow) coefficient (taken to be 0.7 in CFAST \cite{Steckler_Coefficients}), $\rho$ is the gas density on the source side, and $\Delta P(h)$ is the pressure across the interface
 at elevation $h$.  At present we use a constant value for $C$ for all gas temperatures.
 
 The differential mass flow, $\dmass(h)$, at elevation $h$ through a region of width $w$ and differential height $dh$ is found using equation \ref{eq:vent_velocity} after noting that $\dmass(h)=v(h)\rho wdh$
@@ -653,8 +660,7 @@ to obtain
 \label{eq:vent_massflow}
 \ee
 
-The total mass flow rate through a slab is found by integrating $\dmass(h)$ vertically over
-that slab.
+The total mass flow rate through a slab is found by integrating $\dmass(h)$ vertically over that slab.
 The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  The mass flow equation can be integrated piecewise analytically and then summed by breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, .
 
 The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in figure \ref{fig:Flow_Notation}.
@@ -717,7 +723,7 @@ Although outside of the normal range of validity of the plume model, a level of 
 
 The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
 
-\subsubsection{Vertical Flow Through Horizontal Vents}
+\subsubsection{Vertical Flow Through Horizontally-Oriented Vents (Floor and Ceiling Vents)}
 
 Flow through a ceiling or floor vent can be somewhat more complicated than through door or window vents.  The simplest form is uni-directional flow, driven solely by a pressure difference.  This is analogous to flow in the horizontal direction driven by a piston effect of expanding gases.  Once again, it can be calculated based on the Bernoulli equation, and presents little difficulty.  However, in general we must deal with more complex situations that must be modeled in order to have a proper understanding of smoke movement.  The first is an occurrence of puffing.  When a fire exists in a compartment in which there is only one hole in the ceiling, the fire will burn until the oxygen has been depleted, pushing gas out the hole.  Eventually the fire will die down.  At this point ambient air will rush back in, enable combustion to increase, and the process will be repeated.  Combustion is thus tightly coupled to the flow.  The other case is exchange flow which occurs when the fluid configuration across the vent is unstable (such as a hotter gas layer underneath a cooler gas layer).  Both of these pressure regimes require a calculation of the onset of the flow reversal mechanism.
 

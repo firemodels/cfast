@@ -241,76 +241,78 @@ cd multi
 cd ..\
 if %1==PLAZA goto end
 :VTT
+cd VTT
 call ..\cleancfast.bat
 echo VTT Cases 1, 2, 3
-cd VTT\Case_1
+cd Case_1
 ..\..\..\bin\cfast VTT_C1 /V
-cd ..\..
-cd VTT\Case_2
+cd ..\
+cd Case_2
 ..\..\..\bin\cfast VTT_C2 /V
-cd ..\..
-cd VTT\Case_3
+cd ..\
+cd Case_3
 ..\..\..\bin\cfast VTT_C3 /V
 cd ..\..
 if %1==VTT goto end
 :NIST_NRC
+cd NIST_NRC
 call ..\cleancfast.bat
 echo NIST_NRC tests 1-5, 7-10, 13-18
-cd NIST_NRC\Test_1\
+cd Test_1\
 ..\..\..\bin\cfast NIST_NRC_T1 /V
-cd ..\..
-cd NIST_NRC\Test_2\
+cd ..\
+cd Test_2\
 ..\..\..\bin\cfast NIST_NRC_T2 /V
-cd ..\..
-cd NIST_NRC\Test_3\
+cd ..\
+cd Test_3\
 ..\..\..\bin\cfast NIST_NRC_T3 /V
-cd ..\..
-cd NIST_NRC\Test_4\
+cd ..\
+cd Test_4\
 ..\..\..\bin\cfast NIST_NRC_T4 /V
-cd ..\..
-cd NIST_NRC\Test_5\
+cd ..\
+cd Test_5\
 ..\..\..\bin\cfast NIST_NRC_T5 /V
-cd ..\..
-cd NIST_NRC\Test_7\
+cd ..\
+cd Test_7\
 ..\..\..\bin\cfast NIST_NRC_T7 /V
-cd ..\..
-cd NIST_NRC\Test_8\
+cd ..\
+cd Test_8\
 ..\..\..\bin\cfast NIST_NRC_T8 /V
-cd ..\..
-cd NIST_NRC\Test_9\
+cd ..\
+cd Test_9\
 ..\..\..\bin\cfast NIST_NRC_T9 /V
-cd ..\..
-cd NIST_NRC\Test_10\
+cd ..\
+cd Test_10\
 ..\..\..\bin\cfast NIST_NRC_T10 /V
-cd ..\..
-cd NIST_NRC\Test_13\
+cd ..\
+cd Test_13\
 ..\..\..\bin\cfast NIST_NRC_T13 /V
-cd ..\..
-cd NIST_NRC\Test_14\
+cd ..\
+cd Test_14\
 ..\..\..\bin\cfast NIST_NRC_T14 /V
-cd ..\..
-cd NIST_NRC\Test_15\
+cd ..\
+cd Test_15\
 ..\..\..\bin\cfast NIST_NRC_T15 /V
-cd ..\..
-cd NIST_NRC\Test_16\
+cd ..\
+cd Test_16\
 ..\..\..\bin\cfast NIST_NRC_T16 /V
-cd ..\..
-cd NIST_NRC\Test_17\
+cd ..\
+cd Test_17\
 ..\..\..\bin\cfast NIST_NRC_T17 /V
-cd ..\..
-cd NIST_NRC\Test_18\
+cd ..\
+cd Test_18\
 ..\..\..\bin\cfast NIST_NRC_T18 /V
 cd ..\..
 if %1==NIST_NRC goto end
 :iBMB
 echo iBMB_4 Test 1
 cd iBMB_4\
-call ..\..\cleanCFAST.bat
+call ..\cleanCFAST.bat
 ..\..\bin\cfast iBMB_4_T1 /V
 cd ..\
 echo iBMB_5 Test 4
 cd iBMB_5\
-call ..\..\cleanCFAST.bat
+call ..\cleancfast.bat
 ..\..\bin\cfast iBMB_5_T4 /V
 cd ..\
 if %1==iBMB goto end
@@ -318,77 +320,75 @@ if %1==iBMB goto end
 echo FM SNL Tests
 cd FM_SNL
 call ..\cleanCFAST.bat
-cd ..\
-cd FM_SNL\Test_1
+cd Test_1
 ..\..\..\bin\cfast FMSNL_1 /V
-cd ..\..\
-cd FM_SNL\Test_2
+cd ..\
+cd Test_2
 ..\..\..\bin\cfast FMSNL_2 /V
-cd ..\..\
-cd FM_SNL\Test_3
+cd ..\
+cd Test_3
 ..\..\..\bin\cfast FMSNL_3 /V
-cd ..\..\
-cd FM_SNL\Test_4
+cd ..\
+cd Test_4
 ..\..\..\bin\cfast FMSNL_4 /V
-cd ..\..\
-cd FM_SNL\Test_5
+cd ..\
+cd Test_5
 ..\..\..\bin\cfast FMSNL_5 /V
-cd ..\..\
-cd FM_SNL\Test_6
+cd ..\
+cd Test_6
 ..\..\..\bin\cfast FMSNL_6 /V
-cd ..\..\
-cd FM_SNL\Test_7
+cd ..\
+cd Test_7
 ..\..\..\bin\cfast FMSNL_7 /V
-cd ..\..\
-cd FM_SNL\Test_8
+cd ..\
+cd Test_8
 ..\..\..\bin\cfast FMSNL_8 /V
-cd ..\..\
-cd FM_SNL\Test_9
+cd ..\
+cd Test_9
 ..\..\..\bin\cfast FMSNL_9 /V
-cd ..\..\
-cd FM_SNL\Test_10
+cd ..\
+cd Test_10
 ..\..\..\bin\cfast FMSNL_10 /V
-cd ..\..\
-cd FM_SNL\Test_11
+cd ..\
+cd Test_11
 ..\..\..\bin\cfast FMSNL_11 /V
-cd ..\..\
-cd FM_SNL\Test_12
+cd ..\
+cd Test_12
 ..\..\..\bin\cfast FMSNL_12 /V
-cd ..\..\
-cd FM_SNL\Test_13
+cd ..\
+cd Test_13
 ..\..\..\bin\cfast FMSNL_13 /V
-cd ..\..\
-cd FM_SNL\Test_14
+cd ..\
+cd Test_14
 ..\..\..\bin\cfast FMSNL_14 /V
-cd ..\..\
-cd FM_SNL\Test_15
+cd ..\
+cd Test_15
 ..\..\..\bin\cfast FMSNL_15 /V
-cd ..\..\
-cd FM_SNL\Test_16
+cd ..\
+cd Test_16
 ..\..\..\bin\cfast FMSNL_16 /V
-cd ..\..\
-cd FM_SNL\Test_17
+cd ..\
+cd Test_17
 ..\..\..\bin\cfast FMSNL_17 /V
-cd ..\..\
-cd FM_SNL\Test_21
+cd ..\
+cd Test_21
 ..\..\..\bin\cfast FMSNL_21 /V
-cd ..\..\
-cd FM_SNL\Test_22
+cd ..\
+cd Test_22
 ..\..\..\bin\cfast FMSNL_22 /V
 cd ..\..\
-if %1==fm_SNL goto end
+if %1==FM_SNL goto end
 :NBS
 echo NBS Tests MV100A, MV100O, MV100Z
 cd NBS
 call ..\cleanCFAST.bat
-cd ..
-cd NBS\MV100A
+cd MV100A
 ..\..\..\bin\cfast MV100A /V
-cd ..\..\
-cd NBS\MV100O
+cd ..\
+cd MV100O
 ..\..\..\bin\cfast MV100O /V
-cd ..\..\
-cd NBS\MV100Z
+cd ..\
+cd MV100Z
 ..\..\..\bin\cfast MV100Z /V
 cd ..\..\
 if %1==NBS goto end
@@ -396,15 +396,15 @@ if %1==NBS goto end
 echo High Bay Tests
 cd High_Bay
 call ..\cleanCFAST.bat
-..\..\bin\cfast Keflavik_14 /V
-..\..\bin\cfast Keflavik_15 /V
-..\..\bin\cfast Keflavik_17 /V
-..\..\bin\cfast Keflavik_18 /V
-..\..\bin\cfast Keflavik_20 /V
-..\..\bin\cfast Keflavik_21 /V
-..\..\bin\cfast Keflavik_5 /V
-..\..\bin\cfast Keflavik_6 /V
-..\..\bin\cfast Keflavik_7 /V
+..\..\bin\cfast USN_Iceland_Test_05 /V
+..\..\bin\cfast USN_Iceland_Test_06 /V
+..\..\bin\cfast USN_Iceland_Test_07 /V
+..\..\bin\cfast USN_Iceland_Test_14 /V
+..\..\bin\cfast USN_Iceland_Test_15 /V
+..\..\bin\cfast USN_Iceland_Test_17 /V
+..\..\bin\cfast USN_Iceland_Test_18 /V
+..\..\bin\cfast USN_Iceland_Test_20 /V
+..\..\bin\cfast USN_Iceland_Test_21 /V
 cd ..\
 if %1==HighBay goto end
 :end

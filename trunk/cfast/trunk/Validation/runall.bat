@@ -396,15 +396,24 @@ if %1==NBS goto end
 echo High Bay Tests
 cd High_Bay
 call ..\cleanCFAST.bat
+..\..\bin\cfast USN_Iceland_Test_01 /V
+..\..\bin\cfast USN_Iceland_Test_02 /V
+..\..\bin\cfast USN_Iceland_Test_03 /V
+..\..\bin\cfast USN_Iceland_Test_04 /V
 ..\..\bin\cfast USN_Iceland_Test_05 /V
 ..\..\bin\cfast USN_Iceland_Test_06 /V
 ..\..\bin\cfast USN_Iceland_Test_07 /V
+..\..\bin\cfast USN_Iceland_Test_09 /V
+..\..\bin\cfast USN_Iceland_Test_10 /V
+..\..\bin\cfast USN_Iceland_Test_11 /V
+..\..\bin\cfast USN_Iceland_Test_12 /V
+..\..\bin\cfast USN_Iceland_Test_13 /V
 ..\..\bin\cfast USN_Iceland_Test_14 /V
 ..\..\bin\cfast USN_Iceland_Test_15 /V
 ..\..\bin\cfast USN_Iceland_Test_17 /V
 ..\..\bin\cfast USN_Iceland_Test_18 /V
+..\..\bin\cfast USN_Iceland_Test_19 /V
 ..\..\bin\cfast USN_Iceland_Test_20 /V
-..\..\bin\cfast USN_Iceland_Test_21 /V
 cd ..\
 if %1==HighBay goto end
 :end

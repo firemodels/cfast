@@ -11,7 +11,7 @@ if %1==NIST_NRC goto NIST_NRC
 if %1==iBMB goto iBMB
 if %1==FM_SNL goto FM_SNL
 if %1==NBS goto NBS
-if %1==HighBay goto HighBay
+if %1==High_Bay goto High_Bay
 :Vettori_Flat
 echo Running Vettori Flat Simulations
 cd Vettori_Flat
@@ -392,10 +392,18 @@ cd MV100Z
 ..\..\..\bin\cfast MV100Z /V
 cd ..\..\
 if %1==NBS goto end
-:HighBay
+:High_Bay
 echo High Bay Tests
 cd High_Bay
 call ..\cleanCFAST.bat
+..\..\bin\cfast USN_Hawaii_Test_01 /V
+..\..\bin\cfast USN_Hawaii_Test_02 /V
+..\..\bin\cfast USN_Hawaii_Test_03 /V
+..\..\bin\cfast USN_Hawaii_Test_04 /V
+..\..\bin\cfast USN_Hawaii_Test_05 /V
+..\..\bin\cfast USN_Hawaii_Test_06 /V
+..\..\bin\cfast USN_Hawaii_Test_07 /V
+..\..\bin\cfast USN_Hawaii_Test_11 /V
 ..\..\bin\cfast USN_Iceland_Test_01 /V
 ..\..\bin\cfast USN_Iceland_Test_02 /V
 ..\..\bin\cfast USN_Iceland_Test_03 /V
@@ -415,7 +423,7 @@ call ..\cleanCFAST.bat
 ..\..\bin\cfast USN_Iceland_Test_19 /V
 ..\..\bin\cfast USN_Iceland_Test_20 /V
 cd ..\
-if %1==HighBay goto end
+if %1==High_Bay goto end
 :end
 echo.| time
 echo CFAST simulations complete.

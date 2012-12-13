@@ -221,36 +221,39 @@ call ..\cleancfast.bat
 cd ..\
 echo NBS 1 room wall burning test 1, 2
 cd 1rwall
+call ..\cleancfast.bat
 ..\..\bin\cfast 1rwall1 /V
 ..\..\bin\cfast 1rwall2 /V
 cd ..\
 if %1==NBS_1Room goto end
 :FM_NBS
-call ..\cleancfast.bat
 echo FM NBS 4 room tests 19, 21
 cd fm_nbs
+call ..\cleancfast.bat
 ..\..\bin\cfast fm19 /V
 ..\..\bin\cfast fm21 /V
 cd ..\
 if %1==FM_NBS goto end
 :PLAZA
-call ..\cleancfast.bat
 echo NBS Plaza Hotel test 7
 cd multi
+call ..\cleancfast.bat
 ..\..\bin\cfast multi /V
 cd ..\
 if %1==PLAZA goto end
 :VTT
 cd VTT
-call ..\cleancfast.bat
 echo VTT Cases 1, 2, 3
 cd Case_1
+call ..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C1 /V
 cd ..\
 cd Case_2
+call ..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C2 /V
 cd ..\
 cd Case_3
+call ..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C3 /V
 cd ..\..
 if %1==VTT goto end

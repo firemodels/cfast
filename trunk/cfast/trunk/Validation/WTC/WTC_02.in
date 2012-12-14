@@ -1,0 +1,49 @@
+VERSN,6,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,3600,-50,0,10,10
+EAMB,298.15,101300,0
+TAMB,298.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,GYP1/2,0.16,900,790,0.013,0.9,Gypsum Board (1/2 in)
+MATL,OIL,145,1909,884.1,0.006,0.8,"Oil, Unused (1/4 in)"
+MATL,Marinite,0.12,1423,737,0.0254,0.8,BNZ Materials Marinite I
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,9,3.6,3.82,0,0,0,Marinite,GYP1/2,Marinite
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,0.5,0.98,0.28,1,0.3,0,4,1
+HVENT,1,2,2,0.76,0.98,0.28,1,1,0,4,1
+HVENT,1,2,3,0.76,0.98,0.28,1,1.9,0,4,1
+HVENT,1,2,4,0.5,0.98,0.28,1,2.8,0,4,1
+HVENT,1,2,5,0.5,2.82,2.12,1,0.3,0,2,1
+HVENT,1,2,6,0.76,2.82,2.12,1,1,0,2,1
+HVENT,1,2,7,0.76,2.82,2.12,1,1.9,0,2,1
+HVENT,1,2,8,0.5,2.82,2.12,1,2.8,0,2,1
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!WTC_02
+FIRE,1,4.02,1.825,0,1,1,0,0,0,1,WTC_02
+CHEMI,7,12,0,0,0,0.39,4.5E+07,OIL
+TIME,0,5,370,380
+HRR,0,2410000,2410000,0
+SOOT,0.114,0.114,0.114,0.114
+CO,0.042,0.042,0.042,0.042
+TRACE,0,0,0,0
+AREA,2.13,2.13,2.13,2.13
+HEIGH,0,0,0,0
+!!
+!!Target and detector keywords
+!!
+DETECT,2,1,283.15,1.95,2.31,3.77,5,0,7E-05
+DETECT,2,1,283.15,7.04,2.31,3.79,5,0,7E-05

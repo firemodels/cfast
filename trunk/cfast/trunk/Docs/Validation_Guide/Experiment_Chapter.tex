@@ -445,3 +445,149 @@ Each test used a single fire source with its center located 16 m from the west w
 \end{center}
 \caption{Prescribed Heat Release Rate as a Function of Time for VTT Large Hall Tests.} \label{fig:VTT_HRR}
 \end{figure}
+
+\clearpage
+\clearpage
+
+\section{WTC Spray Burner Test Series}
+
+As part of its investigation of the World Trade Center disaster, the Building and Fire Research Laboratory at NIST conducted several series of fire experiments to both gain insight into the
+observed fire behavior and also to validate FDS for use in reconstructing the fires. The first series of experiments involved a relatively simple compartment with a liquid spray burner and
+various structural elements with varying amounts of sprayed fire-resistive materials (SFRM). A diagram of the compartment is shown in figure~\ref{WTC_Drawing}.
+A complete description of the experiments can be found in the NIST WTC report NCSTAR~1-5B~\cite{NIST_NCSTAR_1-5B}.
+The overall enclosure was rectangular, as were the vents and most of the obstructions. The compartment walls and ceiling were made of 2.54~cm thick marinite. The manufacturer provided the thermal properties of the material used in the calculation. The density was 737~kg/m$^3$, conductivity 0.12~W/m/K. The specific heat ranged from 1.17~kJ/kg/K at 93~$^\circ$C to
+1.42~kJ/kg/K at 425~$^\circ$C. This value was assumed for higher temperatures.
+The steel used to construct the column and truss flanges was 0.64~cm thick.  The density of the steel was assumed to be 7,860~kg/m$^3$; its specific heat 0.45~kJ/kg/K.
+
+Two fuels were used in the tests. The properties of the fuels were obtained from measurements made on a series of unconfined burns that are referenced in the test report.
+The first fuel was a blend of heptane isomers, C$_7$H$_{16}$. Its soot yield was set at a constant 1.5~\%. The second fuel was a mixture (40~\% - 60~\% by volume) of toluene, C$_7$H$_8$,
+and heptane. Because FDS only considers the burning of a single hydrocarbon fuel, the mixture was taken to be C$_7$H$_{12}$ with a soot yield of 11.2~\%.
+The radiative fraction for the heptane blend was 0.44; for the heptane/toluene mixture it was 0.39.
+The heat release rate of the simulated burner was set to that which was measured in the experiments with the fire placed on the floor at the center of the fire pan.
+
+\begin{sidewaysfigure}[p]
+\begin{center}
+\includegraphics[height=6.5in]{FIGURES/WTC/WTC_AutoDesk_Schematic}
+\end{center}
+\caption[Geometry of the WTC Experiments]{Geometry of the WTC Experiments.}
+\label{WTC_Drawing}
+\end{sidewaysfigure}
+
+
+\section{Summary of Experiments}
+
+\label{experiment_summary}
+
+Table~\ref{Test_Parameters} presents a summary of all the experiments described in this chapter in terms of quantities commonly used in fire protection engineering. This ``parameter space''
+outlines the range of applicability of the validation studies performed to date. The parameters are explained below:
+
+\begin{description}
+\item[Heat Release Rate, $\dQ$,] is the range of peak heat release rates of the fires in the test series.
+\item[Fire Diameter, $D$,] is the equivalent diameter of the base of the fire, calculated $D=\sqrt{4A/\pi}$, where $A$ is the area of the base.
+\item[Ceiling Height, $H$,] is the distance from floor to ceiling.
+\item[Fire Froude Number, $\dQ^*$,] is a useful non-dimensional quantity for plume correlations and flame height estimates.
+\be Q^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2} \ee
+It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires
+have a Froude number near unity.
+\item[Flame Height relative to Ceiling Height, $L_f/H$,] is a convenient way to express the physical size of the fire relative to the size of the room.
+The height of the visible flame, based on Heskestad's correlation, is estimated by:
+\be L_f = D \, \left( 3.7 \, (\dQ^*)^{2/5} - 1.02 \right) \ee
+\item[Global Equivalence Ratio, $\phi$,] is the ratio of the mass flux of fuel to the mass flux of oxygen into the compartment, divided by the stoichiometric ratio.
+\be \phi = \frac{\dm_f}{r\, \dm{\hbox{\tiny O$_2$}}} \equiv  \frac{\dQ \, \hbox{(kW)}}{13,100 \, \hbox{(kJ/kg)} \; \dm_{\hbox{\tiny O$_2$}} } \quad ; \quad  \dm_{\hbox{\tiny O$_2$}} = \left\{
+   \begin{array}{r@{\quad:\quad}l}
+      \ha \, 0.23 \, A_0 \sqrt{H_0} & \hbox{Natural Ventilation} \\
+      0.23 \, \rho \, \dot{V}       & \hbox{Mechanical Ventilation} \end{array} \right.
+\ee
+Here, $r$ is the stoichiometric ratio, $A_0$ is the area of the compartment opening, $H_0$ is the height of the opening, $\rho$ is the density of air, and $\dot{V}$ is the
+volume flow of air into the compartment. If $\phi<1$, the compartment is considered ``well-ventilated'' and if $\phi>1$, the compartment is considered ``under-ventilated.''
+\item[Compartment Aspect Ratios, $W/H$ and $L/H$,] indicate if the compartment is shaped like a hallway, typical room, or vertical shaft.
+\item[Relative Distance along the Ceiling, $r_{cj}/H$,] indicates the distance from the fire plume of a sprinkler, smoke detector, etc., relative to the
+compartment height, $H$.
+\item[Relative Distance from the Fire, $r_{rad}/D$,] indicates whether a ``target'' is near or far from the fire.
+\end{description}
+
+\newpage \thispagestyle{empty}
+\begin{sidewaystable}[p]
+\caption{Summary of important experimental parameters. }
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+                    & $\dot{Q}$     & $D$           & $H$   &                   &               &               &           &           &                   &                   \\
+\rb{Test Series}    & (kW)          & (m)           & (m)   & \rb{$Q^*$}        & \rb{$L_f/H$}  & \rb{$\phi$}   & \rb{$W/H$}& \rb{$L/H$}& \rb{$r_{cj}/H$}   & \rb{$r_{rad}/D$}  \\ \hline \hline
+Arup Tunnel         & 5344          & 1.6           & 7     & 1.4               & 0.8           & 0.03          & 1.1       & 43        & 0 -- 1.1          & N/A               \\ \hline
+FM/SNL              & 470 -- 516    & 0.9           & 6.1   & 0.5 -- 0.6        & 0.3           & 0.2           & 2.0       & 3.0       & 0.2 -- 0.3        & N/A               \\ \hline
+LLNL Enclosure      & 50 -- 400     & 0.6           & 4.5   & 0.2 -- 1.4        & 0.1 -- 0.4    & 0.03 -- 0.22  & 0.9       & 1.3       & 0.3 -- 1.0        & N/A               \\ \hline
+NBS Multi-Room      & 110           & 0.3           & 2.4   & 1.4               & 0.4 -- 5.2    & 0.12          & 1.0       & 5.1       & 0.5 -- 0.7        & 0.9 -- 2.4        \\ \hline
+NIST/NRC            & 350 -- 2200   & 1.0           & 3.8   & 0.3 -- 1.9        & 0.4 -- 1.1    & 0.04 -- 0.7   & 1.9       & 5.7       & 0.3 -- 2.1        & 2 -- 4            \\ \hline
+Steckler            & 31.6 -- 158   & 0.3           & 2.1   & 0.7 -- 3.5        & 0.3 -- 0.7    & 0.01 -- 0.6   & 1.3       & 1.3       & N/A               & N/A               \\ \hline
+USN Hawaii          & 100 -- 7700   & 0.3 -- 2.5    & 15    & 1.3 -- 0.7        & 0.1 -- 0.4    & 0             & 4.9       & 6.5       & 0 -- 1.2          & N/A               \\ \hline
+USN Iceland         & 100 -- 15700  & 0.3 -- 3.4    & 22    & 1.3 -- 0.6        & 0.1 -- 0.4    & 0             & 2.1       & 3.4       & 0 -- 1.0          & N/A               \\ \hline
+Vettori Flat        & 1055          & 0.7           & 2.6   & 2.3               & 1.2           & Closed        & 2.1       & 3.5       & 0.8 -- 2.9        & N/A               \\ \hline
+VTT Large Hall      & 1860 -- 3640  & 1.4 -- 1.8    & 19    & 0.7               & 0.2           & 0             & 1.0       & 1.4       & 0 -- 0.6          & N/A               \\ \hline
+WTC                 & 965 -- 1460   & 1.0           & 3.8   & 0.8 -- 1.2        & 0.7 -- 0.9    & 0.5 -- 0.7    & 0.9       & 1.8       & 0.1               & 0.5 -- 2          \\ \hline
+\end{tabular}
+\end{center}
+\label{Test_Parameters}
+\nopagebreak
+\end{sidewaystable}
+
+
+\noindent
+Table~\ref{Numerical_Parameters} lists a few important parameters related to the numerical resolution of the calculation.
+\begin{description}
+\item[Characteristic Fire Diameter, $D^*$,] is a useful length scale that incorporates the heat release rate of the fire.
+\be D^* = \left( \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{g}} \right)^{2/5}  \ee
+\item[Plume Resolution Index, $D^*/\dx$,] is the number of grid cells of length $\dx$ that span the characteristic diameter of the fire. The greater its value, the more
+``resolved'' are the fire dynamics.
+\item[Ceiling Height relative to Fire Diameter, $H/D^*$,] is the non-dimensional height of the smoke plume.
+\end{description}
+Note that the calculations performed for the various validation studies described in this Guide use a wide range of values of the Plume Resolution Index, $D^*/\dx$.
+There are several reasons for this. First,
+typical applications of FDS often involve relatively small fires in relatively large spaces, and it is impractical to use a very fine grid that captures the detailed fire dynamics.
+Second, for some applications the accuracy of calculation is highly dependent on resolving the plume well, but for others, it is less important. For those citing the validation
+studies in this Guide, it is important that both the physical and numerical parameters are comparable to the given application.
+
+
+\begin{table}[p]
+\caption{Summary of important numerical parameters. }
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+                    &               &               &               \\
+\rb{Test Series}    & \rb{$D^*$ (m)}& \rb{$D^*/\dx$}& \rb{$H/D^*$}  \\ \hline \hline
+Arup Tunnel         & 1.8           & 9             & 3.8           \\ \hline
+ATF Corridors       & 0.3 -- 0.7    & 3 -- 7        & 8.5 -- 3.4    \\ \hline
+Beyler Hood         & 0.1 -- 0.2    & 5 -- 8        & 3.5 -- 2.1    \\ \hline
+Bryant Doorway      & 0.2 -- 0.7    & 5 -- 14       & 9.9 -- 3.4    \\ \hline
+CSTB Tunnel         & 1.2 -- 1.3    & 12 -- 13      & 1.5 -- 1.4    \\ \hline
+Cup Burner          & 0.04          & 36            & Open          \\ \hline
+Fleury Heat Flux    & 0.4 -- 0.6    & 8 -- 12       & Open          \\ \hline
+FM Panels           & 0.2 -- 0.4    & 12 -- 19      & Open          \\ \hline
+FM/SNL              & 0.7           & 7             & 8.8 -- 8.5    \\ \hline
+Hamins Burner       & 0.04 -- 0.5   & 6             & Open          \\ \hline
+Harrison Plumes     & 0.1 -- 0.2    & 5 -- 7        & 4.4 -- 2.8    \\ \hline
+Heskestad           & 0.4 -- 44     & 5 -- 20       & Open          \\ \hline
+LLNL Enclosure      & 0.3 -- 0.6    & 1 -- 3        & 15.9 -- 6.9   \\ \hline
+McCaffrey Plume     & 0.2 -- 0.3    & 5 -- 20       & Open          \\ \hline
+NBS Multi-Room      & 0.4           & 4             & 6.2           \\ \hline
+NIST RSE            & 0.3 -- 0.8    & 12 -- 32      & 3.5 -- 1.3    \\ \hline
+NIST/NRC            & 0.6 -- 1.3    & 5 -- 11       & 6.5 -- 3.1    \\ \hline
+NRCC Facade         & 1.8 -- 2.4    & 18 -- 24      & 1.5 -- 1.2    \\ \hline
+NRL/HAI             & 0.3 -- 0.7    & 9 -- 10       & Open          \\ \hline
+Sandia Plume        & 1.2 -- 1.8    & 20 -- 118     & Open          \\ \hline
+SP AST              & 0.7           & 14            & 3.5           \\ \hline
+Steckler            & 0.2 -- 0.4    & 5 -- 9        & 9.1 -- 4.8    \\ \hline
+UL/NFPRF            & 1.7 -- 2.4    & 8 -- 12       & 4.5 -- 3.2    \\ \hline
+Ulster SBI          & 0.2 -- 0.3    & 12 -- 15      & Open          \\ \hline
+USCG/HAI            & 0.5 -- 0.9    & 5 -- 9        & 5.6 -- 3.2    \\ \hline
+USN Hawaii          & 0.4 -- 2.1    & 2 -- 11       & 40.3 -- 7.1   \\ \hline
+USN Iceland         & 0.4 -- 2.8    & 2 -- 14       & 59 -- 7.8     \\ \hline
+Vettori Flat        & 1.0           & 12            & 2.8           \\ \hline
+Vettori Sloped      & 1.0           & 10            & 2.6           \\ \hline
+VTT Large Hall      & 1.2 -- 1.6    & 5 -- 6        & 15.8 -- 12.1  \\ \hline
+WTC                 & 0.9 -- 1.1    & 9 -- 11       & 4.1 -- 3.5    \\ \hline
+\end{tabular}
+\end{center}
+\label{Numerical_Parameters}
+\nopagebreak
+\end{table}

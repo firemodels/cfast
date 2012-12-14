@@ -12,6 +12,19 @@ if %1==iBMB goto iBMB
 if %1==FM_SNL goto FM_SNL
 if %1==NBS goto NBS
 if %1==High_Bay goto High_Bay
+if %1==WTC goto WTC
+:WTC
+echo Running WTC Spray Burner Tests
+cd WTC
+call ..\cleancfast.bat
+..\..\bin\cfast WTC_01 /V
+..\..\bin\cfast WTC_02 /V
+..\..\bin\cfast WTC_03 /V
+..\..\bin\cfast WTC_04 /V
+..\..\bin\cfast WTC_05 /V
+..\..\bin\cfast WTC_06 /V
+cd ..
+if %1==WTC goto end
 :Vettori_Flat
 echo Running Vettori Flat Simulations
 cd Vettori_Flat

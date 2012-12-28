@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Smokebot
+# cfastbot
 # This script is a simplified version of Kris Overholt's firebot script.
-# It runs the smokeview verification suite (not FDS) on the latest
+# It runs the cfast verification/validation suite (not FDS) on the latest
 # revision of the repository.  It does not erase files that are not
 # the repository.  This allows one to test working files before they
 # have been committed.  
@@ -11,8 +11,7 @@
 #  = Input variables =
 #  ===================
 
-mailToSMV="gforney@gmail.com, richard.peacock@nist.gov"
-mailToFDS="gforney@gmail.com, richard.peacock@nist.gov"
+mailTo="gforney@gmail.com"
 
 FIREBOT_QUEUE=smokebot
 RUNAUTO=
@@ -33,7 +32,7 @@ FIREBOT_USERNAME="`whoami`"
 
 cd
 FIREBOT_HOME_DIR="`pwd`"
-FIREBOT_DIR="$FIREBOT_HOME_DIR/SMOKEBOT"
+FIREBOT_DIR="$FIREBOT_HOME_DIR/CFASTBOT"
 export FDS_SVNROOT="$FIREBOT_HOME_DIR/FDS-SMV"
 CFAST_SVNROOT="$FIREBOT_HOME_DIR/cfast"
 ERROR_LOG=$FIREBOT_DIR/output/errors
@@ -41,27 +40,22 @@ TIME_LOG=$FIREBOT_DIR/output/timings
 WARNING_LOG=$FIREBOT_DIR/output/warnings
 GUIDE_DIR=$FIREBOT_DIR/guides
 
-THIS_FDS_FAILED=0
-FDS_STATUS_FILE=$FDS_SVNROOT/FDS_status
-LAST_FDS_FAILED=0
-if [ -e $FDS_STATUS_FILE ] ; then
-  LAST_FDS_FAILED=`cat $FDS_STATUS_FILE`
-fi
-
-mailTo=$mailToSMV
-if [[ "$LAST_FDS_FAILED" == "1" ]] ; then
-  mailTo=$mailToFDS
+THIS_CFAST_FAILED=0
+CFAST_STATUS_FILE=$CFAST_SVNROOT/FDS_status
+LAST_CFAST_FAILED=0
+if [ -e $CFAST_STATUS_FILE ] ; then
+  LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
 fi
 
 export JOBPREFIX=CB_
 
 #  =============================================
-#  = Firebot timing and notification mechanism =
+#  = cfastbot timing and notification mechanism =
 #  =============================================
 
-# This routine checks the elapsed time of Firebot.
-# If Firebot runs more than 12 hours, an email notification is sent.
-# This is a notification only and does not terminate Firebot.
+# This routine checks the elapsed time of cfastbot.
+# If cfastbot runs more than 12 hours, an email notification is sent.
+# This is a notification only and does not terminate cfastbot.
 # This check runs during Stages 3 and 5.
 
 # Start firebot timer
@@ -162,7 +156,7 @@ set_files_world_readable()
 clean_firebot_history()
 {
    
-   # Clean Firebot metafiles
+   # Clean cfastbot metafiles
    MKDIR $FIREBOT_DIR
    cd $FIREBOT_DIR
    MKDIR guides
@@ -173,7 +167,7 @@ clean_firebot_history()
 
 #  ========================
 #  ========================
-#  = Firebot Build Stages =
+#  = cfastbot Build Stages =
 #  ========================
 #  ========================
 
@@ -236,9 +230,9 @@ clean_svn_repo()
    # If not, create FDS repository and checkout
      dummy=true
    else
-      echo "Downloading FDS repository:" >> $FIREBOT_DIR/output/stage1 2>&1
+      echo "Downloading FDS repository:" >> $FIREBOT_DIR/output/stage1a 2>&1
       cd $FIREBOT_HOME_DIR
-      svn co https://fds-smv.googlecode.com/svn/trunk/FDS/trunk/ FDS-SMV >> $FIREBOT_DIR/output/stage1 2>&1
+      svn co https://fds-smv.googlecode.com/svn/trunk/FDS/trunk/ FDS-SMV >> $FIREBOT_DIR/output/stage1a 2>&1
    fi
    # Check to see if CFAST repository exists
    if [ -e "$CFAST_SVNROOT" ]
@@ -246,33 +240,33 @@ clean_svn_repo()
    # If not, create CFAST repository and checkout
      dummy=true
    else
-      echo "Downloading CFAST repository:" >> $FIREBOT_DIR/output/stage1 2>&1
+      echo "Downloading CFAST repository:" >> $FIREBOT_DIR/output/stage1b 2>&1
       cd $FIREBOT_HOME_DIR
-      svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk cfast >> $FIREBOT_DIR/output/stage1 2>&1
+      svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk cfast >> $FIREBOT_DIR/output/stage1b 2>&1
    fi
 }
 
 do_svn_checkout()
 {
    cd $FDS_SVNROOT
-   echo "Checking out latest FDS-SMV revision." >> $FIREBOT_DIR/output/stage1 2>&1
+   echo "Checking out latest FDS-SMV revision." >> $FIREBOT_DIR/output/stage1a 2>&1
    svn update >> $FIREBOT_DIR/output/stage1a 2>&1
-   #SVN_REVISION=`tail -n 1 $FIREBOT_DIR/output/stage1b | sed "s/[^0-9]//g"`
+   SVN_REVISIONfds=`tail -n 1 $FIREBOT_DIR/output/stage1a | sed "s/[^0-9]//g"`
 
    cd $CFAST_SVNROOT
-   echo "Checking out latest cfast revision." >> $FIREBOT_DIR/output/stage1 2>&1
+   echo "Checking out latest cfast revision." >> $FIREBOT_DIR/output/stage1b 2>&1
    svn update >> $FIREBOT_DIR/output/stage1b 2>&1
-   SVN_REVISION=`tail -n 1 $FIREBOT_DIR/output/stage1b | sed "s/[^0-9]//g"`
+   SVN_REVISIONcfast=`tail -n 1 $FIREBOT_DIR/output/stage1b | sed "s/[^0-9]//g"`
 }
 
 check_svn_checkout()
 {
    cd $FDS_SVNROOT
    # Check for SVN errors
-   if [[ `grep -E 'Updated|At revision' $FIREBOT_DIR/output/stage1 | wc -l` -ne 1 ]];
+   if [[ `grep -E 'Updated|At revision' $FIREBOT_DIR/output/stage1a | wc -l` -ne 1 ]];
    then
       echo "Errors from Stage 1 - SVN operations:" >> $ERROR_LOG
-      cat $FIREBOT_DIR/output/stage1 >> $ERROR_LOG
+      cat $FIREBOT_DIR/output/stage1a >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       email_build_status
       exit
@@ -282,10 +276,10 @@ check_svn_checkout()
 
    cd $CFAST_SVNROOT
    # Check for SVN errors
-   if [[ `grep -E 'Updated|At revision' $FIREBOT_DIR/output/stage1 | wc -l` -ne 1 ]];
+   if [[ `grep -E 'Updated|At revision' $FIREBOT_DIR/output/stage1b | wc -l` -ne 1 ]];
    then
       echo "Errors from Stage 1 - SVN operations:" >> $ERROR_LOG
-      cat $FIREBOT_DIR/output/stage1 >> $ERROR_LOG
+      cat $FIREBOT_DIR/output/stage1b >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       email_build_status
       exit
@@ -322,21 +316,21 @@ run_verification_cases_short()
 {
 
    #  =====================
-   #  = Run all SMV cases =
+   #  = Run all cfast cases =
    #  =====================
 
-   cd $FDS_SVNROOT/Verification/scripts
+   cd $CFAST_SVNROOT/cfast/Validation/scripts
 
-   # Submit SMV verification cases and wait for them to start (run SMV cases in debug mode on firebot queue)
-   echo 'Running SMV verification cases:' >> $FIREBOT_DIR/output/stage3 2>&1
-   ./Run_SMV_Cases.sh -d -q $FIREBOT_QUEUE >> $FIREBOT_DIR/output/stage3 2>&1
+   # Submit CFAST verification cases and wait for them to start
+   echo 'Running cfast verification cases:' >> $FIREBOT_DIR/output/stage3 2>&1
+   ./Run_CFAST_Cases.sh -d -q $FIREBOT_QUEUE >> $FIREBOT_DIR/output/stage3 2>&1
    wait_verification_cases_short_start
 
    # Wait some additional time for all cases to start
    sleep 30
 
    # Stop all cases
-   ./Run_SMV_Cases.sh -d -s >> $FIREBOT_DIR/output/stage3 2>&1
+   ./Run_CFAST_Cases.sh -d -s >> $FIREBOT_DIR/output/stage3 2>&1
    echo "" >> $FIREBOT_DIR/output/stage3 2>&1
 
    # Wait for SMV verification cases to end
@@ -347,18 +341,17 @@ run_verification_cases_short()
    #  ======================
 
    # Remove all .stop and .err files from Verification directories (recursively)
-   cd $FDS_SVNROOT/Verification
+   cd $CFAST_SVNROOT/Validation
    find . -name '*.stop' -exec rm -f {} \;
    find . -name '*.err' -exec rm -f {} \;
-   find Visualization -name '*.smv' -exec rm -f {} \;
-   find scripts/Outfiles -name '*.out' -exec rm -f {} \;
-   find WUI -name '*.smv' -exec rm -f {} \;
+   find . -name '*.smv' -exec rm -f {} \;
+   find . -name '*.out' -exec rm -f {} \;
 }
 
 check_verification_cases_short()
 {
-   # Scan and report any errors in FDS verification cases
-   cd $FDS_SVNROOT/Verification/Visualization
+   # Scan and report any errors in CFAST verification cases
+   cd $CFAST_SVNROOT/Validation
 
    if [[ `grep 'Run aborted' -rI ${FIREBOT_DIR}/output/stage3` == "" ]] && \
       [[ `grep ERROR: -rI *` == "" ]] && \
@@ -375,7 +368,7 @@ check_verification_cases_short()
       echo "Errors from Stage 3 - Run verification cases (short run):" >> $ERROR_LOG
       cat $FIREBOT_DIR/output/stage3_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
-      THIS_FDS_FAILED=1
+      THIS_CFAST_FAILED=1
    fi
 }
 
@@ -397,10 +390,10 @@ wait_verification_cases_long_end()
 
 run_verification_cases_long()
 {
-   # Start running all SMV verification cases (run all cases on firebot queue)
-   cd $FDS_SVNROOT/Verification/scripts
-   echo 'Running SMV verification cases:' >> $FIREBOT_DIR/output/stage5 2>&1
-   ./Run_SMV_Cases.sh -q $FIREBOT_QUEUE >> $FIREBOT_DIR/output/stage5 2>&1
+   # Start running all CFAST verification cases (run all cases on firebot queue)
+   cd $CFAST_SVNROOT/Validation/scripts
+   echo 'Running CFAST verification cases:' >> $FIREBOT_DIR/output/stage5 2>&1
+   ./Run_CFAST_Cases.sh -q $FIREBOT_QUEUE >> $FIREBOT_DIR/output/stage5 2>&1
 
    # Wait for all verification cases to end
    wait_verification_cases_long_end
@@ -409,7 +402,7 @@ run_verification_cases_long()
 check_verification_cases_long()
 {
    # Scan and report any errors in FDS verification cases
-   cd $FDS_SVNROOT/Verification/Visualization
+   cd $CFAST_SVNROOT/Validation/
 
    if [[ `grep 'Run aborted' -rI ${FIREBOT_DIR}/output/stage5` == "" ]] && \
       [[ `grep ERROR: -rI *` == "" ]] && \
@@ -426,7 +419,7 @@ check_verification_cases_long()
       echo "Errors from Stage 5 - Run verification cases (long run):" >> $ERROR_LOG
       cat $FIREBOT_DIR/output/stage5_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
-      THIS_FDS_FAILED=1
+      THIS_CFAST_FAILED=1
    fi
 }
 
@@ -584,8 +577,8 @@ check_compile_smv()
 make_smv_pictures()
 {
    # Run Make SMV Pictures script (release mode)
-   cd $FDS_SVNROOT/Verification/scripts
-   ./Make_SMV_Pictures.sh 2>&1 | grep -v FreeFontPath &> $FIREBOT_DIR/output/stage6e
+   cd $CFAST_SVNROOT/Validatio/scripts
+   ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $FIREBOT_DIR/output/stage6e
 }
 
 check_smv_pictures()
@@ -598,7 +591,7 @@ check_smv_pictures()
    else
       cp $FIREBOT_DIR/output/stage6e  $FIREBOT_DIR/output/stage6e_errors
 
-      echo "Errors from Stage 6e - Make SMV pictures (release mode):" >> $ERROR_LOG
+      echo "Errors from Stage 6e - Make CFAST pictures (release mode):" >> $ERROR_LOG
       cat $FIREBOT_DIR/output/stage6e >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
@@ -719,10 +712,7 @@ save_build_status()
 
 email_build_status()
 {
-   if [[ "$THIS_FDS_FAILED" == "1" ]] ; then
-     mailTo=$mailToFDS
-   fi
-   echo $THIS_FDS_FAILED>$FDS_STATUS_FILE
+   echo $THIS_CFAST_FAILED>$CFAST_STATUS_FILE
    stop_time=`date`
    echo "-------------------------------" > $TIME_LOG
    echo "      host: $hostname " >> $TIME_LOG

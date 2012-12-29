@@ -99,7 +99,7 @@ intel_linux_64 : $(objf)
 intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -save -zero -auto -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0
 intel_linux_64_db : FCOMPL = ifort
 intel_linux_64_db : obj = cfast6_linux_64_db
-intel_linux_64_db : setup $(obj)
+intel_linux_64_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # ------------- OSX -------------------

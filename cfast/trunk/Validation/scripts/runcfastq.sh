@@ -18,6 +18,6 @@ infile=$2
 fulldir=$BASEDIR/$dir
 
 echo --------------------------------------------
-echo running $infile in $fulldir the $queue queue
+echo running $infile in $fulldir using the $queue queue
 $QEXE -q $queue $dir $CFAST $infile 
 echo --------------------------------------------

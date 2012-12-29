@@ -525,7 +525,7 @@ check_compile_smv_db()
 #  = Stage 6c - Make SMV pictures (debug mode) =
 #  ==================================================
 
-make_smv_pictures_db()
+make_cfast_pictures_db()
 {
    # Run Make SMV Pictures script (debug mode)
    cd $FDS_SVNROOT/Verification/scripts
@@ -533,7 +533,7 @@ make_smv_pictures_db()
 
 }
 
-check_smv_pictures_db()
+check_cfast_pictures_db()
 {
    # Scan and report any errors in make SMV pictures process
    cd $FIREBOT_DIR
@@ -591,7 +591,7 @@ check_compile_smv()
 #  = Stage 6e - Make SMV pictures (release mode) =
 #  ===============================================
 
-make_smv_pictures()
+make_cfast_pictures()
 {
    # Run Make SMV Pictures script (release mode)
    cd $CFAST_SVNROOT/Validatio/scripts
@@ -675,45 +675,6 @@ make_cfast_vv_guide()
 
    # Check guide for completion and copy to website if successful
    check_guide $FIREBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Tech_Ref/Validation_Guide.pdf
-}
-
-make_smv_user_guide()
-{
-   # Build SMV User Guide
-   cd $FDS_SVNROOT/Manuals/SMV_User_Guide
-   pdflatex -interaction nonstopmode SMV_User_Guide &> $FIREBOT_DIR/output/stage8_smv_user_guide
-   bibtex SMV_User_Guide &> $FIREBOT_DIR/output/stage8_smv_user_guide
-   pdflatex -interaction nonstopmode SMV_User_Guide &> $FIREBOT_DIR/output/stage8_smv_user_guide
-   pdflatex -interaction nonstopmode SMV_User_Guide &> $FIREBOT_DIR/output/stage8_smv_user_guide
-
-   # Check guide for completion and copy to website if successful
-   check_guide $FIREBOT_DIR/output/stage8_smv_user_guide $FDS_SVNROOT/Manuals/SMV_User_Guide/SMV_User_Guide.pdf
-}
-
-make_smv_technical_guide()
-{
-   # Build SMV Technical Guide
-   cd $FDS_SVNROOT/Manuals/SMV_Technical_Reference_Guide
-   pdflatex -interaction nonstopmode SMV_Technical_Reference_Guide &> $FIREBOT_DIR/output/stage8_smv_technical_guide
-   bibtex SMV_Technical_Reference_Guide &> $FIREBOT_DIR/output/stage8_smv_technical_guide
-   pdflatex -interaction nonstopmode SMV_Technical_Reference_Guide &> $FIREBOT_DIR/output/stage8_smv_technical_guide
-   pdflatex -interaction nonstopmode SMV_Technical_Reference_Guide &> $FIREBOT_DIR/output/stage8_smv_technical_guide
-
-   # Check guide for completion and copy to website if successful
-   check_guide $FIREBOT_DIR/output/stage8_smv_technical_guide $FDS_SVNROOT/Manuals/SMV_Technical_Reference_Guide/SMV_Technical_Reference_Guide.pdf
-}
-
-make_smv_verification_guide()
-{
-   # Build SMV Verification Guide
-   cd $FDS_SVNROOT/Manuals/SMV_Verification_Guide
-   pdflatex -interaction nonstopmode SMV_Verification_Guide &> $FIREBOT_DIR/output/stage8_smv_verification_guide
-   bibtex SMV_Verification_Guide &> $FIREBOT_DIR/output/stage8_smv_verification_guide
-   pdflatex -interaction nonstopmode SMV_Verification_Guide &> $FIREBOT_DIR/output/stage8_smv_verification_guide
-   pdflatex -interaction nonstopmode SMV_Verification_Guide &> $FIREBOT_DIR/output/stage8_smv_verification_guide
-
-   # Check guide for completion and copy to website if successful
-   check_guide $FIREBOT_DIR/output/stage8_smv_verification_guide $FDS_SVNROOT/Manuals/SMV_Verification_Guide/SMV_Verification_Guide.pdf
 }
 
 #  =====================================================
@@ -847,8 +808,8 @@ check_compile_smv_db
 
 ### Stage 6c ###
 if [[ $stage4a_success && $stage6b_success ]] ; then
-  make_smv_pictures_db
-  check_smv_pictures_db
+#  make_cfast_pictures_db
+#  check_cfast_pictures_db
 fi
 
 ### Stage 6d ###
@@ -857,17 +818,14 @@ check_compile_smv
 
 ### Stage 6e ###
 if [[ $stage4a_success && $stage6d_success ]] ; then
-  make_smv_pictures
-  check_smv_pictures
+#  make_cfast_pictures
+#  check_cfast_pictures
 fi
 
 ### Stage 8 ###
 # No stage dependencies
   make_cfast_tech_guide
   make_cfast_vv_guide
-  make_smv_user_guide
-  make_smv_technical_guide
-  make_smv_verification_guide
 
 ### Report results ###
 set_files_world_readable

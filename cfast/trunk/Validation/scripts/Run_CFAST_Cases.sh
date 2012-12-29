@@ -61,7 +61,7 @@ fi
 PLATFORM=$PLATFORM$DEBUG
 
 export CFAST=~/cfast/CFAST/intel_$PLATFORM/cfast6_$PLATFORM
-export QEXE=/usr/local/bin/qexe.sh
+export QEXE=~/cfast/Validation/scripts/qexe.sh
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"

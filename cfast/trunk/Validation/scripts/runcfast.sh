@@ -3,6 +3,7 @@ dir=$1
 infile=$2
 
 fulldir=$BASEDIR/$dir
+stopfile=$fulldir/$infile.stop
 
 if ! [ -e $CFAST ];  then
   echo "The file $CFAST does not exit. Run aborted"

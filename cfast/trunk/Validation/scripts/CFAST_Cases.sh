@@ -67,6 +67,3 @@ $RUNCFAST High_Bay Keflavik_21
 $RUNCFAST High_Bay Keflavik_5
 $RUNCFAST High_Bay Keflavik_6
 $RUNCFAST High_Bay Keflavik_7
-
-
-

@@ -808,6 +808,7 @@ check_compile_smv_db
 
 ### Stage 6c ###
 if [[ $stage4a_success && $stage6b_success ]] ; then
+dummy=
 #  make_cfast_pictures_db
 #  check_cfast_pictures_db
 fi
@@ -818,6 +819,7 @@ check_compile_smv
 
 ### Stage 6e ###
 if [[ $stage4a_success && $stage6d_success ]] ; then
+dummy=
 #  make_cfast_pictures
 #  check_cfast_pictures
 fi

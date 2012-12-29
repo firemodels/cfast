@@ -198,15 +198,31 @@ update_and_compile_cfast()
       svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk/CFAST CFAST >> $FIREBOT_DIR/output/stage0_cfast 2>&1
       
    fi
-    # Build CFAST
+
+    # Build debug CFAST
+
+    cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
+    rm -f cfast6_linux_64_db
+    make --makefile ../makefile clean &> /dev/null
+    ./make_cfast.sh >> $FIREBOT_DIR/output/stage0_cfast 2>&1
+
+   # Check for errors in CFAST debug compilation
+   cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
+   if [ -e "cfast6_linux_64_db" ]
+   then
+      stage0_success=true
+   fi
+ 
+   # Build release CFAST
+
     cd $CFAST_SVNROOT/CFAST/intel_linux_64
     rm -f cfast6_linux_64
     make --makefile ../makefile clean &> /dev/null
     ./make_cfast.sh >> $FIREBOT_DIR/output/stage0_cfast 2>&1
 
-   # Check for errors in CFAST compilation
+   # Check for errors in CFAST release compilation
    cd $CFAST_SVNROOT/CFAST/intel_linux_64
-   if [ -e "cfast6_linux_64" ]
+   if [[ -e "cfast6_linux_64" && stage0_success==true ]]
    then
       stage0_success=true
    else
@@ -215,6 +231,7 @@ update_and_compile_cfast()
       cat $FIREBOT_DIR/output/stage0_cfast >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
+
 
 }
 
@@ -319,7 +336,7 @@ run_verification_cases_short()
    #  = Run all cfast cases =
    #  =====================
 
-   cd $CFAST_SVNROOT/cfast/Validation/scripts
+   cd $CFAST_SVNROOT/Validation/scripts
 
    # Submit CFAST verification cases and wait for them to start
    echo 'Running cfast verification cases:' >> $FIREBOT_DIR/output/stage3 2>&1
@@ -634,6 +651,32 @@ check_guide()
    fi
 }
 
+make_cfast_tech_guide()
+{
+   # Build CFAST tech Guide
+   cd $CFAST_SVNROOT/Docs/Tech_Ref
+   pdflatex -interaction nonstopmode Tech_Ref &> $FIREBOT_DIR/output/stage8_cfast_tech_guide
+   bibtex Tech_Ref &> $FIREBOT_DIR/output/stage8_cfast_tech_guide
+   pdflatex -interaction nonstopmode Tech_Ref &> $FIREBOT_DIR/output/stage8_cfast_tech_guide
+   pdflatex -interaction nonstopmode Tech_Ref &> $FIREBOT_DIR/output/stage8_cfast_tech_guide
+
+   # Check guide for completion and copy to website if successful
+   check_guide $FIREBOT_DIR/output/stage8_cfast_tech_guide $CFAST_SVNROOT/Docs/Tech_Ref/Tech_Ref.pdf
+}
+
+make_cfast_vv_guide()
+{
+   # Build CFAST tech Guide
+   cd $CFAST_SVNROOT/Docs/Validation_Guide
+   pdflatex -interaction nonstopmode Validation_Guide &> $FIREBOT_DIR/output/stage8_cfast_vv_guide
+   bibtex Validation_Guide &> $FIREBOT_DIR/output/stage8_cfast_vv_guide
+   pdflatex -interaction nonstopmode Validation_Guide &> $FIREBOT_DIR/output/stage8_cfast_vv_guide
+   pdflatex -interaction nonstopmode Validation_Guide &> $FIREBOT_DIR/output/stage8_cfast_vv_guide
+
+   # Check guide for completion and copy to website if successful
+   check_guide $FIREBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Tech_Ref/Validation_Guide.pdf
+}
+
 make_smv_user_guide()
 {
    # Build SMV User Guide
@@ -723,7 +766,7 @@ email_build_status()
   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
     cat $SVN_SMVLOG >> $TIME_LOG
   fi
-  if [[ $THIS_FDSSVN != $LAST_FDSSVN ]] ; then
+  if [[ $THIS_CFASTSVN != $LAST_CFASTSVN ]] ; then
     cat $SVN_FDSLOG >> $TIME_LOG
   fi
    echo "-------------------------------" >> $TIME_LOG
@@ -734,30 +777,30 @@ email_build_status()
      cat $TIME_LOG >> $ERROR_LOG
      cat $TIME_LOG >> $WARNING_LOG
      # Send email with failure message and warnings, body of email contains appropriate log file
-     mail -s "smokebot build failure and warnings on ${hostname}. Revision ${SVN_REVISION}." $mailTo < $ERROR_LOG > /dev/null
+     mail -s "cfastbot build failure and warnings on ${hostname}. Revision ${SVN_REVISION}." $mailTo < $ERROR_LOG > /dev/null
 
    # Check for errors only
    elif [ -e $ERROR_LOG ]
    then
      cat $TIME_LOG >> $ERROR_LOG
       # Send email with failure message, body of email contains error log file
-      mail -s "smokebot build failure on ${hostname}. Revision ${SVN_REVISION}." $mailTo < $ERROR_LOG > /dev/null
+      mail -s "cfastbot build failure on ${hostname}. Revision ${SVN_REVISION}." $mailTo < $ERROR_LOG > /dev/null
 
    # Check for warnings only
    elif [ -e $WARNING_LOG ]
    then
      cat $TIME_LOG >> $WARNING_LOG
       # Send email with success message, include warnings
-      mail -s "smokebot build success with warnings on ${hostname}. Revision ${SVN_REVISION}." $mailTo < $WARNING_LOG > /dev/null
+      mail -s "cfastbot build success with warnings on ${hostname}. Revision ${SVN_REVISION}." $mailTo < $WARNING_LOG > /dev/null
 
    # No errors or warnings
    else
       # Send empty email with success message
-      mail -s "smokebot build success on ${hostname}! Revision ${SVN_REVISION}." $mailTo < $TIME_LOG > /dev/null
+      mail -s "cfastbot build success on ${hostname}! Revision ${SVN_REVISION}." $mailTo < $TIME_LOG > /dev/null
    fi
 }
 
-# if -a option is invoked, only proceed running smokebot if the
+# if -a option is invoked, only proceed running cfastbot if the
 # smokeview or FDS source has changed
 
 if [[ $RUNAUTO == "y" ]] ; then
@@ -781,13 +824,13 @@ do_svn_checkout
 check_svn_checkout
 
 ### Stage 3 ###
-if [[ $stage2a_success ]] ; then
+if [[ $stage0_success ]] ; then
    run_verification_cases_short
    check_verification_cases_short
 fi
 
 ### Stage 5 ###
-if [[ $stage4a_success ]] ; then
+if [[ $stage0_success ]] ; then
    run_verification_cases_long
    check_verification_cases_long
 fi
@@ -819,12 +862,12 @@ if [[ $stage4a_success && $stage6d_success ]] ; then
 fi
 
 ### Stage 8 ###
-if [[ $stage4a_success && $stage6d_success ]] ; then
+# No stage dependencies
+  make_cfast_tech_guide
+  make_cfast_vv_guide
   make_smv_user_guide
   make_smv_technical_guide
   make_smv_verification_guide
-fi
-# No stage dependencies
 
 ### Report results ###
 set_files_world_readable

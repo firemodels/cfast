@@ -51,7 +51,7 @@ dir=$1
 command=$2
 in=$3
 infile=${in%.*}
-TITLE="$infile(cfast)"
+TITLE="$JOBPREFIX$infile(cfast)"
 
 nnodes=1
 

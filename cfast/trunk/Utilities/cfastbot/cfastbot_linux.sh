@@ -11,7 +11,7 @@
 #  = Input variables =
 #  ===================
 
-mailTo="gforney@gmail.com, richard.peacock@nist.gov"
+mailTo="gforney@gmail.com, cfast@nist.gov"
 
 FIREBOT_QUEUE=smokebot
 RUNAUTO=

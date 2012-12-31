@@ -13,7 +13,7 @@
 
 mailTo="gforney@gmail.com, cfast@nist.gov"
 
-FIREBOT_QUEUE=smokebot
+CFASTBOT_QUEUE=smokebot
 RUNAUTO=
 while getopts 'aq:' OPTION
 do
@@ -22,26 +22,24 @@ case $OPTION in
    RUNAUTO="y"
    ;;
   q)
-   FIREBOT_QUEUE="$OPTARG"
+   CFASTBOT_QUEUE="$OPTARG"
    ;;
 esac
 done
 shift $(($OPTIND-1))
 
-FIREBOT_USERNAME="`whoami`"
-
 cd
-FIREBOT_HOME_DIR="`pwd`"
-CFASTBOT_DIR="$FIREBOT_HOME_DIR/CFASTBOT"
-export FDS_SVNROOT="$FIREBOT_HOME_DIR/FDS-SMV"
-CFAST_SVNROOT="$FIREBOT_HOME_DIR/cfast"
+CFASTBOT_HOME_DIR="`pwd`"
+CFASTBOT_DIR="$CFASTBOT_HOME_DIR/CFASTBOT"
+export FDS_SVNROOT="$CFASTBOT_HOME_DIR/FDS-SMV"
+CFAST_SVNROOT="$CFASTBOT_HOME_DIR/cfast"
 ERROR_LOG=$CFASTBOT_DIR/output/errors
 TIME_LOG=$CFASTBOT_DIR/output/timings
 WARNING_LOG=$CFASTBOT_DIR/output/warnings
 GUIDE_DIR=$CFASTBOT_DIR/guides
 
 THIS_CFAST_FAILED=0
-CFAST_STATUS_FILE=$CFAST_SVNROOT/FDS_status
+CFAST_STATUS_FILE=$CFAST_SVNROOT/cfast_status
 LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
   LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
@@ -68,12 +66,16 @@ TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 run_auto()
 {
   SMV_SOURCE=$FDS_SVNROOT/SMV/source
-  SVN_SMVFILE=$FDS_SVNROOT/smv_revision
-  SVN_SMVLOG=$FDS_SVNROOT/smv_log
+  SVN_SMVFILE=$FDS_SVNROOT/smokeview_source_revision
+  SVN_SMVLOG=$FDS_SVNROOT/smokeview_source_log
 
   CFAST_SOURCE=$CFAST_SVNROOT/CFAST/Source
-  SVN_CFASTFILE=$FDS_SVNROOT/fds_revision
-  SVN_CFASTLOG=$FDS_SVNROOT/FDS_log
+  SVN_CFASTSOURCEFILE=$FDS_SVNROOT/cfast_source_revision
+  SVN_CFASTSOURCELOG=$FDS_SVNROOT/cfast_source_log
+  
+  CFAST_DOCS=$CFAST_SVNROOT/CFAST/Docs
+  SVN_CFASTDOCSFILE=$FDS_SVNROOT/cfast_docs_revision
+  SVN_CFASTDOCSLOG=$FDS_SVNROOT/cfast_docs_log
 
   SMOKEBOTDIR=~/CFASTBOT/
   SMOKEBOTEXE=./run_cfastbot.sh
@@ -89,12 +91,19 @@ run_auto()
 
   cd $CFAST_SOURCE
   svn update > /dev/null
-  THIS_CFASTSVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
-  THIS_CFASTAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
-  LAST_CFASTSVN=`cat $SVN_CFASTFILE`
-  svn log -r $THIS_CFASTSVN > $SVN_CFASTLOG
-
-  if [[ $THIS_SMVSVN == $LAST_SMVSVN && $THIS_CFASTSVN == $LAST_CFASTSVN ]] ; then
+  THIS_CFASTSOURCESVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
+  THIS_CFASTSOURCEAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
+  LAST_CFASTSOURCESVN=`cat $SVN_CFASTSOURCEFILE`
+  svn log -r $THIS_CFASTSOURCESVN > $SVN_CFASTSOURCELOG
+  
+  cd $CFAST_DOCS
+  svn update > /dev/null
+  THIS_CFASTDOCSSVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
+  THIS_CFASTDOCSAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
+  LAST_CFASTDOCSSVN=`cat $SVN_CFASTDOCSFILE`
+  svn log -r $THIS_CFASTDOCSSVN > $SVN_CFASTDOCSLOG
+  
+  if [[ $THIS_SMVSVN == $LAST_SMVSVN && $THIS_CFASTSOURCESVN == $LAST_CFASTSOURCESVN && $THIS_CFASTDOCSSVN && $LAST_CFASTDOCSSVN ]] ; then
     exit
   fi
 
@@ -104,10 +113,15 @@ run_auto()
     echo -e "smokeview source has changed. $LAST_SMVSVN->$THIS_SMVSVN($THIS_SMVAUTHOR)" >> $MESSAGE_FILE
     cat $SVN_SMVLOG >> $MESSAGE_FILE
   fi
-  if [[ $THIS_CFASTSVN != $LAST_CFASTSVN ]] ; then
-    echo $THIS_CFASTSVN>$SVN_CFASTFILE
-    echo -e "CFAST source has changed. $LAST_CFASTSVN->$THIS_CFASTSVN($THIS_CFASTAUTHOR)" >> $MESSAGE_FILE
-    cat $SVN_CFASTLOG >> $MESSAGE_FILE
+  if [[ $THIS_CFASTSOURCESVN != $LAST_CFASTSOURCESVN ]] ; then
+    echo $THIS_CFASTSOURCESVN>$SVN_CFASTSOURCEFILE
+    echo -e "CFAST source has changed. $LAST_CFASTSOURCESVN->$THIS_CFASTSOURCE($THIS_CFASTSOURCEAUTHOR)" >> $MESSAGE_FILE
+    cat $SVN_CFASTSOURCELOG >> $MESSAGE_FILE
+  fi
+  if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
+    echo $THIS_CFASTDOCSSVN>$SVN_CFASTDOCSFILE
+    echo -e "CFAST source has changed. $LAST_CFASTDOCSSVN->$THIS_CFASTDOCS($THIS_CFASTDOCSAUTHOR)" >> $MESSAGE_FILE
+    cat $SVN_CFASTDOCSLOG >> $MESSAGE_FILE
   fi
   echo -e "cfastbot run initiated." >> $MESSAGE_FILE
   cat $MESSAGE_FILE | mail -s "cfastbot run initiated" $mailTo > /dev/null
@@ -177,7 +191,7 @@ clean_firebot_history()
 
 update_and_compile_cfast()
 {
-   cd $FIREBOT_HOME_DIR
+   cd $CFASTBOT_HOME_DIR
 
    # Check to see if CFAST repository exists
    if [ -e "$CFAST_SVNROOT" ]
@@ -248,7 +262,7 @@ clean_svn_repo()
      dummy=true
    else
       echo "Downloading FDS repository:" >> $CFASTBOT_DIR/output/stage1a 2>&1
-      cd $FIREBOT_HOME_DIR
+      cd $CFASTBOT_HOME_DIR
       svn co https://fds-smv.googlecode.com/svn/trunk/FDS/trunk/ FDS-SMV >> $CFASTBOT_DIR/output/stage1a 2>&1
    fi
    # Check to see if CFAST repository exists
@@ -258,7 +272,7 @@ clean_svn_repo()
      dummy=true
    else
       echo "Downloading CFAST repository:" >> $CFASTBOT_DIR/output/stage1b 2>&1
-      cd $FIREBOT_HOME_DIR
+      cd $CFASTBOT_HOME_DIR
       svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk cfast >> $CFASTBOT_DIR/output/stage1b 2>&1
    fi
 }
@@ -340,7 +354,7 @@ run_verification_cases_short()
 
    # Submit CFAST verification cases and wait for them to start
    echo 'Running cfast verification cases:' >> $CFASTBOT_DIR/output/stage3 2>&1
-   ./Run_CFAST_Cases.sh -d -q $FIREBOT_QUEUE >> $CFASTBOT_DIR/output/stage3 2>&1
+   ./Run_CFAST_Cases.sh -d -q $CFASTBOT_QUEUE >> $CFASTBOT_DIR/output/stage3 2>&1
    wait_verification_cases_short_start
 
    # Wait some additional time for all cases to start
@@ -410,7 +424,7 @@ run_verification_cases_long()
    # Start running all CFAST verification cases (run all cases on firebot queue)
    cd $CFAST_SVNROOT/Validation/scripts
    echo 'Running CFAST verification cases:' >> $CFASTBOT_DIR/output/stage5 2>&1
-   ./Run_CFAST_Cases.sh -q $FIREBOT_QUEUE >> $CFASTBOT_DIR/output/stage5 2>&1
+   ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $CFASTBOT_DIR/output/stage5 2>&1
 
    # Wait for all verification cases to end
    wait_verification_cases_long_end
@@ -614,6 +628,80 @@ check__pictures()
    fi
 }
 
+#  ====================
+#  = Stage 7 - Matlab =
+#  ====================
+
+# Functions to check for an available Matlab license
+
+run_matlab_license_test()
+{
+   # Run simple test to see if Matlab license is available
+   cd $FDS_SVNROOT/Utilities/Matlab
+   matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7_matlab_license
+}
+
+scan_matlab_license_test()
+{
+   # Check for failed license
+   if [[ `grep "License checkout failed" $CFASTBOT_DIR/output/stage7_matlab_license` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      TIME_LIMIT_STAGE="7"
+      check_time_limit
+      # Wait 5 minutes until retry
+      sleep 300
+      check_matlab_license_server
+   fi
+}
+
+check_matlab_license_server()
+{
+   run_matlab_license_test
+   scan_matlab_license_test
+}
+
+#  ===========================================
+#  = Stage 7b - Matlab plotting (validation) =
+#  ===========================================
+
+run_matlab_validation()
+{
+   # Run Matlab plotting script
+   cd $CFAST_SVNROOT/Validation/Matlab/scripts
+
+   # Replace LaTeX with TeX for Interpreter in plot_style.m
+   # This allows displayless automatic Matlab plotting
+   # Otherwise Matlab crashes due to a known bug
+   sed -i 's/LaTeX/TeX/g' plot_style.m
+
+   cd $CFAST_SVNROOT/Validation/Matlab
+   matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
+
+   # Restore LaTeX as plot_style interpreter
+   cd scripts
+   sed -i 's/TeX/LaTeX/g' plot_style.m
+   cd ..
+}
+
+check_matlab_validation()
+{
+   # Scan and report any errors in Matlab scripts
+   cd $CFASTBOT_DIR
+   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation` == "" ]]
+   then
+      stage7b_success=true
+   else
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation > $CFASTBOT_DIR/output/stage7b_errors
+
+      echo "Errors from Stage 7b - Matlab plotting (validation):" >> $ERROR_LOG
+      cat $CFASTBOT_DIR/output/stage7b_errors >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+}
+
 #  ==================================
 #  = Stage 8 - Build FDS-SMV Guides =
 #  ==================================
@@ -719,8 +807,11 @@ email_build_status()
   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
     cat $SVN_SMVLOG >> $TIME_LOG
   fi
-  if [[ $THIS_CFASTSVN != $LAST_CFASTSVN ]] ; then
-    cat $SVN_FDSLOG >> $TIME_LOG
+  if [[ $THIS_CFASTSOURCESVN != $LAST_CFASTSOUCESVN ]] ; then
+    cat $SVN_CFASTSOURCELOG >> $TIME_LOG
+  fi
+  if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
+    cat $SVN_CFASTDOCSLOG >> $TIME_LOG
   fi
    echo "-------------------------------" >> $TIME_LOG
    cd $CFASTBOT_DIR
@@ -815,6 +906,12 @@ dummy=
 #  make_cfast_pictures
 #  check_cfast_pictures
 fi
+
+### Stage 7b ###
+check_matlab_license_server
+run_matlab_validation
+check_matlab_validation
+
 
 ### Stage 8 ###
 # No stage dependencies

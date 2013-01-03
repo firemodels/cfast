@@ -20,5 +20,5 @@ fulldir=$BASEDIR/$dir/$dir2
 
 echo --------------------------------------------------
 echo running $infile in $fulldir using the $queue queue
-$QEXE -q $queue $dir/$dir2 $CFAST $infile 
+$QEXE -q $queue $dir/$dir2 $CFAST $infile /V
 echo --------------------------------------------------

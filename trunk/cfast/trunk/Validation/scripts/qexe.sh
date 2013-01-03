@@ -50,6 +50,7 @@ shift $(($OPTIND-1))
 dir=$1
 command=$2
 in=$3
+option=$4
 infile=${in%.*}
 TITLE="$JOBPREFIX$infile(cfast)"
 
@@ -58,7 +59,7 @@ nnodes=1
 fulldir=`pwd`/$dir
 
 out=$fulldir/$infile.err
-outlog=$fulldir/$infile.log
+outlog=$fulldir/$infile.qlog
 stopfile=$fulldir/$infile.stop
 
 # make sure files that are needed exist
@@ -96,7 +97,7 @@ cd $fulldir
 echo Start time: \`date\`
 echo Running $infile on \`hostname\`
 echo Directory: \`pwd\`
-$command $in
+$command $in $option
 EOF
 chmod +x $scriptfile
 qsub -q $queue $scriptfile

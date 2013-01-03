@@ -637,7 +637,7 @@ check__pictures()
 run_matlab_license_test()
 {
    # Run simple test to see if Matlab license is available
-   cd $FDS_SVNROOT/Utilities/Matlab
+   cd $CFAST_SVNROOT/Validation/Matlab
    matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7_matlab_license
 }
 
@@ -681,7 +681,7 @@ run_matlab_validation()
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
 
    # Restore LaTeX as plot_style interpreter
-   cd scripts
+   cd $CFAST_SVNROOT/Validation/Matlab/scripts
    sed -i 's/TeX/LaTeX/g' plot_style.m
    cd ..
 }

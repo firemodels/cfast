@@ -702,7 +702,7 @@ check_matlab_validation()
 }
 
 #  ==================================
-#  = Stage 8 - Build FDS-SMV Guides =
+#  = Stage 8 - Build CFAST Guides =
 #  ==================================
 
 check_guide()
@@ -713,7 +713,7 @@ check_guide()
    then
       cp $2 $GUIDE_DIR/.
    else
-      echo "Errors from Stage 8 - Build FDS-SMV Guides:" >> $ERROR_LOG
+      echo "Errors from Stage 8 - Build CFAST Guides:" >> $ERROR_LOG
       grep "! LaTeX Error:" -I $1 >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
@@ -801,8 +801,6 @@ email_build_status()
    echo "      host: $hostname " >> $TIME_LOG
    echo "start time: $start_time " >> $TIME_LOG
    echo " stop time: $stop_time " >> $TIME_LOG
-   echo "   results (private): http://blaze.nist.gov/smokebot" >> $TIME_LOG
-   echo "   results (public): https://docs.google.com/folder/d/0B_wB1pJL2bFQaDJaOFNnUDR4LXM/edit" >> $TIME_LOG
   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
     cat $SVN_SMVLOG >> $TIME_LOG
   fi

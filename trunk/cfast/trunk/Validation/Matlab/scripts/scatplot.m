@@ -98,9 +98,21 @@ for j=2:length(Q);
                 display(['Error: Mismatched measured and predicted arrays in scatter plot for scatterplot ', Scatter_Plot_Title, '. Verify that the statistical metrics are being used properly for all cases. Skipping scatterplot.'])
                 continue
             end
-            K(k) = plot(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+            
+            if strcmp(Plot_Type,'linear')
+                K(k) = plot(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
                 char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
-
+            elseif strcmp(Plot_Type,'loglog')
+                K(k) = loglog(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+            elseif strcmp(Plot_Type,'semilogx')
+                K(k) = semilogx(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+            elseif strcmp(Plot_Type,'semilogy')
+                K(k) = semilogy(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+            end
+            
             if stats_output == 1
                 single_measured_metric = nonzeros(Measured_Metric(k,:,:));
                 single_predicted_metric = nonzeros(Predicted_Metric(k,:,:));
@@ -203,13 +215,24 @@ for j=2:length(Q);
         set(gca,'YTick',get(gca,'XTick'))
         set(gca,'Position',[Scat_Plot_X,Scat_Plot_Y,Scat_Plot_Width,Scat_Plot_Height])
         
-        text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
+        if strcmp(Plot_Type,'linear')
+            text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
             Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+        elseif strcmp(Plot_Type,'loglog')
+            text(10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min))),10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min))),...
+            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+        elseif strcmp(Plot_Type,'semilogx')
+            text(10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min))),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
+            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+        elseif strcmp(Plot_Type,'semilogy')
+            text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min))),...
+            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+        end
   
-         if Sigma_E > 0.0
-             text(Plot_Min+(Title_Position(1)+0.05)*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min),...
+        if Sigma_E > 0.0
+            text(Plot_Min+(Title_Position(1)+0.05)*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min),...
                  ['$2 \, \tilde{\sigma}_E$=',num2str(2*Sigma_E,'%4.2f')],'FontSize',12,'FontName','Times','Interpreter',Font_Interpreter)
-         end
+        end
          
         if strcmp(Model_Error,'yes')
             text(Plot_Min+(Title_Position(1)+0.05)*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.10)*(Plot_Max-Plot_Min),...
@@ -221,16 +244,32 @@ for j=2:length(Q);
         
         C = stripcell(Group_Key_Label);
         [B I] = unique(C);
-        legend(K(I),C(I),'Location',Key_Position,'FontSize',12','Interpreter',Font_Interpreter)
-        legend boxon
+        
+        if size(Key_Position)>0
+            legend_handle = legend(K(I),C(I),'Location',Key_Position,'FontSize',12','Interpreter',Font_Interpreter);
+            if isequal(Key_Position,'EastOutside')
+               pos = get(legend_handle,'position');
+               set(legend_handle,'position',[Scat_Paper_Width pos(2:4)])
+            end
+            if isequal(Key_Position,'SouthEastOutside')
+               pos = get(legend_handle,'position');
+               set(legend_handle,'position',[Scat_Paper_Width 0.5 pos(3:4)])
+            end
+            set(legend_handle,'Interpreter',Font_Interpreter);
+            set(legend_handle,'Fontsize',Key_Font_Size);
+            set(legend_handle,'Box','on');
+        end
         
         hold off
         
         % print to pdf
+        
+        PDF_Paper_Width = Paper_Width_Factor * Scat_Paper_Width;
+
         set(gcf,'Visible','on');
         set(gcf,'PaperUnits','inches');
-        set(gcf,'PaperSize',[Scat_Paper_Width Scat_Paper_Height]);
-        set(gcf,'PaperPosition',[0 0 Scat_Paper_Width Scat_Paper_Height]);
+        set(gcf,'PaperSize',[PDF_Paper_Width Scat_Paper_Height]);
+        set(gcf,'PaperPosition',[0 0 PDF_Paper_Width Scat_Paper_Height]);
         display(['Printing scatter plot ',num2str(j),'...'])
         print(gcf,'-dpdf',[plotdir,Plot_Filename])
         

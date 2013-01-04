@@ -753,7 +753,7 @@ make_cfast_vv_guide()
    pdflatex -interaction nonstopmode Validation_Guide &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $CFASTBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Tech_Ref/Validation_Guide.pdf
+   check_guide $CFASTBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Validation_Guide/Validation_Guide.pdf
 }
 
 #  =====================================================

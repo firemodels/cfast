@@ -167,6 +167,7 @@ $RUNCFAST High_Bay USN_Hawaii_Test_04
 $RUNCFAST High_Bay USN_Hawaii_Test_05
 $RUNCFAST High_Bay USN_Hawaii_Test_06
 $RUNCFAST High_Bay USN_Hawaii_Test_07
+$RUNCFAST High_Bay USN_Hawaii_Test_11
 $RUNCFAST High_Bay USN_Iceland_Test_01
 $RUNCFAST High_Bay USN_Iceland_Test_02
 $RUNCFAST High_Bay USN_Iceland_Test_03

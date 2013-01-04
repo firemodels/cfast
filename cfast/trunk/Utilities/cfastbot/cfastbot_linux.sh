@@ -282,12 +282,11 @@ do_svn_checkout()
    cd $FDS_SVNROOT
    echo "Checking out latest FDS-SMV revision." >> $CFASTBOT_DIR/output/stage1a 2>&1
    svn update >> $CFASTBOT_DIR/output/stage1a 2>&1
-   SVN_REVISIONfds=`tail -n 1 $CFASTBOT_DIR/output/stage1a | sed "s/[^0-9]//g"`
 
    cd $CFAST_SVNROOT
    echo "Checking out latest cfast revision." >> $CFASTBOT_DIR/output/stage1b 2>&1
    svn update >> $CFASTBOT_DIR/output/stage1b 2>&1
-   SVN_REVISIONcfast=`tail -n 1 $CFASTBOT_DIR/output/stage1b | sed "s/[^0-9]//g"`
+   SVN_REVISION=`tail -n 1 $CFASTBOT_DIR/output/stage1b | sed "s/[^0-9]//g"`
 }
 
 check_svn_checkout()

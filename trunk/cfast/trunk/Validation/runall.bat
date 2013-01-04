@@ -249,9 +249,9 @@ cd ..\
 if %1==FM_NBS goto end
 :PLAZA
 echo NBS Plaza Hotel test 7
-cd multi
+cd Multi
 call ..\cleancfast.bat
-..\..\bin\cfast multi /V
+..\..\bin\cfast Multi /V
 cd ..\
 if %1==PLAZA goto end
 :VTT

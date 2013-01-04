@@ -707,10 +707,14 @@ check_matlab_validation()
 
 check_guide()
 {
+   CFASTBOT_MANDIR=/var/www/html/cfastbot/manuals
    # Scan and report any errors in build process for guides
    cd $CFASTBOT_DIR
    if [[ `grep "! LaTeX Error:" -I $1` == "" ]]
    then
+      if [ -d $CFASTBOT_MANDIR ] ; then
+        cp $2 $CFASTBOT_MANDIR/.
+      fi
       cp $2 $GUIDE_DIR/.
    else
       echo "Errors from Stage 8 - Build CFAST Guides:" >> $ERROR_LOG

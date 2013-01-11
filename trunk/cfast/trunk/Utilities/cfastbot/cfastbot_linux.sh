@@ -121,7 +121,7 @@ run_auto()
   fi
   if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
     echo $THIS_CFASTDOCSSVN>$SVN_CFASTDOCSFILE
-    echo -e "CFAST Docs directory has changed. $LAST_CFASTDOCSSVN->$THIS_CFASTDOCS($THIS_CFASTDOCSAUTHOR)" >> $MESSAGE_FILE
+    echo -e "CFAST Docs file has changed. $LAST_CFASTDOCSSVN->$THIS_CFASTDOCS($THIS_CFASTDOCSAUTHOR)" >> $MESSAGE_FILE
     cat $SVN_CFASTDOCSLOG >> $MESSAGE_FILE
   fi
   echo -e "cfastbot run initiated." >> $MESSAGE_FILE

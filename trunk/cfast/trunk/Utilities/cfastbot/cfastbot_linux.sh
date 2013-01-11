@@ -37,6 +37,7 @@ ERROR_LOG=$CFASTBOT_DIR/output/errors
 TIME_LOG=$CFASTBOT_DIR/output/timings
 WARNING_LOG=$CFASTBOT_DIR/output/warnings
 GUIDE_DIR=$CFASTBOT_DIR/guides
+export TEXINPUTS=".:../LaTeX_Style_Files:"
 
 THIS_CFAST_FAILED=0
 CFAST_STATUS_FILE=$CFAST_SVNROOT/cfast_status
@@ -738,6 +739,7 @@ make_cfast_tech_guide()
 {
    # Build CFAST tech Guide
    cd $CFAST_SVNROOT/Docs/Tech_Ref
+   ./make_guide.sh
    pdflatex -interaction nonstopmode Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
    bibtex Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
    pdflatex -interaction nonstopmode Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide

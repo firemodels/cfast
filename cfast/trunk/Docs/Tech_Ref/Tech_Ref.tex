@@ -5,6 +5,9 @@
 \usepackage{multirow}
 \usepackage{longtable}
 \usepackage{units}
+\usepackage{fix-cm}
+\usepackage{datetime}
+\newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
 
 \renewcommand{\bibname}{References}
 
@@ -135,28 +138,37 @@
 \newcommand{\Oh}{{\tiny \hbox{O}}}
 \newcommand{\Cl}{{\tiny \hbox{Cl}}}
 
+\frontmatter
+
 \pagestyle{empty}
 
 \begin{minipage}[t][9in][s]{6.5in}
 
-\huge
-\flushright{NIST Special Publication 1026r1}
-\large
-\flushright{October 2011 Revision}
+\flushright{
+    \fontsize{20}{24}\selectfont
+    \bf{NIST Special Publication 1026r1\\
+     October 2011 Revision\\}
+     }
 
 \vspace{1in}
 
-\Huge
-\flushright{CFAST -- Consolidated Model of Fire Growth and Smoke Transport (Version 6) \\
-\LARGE Technical Reference Guide }
+\flushright{
+  \fontsize{28}{33.6}\selectfont
+   \bf{CFAST -- Consolidated Model of Fire \\
+   Growth and Smoke Transport \\
+   (Version 6) \\
+   Technical Reference Guide \\}
+   }
 
 \vspace{.5in}
 
-\large
+
 \flushright{
-Richard D. Peacock \\
-Glenn P. Forney \\
-Paul A. Reneke }
+  \fontsize{14}{16.8}\selectfont
+   Richard D. Peacock \\
+   Glenn P. Forney \\
+   Paul A. Reneke \\
+}
 
 \vspace{.5in}
 
@@ -177,16 +189,21 @@ Paul A. Reneke }
 
 \begin{minipage}[t][9in][s]{6.5in}
 
-\huge
-\flushright{NIST Special Publication 1026r1}
-\large
-\flushright{October 2011 Revision}
+\flushright{
+    \fontsize{20}{24}\selectfont
+    \bf{NIST Special Publication 1026r1\\
+     October 2011 Revision\\}
+     }
 
-\vspace{1.in}
+\vspace{1in}
 
-\Huge
-\flushright{CFAST -- Consolidated Model of Fire Growth and Smoke Transport (Version 6) \\
-\LARGE Technical Reference Guide }
+\flushright{
+  \fontsize{28}{33.6}\selectfont
+   \bf{CFAST -- Consolidated Model of Fire \\
+   Growth and Smoke Transport \\
+   (Version 6) \\
+   Technical Reference Guide \\}
+   }
 
 \vspace{.5in}
 
@@ -205,33 +222,26 @@ Paul A. Reneke \\
 
 \vspace{.25in}
 
-\flushright{\today \\
-{\em SVN Repository~Revision: $Rev: 283}}
+\flushright{\mydate\today\\
+SVN Repository~Revision: $Revision: 283 $}
 
 
-\vfill
+%\vfill
 
 \flushright{\includegraphics[width=1in]{FIGURES/doc} }
 
 \small
 \flushright{U.S. Department of Commerce \\
 {\em Rebecca M. Blank, Acting Secretary} \\
-\hspace{1in} \\
+\vspace{\baselineskip}
 National Institute of Standards and Technology \\
 {\em Patrick D. Gallagher, Under Secretary for Standards and Technology and Director} }
-
 \end{minipage}
 
-
-
-
-\newpage
-
-\frontmatter
+\chapter{Disclaimer}
 
 \pagestyle{plain}
-
-\chapter{Disclaimer}
+\setcounter{page}{2}
 
 The U. S. Department of Commerce makes no warranty, expressed or implied, to users of
 CFAST and associated computer programs, and accepts no responsibility for its use.  Users of

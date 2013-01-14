@@ -13,6 +13,7 @@ if %1==FM_SNL goto FM_SNL
 if %1==NBS goto NBS
 if %1==High_Bay goto High_Bay
 if %1==WTC goto WTC
+if %1==Steckler goto Steckler
 :WTC
 echo Running WTC Spray Burner Tests
 cd WTC
@@ -440,6 +441,65 @@ call ..\cleanCFAST.bat
 ..\..\bin\cfast USN_Iceland_Test_20 /V
 cd ..\
 if %1==High_Bay goto end
+:Steckler
+echo Steckler Compartment Tests
+cd Steckler_Compartment
+call ..\CleanCFAST
+..\..\bin\cfast Steckler_010 /V
+..\..\bin\cfast Steckler_011 /V
+..\..\bin\cfast Steckler_012 /V
+..\..\bin\cfast Steckler_612 /V
+..\..\bin\cfast Steckler_013 /V
+..\..\bin\cfast Steckler_014 /V
+..\..\bin\cfast Steckler_018 /V
+..\..\bin\cfast Steckler_710 /V
+..\..\bin\cfast Steckler_810 /V
+REM ..\..\bin\cfast Steckler_016 /V
+..\..\bin\cfast Steckler_022 /V
+..\..\bin\cfast Steckler_023 /V
+..\..\bin\cfast Steckler_030 /V
+..\..\bin\cfast Steckler_041 /V
+..\..\bin\cfast Steckler_019 /V
+..\..\bin\cfast Steckler_020 /V
+..\..\bin\cfast Steckler_021 /V
+..\..\bin\cfast Steckler_114 /V
+..\..\bin\cfast Steckler_144 /V
+REM..\..\bin\cfast Steckler_212 /V
+..\..\bin\cfast Steckler_242 /V
+..\..\bin\cfast Steckler_410 /V
+..\..\bin\cfast Steckler_210 /V
+..\..\bin\cfast Steckler_310 /V
+..\..\bin\cfast Steckler_240 /V
+..\..\bin\cfast Steckler_116 /V
+..\..\bin\cfast Steckler_122 /V
+..\..\bin\cfast Steckler_224 /V
+..\..\bin\cfast Steckler_324 /V
+..\..\bin\cfast Steckler_220 /V
+..\..\bin\cfast Steckler_221 /V
+REM..\..\bin\cfast Steckler_514 /V
+..\..\bin\cfast Steckler_544 /V
+..\..\bin\cfast Steckler_512 /V
+..\..\bin\cfast Steckler_542 /V
+..\..\bin\cfast Steckler_610 /V
+..\..\bin\cfast Steckler_510 /V
+..\..\bin\cfast Steckler_540 /V
+..\..\bin\cfast Steckler_517 /V
+..\..\bin\cfast Steckler_622 /V
+..\..\bin\cfast Steckler_522 /V
+..\..\bin\cfast Steckler_524 /V
+..\..\bin\cfast Steckler_541 /V
+..\..\bin\cfast Steckler_520 /V
+..\..\bin\cfast Steckler_521 /V
+..\..\bin\cfast Steckler_513 /V
+..\..\bin\cfast Steckler_160 /V
+..\..\bin\cfast Steckler_163 /V
+..\..\bin\cfast Steckler_164 /V
+..\..\bin\cfast Steckler_165 /V
+..\..\bin\cfast Steckler_162 /V
+..\..\bin\cfast Steckler_167 /V
+..\..\bin\cfast Steckler_161 /V
+..\..\bin\cfast Steckler_166 /V
+cd ..\
 :end
 echo.| time
 echo CFAST simulations complete.

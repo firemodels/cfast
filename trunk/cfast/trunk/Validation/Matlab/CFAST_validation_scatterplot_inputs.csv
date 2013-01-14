@@ -9,7 +9,7 @@ Detector / Sprinkler Activation,Measured Temperature Rise ($^\circ$C),Predicted 
 Plume Temperature,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,500,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Plume_Temperature
 Oxygen Concentration,Measured Drop in Volume Fraction,Predicted Drop in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Oxygen_Concentration
 Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Carbon_Dioxide_Concentration
-Smoke Concentration,Measured Density (mg/m$^3$),Predicted Density (mg/m$^3$),0,1200,0.03 0.95,SouthEast,1,33,yes,linear,ScatterPlots/Smoke_Concentration
+Smoke Concentration,Measured Density (mg/m$^3$),Predicted Density (mg/m$^3$),0,600,0.03 0.95,SouthEast,1,33,yes,linear,ScatterPlots/Smoke_Concentration
 Carbon Monoxide Concentration,Measured Change in Volume Fraction,Predicted Change in Volume Fraction,0,0.001,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Carbon_Monoxide_Concentration
 Compartment Over-Pressure,Measured Pressure Rise (Pa),Predicted Pressure Rise (Pa),0,400,0.03 0.95,SouthEast,1,40,yes,linear,ScatterPlots/Compartment_Pressure
 Open Compartment Over-Pressure,Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,30,0.03 0.95,SouthEast,1,40,yes,linear,ScatterPlots/Open_Compartment_Pressure
@@ -26,3 +26,4 @@ Smoke Alarm Activations,Measured Time to Activation (s),Predicted Time to Activa
 Fire Temperature,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1200,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Fire_Temperature
 Entrainment,Measured Mass Flow Rate (kg/s),Predicted Mass Flow Rate (kg/s),0,0.6,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Entrainment
 Activation Time,Measured Time to Activation (s),Predicted Time to Activation (s),0,300,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Activation_Time
+Sprinkler Activation Time,Measured Time to Activation (s),Predicted Time to Activation (s),0,300,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Sprinkler_Activation_Time

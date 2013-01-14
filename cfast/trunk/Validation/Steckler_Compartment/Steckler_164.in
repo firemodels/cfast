@@ -19,13 +19,13 @@ COMPA,Compartment 1,2.8,2.8,2.13,0,0,0,Fiberboard,Fiberboard,Fiberboard
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,0.24,1.83,0,1,1.28,1.28,1,1
+HVENT,1,2,1,0.74,1.83,0,1,1.28,1.28,1,1
 !!
 !!Fire keywords
 !!
 GLOBA,10,393.15
 !!Steckler 62 kW
-FIRE,1,1.4,1.4,0.02,1,1,0,0,0,1,Steckler 62 kW
+FIRE,1,1.4,2.8,0.3,1,1,0,0,0,1,Steckler 62 kW
 CHEMI,1,4,0,0,0,0.2,5E+07,METHANE
 TIME,0,1800
 HRR,62900,62900

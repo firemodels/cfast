@@ -29,6 +29,6 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\Functions.f90"/>
 		<File RelativePath=".\Read Comma Delimited File.f90"/>
-		<File RelativePath=".\Temperature Profiles.f90"/></Filter>
+		<File RelativePath=".\VandV_Calcs.f90"/></Filter>
 		<File RelativePath=".\ReadMe.txt"/></Files>
 	<Globals/></VisualStudioProject>

@@ -1,18 +1,4 @@
-!  ActivationTimes.f90 
-!
-!  FUNCTIONS:
-!  ActivationTimes - Entry point of console application.
-!
-
-!****************************************************************************
-!
-!  PROGRAM: ActivationTimes
-!
-!  PURPOSE:  Entry point for the console application.
-!
-!****************************************************************************
-
-    program ActivationTimes
+    program VandV_Calcs
 
         implicit none
 
@@ -136,5 +122,5 @@
         close (unit=10)
     end if
 
-    end program ActivationTimes
+    end program VandV_Calcs
 

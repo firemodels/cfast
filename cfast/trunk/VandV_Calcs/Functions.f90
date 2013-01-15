@@ -1,4 +1,21 @@
-   integer function find_column(carray,num_rows,num_columns,search_row, desired_id)
+    subroutine find_column_name(col_names, col_name)
+
+    implicit none
+
+    character :: col_names*128, col_name*128
+
+    if(index(col_names,'|')>0) then
+        col_name = col_names(1:(index(col_names,'|')-1))
+        col_names = col_names((index(col_names,'|')+1):)
+    else
+        col_name = col_names
+        col_names=''
+    end if
+    return
+
+    end subroutine find_column_name
+
+    integer function find_column(carray,num_rows,num_columns,search_row, desired_id)
 
     implicit none
 

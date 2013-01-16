@@ -455,6 +455,7 @@ call ..\CleanCFAST
 ..\..\bin\cfast Steckler_710 /V
 ..\..\bin\cfast Steckler_810 /V
 REM ..\..\bin\cfast Steckler_016 /V
+..\..\bin\cfast Steckler_017 /V
 ..\..\bin\cfast Steckler_022 /V
 ..\..\bin\cfast Steckler_023 /V
 ..\..\bin\cfast Steckler_030 /V

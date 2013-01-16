@@ -32,6 +32,20 @@
     return
 
     end function find_column
+    
+    subroutine copy_vector(x, xs, x_len, xs_len, nrow, ic)
+    implicit none
+    
+    integer :: nrow, ic, ir, x_len, xs_len(*)
+    real :: x(nrow), xs(nrow,*)
+    
+    do ir = 1, x_len
+        xs(ir,ic) = x(ir)
+    end do
+    xs_len(ic) = x_len
+    return
+    
+    end subroutine copy_vector
 
     subroutine load_vector (rarray, carray, array_row_dimension, array_row_actual, array_column, array_start_row, vector, vector_length)
     implicit none

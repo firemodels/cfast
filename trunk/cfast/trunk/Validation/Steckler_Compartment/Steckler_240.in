@@ -1,10 +1,10 @@
-VERSN,6,Steckler Compartment Test 10
+VERSN,6,Steckler Compartment Test 240
 !!
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-50,0,10,10
-EAMB,295.15,101300,0
-TAMB,295.15,101300,0,50
+EAMB,302.15,101300,0
+TAMB,302.15,101300,0,50
 CJET,WALLS
 WIND,0,10,0.16
 !!
@@ -25,7 +25,7 @@ HVENT,1,2,1,0.86,1.83,0,1,1.28,1.28,1,1
 !!
 GLOBA,10,393.15
 !!Steckler 62 kW
-FIRE,1,0,2.8,0.02,1,1,0,0,0,1,Steckler 62 kW
+FIRE,1,0.21,2.66,0.02,1,1,0,0,0,1,Steckler 62 kW
 CHEMI,1,4,0,0,0,0.2,5E+07,METHANE
 TIME,0,1800
 HRR,62900,62900

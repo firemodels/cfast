@@ -1,10 +1,10 @@
-VERSN,6,Steckler Compartment Test 10
+VERSN,6,Steckler Compartment Test 167
 !!
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-50,0,10,10
-EAMB,295.15,101300,0
-TAMB,295.15,101300,0,50
+EAMB,280.15,101300,0
+TAMB,280.15,101300,0,50
 CJET,WALLS
 WIND,0,10,0.16
 !!

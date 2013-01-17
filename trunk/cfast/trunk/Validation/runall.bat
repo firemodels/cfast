@@ -454,7 +454,7 @@ call ..\CleanCFAST
 ..\..\bin\cfast Steckler_018 /V
 ..\..\bin\cfast Steckler_710 /V
 ..\..\bin\cfast Steckler_810 /V
-REM ..\..\bin\cfast Steckler_016 /V
+..\..\bin\cfast Steckler_016 /V
 ..\..\bin\cfast Steckler_017 /V
 ..\..\bin\cfast Steckler_022 /V
 ..\..\bin\cfast Steckler_023 /V
@@ -465,7 +465,7 @@ REM ..\..\bin\cfast Steckler_016 /V
 ..\..\bin\cfast Steckler_021 /V
 ..\..\bin\cfast Steckler_114 /V
 ..\..\bin\cfast Steckler_144 /V
-REM..\..\bin\cfast Steckler_212 /V
+..\..\bin\cfast Steckler_212 /V
 ..\..\bin\cfast Steckler_242 /V
 ..\..\bin\cfast Steckler_410 /V
 ..\..\bin\cfast Steckler_210 /V
@@ -477,7 +477,7 @@ REM..\..\bin\cfast Steckler_212 /V
 ..\..\bin\cfast Steckler_324 /V
 ..\..\bin\cfast Steckler_220 /V
 ..\..\bin\cfast Steckler_221 /V
-REM..\..\bin\cfast Steckler_514 /V
+..\..\bin\cfast Steckler_514 /V
 ..\..\bin\cfast Steckler_544 /V
 ..\..\bin\cfast Steckler_512 /V
 ..\..\bin\cfast Steckler_542 /V
@@ -486,7 +486,7 @@ REM..\..\bin\cfast Steckler_514 /V
 ..\..\bin\cfast Steckler_540 /V
 ..\..\bin\cfast Steckler_517 /V
 ..\..\bin\cfast Steckler_622 /V
-..\..\bin\cfast Steckler_522 /V
+REM ..\..\bin\cfast Steckler_522 /V
 ..\..\bin\cfast Steckler_524 /V
 ..\..\bin\cfast Steckler_541 /V
 ..\..\bin\cfast Steckler_520 /V

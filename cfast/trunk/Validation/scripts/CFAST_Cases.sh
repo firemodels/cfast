@@ -196,7 +196,7 @@ $RUNCFAST Steckler_Compartment Steckler_014 /V
 $RUNCFAST Steckler_Compartment Steckler_018 /V
 $RUNCFAST Steckler_Compartment Steckler_710 /V
 $RUNCFAST Steckler_Compartment Steckler_810 /V
-# $RUNCFAST Steckler_Compartment Steckler_016 /V
+$RUNCFAST Steckler_Compartment Steckler_016 /V
 $RUNCFAST Steckler_Compartment Steckler_022 /V
 $RUNCFAST Steckler_Compartment Steckler_023 /V
 $RUNCFAST Steckler_Compartment Steckler_030 /V
@@ -206,7 +206,7 @@ $RUNCFAST Steckler_Compartment Steckler_020 /V
 $RUNCFAST Steckler_Compartment Steckler_021 /V
 $RUNCFAST Steckler_Compartment Steckler_114 /V
 $RUNCFAST Steckler_Compartment Steckler_144 /V
-# $RUNCFAST Steckler_Compartment Steckler_212 /V
+$RUNCFAST Steckler_Compartment Steckler_212 /V
 $RUNCFAST Steckler_Compartment Steckler_242 /V
 $RUNCFAST Steckler_Compartment Steckler_410 /V
 $RUNCFAST Steckler_Compartment Steckler_210 /V
@@ -218,7 +218,7 @@ $RUNCFAST Steckler_Compartment Steckler_224 /V
 $RUNCFAST Steckler_Compartment Steckler_324 /V
 $RUNCFAST Steckler_Compartment Steckler_220 /V
 $RUNCFAST Steckler_Compartment Steckler_221 /V
-# $RUNCFAST Steckler_Compartment Steckler_514 /V
+$RUNCFAST Steckler_Compartment Steckler_514 /V
 $RUNCFAST Steckler_Compartment Steckler_544 /V
 $RUNCFAST Steckler_Compartment Steckler_512 /V
 $RUNCFAST Steckler_Compartment Steckler_542 /V
@@ -227,7 +227,7 @@ $RUNCFAST Steckler_Compartment Steckler_510 /V
 $RUNCFAST Steckler_Compartment Steckler_540 /V
 $RUNCFAST Steckler_Compartment Steckler_517 /V
 $RUNCFAST Steckler_Compartment Steckler_622 /V
-$RUNCFAST Steckler_Compartment Steckler_522 /V
+# $RUNCFAST Steckler_Compartment Steckler_522 /V
 $RUNCFAST Steckler_Compartment Steckler_524 /V
 $RUNCFAST Steckler_Compartment Steckler_541 /V
 $RUNCFAST Steckler_Compartment Steckler_520 /V

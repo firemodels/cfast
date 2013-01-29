@@ -1,0 +1,40 @@
+VERSN,6,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,900,50,0,10,10
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,GYPSUM,0.16,900,790,0.016,0.9,Gypsum Board (5/8 in)
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+!!
+!!Compartment keywords
+!!
+COMPA,Lower Corridor,17,1.8,2.5,0,0,0,GYPSUM,OFF,GYPSUM
+COMPA,Stairwell,2.6,3.2,5,0,1.8,0,GYPSUM,OFF,GYPSUM
+COMPA,Upper Corridor,17,1.8,2.5,0,0,2.5,GYPSUM,OFF,GYPSUM
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,2.6,2.5,0,1,0,0,3,1
+HVENT,2,3,1,2.6,5,2.5,1,0,0,1,1
+HVENT,3,4,1,1.8,2,0,1,0,0,2,1
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!ATF 48 kW
+FIRE,1,15,0.9,0.4,1,1,0,0,0,1,ATF 48 kW
+CHEMI,1,4,0,0,0,0.2,5E+07,METHANE
+TIME,0,60,900
+HRR,11520,48000,48000
+SOOT,0.01,0.01,0.01
+CO,0.004747221,0.004747221,0.0047
+TRACE,0,0,0
+AREA,0.16,0.16,0.16
+HEIGH,0,0,0

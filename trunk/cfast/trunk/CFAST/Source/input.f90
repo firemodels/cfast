@@ -896,34 +896,6 @@
         windrf = lrarray(2)
         windpw = lrarray(3)
 
-        ! INTER - Set the initial interface height only if it different than the default
-        !         this key word takes arguements in pairs - compartment, height
-    case ('INTER')
-        if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
-            ierror = 25
-            return
-        endif
-        if ((nret/2)*2/=nret) then   ! There have to be pairs of numbers
-            write (iofilo,5130) nret
-            ierror = 73
-            return
-        endif
-        do i = 1, nret - 1, 2
-            j = lrarray(i)
-            if (j>n.or.j<1) then
-                write (iofilo,5140) i, j
-                ierror = 26
-                return
-            else
-                xxlocal = lrarray(i+1)
-                if(xxlocal<xx0.or.xxlocal>hr(j)) then
-                    ierror = 72
-                    return
-                endif
-                inter(j) = xxlocal
-            endif
-        end do
-
         ! MVENT - simplified mechanical ventilation
 
         ! (1) From_Compartment, (2) To_Compartment, (3) ID_Number
@@ -1684,7 +1656,7 @@
         heatfq = lrarray(6)
 
         ! Outdated keywords
-    case ('OBJFL','MVOPN','MVFAN','MAINF')
+    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER')
         ierror = 5
         return
 

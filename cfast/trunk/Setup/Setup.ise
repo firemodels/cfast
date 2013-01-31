@@ -4655,7 +4655,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{8C3CB364-5BC9-4067-8F9A-C54D3ED8506A}</td><td/></row>
 		<row><td>ProductName</td><td>CFAST</td><td/></row>
-		<row><td>ProductVersion</td><td>6.3.0.559</td><td/></row>
+		<row><td>ProductVersion</td><td>6.3.0.713</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>

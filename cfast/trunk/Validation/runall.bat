@@ -14,6 +14,7 @@ if %1==NBS goto NBS
 if %1==High_Bay goto High_Bay
 if %1==WTC goto WTC
 if %1==Steckler goto Steckler
+if %1==Dunes2000 goto Dunes2000
 :WTC
 echo Running WTC Spray Burner Tests
 cd WTC
@@ -501,6 +502,21 @@ REM ..\..\bin\cfast Steckler_522 /V
 ..\..\bin\cfast Steckler_161 /V
 ..\..\bin\cfast Steckler_166 /V
 cd ..\
+if %1==Steckler goto end
+:Dunes2000
+echo NIST Dunes 2000 tests
+cd NIST_Dunes_2000
+call ..\CleanCFAST
+..\..\bin\cfast NIST_Dunes_2000_SDC02 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC05 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC07 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC09 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC10 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC33 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC35 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC39 /V
+cd ..\
+if %1==Dunes2000 goto end
 :end
 echo.| time
 echo CFAST simulations complete.

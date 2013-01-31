@@ -8,7 +8,7 @@ Public Class RunModel
     Private localById As Process
     Private FileName As String, IO As Integer = 1
     Friend WithEvents RunOptions As System.Windows.Forms.Label
-    Friend WithEvents Jacobian As System.Windows.Forms.Button
+    Friend WithEvents RunJac As System.Windows.Forms.Button
     Private CurrentTime As Single
     Private DebugOn As Boolean = False
     Private JacobianOn As Boolean = False
@@ -67,7 +67,7 @@ Public Class RunModel
         Me.Label3 = New System.Windows.Forms.Label()
         Me.RunUpdate = New System.Windows.Forms.Button()
         Me.RunOptions = New System.Windows.Forms.Label()
-        Me.Jacobian = New System.Windows.Forms.Button()
+        Me.RunJac = New System.Windows.Forms.Button()
         CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -84,9 +84,9 @@ Public Class RunModel
         '
         'RunOK
         '
-        Me.RunOK.Location = New System.Drawing.Point(307, 445)
+        Me.RunOK.Location = New System.Drawing.Point(212, 445)
         Me.RunOK.Name = "RunOK"
-        Me.RunOK.Size = New System.Drawing.Size(75, 23)
+        Me.RunOK.Size = New System.Drawing.Size(100, 23)
         Me.RunOK.TabIndex = 4
         Me.RunOK.Text = "Close"
         '
@@ -130,9 +130,9 @@ Public Class RunModel
         '
         'RunStop
         '
-        Me.RunStop.Location = New System.Drawing.Point(455, 445)
+        Me.RunStop.Location = New System.Drawing.Point(364, 445)
         Me.RunStop.Name = "RunStop"
-        Me.RunStop.Size = New System.Drawing.Size(75, 23)
+        Me.RunStop.Size = New System.Drawing.Size(100, 23)
         Me.RunStop.TabIndex = 5
         Me.RunStop.Text = "Stop"
         '
@@ -155,9 +155,9 @@ Public Class RunModel
         '
         'RunUpdate
         '
-        Me.RunUpdate.Location = New System.Drawing.Point(603, 445)
+        Me.RunUpdate.Location = New System.Drawing.Point(516, 445)
         Me.RunUpdate.Name = "RunUpdate"
-        Me.RunUpdate.Size = New System.Drawing.Size(75, 23)
+        Me.RunUpdate.Size = New System.Drawing.Size(100, 23)
         Me.RunUpdate.TabIndex = 6
         Me.RunUpdate.Text = "Update"
         '
@@ -170,21 +170,30 @@ Public Class RunModel
         Me.RunOptions.Size = New System.Drawing.Size(0, 13)
         Me.RunOptions.TabIndex = 10
         '
-        'Jacobian
+        'RunJacobian
         '
-        Me.Jacobian.Location = New System.Drawing.Point(751, 445)
-        Me.Jacobian.Name = "Jacobian"
-        Me.Jacobian.Size = New System.Drawing.Size(100, 23)
-        Me.Jacobian.TabIndex = 11
-        Me.Jacobian.Text = "Jacobian Off"
-        Me.Jacobian.Visible = False
+        Me.RunJac.Location = New System.Drawing.Point(672, 445)
+        Me.RunJac.Name = "RunJac"
+        Me.RunJac.Size = New System.Drawing.Size(100, 23)
+        Me.RunJac.TabIndex = 11
+        Me.RunJac.Text = "Jacobian Off"
+        Me.RunJac.Visible = False
+        '
+        'RunJac
+        '
+        Me.RunJac.Location = New System.Drawing.Point(672, 445)
+        Me.RunJac.Name = "RunJac"
+        Me.RunJac.Size = New System.Drawing.Size(100, 23)
+        Me.RunJac.TabIndex = 11
+        Me.RunJac.Text = "Jacobian Off"
+        Me.RunJac.Visible = False
         '
         'RunModel
         '
         Me.AcceptButton = Me.RunOK
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.ClientSize = New System.Drawing.Size(984, 534)
-        Me.Controls.Add(Me.Jacobian)
+        Me.Controls.Add(Me.RunJac)
         Me.Controls.Add(Me.RunOptions)
         Me.Controls.Add(Me.RunUpdate)
         Me.Controls.Add(Me.Label3)
@@ -222,16 +231,22 @@ Public Class RunModel
         Me.DebugOn = False
         Me.JacobianOn = False
         If DebugOutput Then
-            Me.RunUpdate.Width = 100
+            Me.RunOK.Location = New Point(212, 445)
+            Me.RunStop.Location = New Point(364, 445)
+            Me.RunUpdate.Location = New Point(516, 445)
+            Me.RunJac.Location = New Point(672, 445)
             Me.RunUpdate.Text = "Debug is Off"
-            Me.Jacobian.Text = "Jacobian is Off"
-            Me.Jacobian.Visible = True
-            Me.Jacobian.Enabled = False
+            Me.RunJac.Text = "Jacobian is Off"
+            Me.RunJac.Visible = True
+            Me.RunJac.Enabled = False
         Else
+            Me.RunOK.Location = New Point(290, 445)
+            Me.RunStop.Location = New Point(442, 445)
+            Me.RunUpdate.Location = New Point(594, 445)
+            Me.RunJac.Location = New Point(672, 445)
             Me.RunUpdate.Text = "Update"
-            Me.RunUpdate.Width = 75
-            Me.Jacobian.Text = "Jacobian is Off"
-            Me.Jacobian.Visible = False
+            Me.RunJac.Text = "Jacobian is Off"
+            Me.RunJac.Visible = False
         End If
         Me.JacobianOn = False
         ' Start the model run and then just look for the status file every so often
@@ -353,14 +368,14 @@ Public Class RunModel
             If Me.DebugOn Then
                 Me.DebugOn = False
                 Me.RunUpdate.Text = "Debug is Off"
-                Me.Jacobian.Text = "Jacobian is Off"
-                Me.Jacobian.Enabled = False
+                Me.RunJac.Text = "Jacobian is Off"
+                Me.RunJac.Enabled = False
                 If System.IO.File.Exists(FileName + ".debug") Then System.IO.File.Delete(FileName + ".debug")
                 If System.IO.File.Exists(FileName + ".jacobian") Then System.IO.File.Delete(FileName + ".jacobian")
             Else
                 Me.DebugOn = True
                 Me.RunUpdate.Text = "Debug is On"
-                Me.Jacobian.Enabled = True
+                Me.RunJac.Enabled = True
                 FileOpen(IO, FileName + ".debug", OpenMode.Output)
                 FileClose(IO)
             End If
@@ -371,17 +386,17 @@ Public Class RunModel
         Me.RunTimer.Enabled = True
     End Sub
 
-    Private Sub Jacobian_Click(sender As System.Object, e As System.EventArgs) Handles Jacobian.Click
+    Private Sub Jacobian_Click(sender As System.Object, e As System.EventArgs) Handles RunJac.Click
         RunTimer.Enabled = False
         If DebugOutput Then
             FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".jacobian"
             If Me.JacobianOn Then
                 Me.JacobianOn = False
-                Me.Jacobian.Text = "Jacobian is Off"
+                Me.RunJac.Text = "Jacobian is Off"
                 If System.IO.File.Exists(FileName) Then System.IO.File.Delete(FileName)
             Else
                 Me.JacobianOn = True
-                Me.Jacobian.Text = "Jacobian is On"
+                Me.RunJac.Text = "Jacobian is On"
                 FileOpen(IO, FileName, OpenMode.Output)
                 FileClose(IO)
             End If

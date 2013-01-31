@@ -51,6 +51,8 @@ Public Class CeditMain
     Friend WithEvents FireType As System.Windows.Forms.Label
     Friend WithEvents Label53 As System.Windows.Forms.Label
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
+    Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuDebugOutput As System.Windows.Forms.MenuItem
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -442,6 +444,8 @@ Public Class CeditMain
         Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
         Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
         Me.MenuValidationOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuItem4 = New System.Windows.Forms.MenuItem()
+        Me.MenuDebugOutput = New System.Windows.Forms.MenuItem()
         Me.MenuTools = New System.Windows.Forms.MenuItem()
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
@@ -880,6 +884,7 @@ Public Class CeditMain
         'MenuNew
         '
         Me.MenuNew.Index = 0
+        Me.MenuNew.Shortcut = System.Windows.Forms.Shortcut.CtrlN
         Me.MenuNew.Text = "New"
         '
         'MenuOpen
@@ -964,7 +969,7 @@ Public Class CeditMain
         'MenuItem2
         '
         Me.MenuItem2.Index = 4
-        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuShowCFAST, Me.MenuValidationOutput})
+        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuValidationOutput, Me.MenuItem4, Me.MenuDebugOutput, Me.MenuShowCFAST})
         Me.MenuItem2.Text = "Output Options"
         '
         'MenuDetailedOutput
@@ -986,13 +991,24 @@ Public Class CeditMain
         '
         'MenuShowCFAST
         '
-        Me.MenuShowCFAST.Index = 3
+        Me.MenuShowCFAST.Index = 6
         Me.MenuShowCFAST.Text = "Show CFAST Window"
         '
         'MenuValidationOutput
         '
-        Me.MenuValidationOutput.Index = 4
+        Me.MenuValidationOutput.Index = 3
         Me.MenuValidationOutput.Text = "CFAST Validation Output"
+        '
+        'MenuItem4
+        '
+        Me.MenuItem4.Index = 4
+        Me.MenuItem4.Text = "-"
+        '
+        'MenuDebugOutput
+        '
+        Me.MenuDebugOutput.Index = 5
+        Me.MenuDebugOutput.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftD
+        Me.MenuDebugOutput.Text = "Debug Output"
         '
         'MenuTools
         '
@@ -5898,5 +5914,14 @@ Public Class CeditMain
         End If
         Me.MenuValidationOutput.Checked = ValidationOutput
         SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
+    End Sub
+
+    Private Sub MenuDebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles MenuDebugOutput.Click
+        If Me.MenuDebugOutput.Checked Then
+            DebugOutput = False
+        Else
+            DebugOutput = True
+        End If
+        Me.MenuDebugOutput.Checked = DebugOutput
     End Sub
 End Class

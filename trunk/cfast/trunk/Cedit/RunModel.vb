@@ -8,7 +8,10 @@ Public Class RunModel
     Private localById As Process
     Private FileName As String, IO As Integer = 1
     Friend WithEvents RunOptions As System.Windows.Forms.Label
+    Friend WithEvents Jacobian As System.Windows.Forms.Button
     Private CurrentTime As Single
+    Private DebugOn As Boolean = False
+    Private JacobianOn As Boolean = False
 
 #Region " Windows Form Designer generated code "
 
@@ -64,6 +67,7 @@ Public Class RunModel
         Me.Label3 = New System.Windows.Forms.Label()
         Me.RunUpdate = New System.Windows.Forms.Button()
         Me.RunOptions = New System.Windows.Forms.Label()
+        Me.Jacobian = New System.Windows.Forms.Button()
         CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -126,7 +130,7 @@ Public Class RunModel
         '
         'RunStop
         '
-        Me.RunStop.Location = New System.Drawing.Point(454, 445)
+        Me.RunStop.Location = New System.Drawing.Point(455, 445)
         Me.RunStop.Name = "RunStop"
         Me.RunStop.Size = New System.Drawing.Size(75, 23)
         Me.RunStop.TabIndex = 5
@@ -166,11 +170,21 @@ Public Class RunModel
         Me.RunOptions.Size = New System.Drawing.Size(0, 13)
         Me.RunOptions.TabIndex = 10
         '
+        'Jacobian
+        '
+        Me.Jacobian.Location = New System.Drawing.Point(751, 445)
+        Me.Jacobian.Name = "Jacobian"
+        Me.Jacobian.Size = New System.Drawing.Size(100, 23)
+        Me.Jacobian.TabIndex = 11
+        Me.Jacobian.Text = "Jacobian Off"
+        Me.Jacobian.Visible = False
+        '
         'RunModel
         '
         Me.AcceptButton = Me.RunOK
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.ClientSize = New System.Drawing.Size(984, 534)
+        Me.Controls.Add(Me.Jacobian)
         Me.Controls.Add(Me.RunOptions)
         Me.Controls.Add(Me.RunUpdate)
         Me.Controls.Add(Me.Label3)
@@ -205,6 +219,21 @@ Public Class RunModel
         Me.RunSummary(0, 6) = "Pressure" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Pressure).Units.Substring(1) + ")"
         Me.RunSummary(0, 7) = "Ambient Target" + Chr(10) + "Flux" + Chr(10) + "(" + myUnits.Convert(UnitsNum.HeatFlux).Units.Substring(1) + ")"
         Me.RunSummary.AutoSizeRow(0)
+        Me.DebugOn = False
+        Me.JacobianOn = False
+        If DebugOutput Then
+            Me.RunUpdate.Width = 100
+            Me.RunUpdate.Text = "Debug is Off"
+            Me.Jacobian.Text = "Jacobian is Off"
+            Me.Jacobian.Visible = True
+            Me.Jacobian.Enabled = False
+        Else
+            Me.RunUpdate.Text = "Update"
+            Me.RunUpdate.Width = 75
+            Me.Jacobian.Text = "Jacobian is Off"
+            Me.Jacobian.Visible = False
+        End If
+        Me.JacobianOn = False
         ' Start the model run and then just look for the status file every so often
         found = CFastInputFile.IndexOf(" ", 0)
         If found = 0 Then
@@ -312,14 +341,51 @@ Public Class RunModel
 
     Private Sub RunOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunOK.Click
         Me.RunTimer.Enabled = False
+        If System.IO.File.Exists(FileName + ".debug") Then System.IO.File.Delete(FileName + ".debug")
+        If System.IO.File.Exists(FileName + ".jacobian") Then System.IO.File.Delete(FileName + ".jacobian")
         Me.Close()
     End Sub
 
     Private Sub RunUpdate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunUpdate.Click
-        Me.RunTimer.Enabled = False
-        FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".query"
-        FileOpen(IO, FileName, OpenMode.Output)
-        FileClose(IO)
+        RunTimer.Enabled = False
+        FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile)
+        If DebugOutput Then
+            If Me.DebugOn Then
+                Me.DebugOn = False
+                Me.RunUpdate.Text = "Debug is Off"
+                Me.Jacobian.Text = "Jacobian is Off"
+                Me.Jacobian.Enabled = False
+                If System.IO.File.Exists(FileName + ".debug") Then System.IO.File.Delete(FileName + ".debug")
+                If System.IO.File.Exists(FileName + ".jacobian") Then System.IO.File.Delete(FileName + ".jacobian")
+            Else
+                Me.DebugOn = True
+                Me.RunUpdate.Text = "Debug is On"
+                Me.Jacobian.Enabled = True
+                FileOpen(IO, FileName + ".debug", OpenMode.Output)
+                FileClose(IO)
+            End If
+        Else
+            FileOpen(IO, FileName + ".query", OpenMode.Output)
+            FileClose(IO)
+        End If
+        Me.RunTimer.Enabled = True
+    End Sub
+
+    Private Sub Jacobian_Click(sender As System.Object, e As System.EventArgs) Handles Jacobian.Click
+        RunTimer.Enabled = False
+        If DebugOutput Then
+            FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".jacobian"
+            If Me.JacobianOn Then
+                Me.JacobianOn = False
+                Me.Jacobian.Text = "Jacobian is Off"
+                If System.IO.File.Exists(FileName) Then System.IO.File.Delete(FileName)
+            Else
+                Me.JacobianOn = True
+                Me.Jacobian.Text = "Jacobian is On"
+                FileOpen(IO, FileName, OpenMode.Output)
+                FileClose(IO)
+            End If
+        End If
         Me.RunTimer.Enabled = True
     End Sub
 End Class

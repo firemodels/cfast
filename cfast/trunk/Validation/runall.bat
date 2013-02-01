@@ -510,7 +510,7 @@ call ..\CleanCFAST
 ..\..\bin\cfast NIST_Dunes_2000_SDC02 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC05 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC07 /V
-..\..\bin\cfast NIST_Dunes_2000_SDC09 /V
+REM ..\..\bin\cfast NIST_Dunes_2000_SDC09 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC10 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC33 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC35 /V

@@ -95,11 +95,6 @@
                     endif
                 endif
 
-                ! copy number of neutral planes to cfast data structures
-
-                neutral(iroom1,iroom2) = nneut
-                neutral(iroom2,iroom1) = nneut
-
                 ! copy flows into the cfast data structure. this data structure is for reporting purposes only;
 
                 iijk = ijk(iroom1,iroom2,ik)

@@ -832,7 +832,6 @@
             vvarea(i,j) = xx0
             ! do horizontal vents (hvent,...)
             nw(i,j) = 0
-            neutral(i,j) = 0
         end do
     end do
 

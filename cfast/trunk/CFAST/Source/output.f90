@@ -1832,7 +1832,7 @@
     
     integer :: iint, iflt, itot, iv
 
-    iint = (loc(itermxx) - loc(neutral))/4 + 1
+    iint = (loc(itermxx) - loc(nlspct))/4 + 1
     iflt = (loc(termxx) - loc(gamma))/4
 
     iflt = iflt + 2

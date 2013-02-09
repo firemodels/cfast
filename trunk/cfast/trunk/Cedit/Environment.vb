@@ -7,7 +7,6 @@ Public Class Environment
     Private aTitle As String                        ' Title for the simulation
     Private aSimulationTime As Integer              ' Total simulation time
     Private aOutputInterval As Integer              ' Time interval for printed output, + is compact output and - is full output
-    Private aBinaryInterval As Integer              ' Time interval for binary output
     Private aSpreadsheetInterval As Integer         ' Time interval for comma-separated output
     Private aSmokeviewInterval As Integer           ' Time interval for smokeview output
     Private aIntAmbTemperature As Single            ' Ambient temperature inside the structure at t=0
@@ -33,7 +32,6 @@ Public Class Environment
         aTitle = "CFAST Simulation"
         aSimulationTime = 900
         aOutputInterval = 50
-        aBinaryInterval = 0
         aSpreadsheetInterval = 10
         aSmokeviewInterval = 10
         aIntAmbTemperature = 293.15
@@ -79,17 +77,6 @@ Public Class Environment
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aOutputInterval Then
                 aChanged = True
                 aOutputInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
-            End If
-        End Set
-    End Property
-    Friend Property BinaryOutputInterval() As Integer
-        Get
-            Return myUnits.Convert(UnitsNum.Time).FromSI(aBinaryInterval)
-        End Get
-        Set(ByVal Value As Integer)
-            If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aBinaryInterval Then
-                aChanged = True
-                aBinaryInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property

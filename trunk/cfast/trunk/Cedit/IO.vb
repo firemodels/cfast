@@ -252,7 +252,6 @@ Module IO
         Else
             csv.Num(i, timesNum.printInterval) = myEnvironment.OutputInterval
         End If
-        csv.Num(i, timesNum.historyInterval) = myEnvironment.BinaryOutputInterval
         csv.Num(i, timesNum.smokeviewInterval) = myEnvironment.SmokeviewInterval
         csv.Num(i, timesNum.spreadsheetInterval) = myEnvironment.SpreadsheetInterval
         i += 1
@@ -690,10 +689,6 @@ Module IO
             End If
             i += 1
         Loop
-        'If NewFileFormat Then
-        ' myFireObjects.Clear()
-        ' myThermalProperties.Clear()
-        ' End If
 
         ' do material properties so they are defined for compartments, fires, and targets
         Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
@@ -1052,9 +1047,14 @@ Module IO
                         Else
                             DetailedCFASTOutput = False
                         End If
-                        myEnvironment.BinaryOutputInterval = csv.Num(i, timesNum.historyInterval)
-                        myEnvironment.SmokeviewInterval = csv.Num(i, timesNum.smokeviewInterval)
-                        myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval)
+                        If csv.Num(i, 0) = 5 Then
+                            myEnvironment.SmokeviewInterval = csv.Num(i, timesNum.smokeviewInterval)
+                            myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval)
+                        Else
+                            ' This is the old format input file that has a history file entry
+                            myEnvironment.SmokeviewInterval = csv.Num(i, timesNum.smokeviewInterval + 1)
+                            myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval + 1)
+                        End If
                         myEnvironment.Changed = False
                     Case "WIND"
                         myEnvironment.ExtWindSpeed = csv.Num(i, windNum.velocity)

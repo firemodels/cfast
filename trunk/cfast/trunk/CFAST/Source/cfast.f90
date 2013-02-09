@@ -561,18 +561,6 @@
             prttime = xx0
         endif
 
-        if (t+x0001>min(tdump,tstop).and.idump) then
-            itmstp = tdump + 1.0d0
-            if(.not.ltarg)then
-                call target(steady)
-                ltarg = .true.
-            endif
-            call dumper(itmstp,ierror)
-            if (ierror/=0) return
-            tdump = tdump + ddump
-            call statusoutput (t, dt, errorcode)
-        endif
-
         if (t+x0001>min(tplot,tstop).and.iplot) then
             itmstp = tplot
             if(.not.ltarg)then

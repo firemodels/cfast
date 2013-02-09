@@ -2,7 +2,7 @@ VERSN,6,Cable tray fire -- base case
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,1800,-120,0,10,30
+TIMES,1800,-120,10,30
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
 CJET,WALLS
@@ -25,6 +25,7 @@ HVENT,1,2,1,1,2.4,0,1,0,0,1,1
 !!
 !!Fire keywords
 !!
+GLOBA,10,393.15
 !!bunsen
 FIRE,1,4.55,2.5,0,1,1,0,0,0,1,bunsen
 CHEMI,1,4,0,0,0,0.33,5E+07,METHANE

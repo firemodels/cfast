@@ -203,7 +203,6 @@ Friend Module Data
     Friend Enum timesNum
         simTime = 2
         printInterval
-        historyInterval
         smokeviewInterval
         spreadsheetInterval
     End Enum

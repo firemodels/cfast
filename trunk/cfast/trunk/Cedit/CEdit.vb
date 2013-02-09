@@ -161,7 +161,6 @@ Public Class CeditMain
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
     Friend WithEvents Label4 As System.Windows.Forms.Label
-    Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents Label87 As System.Windows.Forms.Label
@@ -182,7 +181,6 @@ Public Class CeditMain
     Friend WithEvents EnvIntAmbPress As System.Windows.Forms.TextBox
     Friend WithEvents EnvIntAmbTemp As System.Windows.Forms.TextBox
     Friend WithEvents EnvSpreadOutInterval As System.Windows.Forms.TextBox
-    Friend WithEvents EnvBinaryOutInterval As System.Windows.Forms.TextBox
     Friend WithEvents EnvTextOutInterval As System.Windows.Forms.TextBox
     Friend WithEvents EnvSimTime As System.Windows.Forms.TextBox
     Friend WithEvents EnvErrors As System.Windows.Forms.TextBox
@@ -442,10 +440,10 @@ Public Class CeditMain
         Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
         Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
         Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
         Me.MenuValidationOutput = New System.Windows.Forms.MenuItem()
         Me.MenuItem4 = New System.Windows.Forms.MenuItem()
         Me.MenuDebugOutput = New System.Windows.Forms.MenuItem()
+        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
         Me.MenuTools = New System.Windows.Forms.MenuItem()
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
@@ -491,8 +489,6 @@ Public Class CeditMain
         Me.EnvSmokeviewInterval = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.EnvSpreadOutInterval = New System.Windows.Forms.TextBox()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.EnvBinaryOutInterval = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.EnvTextOutInterval = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -989,11 +985,6 @@ Public Class CeditMain
         Me.MenuNetHeatFluxOutput.Index = 2
         Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
         '
-        'MenuShowCFAST
-        '
-        Me.MenuShowCFAST.Index = 6
-        Me.MenuShowCFAST.Text = "Show CFAST Window"
-        '
         'MenuValidationOutput
         '
         Me.MenuValidationOutput.Index = 3
@@ -1009,6 +1000,11 @@ Public Class CeditMain
         Me.MenuDebugOutput.Index = 5
         Me.MenuDebugOutput.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftD
         Me.MenuDebugOutput.Text = "Debug Output"
+        '
+        'MenuShowCFAST
+        '
+        Me.MenuShowCFAST.Index = 6
+        Me.MenuShowCFAST.Text = "Show CFAST Window"
         '
         'MenuTools
         '
@@ -1099,7 +1095,7 @@ Public Class CeditMain
         '
         'EnvTitle
         '
-        Me.EnvTitle.Location = New System.Drawing.Point(152, 24)
+        Me.EnvTitle.Location = New System.Drawing.Point(143, 48)
         Me.EnvTitle.Name = "EnvTitle"
         Me.EnvTitle.Size = New System.Drawing.Size(272, 20)
         Me.EnvTitle.TabIndex = 1
@@ -1107,7 +1103,7 @@ Public Class CeditMain
         '
         'Label28
         '
-        Me.Label28.Location = New System.Drawing.Point(112, 24)
+        Me.Label28.Location = New System.Drawing.Point(103, 48)
         Me.Label28.Name = "Label28"
         Me.Label28.Size = New System.Drawing.Size(32, 23)
         Me.Label28.TabIndex = 101
@@ -1339,22 +1335,20 @@ Public Class CeditMain
         Me.GroupBox7.Controls.Add(Me.EnvSmokeviewInterval)
         Me.GroupBox7.Controls.Add(Me.Label4)
         Me.GroupBox7.Controls.Add(Me.EnvSpreadOutInterval)
-        Me.GroupBox7.Controls.Add(Me.Label3)
-        Me.GroupBox7.Controls.Add(Me.EnvBinaryOutInterval)
         Me.GroupBox7.Controls.Add(Me.Label2)
         Me.GroupBox7.Controls.Add(Me.EnvTextOutInterval)
         Me.GroupBox7.Controls.Add(Me.Label1)
         Me.GroupBox7.Controls.Add(Me.EnvSimTime)
-        Me.GroupBox7.Location = New System.Drawing.Point(120, 74)
+        Me.GroupBox7.Location = New System.Drawing.Point(111, 106)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(304, 192)
+        Me.GroupBox7.Size = New System.Drawing.Size(304, 156)
         Me.GroupBox7.TabIndex = 2
         Me.GroupBox7.TabStop = False
         Me.GroupBox7.Text = "Simulation Times"
         '
         'Label25
         '
-        Me.Label25.Location = New System.Drawing.Point(16, 149)
+        Me.Label25.Location = New System.Drawing.Point(16, 117)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(152, 23)
         Me.Label25.TabIndex = 117
@@ -1363,7 +1357,7 @@ Public Class CeditMain
         '
         'EnvSmokeviewInterval
         '
-        Me.EnvSmokeviewInterval.Location = New System.Drawing.Point(184, 149)
+        Me.EnvSmokeviewInterval.Location = New System.Drawing.Point(184, 117)
         Me.EnvSmokeviewInterval.Name = "EnvSmokeviewInterval"
         Me.EnvSmokeviewInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSmokeviewInterval.TabIndex = 7
@@ -1371,7 +1365,7 @@ Public Class CeditMain
         '
         'Label4
         '
-        Me.Label4.Location = New System.Drawing.Point(16, 117)
+        Me.Label4.Location = New System.Drawing.Point(16, 85)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(152, 23)
         Me.Label4.TabIndex = 118
@@ -1380,28 +1374,11 @@ Public Class CeditMain
         '
         'EnvSpreadOutInterval
         '
-        Me.EnvSpreadOutInterval.Location = New System.Drawing.Point(184, 117)
+        Me.EnvSpreadOutInterval.Location = New System.Drawing.Point(184, 85)
         Me.EnvSpreadOutInterval.Name = "EnvSpreadOutInterval"
         Me.EnvSpreadOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSpreadOutInterval.TabIndex = 6
         Me.EnvSpreadOutInterval.Text = "10 s"
-        '
-        'Label3
-        '
-        Me.Label3.Location = New System.Drawing.Point(16, 85)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(152, 23)
-        Me.Label3.TabIndex = 119
-        Me.Label3.Text = "Binary Output Interval:"
-        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'EnvBinaryOutInterval
-        '
-        Me.EnvBinaryOutInterval.Location = New System.Drawing.Point(184, 85)
-        Me.EnvBinaryOutInterval.Name = "EnvBinaryOutInterval"
-        Me.EnvBinaryOutInterval.Size = New System.Drawing.Size(96, 20)
-        Me.EnvBinaryOutInterval.TabIndex = 5
-        Me.EnvBinaryOutInterval.Text = "10 s"
         '
         'Label2
         '
@@ -4531,11 +4508,10 @@ Public Class CeditMain
     End Sub
 
     ' This section of code handles events related to the environment tab
-    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvBinaryOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvIntAmbRH.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvWindSpeed.Leave, EnvPowerLaw.Leave, EnvWindHeight.Leave
+    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvIntAmbRH.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvWindSpeed.Leave, EnvPowerLaw.Leave, EnvWindHeight.Leave
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
         If sender Is Me.EnvSimTime Then myEnvironment.SimulationTime = Val(Me.EnvSimTime.Text)
         If sender Is Me.EnvTextOutInterval Then myEnvironment.OutputInterval = Val(Me.EnvTextOutInterval.Text)
-        If sender Is Me.EnvBinaryOutInterval Then myEnvironment.BinaryOutputInterval = Val(Me.EnvBinaryOutInterval.Text)
         If sender Is Me.EnvSpreadOutInterval Then myEnvironment.SpreadsheetInterval = Val(Me.EnvSpreadOutInterval.Text)
         If sender Is Me.EnvSmokeviewInterval Then myEnvironment.SmokeviewInterval = Val(Me.EnvSmokeviewInterval.Text)
         If sender Is Me.EnvIntAmbTemp Then myEnvironment.IntAmbTemperature = Val(Me.EnvIntAmbTemp.Text)

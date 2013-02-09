@@ -10,7 +10,7 @@ WIND,0,10,0.16
 !!
 !!Material Properties
 !!
-MATL,GYPSUM,0.16,900,790,0.016,0.9,Gypsum Board (5/8 in)
+MATL,GYPSUM,0.13,1090,930,0.017,0.9,Gypsum Board ATF
 MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
 !!
 !!Compartment keywords
@@ -38,3 +38,10 @@ CO,0.004747221,0.004747221,0.0047
 TRACE,0,0,0
 AREA,0.16,0.16,0.16
 HEIGH,0,0,0
+!!
+!!Target and detector keywords
+!!
+DETECT,2,1,283.15,13,0.8,2.34,0,0,7E-05
+DETECT,2,1,283.15,6,1,2.34,0,0,7E-05
+DETECT,2,1,283.15,0.5,0.5,2.34,0,0,7E-05
+DETECT,2,2,283.15,0.5,0.1,2.34,0,0,7E-05

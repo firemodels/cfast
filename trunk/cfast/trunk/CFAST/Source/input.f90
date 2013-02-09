@@ -551,19 +551,19 @@
 
         ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
     case ("TIMES")
-        if (countargs(label,4,lcarray, xnumc-1, nret)) then
-            nsmax =  lrarray(1)
-            lprint = lrarray(2)
-            ldiagp = lrarray(3)
-            lcopyss =  lrarray(4)
-        else if (countargs(label,5,lcarray, xnumc-1, nret)) then
+        if (countargs(label,5,lcarray, xnumc-1, nret)) then
             nsmax =  lrarray(1)
             lprint = lrarray(2)
             ldiago = lrarray(3)
             if (ldiago>0) ndumpr = 1
             ldiagp = lrarray(4)
             lcopyss =  lrarray(5)
-        else
+        else if (countargs(label,4,lcarray, xnumc-1, nret)) then
+            nsmax =  lrarray(1)
+            lprint = lrarray(2)
+            ldiagp = lrarray(3)
+            lcopyss =  lrarray(4)
+        else 
             ierror = 1
             return
         endif

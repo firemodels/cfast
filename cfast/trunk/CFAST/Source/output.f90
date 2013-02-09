@@ -866,7 +866,7 @@
 
     write (iofilo,5000) 
     write (iofilo,5010) nm1, nvents, nvvent, next
-    write (iofilo,5020) nsmax, lprint, ldiago, ldiago, lcopyss
+    write (iofilo,5020) nsmax, lprint, ldiagp, lcopyss
     if (cjeton(5)) then
         if (cjeton(1)) then
             if (cjeton(3)) then
@@ -882,15 +882,14 @@
         write (cjbuf,'(''off for all surfaces.'')')
     endif
     write (iofilo,5030) cjbuf
-    if (ndumpr>0.and.dumpf/=' ') write (iofilo,5040) dumpf
     return
 
 5000 format (//,' OVERVIEW',/)
 5010 FORMAT ('0Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,'0',i4,12x,i4,10x,i4,17x,i4)
-5020 format ('0Simulation    ',' Output     ','History     Smokeview',2x'Spreadsheet',/, &
-    '    Time       ',4('Interval    '),/,3x,' (s)          ',4('(s)         '),//,' ',i6,6x,4(i6,6x))
+5020 format ('0Simulation     Output         Smokeview      Spreadsheet',/, &
+             ' Time           Interval       Interval       Interval',/, & 
+             ' (s)            (s)            (s)            (s)',/,' ',i6,6x,3(i6,9x))
 5030 format ('0Ceiling jet is ',a)
-5040 format (' History file is ',a)
     end subroutine outover
 
     subroutine outamb
@@ -1781,236 +1780,6 @@
 6095 format(1x,i2,4x,e13.6)
 
     end subroutine debugpr
-
-    subroutine dumper (istep,ierror)
-
-    !     description:  saves the data files in packed binary format
-    !
-    !     arguments: istep  current time step
-    !                ierror returns error code
-
-    use cfast_main
-    use cshell
-    use iofiles
-    
-    implicit none
-
-    integer :: iounit = 11, itot, iflt, iint, ierr, istep, ierror
-    save itot
-
-    if (ndumpr==0) stop 106
-
-    termxx = itmstp - 1
-    itermxx = itmstp - 1
-    call lenoco(version/10,itot,iflt,iint)
-    call writeot(dmpoutput,itot,iounit,ierr,version)
-    if (ierr==0) then
-        if (debugging) write (logerr,5020) istep, itot * 4
-        return
-    endif
-
-    !error processing
-    write (logerr,5030) mod(ierr,256), historyfile
-    stop
-
-5020 format ('Write to the history file at',i5,i7)
-5030 format ('From dumper, error in accessing history file, error = ',i5,/,' File = ',a256)
-    end subroutine dumper 
-
-    subroutine lenoco (iv,itot,iflt,iint)
-
-    !     description:  to calculation the length of the numeric common block
-
-    !     arguments: iv     cfast reduced version number (version -1800) / 10
-    !                itot   total length of the common block in storage units
-    !                iflt   length of the floating portion in numeric storage units
-    !                iint   length of the integer portion in numeric storage units
-
-    use cfast_main
-    
-    implicit none
-    
-    integer :: iint, iflt, itot, iv
-
-    iint = (loc(itermxx) - loc(nlspct))/4 + 1
-    iflt = (loc(termxx) - loc(gamma))/4
-
-    iflt = iflt + 2
-    itot = iint + iflt
-
-    return
-    end subroutine lenoco
-
-    subroutine writeot(input,len,iounit,ierr,ivers0)
-
-    !     description:  write compacted history file
-    !     arguments: input
-    !                len
-    !                iounit
-    !                ierr
-    !                ivers0
-
-    implicit none
-    
-    integer, parameter :: mxdmp = 36000
-    integer :: input(len), parray(mxdmp), ierr, iounit, ios, ivers0, i, len
-    character header*6
-    data header /'$$CFL$'/
-
-    ierr = 0
-    call packot(len,mxdmp,input,parray)
-    write (iounit,iostat=ios) header, ivers0
-    write (iounit,iostat=ios) parray(1), (parray(i),i = 2,parray(1))
-
-    if (ios/=0) then
-        ierr = ios
-    else
-        ierr = 0
-    endif
-    return
-    end subroutine writeot
-
-     subroutine packot (itin,mxdmp,doit,retbuf)
-
-    !     This is the pack routine.  It crunches the binary common block to reduce
-    !     The amount of storage required to hold a single history record.
-    !     The length of the record which is written is contained in the first word
-    !     of the record and does NOT include itself.
-    !     The original implementation of this work was published by 
-    !     Andrew Binstock in The C Gazette, December 1987.  It is one of a large
-    !     class of compression schemes.  This particular scheme is fast, and is
-    !     best at compressing strings of the same character.  Since much of
-    !     the history file in CFAST stays the same, 0 for example, this works
-    !     fairly well.
-
-    implicit none 
-    
-    integer :: ic, itin, idx, ridx, mxdmp, doit(itin), retbuf(mxdmp), lc, count, mrkr, ierr, i
-    character :: msg*80
-
-    idx = 1
-    ridx = 1
-    mrkr = 106
-    ic = doit(idx)
-    idx = idx + 1
-
-    !     checking to make sure the first numbers are not the marker
-10  if (ic==mrkr) then
-        ridx = ridx + 1
-        retbuf(ridx) = mrkr
-        ridx = ridx + 1
-        retbuf(ridx) = mrkr
-        ic = doit(idx)
-        idx = idx + 1
-        go to 10
-    endif
-
-    lc = ic
-    count = 1
-
-    !     main loop
-20  if (idx<=itin) then
-        ic = doit(idx)
-        idx = idx + 1
-
-        !     if next number = marker then store what you have
-30      if (ic==mrkr) then
-            if (count>3) then
-                if ((ridx+5)>=mxdmp) then
-                    write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-                    call xerror(msg,0,1,1)
-                    ierr = 19
-                    return
-                endif
-                call oput(lc,count,itin,mxdmp,ridx,retbuf)
-            else
-                if ((ridx+count+2)>=mxdmp) then
-                    write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-                    call xerror(msg,0,1,1)
-                    ierr = 19
-                    return
-                endif
-                do, i = 1, count
-                    ridx = ridx + 1
-                    retbuf(ridx) = lc
-                end do
-            endif
-            count = 0
-            ridx = ridx + 1
-            retbuf(ridx) = mrkr
-            ridx = ridx + 1
-            retbuf(ridx) = mrkr
-            if (idx>itin) go to 60
-            ic = doit(idx)
-            idx = idx + 1
-            lc = ic
-            go to 30
-        endif
-        if (ic==lc) then
-            count = count + 1
-            if (count==(2**30)) then
-                if ((ridx+5)>=mxdmp) then
-                    write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-                    call xerror(msg,0,1,1)
-                    ierr = 19
-                    return
-                endif
-                call oput(lc,count,itin,mxdmp,ridx,retbuf)
-                count = 0
-            endif
-        else
-            if (count>3) then
-                if ((ridx+5)>=mxdmp) then
-                    write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-                    call xerror(msg,0,1,1)
-                    ierr = 19
-                    return
-                endif
-                call oput(lc,count,itin,mxdmp,ridx,retbuf)
-                lc = ic
-                count = 1
-            else
-                if ((ridx+count+2)>=mxdmp) then
-                    write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-                    call xerror(msg,0,1,1)
-                    ierr = 19
-                    return
-                endif
-                do i = 1, count
-                    ridx = ridx + 1
-                    retbuf(ridx) = lc
-                end do
-                lc = ic
-                count = 1
-            endif
-        endif
-        go to 20
-    endif
-60  if (count>3) then
-        if ((ridx+5)>=mxdmp) then
-            write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-            call xerror(msg,0,1,1)
-            ierr = 19
-            return
-        endif
-        call oput(lc,count,itin,mxdmp,ridx,retbuf)
-        lc = ic
-        count = 1
-    else
-        if ((ridx+count+2)>=mxdmp) then
-            write (msg,*) 'packot - overwrite, input and index = ', itin, idx
-            call xerror(msg,0,1,1)
-            ierr = 19
-            return
-        endif
-        do i = 1, count
-            ridx = ridx + 1
-            retbuf(ridx) = lc
-        end do
-    endif
-    retbuf(1) = ridx
-    return
-    end subroutine packot
 
     subroutine oput (ic,count,itin,mxdmp,ridx,retbuf)
 

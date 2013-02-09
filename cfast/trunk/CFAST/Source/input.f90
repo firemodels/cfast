@@ -549,18 +549,24 @@
 
     select case (label)
 
-        ! TIMES total_simulation, print interval, history interval, smokeview interval, spreadsheet interval
+        ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
     case ("TIMES")
-        if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
+        if (countargs(label,4,lcarray, xnumc-1, nret)) then
+            nsmax =  lrarray(1)
+            lprint = lrarray(2)
+            ldiagp = lrarray(3)
+            lcopyss =  lrarray(4)
+        else if (countargs(label,5,lcarray, xnumc-1, nret)) then
+            nsmax =  lrarray(1)
+            lprint = lrarray(2)
+            ldiago = lrarray(3)
+            if (ldiago>0) ndumpr = 1
+            ldiagp = lrarray(4)
+            lcopyss =  lrarray(5)
+        else
             ierror = 1
             return
         endif
-        nsmax =  lrarray(1)
-        lprint = lrarray(2)
-        ldiago = lrarray(3)
-        if (ldiago>0) ndumpr = 1
-        ldiagp = lrarray(4)
-        lcopyss =  lrarray(5)
 
         ! TAMB REFERENCE AMBIENT TEMPERATURE (C), REFERENCE AMBIENT PRESSURE, REFERENCE PRESSURE, relative humidity
     case ("TAMB")
@@ -1902,141 +1908,6 @@
     call set_target_object (ntarg,iobj,ierror)
     return
     end subroutine initfireobject
-
-    subroutine dreadin(output,iounit,ierr,ivers0)
-
-    !     routine: dreadin
-    !     purpose: read routine for compacted history files
-    !     arguments: output   starting location for i/o
-    !                iounit   logical unit assigned for read
-    !                ierr     status of read (zero if ok)
-    !                ivers0   version number of history file
-
-    implicit none
-    
-    integer, parameter :: mxdmp = 36000
-    logical cnvrt
-    character :: header*6, rheader(2)*6 = (/'$$CFL$', '$$CFH$'/)
-    integer output(*), input(mxdmp), flop, ierr, iounit, ios, ivers0, i, itot, iflt, iint, itemp
-
-    ierr = 0
-    read (iounit,end=30,iostat=ios) header, ivers0
-    if (header==rheader(1)) then
-#ifdef pp_ibmpc
-        cnvrt = .false.
-#else
-        cnvrt = .true.
-#endif
-    else if (header==rheader(2)) then
-#ifdef pp_ibmpc
-        cnvrt = .true.
-#else
-        cnvrt = .false.
-#endif
-    else
-        ierr = 9999
-        return
-    endif
-    if (cnvrt) ivers0 = flop(ivers0)
-    if (cnvrt) then
-        read (iounit,end=30,iostat=ios) input(1), (input(i),i = 2,flop(input(1)))
-        input(1) = flop(input(1))
-    else
-        read (iounit,end=30,iostat=ios) input(1), (input(i),i = 2,input(1))
-    endif
-    if (input(1)>mxdmp) then
-        call xerror('DREADIN - overwrite input buffer; fatal error',0,1,1)
-        ierr = 7
-        return
-    endif
-    if (cnvrt) then
-        do i = 2, input(1)
-            input(i) = flop(input(i))
-        end do
-    endif
-    call unpack(input,output)
-    if (cnvrt) then
-        call lenoco(((ivers0-1800)/10),itot,iflt,iint)
-        do  i = 1, iflt / 2
-            itemp = output(2*i-1)
-            output(2*i-1) = output(2*i)
-            output(2*i) = itemp
-        end do
-    endif
-30  if (ios/=0) then
-        ierr = ios
-    else
-        ierr = 0
-    endif
-    return
-    end subroutine dreadin
-
-    subroutine unpack(input,output)
-
-    !     routine: unpack
-    !     purpose: this routine is to uncrunch the packed binary history file.
-    !              the length of the record is contained in the first word and does not include the first word itself.  
-    !              see writeot for the reference information
-    !     arguments: input    packed array
-    !                output   unpack array returned
-
-    implicit none
-    
-    integer :: output(*), input(*), i, intgr, cntr, mrkr, inlen, inidx, outidx
-
-    mrkr = 106
-    inidx = 1
-    outidx = 0
-    inlen = input(1)
-10  if (.true.) then
-        inidx = inidx + 1
-        if (inidx>inlen) go to 30
-        intgr = input(inidx)
-        if (intgr==mrkr) then
-            inidx = inidx + 1
-            if (inidx>inlen) go to 30
-            intgr = input(inidx)
-            if (intgr==mrkr) then
-                outidx = outidx + 1
-                output(outidx) = intgr
-            else
-                inidx = inidx + 1
-                if (inidx>inlen) go to 30
-                cntr = input(inidx)
-                do i = 1, cntr
-                    outidx = outidx + 1
-                    output(outidx) = intgr
-                end do
-            endif
-        else
-            outidx = outidx + 1
-            output(outidx) = intgr
-        endif
-        go to 10
-    endif
-30  return
-    end
-
-    integer function flop(inum)
-
-    !     routine: flop
-    !     purpose: this routine flips bytes in an integer word big-endian to little endian or back
-    !     arguments: inum: number to be flipped
-
-    implicit none
-    
-    integer :: inum
-    integer*1 :: b(4), c(4), i, j
-    equivalence (b,i), (c,j)
-    
-    i = inum
-    c(1) = b(4)
-    c(2) = b(3)
-    c(3) = b(2)
-    c(4) = b(1)
-    flop = j
-    return
-    end function flop
 
     subroutine readcf1 (errorcode)
 

@@ -63,7 +63,6 @@ Public Class UpdateGUI
         MainWin.EnvTitle.Text = myEnvironment.Title
         MainWin.EnvSimTime.Text = myEnvironment.SimulationTime.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvTextOutInterval.Text = myEnvironment.OutputInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
-        MainWin.EnvBinaryOutInterval.Text = myEnvironment.BinaryOutputInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvSpreadOutInterval.Text = myEnvironment.SpreadsheetInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvSmokeviewInterval.Text = myEnvironment.SmokeviewInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvIntAmbTemp.Text = myEnvironment.IntAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units

@@ -467,13 +467,6 @@
     if (tocount>0) then
         do i = 1, tocount
             if (lcarray(i)==' ') then
-                if (i==1.) then
-                    write(logerr,5003) label, tocount
-                else if (i==2) then
-                    write(logerr,5004) label, tocount
-                else
-                    write(logerr,5000) label, tocount, nret
-                endif
                 return
             endif
             nret = nret + 1

@@ -2,6 +2,7 @@ module cenviro
     
     use cparams
     implicit none
+    save
     
     integer :: jaccol, neqoff
 
@@ -55,71 +56,53 @@ module cfast_main
     use cparams
     use dsize
     implicit none
-    INTEGER HVORIEN(MEXT), HVNODE(2,MEXT), CRDATE(3), MPSDAT(3), NWV(NR,NR), NA(MBR), NOFSETS(17), &
-        NCNODE(MNODE), NE(MBR), MVINTNODE(MNODE,MCON), ICMV(MNODE,MCON), NFC(MFAN), NW(NR,NR), NSLB(NWAL,NR), &
-        NF(MBR), HCLDEP, SMKAGL, VSHAPE(NR,NR), OBJRM(0:MXOIN), OBJIGN(MXOIN), NUMNODE(MXSLB+1,4,NR), &
-        FROOM(0:MXFIRE), NUMOBJL, IXTARG(TRGIROW,MXTARG), IXDTECT(MXDTECT,DTICOL), IQUENCH(NR), IDTPNT(NR,2), &
-        NDTECT, IDSET, NTARG, IFROOM(MXFIRE), IFRPNT(NR,2), IBRD(MDT), NFIRE, IPNTFSM, IJK(NR,NR,mxccv), &
-        NVENTIJK,NFOPT,VFACE(MXVENTS),ITERMXX, fplume(0:mxfire), lcopyss,heatfr, nfilter, dmpoutput(4096)
+    save
     
-    INTEGER nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofhcl, nofsmkw, nofsmk, &
+    integer hvorien(mext), hvnode(2,mext), crdate(3), mpsdat(3), nwv(nr,nr), na(mbr), nofsets(17), &
+        ncnode(mnode), ne(mbr), mvintnode(mnode,mcon), icmv(mnode,mcon), nfc(mfan), nw(nr,nr), nslb(nwal,nr), &
+        nf(mbr), hcldep, smkagl, vshape(nr,nr), objrm(0:mxoin), objign(mxoin), numnode(mxslb+1,4,nr), &
+        froom(0:mxfire), numobjl, ixtarg(trgirow,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
+        ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mdt), nfire, ipntfsm, ijk(nr,nr,mxccv), &
+        nventijk,nfopt,vface(mxvents),itermxx, fplume(0:mxfire), lcopyss,heatfr, nfilter, dmpoutput(4096)
+    
+    integer nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofhcl, nofsmkw, nofsmk, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbo, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
         nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, ndumpr, nrestr, ndt, next, nnode, nft, nfan, nbr
     
-    EQUIVALENCE (NOFP,NOFSETS(1)), (NOFPMV,NOFSETS(2)), (NOFTMV,NOFSETS(3)), (NOFTU,NOFSETS(4)), (NOFVU,NOFSETS(5)), &
-        (NOFTL,NOFSETS(6)), (NOFOXYL,NOFSETS(7)), (NOFOXYU,NOFSETS(8)),(NOFTT,NOFSETS(9)), (NOFWT,NOFSETS(10)), (NOFPRD,NOFSETS(11)), &
-        (NOFHCL,NOFSETS(12)), (NOFSMKW,NOFSETS(13)), (NOFSMK,NOFSETS(14)), (NOFHVPR,NOFSETS(15)), (NEQUALS,NOFSETS(16)), (NOFFSM,NOFSETS(17))
+    equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
+        (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), (nofprd,nofsets(11)), &
+        (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), (nequals,nofsets(16)), (noffsm,nofsets(17))
 
-    real*8 MASS(2,NR,NS), MPRODR(NV,NS), MFIRET(NS), MINMAS, LIMO2, QF(NR), P(MAXTEQ), objmaspy(0:mxfire),tradio, &
-        SS1(MXVENTS), SA1(MXVENTS), SS2(MXVENTS), SA2(MXVENTS), AS1(MXVENTS), AA1(MXVENTS), AS2(MXVENTS), AA2(MXVENTS), &
-        SAU1(MXVENTS), ASL1(MXVENTS), SAU2(MXVENTS), ASL2(MXVENTS), QR(2,NR), QC(2,NR), HEATUP(NR), HEATLP(NR), HEATVF(NR), &
-        EMP(NR), EMS(NR), EME(NR), APS(NR), VVAREA(NR,NR), HWJ(NWAL,NR), HOCBMB(NV), HVEFLO(2,MEXT), hveflot(2,mext), &
-        BFIRED(NV), AFIRED(NV), HFIRED(NV), TFIRED(NV), HHP(MXVENTS), BW(MXVENTS), HH(MXVENTS), HL(MXVENTS), WINDC(MXVENTS), &
-        HALLDIST(MXVENTS,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), OPLUME(3,MXOIN), BR(NR), DR(NR), HR(NR), AR(NR), HRP(NR), &
-        VR(NR), HRL(NR), VMFLO(NR,NR,2), XDTECT(MXDTECT,DTXCOL), QSPRAY(0:mxfire,2), radio(0:mxfire), &
-        XFIRE(MXFIRE,MXFIRP), RDQOUT(4,NR),OBJXYZ(4,MXOIN), OBJSTRT(2,MXOIN),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
+    real*8 mass(2,nr,ns), mprodr(nv,ns), mfiret(ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
+        ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
+        sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), qr(2,nr), qc(2,nr), heatup(nr), heatlp(nr), heatvf(nr), &
+        emp(nr), ems(nr), eme(nr), aps(nr), vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
+        bfired(nv), afired(nv), hfired(nv), tfired(nv), hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
+        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
+        vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
+        xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
-    real*8 PPMDV(2,NR,NS), TAMB(NR), RAMB(NR), PAMB(NR), ETA(NR), ERA(NR), FKW(MXSLB,NWAL,NR), CW(MXSLB,NWAL,NR), &
-        RW(MXSLB,NWAL,NR), EPA(NR), FLW(MXSLB,NWAL,NR), EPW(NWAL,NR), QFIRED(NV), TWJ(NN,NR,NWAL), TWE(NWAL,NR), fopos(3,0:mxfire), &
-        HFLR(NR),ONTARGET(NR),CCO2(NV),TOXICT(NR,2,NS),femr(0:mxfire), HCRATIO(NV), COCO2(NV), HLP(MXVENTS), HVEXTT(MEXT,2), &
-        AREXT(MEXT), HVELXT(MEXT), OCRATI(NV), OBJMA1(MXOIN), CE(MBR), HVDVOL(MBR), TBR(MBR), ROHB(MBR), BFLO(MBR), &
-        HVP(MNODE), HVGHT(MNODE), HMFNET(2,NR,NR), DPZ(MNODE,MCON), HVFLOW(MNODE,MCON), HCLBF(7,NWAL,NR), &
-        QMAX(MFAN), HMIN(MFAN), HMAX(MFAN), HVBCO(MFAN,MFCOE), DFMIN(MFAN), DFMAX(MFAN), QMIN(MFAN), DE(MDT), DA(MDT), &
-        DL(MDT), RR(MDT), DUCTAR(MDT), HVCONC(MBR,NS),qcvpp(4,nr,nr), HVEXCN(MEXT,NS,2),OBJPOS(3,0:MXOIN),FPOS(3),HCNF(NV),hcrf(nv), &
-        HCLF(NV),FEMP(0:MXFIRE),FEMS(0:MXFIRE),FQF(0:MXFIRE), FQFC(0:MXFIRE), FQLOW(0:MXFIRE), FQUPR(0:MXFIRE),FQDJ(NR), &
-        FAREA(0:MXFIRE),XXTARG(TRGXROW,MXTARG),CXABS(NR),CYABS(NR)
+    real*8 ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+        rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
+        hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
+        arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
+        hvp(mnode), hvght(mnode), hmfnet(2,nr,nr), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
+        qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), dfmin(mfan), dfmax(mfan), qmin(mfan), de(mdt), da(mdt), &
+        dl(mdt), rr(mdt), ductar(mdt), hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcnf(nv),hcrf(nv), &
+        hclf(nv),femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
+        farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 
-    real*8 CP, DELTAT, heatfq, tracet(2,mext)
-    real*8 G, GAMMA, GMWF, HCOMBA, HVDELT, traces(2,mext)
-    real*8 HVGRAV, HVRGAS, PA, POFSET, PREF, QRADRL
-    real*8 RA, RELHUM, RGAS, SAL, SAL2, SIGM, STIME, TA, TE
-    real*8 TERMXX, TFIRET, TFMAXT, TGIGNT
-    real*8 TREF, WINDPW, WINDRF, WINDV
-    
-    equivalence (gamma, dmpoutput)
+    real*8 cp, deltat, heatfq, tracet(2,mext)
+    real*8 g, gamma, gmwf, hcomba, hvdelt, traces(2,mext)
+    real*8 hvgrav, hvrgas, pa, pofset, pref, qradrl
+    real*8 ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
+    real*8 termxx, tfiret, tfmaxt, tgignt
+    real*8 tref, windpw, windrf, windv
 
-    LOGICAL ACTIVS(NS), SWITCH(NWAL,NR), MVCALC, OBJON(0:MXOIN), CJETON(NWAL+1), heatfl
+    logical activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
 
-    COMMON /CFASTN/ GAMMA,G,SIGM,CP,TA,RA,PREF,RGAS,POFSET,PA,TREF,SAL,SAL2,SS1,SS2,SA1,SA2,AS1,AS2,AA1,AA2,SAU1,SAU2, &
-        ASL1,ASL2,MINMAS,QF,QR,QC,HEATUP,HEATLP,HEATVF,EMP,EMS,EME,APS,VVAREA,QRADRL,HCOMBA,HVDELT, &
-        HVGRAV,HVRGAS,CE,HWJ,BFIRED,AFIRED,HFIRED,TFIRED,TFMAXT,TFIRET,MPRODR,MFIRET,P,BW,HH,HL,WINDC,HALLDIST,HHP, &
-        HLP,WINDV,WINDRF,WINDPW,DELTAT,TGIGNT,STIME,LIMO2,RELHUM,GMWF,HOCBMB,COCO2,HVEFLO,BR,DR,HR,AR,HRP,VR,HRL,TE, &
-        PPMDV,TAMB,RAMB,PAMB,ETA,ERA,FKW,CW,RW,EPA,FLW,EPW,QFIRED,TWJ,TWE,HFLR,ONTARGET,CCO2,MASS,TOXICT,HCRATIO,HVEXTT,AREXT, &
-        HVELXT,HVDVOL,TBR,ROHB,BFLO,HVP,HVGHT,OBJXYZ,OBJSTRT,DPZ,HVFLOW,QMAX,HMIN,HMAX,HVBCO,DFMIN,DFMAX,QMIN,DE,DA,DL,RR, &
-        DUCTAR,HVCONC,HVEXCN,HCLBF,OCRATI,OBJPOS,hcrf,OBJMA1,OPLUME,HMFNET,FPOS,HCNF,HCLF,FEMP,FEMS,FQF,FQFC,FQLOW, &
-        FQUPR,FAREA,FQDJ,XDTECT,QSPRAY,VMFLO,XXTARG,XFIRE,RDQOUT,CXABS,CYABS,radconsplit,heatfp,qcvh,qcvv,qcvm,heatfq, &
-        qcvpp,fopos,qcvf,tradio, femr, radio, objmaspy, hveflot,tracet,traces,TERMXX, &
-        NLSPCT,IVERS,LFMAX, NUMNODE,NSLB,HVORIEN, LFBO,LFBT,SWITCH,NOPMX,NRFLOW,LPRINT,NSMAX,LDIAGP,LDIAGO,ITMMAX,IDIAG,NM1,N,N2,N3,N4,ITMSTP,ACTIVS, &
-        NCONFG,NDUMPR,NRESTR,LCOPYss,CRDATE,MPSDAT,NDT,NEXT,NA,NE,NF,MVCALC,NNODE,NFT,NFAN,NBR,NCNODE,MVINTNODE,NFC,NWV,NW,HVNODE, &
-        ICMV,SMKAGL,OBJIGN,OBJON,CJETON,HCLDEP,OBJRM,VSHAPE,NOFSETS,FROOM,NUMOBJL,IXDTECT,IQUENCH,IDTPNT,NDTECT, IDSET, &
-        IXTARG,NTARG,NFIRE,IFROOM,IFRPNT,IBRD,IPNTFSM,IJK,NVENTIJK,NFOPT,VFACE,heatfl,heatfr,fplume,nfilter,ITERMXX
-    SAVE /CFASTN/
+    character title*128, compartmentnames(nr)*128
 
-    CHARACTER TITLE*128, compartmentnames(nr)*128
-
-    COMMON /CFASTC/ TITLE, compartmentnames
-    SAVE /CFASTC/
-      
 end module cfast_main
    
 module cfin
@@ -147,6 +130,7 @@ end module cfio
 module cshell
 
     implicit none
+    save
 
     ! rundat is today's date, crdate is the creation date of the module, and is kept in the main cfast data module.  
     ! rundat is copied to mpsdat as soon as the model kernel is started. done in initfs and cfast body.
@@ -164,6 +148,7 @@ module dervs
 
     use cparams    
     implicit none
+    save
 
     logical produp
     real*8, dimension(maxteq) :: pdold, pold
@@ -174,6 +159,7 @@ end module dervs
 module fltarget
     use cparams
     implicit none
+    save
     
     ! variables for calculation of flux to a target
       
@@ -223,6 +209,7 @@ end module fltarget
 module  iofiles
 
     implicit none
+    save
     
 !File descriptors for cfast
 
@@ -244,6 +231,7 @@ module objects1
 
     use cparams
     implicit none
+    save
 
     logical, dimension(0:mxoin) :: objld
     character(64), dimension(0:mxoin) :: odbnam
@@ -256,6 +244,7 @@ module objects2
 
     use cparams
     implicit none
+    save
 
     logical, dimension(0:mxoin) :: objdef
     character(60), dimension(mxoin) :: objnam(mxoin)
@@ -277,6 +266,7 @@ module opt
 
     use cparams
     implicit none
+    save
     
     integer, parameter :: mxdebug = 19
     integer, parameter :: mxopt = 21
@@ -342,6 +332,7 @@ module params
 
     use cparams
     implicit none
+    save
 
 !   these are temporary work arrays
 
@@ -358,9 +349,9 @@ module params
         htot(nr), htflow(nr,2), hmflow(nr,2), htfnet(2,nr,nr), volfru(nr), volfrl(nr), hvfrac(2,mext), expa, exta, exra, &
         hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), hvt, ductcv
 
-    common exsal, qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, expa, exta, exra, qcvent, o2n2, hwjdot, &
-        htot, htflow, htfnet, volfru, volfrl, hvfrac, hcratt, ihmlar, hvmfsys,dhvprsys,hvtm,hvdara,hvt,chv,ductcv, &
-        exset, allowed, izhvmapi,izhvmape,izhvie,nhvpvar,nhvtvar, izhvsys,izhvbsys,nhvsys
+    !common exsal, qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, expa, exta, exra, qcvent, o2n2, hwjdot, &
+    !    htot, htflow, htfnet, volfru, volfrl, hvfrac, hcratt, ihmlar, hvmfsys,dhvprsys,hvtm,hvdara,hvt,chv,ductcv, &
+    !    exset, allowed, izhvmapi,izhvmape,izhvie,nhvpvar,nhvtvar, izhvsys,izhvbsys,nhvsys
 
 end module params
 
@@ -368,6 +359,7 @@ module smkview
 
     use cparams
     implicit none
+    save
 
     integer :: smkunit, spltunit, flocal(mxfire+1)
     character(60) :: smkgeom, smkplot, smkplottrunc
@@ -380,6 +372,8 @@ module solver_parameters
 
     use cparams
     implicit none
+    save
+    
     real*8, dimension(nt) :: pinit
     real*8, dimension(1) :: rpar2
     integer, dimension(3) :: ipar2
@@ -404,6 +398,7 @@ module thermp
 
     use cparams
     implicit none
+    save
     
     real*8, dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
     real*8, dimension(nthmax) :: lepw
@@ -421,6 +416,7 @@ module vents
 
     use cparams, only: nr, mxvent
     implicit none
+    save
     
     integer, dimension(mxvent,2) :: ivvent
     integer nvents, nvvent
@@ -444,6 +440,8 @@ end module vents
 module vent_slab
     
     implicit none
+    save
+    
     real*8, dimension(10) :: yvelev, dpv1m2
     integer, dimension(10) ::  dirs12
     integer :: nvelev, ioutf
@@ -452,6 +450,9 @@ end module vent_slab
 
 module wdervs
 
+    implicit none
+    save
+    
     real*8 :: jacn1, jacn2, jacn3, jacdim
       
 end module wdervs
@@ -460,6 +461,7 @@ module wnodes
 
     use cparams
     implicit none
+    save
     
     integer :: nwpts = 30                                   ! number of wall nodes
     integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)

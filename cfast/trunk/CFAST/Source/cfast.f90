@@ -38,7 +38,7 @@
     real*8 :: xdelt, tstop, tbeg, tend
 
     version = 6300          ! Current CFAST version number
-    crdate = (/2013,1,15/)  ! Current CFAST executable creation date
+    crdate = (/2013,2,12/)  ! Current CFAST executable creation date
 
     errorcode = 0
 

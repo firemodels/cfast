@@ -1,0 +1,2192 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+ <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+ 
+ <meta name="ROBOTS" content="NOARCHIVE">
+ 
+ <link rel="icon" type="image/vnd.microsoft.icon" href="http://www.gstatic.com/codesite/ph/images/phosting.ico">
+ 
+ 
+ <script type="text/javascript">
+ 
+ 
+ 
+ 
+ var codesite_token = "DvtMMBduPDfnvYzJNa-VnqPpRJs:1360792150019";
+ 
+ 
+ var CS_env = {"domainName":null,"assetHostPath":"http://www.gstatic.com/codesite/ph","relativeBaseUrl":"","projectHomeUrl":"/p/fds-smv","token":"DvtMMBduPDfnvYzJNa-VnqPpRJs:1360792150019","assetVersionPath":"http://www.gstatic.com/codesite/ph/14116724302520652310","profileUrl":"/u/105369268430911968432/","loggedInUserEmail":"tmacksmyers@gmail.com","projectName":"fds-smv"};
+ var _gaq = _gaq || [];
+ _gaq.push(
+ ['siteTracker._setAccount', 'UA-18071-1'],
+ ['siteTracker._trackPageview']);
+ 
+ _gaq.push(
+ ['projectTracker._setAccount', 'UA-35636658-1'],
+ ['projectTracker._trackPageview']);
+ 
+ (function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+ })();
+ 
+ </script>
+ 
+ 
+ <title>ATF_Corridors_048kW_avg.csv - 
+ fds-smv -
+ 
+ 
+ Fire Dynamics Simulator (FDS) and Smokeview (SMV) - Google Project Hosting
+ </title>
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/14116724302520652310/css/core.css">
+ 
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/14116724302520652310/css/ph_detail.css" >
+ 
+ 
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/14116724302520652310/css/d_sb.css" >
+ 
+ 
+ 
+<!--[if IE]>
+ <link type="text/css" rel="stylesheet" href="http://www.gstatic.com/codesite/ph/14116724302520652310/css/d_ie.css" >
+<![endif]-->
+ <style type="text/css">
+ .menuIcon.off { background: no-repeat url(http://www.gstatic.com/codesite/ph/images/dropdown_sprite.gif) 0 -42px }
+ .menuIcon.on { background: no-repeat url(http://www.gstatic.com/codesite/ph/images/dropdown_sprite.gif) 0 -28px }
+ .menuIcon.down { background: no-repeat url(http://www.gstatic.com/codesite/ph/images/dropdown_sprite.gif) 0 0; }
+ 
+ 
+ 
+  tr.inline_comment {
+ background: #fff;
+ vertical-align: top;
+ }
+ div.draft, div.published {
+ padding: .3em;
+ border: 1px solid #999; 
+ margin-bottom: .1em;
+ font-family: arial, sans-serif;
+ max-width: 60em;
+ }
+ div.draft {
+ background: #ffa;
+ } 
+ div.published {
+ background: #e5ecf9;
+ }
+ div.published .body, div.draft .body {
+ padding: .5em .1em .1em .1em;
+ max-width: 60em;
+ white-space: pre-wrap;
+ white-space: -moz-pre-wrap;
+ white-space: -pre-wrap;
+ white-space: -o-pre-wrap;
+ word-wrap: break-word;
+ font-size: 1em;
+ }
+ div.draft .actions {
+ margin-left: 1em;
+ font-size: 90%;
+ }
+ div.draft form {
+ padding: .5em .5em .5em 0;
+ }
+ div.draft textarea, div.published textarea {
+ width: 95%;
+ height: 10em;
+ font-family: arial, sans-serif;
+ margin-bottom: .5em;
+ }
+
+ 
+ .nocursor, .nocursor td, .cursor_hidden, .cursor_hidden td {
+ background-color: white;
+ height: 2px;
+ }
+ .cursor, .cursor td {
+ background-color: darkblue;
+ height: 2px;
+ display: '';
+ }
+ 
+ 
+.list {
+ border: 1px solid white;
+ border-bottom: 0;
+}
+
+ 
+ </style>
+</head>
+<body class="t4">
+<script type="text/javascript">
+ window.___gcfg = {lang: 'en'};
+ (function() 
+ {var po = document.createElement("script");
+ po.type = "text/javascript"; po.async = true;po.src = "https://apis.google.com/js/plusone.js";
+ var s = document.getElementsByTagName("script")[0];
+ s.parentNode.insertBefore(po, s);
+ })();
+</script>
+<div class="headbg">
+
+ <div id="gaia">
+ 
+
+ <span>
+ 
+ 
+ 
+ <a href="#" id="multilogin-dropdown" onclick="return false;"
+ ><u><b>tmacksmyers@gmail.com</b></u> <small>&#9660;</small></a>
+ 
+ 
+ | <a href="/u/105369268430911968432/" id="projects-dropdown" onclick="return false;"
+ ><u>My favorites</u> <small>&#9660;</small></a>
+ | <a href="/u/105369268430911968432/" onclick="_CS_click('/gb/ph/profile');"
+ title="Profile, Updates, and Settings"
+ ><u>Profile</u></a>
+ | <a href="https://www.google.com/accounts/Logout?continue=http%3A%2F%2Fcode.google.com%2Fp%2Ffds-smv%2Fsource%2Fbrowse%2Ftrunk%2FFDS%2Ftrunk%2FValidation%2FATF_Corridors%2FExperimental_Data%2FATF_Corridors_048kW_avg.csv" 
+ onclick="_CS_click('/gb/ph/signout');"
+ ><u>Sign out</u></a>
+ 
+ </span>
+
+ </div>
+
+ <div class="gbh" style="left: 0pt;"></div>
+ <div class="gbh" style="right: 0pt;"></div>
+ 
+ 
+ <div style="height: 1px"></div>
+<!--[if lte IE 7]>
+<div style="text-align:center;">
+Your version of Internet Explorer is not supported. Try a browser that
+contributes to open source, such as <a href="http://www.firefox.com">Firefox</a>,
+<a href="http://www.google.com/chrome">Google Chrome</a>, or
+<a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a>.
+</div>
+<![endif]-->
+
+
+
+ <table style="padding:0px; margin: 0px 0px 10px 0px; width:100%" cellpadding="0" cellspacing="0"
+ itemscope itemtype="http://schema.org/CreativeWork">
+ <tr style="height: 58px;">
+ 
+ 
+ 
+ <td id="plogo">
+ <link itemprop="url" href="/p/fds-smv">
+ <a href="/p/fds-smv/">
+ 
+ 
+ <img src="/p/fds-smv/logo?cct=1357690776"
+ alt="Logo" itemprop="image">
+ 
+ </a>
+ </td>
+ 
+ <td style="padding-left: 0.5em">
+ 
+ <div id="pname">
+ <a href="/p/fds-smv/"><span itemprop="name">fds-smv</span></a>
+ </div>
+ 
+ <div id="psum">
+ <a id="project_summary_link"
+ href="/p/fds-smv/"><span itemprop="description">Fire Dynamics Simulator (FDS) and Smokeview (SMV)</span></a>
+ 
+ </div>
+ 
+ 
+ </td>
+ <td style="white-space:nowrap;text-align:right; vertical-align:bottom;">
+ 
+ <form action="/hosting/search">
+ <input size="30" name="q" value="" type="text">
+ 
+ <input type="submit" name="projectsearch" value="Search projects" >
+ </form>
+ 
+ </tr>
+ </table>
+
+</div>
+
+ 
+<div id="mt" class="gtb"> 
+ <a href="/p/fds-smv/" class="tab ">Project&nbsp;Home</a>
+ 
+ 
+ 
+ 
+ <a href="/p/fds-smv/wiki/Downloads_Overview?tm=2" class="tab ">Downloads</a>
+ 
+ 
+ 
+ 
+ 
+ <a href="/p/fds-smv/wiki/Wiki_Overview?tm=6" class="tab ">Wiki</a>
+ 
+ 
+ 
+ 
+ 
+ <a href="/p/fds-smv/issues/list"
+ class="tab ">Issues</a>
+ 
+ 
+ 
+ 
+ 
+ <a href="/p/fds-smv/source/checkout"
+ class="tab active">Source</a>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <div class=gtbc></div>
+</div>
+<table cellspacing="0" cellpadding="0" width="100%" align="center" border="0" class="st">
+ <tr>
+ 
+ 
+ 
+ 
+ 
+ 
+ <td class="subt">
+ <div class="st2">
+ <div class="isf">
+ 
+ 
+
+
+ <span class="inst1"><a href="/p/fds-smv/source/checkout">Checkout</a></span> &nbsp;
+ <span class="inst2"><a href="/p/fds-smv/source/browse/trunk/FDS/trunk">Browse</a></span> &nbsp;
+ <span class="inst3"><a href="/p/fds-smv/source/list">Changes</a></span> &nbsp;
+ 
+ &nbsp;
+ 
+ 
+ <form action="/p/fds-smv/source/search" method="get" style="display:inline"
+ onsubmit="document.getElementById('codesearchq').value = document.getElementById('origq').value">
+ <input type="hidden" name="q" id="codesearchq" value="">
+ <input type="text" maxlength="2048" size="38" id="origq" name="origq" value="" title="Google Code Search" style="font-size:92%">&nbsp;<input type="submit" value="Search Trunk" name="btnG" style="font-size:92%">
+ 
+ 
+ 
+ 
+ <a href="/p/fds-smv/issues/entry?show=review&former=sourcelist">Request code review</a>
+ 
+ 
+ 
+ </form>
+ <script type="text/javascript">
+ 
+ function codesearchQuery(form) {
+ var query = document.getElementById('q').value;
+ if (query) { form.action += '%20' + query; }
+ }
+ </script>
+ </div>
+</div>
+
+ </td>
+ 
+ 
+ 
+ <td align="right" valign="top" class="bevel-right"></td>
+ </tr>
+</table>
+
+
+<script type="text/javascript">
+ var cancelBubble = false;
+ function _go(url) { document.location = url; }
+</script>
+<div id="maincol"
+ 
+>
+
+ 
+
+
+
+
+<div class="collapse">
+<div id="colcontrol">
+<style type="text/css">
+ #file_flipper { white-space: nowrap; padding-right: 2em; }
+ #file_flipper.hidden { display: none; }
+ #file_flipper .pagelink { color: #0000CC; text-decoration: underline; }
+ #file_flipper #visiblefiles { padding-left: 0.5em; padding-right: 0.5em; }
+</style>
+<table id="nav_and_rev" class="list"
+ cellpadding="0" cellspacing="0" width="100%">
+ <tr>
+ 
+ <td nowrap="nowrap" class="src_crumbs src_nav" width="33%">
+ <strong class="src_nav">Source path:&nbsp;</strong>
+ <span id="crumb_root">
+ 
+ <a href="/p/fds-smv/source/browse/">svn</a>/&nbsp;</span>
+ <span id="crumb_links" class="ifClosed"><a href="/p/fds-smv/source/browse/trunk/">trunk</a><span class="sp">/&nbsp;</span><a href="/p/fds-smv/source/browse/trunk/FDS/">FDS</a><span class="sp">/&nbsp;</span><a href="/p/fds-smv/source/browse/trunk/FDS/trunk/">trunk</a><span class="sp">/&nbsp;</span><a href="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/">Validation</a><span class="sp">/&nbsp;</span><a href="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/">ATF_Corridors</a><span class="sp">/&nbsp;</span><a href="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/">Experimental_Data</a><span class="sp">/&nbsp;</span>ATF_Corridors_048kW_avg.csv</span>
+ 
+ 
+
+
+ </td>
+ 
+ 
+ <td nowrap="nowrap" width="33%" align="center">
+ <a href="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv?edit=1"
+ ><img src="http://www.gstatic.com/codesite/ph/images/pencil-y14.png"
+ class="edit_icon">Edit file</a>
+ </td>
+ 
+ 
+ <td nowrap="nowrap" width="33%" align="right">
+ <table cellpadding="0" cellspacing="0" style="font-size: 100%"><tr>
+ 
+ 
+ <td class="flipper"><b>r14700</b></td>
+ 
+ </tr></table>
+ </td> 
+ </tr>
+</table>
+
+<div class="fc">
+ 
+ 
+ 
+<style type="text/css">
+.undermouse span {
+ background-image: url(http://www.gstatic.com/codesite/ph/images/comments.gif); }
+</style>
+<table class="opened" id="review_comment_area"
+onmouseout="gutterOut()"><tr>
+<td id="nums">
+<pre><table width="100%"><tr class="nocursor"><td></td></tr></table></pre>
+<pre><table width="100%" id="nums_table_0"><tr id="gr_svn14700_1"
+
+ onmouseover="gutterOver(1)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',1);">&nbsp;</span
+></td><td id="1"><a href="#1">1</a></td></tr
+><tr id="gr_svn14700_2"
+
+ onmouseover="gutterOver(2)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',2);">&nbsp;</span
+></td><td id="2"><a href="#2">2</a></td></tr
+><tr id="gr_svn14700_3"
+
+ onmouseover="gutterOver(3)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',3);">&nbsp;</span
+></td><td id="3"><a href="#3">3</a></td></tr
+><tr id="gr_svn14700_4"
+
+ onmouseover="gutterOver(4)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',4);">&nbsp;</span
+></td><td id="4"><a href="#4">4</a></td></tr
+><tr id="gr_svn14700_5"
+
+ onmouseover="gutterOver(5)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',5);">&nbsp;</span
+></td><td id="5"><a href="#5">5</a></td></tr
+><tr id="gr_svn14700_6"
+
+ onmouseover="gutterOver(6)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',6);">&nbsp;</span
+></td><td id="6"><a href="#6">6</a></td></tr
+><tr id="gr_svn14700_7"
+
+ onmouseover="gutterOver(7)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',7);">&nbsp;</span
+></td><td id="7"><a href="#7">7</a></td></tr
+><tr id="gr_svn14700_8"
+
+ onmouseover="gutterOver(8)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',8);">&nbsp;</span
+></td><td id="8"><a href="#8">8</a></td></tr
+><tr id="gr_svn14700_9"
+
+ onmouseover="gutterOver(9)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',9);">&nbsp;</span
+></td><td id="9"><a href="#9">9</a></td></tr
+><tr id="gr_svn14700_10"
+
+ onmouseover="gutterOver(10)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',10);">&nbsp;</span
+></td><td id="10"><a href="#10">10</a></td></tr
+><tr id="gr_svn14700_11"
+
+ onmouseover="gutterOver(11)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',11);">&nbsp;</span
+></td><td id="11"><a href="#11">11</a></td></tr
+><tr id="gr_svn14700_12"
+
+ onmouseover="gutterOver(12)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',12);">&nbsp;</span
+></td><td id="12"><a href="#12">12</a></td></tr
+><tr id="gr_svn14700_13"
+
+ onmouseover="gutterOver(13)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',13);">&nbsp;</span
+></td><td id="13"><a href="#13">13</a></td></tr
+><tr id="gr_svn14700_14"
+
+ onmouseover="gutterOver(14)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',14);">&nbsp;</span
+></td><td id="14"><a href="#14">14</a></td></tr
+><tr id="gr_svn14700_15"
+
+ onmouseover="gutterOver(15)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',15);">&nbsp;</span
+></td><td id="15"><a href="#15">15</a></td></tr
+><tr id="gr_svn14700_16"
+
+ onmouseover="gutterOver(16)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',16);">&nbsp;</span
+></td><td id="16"><a href="#16">16</a></td></tr
+><tr id="gr_svn14700_17"
+
+ onmouseover="gutterOver(17)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',17);">&nbsp;</span
+></td><td id="17"><a href="#17">17</a></td></tr
+><tr id="gr_svn14700_18"
+
+ onmouseover="gutterOver(18)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',18);">&nbsp;</span
+></td><td id="18"><a href="#18">18</a></td></tr
+><tr id="gr_svn14700_19"
+
+ onmouseover="gutterOver(19)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',19);">&nbsp;</span
+></td><td id="19"><a href="#19">19</a></td></tr
+><tr id="gr_svn14700_20"
+
+ onmouseover="gutterOver(20)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',20);">&nbsp;</span
+></td><td id="20"><a href="#20">20</a></td></tr
+><tr id="gr_svn14700_21"
+
+ onmouseover="gutterOver(21)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',21);">&nbsp;</span
+></td><td id="21"><a href="#21">21</a></td></tr
+><tr id="gr_svn14700_22"
+
+ onmouseover="gutterOver(22)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',22);">&nbsp;</span
+></td><td id="22"><a href="#22">22</a></td></tr
+><tr id="gr_svn14700_23"
+
+ onmouseover="gutterOver(23)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',23);">&nbsp;</span
+></td><td id="23"><a href="#23">23</a></td></tr
+><tr id="gr_svn14700_24"
+
+ onmouseover="gutterOver(24)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',24);">&nbsp;</span
+></td><td id="24"><a href="#24">24</a></td></tr
+><tr id="gr_svn14700_25"
+
+ onmouseover="gutterOver(25)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',25);">&nbsp;</span
+></td><td id="25"><a href="#25">25</a></td></tr
+><tr id="gr_svn14700_26"
+
+ onmouseover="gutterOver(26)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',26);">&nbsp;</span
+></td><td id="26"><a href="#26">26</a></td></tr
+><tr id="gr_svn14700_27"
+
+ onmouseover="gutterOver(27)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',27);">&nbsp;</span
+></td><td id="27"><a href="#27">27</a></td></tr
+><tr id="gr_svn14700_28"
+
+ onmouseover="gutterOver(28)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',28);">&nbsp;</span
+></td><td id="28"><a href="#28">28</a></td></tr
+><tr id="gr_svn14700_29"
+
+ onmouseover="gutterOver(29)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',29);">&nbsp;</span
+></td><td id="29"><a href="#29">29</a></td></tr
+><tr id="gr_svn14700_30"
+
+ onmouseover="gutterOver(30)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',30);">&nbsp;</span
+></td><td id="30"><a href="#30">30</a></td></tr
+><tr id="gr_svn14700_31"
+
+ onmouseover="gutterOver(31)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',31);">&nbsp;</span
+></td><td id="31"><a href="#31">31</a></td></tr
+><tr id="gr_svn14700_32"
+
+ onmouseover="gutterOver(32)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',32);">&nbsp;</span
+></td><td id="32"><a href="#32">32</a></td></tr
+><tr id="gr_svn14700_33"
+
+ onmouseover="gutterOver(33)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',33);">&nbsp;</span
+></td><td id="33"><a href="#33">33</a></td></tr
+><tr id="gr_svn14700_34"
+
+ onmouseover="gutterOver(34)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',34);">&nbsp;</span
+></td><td id="34"><a href="#34">34</a></td></tr
+><tr id="gr_svn14700_35"
+
+ onmouseover="gutterOver(35)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',35);">&nbsp;</span
+></td><td id="35"><a href="#35">35</a></td></tr
+><tr id="gr_svn14700_36"
+
+ onmouseover="gutterOver(36)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',36);">&nbsp;</span
+></td><td id="36"><a href="#36">36</a></td></tr
+><tr id="gr_svn14700_37"
+
+ onmouseover="gutterOver(37)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',37);">&nbsp;</span
+></td><td id="37"><a href="#37">37</a></td></tr
+><tr id="gr_svn14700_38"
+
+ onmouseover="gutterOver(38)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',38);">&nbsp;</span
+></td><td id="38"><a href="#38">38</a></td></tr
+><tr id="gr_svn14700_39"
+
+ onmouseover="gutterOver(39)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',39);">&nbsp;</span
+></td><td id="39"><a href="#39">39</a></td></tr
+><tr id="gr_svn14700_40"
+
+ onmouseover="gutterOver(40)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',40);">&nbsp;</span
+></td><td id="40"><a href="#40">40</a></td></tr
+><tr id="gr_svn14700_41"
+
+ onmouseover="gutterOver(41)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',41);">&nbsp;</span
+></td><td id="41"><a href="#41">41</a></td></tr
+><tr id="gr_svn14700_42"
+
+ onmouseover="gutterOver(42)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',42);">&nbsp;</span
+></td><td id="42"><a href="#42">42</a></td></tr
+><tr id="gr_svn14700_43"
+
+ onmouseover="gutterOver(43)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',43);">&nbsp;</span
+></td><td id="43"><a href="#43">43</a></td></tr
+><tr id="gr_svn14700_44"
+
+ onmouseover="gutterOver(44)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',44);">&nbsp;</span
+></td><td id="44"><a href="#44">44</a></td></tr
+><tr id="gr_svn14700_45"
+
+ onmouseover="gutterOver(45)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',45);">&nbsp;</span
+></td><td id="45"><a href="#45">45</a></td></tr
+><tr id="gr_svn14700_46"
+
+ onmouseover="gutterOver(46)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',46);">&nbsp;</span
+></td><td id="46"><a href="#46">46</a></td></tr
+><tr id="gr_svn14700_47"
+
+ onmouseover="gutterOver(47)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',47);">&nbsp;</span
+></td><td id="47"><a href="#47">47</a></td></tr
+><tr id="gr_svn14700_48"
+
+ onmouseover="gutterOver(48)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',48);">&nbsp;</span
+></td><td id="48"><a href="#48">48</a></td></tr
+><tr id="gr_svn14700_49"
+
+ onmouseover="gutterOver(49)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',49);">&nbsp;</span
+></td><td id="49"><a href="#49">49</a></td></tr
+><tr id="gr_svn14700_50"
+
+ onmouseover="gutterOver(50)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',50);">&nbsp;</span
+></td><td id="50"><a href="#50">50</a></td></tr
+><tr id="gr_svn14700_51"
+
+ onmouseover="gutterOver(51)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',51);">&nbsp;</span
+></td><td id="51"><a href="#51">51</a></td></tr
+><tr id="gr_svn14700_52"
+
+ onmouseover="gutterOver(52)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',52);">&nbsp;</span
+></td><td id="52"><a href="#52">52</a></td></tr
+><tr id="gr_svn14700_53"
+
+ onmouseover="gutterOver(53)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',53);">&nbsp;</span
+></td><td id="53"><a href="#53">53</a></td></tr
+><tr id="gr_svn14700_54"
+
+ onmouseover="gutterOver(54)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',54);">&nbsp;</span
+></td><td id="54"><a href="#54">54</a></td></tr
+><tr id="gr_svn14700_55"
+
+ onmouseover="gutterOver(55)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',55);">&nbsp;</span
+></td><td id="55"><a href="#55">55</a></td></tr
+><tr id="gr_svn14700_56"
+
+ onmouseover="gutterOver(56)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',56);">&nbsp;</span
+></td><td id="56"><a href="#56">56</a></td></tr
+><tr id="gr_svn14700_57"
+
+ onmouseover="gutterOver(57)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',57);">&nbsp;</span
+></td><td id="57"><a href="#57">57</a></td></tr
+><tr id="gr_svn14700_58"
+
+ onmouseover="gutterOver(58)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',58);">&nbsp;</span
+></td><td id="58"><a href="#58">58</a></td></tr
+><tr id="gr_svn14700_59"
+
+ onmouseover="gutterOver(59)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',59);">&nbsp;</span
+></td><td id="59"><a href="#59">59</a></td></tr
+><tr id="gr_svn14700_60"
+
+ onmouseover="gutterOver(60)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',60);">&nbsp;</span
+></td><td id="60"><a href="#60">60</a></td></tr
+><tr id="gr_svn14700_61"
+
+ onmouseover="gutterOver(61)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',61);">&nbsp;</span
+></td><td id="61"><a href="#61">61</a></td></tr
+><tr id="gr_svn14700_62"
+
+ onmouseover="gutterOver(62)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',62);">&nbsp;</span
+></td><td id="62"><a href="#62">62</a></td></tr
+><tr id="gr_svn14700_63"
+
+ onmouseover="gutterOver(63)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',63);">&nbsp;</span
+></td><td id="63"><a href="#63">63</a></td></tr
+><tr id="gr_svn14700_64"
+
+ onmouseover="gutterOver(64)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',64);">&nbsp;</span
+></td><td id="64"><a href="#64">64</a></td></tr
+><tr id="gr_svn14700_65"
+
+ onmouseover="gutterOver(65)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',65);">&nbsp;</span
+></td><td id="65"><a href="#65">65</a></td></tr
+><tr id="gr_svn14700_66"
+
+ onmouseover="gutterOver(66)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',66);">&nbsp;</span
+></td><td id="66"><a href="#66">66</a></td></tr
+><tr id="gr_svn14700_67"
+
+ onmouseover="gutterOver(67)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',67);">&nbsp;</span
+></td><td id="67"><a href="#67">67</a></td></tr
+><tr id="gr_svn14700_68"
+
+ onmouseover="gutterOver(68)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',68);">&nbsp;</span
+></td><td id="68"><a href="#68">68</a></td></tr
+><tr id="gr_svn14700_69"
+
+ onmouseover="gutterOver(69)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',69);">&nbsp;</span
+></td><td id="69"><a href="#69">69</a></td></tr
+><tr id="gr_svn14700_70"
+
+ onmouseover="gutterOver(70)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',70);">&nbsp;</span
+></td><td id="70"><a href="#70">70</a></td></tr
+><tr id="gr_svn14700_71"
+
+ onmouseover="gutterOver(71)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',71);">&nbsp;</span
+></td><td id="71"><a href="#71">71</a></td></tr
+><tr id="gr_svn14700_72"
+
+ onmouseover="gutterOver(72)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',72);">&nbsp;</span
+></td><td id="72"><a href="#72">72</a></td></tr
+><tr id="gr_svn14700_73"
+
+ onmouseover="gutterOver(73)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',73);">&nbsp;</span
+></td><td id="73"><a href="#73">73</a></td></tr
+><tr id="gr_svn14700_74"
+
+ onmouseover="gutterOver(74)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',74);">&nbsp;</span
+></td><td id="74"><a href="#74">74</a></td></tr
+><tr id="gr_svn14700_75"
+
+ onmouseover="gutterOver(75)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',75);">&nbsp;</span
+></td><td id="75"><a href="#75">75</a></td></tr
+><tr id="gr_svn14700_76"
+
+ onmouseover="gutterOver(76)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',76);">&nbsp;</span
+></td><td id="76"><a href="#76">76</a></td></tr
+><tr id="gr_svn14700_77"
+
+ onmouseover="gutterOver(77)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',77);">&nbsp;</span
+></td><td id="77"><a href="#77">77</a></td></tr
+><tr id="gr_svn14700_78"
+
+ onmouseover="gutterOver(78)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',78);">&nbsp;</span
+></td><td id="78"><a href="#78">78</a></td></tr
+><tr id="gr_svn14700_79"
+
+ onmouseover="gutterOver(79)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',79);">&nbsp;</span
+></td><td id="79"><a href="#79">79</a></td></tr
+><tr id="gr_svn14700_80"
+
+ onmouseover="gutterOver(80)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',80);">&nbsp;</span
+></td><td id="80"><a href="#80">80</a></td></tr
+><tr id="gr_svn14700_81"
+
+ onmouseover="gutterOver(81)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',81);">&nbsp;</span
+></td><td id="81"><a href="#81">81</a></td></tr
+><tr id="gr_svn14700_82"
+
+ onmouseover="gutterOver(82)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',82);">&nbsp;</span
+></td><td id="82"><a href="#82">82</a></td></tr
+><tr id="gr_svn14700_83"
+
+ onmouseover="gutterOver(83)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',83);">&nbsp;</span
+></td><td id="83"><a href="#83">83</a></td></tr
+><tr id="gr_svn14700_84"
+
+ onmouseover="gutterOver(84)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',84);">&nbsp;</span
+></td><td id="84"><a href="#84">84</a></td></tr
+><tr id="gr_svn14700_85"
+
+ onmouseover="gutterOver(85)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',85);">&nbsp;</span
+></td><td id="85"><a href="#85">85</a></td></tr
+><tr id="gr_svn14700_86"
+
+ onmouseover="gutterOver(86)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',86);">&nbsp;</span
+></td><td id="86"><a href="#86">86</a></td></tr
+><tr id="gr_svn14700_87"
+
+ onmouseover="gutterOver(87)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',87);">&nbsp;</span
+></td><td id="87"><a href="#87">87</a></td></tr
+><tr id="gr_svn14700_88"
+
+ onmouseover="gutterOver(88)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',88);">&nbsp;</span
+></td><td id="88"><a href="#88">88</a></td></tr
+><tr id="gr_svn14700_89"
+
+ onmouseover="gutterOver(89)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',89);">&nbsp;</span
+></td><td id="89"><a href="#89">89</a></td></tr
+><tr id="gr_svn14700_90"
+
+ onmouseover="gutterOver(90)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',90);">&nbsp;</span
+></td><td id="90"><a href="#90">90</a></td></tr
+><tr id="gr_svn14700_91"
+
+ onmouseover="gutterOver(91)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',91);">&nbsp;</span
+></td><td id="91"><a href="#91">91</a></td></tr
+><tr id="gr_svn14700_92"
+
+ onmouseover="gutterOver(92)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',92);">&nbsp;</span
+></td><td id="92"><a href="#92">92</a></td></tr
+><tr id="gr_svn14700_93"
+
+ onmouseover="gutterOver(93)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',93);">&nbsp;</span
+></td><td id="93"><a href="#93">93</a></td></tr
+><tr id="gr_svn14700_94"
+
+ onmouseover="gutterOver(94)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',94);">&nbsp;</span
+></td><td id="94"><a href="#94">94</a></td></tr
+><tr id="gr_svn14700_95"
+
+ onmouseover="gutterOver(95)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',95);">&nbsp;</span
+></td><td id="95"><a href="#95">95</a></td></tr
+><tr id="gr_svn14700_96"
+
+ onmouseover="gutterOver(96)"
+
+><td><span title="Add comment" onclick="codereviews.startEdit('svn14700',96);">&nbsp;</span
+></td><td id="96"><a href="#96">96</a></td></tr
+></table></pre>
+<pre><table width="100%"><tr class="nocursor"><td></td></tr></table></pre>
+</td>
+<td id="lines">
+<pre><table width="100%"><tr class="cursor_stop cursor_hidden"><td></td></tr></table></pre>
+<pre ><table id="src_table_0"><tr
+id=sl_svn14700_1
+
+ onmouseover="gutterOver(1)"
+
+><td class="source">Time, HRR, Heat_Flux_Wall1Radiative, Heat_Flux_Wall1Total, Heat_Flux_Wall2Total, Heat_Flux_HallTotal, TC_A01, TC_A02, TC_A03, TC_A04, TC_A05, TC_A06, TC_A07, TC_A08, TC_A09, TC_A10, TC_B01, TC_B02, TC_B03, TC_B04, TC_B05, TC_B06, TC_B07, TC_B08, TC_B09, TC_B10, TC_C01, TC_C02, TC_C03, TC_C04, TC_C05, TC_C06, TC_C07, TC_C08, TC_C09, TC_C10, TC_D01, TC_D02, TC_D03, TC_D04, TC_D05, TC_D06, TC_D07, TC_D08, TC_D09, TC_D10, TC_E01, TC_E02, TC_E03, TC_E04, TC_E05, TC_E06, TC_E07, TC_E08, TC_F01, TC_F02, TC_F03, TC_F04, TC_F05, TC_F06, TC_F07, TC_F08, TC_F09, TC_F10, TC_G01, TC_G02, TC_G03, TC_G04, TC_G05, TC_G06, TC_G07, TC_G08, TC_G09, TC_G10, VEL_TEMP_H01, VEL_TEMP_H02, VEL_TEMP_H03, VEL_TEMP_H04, VEL_TEMP_I01, VEL_TEMP_I02, VEL_TEMP_I03, VEL_TEMP_I04, VEL_TEMP_J01, VEL_TEMP_J02, VEL_TEMP_J03, VEL_TEMP_J04, VEL_TEMP_K01, VEL_TEMP_K02, VEL_TEMP_K03, VEL_TEMP_K04, VEL_BDP_H01, VEL_BDP_H02, VEL_BDP_H03, VEL_BDP_H04, VEL_BDP_I01, VEL_BDP_I02, VEL_BDP_I03, VEL_BDP_I04, VEL_BDP_J01, VEL_BDP_J02 , VEL_BDP_J03, VEL_BDP_J04, VEL_BDP_K01, VEL_BDP_K02, VEL_BDP_K03, VEL_BDP_K04<br></td></tr
+><tr
+id=sl_svn14700_2
+
+ onmouseover="gutterOver(2)"
+
+><td class="source">0,4.4,0.06,-0.04,-0.04,0.01,18.8,18.9,19.1,19.6,20.1,20.5,21.2,21.4,21.6,21.9,18.4,18.5,18.6,19.0,19.5,20.2,20.7,21.0,21.2,21.6,21.0,20.1,19.2,19.3,19.5,20.1,20.8,21.6,22.3,23.1,18.9,18.9,19.0,19.3,19.7,20.2,20.6,21.4,21.7,22.1,20.1,20.6,20.7,20.8,20.9,21.1,21.1,21.8,19.9,20.0,20.0,20.2,20.5,20.7,20.9,21.2,21.4,22.0,19.7,19.9,20.1,20.3,20.4,20.5,20.7,21.0,21.3,21.8,19.8,19.8,20.0,21.3,19.8,19.8,20.5,21.6,21.0,20.5,20.4,21.0,20.0,20.2,20.1,19.8,0.13,0.17,-0.09,0.13,0.12,0.12,0.11,0.03,0.06,0.14,0.09,0.16,-0.07,0.14,-0.13,0.12<br></td></tr
+><tr
+id=sl_svn14700_3
+
+ onmouseover="gutterOver(3)"
+
+><td class="source">10,15,0.10,0.00,0.00,0.02,18.9,18.9,19.1,19.7,20.2,20.7,21.5,21.9,22.2,22.5,18.5,18.5,18.7,19.0,19.7,20.3,20.7,21.0,21.1,21.4,21.0,20.1,19.2,19.4,19.6,20.1,20.7,21.7,22.4,23.4,18.8,18.9,19.0,19.3,19.7,20.2,20.8,21.5,21.8,22.2,20.1,20.6,20.7,20.9,21.0,21.1,21.2,21.8,20.0,20.0,20.0,20.1,20.5,20.7,20.9,21.2,21.3,22.0,19.8,19.9,20.1,20.3,20.4,20.5,20.8,21.1,21.3,21.8,19.8,19.8,20.2,21.3,19.9,19.8,20.6,21.6,20.9,20.5,20.5,21.0,20.0,20.1,20.1,19.8,0.13,0.18,-0.09,0.15,0.13,0.14,0.13,0.04,0.06,0.12,0.12,0.16,-0.05,0.14,-0.11,0.12<br></td></tr
+><tr
+id=sl_svn14700_4
+
+ onmouseover="gutterOver(4)"
+
+><td class="source">20,21.4,0.24,0.15,0.15,0.13,19.0,19.0,19.3,19.9,20.3,21.1,26.0,29.1,30.7,30.6,18.5,18.6,18.8,19.2,19.8,20.4,20.8,21.1,21.3,21.6,21.2,20.2,19.2,19.5,19.8,20.2,20.8,21.6,22.3,23.5,18.7,18.8,19.0,19.3,19.8,20.2,20.9,21.6,21.9,22.2,20.1,20.5,20.7,20.9,21.0,21.2,21.2,21.9,20.0,19.9,20.0,20.2,20.5,20.7,20.9,21.2,21.4,22.1,19.8,19.9,20.1,20.2,20.4,20.5,20.8,21.1,21.4,21.8,19.9,20.0,20.3,21.3,19.9,19.9,20.7,21.6,20.8,20.5,20.4,21.1,20.0,20.1,20.1,19.7,0.10,0.16,-0.09,0.10,0.11,0.11,0.12,0.04,0.02,0.09,0.09,0.12,-0.04,0.12,-0.13,0.14<br></td></tr
+><tr
+id=sl_svn14700_5
+
+ onmouseover="gutterOver(5)"
+
+><td class="source">30,27.8,0.35,0.28,0.26,0.21,19.0,19.1,19.3,20.0,20.6,23.2,35.8,41.2,44.0,43.9,18.4,18.6,18.8,19.4,20.1,20.6,21.9,23.4,23.5,23.6,21.2,20.2,19.3,19.6,19.9,20.2,20.8,21.6,22.4,23.7,18.8,18.9,19.1,19.4,19.8,20.3,21.1,21.7,21.9,22.2,20.1,20.6,20.7,20.9,21.0,21.2,21.2,21.9,20.0,20.0,20.0,20.2,20.4,20.8,21.0,21.3,21.5,22.2,19.6,19.8,20.2,20.3,20.4,20.5,20.9,21.1,21.3,21.8,19.9,20.2,20.4,23.2,19.9,20.0,21.0,22.0,20.8,20.5,20.5,21.1,20.0,20.2,20.1,19.8,0.06,0.10,-0.12,0.30,0.07,0.11,0.13,0.14,0.04,0.12,0.12,0.15,-0.04,0.14,-0.15,0.15<br></td></tr
+><tr
+id=sl_svn14700_6
+
+ onmouseover="gutterOver(6)"
+
+><td class="source">40,33.8,0.50,0.44,0.43,0.29,19.1,19.2,19.3,20.3,20.9,26.6,45.0,50.0,52.3,52.4,18.5,18.7,19.1,20.0,20.8,22.4,30.7,37.4,37.7,37.3,21.4,20.1,19.6,20.2,21.0,21.8,22.4,23.1,23.9,24.9,18.7,18.9,19.1,19.5,19.9,20.6,21.7,22.5,23.0,23.4,20.1,20.6,20.8,21.0,21.0,21.3,21.2,21.9,19.8,19.8,19.9,20.2,20.5,20.8,21.0,21.2,21.5,22.3,19.5,19.8,20.1,20.3,20.4,20.6,20.9,21.2,21.3,21.8,20.0,20.6,21.3,36.5,19.9,20.3,22.0,27.0,20.8,20.5,20.6,21.2,20.0,20.2,20.2,19.9,-0.11,-0.01,-0.06,0.77,-0.06,0.00,0.12,0.53,0.02,0.13,0.10,0.14,-0.04,0.12,-0.16,0.13<br></td></tr
+><tr
+id=sl_svn14700_7
+
+ onmouseover="gutterOver(7)"
+
+><td class="source">50,40.2,0.68,0.64,0.62,0.37,19.2,19.3,19.4,20.5,21.3,28.8,50.8,56.3,58.8,58.5,18.5,18.8,19.2,20.1,20.9,23.3,40.5,46.0,46.1,45.3,20.8,20.4,21.0,23.2,25.8,28.8,30.6,31.4,32.2,32.6,18.8,19.0,19.3,19.8,20.7,23.0,27.0,28.7,29.2,30.2,21.5,21.2,21.3,21.3,21.4,21.6,21.3,22.5,19.8,19.8,19.9,20.2,20.5,20.8,21.0,21.3,21.5,22.2,19.6,19.8,20.1,20.3,20.4,20.6,20.9,21.1,21.3,21.9,20.1,20.9,21.8,44.7,20.0,20.7,23.6,37.7,20.8,20.5,20.6,21.2,20.1,20.2,20.2,20.0,-0.15,-0.02,-0.09,0.79,-0.15,-0.06,0.15,0.77,0.01,0.12,0.10,0.14,-0.05,0.11,-0.17,0.16<br></td></tr
+><tr
+id=sl_svn14700_8
+
+ onmouseover="gutterOver(8)"
+
+><td class="source">60,46.4,0.92,0.89,0.87,0.49,19.3,19.5,19.7,20.6,21.3,30.1,56.5,61.7,64.6,64.1,18.6,18.9,19.3,20.4,21.6,25.3,47.4,51.4,51.2,50.2,20.4,20.2,20.5,22.5,27.5,36.7,39.8,40.1,40.4,39.9,19.3,19.6,20.0,20.5,21.4,25.0,36.9,37.7,37.2,38.1,26.5,23.4,23.0,22.1,22.2,22.8,23.1,24.9,19.9,19.8,19.9,20.1,20.6,20.8,21.0,21.3,21.5,22.0,19.6,19.9,20.1,20.3,20.5,20.6,20.9,21.2,21.4,21.8,20.2,21.0,21.9,50.4,20.1,21.1,24.6,44.3,20.8,20.5,20.6,21.2,20.0,20.2,20.2,20.1,-0.17,-0.02,-0.10,0.78,-0.13,-0.05,0.12,0.71,0.04,0.10,0.10,0.14,-0.05,0.13,-0.13,0.16<br></td></tr
+><tr
+id=sl_svn14700_9
+
+ onmouseover="gutterOver(9)"
+
+><td class="source">70,48.6,1.06,1.05,1.04,0.57,19.4,19.7,19.8,20.9,21.3,34.9,60.1,66.0,68.4,68.0,18.8,19.2,19.7,21.5,24.0,31.0,52.7,56.2,56.1,55.6,20.9,20.4,20.2,20.8,27.4,43.3,45.7,46.2,46.5,45.3,20.2,20.9,21.2,21.6,22.4,27.1,41.7,42.9,42.9,43.7,28.0,24.8,24.0,23.7,23.7,24.0,25.6,28.3,19.9,19.9,20.0,20.4,20.7,20.9,21.3,21.8,22.1,22.5,19.7,19.8,20.2,20.3,20.6,20.7,21.0,21.2,21.4,21.9,20.4,21.4,22.4,55.0,20.2,22.0,26.9,49.4,20.8,20.5,20.6,21.2,19.9,20.1,20.2,20.0,-0.07,-0.06,-0.17,0.76,-0.23,-0.06,0.10,0.70,0.04,0.14,0.12,0.17,-0.05,0.15,-0.09,0.16<br></td></tr
+><tr
+id=sl_svn14700_10
+
+ onmouseover="gutterOver(10)"
+
+><td class="source">80,49,1.10,1.10,1.09,0.59,19.6,19.9,20.2,21.2,21.8,40.0,62.8,68.0,70.1,69.7,19.0,19.4,19.8,21.3,26.0,35.7,56.1,59.5,59.2,58.3,21.4,21.2,21.1,21.3,27.5,47.1,49.6,50.0,50.3,48.6,20.8,21.9,22.6,22.9,23.6,27.8,46.2,47.0,47.3,49.1,28.8,26.3,26.1,25.6,25.9,26.8,28.0,31.2,19.9,19.9,20.0,20.9,21.2,21.4,22.9,23.9,24.5,25.0,19.8,19.8,20.2,20.3,20.5,20.7,21.0,21.2,21.4,22.0,20.5,22.3,24.7,58.6,20.6,22.4,28.9,53.1,20.9,20.6,20.7,21.7,19.9,20.2,20.2,20.1,-0.11,-0.01,-0.15,0.75,-0.21,-0.07,0.11,0.67,0.03,0.13,0.13,0.28,-0.06,0.14,-0.07,0.16<br></td></tr
+><tr
+id=sl_svn14700_11
+
+ onmouseover="gutterOver(11)"
+
+><td class="source">90,48.4,1.14,1.16,1.15,0.61,19.7,20.1,20.5,22.0,23.6,46.6,65.1,69.5,71.2,70.8,19.2,19.6,20.2,21.5,27.7,39.5,57.4,60.5,60.5,59.6,22.3,22.5,22.7,22.7,27.9,49.1,52.2,52.4,52.9,50.8,21.3,22.6,23.5,24.2,25.0,29.9,48.2,50.3,50.5,52.3,32.3,28.3,28.0,28.4,28.4,29.4,30.7,34.2,19.9,19.8,20.0,20.6,22.2,22.7,25.0,26.0,26.5,27.0,19.7,19.8,20.2,20.4,20.5,20.7,21.0,21.2,21.5,22.1,20.8,22.6,27.5,60.3,21.1,22.7,31.2,55.0,20.9,20.6,20.8,23.0,19.9,20.1,20.2,20.1,-0.09,0.02,-0.12,0.70,-0.13,-0.14,0.10,0.61,-0.02,0.06,0.07,0.45,-0.03,0.09,-0.09,0.17<br></td></tr
+><tr
+id=sl_svn14700_12
+
+ onmouseover="gutterOver(12)"
+
+><td class="source">100,48.6,1.17,1.20,1.18,0.62,19.8,20.2,20.6,22.4,25.1,51.6,67.9,72.7,74.3,73.3,19.6,20.0,20.9,22.6,30.4,42.4,59.2,62.1,61.9,61.0,22.6,23.1,23.3,24.0,27.0,50.4,53.5,53.4,53.7,51.1,21.5,22.9,23.9,24.5,25.6,30.2,48.4,52.1,52.7,54.8,34.5,30.0,29.6,30.0,30.1,31.2,33.0,35.6,19.9,19.9,20.1,20.8,23.0,23.7,27.0,28.7,29.1,29.5,19.7,19.8,20.2,20.4,20.5,20.8,21.2,21.4,21.6,22.1,21.2,23.2,30.9,61.6,21.4,23.6,33.6,56.6,20.9,20.6,21.1,25.3,20.0,20.2,20.3,20.3,-0.11,-0.02,-0.14,0.66,-0.12,-0.20,0.11,0.61,-0.08,0.04,0.12,0.61,-0.07,0.09,-0.17,0.19<br></td></tr
+><tr
+id=sl_svn14700_13
+
+ onmouseover="gutterOver(13)"
+
+><td class="source">110,48.6,1.17,1.19,1.17,0.62,20.0,20.5,21.0,22.7,27.2,54.3,70.4,75.0,76.6,75.8,19.7,20.4,21.6,23.7,31.8,44.7,61.1,64.2,63.8,62.6,22.9,23.5,24.0,25.1,29.1,51.6,54.7,54.5,55.0,52.5,21.3,22.8,24.0,24.8,26.5,30.2,49.4,53.3,54.4,56.2,33.6,30.6,30.9,31.5,32.0,32.6,33.9,36.4,19.9,19.9,20.2,21.4,24.7,25.6,28.6,30.0,30.5,30.7,19.6,19.9,20.3,20.4,20.8,21.2,21.8,22.4,22.5,22.8,21.9,24.3,33.8,63.2,21.9,24.5,35.6,58.0,20.9,20.7,22.1,27.0,20.0,20.3,20.5,21.6,-0.07,-0.15,-0.20,0.68,-0.16,-0.22,0.10,0.62,-0.10,0.04,0.18,0.64,-0.14,0.06,-0.21,0.36<br></td></tr
+><tr
+id=sl_svn14700_14
+
+ onmouseover="gutterOver(14)"
+
+><td class="source">120,48.8,1.19,1.24,1.22,0.64,20.4,21.1,21.7,23.5,28.3,58.0,72.2,75.6,76.8,75.5,19.8,20.8,22.1,24.4,32.9,45.5,62.9,66.0,65.7,64.7,23.6,23.9,24.7,26.0,28.9,52.7,56.2,56.4,56.7,53.9,21.5,23.1,24.9,25.7,27.0,30.9,49.6,54.9,55.7,57.6,36.8,32.3,32.2,32.9,33.2,34.1,35.8,38.1,19.8,19.9,20.2,21.2,25.1,27.0,30.5,31.6,31.9,31.9,19.6,20.0,20.4,20.7,21.3,22.4,23.9,25.0,24.8,24.6,22.5,25.0,35.4,65.0,22.3,25.1,37.2,60.1,20.9,20.8,23.3,28.5,20.1,20.4,20.7,23.4,-0.05,-0.17,-0.23,0.66,-0.14,-0.17,0.09,0.61,-0.14,0.01,0.20,0.64,-0.18,0.03,-0.23,0.41<br></td></tr
+><tr
+id=sl_svn14700_15
+
+ onmouseover="gutterOver(15)"
+
+><td class="source">130,48.6,1.22,1.26,1.27,0.67,20.9,21.7,22.4,24.4,29.5,60.1,74.0,77.5,79.0,77.3,19.9,21.1,22.4,25.3,34.4,47.7,64.2,67.1,66.5,65.6,23.8,24.5,25.4,26.5,28.8,53.8,57.8,58.3,58.3,55.4,21.7,23.6,25.3,26.2,27.4,31.6,52.9,56.5,57.4,59.6,37.4,33.4,33.7,34.4,34.4,35.1,36.8,38.8,19.8,19.9,20.1,21.6,26.7,28.1,30.9,32.4,32.9,33.3,19.6,20.0,20.6,21.0,22.0,23.6,25.5,26.6,26.6,26.1,22.9,26.0,37.8,65.9,22.4,25.8,38.7,61.6,20.9,21.0,24.6,29.9,20.1,20.5,21.0,24.7,-0.08,-0.21,-0.17,0.69,-0.18,-0.22,0.10,0.64,-0.19,-0.03,0.19,0.69,-0.20,0.00,-0.20,0.46<br></td></tr
+><tr
+id=sl_svn14700_16
+
+ onmouseover="gutterOver(16)"
+
+><td class="source">140,48.8,1.22,1.27,1.28,0.67,21.2,22.2,22.9,24.9,30.9,61.0,75.4,79.6,81.2,80.0,20.0,21.3,22.9,25.9,33.8,48.5,65.3,68.4,67.7,66.4,23.9,24.7,25.8,26.6,29.5,55.6,58.9,59.4,59.7,56.9,21.9,24.1,25.7,26.4,27.4,33.7,54.9,57.7,58.1,60.3,40.6,35.7,34.4,35.1,35.5,36.5,37.7,39.9,19.8,20.0,20.2,21.3,26.5,28.7,32.1,33.5,34.1,34.2,19.3,19.8,20.9,21.9,22.8,25.0,27.1,28.0,27.9,27.2,23.3,26.5,38.5,67.5,22.6,26.3,40.3,62.7,20.9,21.0,25.7,31.2,20.1,20.6,21.6,26.4,-0.03,-0.21,-0.19,0.69,-0.17,-0.20,0.10,0.62,-0.20,-0.07,0.20,0.69,-0.23,-0.06,-0.19,0.48<br></td></tr
+><tr
+id=sl_svn14700_17
+
+ onmouseover="gutterOver(17)"
+
+><td class="source">150,48.8,1.25,1.31,1.32,0.68,21.7,22.6,23.3,25.6,31.6,61.9,75.4,79.4,81.2,80.2,20.1,21.4,23.3,26.3,33.9,49.0,66.7,70.1,69.5,68.1,24.5,25.4,26.1,27.1,30.4,56.2,60.0,60.5,60.8,58.1,22.0,24.2,25.8,26.6,27.9,32.3,53.6,58.0,59.1,61.3,40.7,36.8,36.8,36.3,36.5,37.7,38.9,40.6,19.8,20.0,20.2,21.0,26.2,29.4,32.7,34.1,34.7,35.0,19.3,19.7,21.3,22.8,24.0,26.7,28.3,29.1,29.2,28.4,23.6,26.8,39.0,69.1,22.7,26.8,41.2,64.1,20.9,21.1,26.6,32.2,20.1,20.9,22.4,27.6,-0.01,-0.21,-0.16,0.70,-0.20,-0.21,0.11,0.62,-0.22,-0.05,0.25,0.73,-0.23,-0.07,-0.15,0.47<br></td></tr
+><tr
+id=sl_svn14700_18
+
+ onmouseover="gutterOver(18)"
+
+><td class="source">160,48.4,1.28,1.34,1.35,0.69,21.7,22.9,23.7,26.2,32.5,62.1,75.5,79.3,80.8,79.5,20.3,21.6,23.7,26.7,35.0,50.2,67.4,70.4,70.0,69.2,24.1,25.1,26.1,27.2,29.3,57.7,61.5,61.4,61.8,58.9,22.1,24.4,26.3,27.0,28.2,32.9,56.5,60.0,61.0,62.8,42.8,37.6,37.4,37.7,37.7,38.5,39.7,41.2,19.8,20.0,20.3,21.0,25.7,30.1,33.2,34.7,35.4,35.8,19.2,19.8,21.4,23.8,25.2,27.8,29.2,29.9,29.9,29.1,23.9,27.3,40.3,69.8,23.1,27.2,42.1,65.1,20.9,21.2,27.3,32.9,19.9,21.4,23.4,28.7,-0.06,-0.23,-0.16,0.67,-0.20,-0.20,0.12,0.64,-0.21,-0.09,0.24,0.69,-0.27,-0.04,-0.12,0.46<br></td></tr
+><tr
+id=sl_svn14700_19
+
+ onmouseover="gutterOver(19)"
+
+><td class="source">170,48.6,1.28,1.36,1.37,0.70,21.9,23.3,24.2,26.7,33.3,62.9,76.2,80.4,82.0,80.9,20.4,21.8,23.8,27.0,34.7,50.8,67.6,70.5,69.9,69.0,24.2,25.5,26.4,27.3,29.5,58.0,62.3,62.6,62.7,59.9,22.0,24.4,26.4,27.0,28.3,34.7,59.0,60.4,61.0,63.1,42.1,37.8,37.8,38.2,38.4,39.2,40.2,42.0,19.7,19.9,20.4,21.3,26.5,31.2,33.8,35.5,36.0,36.4,19.2,19.9,21.6,24.6,26.2,28.6,29.9,30.7,30.6,29.6,24.2,27.8,41.2,70.0,23.2,27.4,42.7,65.6,20.9,21.3,28.0,33.7,19.8,22.0,24.1,29.5,-0.10,-0.24,-0.12,0.69,-0.19,-0.23,0.13,0.64,-0.21,-0.12,0.25,0.67,-0.27,-0.01,-0.08,0.47<br></td></tr
+><tr
+id=sl_svn14700_20
+
+ onmouseover="gutterOver(20)"
+
+><td class="source">180,48.6,1.31,1.39,1.41,0.71,22.0,23.8,24.6,27.1,32.5,63.0,77.1,81.6,83.3,82.4,20.3,21.9,24.1,27.3,35.2,51.9,67.9,71.4,71.0,69.6,24.4,25.5,26.5,27.7,30.1,58.8,62.6,62.6,62.7,59.5,22.1,24.8,26.3,27.0,28.4,32.2,59.3,61.3,62.2,64.0,41.1,39.3,39.7,39.8,39.9,40.4,41.1,42.7,19.5,19.9,20.3,21.6,26.5,31.6,34.8,36.0,36.4,36.8,19.4,20.0,21.8,25.2,26.9,29.5,30.6,31.3,31.0,29.9,24.3,27.9,41.6,70.2,23.5,27.6,43.6,66.2,20.7,21.9,28.8,34.5,19.8,22.5,24.7,30.1,-0.10,-0.27,-0.16,0.69,-0.18,-0.27,0.09,0.64,-0.23,-0.09,0.30,0.68,-0.28,0.03,-0.07,0.44<br></td></tr
+><tr
+id=sl_svn14700_21
+
+ onmouseover="gutterOver(21)"
+
+><td class="source">190,48.4,1.32,1.40,1.43,0.72,21.8,24.2,25.2,27.7,32.4,63.4,78.5,82.5,84.0,82.6,20.3,22.0,24.2,27.2,35.2,52.1,68.7,71.7,71.1,69.8,24.5,25.6,26.8,27.9,30.7,59.1,62.8,62.8,63.0,59.8,22.3,25.3,26.9,27.4,28.3,32.9,58.6,61.8,62.7,64.6,43.0,40.7,40.6,40.3,40.4,40.9,41.6,42.9,19.5,19.8,20.5,22.6,27.8,32.2,34.9,36.2,36.9,37.3,19.4,20.1,22.1,25.7,27.5,30.3,31.4,32.0,31.7,30.5,24.5,28.0,41.3,71.5,23.6,27.6,44.2,67.0,20.5,22.5,29.8,34.8,19.9,22.9,25.4,30.9,-0.03,-0.26,-0.14,0.71,-0.20,-0.23,0.13,0.63,-0.23,-0.07,0.33,0.66,-0.28,0.04,-0.06,0.45<br></td></tr
+><tr
+id=sl_svn14700_22
+
+ onmouseover="gutterOver(22)"
+
+><td class="source">200,48.8,1.31,1.40,1.41,0.71,21.6,24.4,25.7,28.1,32.6,64.1,77.7,81.4,82.9,81.9,20.2,22.1,24.1,27.3,35.7,52.3,69.5,72.3,71.6,70.4,25.0,26.2,26.8,27.6,29.9,59.0,63.8,63.9,64.0,60.6,22.7,25.9,27.0,27.3,28.3,33.4,58.0,61.9,62.8,65.1,43.6,39.8,40.5,40.6,40.5,40.9,41.9,43.5,19.5,19.7,20.4,22.7,28.3,33.1,35.9,37.3,37.8,37.9,19.5,20.1,22.2,25.9,28.1,30.8,31.8,32.4,32.2,31.2,24.6,28.2,41.8,71.8,23.6,27.9,44.2,67.4,20.5,23.1,30.5,35.3,19.9,23.2,26.0,31.4,-0.11,-0.25,-0.16,0.71,-0.18,-0.22,0.13,0.64,-0.27,-0.10,0.30,0.65,-0.30,0.04,-0.11,0.43<br></td></tr
+><tr
+id=sl_svn14700_23
+
+ onmouseover="gutterOver(23)"
+
+><td class="source">210,48.8,1.33,1.42,1.46,0.71,21.5,24.7,25.9,28.5,32.8,63.9,78.3,81.7,82.9,81.7,20.4,22.2,24.4,27.5,36.0,52.7,69.2,72.3,72.0,71.1,25.0,26.2,26.8,27.6,30.3,59.8,64.3,64.5,64.5,61.5,22.6,25.8,27.1,27.7,28.6,33.3,57.5,62.6,63.7,65.9,43.6,40.6,40.6,41.1,40.9,41.3,41.9,44.4,19.5,19.7,20.5,23.3,28.5,33.4,36.2,37.7,38.2,38.6,19.4,20.1,22.2,26.4,28.5,31.3,32.1,32.6,32.4,31.2,24.8,28.4,42.6,71.6,23.7,27.9,44.3,67.6,20.5,23.7,31.0,36.0,19.9,23.4,26.5,31.9,-0.11,-0.27,-0.11,0.71,-0.21,-0.28,0.15,0.63,-0.23,-0.05,0.29,0.66,-0.34,0.05,-0.11,0.44<br></td></tr
+><tr
+id=sl_svn14700_24
+
+ onmouseover="gutterOver(24)"
+
+><td class="source">220,48.6,1.32,1.42,1.44,0.72,21.5,24.7,26.2,28.9,32.3,63.7,78.6,82.3,83.5,82.3,20.5,22.3,24.5,27.6,35.7,53.2,69.3,72.6,72.3,71.4,24.8,26.1,27.2,27.8,31.2,60.7,64.1,64.2,64.3,61.3,23.2,25.5,26.8,27.6,28.8,34.1,61.7,62.9,64.3,66.1,44.8,40.0,40.9,40.9,41.0,41.3,42.8,44.7,19.5,19.6,20.5,23.7,29.2,33.9,37.0,38.0,38.4,38.7,19.4,20.0,22.4,26.8,29.1,31.8,32.9,33.5,33.3,32.1,24.9,28.5,42.5,71.9,23.9,27.8,45.4,67.2,20.6,24.0,31.6,36.2,19.9,23.5,27.0,32.4,-0.10,-0.28,-0.06,0.70,-0.24,-0.25,0.16,0.65,-0.19,-0.06,0.26,0.67,-0.33,0.07,-0.14,0.42<br></td></tr
+><tr
+id=sl_svn14700_25
+
+ onmouseover="gutterOver(25)"
+
+><td class="source">230,48.6,1.32,1.43,1.44,0.73,21.6,24.8,26.4,29.2,32.1,63.6,78.7,82.1,83.3,82.4,20.6,22.4,24.7,27.7,36.8,53.4,69.8,72.9,72.4,71.5,25.4,26.4,27.1,28.0,31.4,60.7,64.3,64.4,64.7,61.7,23.1,25.6,27.3,27.9,29.4,35.4,59.4,63.0,64.3,66.2,42.6,41.4,41.5,41.6,41.6,42.3,43.4,44.7,19.6,19.7,20.5,24.5,30.1,34.2,37.7,38.9,39.2,39.3,19.5,19.9,22.5,27.2,29.4,32.4,33.1,33.6,33.5,32.4,25.1,28.6,42.4,72.2,24.0,28.2,46.3,67.7,20.6,23.9,31.9,36.9,19.8,23.6,27.4,33.0,-0.11,-0.23,-0.08,0.74,-0.22,-0.24,0.16,0.67,-0.21,0.02,0.24,0.68,-0.33,0.07,-0.15,0.42<br></td></tr
+><tr
+id=sl_svn14700_26
+
+ onmouseover="gutterOver(26)"
+
+><td class="source">240,48.8,1.34,1.45,1.46,0.73,21.7,24.9,26.4,29.3,32.4,63.9,78.0,81.4,82.8,81.6,20.6,22.6,24.9,27.9,36.7,53.1,69.8,73.1,72.9,71.8,25.4,26.5,27.3,27.9,30.8,61.0,64.7,64.8,65.0,62.1,23.5,26.2,27.4,28.4,29.8,34.1,61.9,63.1,64.2,66.3,44.4,42.7,42.9,42.8,42.6,43.2,43.9,45.1,19.5,19.8,20.6,25.3,30.6,34.5,37.5,38.9,39.5,39.6,19.5,20.0,22.5,27.2,29.8,32.8,33.5,34.1,34.0,32.7,25.2,28.8,42.6,72.3,24.1,28.3,46.6,67.9,20.7,24.2,32.4,37.3,19.9,23.8,27.8,33.3,-0.14,-0.26,-0.08,0.69,-0.24,-0.23,0.15,0.63,-0.22,0.05,0.27,0.69,-0.31,0.07,-0.18,0.43<br></td></tr
+><tr
+id=sl_svn14700_27
+
+ onmouseover="gutterOver(27)"
+
+><td class="source">250,48.4,1.35,1.45,1.47,0.74,21.9,25.1,26.5,29.6,32.5,64.6,78.9,82.5,83.8,82.7,20.9,22.7,24.9,27.8,37.1,53.1,69.5,72.9,72.6,71.7,25.2,26.4,27.3,27.9,30.9,61.2,64.6,64.4,64.5,61.3,23.4,26.3,27.6,28.4,29.6,34.4,62.3,62.6,64.3,66.7,45.5,42.8,42.4,42.9,42.8,43.3,44.0,45.4,19.5,19.8,20.5,25.6,30.8,34.7,37.7,39.1,39.6,39.6,19.5,20.0,22.5,27.5,30.2,33.2,34.0,34.7,34.3,32.9,25.4,29.0,42.7,72.3,24.2,28.4,47.1,67.6,20.6,24.6,32.7,37.5,19.9,23.8,28.1,33.8,-0.08,-0.23,-0.13,0.74,-0.21,-0.26,0.15,0.66,-0.25,0.03,0.32,0.65,-0.33,0.07,-0.18,0.45<br></td></tr
+><tr
+id=sl_svn14700_28
+
+ onmouseover="gutterOver(28)"
+
+><td class="source">260,48.8,1.36,1.47,1.49,0.74,22.0,25.1,26.6,29.7,32.6,65.2,78.7,82.4,83.8,83.0,21.1,22.8,25.1,28.1,36.7,52.8,70.1,73.1,72.8,71.9,25.4,26.8,27.4,28.1,30.9,61.2,64.5,64.2,64.1,62.0,23.8,26.8,27.8,28.3,29.6,35.1,62.2,63.5,64.5,66.4,44.1,41.7,42.0,42.3,42.6,43.3,44.1,45.2,19.5,19.8,20.5,26.6,31.1,35.5,38.4,39.5,39.9,39.9,19.3,20.1,22.6,27.7,30.5,33.4,34.3,34.8,34.6,33.1,25.5,29.1,42.3,72.7,24.3,28.6,47.4,68.0,20.6,25.1,33.2,37.9,19.9,23.8,28.2,34.2,-0.10,-0.23,-0.10,0.74,-0.22,-0.26,0.15,0.64,-0.27,0.01,0.30,0.64,-0.30,0.06,-0.22,0.44<br></td></tr
+><tr
+id=sl_svn14700_29
+
+ onmouseover="gutterOver(29)"
+
+><td class="source">270,48.6,1.36,1.49,1.49,0.74,22.1,25.1,26.7,29.7,32.7,66.2,78.5,82.1,83.7,82.7,21.3,23.0,25.4,28.4,37.3,53.0,70.2,73.8,73.3,72.0,25.6,26.9,27.6,28.1,31.5,61.6,64.9,64.6,64.9,61.9,23.7,26.5,27.6,28.1,29.4,33.9,61.9,62.9,65.1,67.2,44.7,42.0,42.5,42.3,42.3,43.1,44.0,45.7,19.6,19.8,20.5,25.7,31.5,35.7,38.6,39.5,40.0,40.2,19.4,20.1,22.7,27.8,30.8,33.7,34.5,35.2,34.8,33.3,25.7,29.4,42.5,73.1,24.6,28.6,48.0,68.5,20.7,25.2,33.5,38.3,19.9,24.1,28.6,34.5,-0.10,-0.22,-0.16,0.73,-0.25,-0.23,0.16,0.67,-0.27,0.03,0.27,0.67,-0.33,0.06,-0.19,0.44<br></td></tr
+><tr
+id=sl_svn14700_30
+
+ onmouseover="gutterOver(30)"
+
+><td class="source">280,48.8,1.38,1.49,1.51,0.75,22.1,25.2,26.8,29.8,33.3,66.4,79.5,83.2,84.4,83.6,21.5,23.1,25.5,28.5,37.2,53.2,70.2,73.2,72.7,72.0,25.9,26.8,27.4,28.0,31.7,61.8,65.2,65.0,65.3,62.1,23.7,26.2,27.5,28.3,30.2,34.5,63.2,63.8,65.7,67.4,46.8,42.8,42.0,42.5,42.7,43.1,44.5,45.6,19.6,19.8,20.5,25.7,31.8,35.7,38.9,39.7,40.1,40.1,19.4,19.8,22.8,28.3,31.2,34.2,35.1,35.7,35.5,33.9,25.9,29.4,42.6,73.3,24.8,28.7,48.5,68.4,20.7,25.0,33.7,38.3,19.9,24.2,29.0,35.0,-0.11,-0.24,-0.13,0.74,-0.28,-0.27,0.16,0.66,-0.23,0.06,0.27,0.64,-0.33,0.08,-0.20,0.46<br></td></tr
+><tr
+id=sl_svn14700_31
+
+ onmouseover="gutterOver(31)"
+
+><td class="source">290,48.4,1.37,1.48,1.51,0.77,22.2,25.5,26.9,29.8,33.0,65.5,79.5,83.3,84.8,83.9,21.6,23.3,25.4,28.4,36.7,53.4,70.4,73.5,73.4,72.3,26.1,27.2,27.7,28.3,31.3,62.4,65.5,65.3,65.4,62.7,23.4,26.6,27.9,28.9,30.6,36.1,63.5,63.3,64.7,67.1,45.8,41.4,41.8,42.6,43.0,43.4,44.4,45.8,19.6,19.8,20.6,26.5,32.7,36.0,39.2,40.4,40.8,40.8,19.5,19.9,22.7,28.3,31.3,34.2,35.3,35.8,35.8,34.3,25.9,29.4,42.7,73.2,24.9,28.5,48.6,68.8,20.7,25.3,34.1,38.4,19.8,24.1,29.0,34.8,-0.07,-0.22,-0.12,0.74,-0.27,-0.24,0.19,0.67,-0.22,0.06,0.24,0.64,-0.34,0.08,-0.17,0.42<br></td></tr
+><tr
+id=sl_svn14700_32
+
+ onmouseover="gutterOver(32)"
+
+><td class="source">300,49,1.39,1.52,1.54,0.76,22.4,25.5,27.1,30.0,32.6,64.8,80.2,84.1,85.4,84.4,21.6,23.5,25.8,28.3,37.0,53.6,70.7,74.2,73.9,72.7,26.3,27.6,28.2,28.5,31.9,62.2,65.4,65.3,65.4,62.7,23.7,26.2,27.8,28.7,30.5,34.9,63.1,64.2,66.0,67.8,45.3,42.3,43.5,43.0,43.4,43.8,44.6,46.5,19.6,19.8,20.5,26.0,32.6,36.0,39.1,40.0,40.4,40.6,19.5,19.8,22.5,28.2,31.5,34.3,35.2,35.8,35.6,34.1,25.9,29.4,42.7,73.8,25.1,28.7,48.8,69.1,20.6,25.2,34.2,38.5,19.8,24.1,28.9,35.1,-0.09,-0.18,-0.13,0.75,-0.27,-0.23,0.17,0.66,-0.26,0.05,0.23,0.63,-0.34,0.06,-0.16,0.43<br></td></tr
+><tr
+id=sl_svn14700_33
+
+ onmouseover="gutterOver(33)"
+
+><td class="source">310,48.4,1.38,1.50,1.51,0.77,22.5,25.5,27.1,30.0,32.9,65.0,80.0,83.0,84.5,83.4,21.9,23.7,25.9,28.6,37.4,53.8,71.4,74.6,74.0,73.0,25.9,27.2,27.9,28.8,31.0,61.9,65.8,66.1,66.3,63.3,24.1,26.7,27.6,28.6,30.3,35.9,62.6,64.6,66.3,67.8,44.8,42.4,43.5,43.3,43.5,43.9,45.0,46.3,19.6,19.8,20.5,27.1,33.0,36.3,39.0,40.2,40.7,40.9,19.5,19.6,22.4,28.5,31.6,34.6,35.4,35.9,35.5,34.2,26.1,29.5,43.1,74.4,25.1,29.1,48.8,69.5,20.6,24.9,34.2,38.6,19.8,24.0,28.9,35.2,-0.11,-0.18,-0.12,0.74,-0.28,-0.22,0.17,0.66,-0.28,0.06,0.25,0.64,-0.33,0.08,-0.17,0.42<br></td></tr
+><tr
+id=sl_svn14700_34
+
+ onmouseover="gutterOver(34)"
+
+><td class="source">320,48.6,1.40,1.51,1.54,0.78,22.6,25.7,27.2,30.2,33.6,65.9,79.9,83.8,85.0,84.0,22.0,23.8,25.9,28.8,36.6,53.9,70.8,74.0,73.7,73.0,26.6,27.3,27.8,28.6,30.9,63.0,66.1,65.9,66.1,62.9,24.5,27.0,27.9,28.8,30.0,34.1,64.4,64.2,65.5,68.0,45.3,42.9,43.3,43.5,43.7,43.9,45.2,45.9,19.6,19.8,20.5,27.5,33.0,36.5,39.5,40.7,41.3,41.2,19.5,19.7,22.2,28.6,31.8,34.6,35.5,36.2,36.0,34.6,26.4,29.8,42.9,73.7,25.2,29.1,48.8,69.6,20.5,25.3,34.4,38.9,19.8,23.9,29.3,35.3,-0.17,-0.21,-0.11,0.72,-0.29,-0.23,0.15,0.67,-0.29,0.05,0.27,0.64,-0.35,0.08,-0.21,0.43<br></td></tr
+><tr
+id=sl_svn14700_35
+
+ onmouseover="gutterOver(35)"
+
+><td class="source">330,48.6,1.43,1.55,1.59,0.79,22.6,25.8,27.3,30.2,33.2,66.3,80.5,84.8,86.0,85.0,22.1,23.7,26.0,28.5,36.7,53.6,71.0,74.4,73.8,72.8,26.2,27.3,27.8,28.6,31.3,63.4,65.9,66.1,66.2,63.2,24.1,26.8,27.9,28.7,29.9,36.2,64.5,64.2,65.9,67.7,44.8,42.5,42.8,43.1,43.5,43.9,45.0,46.6,19.6,19.8,20.5,27.2,33.5,36.8,39.8,41.0,41.2,41.3,19.5,19.8,22.2,28.8,32.0,34.7,35.7,36.4,36.3,34.6,26.4,29.8,42.8,74.1,25.4,29.0,49.1,69.5,20.6,25.6,34.6,39.3,19.8,23.9,29.6,35.5,-0.19,-0.20,-0.10,0.77,-0.29,-0.27,0.17,0.66,-0.29,0.07,0.22,0.61,-0.36,0.06,-0.24,0.43<br></td></tr
+><tr
+id=sl_svn14700_36
+
+ onmouseover="gutterOver(36)"
+
+><td class="source">340,48.6,1.41,1.54,1.57,0.78,22.8,26.1,27.4,30.3,33.4,67.0,79.8,83.9,85.4,84.4,22.1,23.7,25.9,28.6,36.8,53.8,71.9,75.3,74.7,73.5,26.0,27.5,28.1,28.7,32.2,62.7,66.2,66.4,66.6,64.0,24.1,27.2,28.2,28.7,30.4,35.5,63.9,64.3,66.1,68.2,42.9,42.2,43.1,43.6,43.8,44.2,44.9,47.0,19.6,19.8,20.4,27.1,33.5,36.9,39.8,40.9,41.5,41.7,19.6,19.9,22.3,28.9,32.2,35.0,36.0,36.7,36.4,34.7,26.5,29.6,42.7,74.7,25.5,29.1,49.1,70.2,20.6,25.8,34.7,39.4,19.8,24.1,29.9,35.9,-0.14,-0.17,-0.13,0.73,-0.29,-0.22,0.16,0.65,-0.28,0.10,0.22,0.65,-0.36,0.07,-0.23,0.43<br></td></tr
+><tr
+id=sl_svn14700_37
+
+ onmouseover="gutterOver(37)"
+
+><td class="source">350,49,1.42,1.55,1.58,0.78,22.9,26.0,27.4,30.2,33.4,66.3,80.7,84.5,85.5,84.3,22.2,24.0,25.9,28.7,37.7,54.7,71.7,74.7,74.1,73.2,25.9,27.3,27.9,29.1,31.5,63.0,66.6,66.9,66.9,64.0,24.9,27.9,28.5,29.1,30.3,35.0,64.3,65.3,66.5,68.7,44.7,44.0,45.0,44.4,44.1,44.6,45.5,46.8,19.6,19.8,20.4,27.5,33.7,36.8,39.5,40.9,41.4,41.5,19.4,19.7,22.5,29.1,32.3,35.3,36.2,36.9,36.6,34.9,26.6,29.7,43.4,74.2,25.8,29.1,49.2,70.1,20.6,25.9,35.0,39.3,19.8,24.2,29.9,35.9,-0.21,-0.23,-0.08,0.71,-0.29,-0.25,0.16,0.64,-0.28,0.10,0.24,0.64,-0.36,0.09,-0.23,0.44<br></td></tr
+><tr
+id=sl_svn14700_38
+
+ onmouseover="gutterOver(38)"
+
+><td class="source">360,48.6,1.43,1.57,1.58,0.79,23.1,26.2,27.5,30.3,33.8,67.3,79.8,83.2,84.7,83.7,22.3,24.1,26.1,28.6,37.2,54.3,71.6,74.8,74.6,73.5,25.9,27.7,28.3,28.8,31.2,63.3,66.4,66.3,66.5,63.9,24.7,27.3,28.3,29.0,30.1,35.0,64.6,65.2,67.0,68.8,45.7,43.6,44.5,44.2,43.9,44.6,45.4,46.5,19.6,19.8,20.4,28.1,34.4,36.9,40.0,41.2,41.5,41.4,19.4,19.7,22.5,28.9,32.2,35.2,36.2,36.9,36.8,35.5,26.7,29.8,43.3,74.1,25.6,29.4,49.5,70.1,20.6,26.2,35.4,39.2,19.8,24.2,29.9,36.1,-0.11,-0.20,-0.14,0.76,-0.27,-0.23,0.17,0.65,-0.28,0.08,0.27,0.58,-0.37,0.08,-0.24,0.42<br></td></tr
+><tr
+id=sl_svn14700_39
+
+ onmouseover="gutterOver(39)"
+
+><td class="source">370,49,1.43,1.56,1.59,0.79,23.0,26.1,27.6,30.3,34.0,67.7,79.8,83.9,85.0,84.1,22.5,24.1,26.2,28.9,36.8,54.3,71.7,74.8,74.3,73.3,25.7,27.2,28.2,28.5,31.6,63.1,66.7,66.5,66.7,63.4,24.9,26.9,27.9,28.6,30.5,35.5,63.9,65.5,67.1,68.7,43.5,42.7,44.2,44.3,44.3,45.0,45.6,46.8,19.7,19.8,20.4,27.1,35.0,37.6,40.3,41.2,41.5,41.5,19.5,19.8,22.6,29.1,32.5,35.4,36.3,37.0,36.8,35.4,26.8,29.9,43.6,74.6,25.7,29.4,49.4,70.3,20.6,26.4,35.4,39.5,19.7,24.2,30.1,35.9,-0.15,-0.20,-0.11,0.75,-0.25,-0.23,0.17,0.66,-0.28,0.08,0.23,0.63,-0.37,0.08,-0.25,0.43<br></td></tr
+><tr
+id=sl_svn14700_40
+
+ onmouseover="gutterOver(40)"
+
+><td class="source">380,48.2,1.45,1.59,1.61,0.80,22.9,26.3,27.6,30.3,34.2,68.2,80.5,84.5,85.8,84.7,22.3,24.3,26.3,28.9,37.2,54.8,71.9,75.1,74.6,73.4,26.0,27.3,28.1,28.4,31.0,63.8,66.7,66.6,66.9,64.0,25.4,27.5,28.0,28.8,30.2,35.2,64.6,66.0,67.6,68.9,44.2,44.0,45.1,44.2,44.5,44.9,45.9,47.0,19.6,19.8,20.4,27.8,34.2,37.4,40.1,41.6,42.2,42.3,19.5,19.7,22.5,29.2,32.8,35.6,36.4,37.0,36.8,35.3,26.8,29.9,43.6,74.3,25.5,29.3,49.9,70.3,20.5,26.3,35.6,39.8,19.7,24.3,30.2,36.2,-0.12,-0.20,-0.12,0.73,-0.30,-0.22,0.17,0.65,-0.29,0.09,0.24,0.64,-0.39,0.06,-0.25,0.42<br></td></tr
+><tr
+id=sl_svn14700_41
+
+ onmouseover="gutterOver(41)"
+
+><td class="source">390,48.8,1.43,1.55,1.60,0.80,23.0,26.3,27.7,30.3,34.1,66.8,80.8,84.2,85.9,85.3,22.5,24.2,26.1,28.7,37.5,54.9,72.0,75.2,74.7,73.6,26.7,27.6,28.1,28.4,31.5,63.5,66.8,67.0,67.1,64.2,25.3,27.6,28.2,28.8,30.2,35.6,64.9,65.8,68.1,69.4,48.3,44.0,44.0,44.1,44.7,45.1,46.0,47.1,19.5,19.8,20.4,28.2,34.3,37.4,40.1,41.2,41.6,41.6,19.4,19.7,22.6,29.4,32.9,35.7,36.5,37.0,36.9,35.4,26.6,29.9,43.4,74.6,25.8,29.2,50.4,70.5,20.5,26.1,35.6,39.8,19.7,24.4,30.4,36.5,-0.17,-0.16,-0.14,0.75,-0.31,-0.23,0.14,0.67,-0.29,0.11,0.24,0.63,-0.38,0.08,-0.24,0.42<br></td></tr
+><tr
+id=sl_svn14700_42
+
+ onmouseover="gutterOver(42)"
+
+><td class="source">400,48.6,1.44,1.57,1.61,0.80,23.1,26.3,27.5,30.3,34.4,67.7,80.3,83.7,85.3,84.6,22.6,24.3,26.4,28.7,36.6,54.6,72.1,75.5,75.3,74.3,26.5,27.7,28.2,28.6,31.3,63.9,67.0,67.0,67.2,64.3,24.9,27.4,28.2,28.9,30.6,38.2,64.4,65.7,67.4,69.2,45.0,44.5,44.3,44.3,44.3,45.0,46.0,47.3,19.6,19.7,20.4,27.9,35.0,38.1,40.8,41.9,42.3,42.2,19.4,19.9,22.6,29.4,32.8,35.8,36.6,37.3,37.0,35.6,26.7,29.8,43.6,75.2,26.0,29.2,50.3,70.9,20.5,26.0,35.7,39.8,19.7,24.4,30.6,36.5,-0.16,-0.20,-0.11,0.75,-0.30,-0.22,0.17,0.66,-0.30,0.07,0.23,0.64,-0.37,0.07,-0.22,0.43<br></td></tr
+><tr
+id=sl_svn14700_43
+
+ onmouseover="gutterOver(43)"
+
+><td class="source">410,48.8,1.44,1.58,1.60,0.81,23.1,26.3,27.6,30.3,34.4,67.6,80.9,84.7,86.4,85.6,22.9,24.5,26.4,28.9,37.7,55.0,72.0,75.6,75.2,74.3,26.9,27.8,28.4,28.9,31.7,63.8,67.1,67.0,67.1,64.4,25.1,27.1,28.2,29.0,30.6,36.1,65.4,66.0,67.9,69.2,45.1,45.1,45.0,44.3,44.6,45.2,46.3,47.4,19.6,19.7,20.4,27.5,34.7,38.2,41.0,42.2,42.5,42.5,19.4,19.9,22.6,29.6,33.0,35.9,36.7,37.4,37.2,35.9,26.8,29.8,44.1,75.0,26.1,29.4,50.7,70.7,20.5,26.1,35.6,40.2,19.7,24.4,30.6,36.6,-0.17,-0.19,-0.14,0.75,-0.30,-0.19,0.18,0.66,-0.29,0.11,0.22,0.62,-0.37,0.09,-0.23,0.45<br></td></tr
+><tr
+id=sl_svn14700_44
+
+ onmouseover="gutterOver(44)"
+
+><td class="source">420,48.4,1.45,1.59,1.60,0.81,23.2,26.5,27.7,30.4,34.6,67.8,81.4,85.3,86.7,85.9,22.8,24.7,26.4,28.8,37.5,54.8,72.4,75.4,75.0,73.7,26.7,27.9,28.4,28.9,32.4,64.1,67.1,67.1,67.3,64.7,25.5,27.3,28.3,29.0,30.2,35.6,64.9,65.0,66.6,69.1,45.7,44.5,45.9,45.4,45.4,45.8,46.7,47.5,19.6,19.7,20.5,28.0,35.1,37.8,40.4,41.8,42.2,42.4,19.4,19.9,22.7,29.7,33.1,36.0,36.9,37.3,37.1,35.7,27.0,29.8,43.8,75.3,26.1,29.4,50.9,71.0,20.5,26.1,36.0,40.2,19.8,24.5,30.8,36.9,-0.12,-0.17,-0.11,0.75,-0.27,-0.28,0.19,0.67,-0.29,0.11,0.26,0.64,-0.31,0.08,-0.26,0.41<br></td></tr
+><tr
+id=sl_svn14700_45
+
+ onmouseover="gutterOver(45)"
+
+><td class="source">430,48.6,1.49,1.63,1.66,0.83,23.3,26.7,27.9,30.5,34.7,67.6,81.8,85.2,86.7,85.7,23.0,24.7,26.5,28.9,36.8,54.8,72.6,75.9,75.5,74.6,27.0,27.9,28.2,28.9,31.6,64.2,67.6,67.4,67.6,64.6,25.2,27.4,28.3,28.9,30.2,36.9,65.8,65.3,67.1,69.7,45.0,44.0,45.3,45.2,45.1,45.6,46.2,47.4,19.5,19.7,20.5,28.0,35.1,38.0,40.6,41.8,42.2,42.3,19.4,19.6,22.6,29.7,33.1,36.0,37.0,37.5,37.5,35.9,27.0,29.8,44.0,75.6,26.0,29.5,50.7,71.3,20.5,26.3,36.2,40.2,19.8,24.5,30.9,36.9,-0.15,-0.20,-0.08,0.72,-0.29,-0.22,0.20,0.67,-0.30,0.08,0.29,0.61,-0.33,0.08,-0.29,0.42<br></td></tr
+><tr
+id=sl_svn14700_46
+
+ onmouseover="gutterOver(46)"
+
+><td class="source">440,48.6,1.47,1.61,1.64,0.81,23.3,26.8,28.0,30.5,34.8,67.5,81.3,85.2,86.9,85.9,23.0,24.7,26.5,28.9,36.4,55.0,73.0,76.0,75.4,74.6,26.7,27.8,28.3,28.8,31.3,64.7,67.7,67.9,68.1,65.1,25.4,27.3,28.2,29.1,30.3,36.8,65.2,66.6,68.3,69.9,46.4,44.8,45.0,45.0,45.0,45.4,46.3,47.3,19.6,19.8,20.4,27.7,34.9,38.4,40.8,41.8,42.2,42.3,19.3,19.7,22.6,29.6,33.3,36.2,37.0,37.6,37.4,35.9,27.0,29.9,43.7,75.6,26.1,29.4,50.5,71.3,20.5,26.2,36.2,40.3,19.9,24.5,30.8,37.1,-0.13,-0.13,-0.16,0.75,-0.30,-0.21,0.18,0.67,-0.28,0.07,0.29,0.64,-0.36,0.11,-0.25,0.44<br></td></tr
+><tr
+id=sl_svn14700_47
+
+ onmouseover="gutterOver(47)"
+
+><td class="source">450,48.8,1.48,1.63,1.64,0.81,23.3,26.8,28.0,30.5,34.7,68.2,80.6,84.4,85.9,85.2,22.9,24.6,26.4,28.9,36.7,55.2,73.1,76.7,76.3,75.4,26.5,27.7,28.4,28.6,30.8,65.2,68.0,68.1,68.2,64.9,25.4,27.3,28.4,29.3,30.6,35.9,65.5,67.1,68.9,70.3,45.5,44.7,45.4,44.9,45.0,45.6,46.7,48.1,19.6,19.8,20.3,27.4,35.1,38.4,41.0,42.0,42.4,42.4,19.3,19.6,22.6,29.9,33.2,36.4,37.2,37.8,37.7,36.2,27.0,29.9,43.8,75.8,25.9,29.2,50.8,71.4,20.5,26.3,36.1,40.5,19.9,24.6,31.1,37.0,-0.18,-0.17,-0.12,0.75,-0.32,-0.27,0.17,0.65,-0.28,0.12,0.27,0.65,-0.35,0.07,-0.26,0.44<br></td></tr
+><tr
+id=sl_svn14700_48
+
+ onmouseover="gutterOver(48)"
+
+><td class="source">460,49,1.46,1.59,1.62,0.82,23.5,26.7,28.0,30.7,34.9,68.1,81.0,85.0,86.6,86.0,22.9,24.6,26.5,28.8,37.0,55.9,73.1,76.3,76.0,75.0,26.4,27.9,28.4,28.6,31.9,65.2,68.1,68.2,68.4,65.4,25.7,27.7,28.7,29.4,30.6,36.7,65.8,67.8,69.8,70.5,45.9,43.7,44.3,44.7,45.1,45.5,46.7,48.1,19.6,19.8,20.3,27.9,34.4,38.4,41.0,42.4,43.0,43.2,19.4,19.7,22.5,30.0,33.4,36.6,37.3,37.9,37.7,36.3,27.0,29.9,43.7,75.6,26.0,29.3,51.2,71.7,20.5,26.2,36.3,40.8,19.9,24.6,31.1,37.1,-0.13,-0.17,-0.10,0.72,-0.30,-0.23,0.17,0.67,-0.27,0.10,0.23,0.64,-0.36,0.07,-0.27,0.44<br></td></tr
+><tr
+id=sl_svn14700_49
+
+ onmouseover="gutterOver(49)"
+
+><td class="source">470,48.8,1.48,1.62,1.65,0.82,23.5,26.7,27.9,30.5,34.7,68.6,80.6,84.9,86.3,85.7,23.0,24.6,26.3,29.1,38.7,56.6,73.0,76.2,75.7,74.8,26.8,28.1,28.5,28.8,31.3,64.6,68.0,67.9,68.1,65.6,25.8,27.8,28.9,29.5,31.5,37.8,66.1,65.8,68.0,70.2,47.0,44.9,45.7,45.5,45.7,46.0,46.9,47.9,19.6,19.8,20.3,28.2,35.3,38.4,41.1,42.2,42.6,42.6,19.5,20.0,22.5,29.8,33.3,36.4,37.3,37.9,37.7,36.3,27.0,30.0,44.5,75.7,26.2,29.5,51.9,71.4,20.5,25.9,36.2,40.7,19.9,24.6,31.2,37.2,-0.13,-0.17,-0.09,0.73,-0.31,-0.21,0.15,0.66,-0.30,0.08,0.23,0.61,-0.36,0.06,-0.29,0.42<br></td></tr
+><tr
+id=sl_svn14700_50
+
+ onmouseover="gutterOver(50)"
+
+><td class="source">480,48.8,1.48,1.63,1.65,0.83,23.6,26.7,27.9,30.7,35.4,68.9,81.7,85.1,86.3,85.3,23.3,24.7,26.7,29.0,38.0,56.2,72.8,76.1,75.5,74.6,26.3,28.1,28.7,29.1,31.5,64.7,67.8,67.9,68.0,64.7,25.8,27.9,28.8,29.4,30.8,35.4,66.7,66.1,67.8,69.8,46.9,45.1,45.4,45.3,45.4,46.2,46.6,47.9,19.6,19.8,20.3,27.1,35.6,38.5,41.2,42.2,42.7,42.7,19.6,19.9,22.3,29.9,33.5,36.4,37.4,38.1,38.0,36.5,27.1,30.2,44.9,75.8,26.4,29.6,51.6,71.7,20.6,26.3,36.5,40.6,19.9,24.7,31.4,37.3,-0.11,-0.18,-0.15,0.74,-0.32,-0.19,0.16,0.67,-0.28,0.09,0.25,0.61,-0.36,0.08,-0.27,0.43<br></td></tr
+><tr
+id=sl_svn14700_51
+
+ onmouseover="gutterOver(51)"
+
+><td class="source">490,48.6,1.47,1.62,1.62,0.83,23.7,26.7,28.1,30.9,35.5,69.7,81.5,85.0,86.7,85.9,23.3,24.7,26.8,29.2,37.9,55.7,73.2,76.4,75.9,74.9,26.3,28.0,28.6,29.1,32.2,64.7,67.9,67.8,67.8,64.9,26.0,27.8,28.7,29.5,30.4,37.3,66.6,66.6,68.5,69.9,45.5,44.1,44.3,44.3,44.8,45.7,46.9,48.0,19.6,19.8,20.4,27.3,36.0,38.6,41.1,42.4,42.9,43.0,19.6,20.0,22.4,29.8,33.5,36.6,37.4,38.0,37.8,36.3,27.3,30.1,44.8,75.8,26.4,29.7,51.6,71.6,20.5,26.7,36.4,41.0,19.9,24.6,31.5,37.3,-0.16,-0.17,-0.11,0.72,-0.33,-0.23,0.16,0.68,-0.30,0.07,0.24,0.66,-0.36,0.09,-0.28,0.43<br></td></tr
+><tr
+id=sl_svn14700_52
+
+ onmouseover="gutterOver(52)"
+
+><td class="source">500,48.8,1.49,1.63,1.67,0.82,23.6,26.8,28.1,30.8,35.3,69.8,81.8,85.2,86.5,85.5,23.4,24.9,26.8,29.2,38.2,56.2,73.4,76.0,75.4,74.0,27.0,28.2,28.8,29.3,33.6,65.1,68.1,68.4,68.4,65.7,25.6,27.7,28.6,29.2,30.7,36.4,65.7,66.4,68.0,70.2,44.1,43.9,45.1,45.1,45.5,46.0,46.8,47.6,19.7,19.8,20.4,27.8,35.3,38.7,41.3,42.5,43.0,43.2,19.7,20.0,22.4,30.0,33.6,36.6,37.5,38.2,38.1,36.3,27.3,30.2,45.1,75.6,26.4,29.8,51.8,72.0,20.5,26.7,36.3,41.2,19.9,24.5,31.6,37.5,-0.16,-0.18,-0.09,0.74,-0.32,-0.27,0.15,0.66,-0.31,0.05,0.25,0.65,-0.35,0.06,-0.29,0.40<br></td></tr
+><tr
+id=sl_svn14700_53
+
+ onmouseover="gutterOver(53)"
+
+><td class="source">510,48.8,1.47,1.64,1.64,0.83,23.8,27.0,28.3,31.0,35.2,69.5,83.0,86.3,87.7,86.9,23.4,25.0,27.0,29.4,38.7,56.4,73.8,76.8,76.3,75.3,26.9,28.1,28.4,29.1,33.2,65.1,68.5,68.4,68.4,65.3,25.8,28.0,28.6,29.1,30.6,35.9,65.9,66.4,68.4,71.0,45.8,44.1,45.5,45.9,45.7,46.1,46.8,48.3,19.6,19.9,20.5,28.2,35.5,38.6,41.4,42.5,42.8,42.7,19.6,20.0,22.4,30.0,33.6,36.9,37.6,38.2,38.0,36.6,27.5,30.2,45.2,76.2,26.5,29.9,51.9,71.9,20.6,26.6,36.7,41.1,19.9,24.6,31.6,37.6,-0.13,-0.18,-0.10,0.72,-0.29,-0.25,0.17,0.67,-0.31,0.08,0.27,0.63,-0.34,0.08,-0.28,0.43<br></td></tr
+><tr
+id=sl_svn14700_54
+
+ onmouseover="gutterOver(54)"
+
+><td class="source">520,48.6,1.47,1.63,1.64,0.83,23.7,27.0,28.4,31.1,35.7,69.9,82.4,85.6,87.3,86.7,23.4,25.1,27.1,29.4,37.5,56.1,74.0,77.4,77.1,75.9,27.0,28.0,28.4,28.9,31.5,66.0,68.7,68.7,68.9,65.6,25.5,27.8,28.4,29.1,30.5,35.7,66.2,67.7,70.0,71.5,47.3,45.2,46.2,46.0,46.1,46.7,47.6,48.2,19.8,19.9,20.6,28.3,36.1,38.7,41.3,42.7,43.1,43.2,19.6,19.9,22.6,30.0,33.7,36.8,37.7,38.4,38.1,36.5,27.6,30.4,45.3,77.1,26.4,29.8,51.6,72.3,20.7,26.8,37.0,40.9,19.9,24.6,31.7,37.6,-0.13,-0.18,-0.13,0.74,-0.32,-0.20,0.14,0.68,-0.31,0.08,0.24,0.62,-0.36,0.07,-0.30,0.41<br></td></tr
+><tr
+id=sl_svn14700_55
+
+ onmouseover="gutterOver(55)"
+
+><td class="source">530,48.6,1.51,1.66,1.67,0.84,23.9,27.3,28.6,31.2,35.5,70.2,82.3,85.8,87.4,86.7,23.3,24.9,26.8,29.2,37.1,56.6,74.2,77.1,76.7,75.6,26.7,28.0,28.6,28.8,32.1,65.7,69.1,69.1,69.3,66.7,26.0,28.0,28.8,29.5,30.9,36.7,66.1,67.3,70.2,71.8,47.0,45.8,46.2,45.8,46.0,46.3,47.6,48.5,19.8,19.8,20.4,27.7,35.3,39.0,41.5,42.5,43.0,43.1,19.6,19.9,22.5,29.9,33.7,36.7,37.7,38.4,38.2,36.8,27.5,30.3,44.4,77.0,26.4,29.4,51.7,72.7,20.7,27.0,37.0,41.2,19.9,24.6,31.8,37.6,-0.19,-0.20,-0.12,0.74,-0.33,-0.22,0.15,0.66,-0.28,0.12,0.27,0.63,-0.38,0.09,-0.30,0.43<br></td></tr
+><tr
+id=sl_svn14700_56
+
+ onmouseover="gutterOver(56)"
+
+><td class="source">540,48.6,1.51,1.67,1.69,0.84,24.0,27.2,28.4,31.1,35.5,68.6,82.8,86.2,87.4,86.6,23.4,25.0,26.9,29.3,37.6,57.0,73.9,77.3,77.1,75.9,26.8,28.1,28.6,28.9,32.9,65.9,69.0,69.0,69.0,66.2,26.0,28.5,29.2,29.5,30.7,35.7,68.3,67.1,69.6,71.5,47.6,44.6,45.3,45.7,46.3,46.9,47.6,49.0,19.8,19.9,20.5,27.6,36.0,39.1,42.0,43.0,43.4,43.3,19.6,20.0,22.5,30.2,33.9,37.0,37.8,38.5,38.3,36.7,27.4,30.2,44.7,76.4,26.5,29.5,52.3,72.7,20.8,26.6,37.3,41.2,20.0,24.8,31.8,37.7,-0.21,-0.19,-0.12,0.75,-0.33,-0.25,0.16,0.68,-0.29,0.11,0.26,0.64,-0.37,0.08,-0.32,0.44<br></td></tr
+><tr
+id=sl_svn14700_57
+
+ onmouseover="gutterOver(57)"
+
+><td class="source">550,48.6,1.50,1.65,1.67,0.83,23.9,27.1,28.4,31.2,35.4,68.9,82.6,85.9,86.7,85.6,23.5,24.9,27.0,29.2,37.7,57.1,74.0,77.2,77.0,76.1,26.9,28.3,29.0,29.1,32.4,65.7,69.0,68.8,69.0,66.2,25.9,28.4,28.8,29.2,30.7,37.0,67.1,67.9,70.3,71.8,46.4,45.3,45.5,45.5,45.7,46.3,47.5,49.1,19.7,20.0,20.6,28.3,36.4,39.1,42.1,43.2,43.6,43.6,19.6,20.0,22.6,30.3,33.9,37.1,38.0,38.6,38.3,36.9,27.4,30.3,45.0,76.4,26.7,29.8,52.7,72.6,20.7,26.5,37.2,41.3,19.9,24.8,32.0,37.8,-0.16,-0.16,-0.12,0.74,-0.30,-0.27,0.15,0.67,-0.30,0.12,0.26,0.64,-0.38,0.08,-0.33,0.43<br></td></tr
+><tr
+id=sl_svn14700_58
+
+ onmouseover="gutterOver(58)"
+
+><td class="source">560,48.6,1.49,1.65,1.67,0.83,24.0,27.0,28.5,31.2,35.6,70.0,81.3,85.1,86.5,85.7,23.6,25.0,27.3,29.5,37.8,57.3,73.6,76.8,76.4,75.4,27.2,28.1,28.7,29.2,31.3,65.2,69.1,69.2,69.2,66.5,25.7,27.9,28.7,29.4,30.6,35.4,66.3,67.2,69.5,71.5,45.9,44.7,46.6,46.2,46.1,46.9,47.9,48.7,19.8,19.9,20.6,28.7,36.1,39.2,42.1,43.5,44.0,44.1,19.5,19.9,22.8,30.4,34.2,37.2,38.0,38.6,38.4,37.2,27.6,30.4,45.3,76.3,26.8,29.9,52.7,72.5,20.8,27.0,37.2,41.5,19.9,24.7,32.1,38.0,-0.19,-0.22,-0.13,0.74,-0.32,-0.20,0.18,0.68,-0.29,0.10,0.21,0.64,-0.37,0.09,-0.32,0.44<br></td></tr
+><tr
+id=sl_svn14700_59
+
+ onmouseover="gutterOver(59)"
+
+><td class="source">570,48.8,1.49,1.66,1.68,0.84,24.1,27.1,28.5,31.3,35.8,70.3,81.8,85.3,86.7,86.0,23.6,25.2,27.2,29.5,38.6,57.1,73.7,77.1,76.9,76.2,27.0,27.9,28.7,29.1,32.1,65.8,69.0,69.1,69.0,66.1,26.3,28.1,28.7,29.6,31.0,38.6,67.4,67.2,69.7,71.2,45.6,45.7,46.9,46.2,46.4,47.1,47.8,49.0,19.8,19.9,20.5,28.2,36.2,39.1,41.5,42.8,43.2,43.4,19.6,20.0,22.9,30.4,34.4,37.3,38.1,38.7,38.5,37.0,27.7,30.5,45.3,76.6,26.7,30.0,52.9,72.3,20.7,27.1,37.3,41.5,20.0,24.8,32.2,38.1,-0.17,-0.20,-0.12,0.74,-0.35,-0.23,0.17,0.67,-0.28,0.11,0.28,0.64,-0.37,0.07,-0.33,0.43<br></td></tr
+><tr
+id=sl_svn14700_60
+
+ onmouseover="gutterOver(60)"
+
+><td class="source">580,49,1.54,1.70,1.74,0.87,24.2,27.3,28.6,31.2,35.8,69.5,82.8,86.5,87.7,86.9,23.6,25.2,27.2,29.4,38.8,57.3,74.0,77.5,77.0,76.0,27.2,28.2,28.7,29.0,31.7,65.4,69.0,69.0,69.0,66.2,26.2,28.4,29.4,29.9,31.3,36.8,67.6,67.7,70.3,71.5,47.6,45.0,45.7,45.5,46.0,46.7,47.7,49.1,19.8,19.9,20.5,28.3,36.1,39.1,42.1,43.3,43.6,43.7,19.7,20.1,22.6,30.5,34.3,37.3,38.2,38.9,38.7,37.4,27.6,30.6,45.5,77.0,26.7,29.8,53.3,72.8,20.7,27.1,37.4,41.5,20.0,24.8,32.2,38.2,-0.25,-0.19,-0.12,0.73,-0.31,-0.19,0.17,0.70,-0.29,0.12,0.25,0.64,-0.33,0.08,-0.30,0.43<br></td></tr
+><tr
+id=sl_svn14700_61
+
+ onmouseover="gutterOver(61)"
+
+><td class="source">590,48.8,1.52,1.68,1.70,0.85,24.1,27.3,28.5,31.2,35.7,69.5,82.7,86.1,87.7,87.4,23.5,25.3,27.1,29.4,37.9,57.2,74.2,77.9,77.4,76.6,27.3,28.7,29.2,29.2,32.5,65.8,69.2,69.3,69.7,66.6,25.9,28.3,29.3,29.9,31.9,36.6,67.4,68.3,70.4,71.9,46.8,45.1,45.8,45.9,46.3,46.7,47.7,49.1,19.8,19.9,20.5,28.1,36.9,39.5,42.6,43.5,43.8,44.0,19.7,20.1,22.4,30.5,34.2,37.4,38.2,38.7,38.6,37.2,27.7,30.5,45.2,77.8,26.9,29.8,53.2,73.1,20.7,27.2,37.5,41.7,20.1,24.8,32.3,38.2,-0.13,-0.18,-0.12,0.75,-0.33,-0.24,0.17,0.66,-0.26,0.10,0.23,0.62,-0.39,0.07,-0.32,0.44<br></td></tr
+><tr
+id=sl_svn14700_62
+
+ onmouseover="gutterOver(62)"
+
+><td class="source">600,48.4,1.50,1.66,1.67,0.84,24.2,27.3,28.6,31.3,35.9,70.3,82.5,85.4,86.6,85.9,23.7,25.4,27.1,29.7,38.7,57.6,74.2,78.1,77.8,77.2,27.4,28.7,29.3,29.7,31.9,65.2,69.6,69.6,69.7,66.9,25.5,28.3,29.2,29.7,31.8,37.7,66.8,67.9,70.6,72.2,45.3,45.1,46.0,46.1,46.3,46.8,47.5,49.2,19.8,20.0,20.6,28.3,36.4,39.3,42.2,43.5,43.9,44.0,19.6,20.2,22.6,30.7,34.3,37.6,38.4,39.0,38.9,37.4,27.7,30.6,45.4,77.6,26.9,30.2,53.1,73.1,20.7,27.0,37.5,41.9,20.0,24.9,32.3,38.3,-0.15,-0.20,-0.13,0.72,-0.29,-0.21,0.14,0.68,-0.29,0.09,0.24,0.65,-0.37,0.08,-0.31,0.43<br></td></tr
+><tr
+id=sl_svn14700_63
+
+ onmouseover="gutterOver(63)"
+
+><td class="source">610,48.6,1.51,1.67,1.70,0.86,24.2,27.5,28.7,31.5,36.2,70.3,81.9,85.6,87.6,86.8,23.8,25.4,27.4,29.8,38.3,57.5,74.3,77.4,76.8,75.7,27.2,28.6,29.0,29.5,31.7,66.1,69.5,69.4,69.5,66.2,26.1,28.1,28.8,29.6,31.2,36.8,67.5,67.0,70.3,72.3,46.7,45.6,46.2,46.2,46.5,46.8,47.6,49.5,19.8,20.0,20.6,28.6,36.2,39.5,41.8,42.9,43.3,43.4,19.7,20.2,22.6,30.6,34.4,37.6,38.5,39.1,38.8,37.3,27.8,30.8,46.0,76.4,26.9,30.4,53.0,73.0,20.8,26.8,37.9,41.5,20.1,25.0,32.5,38.4,-0.22,-0.22,-0.13,0.74,-0.32,-0.22,0.15,0.67,-0.31,0.09,0.29,0.59,-0.34,0.08,-0.31,0.43<br></td></tr
+><tr
+id=sl_svn14700_64
+
+ onmouseover="gutterOver(64)"
+
+><td class="source">620,48.6,1.53,1.69,1.73,0.86,24.2,27.5,28.9,31.6,36.4,70.9,82.8,86.6,88.3,87.8,23.8,25.4,27.3,29.6,37.9,57.5,74.2,78.0,77.6,76.8,27.5,28.6,28.9,29.3,32.3,66.2,69.4,69.3,69.3,66.1,26.0,28.1,29.3,29.8,31.2,39.3,67.7,67.7,69.9,71.6,49.0,46.0,46.0,46.3,46.3,46.7,47.8,49.8,19.8,20.0,20.5,27.7,36.2,39.7,42.4,43.3,43.6,43.6,19.7,20.2,22.6,30.6,34.3,37.6,38.5,39.1,38.9,37.5,28.0,30.8,45.7,77.6,26.8,30.1,53.0,72.9,20.7,27.2,37.8,41.5,20.1,24.8,32.3,38.4,-0.23,-0.18,-0.12,0.76,-0.32,-0.27,0.18,0.68,-0.30,0.13,0.29,0.60,-0.35,0.07,-0.31,0.42<br></td></tr
+><tr
+id=sl_svn14700_65
+
+ onmouseover="gutterOver(65)"
+
+><td class="source">630,49,1.52,1.68,1.71,0.85,24.3,27.6,28.9,31.6,36.2,70.7,83.1,86.6,87.7,87.1,23.9,25.5,27.4,29.6,38.4,57.6,74.4,78.3,78.2,77.4,27.2,28.7,29.2,29.3,33.0,66.2,69.1,69.3,69.8,67.0,25.7,28.6,29.4,30.1,31.8,37.6,66.7,68.6,70.8,72.0,45.6,44.7,45.2,45.7,46.7,46.9,48.1,49.8,19.8,20.0,20.6,27.5,35.9,39.7,42.7,44.0,44.2,44.4,19.5,20.0,22.4,30.5,34.5,37.7,38.4,39.0,38.7,37.5,27.9,30.8,45.5,78.0,26.8,30.0,53.4,73.3,20.7,27.3,37.7,42.1,19.9,24.9,32.3,38.4,-0.16,-0.13,-0.12,0.74,-0.31,-0.26,0.17,0.68,-0.26,0.11,0.22,0.66,-0.35,0.10,-0.31,0.44<br></td></tr
+><tr
+id=sl_svn14700_66
+
+ onmouseover="gutterOver(66)"
+
+><td class="source">640,48.8,1.51,1.68,1.70,0.86,24.3,27.5,28.8,31.5,36.1,71.2,82.5,85.9,87.2,86.6,23.8,25.6,27.3,29.7,39.0,57.7,74.9,78.2,77.8,76.6,27.0,28.5,29.3,30.0,32.5,65.8,69.8,70.0,70.2,67.0,27.0,28.3,29.3,30.1,31.6,37.0,67.3,68.2,70.7,72.4,44.9,45.6,47.2,47.2,47.0,47.2,47.8,49.5,19.8,19.9,20.6,28.2,36.5,39.7,42.3,43.4,43.8,44.2,19.5,20.0,22.5,30.8,34.7,37.9,38.7,39.4,39.3,37.8,27.9,30.8,45.8,77.7,26.9,30.1,53.5,73.5,20.7,26.8,37.6,42.1,19.9,25.0,32.4,38.6,-0.23,-0.19,-0.09,0.73,-0.30,-0.26,0.17,0.67,-0.29,0.10,0.29,0.66,-0.39,0.09,-0.31,0.43<br></td></tr
+><tr
+id=sl_svn14700_67
+
+ onmouseover="gutterOver(67)"
+
+><td class="source">650,48.8,1.53,1.68,1.71,0.87,24.3,27.5,28.9,31.9,36.4,71.1,82.7,86.2,87.7,87.2,23.9,25.6,27.5,29.8,38.5,57.9,74.8,77.7,77.4,76.3,27.0,28.6,29.2,29.8,32.6,66.8,70.0,70.1,70.3,67.3,26.4,28.1,29.0,29.5,31.1,36.6,68.4,67.9,70.4,72.3,48.0,45.4,45.9,46.6,46.9,47.2,48.0,50.0,19.7,19.9,20.5,28.6,37.4,39.6,42.2,43.4,43.9,43.9,19.4,19.9,22.5,30.7,34.6,37.8,38.8,39.3,39.2,37.6,27.9,31.0,46.4,77.6,27.0,30.3,53.4,73.5,20.6,26.7,37.8,42.1,19.9,24.8,32.5,38.6,-0.13,-0.22,-0.15,0.73,-0.32,-0.22,0.16,0.67,-0.31,0.10,0.32,0.63,-0.38,0.11,-0.31,0.42<br></td></tr
+><tr
+id=sl_svn14700_68
+
+ onmouseover="gutterOver(68)"
+
+><td class="source">660,49,1.55,1.72,1.75,0.88,24.4,27.6,29.0,31.9,36.6,71.3,83.5,87.0,88.0,87.4,24.0,25.6,27.4,30.0,39.2,58.1,74.4,78.0,77.6,76.6,27.3,28.6,29.0,29.4,32.3,67.2,69.8,69.6,69.6,66.3,26.1,28.2,29.2,30.0,31.9,37.7,68.9,68.3,71.0,72.3,46.2,45.1,46.3,46.6,47.2,47.7,48.4,49.9,19.7,19.9,20.5,28.0,36.4,39.9,42.3,43.5,43.9,43.9,19.5,20.0,22.3,30.6,34.7,38.0,38.8,39.3,39.0,37.5,28.1,31.1,46.6,77.9,27.0,30.3,53.7,73.4,20.6,26.7,38.0,41.8,19.9,24.8,32.9,38.6,-0.14,-0.20,-0.10,0.73,-0.31,-0.27,0.18,0.69,-0.30,0.08,0.28,0.58,-0.39,0.09,-0.32,0.45<br></td></tr
+><tr
+id=sl_svn14700_69
+
+ onmouseover="gutterOver(69)"
+
+><td class="source">670,48.8,1.56,1.73,1.77,0.87,24.6,27.8,29.2,32.0,36.7,70.8,83.2,86.5,87.8,86.8,23.8,25.7,27.4,29.8,38.6,57.7,74.6,78.3,78.0,76.8,27.1,28.4,29.2,29.6,33.0,67.0,69.9,69.6,69.7,67.4,26.7,28.2,29.2,30.3,32.4,39.0,68.5,68.9,71.1,72.4,43.8,44.3,46.8,47.1,47.3,47.6,48.8,49.9,19.7,19.9,20.4,28.8,36.7,39.8,42.8,44.1,44.5,44.6,19.7,20.0,22.3,30.8,34.7,37.8,38.8,39.5,39.2,37.8,28.1,31.0,45.9,77.8,27.1,30.1,54.0,73.5,20.6,26.8,38.1,42.3,19.9,24.8,33.1,38.7,-0.20,-0.17,-0.15,0.76,-0.32,-0.24,0.19,0.68,-0.33,0.06,0.20,0.64,-0.39,0.07,-0.32,0.44<br></td></tr
+><tr
+id=sl_svn14700_70
+
+ onmouseover="gutterOver(70)"
+
+><td class="source">680,48.8,1.54,1.70,1.74,0.87,24.5,27.7,29.1,32.0,36.7,71.3,83.7,87.8,89.3,88.3,24.0,25.6,27.5,29.8,39.0,58.3,75.1,78.5,78.1,77.1,27.2,28.3,28.9,29.5,32.1,66.9,70.3,70.2,70.3,67.5,26.7,28.6,29.6,30.1,31.6,36.6,68.4,68.5,71.3,72.9,45.4,45.6,47.6,47.3,47.5,47.9,49.0,50.0,19.7,19.9,20.5,28.9,36.6,40.1,42.6,43.7,44.1,44.2,19.6,19.9,22.5,30.9,34.8,38.1,39.0,39.6,39.3,37.8,28.0,31.0,46.2,78.4,27.1,30.3,54.3,73.6,20.7,26.8,38.1,42.3,19.9,25.0,33.2,38.9,-0.23,-0.14,-0.10,0.76,-0.31,-0.25,0.18,0.68,-0.32,0.09,0.27,0.59,-0.41,0.08,-0.34,0.43<br></td></tr
+><tr
+id=sl_svn14700_71
+
+ onmouseover="gutterOver(71)"
+
+><td class="source">690,48.8,1.56,1.73,1.75,0.88,24.6,27.8,29.1,32.2,36.9,71.7,83.6,87.2,88.3,87.5,23.9,25.6,27.3,29.7,38.3,57.8,75.7,78.9,78.5,77.6,27.3,28.8,29.3,29.5,32.0,67.1,70.1,70.3,70.4,67.0,26.7,28.6,29.7,30.3,31.3,37.8,68.9,69.0,71.8,73.2,45.6,46.1,48.4,47.6,47.7,48.1,48.6,50.0,19.8,20.0,20.4,28.6,37.0,39.8,42.5,43.7,44.3,44.4,19.7,19.9,22.6,31.1,34.8,38.0,39.1,39.7,39.6,38.1,28.0,30.8,45.4,78.8,27.1,30.2,53.9,73.9,20.7,26.9,38.1,42.1,19.9,24.9,33.2,38.9,-0.20,-0.13,-0.16,0.73,-0.33,-0.22,0.16,0.67,-0.32,0.10,0.28,0.63,-0.39,0.08,-0.30,0.44<br></td></tr
+><tr
+id=sl_svn14700_72
+
+ onmouseover="gutterOver(72)"
+
+><td class="source">700,48.6,1.54,1.71,1.73,0.86,24.7,27.7,29.1,32.2,36.9,71.7,83.3,86.6,88.1,87.5,23.9,25.7,27.4,29.9,38.7,58.3,75.7,78.9,78.5,77.6,27.3,28.7,29.2,29.4,32.6,67.0,70.6,70.6,70.7,67.6,26.7,28.7,29.4,30.2,31.3,36.9,68.9,69.7,72.1,73.3,47.7,45.6,46.3,47.3,47.4,47.8,49.1,50.3,19.8,19.9,20.5,28.5,37.2,39.9,42.5,43.9,44.4,44.6,19.6,20.0,22.5,31.0,35.0,38.3,39.0,39.6,39.5,37.9,28.1,30.9,45.6,78.6,27.1,30.2,54.0,73.8,20.7,26.7,38.0,42.4,20.0,25.0,33.2,38.9,-0.20,-0.19,-0.13,0.76,-0.33,-0.20,0.18,0.69,-0.29,0.10,0.26,0.64,-0.38,0.09,-0.32,0.43<br></td></tr
+><tr
+id=sl_svn14700_73
+
+ onmouseover="gutterOver(73)"
+
+><td class="source">710,49,1.55,1.71,1.75,0.86,24.6,27.7,29.2,32.3,36.9,71.7,83.4,86.8,88.0,87.0,24.0,25.7,27.5,29.9,38.2,58.1,75.5,78.8,78.2,77.1,27.3,28.9,29.2,29.5,32.1,67.8,70.4,70.6,70.8,67.8,26.3,28.6,29.4,30.0,31.6,38.0,68.9,69.7,71.8,73.2,48.1,46.2,46.7,46.8,47.2,47.5,48.5,50.6,19.8,20.0,20.5,28.2,37.2,40.1,42.8,44.0,44.3,44.3,19.7,20.1,22.1,31.0,35.1,38.3,39.0,39.7,39.5,38.0,28.2,31.1,45.8,78.5,27.2,30.2,54.1,74.0,20.7,26.8,38.5,42.4,20.0,25.0,33.1,39.1,-0.22,-0.18,-0.13,0.74,-0.35,-0.23,0.18,0.67,-0.28,0.10,0.28,0.60,-0.38,0.10,-0.33,0.44<br></td></tr
+><tr
+id=sl_svn14700_74
+
+ onmouseover="gutterOver(74)"
+
+><td class="source">720,48.8,1.55,1.71,1.74,0.87,24.7,27.8,29.1,32.2,36.8,70.7,83.6,86.8,88.3,87.7,24.1,25.7,27.6,30.0,39.0,58.4,75.3,78.5,78.3,77.1,27.0,28.8,29.1,29.4,31.8,67.5,70.6,70.4,70.8,67.6,26.6,28.5,29.2,29.9,32.0,37.2,68.7,68.9,71.4,72.9,47.0,46.8,47.4,47.3,47.4,47.9,49.0,50.5,19.9,20.0,20.5,28.4,37.9,40.3,43.4,44.6,44.8,44.7,19.7,20.1,22.3,31.0,35.0,38.3,39.1,39.8,39.7,38.1,28.2,31.1,45.7,77.3,27.3,30.2,54.3,73.5,20.8,27.2,38.6,42.5,20.0,24.9,33.2,39.1,-0.23,-0.12,-0.15,0.71,-0.34,-0.27,0.18,0.67,-0.31,0.09,0.33,0.66,-0.38,0.10,-0.32,0.40<br></td></tr
+><tr
+id=sl_svn14700_75
+
+ onmouseover="gutterOver(75)"
+
+><td class="source">730,48.4,1.55,1.73,1.75,0.88,24.9,27.7,29.2,32.1,36.8,71.6,82.7,86.5,88.3,87.5,24.2,25.8,27.7,29.9,39.4,58.7,75.5,79.0,78.6,77.4,27.5,28.7,28.9,29.3,31.7,66.5,70.2,70.0,70.0,67.4,26.8,28.5,29.5,30.2,31.6,38.3,68.7,68.9,71.8,73.3,48.0,46.0,47.1,46.8,47.3,47.8,48.9,50.1,19.8,20.0,20.5,28.4,37.0,40.9,43.4,44.5,44.8,44.9,19.6,19.9,22.2,31.0,34.9,38.3,39.1,39.8,39.6,38.2,28.2,31.0,46.4,77.8,27.2,30.3,54.5,74.0,20.8,27.2,38.9,42.6,20.0,25.0,33.5,39.3,-0.14,-0.17,-0.14,0.71,-0.34,-0.20,0.17,0.68,-0.31,0.09,0.25,0.61,-0.40,0.09,-0.32,0.44<br></td></tr
+><tr
+id=sl_svn14700_76
+
+ onmouseover="gutterOver(76)"
+
+><td class="source">740,48.8,1.57,1.75,1.78,0.88,24.7,27.8,29.3,32.1,36.6,72.6,83.5,86.9,88.4,87.7,24.3,25.8,27.7,29.8,38.3,58.3,75.7,79.1,78.9,78.0,27.7,28.8,29.1,29.5,33.0,67.1,70.5,70.5,70.7,68.4,26.9,28.5,29.4,30.2,31.5,36.9,68.8,68.9,71.9,73.6,47.7,46.6,47.0,46.8,47.0,47.6,49.1,50.4,19.9,20.0,20.6,28.9,37.4,40.9,43.6,44.8,45.3,45.4,19.6,19.9,22.3,31.3,35.2,38.5,39.4,40.1,39.9,38.3,28.4,31.0,45.6,78.4,27.4,30.1,54.6,73.7,20.8,27.3,38.8,42.6,19.9,25.1,33.5,39.5,-0.21,-0.14,-0.15,0.74,-0.34,-0.24,0.19,0.66,-0.32,0.08,0.31,0.63,-0.41,0.08,-0.32,0.44<br></td></tr
+><tr
+id=sl_svn14700_77
+
+ onmouseover="gutterOver(77)"
+
+><td class="source">750,48.4,1.57,1.75,1.76,0.87,24.8,27.9,29.3,32.1,36.6,72.1,83.7,87.1,88.5,87.7,24.2,25.9,27.8,29.8,38.8,58.7,76.0,79.1,78.7,77.9,27.7,28.7,29.2,29.7,33.6,66.7,70.5,70.7,70.8,67.8,27.1,28.9,29.6,30.2,31.7,37.8,68.4,68.4,71.2,73.1,47.3,46.7,47.4,46.9,47.2,47.5,48.6,50.6,19.9,20.0,20.5,29.2,36.8,40.9,43.4,44.8,45.2,45.3,19.6,20.0,22.5,31.3,35.2,38.7,39.5,40.0,39.7,38.3,28.5,31.0,45.6,78.2,27.3,30.2,54.4,73.8,20.7,27.5,38.5,42.8,19.9,25.1,33.4,39.5,-0.19,-0.14,-0.13,0.72,-0.33,-0.24,0.18,0.70,-0.30,0.10,0.23,0.63,-0.38,0.07,-0.34,0.46<br></td></tr
+><tr
+id=sl_svn14700_78
+
+ onmouseover="gutterOver(78)"
+
+><td class="source">760,48.8,1.57,1.74,1.78,0.87,25.0,28.0,29.3,32.3,37.0,72.2,82.9,85.9,87.2,86.7,24.4,25.9,27.8,30.0,39.2,58.8,75.8,79.0,78.5,77.6,27.2,29.1,29.4,29.7,33.2,67.2,70.7,70.9,71.1,68.0,26.8,28.7,29.4,30.0,31.4,39.3,68.8,69.4,72.2,73.8,46.8,46.2,47.3,47.1,47.4,48.2,48.9,50.6,19.9,20.0,20.5,28.3,37.2,40.2,43.1,44.4,44.9,45.2,19.7,20.0,22.6,31.3,35.2,38.7,39.8,40.3,40.0,38.6,28.5,31.1,46.2,78.2,27.3,30.4,54.6,74.1,20.7,27.4,38.4,42.8,19.9,25.0,33.3,39.6,-0.16,-0.17,-0.11,0.72,-0.33,-0.24,0.16,0.67,-0.29,0.09,0.26,0.65,-0.37,0.09,-0.33,0.43<br></td></tr
+><tr
+id=sl_svn14700_79
+
+ onmouseover="gutterOver(79)"
+
+><td class="source">770,48.6,1.57,1.75,1.78,0.88,25.1,28.1,29.4,32.2,37.3,72.4,83.3,87.4,88.8,87.9,24.4,26.0,27.9,30.2,39.8,59.2,75.4,78.5,78.2,77.4,28.1,28.9,29.4,29.9,32.8,67.5,71.1,71.1,71.2,67.9,26.6,28.5,29.1,30.1,31.8,37.6,69.1,69.5,72.1,73.4,48.9,47.3,47.9,47.7,48.0,48.2,48.8,50.5,19.9,20.0,20.5,28.4,38.2,40.6,43.5,44.3,44.7,44.8,19.6,19.9,22.3,31.0,35.2,38.7,39.5,40.0,39.8,38.4,28.5,31.2,46.6,77.8,27.4,30.5,55.0,73.8,20.7,27.3,38.7,42.4,19.9,24.9,33.5,39.6,-0.14,-0.19,-0.10,0.72,-0.34,-0.18,0.19,0.68,-0.32,0.08,0.29,0.57,-0.37,0.11,-0.32,0.45<br></td></tr
+><tr
+id=sl_svn14700_80
+
+ onmouseover="gutterOver(80)"
+
+><td class="source">780,48.4,1.58,1.76,1.80,0.89,25.0,28.1,29.4,32.3,37.2,72.4,83.8,87.6,89.1,88.5,24.2,26.1,28.1,30.1,38.7,59.0,75.6,79.1,78.8,77.9,27.4,28.9,29.4,29.9,32.5,67.9,70.8,70.5,70.5,67.3,26.8,28.8,29.5,30.3,31.9,38.2,69.5,70.1,72.8,73.5,47.2,46.8,47.8,47.2,47.7,48.1,49.0,50.6,19.8,20.0,20.5,28.4,37.4,40.8,43.6,44.7,45.0,45.0,19.7,19.9,22.3,31.3,35.3,38.6,39.6,40.1,39.8,38.3,28.6,31.2,46.6,78.3,27.5,30.5,54.9,74.0,20.7,27.5,38.9,42.8,19.9,24.9,33.5,39.6,-0.19,-0.17,-0.12,0.72,-0.35,-0.25,0.16,0.69,-0.30,0.09,0.30,0.63,-0.39,0.09,-0.34,0.45<br></td></tr
+><tr
+id=sl_svn14700_81
+
+ onmouseover="gutterOver(81)"
+
+><td class="source">790,48.4,1.58,1.75,1.77,0.89,25.0,28.1,29.5,32.2,36.9,72.5,84.2,87.4,88.9,88.4,24.3,26.1,27.8,30.1,39.1,59.0,75.9,79.4,79.0,78.1,27.4,29.3,29.6,29.9,32.6,67.9,70.9,71.2,71.1,68.2,26.9,29.1,29.7,30.4,31.8,38.4,68.8,70.8,73.6,74.0,49.5,45.5,46.6,46.9,47.5,47.9,49.2,50.5,19.8,20.0,20.5,28.9,38.8,40.9,43.4,44.7,45.2,45.2,19.6,20.0,22.5,31.5,35.5,38.9,39.8,40.4,40.1,38.6,28.5,31.2,46.4,78.8,27.4,30.4,55.0,74.6,20.7,27.3,38.8,43.0,19.9,25.0,33.7,39.7,-0.16,-0.14,-0.12,0.74,-0.32,-0.19,0.19,0.67,-0.29,0.10,0.29,0.63,-0.40,0.10,-0.34,0.42<br></td></tr
+><tr
+id=sl_svn14700_82
+
+ onmouseover="gutterOver(82)"
+
+><td class="source">800,48.6,1.58,1.76,1.79,0.88,25.0,28.1,29.4,32.2,37.1,72.3,83.1,86.8,88.6,88.3,24.4,26.2,28.1,30.1,39.7,59.1,76.1,79.3,78.9,77.9,27.6,29.2,29.7,30.0,32.2,67.6,71.5,71.6,71.6,68.5,27.0,28.8,29.4,30.5,32.2,39.1,69.1,70.0,73.0,73.9,47.2,45.4,46.3,47.3,47.6,47.9,48.9,51.1,19.8,20.0,20.5,28.7,38.5,40.8,43.8,44.8,45.3,45.3,19.7,20.1,22.6,31.5,35.3,38.6,39.7,40.3,40.2,38.5,28.6,31.3,47.1,78.9,27.5,30.6,55.2,74.8,20.7,27.5,38.9,43.0,19.8,24.9,33.8,39.6,-0.12,-0.11,-0.11,0.71,-0.31,-0.22,0.17,0.68,-0.31,0.07,0.26,0.62,-0.40,0.11,-0.36,0.42<br></td></tr
+><tr
+id=sl_svn14700_83
+
+ onmouseover="gutterOver(83)"
+
+><td class="source">810,48.8,1.60,1.77,1.81,0.89,25.0,28.1,29.5,32.5,37.6,72.9,83.7,87.3,88.9,88.4,24.6,26.3,28.0,30.1,39.4,59.2,75.9,78.7,78.3,77.1,27.5,29.1,29.7,30.0,32.5,67.9,71.3,71.4,71.8,68.9,27.2,29.1,29.7,30.2,31.4,39.0,69.9,69.2,72.1,73.6,46.0,47.0,48.4,48.3,48.3,48.6,49.2,51.2,19.8,20.0,20.4,28.6,37.4,40.9,43.8,45.0,45.1,45.2,19.8,19.9,22.4,31.4,35.7,38.9,39.7,40.1,39.9,38.3,28.7,31.4,47.2,78.5,27.6,30.6,55.1,74.8,20.7,27.5,39.2,43.1,19.9,24.9,33.8,39.8,-0.18,-0.18,-0.09,0.69,-0.33,-0.24,0.20,0.69,-0.31,0.08,0.28,0.60,-0.39,0.07,-0.36,0.43<br></td></tr
+><tr
+id=sl_svn14700_84
+
+ onmouseover="gutterOver(84)"
+
+><td class="source">820,48.8,1.60,1.78,1.81,0.89,25.2,28.3,29.6,32.4,37.4,72.7,84.1,87.4,89.0,88.6,24.4,26.2,27.9,30.0,39.5,59.4,76.0,79.0,78.7,77.7,27.5,29.1,29.4,29.9,32.9,68.3,71.0,71.1,71.3,68.4,27.5,29.3,29.8,30.3,31.6,36.4,69.6,69.9,72.6,73.6,49.3,47.7,47.6,47.4,47.5,48.2,49.0,51.0,19.8,20.0,20.5,28.1,38.1,40.8,43.6,44.8,45.2,45.3,19.8,20.0,22.5,31.6,35.5,39.0,39.8,40.5,40.1,38.5,28.6,31.3,46.7,78.5,27.6,30.6,55.4,74.5,20.7,27.2,39.2,43.1,20.0,24.9,33.8,39.9,-0.22,-0.17,-0.10,0.70,-0.34,-0.28,0.17,0.68,-0.31,0.07,0.32,0.65,-0.40,0.08,-0.37,0.43<br></td></tr
+><tr
+id=sl_svn14700_85
+
+ onmouseover="gutterOver(85)"
+
+><td class="source">830,48.8,1.58,1.76,1.79,0.88,25.3,28.3,29.7,32.5,37.6,72.3,83.6,87.0,88.7,88.3,24.6,26.4,28.0,30.3,39.0,59.3,76.2,79.3,78.7,78.0,27.8,29.0,29.6,29.9,34.2,67.9,71.2,71.2,71.4,68.6,27.5,28.9,29.6,30.3,31.8,36.8,69.4,70.5,72.8,73.9,48.6,46.5,47.3,47.8,47.8,48.2,49.4,50.9,19.9,20.0,20.5,28.8,38.3,41.0,43.8,45.0,45.4,45.4,19.9,20.1,22.3,31.4,35.6,38.9,39.8,40.5,40.2,38.7,28.7,31.4,46.7,79.1,27.7,30.7,55.6,74.9,20.8,27.5,39.2,43.2,20.0,24.9,33.9,39.9,-0.19,-0.17,-0.15,0.73,-0.34,-0.21,0.18,0.68,-0.32,0.08,0.31,0.62,-0.37,0.10,-0.33,0.42<br></td></tr
+><tr
+id=sl_svn14700_86
+
+ onmouseover="gutterOver(86)"
+
+><td class="source">840,48.6,1.60,1.78,1.80,0.90,25.4,28.3,29.7,32.8,37.8,72.2,84.5,88.0,89.5,88.9,24.7,26.4,28.2,30.2,39.2,59.4,76.0,79.3,78.7,77.7,27.8,29.2,29.4,29.9,32.6,68.2,71.5,71.6,71.3,68.5,27.3,28.9,29.6,30.3,32.2,37.7,68.3,69.9,72.3,73.8,49.3,47.3,47.6,47.6,47.8,48.3,49.6,51.0,19.9,20.1,20.5,28.9,38.2,41.3,44.1,45.1,45.4,45.4,19.8,20.0,22.2,31.7,35.7,39.1,39.9,40.5,40.3,38.9,28.8,31.4,47.0,78.4,27.8,30.6,55.5,75.0,20.8,27.6,39.6,43.3,20.1,24.9,34.0,39.9,-0.18,-0.15,-0.14,0.72,-0.34,-0.23,0.18,0.67,-0.30,0.09,0.32,0.65,-0.39,0.10,-0.33,0.43<br></td></tr
+><tr
+id=sl_svn14700_87
+
+ onmouseover="gutterOver(87)"
+
+><td class="source">850,48.6,1.59,1.77,1.79,0.90,25.4,28.4,29.8,32.8,37.8,72.2,84.6,88.5,90.1,89.1,24.7,26.5,28.2,30.3,39.4,59.9,76.3,79.6,79.2,78.3,28.3,29.4,29.4,29.5,35.7,68.6,71.1,71.3,71.3,68.7,27.2,29.3,29.9,30.5,32.4,38.7,69.2,70.2,73.0,74.0,45.6,45.6,47.2,47.6,47.9,48.4,49.3,51.0,19.9,20.1,20.5,28.4,37.7,41.2,44.6,45.6,45.9,45.9,19.7,19.9,22.1,31.7,35.9,39.2,40.1,40.7,40.3,38.8,28.8,31.3,46.4,79.0,27.8,30.6,55.7,74.8,20.8,27.8,39.4,43.7,20.1,25.0,34.2,40.1,-0.20,-0.15,-0.08,0.72,-0.32,-0.21,0.21,0.67,-0.31,0.09,0.24,0.66,-0.39,0.11,-0.33,0.43<br></td></tr
+><tr
+id=sl_svn14700_88
+
+ onmouseover="gutterOver(88)"
+
+><td class="source">860,48.8,1.60,1.79,1.82,0.90,25.4,28.4,29.9,32.7,37.6,72.2,84.6,87.8,88.9,88.2,24.7,26.3,28.1,30.4,40.1,59.8,76.7,79.6,79.3,78.5,28.3,29.1,29.6,29.9,33.3,68.1,71.3,71.3,71.4,68.5,27.7,29.1,29.6,30.3,32.3,37.4,69.5,70.4,73.0,74.3,48.2,48.3,48.5,48.6,48.2,48.6,49.4,51.1,20.0,20.1,20.5,28.9,37.5,40.8,44.0,45.1,45.5,45.4,19.7,20.1,22.3,31.9,36.0,39.4,40.2,40.8,40.6,39.1,28.8,31.5,47.2,79.1,27.9,30.6,56.0,75.3,20.8,27.3,39.3,43.4,20.1,25.2,34.2,40.3,-0.17,-0.14,-0.15,0.70,-0.32,-0.15,0.19,0.68,-0.28,0.08,0.30,0.59,-0.38,0.10,-0.33,0.45<br></td></tr
+><tr
+id=sl_svn14700_89
+
+ onmouseover="gutterOver(89)"
+
+><td class="source">870,48.6,1.61,1.80,1.81,0.89,25.4,28.5,29.8,32.7,38.0,73.2,85.1,88.8,90.3,89.4,24.7,26.4,28.4,30.3,39.0,59.5,76.7,79.7,79.1,78.1,28.0,29.3,29.6,29.9,32.7,68.7,71.8,71.8,72.0,68.6,27.1,28.8,29.8,30.9,32.4,37.8,69.5,70.7,72.9,74.8,48.9,48.4,48.3,47.8,48.1,48.5,49.6,51.0,20.0,20.1,20.6,28.3,38.0,41.2,43.9,45.1,45.4,45.5,19.7,19.9,22.5,31.7,35.8,39.2,40.3,40.9,40.7,38.9,28.8,31.4,47.2,78.8,27.9,30.6,55.7,75.4,20.8,27.1,39.5,43.3,20.1,24.9,34.3,40.2,-0.17,-0.16,-0.09,0.71,-0.32,-0.20,0.17,0.67,-0.28,0.04,0.28,0.64,-0.37,0.09,-0.35,0.42<br></td></tr
+><tr
+id=sl_svn14700_90
+
+ onmouseover="gutterOver(90)"
+
+><td class="source">880,48.4,1.59,1.78,1.83,0.89,25.5,28.4,29.9,32.7,37.8,73.8,84.5,88.2,89.4,89.0,24.8,26.6,28.3,30.3,39.6,59.5,76.7,80.5,80.1,79.0,28.4,29.4,29.8,30.0,33.6,68.3,71.7,71.6,71.7,68.4,27.4,28.9,29.7,30.6,32.4,39.7,69.6,70.5,73.1,74.3,45.8,46.5,48.3,48.0,48.5,48.9,50.0,50.9,20.0,20.1,20.6,28.2,38.3,41.1,44.2,45.2,45.5,45.6,19.6,20.0,22.3,31.4,35.9,39.3,40.3,40.8,40.7,39.2,29.0,31.4,47.0,79.7,27.9,30.6,55.8,75.2,20.8,27.4,39.3,43.2,20.1,24.8,34.3,40.1,-0.14,-0.10,-0.10,0.72,-0.34,-0.25,0.19,0.69,-0.30,0.11,0.27,0.63,-0.38,0.09,-0.36,0.43<br></td></tr
+><tr
+id=sl_svn14700_91
+
+ onmouseover="gutterOver(91)"
+
+><td class="source">890,49,1.61,1.79,1.82,0.89,25.4,28.5,29.9,32.7,37.8,73.5,84.3,87.5,88.9,88.6,24.8,26.4,28.6,30.6,39.5,60.0,77.1,80.4,80.0,79.1,27.7,29.4,30.0,30.5,32.1,68.2,72.2,72.5,72.5,69.3,27.4,29.2,29.9,30.6,32.1,39.4,69.7,70.3,73.9,75.6,47.7,47.5,48.4,47.9,48.0,48.5,49.3,51.5,19.9,20.1,20.5,28.1,38.1,41.4,44.1,45.3,45.8,45.8,19.6,19.8,22.2,31.6,35.8,39.2,40.1,40.6,40.3,38.5,29.0,31.6,47.4,79.8,27.8,30.8,55.9,75.3,20.9,27.5,39.2,43.4,20.1,24.8,34.4,40.0,-0.20,-0.12,-0.11,0.72,-0.34,-0.23,0.17,0.67,-0.29,0.08,0.26,0.65,-0.38,0.08,-0.35,0.45<br></td></tr
+><tr
+id=sl_svn14700_92
+
+ onmouseover="gutterOver(92)"
+
+><td class="source">900,48.4,1.62,1.81,1.85,0.89,25.5,28.5,29.8,32.8,38.3,73.2,83.7,88.1,89.6,89.1,24.9,26.6,28.4,30.6,39.8,60.4,76.6,79.7,79.5,78.2,28.1,29.5,30.0,30.3,32.5,69.1,72.2,72.1,72.3,69.2,27.7,29.2,29.8,30.6,32.4,39.9,69.8,69.8,73.3,75.1,49.6,48.2,47.4,47.8,48.1,48.5,49.3,51.1,19.9,20.1,20.5,28.7,38.5,41.5,44.2,45.3,45.6,45.7,19.6,19.9,22.2,31.7,36.0,39.3,40.1,40.6,40.2,38.3,29.2,31.7,47.5,78.9,27.7,30.9,55.9,75.2,20.9,27.1,39.2,43.4,20.1,24.9,34.5,40.2,-0.16,-0.14,-0.14,0.73,-0.35,-0.27,0.20,0.68,-0.31,0.08,0.27,0.61,-0.40,0.10,-0.35,0.43<br></td></tr
+><tr
+id=sl_svn14700_93
+
+ onmouseover="gutterOver(93)"
+
+><td class="source">910,48.75,1.62,1.82,1.84,0.90,25.3,28.7,30.0,32.9,37.9,73.8,84.2,87.8,89.4,89.1,24.5,26.4,28.4,30.7,39.8,60.1,76.7,80.2,79.9,78.9,27.9,29.6,30.1,30.3,34.4,69.0,71.6,71.6,71.7,69.0,28.0,29.4,30.1,31.0,32.6,39.5,69.9,70.1,73.3,74.7,47.8,46.4,46.3,46.7,47.3,47.8,48.5,51.2,19.7,19.9,20.3,27.6,37.7,41.4,44.3,45.4,45.7,45.7,19.5,19.9,22.0,31.5,35.9,39.2,40.3,40.9,40.7,39.2,29.0,31.8,47.6,79.6,27.7,30.9,56.4,75.3,20.6,27.9,39.2,43.5,19.8,24.8,34.3,39.9,-0.26,-0.17,-0.11,0.70,-0.38,-0.27,0.14,0.66,-0.32,0.07,0.23,0.64,-0.41,0.09,-0.35,0.44<br></td></tr
+><tr
+id=sl_svn14700_94
+
+ onmouseover="gutterOver(94)"
+
+><td class="source">920,49,1.63,1.82,1.84,0.89,25.7,28.5,29.7,32.7,38.2,72.9,83.7,87.3,88.2,87.5,24.9,26.6,28.5,30.9,42.0,60.1,76.6,79.1,78.9,77.6,28.0,29.5,29.9,30.9,35.0,67.9,72.0,71.9,72.0,69.2,26.8,29.4,30.4,30.8,31.8,36.0,68.7,66.2,70.0,74.4,48.0,48.6,47.8,46.5,46.7,47.6,48.7,50.8,19.7,19.9,20.2,27.9,37.6,40.6,43.7,44.8,45.2,45.2,19.6,19.7,22.3,31.6,35.2,39.1,39.8,39.9,39.4,37.6,29.0,31.6,47.9,78.2,27.8,31.3,55.7,75.4,20.6,27.0,39.5,43.3,19.8,24.9,34.1,40.6,-0.12,-0.22,-0.15,0.67,-0.29,-0.21,0.23,0.66,-0.27,0.13,0.27,0.60,-0.38,0.16,-0.22,0.48<br></td></tr
+><tr
+id=sl_svn14700_95
+
+ onmouseover="gutterOver(95)"
+
+><td class="source">930,49,1.63,1.79,1.82,0.89,25.8,28.7,30.3,33.2,38.9,74.9,86.0,89.2,90.6,89.6,25.1,27.1,28.8,31.3,41.7,60.2,75.8,78.7,78.7,77.3,27.9,29.8,30.2,31.3,33.2,68.0,70.9,71.6,71.5,69.0,26.5,29.3,30.0,31.0,32.1,38.1,69.8,67.1,71.6,74.4,47.8,49.3,49.4,47.2,47.3,47.5,49.0,50.5,19.6,19.8,20.2,28.0,38.3,41.2,43.7,44.2,44.4,44.1,19.5,19.9,23.7,32.1,35.3,39.0,39.9,40.2,40.1,38.6,29.2,32.2,49.0,78.4,28.4,31.8,55.9,74.5,20.6,26.9,39.9,42.6,19.9,24.7,33.8,40.1,-0.17,-0.19,-0.16,0.72,-0.33,-0.28,0.24,0.69,-0.26,0.15,0.36,0.55,-0.39,0.16,-0.26,0.43<br></td></tr
+><tr
+id=sl_svn14700_96
+
+ onmouseover="gutterOver(96)"
+
+><td class="source">940,48,1.68,1.84,1.90,0.90,25.4,28.9,30.2,34.1,39.7,74.8,85.3,88.8,90.4,89.5,24.9,26.6,29.0,31.2,39.9,59.7,77.1,80.5,80.2,78.9,27.6,29.6,30.6,30.8,33.7,68.5,71.1,71.2,71.4,68.1,26.5,29.4,30.2,30.7,32.1,39.4,70.1,69.5,72.7,73.9,51.4,46.6,46.7,46.5,46.8,47.9,49.3,49.9,19.6,19.9,20.2,28.6,37.7,41.3,43.8,44.9,45.1,45.0,19.2,20.1,24.3,31.5,35.2,38.8,39.7,40.2,40.1,38.0,29.4,32.3,47.9,79.7,27.9,31.2,56.0,74.6,20.6,26.7,40.1,42.7,20.0,24.7,33.6,40.3,-0.19,-0.16,-0.19,0.71,-0.30,-0.29,0.25,0.68,-0.24,0.12,0.36,0.63,-0.25,0.16,-0.19,0.42<br></td></tr
+></table></pre>
+<pre><table width="100%"><tr class="cursor_stop cursor_hidden"><td></td></tr></table></pre>
+</td>
+</tr></table>
+
+ 
+<script type="text/javascript">
+ var lineNumUnderMouse = -1;
+ 
+ function gutterOver(num) {
+ gutterOut();
+ var newTR = document.getElementById('gr_svn14700_' + num);
+ if (newTR) {
+ newTR.className = 'undermouse';
+ }
+ lineNumUnderMouse = num;
+ }
+ function gutterOut() {
+ if (lineNumUnderMouse != -1) {
+ var oldTR = document.getElementById(
+ 'gr_svn14700_' + lineNumUnderMouse);
+ if (oldTR) {
+ oldTR.className = '';
+ }
+ lineNumUnderMouse = -1;
+ }
+ }
+ var numsGenState = {table_base_id: 'nums_table_'};
+ var srcGenState = {table_base_id: 'src_table_'};
+ var alignerRunning = false;
+ var startOver = false;
+ function setLineNumberHeights() {
+ if (alignerRunning) {
+ startOver = true;
+ return;
+ }
+ numsGenState.chunk_id = 0;
+ numsGenState.table = document.getElementById('nums_table_0');
+ numsGenState.row_num = 0;
+ if (!numsGenState.table) {
+ return; // Silently exit if no file is present.
+ }
+ srcGenState.chunk_id = 0;
+ srcGenState.table = document.getElementById('src_table_0');
+ srcGenState.row_num = 0;
+ alignerRunning = true;
+ continueToSetLineNumberHeights();
+ }
+ function rowGenerator(genState) {
+ if (genState.row_num < genState.table.rows.length) {
+ var currentRow = genState.table.rows[genState.row_num];
+ genState.row_num++;
+ return currentRow;
+ }
+ var newTable = document.getElementById(
+ genState.table_base_id + (genState.chunk_id + 1));
+ if (newTable) {
+ genState.chunk_id++;
+ genState.row_num = 0;
+ genState.table = newTable;
+ return genState.table.rows[0];
+ }
+ return null;
+ }
+ var MAX_ROWS_PER_PASS = 1000;
+ function continueToSetLineNumberHeights() {
+ var rowsInThisPass = 0;
+ var numRow = 1;
+ var srcRow = 1;
+ while (numRow && srcRow && rowsInThisPass < MAX_ROWS_PER_PASS) {
+ numRow = rowGenerator(numsGenState);
+ srcRow = rowGenerator(srcGenState);
+ rowsInThisPass++;
+ if (numRow && srcRow) {
+ if (numRow.offsetHeight != srcRow.offsetHeight) {
+ numRow.firstChild.style.height = srcRow.offsetHeight + 'px';
+ }
+ }
+ }
+ if (rowsInThisPass >= MAX_ROWS_PER_PASS) {
+ setTimeout(continueToSetLineNumberHeights, 10);
+ } else {
+ alignerRunning = false;
+ if (startOver) {
+ startOver = false;
+ setTimeout(setLineNumberHeights, 500);
+ }
+ }
+ }
+ function initLineNumberHeights() {
+ // Do 2 complete passes, because there can be races
+ // between this code and prettify.
+ startOver = true;
+ setTimeout(setLineNumberHeights, 250);
+ window.onresize = setLineNumberHeights;
+ }
+ initLineNumberHeights();
+</script>
+
+ 
+ 
+ <div id="log">
+ <div style="text-align:right">
+ <a class="ifCollapse" href="#" onclick="_toggleMeta(this); return false">Show details</a>
+ <a class="ifExpand" href="#" onclick="_toggleMeta(this); return false">Hide details</a>
+ </div>
+ <div class="ifExpand">
+ 
+ 
+ <div class="pmeta_bubble_bg" style="border:1px solid white">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <div id="changelog">
+ <p>Change log</p>
+ <div>
+ <a href="/p/fds-smv/source/detail?spec=svn14700&amp;r=14639">r14639</a>
+ by mcgratta
+ on Feb 7 (6 days ago)
+ &nbsp; <a href="/p/fds-smv/source/diff?spec=svn14700&r=14639&amp;format=side&amp;path=/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv&amp;old_path=/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv&amp;old=">Diff</a>
+ </div>
+ <pre>FDS Validation: Average the ATF Corridors
+data.</pre>
+ </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ <script type="text/javascript">
+ var detail_url = '/p/fds-smv/source/detail?r=14639&spec=svn14700';
+ var publish_url = '/p/fds-smv/source/detail?r=14639&spec=svn14700#publish';
+ // describe the paths of this revision in javascript.
+ var changed_paths = [];
+ var changed_urls = [];
+ 
+ changed_paths.push('/trunk/FDS/trunk/Utilities/Matlab/FDS_validation_dataplot_inputs.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Utilities/Matlab/FDS_validation_dataplot_inputs.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3402.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3402.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3411.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3411.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3414.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3414.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3415.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3415.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3416.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3416.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ var selected_path = '/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv';
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3418.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3418.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3419.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3419.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3420.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3420.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_avg.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_avg.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_3422.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_3422.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_3426.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_3426.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_avg.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_avg.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_3429.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_3429.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_3430.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_3430.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_avg.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_avg.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3444.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3444.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3446.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3446.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3458.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3458.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_avg.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_avg.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3433.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3433.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3435.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3435.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3443.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3443.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ changed_paths.push('/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_avg.csv');
+ changed_urls.push('/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_avg.csv?r\x3d14639\x26spec\x3dsvn14700');
+ 
+ 
+ function getCurrentPageIndex() {
+ for (var i = 0; i < changed_paths.length; i++) {
+ if (selected_path == changed_paths[i]) {
+ return i;
+ }
+ }
+ }
+ function getNextPage() {
+ var i = getCurrentPageIndex();
+ if (i < changed_paths.length - 1) {
+ return changed_urls[i + 1];
+ }
+ return null;
+ }
+ function getPreviousPage() {
+ var i = getCurrentPageIndex();
+ if (i > 0) {
+ return changed_urls[i - 1];
+ }
+ return null;
+ }
+ function gotoNextPage() {
+ var page = getNextPage();
+ if (!page) {
+ page = detail_url;
+ }
+ window.location = page;
+ }
+ function gotoPreviousPage() {
+ var page = getPreviousPage();
+ if (!page) {
+ page = detail_url;
+ }
+ window.location = page;
+ }
+ function gotoDetailPage() {
+ window.location = detail_url;
+ }
+ function gotoPublishPage() {
+ window.location = publish_url;
+ }
+</script>
+
+ 
+ <style type="text/css">
+ #review_nav {
+ border-top: 3px solid white;
+ padding-top: 6px;
+ margin-top: 1em;
+ }
+ #review_nav td {
+ vertical-align: middle;
+ }
+ #review_nav select {
+ margin: .5em 0;
+ }
+ </style>
+ <div id="review_nav">
+ <table><tr><td>Go to:&nbsp;</td><td>
+ <select name="files_in_rev" onchange="window.location=this.value">
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Utilities/Matlab/FDS_validation_dataplot_inputs.csv?r=14639&amp;spec=svn14700"
+ 
+ >...S_validation_dataplot_inputs.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3402.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_048kW_3402.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3411.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_048kW_3411.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3414.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_048kW_3414.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3415.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_048kW_3415.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_3416.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_048kW_3416.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv?r=14639&amp;spec=svn14700"
+ selected="selected"
+ >...Data/ATF_Corridors_048kW_avg.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3418.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_097kW_3418.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3419.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_097kW_3419.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_3420.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_097kW_3420.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_097kW_avg.csv?r=14639&amp;spec=svn14700"
+ 
+ >...Data/ATF_Corridors_097kW_avg.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_3422.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_242kW_3422.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_3426.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_242kW_3426.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_242kW_avg.csv?r=14639&amp;spec=svn14700"
+ 
+ >...Data/ATF_Corridors_242kW_avg.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_3429.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_250kW_3429.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_3430.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_250kW_3430.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_250kW_avg.csv?r=14639&amp;spec=svn14700"
+ 
+ >...Data/ATF_Corridors_250kW_avg.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3444.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_485kW_3444.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3446.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_485kW_3446.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_3458.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_485kW_3458.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_485kW_avg.csv?r=14639&amp;spec=svn14700"
+ 
+ >...Data/ATF_Corridors_485kW_avg.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3433.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_Pulse_3433.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3435.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_Pulse_3435.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_3443.csv?r=14639&amp;spec=svn14700"
+ 
+ >...ata/ATF_Corridors_Pulse_3443.csv</option>
+ 
+ <option value="/p/fds-smv/source/browse/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_Pulse_avg.csv?r=14639&amp;spec=svn14700"
+ 
+ >...Data/ATF_Corridors_Pulse_avg.csv</option>
+ 
+ </select>
+ </td></tr></table>
+ 
+ 
+ <div id="review_instr" class="closed">
+ <a class="ifOpened" href="/p/fds-smv/source/detail?r=14639&spec=svn14700#publish">Publish your comments</a>
+ <div class="ifClosed">Double click a line to add a comment</div>
+ </div>
+ 
+ </div>
+ 
+ 
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ <div class="pmeta_bubble_bg" style="border:1px solid white">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <div id="older_bubble">
+ <p>Older revisions</p>
+ 
+ <a href="/p/fds-smv/source/list?path=/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv&start=14639">All revisions of this file</a>
+ </div>
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ 
+ <div class="pmeta_bubble_bg" style="border:1px solid white">
+ <div class="round4"></div>
+ <div class="round2"></div>
+ <div class="round1"></div>
+ <div class="box-inner">
+ <div id="fileinfo_bubble">
+ <p>File info</p>
+ 
+ <div>Size: 52043 bytes,
+ 96 lines</div>
+ 
+ <div><a href="//fds-smv.googlecode.com/svn/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv">View raw file</a></div>
+ </div>
+ 
+ <div id="props">
+ <p>File properties</p>
+ <dl>
+ 
+ <dt>svn:eol-style</dt>
+ <dd>native</dd>
+ 
+ <dt>svn:mime-type</dt>
+ <dd>text/plain</dd>
+ 
+ </dl>
+ </div>
+ 
+ </div>
+ <div class="round1"></div>
+ <div class="round2"></div>
+ <div class="round4"></div>
+ </div>
+ </div>
+ </div>
+
+
+</div>
+
+</div>
+</div>
+
+
+<script src="http://www.gstatic.com/codesite/ph/14116724302520652310/js/source_file_scripts.js"></script>
+
+ <script type="text/javascript" src="http://www.gstatic.com/codesite/ph/14116724302520652310/js/kibbles.js"></script>
+ <script type="text/javascript">
+ var lastStop = null;
+ var initialized = false;
+ 
+ function updateCursor(next, prev) {
+ if (prev && prev.element) {
+ prev.element.className = 'cursor_stop cursor_hidden';
+ }
+ if (next && next.element) {
+ next.element.className = 'cursor_stop cursor';
+ lastStop = next.index;
+ }
+ }
+ 
+ function pubRevealed(data) {
+ updateCursorForCell(data.cellId, 'cursor_stop cursor_hidden');
+ if (initialized) {
+ reloadCursors();
+ }
+ }
+ 
+ function draftRevealed(data) {
+ updateCursorForCell(data.cellId, 'cursor_stop cursor_hidden');
+ if (initialized) {
+ reloadCursors();
+ }
+ }
+ 
+ function draftDestroyed(data) {
+ updateCursorForCell(data.cellId, 'nocursor');
+ if (initialized) {
+ reloadCursors();
+ }
+ }
+ function reloadCursors() {
+ kibbles.skipper.reset();
+ loadCursors();
+ if (lastStop != null) {
+ kibbles.skipper.setCurrentStop(lastStop);
+ }
+ }
+ // possibly the simplest way to insert any newly added comments
+ // is to update the class of the corresponding cursor row,
+ // then refresh the entire list of rows.
+ function updateCursorForCell(cellId, className) {
+ var cell = document.getElementById(cellId);
+ // we have to go two rows back to find the cursor location
+ var row = getPreviousElement(cell.parentNode);
+ row.className = className;
+ }
+ // returns the previous element, ignores text nodes.
+ function getPreviousElement(e) {
+ var element = e.previousSibling;
+ if (element.nodeType == 3) {
+ element = element.previousSibling;
+ }
+ if (element && element.tagName) {
+ return element;
+ }
+ }
+ function loadCursors() {
+ // register our elements with skipper
+ var elements = CR_getElements('*', 'cursor_stop');
+ var len = elements.length;
+ for (var i = 0; i < len; i++) {
+ var element = elements[i]; 
+ element.className = 'cursor_stop cursor_hidden';
+ kibbles.skipper.append(element);
+ }
+ }
+ function toggleComments() {
+ CR_toggleCommentDisplay();
+ reloadCursors();
+ }
+ function keysOnLoadHandler() {
+ // setup skipper
+ kibbles.skipper.addStopListener(
+ kibbles.skipper.LISTENER_TYPE.PRE, updateCursor);
+ // Set the 'offset' option to return the middle of the client area
+ // an option can be a static value, or a callback
+ kibbles.skipper.setOption('padding_top', 50);
+ // Set the 'offset' option to return the middle of the client area
+ // an option can be a static value, or a callback
+ kibbles.skipper.setOption('padding_bottom', 100);
+ // Register our keys
+ kibbles.skipper.addFwdKey("n");
+ kibbles.skipper.addRevKey("p");
+ kibbles.keys.addKeyPressListener(
+ 'u', function() { window.location = detail_url; });
+ kibbles.keys.addKeyPressListener(
+ 'r', function() { window.location = detail_url + '#publish'; });
+ 
+ kibbles.keys.addKeyPressListener('j', gotoNextPage);
+ kibbles.keys.addKeyPressListener('k', gotoPreviousPage);
+ 
+ 
+ kibbles.keys.addKeyPressListener('h', toggleComments);
+ 
+ }
+ </script>
+<script src="http://www.gstatic.com/codesite/ph/14116724302520652310/js/code_review_scripts.js"></script>
+<script type="text/javascript">
+ function showPublishInstructions() {
+ var element = document.getElementById('review_instr');
+ if (element) {
+ element.className = 'opened';
+ }
+ }
+ var codereviews;
+ function revsOnLoadHandler() {
+ // register our source container with the commenting code
+ var paths = {'svn14700': '/trunk/FDS/trunk/Validation/ATF_Corridors/Experimental_Data/ATF_Corridors_048kW_avg.csv'}
+ codereviews = CR_controller.setup(
+ {"domainName":null,"assetHostPath":"http://www.gstatic.com/codesite/ph","relativeBaseUrl":"","projectHomeUrl":"/p/fds-smv","token":"DvtMMBduPDfnvYzJNa-VnqPpRJs:1360792150019","assetVersionPath":"http://www.gstatic.com/codesite/ph/14116724302520652310","profileUrl":"/u/105369268430911968432/","loggedInUserEmail":"tmacksmyers@gmail.com","projectName":"fds-smv"}, '', 'svn14700', paths,
+ CR_BrowseIntegrationFactory);
+ 
+ // register our source container with the commenting code
+ // in this case we're registering the container and the revison
+ // associated with the contianer which may be the primary revision
+ // or may be a previous revision against which the primary revision
+ // of the file is being compared.
+ codereviews.registerSourceContainer(document.getElementById('lines'), 'svn14700');
+ 
+ codereviews.registerActivityListener(CR_ActivityType.REVEAL_DRAFT_PLATE, showPublishInstructions);
+ 
+ codereviews.registerActivityListener(CR_ActivityType.REVEAL_PUB_PLATE, pubRevealed);
+ codereviews.registerActivityListener(CR_ActivityType.REVEAL_DRAFT_PLATE, draftRevealed);
+ codereviews.registerActivityListener(CR_ActivityType.DISCARD_DRAFT_COMMENT, draftDestroyed);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ var initialized = true;
+ reloadCursors();
+ }
+ window.onload = function() {keysOnLoadHandler(); revsOnLoadHandler();};
+
+</script>
+<script type="text/javascript" src="http://www.gstatic.com/codesite/ph/14116724302520652310/js/dit_scripts.js"></script>
+
+ 
+ 
+ 
+ <script type="text/javascript" src="http://www.gstatic.com/codesite/ph/14116724302520652310/js/ph_core.js"></script>
+ 
+ 
+ 
+ 
+</div> 
+
+<div id="footer" dir="ltr">
+ <div class="text">
+ <a href="/projecthosting/terms.html">Terms</a> -
+ <a href="http://www.google.com/privacy.html">Privacy</a> -
+ <a href="/p/support/">Project Hosting Help</a>
+ </div>
+</div>
+ <div class="hostedBy" style="margin-top: -20px;">
+ <span style="vertical-align: top;">Powered by <a href="http://code.google.com/projecthosting/">Google Project Hosting</a></span>
+ </div>
+
+ 
+ 
+
+
+ 
+ </body>
+</html>
+

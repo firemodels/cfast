@@ -35,7 +35,7 @@
     use params
     implicit none
 
-    real*8 :: flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns), xxfire(1), yyfire(1), zzfire(1), zzloc(1), ftemp(1), fvel(1), n_C, n_H, n_O, n_N, n_Cl, omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xqft, xtl, q1, q2, hcombt, tsec, xqfr
+    real*8 :: flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns), xxfire(1), yyfire(1), zzfire(1), zzloc(1), ftemp(1), fvel(1), n_C, n_H, n_O, n_N, n_Cl, omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xqft, xtl, q1, q2, tsec, xqfr
     integer cjetopt, lsp, iroom, logerr, nobj, iobj, i, j, update
 
     ! initialize summations and local data
@@ -100,7 +100,7 @@
             xfire(nfire,9) = heatlp(iroom) + heatup(iroom)
             xfire(nfire,10) = heatlp(iroom)
             xfire(nfire,11) = heatup(iroom)
-            xfire(nfire,12) = hcombt
+            xfire(nfire,12) = objhct
             xfire(nfire,13) = y_soot
             xfire(nfire,14) = y_co
             !xfire(nfire,15) = hcratt

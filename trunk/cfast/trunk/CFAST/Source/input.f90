@@ -1919,6 +1919,7 @@
     !     arguments: errorcode: return error indication if non-zero
 
     use iofiles
+    use debug
     implicit none
 
     integer errorcode , lp, ld, lf, ios
@@ -1948,10 +1949,16 @@
     sswall = testpath(1:lp) // testproj(1:ld) // '_w.csv'
     errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
     stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
+    residfile = testpath(1:lp) // testproj(1:ld) // '.debug'
+    residcsv = testpath(1:lp) // testproj(1:ld) // '_resid.csv'
+    jacfile = testpath(1:lp) // testproj(1:ld) // '.jac'
+    jaccsv = testpath(1:lp) // testproj(1:ld) // '_jac.csv'
     historyfile = testpath(1:lp) // testproj(1:ld) // '.hi'
     queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
     statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
     kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
+    
+    slabcsv = testpath(1:lp) // testproj(1:ld) // '_slab.csv'
 
     testpath = trim (exepath)
     lp = len_trim (testpath)

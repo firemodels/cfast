@@ -106,7 +106,6 @@
     write(*,3) 'mpr10',(mprodr(i,10),i=1,lfmax)
     write(*,3) 'mpr11',(mprodr(i,11),i=1,lfmax)
     write(*,2) 'hocb ',(hocbmb(i),i=1,lfmax)
-    write(*,*)
 
     return
     end subroutine printfireparameters

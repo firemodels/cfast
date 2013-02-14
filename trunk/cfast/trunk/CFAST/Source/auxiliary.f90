@@ -317,6 +317,7 @@
     maxarg = 5 + 2
     lpoint = 0
     iar = iargc()
+    
     if (iar==0) then
         cmdlin = ' '
     else
@@ -674,7 +675,6 @@
         return
     else
         ! Note that we do not yet have the logerr file open, so write to the console
-        write(*,*) 'The data file does not exist'
         errorcode = 102
     endif
     return

@@ -72,7 +72,6 @@
     irev = rev_cfast()
 
     call initslv
-
     call readinputfile (errorcode)
     if (errorcode<=0) then
 
@@ -325,6 +324,7 @@
     use cfin
     use cshell
     use dervs
+    use debug
     use fltarget
     use iofiles
     use objects1
@@ -354,6 +354,7 @@
         tplot, tspread, tout,  ostptime, tdtect, tobj, jac
     character*133 messg
     external resid, jac, delfilesqq
+    integer:: funit
 
     call cptime(toff)
     xx0 = 0.0d0
@@ -534,6 +535,34 @@
     if (exists) then
         call StatusOutput (T, dT, errorcode)
         filecount = delfilesqq(queryfile)
+    endif
+    
+    !Check to see if diagnostic files .resid and .jac exist. If they do exist
+    !set flags and open file, if needed, to print diagnositic information.
+    inquire (file=residfile, exist=exists)
+    if (exists) then
+        residprn = .true.
+        if (residfirst) then
+            residfirst = .false.
+            ioresid = funit(150)
+            open(unit=ioresid,file=residcsv)
+            ioslab = funit(150)
+            open(unit = ioslab, file=slabcsv)
+        end if
+        inquire (file=jacfile,exist=exists)
+        if (exists) then
+            if(jacfirst) then
+                jacfirst = .false.
+                iojac = funit(150)
+                open(unit=iojac,file=jaccsv)
+            endif 
+            jacprn = .true.
+        else
+            jacprn = .false.
+        endif
+    else
+        residprn = .false.
+        jacprn = .false.
     endif
 
     ! now do normal output (printout, spreadsheets, ...)
@@ -1023,6 +1052,7 @@
     use fltarget
     use opt
     use params
+    use debug
     implicit none
 
     integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
@@ -1054,7 +1084,7 @@
 
     ! data structures for door jet fires
     real*8 :: flwdjf(nr,ns+2,2)
-    integer :: update
+    integer :: update, errorcode
 
     logical :: vflowflg, hvacflg, djetflg
     integer :: ii, nprod, nirm, i, ires, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
@@ -1079,8 +1109,11 @@
 
     if (ipar(2)==some) then
         update = 0
+        prnslab = .false.
     else
         update = 1
+        prnslab = .true.
+        dbtime = tsec
     endif
 
     epsp = rpar(1)
@@ -1178,6 +1211,7 @@
 
         flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll) + flwcjet(iroom,ll)
         flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu) + flwcjet(iroom,uu)
+        
 
         ! if this room is a shaft then solve for only one zone.
         ! this is done by combining flows from to both
@@ -1205,6 +1239,11 @@
 
     end do
 
+    if (update==all) then
+        if (residprn) then
+            call spreadsheetresid(tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet, errorcode)
+        endif
+    endif
     ! sum flux for inside rooms
     do iroom = 1, nirm
         do iwall = 1, nwal

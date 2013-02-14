@@ -1112,7 +1112,11 @@
         prnslab = .false.
     else
         update = 1
-        prnslab = .true.
+        if (residprn) then
+            prnslab = .true.
+        else
+            prnslab = .false.
+        end if
         dbtime = tsec
     endif
 

@@ -17,6 +17,7 @@
     use params
     use vents
     use vent_slab
+    use debug
     implicit none
 
     real*8 conl(mxprd,2), conu(mxprd,2), pmix(mxprd)
@@ -31,6 +32,7 @@
     real*8 factor2, qchfraction, height, width
     integer nirm, ifrom, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk, nprod
     real*8 xx0, yvbot, yvtop, tsec, avent, epsp, ventvel, ventheight, vlayerdepth
+    integer errorcode
 
     ! temporary declaration
     nirm = nm1
@@ -78,6 +80,10 @@
             if (avent>=1.d-10) then
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxslab,epsp,cslab,pslab,qslab, &
                 vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
+                
+                if (prnslab) then
+                    call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, errorcode)
+                endif
 
                 ! update hall info for vents connected from fire room to hall
 
@@ -194,6 +200,10 @@
             end do
         endif
     endif
+    
+    if (prnslab) then
+        call SSprintslab
+    end if
     return
     end subroutine hflow
 

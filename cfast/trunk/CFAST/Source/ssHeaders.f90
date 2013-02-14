@@ -562,3 +562,144 @@
     return
     end function toIntString
 
+ subroutine ssHeadersResid
+
+    ! This is the header information for the normal spreadsheet output
+
+    use cenviro
+    use cfast_main
+    use cshell
+    use objects1
+    use debug
+    implicit none
+
+    ! local variables     
+    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
+    character*35 headertext(3,maxhead), cTemp, cRoom, cFire, Labels(15), LabelUnits(8), Layers(2), toIntString, Species(10)
+    integer position, i, j, k, l, nprod
+
+    data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow', 'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
+    'Convecxtive Flow', 'Radiative Flow', 'Ceiling Jet Flow'/
+    data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
+    data Layers /'upper', 'lower'/
+    data Species /'O2', 'CO2', 'CO', 'HCN', 'HCl', 'UHC', 'H20', 'C',  'CT', 'Trace'/
+
+    !  spreadsheet header
+    
+    headertext(1,1) = Labels(1)
+    headertext(2,1) = ' '
+    headertext(3,1) = LabelUnits(1)
+    nprod = nlspct
+ 
+    position = 1
+
+    ! Compartment variables
+    do j = 1, nm1
+        position = position + 1
+        headertext(1,position) = trim(Labels(2))
+        headertext(2,position) = compartmentnames(j)
+        headertext(3,position) = LabelUnits(2)
+        position = position + 1
+        headertext(1,position) = trim(Labels(3))
+        headertext(2,position) = compartmentnames(j)
+        headertext(3,position) = LabelUnits(3)
+        position = position + 1
+        headertext(1,position) = trim(Labels(4))
+        headertext(2,position) = compartmentnames(j)
+        headertext(3,position) = LabelUnits(4)
+        position = position + 1
+        headertext(1,position) = trim(Labels(5))
+        headertext(2,position) = compartmentnames(j)
+        headertext(3,position) = LabelUnits(5)
+        do i = 1, 2
+            do k = 1, 2
+                do l = 2, 8
+                    position = position + 1
+                    headertext(1,position) = trim(Labels(l+4))//trim(Layers(i))
+                    headertext(2,position) = compartmentnames(j)
+                    headertext(3,position) = LabelUnits(k+5)
+                end do
+            end do
+            position = position + 1
+            headertext(1,position) = trim(Labels(13))//trim(Layers(i))
+            headertext(2,position) = compartmentnames(j)
+            headertext(3,position) = LabelUnits(7)
+            position = position + 1
+            headertext(1,position) = trim(Labels(14))//trim(Layers(i))
+            headertext(2,position) = compartmentnames(j)
+            headertext(3,position) = LabelUnits(7)
+            position = position + 1
+            headertext(1,position) = trim(Labels(15))//trim(Layers(i))
+            headertext(2,position) = compartmentnames(j)
+            headertext(3,position) = LabelUnits(7)
+        end do
+    end do
+        
+    ! Species 
+    !do j = 1, nm1
+    !    do i = 1, 2
+    !        do k = 3, nprod+2
+    !            position = position + 1
+    !            headertext(1,position) = trim(Species(k-2))//trim(Layers(i))
+    !            headertext(2,position) = compartmentnames(j)
+    !            headertext(3,position) = LabelUnits(3)
+    !        end do
+    !    end do
+    !end do
+    
+    ! write out header
+    write(ioresid,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(ioresid,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+    write(ioresid,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+
+ end subroutine ssHeadersResid
+ 
+  subroutine ssHeadersFSlabs
+
+    ! This is the header information for the normal spreadsheet output
+
+    use cenviro
+    use cfast_main
+    use cshell
+    use objects1
+    use debug
+    use vents
+    implicit none
+
+    ! local variables     
+    integer, parameter :: maxhead = 1 + mxvents*(4 + mxslab)
+    character*35 headertext(3,maxhead), Labels(6), LabelUnits(2), toIntString
+    integer position, i, j
+
+    data Labels / 'time', 'Room 1','Room 2', 'Vent Num', 'Num Slabs', 'Slab'/
+    data LabelUnits / 'sec', 'w'/
+
+    !  spreadsheet header
+    
+    headertext(1,1) = Labels(1)
+    headertext(2,1) = ' '
+    headertext(3,1) = LabelUnits(1)
+ 
+    position = 1
+    
+    do i = 1, nvents
+        do j = 1, 4
+            position = position + 1
+            headertext(1,position) = trim(Labels(j+1))
+            headertext(2,position) = ' '
+            headertext(3,position) = ' '
+        end do
+        do j = 1, mxslab
+            position = position + 1
+            headertext(1,position) = trim(Labels(6))
+            headertext(2,position) = toIntString(j)
+            headertext(3,position) = trim(LabelUnits(2))
+        end do
+    end do 
+    
+    ! write out header
+    write(ioslab,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(ioslab,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+    write(ioslab,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+
+    end subroutine ssHeadersFSlabs

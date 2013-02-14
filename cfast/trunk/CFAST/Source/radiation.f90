@@ -14,6 +14,7 @@
     use cfast_main
     use fltarget
     use opt
+    use debug
     implicit none
 
     real*8 :: flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
@@ -104,6 +105,9 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
+                if(prnslab) then
+                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
+                end if 
                 call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xfire(ifire,1),xfire(ifire,2),xfire(ifire,3),nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
@@ -116,6 +120,9 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
+                if(prnslab) then
+                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
+                end if 
                 call rad2(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xfire(ifire,1),xfire(ifire,2),xfire(ifire,3),nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
@@ -1108,6 +1115,7 @@
     !  version 1.0.3
 
     use cenviro
+    use debug
     
     implicit none
 
@@ -1195,26 +1203,38 @@
     ! calculate absorbance for co2
     ng = zzgspec(cmpt, layer, co2) / mwco2
     plg = ng * rtv * l
-    if (plg>1.0d-3) then
+    !if (plg>1.0d-3) then
+    if (plg>0.0D0) then
         cplg = log10(plg)
         tglog = log10(tg)
         call linterp(co2xsize, co2ysize, tco2, plco2, eco2, tglog, cplg, aco2, xco2, yco2)
         ag = ag + 0.50d0*10.0d0**aco2
+    else
+        aco2 = 0.0d0
     endif
 
     ! calculate absorbance for h2o
     ng = zzgspec(cmpt, layer, h2o) / mwh2o
     plg = ng * rtv * l
-    if (plg>1.0d-3) then
+    !if (plg>1.0d-3) then
+    if (plg>0.0d0) then
         cplg = log10(plg)
         tglog = log10(tg)
         call linterp(h2oxsize, h2oysize, th2o, plh2o, eh2o, tglog, cplg, ah2o, xh2o, yh2o)
         ag = ag + 10.0d0**ah2o
+    else
+        ah2o = 0.0d0
     endif
 
     ! calculate total absorbance
     vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer) * rhos)
     absorb = max(k*vfs*tg - log(1.0d0-ag)/l,0.01d0)
+    if (prnslab)then
+        if (absorb==00.1d0) then
+            write(*,*)'STOP in absorb ', tg, ah2o, aco2
+            stop
+        end if
+    end if
     return
 1000 format ('error in ',a3,' absorbance: xerror = 'i2,'; yerror = ',i2)
     end function absorb

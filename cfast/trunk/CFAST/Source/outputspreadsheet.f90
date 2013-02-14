@@ -96,6 +96,11 @@
 
     write (iounit,"(1024(e12.6,','))" ) (array(i),i=1,ic)
     return
+    
+    entry SSprintresid (iounit,ic,array)
+
+    write (iounit,"(1024(e19.13,','))" ) (array(i),i=1,ic)
+    return
     end subroutine SSaddtolist
 
     SUBROUTINE SpreadSheetFlow (Time, errorcode)
@@ -517,3 +522,153 @@
     write(module_date,'(a)') maindate
     return
     end function rev_outputspreadsheet
+    
+    subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet, errorcode)
+    
+    use debug
+    use cenviro
+    use cfast_main
+    use fltarget
+    use objects1
+    implicit none
+    
+    ! data structure for total flows and fluxes
+    real*8 :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+
+    ! data structures for flow through vents
+    real*8 :: flwnvnt(nr,mxprd+2,2)
+    real*8 :: flwhvnt(nr,ns+2,2)
+
+    ! data structures for fires
+    real*8 :: flwf(nr,ns+2,2)
+
+    ! data structures for convection, radiation, and ceiling jets
+    real*8 :: flwcv(nr,2), flxcv(nr,nwal)
+    real*8 :: flwrad(nr,2), flxrad(nr,nwal)
+    real*8 :: flwcjet(nr,2), flxcjet(nr,nwal)
+
+    ! data structures for mechanical vents
+    real*8 :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+
+    ! data structures for hcl deposition
+    real*8 :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
+
+    ! data structures for door jet fires
+    real*8 :: flwdjf(nr,ns+2,2)
+    
+    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
+    real*8 time, outarray(maxhead), xx0, fheight
+    logical firstc
+    integer position, errorcode, i, j, k, nprod
+    data firstc/.true./
+    save firstc
+    
+    ! headers
+    if (firstc) then
+        call ssHeadersResid
+        firstc = .false.
+    endif
+
+    nprod = nlspct
+    position = 0
+    CALL ssaddtolist (position,TIME,outarray)
+
+    ! compartment information
+    do i = 1, nm1
+        call SSaddtolist (position,zzrelp(i),outarray)
+        call SSaddtolist (position,zzvol(i,upper),outarray)
+        call SSaddtolist(position,zztemp(i,upper),outarray)
+        call SSaddtolist(position,zztemp(i,lower),outarray)
+        do j = 1, 2
+            do k = 1, 2
+                call ssaddtolist (position,flwtot(i,k,j),outarray)
+                call ssaddtolist (position,flwnvnt(i,k,j),outarray)
+                call ssaddtolist (position,flwf(i,k,j),outarray)
+                call ssaddtolist (position,flwhvnt(i,k,j),outarray)
+                call ssaddtolist (position,flwmv(i,k,j),outarray)
+                call ssaddtolist (position,filtered(i,k,j),outarray)
+                call ssaddtolist (position,flwdjf(i,k,j),outarray)
+            end do
+            call SSaddtolist (position,flwcv(i,j),outarray)
+            call SSaddtolist (position,flwrad(i,j),outarray)
+            call SSaddtolist (position,flwcjet(i,j),outarray)
+        end do
+    end do
+    ! species mass flow    
+    !do i = 1, nm1
+    !    do j = 1, 2
+    !        do k = 3, nprod + 2
+    !            call ssaddtolist (position,flwtot(i,k,j),outarray)
+    !            call ssaddtolist (position,flwnvnt(i,k,j),outarray)
+    !            call ssaddtolist (position,flwf(i,k,j),outarray)
+    !            call ssaddtolist (position,flwhvnt(i,k,j),outarray)
+    !            call ssaddtolist (position,flwmv(i,k,j),outarray)
+    !            call ssaddtolist (position,filtered(i,k,j),outarray)
+    !            call ssaddtolist (position,flwdjf(i,k,j),outarray)
+    !        end do
+    !        call SSaddtolist (position,flwcv(i,j),outarray)
+    !        call SSaddtolist (position,flwrad(i,j),outarray)
+    !        call SSaddtolist (position,flwcjet(i,j),outarray)
+    !    end do
+    !end do
+
+    CALL SSprintresid (ioresid, position, outarray)
+
+    return
+    end subroutine spreadsheetresid
+    
+    subroutine SpreadSheetFSlabs (time, ir1, ir2, iv, nslab, qslab, errorcode)
+    
+    use debug
+    use cenviro
+    use cfast_main
+    use fltarget
+    use objects1
+    use vents
+    use vent_slab
+    implicit none
+    
+    real*8 :: time, qslab(mxslab)
+    integer :: ir1, ir2, iv, nslab, errorcode
+    real*8 :: r1, r2, v, slab
+    
+    integer,parameter :: maxhead = 1 + mxvents*(4 + mxslab)
+    real*8 :: outarray(maxhead)
+    integer :: position, i
+    logical :: firstc, nwline
+    data firstc /.true./
+    data nwline /.true./
+    save firstc, outarray, position
+    
+    if (firstc) then 
+        call SSHeadersFSlabs
+        firstc = .false.
+    end if
+    
+    if (nwline) then 
+        position = 0
+        call SSaddtolist(position, time, outarray)
+        nwline = .false.
+    end if
+    
+    r1 = ir1
+    r2 = ir2
+    v = iv
+    slab = nslab
+    call SSaddtolist(position, r1, outarray)
+    call SSaddtolist(position, r2, outarray)
+    call SSaddtolist(position, v, outarray)
+    call SSaddtolist(position, slab, outarray)
+    do i = 1, mxslab
+        call SSaddtolist(position, dirs12(i)*qslab(i), outarray)
+    end do
+    return
+    
+    entry SSprintslab
+    
+        call SSprintresid(ioslab, position, outarray)
+        nwline = .true.
+    
+    return
+    end subroutine SpreadSheetFSlabs
+    

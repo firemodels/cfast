@@ -2,7 +2,7 @@ VERSN,6,CFAST Simulation
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,900,50,0,10,10
+TIMES,900,-50,0,10,10
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
 CJET,WALLS

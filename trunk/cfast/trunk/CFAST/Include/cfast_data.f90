@@ -226,6 +226,20 @@ module  iofiles
     character(128) :: carray(nrow,ncol)
 
 end module iofiles
+
+module  debug
+
+    implicit none
+
+    logical :: residprn, jacprn
+    logical :: residfirst = .true.
+    logical :: jacfirst = .true.
+    logical :: prnslab
+    integer :: ioresid, iojac, ioslab
+    real*8 ::   dbtime
+    character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
+
+end module debug
     
 module objects1
 

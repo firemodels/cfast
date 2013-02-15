@@ -693,24 +693,25 @@
     !
     !**end
     !
-    implicit real*8(a-h,o-z)
+    !implicit real*8(a-h,o-z)
+    implicit none
     logical done
     external res,jac
-    dimension y(*),yprime(*)
-    dimension info(15)
-    dimension rwork(*),iwork(*)
-    dimension rtol(*),atol(*)
-    dimension rpar(*),ipar(*)
-    character msg*80, mesg*128
+    real*8 :: y(*),yprime(*),rwork(*),rtol(*),atol(*),rpar(*)
+    integer :: info(15), iwork(*),ipar(*)
+    character :: msg*80, mesg*128
+    
+    real*8 uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, dabs, tstop, h, tnext, r
+    integer :: i, neq, mxord, lenpd, lenrw, jacdim, jacd, mband, msave, leniw, lrw, liw, idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
     !     set pointers into iwork
-    parameter (lml=1, lmu=2, lmxord=3, lmtype=4, lnst=11, lnre=12, lnje=13, letf=14, lctf=15, lnpd=16, lipvt=21, ljcalc=5, lphase=6, lk=7, lkold=8, lns=9, lnstl=10, liwm=1)
+    integer, parameter :: lml=1, lmu=2, lmxord=3, lmtype=4, lnst=11, lnre=12, lnje=13, letf=14, lctf=15, lnpd=16, lipvt=21, ljcalc=5, lphase=6, lk=7, lkold=8, lns=9, lnstl=10, liwm=1
     !
     !     set relative offset into rwork
-    parameter (npd=1)
+    integer, parameter :: npd=1
     !
     !     set pointers into rwork
-    parameter (ltstop=1, lhmax=2, lh=3, ltn=4, lcj=5, lcjold=6, lhold=7, ls=8, lround=9, lalpha=11, lbeta=17, lgamma=23, lpsi=29, lsigma=35, ldelta=41)
+    integer, parameter :: ltstop=1, lhmax=2, lh=3, ltn=4, lcj=5, lcjold=6, lhold=7, ls=8, lround=9, lalpha=11, lbeta=17, lgamma=23, lpsi=29, lsigma=35, ldelta=41
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -726,16 +727,16 @@
     !
     !     first check info array to make sure all elements of info
     !     are either zero or one.
-    do 10 i=2,11
+    do i=2,11
         !
         !     added by par 01/08/93 to allow and added option for solving the jacobian
         !
         if (i==5) then
             if (info(5)/=0.and.info(5)/=1.and.info(5)/=2) go to 701
-            go to 10
+        else
+            if(info(i)/=0.and.info(i)/=1) go to 701
         endif
-        if(info(i)/=0.and.info(i)/=1) go to 701
-10  continue
+    end do       
     !
     if(neq<=0)go to 702
     !
@@ -918,9 +919,10 @@
     !
     !     load y and h*yprime into phi(*,1) and phi(*,2)
 360 itemp = lphi + neq
-    do 370 i = 1,neq
+    do i = 1,neq
         rwork(lphi + i - 1) = y(i)
-370 rwork(itemp + i - 1) = h*yprime(i)
+        rwork(itemp + i - 1) = h*yprime(i)
+    end do
     !
 390 go to 500
     !
@@ -1039,9 +1041,10 @@
     atol(1)=r*atol(1)
     idid=-2
     go to 527
-523 do 524 i=1,neq
+523 do i=1,neq
         rtol(i)=r*rtol(i)
-524 atol(i)=r*atol(i)
+        atol(i)=r*atol(i)
+    end do
     idid=-2
     go to 527
 525 continue
@@ -1246,7 +1249,7 @@
     call xerrwv(msg,47,802,1,0,0,0,0,0.0d0,0.0d0)
     return
     !-----------end of subroutine ddassl------------------------------------
-    end
+    end subroutine ddassl
 
     subroutine ddawts(neq,iwt,rtol,atol,y,wt,rpar,ipar)
 
@@ -1264,9 +1267,10 @@
     !     and vectors if iwt = 1.
     !-----------------------------------------------------------------------
     !
-    implicit real*8(a-h,o-z)
-    dimension rtol(*),atol(*),y(*),wt(*)
-    dimension rpar(*),ipar(*)
+    !implicit real*8(a-h,o-z)
+    implicit none
+    real*8 :: rtol(*),atol(*),y(*),wt(*),rpar(*), atoli, rtoli
+    integer :: ipar(*), i, neq, iwt
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -1300,27 +1304,28 @@
     !        ddanrm=sqrt((1/neq)*sum(v(i)/wt(i))**2)
     !-----------------------------------------------------------------------
     !
-    implicit real*8(a-h,o-z)
-    dimension v(neq),wt(neq)
-    dimension rpar(*),ipar(*)
+    implicit none
+    real*8 :: v(neq), wt(neq), rpar(*), vmax, sum
+    integer :: ipar(*), i, neq
     ddanrm = 0.0d0
     vmax = 0.0d0
     ipar(3) = 1
-    do 10 i = 1,neq
+    do i = 1,neq
         if(dabs(v(i)/wt(i)) > vmax) then
             vmax = dabs(v(i)/wt(i))
             ipar(3) = i
         endif
-10  continue
+    end do
     if(vmax <= 0.0d0) go to 30
     sum = 0.0d0
-    do 20 i = 1,neq
-20  sum = sum + ((v(i)/wt(i))/vmax)**2
+    do  i = 1,neq
+        sum = sum + ((v(i)/wt(i))/vmax)**2
+    end do
     ddanrm = vmax*dsqrt(sum/dfloat(neq))
 30  continue
     return
     !------end of function ddanrm------
-    end
+    end function ddanrm
     
     subroutine ddaini(x,y,yprime,neq,res,jac,h,wt,idid,rpar,ipar,phi,delta,e,wm,iwm,hmin,uround,nonneg,ntemp)
     !
@@ -1368,16 +1373,14 @@
     !-----------------------------------------------------------------
     !
     !
-    implicit real*8(a-h,o-z)
-    logical convgd
-    dimension y(*),yprime(*),wt(*)
-    dimension phi(neq,*),delta(*),e(*)
-    dimension wm(*),iwm(*)
-    dimension rpar(*),ipar(*)
+    implicit none
+    logical :: convgd
+    real*8 :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, ddanrm, cj, h, uround, s, delnrm, oldnrm, rate, err, hmin, r, dmin1
+    integer :: iwm(*), ipar(*), maxit, mjac, idid, nef, ncf, nsf, i, jcalc, m, ires, ier, ntemp, nonneg, neq
     external res,jac
     !
-    parameter (lnre=12)
-    parameter (lnje=13)
+    integer, parameter :: lnre=12
+    integer, parameter :: lnje=13
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -1401,9 +1404,10 @@
     ynorm=ddanrm(neq,y,wt,rpar,ipar)
     !
     !     save y and yprime in phi
-    do 100 i=1,neq
+    do i=1,neq
         phi(i,1)=y(i)
-100 phi(i,2)=yprime(i)
+        phi(i,2)=yprime(i)
+    end do
     !
     !
     !----------------------------------------------------
@@ -1416,8 +1420,9 @@
     x=x+h
     !
     !     predict solution and derivative
-    do 250 i=1,neq
-250 y(i)=y(i)+h*yprime(i)
+    do i=1,neq
+        y(i)=y(i)+h*yprime(i)
+    end do
     !
     jcalc=-1
     m=0
@@ -1454,8 +1459,9 @@
     !
     !     multiply residual by damping factor
 310 continue
-    do 320 i=1,neq
-320 delta(i)=delta(i)*damp
+    do i=1,neq
+        delta(i)=delta(i)*damp
+    end do
     !
     !     compute a new iterate (back substitution)
     !     store the correction in delta
@@ -1463,9 +1469,10 @@
     call ddaslv(neq,delta,wm,iwm)
     !
     !     update y and yprime
-    do 330 i=1,neq
+    do i=1,neq
         y(i)=y(i)-delta(i)
-330 yprime(i)=yprime(i)-cj*delta(i)
+        yprime(i)=yprime(i)-cj*delta(i)
+    end do
     !
     !     test for convergence of the iteration.
     !
@@ -1499,15 +1506,17 @@
     !     the iteration has converged.
     !     check nonnegativity constraints
 400 if (nonneg==0) go to 450
-    do 410 i=1,neq
-410 delta(i)=dmin1(y(i),0.0d0)
+    do i=1,neq
+        delta(i)=dmin1(y(i),0.0d0)
+    end do
     !
     delnrm=ddanrm(neq,delta,wt,rpar,ipar)
     if (delnrm>0.33d0) go to 430
     !
-    do 420 i=1,neq
+    do i=1,neq
         y(i)=y(i)-delta(i)
-420 yprime(i)=yprime(i)-cj*delta(i)
+        yprime(i)=yprime(i)-cj*delta(i)
+    end do
     go to 450
     !
     !
@@ -1523,8 +1532,9 @@
     !     do error test.
     !-----------------------------------------------------
     !
-    do 510 i=1,neq
-510 e(i)=y(i)-phi(i,1)
+    do i=1,neq
+        e(i)=y(i)-phi(i,1)
+    end do
     err=ddanrm(neq,e,wt,rpar,ipar)
     !
     if (err<=1.0d0) return
@@ -1571,7 +1581,7 @@
 690 go to 200
     !
     !-------------end of subroutine ddaini----------------------
-    end
+    end subroutine ddaini
     
     subroutine ddatrp(x,xout,yout,ypout,neq,kold,phi,psi)
     !
@@ -1603,9 +1613,9 @@
     !     psi   array of past stepsize history
     !-----------------------------------------------------------------------
     !
-    implicit real*8(a-h,o-z)
-    dimension yout(*),ypout(*)
-    dimension phi(neq,*),psi(*)
+    implicit none
+    real*8 ::  yout(*), ypout(*), phi(neq,*), psi(*), temp1, xout, x, c, d, gamma
+    integer :: i, j, neq, koldp1, kold
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -1613,24 +1623,26 @@
     !
     koldp1=kold+1
     temp1=xout-x
-    do 10 i=1,neq
+    do i=1,neq
         yout(i)=phi(i,1)
-10  ypout(i)=0.0d0
+        ypout(i)=0.0d0
+    end do
     c=1.0d0
     d=0.0d0
     gamma=temp1/psi(1)
-    do 30 j=2,koldp1
+    do j=2,koldp1
         d=d*gamma+c/psi(j-1)
         c=c*gamma
         gamma=(temp1+psi(j-1))/psi(j)
-        do 20 i=1,neq
+        do i=1,neq
             yout(i)=yout(i)+c*phi(i,j)
-20      ypout(i)=ypout(i)+d*phi(i,j)
-30  continue
+            ypout(i)=ypout(i)+d*phi(i,j)
+        end do
+    end do
     return
     !
     !------end of subroutine ddatrp------
-    end
+    end subroutine ddatrp
     
     subroutine ddastp(x,y,yprime,neq,res,jac,h,wt,jstart,idid,rpar,ipar,phi,delta,e,wm,iwm,alpha,beta,gamma,psi,sigma,cj,cjold,hold,s,hmin,uround,iphase,jcalc,k,kold,ns,nonneg,ntemp)
     !
@@ -1718,21 +1730,15 @@
     !
     !
     !
-    implicit real*8(a-h,o-z)
+    implicit none
     logical convgd
-    dimension y(*),yprime(*),wt(*)
-    dimension phi(neq,*),delta(*),e(*)
-    dimension wm(*),iwm(*)
-    dimension psi(*),alpha(*),beta(*),gamma(*),sigma(*)
-    dimension rpar(*),ipar(*)
+    real*8 :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, &
+        temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, uround, oldnrm, rate, enorm, erk, terk, est, erk1, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, &
+        hmin, hnew, r
+    integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
     external res,jac
     !
-    parameter (lmxord=3)
-    parameter (lnst=11)
-    parameter (lnre=12)
-    parameter (lnje=13)
-    parameter (letf=14)
-    parameter (lctf=15)
+    integer, parameter :: lmxord=3, lnst=11, lnre=12, lnje=13, letf=14, lctf=15
     !
     !
     !*** added by gpf 11/21/91 in case the "no remember"
@@ -1803,7 +1809,7 @@
     temp1=h
     gamma(1)=0.0d0
     sigma(1)=1.0d0
-    do 210 i=2,kp1
+    do i=2,kp1
         temp2=psi(i-1)
         psi(i-1)=temp1
         beta(i)=beta(i-1)*psi(i-1)/temp2
@@ -1811,17 +1817,17 @@
         alpha(i)=h/temp1
         sigma(i)=dfloat(i-1)*sigma(i-1)*alpha(i)
         gamma(i)=gamma(i-1)+alpha(i-1)/h
-210 continue
+    end do
     psi(kp1)=temp1
 230 continue
     !
     !     compute alphas, alpha0
     alphas = 0.0d0
     alpha0 = 0.0d0
-    do 240 i = 1,k
+    do i = 1,k
         alphas = alphas - 1.0d0/dfloat(i)
         alpha0 = alpha0 - alpha(i)
-240 continue
+    end do
     !
     !     compute leading coefficient cj
     cjlast = cj
@@ -1839,10 +1845,11 @@
     !
     !     change phi to phi star
     if(kp1 < nsp1) go to 280
-    do 270 j=nsp1,kp1
-        do 260 i=1,neq
-260     phi(i,j)=beta(j)*phi(i,j)
-270 continue
+    do j=nsp1,kp1
+        do i=1,neq
+            phi(i,j)=beta(j)*phi(i,j)
+        end do
+    end do
 280 continue
     !
     !     update time
@@ -1907,8 +1914,9 @@
     !
     !     initialize the error accumulation vector e.
 340 continue
-    do 345 i=1,neq
-345 e(i)=0.0d0
+    do i=1,neq
+        e(i)=0.0d0
+    end do
     !
     !
     !     corrector loop.
@@ -1916,18 +1924,20 @@
     !
     !     multiply residual by temp1 to accelerate convergence
     temp1 = 2.0d0/(1.0d0 + cj/cjold)
-    do 355 i = 1,neq
-355 delta(i) = delta(i) * temp1
+    do i = 1,neq
+        delta(i) = delta(i) * temp1
+    end do
     !
     !     compute a new iterate (back-substitution).
     !     store the correction in delta.
     call ddaslv(neq,delta,wm,iwm)
     !
     !     update y,e,and yprime
-    do 360 i=1,neq
+    do i=1,neq
         y(i)=y(i)-delta(i)
         e(i)=e(i)-delta(i)
-360 yprime(i)=yprime(i)-cj*delta(i)
+        yprime(i)=yprime(i)-cj*delta(i)
+    end do
     !
     !     test for convergence of the iteration
     delnrm=ddanrm(neq,delta,wt,rpar,ipar)
@@ -1971,12 +1981,14 @@
     !     to do it is small enough.  if the change is too large, then
     !     consider the corrector iteration to have failed.
 375 if(nonneg == 0) go to 390
-    do 377 i = 1,neq
-377 delta(i) = dmin1(y(i),0.0d0)
+    do i = 1,neq
+        delta(i) = dmin1(y(i),0.0d0)
+    end do
     delnrm = ddanrm(neq,delta,wt,rpar,ipar)
     if(delnrm > 0.33d0) go to 380
-    do 378 i = 1,neq
-378 e(i) = e(i) - delta(i)
+    do i = 1,neq
+        e(i) = e(i) - delta(i)
+    end do
     go to 390
     !
     !
@@ -2006,16 +2018,18 @@
     est = erk
     knew=k
     if(k == 1)go to 430
-    do 405 i = 1,neq
-405 delta(i) = phi(i,kp1) + e(i)
+    do i = 1,neq
+        delta(i) = phi(i,kp1) + e(i)
+    end do
     erkm1=sigma(k)*ddanrm(neq,delta,wt,rpar,ipar)
     terkm1 = float(k)*erkm1
     if(k > 2)go to 410
     if(terkm1 <= 0.5d0*terk)go to 420
     go to 430
 410 continue
-    do 415 i = 1,neq
-415 delta(i) = phi(i,k) + delta(i)
+    do i = 1,neq
+        delta(i) = phi(i,k) + delta(i)
+    end do
     erkm2=sigma(k-1)*ddanrm(neq,delta,wt,rpar,ipar)
     terkm2 = float(k-1)*erkm2
     if(dmax1(terkm1,terkm2)>terk)go to 430
@@ -2059,8 +2073,9 @@
     if(knew==km1)go to 540
     if(k==iwm(lmxord)) go to 550
     if(kp1>=ns.or.kdiff==1)go to 550
-    do 510 i=1,neq
-510 delta(i)=e(i)-phi(i,kp2)
+    do i=1,neq
+        delta(i)=e(i)-phi(i,kp2)
+    end do
     erkp1 = (1.0d0/dfloat(k+2))*ddanrm(neq,delta,wt,rpar,ipar)
     terkp1 = float(k+2)*erkp1
     if(k>1)go to 520
@@ -2104,15 +2119,19 @@
     !     update differences for next step
 575 continue
     if(kold==iwm(lmxord))go to 585
-    do 580 i=1,neq
-580 phi(i,kp2)=e(i)
+    do i=1,neq
+        phi(i,kp2)=e(i)
+    end do
 585 continue
-    do 590 i=1,neq
-590 phi(i,kp1)=phi(i,kp1)+e(i)
-    do 595 j1=2,kp1
+    do i=1,neq
+        phi(i,kp1)=phi(i,kp1)+e(i)
+    end do
+    do j1=2,kp1
         j=kp1-j1+1
-        do 595 i=1,neq
-595 phi(i,j)=phi(i,j)+phi(i,j+1)
+        do i=1,neq
+            phi(i,j)=phi(i,j)+phi(i,j+1)
+        end do
+    end do
     return
     !
     !
@@ -2132,14 +2151,16 @@
     !     restore x,phi,psi
     x=xold
     if(kp1<nsp1)go to 630
-    do 620 j=nsp1,kp1
+    do j=nsp1,kp1
         temp1=1.0d0/beta(j)
-        do 610 i=1,neq
-610     phi(i,j)=temp1*phi(i,j)
-620 continue
+        do i=1,neq
+            phi(i,j)=temp1*phi(i,j)
+        end do
+    end do
 630 continue
-    do 640 i=2,kp1
-640 psi(i-1)=psi(i)-h
+    do i=2,kp1
+        psi(i-1)=psi(i)-h
+    end do
     !
     !
     !     test whether failure is due to corrector iteration
@@ -2234,7 +2255,7 @@
 690 go to 200
     !
     !------end of subroutine ddastp------
-    end
+    end subroutine ddastp
     
     subroutine ddajac(neq,x,y,yprime,delta,cj,h,ier,wt,e,wm,iwm,res,ires,uround,jac,rpar,ipar,ntemp)
     !
@@ -2280,16 +2301,12 @@
     !                is only used if iwm(mtype) is 1 or 4)
     !-----------------------------------------------------------------------
     !
-    implicit real*8(a-h,o-z)
+    implicit none
     external res,jac
-    dimension y(*),yprime(*),delta(*),wt(*),e(*)
-    dimension wm(*),iwm(*),rpar(*),ipar(*)
+    real*8 :: y(*), yprime(*), delta(*), wt(*), e(*), wm(*), rpar(*), x, cj, squr, uround, del, h, ysave, ypsave, delinv
+    integer :: iwm(*), ipar(*),  ier, npdm1, mtype, lenpd, neq, i, ires, nrow, l, meband, mband, mba, meb1, msave, isave, ntemp, ipsave, j, n, k, i1, i2, ii
     !
-    parameter (npd=1)
-    parameter (lml=1)
-    parameter (lmu=2)
-    parameter (lmtype=4)
-    parameter (lipvt=21)
+    integer, parameter :: npd=1, lml=1, lmu=2, lmtype=4, lipvt=21
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -2307,8 +2324,9 @@
     !
     !     dense user-supplied matrix
 100 lenpd=neq*neq
-    do 110 i=1,lenpd
-110 wm(npdm1+i)=0.0d0
+    do i=1,lenpd
+        wm(npdm1+i)=0.0d0
+    end do
     call jac(x,y,yprime,wm(npd),cj,rpar,ipar)
     go to 230
     !
@@ -2317,7 +2335,7 @@
 200 ires=0
     nrow=npdm1
     squr = dsqrt(uround)
-    do 210 i=1,neq
+    do i=1,neq
         del=squr*dmax1(dabs(y(i)),dabs(h*yprime(i)),dabs(wt(i)))
         del=dsign(del,h*yprime(i))
         del=(y(i)+del)-y(i)
@@ -2329,12 +2347,13 @@
         call res(x,y,yprime,e,ires,rpar,ipar)
         if (ires < 0) return
         delinv=1.0d0/del
-        do 220 l=1,neq
-220     wm(nrow+l)=(e(l)-delta(l))*delinv
+        do l=1,neq
+            wm(nrow+l)=(e(l)-delta(l))*delinv
+        end do
         nrow=nrow+neq
         y(i)=ysave
         yprime(i)=ypsave
-210 continue
+    end do
     call setderv(-1)
     !
     !*** code added by gpf and par to increment jacobian count
@@ -2356,8 +2375,9 @@
     !
     !     banded user-supplied matrix
 400 lenpd=(2*iwm(lml)+iwm(lmu)+1)*neq
-    do 410 i=1,lenpd
-410 wm(npdm1+i)=0.0d0
+    do i=1,lenpd
+        wm(npdm1+i)=0.0d0
+    end do
     call jac(x,y,yprime,wm(npd),cj,rpar,ipar)
     meband=2*iwm(lml)+iwm(lmu)+1
     go to 550
@@ -2373,8 +2393,8 @@
     ipsave=isave+msave
     ires=0
     squr=dsqrt(uround)
-    do 540 j=1,mba
-        do 510 n=j,neq,mband
+    do j=1,mba
+        do n=j,neq,mband
             k= (n-j)/mband + 1
             wm(isave+k)=y(n)
             wm(ipsave+k)=yprime(n)
@@ -2382,10 +2402,11 @@
             del=dsign(del,h*yprime(n))
             del=(y(n)+del)-y(n)
             y(n)=y(n)+del
-510     yprime(n)=yprime(n)+cj*del
+            yprime(n)=yprime(n)+cj*del
+        end do
         call res(x,y,yprime,e,ires,rpar,ipar)
         if (ires < 0) return
-        do 530 n=j,neq,mband
+        do n=j,neq,mband
             k= (n-j)/mband + 1
             y(n)=wm(isave+k)
             yprime(n)=wm(ipsave+k)
@@ -2396,10 +2417,11 @@
             i1=max0(1,(n-iwm(lmu)))
             i2=min0(neq,(n+iwm(lml)))
             ii=n*meb1-iwm(lml)+npdm1
-            do 520 i=i1,i2
-520         wm(ii+i)=(e(i)-delta(i))*delinv
-530     continue
-540 continue
+            do i=i1,i2
+                wm(ii+i)=(e(i)-delta(i))*delinv
+            end do
+        end do
+    end do
     !
     !
     !     do lu decomposition of banded pd
@@ -2413,7 +2435,7 @@
 600 continue
     return
     !------end of subroutine ddajac------
-    end
+    end subroutine ddajac
     
     subroutine ddaslv(neq,delta,wm,iwm)
     !
@@ -2436,14 +2458,11 @@
     !     dgbsl is called.
     !-----------------------------------------------------------------------
     !
-    implicit real*8(a-h,o-z)
-    dimension delta(*),wm(*),iwm(*)
+    implicit none
+    real*8 :: delta(*),wm(*)
+    integer :: iwm(*), mtype, neq, meband
     !
-    parameter (npd=1)
-    parameter (lml=1)
-    parameter (lmu=2)
-    parameter (lmtype=4)
-    parameter (lipvt=21)
+    integer, parameter :: npd=1, lml=1, lmu=2, lmtype=4, lipvt=21
     !
     !
     !*** added by gpf 11/21/91 in case the "no remember"
@@ -2473,7 +2492,7 @@
 600 continue
     return
     !------end of subroutine ddaslv------
-    end
+    end subroutine ddaslv
 
     subroutine snsqe(fcn,jac,iopt,n,x,fvec,tol,nprint,info,wa,lwa)
     !***begin prologue  snsqe
@@ -2804,11 +2823,12 @@
     !                 p. rabinowitz, editor.  gordon and breach, 1970.
     !***routines called  snsq,xerror
     !***end prologue  snsqe
-    implicit real*8 (a-h,o-z)
-    integer iopt,n,nprint,info,lwa
-    dimension x(n),fvec(n),wa(lwa)
+    
+    implicit none
+    integer :: iopt,  n,  nprint,  info,  lwa, index, j, lr, maxfev, ml, mode, mu, nfev, njev
+    real*8 :: x(n), fvec(n), wa(lwa), factor, one, zero, tol, xtol, epsfcn
     external fcn,jac
-    integer index,j,lr,maxfev,ml,mode,mu,nfev,njev
+    
     data factor,one,zero /1.0d2,1.0d0,0.0d0/
     !***first executable statement  snsqe
     info = 0
@@ -2826,9 +2846,9 @@
     mu = n - 1
     epsfcn = zero
     mode = 2
-    do 10 j = 1, n
+    do j = 1, n
         wa(j) = one
-10  continue
+    end do
     lr = (n*(n + 1))/2
     index=6*n+lr
     call snsq(fcn,jac,iopt,n,x,fvec,wa(index+1),n,xtol,maxfev,ml,mu,epsfcn,wa(1),mode,factor,nprint,info,nfev,njev, &
@@ -2840,7 +2860,7 @@
     !
     !     last card of subroutine snsqe.
     !
-    end
+    end subroutine snsqe
     
     subroutine dogleg(n,r,lr,diag,qtb,delta,x,wa1,wa2)
     !***begin prologue  dogleg
@@ -2903,48 +2923,50 @@
     !     **********
     !***routines called  enorm,r1mach
     !***end prologue  dogleg
-    implicit real*8 (a-h,o-z)
-    integer n,lr
-    dimension r(lr),diag(n),qtb(n),x(n),wa1(n),wa2(n)
-    integer i,j,jj,jp1,k,l
+    
+    implicit none
+    integer :: n, lr, i, j, jj, jp1, k, l
+    real*8 ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, d1mach, sum, temp, qnorm, enorm, delta, gnorm, sgnorm, alpha, bnorm
+
     data one,zero /1.0d0,0.0d0/
+    
     !***first executable statement  dogleg
     epsmch = d1mach(4)
     !
     !     first, calculate the gauss-newton direction.
     !
     jj = (n*(n + 1))/2 + 1
-    do 50 k = 1, n
+    do k = 1, n
         j = n - k + 1
         jp1 = j + 1
         jj = jj - k
         l = jj + 1
         sum = zero
         if (n < jp1) go to 20
-        do 10 i = jp1, n
+        do i = jp1, n
             sum = sum + r(l)*x(i)
             l = l + 1
-10      continue
+        end do
 20      continue
         temp = r(jj)
         if (temp /= zero) go to 40
         l = j
-        do 30 i = 1, j
+        do i = 1, j
             temp = max(temp,abs(r(l)))
             l = l + n - i
-30      continue
+        end do
         temp = epsmch*temp
         if (temp == zero) temp = epsmch
 40      continue
         x(j) = (qtb(j) - sum)/temp
-50  continue
+    end do
     !
     !     test whether the gauss-newton direction is acceptable.
     !
-    do 60 j = 1, n
+    do j = 1, n
         wa1(j) = zero
         wa2(j) = diag(j)*x(j)
-60  continue
+    end do
     qnorm = enorm(n,wa2)
     if (qnorm <= delta) go to 140
     !
@@ -2952,14 +2974,14 @@
     !     next, calculate the scaled gradient direction.
     !
     l = 1
-    do 80 j = 1, n
+    do j = 1, n
         temp = qtb(j)
-        do 70 i = j, n
+        do i = j, n
             wa1(i) = wa1(i) + r(l)*temp
             l = l + 1
-70      continue
+        end do
         wa1(j) = wa1(j)/diag(j)
-80  continue
+    end do
     !
     !     calculate the norm of the scaled gradient direction,
     !     normalize, and rescale the gradient.
@@ -2968,22 +2990,22 @@
     sgnorm = zero
     alpha = delta/qnorm
     if (gnorm == zero) go to 120
-    do 90 j = 1, n
+    do j = 1, n
         wa1(j) = (wa1(j)/gnorm)/diag(j)
-90  continue
+    end do
     !
     !     calculate the point along the scaled gradient
     !     at which the quadratic is minimized.
     !
     l = 1
-    do 110 j = 1, n
+    do j = 1, n
         sum = zero
-        do 100 i = j, n
+        do i = j, n
             sum = sum + r(l)*wa1(i)
             l = l + 1
-100     continue
+        end do
         wa2(j) = sum
-110 continue
+    end do
     temp = enorm(n,wa2)
     sgnorm = (gnorm/temp)/temp
     !
@@ -3006,15 +3028,15 @@
     !     direction and the scaled gradient direction.
     !
     temp = (one - alpha)*min(sgnorm,delta)
-    do 130 j = 1, n
+    do j = 1, n
         x(j) = temp*wa1(j) + alpha*x(j)
-130 continue
+    end do
 140 continue
     return
     !
     !     last card of subroutine dogleg.
     !
-    end
+    end subroutine dogleg
     
     real*8 function enorm(n,x)
     !***begin prologue  enorm
@@ -3057,10 +3079,11 @@
     !     **********
     !***routines called  (none)
     !***end prologue  enorm
-    implicit real*8 (a-h,o-z)
-    integer n
-    dimension x(n)
-    integer i
+    
+    implicit none
+    integer :: n, i
+    real *8 ::  x(n), one, zero, rdwarf, rgiant, s1, s2, s3, x1max, x3max, floatn, agiant, xabs
+    
     data one,zero,rdwarf,rgiant /1.0d0,0.0d0,3.834d-20,1.304d19/
     !***first executable statement  enorm
     s1 = zero
@@ -3070,7 +3093,7 @@
     x3max = zero
     floatn = n
     agiant = rgiant/floatn
-    do 90 i = 1, n
+    do i = 1, n
         xabs = abs(x(i))
         if (xabs > rdwarf .and. xabs < agiant) go to 70
         if (xabs <= rdwarf) go to 30
@@ -3104,7 +3127,7 @@
         !
         s2 = s2 + xabs**2
 80      continue
-90  continue
+    end do
     !
     !     calculation of norm.
     !
@@ -3124,7 +3147,7 @@
     !
     !     last card of function enorm.
     !
-    end
+    end function enorm
     
     subroutine fdjac1(fcn,n,x,fvec,fjac,ldfjac,iflag,ml,mu,epsfcn,wa1,wa2)
     !***begin prologue  fdjac1
@@ -3214,10 +3237,12 @@
     !     **********
     !***routines called  r1mach
     !***end prologue  fdjac1
-    implicit real*8 (a-h,o-z)
-    integer n,ldfjac,iflag,ml,mu
-    dimension x(n),fvec(n),fjac(ldfjac,n),wa1(n),wa2(n)
-    integer i,j,k,msum
+    
+    implicit none
+    
+    integer :: n, ldfjac, iflag, ml, mu, i, j, k, msum
+    real*8 :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, d1mach, eps, epsfcn, temp, h
+
     data zero /0.0d0/
     !***first executable statement  fdjac1
     epsmch = d1mach(4)
@@ -3228,7 +3253,7 @@
     !
     !        computation of dense approximate jacobian.
     !
-    do 20 j = 1, n
+    do j = 1, n
         temp = x(j)
         h = eps*abs(temp)
         if (h == zero) h = eps
@@ -3236,42 +3261,42 @@
         call fcn(n,x,wa1,iflag)
         if (iflag < 0) go to 30
         x(j) = temp
-        do 10 i = 1, n
+        do i = 1, n
             fjac(i,j) = (wa1(i) - fvec(i))/h
-10      continue
-20  continue
+        end do
+    end do
 30  continue
     go to 110
 40  continue
     !
     !        computation of banded approximate jacobian.
     !
-    do 90 k = 1, msum
-        do 60 j = k, n, msum
+    do k = 1, msum
+        do j = k, n, msum
             wa2(j) = x(j)
             h = eps*abs(wa2(j))
             if (h == zero) h = eps
             x(j) = wa2(j) + h
-60      continue
+        end do
         call fcn(n,x,wa1,iflag)
         if (iflag < 0) go to 100
-        do 80 j = k, n, msum
+        do j = k, n, msum
             x(j) = wa2(j)
             h = eps*abs(wa2(j))
             if (h == zero) h = eps
-            do 70 i = 1, n
+            do i = 1, n
                 fjac(i,j) = zero
                 if (i >= j - mu .and. i <= j + ml) fjac(i,j) = (wa1(i) - fvec(i))/h
-70          continue
-80      continue
-90  continue
+            end do
+        end do
+    end do
 100 continue
 110 continue
     return
     !
     !     last card of subroutine fdjac1.
     !
-    end
+    end subroutine fdjac1
     
     subroutine qform(m,n,q,ldq,wa)
     !***begin prologue  qform
@@ -3314,61 +3339,63 @@
     !     **********
     !***routines called  (none)
     !***end prologue  qform
-    implicit real*8 (a-h,o-z)
-    integer m,n,ldq
-    dimension q(ldq,m),wa(m)
-    integer i,j,jm1,k,l,minmn,np1
+    
+    implicit none
+    
+    integer :: m, n, ldq,  i, j, jm1, k, l, minmn, np1
+    real*8 :: q(ldq, m), wa(m), one, zero, sum, temp
+
     data one,zero /1.0d0,0.0d0/
     !***first executable statement  qform
     minmn = min0(m,n)
     if (minmn < 2) go to 30
-    do 20 j = 2, minmn
+    do j = 2, minmn
         jm1 = j - 1
-        do 10 i = 1, jm1
+        do i = 1, jm1
             q(i,j) = zero
-10      continue
-20  continue
+        end do
+    end do
 30  continue
     !
     !     initialize remaining columns to those of the identity matrix.
     !
     np1 = n + 1
     if (m < np1) go to 60
-    do 50 j = np1, m
-        do 40 i = 1, m
+    do j = np1, m
+        do i = 1, m
             q(i,j) = zero
-40      continue
+        end do
         q(j,j) = one
-50  continue
+    end do
 60  continue
     !
     !     accumulate q from its factored form.
     !
-    do 120 l = 1, minmn
+    do l = 1, minmn
         k = minmn - l + 1
-        do 70 i = k, m
+        do i = k, m
             wa(i) = q(i,k)
             q(i,k) = zero
-70      continue
+        end do
         q(k,k) = one
         if (wa(k) == zero) go to 110
-        do 100 j = k, m
+        do j = k, m
             sum = zero
-            do 80 i = k, m
+            do i = k, m
                 sum = sum + q(i,j)*wa(i)
-80          continue
+            end do
             temp = sum/wa(k)
-            do 90 i = k, m
+            do i = k, m
                 q(i,j) = q(i,j) - temp*wa(i)
-90          continue
-100     continue
+            end do
+        end do
 110     continue
-120 continue
+    end do
     return
     !
     !     last card of subroutine qform.
     !
-    end
+    end subroutine qform
     
     subroutine qrfac(m,n,a,lda,pivot,ipvt,lipvt,sigma,acnorm,wa)
     !***begin prologue  qrfac
@@ -3448,43 +3475,44 @@
     !     **********
     !***routines called  enorm,r1mach
     !***end prologue  qrfac
-    implicit real*8 (a-h,o-z)
-    integer m,n,lda,lipvt
-    integer ipvt(lipvt)
+    
+    implicit none
+    
+    integer :: m,n,lda,lipvt,ipvt(lipvt),i,j,jp1,k,kmax,minmn
     logical pivot
-    dimension a(lda,n),sigma(n),acnorm(n),wa(n)
-    integer i,j,jp1,k,kmax,minmn
+    real*8 ::  a(lda,n),sigma(n),acnorm(n),wa(n), one, zero, p05, epsmch, d1mach, enorm, temp, ajnorm, sum
+
     data one,p05,zero /1.0d0,5.0d-2,0.0d0/
     !***first executable statement  qrfac
     epsmch = d1mach(4)
     !
     !     compute the initial column norms and initialize several arrays.
     !
-    do 10 j = 1, n
+    do j = 1, n
         acnorm(j) = enorm(m,a(1,j))
         sigma(j) = acnorm(j)
         wa(j) = sigma(j)
         if (pivot) ipvt(j) = j
-10  continue
+    end do
     !
     !     reduce a to r with householder transformations.
     !
     minmn = min0(m,n)
-    do 110 j = 1, minmn
+    do j = 1, minmn
         if (.not.pivot) go to 40
         !
         !        bring the column of largest norm into the pivot position.
         !
         kmax = j
-        do 20 k = j, n
+        do k = j, n
             if (sigma(k) > sigma(kmax)) kmax = k
-20      continue
+        end do
         if (kmax == j) go to 40
-        do 30 i = 1, m
+        do i = 1, m
             temp = a(i,j)
             a(i,j) = a(i,kmax)
             a(i,kmax) = temp
-30      continue
+        end do
         sigma(kmax) = sigma(j)
         wa(kmax) = wa(j)
         k = ipvt(j)
@@ -3498,9 +3526,9 @@
         ajnorm = enorm(m-j+1,a(j,j))
         if (ajnorm == zero) go to 100
         if (a(j,j) < zero) ajnorm = -ajnorm
-        do 50 i = j, m
+        do i = j, m
             a(i,j) = a(i,j)/ajnorm
-50      continue
+        end do
         a(j,j) = a(j,j) + one
         !
         !        apply the transformation to the remaining columns
@@ -3508,15 +3536,15 @@
         !
         jp1 = j + 1
         if (n < jp1) go to 100
-        do 90 k = jp1, n
+        do k = jp1, n
             sum = zero
-            do 60 i = j, m
+            do i = j, m
                 sum = sum + a(i,j)*a(i,k)
-60          continue
+            end do
             temp = sum/a(j,j)
-            do 70 i = j, m
+            do i = j, m
                 a(i,k) = a(i,k) - temp*a(i,j)
-70          continue
+            end do
             if (.not.pivot .or. sigma(k) == zero) go to 80
             temp = a(j,k)/sigma(k)
             sigma(k) = sigma(k)*sqrt(max(zero,one-temp**2))
@@ -3524,15 +3552,15 @@
             sigma(k) = enorm(m-j,a(jp1,k))
             wa(k) = sigma(k)
 80          continue
-90      continue
+        end do
 100     continue
         sigma(j) = -ajnorm
-110 continue
+    end do
     return
     !
     !     last card of subroutine qrfac.
     !
-    end
+    end subroutine qrfac
     
     subroutine r1mpyq(m,n,a,lda,v,w)
     !***begin prologue  r1mpyq
@@ -3587,46 +3615,47 @@
     !     **********
     !***routines called  (none)
     !***end prologue  r1mpyq
-    implicit real*8 (a-h,o-z)
-    integer m,n,lda
-    dimension a(lda,n),v(n),w(n)
-    integer i,j,nmj,nm1
+    
+    implicit none
+    integer m,n,lda,i,j,nmj,nm1
+    real*8 :: a(lda,n),v(n),w(n),one, temp, cos, sin
+
     data one /1.0d0/
     !***first executable statement  r1mpyq
     nm1 = n - 1
     if (nm1 < 1) go to 50
-    do 20 nmj = 1, nm1
+    do nmj = 1, nm1
         j = n - nmj
         if (abs(v(j)) > one) cos = one/v(j)
         if (abs(v(j)) > one) sin = sqrt(one-cos**2)
         if (abs(v(j)) <= one) sin = v(j)
         if (abs(v(j)) <= one) cos = sqrt(one-sin**2)
-        do 10 i = 1, m
+        do i = 1, m
             temp = cos*a(i,j) - sin*a(i,n)
             a(i,n) = sin*a(i,j) + cos*a(i,n)
             a(i,j) = temp
-10      continue
-20  continue
+        end do
+    end do
     !
     !     apply the second set of givens rotations to a.
     !
-    do 40 j = 1, nm1
+    do j = 1, nm1
         if (abs(w(j)) > one) cos = one/w(j)
         if (abs(w(j)) > one) sin = sqrt(one-cos**2)
         if (abs(w(j)) <= one) sin = w(j)
         if (abs(w(j)) <= one) cos = sqrt(one-sin**2)
-        do 30 i = 1, m
+        do i = 1, m
             temp = cos*a(i,j) + sin*a(i,n)
             a(i,n) = -sin*a(i,j) + cos*a(i,n)
             a(i,j) = temp
-30      continue
-40  continue
+        end do
+    end do
 50  continue
     return
     !
     !     last card of subroutine r1mpyq.
     !
-    end
+    end subroutine r1mpyq
     
     subroutine r1updt(m,n,s,ls,u,v,w,sing)
     !***begin prologue  r1updt
@@ -3699,11 +3728,12 @@
     !     **********
     !***routines called  r1mach
     !***end prologue  r1updt
-    implicit real*8 (a-h,o-z)
-    integer m,n,ls
-    logical sing
-    dimension s(ls),u(m),v(n),w(m)
-    integer i,j,jj,l,nmj,nm1
+    
+    implicit none
+    integer :: m,n,ls, i,j,jj,l,nmj,nm1
+    logical :: sing
+    real*8 :: s(ls),u(m),v(n),w(m), one, p5, p25, zero, giant, d1mach, cotan, sin, cos, tau, tan, temp
+    
     data one,p5,p25,zero /1.0d0,5.0d-1,2.5d-1,0.0d0/
     !***first executable statement  r1updt
     giant = d1mach(2)
@@ -3715,17 +3745,17 @@
     !     move the nontrivial part of the last column of s into w.
     !
     l = jj
-    do 10 i = n, m
+    do i = n, m
         w(i) = s(l)
         l = l + 1
-10  continue
+    end do
     !
     !     rotate the vector v into a multiple of the n-th unit vector
     !     in such a way that a spike is introduced into w.
     !
     nm1 = n - 1
     if (nm1 < 1) go to 70
-    do 60 nmj = 1, nm1
+    do nmj = 1, nm1
         j = n - nmj
         jj = jj - (m - j + 1)
         w(j) = zero
@@ -3757,27 +3787,27 @@
         !        apply the transformation to s and extend the spike in w.
         !
         l = jj
-        do 40 i = j, m
+        do i = j, m
             temp = cos*s(l) - sin*w(i)
             w(i) = sin*s(l) + cos*w(i)
             s(l) = temp
             l = l + 1
-40      continue
+        end do
 50      continue
-60  continue
+    end do
 70  continue
     !
     !     add the spike from the rank 1 update to w.
     !
-    do 80 i = 1, m
+    do i = 1, m
         w(i) = w(i) + v(n)*u(i)
-80  continue
+    end do
     !
     !     eliminate the spike.
     !
     sing = .false.
     if (nm1 < 1) go to 140
-    do 130 j = 1, nm1
+    do j = 1, nm1
         if (w(j) == zero) go to 120
         !
         !        determine a givens rotation which eliminates the
@@ -3800,12 +3830,12 @@
         !        apply the transformation to s and reduce the spike in w.
         !
         l = jj
-        do 110 i = j, m
+        do i = j, m
             temp = cos*s(l) + sin*w(i)
             w(i) = -sin*s(l) + cos*w(i)
             s(l) = temp
             l = l + 1
-110     continue
+        end do
         !
         !        store the information necessary to recover the
         !        givens rotation.
@@ -3817,22 +3847,22 @@
         !
         if (s(jj) == zero) sing = .true.
         jj = jj + (m - j + 1)
-130 continue
+    end do
 140 continue
     !
     !     move w back into the last column of the output s.
     !
     l = jj
-    do 150 i = n, m
+    do i = n, m
         s(l) = w(i)
         l = l + 1
-150 continue
+    end do
     if (s(jj) == zero) sing = .true.
     return
     !
     !     last card of subroutine r1updt.
     !
-    end
+    end subroutine r1updt
     
     subroutine snsq(fcn,jac,iopt,n,x,fvec,fjac,ldfjac,xtol,maxfev,ml,mu,epsfcn,diag,mode,factor,nprint,info,nfev,njev,r,lr,qtf,wa1,wa2,wa3,wa4)
     !***begin prologue  snsq
@@ -4245,13 +4275,13 @@
     !***routines called  dogleg,enorm,fdjac1,qform,qrfac,r1mach,r1mpyq,
     !                    r1updt,xerror
     !***end prologue  snsq
-    implicit real*8 (a-h,o-z)
-    integer iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev
-    dimension x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n)
+    
+    implicit none
+    integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
+    real*8 :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, p001, p0001, zero, epsmch, d1mach, &
+        xtol, factor, fnorm, enorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
     external fcn
-    integer i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2
-    integer iwa(1)
-    logical jeval,sing
+    logical :: jeval,sing
     data one,p1,p5,p001,p0001,zero /1.0d0,1.0d-1,5.0d-1,1.0d-3,1.0d-4,0.0d0/
     !
     !***first executable statement  snsq
@@ -4266,9 +4296,9 @@
     !
     if (iopt < 1 .or. iopt > 2 .or. n <= 0 .or. xtol < zero .or. maxfev <= 0 .or. ml < 0 .or. mu < 0 .or. factor <= zero .or. ldfjac < n .or. lr < (n*(n + 1))/2) go to 300
     if (mode /= 2) go to 20
-    do 10 j = 1, n
+    do j = 1, n
         if (diag(j) <= zero) go to 300
-10  continue
+    end do
 20  continue
     !
     !     evaluate the function at the starting point
@@ -4320,18 +4350,18 @@
     !
     if (iter /= 1) go to 70
     if (mode == 2) go to 50
-    do 40 j = 1, n
+    do j = 1, n
         diag(j) = wa2(j)
         if (wa2(j) == zero) diag(j) = one
-40  continue
+    end do
 50  continue
     !
     !        on the first iteration, calculate the norm of the scaled x
     !        and initialize the step bound delta.
     !
-    do 60 j = 1, n
+    do j = 1, n
         wa3(j) = diag(j)*x(j)
-60  continue
+    end do
     xnorm = enorm(n,wa3)
     delta = factor*xnorm
     if (delta == zero) delta = factor
@@ -4339,37 +4369,37 @@
     !
     !        form (q transpose)*fvec and store in qtf.
     !
-    do 80 i = 1, n
+    do i = 1, n
         qtf(i) = fvec(i)
-80  continue
-    do 120 j = 1, n
+    end do
+    do j = 1, n
         if (fjac(j,j) == zero) go to 110
         sum = zero
-        do 90 i = j, n
+        do i = j, n
             sum = sum + fjac(i,j)*qtf(i)
-90      continue
+        end do
         temp = -sum/fjac(j,j)
-        do 100 i = j, n
+        do i = j, n
             qtf(i) = qtf(i) + fjac(i,j)*temp
-100     continue
+        end do
 110     continue
-120 continue
+    end do
     !
     !        copy the triangular factor of the qr factorization into r.
     !
     sing = .false.
-    do 150 j = 1, n
+    do j = 1, n
         l = j
         jm1 = j - 1
         if (jm1 < 1) go to 140
-        do 130 i = 1, jm1
+        do i = 1, jm1
             r(l) = fjac(i,j)
             l = l + n - i
-130     continue
+        end do
 140     continue
         r(l) = wa1(j)
         if (wa1(j) == zero) sing = .true.
-150 continue
+    end do
     !
     !        accumulate the orthogonal factor in fjac.
     !
@@ -4401,11 +4431,11 @@
     !
     !           store the direction p and x + p. calculate the norm of p.
     !
-    do 200 j = 1, n
+    do j = 1, n
         wa1(j) = -wa1(j)
         wa2(j) = x(j) + wa1(j)
         wa3(j) = diag(j)*wa1(j)
-200 continue
+    end do
     pnorm = enorm(n,wa3)
     !
     !           on the first iteration, adjust the initial step bound.
@@ -4428,14 +4458,14 @@
     !           compute the scaled predicted reduction.
     !
     l = 1
-    do 220 i = 1, n
+    do i = 1, n
         sum = zero
-        do 210 j = i, n
+        do j = i, n
             sum = sum + r(l)*wa1(j)
             l = l + 1
-210     continue
+        end do
         wa3(i) = qtf(i) + sum
-220 continue
+    end do
     temp = enorm(n,wa3)
     prered = zero
     if (temp < fnorm) prered = one - (temp/fnorm)**2
@@ -4466,11 +4496,11 @@
     !
     !           successful iteration. update x, fvec, and their norms.
     !
-    do 250 j = 1, n
+    do j = 1, n
         x(j) = wa2(j)
         wa2(j) = diag(j)*x(j)
         fvec(j) = wa4(j)
-250 continue
+    end do
     xnorm = enorm(n,wa2)
     fnorm = fnorm1
     iter = iter + 1
@@ -4503,15 +4533,15 @@
     !           calculate the rank one modification to the jacobian
     !           and update qtf if necessary.
     !
-    do 280 j = 1, n
+    do j = 1, n
         sum = zero
-        do 270 i = 1, n
+        do i = 1, n
             sum = sum + fjac(i,j)*wa4(i)
-270     continue
+        end do
         wa2(j) = (sum - wa3(j))/pnorm
         wa1(j) = diag(j)*((diag(j)*wa1(j))/pnorm)
         if (ratio >= p0001) qtf(j) = sum
-280 continue
+    end do
     !
     !           compute the qr factorization of the updated jacobian.
     !
@@ -4544,7 +4574,7 @@
     !
     !     last card of subroutine snsq.
     !
-    end
+    end subroutine snsq
 
     integer function idamax(n,dx,incx)
 
@@ -4581,7 +4611,9 @@
     !***routines called  (none)
     !***end prologue  idamax
     !
-    real*8 dx(*),dmax,xmag
+    implicit none
+    real*8 :: dx(*),dmax,xmag
+    integer :: n, incx, ns, ii, i
     !***first executable statement  idamax
     idamax = 0
     if(n<=0) return
@@ -4594,24 +4626,25 @@
     dmax = dabs(dx(1))
     ns = n*incx
     ii = 1
-    do 10 i = 1,ns,incx 
+    do i = 1,ns,incx 
         xmag = dabs(dx(i))
         if(xmag<=dmax) go to 5
         idamax = ii
         dmax = xmag
 5       ii = ii + 1
-10  continue
+    end do
     return
     !
     !        code for increments equal to 1.
     !
 20  dmax = dabs(dx(1))
-    do 30 i = 2,n 
+    do i = 2,n 
         xmag = dabs(dx(i))
         if(xmag<=dmax) go to 30
         idamax = i
         dmax = xmag
-30  continue
+30      continue
+    end do
     return
     end 
 
@@ -4649,7 +4682,10 @@
     !***routines called  (none)
     !***end prologue  dasum
     !
-    real*8 dx(*)
+    implicit none
+    real*8 :: dx(*)
+    integer :: n, i, m, mp1, ns, incx
+    
     !***first executable statement  dasum
     dasum = 0.d0
     if(n<=0)return
@@ -4658,9 +4694,9 @@
     !        code for increments not equal to 1.
     !
     ns = n*incx
-    do 10 i=1,ns,incx
+    do i=1,ns,incx
         dasum = dasum + dabs(dx(i))
-10  continue
+    end do
     return
     !
     !        code for increments equal to 1.
@@ -4670,14 +4706,14 @@
     !
 20  m = mod(n,6)
     if( m == 0 ) go to 40
-    do 30 i = 1,m
+    do i = 1,m
         dasum = dasum + dabs(dx(i))
-30  continue
+    end do
     if( n < 6 ) return
 40  mp1 = m + 1
-    do 50 i = mp1,n,6
+    do i = mp1,n,6
         dasum = dasum + dabs(dx(i)) + dabs(dx(i+1)) + dabs(dx(i+2)) + dabs(dx(i+3)) + dabs(dx(i+4)) + dabs(dx(i+5))
-50  continue
+    end do
     return
     end
 
@@ -4719,7 +4755,10 @@
     !***routines called  (none)
     !***end prologue  daxpy
     !
-    real*8 dx(*),dy(*),da
+    implicit none
+    real*8 :: dx(*), dy(*), da
+    integer :: n, incx, incy, ix, iy, i, m, mp1, ns
+    
     !***first executable statement  daxpy
     if(n<=0.or.da==0.d0) return
     if(incx==incy) if(incx-1) 5,20,60
@@ -4731,11 +4770,11 @@
     iy = 1
     if(incx<0)ix = (-n+1)*incx + 1 
     if(incy<0)iy = (-n+1)*incy + 1 
-    do 10 i = 1,n 
+    do i = 1,n 
         dy(iy) = dy(iy) + da*dx(ix)
         ix = ix + incx
         iy = iy + incy
-10  continue
+    end do
     return
     !
     !        code for both increments equal to 1
@@ -4745,26 +4784,26 @@
     !
 20  m = mod(n,4)
     if( m == 0 ) go to 40 
-    do 30 i = 1,m 
+    do i = 1,m 
         dy(i) = dy(i) + da*dx(i)
-30  continue
+    end do
     if( n < 4 ) return
 40  mp1 = m + 1
-    do 50 i = mp1,n,4
+    do i = mp1,n,4
         dy(i) = dy(i) + da*dx(i)
         dy(i + 1) = dy(i + 1) + da*dx(i + 1)
         dy(i + 2) = dy(i + 2) + da*dx(i + 2)
         dy(i + 3) = dy(i + 3) + da*dx(i + 3)
-50  continue
+    end do
     return
     !
     !        code for equal, positive, nonunit increments.
     !
 60  continue
     ns = n*incx
-    do 70 i=1,ns,incx
+    do i=1,ns,incx
         dy(i) = da*dx(i) + dy(i)
-70  continue
+    end do
     return
     end 
 
@@ -4806,7 +4845,11 @@
     !***routines called  (none)
     !***end prologue  ddot
     !
-    real*8 dx(*),dy(*)
+    
+    implicit none
+    real*8 :: dx(*),dy(*)
+    integer :: n, incx, incy, ix, iy, i, m, mp1, ns
+    
     !***first executable statement  ddot
     ddot = 0.d0
     if(n<=0)return
@@ -4838,18 +4881,18 @@
 30  continue
     if( n < 5 ) return
 40  mp1 = m + 1
-    do 50 i = mp1,n,5
+    do i = mp1,n,5
         ddot = ddot + dx(i)*dy(i) + dx(i+1)*dy(i+1) + dx(i + 2)*dy(i + 2) + dx(i + 3)*dy(i + 3) + dx(i + 4)*dy(i + 4)
-50  continue
+    end do
     return
     !
     !         code for positive equal increments /=1.
     !
 60  continue
     ns = n*incx
-    do 70 i=1,ns,incx
+    do i=1,ns,incx
         ddot = ddot + dx(i)*dy(i)
-70  continue
+    end do
     return
     end 
 
@@ -4921,8 +4964,10 @@
     !                 software, volume 5, number 3, september 1979, 308-323
     !***routines called  (none)
     !***end prologue  dnrm2
-    integer          next
-    real*8   dx(*), cutlo, cuthi, hitest, sum, xmax,zero,one
+    
+    implicit none
+    integer :: next, n, nn, incx, i, j
+    real*8 :: dx(*), cutlo, cuthi, hitest, sum, xmax, zero, one
     data   zero, one /0.0d0, 1.0d0/
     !
     data cutlo, cuthi / 8.232d-11,  1.304d19 /
@@ -4987,9 +5032,10 @@
     !
     !                   phase 3.  sum is mid-range.  no scaling.
     !
-    do 95 j =i,nn,incx
+    do j =i,nn,incx
         if(dabs(dx(j)) >= hitest) go to 100
-95  sum = sum + dx(j)**2 
+        sum = sum + dx(j)**2 
+    end do
     dnrm2 = dsqrt( sum )
     go to 300
     !
@@ -5040,7 +5086,11 @@
     !***routines called  (none)
     !***end prologue  dscal
     !
-    real*8 da,dx(*)
+    
+    implicit none
+    real*8 :: da,dx(*)
+    integer :: n, incx, i, m, mp1, ns
+    
     !***first executable statement  dscal
     if(n<=0)return
     if(incx==1)goto 20
@@ -5048,9 +5098,9 @@
     !        code for increments not equal to 1.
     !
     ns = n*incx
-    do 10 i = 1,ns,incx 
+    do i = 1,ns,incx 
         dx(i) = da*dx(i)
-10  continue
+    end do
     return
     !
     !        code for increments equal to 1.
@@ -5060,28 +5110,31 @@
     !
 20  m = mod(n,5)
     if( m == 0 ) go to 40 
-    do 30 i = 1,m 
+    do i = 1,m 
         dx(i) = da*dx(i)
-30  continue
+    end do
     if( n < 5 ) return
 40  mp1 = m + 1
-    do 50 i = mp1,n,5
+    do i = mp1,n,5
         dx(i) = da*dx(i)
         dx(i + 1) = da*dx(i + 1)
         dx(i + 2) = da*dx(i + 2)
         dx(i + 3) = da*dx(i + 3)
         dx(i + 4) = da*dx(i + 4)
-50  continue
+    end do
     return
     end 
     
     subroutine dgemv ( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
+    
+        
+    implicit none
     !     .. scalar arguments ..
-    real*8   alpha, beta
-    integer            incx, incy, lda, m, n
-    character*1        trans
+    real*8 :: alpha, beta
+    integer :: incx, incy, lda, m, n
+    character(1) :: trans
     !     .. array arguments ..
-    real*8   a( lda, * ), x( * ), y( * )
+    real*8 :: a(lda, *), x(*), y(*)
     !     ..
     !
     !  purpose
@@ -5175,24 +5228,25 @@
     !     richard hanson, sandia national labs.
     !
     !
+
     !     .. parameters ..
-    real*8   one         , zero
-    parameter        ( one = 1.0d+0, zero = 0.0d+0 )
+    real*8, parameter :: one = 1.0d+0, zero = 0.0d+0
     !     .. local scalars ..
-    real*8   temp
-    integer            i, info, ix, iy, j, jx, jy, kx, ky, lenx, leny
+    real*8 :: temp
+    integer:: i, info, ix, iy, j, jx, jy, kx, ky, lenx, leny
     !     .. external functions ..
-    logical            lsame
-    external           lsame
+    logical :: lsame
+    external lsame
     !     .. external subroutines ..
-    external           xerbla
+    external xerbla
     !     .. intrinsic functions ..
-    intrinsic          max
+    intrinsic max
     !     ..
     !     .. executable statements ..
     !
     !     test the input parameters.
     !
+    
     info = 0
     if (.not.lsame(trans, 'N').and..not.lsame(trans, 'T').and..not.lsame(trans, 'C'))then
         info = 1
@@ -5245,26 +5299,26 @@
     if( beta/=one )then
         if( incy==1 )then
             if( beta==zero )then
-                do 10, i = 1, leny
+                do i = 1, leny
                     y( i ) = zero
-10              continue
+                end do
             else
-                do 20, i = 1, leny
+                do i = 1, leny
                     y( i ) = beta*y( i )
-20              continue
+                end do
             endif
         else
             iy = ky
             if( beta==zero )then
-                do 30, i = 1, leny
+                do i = 1, leny
                     y( iy ) = zero
                     iy      = iy   + incy
-30              continue
+                end do
             else
-                do 40, i = 1, leny
+                do i = 1, leny
                     y( iy ) = beta*y( iy )
                     iy      = iy           + incy
-40              continue
+                end do
             endif
         endif
     endif
@@ -5275,27 +5329,27 @@
         !
         jx = kx
         if( incy==1 )then
-            do 60, j = 1, n
+            do j = 1, n
                 if( x( jx )/=zero )then
                     temp = alpha*x( jx )
-                    do 50, i = 1, m
+                    do i = 1, m
                         y( i ) = y( i ) + temp*a( i, j )
-50                  continue
+                    end do
                 endif
                 jx = jx + incx
-60          continue
+            end do
         else
-            do 80, j = 1, n
+            do j = 1, n
                 if( x( jx )/=zero )then
                     temp = alpha*x( jx )
                     iy   = ky
-                    do 70, i = 1, m
+                    do i = 1, m
                         y( iy ) = y( iy ) + temp*a( i, j )
                         iy      = iy      + incy
-70                  continue
+                    end do
                 endif
                 jx = jx + incx
-80          continue
+            end do
         endif
     else
         !
@@ -5303,25 +5357,25 @@
         !
         jy = ky
         if( incx==1 )then
-            do 100, j = 1, n
+            do j = 1, n
                 temp = zero
-                do 90, i = 1, m
+                do i = 1, m
                     temp = temp + a( i, j )*x( i )
-90              continue
+                end do
                 y( jy ) = y( jy ) + alpha*temp
                 jy      = jy      + incy
-100         continue
+            end do
         else
-            do 120, j = 1, n
+            do j = 1, n
                 temp = zero
                 ix   = kx
-                do 110, i = 1, m
+                do i = 1, m
                     temp = temp + a( i, j )*x( ix )
                     ix   = ix   + incx
-110             continue
+                end do
                 y( jy ) = y( jy ) + alpha*temp
                 jy      = jy      + incy
-120         continue
+            end do
         endif
     endif
     !
@@ -5332,12 +5386,14 @@
     end
     
     subroutine dgemm ( transa, transb, m, n, k, alpha, a, lda, b, ldb,beta, c, ldc )
+    
+    implicit none
     !     .. scalar arguments ..
-    character*1        transa, transb
-    integer            m, n, k, lda, ldb, ldc
-    real*8   alpha, beta
+    character(1) :: transa, transb
+    integer :: m, n, k, lda, ldb, ldc
+    real*8 :: alpha, beta
     !     .. array arguments ..
-    real*8   a( lda, * ), b( ldb, * ), c( ldc, * )
+    real*8 :: a(lda, *), b(ldb, *), c(ldc, *)
     !     ..
     !
     !  purpose
@@ -5461,19 +5517,18 @@
     !
     !
     !     .. external functions ..
-    logical            lsame
-    external           lsame
+    logical :: lsame
+    external lsame
     !     .. external subroutines ..
-    external           xerbla
+    external xerbla
     !     .. intrinsic functions ..
-    intrinsic          max
+    intrinsic max
     !     .. local scalars ..
-    logical            nota, notb
-    integer            i, info, j, l, ncola, nrowa, nrowb
-    real*8   temp
+    logical :: nota, notb
+    integer :: i, info, j, l, ncola, nrowa, nrowb
+    real*8 :: temp
     !     .. parameters ..
-    real*8   one         , zero
-    parameter        ( one = 1.0d+0, zero = 0.0d+0 )
+    real*8, parameter :: one = 1.0d+0, zero = 0.0d+0
     !     ..
     !     .. executable statements ..
     !
@@ -5529,17 +5584,17 @@
     !
     if( alpha==zero )then
         if( beta==zero )then
-            do 20, j = 1, n
-                do 10, i = 1, m
+            do j = 1, n
+                do i = 1, m
                     c( i, j ) = zero
-10              continue
-20          continue
+                end do
+            end do
         else
-            do 40, j = 1, n
-                do 30, i = 1, m
+            do j = 1, n
+                do i = 1, m
                     c( i, j ) = beta*c( i, j )
-30              continue
-40          continue
+                end do
+            end do
         endif
         return
     endif
@@ -5551,84 +5606,84 @@
             !
             !           form  c := alpha*a*b + beta*c.
             !
-            do 90, j = 1, n
+            do j = 1, n
                 if( beta==zero )then
-                    do 50, i = 1, m
+                    do i = 1, m
                         c( i, j ) = zero
-50                  continue
+                    end do
                 else if( beta/=one )then
-                    do 60, i = 1, m
+                    do i = 1, m
                         c( i, j ) = beta*c( i, j )
-60                  continue
+                    end do
                 endif
-                do 80, l = 1, k
+                do l = 1, k
                     if( b( l, j )/=zero )then
                         temp = alpha*b( l, j )
-                        do 70, i = 1, m
+                        do i = 1, m
                             c( i, j ) = c( i, j ) + temp*a( i, l )
-70                      continue
+                        end do
                     endif
-80              continue
-90          continue
+                end do
+            end do
         else
             !
             !           form  c := alpha*a'*b + beta*c
             !
-            do 120, j = 1, n
-                do 110, i = 1, m
+            do j = 1, n
+                do i = 1, m
                     temp = zero
-                    do 100, l = 1, k
+                    do l = 1, k
                         temp = temp + a( l, i )*b( l, j )
-100                 continue
+                    end do
                     if( beta==zero )then
                         c( i, j ) = alpha*temp
                     else
                         c( i, j ) = alpha*temp + beta*c( i, j )
                     endif
-110             continue
-120         continue
+               end do
+            end do
         endif
     else
         if( nota )then
             !
             !           form  c := alpha*a*b' + beta*c
             !
-            do 170, j = 1, n
+            do j = 1, n
                 if( beta==zero )then
-                    do 130, i = 1, m
+                    do i = 1, m
                         c( i, j ) = zero
-130                 continue
+                    end do
                 else if( beta/=one )then
-                    do 140, i = 1, m
+                    do i = 1, m
                         c( i, j ) = beta*c( i, j )
-140                 continue
+                    end do
                 endif
-                do 160, l = 1, k
+                do l = 1, k
                     if( b( j, l )/=zero )then
                         temp = alpha*b( j, l )
-                        do 150, i = 1, m
+                        do i = 1, m
                             c( i, j ) = c( i, j ) + temp*a( i, l )
-150                     continue
+                        end do
                     endif
-160             continue
-170         continue
+                end do
+            end do
         else
             !
             !           form  c := alpha*a'*b' + beta*c
             !
-            do 200, j = 1, n
-                do 190, i = 1, m
+            do j = 1, n
+                do i = 1, m
                     temp = zero
-                    do 180, l = 1, k
+                    do l = 1, k
                         temp = temp + a( l, i )*b( j, l )
-180                 continue
+                    end do
                     if( beta==zero )then
                         c( i, j ) = alpha*temp
                     else
                         c( i, j ) = alpha*temp + beta*c( i, j )
                     endif
-190             continue
-200         continue
+                end do
+            end do
         endif
     endif
     !
@@ -5639,8 +5694,10 @@
     end
 
     subroutine dgefa(a,lda,n,ipvt,info)
-    integer lda, n, ipvt(*), info
-    real*8 a(lda,*)
+    
+    implicit none
+    integer :: lda, n, ipvt(*), info
+    real*8 :: a(lda,*)
     !
     !     dgefa factors a real*8 matrix by gaussian elimination.
     !
@@ -5687,8 +5744,8 @@
     !
     !     internal variables
     !
-    real*8 t
-    integer idamax, j, k, kp1, l, nm1
+    real*8 :: t
+    integer :: idamax, j, k, kp1, l, nm1
     !
     !
     !     gaussian elimination with partial pivoting
@@ -5696,7 +5753,7 @@
     info = 0
     nm1 = n - 1
     if (nm1>=1) then
-        do 20 k = 1, nm1
+        do k = 1, nm1
             kp1 = k + 1
             !
             !        find l = pivot index
@@ -5723,18 +5780,18 @@
                 !
                 !           row elimination with column indexing
                 !
-                do 10 j = kp1, n
+                do j = kp1, n
                     t = a(l,j)
                     if (l/=k) then
                         a(l,j) = a(k,j)
                         a(k,j) = t
                     endif
                     call daxpy(n-k,t,a(k+1,k),1,a(k+1,j),1)
-10              continue
+                end do
             else
                 info = k
             endif
-20      continue
+        end do
     endif
     ipvt(n) = n
     if (a(n,n)==0.0d0) info = n
@@ -5742,8 +5799,10 @@
     end
     
     subroutine dgesl(a,lda,n,ipvt,b,job)
-    integer lda, n, ipvt(*), job
-    real*8 a(lda,*), b(*)
+    
+    implicit none
+    integer :: lda, n, ipvt(*), job
+    real*8 :: a(lda,*), b(*)
     !
     !     dgesl solves the real*8 system
     !     a * x = b  or  trans(a) * x = b
@@ -5801,8 +5860,8 @@
     !
     !     internal variables
     !
-    real*8 ddot, t
-    integer k, kb, l, nm1
+    real*8 :: ddot, t
+    integer :: k, kb, l, nm1
     !
     nm1 = n - 1
     if (job==0) then
@@ -5811,7 +5870,7 @@
         !        first solve  l*y = b
         !
         if (nm1>=1) then
-            do 10 k = 1, nm1
+            do k = 1, nm1
                 l = ipvt(k)
                 t = b(l)
                 if (l/=k) then
@@ -5819,31 +5878,31 @@
                     b(k) = t
                 endif
                 call daxpy(n-k,t,a(k+1,k),1,b(k+1),1)
-10          continue
+            end do
         endif
         !
         !        now solve  u*x = y
         !
-        do 20 kb = 1, n
+        do kb = 1, n
             k = n + 1 - kb
             b(k) = b(k) / a(k,k)
             t = -b(k)
             call daxpy(k-1,t,a(1,k),1,b(1),1)
-20      continue
+        end do
     else
         !
         !        job = nonzero, solve  trans(a) * x = b
         !        first solve  trans(u)*y = b
         !
-        do 30 k = 1, n
+        do k = 1, n
             t = ddot(k-1,a(1,k),1,b(1),1)
             b(k) = (b(k)-t) / a(k,k)
-30      continue
+        end do
         !
         !        now solve trans(l)*x = y
         !
         if (nm1>=1) then
-            do 40 kb = 1, nm1
+            do kb = 1, nm1
                 k = n - kb
                 b(k) = b(k) + ddot(n-k,a(k+1,k),1,b(k+1),1)
                 l = ipvt(k)
@@ -5852,15 +5911,16 @@
                     b(l) = b(k)
                     b(k) = t
                 endif
-40          continue
+            end do
         endif
     endif
     return
     end
     
     subroutine dgbfa(abd,lda,n,ml,mu,ipvt,info)
-    integer lda, n, ml, mu, ipvt(*), info
-    real*8 abd(lda,*)
+    implicit none
+    integer :: lda, n, ml, mu, ipvt(*), info
+    real*8 :: abd(lda,*)
     !
     !     dgbfa factors a real*8 band matrix by elimination.
     !
@@ -5944,8 +6004,8 @@
     !
     !     internal variables
     !
-    real*8 t
-    integer i, idamax, i0, j, ju, jz, j0, j1, k, kp1, l, lm, m, mm, nm1
+    real*8 :: t
+    integer :: i, idamax, i0, j, ju, jz, j0, j1, k, kp1, l, lm, m, mm, nm1
     !
     !
     m = ml + mu + 1
@@ -5956,12 +6016,12 @@
     j0 = mu + 2
     j1 = min0(n,m) - 1
     if (j1>=j0) then
-        do 20 jz = j0, j1
+        do jz = j0, j1
             i0 = m + 1 - jz
-            do 10 i = i0, ml
+            do i = i0, ml
                 abd(i,jz) = 0.0d0
-10          continue
-20      continue
+            end do
+        end do
     endif
     jz = j1
     ju = 0
@@ -5970,7 +6030,7 @@
     !
     nm1 = n - 1
     if (nm1>=1) then
-        do 50 k = 1, nm1
+        do k = 1, nm1
             kp1 = k + 1
             !
             !        zero next fill-in column
@@ -5978,9 +6038,9 @@
             jz = jz + 1
             if (jz<=n) then
                 if (ml>=1) then
-                    do 30 i = 1, ml
+                    do i = 1, ml
                         abd(i,jz) = 0.0d0
-30                  continue
+                    end do
                 endif
             endif
             !
@@ -6012,7 +6072,7 @@
                 ju = min0(max0(ju,mu+ipvt(k)),n)
                 mm = m
                 if (ju>=kp1) then
-                    do 40 j = kp1, ju
+                    do j = kp1, ju
                         l = l - 1
                         mm = mm - 1
                         t = abd(l,j)
@@ -6021,12 +6081,12 @@
                             abd(mm,j) = t
                         endif
                         call daxpy(lm,t,abd(m+1,k),1,abd(mm+1,j),1)
-40                  continue
+                    end do
                 endif
             else
                 info = k
             endif
-50      continue
+        end do
     endif
     ipvt(n) = n
     if (abd(m,n)==0.0d0) info = n
@@ -6034,8 +6094,10 @@
     end
     
     subroutine dgbsl(abd,lda,n,ml,mu,ipvt,b,job)
-    integer lda, n, ml, mu, ipvt(*), job
-    real*8 abd(lda,*), b(*)
+    
+    implicit none
+    integer :: lda, n, ml, mu, ipvt(*), job
+    real*8 :: abd(lda,*), b(*)
     !
     !     dgbsl solves the real*8 band system
     !     a * x = b  or  trans(a) * x = b
@@ -6100,8 +6162,8 @@
     !
     !     internal variables
     !
-    real*8 ddot, t
-    integer k, kb, l, la, lb, lm, m, nm1
+    real*8 :: ddot, t
+    integer :: k, kb, l, la, lb, lm, m, nm1
     !
     m = mu + ml + 1
     nm1 = n - 1
@@ -6112,7 +6174,7 @@
         !
         if (ml/=0) then
             if (nm1>=1) then
-                do 10 k = 1, nm1
+                do k = 1, nm1
                     lm = min0(ml,n-k)
                     l = ipvt(k)
                     t = b(l)
@@ -6121,13 +6183,13 @@
                         b(k) = t
                     endif
                     call daxpy(lm,t,abd(m+1,k),1,b(k+1),1)
-10              continue
+                end do
             endif
         endif
         !
         !        now solve  u*x = y
         !
-        do 20 kb = 1, n
+        do kb = 1, n
             k = n + 1 - kb
             b(k) = b(k) / abd(m,k)
             lm = min0(k,m) - 1
@@ -6135,25 +6197,25 @@
             lb = k - lm
             t = -b(k)
             call daxpy(lm,t,abd(la,k),1,b(lb),1)
-20      continue
+        end do
     else
         !
         !        job = nonzero, solve  trans(a) * x = b
         !        first solve  trans(u)*y = b
         !
-        do 30 k = 1, n
+        do k = 1, n
             lm = min0(k,m) - 1
             la = m - lm
             lb = k - lm
             t = ddot(lm,abd(la,k),1,b(lb),1)
             b(k) = (b(k)-t) / abd(m,k)
-30      continue
+        end do
         !
         !        now solve trans(l)*x = y
         !
         if (ml/=0) then
             if (nm1>=1) then
-                do 40 kb = 1, nm1
+                do kb = 1, nm1
                     k = n - kb
                     lm = min0(ml,n-k)
                     b(k) = b(k) + ddot(lm,abd(m+1,k),1,b(k+1),1)
@@ -6163,7 +6225,7 @@
                         b(l) = b(k)
                         b(k) = t
                     endif
-40              continue
+                end do
             endif
         endif
     endif
@@ -6171,6 +6233,8 @@
     end
 
     subroutine gjac
+    
+    implicit none
 
     !--------------------------------- nist/bfrl ---------------------------------
     !
@@ -6195,6 +6259,8 @@
     end
 
     subroutine jac
+    
+    implicit none
 
     !--------------------------------- nist/bfrl ---------------------------------
     !
@@ -6268,9 +6334,10 @@
     !---------------------------- all rights reserved ----------------------------
 
     use cenviro
-    implicit real*8 (a-h,o-z)
+    implicit none
+    integer :: j
     !
-    if(j>-10)jaccol = j
+    if(j>-10) jaccol = j
     return
     end
     
@@ -6296,13 +6363,13 @@
 
     use cparams
     use opt
-    implicit real*8 (a-h,o-z)
+    implicit none
     !
     numjac = numjac + 1
     return
     end
 
-    integer function rev_numerics
+    integer function rev_numerics ()
 
     integer :: module_rev
     character(255) :: module_date 

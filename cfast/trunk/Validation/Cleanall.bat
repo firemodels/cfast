@@ -12,7 +12,8 @@ del *.status /s/q >nul
 del *.log /s/q >nul
 del ..\Docs\Validation_Guide\FIGURES\FM_NBS\fm??_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\FM_SNL\FM_SNL_*.pdf /q >nul
-del ..\Docs\Validation_Guide\FIGURES\High_Bay\Iceland_Test_??*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\High_Bay\USN_Hawaii_Test_??*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\High_Bay\USN_Iceland_Test_??*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\iBMB\iBMB_Cable_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\iBMB\iBMB_Pool_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\LLNL_Enclosure\LLNL_??_*.pdf /q >nul

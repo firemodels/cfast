@@ -108,7 +108,7 @@
     
     implicit none
     integer :: i
-    double precision :: b, x
+    real(8) :: b, x
 
     x = 1.0d0
     b = radix(x)

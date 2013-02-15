@@ -1,6 +1,9 @@
 echo off
 echo.| time
 echo Running CFAST simulations. $Rev$
+if "%1"=="" goto Help
+if %1==ALL goto All
+if %1==ATF goto ATF
 if %1==Vettori_Flat goto Vettori_Flat
 if %1==LLNL_Enclosure goto LLNL_Enclosure
 if %1==NBS_1Room goto NBS_1Room
@@ -13,8 +16,20 @@ if %1==FM_SNL goto FM_SNL
 if %1==NBS goto NBS
 if %1==High_Bay goto High_Bay
 if %1==WTC goto WTC
-if %1==Steckler goto Steckler
-if %1==Dunes2000 goto Dunes2000
+if %1==Steckler_Compartment goto Steckler
+if %1==Dunes_2000 goto Dunes2000
+:Help
+echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
+echo        NBS, NBS_1Room, NIST_NRC, Steckler_Compartment, Vettori_Flat, VTT, or WTC
+goto end
+:ALL
+:ATF
+echo Running ATF Corridor Tests
+cd ATF_Corridors
+call ..\cleancfast.bat
+..\..\bin\cfast ATF_Corridors_050_kW /V
+cd ..
+if %1==ATF goto end
 :WTC
 echo Running WTC Spray Burner Tests
 cd WTC
@@ -82,150 +97,71 @@ if %1==Vettori_Flat goto end
 echo LLNL Tests
 cd LLNL_Enclosure
 call ..\cleancfast.bat
-cd LLNL_01
-..\..\..\bin\cfast LLNL_01 /V
-cd ..
-cd LLNL_02
-..\..\..\bin\cfast LLNL_02 /V
-cd ..
-cd LLNL_03
-..\..\..\bin\cfast LLNL_03 /V
-cd ..
-cd LLNL_04
-..\..\..\bin\cfast LLNL_04 /V
-cd ..
-cd LLNL_05
-..\..\..\bin\cfast LLNL_05 /V
-cd ..
-cd LLNL_06
-..\..\..\bin\cfast LLNL_06 /V
-cd ..
-cd LLNL_07
-..\..\..\bin\cfast LLNL_07 /V
-cd ..
-cd LLNL_08
-..\..\..\bin\cfast LLNL_08 /V
-cd ..
-cd LLNL_09
-..\..\..\bin\cfast LLNL_09 /V
-cd ..
-cd LLNL_10
-..\..\..\bin\cfast LLNL_10 /V
-cd ..
-cd LLNL_11
-..\..\..\bin\cfast LLNL_11 /V
-cd ..
-cd LLNL_12
-..\..\..\bin\cfast LLNL_12 /V
-cd ..
-cd LLNL_13
-..\..\..\bin\cfast LLNL_13 /V
-cd ..
-cd LLNL_14
-..\..\..\bin\cfast LLNL_14 /V
-cd ..
-cd LLNL_18
-..\..\..\bin\cfast LLNL_18 /V
-cd ..
-cd LLNL_19
-..\..\..\bin\cfast LLNL_19 /V
-cd ..
-cd LLNL_21
-..\..\..\bin\cfast LLNL_21 /V
-cd ..
-cd LLNL_22
-..\..\..\bin\cfast LLNL_22 /V
-cd ..
-cd LLNL_23
-..\..\..\bin\cfast LLNL_23 /V
-cd ..
-cd LLNL_24
-..\..\..\bin\cfast LLNL_24 /V
-cd ..
-cd LLNL_27
-..\..\..\bin\cfast LLNL_27 /V
-cd ..
-cd LLNL_28
-..\..\..\bin\cfast LLNL_28 /V
-cd ..
-cd LLNL_29
-..\..\..\bin\cfast LLNL_29 /V
-cd ..
-cd LLNL_30
-..\..\..\bin\cfast LLNL_30 /V
-cd ..
-cd LLNL_31
-..\..\..\bin\cfast LLNL_31 /V
-cd ..
-cd LLNL_32
-..\..\..\bin\cfast LLNL_32 /V
-cd ..
-cd LLNL_33
-..\..\..\bin\cfast LLNL_33 /V
-cd ..
-cd LLNL_34
-..\..\..\bin\cfast LLNL_34 /V
-cd ..
-cd LLNL_35
-..\..\..\bin\cfast LLNL_35 /V
-cd ..
-cd LLNL_36
-..\..\..\bin\cfast LLNL_36 /V
-cd ..
-cd LLNL_37
-..\..\..\bin\cfast LLNL_37 /V
-cd ..
-cd LLNL_38
-..\..\..\bin\cfast LLNL_38 /V
-cd ..
-cd LLNL_39
-..\..\..\bin\cfast LLNL_39 /V
-cd ..
-cd LLNL_41
-..\..\..\bin\cfast LLNL_41 /V
-cd ..
-cd LLNL_43
-..\..\..\bin\cfast LLNL_43 /V
-cd ..
-cd LLNL_44
-..\..\..\bin\cfast LLNL_44 /V
-cd ..
-cd LLNL_45
-..\..\..\bin\cfast LLNL_45 /V
-cd ..
-cd LLNL_46
-..\..\..\bin\cfast LLNL_46 /V
-cd ..
-cd LLNL_47
-..\..\..\bin\cfast LLNL_47 /V
-cd ..
-cd LLNL_49
-..\..\..\bin\cfast LLNL_49 /V
-cd ..
-cd LLNL_50
-..\..\..\bin\cfast LLNL_50 /V
-cd ..
-cd LLNL_51
-..\..\..\bin\cfast LLNL_51 /V
-cd ..
-cd LLNL_52
-..\..\..\bin\cfast LLNL_52 /V
-cd ..
-cd LLNL_59
-..\..\..\bin\cfast LLNL_59 /V
-cd ..
-cd LLNL_60
-..\..\..\bin\cfast LLNL_60 /V
-cd ..
-cd LLNL_61
-..\..\..\bin\cfast LLNL_61 /V
-cd ..
-cd LLNL_63
-..\..\..\bin\cfast LLNL_63 /V
-cd ..
-cd LLNL_64
-..\..\..\bin\cfast LLNL_64 /V
-cd ..\..\
+..\..\bin\cfast LLNL_01 /V
+..\..\bin\cfast LLNL_02 /V
+..\..\bin\cfast LLNL_03 /V
+..\..\bin\cfast LLNL_04 /V
+..\..\bin\cfast LLNL_05 /V
+..\..\bin\cfast LLNL_06 /V
+..\..\bin\cfast LLNL_07 /V
+..\..\bin\cfast LLNL_08 /V
+..\..\bin\cfast LLNL_09 /V
+..\..\bin\cfast LLNL_10 /V
+..\..\bin\cfast LLNL_11 /V
+..\..\bin\cfast LLNL_12 /V
+..\..\bin\cfast LLNL_13 /V
+..\..\bin\cfast LLNL_14 /V
+REM ..\..\bin\cfast LLNL_15 /V
+REM ..\..\bin\cfast LLNL_16 /V
+REM ..\..\bin\cfast LLNL_17 /V
+REM ..\..\bin\cfast LLNL_18 /V
+..\..\bin\cfast LLNL_19 /V
+REM ..\..\bin\cfast LLNL_20 /V
+..\..\bin\cfast LLNL_21 /V
+..\..\bin\cfast LLNL_22 /V
+..\..\bin\cfast LLNL_23 /V
+REM ..\..\bin\cfast LLNL_24 /V
+REM ..\..\bin\cfast LLNL_25 /V
+REM ..\..\bin\cfast LLNL_26 /V
+..\..\bin\cfast LLNL_27 /V
+..\..\bin\cfast LLNL_28 /V
+..\..\bin\cfast LLNL_29 /V
+..\..\bin\cfast LLNL_30 /V
+..\..\bin\cfast LLNL_31 /V
+..\..\bin\cfast LLNL_32 /V
+..\..\bin\cfast LLNL_33 /V
+..\..\bin\cfast LLNL_34 /V
+..\..\bin\cfast LLNL_35 /V
+..\..\bin\cfast LLNL_36 /V
+..\..\bin\cfast LLNL_37 /V
+..\..\bin\cfast LLNL_38 /V
+..\..\bin\cfast LLNL_39 /V
+REM ..\..\bin\cfast LLNL_40 /V
+..\..\bin\cfast LLNL_41 /V
+REM ..\..\bin\cfast LLNL_42 /V
+..\..\bin\cfast LLNL_43 /V
+..\..\bin\cfast LLNL_44 /V
+..\..\bin\cfast LLNL_45 /V
+..\..\bin\cfast LLNL_46 /V
+..\..\bin\cfast LLNL_47 /V
+REM ..\..\bin\cfast LLNL_48 /V
+..\..\bin\cfast LLNL_49 /V
+..\..\bin\cfast LLNL_50 /V
+..\..\bin\cfast LLNL_51 /V
+..\..\bin\cfast LLNL_52 /V
+REM ..\..\bin\cfast LLNL_53 /V
+REM ..\..\bin\cfast LLNL_54 /V
+REM ..\..\bin\cfast LLNL_55 /V
+REM ..\..\bin\cfast LLNL_56 /V
+REM ..\..\bin\cfast LLNL_57 /V
+REM ..\..\bin\cfast LLNL_58 /V
+..\..\bin\cfast LLNL_59 /V
+..\..\bin\cfast LLNL_60 /V
+..\..\bin\cfast LLNL_61 /V
+REM ..\..\bin\cfast LLNL_62 /V
+..\..\bin\cfast LLNL_63 /V
+..\..\bin\cfast LLNL_64 /V
+cd ..\
 if %1==LLNL_Enclosure goto end
 :NBS_1Room
 echo NBS 1 room furniture tests 1, 6
@@ -472,7 +408,7 @@ call ..\CleanCFAST
 ..\..\bin\cfast Steckler_210 /V
 ..\..\bin\cfast Steckler_310 /V
 ..\..\bin\cfast Steckler_240 /V
-..\..\bin\cfast Steckler_116 /V
+REM ..\..\bin\cfast Steckler_116 /V
 ..\..\bin\cfast Steckler_122 /V
 ..\..\bin\cfast Steckler_224 /V
 ..\..\bin\cfast Steckler_324 /V
@@ -487,7 +423,7 @@ call ..\CleanCFAST
 ..\..\bin\cfast Steckler_540 /V
 ..\..\bin\cfast Steckler_517 /V
 ..\..\bin\cfast Steckler_622 /V
-REM ..\..\bin\cfast Steckler_522 /V
+..\..\bin\cfast Steckler_522 /V
 ..\..\bin\cfast Steckler_524 /V
 ..\..\bin\cfast Steckler_541 /V
 ..\..\bin\cfast Steckler_520 /V

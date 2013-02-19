@@ -28,6 +28,11 @@ echo Running ATF Corridor Tests
 cd ATF_Corridors
 call ..\cleancfast.bat
 ..\..\bin\cfast ATF_Corridors_050_kW /V
+..\..\bin\cfast ATF_Corridors_100_kW /V
+..\..\bin\cfast ATF_Corridors_240_kW /V
+..\..\bin\cfast ATF_Corridors_250_kW /V
+..\..\bin\cfast ATF_Corridors_500_kW /V
+..\..\bin\cfast ATF_Corridors_Mix_kW /V
 cd ..
 if %1==ATF goto end
 :WTC

@@ -20,7 +20,7 @@ For the 9 Iceland tests, CFAST predicts flame height within 25~\% of the experim
 
 As with the ceiling jet, CFAST includes a specific plume temperature model based on the McCaffrey plume \cite{Baum:1989, McCaffrey:1983} to account for presence of higher gas temperatures near a target located at the centerline of the fire plume. the correlation has been subjected to extensive validation efforts by McCaffrey \cite{Baum:1989} and others \cite{Valid:Davis_Plumes} and shown to provide predictions within about 30 \% of a wide range of experimental results \cite{Valid:Davis_Plumes}. In the model, this increased temperature has the effect of increasing the convective heat transfer to the target. Only two of the six test series (VTT and FM/SNL) included measurements of plume centerline temperature.
 
-Figure \ref{fig:Plume_Temp_Scatter} shows a comparison of predicted and measured values for plume temperature. Appendix A provides individual graphs of model and experimental values. All of the comparisons are to the surrounding gas temperature predicted by CFAST. Comparisons to the target surface temperature or target center temperature would be expected to have a smaller relative difference since all the predictions of surrounding gas temperature are higher than experimental measurements. Following is a summary of the accuracy assessment for the ceiling jet predictions in the two test series.
+Figure \ref{fig:Plume_Temp_Scatter} shows a comparison of predicted and measured values for plume temperature. Appendix A provides individual graphs of model and experimental values. All of the comparisons are to the surrounding gas temperature predicted by CFAST. Comparisons to the target surface temperature or target center temperature would be expected to have a smaller relative difference since all the predictions of surrounding gas temperature are higher than experimental measurements. Following is a summary of the predictions in the two test series.
 
 \begin{figure}
 \begin{center}
@@ -44,7 +44,7 @@ Predictions for the high bay tests average within \Plumehighbay~\%.  With a wide
 
 \section{Ceiling Jets}
 
-CFAST includes an algorithm to account for the presence of the higher gas temperatures near the ceiling surfaces in compartments involved in a fire.  In the model, this increased temperature has the effect of increasing the convective heat transfer to ceiling surfaces.  The temperature and velocity of the ceiling jet are available from the model by placing a heat detector at the specified location.  The ceiling jet algorithm is based on the model by Cooper \cite{Cooper:1991}, with details described in the CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6}.  The algorithm predicts gas temperature and velocity under a flat, unconstrained ceiling above a fire source.  Only two of the six test series (NIST/NRC and FM/SNL) involved relatively large flat ceilings.  
+CFAST includes an algorithm to account for the presence of the higher gas temperatures near the ceiling surfaces in compartments involved in a fire.  In the model, this increased temperature has the effect of increasing the convective heat transfer to ceiling surfaces.  The temperature and velocity of the ceiling jet are also available from the model by placing a heat detector at the specified location.  The ceiling jet algorithm is based on the model by Cooper \cite{Cooper:1991}, with details described in the CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6}.  The algorithm predicts gas temperature and velocity under a flat, unconstrained ceiling above a fire source.  Only two of the six test series (NIST/NRC and FM/SNL) involved relatively large flat ceilings.  
 
 Figure \ref{fig:Ceiling_Jet_Scatter} shows a comparison of predicted and measured values for ceiling jet temperature. Appendix A provides individual graphs of model and experimental values. Following is a summary of the accuracy assessment for the ceiling jet predictions in the two test series.
 
@@ -63,6 +63,24 @@ The thermocouple nearest the ceiling in Tree 7, located towards the back of the 
 \subsubsection{FM/SNL Test Series}
 
 With fire sizes comparable to the smaller fire sizes used in the tests in NIST/NRC test series and compartment volumes significantly larger, measured temperature rise near the ceiling in the FM/SNL tests was below 100~\degc in all three tests. Relative differences averaged within \CeilingJetfmsnl~\% of experimental measurements.  Hot gas layer temperatures for these tests were below 70~\degc.  CFAST consistently predicts higher ceiling jet temperatures in the FM/SNL tests compared to experimental measurements.  With a larger compartment relative to the fire size, the ceiling jet for the FM/SNL tests is not nearly as well-developed as those in the NIST/NRC tests.  The difference between the experimental ceiling jet temperature and HGL temperature for the FM/SNL tests is less than half that observed in the NIST/NRC tests.  While the over-prediction of ceiling jet temperature could be considered conservative for some applications, for scenarios involving sprinkler or heat detector activation, the increased temperature in the ceiling jet would lead to shorter estimates of activation times for the simulated sprinkler or heat detector.
+
+\section{Device Activation}
+
+Smoke detector, heat detector, and sprinkler activations are all treated similarly in CFAST.  Device activation is modeled using temperatures and velocities from the ceiling jet.  For rooms without a fire (which do not have a ceiling jet), the upper layer temperature (and a default velocity of 0.1 m/s) is used.  Devices are described with a characteristic activation temperature and response time index (RTI). The RTI a measure of the sensor's sensitivity to temperature change (thermal inertia). For heat detectors and sprinklers, the activation temperature and RTI values are part of the device specification. For smoke detectors, a temperature rise of 10~\degc and RTI of 5~(m s)$^{1/2}$ were used, consistent with values in NUREG 1805 \cite{NRCNUREG1805}. With these inputs, the characteristic detector temperature is modeled using the differential equation \cite{Heskestad:1976}
+
+\be \frac{dT_L}{dt} = \frac{\sqrt{v(t)}}{RTI} \brackets{T_g(t) - T_L(t)} \; , \; T_L(0) = T_g(0)  \ee
+
+where $T_L$ and $T_g$ are the link and gas temperatures, $v$ is the gas velocity, and $RTI$.
+
+Figure \ref{fig:Activation_Scatter} shows a comparison of predicted and measured values for ceiling jet temperature. Appendix A provides individual graphs of model and experimental values. Following is a summary  predictions in the test series.
+
+\begin{figure}{t}
+\begin{center}
+\includegraphics[width=4.0in]{FIGURES/ScatterPlots/Sprinkler_Activation_Time}  \\
+\includegraphics[width=4.0in]{FIGURES/ScatterPlots/Smoke_Alarm_Activation_Time}
+\end{center}
+\caption{Comparison of Measured and Predicted Ceiling Jet Temperature.} \label{fig:Activation_Scatter}
+\end{figure}
 
 \section{Summary}
 

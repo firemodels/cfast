@@ -444,7 +444,9 @@ REM ..\..\bin\cfast Steckler_116 /V
 ..\..\bin\cfast Steckler_161 /V
 ..\..\bin\cfast Steckler_166 /V
 cd ..\
-if %1==Steckler goto end
+..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Temperature_Profile_inputs.csv
+copy profiles.csv Steckler_Compartment /Y
+if %1==Steckler_Compartment goto end
 :Dunes2000
 echo NIST Dunes 2000 tests
 cd NIST_Dunes_2000

@@ -16,10 +16,10 @@
     !
     ! *usage:
     !
-    !      implicit real*8(a-h,o-z)
+    !      implicit real(8)(a-h,o-z)
     !      external res, jac
     !      integer neq, info(n), idid, lrw, liw, iwork(liw), ipar
-    !      real*8 t, y(neq), yprime(neq), tout, rtol, atol,
+    !      real(8) t, y(neq), yprime(neq), tout, rtol, atol,
     !     *   rwork(lrw), rpar
     !
     !      call ddassl (res, neq, t, y, yprime, tout, info, rtol, atol,
@@ -496,7 +496,7 @@
     !  ddassl uses a weighted norm ddanrm to measure the size
     !  of vectors such as the estimated error in each step.
     !  a function subprogram
-    !    real*8 function ddanrm(neq,v,wt,rpar,ipar)
+    !    real(8) function ddanrm(neq,v,wt,rpar,ipar)
     !    dimension v(neq),wt(neq)
     !  is used to define this norm. here, v is the vector
     !  whose norm is to be computed, and wt is a vector of
@@ -693,15 +693,15 @@
     !
     !**end
     !
-    !implicit real*8(a-h,o-z)
+    !implicit real(8)(a-h,o-z)
     implicit none
     logical done
     external res,jac
-    real*8 :: y(*),yprime(*),rwork(*),rtol(*),atol(*),rpar(*)
+    real(8) :: y(*),yprime(*),rwork(*),rtol(*),atol(*),rpar(*)
     integer :: info(15), iwork(*),ipar(*)
     character :: msg*80, mesg*128
     
-    real*8 uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, dabs, tstop, h, tnext, r
+    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, dabs, tstop, h, tnext, r
     integer :: i, neq, mxord, lenpd, lenrw, jacdim, jacd, mband, msave, leniw, lrw, liw, idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
     !     set pointers into iwork
@@ -1267,9 +1267,8 @@
     !     and vectors if iwt = 1.
     !-----------------------------------------------------------------------
     !
-    !implicit real*8(a-h,o-z)
     implicit none
-    real*8 :: rtol(*),atol(*),y(*),wt(*),rpar(*), atoli, rtoli
+    real(8) :: rtol(*),atol(*),y(*),wt(*),rpar(*), atoli, rtoli
     integer :: ipar(*), i, neq, iwt
     !
     !*** added by gpf 11/21/91 in case the "no remember"
@@ -1288,7 +1287,7 @@
     !-----------end of subroutine ddawts------------------------------------
     end
     
-    real*8 function ddanrm(neq,v,wt,rpar,ipar)
+    real(8) function ddanrm(neq,v,wt,rpar,ipar)
     !
     !***begin prologue  ddanrm
     !***refer to  ddassl
@@ -1305,8 +1304,9 @@
     !-----------------------------------------------------------------------
     !
     implicit none
-    real*8 :: v(neq), wt(neq), rpar(*), vmax, sum
+    
     integer :: ipar(*), i, neq
+    real(8) :: v(neq), wt(neq), rpar(*), vmax, sum
     ddanrm = 0.0d0
     vmax = 0.0d0
     ipar(3) = 1
@@ -1374,9 +1374,10 @@
     !
     !
     implicit none
+    
     logical :: convgd
-    real*8 :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, ddanrm, cj, h, uround, s, delnrm, oldnrm, rate, err, hmin, r, dmin1
     integer :: iwm(*), ipar(*), maxit, mjac, idid, nef, ncf, nsf, i, jcalc, m, ires, ier, ntemp, nonneg, neq
+    real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, ddanrm, cj, h, uround, s, delnrm, oldnrm, rate, err, hmin, r, dmin1
     external res,jac
     !
     integer, parameter :: lnre=12
@@ -1551,9 +1552,10 @@
     !
 600 continue
     x = xold
-    do 610 i=1,neq
+    do i=1,neq
         y(i)=phi(i,1)
-610 yprime(i)=phi(i,2)
+        yprime(i)=phi(i,2)
+    end do
     !
     if (convgd) go to 640
     if (ier==0) go to 620
@@ -1614,8 +1616,9 @@
     !-----------------------------------------------------------------------
     !
     implicit none
-    real*8 ::  yout(*), ypout(*), phi(neq,*), psi(*), temp1, xout, x, c, d, gamma
+    
     integer :: i, j, neq, koldp1, kold
+    real(8) ::  yout(*), ypout(*), phi(neq,*), psi(*), temp1, xout, x, c, d, gamma
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -1732,10 +1735,10 @@
     !
     implicit none
     logical convgd
-    real*8 :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, &
+    integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
+    real(8) :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, &
         temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, uround, oldnrm, rate, enorm, erk, terk, est, erk1, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, &
         hmin, hnew, r
-    integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
     external res,jac
     !
     integer, parameter :: lmxord=3, lnst=11, lnre=12, lnje=13, letf=14, lctf=15
@@ -1867,14 +1870,16 @@
     !
     !     first,predict the solution and derivative
 300 continue
-    do 310 i=1,neq
+    do i=1,neq
         y(i)=phi(i,1)
-310 yprime(i)=0.0d0
-    do 330 j=2,kp1
-        do 320 i=1,neq
+        yprime(i)=0.0d0
+    end do
+    do j=2,kp1
+        do i=1,neq
             y(i)=y(i)+phi(i,j)
-320     yprime(i)=yprime(i)+gamma(j)*phi(i,j)
-330 continue
+         yprime(i)=yprime(i)+gamma(j)*phi(i,j)
+        end do
+    end do
     pnorm = ddanrm (neq,y,wt,rpar,ipar)
     !
     !
@@ -2303,7 +2308,7 @@
     !
     implicit none
     external res,jac
-    real*8 :: y(*), yprime(*), delta(*), wt(*), e(*), wm(*), rpar(*), x, cj, squr, uround, del, h, ysave, ypsave, delinv
+    real(8) :: y(*), yprime(*), delta(*), wt(*), e(*), wm(*), rpar(*), x, cj, squr, uround, del, h, ysave, ypsave, delinv
     integer :: iwm(*), ipar(*),  ier, npdm1, mtype, lenpd, neq, i, ires, nrow, l, meband, mband, mba, meb1, msave, isave, ntemp, ipsave, j, n, k, i1, i2, ii
     !
     integer, parameter :: npd=1, lml=1, lmu=2, lmtype=4, lipvt=21
@@ -2459,7 +2464,7 @@
     !-----------------------------------------------------------------------
     !
     implicit none
-    real*8 :: delta(*),wm(*)
+    real(8) :: delta(*),wm(*)
     integer :: iwm(*), mtype, neq, meband
     !
     integer, parameter :: npd=1, lml=1, lmu=2, lmtype=4, lipvt=21
@@ -2826,7 +2831,7 @@
     
     implicit none
     integer :: iopt,  n,  nprint,  info,  lwa, index, j, lr, maxfev, ml, mode, mu, nfev, njev
-    real*8 :: x(n), fvec(n), wa(lwa), factor, one, zero, tol, xtol, epsfcn
+    real(8) :: x(n), fvec(n), wa(lwa), factor, one, zero, tol, xtol, epsfcn
     external fcn,jac
     
     data factor,one,zero /1.0d2,1.0d0,0.0d0/
@@ -2926,7 +2931,7 @@
     
     implicit none
     integer :: n, lr, i, j, jj, jp1, k, l
-    real*8 ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, d1mach, sum, temp, qnorm, enorm, delta, gnorm, sgnorm, alpha, bnorm
+    real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, d1mach, sum, temp, qnorm, enorm, delta, gnorm, sgnorm, alpha, bnorm
 
     data one,zero /1.0d0,0.0d0/
     
@@ -3038,7 +3043,7 @@
     !
     end subroutine dogleg
     
-    real*8 function enorm(n,x)
+    real(8) function enorm(n,x)
     !***begin prologue  enorm
     !***refer to  snls1,snls1e,snsq,snsqe
     !
@@ -3082,7 +3087,7 @@
     
     implicit none
     integer :: n, i
-    real *8 ::  x(n), one, zero, rdwarf, rgiant, s1, s2, s3, x1max, x3max, floatn, agiant, xabs
+    real(8) ::  x(n), one, zero, rdwarf, rgiant, s1, s2, s3, x1max, x3max, floatn, agiant, xabs
     
     data one,zero,rdwarf,rgiant /1.0d0,0.0d0,3.834d-20,1.304d19/
     !***first executable statement  enorm
@@ -3241,7 +3246,7 @@
     implicit none
     
     integer :: n, ldfjac, iflag, ml, mu, i, j, k, msum
-    real*8 :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, d1mach, eps, epsfcn, temp, h
+    real(8) :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, d1mach, eps, epsfcn, temp, h
 
     data zero /0.0d0/
     !***first executable statement  fdjac1
@@ -3343,7 +3348,7 @@
     implicit none
     
     integer :: m, n, ldq,  i, j, jm1, k, l, minmn, np1
-    real*8 :: q(ldq, m), wa(m), one, zero, sum, temp
+    real(8) :: q(ldq, m), wa(m), one, zero, sum, temp
 
     data one,zero /1.0d0,0.0d0/
     !***first executable statement  qform
@@ -3480,7 +3485,7 @@
     
     integer :: m,n,lda,lipvt,ipvt(lipvt),i,j,jp1,k,kmax,minmn
     logical pivot
-    real*8 ::  a(lda,n),sigma(n),acnorm(n),wa(n), one, zero, p05, epsmch, d1mach, enorm, temp, ajnorm, sum
+    real(8) ::  a(lda,n),sigma(n),acnorm(n),wa(n), one, zero, p05, epsmch, d1mach, enorm, temp, ajnorm, sum
 
     data one,p05,zero /1.0d0,5.0d-2,0.0d0/
     !***first executable statement  qrfac
@@ -3618,7 +3623,7 @@
     
     implicit none
     integer m,n,lda,i,j,nmj,nm1
-    real*8 :: a(lda,n),v(n),w(n),one, temp, cos, sin
+    real(8) :: a(lda,n),v(n),w(n),one, temp, cos, sin
 
     data one /1.0d0/
     !***first executable statement  r1mpyq
@@ -3732,7 +3737,7 @@
     implicit none
     integer :: m,n,ls, i,j,jj,l,nmj,nm1
     logical :: sing
-    real*8 :: s(ls),u(m),v(n),w(m), one, p5, p25, zero, giant, d1mach, cotan, sin, cos, tau, tan, temp
+    real(8) :: s(ls),u(m),v(n),w(m), one, p5, p25, zero, giant, d1mach, cotan, sin, cos, tau, tan, temp
     
     data one,p5,p25,zero /1.0d0,5.0d-1,2.5d-1,0.0d0/
     !***first executable statement  r1updt
@@ -4278,7 +4283,7 @@
     
     implicit none
     integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
-    real*8 :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, p001, p0001, zero, epsmch, d1mach, &
+    real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, p001, p0001, zero, epsmch, d1mach, &
         xtol, factor, fnorm, enorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
     external fcn
     logical :: jeval,sing
@@ -4582,7 +4587,7 @@
     !***date written   791001   (yymmdd)
     !***revision date  820801   (yymmdd)
     !***category no.  d1a2
-    !***keywords  blas,real*8,linear algebra,maximum component, 
+    !***keywords  blas,real(8),linear algebra,maximum component, 
     !             vector
     !***author  lawson, c. l., (jpl)
     !           hanson, r. j., (snla)
@@ -4596,13 +4601,13 @@
     !
     !     --input--
     !        n  number of elements in input vector(s) 
-    !       dx  real*8 vector with n elements
+    !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
     !
     !     --output--
     !   idamax  smallest index (zero if n <= 0)
     !
-    !     find smallest index of maximum magnitude of real*8 dx.
+    !     find smallest index of maximum magnitude of real(8) dx.
     !     idamax =  first i, i = 1 to n, to minimize  abs(dx(1-incx+i*incx)
     !***references  lawson c.l., hanson r.j., kincaid d.r., krogh f.t.,
     !                 *basic linear algebra subprograms for fortran usage*,
@@ -4612,7 +4617,7 @@
     !***end prologue  idamax
     !
     implicit none
-    real*8 :: dx(*),dmax,xmag
+    real(8) :: dx(*),dmax,xmag
     integer :: n, incx, ns, ii, i
     !***first executable statement  idamax
     idamax = 0
@@ -4648,12 +4653,12 @@
     return
     end 
 
-    real*8 function dasum(n,dx,incx)
+    real(8) function dasum(n,dx,incx)
     !***begin prologue  dasum
     !***date written   791001   (yymmdd)
     !***revision date  820801   (yymmdd)
     !***category no.  d1a3a
-    !***keywords  add,blas,real*8,linear algebra,magnitude,sum,
+    !***keywords  add,blas,real(8),linear algebra,magnitude,sum,
     !             vector
     !***author  lawson, c. l., (jpl)
     !           hanson, r. j., (snla)
@@ -4667,13 +4672,13 @@
     !
     !     --input--
     !        n  number of elements in input vector(s)
-    !       dx  real*8 vector with n elements
+    !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
     !
     !     --output--
-    !    dasum  real*8 result (zero if n <= 0)
+    !    dasum  real(8) result (zero if n <= 0)
     !
-    !     returns sum of magnitudes of real*8 dx.
+    !     returns sum of magnitudes of real(8) dx.
     !     dasum = sum from 0 to n-1 of dabs(dx(1+i*incx))
     !***references  lawson c.l., hanson r.j., kincaid d.r., krogh f.t.,
     !                 *basic linear algebra subprograms for fortran usage*,
@@ -4683,7 +4688,7 @@
     !***end prologue  dasum
     !
     implicit none
-    real*8 :: dx(*)
+    real(8) :: dx(*)
     integer :: n, i, m, mp1, ns, incx
     
     !***first executable statement  dasum
@@ -4722,7 +4727,7 @@
     !***date written   791001   (yymmdd)
     !***revision date  820801   (yymmdd)
     !***category no.  d1a7
-    !***keywords  blas,real*8,linear algebra,triad,vector
+    !***keywords  blas,real(8),linear algebra,triad,vector
     !***author  lawson, c. l., (jpl)
     !           hanson, r. j., (snla)
     !           kincaid, d. r., (u. of texas)
@@ -4735,16 +4740,16 @@
     !
     !     --input--
     !        n  number of elements in input vector(s) 
-    !       da  real*8 scalar multiplier
-    !       dx  real*8 vector with n elements
+    !       da  real(8) scalar multiplier
+    !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
-    !       dy  real*8 vector with n elements
+    !       dy  real(8) vector with n elements
     !     incy  storage spacing between elements of dy
     !
     !     --output--
-    !       dy  real*8 result (unchanged if n <= 0) 
+    !       dy  real(8) result (unchanged if n <= 0) 
     !
-    !     overwrite real*8 dy with real*8 da*dx + dy. 
+    !     overwrite real(8) dy with real(8) da*dx + dy. 
     !     for i = 0 to n-1, replace  dy(ly+i*incy) with da*dx(lx+i*incx) +
     !       dy(ly+i*incy), where lx = 1 if incx >= 0, else lx = (-incx)*n
     !       and ly is defined in a similar way using incy.
@@ -4756,7 +4761,7 @@
     !***end prologue  daxpy
     !
     implicit none
-    real*8 :: dx(*), dy(*), da
+    real(8) :: dx(*), dy(*), da
     integer :: n, incx, incy, ix, iy, i, m, mp1, ns
     
     !***first executable statement  daxpy
@@ -4807,13 +4812,13 @@
     return
     end 
 
-    real*8 function ddot(n,dx,incx,dy,incy)
+    real(8) function ddot(n,dx,incx,dy,incy)
 
     !***begin prologue  ddot
     !***date written   791001   (yymmdd)
     !***revision date  820801   (yymmdd)
     !***category no.  d1a4
-    !***keywords  blas,real*8,inner product,linear algebra,vector
+    !***keywords  blas,real(8),inner product,linear algebra,vector
     !***author  lawson, c. l., (jpl)
     !           hanson, r. j., (snla)
     !           kincaid, d. r., (u. of texas)
@@ -4826,15 +4831,15 @@
     !
     !     --input--
     !        n  number of elements in input vector(s) 
-    !       dx  real*8 vector with n elements
+    !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
-    !       dy  real*8 vector with n elements
+    !       dy  real(8) vector with n elements
     !     incy  storage spacing between elements of dy
     !
     !     --output--
-    !     ddot  real*8 dot product (zero if n <= 0) 
+    !     ddot  real(8) dot product (zero if n <= 0) 
     !
-    !     returns the dot product of real*8 dx and dy.
+    !     returns the dot product of real(8) dx and dy.
     !     ddot = sum for i = 0 to n-1 of  dx(lx+i*incx) * dy(ly+i*incy)
     !     where lx = 1 if incx >= 0, else lx = (-incx)*n, and ly is
     !     defined in a similar way using incy.
@@ -4847,7 +4852,7 @@
     !
     
     implicit none
-    real*8 :: dx(*),dy(*)
+    real(8) :: dx(*),dy(*)
     integer :: n, incx, incy, ix, iy, i, m, mp1, ns
     
     !***first executable statement  ddot
@@ -4896,12 +4901,12 @@
     return
     end 
 
-    real*8 function dnrm2(n,dx,incx)
+    real(8) function dnrm2(n,dx,incx)
     !***begin prologue  dnrm2
     !***date written   791001   (yymmdd)
     !***revision date  820801   (yymmdd)
     !***category no.  d1a3b
-    !***keywords  blas,real*8,euclidean,l2,length,linear algebra,
+    !***keywords  blas,real(8),euclidean,l2,length,linear algebra,
     !             norm,vector
     !***author  lawson, c. l., (jpl)
     !           hanson, r. j., (snla)
@@ -4915,11 +4920,11 @@
     !
     !     --input--
     !        n  number of elements in input vector(s) 
-    !       dx  real*8 vector with n elements
+    !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
     !
     !     --output--
-    !    dnrm2  real*8 result (zero if n <= 0)
+    !    dnrm2  real(8) result (zero if n <= 0)
     !
     !     euclidean norm of the n-vector stored in dx() with storage
     !     increment incx .
@@ -4967,7 +4972,7 @@
     
     implicit none
     integer :: next, n, nn, incx, i, j
-    real*8 :: dx(*), cutlo, cuthi, hitest, sum, xmax, zero, one
+    real(8) :: dx(*), cutlo, cuthi, hitest, sum, xmax, zero, one
     data   zero, one /0.0d0, 1.0d0/
     !
     data cutlo, cuthi / 8.232d-11,  1.304d19 /
@@ -5070,14 +5075,14 @@
     !
     !     --input--
     !        n  number of elements in input vector(s) 
-    !       da  real*8 scale factor
-    !       dx  real*8 vector with n elements
+    !       da  real(8) scale factor
+    !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
     !
     !     --output--
-    !       dx  real*8 result (unchanged if n<=0)
+    !       dx  real(8) result (unchanged if n<=0)
     !
-    !     replace real*8 dx by real*8 da*dx.
+    !     replace real(8) dx by real(8) da*dx.
     !     for i = 0 to n-1, replace dx(1+i*incx) with  da * dx(1+i*incx)
     !***references  lawson c.l., hanson r.j., kincaid d.r., krogh f.t.,
     !                 *basic linear algebra subprograms for fortran usage*,
@@ -5088,7 +5093,7 @@
     !
     
     implicit none
-    real*8 :: da,dx(*)
+    real(8) :: da,dx(*)
     integer :: n, incx, i, m, mp1, ns
     
     !***first executable statement  dscal
@@ -5130,11 +5135,11 @@
         
     implicit none
     !     .. scalar arguments ..
-    real*8 :: alpha, beta
+    real(8) :: alpha, beta
     integer :: incx, incy, lda, m, n
     character(1) :: trans
     !     .. array arguments ..
-    real*8 :: a(lda, *), x(*), y(*)
+    real(8) :: a(lda, *), x(*), y(*)
     !     ..
     !
     !  purpose
@@ -5172,11 +5177,11 @@
     !           n must be at least zero.
     !           unchanged on exit.
     !
-    !  alpha  - real*8.
+    !  alpha  - real(8).
     !           on entry, alpha specifies the scalar alpha.
     !           unchanged on exit.
     !
-    !  a      - real*8 array of dimension ( lda, n ).
+    !  a      - real(8) array of dimension ( lda, n ).
     !           before entry, the leading m by n part of the array a must
     !           contain the matrix of coefficients.
     !           unchanged on exit.
@@ -5187,7 +5192,7 @@
     !           max( 1, m ).
     !           unchanged on exit.
     !
-    !  x      - real*8 array of dimension at least
+    !  x      - real(8) array of dimension at least
     !           ( 1 + ( n - 1 )*abs( incx ) ) when trans = 'n' or 'n'
     !           and at least
     !           ( 1 + ( m - 1 )*abs( incx ) ) otherwise.
@@ -5200,12 +5205,12 @@
     !           x. incx must not be zero.
     !           unchanged on exit.
     !
-    !  beta   - real*8.
+    !  beta   - real(8).
     !           on entry, beta specifies the scalar beta. when beta is
     !           supplied as zero then y need not be set on input.
     !           unchanged on exit.
     !
-    !  y      - real*8 array of dimension at least
+    !  y      - real(8) array of dimension at least
     !           ( 1 + ( m - 1 )*abs( incy ) ) when trans = 'n' or 'n'
     !           and at least
     !           ( 1 + ( n - 1 )*abs( incy ) ) otherwise.
@@ -5230,9 +5235,9 @@
     !
 
     !     .. parameters ..
-    real*8, parameter :: one = 1.0d+0, zero = 0.0d+0
+    real(8), parameter :: one = 1.0d+0, zero = 0.0d+0
     !     .. local scalars ..
-    real*8 :: temp
+    real(8) :: temp
     integer:: i, info, ix, iy, j, jx, jy, kx, ky, lenx, leny
     !     .. external functions ..
     logical :: lsame
@@ -5391,9 +5396,9 @@
     !     .. scalar arguments ..
     character(1) :: transa, transb
     integer :: m, n, k, lda, ldb, ldc
-    real*8 :: alpha, beta
+    real(8) :: alpha, beta
     !     .. array arguments ..
-    real*8 :: a(lda, *), b(ldb, *), c(ldc, *)
+    real(8) :: a(lda, *), b(ldb, *), c(ldc, *)
     !     ..
     !
     !  purpose
@@ -5454,11 +5459,11 @@
     !           be at least  zero.
     !           unchanged on exit.
     !
-    !  alpha  - real*8.
+    !  alpha  - real(8).
     !           on entry, alpha specifies the scalar alpha.
     !           unchanged on exit.
     !
-    !  a      - real*8 array of dimension ( lda, ka ), where ka is
+    !  a      - real(8) array of dimension ( lda, ka ), where ka is
     !           k  when  transa = 'n' or 'n',  and is  m  otherwise.
     !           before entry with  transa = 'n' or 'n',  the leading  m by k
     !           part of the array  a  must contain the matrix  a,  otherwise
@@ -5473,7 +5478,7 @@
     !           least  max( 1, k ).
     !           unchanged on exit.
     !
-    !  b      - real*8 array of dimension ( ldb, kb ), where kb is
+    !  b      - real(8) array of dimension ( ldb, kb ), where kb is
     !           n  when  transb = 'n' or 'n',  and is  k  otherwise.
     !           before entry with  transb = 'n' or 'n',  the leading  k by n
     !           part of the array  b  must contain the matrix  b,  otherwise
@@ -5488,12 +5493,12 @@
     !           least  max( 1, n ).
     !           unchanged on exit.
     !
-    !  beta   - real*8.
+    !  beta   - real(8).
     !           on entry,  beta  specifies the scalar  beta.  when  beta  is
     !           supplied as zero then c need not be set on input.
     !           unchanged on exit.
     !
-    !  c      - real*8 array of dimension ( ldc, n ).
+    !  c      - real(8) array of dimension ( ldc, n ).
     !           before entry, the leading  m by n  part of the array  c must
     !           contain the matrix  c,  except when  beta  is zero, in which
     !           case c need not be set on entry.
@@ -5526,9 +5531,9 @@
     !     .. local scalars ..
     logical :: nota, notb
     integer :: i, info, j, l, ncola, nrowa, nrowb
-    real*8 :: temp
+    real(8) :: temp
     !     .. parameters ..
-    real*8, parameter :: one = 1.0d+0, zero = 0.0d+0
+    real(8), parameter :: one = 1.0d+0, zero = 0.0d+0
     !     ..
     !     .. executable statements ..
     !
@@ -5697,9 +5702,9 @@
     
     implicit none
     integer :: lda, n, ipvt(*), info
-    real*8 :: a(lda,*)
+    real(8) :: a(lda,*)
     !
-    !     dgefa factors a real*8 matrix by gaussian elimination.
+    !     dgefa factors a real(8) matrix by gaussian elimination.
     !
     !     dgefa is usually called by dgeco, but it can be called
     !     directly with a saving in time if  rcond  is not needed.
@@ -5707,7 +5712,7 @@
     !
     !     on entry
     !
-    !        a       real*8(lda, n)
+    !        a       real(8)(lda, n)
     !                the matrix to be factored.
     !
     !        lda     integer
@@ -5744,7 +5749,7 @@
     !
     !     internal variables
     !
-    real*8 :: t
+    real(8) :: t
     integer :: idamax, j, k, kp1, l, nm1
     !
     !
@@ -5802,15 +5807,15 @@
     
     implicit none
     integer :: lda, n, ipvt(*), job
-    real*8 :: a(lda,*), b(*)
+    real(8) :: a(lda,*), b(*)
     !
-    !     dgesl solves the real*8 system
+    !     dgesl solves the real(8) system
     !     a * x = b  or  trans(a) * x = b
     !     using the factors computed by dgeco or dgefa.
     !
     !     on entry
     !
-    !        a       real*8(lda, n)
+    !        a       real(8)(lda, n)
     !                the output from dgeco or dgefa.
     !
     !        lda     integer
@@ -5822,7 +5827,7 @@
     !        ipvt    integer(n)
     !                the pivot vector from dgeco or dgefa.
     !
-    !        b       real*8(n)
+    !        b       real(8)(n)
     !                the right hand side vector.
     !
     !        job     integer
@@ -5860,7 +5865,7 @@
     !
     !     internal variables
     !
-    real*8 :: ddot, t
+    real(8) :: ddot, t
     integer :: k, kb, l, nm1
     !
     nm1 = n - 1
@@ -5920,16 +5925,16 @@
     subroutine dgbfa(abd,lda,n,ml,mu,ipvt,info)
     implicit none
     integer :: lda, n, ml, mu, ipvt(*), info
-    real*8 :: abd(lda,*)
+    real(8) :: abd(lda,*)
     !
-    !     dgbfa factors a real*8 band matrix by elimination.
+    !     dgbfa factors a real(8) band matrix by elimination.
     !
     !     dgbfa is usually called by dgbco, but it can be called
     !     directly with a saving in time if  rcond  is not needed.
     !
     !     on entry
     !
-    !        abd     real*8(lda, n)
+    !        abd     real(8)(lda, n)
     !                contains the matrix in band storage.  the columns
     !                of the matrix are stored in the columns of  abd  and
     !                the diagonals of the matrix are stored in rows
@@ -6004,7 +6009,7 @@
     !
     !     internal variables
     !
-    real*8 :: t
+    real(8) :: t
     integer :: i, idamax, i0, j, ju, jz, j0, j1, k, kp1, l, lm, m, mm, nm1
     !
     !
@@ -6097,15 +6102,15 @@
     
     implicit none
     integer :: lda, n, ml, mu, ipvt(*), job
-    real*8 :: abd(lda,*), b(*)
+    real(8) :: abd(lda,*), b(*)
     !
-    !     dgbsl solves the real*8 band system
+    !     dgbsl solves the real(8) band system
     !     a * x = b  or  trans(a) * x = b
     !     using the factors computed by dgbco or dgbfa.
     !
     !     on entry
     !
-    !        abd     real*8(lda, n)
+    !        abd     real(8)(lda, n)
     !                the output from dgbco or dgbfa.
     !
     !        lda     integer
@@ -6123,7 +6128,7 @@
     !        ipvt    integer(n)
     !                the pivot vector from dgbco or dgbfa.
     !
-    !        b       real*8(n)
+    !        b       real(8)(n)
     !                the right hand side vector.
     !
     !        job     integer
@@ -6162,7 +6167,7 @@
     !
     !     internal variables
     !
-    real*8 :: ddot, t
+    real(8) :: ddot, t
     integer :: k, kb, l, la, lb, lm, m, nm1
     !
     m = mu + ml + 1

@@ -82,7 +82,7 @@
     use cfast_main
 
     write(*,5) gmwf,hcomba,te,tgignt,qradrl,limo2
-5   format('gmwf,h,te,tg,q,o2 ',f8.3,1pg12.3,0p4f8.2)
+5   format('gmwf,h,te,tg,q,o2 ',f8.3,g12.3,4f8.2)
 
     write (*,1) lfbo,lfbt,lfmax,fpos(1),fpos(2),fpos(3),fplume(0)
 1   format('room,type,int,pos,plume ',3i3,3f5.1,i3)
@@ -173,7 +173,7 @@
     implicit none
 
     integer isw
-    real*8 :: time
+    real(8) :: time
 
     if (outputformat>1) then
         write (iofilo,5000) time
@@ -247,7 +247,7 @@
     implicit none
 
     integer length, i, isw, ir, j
-    real*8 xx0, fheight, xems, xemp, xqf, xqupr, xqlow
+    real(8) :: xx0, fheight, xems, xemp, xqf, xqupr, xqlow
 
     external length
     xx0 = 0.0d0
@@ -393,7 +393,7 @@
     implicit none
 
     integer :: irm, i, j, k, iijk, ii, inode, iii
-    real*8 :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow, time
+    real(8) :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow, time
 
     character ciout*8, cjout*12, outbuf*132
     dimension flow(6)
@@ -522,11 +522,10 @@
     use vents
     implicit none
 
-    integer irm, i, ii, iii, inode
-    real*8 xx0, flow, time
+    integer :: irm, i, ii, iii, inode
+    real(8) :: xx0, flow(6), time
 
-    character ciout*14, cjout*12, outbuf*132
-    dimension flow(6)
+    character :: ciout*14, cjout*12, outbuf*132
     logical first
     xx0 = 0.0d0
     write (iofilo,5000)
@@ -588,8 +587,8 @@
     use objects2
     implicit none
 
-    integer i, iounit, ir
-    real*8 xx0, xemp, xqf
+    integer :: i, iounit, ir
+    real(8) :: xx0, xemp, xqf
 
     xx0 = 0.0d0
     write (iounit,5000)
@@ -634,8 +633,8 @@
     use fltarget
     implicit none
 
-    integer length, itprt, i, iw, itarg, itctemp, isw
-    real*8 xx0, x100, ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
+    integer :: length, itprt, i, iw, itarg, itctemp, isw
+    real(8) :: xx0, x100, ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
 
     integer iwptr(4)
     external length
@@ -726,11 +725,11 @@
     use cshell
     implicit none
 
-    integer i, iroom, itype
-    real*8 ctotal, tctemp, cjetmin, zdetect, tlay, tjet, vel, tlink
+    integer :: i, iroom, itype
+    real(8) :: ctotal, tctemp, cjetmin, zdetect, tlay, tjet, vel, tlink
 
-    character*5 ctype
-    character*3 cact
+    character(5) :: ctype
+    character(3) :: cact
 
     if(ndtect==0)return
     write(iofilo,5000)
@@ -779,7 +778,7 @@
     implicit none
 
     integer :: nhalls, i
-    real*8 :: tstart, vel, depth, dist, time
+    real(8) :: tstart, vel, depth, dist, time
 
 
     nhalls = 0
@@ -944,10 +943,9 @@
     implicit none
 
     integer :: i,j,k,iijk, isys, ibr, irm, iext
-    real*8 hrx, hrpx
-
-    character ciout*8, cjout*14, csout*6
-    logical first
+    real(8) :: hrx, hrpx
+    character :: ciout*8, cjout*14, csout*6
+    logical :: first
 
     !     horizontal flow vents
     if (nvents==0) then
@@ -1159,8 +1157,8 @@
     use params
     implicit none
 
-    integer io, i, j, nnv, length, is
-    real*8 y_hcn, y_hcl
+    integer :: io, i, j, nnv, length, is
+    real(8) :: y_hcn, y_hcl
 
     character cbuf*255, stype(ns)*5, ftype(0:4)*13
     external length
@@ -1252,7 +1250,7 @@
     implicit none
 
     integer :: i
-    real*8 flow(8), flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8, x1000,x100,x10,x1,x01
+    real(8) :: flow(8), flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8, x1000,x100,x10,x1,x01
     character outbuf*(*)
 
     outbuf = ' '
@@ -1304,8 +1302,8 @@
     use fltarget
     implicit none
 
-    real*8 positionvector(*)
-    integer targetnumber, i
+    real(8) :: positionvector(*)
+    integer :: targetnumber, i
 
     do i = 1, 6
         positionvector (i) = xxtarg(i,targetnumber)
@@ -1384,7 +1382,7 @@
     
     implicit none
 
-    real*8 :: wm(jacdim,*), buf(maxeq), xx0, tsec, wmii, wmij, tmp, tmp1
+    real(8) :: wm(jacdim,*), buf(maxeq), xx0, tsec, wmii, wmij, tmp, tmp1
     integer :: ioffst(8), itmp, itmp2, i, j, k, itemp, iounit, irdx, neqs, itcol, icdx, iitmp
     logical :: firstc
     character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
@@ -1501,7 +1499,7 @@
     
     implicit none
 
-    real*8 :: t
+    real(8) :: t
     integer :: iounit
     logical :: firstc = .true.
     save iounit
@@ -1629,9 +1627,9 @@
     
     implicit none
 
-    real*8 :: xqf, dp, dt, t
+    real(8) :: xqf, dp, dt, t
     integer :: bmap(mbr), i, j, ikey, iprod, il, isys, idt, iroom, ieqmax, iobj, itarg
-    integer*2 ch, hit
+    integer(2) :: ch, hit
     character :: spname(ns)*5 = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', 'TS'/), ccc*3
     logical :: firstc = .true.
     save bmap
@@ -1810,7 +1808,7 @@
     implicit none
     
     integer errorcode	
-    real*8 T, dT
+    real(8) T, dT
 
     rewind (12)
     write(12,5001) t, dt

@@ -27,18 +27,18 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, 
     use iofiles
     implicit none
 
-    real*8, intent(in) :: pabs_ref, pamb, tamb, stime
+    real(8), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
-    real*8, dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
+    real(8), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
     integer, intent(in), dimension(nfires) :: froom_number
-    real*8, intent(in), dimension(nfires) :: fx0, fy0, fz0
+    real(8), intent(in), dimension(nfires) :: fx0, fy0, fz0
     character(len=*), intent(in) :: plotfile
-    real*8 vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
-    real*8  harea, targetvector(6)
-    integer i, hface, ibot, itop, hshape
-    character(128) dir
-    character(64) smokeviewplotfilename, drive, ext, name ! the extension is .plt
-    integer(4) length, splitpathqq
+    real(8) :: vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
+    real(8) :: harea, targetvector(6)
+    integer ::i, hface, ibot, itop, hshape
+    character(128) :: dir
+    character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
+    integer(4) :: length, splitpathqq
     integer :: ifrom, ito, iface
 
     ! this code is to trim the file name to the name itself along with the extension
@@ -129,11 +129,11 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 !
   implicit none
 
-  real*8, intent(in) :: time
+  real(8), intent(in) :: time
   integer, intent(in) :: nrooms
-  real*8, intent(in), dimension(nrooms) :: pr, ylay, tl, tu
+  real(8), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
   integer, intent(in) :: nfires
-  real*8, intent(in), dimension(nfires) :: qdot, height
+  real(8), intent(in), dimension(nfires) :: qdot, height
   REAL XXTIME, XXPR, XXYLAY, XXTL, XXTU, XXHEIGHT, XXQDOT
 
   integer :: i

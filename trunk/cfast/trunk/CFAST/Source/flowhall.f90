@@ -12,7 +12,7 @@
     use cfast_main
     implicit none
     
-    real*8 :: xx, yy, zz, xlen, temp, rho, vel
+    real(8) :: xx, yy, zz, xlen, temp, rho, vel
     integer :: id, idstart, nd, iroom
 
     do id = idstart, idstart + nd - 1
@@ -37,7 +37,7 @@
     use cfast_main
     implicit none
     
-    real*8 :: cjetheight, xloc, zloc, c1, hhalf, d0, dt0, fact, halltemp, hallrho, hallvel
+    real(8) :: cjetheight, xloc, zloc, c1, hhalf, d0, dt0, fact, halltemp, hallrho, hallvel
     integer :: iroom, ihalf
 
     if(izhall(iroom,ihmode)==ihduring)then
@@ -97,7 +97,7 @@
     use vents
     implicit none
 
-    real*8 :: xx0, htemp, hhtemp, roomwidth, roomlength, ventwidth, width, othird, fraction, halldepth, hdepth, hallvel, hvel, tsec, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
+    real(8) :: xx0, htemp, hhtemp, roomwidth, roomlength, ventwidth, width, othird, fraction, halldepth, hdepth, hallvel, hvel, tsec, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
     integer :: ihall, inum, i, itype
     
     xx0 = 0.0d0
@@ -213,7 +213,7 @@
     return
     end
 
-    integer function rev_flowhall
+    integer function rev_flowhall ()
 
     INTEGER :: MODULE_REV
     CHARACTER(255) :: MODULE_DATE 

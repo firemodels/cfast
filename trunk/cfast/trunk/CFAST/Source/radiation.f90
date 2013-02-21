@@ -17,12 +17,12 @@
     use debug
     implicit none
 
-    real*8 :: flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
+    real(8) :: flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, ieqtyp, iroom, iwall, ilay, imap, ifire, nrmfire, ierror
     logical black
 
     ! work and dummy arrays passed to rad2 and rad4
-    real*8 :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2)
+    real(8) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2)
     logical roomflg(nr)
     save flxrad0, flwrad0
 
@@ -198,7 +198,7 @@
 
     implicit none
 
-    real*8 :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(2,2), tauu(2,2), beam(2,2), &
+    real(8) :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(2,2), tauu(2,2), beam(2,2), &
         taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(2), area4(4), figs(2,2), emis2(2), qout(4), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2), &
         e(2), c(2), rhs(2), dq(2), dqde(2), sigma, x1, pi, third, one, xroom, yroom, zroom, hlay, aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig, &
         tupper4, tlower4, aij, qllay, qulay
@@ -390,7 +390,7 @@
     implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
-    real*8 :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(4,4), tauu(4,4), beam(4,4), &
+    real(8) :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(4,4), tauu(4,4), beam(4,4), &
         taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(4), figs(4,4), qout(4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom), &
         sigma, rdparfig, xroom, yroom, zroom, hlay, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, ierror, mxfire
@@ -582,7 +582,7 @@
     implicit none
 
     integer, parameter ::u = 1, l = 2
-    real*8 :: c(*), figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), zfire(*), area(*), qfire(mxfire), tlay(2), &
+    real(8) :: c(*), figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), zfire(*), area(*), qfire(mxfire), tlay(2), &
         pi, sigma, xx1, qulay, qllay, eu, el, qugas, qlgas, wf, qfflux, hlay, factu, factl
     integer :: j, k, nup, ifire, mxfire, nzone, nfire
     logical first
@@ -694,7 +694,7 @@
 
     implicit none
 
-    real*8 :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*), qout, qulay, qllay, qk
+    real(8) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*), qout, qulay, qllay, qk
     integer :: j, k, nup, nzone
 
     do k = 1, nup
@@ -724,7 +724,7 @@
     return
     end subroutine rdabs
 
-    real*8 function rdparfig(x,y,z)
+    real(8) function rdparfig(x,y,z)
 
     !     routine: rdparfig
     !     purpose: This routine calculates the configuration factor between two paralell plates a distance z a part.  Each 
@@ -735,7 +735,7 @@
 
     implicit none
     
-    real*8 :: xx1, xxh, xx0, pi, x, y, z, xx, yy, xsq, ysq, f1, f2, f3, f4, f5
+    real(8) :: xx1, xxh, xx0, pi, x, y, z, xx, yy, xsq, ysq, f1, f2, f3, f4, f5
     logical :: first=.true.
 
     save first, pi, xx0, xx1, xxh
@@ -762,7 +762,7 @@
     return
     end function rdparfig
     
-    real*8 function rdprpfig(x,y,z)
+    real(8) function rdprpfig(x,y,z)
 
     !     routine: rdparfig
     !     purpose: this routine calculates the configuration factor between two perpindular plates with a common edge.
@@ -772,7 +772,7 @@
 
     implicit none
 
-    real*8 :: xx1, xx0, pi, x, y, z, h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
+    real(8) :: xx1, xx0, pi, x, y, z, h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
     logical :: first = .true.
     save first, pi
 
@@ -822,7 +822,7 @@
 
     implicit none
 
-    real*8 :: xfire(*), yfire(*), zfire(*), firang(mxfire,*), xx1, pi, fourpi, arg1, arg2, arg3, arg4, xroom, yroom, zroom, f1, f4, fd, rdsang, hlay
+    real(8) :: xfire(*), yfire(*), zfire(*), firang(mxfire,*), xx1, pi, fourpi, arg1, arg2, arg3, arg4, xroom, yroom, zroom, f1, f4, fd, rdsang, hlay
     integer :: i, nfire, mxfire
     logical :: first = .true.
     save first, fourpi
@@ -855,7 +855,7 @@
     return
     end  subroutine rdfang
 
-    real*8 function rdsang(x1,x2,y1,y2,r)
+    real(8) function rdsang(x1,x2,y1,y2,r)
 
     !     routine: rdsang
     !     purpose: 
@@ -867,7 +867,7 @@
 
     implicit none
     
-    real*8 :: x1, x2, y1, y2, f1, f2, f3, f4, rdsang1, r
+    real(8) :: x1, x2, y1, y2, f1, f2, f3, f4, rdsang1, r
 
     f1 = sign(rdsang1(abs(x2),abs(y2),r),x2*y2)
     f2 = sign(rdsang1(abs(x1),abs(y2),r),x1*y2)
@@ -877,7 +877,7 @@
     return
     end function rdsang
 
-    real*8 function rdsang1(x,y,r)
+    real(8) function rdsang1(x,y,r)
 
     !     routine: rdsang1
     !     purpose: 
@@ -887,7 +887,7 @@
 
     implicit none
 
-    real*8 :: x, y, r, xx0, xx1, pi, pio2, xr, yr, xy, xyr, f1, f2
+    real(8) :: x, y, r, xx0, xx1, pi, pio2, xr, yr, xy, xyr, f1, f2
     logical :: first = .true.
     save first, pi, pio2
 
@@ -929,7 +929,7 @@
 
     implicit none
 
-    real*8 :: absorb(*), zz(*), zfire(*), taufu(mxfire,*), taufl(mxfire,*), hlay, beam, beamu, beaml
+    real(8) :: absorb(*), zz(*), zfire(*), taufu(mxfire,*), taufl(mxfire,*), hlay, beam, beamu, beaml
     integer :: i, j, nfire, nzone, mxfire, nup
     logical black
     
@@ -997,7 +997,7 @@
 
     implicit none
     
-    real*8 :: absorb(*), beam(nzone,nzone), zz(*), tauu(nzone,nzone), taul(nzone,nzone), fu, fl, hlay
+    real(8) :: absorb(*), beam(nzone,nzone), zz(*), tauu(nzone,nzone), taul(nzone,nzone), fu, fl, hlay
     integer i, j, nup, nzone
     logical black
 
@@ -1087,7 +1087,7 @@
     return
     end
 
-    real*8 function absorb (cmpt, layer)
+    real(8) function absorb (cmpt, layer)
 
     !  function calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
 
@@ -1145,8 +1145,8 @@
     !    rg = ideal gas constant (atm-m^3/mol-k)
 
     integer :: xco2, yco2, xh2o, yh2o
-    real*8 :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
-    real*8 :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
+    real(8) :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
+    real(8) :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
 
     ! declare module data
 
@@ -1258,10 +1258,10 @@
 
     ! declare i/o parameters 
     integer :: xdim, ydim, xerr, yerr
-    real*8 :: x(xdim), y(ydim), z(xdim,ydim)
+    real(8) :: x(xdim), y(ydim), z(xdim,ydim)
 
     ! declare internal variables
-    real*8 :: xval, yval, deltax, deltay, delx, dely, dzdx, dzdy, zval
+    real(8) :: xval, yval, deltax, deltay, delx, dely, dzdx, dzdy, zval
     integer count, i, j
 
     ! find the value of i such that x(1) <= xval <= x(xdim). if xval is outside that range, set it to the closest legal value and set the error value, as appropriate.

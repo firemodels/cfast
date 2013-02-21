@@ -14,10 +14,10 @@
     use vents
     implicit none
 
-    real*8 :: flwvf(nr,ns+2,2), xmvent(2), tmvent(2), crosover, oco, epscut, xx0, xx1, qcvfraction, voltop, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
+    real(8) :: flwvf(nr,ns+2,2), xmvent(2), tmvent(2), crosover, oco, epscut, xx0, xx1, qcvfraction, voltop, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
-    logical vflowflg
-    real*8 area, tsec
+    logical :: vflowflg
+    real(8) :: area, tsec
 
     ! the selection rules are now implemented here.  the crossover is the relative fraction of the volume cloesest to the hole from which the mass will come
     vflowflg = .false.
@@ -161,12 +161,12 @@
     use cfast_main
     implicit none
 
-    real*8 :: xmvent(2), tmvent(2),pabs(2), den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
+    real(8) :: xmvent(2), tmvent(2),pabs(2), den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
     integer ::  ilay(2), iroom(2)
     
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
-    real*8 :: xxzero, xxone, xxtwo, gamcut, zzz, gammax, pi, delp, delden, rho, eps, x, coef, epsp, epscut, srdelp, fnoise, w, gg, ff, rho2, v, avent, cshape, d, delpfd, dpddpf, vexmax, vex
+    real(8) :: xxzero, xxone, xxtwo, gamcut, zzz, gammax, pi, delp, delden, rho, eps, x, coef, epsp, epscut, srdelp, fnoise, w, gg, ff, rho2, v, avent, cshape, d, delpfd, dpddpf, vexmax, vex
     integer :: itop, ibot, nshape, i
     logical firstc
 
@@ -332,7 +332,7 @@
     implicit none
 
     integer :: itop, ibot, hshape, hface, iinvvent
-    real*8 :: harea
+    real(8) :: harea
 
     itop = ivvent(iinvvent,1)
     ibot = ivvent(iinvvent,2)
@@ -347,7 +347,7 @@
     return
     end
 
-    integer function rev_flowvertical
+    integer function rev_flowvertical ()
 
     integer :: module_rev
     character(255) :: module_date 

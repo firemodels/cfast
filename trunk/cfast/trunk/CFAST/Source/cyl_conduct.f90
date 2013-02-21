@@ -1,11 +1,11 @@
     subroutine getcyltemp(x,wtemp,nx,rad,tempx)
     implicit none
-    real*8, intent(in) :: x, rad
+    real(8), intent(in) :: x, rad
     integer, intent(in) :: nx
-    real*8, intent(in), dimension(nx) :: wtemp
-    real*8, intent(out) :: tempx
+    real(8), intent(in), dimension(nx) :: wtemp
+    real(8), intent(out) :: tempx
 
-    real*8 :: dr, r, rint, factor
+    real(8) :: dr, r, rint, factor
     integer :: left, right
 
     dr = rad/nx
@@ -40,23 +40,23 @@
     implicit none
 
     integer, intent(in) :: nx
-    real*8, intent(in)  :: dt,wrho, wk, wspec, diam
-    real*8, intent(in)  :: wfluxin
-    real*8, intent(inout), dimension(nx) :: wtemp
+    real(8), intent(in)  :: dt, wrho, wk, wspec, diam
+    real(8), intent(in)  :: wfluxin
+    real(8), intent(inout), dimension(nx) :: wtemp
 
     ! declare local variables
 
     integer :: nn, i, ii, nr, niter, iter
     parameter (nn = 50)
-    real*8, dimension(nn) :: aim1, ai, aip1, tnew
-    real*8, dimension(nn) :: cc, dd
-    real*8 :: alpha, dr, factor, dt_iter
+    real(8), dimension(nn) :: aim1, ai, aip1, tnew
+    real(8), dimension(nn) :: cc, dd
+    real(8) :: alpha, dr, factor, dt_iter
 
 
     nr = nn
     dr = (diam/2.0d0)/nr
     alpha = wk / (wspec*wrho)
-    dt_iter = min(dt,0.1)
+    dt_iter = min(dt,0.1d0)
     niter = dt/dt_iter + 0.5
     dt_iter=dt/niter
     factor = 2.0*alpha*dt_iter/dr**2
@@ -116,10 +116,10 @@
     end
     subroutine get_flux(t,temp_cable,temp_amb,temp_shroud,flux_out)
 
-    real*8, intent(in) :: t,temp_cable,temp_amb
-    real*8, intent(out) :: flux_out,temp_shroud
+    real(8), intent(in) :: t,temp_cable,temp_amb
+    real(8), intent(out) :: flux_out,temp_shroud
 
-    real*8 :: factor, factor2, sigma, temp_gas
+    real(8) :: factor, factor2, sigma, temp_gas
 
     sigma = 5.67/10.0**8
 

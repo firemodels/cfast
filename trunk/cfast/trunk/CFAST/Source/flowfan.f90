@@ -25,7 +25,7 @@
     use params
     implicit none
 
-    real*8 :: flwmv(nr,ns+2,2), hvpsolv(*), hvtsolv(*), deltpmv(*), delttmv(*), tprime(*), prprime(*), flwmv0(nr,ns+2,2), deltpmv0(mnode), delttmv0(mbr), filter, qcifraction, tsec, xx0, xx1, filterm1, filtered(nr,ns+2,2)
+    real(8) :: flwmv(nr,ns+2,2), hvpsolv(*), hvtsolv(*), deltpmv(*), delttmv(*), tprime(*), prprime(*), flwmv0(nr,ns+2,2), deltpmv0(mnode), delttmv0(mbr), filter, qcifraction, tsec, xx0, xx1, filterm1, filtered(nr,ns+2,2)
     integer :: i, ii, j, k, ieqtyp, iroom, isys, ierror, nprod
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0
@@ -180,8 +180,8 @@
     use params
     implicit none
 
-    real*8, parameter :: xx1 = 1.0d0, xx2 = 2.0d0, xx0 = 0.0d0, xx1o2 = xx1 / xx2
-    real*8 :: deltpmv(*), tsec, pav, xtemp, f, dp, hvfan
+    real(8), parameter :: xx1 = 1.0d0, xx2 = 2.0d0, xx0 = 0.0d0, xx1o2 = xx1 / xx2
+    real(8) :: deltpmv(*), tsec, pav, xtemp, f, dp, hvfan
     integer :: ib, niter, iter, i, ii, j, k, ierror
 
     ! calculate average temperatures and densities for each branch
@@ -263,8 +263,8 @@
     use params
     implicit none
 
-    real*8, parameter :: xx0 = 0.0d0
-    real*8 :: tprime(*), delttmv(*), hvta, flowin, hvtemp
+    real(8), parameter :: xx0 = 0.0d0
+    real(8) :: tprime(*), delttmv(*), hvta, flowin, hvtemp
     integer ib, i, ii, j
 
     do ib = 1, nbr
@@ -321,7 +321,7 @@
     return
     end
 
-    real*8 function hvfan(tsec,i,j,k,dp)
+    real(8) function hvfan(tsec,i,j,k,dp)
 
     !     routine: hvfan
     !     purpose: calculates mass flow through a fan. this function has been modified to prevent negative flow.  
@@ -336,9 +336,9 @@
     use cfast_main
     implicit none
     
-    real*8, parameter :: xx0 = 0.0d0
-    real*8 hvfanl, openfraction, qcffraction, tsec, minimumopen, roh, d1mach, f, dp
-    integer i, j, k
+    real(8), parameter :: xx0 = 0.0d0
+    real(8) :: hvfanl, openfraction, qcffraction, tsec, minimumopen, roh, d1mach, f, dp
+    integer :: i, j, k
     logical :: firstc = .true.
     save firstc
 
@@ -372,8 +372,8 @@
     use params
     implicit none
 
-    real*8, parameter :: xx0 = 0.0d0, xx1 = 1.0d0, xxtenth = 0.1d0, xx0p5 = 0.5d0
-    real*8 :: hvpsolv(*), hvtsolv(*), tsec, z, xxl, xxll, fraction, zl, zu, rl, ru, xxrho
+    real(8), parameter :: xx0 = 0.0d0, xx1 = 1.0d0, xxtenth = 0.1d0, xx0p5 = 0.5d0
+    real(8) :: hvpsolv(*), hvtsolv(*), tsec, z, xxl, xxll, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, k, ib, lsp
 
     do ii = 1, next
@@ -451,8 +451,8 @@
     use params
     implicit none
 
-    real*8, parameter :: xx0 = 0.0d0, xx1 = 1.0d0
-    real*8 :: prprime(*), tsec
+    real(8), parameter :: xx0 = 0.0d0, xx1 = 1.0d0
+    real(8) :: prprime(*), tsec
     integer i, ii, j, k, ib, isys, isof, nhvpr, nprod
     
     ! sum product flows entering system
@@ -568,7 +568,7 @@
     return
     end subroutine hvtoex
 
-    integer function rev_flowfan
+    integer function rev_flowfan ()
 
     integer :: module_rev
     character(255) :: module_date 

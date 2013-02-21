@@ -18,24 +18,24 @@ module cenviro
     ! index for hall models
     integer, parameter :: ihbefore = 1, ihduring = 2, ihafter = 3
 
-    logical updatehall, izdtflag
+    logical updatehall, izdtflag, izcon(nr), izhvac(nr)
 
-    real*8, dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs, zzyflor, zzyceil
-    real*8, dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
-    real*8, dimension(nr,2,ns) :: zzgspec, zzcspec
-    real*8, dimension(nr,nwal) :: zzwspec
-    real*8, dimension(nr,nwal,2) :: zzwtemp
-    real*8, dimension(mxhvsys,ns) :: zzhvpr
-    real*8, dimension(mxhvsys) :: zzhvm
-    real*8, dimension(nr,4) :: zzwarea
-    real*8, dimension(nr,10,3) :: zzwcen
-    real*8, dimension(nr,10) :: zzwarea2
-    real*8, dimension(nr,8) :: zzhall
-    real*8, dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
-    real*8, dimension(2,nr) :: zzabsb, zzbeam
-    real*8, dimension(0:nv+1) :: zzdisc
-    real*8, dimension(nr,nr) :: zzhtfrac
-    real*8 :: zzdtcrit
+    real(8), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs, zzyflor, zzyceil
+    real(8), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real(8), dimension(nr,2,ns) :: zzgspec, zzcspec
+    real(8), dimension(nr,nwal) :: zzwspec
+    real(8), dimension(nr,nwal,2) :: zzwtemp
+    real(8), dimension(mxhvsys,ns) :: zzhvpr
+    real(8), dimension(mxhvsys) :: zzhvm
+    real(8), dimension(nr,4) :: zzwarea
+    real(8), dimension(nr,10,3) :: zzwcen
+    real(8), dimension(nr,10) :: zzwarea2
+    real(8), dimension(nr,8) :: zzhall
+    real(8), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
+    real(8), dimension(2,nr) :: zzabsb, zzbeam
+    real(8), dimension(0:nv+1) :: zzdisc
+    real(8), dimension(nr,nr) :: zzhtfrac
+    real(8) :: zzdtcrit
  
     integer, dimension(ns+2) :: izpmap
     integer, dimension(2,nr) :: izwmap
@@ -44,7 +44,7 @@ module cenviro
     integer, dimension(4*nr,5) :: izwall
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
-    integer, dimension(nr) :: izrvol, izhvac(nr), izcon(nr), iznwall(nr), izshaft(nr)
+    integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
     integer, dimension(nr,7) :: izhall
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
@@ -58,14 +58,14 @@ module cfast_main
     implicit none
     save
     
-    integer hvorien(mext), hvnode(2,mext), crdate(3), mpsdat(3), nwv(nr,nr), na(mbr), nofsets(17), &
+    integer :: hvorien(mext), hvnode(2,mext), crdate(3), mpsdat(3), nwv(nr,nr), na(mbr), nofsets(17), &
         ncnode(mnode), ne(mbr), mvintnode(mnode,mcon), icmv(mnode,mcon), nfc(mfan), nw(nr,nr), nslb(nwal,nr), &
         nf(mbr), hcldep, smkagl, vshape(nr,nr), objrm(0:mxoin), objign(mxoin), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixtarg(trgirow,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mdt), nfire, ipntfsm, ijk(nr,nr,mxccv), &
         nventijk,nfopt,vface(mxvents),itermxx, fplume(0:mxfire), lcopyss,heatfr, nfilter, dmpoutput(4096)
     
-    integer nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofhcl, nofsmkw, nofsmk, &
+    integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofhcl, nofsmkw, nofsmk, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbo, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
         nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, ndumpr, nrestr, ndt, next, nnode, nft, nfan, nbr
     
@@ -73,7 +73,7 @@ module cfast_main
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), (nofprd,nofsets(11)), &
         (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), (nequals,nofsets(16)), (noffsm,nofsets(17))
 
-    real*8 mass(2,nr,ns), mprodr(nv,ns), mfiret(ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
+    real(8) :: mass(2,nr,ns), mprodr(nv,ns), mfiret(ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
         sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), qr(2,nr), qc(2,nr), heatup(nr), heatlp(nr), heatvf(nr), &
         emp(nr), ems(nr), eme(nr), aps(nr), vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
@@ -82,7 +82,7 @@ module cfast_main
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
-    real*8 ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+    real(8) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
@@ -92,16 +92,16 @@ module cfast_main
         hclf(nv),femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 
-    real*8 cp, deltat, heatfq, tracet(2,mext)
-    real*8 g, gamma, gmwf, hcomba, hvdelt, traces(2,mext)
-    real*8 hvgrav, hvrgas, pa, pofset, pref, qradrl
-    real*8 ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
-    real*8 termxx, tfiret, tfmaxt, tgignt
-    real*8 tref, windpw, windrf, windv
+    real(8) :: cp, deltat, heatfq, tracet(2,mext)
+    real(8) :: g, gamma, gmwf, hcomba, hvdelt, traces(2,mext)
+    real(8) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
+    real(8) :: ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
+    real(8) :: termxx, tfiret, tfmaxt, tgignt
+    real(8) :: tref, windpw, windrf, windv
 
-    logical activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
+    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
 
-    character title*128, compartmentnames(nr)*128
+    character(128) :: title, compartmentnames(nr)
 
 end module cfast_main
    
@@ -150,9 +150,9 @@ module dervs
     implicit none
     save
 
-    logical produp
-    real*8, dimension(maxteq) :: pdold, pold
-    real*8 :: told, dt
+    logical :: produp
+    real(8), dimension(maxteq) :: pdold, pold
+    real(8) :: told, dt
 
 end module dervs
     
@@ -222,7 +222,7 @@ module  iofiles
 ! Work arrays for the csv input routines
 
     integer, parameter :: nrow=200, ncol=200
-    real*8 rarray(nrow,ncol) 
+    real(8) :: rarray(nrow,ncol) 
     character(128) :: carray(nrow,ncol)
 
 end module iofiles
@@ -236,7 +236,7 @@ module  debug
     logical :: jacfirst = .true.
     logical :: prnslab
     integer :: ioresid, iojac, ioslab
-    real*8 ::   dbtime
+    real(8) ::   dbtime
     character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
 
 end module debug
@@ -265,14 +265,14 @@ module objects2
     character(60), dimension(0:mxoin) :: omatl
     integer, dimension(mxoin) :: objlfm,objtyp,obtarg, objset
     
-    real*8, dimension(mxoin) :: obj_c, obj_h, obj_o, obj_n, obj_cl
-    real*8, dimension(3,0:mxoin) :: objcri, objort
-    real*8, dimension(0:mxoin) :: objmas, objgmw, objvt, objclen
-    real*8, dimension(nv,0:mxoin) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
-    real*8, dimension(nv,ns,mxoin) :: omprodr
-    real*8, dimension(nv,mxoin) :: otime
-    real*8, dimension(2,0:mxoin) :: obcond
-    real*8 :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
+    real(8), dimension(mxoin) :: obj_c, obj_h, obj_o, obj_n, obj_cl
+    real(8), dimension(3,0:mxoin) :: objcri, objort
+    real(8), dimension(0:mxoin) :: objmas, objgmw, objvt, objclen
+    real(8), dimension(nv,0:mxoin) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
+    real(8), dimension(nv,ns,mxoin) :: omprodr
+    real(8), dimension(nv,mxoin) :: otime
+    real(8), dimension(2,0:mxoin) :: obcond
+    real(8) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
 
 end module objects2
 
@@ -332,12 +332,12 @@ module opt
         (/ 2,   1,      1,       1,     2,    1,         1,      2,   1,       0,     1,          1,    1,     1,        1,                       0,            1,       0,           0,                  0,                   0/)
     integer, dimension(mxopt) :: debug = 0
     
-    real*8 :: cutjac, stptime, prttime, tottime, ovtime, tovtime
+    real(8) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
     
     integer :: iprtalg = 0, jacchk = 0
     integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0
  
-    integer*2, dimension(mxdebug,2,nr) :: dbugsw
+    integer(2), dimension(mxdebug,2,nr) :: dbugsw
     
 
       end module opt
@@ -356,10 +356,10 @@ module params
 !   the volume fractions volfru and volfrl are calculated by resid at the beginning of a time step
 !   hvfrac is the fraction that a mv duct is in the upper or lower layer
 
-    logical allowed(ns), exset
-    integer mapltw(nwal), ihmlar(2,nr,nr), izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
+    logical :: allowed(ns), exset
+    integer :: mapltw(nwal), ihmlar(2,nr,nr), izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
 
-    real*8 qfr(mxfire), qfc(2,nr), qscnv(nwal,nr), qdout(nwal,nr), qsradw(nwal,nr), qdin(nwal,nr), qcvent(mxvents,nv), o2n2(ns), hwjdot(nwal,nr), exsal, &
+    real(8) :: qfr(mxfire), qfc(2,nr), qscnv(nwal,nr), qdout(nwal,nr), qsradw(nwal,nr), qdin(nwal,nr), qcvent(mxvents,nv), o2n2(ns), hwjdot(nwal,nr), exsal, &
         htot(nr), htflow(nr,2), hmflow(nr,2), htfnet(2,nr,nr), volfru(nr), volfrl(nr), hvfrac(2,mext), expa, exta, exra, &
         hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), hvt, ductcv
 
@@ -378,7 +378,7 @@ module smkview
     integer :: smkunit, spltunit, flocal(mxfire+1)
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
-    real*8, dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    real(8), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
   
 end module smkview
 
@@ -388,23 +388,23 @@ module solver_parameters
     implicit none
     save
     
-    real*8, dimension(nt) :: pinit
-    real*8, dimension(1) :: rpar2
+    real(8), dimension(nt) :: pinit
+    real(8), dimension(1) :: rpar2
     integer, dimension(3) :: ipar2
-    real*8 :: aptol = 1.0d-6        ! absolute pressure tolerance
-    real*8 :: rptol = 1.0d-6        ! relative pressure tolerance
-    real*8 :: atol = 1.0d-5         ! absolute other tolerance
-    real*8 :: rtol = 1.0d-5         ! relative other tolerance
-    real*8 :: awtol = 1.0d-2        ! absolute wall tolerance
-    real*8 :: rwtol = 1.0d-2        ! relative wall tolerance
-    real*8 :: algtol = 1.0d-8       ! initialization tolerance
-    real*8 :: ahvptol = 1.0d-6      ! absolute HVAC pressure tolerance
-    real*8 :: rhvptol = 1.0d-6      ! relative HVAC pressure tolerance
-    real*8 :: ahvttol = 1.0d-5      ! absolute HVAC temperature tolerance
-    real*8 :: rhvttol = 1.0d-5      ! relative HVAC temperature tolerance
+    real(8) :: aptol = 1.0d-6        ! absolute pressure tolerance
+    real(8) :: rptol = 1.0d-6        ! relative pressure tolerance
+    real(8) :: atol = 1.0d-5         ! absolute other tolerance
+    real(8) :: rtol = 1.0d-5         ! relative other tolerance
+    real(8) :: awtol = 1.0d-2        ! absolute wall tolerance
+    real(8) :: rwtol = 1.0d-2        ! relative wall tolerance
+    real(8) :: algtol = 1.0d-8       ! initialization tolerance
+    real(8) :: ahvptol = 1.0d-6      ! absolute HVAC pressure tolerance
+    real(8) :: rhvptol = 1.0d-6      ! relative HVAC pressure tolerance
+    real(8) :: ahvttol = 1.0d-5      ! absolute HVAC temperature tolerance
+    real(8) :: rhvttol = 1.0d-5      ! relative HVAC temperature tolerance
     
-    real*8 :: stpmax = 1.0d0        ! maximum solver time step, if negative, then solver will decide
-    real*8 :: dasslfts = 0.005d0    ! first time step for DASSL
+    real(8) :: stpmax = 1.0d0        ! maximum solver time step, if negative, then solver will decide
+    real(8) :: dasslfts = 0.005d0    ! first time step for DASSL
 
 end module solver_parameters
 
@@ -414,9 +414,9 @@ module thermp
     implicit none
     save
     
-    real*8, dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
-    real*8, dimension(nthmax) :: lepw
-    real*8, dimension(7,nthmax) :: lhclbf
+    real(8), dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
+    real(8), dimension(nthmax) :: lepw
+    real(8), dimension(7,nthmax) :: lhclbf
 
     logical, dimension(nwal,nr) :: thset
     integer maxct, numthrm
@@ -433,7 +433,7 @@ module vents
     save
     
     integer, dimension(mxvent,2) :: ivvent
-    integer nvents, nvvent
+    integer :: nvents, nvvent
     
     ! zzvent(1) = sill
     ! zzvent(2) = soffit
@@ -445,9 +445,9 @@ module vents
     ! izvent(3) = pairwise counter
     ! izvent(4 and 5) = hall (yes or no)
     ! izvent(6) = face (smokeview)
-    real*8, dimension(mxvent,6) :: zzvent, izvent
-    real*8, dimension(nr,mxvent) :: zzventdist
-    real*8, dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    real(8), dimension(mxvent,6) :: zzvent, izvent
+    real(8), dimension(nr,mxvent) :: zzventdist
+    real(8), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
     
 end module vents
 
@@ -456,7 +456,7 @@ module vent_slab
     implicit none
     save
     
-    real*8, dimension(10) :: yvelev, dpv1m2
+    real(8), dimension(10) :: yvelev, dpv1m2
     integer, dimension(10) ::  dirs12
     integer :: nvelev, ioutf
       
@@ -467,7 +467,7 @@ module wdervs
     implicit none
     save
     
-    real*8 :: jacn1, jacn2, jacn3, jacdim
+    real(8) :: jacn1, jacn2, jacn3, jacdim
       
 end module wdervs
 
@@ -479,12 +479,12 @@ module wnodes
     
     integer :: nwpts = 30                                   ! number of wall nodes
     integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)
-    real*8, dimension(3) :: wsplit = (/0.50, 0.17, 0.33/)   ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
+    real(8), dimension(3) :: wsplit = (/0.50, 0.17, 0.33/)   ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
     
     integer nwalls, nfurn
-    real*8, dimension (nr,4) :: wlength
-    real*8, dimension (nn,nr,4) :: walldx
-    real*8, dimension(nv) :: furn_time, furn_temp
-    real*8 qfurnout
+    real(8), dimension (nr,4) :: wlength
+    real(8), dimension (nn,nr,4) :: walldx
+    real(8), dimension(nv) :: furn_time, furn_temp
+    real(8) :: qfurnout
       
 end module wnodes

@@ -12,7 +12,7 @@
 
     implicit none
     integer iw
-    real*8 nuoverl, k, g, tdel, x1del, xthird, xxhalf, qdinl, tf, tw, tg, t3000, tff, alpha, pr, cup, cdown, c, abstwtg
+    real(8) nuoverl, k, g, tdel, x1del, xthird, xxhalf, qdinl, tf, tw, tg, t3000, tff, alpha, pr, cup, cdown, c, abstwtg
     logical :: first = .true.
     save first, g, x1del, xthird, tdel, xxhalf
 
@@ -76,8 +76,8 @@
     use wnodes
     implicit none
 
-    real*8 :: flwcv(nr,2), flxcv(nr,nwal), flwcv0(nr,2), flxcv0(nr,nwal)
-    real*8 :: xx0
+    real(8) :: flwcv(nr,2), flxcv(nr,nwal), flwcv0(nr,2), flxcv0(nr,nwal)
+    real(8) :: xx0
     integer cjetopt, i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay
     logical roomflg(nr), wallflg(4*nr)
     save flwcv0, flxcv0
@@ -273,8 +273,8 @@
     !
     external qfclg
     integer cjetopt, id, nd, ntab, n
-    real*8 :: awl(8), awu(8), qfwcl(4), qfwcu(4), qfwlan(8), qfwuan(8), qfwsl(4), qfwsu(4), rc(4), rs(4), xd(*), yd(*), zd(*), td(*), vd(*)
-    real*8 xx0, qceil, qfclga, qfwla, qfwua, mplume, qconv, tu, one, pi, g, ct, cp, pr, gsqrt, x2d3, x1d3, two, rk1, xf, axf, ayf, yf, &
+    real(8) :: awl(8), awu(8), qfwcl(4), qfwcu(4), qfwlan(8), qfwuan(8), qfwsl(4), qfwsu(4), rc(4), rs(4), xd(*), yd(*), zd(*), td(*), vd(*)
+    real(8) xx0, qceil, qfclga, qfwla, qfwua, mplume, qconv, tu, one, pi, g, ct, cp, pr, gsqrt, x2d3, x1d3, two, rk1, xf, axf, ayf, yf, &
     rfmin, zc, zf, xw, wy, tc, atc, alpha, tl, zlay, qeq, zeq, rhol, alfm1, sigma, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, rhou, &
     h, sqrtgh, qh, qhp, yw, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rmax, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
     rlamr, tmaxmtu, ths, thta, tcj, tdmax, tw, sumaql, sumaqu, sumal, sumau, qfclg
@@ -574,7 +574,7 @@
     implicit none
     
     logical :: first = .true.
-    real*8 pi, one, x1, xrect, xc, x2, y1, yrect, yc, y2, r, frint, ans, ans1, ans2, ans3, ans4
+    real(8) pi, one, x1, xrect, xc, x2, y1, yrect, yc, y2, r, frint, ans, ans1, ans2, ans3, ans4
     save pi
 
     if (first) then
@@ -619,9 +619,9 @@
     implicit none
     
     logical :: first = .true.
-    real*8 :: pi
+    real(8) :: pi
     save first, pi
-    real*8 one, r, s1, s2, frint, ans, ans1, ans2
+    real(8) one, r, s1, s2, frint, ans, ans1, ans2
 
     if (first) then
         first = .false.
@@ -661,7 +661,7 @@
     implicit none
     
     integer :: n, j  
-    real*8 :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, theatj, thetaj, rj, arj, theta
+    real(8) :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, theatj, thetaj, rj, arj, theta
 
 
     xx0 = 0.0d0
@@ -719,7 +719,7 @@
     implicit none
 
     external func
-    real*8 :: tabl(100), fun(100), xx0, rmax, r, xxntabm1, dr, dr2, xxim1, func, rr
+    real(8) :: tabl(100), fun(100), xx0, rmax, r, xxntabm1, dr, dr2, xxim1, func, rr
     integer :: i, ntab, n
     common /trptabl/ tabl, rmax, ntab
     save /trptabl/
@@ -756,7 +756,7 @@
 
     implicit none
 
-    real*8 :: tabl(100), xxntabm1, dr, rmax, r, tab1, tab2, xxir, rr1, rr2, ans
+    real(8) :: tabl(100), xxntabm1, dr, rmax, r, tab1, tab2, xxir, rr1, rr2, ans
     integer :: ir, ntab
     common /trptabl/ tabl, rmax, ntab
     save /trptabl/
@@ -774,7 +774,7 @@
     return
     end subroutine inttabl
 
-    real*8 function qfclg (r)
+    real(8) function qfclg (r)
 
     !     Description: This function computes the convective heat transfer 
     !                  flux to the ceiling at location (X,Y)=(Z(1),Z(2)) 
@@ -784,7 +784,7 @@
 
     implicit none
 
-    real*8 :: rdh, r, h, t0, t1, t2, t3, ff, htcldh, c1, c2, c3, taddim, htcl, htct, tad, thtqhp, tht, tc, xf, yf
+    real(8) :: rdh, r, h, t0, t1, t2, t3, ff, htcldh, c1, c2, c3, taddim, htcl, htct, tad, thtqhp, tht, tc, xf, yf
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
     rdh = r / h
@@ -825,7 +825,7 @@
 
     implicit none
 
-    real*8 :: t1, t2, t3, rdh, f, taddim, htcl, c4, htct, tad, thtqhp, tht, qfwst, tw, h8, h, h16, zc, qfwlow, qfwup, zlay 
+    real(8) :: t1, t2, t3, rdh, f, taddim, htcl, c4, htct, tad, thtqhp, tht, qfwst, tw, h8, h, h16, zc, qfwlow, qfwup, zlay 
 
     t1 = rdh ** (.8d0)
     t2 = t1 * t1
@@ -875,7 +875,7 @@
 
     implicit none
 
-    real*8 :: flwcjt(nr,2), flxcjt(nr,nwal), dummy(100), xx0, zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
+    real(8) :: flwcjt(nr,2), flxcjt(nr,nwal), dummy(100), xx0, zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
     integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
 
     xx0 = 0.0d0
@@ -950,7 +950,7 @@
     return
     end subroutine cjet
 
-    integer function rev_convection
+    integer function rev_convection ()
 
     integer :: module_rev
     character(255) :: module_date 

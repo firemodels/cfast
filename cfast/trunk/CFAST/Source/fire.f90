@@ -35,7 +35,7 @@
     use params
     implicit none
 
-    real*8 :: flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns), xxfire(1), yyfire(1), zzfire(1), zzloc(1), ftemp(1), fvel(1), n_C, n_H, n_O, n_N, n_Cl, omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xqft, xtl, q1, q2, tsec, xqfr
+    real(8) :: flwf(nr,ns+2,2), xntms(2,ns), stmass(2,ns), xxfire(1), yyfire(1), zzfire(1), zzloc(1), ftemp(1), fvel(1), n_C, n_H, n_O, n_N, n_Cl, omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xqft, xtl, q1, q2, tsec, xqfr
     integer cjetopt, lsp, iroom, logerr, nobj, iobj, i, j, update
 
     ! initialize summations and local data
@@ -164,7 +164,7 @@
     use interfaces
     implicit none
 
-    real*8 :: xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns), n_C ,n_H, n_O, n_N, n_Cl, mol_mass, x1, x0, xz, xtl, xtu, xqlp, xeme, xems, xemp, xxfirel, xxfireu, xbr, xhr, xfz, xntfl, qheatl, qheatu, xqfr, &
+    real(8) :: xntms(2,ns), xqfc(2), stmass(2,ns), xmass(ns), n_C ,n_H, n_O, n_N, n_Cl, mol_mass, x1, x0, xz, xtl, xtu, xqlp, xeme, xems, xemp, xxfirel, xxfireu, xbr, xhr, xfz, xntfl, qheatl, qheatu, xqfr, &
     y_trace, y_soot, y_co, chirad, xqpyrl, objectsize, xfx, xfy, xdr, source_o2, activated_time, activated_rate, hcombt, xtemp, xnet, xqf, xqup, uplmep, uplmes, uplmee, height
     integer :: iroom, lsp, ipass, source, i, ifire
 
@@ -342,13 +342,13 @@
 
     implicit none
     integer, intent(in) :: source_room, activated_room, activated_sprinkler
-    real*8, intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, activated_time, activated_rate, model_time
-    real*8, intent(out) :: hrr_constrained, hrr_at_activation, pyrolysis_rate_constrained, species_rates(:)
+    real(8), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, activated_time, activated_rate, model_time
+    real(8), intent(out) :: hrr_constrained, hrr_at_activation, pyrolysis_rate_constrained, species_rates(:)
 
     logical :: first=.TRUE.
-    real*8 :: o2f, o2fi, o2_entrained, o2_factor, o2_available, quenching_factor
-    real*8 :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn
-    real*8 :: net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct, net_trace
+    real(8) :: o2f, o2fi, o2_entrained, o2_factor, o2_available, quenching_factor
+    real(8) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn
+    real(8) :: net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct, net_trace
 
     if (first) then
         o2f = 1.31d+7
@@ -436,8 +436,8 @@
     use objects2
     implicit none
 
-    real*8 n_C, n_H, n_O, n_N, n_Cl, y_soot, y_co, y_trace, xx0, omasst, oareat, ohight, oqdott, objhct, xxtime, time, tdrate, xxtimef, qt, qtf, tfact
-    integer objn, lobjlfm, id, iroom, ifact
+    real(8) :: n_C, n_H, n_O, n_N, n_Cl, y_soot, y_co, y_trace, xx0, omasst, oareat, ohight, oqdott, objhct, xxtime, time, tdrate, xxtimef, qt, qtf, tfact
+    integer :: objn, lobjlfm, id, iroom, ifact
 
     if (.not.objon(objn).or.objset(objn)>0) then
         xx0 = 0.0d0
@@ -520,7 +520,7 @@
 
     implicit none
     integer plumetype, objectnumber
-    real *8 :: qjl, zz, xemp, xeme, xems, xfx, xfy, objectsize
+    real(8) :: qjl, zz, xemp, xeme, xems, xfx, xfy, objectsize
 
     select case (plumetype)
     case (1) !    mccaffrey
@@ -550,8 +550,8 @@
     implicit none
 
     logical :: first = .true.
-    real*8 :: fm1, fm2, fm3, t1, t2, a1, a2, a3, x0, xf, xfx, xfy, qj, qjl, zz, zq, zdq, xemp, xeme, xems, od
-    real*8, parameter :: fire_at_wall = 1.0d-3
+    real(8) :: fm1, fm2, fm3, t1, t2, a1, a2, a3, x0, xf, xfx, xfy, qj, qjl, zz, zq, zdq, xemp, xeme, xems, od
+    real(8), parameter :: fire_at_wall = 1.0d-3
     save first, a1, a2, a3, t1, t2
 
     ! define assignment statement subroutines to compute three parts of correlation
@@ -611,7 +611,7 @@
 
     implicit none
 
-    real*8 q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
+    real(8) :: q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
 
     qj = 0.001d0 * q
     z0 = -1.02d0 * od + 0.083d0 * qj**0.4
@@ -636,7 +636,7 @@
     implicit none  
 
     integer ::i, j, irm, ii, isys
-    real*8 :: xx0 = 0.0d0, xx1 = 1.0d0, filter, qcifraction, time, deltt
+    real(8) :: xx0 = 0.0d0, xx1 = 1.0d0, filter, qcifraction, time, deltt
 
     do i = 0, numobjl
         objmaspy(i) = objmaspy(i) + femp(i)*deltt
@@ -697,7 +697,7 @@
     use vents
     implicit none
 
-    real*8 :: flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns), flwdjf0(nr,ns+2,2), xx0, flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
+    real(8) :: flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns), flwdjf0(nr,ns+2,2), xx0, flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
     integer i, iroom1, iroom2, ifrom, lsp, iroom
     save flwdjf0
 
@@ -826,7 +826,7 @@
 
     implicit none
 
-    real*8 :: xntms(2,ns), xmass(ns), x0, flw1to2, flw2to1, flwdjf, fldjf0, hcombt, qpyrol, qpyrol1, qpyrol2, xntms1, xntms2, xxnetfl, sas, tjet, dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
+    real(8) :: xntms(2,ns), xmass(ns), x0, flw1to2, flw2to1, flwdjf, fldjf0, hcombt, qpyrol, qpyrol1, qpyrol2, xntms1, xntms2, xxnetfl, sas, tjet, dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
     integer :: i, iroom1, iroom2, ifrom, ito, lsp
     logical djflowflg
 
@@ -871,10 +871,8 @@
 
     implicit none
     character str*10
-    real*8, parameter :: zero = 0.0d0, four = 4.0d0, pi = 3.14159d0
-    real*8 qdot, area
-    real*8 fheight
-    real*8 d
+    real(8), parameter :: zero = 0.0d0, four = 4.0d0, pi = 3.14159d0
+    real(8) :: qdot, area, fheight, d
     if (area<=0d0) then
         d = 0.09d0
     else
@@ -904,9 +902,9 @@
     !                 tplume (output): plume centerline temperature
 
     implicit none
-    real*8 :: qdot, xrad, dfire, tu, tl, zfire, zlayer, zin, tplume
-    real*8, parameter :: g = 9.81d0, C_T = 9.115d0, Beta = 0.955d0
-    real*8 :: cp, rhoamb, z0, qdot_c, z_i1, q_i1star, xi, fheight, z, q_i2star, z_i2, z_eff, q_eff, dt
+    real(8) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, zin, tplume
+    real(8), parameter :: g = 9.81d0, C_T = 9.115d0, Beta = 0.955d0
+    real(8) :: cp, rhoamb, z0, qdot_c, z_i1, q_i1star, xi, fheight, z, q_i2star, z_i2, z_eff, q_eff, dt
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
     z = zin - zfire
@@ -965,9 +963,9 @@
     !                 tplume (output):  plume centerline temperature
 
     implicit none
-    real*8 qdot, xrad, dfire, tgas, tl, z, tplume
-    real*8, parameter :: g = 9.81d0, piov4 = (3.14159d0/4.0d0)
-    real*8 cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b
+    real(8) :: qdot, xrad, dfire, tgas, tl, z, tplume
+    real(8), parameter :: g = 9.81d0, piov4 = (3.14159d0/4.0d0)
+    real(8) :: cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b
 
     ! plume temperature correlation is only valid above the mean flame height      
     call flamhgt (qdot,piov4*dfire**2,fheight)
@@ -1011,10 +1009,10 @@
     !                 tplume (output):  plume centerline temperature
 
     implicit none
-    real*8 qdot, dfire, tgas, z, tplume
-    real*8, parameter :: g = 9.81d0
+    real(8) :: qdot, dfire, tgas, z, tplume
+    real(8), parameter :: g = 9.81d0
 
-    real*8 cp, rhoamb, dstar, zstar, dt, n, B, theta
+    real(8) :: cp, rhoamb, dstar, zstar, dt, n, B, theta
 
     rhoamb = 352.981915d0/tgas
     cp = 3.019d-7*tgas**2 - 1.217d-4*tgas + 1.014d0
@@ -1048,7 +1046,7 @@
     use params
     implicit none
 
-    real*8 :: aweigh(ns), air(2), v(2), aweigh7, deltt, avagad
+    real(8) :: aweigh(ns), air(2), v(2), aweigh7, deltt, avagad
     integer i, k, lsp
     logical ppmcal(ns)
 
@@ -1140,7 +1138,7 @@
     use smkview
     implicit none
 
-    real*8 :: fheight
+    real(8) :: fheight
     integer :: nfires, i
 
     ! first, the mainfire if there is one
@@ -1177,14 +1175,14 @@
 
     implicit none
 
-    real*8 :: mdot(maxint), qdot(maxint), hdot(maxint), hinitial, hcmax = 1.0d8, hcmin = 1.0d+6
     integer :: i, maxint
+    real(8) :: mdot(maxint), qdot(maxint), hdot(maxint), hinitial, hcmax = 1.0d8, hcmin = 1.0d+6
 
     do i = 1, maxint
         if(i>1) then
             if (mdot(i)*qdot(i)<=0.d0) then
                 hdot(i) = hinitial
-            else					
+            else
                 hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
                 mdot(i) = qdot(i)/hdot(i)
             endif
@@ -1214,7 +1212,7 @@
     use opt
     implicit none
 
-    real*8 :: tmpob(2,mxoin), tobj, told, dt, tnobj
+    real(8) :: tmpob(2,mxoin), tobj, told, dt, tnobj
     integer :: ifobj, iobj, ignflg, iobtarg, iflag, ierror
 
     ifobj = 0
@@ -1277,7 +1275,7 @@
 
     implicit none
 
-    real*8 :: tmpob(2), told, dt, cond, trip, oldcond, tobj, delta
+    real(8) :: tmpob(2), told, dt, cond, trip, oldcond, tobj, delta
     integer :: iflag, iobj, ifobj
 
     if (cond>trip) then
@@ -1308,7 +1306,7 @@
     use params
     implicit none
 
-    real*8 :: flwhcl(nr,ns+2,2), flxhcl(nr,4), x0, arw, hclg, hclw, h2o, rho, tg, tw, flux, hwdot, hnet
+    real(8) :: flwhcl(nr,ns+2,2), flxhcl(nr,4), x0, arw, hclg, hclw, h2o, rho, tg, tw, flux, hwdot, hnet
     integer :: j, iroom, iwall, layer, ierror
 
     ! initialize summations and local data
@@ -1391,7 +1389,7 @@
     use cfast_main
     implicit none
 
-    real*8 :: xx0, x001, hwdot, hnet, hclg, hclw, hclp, xhclf, tg, twc, tw, b1, b2, b3, b4, b5, b6, b7, h2os, xtemp, exptw, bcoef, rk, flux, rho, h2o, rke, hclcof, arw
+    real(8) :: xx0, x001, hwdot, hnet, hclg, hclw, hclp, xhclf, tg, twc, tw, b1, b2, b3, b4, b5, b6, b7, h2os, xtemp, exptw, bcoef, rk, flux, rho, h2o, rke, hclcof, arw
     integer :: iwall, icomp, ierror
 
     xx0 = 0.0d0
@@ -1467,7 +1465,7 @@
     return
     end
 
-    integer function rev_fire
+    integer function rev_fire ()
 
     integer :: module_rev
     character(255) :: module_date 

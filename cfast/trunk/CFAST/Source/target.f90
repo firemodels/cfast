@@ -16,7 +16,7 @@
     implicit none
 
     logical :: first=.true.
-    real*8 :: tmp(trgtnum), walldx(trgtnum), delta(*), xpsolve(*), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout, dt, tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, xl
+    real(8) :: tmp(trgtnum), walldx(trgtnum), delta(*), xpsolve(*), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout, dt, tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, xl
     integer :: update, method, nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
 
@@ -118,7 +118,7 @@
     implicit none
 
     logical :: first = .true.
-    real*8 :: flux(2), dflux(2), ttarg(2), sigma, ddif
+    real(8) :: flux(2), dflux(2), ttarg(2), sigma, ddif
     integer :: itarg, methtarg, method, iroom, niter, iter
     save first, sigma
 
@@ -203,7 +203,7 @@
     use wnodes
     implicit none
 
-    real*8 :: svect(3), flux(2), dflux(2), ttarg(2), qwtsum(2), awallsum(2), qgassum(2), pi, sigma, cos45, xx1, absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
+    real(8) :: svect(3), flux(2), dflux(2), ttarg(2), qwtsum(2), awallsum(2), qgassum(2), pi, sigma, cos45, xx1, absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, itarg, iter, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
@@ -440,7 +440,7 @@
     implicit none
 
     logical :: first = .true.
-    real*8 :: xx1, four, pi, xtarg, ytarg, ztarg, tg, qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
+    real(8) :: xx1, four, pi, xtarg, ytarg, ztarg, tg, qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
     integer :: irtarg, i
     save first, pi, four
 
@@ -489,7 +489,7 @@
     !                yu
 
     implicit none
-    real*8 :: yo, y, yt, s, yl, yu
+    real(8) :: yo, y, yt, s, yl, yu
 
 
     if(yo<=y)then
@@ -527,7 +527,7 @@
     use dsize
     implicit none
 
-    real*8 :: zztemp(nr,2), zzhlay(nr,2), xdtect(mxdtect,*), tdtect, tcur, dstep, cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
+    real(8) :: zztemp(nr,2), zzhlay(nr,2), xdtect(mxdtect,*), tdtect, tcur, dstep, cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
     integer :: ixdtect(mxdtect,*), iquench(*), idset, ifdtect, i, ndtect, iroom, imode, idold, iqu
 
     idset = 0

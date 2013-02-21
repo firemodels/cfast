@@ -20,10 +20,10 @@
     use wnodes
     implicit none
 
-    real*8 :: tgrad(2), delta(*), flxtot(nr,nwal), vtgrad0(4*nr), vtgrad(4*nr)
+    real(8) :: tgrad(2), delta(*), flxtot(nr,nwal), vtgrad0(4*nr), vtgrad(4*nr)
     save vtgrad0
 
-    real*8 :: sigma, twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, dt, tderv
+    real(8) :: sigma, twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, dt, tderv
     integer :: update, ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
@@ -180,11 +180,11 @@
 
     implicit none
     integer, parameter :: nn = 60
-    real*8 :: a(nn), b(nn), c(nn), tnew(nn), tderiv(nn), ddif(3), tgrad(2), wk(*), wspec(*), wrho(*), wtemp(*), walldx(*)
+    real(8) :: a(nn), b(nn), c(nn), tnew(nn), tderiv(nn), ddif(3), tgrad(2), wk(*), wspec(*), wrho(*), wtemp(*), walldx(*)
     integer :: numnode(*), update
     
     integer :: nx, i, iwbound, ibeg, iend, islab, nslab, nintx, ibreak
-    real*8 :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
+    real(8) :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
 
     nx = numnode(1)
 
@@ -314,7 +314,7 @@
     return
     end subroutine cnduct
 
-    integer function rev_conduction
+    integer function rev_conduction ()
 
     integer :: module_rev
     character(255) :: module_date 

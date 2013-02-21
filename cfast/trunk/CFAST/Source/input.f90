@@ -11,7 +11,7 @@
     use thermp
     implicit none
 
-    real*8 :: yinter(nr), temparea(mxpts), temphgt(mxpts), xx0, xx1, deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
+    real(8) :: yinter(nr), temparea(mxpts), temphgt(mxpts), xx0, xx1, deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
     integer numr, numc, ifail, ios, ierror, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     logical exists
     character :: messg*133, aversion*5
@@ -509,9 +509,11 @@
     
     logical :: lfupdat, eof, countargs
     integer :: obpnt, compartment, lrowcount, xnumr, xnumc, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, ierror, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom
-    real*8 :: nter(nr), initialopening, lrarray(ncol),inter(nr), minpres, maxpres, heightfrom, heightto, areafrom, areato, xx0, xx1, xxm1, xxlocal, fanfraction, heatfplume, frac, tmpcond, dnrm2
-    character :: orientyp*1, messg*133, lcarray*128(ncol), cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1, compfrom*128, compto*128
-    character*10 plumemodel(2)/'McCaffrey','Heskestad'/
+    real(8) :: nter(nr), initialopening, lrarray(ncol),inter(nr), minpres, maxpres, heightfrom, heightto, areafrom, areato, xx0, xx1, xxm1, xxlocal, fanfraction, heatfplume, frac, tmpcond, dnrm2
+    character :: orientyp*1, messg*133, cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
+    character(128) :: lcarray(ncol), compfrom, compto
+    character(10) :: plumemodel(2)
+    data plumemodel /'McCaffrey', 'Heskestad'/
 
     !	Start with a clean slate
     xx0 = 0.0d0
@@ -819,7 +821,7 @@
             iijk = ijk(i,j,k)
             qcvh(1,iijk) = lrarray(5)
             qcvh(3,iijk) = lrarray(5) + lrarray(7)
-            qcvh(4,iijk) = lrarray(6)		 
+            qcvh(4,iijk) = lrarray(6)
         case ('V')
             if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
                 ierror = 11
@@ -1060,7 +1062,7 @@
             ierror = 78
             return 
         endif
-        write(logerr,5403) plumemodel(fplume(numobjl))	
+        write(logerr,5403) plumemodel(fplume(numobjl))
         objign(obpnt) =   lrarray(6)
         tmpcond =         lrarray(7)
         objort(1,obpnt) = lrarray(8)
@@ -1162,7 +1164,7 @@
             ierror = 78
             return 
         endif
-        write(logerr,5403) plumemodel(fplume(numobjl))	
+        write(logerr,5403) plumemodel(fplume(numobjl))
         objign(obpnt) =   lrarray(7)
         tmpcond =         lrarray(8)
         objort(1,obpnt) = lrarray(9)
@@ -1611,7 +1613,7 @@
         endif
 
         if (2*nto/=(nret-2)) then
-            write(logerr,	5355) ifrom, nto
+            write(logerr,5355) ifrom, nto
             ierror = 60
             return
         endif
@@ -1679,7 +1681,7 @@
 5003 format ('The compartment specified by TARGET does not exist',i3)
 5051 format ('The key word ',a5,' is not recognized')
 5062 format ('Compartment number outside of allowable range',i5)
-5063 format ('Compartment ',i3,1x,a8,1x,6f6.1,4l,1x,4a10)
+5063 format ('Compartment ',i3,1x,a8,1x,6f6.1,4l1,1x,4a10)
 5070 format ('VENT parameter(s) outside of allowable range',2I4)
 5080 format ('Too many pairwise horizontal connections',4I5)
 5081 format ('Too many horizontal connections ',3i5)
@@ -1745,10 +1747,12 @@
     implicit none
 
     logical :: countargs, lstat
-    character :: lcarray*128(ncol), label*5, objname*(*)
+    character(128) :: lcarray(ncol)
+    character(5) :: label
+    character(*) :: objname
     integer :: lrowcount, xnumr, xnumc, iobj, logerr = 3, midpoint = 1, base = 2, errorcode, ierror, ir, i, ii, nret, iroom
-    real*8 :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength, flameheight
-    real*8, parameter :: xx0 = 0.0d0
+    real(8) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength, flameheight
+    real(8), parameter :: xx0 = 0.0d0
 
     ! there are eight required inputs for each fire
     do ir = 1, 8
@@ -1922,11 +1926,10 @@
     use debug
     implicit none
 
-    integer errorcode , lp, ld, lf, ios
-    integer(2) filecount
-    logical exists
-
-    character*256 testpath, testproj 
+    integer :: errorcode , lp, ld, lf, ios
+    integer(2) :: filecount
+    logical :: exists
+    character(256) :: testpath, testproj 
 
     ! get the path and project names
     errorcode = 0
@@ -1967,7 +1970,7 @@
     open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
 
     call deleteoutputfiles (outputfile)
-    call deleteoutputfiles (smvhead)	
+    call deleteoutputfiles (smvhead)
     call deleteoutputfiles (smvdata)
     call deleteoutputfiles (smvcsv)
     call deleteoutputfiles (ssflow)
@@ -2005,7 +2008,7 @@
     use opt
     implicit none
 
-    real*8 :: p0(*), pmxmn(maxteq,2), local(2), x
+    real(8) :: p0(*), pmxmn(maxteq,2), local(2), x
 
     integer :: ip0(0:*), ipmxmn(0:maxteq,2), iounit, ilocal(2), ierror, i, io, nret, iroom
     character :: label*5, testfile*128, place*1, mxmn*1, toupper*1, testpath*256
@@ -2123,7 +2126,7 @@
     use opt
     implicit none
 
-    real*8 :: p0(*), pmxmn(maxteq,2), x
+    real(8) :: p0(*), pmxmn(maxteq,2), x
     integer :: ip0(0:*), ipmxmn(0:maxteq,2), noflg, iroom
     character :: mxmn*1
 
@@ -2159,7 +2162,7 @@
     implicit none
     
     integer :: index, defaultposition, opoint,rpoint, errorcode
-    real*8 :: xyz(3,0:*), xx0 =0.0d0, minimumseparation, criterion(*)
+    real(8) :: xyz(3,0:*), xx0 =0.0d0, minimumseparation, criterion(*)
 
     IF((xyz(index,opoint)<xx0).or.(xyz(index,opoint)>criterion(rpoint))) THEN
         select case (defaultposition)
@@ -2223,9 +2226,10 @@
     use cshell
     implicit none
 
-    real*8 :: x(numr,numc)
+    integer numr, numc
+    real(8) :: x(numr,numc)
     character :: in*10000, token*128, c(numr,numc)*(*)
-    integer :: ierror, maxr, maxc, i, j, nstart, iunit, nrcurrent, ic, icomma, ios, numr, numc, nc
+    integer :: ierror, maxr, maxc, i, j, nstart, iunit, nrcurrent, ic, icomma, ios, nc
 
     maxr = 0
     maxc = 0
@@ -2298,7 +2302,7 @@
     return
     end subroutine readcsvformat
 
-    integer function rev_input
+    integer function rev_input ()
 
     implicit none
     

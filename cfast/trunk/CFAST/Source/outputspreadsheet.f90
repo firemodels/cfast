@@ -9,9 +9,9 @@
     implicit none
 
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    real*8 time, outarray(maxhead), xx0, fheight
-    logical firstc
-    integer position, errorcode, i, itarg, izzvol, ifire
+    real(8) :: time, outarray(maxhead), xx0, fheight
+    logical :: firstc
+    integer :: position, errorcode, i, itarg, izzvol, ifire
 
     data firstc/.true./
     save firstc
@@ -79,8 +79,8 @@
 
     subroutine SSaddtolist (ic, valu, array)
 
-    real*8 array(*), valu
-    integer ic
+    real(8) :: array(*), valu
+    integer :: ic
 
     ic = ic + 1
     ! We are imposing an arbitrary limit of 32000 columns
@@ -113,9 +113,10 @@
     implicit none
 
     integer, parameter :: maxoutput = 512
-    real*8 time, outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
-    logical firstc/.true./
-    integer position, errorcode, irm, i,j,k,iijk,ii,iii,inode
+    real(8) :: time, outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
+    logical :: firstc
+    data firstc /.true./
+    integer :: position, errorcode, irm, i,j,k,iijk,ii,iii,inode
     save firstc
 
     if (firstc) then
@@ -234,12 +235,13 @@
     implicit none
 
     integer, parameter :: maxoutput=512
-    real*8 outarray(maxoutput), time, xiroom, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
-    integer iwptr(4), errorcode, position,i,iw,itarg,itctemp,iroom
+    real(8) :: outarray(maxoutput), time, xiroom, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
+    integer :: iwptr(4), errorcode, position,i,iw,itarg,itctemp,iroom
     external length
     data iwptr /1, 3, 4, 2/
-    character ctype*5, cact*3
-    logical firstc/.true./
+    character :: ctype*5, cact*3
+    logical :: firstc
+    data firstc /.true./
     save firstc
 
     if (firstc) then
@@ -358,11 +360,9 @@
     implicit none
 
     integer, parameter :: maxhead = 1+22*nr
-    character*16 heading(3,maxhead)
-    real*8 time, outarray(maxhead), ssvalue
-    integer position, errorcode, i, lsp
-
-    integer layer
+    character(16) :: heading(3,maxhead)
+    real(8) :: time, outarray(maxhead), ssvalue
+    integer :: position, errorcode, i, lsp, layer
     logical tooutput(NS)/.false.,5*.true.,.false.,4*.true. /,firstc/.true./
     logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./
 
@@ -415,12 +415,12 @@
     implicit none
 
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character*16 headline(3,maxhead)
-    real*8 time, outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
-    logical firstc
-    integer position, errorcode
-    integer toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
-    integer itop, ibot
+    character(16) :: headline(3,maxhead)
+    real(8) :: time, outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
+    logical :: firstc
+    integer :: position, errorcode
+    integer :: toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
+    integer :: itop, ibot
     data toprm /1/, botrm /2/
 
     data firstc/.true./
@@ -533,33 +533,33 @@
     implicit none
     
     ! data structure for total flows and fluxes
-    real*8 :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+    real(8) :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
 
     ! data structures for flow through vents
-    real*8 :: flwnvnt(nr,mxprd+2,2)
-    real*8 :: flwhvnt(nr,ns+2,2)
+    real(8) :: flwnvnt(nr,mxprd+2,2)
+    real(8) :: flwhvnt(nr,ns+2,2)
 
     ! data structures for fires
-    real*8 :: flwf(nr,ns+2,2)
+    real(8) :: flwf(nr,ns+2,2)
 
     ! data structures for convection, radiation, and ceiling jets
-    real*8 :: flwcv(nr,2), flxcv(nr,nwal)
-    real*8 :: flwrad(nr,2), flxrad(nr,nwal)
-    real*8 :: flwcjet(nr,2), flxcjet(nr,nwal)
+    real(8) :: flwcv(nr,2), flxcv(nr,nwal)
+    real(8) :: flwrad(nr,2), flxrad(nr,nwal)
+    real(8) :: flwcjet(nr,2), flxcjet(nr,nwal)
 
     ! data structures for mechanical vents
-    real*8 :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+    real(8) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
 
     ! data structures for hcl deposition
-    real*8 :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
+    real(8) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
     ! data structures for door jet fires
-    real*8 :: flwdjf(nr,ns+2,2)
+    real(8) :: flwdjf(nr,ns+2,2)
     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    real*8 time, outarray(maxhead), xx0, fheight
-    logical firstc
-    integer position, errorcode, i, j, k, nprod
+    real(8) :: time, outarray(maxhead), xx0, fheight
+    logical :: firstc
+    integer :: position, errorcode, i, j, k, nprod
     data firstc/.true./
     save firstc
     
@@ -628,12 +628,12 @@
     use vent_slab
     implicit none
     
-    real*8 :: time, qslab(mxslab)
+    real(8) :: time, qslab(mxslab)
     integer :: ir1, ir2, iv, nslab, errorcode
-    real*8 :: r1, r2, v, slab
+    real(8) :: r1, r2, v, slab
     
     integer,parameter :: maxhead = 1 + mxvents*(4 + mxslab)
-    real*8 :: outarray(maxhead)
+    real(8) :: outarray(maxhead)
     integer :: position, i
     logical :: firstc, nwline
     data firstc /.true./

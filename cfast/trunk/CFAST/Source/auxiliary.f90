@@ -18,8 +18,8 @@
 
     implicit none
 
-    character*(*) messg
-    real*8, parameter :: xx0 = 0.0d0
+    character(*) :: messg
+    real(8), parameter :: xx0 = 0.0d0
     integer nmessg, nmess, level, nerr
 
     if(nmessg==0)then
@@ -51,7 +51,7 @@
     implicit none
 
     integer :: nmes, nerr, level, ni, i1, i2, nnr, i, lunit, mesflg, imessg(2048)
-    real*8 :: r1, r2
+    real(8) :: r1, r2
     character :: msg(nmes)*1, cc*1, foutnm*60
 
     ! define message print flag and logical unit number
@@ -79,7 +79,7 @@
 
     end subroutine xerrwv
 
-    real*8 function d1mach (i)
+    real(8) function d1mach (i)
 
     !     routine: d1mach
     !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.  it is a function subprogram with one
@@ -145,7 +145,7 @@
     implicit none
 
     integer :: nmes, nerr, nnr, lm, i, lunit, mesflg
-    real*8 :: r1, r2
+    real(8) :: r1, r2
     character :: mesg*(*)
 
     character  cc*1, foutnm*60
@@ -198,9 +198,10 @@
     !                iopt  returned list of pointers to elements in strs corresponding to options a-z
 
     implicit none
-    
+
+    integer nargs 
+    integer iarg(nargs), iopt(26), ic, ia, i   
     character strs(nargs)*(*), cmdlin*127, optsep
-    integer iarg(nargs), iopt(26), ic, ia, i, nargs
 
     optsep = '/'
 
@@ -350,10 +351,10 @@
 
     use cfin
 
-    character coord*(*)
-    character*20 decod
-    integer first, last, type, i0
-    real x0
+    character(*) :: coord
+    character(20) :: decod
+    integer :: first, last, type, i0
+    real :: x0
 
     ! get data type
     call datype(coord,first,last,type)
@@ -459,7 +460,8 @@
     implicit none
 
     integer :: tocount, i,numc,nret
-    character :: lcarray*128(numc), label*5
+    character(128) :: lcarray(numc)
+    character(5) :: label
 
     countargs = .false.
     nret = 0.
@@ -478,7 +480,7 @@
     countargs = .true.
     do i = tocount+1, numc
         if (lcarray(i)/=' ') nret = nret + 1
-    end do	
+    end do
 
     return
 
@@ -499,8 +501,8 @@
     
     implicit none
     
-    real*8 :: cputim
-    integer*2 :: hrs, mins, secs, hsecs
+    real(8) :: cputim
+    integer(2) :: hrs, mins, secs, hsecs
 
     call gettim(hrs,mins,secs,hsecs)
     cputim = hrs * 3600 + mins * 60 + secs + hsecs / 100.0
@@ -603,16 +605,16 @@
     implicit none
     
     integer :: i
-    integer(2) n, status, loop, ld(2), li(2), ln(2), le(2), lb
-    character(256) buf, xname
-    character *(*) exepath, datapath, project
-    character (64) name(2)
-    logical exists, doesthefileexist
+    integer(2) :: n, status, loop, ld(2), li(2), ln(2), le(2), lb
+    character(256) :: buf, xname
+    character(*) :: exepath, datapath, project
+    character (64) :: name(2)
+    logical :: exists, doesthefileexist
 
-    character(3) drive(2)
-    character(256) dir(2)
-    character(64) ext(2)
-    integer(4) length, errorcode, pathcount, splitpathqq
+    character(3) :: drive(2)
+    character(256) :: dir(2)
+    character(64) :: ext(2)
+    integer(4) :: length, errorcode, pathcount, splitpathqq
 
     n = nargs ()
     project = ' '
@@ -687,9 +689,9 @@
     
     implicit none
     
-    character*1 ch, getcharqq
-    integer*2 ich, it
-    logical peekcharqq
+    character(1) :: ch, getcharqq
+    integer(2) :: ich, it
+    logical :: peekcharqq
 
     ich = 0
     it = 0
@@ -721,7 +723,8 @@
 
     implicit none
     
-    integer :: mat1(idim,n), mat2(idim,n), i, j, idot, idim, n, matiter
+    integer :: idim, n
+    integer :: mat1(idim,n), mat2(idim,n), i, j, idot, matiter
     do i = 1, n
         do j = 1, n
             mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
@@ -808,7 +811,7 @@
 
     implicit none
 
-    real*8 :: x(*), y(*), yint, t, dydx
+    real(8) :: x(*), y(*), yint, t, dydx
     integer n, icode, ilast, imid, ia, iz
     save
     data ilast /1/
@@ -988,7 +991,7 @@
     
     implicit none
 
-    real*8 :: flting(*)
+    real(8) :: flting(*)
     integer :: fixed(*), input = 0, lstart = 0, nret, i, j, nreq, llast, i0, iu, lenofch
     real :: x0, xxbig
     logical :: multi, eof
@@ -1177,11 +1180,11 @@
     
     implicit none
 
-    integer (2) year, month, day
-    logical exists
-    character strs(8)*60, ic, toupper*1, logfile*60
-    character*60 solveini
-    integer iarg(8), iopt(26), option, cmdflag, nargs
+    integer(2) :: year, month, day
+    logical :: exists
+    character :: strs(8)*60, ic, toupper*1, logfile*60
+    character(60) :: solveini
+    integer :: iarg(8), iopt(26), option, cmdflag, nargs
     cmdflag(ic) = iopt(ichar(ic)-ichar('A')+1)
 
     ! current date
@@ -1227,7 +1230,7 @@
     implicit none
     
     integer n, j, i, inc
-    real*8 ra(n), rra
+    real(8) ra(n), rra
 
     inc = 1
 1   inc = 3*inc+1
@@ -1271,9 +1274,10 @@
     implicit none
   
     ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
-    integer, parameter :: lwork=100  
-    real*8 :: x(lx,ncolx), work(lwork)
-    integer :: ix(lix,ncolix), nrow, i, j, isort, iroom, nroom, lx, lix, ncolx, ncolix, ldp, ipoint(ldp,*), iwork(lwork), iperm(lwork)
+    integer, parameter :: lwork=100
+    integer :: lix, ncolix, ncolx
+    integer :: ix(lix,ncolix), nrow, i, j, isort, iroom, nroom, lx, ldp, ipoint(ldp,*), iwork(lwork), iperm(lwork) 
+    real(8) :: x(lx,ncolx), work(lwork)
 
     ! create a permutation vector using the isort'th column of ix
     if(nrow>lwork)then
@@ -1334,7 +1338,7 @@
     
     implicit none
     
-    real*8 :: xfire(mxfire,mxfirp), work(mxfire)
+    real(8) :: xfire(mxfire,mxfirp), work(mxfire)
     integer :: ifroom(mxfire), iperm(mxfire), iwork(mxfire), ifrpnt(nr,2), i, j, irm, nm1, nfire
 
     ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
@@ -1593,8 +1597,8 @@
 
     implicit none
     
-    integer            info
-    character*6        srname
+    integer :: info
+    character(6) :: srname
 
     write (*,99999) srname, info
     stop
@@ -1612,7 +1616,7 @@
 
     implicit none
     
-    character*1 :: ca, cb
+    character(1) :: ca, cb
     integer, parameter :: ioff = 32
     intrinsic ichar
 
@@ -1625,7 +1629,7 @@
 
     end function lsame
 
-    integer function rev_auxilliary
+    integer function rev_auxilliary ()
 
     integer :: module_rev
     character(255) :: module_date 

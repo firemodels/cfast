@@ -42,7 +42,7 @@
     use solver_parameters
     implicit none
 
-    real*8 :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
+    real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
     integer :: nalg, i, ires, nnn, iflag
     data pdzero /maxteq * 0.0d0/
     nalg = nm1 + nhvpvar + nhvtvar
@@ -113,7 +113,7 @@
     use solver_parameters
     implicit none
 
-    real*8 :: hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
+    real(8) :: hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer :: i, ires, nnn, iflag
     data pdzero /maxteq * 0.0d0/
     do i = 1, nequals
@@ -182,7 +182,7 @@
     use solver_parameters
     implicit none
 
-    real*8 :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
+    real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer nalg, i, ii, ieq1, ieq2, ieq3, ires, nnn, iflag
     data pdzero /maxteq * 0.0d0/
     nalg = nm1 + nhvpvar + nhvtvar
@@ -308,9 +308,9 @@
     use params
     implicit none
 
-    real*8 :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
+    real(8) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, ierror, lsp
-    real*8, parameter :: x1 = 1.0d0, x0 = 0.0d0, pi = 4.0d0 * atan(x1)
+    real(8), parameter :: x1 = 1.0d0, x0 = 0.0d0, pi = 4.0d0 * atan(x1)
 
     !    calculate min & max values for fan curve
 
@@ -603,8 +603,8 @@
     use params
     implicit none
 
-    real*8 :: yinter(*), dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
-    real*8, parameter :: xx0 = 0.0d0, xx2= 2.0d0
+    real(8) :: yinter(*), dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
+    real(8), parameter :: xx0 = 0.0d0, xx2= 2.0d0
     integer i, ii, iflag, iwall, iroom, itarg, ieq
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
@@ -779,8 +779,8 @@
     use vents
     implicit none
     
-    real*8 :: xlrg
-    real*8, parameter :: xx0 = 0.0d0, xx1 = 1.0d0, xm1 = -1.0d0
+    real(8) :: xlrg
+    real(8), parameter :: xx0 = 0.0d0, xx1 = 1.0d0, xm1 = -1.0d0
     integer :: i, j, k, ivent, itarg, lsp, nfurn
 
     ! set some initialization - simple control stuff
@@ -1192,7 +1192,7 @@
     use wnodes
     implicit none
 
-    real*8 :: fract1, fract2, fract3, fsum
+    real(8) :: fract1, fract2, fract3, fsum
     integer :: nopt, i, j, ibeg, iend
     logical existed
 
@@ -1274,7 +1274,7 @@
     use thermp
     implicit none
 
-    real*8 :: xm(2), xt, xtemp, xh2o, toto2n2
+    real(8) :: xm(2), xt, xtemp, xh2o, toto2n2
     integer i, j, k, ip, iprod, isof, isys, lsp
 
 
@@ -1377,11 +1377,11 @@
     use thermp
     implicit none
     
-    real*8, parameter :: xm1 = -1.0d0, x0 = 0.0d0
-    real*8 :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
+    real(8), parameter :: xm1 = -1.0d0, x0 = 0.0d0
+    real(8) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: ifail, itarg, iroom, iwall, iwall1, iwall2, ierror
     integer :: map6(6) = (/1,3,3,3,3,2/)
-    character*133 messg
+    character(133) :: messg
 
     ifail = 0
     do itarg = 1, ntarg
@@ -1527,7 +1527,7 @@
     use wnodes
     implicit none
 
-    real*8 :: tstop
+    real(8) :: tstop
     integer :: i, j, jj, k, icode, itarg, ifromr, itor, ifromw, itow, ierror, nslabf, nslabt, nptsf, nptst, wfrom, wto
     character off*8, none*8, tcname*8
 
@@ -1814,7 +1814,7 @@
     use vents
     implicit none
 
-    real*8 :: vntopn(nv), factor2, qchfraction, height, width, tsec, avent
+    real(8) :: vntopn(nv), factor2, qchfraction, height, width, tsec, avent
     integer roomc(nr,nr), tempmat(nr,nr), i, j, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
 
@@ -1896,7 +1896,7 @@
 
     implicit none
 
-    real*8 :: walldx(*), wk(*), wspec(*), wrho(*), wthick(*), wtemp(*), wsplit(*), xwall(100), xpos(10), xxnx, wlen, errfc05, xkrhoc, alpha, xb, tstop, xxnsplit, w, xxim1, xxiim1, &
+    real(8) :: walldx(*), wk(*), wspec(*), wrho(*), wthick(*), wtemp(*), wsplit(*), xwall(100), xpos(10), xxnx, wlen, errfc05, xkrhoc, alpha, xb, tstop, xxnsplit, w, xxim1, xxiim1, &
         wmxb, xxnslabm2, xxnint, xxi1, xxi2, xxi3, xxnintx, tamb, text, dtdw
     integer :: numnode(*), cumpts(10), numpts(10), i, ii, nx, nintx, nslab, nsplit, islab, isum, nint, ibeg, iend
 
@@ -2020,7 +2020,7 @@
     return
     end
 
-    integer function rev_initialization
+    integer function rev_initialization ()
 
     integer :: module_rev
     character(255) :: module_date 

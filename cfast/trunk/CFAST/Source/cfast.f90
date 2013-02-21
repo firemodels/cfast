@@ -35,7 +35,7 @@
     implicit none
 
     integer errorcode, rev_cfast, irev, i
-    real*8 :: xdelt, tstop, tbeg, tend
+    real(8) :: xdelt, tstop, tbeg, tend
 
     version = 6300          ! Current CFAST version number
     crdate = (/2013,2,20/)  ! Current CFAST executable creation date
@@ -149,14 +149,14 @@
 
     external gres, gres2, gres3, gjac
     integer ipar(*)
-    real*8 :: pdold(*), pdzero(*), rpar(*)
+    real(8) :: pdold(*), pdzero(*), rpar(*)
 
     integer, parameter :: mxalg = 4*nr+mnode+mbr
-    real*8 deltamv(mxalg), hhvp(mxalg)
+    real(8) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
-    real*8 :: work(lrw)
+    real(8) :: work(lrw)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nalg2, nprint, i, ioff0,  info, ii, ieq1, ieq2, nodes
-    real*8 :: t, xx0 = 0.0d0, tol
+    real(8) :: t, xx0 = 0.0d0, tol
 
 1   continue
 
@@ -342,19 +342,19 @@
     integer, parameter :: liw = 20+maxeq
     integer, parameter :: all = 1, some = 0
 
-    real*8 :: rwork(lrw), rpar(1)
+    real(8) :: rwork(lrw), rpar(1)
     integer :: iwork(liw), info(15), ipar(3), info2(15)
     integer :: izp0(0:maxteq), izpmxmn(0:maxteq,2)
-    real*8 :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
-    real*8 :: pdzero(maxteq) = 0.0d0
-    logical iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
+    real(8) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
+    real(8) :: pdzero(maxteq) = 0.0d0
+    logical :: iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
     integer :: ios, ierror, idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
-    integer*2 filecount, delfilesqq
-    real*8 :: ton, toff, xx0, xx1, x0001, tpaws, tstop, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
+    integer(2) :: filecount, delfilesqq
+    real(8) :: ton, toff, xx0, xx1, x0001, tpaws, tstop, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
         tplot, tspread, tout,  ostptime, tdtect, tobj, jac
-    character*133 messg
+    character(133) :: messg
     external resid, jac, delfilesqq
-    integer:: funit
+    integer :: funit
 
     call cptime(toff)
     xx0 = 0.0d0
@@ -841,9 +841,9 @@
     use fltarget
     implicit none
 
-    real*8 :: p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
+    real(8) :: p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
     integer i, nodes, nequals, nlspct
-    real*8 :: dt, t, told, xx0 = 0.0d0
+    real(8) :: dt, t, told, xx0 = 0.0d0
 
     dt = t - told
     xx0 = 0.d0
@@ -879,9 +879,9 @@
     implicit none
 
     logical :: slvhelp
-    integer*2 :: ch, hit
+    integer(2) :: ch, hit
     integer :: icode, ieqmax
-    real*8 :: t, rcode, tpaws, tout
+    real(8) :: t, rcode, tpaws, tout
 
     icode = 0
     call grabky(ch,hit)
@@ -944,7 +944,7 @@
     use opt
     implicit none
 
-    integer*2 ch, hit
+    integer(2) :: ch, hit
     integer ii
 
     write (iofilo,*) '***Options Set***'
@@ -977,9 +977,9 @@
     implicit none
 
     integer :: info(*)
-    real*8 :: rwork(*)
+    real(8) :: rwork(*)
     integer :: i
-    real*8 :: xx0 = 0.0d0
+    real(8) :: xx0 = 0.0d0
 
     xx0 = 0.0d0
     do i = 1, 11
@@ -1059,36 +1059,36 @@
 
     ! data structures for dassl, the numerical solver
     integer :: ipar(*)
-    real*8 :: rpar(*), x(*), xpsolve(*), xprime(maxteq), delta(*)
+    real(8) :: rpar(*), x(*), xpsolve(*), xprime(maxteq), delta(*)
 
     ! data structure for total flows and fluxes
-    real*8 :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+    real(8) :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
 
     ! data structures for flow through vents
-    real*8 :: flwnvnt(nr,mxprd+2,2)
-    real*8 :: flwhvnt(nr,ns+2,2)
+    real(8) :: flwnvnt(nr,mxprd+2,2)
+    real(8) :: flwhvnt(nr,ns+2,2)
 
     ! data structures for fires
-    real*8 :: flwf(nr,ns+2,2)
+    real(8) :: flwf(nr,ns+2,2)
 
     ! data structures for convection, radiation, and ceiling jets
-    real*8 :: flwcv(nr,2), flxcv(nr,nwal)
-    real*8 :: flwrad(nr,2), flxrad(nr,nwal)
-    real*8 :: flwcjet(nr,2), flxcjet(nr,nwal)
+    real(8) :: flwcv(nr,2), flxcv(nr,nwal)
+    real(8) :: flwrad(nr,2), flxrad(nr,nwal)
+    real(8) :: flwcjet(nr,2), flxcjet(nr,nwal)
 
     ! data structures for mechanical vents
-    real*8 :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+    real(8) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
 
     ! data structures for hcl deposition
-    real*8 :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
+    real(8) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
     ! data structures for door jet fires
-    real*8 :: flwdjf(nr,ns+2,2)
+    real(8) :: flwdjf(nr,ns+2,2)
     integer :: update, errorcode
 
     logical :: vflowflg, hvacflg, djetflg
     integer :: ii, nprod, nirm, i, ires, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
-    real*8 :: xx0 = 0.0d0, tsec, epsp, xqu, xql, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
+    real(8) :: xx0 = 0.0d0, tsec, epsp, xqu, xql, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
     ierror = 0
     xx0 = 0.0d0
@@ -1444,7 +1444,7 @@
 
     integer :: iflag, iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
-    real*8 :: wtemp, xx0, xx1, xx2, vminfrac, xx, yy, yy2, zz, pdif, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
+    real(8) :: wtemp, xx0, xx1, xx2, vminfrac, xx, yy, yy2, zz, pdif, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
 
     if(nfurn>0)then
@@ -2007,9 +2007,9 @@
     use cfast_main
     implicit none
 
-    real*8 :: pdif(*), factor(nr,2)
+    real(8) :: pdif(*), factor(nr,2)
     integer :: i, iroom, isof, ibeg, iprod
-    real*8 :: xx0 = 0.0d0
+    real(8) :: xx0 = 0.0d0
 
     xx0 = 0.0d0
     do iroom = 1,nm1
@@ -2057,7 +2057,7 @@
     return
     end
 
-    integer function rev_cfast
+    integer function rev_cfast ()
 
     !     Routine: rev_cfast
     !     Purpose: return current SVN revision or date

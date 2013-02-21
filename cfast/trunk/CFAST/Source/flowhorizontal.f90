@@ -20,19 +20,19 @@
     use debug
     implicit none
 
-    real*8 conl(mxprd,2), conu(mxprd,2), pmix(mxprd)
-    real*8 uflw(nr,mxprd+2,2), uflw3(2,mxprd+2,2), uflw2(2,mxprd+2,2)
-    real*8 yflor(2), yceil(2), ylay(2), pflor(2)
-    real*8 denl(2), denu(2), tu(2), tl(2)
-    real*8 rslab(mxslab), tslab(mxslab), yslab(mxslab),xmslab(mxslab), qslab(mxslab), cslab(mxslab,mxprd),pslab(mxslab,mxprd)
-    real*8 vntopn(nv)
-    real*8 uflw0(nr,ns+2,2)
+    real(8) :: conl(mxprd,2), conu(mxprd,2), pmix(mxprd)
+    real(8) :: uflw(nr,mxprd+2,2), uflw3(2,mxprd+2,2), uflw2(2,mxprd+2,2)
+    real(8) :: yflor(2), yceil(2), ylay(2), pflor(2)
+    real(8) :: denl(2), denu(2), tu(2), tl(2)
+    real(8) :: rslab(mxslab), tslab(mxslab), yslab(mxslab),xmslab(mxslab), qslab(mxslab), cslab(mxslab,mxprd),pslab(mxslab,mxprd)
+    real(8) :: vntopn(nv)
+    real(8) :: uflw0(nr,ns+2,2)
     save uflw0
-    logical ventflg(mxvent), roomflg(nr), anyvents
-    real*8 factor2, qchfraction, height, width
-    integer nirm, ifrom, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk, nprod
-    real*8 xx0, yvbot, yvtop, tsec, avent, epsp, ventvel, ventheight, vlayerdepth
-    integer errorcode
+    logical :: ventflg(mxvent), roomflg(nr), anyvents
+    real(8) :: factor2, qchfraction, height, width
+    integer :: nirm, ifrom, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk, nprod
+    real(8) :: xx0, yvbot, yvtop, tsec, avent, epsp, ventvel, ventheight, vlayerdepth
+    integer :: errorcode
 
     ! temporary declaration
     nirm = nm1
@@ -225,14 +225,14 @@
     use flwptrs
     implicit none
     integer dirs12(10)
-    real*8 yslab(10), xmslab(10), pmix(mxprd)
-    real*8 tu(2), tl(2), ylay(2)
-    real*8 conl(mxprd,2), conu(mxprd,2)
-    real*8 uflw3(2,mxprd+2,2)
-    real*8 vsas(2), vasa(2)
-    real*8, parameter :: xx0 = 0.0d0
-    integer i, iprod, nprod, n, nslab, ifrom, ito, mxprd
-    real*8 :: tmix, zd, yvbot, yvtop, cp
+    integer :: i, iprod, nprod, n, nslab, ifrom, ito, mxprd
+    real(8) :: yslab(10), xmslab(10), pmix(mxprd)
+    real(8) :: tu(2), tl(2), ylay(2)
+    real(8) :: conl(mxprd,2), conu(mxprd,2)
+    real(8) :: uflw3(2,mxprd+2,2)
+    real(8) :: vsas(2), vasa(2)
+    real(8), parameter :: xx0 = 0.0d0
+    real(8) :: tmix, zd, yvbot, yvtop, cp
 
     ! initialize outputs
     do i = 1, 2
@@ -336,7 +336,7 @@
     use cfast_main
     implicit none
     logical firstc
-    real*8 :: fm1, fm2, fm3, t1, t2, a1, a2, a3, e1, e2, e3, f1, f2, xqj, tu, tl, qj, fmd, fmdqj, z0dq, zdq, zq, z, fmz, xx0
+    real(8) :: fm1, fm2, fm3, t1, t2, a1, a2, a3, e1, e2, e3, f1, f2, xqj, tu, tl, qj, fmd, fmdqj, z0dq, zdq, zq, z, fmz, xx0
     save firstc, a1, a2, a3, e1, e2, e3, f1, f2
     data firstc /.true./
 
@@ -500,11 +500,11 @@
     !                nslab  - number of slabs between bottom and top of the vent
 
     implicit none
-    real*8 :: yflor(*), ylay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
-    real*8 ::  pslab(mxslab,*), cslab(mxslab,*), conl(mxprd,2), conu(mxprd,2), yelev(10), dp1m2(10), dpv1m2(10), xmslab(*), yn(10), rslab(*), tslab(*), yslab(*), yvelev(*)
-    real*8 :: qslab(*), vss(2), vsa(2), vas(2), vaa(2)
-    real*8 :: ventvel, yvbot, yvtop, epsp, xx0, dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, avent, r1m8, cp, sum, ys
     integer dirs12(*), nelev, nneut, i, nslab, n, jroom, iprod, nprod, nvelev, mxprd, mxslab
+    real(8) :: yflor(*), ylay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
+    real(8) ::  pslab(mxslab,*), cslab(mxslab,*), conl(mxprd,2), conu(mxprd,2), yelev(10), dp1m2(10), dpv1m2(10), xmslab(*), yn(10), rslab(*), tslab(*), yslab(*), yvelev(*)
+    real(8) :: qslab(*), vss(2), vsa(2), vas(2), vaa(2)
+    real(8) :: ventvel, yvbot, yvtop, epsp, xx0, dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, avent, r1m8, cp, sum, ys
 
     ventvel = 0.0d0
 
@@ -646,7 +646,7 @@
 
     subroutine getelev(yvbot,yvtop,ylay,yelev,nelev)
     implicit none
-    real*8 yelev(*), ylay(*), ymin, ymax, yvbot, yvtop
+    real(8) :: yelev(*), ylay(*), ymin, ymax, yvbot, yvtop
     integer :: nelev
 
     ymin = min(ylay(1),ylay(2))
@@ -703,9 +703,9 @@
     use vents
     implicit none
 
-    real*8 conl(mxprd), conu(mxprd), yflor, yceil, ylay, pflor, denl, denu, tl, tu, xx0, ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
-    logical hallflag
-    integer up, ivent, iroom, iprod, ip, iroom2, nprod
+    real(8) :: conl(mxprd), conu(mxprd), yflor, yceil, ylay, pflor, denl, denu, tl, tu, xx0, ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
+    logical :: hallflag
+    integer :: up, ivent, iroom, iprod, ip, iroom2, nprod
 
     xx0 = 0.0d0
     hallflag = .false.
@@ -796,9 +796,9 @@
     use flwptrs
     implicit none
     integer dirs12(*)
-    real*8 :: yslab(*), xmslab(*), tslab(*), qslab(*), tu(*), tl(*), yflor(*), yceil(*), ylay(*), pslab(mxslab,*), uflw2(2,mxprd+2,2), ff(2), fl, fu, xmterm, qterm
-    real*8 :: ylayer, ylow, yup, ttr, tts, ttu, ttl, yslabf, yslabt, yslab1, yslab2
     integer :: i, iprod, nprod, n, nslab, ifrom, ito, ilay, mxprd, mxslab
+    real(8) :: yslab(*), xmslab(*), tslab(*), qslab(*), tu(*), tl(*), yflor(*), yceil(*), ylay(*), pslab(mxslab,*), uflw2(2,mxprd+2,2), ff(2), fl, fu, xmterm, qterm
+    real(8) :: ylayer, ylow, yup, ttr, tts, ttu, ttl, yslabf, yslabt, yslab1, yslab2
 
     ! initialize outputs
     do i = 1, 2
@@ -956,8 +956,8 @@
     use flwptrs
     implicit none
     integer dirs12(*)
-    real*8 :: yslab(*), xmslab(*), qslab(*), ylay(*), pslab(mxslab,*), uflw2(2,mxprd+2,2), ff(2), fl, fu, xmterm, qterm
     integer :: i, iprod, nprod, n, nslab, ifrom, ito, ilay, mxprd, mxslab
+    real(8) :: yslab(*), xmslab(*), qslab(*), ylay(*), pslab(mxslab,*), uflw2(2,mxprd+2,2), ff(2), fl, fu, xmterm, qterm
 
     ! initialize outputs
     do i = 1, 2
@@ -1039,10 +1039,10 @@
     !                dp    - change in pressure between two rooms [kg/(m*s**2) = pascal]
 
     implicit none
-    real*8 :: proom(2), y(*), denl(*), denu(*), yflor(*), ylay(*), pflor(*), dp(*), gdenl(2), gdenu(2), ygden(2)
-    real*8, parameter :: g = 9.80d0, x1 = 1.0d0
+    real(8) :: proom(2), y(*), denl(*), denu(*), yflor(*), ylay(*), pflor(*), dp(*), gdenl(2), gdenu(2), ygden(2)
+    real(8), parameter :: g = 9.80d0, x1 = 1.0d0
     integer :: iroom, i, nelev
-    real*8 dp1, dp2, epscut, epsp, dpold, zz
+    real(8) :: dp1, dp2, epscut, epsp, dpold, zz
 
     do iroom = 1, 2
         ygden(iroom) = -(ylay(iroom)-yflor(iroom)) * denl(iroom) * g
@@ -1099,11 +1099,11 @@
 
     !	The open/close function is done in the physical/mode interface, HFLOW, VFLOW and HVFAN
 
-    real*8 function qchfraction (points, index, time)
+    real(8) function qchfraction (points, index, time)
 
     !	This is the open/close function for buoyancy driven horizontal flow
 
-    real*8 points(4,*), time, dt, dy, dydt, mintime
+    real(8) :: points(4,*), time, dt, dy, dydt, mintime
     data mintime/1.0e-6/
 
     if (time<points(1,index)) then
@@ -1120,11 +1120,11 @@
     return
     end function qchfraction
 
-    real*8 function qcvfraction (points, index, time)
+    real(8) function qcvfraction (points, index, time)
 
     !	This is the open/close function for buoyancy driven vertical flow
 
-    real*8 points(4,*), time, dt, dy, dydt, mintime
+    real(8) :: points(4,*), time, dt, dy, dydt, mintime
     data mintime/1.0e-6/
 
     if (time<points(1,index)) then
@@ -1141,11 +1141,11 @@
     return
     end function qcvfraction
 
-    real*8 function qcffraction (points, index, time)
+    real(8) function qcffraction (points, index, time)
 
     !	This is the open/close function for mechanical ventilation
 
-    real*8 points(4,*), time, dt, dy, dydt, mintime
+    real(8) :: points(4,*), time, dt, dy, dydt, mintime
     data mintime/1.0d-6/
 
     if (time<points(1,index)) then
@@ -1162,11 +1162,11 @@
     return
     end function qcffraction
 
-    real*8 function qcifraction (points, index, time)
+    real(8) function qcifraction (points, index, time)
 
     !	This is the open/close function for filtering
 
-    real*8 points(4,*), time, dt, dy, dydt, mintime
+    real(8) :: points(4,*), time, dt, dy, dydt, mintime
     data mintime/1.0d-6/
 
     if (time<points(1,index)) then
@@ -1190,7 +1190,7 @@
     use vents
     implicit none
     integer :: i,ifrom,ito,iface
-    real*8 :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue
+    real(8) :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue
 
     ifrom =IZVENT(i,1)
     ito = IZVENT(i,2)
@@ -1206,7 +1206,7 @@
     RETURN
     END
 
-    integer function rev_flowhorizontal
+    integer function rev_flowhorizontal ()
 
     INTEGER :: MODULE_REV
     CHARACTER(255) :: MODULE_DATE 

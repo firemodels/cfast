@@ -464,7 +464,7 @@
             if (xtarg==xfire(i,1).and.ytarg==xfire(i,2).and. ztarg>xfire(i,3)) then
                 qdot = fqf(i)
                 xrad = radconsplit(i)
-                dfire = dsqrt(farea(i)*four/pi)
+                dfire = sqrt(farea(i)*four/pi)
                 tu = zztemp(irtarg,upper)
                 tl = zztemp(irtarg,lower)
                 zfire = xfire(i,3)
@@ -609,7 +609,7 @@
     return
     end subroutine updtect
 
-    integer function rev_target
+    integer function rev_target ()
 
     integer :: module_rev
     character(255) :: module_date 

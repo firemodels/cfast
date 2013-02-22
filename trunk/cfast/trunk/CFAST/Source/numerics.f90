@@ -701,7 +701,7 @@
     integer :: info(15), iwork(*),ipar(*)
     character :: msg*80, mesg*128
     
-    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, dabs, tstop, h, tnext, r
+    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, abs, tstop, h, tnext, r
     integer :: i, neq, mxord, lenpd, lenrw, jacdim, jacd, mband, msave, leniw, lrw, liw, idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
     !     set pointers into iwork
@@ -877,10 +877,10 @@
     !     compute unit roundoff and hmin
     uround = d1mach(4)
     rwork(lround) = uround
-    hmin = 4.0d0*uround*dmax1(dabs(t),dabs(tout))
+    hmin = 4.0d0*uround*dmax1(abs(t),abs(tout))
     !
     !     check initial interval to see that it is long enough
-    tdist = dabs(tout - t)
+    tdist = abs(tout - t)
     if(tdist < hmin) go to 714
     !
     !     check ho, if this was input
@@ -899,7 +899,7 @@
     ho = dsign(ho,tout-t)
     !     adjust ho if necessary to meet hmax bound
 320 if (info(7) == 0) go to 330
-    rh = dabs(ho)/rwork(lhmax)
+    rh = abs(ho)/rwork(lhmax)
     if (rh > 1.0d0) ho = ho/rh
     !     compute tstop, if applicable
 330 if (info(4) == 0) go to 340
@@ -939,7 +939,7 @@
     tn=rwork(ltn)
     h=rwork(lh)
     if(info(7) == 0) go to 410
-    rh = dabs(h)/rwork(lhmax)
+    rh = abs(h)/rwork(lhmax)
     if(rh > 1.0d0) h = h/rh
 410 continue
     if(t == tout) go to 719
@@ -993,7 +993,7 @@
     go to 490
 450 continue
     !     check whether we are with in roundoff of tstop
-    if(dabs(tn-tstop)>100.0d0*uround*(dabs(tn)+dabs(h)))go to 460
+    if(abs(tn-tstop)>100.0d0*uround*(abs(tn)+abs(h)))go to 460
     idid=2
     t=tstop
     done = .true.
@@ -1050,7 +1050,7 @@
 525 continue
     !
     !     compute minimum stepsize
-    hmin=4.0d0*uround*dmax1(dabs(tn),dabs(tout))
+    hmin=4.0d0*uround*dmax1(abs(tn),abs(tout))
     !
     call ddastp(tn,y,yprime,neq,res,jac,h,rwork(lwt),info(1),idid,rpar,ipar,rwork(lphi),rwork(ldelta),rwork(le),rwork(lwm),iwork(liwm), &
     rwork(lalpha),rwork(lbeta),rwork(lgamma),rwork(lpsi),rwork(lsigma),rwork(lcj),rwork(lcjold),rwork(lhold),rwork(ls),hmin,rwork(lround), &
@@ -1083,7 +1083,7 @@
     t=tout
     idid=3
     go to 580
-542 if(dabs(tn-tstop)<=100.0d0*uround*(dabs(tn)+dabs(h)))go to 545
+542 if(abs(tn-tstop)<=100.0d0*uround*(abs(tn)+abs(h)))go to 545
     tnext=tn+h*(1.0d0+4.0d0*uround)
     if((tnext-tstop)*h<=0.0d0)go to 500
     h=(tstop-tn)*(1.0d0-4.0d0*uround)
@@ -1092,7 +1092,7 @@
     t=tstop
     go to 580
 550 if((tn-tout)*h>=0.0d0)go to 555
-    if(dabs(tn-tstop)<=100.0d0*uround*(dabs(tn)+dabs(h)))go to 552
+    if(abs(tn-tstop)<=100.0d0*uround*(abs(tn)+abs(h)))go to 552
     t=tn
     idid=1
     go to 580
@@ -1281,7 +1281,7 @@
         if (iwt ==0) go to 10
         rtoli=rtol(i)
         atoli=atol(i)
-10      wt(i)=rtoli*dabs(y(i))+atoli
+10      wt(i)=rtoli*abs(y(i))+atoli
 20  continue
     return
     !-----------end of subroutine ddawts------------------------------------
@@ -1311,8 +1311,8 @@
     vmax = 0.0d0
     ipar(3) = 1
     do i = 1,neq
-        if(dabs(v(i)/wt(i)) > vmax) then
-            vmax = dabs(v(i)/wt(i))
+        if(abs(v(i)/wt(i)) > vmax) then
+            vmax = abs(v(i)/wt(i))
             ipar(3) = i
         endif
     end do
@@ -1321,7 +1321,7 @@
     do  i = 1,neq
         sum = sum + ((v(i)/wt(i))/vmax)**2
     end do
-    ddanrm = vmax*dsqrt(sum/dfloat(neq))
+    ddanrm = vmax*sqrt(sum/float(neq))
 30  continue
     return
     !------end of function ddanrm------
@@ -1484,7 +1484,7 @@
     oldnrm=delnrm
     go to 350
     !
-340 rate=(delnrm/oldnrm)**(1.0d0/dfloat(m))
+340 rate=(delnrm/oldnrm)**(1.0d0/float(m))
     if (rate>0.90d0) go to 430
     s=rate/(1.0d0-rate)
     !
@@ -1561,7 +1561,7 @@
     if (ier==0) go to 620
     nsf=nsf+1
     h=h*0.25d0
-    if (nsf<3.and.dabs(h)>=hmin) go to 690
+    if (nsf<3.and.abs(h)>=hmin) go to 690
     idid=-12
     return
 620 if (ires>-2) go to 630
@@ -1569,7 +1569,7 @@
     return
 630 ncf=ncf+1
     h=h*0.25d0
-    if (ncf<10.and.dabs(h)>=hmin) go to 690
+    if (ncf<10.and.abs(h)>=hmin) go to 690
     idid=-12
     return
     !
@@ -1577,7 +1577,7 @@
     r=0.90d0/(2.0d0*err+0.0001d0)
     r=dmax1(0.1d0,dmin1(0.5d0,r))
     h=h*r
-    if (dabs(h)>=hmin.and.nef<10) go to 690
+    if (abs(h)>=hmin.and.nef<10) go to 690
     idid=-12
     return
 690 go to 200
@@ -1818,7 +1818,7 @@
         beta(i)=beta(i-1)*psi(i-1)/temp2
         temp1=temp2+h
         alpha(i)=h/temp1
-        sigma(i)=dfloat(i-1)*sigma(i-1)*alpha(i)
+        sigma(i)=float(i-1)*sigma(i-1)*alpha(i)
         gamma(i)=gamma(i-1)+alpha(i-1)/h
     end do
     psi(kp1)=temp1
@@ -1828,7 +1828,7 @@
     alphas = 0.0d0
     alpha0 = 0.0d0
     do i = 1,k
-        alphas = alphas - 1.0d0/dfloat(i)
+        alphas = alphas - 1.0d0/float(i)
         alpha0 = alpha0 - alpha(i)
     end do
     !
@@ -1837,7 +1837,7 @@
     cj = -alphas/h
     !
     !     compute variable stepsize error coefficient ck
-    ck = dabs(alpha(kp1) + alphas - alpha0)
+    ck = abs(alpha(kp1) + alphas - alpha0)
     ck = dmax1(ck,alpha(kp1))
     !
     !     decide whether new jacobian is needed
@@ -1950,7 +1950,7 @@
     if (m > 0) go to 365
     oldnrm = delnrm
     go to 367
-365 rate = (delnrm/oldnrm)**(1.0d0/dfloat(m))
+365 rate = (delnrm/oldnrm)**(1.0d0/float(m))
     if (rate > 0.90d0) go to 370
     s = rate/(1.0d0 - rate)
 367 if (s*delnrm <= 0.33d0) go to 375
@@ -2081,7 +2081,7 @@
     do i=1,neq
         delta(i)=e(i)-phi(i,kp2)
     end do
-    erkp1 = (1.0d0/dfloat(k+2))*ddanrm(neq,delta,wt,rpar,ipar)
+    erkp1 = (1.0d0/float(k+2))*ddanrm(neq,delta,wt,rpar,ipar)
     terkp1 = float(k+2)*erkp1
     if(k>1)go to 520
     if(terkp1>=0.5d0*terk)go to 550
@@ -2186,7 +2186,7 @@
     nsf=nsf+1
     r = 0.25d0
     h=h*r
-    if (nsf < 3 .and. dabs(h) >= hmin) go to 690
+    if (nsf < 3 .and. abs(h) >= hmin) go to 690
     idid=-8
     go to 675
     !
@@ -2202,7 +2202,7 @@
 655 ncf = ncf + 1
     r = 0.25d0
     h = h*r
-    if (ncf < 10 .and. dabs(h) >= hmin) go to 690
+    if (ncf < 10 .and. abs(h) >= hmin) go to 690
     idid = -7
     if (ires < 0) idid = -10
     if (nef >= 3) idid = -9
@@ -2224,7 +2224,7 @@
     r = 0.90d0*(2.0d0*est+0.0001d0)**(-1.0d0/temp2)
     r = dmax1(0.25d0,dmin1(0.9d0,r))
     h = h*r
-    if (dabs(h) >= hmin) go to 690
+    if (abs(h) >= hmin) go to 690
     idid = -6
     go to 675
     !
@@ -2234,7 +2234,7 @@
 665 if (nef > 2) go to 670
     k = knew
     h = 0.25d0*h
-    if (dabs(h) >= hmin) go to 690
+    if (abs(h) >= hmin) go to 690
     idid = -6
     go to 675
     !
@@ -2242,7 +2242,7 @@
     !     one and reduce the stepsize by a factor of one quarter
 670 k = 1
     h = 0.25d0*h
-    if (dabs(h) >= hmin) go to 690
+    if (abs(h) >= hmin) go to 690
     idid = -6
     go to 675
     !
@@ -2339,9 +2339,9 @@
     !     dense finite-difference-generated matrix
 200 ires=0
     nrow=npdm1
-    squr = dsqrt(uround)
+    squr = sqrt(uround)
     do i=1,neq
-        del=squr*dmax1(dabs(y(i)),dabs(h*yprime(i)),dabs(wt(i)))
+        del=squr*dmax1(abs(y(i)),abs(h*yprime(i)),abs(wt(i)))
         del=dsign(del,h*yprime(i))
         del=(y(i)+del)-y(i)
         ysave=y(i)
@@ -2397,13 +2397,13 @@
     isave=ntemp-1
     ipsave=isave+msave
     ires=0
-    squr=dsqrt(uround)
+    squr=sqrt(uround)
     do j=1,mba
         do n=j,neq,mband
             k= (n-j)/mband + 1
             wm(isave+k)=y(n)
             wm(ipsave+k)=yprime(n)
-            del=squr*dmax1(dabs(y(n)),dabs(h*yprime(n)),dabs(wt(n)))
+            del=squr*dmax1(abs(y(n)),abs(h*yprime(n)),abs(wt(n)))
             del=dsign(del,h*yprime(n))
             del=(y(n)+del)-y(n)
             y(n)=y(n)+del
@@ -2415,7 +2415,7 @@
             k= (n-j)/mband + 1
             y(n)=wm(isave+k)
             yprime(n)=wm(ipsave+k)
-            del=squr*dmax1(dabs(y(n)),dabs(h*yprime(n)),dabs(wt(n)))
+            del=squr*dmax1(abs(y(n)),abs(h*yprime(n)),abs(wt(n)))
             del=dsign(del,h*yprime(n))
             del=(y(n)+del)-y(n)
             delinv=1.0d0/del
@@ -4628,11 +4628,11 @@
     !
     !        code for increments not equal to 1.
     !
-    dmax = dabs(dx(1))
+    dmax = abs(dx(1))
     ns = n*incx
     ii = 1
     do i = 1,ns,incx 
-        xmag = dabs(dx(i))
+        xmag = abs(dx(i))
         if(xmag<=dmax) go to 5
         idamax = ii
         dmax = xmag
@@ -4642,9 +4642,9 @@
     !
     !        code for increments equal to 1.
     !
-20  dmax = dabs(dx(1))
+20  dmax = abs(dx(1))
     do i = 2,n 
-        xmag = dabs(dx(i))
+        xmag = abs(dx(i))
         if(xmag<=dmax) go to 30
         idamax = i
         dmax = xmag
@@ -4679,7 +4679,7 @@
     !    dasum  real(8) result (zero if n <= 0)
     !
     !     returns sum of magnitudes of real(8) dx.
-    !     dasum = sum from 0 to n-1 of dabs(dx(1+i*incx))
+    !     dasum = sum from 0 to n-1 of abs(dx(1+i*incx))
     !***references  lawson c.l., hanson r.j., kincaid d.r., krogh f.t.,
     !                 *basic linear algebra subprograms for fortran usage*,
     !                 algorithm no. 539, transactions on mathematical
@@ -4700,7 +4700,7 @@
     !
     ns = n*incx
     do i=1,ns,incx
-        dasum = dasum + dabs(dx(i))
+        dasum = dasum + abs(dx(i))
     end do
     return
     !
@@ -4712,12 +4712,12 @@
 20  m = mod(n,6)
     if( m == 0 ) go to 40
     do i = 1,m
-        dasum = dasum + dabs(dx(i))
+        dasum = dasum + abs(dx(i))
     end do
     if( n < 6 ) return
 40  mp1 = m + 1
     do i = mp1,n,6
-        dasum = dasum + dabs(dx(i)) + dabs(dx(i+1)) + dabs(dx(i+2)) + dabs(dx(i+3)) + dabs(dx(i+4)) + dabs(dx(i+5))
+        dasum = dasum + abs(dx(i)) + abs(dx(i+1)) + abs(dx(i+2)) + abs(dx(i+3)) + abs(dx(i+4)) + abs(dx(i+5))
     end do
     return
     end
@@ -4935,8 +4935,8 @@
     !
     !     four phase method     using two built-in constants that are
     !     hopefully applicable to all machines.
-    !         cutlo = maximum of  dsqrt(u/eps)  over all known machines.
-    !         cuthi = minimum of  dsqrt(v)      over all known machines.
+    !         cutlo = maximum of  sqrt(u/eps)  over all known machines.
+    !         cuthi = minimum of  sqrt(v)      over all known machines.
     !     where
     !         eps = smallest no. such that eps + 1. > 1.
     !         u   = smallest positive no.   (underflow limit)
@@ -4987,14 +4987,14 @@
     !                                                 begin main loop
     i = 1
 20  go to next,(30, 50, 70, 110)
-30  if( dabs(dx(i)) > cutlo) go to 85
+30  if( abs(dx(i)) > cutlo) go to 85
     assign 50 to next
     xmax = zero
     !
     !                        phase 1.  sum is zero
     !
 50  if( dx(i) == zero) go to 200
-    if( dabs(dx(i)) > cutlo) go to 85
+    if( abs(dx(i)) > cutlo) go to 85
     !
     !                                prepare for phase 2.
     assign 70 to next
@@ -5005,20 +5005,20 @@
 100 i = j
     assign 110 to next
     sum = (sum / dx(i)) / dx(i)
-105 xmax = dabs(dx(i))
+105 xmax = abs(dx(i))
     go to 115
     !
     !                   phase 2.  sum is small.
     !                             scale to avoid destructive underflow.
     !
-70  if( dabs(dx(i)) > cutlo ) go to 75
+70  if( abs(dx(i)) > cutlo ) go to 75
     !
     !                     common code for phases 2 and 4.
     !                     in phase 4 sum is large.  scale to avoid overflow.
     !
-110 if( dabs(dx(i)) <= xmax ) go to 115
+110 if( abs(dx(i)) <= xmax ) go to 115
     sum = one + sum * (xmax / dx(i))**2
-    xmax = dabs(dx(i))
+    xmax = abs(dx(i))
     go to 200
     !
 115 sum = sum + (dx(i)/xmax)**2
@@ -5038,10 +5038,10 @@
     !                   phase 3.  sum is mid-range.  no scaling.
     !
     do j =i,nn,incx
-        if(dabs(dx(j)) >= hitest) go to 100
+        if(abs(dx(j)) >= hitest) go to 100
         sum = sum + dx(j)**2 
     end do
-    dnrm2 = dsqrt( sum )
+    dnrm2 = sqrt( sum )
     go to 300
     !
 200 continue
@@ -5052,7 +5052,7 @@
     !
     !              compute square root and adjust for scaling.
     !
-    dnrm2 = xmax * dsqrt(sum)
+    dnrm2 = xmax * sqrt(sum)
 300 continue
     return
     end 

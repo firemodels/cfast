@@ -94,12 +94,12 @@
 
     entry SSprintresults (iounit,ic,array)
 
-    write (iounit,"(1024(e12.6,','))" ) (array(i),i=1,ic)
+    write (iounit,"(1024(e13.6,','))" ) (array(i),i=1,ic)
     return
     
     entry SSprintresid (iounit,ic,array)
 
-    write (iounit,"(1024(e19.13,','))" ) (array(i),i=1,ic)
+    write (iounit,"(1024(e20.13,','))" ) (array(i),i=1,ic)
     return
     end subroutine SSaddtolist
 
@@ -331,7 +331,7 @@
         zdetect = xdtect(i,dzloc)
         if(zdetect>zzhlay(iroom,lower))then
             tlay = zztemp(iroom,upper)
-        else	
+        else
             tlay = zztemp(iroom,lower)
         endif
         xact = ixdtect(i,dact)
@@ -363,8 +363,10 @@
     character(16) :: heading(3,maxhead)
     real(8) :: time, outarray(maxhead), ssvalue
     integer :: position, errorcode, i, lsp, layer
-    logical tooutput(NS)/.false.,5*.true.,.false.,4*.true. /,firstc/.true./
-    logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./
+    logical :: tooutput(ns),  molfrac(ns), firstc
+    data tooutput /.false.,5*.true.,.false.,4*.true./
+    data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
+    data firstc /.true./
 
     save outarray, firstc
 
@@ -509,7 +511,7 @@
     return
     end subroutine SpreadSheetSMV
 
-    integer function rev_outputspreadsheet
+    integer function rev_outputspreadsheet ()
 
     integer :: module_rev
     character(255) :: module_date 

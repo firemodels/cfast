@@ -198,11 +198,11 @@
 
     implicit none
 
+    integer :: ipvt(2), ifire, nfire, i, j, k, info, iroom, mxfire, ierror
     real(8) :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(2,2), tauu(2,2), beam(2,2), &
         taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(2), area4(4), figs(2,2), emis2(2), qout(4), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2), &
         e(2), c(2), rhs(2), dq(2), dqde(2), sigma, x1, pi, third, one, xroom, yroom, zroom, hlay, aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig, &
         tupper4, tlower4, aij, qllay, qulay
-    integer :: ipvt(2), ifire, nfire, i, j, k, info, iroom, mxfire, ierror
 
     logical black, first
     integer, parameter :: u = 1, l = 2
@@ -354,7 +354,7 @@
     qout(4) = qqout(2)
 
     ! compute radiation absorbed by each layer
-    call rdabs(2,1,e,dqde,emis2,area,figs,tauu,taul,qllay,qulay)
+    call rabs(2,1,e,dqde,emis2,area,figs,tauu,taul,qllay,qulay)
 
     qlay(u) = qulay
     qlay(l) = qllay
@@ -390,10 +390,10 @@
     implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
+    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, ierror, mxfire
     real(8) :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(4,4), tauu(4,4), beam(4,4), &
         taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(4), figs(4,4), qout(4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom), &
         sigma, rdparfig, xroom, yroom, zroom, hlay, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14
-    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, ierror, mxfire
 
     logical first, black
 
@@ -547,7 +547,7 @@
     end do
 
     ! compute radiation absorbed by each layer
-    call rdabs(4,2,e,dqde,emis,area,figs,tauu,taul,qllay,qulay)
+    call rabs(4,2,e,dqde,emis,area,figs,tauu,taul,qllay,qulay)
 
     qlay(u) = qulay
     qlay(l) = qllay
@@ -582,9 +582,9 @@
     implicit none
 
     integer, parameter ::u = 1, l = 2
+    integer :: j, k, nup, ifire, mxfire, nzone, nfire
     real(8) :: c(*), figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), zfire(*), area(*), qfire(mxfire), tlay(2), &
         pi, sigma, xx1, qulay, qllay, eu, el, qugas, qlgas, wf, qfflux, hlay, factu, factl
-    integer :: j, k, nup, ifire, mxfire, nzone, nfire
     logical first
     save first, pi, sigma
     data first /.true./
@@ -674,9 +674,9 @@
     return
     end subroutine rdflux
 
-    SUBROUTINE RDABS(NZONE,NUP,E,DQDE,EMIS2,AREA,FIGS,TAUU,TAUL,QLLAY,QULAY)
+    SUBROUTINE Rabs(NZONE,NUP,E,DQDE,EMIS2,AREA,FIGS,TAUU,TAUL,QLLAY,QULAY)
 
-    !     routine: rdabs
+    !     routine: rabs
     !     purpose: This routine computes the energy absorbed by the upper and lower layer due to radiation given off by heat emiiting rectangles
     !              forming the enclosure.  Coming into this routine, qllay and qulay were previously defined to be the heat absorbed by the lower and
     !              upper layers due to gas emissions and fires.  this routine just adds onto these values.
@@ -694,8 +694,8 @@
 
     implicit none
 
-    real(8) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*), qout, qulay, qllay, qk
     integer :: j, k, nup, nzone
+    real(8) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*), qout, qulay, qllay, qk
 
     do k = 1, nup
         qout = e(k) - dqde(k)*(1.0d0-emis2(k))
@@ -722,7 +722,7 @@
     end do
 
     return
-    end subroutine rdabs
+    end subroutine rabs
 
     real(8) function rdparfig(x,y,z)
 
@@ -822,8 +822,8 @@
 
     implicit none
 
-    real(8) :: xfire(*), yfire(*), zfire(*), firang(mxfire,*), xx1, pi, fourpi, arg1, arg2, arg3, arg4, xroom, yroom, zroom, f1, f4, fd, rdsang, hlay
     integer :: i, nfire, mxfire
+    real(8) :: xfire(*), yfire(*), zfire(*), firang(mxfire,*), xx1, pi, fourpi, arg1, arg2, arg3, arg4, xroom, yroom, zroom, f1, f4, fd, rdsang, hlay
     logical :: first = .true.
     save first, fourpi
 
@@ -929,8 +929,8 @@
 
     implicit none
 
-    real(8) :: absorb(*), zz(*), zfire(*), taufu(mxfire,*), taufl(mxfire,*), hlay, beam, beamu, beaml
     integer :: i, j, nfire, nzone, mxfire, nup
+    real(8) :: absorb(*), zz(*), zfire(*), taufu(mxfire,*), taufl(mxfire,*), hlay, beam, beamu, beaml
     logical black
     
     do i = 1, nfire
@@ -997,8 +997,8 @@
 
     implicit none
     
-    real(8) :: absorb(*), beam(nzone,nzone), zz(*), tauu(nzone,nzone), taul(nzone,nzone), fu, fl, hlay
     integer i, j, nup, nzone
+    real(8) :: absorb(*), beam(nzone,nzone), zz(*), tauu(nzone,nzone), taul(nzone,nzone), fu, fl, hlay
     logical black
 
     ! define upper layer transmission factors
@@ -1236,7 +1236,7 @@
         end if
     end if
     return
-1000 format ('error in ',a3,' absorbance: xerror = 'i2,'; yerror = ',i2)
+1000 format ('error in ',a3,' absorbance: xerror = ',i2,'; yerror = ',i2)
     end function absorb
 
     subroutine linterp (xdim, ydim, x, y, z, xval, yval, zval, xerr, yerr)
@@ -1343,7 +1343,7 @@
     return
     end subroutine linterp
 
-    integer function rev_radiation
+    integer function rev_radiation ()
 
     integer :: module_rev
     character(255) :: module_date 

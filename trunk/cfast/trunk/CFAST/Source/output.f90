@@ -1201,9 +1201,10 @@
 5070 format (1P10G10.2,2x,2g10.2)
     end subroutine outfire
 
-    character*8 function chksum(file)
+    character(8) function chksum(file)
+    
     implicit none
-    character*(*) file
+    character(*) :: file
     chksum = '00000000'
     return
     end function chksum
@@ -1510,7 +1511,7 @@
         iounit = dbugsw(d_jac,d_cnt,1)
         write(iounit,1002)
 1002    FORMAT(15x,'STEPS',4x,'JACOBIANS',5x,'RESIDS',4x,'NEWT ITERS',9x,'CPU',14x,'OVER HEAD',/,4x,'TIME',4x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM', &
-        x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM',4x,'CUR',8x,'CUM',6x,'CUR',7x,'CUM')
+            1x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM',4x,'CUR',8x,'CUM',6x,'CUR',7x,'CUM')
     endif
     totjac = totjac + numjac
     totstep = totstep + numstep
@@ -1630,7 +1631,7 @@
     real(8) :: xqf, dp, dt, t
     integer :: bmap(mbr), i, j, ikey, iprod, il, isys, idt, iroom, ieqmax, iobj, itarg
     integer(2) :: ch, hit
-    character :: spname(ns)*5 = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', 'TS'/), ccc*3
+    character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
     save bmap
 
@@ -1807,7 +1808,7 @@
 
     implicit none
     
-    integer errorcode	
+    integer errorcode
     real(8) T, dT
 
     rewind (12)
@@ -1837,7 +1838,7 @@
     
     implicit none
 
-    character*(*) file
+    character(*) :: file
     integer :: funit, nnnopt, i, j, iunit
 
     nnnopt = 21
@@ -2008,7 +2009,7 @@
     return
     end subroutine deleteoutputfiles 
 
-    integer function rev_output
+    integer function rev_output ()
 
     integer :: module_rev
     character(255) :: module_date 

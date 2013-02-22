@@ -113,7 +113,7 @@ end subroutine svout
 subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
 !
-! This routine records data for the current time step into the smokeview zone fire data file
+! this routine records data for the current time step into the smokeview zone fire data file
 !
 ! plotfile - name of file containing zone fire modeling plot data to 
 !            be visualized by smokeview
@@ -127,35 +127,35 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 !     qdot - real array of size nfires of fire heat release rates
 !   height - real array of size nfires of fire heights
 !
-  implicit none
+    implicit none
 
-  real(8), intent(in) :: time
-  integer, intent(in) :: nrooms
-  real(8), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
-  integer, intent(in) :: nfires
-  real(8), intent(in), dimension(nfires) :: qdot, height
-  REAL XXTIME, XXPR, XXYLAY, XXTL, XXTU, XXHEIGHT, XXQDOT
+    real(8), intent(in) :: time
+    integer, intent(in) :: nrooms
+    real(8), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
+    integer, intent(in) :: nfires
+    real(8), intent(in), dimension(nfires) :: qdot, height
+    real xxtime, xxpr, xxylay, xxtl, xxtu, xxheight, xxqdot
 
-  integer :: i
+    integer :: i
 
-  xxtime = time
-  write(14) xxtime
+    xxtime = time
+    write(14) xxtime
 
-  do i = 1, nrooms
-	XXPR = pr(i)
-	XXYLAY = ylay(i)
-	XXTL = tl(i)
-	XXTU = tu(i)
-    write(14) XXPR, XXYLAY, XXTL, XXTU
-  end do
+    do i = 1, nrooms
+        xxpr = pr(i)
+        xxylay = ylay(i)
+        xxtl = tl(i)
+        xxtu = tu(i)
+        write(14) xxpr, xxylay, xxtl, xxtu
+    end do
 
-  do i = 1, nfires
-	XXHEIGHT = height(i)
-	XXQDOT = qdot(i)
-    write(14) XXHEIGHT, XXQDOT
-  end do
+    do i = 1, nfires
+        xxheight = height(i)
+        xxqdot = qdot(i)
+        write(14) xxheight, xxqdot
+    end do
 
-End subroutine svplotdata
+end subroutine svplotdata
 
 
 subroutine svplothdr (version, nrooms, nfires)
@@ -171,26 +171,27 @@ subroutine svplothdr (version, nrooms, nfires)
 !  nrooms  - number of rooms in simulation
 !  nfires  - number of fires in simulation
 !              
-  implicit none
-  integer, intent(in) :: version, nrooms, nfires
+    implicit none
+    integer, intent(in) :: version, nrooms, nfires
 
-  write(14) version
-  write(14) nrooms
-  write(14) nfires
-  return
+    write(14) version
+    write(14) nrooms
+    write(14) nfires
+    return
 
 end subroutine svplothdr
 
-integer function rev_outputsmv
+integer function rev_outputsmv ()
           
-  INTEGER :: MODULE_REV
-  CHARACTER(255) :: MODULE_DATE 
-  CHARACTER(255), PARAMETER :: mainrev='$Revision$'
-  CHARACTER(255), PARAMETER :: maindate='$Date$'
+      integer :: module_rev
+      character(255) :: module_date 
+      character(255), parameter :: mainrev='$Revision$'
+      Character(255), parameter :: maindate='$Date$'
       
-  WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
-  READ (MODULE_DATE,'(I5)') MODULE_REV
-  rev_outputsmv = module_rev
-  WRITE(MODULE_DATE,'(A)') maindate
-  return
+      write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
+      read (module_date,'(i5)') module_rev
+      rev_outputsmv = module_rev
+      write(module_date,'(a)') maindate
+      return
+      
 end function rev_outputsmv

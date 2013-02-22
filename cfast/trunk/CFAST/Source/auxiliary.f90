@@ -317,14 +317,14 @@
 
     maxarg = 5 + 2
     lpoint = 0
-    iar = iargc()
+    iar = command_argument_count()
     
     if (iar==0) then
         cmdlin = ' '
     else
         cmdlin = ' '
         do i = 1, min(iar,maxarg)
-            call getarg(i,lbuf)
+            call get_command_argument(i,lbuf)
             call sstrng(lbuf,60,1,first,last,valid)
             if (valid) then
                 ic = last - first + 1
@@ -365,9 +365,11 @@
 
     ! decode by type
     if (type==1) then
-        x0 = rnum(decod)
+        !x0 = rnum(decod)
+        read(decod,*) x0
     else if (type==2) then
-        i0 = inum(decod)
+        !i0 = inum(decod)
+        read(decod,*) i0
     endif
     return
     end subroutine convrt
@@ -614,9 +616,9 @@
     character(3) :: drive(2)
     character(256) :: dir(2)
     character(64) :: ext(2)
-    integer(4) :: length, errorcode, pathcount, splitpathqq
+    integer(4) :: length, errorcode, pathcount, splitpathqq, ilen
 
-    n = nargs ()
+    n = command_argument_count() + 1
     project = ' '
     exepath = ' '
     datapath = ' '
@@ -635,8 +637,8 @@
 
     do i = 1, 2
         loop = i - 1
-        call getarg (loop, buf, status)
-        if(status>0) then
+        call get_command_argument(loop, buf, ilen, status)
+        if(ilen>0) then
             xname = buf
 
             !	Split out the components
@@ -1579,7 +1581,7 @@
 30  continue
     itmp = itmp + 1
     write(fmt,10) ilen
-10  format('(a',i2.2,',',1h','.',1h',',i3.3)')
+10  format('(a',i2.2,',','','.','',',i3.3)')
     write(workfil,fmt) namefil, itmp
     inquire (file = workfil, exist = existed)
     if (existed) go to 30

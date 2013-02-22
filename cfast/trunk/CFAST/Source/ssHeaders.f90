@@ -10,8 +10,8 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    character*35 headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
-    integer position, i, j
+    character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
+    integer :: position, i, j
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
     'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
@@ -124,9 +124,10 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character*35 headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23), toIntString
-    logical tooutput(NS)/.false.,5*.true.,.false.,4*.true./
-    logical molfrac(NS) /3*.true.,3*.false.,2*.true.,3*.false./
+    character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23), toIntString
+    logical tooutput(ns), molfrac(ns)
+    data tooutput /.false.,5*.true.,.false.,4*.true./ 
+    data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     integer position, i, j, lsp
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', 'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', 'C-T Product Upper Layer', 'Trace Species Upper Layer',&
@@ -204,7 +205,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+9*nr+8*mxtarg+4*mxdtect
-    character*35 headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
+    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
     integer position, i, j, itarg, itype
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', 'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', 'Target Total Flux', 'Target Convective Flux', &
@@ -316,7 +317,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
-    character*35 headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(11), LabelsShort(11), LabelUnits(11), toIntString
+    character(35) :: headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(11), LabelsShort(11), LabelUnits(11), toIntString
     integer position, i, j, k, ih, ii, iijk, inode, irm
 
     data Labels / 'Time', 'HVENT Inflow', 'HVENT Outflow', 'HVENT Mixing to Upper Layer', 'HVENT Mixing to Lower Layer', 'VVENT Inflow', 'VVENT Outflow', 'MVENT Inflow', 'MVENT Outflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
@@ -456,7 +457,7 @@
     logical lmode
 
     integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
-    character*35 headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15), toIntString
+    character(35) :: headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15), toIntString
     integer position, i, j
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
@@ -539,7 +540,7 @@
     end subroutine smvDeviceTag
 
 
-    character*(*) function toIntString(i)
+    character(*) function toIntString(i)
     implicit none
     integer i
     character string*256
@@ -575,7 +576,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    character*35 headertext(3,maxhead), cTemp, cRoom, cFire, Labels(15), LabelUnits(8), Layers(2), toIntString, Species(10)
+    character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(15), LabelUnits(8), Layers(2), toIntString, Species(10)
     integer position, i, j, k, l, nprod
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow', 'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
@@ -668,8 +669,8 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1 + mxvents*(4 + mxslab)
-    character*35 headertext(3,maxhead), Labels(6), LabelUnits(2), toIntString
-    integer position, i, j
+    character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2), toIntString
+    integer :: position, i, j
 
     data Labels / 'time', 'Room 1','Room 2', 'Vent Num', 'Num Slabs', 'Slab'/
     data LabelUnits / 'sec', 'w'/

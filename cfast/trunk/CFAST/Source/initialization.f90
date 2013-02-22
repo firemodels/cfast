@@ -45,6 +45,7 @@
     real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
     integer :: nalg, i, ires, nnn, iflag
     data pdzero /maxteq * 0.0d0/
+    
     nalg = nm1 + nhvpvar + nhvtvar
     do i = 1, nalg
         p2(i) = hvpsolv(i)
@@ -88,7 +89,7 @@
             write(iofilo,*)i,delta(i+noftmv)
         end do
         write(iofilo,*)' '
-        pause
+        read (*,*)
     endif
     return
     end
@@ -154,7 +155,7 @@
             write (iofilo,*) i, deltamv(i+nhvpvar)
         end do
         write(iofilo,*)' '
-        pause
+        read(*,*)
     endif
     return
     end
@@ -284,7 +285,7 @@
             endif
         endif
         write(iofilo,*)' '
-        pause
+        read(*,*)
     endif
     return
     end

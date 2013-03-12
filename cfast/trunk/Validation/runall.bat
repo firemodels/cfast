@@ -202,7 +202,7 @@ if %1==PLAZA goto end
 cd VTT
 echo VTT Cases 1, 2, 3
 cd Case_1
-call ..\..\cleancfast.bat
+if NOT %1==ALL call ..\..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C1 /V
 cd ..\
 cd Case_2
@@ -387,7 +387,7 @@ if %1==High_Bay goto end
 :Steckler
 echo Steckler Compartment Tests
 cd Steckler_Compartment
-call ..\CleanCFAST
+if NOT %1==ALL call ..\CleanCFAST
 ..\..\bin\cfast Steckler_010 /V
 ..\..\bin\cfast Steckler_011 /V
 ..\..\bin\cfast Steckler_012 /V
@@ -450,7 +450,7 @@ if %1==Steckler_Compartment goto end
 :Dunes2000
 echo NIST Dunes 2000 tests
 cd NIST_Dunes_2000
-call ..\CleanCFAST
+if NOT %1==ALL call ..\CleanCFAST
 ..\..\bin\cfast NIST_Dunes_2000_SDC02 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC05 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC07 /V

@@ -201,8 +201,8 @@ if %1==PLAZA goto end
 :VTT
 cd VTT
 echo VTT Cases 1, 2, 3
+if NOT %1==ALL call ..\cleancfast.bat
 cd Case_1
-if NOT %1==ALL call ..\..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C1 /V
 cd ..\
 cd Case_2

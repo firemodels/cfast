@@ -11,7 +11,7 @@ module cparams
     integer, parameter :: nv = 199          ! maximum number of data points in a time-dependent input curve
     integer, parameter :: ns = 11           ! number of species
     integer, parameter :: mxoin = nr        ! maximum number of fire objects
-    integer, parameter :: mxfirp = 19       ! number of parameters for each fire object
+    integer, parameter :: mxfirp = 20       ! number of parameters for each fire object
     integer, parameter :: mxfire = 2*mxoin  ! maximum number of fires in a single simulation
     integer, parameter :: obotemp = 1       ! object ignition criteria index for temperature
     integer, parameter :: oboflux = 2       ! object ignition criteria index for heat flux

@@ -22,7 +22,7 @@
     logical black
 
     ! work and dummy arrays passed to rad2 and rad4
-    real(8) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2)
+    real(8) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2), xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire), fheight
     logical roomflg(nr)
     save flxrad0, flwrad0
 
@@ -95,6 +95,17 @@
             end do
             ifire = ifrpnt(i,2)
             nrmfire = ifrpnt(i,1)
+            do j = 1, nrmfire
+                xrfirepos(j) = xfire(ifire+j-1,1)
+                yrfirepos(j) = xfire(ifire+j-1,2)
+                zrfirepos(j) = xfire(ifire+j-1,3)
+                call flamhgt (xfire(ifire+j-1,8),xfire(ifire+j-1,20),fheight)
+                if (fheight>zzhlay(i,lower)) then
+                    zrfirepos(j) = zzhlay(i,lower)/2.0d0
+                else
+                    zrfirepos(j) = fheight/2.0d0
+                end if
+            end do
             if (nrmfire/=0) then
                 if(.not.black)then
                     if(option(frad)==4.or.lfbt==1)then
@@ -108,7 +119,7 @@
                 if(prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xfire(ifire,1),xfire(ifire,2),xfire(ifire,3),nrmfire, &
+                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
                 if(.not.black)then
@@ -123,7 +134,7 @@
                 if(prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad2(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xfire(ifire,1),xfire(ifire,2),xfire(ifire,3),nrmfire, &
+                call rad2(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
             endif

@@ -25,6 +25,7 @@
     !                                co/co2, h/c, o/c, hcl, hcn yields for
     !                                fire i
     !					   (i,19) characteristic length of the burning volume
+    !                      (i,20) fire area
 
     use cenviro
     use cfast_main
@@ -108,6 +109,7 @@
             !xfire(nfire,17) = clfrat
             !xfire(nfire,18) = cnfrat
             xfire(nfire,19) = objclen(iobj)
+            xfire(nfire,20) = oareat
             nobj = nobj + 1
             froom(nobj) = iroom
             femp(nobj) = oplume(1,iobj)

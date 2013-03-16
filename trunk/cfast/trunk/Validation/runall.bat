@@ -112,7 +112,7 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\..\bin\cfast LLNL_07 /V
 ..\..\bin\cfast LLNL_08 /V
 ..\..\bin\cfast LLNL_09 /V
-..\..\bin\cfast LLNL_10 /V
+REM ..\..\bin\cfast LLNL_10 /V
 ..\..\bin\cfast LLNL_11 /V
 ..\..\bin\cfast LLNL_12 /V
 ..\..\bin\cfast LLNL_13 /V
@@ -125,7 +125,7 @@ REM ..\..\bin\cfast LLNL_18 /V
 REM ..\..\bin\cfast LLNL_20 /V
 ..\..\bin\cfast LLNL_21 /V
 ..\..\bin\cfast LLNL_22 /V
-..\..\bin\cfast LLNL_23 /V
+REM ..\..\bin\cfast LLNL_23 /V
 REM ..\..\bin\cfast LLNL_24 /V
 REM ..\..\bin\cfast LLNL_25 /V
 REM ..\..\bin\cfast LLNL_26 /V
@@ -206,11 +206,9 @@ cd Case_1
 ..\..\..\bin\cfast VTT_C1 /V
 cd ..\
 cd Case_2
-call ..\..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C2 /V
 cd ..\
 cd Case_3
-call ..\..\cleancfast.bat
 ..\..\..\bin\cfast VTT_C3 /V
 cd ..\..
 if %1==VTT goto end

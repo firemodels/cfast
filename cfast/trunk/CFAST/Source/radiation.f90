@@ -99,12 +99,12 @@
                 xrfirepos(j) = xfire(ifire+j-1,1)
                 yrfirepos(j) = xfire(ifire+j-1,2)
                 zrfirepos(j) = xfire(ifire+j-1,3)
-                call flamhgt (xfire(ifire+j-1,8),xfire(ifire+j-1,20),fheight)
-                if (fheight>zzhlay(i,lower)) then
-                    zrfirepos(j) = zzhlay(i,lower)/2.0d0
-                else
-                    zrfirepos(j) = fheight/2.0d0
-                end if
+                !call flamhgt (xfire(ifire+j-1,8),xfire(ifire+j-1,20),fheight)
+                !if (fheight+xfire(ifire+j-1,3)>hr(i)) then
+                !    zrfirepos(j) = xfire(ifire+j-1,3) + (hr(i)-xfire(ifire+j,3))/2.0d0
+                !else
+                !    zrfirepos(j) = xfire(ifire+j-1,3) + fheight/2.0d0
+                !end if
             end do
             if (nrmfire/=0) then
                 if(.not.black)then

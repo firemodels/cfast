@@ -850,7 +850,7 @@ Public Class CeditMain
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.Errors, Me.Message})
         Me.StatusBar.ShowPanels = True
-        Me.StatusBar.Size = New System.Drawing.Size(1014, 22)
+        Me.StatusBar.Size = New System.Drawing.Size(1004, 22)
         Me.StatusBar.TabIndex = 2
         '
         'Errors
@@ -4305,7 +4305,7 @@ Public Class CeditMain
         Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
-        Me.TabMain.Location = New System.Drawing.Point(12, 14)
+        Me.TabMain.Location = New System.Drawing.Point(7, 14)
         Me.TabMain.Name = "TabMain"
         Me.TabMain.SelectedIndex = 0
         Me.TabMain.Size = New System.Drawing.Size(984, 584)
@@ -4368,7 +4368,7 @@ Public Class CeditMain
         Me.C1SizerLight1.SetAutoResize(Me, True)
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(1014, 685)
+        Me.ClientSize = New System.Drawing.Size(1004, 685)
         Me.Controls.Add(Me.MainOpen)
         Me.Controls.Add(Me.MainView)
         Me.Controls.Add(Me.MainGeometry)
@@ -4380,7 +4380,7 @@ Public Class CeditMain
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximumSize = New System.Drawing.Size(1280, 1024)
         Me.Menu = Me.MainMenu
-        Me.MinimumSize = New System.Drawing.Size(1022, 715)
+        Me.MinimumSize = New System.Drawing.Size(1020, 715)
         Me.Name = "CeditMain"
         Me.HelpProvider.SetShowHelp(Me, True)
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

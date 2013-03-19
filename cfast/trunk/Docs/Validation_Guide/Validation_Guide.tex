@@ -5,6 +5,9 @@
 \usepackage{multirow}
 \usepackage{rotating}
 
+\usepackage{datetime}
+\newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
+
 \renewcommand{\bibname}{References}
 
 \setlength{\textwidth}{6.5in}
@@ -135,7 +138,8 @@
    \bf{CFAST -- Consolidated Model of Fire \\
    Growth and Smoke Transport \\
    (Version 6) \\
-   Software Development and Model Evaluation Guide \\}
+   Software Development and \\
+   Model Evaluation Guide \\}
    }
    
 \vspace{.5in}
@@ -178,7 +182,8 @@
    \bf{CFAST -- Consolidated Model of Fire \\
    Growth and Smoke Transport \\
    (Version 6) \\
-   Software Development and Model Evaluation Guide \\}
+   Software Development and  \\
+   Model Evaluation Guide \\}
    }
 
 \vspace{.5in}
@@ -188,7 +193,7 @@
 Richard D. Peacock \\
 Paul A. Reneke \\
 {\em Fire Research Division} \\
-{\em Building and Fire Research Laboratory} 
+{\em Engineering Laboratory} 
  }
  
  \vspace{.5in}
@@ -197,8 +202,9 @@ Paul A. Reneke \\
 
 \vspace{.25in}
 
-\flushright{\today \\
-$SVN Repository$~$Revision: 600 $}
+%\flushright{\mydate\today\\
+\flushright{December 2012 \\
+$SVN Repository$~$Revision: 507 $}
 
 
 \vfill

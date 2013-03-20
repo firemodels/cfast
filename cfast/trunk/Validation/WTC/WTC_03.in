@@ -11,13 +11,13 @@ WIND,0,10,0.16
 !!Material Properties
 !!
 MATL,GYP1/2,0.16,900,790,0.013,0.9,Gypsum Board (1/2 in)
+MATL,BNZMARI,0.12,1250,737,0.0254,0.8,BNZ Materials Maranite I
 MATL,OIL,145,1909,884.1,0.006,0.8,"Oil, Unused (1/4 in)"
 MATL,STAIN304,19.8,557,7900,0.003,0.9,"Steel, 304 Stainless (1/8 in)"
-MATL,Marinite,0.12,1423,737,0.0254,0.8,BNZ Materials Marinite I
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,7,3.6,3.82,0,0,0,Marinite,GYP1/2,Marinite
+COMPA,Compartment 1,7,3.6,3.82,0,0,0,BNZMARI,GYP1/2,BNZMARI
 !!
 !!Vent keywords
 !!

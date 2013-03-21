@@ -7,50 +7,14 @@ A true validation of a model would involve proper statistical treatment of all t
 Table \ref{tab:Summary_Relative_Diffs} summarizes the comparisons in this report.
 
 \begin{table}
-\begin{center}
+
 \caption{Summary of Model Comparisons}
 \label{tab:Summary_Relative_Diffs}
 \vspace{0.1in}
-\begin{tabular*}{1.0\textwidth}{@{\extracolsep{\fill}} | l | c | c | c | c |}
-\hline
-Quantity & Average & Median & Within & 90th \\
-& Difference$^{a}$ &Difference$^b$ & Experimental & Percentile$^d$ \\
-& & & Uncertainty$^c$ & \\
-& (\%) & (\%) & (\%) & (\%) \\
-\hline
-HGL Temperature & 2 &  11 &  56 &  31  \\ \hline
-HGL Depth & -1 & 14 & 38 & 38 \\ \hline
-Plume Temperature & 30 & 29 & 15 & 43 \\ \hline
-Ceiling Jet Temperature & 4 & 4 & 89 & 17 \\ \hline
-Oxygen Concentration & 7 & 18 & 24 & 48 \\ \hline
-Carbon Dioxide Concentration & -12 & 14 & 24 & 35 \\ \hline
-Smoke Obscuration$^e$ & 278/24 & 242/20 & 0/81 & 501/42 \\ \hline
-Pressure & 35 & 13 & 82 & 163$^f$ \\ \hline
-Target Flux (Total) & 2 & 17 & 58 & 46 \\ \hline
-Target Temperature & 2 & 19 & 41 & 43 \\ \hline
-Surface Flux (Total)$^g$ & 121 & 121 & 0 &174 \\ \hline
-Surface Temperature & 21 & 27 & 12 & 51 \\ \hline
-\end{tabular*}  
-\end{center}
-a - average difference includes both the sign and magnitude of the relative differences in order to show any general trend to over- or under-prediction. \\
-b - median difference is based only on the magnitude of the relative differences and ignores the sign of the relative differences so that values with opposing signs do not cancel and make the comparison appear closer than individual magnitudes would indicate. \\
-c - the percentage of model predictions that are within experimental uncertainty. \\
-d - 90 \% of the model predictions are within the stated percentage of experimental values. For reference, a difference of 100~\% is a factor of 2 larger or smaller than experimental values. \\
-e - the first number is for the closed door NIST/NRC tests and the second number if for the open door NIST/NRC tests. \\
-f - high magnitude of the 90th percentile value driven in large part by two tests where under-prediction was approximately 2 Pa. If these two tests are not included, the 90th percentile value drops to 33 \%. \\
-g - reflects only flux to the front surface of the target.  CFAST calculates flux to the front surface and rear surface separately.  For surface targets, the rear surface is assumed at ambient temperature so this comparison to only the front surface is expected to significantly overestimate the actual flux to the entire target.
+
+\input{FIGURES/Scatterplots/validation_statistics.tex}
+
 \end{table}
-
-For five of the quantities,  the physics of the model is appropriate to represent the experimental conditions, and the calculated relative differences comparing the model and the experimental values are consistent with the combined experimental and input uncertainty.  A few notes on the comparisons are appropriate:
-
-\begin{itemize}
-\item The CFAST predictions of the HGL temperature and height are, with a few exceptions, within or close to experimental uncertainty.  The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements.  Still, predictions are mostly within 10~\% to 20~\% of experimental measurements.  Calculation of HGL temperature and height has higher uncertainty in rooms remote from the fire (compared to those in the fire compartment).
-\item For most of the comparisons, CFAST predicts ceiling jet temperature well within experimental uncertainty.  For cases where the HGL temperature is below 70 \degc, significant and consistent over-prediction was observed.
-\item CFAST predicts the flame height consistent with visual observations of flame height for the experiments.  This is not surprising, given that CFAST simply uses a well-characterized experimental correlation to calculate flame height.
-\item Gas concentrations are typically under-predicted by CFAST, with an average difference of -6~\% for oxygen concentration and -16~\% for carbon dioxide concentration. 
-\item Compartment pressure predicted by CFAST are within or close to experimental uncertainty for most tests.
-\end{itemize}
-
 
 Four of the quantities were seen to require additional care when using the model to evaluate the given quantity.  This typically indicates limitations in the use of the model.  A few notes on the comparisons are appropriate:
 

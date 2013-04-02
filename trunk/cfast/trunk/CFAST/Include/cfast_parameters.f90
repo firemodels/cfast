@@ -38,7 +38,7 @@ module cparams
     real(8), parameter :: vfmaxdz=0.01d0    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
     
     ! target parameters
-    integer, parameter :: mxtarg = 3*nr     ! maximum number of targets
+    integer, parameter :: mxtarg = 10*nr    ! maximum number of targets
     integer, parameter :: trgtempf = 17     ! position of front temperature of target (front surface temperature)
     integer, parameter :: trgtnum = 50      ! number of interior nodes in a target for conduction calculation
     integer, parameter :: trgtempb = trgtempf+trgtnum-1   ! position of back temperature of target (back surface temperature)

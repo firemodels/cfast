@@ -1008,7 +1008,7 @@
     return
     end
 
-    SUBROUTINE RESID (TSEC,X,XPSOLVE,DELTA,IRES,RPAR,IPAR)
+    subroutine resid (tsec,x,xpsolve,delta,ires,rpar,ipar)
 
 
     !     Routine: cfast resid

@@ -112,7 +112,7 @@
     use vents
     implicit none
 
-    integer, parameter :: maxoutput = 512
+    integer, parameter :: maxoutput = mxvents*4
     real(8) :: time, outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
     logical :: firstc
     data firstc /.true./
@@ -234,7 +234,7 @@
     use fltarget
     implicit none
 
-    integer, parameter :: maxoutput=512
+    integer, parameter :: maxoutput=4*nr+9*mxtarg
     real(8) :: outarray(maxoutput), time, xiroom, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
     integer :: iwptr(4), errorcode, position,i,iw,itarg,itctemp,iroom
     external length

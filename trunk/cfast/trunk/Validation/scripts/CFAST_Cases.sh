@@ -78,7 +78,7 @@ $RUNCFAST LLNL_Enclosure LLNL_06
 $RUNCFAST LLNL_Enclosure LLNL_07
 $RUNCFAST LLNL_Enclosure LLNL_08
 $RUNCFAST LLNL_Enclosure LLNL_09
-$RUNCFAST LLNL_Enclosure LLNL_10
+#$RUNCFAST LLNL_Enclosure LLNL_10
 $RUNCFAST LLNL_Enclosure LLNL_11
 $RUNCFAST LLNL_Enclosure LLNL_12
 $RUNCFAST LLNL_Enclosure LLNL_13
@@ -91,7 +91,7 @@ $RUNCFAST LLNL_Enclosure LLNL_19
 # $RUNCFAST LLNL_Enclosure LLNL_20
 $RUNCFAST LLNL_Enclosure LLNL_21
 $RUNCFAST LLNL_Enclosure LLNL_22
-$RUNCFAST LLNL_Enclosure LLNL_23
+#$RUNCFAST LLNL_Enclosure LLNL_23
 # $RUNCFAST LLNL_Enclosure LLNL_24
 # $RUNCFAST LLNL_Enclosure LLNL_25
 # $RUNCFAST LLNL_Enclosure LLNL_26
@@ -272,3 +272,4 @@ $RUNCFAST Steckler_Compartment Steckler_162 /V
 $RUNCFAST Steckler_Compartment Steckler_167 /V
 $RUNCFAST Steckler_Compartment Steckler_161 /V
 $RUNCFAST Steckler_Compartment Steckler_166 /V
+ 

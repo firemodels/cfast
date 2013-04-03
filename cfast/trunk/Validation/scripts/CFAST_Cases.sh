@@ -1,5 +1,9 @@
 #!/bin/bash
 
+$RUNCFAST SP_AST SP_AST_Test_1
+$RUNCFAST SP_AST SP_AST_Test_2
+$RUNCFAST SP_AST SP_AST_Test_3
+
 $RUNCFAST  ATF_Corridors ATF_Corridors_050_kW
 $RUNCFAST  ATF_Corridors ATF_Corridors_100_kW
 $RUNCFAST  ATF_Corridors ATF_Corridors_240_kW

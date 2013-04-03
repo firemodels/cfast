@@ -18,12 +18,23 @@ if %1==High_Bay goto High_Bay
 if %1==WTC goto WTC
 if %1==Steckler_Compartment goto Steckler
 if %1==Dunes_2000 goto Dunes2000
+if %1==SP_AST goto SP_AST
 :Help
 echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
 echo        NBS, NBS_1Room, NIST_NRC, Steckler_Compartment, Vettori_Flat, VTT, or WTC
 goto end
 :ALL
 call cleanall.bat
+:SP_AST
+echo Running SP_AST Tests
+cd SP_AST
+if NOT %1==ALL call ..\cleancfast.bat
+..\..\bin\cfast SP_AST_Test_1 /V
+..\..\bin\cfast SP_AST_Test_2 /V
+..\..\bin\cfast SP_AST_Test_3 /V
+cd ..
+if %1==SP_AST goto end
+
 :ATF
 echo Running ATF Corridor Tests
 cd ATF_Corridors
@@ -112,7 +123,7 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\..\bin\cfast LLNL_07 /V
 ..\..\bin\cfast LLNL_08 /V
 ..\..\bin\cfast LLNL_09 /V
-REM ..\..\bin\cfast LLNL_10 /V
+..\..\bin\cfast LLNL_10 /V
 ..\..\bin\cfast LLNL_11 /V
 ..\..\bin\cfast LLNL_12 /V
 ..\..\bin\cfast LLNL_13 /V

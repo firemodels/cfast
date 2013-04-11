@@ -237,53 +237,32 @@ which are defined by user input of the yields as appropriate.  Yields of HCN and
    \nu_\HCl = \frac{M_\F}{M_\HCl} \; y_\HCl \label{HCl_yield}
 \ee
 
-The remaining stoichioimetry falls directly from the chemical balance as
-\be
-  \nu_\COTWO = \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So}
-\ee
-\be
-  \nu_\HTWOO = \frac{\mathrm{n_\Hy} - \nu_\HCl+\nu_\HCN}{2}
-\ee
+The remaining stoichioimetry falls directly from the chemical balance of
 
-\begin{eqnarray} \nu_\OTWO &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO - \mathrm{n_\N}}{2} \label{Oxygen_yield} \\
- &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So}+\frac{\nu_\CO}{2}+\frac{\mathrm{n_\Hy} - \nu_\HCl+\nu_\HCN}{4}-\frac{\mathrm{n_\Oh}}{2} \\
- &=& \frac{4 \mathrm{n_\C+n_\Hy}}{4}-\frac{\mathrm{n_\Oh}}{2}-\brackets{\frac{2 \nu_\So-\nu_\CO}{2}+\frac{5 \nu_\HCN+\nu_\HCl}{4}}\\
+\begin{eqnarray}
+\mathrm{n_C} &=& \nu_\COTWO + \nu_\CO + \nu_\So + \nu_\HCN \\
+\mathrm{n_H} &=& 2 \nu_\HTWOO + \nu_\HCl + \nu_\HCN \\
+\mathrm{n_O} &=& 2 \nu_\COTWO + \nu_\HTWOO + \nu_\CO - 2 \nu_\OTWO \\
+\mathrm{n_{N}} &=& \nu_\HCN \\
+\mathrm{n_{Cl}} &=& \nu_\HCl
+\end{eqnarray}
+
+so that
+
+\begin{eqnarray}
+  \nu_\COTWO &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So} \\
+  \nu_\HTWOO &=& \frac{\mathrm{n_\Hy} - \brackets{\nu_\HCl + \nu_\HCN}}{2} \\
+ \nu_\OTWO &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO - \mathrm{n_\Oh}}{2} \label{Oxygen_yield} \\
+ &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So}+\frac{\nu_\CO}{2}+\frac{\mathrm{n_\Hy} - \nu_\HCl - \nu_\HCN}{4}-\frac{\mathrm{n_\Oh}}{2} \\
  &=& \frac{4 \mathrm{n_\C+n_\Hy}}{4}-\frac{\mathrm{2 n_\Oh+5 n_\N+n_\Cl}}{4}-\brackets{\nu_\So+\frac{\nu_\CO}{2}} \label{Oxygen_yield_2}
 \end{eqnarray}
 The simpler eq. \ref{Oxygen_yield} is used in the code, but the latter equations allow more direct examination of the impact of individual species on the oxygen consumption and are useful to understand the limits of the individual inputs. Again, it is useful to note that eq. \ref{Oxygen_yield_2} assumes complete conversion of the nitrogen and chlorine in the fuel to HCN and HCl, respectively. For incomplete conversion, an effective chemical formula can be used.
 
 For complete combustion of the simplest hydrocarbon fuel, methane reacts with
-oxygen to form carbon dioxide and water. The only input required is the heat release rate and the
-heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes
+oxygen to form carbon dioxide and water. For incomplete combustion or for fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes
 more complex. In this case, production yields for the species are prescribed by the user.
 Stoichiometry is used to insure conservation of mass and elements in the reaction. The species
 which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
-
-In CFAST, the calculation of combustion chemistry is implemented on a carbon-basis rather than a fuel-basis since the actual composition of the fuel is typically not precisely known. For this, the mass balance inherent in eq \ref{stoich} is used as follows
-
-\be  \dm_f +  \dm_\OTWO =    \dm_\COTWO \, + \dm_\CO + \dm_\So + \dm_\HTWOO \
-      + \dm_\HCl + \dm_\HCN \label{eqCFASTfiremassbalance} 
- \ee
-      
- \be   \dm_f +  \dm_\OTWO =  \dm_\COTWO \, + \frac{y_\CO}{y_\COTWO}\dm_\COTWO \
-       + \frac{y_\So}{y_\COTWO}\dm_\COTWO + 9\frac{H}{C}\frac{\dm_f}{f_\C} + y_\HCl\dm_f \
-       + y_\HCN\dm_f
- \ee
- 
- where  $f_\C = 1+\frac{H}{C}+\frac{HCl}{C}+\frac{HCN}{C}+\frac{O}{C}$. Noting that for most hydrocarbon fuels, $\dm_\OTWO \approx \dm_f\frac{H_\C}{1.32x10^7}$ or $\dm_f\frac{H_\C}{1.32x10^7} -\frac{\dm_f}{f_\C}\frac{O}{C}$ for fuels with oxidizer in the fuel,
- 
- \be \dm_f \brackets{\brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \  
-        \brackets{\frac{9 H}{C}\frac{1}{f_\C} + y_\HCl  + y_\HCN}}= \dm_\COTWO \
-        \brackets{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}}
- \ee
-
-Since $f_\C$ is just the mass ratio of fuel to carbon, we can solve for $\dm_\COTWO$ as
-
-\begin{eqnarray} \dm_\COTWO &=& \frac{\dm_f \brackets{\brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \nicefrac{\brackets{\frac{9 H}{C} +  y_\HCl f_\C  + y_\HCN f_\C}}{f_\C}}}{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}} \nonumber \\
-	&=& \frac{\dm_f \brackets{1+\frac{H_\C}{1.32x10^7} -\frac{O/C}{f_\C}}- \nicefrac{\brackets{\frac{9 H}{C} +  \frac{HCl}{C}  + \frac{HCN}{C}}}{f_\C}}{1+\frac{y_\CO}{y_\COTWO} + \frac{y_\So}{y_\COTWO}} \label{eqCFASTcarbonbalance}
-\end{eqnarray}
-
-$y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $H$/$C$, $O$/$C$, $y_\HCl$, and $y_\HCN$ are direct CAST inputs, so production species rates follow from eq \ref{eqCFASTcarbonbalance}. $y_\CO$/$y_\COTWO$, $y_\So$/$y_\COTWO$, $y_\HCl$, and $y_\HCN$ are typically available from material test data. $H$/$C$ and $O$/$C$ are properties of the fuel.   
 
 The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons, reducing the effective $\dm_f$ for a given fire.
 

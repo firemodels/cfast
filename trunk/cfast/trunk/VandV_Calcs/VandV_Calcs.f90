@@ -87,7 +87,7 @@
             
             ! Here's where the various calculations should go
             
-            ! For detector / sprinkler activation times
+            ! Calculations detector / sprinkler activation times
             if (do_activation_time) then
                 ! Calculations of the activation times
                 if (d2x_len==d2ys_len(1)) then
@@ -105,8 +105,9 @@
                 partial_filename = d2_filename
                 if (len_trim(d2_filename)>20) partial_filename = '...' // d2_filename(len_trim(d2_filename)-20:)
                 write (9,'(i4,3x,a25,3x,a15,f12.3)') ir, trim(partial_filename), trim(d2_data_col_name), activation_time
+                
+            !Calculations of layer temperature profiles
             else if (do_temperature_profile) then
-                !Calculations of layer temperature profiles
                 if (d2x_len==d2ys_len(1).and.d2x_len==d2ys_len(2).and.d2x_len==d2ys_len(3)) then
                     ntest = ntest + 1
                     temperature_profile_data(ntest,1) = d2ys(d2ys_len(1),1)
@@ -117,6 +118,10 @@
                     write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2y_len
                     stop
                 end if
+            
+            ! Calculations to correct pressure to height matching measured pressure
+            else if (do_pressure_correction) then
+                
             end if
         end do
     end if

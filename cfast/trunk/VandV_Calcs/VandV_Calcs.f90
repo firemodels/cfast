@@ -4,29 +4,41 @@
 
     ! Variables
 
-    ! These parameters decide which calculation to do ... only one should be true at a time, I think
-    logical, parameter :: do_activation_time = .false.      ! true if calculating activation times from data
-    logical, parameter :: do_temperature_profile = .true.   ! true if calculating temperature profiles in a compartment
+    ! These parameters indicate which calculation to do
+    integer, parameter :: do_activation_time = 1        ! if calculating activation times from data
+    integer, parameter :: do_temperature_profile = 2    ! if calculating temperature profiles in a compartment
+    integer, parameter :: do_pressure_correction = 3    ! if calculating pressure corrected to measurement height
 
 
-    integer, parameter :: ntests = 2000, nrow = 10000, ncol = 500, list_nrow = 1000, list_ncol = 100
+    integer, parameter :: ntests = 200, nrow = 10000, ncol = 500, list_nrow = 1000, list_ncol = 100
 
     character :: base_folder*128, comparelist_file*128, partial_filename*128, filename*128
     character :: list_carray(list_nrow, list_ncol)*128, model_carray(nrow,ncol)*50, switch_id*3
 
-    integer list_numr, list_numc, model_numr, model_numc, find_column, io_error, ir, ic, it, i, ntest, istat
+    integer list_numr, list_numc, model_numr, model_numc, find_column, io_error, ir, ic, it, i, istat, irr
     integer :: switch_id_column
-    integer :: d2_filename_column, d2_col_name_row_column, d2_ind_col_name_column, d2_data_row_column, d2_data_col_name_column, d2_data_column_count_column
+    integer :: d2_filename_column, d2_calculation_type_column, d2_col_name_row_column, d2_ind_col_name_column, d2_data_row_column, &
+        d2_data_col_name_column, d2_data_column_count_column, d2_constants_count_column, d2_constants_column
 
     character :: d2_filename*128, d2_ind_col_name*128, d2_data_col_names(list_ncol)*128, d2_data_col_name*128
-    integer :: d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_data_column_count, d2x_len, d2y_len, d2ys_len(list_ncol)
+    integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_data_column_count, d2x_len, d2y_len, d2ys_len(list_ncol), &
+        d2_constants_count, d2_constants(list_ncol)
 
     real :: list_rarray(list_nrow, list_ncol), model_rarray(nrow,ncol), d2x(nrow), d2y(nrow), d2ys(nrow,list_ncol)
+    character(30) :: print_array(32000)
+    integer :: position
 
     ! Calculation specific variables
-    real :: activation_time
-    real :: temperature_profile_data(ntests,3)
+    real :: activation_time                         ! for activation time calculation
+
+    real :: temperature_profile_data(ntests,3)      ! for temperature profile calculation
     character :: temperature_profile_name(ntests)*30
+    integer ::  ntest_temperature_profile
+
+    real :: pressure_correction_data(ntests,nrow,6) ! for pressure correction calculation
+    real :: tu, tl, h, y, delta_pf, delta_py, rhou, rhol, rhoinf, g
+    character :: pressure_correction_name(ntests)*30
+    integer :: ntest_pressure_correction, numrows_pressure_correction(ntests), max_numrows
 
     ! Body of ModelVandV
     base_folder = '..\..\cfast\Validation\'
@@ -44,19 +56,23 @@
     ! determine column locations
     switch_id_column = find_column(list_carray,list_nrow,list_ncol,1,'switch_id')
     d2_filename_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Filename')
+    d2_calculation_type_column =find_column(list_carray,list_nrow,list_ncol,1,'d2_Calculation_Type')
     d2_col_name_row_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Col_Name_Row')
     d2_ind_col_name_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Ind_Col_Name')
     d2_data_row_column =  find_column(list_carray,list_nrow,list_ncol,1,'d2_Data_Row')
     d2_data_column_count_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Data_Column_Count')
     d2_data_col_name_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Data_Col_Name')
+    d2_constants_count_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Constants_Column_Count')
+    d2_constants_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Constants')
 
     ir=0
-    ntest = 0
+    ntest_temperature_profile = 0
+    ntest_pressure_correction = 0
+    max_numrows = 0
 10  ir = ir + 1
     switch_id = list_carray(ir,switch_id_column)
 
     if (switch_id=='d') then
-
         ! read in the model data   
         d2_filename = trim(base_folder) // list_carray(ir,d2_filename_column)
         write (*,*) ir,trim(d2_filename)
@@ -64,6 +80,7 @@
         call readcsv(8,model_rarray,model_carray,nrow,ncol,1,model_numr, model_numc)
         close (unit=8)
 
+        d2_calculation_type = list_rarray(ir,d2_calculation_type_column)
         d2_col_name_row = list_rarray(ir,d2_col_name_row_column)
         d2_ind_col_name = list_carray(ir,d2_ind_col_name_column)
         d2_ind_data_col = find_column(model_carray,nrow,ncol,d2_col_name_row,d2_ind_col_name)
@@ -72,23 +89,27 @@
         do ic = 1, d2_data_column_count
             d2_data_col_names(ic) = list_carray(ir,d2_data_col_name_column+ic-1)
         end do
+        d2_constants_count = list_rarray(ir,d2_constants_count_column)
+        do ic = 1, d2_constants_count
+            d2_constants(ic) = list_rarray(ir,d2_constants_column+ic-1)
+        end do
 
         ! Get the vectors for this calculation ...d2x and d2y(i)
         call load_vector(model_rarray,model_carray,nrow,model_numr,d2_ind_data_col,d2_data_row,d2x,d2x_len)
 
         do while (len_trim(d2_data_col_names(1))>0)
             do ic = 1,d2_data_column_count
-
                 call find_column_name(d2_data_col_names(ic),d2_data_col_name)
                 d2_data_data_col(ic) = find_column(model_carray,nrow,ncol,d2_col_name_row,d2_data_col_name) 
                 call load_vector(model_rarray,model_carray,nrow,model_numr,d2_data_data_col(ic),d2_data_row,d2y,d2y_len)
                 call copy_vector(d2y,d2ys,d2y_len,d2ys_len,nrow,ic)
             end do
-            
+
             ! Here's where the various calculations should go
-            
+            select case (d2_calculation_type)
+
             ! Calculations detector / sprinkler activation times
-            if (do_activation_time) then
+            case (do_activation_time)
                 ! Calculations of the activation times
                 if (d2x_len==d2ys_len(1)) then
                     do i = 1, d2x_len
@@ -105,41 +126,93 @@
                 partial_filename = d2_filename
                 if (len_trim(d2_filename)>20) partial_filename = '...' // d2_filename(len_trim(d2_filename)-20:)
                 write (9,'(i4,3x,a25,3x,a15,f12.3)') ir, trim(partial_filename), trim(d2_data_col_name), activation_time
-                
+
             !Calculations of layer temperature profiles
-            else if (do_temperature_profile) then
+            case (do_temperature_profile)
                 if (d2x_len==d2ys_len(1).and.d2x_len==d2ys_len(2).and.d2x_len==d2ys_len(3)) then
-                    ntest = ntest + 1
-                    temperature_profile_data(ntest,1) = d2ys(d2ys_len(1),1)
-                    temperature_profile_data(ntest,2) = d2ys(d2ys_len(2),2)
-                    temperature_profile_data(ntest,3) = d2ys(d2ys_len(3),3)
-                    temperature_profile_name(ntest) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
+                    ntest_temperature_profile = ntest_temperature_profile + 1
+                    temperature_profile_data(ntest_temperature_profile,1) = d2ys(d2ys_len(1),1)
+                    temperature_profile_data(ntest_temperature_profile,2) = d2ys(d2ys_len(2),2)
+                    temperature_profile_data(ntest_temperature_profile,3) = d2ys(d2ys_len(3),3)
+                    temperature_profile_name(ntest_temperature_profile) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
                 else
                     write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2y_len
                     stop
                 end if
-            
+
             ! Calculations to correct pressure to height matching measured pressure
-            else if (do_pressure_correction) then
+            case (do_pressure_correction)
+                if (d2x_len==d2ys_len(1).and.d2x_len==d2ys_len(2).and.d2x_len==d2ys_len(3).and.d2x_len==d2ys_len(4)) then
+                    ntest_pressure_correction = ntest_pressure_correction + 1
+                    numrows_pressure_correction(ntest_pressure_correction) = d2x_len
+                    max_numrows=max(max_numrows,d2x_len)
+                    g = 9.8
+                    rhoinf = 352.8/(d2ys(1,2)+273.15) ! gas density assuming surrounding ambient is initial temperature of lower layer
+                    do irr = 1, d2x_len
+                        pressure_correction_data(ntest_pressure_correction,irr,1) = d2x(irr)
+                        pressure_correction_data(ntest_pressure_correction,irr,2) = d2ys(irr,1)
+                        tu = d2ys(irr,1)+273.15 ! upper layer temperature
+                        rhou = 352.8/tu         ! upper layer gas density from SPFE handbook chapter on vent flow
+                        pressure_correction_data(ntest_pressure_correction,irr,3) = d2ys(irr,2)
+                        tl = d2ys(irr,2)+273.15 ! lower layer temperature
+                        rhol = 352.8/tl         ! lower layer gas density from SPFE handbook chapter on vent flow
+                        pressure_correction_data(ntest_pressure_correction,irr,4) = d2ys(irr,3)
+                        h = d2ys(irr,3)         ! layer height
+                        pressure_correction_data(ntest_pressure_correction,irr,5) = d2ys(irr,4)
+                        delta_pf = d2ys(irr,4)  ! pressure difference at the floor
+                        y = d2_constants(1)
+                        if (y<=h) then
+                            delta_py = delta_pf - rhol*g*y + rhoinf*g*y
+                        else
+                            delta_py = delta_pf - rhol*g*h - rhou*g*(y-h) + rhoinf*g*y
+                        end if
+                        pressure_correction_data(ntest_pressure_correction,irr,6) = delta_py
+                    end do  
+                    pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                end if
                 
-            end if
+            ! Incorrect inputs, just throw up hands and quit
+            case default
+            stop 'Invalid specifier for d2_calculation_type'
+            end select
         end do
     end if
 
     if (ir.le.list_numr.and.list_carray(ir,1).ne.'End') go to 10
     close (unit=9)
-    
-    if (do_temperature_profile.and.ntest>=1) then
+
+    if (ntest_temperature_profile>=1) then
         open (unit=10,file='profiles.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
-            write (10,'(2000(a,'',''))') ('HGT_'//trim(temperature_profile_name(ic)),'TEMP_'//trim(temperature_profile_name(ic)), ic=1,ntest)
-            write (10,'(2000(a,'',''))') ('m','C', ic=1,ntest)
-            write (10,'(1000(a,'','',e12.5'',''))') ('0.0',temperature_profile_data(ic,2), ic=1,ntest)
-            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,2), ic=1,ntest)
-            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,1), ic=1,ntest)
-            write (10,'(1000(a,'','',e12.5'',''))') ('100.0',temperature_profile_data(ic,1), ic=1,ntest)
+            write (10,'(2000(a,'',''))') ('HGT_'//trim(temperature_profile_name(ic)),'TEMP_'//trim(temperature_profile_name(ic)), ic=1,ntest_temperature_profile)
+            write (10,'(2000(a,'',''))') ('m','C', ic=1,ntest_temperature_profile)
+            write (10,'(1000(a,'','',e12.5'',''))') ('0.0',temperature_profile_data(ic,2), ic=1,ntest_temperature_profile)
+            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,2), ic=1,ntest_temperature_profile)
+            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,1), ic=1,ntest_temperature_profile)
+            write (10,'(1000(a,'','',e12.5'',''))') ('100.0',temperature_profile_data(ic,1), ic=1,ntest_temperature_profile) ! Note we're assuming ceiling height is less than 100 m
             close (unit=10)
         end if
+    end if
+    if (ntest_pressure_correction>=1) then
+        open (unit=11,file='pressures.csv',form='formatted', action='write', iostat=io_error)
+        if (io_error==0) then
+            write (11,'(2000(a,'',''))') ('TIME_'//trim(pressure_correction_name(ic)),'PRS_'//trim(pressure_correction_name(ic)), ic=1,ntest_pressure_correction)
+            write (11,'(2000(a,'',''))') ('s','Pa', ic=1,ntest_pressure_correction)
+            do irr = 1, max_numrows
+                position = 0
+                do it = 1, ntest_pressure_correction
+                    if (irr<=numrows_pressure_correction(it)) then
+                        call SSaddtolist(position,1,pressure_correction_data(it,irr,1),' ',print_array)
+                        call SSaddtolist(position,1,pressure_correction_data(it,irr,6),' ',print_array)
+                    else
+                        call SSaddtolist(position,2,0.0,'NaN',print_array)
+                        call SSaddtolist(position,2,0.0,'NaN',print_array)
+                    end if
+                end do
+                    call SSprintresults(11,position,print_array)
+            end do
+        end if
+        close (unit=11)
     end if
 
     end program VandV_Calcs

@@ -139,3 +139,34 @@
     end do
     interpolate = y(x_length)
     end function interpolate
+    
+    
+    subroutine SSaddtolist (ic, itype, valu, cvalu, array)
+
+    character(30) :: array(*)
+    character(*) :: cvalu
+    real :: valu
+    integer :: ic, itype, iounit
+
+    ic = ic + 1
+    ! We are imposing an arbitrary limit of 32000 columns
+    if (ic>32000) return
+    select case (itype)
+    case (1)
+        if (abs(valu)<=1.0d-100) then
+            array(ic) = "0.0"
+        else
+            write (array(ic),'(e13.6)') valu
+        end if
+    case (2)
+        array(ic) = cvalu
+    end select
+    return
+
+    entry SSprintresults (iounit,ic,array)
+
+    write (iounit,"(1024(a,','))" ) (trim(array(i)),i=1,ic)
+    return
+
+    end subroutine SSaddtolist
+

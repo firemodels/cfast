@@ -129,14 +129,14 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\..\bin\cfast LLNL_13 /V
 ..\..\bin\cfast LLNL_14 /V
 REM ..\..\bin\cfast LLNL_15 /V
-REM ..\..\bin\cfast LLNL_16 /V
+..\..\bin\cfast LLNL_16 /V
 REM ..\..\bin\cfast LLNL_17 /V
 REM ..\..\bin\cfast LLNL_18 /V
 ..\..\bin\cfast LLNL_19 /V
 REM ..\..\bin\cfast LLNL_20 /V
 ..\..\bin\cfast LLNL_21 /V
 ..\..\bin\cfast LLNL_22 /V
-..\..\bin\cfast LLNL_23 /V
+REM ..\..\bin\cfast LLNL_23 /V
 REM ..\..\bin\cfast LLNL_24 /V
 REM ..\..\bin\cfast LLNL_25 /V
 REM ..\..\bin\cfast LLNL_26 /V
@@ -171,7 +171,7 @@ REM ..\..\bin\cfast LLNL_54 /V
 REM ..\..\bin\cfast LLNL_55 /V
 REM ..\..\bin\cfast LLNL_56 /V
 REM ..\..\bin\cfast LLNL_57 /V
-REM ..\..\bin\cfast LLNL_58 /V
+..\..\bin\cfast LLNL_58 /V
 ..\..\bin\cfast LLNL_59 /V
 ..\..\bin\cfast LLNL_60 /V
 ..\..\bin\cfast LLNL_61 /V
@@ -179,6 +179,8 @@ REM ..\..\bin\cfast LLNL_62 /V
 ..\..\bin\cfast LLNL_63 /V
 ..\..\bin\cfast LLNL_64 /V
 cd ..\
+..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Pressure_Correction_Inputs.csv
+copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y
 if %1==LLNL_Enclosure goto end
 :NBS_1Room
 echo NBS 1 room furniture tests 1, 6

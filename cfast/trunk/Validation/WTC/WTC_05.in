@@ -13,10 +13,10 @@ WIND,0,10,0.16
 MATL,GYP1/2,0.16,900,790,0.013,0.9,Gypsum Board (1/2 in)
 MATL,OIL,145,1909,884.1,0.006,0.8,"Oil, Unused (1/4 in)"
 MATL,BNZMARI,0.12,1250,737,0.0254,0.8,BNZ Materials Maranite I
-MATL,THINTRUSS,0.0752,1130,208,0.034,0.9,Thinly Insulated Truss (Isolatek Blaze-Shield DC/F)
-MATL,THICKTRUSS,0.0752,1130,208,0.068,0.9,Thickly Insulated Truss (Isolatek Blaze-Shield DC/F)
-MATL,THICKCOLUMN,0.0752,1130,208,0.068,0.9,Thickly Insulated Column (Isolatek Blaze-Shield DC/F)
-MATL,THINBAR,0.0752,1130,208,0.034,0.9,Thinly Insulated Bar (Isolatek Blaze-Shield DC/F)
+MATL,THINTRUSS,0.0752,1130,208,0.038,0.9,Thinly Insulated Truss (Isolatek Blaze-Shield DC/F)
+MATL,THICKTRUSS,0.0752,1130,208,0.076,0.9,Thickly Insulated Truss (Isolatek Blaze-Shield DC/F)
+MATL,THICKCOLUMN,0.0752,1130,208,0.076,0.9,Thickly Insulated Column (Isolatek Blaze-Shield DC/F)
+MATL,THINBAR,0.0752,1130,208,0.038,0.9,Thinly Insulated Bar (Isolatek Blaze-Shield DC/F)
 !!
 !!Compartment keywords
 !!

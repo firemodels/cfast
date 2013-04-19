@@ -1,5 +1,7 @@
 \chapter{Description of Experiments}
 
+\label{Experiment_Chapter}
+
 This chapter summarizes the range of experiments used in the current evaluation for the CFAST model. This study focused on the predicted results of the CFAST fire model and did not include an assessment of the user interface for the model.  However, all input files used for the simulations were prepared using the CFAST graphical user interface (GUI) and reviewed for correctness prior to the simulations.  The comparisons between the experiments and model predictions were characterized as semi-blind calculations, i.e., the modelers were given detailed descriptions of the test conditions, test geometry, and fire source, but did not modify model inputs from these given conditions to improve model predictions.  As such, the comparisons in this report provide an assessment of the predictive capability of the model, but not an assessment of the ability of different modelers to develop appropriate model inputs.
 
 \section{ATF Corridors Experiments}
@@ -202,7 +204,7 @@ However, in one experiment, the first 20 minutes involved a fairly well-characte
 pool fire burning on the opposite side of the compartment from the cable tray. This part of
 the experiment has been used as part of the model evaluation.
 
-The first part of the test consisted of preheating the cable trays in the room with a 1 m$^2$ round pan on the floor filled with ethanol (ethyl alcohol) used as the preheating source.  At 30 min, a propane gas burner was used as the fire source Ð this was not considered because only the first 20 min of the test was used in this validation study.  
+The first part of the test consisted of preheating the cable trays in the room with a 1 m$^2$ round pan on the floor filled with ethanol (ethyl alcohol) used as the preheating source.  At 30 min, a propane gas burner was used as the fire source ï¿½ this was not considered because only the first 20 min of the test was used in this validation study.  
 Exhaust products were collected in an exhaust duct and the $\dQ$  was measured using the oxygen calorimetry.  For the purpose of this study, the measured $\dQ$ was used as direct input to the various fire models.  The first 20 min of data were used for the model evaluation. After 20 min, the  $\dQ$ became relatively noisy.  Figure \ref{fig:iBMB_HRR} shows the HRR. The relative combined expanded uncertainty was assigned a value of $\pm$15 \%, consistent with typical values of this parameter \cite{NRCNUREG1824Experimental}.
 
 \section{LLNL Enclosure Tests}
@@ -519,6 +521,22 @@ A single nozzle was used to spray liquid hydrocarbon fuels onto a 1 m by 2 m fir
  \label{fig:NISTNRC_HRR}
 \end{figure}
 
+\section{SP Adiabatic Surface Temperature Experiments}
+
+In 2008, three compartment experiments were performed at SP Technical Research Institute of Sweden under the sponsorship of Brandforsk, the Swedish Fire Research Board~\cite{Wickstrom_AST}. The
+objective of the experiments was to demonstrate how plate thermometer measurements in the vicinity of a simple steel beam can be used to supply the boundary conditions
+for a multi-dimensional heat conduction calculation for the beam. The adiabatic surface temperature was derived from the plate temperatures and used by TASEF, a finite-element
+thermal-structural program.
+
+The experiments were performed inside a standard compartment designed for corner fire testing (ISO 9705).
+The compartment is 3.6~m deep, 2.4~m wide and 2.4~m high and includes a door opening 0.8~m by 2.0~m. The room was constructed of 20~cm thick light weight concrete
+blocks with a density of 600~kg/m$^3$~$\pm$~100~kg/m$^3$.
+The heat source was a gas burner run at a constant power of 450~kW. The top of the burner, with a square opening 30~cm by 30~cm, was placed 65~cm above the floor, 2.5~cm from the walls.
+A single steel beam was suspended 20~cm below the ceiling
+along the centerline of the compartment. There were three measurement stations along the beam at lengths of 0.9~m (Position A), 1.8~m (Position B), and
+2.7~m (Position C) from the far wall where the fire was either positioned in the corner (Tests 1 and 2), or the center (Test 3). The beam in Test 1 was
+a rectangular steel tube filled with an insulation material. The beam in Tests 2 and 3 was an I-beam..
+
 \section{Steckler Compartment Experiments}
 
 Steckler, Quintiere and Rinkinen performed a set of 55 compartment fire tests at NBS in 1979 \cite{Steckler:1982}. The compartment was 2.8~m by 2.8~m by 2.13~m high\footnote{The test report
@@ -746,44 +764,3 @@ WTC                 & 965 -- 1460   & 1.0           & 3.8   & 0.8 -- 1.2        
 
 
 \noindent
-Table~\ref{Numerical_Parameters} lists a few important parameters related to the numerical resolution of the calculation.
-\begin{description}
-\item[Characteristic Fire Diameter, $D^*$,] is a useful length scale that incorporates the heat release rate of the fire.
-\be D^* = \left( \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{g}} \right)^{2/5}  \ee
-\item[Plume Resolution Index, $D^*/\dx$,] is the number of grid cells of length $\dx$ that span the characteristic diameter of the fire. The greater its value, the more
-``resolved'' are the fire dynamics.
-\item[Ceiling Height relative to Fire Diameter, $H/D^*$,] is the non-dimensional height of the smoke plume.
-\end{description}
-Note that the calculations performed for the various validation studies described in this Guide use a wide range of values of the Plume Resolution Index, $D^*/\dx$.
-There are several reasons for this. First,
-typical applications of FDS often involve relatively small fires in relatively large spaces, and it is impractical to use a very fine grid that captures the detailed fire dynamics.
-Second, for some applications the accuracy of calculation is highly dependent on resolving the plume well, but for others, it is less important. For those citing the validation
-studies in this Guide, it is important that both the physical and numerical parameters are comparable to the given application.
-
-
-\begin{table}[p]
-\caption{Summary of important numerical parameters. }
-\begin{center}
-\begin{tabular}{|l|c|c|c|}
-\hline
-                    &               &               &               \\
-\rb{Test Series}    & \rb{$D^*$ (m)}& \rb{$D^*/\dx$}& \rb{$H/D^*$}  \\ \hline \hline
-ATF Corridors       & 0.3 -- 0.7    & 3 -- 7        & 8.5 -- 3.4    \\ \hline
-FM/SNL              & 0.7           & 7             & 8.8 -- 8.5    \\ \hline
-LLNL Enclosure      & 0.3 -- 0.6    & 1 -- 3        & 15.9 -- 6.9   \\ \hline
-NBS Multi-Room      & 0.4           & 4             & 6.2           \\ \hline
-NIST/NRC            & 0.6 -- 1.3    & 5 -- 11       & 6.5 -- 3.1    \\ \hline
-Sandia Plume        & 1.2 -- 1.8    & 20 -- 118     & Open          \\ \hline
-SP AST              & 0.7           & 14            & 3.5           \\ \hline
-Steckler            & 0.2 -- 0.4    & 5 -- 9        & 9.1 -- 4.8    \\ \hline
-UL/NFPRF            & 1.7 -- 2.4    & 8 -- 12       & 4.5 -- 3.2    \\ \hline
-USN Hawaii          & 0.4 -- 2.1    & 2 -- 11       & 40.3 -- 7.1   \\ \hline
-USN Iceland         & 0.4 -- 2.8    & 2 -- 14       & 59 -- 7.8     \\ \hline
-Vettori Flat        & 1.0           & 12            & 2.8           \\ \hline
-VTT Large Hall      & 1.2 -- 1.6    & 5 -- 6        & 15.8 -- 12.1  \\ \hline
-WTC                 & 0.9 -- 1.1    & 9 -- 11       & 4.1 -- 3.5    \\ \hline
-\end{tabular}
-\end{center}
-\label{Numerical_Parameters}
-\nopagebreak
-\end{table}

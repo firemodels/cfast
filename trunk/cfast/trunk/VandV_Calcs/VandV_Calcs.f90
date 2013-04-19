@@ -35,8 +35,9 @@
     character :: temperature_profile_name(ntests)*30
     integer ::  ntest_temperature_profile
 
-    real :: pressure_correction_data(ntests,nrow,6) ! for pressure correction calculation
-    real :: tu, tl, h, y, delta_pf, delta_py, rhou, rhol, rhoinf, g
+    real :: pressure_correction_data(ntests,nrow,2) ! for pressure correction calculation
+    real :: tu1, tl1, h1, delta_pf1, rhou1, rhol1, delta_p1, tu2, tl2, h2, delta_pf2, rhou2, rhol2, delta_p2
+    real :: delta_py, rhoinf, g, hflr, y
     character :: pressure_correction_name(ntests)*30
     integer :: ntest_pressure_correction, numrows_pressure_correction(ntests), max_numrows
 
@@ -150,23 +151,35 @@
                     rhoinf = 352.8/(d2ys(1,2)+273.15) ! gas density assuming surrounding ambient is initial temperature of lower layer
                     do irr = 1, d2x_len
                         pressure_correction_data(ntest_pressure_correction,irr,1) = d2x(irr)
-                        pressure_correction_data(ntest_pressure_correction,irr,2) = d2ys(irr,1)
-                        tu = d2ys(irr,1)+273.15 ! upper layer temperature
-                        rhou = 352.8/tu         ! upper layer gas density from SPFE handbook chapter on vent flow
-                        pressure_correction_data(ntest_pressure_correction,irr,3) = d2ys(irr,2)
-                        tl = d2ys(irr,2)+273.15 ! lower layer temperature
-                        rhol = 352.8/tl         ! lower layer gas density from SPFE handbook chapter on vent flow
-                        pressure_correction_data(ntest_pressure_correction,irr,4) = d2ys(irr,3)
-                        h = d2ys(irr,3)         ! layer height
-                        pressure_correction_data(ntest_pressure_correction,irr,5) = d2ys(irr,4)
-                        delta_pf = d2ys(irr,4)  ! pressure difference at the floor
+                        tu1 = d2ys(irr,1)+273.15    ! upper layer temperature
+                        rhou1 = 352.8/tu1           ! upper layer gas density from SPFE handbook chapter on vent flow
+                        tu2 = d2ys(irr,5) + 273.15
+                        rhou2 = 352.8/tu2
+                        tl1 = d2ys(irr,2)+273.15 ! lower layer temperature
+                        rhol1 = 352.8/tl1         ! lower layer gas density from SPFE handbook chapter on vent flow
+                        tl2 = d2ys(irr,6)+273.15
+                        rhol2 = 352.8/tl2
+                        h1 = d2ys(irr,3)         ! layer height
+                        h2 = d2ys(irr,7)
+                        delta_pf1 = d2ys(irr,4)  ! pressure difference at the floor
                         y = d2_constants(1)
-                        if (y<=h) then
-                            delta_py = delta_pf - rhol*g*y + rhoinf*g*y
-                        else
-                            delta_py = delta_pf - rhol*g*h - rhou*g*(y-h) + rhoinf*g*y
+                        hflr = d2_constants(2)
+                        if (hflr==0.0) then
+                            if (y<=h1) then
+                                delta_py = delta_pf1 - rhol1*g*y + rhoinf*g*y
+                            else
+                                delta_py = delta_pf1 - rhol1*g*h1 - rhou1*g*(y-h1) + rhoinf*g*y
+                            end if
+                        else if (y<=h2) then
+                            delta_p1 = delta_pf1 - rhol1*g*h1 - rhou1*g*(hflr-h1) + rhoinf*g*hflr
+                            delta_p2 = -rhol1*g*y + rhoinf*g*y
+                            delta_py = delta_p1 + delta_p2
+                        else if (y>h2) then
+                            delta_p1 = delta_pf1 - rhol1*g*h1 - rhou1*g*(hflr-h1) + rhoinf*g*hflr
+                            delta_p2 = - rhol2*g*(h2) - rhou2*g*(y-h2) + rhoinf*g*y
+                            delta_py = delta_p1 + delta_p2
                         end if
-                        pressure_correction_data(ntest_pressure_correction,irr,6) = delta_py
+                        pressure_correction_data(ntest_pressure_correction,irr,2) = delta_py
                     end do  
                     pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
                 end if
@@ -203,7 +216,7 @@
                 do it = 1, ntest_pressure_correction
                     if (irr<=numrows_pressure_correction(it)) then
                         call SSaddtolist(position,1,pressure_correction_data(it,irr,1),' ',print_array)
-                        call SSaddtolist(position,1,pressure_correction_data(it,irr,6),' ',print_array)
+                        call SSaddtolist(position,1,pressure_correction_data(it,irr,2),' ',print_array)
                     else
                         call SSaddtolist(position,2,0.0,'NaN',print_array)
                         call SSaddtolist(position,2,0.0,'NaN',print_array)

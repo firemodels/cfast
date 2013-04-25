@@ -1,0 +1,100 @@
+                """"""""""""""""""""""
+                MAGIC-M  Version 4.1.3.
+                """"""""""""""""""""""
+  
+ CALCULATION AUTHOR: LICENCIE        
+  
+ CASE FILE : C:\Users\slestrange\Documents\CFAST Repository\MAGIC_Validation\ATF_Corridors\ATF_100kW\ATF_100kW rev 1.cas                         
+ RESULT FILE : C:\Users\slestrange\Documents\CFAST Repository\MAGIC_Validation\ATF_Corridors\ATF_100kW\ATF_100kW rev 1.res                         
+ MESSAGE FILE : C:\Users\slestrange\Documents\CFAST Repository\MAGIC_Validation\ATF_Corridors\ATF_100kW\ATF_100kW rev 1.info                        
+  
+  
+  
+ ------------------
+  FIRE CALCULATION 
+ ------------------
+  
+ Execution option (File DONNEES)
+ -------------------------------
+ nb_iter_max =   25000000 krep   =  0 kstorep =  0 kstomat =  0 tmat =  240.00
+  icompl =  2 Ilangue =  1 IECR_X  =  3 Cjet =  0
+ kinfocalcul  =  2
+ "PYROCABLE" source number=   0
+ hconv_Option=0
+  
+ Choice of numerical method 
+ ---------------------------
+ Used method : Pure Broyden (std)
+ Maximum time step in seconds = 15.000
+  
+ Plume calculation option (Fixed)
+ --------------------------------
+  Circular plume low. layer or upp.: circular TANAKA law
+  Linear plume  low. layer or upp. : linear ZUKOSKI law
+  Plume at an opening              : circular TANAKA law
+  Linear plume : low. layer --> upp: linear ZUKOSKI law
+  Circular plume : low. layer --> u: circular TANAKA law
+ - > plume calculation at openings without wall
+ - > Upper layer penetration without Cooper law
+ - > Circular source without vitual origin use
+ - > Linear source without virtual origin use 
+  
+ koppdt value :   2
+ Time step is free
+  
+  
+ /---------------------------------/
+        CASE FILE READING           
+ /---------------------------------/
+  
+ OPENING : < LowerCorridor_Stairwel >: No closing scenario => remains open
+ 
+WARNING SIGNAL 918: Undefined close value for an           opening => constant value
+ OPENING : < UpperCorridor_Outside >: No closing scenario => remains open
+ 
+WARNING SIGNAL 918: Undefined close value for an           opening => constant value
+ OPENING : < Stairwell_UpperCorrido >: No closing scenario => remains open
+ 
+WARNING SIGNAL 918: Undefined close value for an           opening => constant value
+Contact between Wall 4 of room  1       and Wall  3 of room  3
+Contact between Wall 5 of room  1       and Wall  7 of room 10
+Contact between Wall 5 of room  2       and Wall
+Contact between Wall 4 of room  2       and Wall  3 of room  3
+Contact between Wall 6 of room  2       and wall  3 of room  1
+Contact between Wall 3 of Room  3       and Wall  4 of room  1
+Contact between Wall 3 of Room  3       and Wall  4 of room  2
+Inside characteristic time:    30.0
+Outside characteristic time :  3600.0
+Multiplying Coefficient:4.00
+Max points number by inside layer : 1
+Max points number by side : 1
+  
+  
+  Calculation options
+ --------------------
+ Precision =  2 Species = 2
+  
+  
+ Initial conditions
+ ------------------
+  Starting at t  =    0.  Time step =10.00  Simulation end time=   900.00
+  
+  
+ /---------------------------------/
+               SIMULATION           
+ /---------------------------------/
+  
+ Activation temperature of detector  7 reached at  7.23793174172770 seconds
+ the target n°   2  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   2  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   3  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   3  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   5  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   5  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   6  of room   1  is outside validation domain of ceiling jet source 
+ the target n°   6  of room   1  is outside validation domain of ceiling jet source 
+ Activation temperature of detector  1 reached at  23.0046274303450 seconds
+ Activation temperature of detector  2 reached at  49.3214551737846 seconds
+ Activation temperature of detector  3 reached at  61.0767763305356 seconds
+ ERREUR DANS LE SOLVEUR, SOUS-PROGRAMME SOLVE6  CODE RETOUR =     1
+ STOP DANS LE SOLVEUR

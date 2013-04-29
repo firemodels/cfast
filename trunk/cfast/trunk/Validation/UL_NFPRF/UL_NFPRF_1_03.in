@@ -2,7 +2,7 @@ VERSN,6,UL_NFPRF Series I and II
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,900,-50,10,10
+TIMES,900,-50,10,1
 EAMB,291.15,101300,0
 TAMB,291.15,101300,0,50
 CJET,WALLS

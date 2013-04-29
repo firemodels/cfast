@@ -27,6 +27,7 @@ goto end
 :ALL
 call cleanall.bat
 :UL_NFPRF
+echo Running UL_NFPRF Series I
 cd UL_NFPRF
 if NOT %1==ALL call ..\cleancfast.bat
 ..\..\bin\cfast UL_NFPRF_1_01 /V

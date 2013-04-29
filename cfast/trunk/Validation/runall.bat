@@ -19,12 +19,41 @@ if %1==WTC goto WTC
 if %1==Steckler_Compartment goto Steckler
 if %1==Dunes_2000 goto Dunes2000
 if %1==SP_AST goto SP_AST
+if %1==UL_NFPRF goto UL_NFPRF
 :Help
 echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
 echo        NBS, NBS_1Room, NIST_NRC, Steckler_Compartment, Vettori_Flat, VTT, or WTC
 goto end
 :ALL
 call cleanall.bat
+:UL_NFPRF
+cd UL_NFPRF
+if NOT %1==ALL call ..\cleancfast.bat
+..\..\bin\cfast UL_NFPRF_1_01 /V
+..\..\bin\cfast UL_NFPRF_1_02 /V
+..\..\bin\cfast UL_NFPRF_1_03 /V
+..\..\bin\cfast UL_NFPRF_1_04 /V
+..\..\bin\cfast UL_NFPRF_1_05 /V
+..\..\bin\cfast UL_NFPRF_1_06 /V
+..\..\bin\cfast UL_NFPRF_1_07 /V
+..\..\bin\cfast UL_NFPRF_1_08 /V
+..\..\bin\cfast UL_NFPRF_1_09 /V
+..\..\bin\cfast UL_NFPRF_1_10 /V
+..\..\bin\cfast UL_NFPRF_1_11 /V
+..\..\bin\cfast UL_NFPRF_1_12 /V
+..\..\bin\cfast UL_NFPRF_1_13 /V
+..\..\bin\cfast UL_NFPRF_1_14 /V
+..\..\bin\cfast UL_NFPRF_1_15 /V
+..\..\bin\cfast UL_NFPRF_1_16 /V
+..\..\bin\cfast UL_NFPRF_1_17 /V
+..\..\bin\cfast UL_NFPRF_1_18 /V
+..\..\bin\cfast UL_NFPRF_1_19 /V
+..\..\bin\cfast UL_NFPRF_1_20 /V
+..\..\bin\cfast UL_NFPRF_1_21 /V
+..\..\bin\cfast UL_NFPRF_1_22 /V
+cd ..
+if %1==UL_NFPRF goto end
+
 :SP_AST
 echo Running SP_AST Tests
 cd SP_AST

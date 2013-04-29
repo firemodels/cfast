@@ -425,8 +425,8 @@ Public Class Target
                         myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " RTI is less than 0 or greater than 400 (m s)^1/2.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
-                    If aSprayDensity < 0.0 Or aSprayDensity > 0.0003 Then
-                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " spray density is less than 0 or greater than 0.0003 m/s.", ErrorMessages.TypeWarning)
+                    If aSprayDensity < 0.0 Or aSprayDensity > 0.003 Then
+                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " spray density is less than 0 or greater than 0.003 m/s.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
             End Select

@@ -365,7 +365,7 @@ Public Class Compartment
             If Me.aAreaPoints.GetUpperBound(0) > 0 Then
                 For i = 0 To aAreaPoints.GetUpperBound(0)
                     If aAreaPoints(i) < 0.0 Or aAreaPoints(i) > MaxSize ^ 2 Then
-                        myErrors.Add(aName + " has an area point that is in error. Cross-sectional area should be greater than " + (MinSize ^ 2).ToString + " m and less than " + (MaxSize ^ 2).ToString + " m²", ErrorMessages.TypeWarning)
+                        myErrors.Add(aName + " has an area point that is in error. Cross-sectional area should be greater than " + (MinSize ^ 2).ToString + " m and less than " + (MaxSize ^ 2).ToString + " m?", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aHeightPoints(i) < 0.0 Or aHeightPoints(i) > aRoomHeight Then
@@ -416,15 +416,15 @@ Public Class CompartmentCollection
     Public Sub Remove(ByVal index As Integer)
         If index >= 0 Or index <= Count - 1 Then
             If index < Count - 1 Then
-                For i = index + 1 To Count - 1
-                    myHVents.Renumber(index + 1, index)
-                    myVVents.Renumber(index + 1, index)
-                    myMVents.Renumber(index + 1, index)
-                    myTargets.Renumber(index + 1, index)
-                    myDetectors.Renumber(index + 1, index)
-                    myHHeats.Renumber(index + 1, index)
-                    myVHeats.Renumber(index + 1, index)
-                    myFires.Renumber(index + 1, index)
+                For i = index To Count - 2
+                    myHVents.Renumber(i + 1, i)
+                    myVVents.Renumber(i + 1, i)
+                    myMVents.Renumber(i + 1, i)
+                    myTargets.Renumber(i + 1, i)
+                    myDetectors.Renumber(i + 1, i)
+                    myHHeats.Renumber(i + 1, i)
+                    myVHeats.Renumber(i + 1, i)
+                    myFires.Renumber(i + 1, i)
                 Next
             End If
             List.RemoveAt(index)

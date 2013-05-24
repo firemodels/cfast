@@ -763,7 +763,7 @@
     return
     end
 
-    SUBROUTINE INITMM
+    subroutine initmm
 
     !     routine: initmm
     !     purpose: This routine initializes the main memory - must be used by 

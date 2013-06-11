@@ -1,0 +1,17 @@
+VERSN,6,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,900,-50,10,10
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,5,5,5,0,0,0,OFF,OFF,OFF
+GLOBA,10,393.15

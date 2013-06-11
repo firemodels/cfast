@@ -1,12 +1,39 @@
 
-\chapter{Software Structure and Robustness}
+\chapter{Software Structure and Verification}
 
 The mathematical and numerical robustness of a deterministic computer model depends upon
 three issues: the code must be transparent so that it can be understood and modified by visual
-inspection; it must be possible to check and verify with automated tools; and there must be a
+inspection; it must be possible to check and verify the coding implementation (perhaps with automated tools); and there must be a
 method for checking the correctness of the solution, at least for asymptotic (steady state)
 solutions (numerical stability and agreement with known solutions).
-In order to understand the meaning of accuracy and robustness, it is necessary to understand the
+
+The terms {\em verification} and {\em validation} are often used interchangeably to mean the process of checking the
+accuracy of a numerical model. For many, this entails comparing model predictions with experimental measurements. However,
+there is now a fairly broad-based consensus that comparing model and experiment is largely what is considered {\em validation}. So what is
+{\em verification}? ASTM~E~1355~\cite{ASTM:E1355}, ``Standard Guide for
+Evaluating the Predictive Capability of Deterministic Fire Models,'' defines verification as
+\begin{quote}
+The process of determining that the implementation of a calculation method accurately
+represents the developer's conceptual description of the calculation method and the solution to the calculation method.
+\end{quote}
+and it defines validation as
+\begin{quote}
+The process of determining the degree to which a calculation method is an accurate representation of the real world
+from the perspective of the intended uses of the calculation method.
+\end{quote}
+Simply put, verification is a check of the math; validation is a check of the physics. If the model predictions closely match
+the results of experiments, using whatever metric is appropriate, it is assumed by most that the model suitably describes, via
+its mathematical equations, what is happening. It is also assumed that the solution of these equations must be correct. So why do
+we need to perform model verification? Why not just skip to validation and be done with it? The reason is that rarely do model and
+measurement agree so well in all applications that anyone would just accept its results unquestionably. Because there is
+inevitably differences between model and experiment, we need to know if these differences are due to limitations or errors in
+the numerical solution, or the physical sub-models, or both.
+
+Whereas model validation consists mainly of comparing predictions with measurements, as documented later in this guide, 
+model verification consists of a much broader range of activities, from checking the computer program
+itself to comparing calculations to analytical (exact) solutions to understanding the impact on model outputs from a range of different model inputs.
+
+In order to understand the meaning model verification, it is also  necessary to understand the
 means by which the numerical routines are structured. In this chapter, details of the
 implementation of the model are presented, including the tests used to assess the numerical
 aspects of the model. These include:
@@ -23,6 +50,7 @@ problem to be solved,
 \item analysis of the numerical implementation for stability and error propagation, and
 \item comparison of the results of the system model with simple analytical or numerical
 solutions.
+\item a series of reference test cases used to evaluate the impact of model changes to the full range of model outputs.
 \end{itemize}
 
 \section{Structure of the Numerical Routines}
@@ -70,17 +98,6 @@ the solution of the currently defined equation set. In addition to allowing a mo
 to the pressure equation, very large time steps are possible if the problem being solved
 approaches steady-state.
 
-\section{Comparison with Analytic Solutions}
-
-Certain CFAST sub-models address phenomena that have analytical solutions, for example, one dimensional heat conduction through a solid or pressure increase in a sealed or slightly leaky compartment as a result of a fire or fan.  The developers of CFAST use analytical solutions to test sub-models to verify the correctness of the coding of the model as part of the development.  Such verification efforts are relatively simple and the results may not always be published or included in the documentation.  Two additional types of verification are possible.  The first type, discussed in Section 3, ÒTheoretical Basis,Ó involves validating individual algorithms against experimental work.  The second involves simple experiments, especially for conduction and radiation, for which the results are asymptotic (e.g., a simple single-compartment test case with no fire, all temperatures should equilibrate asymptotically to a single value).  Such comparisons are common and not usually published.
-
-\section{Code Checking}
-Two standard programs have been used to check the CFAST model structure and language.  Specifically, FLINT and LINT have been applied to the entire model to verify the correctness of the interface, undefined or incorrectly defined (or used) variables and constants, and completeness of loops and threads.
-
-The CFAST code has also been checked by compiling and running the model on a variety of computer platforms.  Because FORTRAN and C are implemented differently for various computers, this represents both a numerical check as well as a syntactic check.  CFAST has been compiled for Sun (Solaris), SGI (Irix), Microsoft Windows-based PCs (Lahey, Digital, and Intel FORTRAN), and Concurrent computer platforms.  Within the precision afforded by the various hardware implementations, the model outputs are identical on the different platforms. \footnote{Typically an error limit of one part in $10^6$ which is the limit set for the differential equation solver in the solution of the CFAST equations}
-
-The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6} contains a detailed description of the CFAST subroutine structure and interactions between the subroutines.
-
 \section{Numerical Tests}
 
 CFAST is designed to use 64-bit precision for real number calculations to minimize the effects of numerical error.
@@ -89,3 +106,17 @@ The differential and algebraic equation solver (called DASSL) has been tested fo
 
 Coupling between the physical algorithms of the model and the differential equation solver also works to ensure numerical accuracy by dynamically adjusting the time step used by the model to advance the solutions of the equation set. Solution tolerances are set to require solution of the model equations within one part in $10{^6}$. This ensures that the error attributable to numerical solution is far less than that associated with the model assumptions.
 
+\section{Code Checking}
+Two standard programs have been used to check the CFAST model structure and language.  Specifically, FLINT and LINT have been applied to the entire model to verify the correctness of the interface, undefined or incorrectly defined (or used) variables and constants, and completeness of loops and threads.
+
+The CFAST code has also been checked by compiling and running the model on a variety of computer platforms.  Because FORTRAN and C are implemented differently for various computers, this represents both a numerical check as well as a syntactic check.  CFAST has been compiled for Sun (Solaris), SGI (Irix), Microsoft Windows-based PCs (Lahey, Digital, and Intel FORTRAN), and Concurrent computer platforms.  Within the precision afforded by the various hardware implementations, the model outputs are identical on the different platforms. \footnote{Typically an error limit of one part in $10^6$ which is the limit set for the differential equation solver in the solution of the CFAST equations}
+
+The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6} contains a detailed description of the CFAST subroutine structure and interactions between the subroutines.
+
+\section{Comparison with Analytic Solutions}
+
+Certain CFAST sub-models address phenomena that have analytical solutions, for example, one dimensional heat conduction through a solid or pressure increase in a sealed or slightly leaky compartment as a result of a fire or fan.  The developers of CFAST use analytical solutions to test sub-models to verify the correctness of the coding of the model as part of the development.  Such verification efforts are relatively simple and the results may not always be published or included in the documentation.  Two additional types of verification are possible.  The first type, discussed in Section 3, ``Theoretical Basis,'' involves validating individual algorithms against experimental work.  The second involves simple experiments, especially for conduction and radiation, for which the results are asymptotic (e.g., a simple single-compartment test case with no fire, all temperatures should equilibrate asymptotically to a single value).  Such comparisons are common and not usually published.
+
+\section{Simple Reference Cases}
+
+In addition to the comparisons of test cases with analytical solutions discussed in the previous section, we have included a number of simple test cases intended to demonstrate the impact of individual model features.  While these are too complex to provide analytical solutions, many can be estimated with simpler engineering calculations.  Together, these form a set of simulations that can be routinely run to verify continued consistency of the calculation results as the model is further developed to insure unintended side-effects of modifications to the model are prevented.

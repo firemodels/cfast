@@ -343,7 +343,7 @@ end
 % Write statistics information to a LaTeX table for inclusion in the
 % FDS Verification Guide (SCRIPT_FIGURES/verification_statistics.tex)
 if stats_output == 1
-    filename = '../../Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/verification_statistics.tex';
+    filename = '../../Docs/Validation_Guide/FIGURES/verification_statistics.tex';
     fid = fopen(filename, 'wt');
     % Generate table header information in .tex file
     fprintf(fid, '%s\n', '\begin{center}');

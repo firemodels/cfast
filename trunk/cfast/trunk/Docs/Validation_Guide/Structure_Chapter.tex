@@ -115,7 +115,18 @@ The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6} contains a detaile
 
 \section{Comparison with Analytic Solutions}
 
-Certain CFAST sub-models address phenomena that have analytical solutions, for example, one dimensional heat conduction through a solid or pressure increase in a sealed or slightly leaky compartment as a result of a fire or fan.  The developers of CFAST use analytical solutions to test sub-models to verify the correctness of the coding of the model as part of the development.  Such verification efforts are relatively simple and the results may not always be published or included in the documentation.  Two additional types of verification are possible.  The first type, discussed in Section 3, ``Theoretical Basis,'' involves validating individual algorithms against experimental work.  The second involves simple experiments, especially for conduction and radiation, for which the results are asymptotic (e.g., a simple single-compartment test case with no fire, all temperatures should equilibrate asymptotically to a single value).  Such comparisons are common and not usually published.
+Certain CFAST sub-models address phenomena that have analytical solutions, for example, one dimensional heat conduction through a solid or pressure increase in a sealed or slightly leaky compartment as a result of a fire or fan.  The developers of CFAST use analytical solutions to test sub-models to verify the correctness of the coding of the model as part of the development. This section provides an overview of the verification testing conducted with each change of the model to verify the basic underlying principles of the model, the mass and energy balances.
+
+For most of the examples presented in this chapter, the same basic geometry is used, a single 5 m x 5 m x 5m compartment.  Depending on the exact simulation, additional details will be added to verify individual model results.  To begin, the simplest example is simply a compartment set at uniform ambient conditions with no ventilation, fires, or additional modeled features.  With no added mass or energy to the system, conditions are expected to remain at the initial ambient. Figure \ref{fig:Ambient_Conditions_Test} shows the simulated conditions for this simple test.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Temperature} &
+\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure}
+\end{tabular*}
+\caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial consitions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Test}
+\end{figure}
+
 
 \section{Simple Reference Cases}
 

@@ -1,0 +1,4 @@
+"Dataplot Line Number","Verification Group","Case Name","Type of Metric","Expected Metric","Predicted Metric","Dependent Variable","Type of Error","Error","Error Tolerance","Within Specified Error Tolerance","Plot Filename"
+5,"Mass","Mass_Balance","max",1e-12,1e-12,"Temperature ($^\circ$C)","Relative Error","0.00e+00","0.00e+00","Yes","Verification/Ambient_Temperature"
+5,"Mass","Mass_Balance","max",1e-12,1e-12,"Temperature ($^\circ$C)","Relative Error","0.00e+00","0.00e+00","Yes","Verification/Ambient_Temperature"
+6,"Mass","Mass_Balance","max",1e-12,1e-12,"Pressure (Pa)","Relative Error","0.00e+00","0.00e+00","Yes","Verification/Ambient_Pressure"

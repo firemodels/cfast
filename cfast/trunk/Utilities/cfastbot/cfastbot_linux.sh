@@ -637,7 +637,7 @@ check__pictures()
 run_matlab_license_test()
 {
    # Run simple test to see if Matlab license is available
-   cd $CFAST_SVNROOT/Validation/Matlab
+   cd $CFAST_SVNROOT/Utilities/Matlab
    matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7_matlab_license
 }
 
@@ -670,18 +670,18 @@ check_matlab_license_server()
 run_matlab_validation()
 {
    # Run Matlab plotting script
-   cd $CFAST_SVNROOT/Validation/Matlab/scripts
+   cd $CFAST_SVNROOT/Utilities/Matlab/scripts
 
    # Replace LaTeX with TeX for Interpreter in plot_style.m
    # This allows displayless automatic Matlab plotting
    # Otherwise Matlab crashes due to a known bug
    sed -i 's/LaTeX/TeX/g' plot_style.m
 
-   cd $CFAST_SVNROOT/Validation/Matlab
+   cd $CFAST_SVNROOT/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
 
    # Restore LaTeX as plot_style interpreter
-   cd $CFAST_SVNROOT/Validation/Matlab/scripts
+   cd $CFAST_SVNROOT/Utilities/Matlab/scripts
    sed -i 's/TeX/LaTeX/g' plot_style.m
    cd ..
 }

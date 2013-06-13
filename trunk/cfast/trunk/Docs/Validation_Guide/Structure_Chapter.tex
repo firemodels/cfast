@@ -124,7 +124,26 @@ For most of the examples presented in this chapter, the same basic geometry is u
 \includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Temperature} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure}
 \end{tabular*}
-\caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial consitions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Test}
+\caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial conditions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Test}
+\end{figure}
+
+As a simple test of the mass and energy balance, consider the base case with the addition of a ixed amount of air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.19 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.23 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the idela gas law, the expected pressure rise can be calculated as
+
+\begin{eqnarray}
+   \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Added_Mass}  \\
+   P_f &=& \frac{P_i N_f  T_f}{N_i T_i}  \nonumber \\
+  P_f &=& \frac{101300 x 5.23 x 294.2}{5.19 x 293.2} \nonumber \\
+  &=& 102491.2 \text{\ Pa} \nonumber
+\end{eqnarray}
+
+or a pressure rise of 1192.3 Pa. Figure \ref{fig:Added_Mass_Test} shows the simulated conditions for this test.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Added_Mass_Temperature} &
+\includegraphics[width=3.0in]{FIGURES/Verification/Added_Mass_Pressure}
+\end{tabular*}
+\caption{Ambient conditions for test case with no fire and non-conducting surfaces, with a mechanical ventilation system injecting 0.1~m$^3$/s of air into the compartment for 10 s. CFAST verification file Added\_Mass.in.} \label{fig:Added_Mass_Test}
 \end{figure}
 
 

@@ -676,9 +676,11 @@ run_matlab_validation()
    # This allows displayless automatic Matlab plotting
    # Otherwise Matlab crashes due to a known bug
    sed -i 's/LaTeX/TeX/g' plot_style.m
-
+   
    cd $CFAST_SVNROOT/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
+
+   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7c_validation
 
    # Restore LaTeX as plot_style interpreter
    cd $CFAST_SVNROOT/Utilities/Matlab/scripts
@@ -698,6 +700,16 @@ check_matlab_validation()
 
       echo "Errors from Stage 7b - Matlab plotting (validation):" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage7b_errors >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_validation` == "" ]]
+   then
+      stage7c_success=true
+   else
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_validation > $CFASTBOT_DIR/output/stage7c_errors
+
+      echo "Errors from Stage 7c - Matlab plotting (validation):" >> $ERROR_LOG
+      cat $CFASTBOT_DIR/output/stage7c_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 }

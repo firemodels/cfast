@@ -300,3 +300,7 @@ $RUNCFAST Steckler_Compartment Steckler_167 /V
 $RUNCFAST Steckler_Compartment Steckler_161 /V
 $RUNCFAST Steckler_Compartment Steckler_166 /V
  
+
+$RUNCFAST ../Verification/Miscellaneous cfast_test
+$RUNCFAST ../Verification/Mass_Energy_Balance Base
+$RUNCFAST ../Verification/Mass_Energy_Balance Added_Mass

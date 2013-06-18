@@ -23,7 +23,7 @@
 close all
 clear all
 
-addpath '../Validation/Matlab/scripts'
+addpath '../Utilities/Matlab/scripts'
 
 % Scripts that run prior to dataplot
 

@@ -17,7 +17,7 @@
     * Click *Next*
     * In the *Location* window, browse to *trunk*, then *cfast*, then *trunk* a second time.
     * Click *Next*
-    * a pop-up window will open asking "Do you want to additionally check out the path up to the project root?" Click *No*
+    * A pop-up window will open asking "Do you want to additionally check out the path up to the project root?" Click *No*
     * In the *Local Directory* box, enter or select the location to place the repository on your local disk.
     * Select the *Into subdirectory* Check out location and enter *cfast* in the text box.
     * Click Next

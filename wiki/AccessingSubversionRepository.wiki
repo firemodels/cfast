@@ -12,32 +12,18 @@
 
   * After installing _SmartSVN_, launch the program.  
   * The program will open with a _Welcome to SmartSVN_ window.  Select *Check out project from repository*.
-  * A _Check Out Project_ window will open.  Select *Manage*
-  * A _Repository Profiles_ window will open.  Select *Add*
-  * An _Add Repository Profile_ window will open.
-    * Select *HTTP* for the protocol
-    * In the *Server Name* box type cfast.googlecode.com 
-    * In the *Repository Path* box type /svn/trunk/cfast/trunk
+  * A _Check Out Project_ window will open.  
+    * In the *Repository* box type http://cfast.googlecode.com/svn
     * Click *Next*
-    * Select *Anonymous* for the SVN Login
+    * In the *Location* window, browse to *trunk*, then *cfast*, then *trunk* a second time.
     * Click *Next*
-    * If you desire to see something other than the URL in _Check Out Project_ window select *Use This Profile Name* and enter a name.  'cfast' would be suitable here.
-    * To check out the code follow the instructions in the next section.
-
-==Obtaining Files==
-
-===The First Time===
-Once a project has been added to the repository it can then be checked out.
-
-  * After launching _SmartSVN_, select *Check out project from repository*
-  * A _Check Out Project_ window will open.  Using the drop down box select the cfast repository.
-  * Click *Next*
-  * _SmartSVN_ will scan the repository in display a directory tree.  The folders in the tree can be opened and closed with the *plus/minus* buttons.
-  * Expand the _cfast_ folder, then select the 'trunk' folder under it.
-  * Click *Next*
-  * Type in or browse a *Local directory* where the files will be stored on your computer.
-  * Click *Next*
-  
+    * a pop-up window will open asking "Do you want to additionally check out the path up to the project root?" Click *No*
+    * In the *Local Directory* box, enter or select the location to place the repository on your local disk.
+    * Select the *Into subdirectory* Check out location and enter *cfast* in the text box.
+    * Click Next
+  * If you desire to see something other than the URL in _Check Out Project_ window select *Add a new project* and enter a name.  'cfast' would be suitable here.
+  * Click *Finish* to check out the code
+ 
 At this point, the entire cfast project will be copied from the repository to your computer.
 
 ===After the First Time===

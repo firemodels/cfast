@@ -34,3 +34,5 @@ Entrainment,Measured Mass Flow Rate (kg/s),Predicted Mass Flow Rate (kg/s),0,0.6
 Activation Time,Measured Time to Activation (s),Predicted Time to Activation (s),0,300,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Activation_Time
 Sprinkler Activation Time,Measured Time to Activation (s),Predicted Time to Activation (s),0,300,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Sprinkler_Activation_Time
 Bar Temperature,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Bar_Temperature
+HGL Temperature: Corner-Wall Effects,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/HGL_Temp_Corner-Wall_Effects
+HGL Temperature: No Corner-Wall Effects,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/HGL_Temp_No-Corner-Wall_Effects

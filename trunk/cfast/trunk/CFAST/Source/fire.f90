@@ -589,7 +589,7 @@
         else
             xems = a1 * fm1(zdq) * qj
         endif
-        xems = max(xemp,xems/xf)
+        xems = max(xemp,xems)
         xeme = max(xems-xemp,x0)
     else
         xems = xemp

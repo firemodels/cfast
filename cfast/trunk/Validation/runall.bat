@@ -455,7 +455,7 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\..\bin\cfast Steckler_210 /V
 ..\..\bin\cfast Steckler_310 /V
 ..\..\bin\cfast Steckler_240 /V
-REM ..\..\bin\cfast Steckler_116 /V
+..\..\bin\cfast Steckler_116 /V
 ..\..\bin\cfast Steckler_122 /V
 ..\..\bin\cfast Steckler_224 /V
 ..\..\bin\cfast Steckler_324 /V

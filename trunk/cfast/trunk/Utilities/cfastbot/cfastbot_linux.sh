@@ -907,7 +907,7 @@ clean_svn_repo
 do_svn_checkout
 check_svn_checkout
 #if [[ ! $SKIP_SVN_PROPS ]] ; then
-   fix_svn_properties
+   #fix_svn_properties
 #fi
 
 ### Stage 3 ###

@@ -906,9 +906,9 @@ update_and_compile_cfast
 clean_svn_repo
 do_svn_checkout
 check_svn_checkout
-if [[ ! $SKIP_SVN_PROPS ]] ; then
+#if [[ ! $SKIP_SVN_PROPS ]] ; then
    fix_svn_properties
-fi
+#fi
 
 ### Stage 3 ###
 if [[ $stage0_success ]] ; then

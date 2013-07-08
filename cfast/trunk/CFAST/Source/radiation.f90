@@ -4,7 +4,7 @@
     !     purpose: Interface between RESID and RAD2 or RAD4.  Loops over
     !              rooms setting up varibles to pass.  If one or more fires
     !              are in a room calls RAD4 otherwise RAD2.
-    !     Revision: $Revision: 484 $
+    !     Revision: $Revision$
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: flwrad      net enthalphy into each layer
     !                flxrad      net enthalphy flux into surface
@@ -1358,8 +1358,8 @@
 
     integer :: module_rev
     character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision: 484 $'
-    character(255), parameter :: maindate='$Date: 2012-07-23 14:49:22 -0400 (Mon, 23 Jul 2012) $'
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
 
     write(module_date,'(A)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
     read (module_date,'(i5)') module_rev

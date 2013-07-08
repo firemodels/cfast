@@ -15,7 +15,7 @@ mailTo="gforney@gmail.com, cfast@nist.gov"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
-while getopts 'aq:' OPTION
+while getopts 'aq:s' OPTION
 do
 case $OPTION in
   a)
@@ -23,6 +23,9 @@ case $OPTION in
    ;;
   q)
    CFASTBOT_QUEUE="$OPTARG"
+   ;;
+  s)
+   SKIP_SVN_PROPS=true
    ;;
 esac
 done
@@ -185,6 +188,28 @@ clean_firebot_history()
 #  = cfastbot Build Stages =
 #  ========================
 #  ========================
+
+fix_svn_properties()
+{
+   # This function fixes SVN properties
+   # (e.g., svn:executable, svn:keywords, svn:eol-style, and svn:mime-type)
+   # throughout the FDS-SMV repository.
+
+   # cd to SVN root
+   cd $CFAST_SVNROOT
+
+   # Delete all svn:executable properties
+   svn propdel svn:executable --recursive &> /dev/null
+
+   # Restore local executable property to svn-fix-props.pl
+   chmod +x Utilities/Subversion/svn-fix-props.pl &> /dev/null
+
+   # Run svn-fix-props.pl script (fixes all SVN properties)
+   Utilities/Subversion/svn-fix-props.pl ./ &> /dev/null
+
+   # Commit back results
+   svn commit -m 'Cfastbot: Fix SVN properties throughout repository' &> /dev/null
+}
 
 #  ===================================
 #  = Stage 0 - External dependencies =
@@ -881,6 +906,9 @@ update_and_compile_cfast
 clean_svn_repo
 do_svn_checkout
 check_svn_checkout
+if [[ ! $SKIP_SVN_PROPS ]] ; then
+   fix_svn_properties
+fi
 
 ### Stage 3 ###
 if [[ $stage0_success ]] ; then

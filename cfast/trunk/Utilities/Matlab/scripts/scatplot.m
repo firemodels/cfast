@@ -146,9 +146,9 @@ for j=2:length(Q);
                     
                     % Compute the appropriate type of statistics, depending
                     % on the 'Quantity' specification in dataplot_inputs
-                    if strcmp(error_type, 'Relative Error')
+                    if strcmp(error_type, 'Relative Difference')
                         error_val = abs((single_predicted_metric(m)-single_measured_metric(m))/single_measured_metric(m));
-                    elseif strcmp(error_type, 'Absolute Error')
+                    elseif strcmp(error_type, 'Absolute Difference')
                         error_val = abs(single_predicted_metric(m)-single_measured_metric(m));
                     end
                     

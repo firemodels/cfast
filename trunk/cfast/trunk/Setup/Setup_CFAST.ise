@@ -3989,6 +3989,7 @@
 		<row><td>ID_STRING1</td><td>1033</td><td>http://cfast.nist.gov</td><td>0</td><td/><td>-165740210</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>National Insitute of Standards and Technology</td><td>0</td><td/><td>-165683058</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>http://www.nist.gov/el/fire_research/cfast-support.cfm</td><td>0</td><td/><td>-165709490</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>CEdit (CFAST 6)</td><td>0</td><td/><td>1537296526</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1910591346</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>in</td><td>0</td><td/><td>-165767414</td></row>
 		<row><td>NEW_STRING2</td><td>1033</td><td>smv</td><td>0</td><td/><td>-165769366</td></row>
@@ -4103,6 +4104,7 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Cedit\ellogob.ico</td><td>0</td></row>
+		<row><td>CEdit.exe1_640857B6D69445EDB15021701ACA8434.exe</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\CEdit.exe</td><td>0</td></row>
 		<row><td>CEdit.exe_491B3C913EFF409EB8D70C2F006ABD90.exe</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Bin\CEdit.exe</td><td>0</td></row>
 		<row><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td/><td>C:\Users\rpeacoc\Documents\Visual Studio 2010\Projects\CFAST\Bin\CEdit.exe</td><td>0</td></row>
 		<row><td>_53D97906_C18A_43EB_A82E_576350D19A29</td><td/><td>C:\Users\rpeacoc.NIST\Documents\Visual Studio 2010\Projects\cfast\Cedit\ellogob.ico</td><td>0</td></row>
@@ -4818,6 +4820,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
 		<row><td>CEdit.exe</td><td>national_insitute_of_standards_and_technology</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe_E3595861BAEA420D9E7262AF5D876CAA.exe</td><td>1</td><td>1</td><td>CFASTDATA</td><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>CEdit.exe1</td><td>DesktopFolder</td><td>##ID_STRING4##</td><td>CEdit.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>CEdit.exe1_640857B6D69445EDB15021701ACA8434.exe</td><td>1</td><td>1</td><td>CFASTDATA</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

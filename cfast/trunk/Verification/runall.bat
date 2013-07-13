@@ -15,6 +15,7 @@ echo Running Mass Balance Tests
 cd Mass_Energy_Balance
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\..\bin\cfast Base /V
+..\..\bin\cfast Added_Mass /V
 cd ..
 if %1==Mass goto end
 

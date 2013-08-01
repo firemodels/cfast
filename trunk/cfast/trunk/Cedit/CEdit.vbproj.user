@@ -66,4 +66,7 @@
     </StartWorkingDirectory>
     <StartWithIE>true</StartWithIE>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'x64|AnyCPU'">
+    <StartWithIE>true</StartWithIE>
+  </PropertyGroup>
 </Project>

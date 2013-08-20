@@ -1846,14 +1846,14 @@
     iunit = funit(70)
     open(unit=iunit,file=file)
 
-    write(iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL,',' REL OTHER TOL'
+    write(iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
     write (iunit,11) aptol, rptol, atol, rtol
 11  format(1x,5(1pg11.4,1x))
 
     write(iunit,'(a)') ' ABS WALL TOL, REL WALL TOL, INITIALIZATION TOLERANCE'
     write (iunit,11) awtol, rwtol, algtol
 
-    write(iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, ',' REL HVAC TEMP'
+    write(iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP'
     write (iunit,11) ahvptol, rhvptol, ahvttol, rhvttol
 
     write(iunit,'(a)') ' NUMBER OF PHYSICAL OPTION FLAGS'
@@ -1865,28 +1865,28 @@
     write(iunit,'(a)') ' DOOR-FIRE, CONVEC, RAD,     CONDUCT, DEBUG PRINT  '
     write (iunit,*) (option(j),j = 6,10)
 
-    write(iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, ','TYPE OF INITIALIZATION'
+    write(iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
     write (iunit,*) (option(j),j = 11,15)
 
-    write(iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, ','OXYGEN SOLVE    DETECTORS'
+    write(iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE    DETECTORS'
     write (iunit,*) (option(j),j = 16,20)
 
     write(iunit,'(a)') ' OBJECT BACKTRACKING'
     write (iunit,*) (option(j),j = 21,21)
 
-    write(iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, ','MIDDLE AND LAST WALL SLAB'
+    write(iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
     write (iunit,'(1x,i3,1x,3(1pg11.4,1x))') nwpts, (wsplit(i),i=1,3)
 
-    write(iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,','   2=INSULATED 3=FLUX)'
+    write(iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,   2=INSULATED 3=FLUX)'
     write (iunit,*) iwbound
 
-    write(iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP - ',' IF EITHER <0 THEN SOLVER DECIDES'
+    write(iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
     write (iunit,11) stpmax, dasslfts
 
     write(iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
     write(iunit,11) ductcv
 
-    write(iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF, ','  SNSQE PRINT (1=ON)'
+    write(iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
     write(iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg
 
     if (1==1) stop

@@ -329,7 +329,9 @@ module opt
 
     integer, dimension(mxopt) :: option = &
         ! fire, hflow, entrain, vflow, cjet, door-fire, convec, rad, conduct, debug, exact ode,  hcl , mflow, keyboard, type of initialization,  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
-        (/ 2,   1,      1,       1,     2,    1,         1,      2,   1,       0,     1,          1,    1,     1,        1,                       0,            1,       0,           0,                  0,                   0/)
+        (/ 2,   1,      1,       1,     2,    1,         1,      4,   1,       0,     1,          1,    1,     1,        1,                       0,            1,       0,           0,                  0,                   0/)
+!*** in above change default rad option from 2 to 4
+!*** this causes absorption coefs to take on constant default values rather than computed from data
     integer, dimension(mxopt) :: debug = 0
     
     real(8) :: cutjac, stptime, prttime, tottime, ovtime, tovtime

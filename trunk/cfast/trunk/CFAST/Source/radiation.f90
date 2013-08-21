@@ -119,10 +119,7 @@
                 if(prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-!                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-!                qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
-! temporary work around until problem with use of rad4 is found
-                call rad2(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
                 if(.not.black)then

@@ -12,7 +12,7 @@ Detector / Sprinkler Activation (MAGIC),Measured Temperature Rise ($^\circ$C),Pr
 Plume Temperature (MAGIC),Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,500,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Plume_Temperature
 Oxygen Concentration (MAGIC),Measured Drop in Volume Fraction,Predicted Drop in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Oxygen_Concentration
 Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Carbon_Dioxide_Concentration
-Smoke Concentration (MAGIC),Measured Density (mg/m$^3$),Predicted Density (mg/m$^3$),0,1200,0.03 0.95,SouthEast,1,33,yes,linear,ScatterPlots/Smoke_Concentration
+Smoke Concentration (MAGIC),Measured Density (mg/m$^3$),Predicted Density (mg/m$^3$),0,600,0.03 0.95,SouthEast,1,33,yes,linear,ScatterPlots/Smoke_Concentration
 Carbon Monoxide Concentration,Measured Change in Volume Fraction,Predicted Change in Volume Fraction,0,0.001,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Carbon_Monoxide_Concentration
 Compartment Over-Pressure (MAGIC),Measured Pressure Rise (Pa),Predicted Pressure Rise (Pa),0,400,0.03 0.95,SouthEast,1,40,yes,linear,ScatterPlots/Compartment_Pressure
 Open Compartment Over-Pressure (MAGIC),Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,30,0.03 0.95,SouthEast,1,40,yes,linear,ScatterPlots/Open_Compartment_Pressure
@@ -22,7 +22,7 @@ Wall Temperature (MAGIC),Measured Temperature Rise ($^\circ$C),Predicted Tempera
 Ceiling Temperature,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Ceiling_Temperature
 Floor Temperature,Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,400,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Floor_Temperature
 Target Heat Flux (MAGIC),Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,120,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Target_Heat_Flux
-Surface Heat Flux (MAGIC),Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,20,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Surface_Heat_Flux
+Surface Heat Flux (MAGIC),Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,120,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Surface_Heat_Flux
 Wall Heat Flux,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,20,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Wall_Heat_Flux
 Ceiling Heat Flux,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,120,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Ceiling_Heat_Flux
 Floor Heat Flux,Measured Heat Flux (kW/m$^2$),Predicted Heat Flux (kW/m$^2$),0,120,0.03 0.95,SouthEast,1,20,yes,linear,ScatterPlots/Floor_Heat_Flux

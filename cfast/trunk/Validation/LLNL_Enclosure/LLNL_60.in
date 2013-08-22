@@ -27,6 +27,7 @@ VVENT,2,1,0.18,2,1
 !!
 !!Fire keywords
 !!
+GLOBA,10,393.15
 !!400kW
 FIRE,1,2,3,0,1,1,30,0,0,1,400kW
 CHEMI,1,4,0,0,0,0.2,5.005E+07,METHANE

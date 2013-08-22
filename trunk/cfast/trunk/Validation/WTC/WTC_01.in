@@ -11,10 +11,10 @@ WIND,0,10,0.16
 !!Material Properties
 !!
 MATL,GYP1/2,0.16,900,790,0.013,0.9,Gypsum Board (1/2 in)
-MATL,BNZMARI,0.12,1250,737,0.0254,0.8,BNZ Materials Maranite I
+MATL,BNZMARI,0.16,1075,670,0.0254,0.8,BNZ Materials Maranite I
 MATL,OIL,145,1909,884.1,0.006,0.8,"Oil, Unused (1/4 in)"
-MATL,BAR,43.068,526,7850,0.01275,0.9,"Steel Bar"
-MATL,FLANGE,43.068,526,7850,0.01275,0.9,"Steel Flange"
+MATL,BAR,40,600,7850,0.01275,0.9,"Steel Bar"
+MATL,FLANGE,40,600,7850,0.01275,0.9,"Steel Flange"
 !!
 !!Compartment keywords
 !!

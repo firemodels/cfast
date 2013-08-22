@@ -191,7 +191,7 @@ REM ..\..\bin\cfast LLNL_42 /V
 ..\..\bin\cfast LLNL_45 /V
 ..\..\bin\cfast LLNL_46 /V
 ..\..\bin\cfast LLNL_47 /V
-REM ..\..\bin\cfast LLNL_48 /V
+..\..\bin\cfast LLNL_48 /V
 ..\..\bin\cfast LLNL_49 /V
 ..\..\bin\cfast LLNL_50 /V
 ..\..\bin\cfast LLNL_51 /V

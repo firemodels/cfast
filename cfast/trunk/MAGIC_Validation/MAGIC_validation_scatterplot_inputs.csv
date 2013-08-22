@@ -1,4 +1,4 @@
-Scatter_Plot_Title,Ind_Title,Dep_Title,Plot_Min,Plot_Max,Title_Position,Key_Position,Paper_Width_Factor,Sigma_2_E,Model_Error,Plot_Type,Plot_Filename
+Scatter_Plot_Title,Ind_Title,Dep_Title,Plot_Min,Plot_Max,Title_Position,Key_Position,Paper_Width_Factor,Sigma_2_E,Weight_Data,Plot_Type,Plot_Filename
 HGL Temperature (MAGIC),Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/HGL_Temperature
 HGL Temperature: Forced Ventilation (MAGIC),Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/HGL_Temperature_Forced_Ventilation
 HGL Temperature: Natural Ventilation (MAGIC),Measured Temperature Rise ($^\circ$C),Predicted Temperature Rise ($^\circ$C),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/HGL_Temperature_Natural_Ventilation

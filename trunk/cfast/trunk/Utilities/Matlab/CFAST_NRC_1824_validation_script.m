@@ -38,7 +38,7 @@ vdir = [pwd,'/../../Validation/'];
 plotdir = [pwd,'/../../Docs/Validation_Guide/FIGURES/'];
 qfil = [pwd,'/CFAST_validation_scatterplot_inputs.csv'];
 
-[saved_data,drange] = dataplot(cfil,vdir,plotdir);
+[saved_data,drange] = dataplot(cfil,vdir,plotdir, 676:817);
 scatplot(saved_data,drange,qfil,plotdir)
 
 % Miscellaneous other scripts for special cases

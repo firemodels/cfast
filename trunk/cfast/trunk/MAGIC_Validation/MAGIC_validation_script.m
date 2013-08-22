@@ -33,13 +33,29 @@ addpath '../Utilities/Matlab/scripts'
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
-cfil = [pwd,'/MAGIC_validation_dataplot_inputs.csv'];
-vdir = [pwd,'/../MAGIC_Validation/'];
-plotdir = [pwd,'/Docs/FIGURES/'];
-qfil = [pwd,'/MAGIC_validation_scatterplot_inputs.csv'];
+Dataplot_Inputs_File = [pwd,'/MAGIC_validation_dataplot_inputs.csv'];
+Working_Dir = [pwd, '/../MAGIC_Validation/'];
+Manuals_Dir = [pwd, '/Docs/FIGURES/'];
+Scatterplot_Inputs_File = [pwd, '/MAGIC_validation_scatterplot_inputs.csv'];
+Output_File = [pwd, '/MAGIC_validation_scatterplot_outputs.csv'];
+Stats_Output = 2;
+Statistics_Tex_Output = [pwd, '/Docs/FIGURES/Scatterplots/validation_statistics.tex'];
+Histogram_Tex_Output = [pwd, '/Docs/FIGURES/Scatterplots/validation_histograms.tex'];
 
-[saved_data,drange] = dataplot(cfil,vdir,plotdir);
-scatplot(saved_data,drange,qfil,plotdir)
+% Override the plot style options with NRC 1824 plot options
+NRC_Options = false;
+Append_To_Scatterplot_Title = '';
+
+[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
+scatplot(saved_data, drange, ...
+         'Scatterplot_Inputs_File', Scatterplot_Inputs_File, ...
+         'Manuals_Dir', Manuals_Dir, ...
+         'Output_File', Output_File, ...
+         'Stats_Output', Stats_Output, ...
+         'Statistics_Tex_Output', Statistics_Tex_Output, ...
+         'Histogram_Tex_Output', Histogram_Tex_Output, ...
+         'NRC_Options', NRC_Options, ...
+         'Append_To_Scatterplot_Title', Append_To_Scatterplot_Title)
 
 % Miscellaneous other scripts for special cases
 

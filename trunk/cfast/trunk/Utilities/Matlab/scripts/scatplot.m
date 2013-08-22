@@ -5,7 +5,7 @@
 % Generate scatter plots.  Must first run dataplot.m to generate
 % saved_data and drange.
 %
-% [] = scatplot(saved_data,drange,qfil,plotfil)
+% [] = scatplot(saved_data, drange, Scatterplot_Inputs_File, Manuals_Dir)
 %
 % Arguments:
 %    saved_data - cell array of packed data, may be obtained by running
@@ -13,18 +13,40 @@
 %
 %    drange - obtained from (or input to) function dataplot.m
 %
-%    qfil - file containing the scatterplot parameters
+%    Scatterplot_Inputs_File - file containing the scatterplot parameters
 %
-%    plotdir - directory where the output files are to go
+%    Manuals_Dir - directory where the output files are to go
 %
 %
 % Dependencies:
 %    ../scripts/define_qrow_variables.m
 %
 
-function [] = scatplot(saved_data,drange,qfil,plotdir,varargin)
+function [] = scatplot(saved_data,drange,varargin)
 
-% unpack data
+% Parse input arguments using ('Key', Value) syntax
+for k=1:2:length(varargin);
+    switch (varargin{k})
+    case {'Scatterplot_Inputs_File'}
+        Scatterplot_Inputs_File = varargin{k+1};
+    case {'Manuals_Dir'}
+        Manuals_Dir = varargin{k+1};
+    case {'Output_File'}
+        Output_File = varargin{k+1};
+    case {'Stats_Output'}
+        Stats_Output = varargin{k+1};
+    case {'Statistics_Tex_Output'}
+        Statistics_Tex_Output = varargin{k+1};
+    case {'Histogram_Tex_Output'}
+        Histogram_Tex_Output = varargin{k+1};
+    case {'NRC_Options'}
+        NRC_Options = varargin{k+1};
+    case {'Append_To_Scatterplot_Title'}
+        Append_To_Scatterplot_Title = varargin{k+1};
+    end
+end
+
+% Unpack data
 Save_Quantity         = saved_data{:,1};
 Save_Group_Style      = saved_data{:,2};
 Save_Fill_Color       = saved_data{:,3};
@@ -37,33 +59,33 @@ Save_Dep_Title        = saved_data{:,9};
 Save_Error_Tolerance  = saved_data{:,10};
 Save_Metric_Type      = saved_data{:,11};
 
-% If a statistics output file is specified, then enable statistics throughout
-% stats_outputs = 0: No output statistics
-% stats_outputs = 1: FDS verification statistics
-% stats_outputs = 2: FDS validation statistics
-if length(varargin) >= 1
-    output_file = varargin{1};
-    % Check if FDS verification plot, set appropriate flag
-    if strfind(output_file, 'verification_scatterplot_output')
-        stats_output = 1;
-    % Check if FDS validation plot, set appropriate flag
-    elseif strfind(output_file, 'validation_scatterplot_output')
-        stats_output = 2;
-    end
-else
-    stats_output = 0;
+Size_Save_Quantity = size(Save_Quantity);
+
+% If a statistics output file is specified, then enable statistics throughout.
+% This is also used to enable histogram plotting for validation cases.
+% Stats_Output = 0: No output statistics
+% Stats_Output = 1: FDS verification statistics
+% Stats_Output = 2: FDS or FDTs validation statistics
+if exist('Stats_Output', 'var') == 0
+    Stats_Output = 0;
 end
 
-qrange = [2:100];
-
+% Read in global plot options
 plot_style
 
-Q = importdata(qfil);
+% Override the plot style options with NRC 1824 plot options
+if NRC_Options == true
+    Font_Name = 'Helvetica';
+    Image_File_Type = '-dpdf';
+end
+
+% Read in scatter plot inputs file
+Q = importdata(Scatterplot_Inputs_File);
 H = textscan(Q{1},'%q','delimiter',',');
 headers = H{:}'; clear H
 
 % Generate header information for verification output_stats
-if stats_output == 1
+if Stats_Output == 1
     output_stats = {};
     output_stats{1,1} = 'Dataplot Line Number';
     output_stats{1,2} = 'Verification Group';
@@ -81,74 +103,84 @@ if stats_output == 1
 end
 
 % Generate header information for validation output_stats
-if stats_output == 2
+if Stats_Output == 2
     output_stats = {};
     output_stats{1,1} = 'Quantity';
     output_stats{1,2} = 'Number of Datasets';
     output_stats{1,3} = 'Number of Points';
-    output_stats{1,4} = '2*Sigma_Experiment';
-    output_stats{1,5} = '2*Sigma_Model';
+    output_stats{1,4} = 'Sigma_Experiment';
+    output_stats{1,5} = 'Sigma_Model';
     output_stats{1,6} = 'Bias';
     stat_line = 2;
+    Output_Histograms = {};
 end
 
 for j=2:length(Q);
     
     define_qrow_variables
     
+    Model_Error = 'yes';
+    if Sigma_2_E < 0 ; Model_Error = 'no'; end
+    
     clear Measured_Metric
     clear Predicted_Metric
     
+    figure
+    
     k = 0;
     for i=drange
-        if i>length(Save_Quantity); break; end
-        if strcmp(Save_Quantity(i),Scatter_Plot_Title)
+        if i > Size_Save_Quantity(2); break; end
+        if strcmp(Save_Quantity(1,i),Scatter_Plot_Title) || strcmp(Save_Quantity(Size_Save_Quantity(1),i),Scatter_Plot_Title)
             k = k+1;
+            
             Measured_Metric(k,:,:)  = Save_Measured_Metric(i,:,:);
             Predicted_Metric(k,:,:) = Save_Predicted_Metric(i,:,:);
-            Group_Key_Label(k)  = Save_Group_Key_Label(i);
-            size_measured = size(nonzeros(Measured_Metric(k,:,:)));
-            size_predicted = size(nonzeros(Predicted_Metric(k,:,:)));
+            Nonzeros_Measured_Metric = nonzeros(Measured_Metric(k,:,:));
+            Nonzeros_Predicted_Metric = nonzeros(Predicted_Metric(k,:,:));
+            Size_Measured = size(Nonzeros_Measured_Metric);
+            Size_Predicted = size(Nonzeros_Predicted_Metric);
+            Group_Key_Label(k) = Save_Group_Key_Label(i);
+            
             % Skip case if predicted metric is zero
-            if size_predicted(1)==0
+            if Size_Predicted(1) == 0
                 display(['Error: Size of predicted metric is zero for scatterplot ', Scatter_Plot_Title, '. Skipping scatterplot.'])
                 continue
             end
             % Check to see if measured and predicted arrays are the same size
-            if size_measured(1) ~= size_predicted(1)
+            if Size_Measured(1) ~= Size_Predicted(1)
                 display(['Error: Mismatched measured and predicted arrays in scatter plot for scatterplot ', Scatter_Plot_Title, '. Verify that the statistical metrics are being used properly for all cases. Skipping scatterplot.'])
                 continue
             end
             
             if strcmp(Plot_Type,'linear')
-                K(k) = plot(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                K(k) = plot(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
                 char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
             elseif strcmp(Plot_Type,'loglog')
-                K(k) = loglog(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                K(k) = loglog(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
                 char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
             elseif strcmp(Plot_Type,'semilogx')
-                K(k) = semilogx(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                K(k) = semilogx(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
                 char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
             elseif strcmp(Plot_Type,'semilogy')
-                K(k) = semilogy(nonzeros(Measured_Metric(k,:,:)),nonzeros(Predicted_Metric(k,:,:)),...
+                K(k) = semilogy(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
                 char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
             end
             
             % Perform this code block for FDS verification scatterplot output
-            if stats_output == 1
-                single_measured_metric = nonzeros(Measured_Metric(k,:,:));
-                single_predicted_metric = nonzeros(Predicted_Metric(k,:,:));
+            if Stats_Output == 1
+                single_measured_metric = Measured_Metric(k,:,:);
+                single_predicted_metric = Predicted_Metric(k,:,:);
                 % Loop over multiple line comparisons and build output_stats cell
                 for m=1:length(single_measured_metric)
                     
                     % Get type of statistics to compute
-                    error_type = Save_Quantity{i,1};
+                    error_type = Save_Quantity{1,i};
                     
                     % Compute the appropriate type of statistics, depending
                     % on the 'Quantity' specification in dataplot_inputs
-                    if strcmp(error_type, 'Relative Difference')
+                    if strcmp(error_type, 'Relative Error')
                         error_val = abs((single_predicted_metric(m)-single_measured_metric(m))/single_measured_metric(m));
-                    elseif strcmp(error_type, 'Absolute Difference')
+                    elseif strcmp(error_type, 'Absolute Error')
                         error_val = abs(single_predicted_metric(m)-single_measured_metric(m));
                     end
                     
@@ -180,31 +212,43 @@ for j=2:length(Q);
         end
     end
     
-    if k>0
+    if k > 0
         
-        % statistics
-        
-        Measured_Values  = nonzeros(Measured_Metric);
+        Measured_Values = nonzeros(Measured_Metric);
         Predicted_Values = nonzeros(Predicted_Metric);
         n_pts = length(Measured_Values);
-        for ib=1:10
-            bin_indices = find(Measured_Values>=(ib-1)*Plot_Max/10 & Measured_Values<ib*Plot_Max/10);
-            bin_weight(ib) = n_pts/length(bin_indices);
-            clear bin_indices
-        end
+        
+        % Weight the data -- for each point on the scatterplot compute a
+        % "weight" to provide sparse data with greater importance in the
+        % calculation of the accuracy statistics
         weight = zeros(size(Measured_Values));
-        for iv=1:n_pts
+        
+        if strcmp(Weight_Data,'yes')
+            Max_Measured_Value = max(Measured_Values);
+            Bin_Size = Max_Measured_Value/10;
             for ib=1:10
-                if Measured_Values(iv)>=(ib-1)*Plot_Max/10 & Measured_Values(iv)<ib*Plot_Max/10; weight(iv) = bin_weight(ib); end
+                bin_indices = find(Measured_Values>=(ib-1)*Bin_Size & Measured_Values<ib*Bin_Size);
+                bin_weight(ib) = n_pts/length(bin_indices);
+                clear bin_indices
+            end
+            for iv=1:n_pts
+                for ib=1:10
+                    if Measured_Values(iv)>=(ib-1)*Bin_Size && Measured_Values(iv)<ib*Bin_Size; weight(iv) = bin_weight(ib); end
+                end
+            end
+        else
+            for iv=1:n_pts
+                weight(iv) = 1.;
             end
         end
-            
+        
+        % Calculate statistics
         E_bar = sum(log(Measured_Values).*weight)/sum(weight);
         M_bar = sum(log(Predicted_Values).*weight)/sum(weight);
-        size_measured = size(Measured_Values);
-        size_predicted = size(Predicted_Values);
-        % Check to see if measured and predicted arrays are the same size
-        if size_measured(1) ~= size_predicted(1)
+        Size_Measured = size(Measured_Values);
+        Size_Predicted = size(Predicted_Values);
+        
+        if Size_Measured(1) ~= Size_Predicted(1)
             display(['Error: Mismatched measured and predicted arrays for scatterplot ', Scatter_Plot_Title, '. Skipping scatterplot.'])
             continue
         end
@@ -216,64 +260,65 @@ for j=2:length(Q);
         Sigma_M = sqrt( max(0,u*u - Sigma_E.^2) );
         delta = exp(M_bar-E_bar+0.5*Sigma_M.^2-0.5*Sigma_E.^2);
         
-        plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max],'k-')                    
-        plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*(1+2*Sigma_E)],'k--') 
-        plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*(1-2*Sigma_E)],'k--') 
-       
-        if strcmp(Model_Error,'yes') 
+        % Plot diagonal lines
+        plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max],'k-')
+        if strcmp(Model_Error,'yes')
+            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max],'k-')
+            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*(1+2*Sigma_E)],'k--')
+            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*(1-2*Sigma_E)],'k--')
             plot([Plot_Min,Plot_Max],[Plot_Min,delta*Plot_Max],'r-')
             plot([Plot_Min,Plot_Max],[Plot_Min,delta*Plot_Max*(1+2*Sigma_M)],'r--')
             plot([Plot_Min,Plot_Max],[Plot_Min,delta*Plot_Max*(1-2*Sigma_M)],'r--')
         end
         
-        % format the legend and axis labels
+        % Format the legend and axis labels
         xlabel(Ind_Title,'Interpreter',Font_Interpreter,'FontSize',Scat_Label_Font_Size,'FontName',Font_Name)
         ylabel(Dep_Title,'Interpreter',Font_Interpreter,'FontSize',Scat_Label_Font_Size,'FontName',Font_Name)
         axis([Plot_Min Plot_Max Plot_Min Plot_Max])
         
         set(gca,'Units','inches')
-        set(gca,'FontName','Times')
+        set(gca,'FontName',Font_Name)
         set(gca,'FontSize',12)
         set(gca,'YTick',get(gca,'XTick'))
         set(gca,'Position',[Scat_Plot_X,Scat_Plot_Y,Scat_Plot_Width,Scat_Plot_Height])
         
         if strcmp(Plot_Type,'linear')
             text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
-            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         elseif strcmp(Plot_Type,'loglog')
             text(10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min))),10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min))),...
-            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         elseif strcmp(Plot_Type,'semilogx')
             text(10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min))),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
-            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         elseif strcmp(Plot_Type,'semilogy')
             text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min))),...
-            Scatter_Plot_Title,'FontSize',Scat_Title_Font_Size,'FontName','Times','Interpreter',Font_Interpreter)
+            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
   
         if Sigma_E > 0.0
-            text(Plot_Min+(Title_Position(1)+0.05)*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min),...
-                 ['$2 \, \tilde{\sigma}_E$=',num2str(2*Sigma_E,'%4.2f')],'FontSize',12,'FontName','Times','Interpreter',Font_Interpreter)
+            text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min),...
+                 ['Exp. Uncertainty: ',num2str(Sigma_E,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
          
         if strcmp(Model_Error,'yes')
-            text(Plot_Min+(Title_Position(1)+0.05)*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.10)*(Plot_Max-Plot_Min),...
-                ['$2 \, \tilde{\sigma}_M$=',num2str(2*Sigma_M,'%4.2f')],'FontSize',12,'FontName','Times','Interpreter',Font_Interpreter)
+            text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.10)*(Plot_Max-Plot_Min),...
+                ['Model Uncertainty: ',num2str(Sigma_M,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
             
-            text(Plot_Min+(Title_Position(1)+0.05)*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.15)*(Plot_Max-Plot_Min),...
-                ['Bias =',num2str(delta,'%4.2f')],'FontSize',12,'FontName','Times','Interpreter',Font_Interpreter)
+            text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.15)*(Plot_Max-Plot_Min),...
+                ['Bias Factor: ',num2str(delta,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
         
         C = stripcell(Group_Key_Label);
         [B I] = unique(C);
         
-        if size(Key_Position)>0
+        if size(Key_Position) > 0
             legend_handle = legend(K(I),C(I),'Location',Key_Position,'FontSize',12','Interpreter',Font_Interpreter);
-            if isequal(Key_Position,'EastOutside')
+            if strcmp(Key_Position,'EastOutside')
                pos = get(legend_handle,'position');
                set(legend_handle,'position',[Scat_Paper_Width pos(2:4)])
             end
-            if isequal(Key_Position,'SouthEastOutside')
+            if strcmp(Key_Position,'SouthEastOutside')
                pos = get(legend_handle,'position');
                set(legend_handle,'position',[Scat_Paper_Width 0.5 pos(3:4)])
             end
@@ -284,25 +329,27 @@ for j=2:length(Q);
         
         hold off
         
-        % print to pdf
-        
+        % Print to pdf
         PDF_Paper_Width = Paper_Width_Factor * Scat_Paper_Width;
-
+        
         set(gcf,'Visible','on');
         set(gcf,'PaperUnits','inches');
         set(gcf,'PaperSize',[PDF_Paper_Width Scat_Paper_Height]);
         set(gcf,'PaperPosition',[0 0 PDF_Paper_Width Scat_Paper_Height]);
         display(['Printing scatter plot ',num2str(j),'...'])
-        print(gcf,'-dpdf',[plotdir,Plot_Filename])
+        print(gcf,Image_File_Type,[Manuals_Dir,Plot_Filename])
+        
+        % Print histogram of ln(M/E) and normal distribution
+        statistics_histogram
         
         % Perform this code block for FDS validation scatterplot output
-        if stats_output == 2
+        if Stats_Output == 2
             % Write descriptive statistics to output_stats cell
             output_stats{stat_line,1} = Scatter_Plot_Title; % Quantity
             output_stats{stat_line,2} = size(B, 2); % Number of data sets
             output_stats{stat_line,3} = size(Predicted_Values, 1); % Number of data points
-            output_stats{stat_line,4} = sprintf('%0.2f', 2*Sigma_E); % 2*Sigma_E
-            output_stats{stat_line,5} = sprintf('%0.2f', 2*Sigma_M); % 2*Sigma_M
+            output_stats{stat_line,4} = sprintf('%0.2f', Sigma_E); % Sigma_E
+            output_stats{stat_line,5} = sprintf('%0.2f', Sigma_M); % Sigma_M
             output_stats{stat_line,6} = sprintf('%0.2f', delta); % Bias
             stat_line = stat_line + 1;
         end
@@ -311,127 +358,14 @@ for j=2:length(Q);
         display(['No data for scatter plot ',Scatter_Plot_Title])
     end
     
-    clear Measured_Metric Predicted_Metric Group_Key_Label K
+    clear Measured_Metric Measured_Values Predicted_Metric Predicted_Values Group_Key_Label K
+    close all
 end
 
-% Write all verification or validation statistics from output_stats to csv output_file
-if (stats_output ~= 0)
-    [rows, cols] = size(output_stats);
-    fid = fopen(output_file, 'w');
-    for i_row = 1:rows
-        file_line = '';
-        for i_col = 1:cols
-            contents = output_stats{i_row, i_col};
-            if isnumeric(contents)
-                contents = num2str(contents);
-            elseif isstr(contents)
-                contents = strcat('"', contents, '"');
-            elseif isempty(contents)
-                contents = '';
-            end
-            if i_col < cols
-                file_line = [file_line, contents, ','];
-            else
-                file_line = [file_line, contents];
-            end
-        end
-        count = fprintf(fid, '%s\n', file_line);
-    end
-    fclose(fid);
-end
+% Verification and validation statistics output routines
+statistics_output
 
-% Write statistics information to a LaTeX table for inclusion in the
-% FDS Verification Guide (SCRIPT_FIGURES/verification_statistics.tex)
-if stats_output == 1
-    filename = '../../Docs/Validation_Guide/FIGURES/verification_statistics.tex';
-    fid = fopen(filename, 'wt');
-    % Generate table header information in .tex file
-    fprintf(fid, '%s\n', '\begin{center}');
-    fprintf(fid, '%s\n', '\tiny');
-    fprintf(fid, '%s\n', '\begin{longtable}{|c|c|c|c|c|c|c|c|}');
-    fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Case Name & Expected & Predicted & Dependent & Type of Error & Error & Error     & Within    \\');
-    fprintf(fid, '%s\n', '          & Metric   & Metric    & Variable  &               &       & Tolerance & Tolerance \\ \hline \hline');
-    fprintf(fid, '%s\n', '\endfirsthead');
-    fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Case Name & Expected & Predicted & Dependent & Type of Error & Error & Error     & Within    \\');
-    fprintf(fid, '%s\n', '          & Metric   & Metric    & Variable  &               &       & Tolerance & Tolerance \\ \hline \hline');
-    fprintf(fid, '%s\n', '\endhead');
-    fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', '\endfoot');
-    fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', '\endlastfoot');
-    [rows, cols] = size(output_stats);
-    for i_row = 2:rows
-        % Format strings for various columns in table (and add short names)
-        m = output_stats;
-        % Escape underscores for LaTeX
-        case_name = strrep(m{i_row, 3}, '_', '\_');
-        % Additional columns
-        expected_value = m{i_row, 5};
-        predicted_value = m{i_row, 6};
-        dependent_variable = m{i_row, 7};
-        % Remove " Error" from string to save horizontal space
-        error_type = strrep(m{i_row, 8}, ' Error', '');
-        % Convert strings to numbers for later formatting
-        error_val = str2num(m{i_row, 9});
-        tol = str2num(m{i_row, 10});
-        % Additional columns
-        within_tolerance = m{i_row, 11};
-        
-        % Write out all columns to .tex file
-        fprintf(fid, '%s', case_name, ' & ');
-        fprintf(fid, '%s', num2str(expected_value, '%1.2e'), ' & ');
-        fprintf(fid, '%s', num2str(predicted_value, '%1.2e'), ' & ');
-        fprintf(fid, '%s', dependent_variable, ' & ');
-        fprintf(fid, '%s', error_type, ' & ');
-        fprintf(fid, '%s', num2str(error_val, '%1.2e'), ' & ');
-        fprintf(fid, '%s', num2str(tol, '%1.2e'), ' & ');
-        fprintf(fid, '%s%s\n', within_tolerance, ' \\');
-    end
-    fprintf(fid,'%s\n','\end{longtable}');
-    fprintf(fid,'%s\n','\end{center}');
-end
-
-% Write statistics information to a LaTeX table for inclusion in the
-% FDS Validation Guide (SCRIPT_FIGURES/validation_statistics.tex)
-if stats_output == 2
-    filename = '../../Docs/Validation_Guide/FIGURES/ScatterPlots/validation_statistics.tex';
-    fid = fopen(filename, 'wt');
-    % Generate table header information in .tex file
-    fprintf(fid, '%s\n', '\begin{center}');
-    fprintf(fid, '%s\n', '\begin{longtable}{|c|c|c|c|c|c|}');
-    fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Quantity & Number of & Number of & $2\widetilde{\sigma}_E$ & $2\widetilde{\sigma}_M$ & Bias \\');
-    fprintf(fid, '%s\n', '         & Datasets  & Points    &                         &                         &      \\ \hline \hline');
-    fprintf(fid, '%s\n', '\endfirsthead');
-    fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Quantity & Number of & Number of & $2\widetilde{\sigma}_E$ & $2\widetilde{\sigma}_M$ & Bias \\');
-    fprintf(fid, '%s\n', '         & Datasets  & Points    &                         &                         &      \\ \hline \hline');
-    fprintf(fid, '%s\n', '\endhead');
-    [rows, cols] = size(output_stats);
-    for i_row = 2:rows
-        % Format strings for various columns in table (and add short names)
-        m = output_stats;
-        quantity = m{i_row, 1};
-        number_datasets = m{i_row, 2};
-        number_points= m{i_row, 3};
-        sigma_e = m{i_row, 4};
-        sigma_m = m{i_row, 5};
-        bias = m{i_row, 6};
-        
-        % Write out all columns to .tex file
-        fprintf(fid, '%s', quantity, ' & ');
-        fprintf(fid, '%s', num2str(number_datasets), ' & ');
-        fprintf(fid, '%s', num2str(number_points), ' & ');
-        fprintf(fid, '%s', num2str(sigma_e, '%0.2f'), ' & ');
-        fprintf(fid, '%s', num2str(sigma_m, '%0.2f'), ' & ');
-        fprintf(fid, '%s%s\n', num2str(bias, '%0.2f'), ' \\ \hline');
-    end
-    fprintf(fid,'%s\n','\end{longtable}');
-    fprintf(fid,'%s\n','\end{center}');
-end
-
+fclose('all');
 
 display('scatplot completed successfully!')
 

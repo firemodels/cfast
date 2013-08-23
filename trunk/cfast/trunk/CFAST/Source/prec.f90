@@ -15,7 +15,7 @@ integer, parameter :: eb = selected_real_kind(12)
 
 ! often used numbers
 
-real(eb) :: pi, sigma, twothirds, third, fourpi, pio2, g, gsqrt
+real(eb) :: pi, sigma, twothirds, third, fourpi, pio2, pio4, g, gsqrt
 
 contains
 
@@ -27,6 +27,7 @@ third = 1.0_eb/3.0_eb
 twothirds = 2.0_eb/3.0_eb
 fourpi = 4.0_eb*pi
 pio2 = pi/2.0_eb
+pio4 = pi/4.0_eb
 g=9.8_eb
 gsqrt=sqrt(g)
 

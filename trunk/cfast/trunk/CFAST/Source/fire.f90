@@ -95,6 +95,7 @@
             ! note that we are carrying parallel data structures for the fire information
             ! output uses the unsorted arrays, froom, ..., ordered by object
             ! fire physics uses the sorted arrays, sorted by compartment
+            
           nfire = nfire + 1
           ifroom(nfire) = iroom
           xfire(nfire,1) = objpos(1,iobj)
@@ -174,11 +175,6 @@
     use fireptrs
     use interfaces
     implicit none
-
-   ! subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,
-   ! mol_mass,stmass,xfx,xfy,xfz,objectsize,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
-!    real(eb), intent(in) ::
-!    real(eb), intent(out) ::
 
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: xemp, xhr, xbr, xdr, hcombt, y_soot, y_co, y_trace, n_C ,n_H, n_O, n_N, n_Cl
@@ -593,35 +589,35 @@
     use precision_parameters
     implicit none
 
-    logical :: first = .true.
-    real(eb) :: fm1, fm2, fm3, t1, t2, a1, a2, a3, xf, xfx, xfy, qj, qjl, zz, zq, zdq, xemp, xeme, xems, od
-    real(eb), parameter :: fire_at_wall = 1.0d-3
-    save first, a1, a2, a3, t1, t2
+    real(eb), intent(in) :: qjl, zz, xemp, xfx, xfy, od
+    real(eb), intent(out) :: xems,  xeme
+    
+    real(eb) :: fm1, fm2, fm3, t1, t2, a1, a2, a3, xf, qj, zq, zdq
+    real(eb), parameter :: fire_at_wall = 1.0e-3_eb
 
     ! define assignment statement subroutines to compute three parts of correlation
+    
     fm1(zq) = zq**.566_eb
     fm2(zq) = zq**.909_eb
     fm3(zq) = zq**1.895_eb
 
-    ! first time in firplm calculate coeff's to insure that mccaffrey correlation is continuous.  
+    ! calculate coeff's to insure that mccaffrey correlation is continuous.  
     ! that is, for a1 = .011, compute a2, a3 such that
     ! a1*zq**.566 = a2*zq**.909  for zq = .08
     ! a2*zq**.909 = a3*zq**1.895 for zq = .2
-    if (first) then
-        first = .false.
-        t1 = .08_eb
-        t2 = .20_eb
-        a1 = .011_eb
-        a2 = a1*fm1(t1)/fm2(t1)
-        a3 = a2*fm2(t2)/fm3(t2)
-    endif
+
+    t1 = .08_eb
+    t2 = .20_eb
+    a1 = .011_eb
+    a2 = a1*fm1(t1)/fm2(t1)
+    a3 = a2*fm2(t2)/fm3(t2)
 
     ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     xf = 1.0_eb
     if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
     if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
     qj = 0.001_eb*qjl
-    if (zz>0._eb.and.qj>0.0_eb) then
+    if (zz>0.0_eb.and.qj>0.0_eb) then
         zdq = zz/(xf*qj)**0.4_eb
         if (zdq>t2) then
             xems = a3*fm3(zdq)*qj
@@ -648,8 +644,8 @@
     !     inputs:    q    fire size (w)
     !                z      plume height (m)
     !                emp  mass loss rate of the fire (kg/s)
-    !                xfx   position of the fire in x direction (m)
-    !                xfy   position of the fire in y direction (m)
+    !                x   position of the fire in x direction (m)
+    !                y   position of the fire in y direction (m)
     !                od is the characteristic size of the object (diameter)
     !     outputs:   ems  total mass transfer rate at height z (kg/s)
     !                eme  net entrainment rate at height z (kg/s)
@@ -657,7 +653,10 @@
     use precision_parameters
     implicit none
 
-    real(eb) :: q, qj, z, z0, emp, eme, ems, x, y, od, deltaz
+    real(eb), intent(in) :: q, z, emp, x, y, od
+    real(eb), intent(out) :: ems, eme
+    
+    real(eb) :: qj, z0, deltaz
 
     qj = 0.001_eb*q
     z0 = -1.02_eb*od + 0.083_eb*qj**0.4
@@ -684,8 +683,10 @@
     use precision_parameters
     implicit none  
 
+    real(eb), intent(in) :: time, deltt
+    
     integer ::i, j, irm, ii, isys
-    real(eb) :: filter, qcifraction, time, deltt
+    real(eb) :: filter, qcifraction
 
     do i = 0, numobjl
         objmaspy(i) = objmaspy(i) + femp(i)*deltt
@@ -748,12 +749,15 @@
     use params
     use vents
     implicit none
+    
+    logical, intent(out) :: djetflg
+    real(eb), intent(out) :: flwdjf(nr,ns+2,2)
 
-    real(eb) :: flwdjf(nr,ns+2,2), xntms1(2,ns), xntms2(2,ns), flwdjf0(nr,ns+2,2), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
-    integer i, iroom1, iroom2, ifrom, lsp, iroom
+    real(eb) :: xntms1(2,ns), xntms2(2,ns), flwdjf0(nr,ns+2,2), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
+    integer :: i, iroom1, iroom2, ifrom, lsp, iroom
     save flwdjf0
 
-    logical djetflg, dj1flag, dj2flag, ventflg(mxvent), roomflg(nr), anyvents
+    logical :: dj1flag, dj2flag, ventflg(mxvent), roomflg(nr), anyvents
 
     ! initialize summations and local data
     djetflg = .false.
@@ -785,76 +789,62 @@
     end do
 
     if(.not.djetflg)return
-    do ifrom = 1, n
-        do lsp = 1, ns + 2
-            flwdjf(ifrom,lsp,lower) = 0.0_eb
-            flwdjf(ifrom,lsp,upper) = 0.0_eb
-        end do
-    end do
+    flwdjf(1:n,1:ns+2,1:2) = 0.0_eb
+    fqdj(1:n) = 0.0_eb
 
-    do i = 1, n
-        fqdj(i) = 0.0_eb
-    end do
-
-    hcombt = 5.005d+07
+    hcombt = 5.005e+7_eb
 
     ! calculate the heat for each of the door jet fires
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
-        do i = 1, nvents
-            if(ventflg(i))then
-                iroom1 = izvent(i,1)
-                iroom2 = izvent(i,2)
-                flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
-                flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
-                call djfire(iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call djfire(iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+       do i = 1, nvents
+          if(ventflg(i))then
+             iroom1 = izvent(i,1)
+             iroom2 = izvent(i,2)
+             flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
+             flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
+             call djfire(iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+             call djfire(iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
-                ! sum the flows for return to the source routine
-                if(dj1flag)then
-                    flwdjf(iroom1,q,upper) = flwdjf(iroom1,q,upper) + qpyrol1
-                    do lsp = 1, ns
-                        flwdjf(iroom1,lsp+2,upper) = flwdjf(iroom1,lsp+2,upper) + xntms1(upper,lsp)
-                    end do
-                endif
-                if(dj2flag)then
-                    flwdjf(iroom2,q,upper) = flwdjf(iroom2,q,upper) + qpyrol2
-                    do lsp = 1, ns
-                        flwdjf(iroom2,lsp+2,upper) = flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
-                    end do
-                endif
-            endif
-        end do
+             ! sum the flows for return to the source routine
+             if(dj1flag)then
+                flwdjf(iroom1,q,upper) = flwdjf(iroom1,q,upper) + qpyrol1
+                do lsp = 1, ns
+                   flwdjf(iroom1,lsp+2,upper) = flwdjf(iroom1,lsp+2,upper) + xntms1(upper,lsp)
+                end do
+             endif
+             if(dj2flag)then
+                flwdjf(iroom2,q,upper) = flwdjf(iroom2,q,upper) + qpyrol2
+                do lsp = 1, ns
+                   flwdjf(iroom2,lsp+2,upper) = flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
+                end do
+             endif
+          endif
+       end do
     endif
 
     if(option(fmodjac)==on)then
-        if(jaccol==0)then
+       if(jaccol==0)then
 
-            ! we need to save the solution for later jacobian calculations
-            do iroom = 1, nm1
-                do lsp = 1, ns + 2
-                    flwdjf0(iroom,lsp,lower) = flwdjf(iroom,lsp,lower)
-                    flwdjf0(iroom,lsp,upper) = flwdjf(iroom,lsp,upper)
-                end do
-            end do
-        else if(jaccol>0)then
+           ! we need to save the solution for later jacobian calculations
+            
+          flwdjf0(1:nm1,1:ns+2,1:2) = flwdjf(1:nm1,1:ns+2,1:2)
+          flwdjf0(iroom,lsp,upper) = flwdjf(iroom,lsp,upper)
+       else if(jaccol>0)then
 
-            ! we are computing a jacobian, so get previously saved solution for rooms
-            ! that are not affected by the perturbed solution variable
-            do iroom = 1, nm1
-                if(.not.roomflg(iroom))then
-                    do lsp = 1, ns+2
-                        flwdjf(iroom,lsp,lower) = flwdjf0(iroom,lsp,lower)
-                        flwdjf(iroom,lsp,upper) = flwdjf0(iroom,lsp,upper)
-                    end do
-                endif
-            end do
-        endif
+          ! we are computing a jacobian, so get previously saved solution for rooms
+          ! that are not affected by the perturbed solution variable
+          do iroom = 1, nm1
+             if(.not.roomflg(iroom))then
+                flwdjf(iroom,1:ns+2,1:2) = flwdjf0(iroom,1:ns+2,1:2)
+             endif
+          end do
+       endif
     endif
 
     do i = 1, n
-        fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
-        heatvf(i) = flwdjf(i,q,upper)
+       fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
+       heatvf(i) = flwdjf(i,q,upper)
     end do
     return
     end subroutine djet
@@ -879,10 +869,14 @@
     use interfaces
 
     implicit none
+    
+    integer, intent(in) :: ito
+    real(eb), intent(in) :: tjet, xxnetfl, sas, hcombt
+    logical, intent(out) :: djflowflg
+    real(eb), intent(out) :: qpyrol, xntms(2,ns)
 
-    real(eb) :: xntms(2,ns), xmass(ns), x0, flw1to2, flw2to1, flwdjf, fldjf0, hcombt, qpyrol, qpyrol1, qpyrol2, xntms1, xntms2, xxnetfl, sas, tjet, dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
-    integer :: i, iroom1, iroom2, ifrom, ito, lsp
-    logical djflowflg
+    real(eb) :: xmass(ns), x0, flw1to2, flw2to1, flwdjf, fldjf0, qpyrol1, qpyrol2, xntms1, xntms2, dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
+    integer :: i, iroom1, iroom2, ifrom, lsp
 
     x0 = 0.0_eb
     qpyrol = x0
@@ -891,24 +885,20 @@
     ! we only wnat to do the door jet calculation if there is fuel, oxygen, and sufficient temperature in the door jet
     if (xxnetfl>x0.and.sas>x0.and.tjet>=tgignt) then
 
-        ! do combustion chemistry assuming complete comversion to co2 & h2o.
-        ! although the real chemistry is more complex, for now we don't know
-        ! how to handle it.
-        dummy = -1.0_eb
-        djflowflg = .true.
-        do i = 1, ns
-            xmass(i) = x0
-        end do
-        source_o2 = zzcspec(ito,lower,2)
-        xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
-        xxqspray = 0.0_eb
-        call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
-        qpyrol = xqpyrl
+       ! do combustion chemistry assuming complete comversion to co2 & h2o.
+       ! although the real chemistry is more complex, for now we don't know
+       ! how to handle it.
+       dummy = -1.0_eb
+       djflowflg = .true.
+       xmass(1:ns) = x0
+       source_o2 = zzcspec(ito,lower,2)
+       xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
+       xxqspray = 0.0_eb
+       call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
+       qpyrol = xqpyrl
 
-        do i = 1, ns
-            xntms(upper,i) = xmass(i)
-            xntms(lower,i) = x0
-        end do
+       xntms(upper,1:ns) = xmass(1:ns)
+       xntms(lower,1:ns) = x0
     endif
     return
     end
@@ -927,16 +917,19 @@
 
     use precision_parameters
     implicit none
-    character str*10
-    real(eb), parameter :: zero = 0.0_eb, four = 4.0_eb
-    real(eb) :: qdot, area, fheight, d
+    
+    real(eb), intent(in) :: qdot, area
+    real(eb), intent(out) :: fheight
+    
+    real(eb) :: d
+    
     if (area<=0_eb) then
         d = 0.09_eb
     else
-        d = sqrt(four*area/pi)
+        d = 2.0_eb*sqrt(area/pi)
     endif
     fheight = -1.02*d + 0.235*(qdot/1.0d3)**0.4_eb
-    fheight = max (zero, fheight)
+    fheight = max (0.0_eb, fheight)
     return
     end subroutine flamhgt
 
@@ -957,56 +950,62 @@
     !                 tl: lower layer gas temperature (K)
     !                 zfire: height of the base of the fire (m)
     !                 zlayer: height of the hot/cold gas layer interface (m)
-    !                 z: position to calculate plume centerline temperature (m)
+    !                 zin: position to calculate plume centerline temperature (m)
     !                 tplume (output): plume centerline temperature
 
     use precision_parameters
     implicit none
-    real(eb) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, zin, tplume
+    
+    real(eb), intent(in) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, zin
+    real(eb), intent(out) :: tplume
+    
     real(eb), parameter :: C_T = 9.115_eb, Beta = 0.955_eb
     real(eb) :: cp, rhoamb, z0, qdot_c, z_i1, q_i1star, xi, fheight, z, q_i2star, z_i2, z_eff, q_eff, dt
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
+    
     z = zin - zfire
     if (qdot>0.0_eb.and.tu>=tl.and.z>=0.0_eb) then
 
-        !       fire and target are both in the lower layer
-        if (z<=zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
-            call PlumeTemp_M (qdot, tl, z, tplume)
+       !       fire and target are both in the lower layer
+       if (z<=zlayer) then
+          !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
+          
+          call PlumeTemp_M (qdot, tl, z, tplume)
 
-            !       fire and target are both in the upper layer
-        else if (zfire>=zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
-            call PlumeTemp_M (qdot, tu, z, tplume)
+          !       fire and target are both in the upper layer
+       else if (zfire>=zlayer) then
+          !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
+          call PlumeTemp_M (qdot, tu, z, tplume)
 
-            !       fire is in lower layer and target is in upper layer
-        else
-            qdot_c = qdot*(1.0_eb - xrad)/1000._eb
-            rhoamb = 352.981915_eb/tl
-            cp = 3.019d-7*tl**2 - 1.217d-4*tl + 1.014_eb
-            z_i1 = zlayer - zfire
-            q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**2.5_eb)
-            xi = tu/tl
-            !           the effective fire source (qi2star) must be a positive number
-            if (1._eb+C_T*q_i1star**twothirds>xi) then
-                q_i2star = ((1._eb+C_T*q_i1star**twothirds)/(xi*C_T)-1._eb/C_T)**1.5_eb
-                z_i2 = (xi*q_i1star*C_T/(q_i2star**third*((xi-1._eb)*(Beta+1._eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
-                rhoamb = 352.981915_eb/tu
-                cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014_eb
-                q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*z_i2**2.5_eb/(1.0_eb-xrad)*1000._eb
-                z_eff = z-z_i1+z_i2
-                call PlumeTemp_M (q_eff, tu, z_eff, tplume)
-            else
-                tplume = tu
-            endif
-        endif
+          !       fire is in lower layer and target is in upper layer
+            
+       else
+          qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
+          rhoamb = 352.981915_eb/tl
+          cp = 3.019e-7_eb*tl**2 - 1.217e-4_eb*tl + 1.014_eb
+          z_i1 = zlayer - zfire
+          q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**2.5_eb)
+          xi = tu/tl
+          !           the effective fire source (qi2star) must be a positive number
+          if (1.0_eb+C_T*q_i1star**twothirds>xi) then
+             q_i2star = ((1.0_eb+C_T*q_i1star**twothirds)/(xi*C_T)-1.0_eb/C_T)**1.5_eb
+             z_i2 = (xi*q_i1star*C_T/(q_i2star**third*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
+             rhoamb = 352.981915_eb/tu
+             cp = 3.019e-7_eb*tu**2 - 1.217e-4_eb*tu + 1.014_eb
+             q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
+             z_eff = z-z_i1+z_i2
+             call PlumeTemp_M (q_eff, tu, z_eff, tplume)
+          else
+             tplume = tu
+          endif
+       endif
     else
-        if (zin<=zlayer) then
-            tplume = tl
-        else
-            tplume = tu
-        endif
+       if (zin<=zlayer) then
+          tplume = tl
+       else
+          tplume = tu
+       endif
     endif  
     return
     end subroutine PlumeTemp
@@ -1026,37 +1025,40 @@
 
     use precision_parameters
     implicit none
-    real(eb) :: qdot, xrad, dfire, tgas, tl, z, tplume
-    real(eb), parameter :: piov4 = (3.14159_eb/4.0_eb)
+    
+    real(eb), intent(in) :: qdot, xrad, dfire, tgas, z
+    real(eb), intent(out) :: tplume
+    
+    real(eb) :: tl
     real(eb) :: cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b
 
     ! plume temperature correlation is only valid above the mean flame height      
-    call flamhgt (qdot,piov4*dfire**2,fheight)
+    call flamhgt (qdot,pio4*dfire**2,fheight)
 
     ! z0 = virtual origin, qdot_c = convective HRR
-    if (dfire>0._eb) then
-        z0 = -1.02_eb*dfire + 0.083_eb*(qdot/1000._eb)**0.4_eb
+    if (dfire>0.0_eb) then
+       z0 = -1.02_eb*dfire + 0.083_eb*(qdot/1000.0_eb)**0.4_eb
     else
-        z0 = 0._eb
+       z0 = 0.0_eb
     endif
-    qdot_c = qdot*(1.0_eb - xrad)/1000._eb
+    qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
 
     rhoamb = 352.981915_eb/tgas
-    cp = 3.019d-7*tgas**2 - 1.217d-4*tgas + 1.014_eb
-    dstar = (qdot/1000._eb/(rhoamb*cp*tgas*sqrt(g)))**0.4_eb
+    cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
+    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(g)))**0.4_eb
 
     if ((z-z0)/dstar<1.32) then
-        dt = 2.91_eb*tgas
+       dt = 2.91_eb*tgas
     else if ((z-z0)<fheight) then
-        zp1 = 1.32*dstar
-        tp1 = 2.91*tgas
-        zp2 = fheight
-        tp2 = 9.1_eb*(tgas/(g*cp**2*rhoamb**2))**third*qdot_c**twothirds*(zp2)**(-5._eb/3._eb)
-        a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
-        b = tp1-a/zp1
-        dt = a/(z-z0) + b
+       zp1 = 1.32*dstar
+       tp1 = 2.91*tgas
+       zp2 = fheight
+       tp2 = 9.1_eb*(tgas/(g*cp**2*rhoamb**2))**third*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
+       a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
+       b = tp1-a/zp1
+       dt = a/(z-z0) + b
     else
-        dt = 9.1_eb*(tgas/(g*cp**2*rhoamb**2))**third*qdot_c**twothirds*(z-z0)**(-5._eb/3._eb)
+       dt = 9.1_eb*(tgas/(g*cp**2*rhoamb**2))**third*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
     endif
     tplume = tgas + dt
 
@@ -1075,27 +1077,29 @@
 
     use precision_parameters
     implicit none
-    real(eb) :: qdot, dfire, tgas, z, tplume
+    real(eb), intent(in) :: qdot, tgas, z
+    real(eb), intent(out) :: tplume
 
+    real(eb) :: dfire
     real(eb) :: cp, rhoamb, dstar, zstar, dt, n, B, theta
 
     rhoamb = 352.981915_eb/tgas
-    cp = 3.019d-7*tgas**2 - 1.217d-4*tgas + 1.014_eb
-    dstar = (qdot/1000._eb/(rhoamb*cp*tgas*sqrt(g)))**(0.4_eb)
+    cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
+    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(g)))**0.4_eb
     zstar = z/dstar
-    if (zstar>=0._eb .and. zstar<1.32_eb) then
+    if (zstar>=0.0_eb .and. zstar<1.32_eb) then
         n = 0.5_eb
         b = 2.91_eb
     else if (zstar>=1.32_eb .and. zstar<3.30_eb) then
-        n = 0._eb
+        n = 0.0_eb
         b = 3.81_eb
     elseif (zstar>=3.30_eb) then
-        n = -1._eb/3._eb
+        n = -third
         b  = 8.41_eb
     endif
 
-    theta = b*zstar**(2.*n-1.)
-    tplume = tgas*(1.+theta)
+    theta = b*zstar**(2.*n-1.0_eb)
+    tplume = tgas*(1.0_eb+theta)
     return
     end subroutine PlumeTemp_M
 
@@ -1114,82 +1118,83 @@
     use params
     implicit none
 
-    real(eb) :: aweigh(ns), air(2), v(2), aweigh7, deltt, avagad
+    real(eb), intent(in) :: deltt
+    
+    real(eb) :: aweigh(ns), air(2), v(2), aweigh7, avagad
     integer i, k, lsp
     logical ppmcal(ns)
 
     ! aweigh's are molar weights of the species, avagad is the reciprocal
     ! of avagadro's number (so you can't have less than an atom of a species
-    data aweigh, aweigh7 /28._eb, 32._eb, 44._eb, 28._eb, 27._eb, 37._eb, 12._eb, 18._eb, 12._eb, 0._eb, 0.0_eb, 12._eb/
-    data avagad /1.66d-24/
+    
+    data aweigh, aweigh7 /28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb, 12.0_eb/
+    data avagad /1.66e-24_eb/
     data ppmcal /3*.false., 3*.true., 5*.false./
-    aweigh(7) = aweigh7*(1.0_eb+hcratt)
 
+    aweigh(7) = aweigh7*(1.0_eb+hcratt)
     do i = 1, nm1
-        v(upper) = zzvol(i,upper)
-        v(lower) = zzvol(i,lower)
-        do k = upper, lower
-            air(k) = 0.0_eb
-            do lsp = 1, 9
-                air(k) = air(k) + zzgspec(i,k,lsp)/aweigh(lsp)
-            end do
-            air(k) = max(avagad,air(k))
-        end do
+       v(upper) = zzvol(i,upper)
+       v(lower) = zzvol(i,lower)
+       do k = upper, lower
+          air(k) = 0.0_eb
+          do lsp = 1, 9
+             air(k) = air(k) + zzgspec(i,k,lsp)/aweigh(lsp)
+         end do
+         air(k) = max(avagad,air(k))
+       end do
 
         ! calcluate the mass density in kg/m^3
-        do lsp = 1, ns
-            if (activs(lsp)) then
-                do k = upper, lower
-                    ppmdv(k,i,lsp) = zzgspec(i,k,lsp)/v(k)
-                end do
-            endif
-        end do
+       do lsp = 1, ns
+          if (activs(lsp)) then
+             do k = upper, lower
+                ppmdv(k,i,lsp) = zzgspec(i,k,lsp)/v(k)
+             end do
+          endif
+       end do
 
         ! calculate the molar density
-        do lsp = 1, 8
-            if (activs(lsp)) then
-                do k = upper, lower
-                    if (ppmcal(lsp)) then
-                        toxict(i,k,lsp) = 1.d+6*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
-                    else
-                        toxict(i,k,lsp) = 100._eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
-                    endif
-                end do
-            endif
-        end do
+       do lsp = 1, 8
+          if (activs(lsp)) then
+             do k = upper, lower
+                if (ppmcal(lsp)) then
+                   toxict(i,k,lsp) = 1.e6_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
+                else
+                   toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
+                endif
+             end do
+          endif
+       end do
 
-        ! opacity is calculated from seder's work
-        ! note: this value was changed 2/15/2 from 3500 to 3778 to reflect the new value as reported by
-        ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
-        ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
-        lsp = 9
-        if (activs(lsp)) then
-            do k = upper, lower
-                toxict(i,k,lsp) = ppmdv(k,i,lsp)*3778.0_eb
-            end do
-        endif
+       ! opacity is calculated from seder's work
+       ! note: this value was changed 2/15/2 from 3500 to 3778 to reflect the new value as reported by
+       ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
+       ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
+       
+       lsp = 9
+       if (activs(lsp)) then
+          toxict(i,1:2,lsp) = ppmdv(1:2,i,lsp)*3778.0_eb
+       endif
 
-        ! ct is the integration of the total "junk" being transported
-        lsp = 10
-        if (activs(lsp)) then
-            do k = upper, lower
-                toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp)*1000.0_eb*deltt/60.0_eb
-            end do
-        endif
+       ! ct is the integration of the total "junk" being transported
+       
+       lsp = 10
+       if (activs(lsp)) then
+          toxict(i,1:2,lsp) = toxict(i,1:2,lsp) + ppmdv(1:2,i,lsp)*1000.0_eb*deltt/60.0_eb
+       endif
 
-        ! ts (trace species) is the filtered concentration - this is the total mass. 
-        ! it is converted to fraction of the total generated by all fires.
-        ! this step being correct depends on the integratemass routine
-        lsp = 11
-        if (activs(lsp)) then
-            do k = upper, lower
-                toxict(i,k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
-            end do
-        endif
+       ! ts (trace species) is the filtered concentration - this is the total mass. 
+       ! it is converted to fraction of the total generated by all fires.
+       ! this step being correct depends on the integratemass routine
+       
+       lsp = 11
+       if (activs(lsp)) then
+          toxict(i,1:2,lsp) = zzgspec(i,1:2,lsp) !/(tradio+1.0d-10)
+       endif
 
     end do
 
     ! ontarget is the radiation received on a target on the floor
+    
     do i = 1, nm1
         ontarget(i) = sigm*(zztemp(i,upper)**4-tamb(i)**4)
         if (ontarget(i)<1.0_eb) ontarget(i) = 0.0_eb
@@ -1209,33 +1214,37 @@
     use smkview
     implicit none
 
+    integer, intent(out) :: nfires
+    
     real(eb) :: fheight
-    integer :: nfires, i
+    integer :: i
 
     ! first, the mainfire if there is one
+    
     if (lfbo>0) then
-        nfires = 1
-        flocal(1) = froom(0)
-        fxlocal(1) = fopos(1,0)
-        fylocal(1) = fopos(2,0)
-        fzlocal(1) = fopos(3,0)
-        call flamhgt (fqf(0),farea(0),fheight)
-        fqlocal(1) = fqf(0)
-        fhlocal(1) = fheight
+       nfires = 1
+       flocal(1) = froom(0)
+       fxlocal(1) = fopos(1,0)
+       fylocal(1) = fopos(2,0)
+       fzlocal(1) = fopos(3,0)
+       call flamhgt (fqf(0),farea(0),fheight)
+       fqlocal(1) = fqf(0)
+       fhlocal(1) = fheight
     else
-        nfires = 0
+       nfires = 0
     endif
 
     ! now the other objects
+    
     do i = 1, numobjl
-        nfires = nfires + 1
-        fxlocal(nfires) = fopos(1,i)
-        fylocal(nfires) = fopos(2,i)
-        fzlocal(nfires) = fopos(3,i)
-        call flamhgt (fqf(i),farea(i),fheight)
-        fqlocal(nfires) = fqf(i)
-        fhlocal(nfires) = fheight
-        flocal(nfires) = froom(i)
+       nfires = nfires + 1
+       fxlocal(nfires) = fopos(1,i)
+       fylocal(nfires) = fopos(2,i)
+       fzlocal(nfires) = fopos(3,i)
+       call flamhgt (fqf(i),farea(i),fheight)
+       fqlocal(nfires) = fqf(i)
+       fhlocal(nfires) = fheight
+       flocal(nfires) = froom(i)
     end do
     return
     end
@@ -1249,20 +1258,24 @@
     use precision_parameters
     implicit none
 
-    integer :: i, maxint
-    real(eb) :: mdot(maxint), qdot(maxint), hdot(maxint), hinitial, hcmax = 1.0d8, hcmin = 1.0d+6
+    integer, intent(in) :: maxint
+    real(eb), intent(in) :: qdot(maxint), hinitial
+    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
+    
+    integer :: i
+    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
 
     do i = 1, maxint
-        if(i>1) then
-            if (mdot(i)*qdot(i)<=0._eb) then
-                hdot(i) = hinitial
-            else
-                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
-                mdot(i) = qdot(i)/hdot(i)
-            endif
-        else
-            hdot(1) = hinitial
-        endif
+       if(i>1) then
+          if (mdot(i)*qdot(i)<=0.0_eb) then
+             hdot(i) = hinitial
+          else
+             hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
+             mdot(i) = qdot(i)/hdot(i)
+          endif
+       else
+          hdot(1) = hinitial
+       endif
     end do
 
     return
@@ -1288,61 +1301,68 @@
     use objects2
     use opt
     implicit none
-
-    real(eb) :: tmpob(2,mxoin), tobj, told, dt, tnobj
-    integer :: ifobj, iobj, ignflg, iobtarg, iflag, ierror
+    
+    integer, intent(in) :: iflag
+    integer, intent(out) :: ifobj
+    integer, intent(out) :: ierror
+    real(eb), intent(in) :: told, dt
+    real(eb), intent(out) :: tobj
+    
+    real(eb) :: tmpob(2,mxoin), tnobj
+    
+    integer :: iobj, ignflg, iobtarg
 
     ifobj = 0
-    tobj = told + 2._eb*dt
+    tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
     ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature and flux are stored backupwards - this historical
     ! see corresponding code in keywordcases
     do iobj = 1, numobjl
-        if (.not.objon(iobj)) then
-            ignflg = objign(iobj)
-            iobtarg = obtarg(iobj)
-            if (ignflg==1) then
-                if (objcri(1,iobj)<=tnobj) then
-                    tobj = min(objcri(1,iobj),tobj)
-                    ifobj = iobj
-                    tmpob(1,iobj) = 1._eb
-                    tmpob(2,iobj) = objcri(1,iobj)
-                else
-                    tmpob(1,iobj) = 0.0_eb
-                    tmpob(2,iobj) = tnobj + dt
-                endif
-            else if (ignflg==2) then
-                call do_objck(iflag,told,dt,xxtarg(trgtempf,iobtarg),objcri(3,iobj),obcond(obotemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
-            else if (ignflg==3) then
-                call do_objck(iflag,told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
-            else
-                call xerror('updobj-incorrectly defined object type',0,1,1)
-                ierror = 20
-                return
-            endif
-        endif
+       if (.not.objon(iobj)) then
+          ignflg = objign(iobj)
+          iobtarg = obtarg(iobj)
+          if (ignflg==1) then
+             if (objcri(1,iobj)<=tnobj) then
+                tobj = min(objcri(1,iobj),tobj)
+                ifobj = iobj
+                tmpob(1,iobj) = 1.0_eb
+                tmpob(2,iobj) = objcri(1,iobj)
+             else
+                tmpob(1,iobj) = 0.0_eb
+                tmpob(2,iobj) = tnobj + dt
+             endif
+          else if (ignflg==2) then
+             call do_objck(iflag,told,dt,xxtarg(trgtempf,iobtarg),objcri(3,iobj),obcond(obotemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+          else if (ignflg==3) then
+             call do_objck(iflag,told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+          else
+             call xerror('updobj-incorrectly defined object type',0,1,1)
+             ierror = 20
+             return
+          endif
+       endif
     end do
 
     if (iflag/=mdchk) then
-        do iobj = 1, numobjl
-            if (.not.objon(iobj)) then
-                iobtarg = obtarg(iobj)
-                obcond(obotemp,iobj) = xxtarg(trgtempf,iobtarg)
-                obcond(oboflux,iobj) = xxtarg(trgtfluxf,iobtarg)
-                if (iflag==mdset.and.tmpob(1,iobj)>0.0_eb) then
-                    if (tmpob(2,iobj)<=tobj) then
-                        objon(iobj) = .true.
-                        if (option(fbtobj)==on) then
-                            objset(iobj) = 1
-                        else
-                            objset(iobj) = 0
-                        endif
-                        objcri(1,iobj) = tmpob(2,iobj)
-                    endif
+       do iobj = 1, numobjl
+          if (.not.objon(iobj)) then
+             iobtarg = obtarg(iobj)
+             obcond(obotemp,iobj) = xxtarg(trgtempf,iobtarg)
+             obcond(oboflux,iobj) = xxtarg(trgtfluxf,iobtarg)
+             if (iflag==mdset.and.tmpob(1,iobj)>0.0_eb) then
+                if (tmpob(2,iobj)<=tobj) then
+                   objon(iobj) = .true.
+                   if (option(fbtobj)==on) then
+                      objset(iobj) = 1
+                   else
+                      objset(iobj) = 0
+                   endif
+                   objcri(1,iobj) = tmpob(2,iobj)
                 endif
-            endif
-        end do
+             endif
+          endif
+       end do
     endif
 
     return
@@ -1355,8 +1375,13 @@
     use precision_parameters
     implicit none
 
-    real(eb) :: tmpob(2), told, dt, cond, trip, oldcond, tobj, delta
-    integer :: iflag, iobj, ifobj
+    integer, intent(in) :: iflag, iobj
+    real(eb), intent(in) :: told, dt, cond, trip, oldcond
+    
+    integer, intent(out) :: ifobj
+    real(eb), intent(out) :: tmpob(2),  tobj
+    
+    real(eb) :: delta
 
     if (cond>trip) then
         delta = (trip-oldcond)/(cond-oldcond)
@@ -1366,7 +1391,7 @@
         ifobj = iobj
     else
         tmpob(1) = 0.0_eb
-        tmpob(2) = told + 2._eb*dt
+        tmpob(2) = told + 2.0_eb*dt
     endif
 
     return
@@ -1389,64 +1414,61 @@
     use params
     implicit none
 
-    real(eb) :: flwhcl(nr,ns+2,2), flxhcl(nr,4), x0, arw, hclg, hclw, h2o, rho, tg, tw, flux, hwdot, hnet
-    integer :: j, iroom, iwall, layer, ierror
+    real(eb), intent(out) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
+    integer, intent(out) :: ierror
+    
+    real(eb) :: arw, hclg, hclw, h2o, rho, tg, tw, flux, hwdot, hnet
+    integer :: j, iroom, iwall, layer
 
     ! initialize summations and local data
-    x0 = 0.0_eb
 
     ! only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
-    do iroom = 1, n
-        do j = 1, ns+2
-            flwhcl(iroom,j,upper) = x0
-            flwhcl(iroom,j,lower) = x0
-        end do
-        flxhcl(iroom,1) = x0
-        flxhcl(iroom,2) = x0
-        flxhcl(iroom,3) = x0
-        flxhcl(iroom,4) = x0
-    end do
+
+    flwhcl(1:n,1:ns+2,1:2) = 0.0_eb
+    flxhcl(1:n,1:4) = 0.0_eb
     if (option(fhcl)==off) return
 
     ! calculate the hcl "added" to the layers from each surface
+    
     if (activs(6)) then
-        do iroom = 1, nm1
-            do iwall = 1, 4
-                if (switch(iwall,iroom)) then
-                    if (iwall==1) then
-                        arw = ar(iroom)
-                        layer = upper
-                    else if (iwall==2) then
-                        arw = ar(iroom)
-                        layer = lower
-                    else if (iwall==3) then
-                        arw = (br(iroom)+dr(iroom))*zzhlay(iroom,upper)*2.0_eb
-                        layer = upper
-                    else if (iwall==4) then
-                        arw = (br(iroom)+dr(iroom))*(hr(iroom) - zzhlay(iroom,upper))*2.0_eb
-                        arw = max(x0,arw)
-                        layer = lower
-                    endif
-
-                    ! use environment variables
-                    hclg = zzcspec(iroom,layer,6)
-                    h2o = zzcspec(iroom,layer,8)
-                    rho = zzrho(iroom,layer)
-                    tg = zztemp(iroom,layer)
-                    hclw = zzwspec(iroom,iwall)
-                    flux = qscnv(iwall,iroom)
-                    tw = twj(1,iroom,iwall)
-                    call hcltran(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)
-                    if (ierror/=0) return
-
-                    ! sum up the flows and fluxes for the source routine
-                    flwhcl(iroom,1,layer) = flwhcl(iroom,1,layer)+hnet
-                    flwhcl(iroom,2+6,layer) = flwhcl(iroom,2+6,layer) + hnet
-                    flxhcl(iroom,iwall) = hwdot
-
+       do iroom = 1, nm1
+          do iwall = 1, 4
+             if (switch(iwall,iroom)) then
+                if (iwall==1) then
+                   arw = ar(iroom)
+                   layer = upper
+                else if (iwall==2) then
+                   arw = ar(iroom)
+                   layer = lower
+                else if (iwall==3) then
+                   arw = (br(iroom)+dr(iroom))*zzhlay(iroom,upper)*2.0_eb
+                   layer = upper
+                else if (iwall==4) then
+                   arw = (br(iroom)+dr(iroom))*(hr(iroom) - zzhlay(iroom,upper))*2.0_eb
+                   arw = max(0.0_eb,arw)
+                   layer = lower
                 endif
-            end do
-        end do
+
+                ! use environment variables
+                
+                hclg = zzcspec(iroom,layer,6)
+                h2o = zzcspec(iroom,layer,8)
+                rho = zzrho(iroom,layer)
+                tg = zztemp(iroom,layer)
+                hclw = zzwspec(iroom,iwall)
+                flux = qscnv(iwall,iroom)
+                tw = twj(1,iroom,iwall)
+                call hcltran(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)
+                if (ierror/=0) return
+
+                ! sum up the flows and fluxes for the source routine
+                flwhcl(iroom,1,layer) = flwhcl(iroom,1,layer)+hnet
+                flwhcl(iroom,2+6,layer) = flwhcl(iroom,2+6,layer) + hnet
+                flxhcl(iroom,iwall) = hwdot
+
+             endif
+          end do
+       end do
     endif
     return
     end
@@ -1474,20 +1496,26 @@
     use precision_parameters
     use cfast_main
     implicit none
+    
+    integer, intent(in) :: icomp, iwall
+    integer, intent(out) :: ierror
+    real(eb), intent(in) :: hclg, hclw, tg, tw, flux, rho, h2o,arw
+    real(eb), intent(out) :: hwdot, hnet
 
-    real(eb) :: x001, hwdot, hnet, hclg, hclw, hclp, xhclf, tg, twc, tw, b1, b2, b3, b4, b5, b6, b7, h2os, xtemp, exptw, bcoef, rk, flux, rho, h2o, rke, hclcof, arw
-    integer :: iwall, icomp, ierror
+    real(eb) :: x001, hclp, xhclf, twc, b1, b2, b3, b4, b5, b6, b7, h2os, xtemp, exptw, bcoef, rk, rke, hclcof
 
     hwdot = 0.0_eb
     hnet = 0.0_eb
-    if ((hclg==0.).and.(hclw==0.)) return
+    if ((hclg==0.0_eb).and.(hclw==0.0_eb)) return
 
     ! note that we calculate density on the fly, since ppmdv is not updated often enough
-    xhclf = hclg*tg*2.25d-3
-    hclp = xhclf*1.0d6
+    
+    xhclf = hclg*tg*2.25e-3_eb
+    hclp = xhclf*1.0e6_eb
     twc = tw - 273.0_eb
 
     ! specific values for painted gypsum - b1 and b2 are for gas phase reactions, and b3 and b4 are for the wall itself
+    
     b1 = hclbf(1,iwall,icomp)
     b2 = hclbf(2,iwall,icomp)
     b3 = hclbf(3,iwall,icomp)
@@ -1499,56 +1527,59 @@
     if (b1<=0) return
 
     ! calculate hcl gas-surface partition coefficient h2os is the saturation concentration of water.
-    if (twc<=40._eb) then
-        if (hclp>10._eb) then
-            h2os = (1.8204_eb-0.18890_eb*log(hclp)+0.06466_eb*twc+1.650d-3*twc**2+7.408d-5*twc**3)/tw
-        else
-            xtemp = 17.64262_eb - 5164.1_eb/tw
-            exptw = exp(xtemp)
-            bcoef = (7.696d-5+3.5920d-6*twc+9.166d-8*twc**2+4.116d-9*twc**3)/tw - 1.d-7*exptw
-            h2os = 0.018_eb*exptw + 1.8d4*bcoef*hclp
-        endif
+    if (twc<=40.0_eb) then
+       if (hclp>10.0_eb) then
+          h2os = (1.8204_eb-0.18890_eb*log(hclp)+0.06466_eb*twc+1.650e-3_eb*twc**2+7.408e-5_eb*twc**3)/tw
+       else
+          xtemp = 17.64262_eb - 5164.1_eb/tw
+          exptw = exp(xtemp)
+          bcoef = (7.696e-5_eb+3.5920e-6_eb*twc+9.166e-8_eb*twc**2+4.116e-9_eb*twc**3)/tw - 1.e-7_eb*exptw
+          h2os = 0.018_eb*exptw + 1.8e4_eb*bcoef*hclp
+       endif
     else if ((twc>40.0_eb).and.(twc<=60.0_eb)) then
-        h2os = (7.044_eb-2.2416d3*xhclf-3.874d-3*twc**2+2.328d-4*twc**3+2.376d6*xhclf**2-5.527d8*xhclf**3+4.918d10*xhclf**4-1.359d12*xhclf**5-1.4033d2*twc*xhclf+2.431d4*twc*xhclf**2-1.6023d6*twc*xhclf**3)/tw
+       h2os = (7.044_eb-2.2416e3_eb*xhclf-3.874e-3_eb*twc**2+2.328e-4_eb*twc**3+2.376e6_eb*xhclf**2-5.527e8_eb*xhclf**3+4.918e10_eb*xhclf**4-1.359e12_eb*xhclf**5-1.4033e2_eb*twc*xhclf+2.431e4_eb*twc*xhclf**2-1.6023e6_eb*twc*xhclf**3)/tw
     else if ((twc>60.0_eb).and.(twc<=80.0_eb)) then
-        h2os = (107.46_eb-4.129_eb*twc+5.096d-2*twc**2-3.1915d8*xhclf**3+1.0408d10*xhclf**4-2.2793d11*xhclf**5-5.8194_eb*twc**2*xhclf+7.6883d4*twc*xhclf**2-7.4363d2*twc**2*xhclf**2+.059067_eb*twc**3*xhclf+1.8132d6*twc*xhclf**3)/tw
+       h2os = (107.46_eb-4.129_eb*twc+5.096e-2_eb*twc**2-3.1915e8_eb*xhclf**3+1.0408e10_eb*xhclf**4-2.2793e11_eb*xhclf**5-5.8194_eb*twc**2*xhclf+7.6883e4_eb*twc*xhclf**2-7.4363e2_eb*twc**2*xhclf**2+.059067_eb*twc**3*xhclf+1.8132e6_eb*twc*xhclf**3)/tw
     else if ((twc>80.0_eb).and.(twc<=95.0_eb)) then
-        h2os = (2.583d2-8.0386_eb*twc+1.739d5*xhclf+7.608d-2*twc**2-1.5492d7*xhclf**2+3.956d9*xhclf**3-2.065d11*xhclf**4+1.3747d13*xhclf**5-4.086d3*twc*xhclf+24.06_eb*twc**2*xhclf+1.3558d5*twc*xhclf**2-3.076d7*twc*xhclf**3)/tw
+       h2os = (2.583e2_eb-8.0386_eb*twc+1.739e5_eb*xhclf+7.608e-2_eb*twc**2-1.5492e7_eb*xhclf**2+3.956e9_eb*xhclf**3-2.065e11_eb*xhclf**4+1.3747e13_eb*xhclf**5-4.086e3_eb*twc*xhclf+24.06_eb*twc**2*xhclf+1.3558e5_eb*twc*xhclf**2-3.076e7_eb*twc*xhclf**3)/tw
     else if ((twc>95.0_eb).and.(twc<=110.0_eb)) then
-        h2os = (6.431d2-16.374_eb*twc+2.822d5*xhclf+0.12117_eb*twc**2-8.224d7*xhclf**2-7.387d6*xhclf**3-5.247d3*twc*xhclf+24.30_eb*twc**2*xhclf+1.5465d6*twc*xhclf**2-7.250d3*twc**2*xhclf**2)/tw
+       h2os = (6.431e2_eb-16.374_eb*twc+2.822e5_eb*xhclf+0.12117_eb*twc**2-8.224e7_eb*xhclf**2-7.387e6_eb*xhclf**3-5.247e3_eb*twc*xhclf+24.30_eb*twc**2*xhclf+1.5465e6_eb*twc*xhclf**2-7.250e3_eb*twc**2*xhclf**2)/tw
     else if (twc>110.0_eb) then
-        xtemp = 18.3036_eb - 3816.44_eb/(tw-46.13_eb)
-        h2os = 0.2885_eb*exp(xtemp)/tw
+       xtemp = 18.3036_eb - 3816.44_eb/(tw-46.13_eb)
+       h2os = 0.2885_eb*exp(xtemp)/tw
     else
-        call xerror('hcltran - h2o out of range',0,1,1)
-        ierror = 12
-        return
+       call xerror('hcltran - h2o out of range',0,1,1)
+       ierror = 12
+       return
     endif
 
     ! calculate the coefficients
     ! rk is the constant "kc" which is the deposition coefficient (m/s)
     ! rke is the equilibrium coeffient between the gas and solid phase
     if (tw>=tg) then
-        rk = 8.33d-3
+       rk = 8.33e-3_eb
     else
-        x001 = .001_eb
-        rk = abs(flux/(max(x001,tg-tw)*rho*cp))
+       x001 = .001_eb
+       rk = abs(flux/(max(x001,tg-tw)*rho*cp))
     endif
     if (h2os>h2o) then
-        xtemp = 1500.0_eb/tw
-        exptw = exp(xtemp)
-        rke = b1*exptw/(1.0_eb+b2*exptw*hclg)*(1.0_eb+b5*h2o**b6/((h2os-h2o)**b7))
+       xtemp = 1500.0_eb/tw
+       exptw = exp(xtemp)
+       rke = b1*exptw/(1.0_eb+b2*exptw*hclg)*(1.0_eb+b5*h2o**b6/((h2os-h2o)**b7))
     else
-        rke = 1.0d4
+       rke = 1.0e4_eb
     endif
 
     ! calculate the derivatives
-    hclcof = rk*(hclg-hclw/(rke+1.0d-20))
+    
+    hclcof = rk*(hclg-hclw/(rke+1.0e-20_eb))
     hnet = -hclcof*arw
     xtemp = -b4/(8.31_eb*tw)
     hwdot = hclcof - b3*exp(xtemp)*hclw
     return
     end
+
+! --------------------------- rev_fire -------------------------------------------
 
     integer function rev_fire ()
 

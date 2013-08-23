@@ -158,18 +158,18 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\..\bin\cfast LLNL_12 /V
 ..\..\bin\cfast LLNL_13 /V
 ..\..\bin\cfast LLNL_14 /V
-REM ..\..\bin\cfast LLNL_15 /V
+..\..\bin\cfast LLNL_15 /V
 ..\..\bin\cfast LLNL_16 /V
-REM ..\..\bin\cfast LLNL_17 /V
-REM ..\..\bin\cfast LLNL_18 /V
+..\..\bin\cfast LLNL_17 /V
+..\..\bin\cfast LLNL_18 /V
 ..\..\bin\cfast LLNL_19 /V
-REM ..\..\bin\cfast LLNL_20 /V
+..\..\bin\cfast LLNL_20 /V
 ..\..\bin\cfast LLNL_21 /V
 ..\..\bin\cfast LLNL_22 /V
-REM ..\..\bin\cfast LLNL_23 /V
-REM ..\..\bin\cfast LLNL_24 /V
-REM ..\..\bin\cfast LLNL_25 /V
-REM ..\..\bin\cfast LLNL_26 /V
+..\..\bin\cfast LLNL_23 /V
+..\..\bin\cfast LLNL_24 /V
+..\..\bin\cfast LLNL_25 /V
+..\..\bin\cfast LLNL_26 /V
 ..\..\bin\cfast LLNL_27 /V
 ..\..\bin\cfast LLNL_28 /V
 ..\..\bin\cfast LLNL_29 /V
@@ -183,9 +183,9 @@ REM ..\..\bin\cfast LLNL_26 /V
 ..\..\bin\cfast LLNL_37 /V
 ..\..\bin\cfast LLNL_38 /V
 ..\..\bin\cfast LLNL_39 /V
-REM ..\..\bin\cfast LLNL_40 /V
+..\..\bin\cfast LLNL_40 /V
 ..\..\bin\cfast LLNL_41 /V
-REM ..\..\bin\cfast LLNL_42 /V
+..\..\bin\cfast LLNL_42 /V
 ..\..\bin\cfast LLNL_43 /V
 ..\..\bin\cfast LLNL_44 /V
 ..\..\bin\cfast LLNL_45 /V
@@ -196,16 +196,16 @@ REM ..\..\bin\cfast LLNL_42 /V
 ..\..\bin\cfast LLNL_50 /V
 ..\..\bin\cfast LLNL_51 /V
 ..\..\bin\cfast LLNL_52 /V
-REM ..\..\bin\cfast LLNL_53 /V
-REM ..\..\bin\cfast LLNL_54 /V
-REM ..\..\bin\cfast LLNL_55 /V
-REM ..\..\bin\cfast LLNL_56 /V
-REM ..\..\bin\cfast LLNL_57 /V
+..\..\bin\cfast LLNL_53 /V
+..\..\bin\cfast LLNL_54 /V
+..\..\bin\cfast LLNL_55 /V
+..\..\bin\cfast LLNL_56 /V
+..\..\bin\cfast LLNL_57 /V
 ..\..\bin\cfast LLNL_58 /V
 ..\..\bin\cfast LLNL_59 /V
 ..\..\bin\cfast LLNL_60 /V
 ..\..\bin\cfast LLNL_61 /V
-REM ..\..\bin\cfast LLNL_62 /V
+..\..\bin\cfast LLNL_62 /V
 ..\..\bin\cfast LLNL_63 /V
 ..\..\bin\cfast LLNL_64 /V
 cd ..\
@@ -495,7 +495,7 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\..\bin\cfast NIST_Dunes_2000_SDC02 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC05 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC07 /V
-REM ..\..\bin\cfast NIST_Dunes_2000_SDC09 /V
+..\..\bin\cfast NIST_Dunes_2000_SDC09 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC10 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC33 /V
 ..\..\bin\cfast NIST_Dunes_2000_SDC35 /V

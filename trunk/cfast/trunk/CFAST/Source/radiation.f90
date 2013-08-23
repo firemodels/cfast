@@ -1,3 +1,6 @@
+
+! --------------------------- rdheat -------------------------------------------
+
     subroutine rdheat(flwrad,flxrad,ierror)
 
     !     routine: rdheat
@@ -180,6 +183,8 @@
     return
     end subroutine rdheat
 
+! --------------------------- rad2 -------------------------------------------
+
     subroutine rad2(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
 
     !     routine: rad2
@@ -188,7 +193,7 @@
     !              floor (floor + lower wall) due to a point source fire, emitting 
     !              absorbing gas layers (upper and lower) and heat emitting wall 
     !              segments.  This routine also computes the heat absorbed by the lower and upper layers.
-    !     arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
+    !     input arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
     !                          i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively.  
     !                tlay: tlay(i) is the temperature of the i'th layer [k] where i=1,2 denotes the upper, lower layers respectively
     !                emis: emis(i) is the emisivity of the ceiling (i=1), walls (i=2) and floor (i=3)
@@ -201,7 +206,7 @@
     !                xfire: x coordinate of fire location [m]
     !                yfire: y coordinate of fire location [m]
     !                zfire: z coordinate of fire location [m]
-    !                qflux (ouptut): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
+    !      output arguments qflux (ouptut): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
     !                                the lower wall and the floor respectively.  note that qflux(1)=qflux(2) and qflux(3)=qflux(4)
     !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
@@ -210,11 +215,17 @@
     use precision_parameters
     implicit none
 
-    integer :: ipvt(2), ifire, nfire, i, j, k, info, iroom, mxfire, ierror
-    real(eb) :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(2,2), tauu(2,2), beam(2,2), &
-        taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(2), area4(4), figs(2,2), emis2(2), qout(4), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2), &
-        e(2), c(2), rhs(2), dq(2), dqde(2), xroom, yroom, zroom, hlay, aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig, &
-        tupper4, tlower4, aij, qllay, qulay
+    real(eb), intent(out) :: qlay(2), qflux(4), qout(4)
+    integer, intent(out) :: ierror
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay,qfire(*),xfire(*), yfire(*), zfire(*)
+    real(eb) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+    integer, intent(in) :: iroom, nfire, mxfire
+
+    integer :: ipvt(2), ifire, i, j, k, info
+    real(eb) :: taul(2,2), tauu(2,2), beam(2,2)
+    real(eb) :: area(2), area4(4), figs(2,2), emis2(2), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2)
+    real(eb) :: e(2), c(2), rhs(2), dq(2), dqde(2),  aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig
+    real(eb) :: tupper4, tlower4, aij, qllay, qulay
 
     logical black
     integer, parameter :: u = 1, l = 2
@@ -295,7 +306,7 @@
         yf = yfire(ifire)
         zf = zfire(ifire)
         firang(ifire,1) = rdsang(-xf,xroom-xf,-yf,yroom-yf,hlay-zf)
-        firang(ifire,2) = 4.0_eb*pi - firang(ifire,1)
+        firang(ifire,2) = fourpi - firang(ifire,1)
     end do
     f1d = rdparfig(xroom,yroom,zroom-hlay)
     f2d = rdparfig(xroom,yroom,hlay)
@@ -364,13 +375,15 @@
     return
     end subroutine rad2
 
+! --------------------------- rad4 -------------------------------------------
+
     subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
 
     !     routine: rad4
     !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to 
     !              a point source fire, emitting absorbing gas layers (upper and lower) and heat emitting wall segments. this routine 
     !              also computes the heat absorbed by the lower and upper layers.
-    !     arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
+    !     intput arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
     !                          i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively
     !                tlay: tlay(i) is the temperature of the i'th layer [k] where i=1,2 denotes the upper, lower layers respectively
     !                emis: emis(i) is the emisivity of the ceiling (i=1), walls (i=2) and floor (i=3)
@@ -383,7 +396,7 @@
     !                xfire: x coordinate of fire location [m]
     !                yfire: y coordinate of fire location [m]
     !                zfire: z coordinate of fire location [m]
-    !                qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
+    !      output arguments: qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
     !                                the lower wall and the floor respectively
     !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
@@ -392,14 +405,18 @@
     use precision_parameters
     implicit none
 
+    real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
+    integer, intent(out) :: ierror
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
+    real(eb), intent(in) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+
     integer, parameter :: u = 1, l = 2, mxroom = 100
-    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, ierror, mxfire
-    real(eb) :: tlay(2), twall(4), emis(4), absorb(2), xfire(*), yfire(*), zfire(*), qlay(2), qflux(4), qfire(*), taul(4,4), tauu(4,4), beam(4,4), &
-        taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), area(4), figs(4,4), qout(4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom), &
-        rdparfig, xroom, yroom, zroom, hlay, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14
+    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfire
+    real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
+    real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
+    real(eb) :: rdparfig, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14
 
     logical black
-
 
     data iflag /mxroom * 0/
 
@@ -552,6 +569,8 @@
     return
     end subroutine rad4
 
+! --------------------------- rdflux -------------------------------------------
+
     subroutine rdflux(mxfire,nzone,nup,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
 
     !     routine: rad4
@@ -579,12 +598,15 @@
     use precision_parameters
     implicit none
 
-    integer, parameter ::u = 1, l = 2
-    integer :: j, k, nup, ifire, mxfire, nzone, nfire
-    real(eb) :: c(*), figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*), zfire(*), area(*), qfire(mxfire), tlay(2), &
-        xx1, qulay, qllay, eu, el, qugas, qlgas, wf, qfflux, hlay, factu, factl
+    real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfire)
+    real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+    real(eb), intent(out) :: qulay, qllay, c(*)
+    integer, intent(in) :: mxfire, nzone, nfire, nup
+    
+    real(eb) :: eu, el, qugas, qlgas, wf, qfflux, factu, factl
 
-    xx1 = 1.0_eb
+    integer, parameter ::u = 1, l = 2
+    integer :: j, k, ifire
 
     ! define c vector
     qulay = 0._eb
@@ -596,18 +618,18 @@
 
         ! case: upper to upper
         do j = 1, nup
-            qugas = (xx1-tauu(k,j)) * eu
+            qugas = (1.0_eb-tauu(k,j)) * eu
             c(k) = c(k) + figs(k,j) * qugas
             qulay = qulay - area(k) * figs(k,j) * qugas
         end do
 
         ! case: lower to upper
         do j = nup + 1, nzone
-            qugas = (xx1-tauu(k,j)) * eu
-            qlgas = (xx1-taul(k,j)) * el
+            qugas = (1.0_eb-tauu(k,j)) * eu
+            qlgas = (1.0_eb-taul(k,j)) * el
             c(k) = c(k) + figs(k,j) * (qugas+qlgas*tauu(k,j))
             wf = area(k) * figs(k,j)
-            qulay = qulay + qlgas * wf * (xx1-tauu(k,j)) - qugas * wf
+            qulay = qulay + qlgas * wf * (1.0_eb-tauu(k,j)) - qugas * wf
             qllay = qllay - qlgas * wf
         end do
 
@@ -616,11 +638,11 @@
             qfflux = 0.25_eb*qfire(ifire)*firang(ifire,k)/(pi*area(k))
             c(k) = c(k) + qfflux * taufl(ifire,k) * taufu(ifire,k)
             if (zfire(ifire)>hlay) then
-                factu = xx1 - taufu(ifire,k)
+                factu = 1.0_eb - taufu(ifire,k)
                 factl = 0.0_eb
             else
-                factu = (xx1-taufu(ifire,k)) * taufl(ifire,k)
-                factl = xx1 - taufl(ifire,k)
+                factu = (1.0_eb-taufu(ifire,k)) * taufl(ifire,k)
+                factl = 1.0_eb - taufl(ifire,k)
             endif
             qulay = qulay + factu * qfflux * area(k)
             qllay = qllay + factl * qfflux * area(k)
@@ -632,12 +654,12 @@
 
         ! case: upper to lower
         do j = 1, nup
-            qugas = (xx1-tauu(k,j)) * eu
-            qlgas = (xx1-taul(k,j)) * el
+            qugas = (1.0_eb-tauu(k,j)) * eu
+            qlgas = (1.0_eb-taul(k,j)) * el
             c(k) = c(k) + figs(k,j) * (qugas*taul(k,j)+qlgas)
             wf = area(k) * figs(k,j)
             qulay = qulay - qugas * wf
-            qllay = qllay + qugas * wf * (xx1-taul(k,j)) - qlgas * wf
+            qllay = qllay + qugas * wf * (1.0_eb-taul(k,j)) - qlgas * wf
         end do
 
         !case: lower to lower
@@ -652,11 +674,11 @@
             qfflux = 0.25_eb*qfire(ifire)*firang(ifire,k)/(pi*area(k))
             c(k) = c(k) + qfflux * taufl(ifire,k) * taufu(ifire,k)
             if (zfire(ifire)>hlay) then
-                factu = xx1 - taufu(ifire,k)
-                factl = (xx1-taufl(ifire,k)) * taufu(ifire,k)
+                factu = 1.0_eb - taufu(ifire,k)
+                factl = (1.0_eb-taufl(ifire,k)) * taufu(ifire,k)
             else
                 factu = 0.0_eb
-                factl = xx1 - taufl(ifire,k)
+                factl = 1.0_eb - taufl(ifire,k)
             endif
             qulay = qulay + factu * qfflux * area(k)
             qllay = qllay + factl * qfflux * area(k)
@@ -665,29 +687,25 @@
     return
     end subroutine rdflux
 
-    SUBROUTINE Rabs(NZONE,NUP,E,DQDE,EMIS2,AREA,FIGS,TAUU,TAUL,QLLAY,QULAY)
+! --------------------------- rabs -------------------------------------------
+
+    subroutine rabs(nzone,nup,e,dqde,emis2,area,figs,tauu,taul,qllay,qulay)
 
     !     routine: rabs
     !     purpose: This routine computes the energy absorbed by the upper and lower layer due to radiation given off by heat emiiting rectangles
     !              forming the enclosure.  Coming into this routine, qllay and qulay were previously defined to be the heat absorbed by the lower and
     !              upper layers due to gas emissions and fires.  this routine just adds onto these values.
-    !     arguments: NZONE
-    !                NUP
-    !                E
-    !                DQDE
-    !                EMIS2
-    !                AREA
-    !                FIGS
-    !                TAUU
-    !                TAUL
-    !                QLLAY(output)
-    !                QULAY (output)
 
     use precision_parameters
     implicit none
 
-    integer :: j, k, nup, nzone
-    real(eb) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*), qout, qulay, qllay, qk
+    integer, intent(in) :: nup, nzone
+    real(eb), intent(in) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*)
+    real(eb), intent(out) :: qulay, qllay
+    
+    real(eb) :: qout, qk
+    integer :: j, k
+
 
     do k = 1, nup
         qout = e(k) - dqde(k)*(1.0_eb-emis2(k))
@@ -716,19 +734,20 @@
     return
     end subroutine rabs
 
+! --------------------------- rdparfig -------------------------------------------
+
     real(eb) function rdparfig(x,y,z)
 
     !     routine: rdparfig
     !     purpose: This routine calculates the configuration factor between two paralell plates a distance z a part.  Each 
     !          plate has a dimension of x by y.  the units of x, y and z are un-important except that they must be consistent.
-    !     arguments: X
-    !                Y
-    !                Z
 
     use precision_parameters
     implicit none
     
-    real(eb) :: x, y, z, xx, yy, xsq, ysq, f1, f2, f3, f4, f5
+    real(eb), intent(in) :: x, y, z
+
+    real(eb) :: xx, yy, xsq, ysq, f1, f2, f3, f4, f5
 
     rdparfig = 0.0_eb
     if (z==0.0_eb.or.x==0.0_eb.or.y==0.0_eb) return
@@ -749,14 +768,13 @@
 
     !     routine: rdparfig
     !     purpose: this routine calculates the configuration factor between two perpindular plates with a common edge.
-    !     arguments: x
-    !                y
-    !                z
 
     use precision_parameters
     implicit none
 
-    real(eb) :: xx1, xx0, x, y, z, h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
+    real(eb), intent(in) :: x, y, z
+
+    real(eb) :: xx1, xx0, h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
 
     xx1 = 1.0_eb
     xx0 = 0.0_eb
@@ -783,26 +801,23 @@
     return
     end function rdprpfig
 
+! --------------------------- rdfang -------------------------------------------
+
     subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
 
     !     routine: rdfang
     !     purpose: 
-    !     arguments: mxfire
-    !                xroom
-    !                yroom
-    !                zroom
-    !                hlay
-    !                nfire
-    !                xfire
-    !                yfire
-    !                zfire
-    !                firang
 
     use precision_parameters
     implicit none
 
-    integer :: i, nfire, mxfire
-    real(eb) :: xfire(*), yfire(*), zfire(*), firang(mxfire,*), arg1, arg2, arg3, arg4, xroom, yroom, zroom, f1, f4, fd, rdsang, hlay
+
+    real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
+    real(eb), intent(out) :: firang(mxfire,*)
+    integer, intent(in) :: mxfire, nfire
+    
+    real(eb) :: arg1, arg2, arg3, arg4, f1, f4, fd, rdsang
+    integer :: i
 
     do i = 1, nfire
         arg1 = -xfire(i)
@@ -827,20 +842,19 @@
     return
     end  subroutine rdfang
 
+! --------------------------- rdsang -------------------------------------------
+
     real(eb) function rdsang(x1,x2,y1,y2,r)
 
     !     routine: rdsang
     !     purpose: 
-    !     arguments: x1
-    !                x2
-    !                y1
-    !                y2
-    !                r
 
     use precision_parameters
     implicit none
     
-    real(eb) :: x1, x2, y1, y2, f1, f2, f3, f4, rdsang1, r
+    real(eb), intent(in) :: x1, x2, y1, y2, r
+
+    real(eb) :: f1, f2, f3, f4, rdsang1
 
     f1 = sign(rdsang1(abs(x2),abs(y2),r),x2*y2)
     f2 = sign(rdsang1(abs(x1),abs(y2),r),x1*y2)
@@ -850,56 +864,51 @@
     return
     end function rdsang
 
+! --------------------------- rdsang1 -------------------------------------------
+
     real(eb) function rdsang1(x,y,r)
 
     !     routine: rdsang1
     !     purpose: 
-    !     arguments: x
-    !                y
-    !                r
 
     use precision_parameters
     implicit none
 
-    real(eb) :: x, y, r, xx0, xx1, xr, yr, xy, xyr, f1, f2
+    real(eb), intent(in) :: x, y, r
 
-    xx0 = 0.0_eb
-    xx1 = 1.0_eb
-    if (x<=xx0.or.y<=xx0) then
-        rdsang1 = xx0
+    real(eb) :: xr, yr, xy, xyr, f1, f2
+
+    if (x<=0.0_eb.or.y<=1.0_eb) then
+        rdsang1 = 0.0_eb
     else
         xr = x * x + r * r
         xyr = x * x + y * y + r * r
         xy = x * x + y * y
         yr = y * y + r * r
-        f1 = min(xx1, y * sqrt(xyr/xy/yr))
-        f2 = min(xx1, x * sqrt(xyr/xy/xr))
+        f1 = min(1.0_eb, y * sqrt(xyr/xy/yr))
+        f2 = min(1.0_eb, x * sqrt(xyr/xy/xr))
         rdsang1 = (asin(f1)+asin(f2)-pio2)
     endif
     return
     end function rdsang1
 
+! --------------------------- rdftran -------------------------------------------
+
     subroutine rdftran(mxfire,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
 
     !     routine: rdftran
     !     purpose: 
-    !     arguments: mxfire
-    !                nzone
-    !                nup
-    !                absorb
-    !                hlay
-    !                zz
-    !                nfire
-    !                zfire
-    !                taufu
-    !                taufl
 
     use precision_parameters
     implicit none
 
-    integer :: i, j, nfire, nzone, mxfire, nup
-    real(eb) :: absorb(*), zz(*), zfire(*), taufu(mxfire,*), taufl(mxfire,*), hlay, beam, beamu, beaml
-    logical black
+    real(eb), intent(in) :: absorb(*), zz(*), zfire(*)
+    integer, intent(in) :: mxfire, nzone, nup, nfire
+    logical, intent(in) :: black
+    real(eb), intent(out) :: taufu(mxfire,*), taufl(mxfire,*)
+    
+    real(eb) :: hlay, beam, beamu, beaml
+    integer :: i, j
     
     do i = 1, nfire
         do j = 1, nup
@@ -950,24 +959,22 @@
     return
     end
 
+! --------------------------- rdrtran -------------------------------------------
+
     subroutine rdrtran(nzone,nup,absorb,beam,hlay,zz,tauu,taul,black)
 
     !     routine: rdftran
     !     purpose: 
-    !     arguments: nzone
-    !                nup
-    !                absorb
-    !                beam
-    !                hlay
-    !                zz
-    !                tauu
-    !                taul
 
     use precision_parameters
     implicit none
+
+    integer, intent(in) ::  nup, nzone
+    real(eb), intent(in) :: absorb(*), beam(nzone,nzone), zz(*), hlay
+    real(eb), intent(out) :: tauu(nzone,nzone), taul(nzone,nzone)
     
-    integer i, j, nup, nzone
-    real(eb) :: absorb(*), beam(nzone,nzone), zz(*), tauu(nzone,nzone), taul(nzone,nzone), fu, fl, hlay
+    integer i, j
+    real(eb) :: fu, fl
     logical black
 
     ! define upper layer transmission factors
@@ -1056,7 +1063,9 @@
     return
     end
 
-    real(eb) function absorb (cmpt, layer)
+! --------------------------- absorb -------------------------------------------
+
+    real(eb) function absorb(cmpt, layer)
 
     !  function calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
 
@@ -1089,16 +1098,14 @@
     
     implicit none
 
+    integer, intent(in) :: cmpt, layer
+
     ! declare parameters
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
 
     integer, parameter :: co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12
 
     integer, parameter :: co2=3, h2o=8, soot=9
-
-    ! declare i/o variables
-
-    integer :: cmpt, layer
 
     !  declare internal variables
     !  units:
@@ -1209,6 +1216,8 @@
 1000 format ('error in ',a3,' absorbance: xerror = ',i2,'; yerror = ',i2)
     end function absorb
 
+! --------------------------- linterp -------------------------------------------
+
     subroutine linterp (xdim, ydim, x, y, z, xval, yval, zval, xerr, yerr)
 
     !     routine: linterp
@@ -1225,15 +1234,14 @@
     use precision_parameters
     implicit none
 
+    integer, intent(in) :: xdim, ydim
+    real(eb), intent(out) :: xval, yval
+    integer, intent(out) :: xerr, yerr
+
+    real(eb), intent(in) :: x(xdim), y(ydim), z(xdim,ydim)
+    real(eb) :: deltax, deltay, delx, dely, dzdx, dzdy, zval
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
-
-    ! declare i/o parameters 
-    integer :: xdim, ydim, xerr, yerr
-    real(eb) :: x(xdim), y(ydim), z(xdim,ydim)
-
-    ! declare internal variables
-    real(eb) :: xval, yval, deltax, deltay, delx, dely, dzdx, dzdy, zval
-    integer count, i, j
+    integer :: count, i, j
 
     ! find the value of i such that x(1) <= xval <= x(xdim). if xval is outside that range, set it to the closest legal value and set the error value, as appropriate.
 
@@ -1313,6 +1321,8 @@
     zval = z(i,j) + delx + dely
     return
     end subroutine linterp
+
+! --------------------------- rev_radiation -------------------------------------------
 
     integer function rev_radiation ()
 

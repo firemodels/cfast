@@ -119,6 +119,7 @@
                 if(prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
+                 write(0,*)nrmfire,hr(i),"zfire=",zrfirepos(1),"hlay=",zzhlay(i,lower)
                 call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
@@ -853,6 +854,8 @@
         f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
         fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
         f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
+        write(0,*)"xx",zroom-zfire(i),hlay-zfire(i),zfire(i)
+        write(0,*)"yy",f1,fd,f4
         firang(i,1) = f1
         firang(i,4) = f4
         if (zfire(i)<hlay) then

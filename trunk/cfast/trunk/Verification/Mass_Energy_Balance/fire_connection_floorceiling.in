@@ -1,0 +1,37 @@
+VERSN,6,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,100,-50,10,10
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+MATL,STAIN304,19.8,557,7900,0.003,0.9,"Steel, 304 Stainless (1/8 in)"
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,5,5,5,0,0,0,STAIN304,OFF,OFF
+COMPA,Compartment 2,5,5,5,0,0,5,OFF,STAIN304,OFF
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!Base Case
+FIRE,1,2.5,2.5,0,1,1,0,0,0,1,Base Case
+CHEMI,1,4,0,0,0,0.3,5E+07,METHANE
+TIME,0,100,100
+HRR,1000000,100000,0
+SOOT,0.01,0.01,0
+CO,0.01,0.01,0
+TRACE,0,0,0
+AREA,1,1,0
+HEIGH,0,0,0
+!!
+!!Heat flow keywords
+!!
+VHEAT,2,1

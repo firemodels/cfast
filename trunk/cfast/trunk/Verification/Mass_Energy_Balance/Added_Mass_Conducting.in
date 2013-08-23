@@ -1,0 +1,23 @@
+VERSN,6,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,5000,-50,10,10
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,ALUM1/8,231,1033,2702,0.003,0.9,Aluminum (1/8 in)
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,5,5,5,0,0,0,ALUM1/8,ALUM1/8,ALUM1/8
+!!
+!!Vent keywords
+!!
+MVENT,2,1,1,V,1,1,V,1,1,0.1,2000,3000,1
+EVENT,M,2,1,1,10,0,1
+GLOBA,10,393.15

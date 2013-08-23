@@ -15,7 +15,7 @@ integer, parameter :: eb = selected_real_kind(12)
 
 ! often used numbers
 
-real(eb) :: pi, sigma, third, fourpi, pio2
+real(eb) :: pi, sigma, twothirds, third, fourpi, pio2, g, gsqrt
 
 contains
 
@@ -24,8 +24,11 @@ subroutine set_often_used
 pi=4._eb*atan(1.0_eb)
 sigma = 5.67e-8_eb
 third = 1.0_eb/3.0_eb
+twothirds = 2.0_eb/3.0_eb
 fourpi = 4.0_eb*pi
 pio2 = pi/2.0_eb
+g=9.8_eb
+gsqrt=sqrt(g)
 
 end subroutine set_often_used
 

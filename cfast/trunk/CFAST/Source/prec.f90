@@ -22,7 +22,7 @@ contains
 subroutine set_often_used
 
 pi=4._eb*atan(1.0_eb)
-sigma = 5.67_eb/100000000.0_eb
+sigma = 5.67e-8_eb
 third = 1.0_eb/3.0_eb
 fourpi = 4.0_eb*pi
 pio2 = pi/2.0_eb

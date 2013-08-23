@@ -10,6 +10,7 @@
     !                flxrad      net enthalphy flux into surface
     !                ierror      returns error codes
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
@@ -17,12 +18,17 @@
     use debug
     implicit none
 
-    real(8) :: flwrad(nr,2), flxrad(nr,nwal), qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
-    integer :: map(nwal) = (/1, 4, 2, 3/), i, j, ieqtyp, iroom, iwall, ilay, imap, ifire, nrmfire, ierror
+    real(eb), intent(out), dimension(nr,2) :: flwrad
+    real(eb), intent(out), dimension(nr,nwal) :: flxrad
+    integer, intent(out) :: ierror
+
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
+    integer :: map(nwal) = (/1, 4, 2, 3/), i, j, ieqtyp, iroom, iwall, ilay, imap, ifire, nrmfire
     logical black
 
     ! work and dummy arrays passed to rad2 and rad4
-    real(8) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2), xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire), fheight
+    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2)
+    real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire), fheight
     logical roomflg(nr)
     save flxrad0, flwrad0
 

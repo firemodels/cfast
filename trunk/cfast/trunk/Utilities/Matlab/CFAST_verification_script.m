@@ -33,6 +33,31 @@ addpath 'scripts'
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
+Dataplot_Inputs_File = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
+Working_Dir = [pwd, '/../../Verification/'];
+Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
+Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
+Output_File = [pwd, '/CFAST_verification_scatterplot_outputs.csv'];
+Stats_Output = 2;
+Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_statistics.tex'];
+Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_histograms.tex'];
+
+% Override the plot style options with NRC 1824 plot options
+
+NRC_Options = true;
+Append_To_Scatterplot_Title = ' (CFAST)';
+
+[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
+scatplot(saved_data, drange, ...
+         'Scatterplot_Inputs_File', Scatterplot_Inputs_File, ...
+         'Manuals_Dir', Manuals_Dir, ...
+         'Output_File', Output_File, ...
+         'Stats_Output', Stats_Output, ...
+         'Statistics_Tex_Output', Statistics_Tex_Output, ...
+         'Histogram_Tex_Output', Histogram_Tex_Output, ...
+         'NRC_Options', NRC_Options, ...
+         'Append_To_Scatterplot_Title', Append_To_Scatterplot_Title)
+
 cfil = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
 vdir = [pwd,'/../../Verification/'];
 plotdir = [pwd,'/../../Docs/Validation_Guide/FIGURES/'];

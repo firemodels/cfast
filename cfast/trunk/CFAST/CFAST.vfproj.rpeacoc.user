@@ -4,6 +4,4 @@
 		<Configuration Name="Debug|Win32" CommandArguments="Test /V"/>
 		<Configuration Name="Release|Win32" CommandArguments="test"/>
 		<Configuration Name="Debug|x64"/>
-		<Configuration Name="Release|x64"/>
-		<Configuration Name="x64|Win32" CommandArguments="test"/>
-		<Configuration Name="x64|x64"/></Configurations></VisualStudioUserFile>
+		<Configuration Name="Release|x64"/></Configurations></VisualStudioUserFile>

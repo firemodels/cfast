@@ -1,28 +1,32 @@
-MODULE PRECISION_PARAMETERS
+module precision_parameters
  
-! Set important parameters having to do with variable precision and array allocations
+! set important parameters having to do with variable precision and array allocations
  
-IMPLICIT NONE
+implicit none
  
-CHARACTER(255), PARAMETER :: precid='$Id$'
-CHARACTER(255), PARAMETER :: precrev='$Revision$'
-CHARACTER(255), PARAMETER :: precdate='$Date$'
+character(255), parameter :: precid='$id: prec.f90 968 2013-08-23 13:50:35Z gforney $'
+character(255), parameter :: precrev='$revision: 968 $'
+character(255), parameter :: precdate='$date: 2013-08-23 09:50:35 -0400 (fri, 23 aug 2013) $'
 
-! Precision of "Four Byte" and "Eight Byte" reals
+! precision of "four byte" and "eight byte" reals
 
-INTEGER, PARAMETER :: FB = SELECTED_REAL_KIND(6)
-INTEGER, PARAMETER :: EB = SELECTED_REAL_KIND(12)
+integer, parameter :: fb = selected_real_kind(6)
+integer, parameter :: eb = selected_real_kind(12)
 
-! Often used numbers
+! often used numbers
 
-REAL(EB) :: PI
+real(eb) :: pi, sigma, third, fourpi, pio2
 
-CONTAINS
+contains
 
-SUBROUTINE SET_OFTEN_USED
+subroutine set_often_used
 
-PI=4._EB*ATAN(1.0_EB)
+pi=4._eb*atan(1.0_eb)
+sigma = 5.67_eb/100000000.0_eb
+third = 1.0_eb/3.0_eb
+fourpi = 4.0_eb*pi
+pio2 = pi/2.0_eb
 
-END SUBROUTINE SET_OFTEN_USED
+end subroutine set_often_used
 
-END MODULE PRECISION_PARAMETERS
+end module precision_parameters

@@ -14,7 +14,7 @@ INCLUDE = ../Include
 
 # Definition of the object variables
 
-objf = cfast_parameters.o cfast_data.o cfast_interfaces.o cfast.o auxiliary.o initialization.o input.o numerics.o \
+objf = prec.o cfast_parameters.o cfast_data.o cfast_interfaces.o cfast.o auxiliary.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               conduction.o cyl_conduct.o convection.o radiation.o target.o \
               fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o 

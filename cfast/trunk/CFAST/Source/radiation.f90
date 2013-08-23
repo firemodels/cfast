@@ -39,16 +39,16 @@
     flxrad(1:nm1,1:nwal) = 0.0_eb
     flwrad(1:nm1,1:2) = 0.0_eb
 
-    if(option(frad)==off) return
+    if (option(frad)==off) return
     black = .false.
-    if(option(frad)==3) black = .true.
+    if (option(frad)==3) black = .true.
 
     ! initially assume that we compute radiation transfer in every room
     
     roomflg(1:nm1) = .true.
 
-    if(option(fmodjac)==on)then
-        if(jaccol>0)then
+    if (option(fmodjac)==on) then
+        if (jaccol>0) then
 
             ! if 2nd modified jacobian is active and dassl is computing a jacobian then
             ! only compute the radiation heat transfer in the room where the dassl 
@@ -57,8 +57,8 @@
             roomflg(1:nm1) = .false.
             ieqtyp = izeqmap(jaccol,1)
             iroom = izeqmap(jaccol,2)
-            if(ieqtyp==eqvu.or.ieqtyp==eqtu.or.ieqtyp==eqtl.or.ieqtyp==eqwt)then
-                if(ieqtyp==eqwt)iroom = izwall(iroom,1)
+            if (ieqtyp==eqvu.or.ieqtyp==eqtu.or.ieqtyp==eqtl.or.ieqtyp==eqwt) then
+                if (ieqtyp==eqwt)iroom = izwall(iroom,1)
                 roomflg(iroom) = .true.
             endif
         endif
@@ -71,24 +71,24 @@
 
     defabsup = 0.5_eb
     defabslow = 0.01_eb
-    if(lfbo/=0.and.option(frad)/=4.and.lfbt/=1)then
+    if (lfbo/=0.and.option(frad)/=4.and.lfbt/=1) then
         defabsup = absorb(lfbo,upper)
     endif
 
     do i = 1, nm1
-        if(roomflg(i))then
+        if (roomflg(i)) then
             tg(upper) = zztemp(i,upper)
             tg(lower) = zztemp(i,lower)
             zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(ar(i) + zzhlay(i, lower)*(dr(i) + br(i)))
             zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(ar(i) + zzhlay(i, upper)*(dr(i) + br(i)))
             do iwall = 1, 4
-                if(mod(iwall,2)==1)then
+                if (mod(iwall,2)==1) then
                     ilay = upper
                 else
                     ilay = lower
                 endif
                 imap = map(iwall)
-                if(switch(iwall,i))then
+                if (switch(iwall,i)) then
                     twall(imap) = zzwtemp(i,iwall,1)
                     emis(imap) = epw(iwall,i)
                 else
@@ -103,15 +103,15 @@
                 yrfirepos(j) = xfire(ifire+j-1,2)
                 !zrfirepos(j) = xfire(ifire+j-1,3) ! This is point radiation at the base of the fire
                 call flamhgt (xfire(ifire+j-1,8),xfire(ifire+j-1,20),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
-                if(fheight+xfire(ifire+j-1,3)>hr(i))then
+                if (fheight+xfire(ifire+j-1,3)>hr(i)) then
                     zrfirepos(j) = xfire(ifire+j-1,3) + (hr(i)-xfire(ifire+j,3))/2.0_eb
                 else
                     zrfirepos(j) = xfire(ifire+j-1,3) + fheight/2.0_eb
                 end if
             end do
-            if(nrmfire/=0)then
-                if(.not.black)then
-                    if(option(frad)==4.or.lfbt==1)then
+            if (nrmfire/=0) then
+                if (.not.black) then
+                    if (option(frad)==4.or.lfbt==1) then
                         zzabsb(upper,i) = defabsup
                         zzabsb(lower,i) = defabslow
                     else
@@ -119,15 +119,15 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-                if(prnslab)then
+                if (prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
                  write(0,*)nrmfire,hr(i),"zfire=",zrfirepos(1),"hlay=",zzhlay(i,lower)
                 call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
-                if(.not.black)then
-                    if(option(frad)==2.or.option(frad)==4.or.lfbt==1)then
+                if (.not.black) then
+                    if (option(frad)==2.or.option(frad)==4.or.lfbt==1) then
                         zzabsb(upper,i) = defabsup
                         zzabsb(lower,i) = defabslow
                     else
@@ -135,14 +135,14 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-                if(prnslab)then
+                if (prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
                 call rad2(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
             endif
-            if(ierror/=0) return
+            if (ierror/=0) return
             do j = 1, nwal
                 flxrad(i,j) = qflxw(map(j))
             end do
@@ -154,20 +154,20 @@
         endif
     end do
 
-    if(option(fmodjac)==on)then
-        if(jaccol==0)then
+    if (option(fmodjac)==on) then
+        if (jaccol==0) then
 
             ! if the jacobian option is active and dassl is computing the base vector for
             ! the jacobian calculation then save the flow and flux calculation for later use
 
             flxrad0(1:nm1,1:nwal) = flxrad(1:nm1,1:nwal)
             flwrad0(1:nm1,1:2) = flwrad(1:nm1,1:2)
-        else if(jaccol>0)then
+        else if (jaccol>0) then
 
             ! dassl is computing the jaccol'th column of a jacobian.  copy values into
             ! the flow and flux vectors that have not changed from the base vector
             do iroom = 1, nm1
-                if(.not.roomflg(iroom))then
+                if (.not.roomflg(iroom)) then
                     flxrad(iroom,1:nwal) = flxrad0(iroom,1:nwal)
                     flwrad(iroom,1:2) = flwrad0(iroom,1:2)
                 end if
@@ -254,7 +254,7 @@
     beam(2,1) = zroom
     fl = hlay/zroom
     fu = 1.0_eb - fl
-    if(.not.black)then
+    if (.not.black) then
         tauu(1,1) = exp(-beam(1,1)*absorb(1))
         taul(2,2) = exp(-beam(2,2)*absorb(2))
     else
@@ -264,7 +264,7 @@
     tauu(2,2) = 1.0_eb
     taul(1,1) = 1.0_eb
 
-    if(.not.black)then
+    if (.not.black) then
         tauu(1,2) = exp(-fu*beam(1,2)*absorb(1))
         taul(1,2) = exp(-fl*beam(1,2)*absorb(2))
     else
@@ -277,7 +277,7 @@
     ! define tranmission factors for surfaces with respect to fire
     
     do ifire = 1, nfire
-        if(zfire(ifire)>hlay)then
+        if (zfire(ifire)>hlay) then
             xxu(1) = zroom - zfire(ifire)
             xxu(2) = zfire(ifire) - hlay
             xxl(1) = 0.0_eb
@@ -289,7 +289,7 @@
             xxl(2) = zfire(ifire)
         endif
         do i = 1, 2
-            if(.not.black)then 
+            if (.not.black) then 
                 taufu(ifire,i) = exp(-absorb(1)*xxu(i))
                 taufl(ifire,i) = exp(-absorb(2)*xxl(i))
             else
@@ -344,7 +344,7 @@
     rhs(2) = b(2,1)*e(1) + b(2,2)*e(2) - c(2)
     call dgefa(a,2,2,ipvt,info)
     call dgesl(a,2,2,ipvt,rhs,0)
-    if(info/=0)then
+    if (info/=0) then
         call xerror('RAD2 - singular matrix',0,1,1)
         ierror = 17
         return
@@ -419,7 +419,7 @@
 
     data iflag /mxroom*0/
 
-    if(iflag(iroom)==0)then
+    if (iflag(iroom)==0) then
         f14(iroom) = rdparfig(xroom,yroom,zroom)
         iflag(iroom) = 1
     endif
@@ -496,12 +496,12 @@
     call rdrtran(4,2,absorb,beam,hlay,zz,tauu,taul,black)
 
     ! define transmission factors for fires
-    if(nfire/=0)then
+    if (nfire/=0) then
         call rdftran(mxfire,4,2,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
     endif
 
     ! define solid angles for fires
-    if(nfire/=0)then
+    if (nfire/=0) then
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
     endif
 
@@ -539,7 +539,7 @@
     ! solve the linear system
 
     call dgefa(a,4,4,ipvt,info)
-    if(info/=0)then
+    if (info/=0) then
         call xerror('RAD4 - singular matrix',0,1,1)
         ierror = 18
         rhs(1:4) = 0.0_eb
@@ -619,7 +619,7 @@
         do ifire = 1, nfire
             qfflux = qfire(ifire)*firang(ifire,k)/(fourpi*area(k))
             c(k) = c(k) + qfflux*taufl(ifire,k)*taufu(ifire,k)
-            if(zfire(ifire)>hlay)then
+            if (zfire(ifire)>hlay) then
                 factu = 1.0_eb - taufu(ifire,k)
                 factl = 0.0_eb
             else
@@ -658,7 +658,7 @@
         do ifire = 1, nfire
             qfflux = qfire(ifire)*firang(ifire,k)/(fourpi*area(k))
             c(k) = c(k) + qfflux*taufl(ifire,k)*taufu(ifire,k)
-            if(zfire(ifire)>hlay)then
+            if (zfire(ifire)>hlay) then
                 factu = 1.0_eb - taufu(ifire,k)
                 factl = (1.0_eb - taufl(ifire,k))*taufu(ifire,k)
             else
@@ -736,7 +736,7 @@
     real(eb) :: xx, yy, xsq, ysq, f1, f2, f3, f4, f5
 
     rdparfig = 0.0_eb
-    if(z==0.0_eb.or.x==0.0_eb.or.y==0.0_eb) return
+    if (z==0.0_eb.or.x==0.0_eb.or.y==0.0_eb) return
     xx = x/z
     yy = y/z
     f1 = 0.5_eb*log((1.0_eb+xx**2)*(1.0_eb+yy**2)/(1.0_eb+xx**2+yy**2))
@@ -765,7 +765,7 @@
     real(eb) :: h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
 
     rdprpfig = 0.0_eb
-    if(y==0.0_eb.or.x==0.0_eb.or.z==0.0_eb) return
+    if (y==0.0_eb.or.x==0.0_eb.or.z==0.0_eb) return
     h = x/y
     w = z/y
     f1 = w*atan(1.0_eb/w)
@@ -818,7 +818,7 @@
         write(0,*)"yy",f1,fd,f4
         firang(i,1) = f1
         firang(i,4) = f4
-        if(zfire(i)<hlay)then
+        if (zfire(i)<hlay) then
             firang(i,2) = fd - f1
             firang(i,3) = fourpi - fd - f4
         else
@@ -865,7 +865,7 @@
 
     real(eb) :: xr, yr, xy, xyr, f1, f2
 
-    if(x<=0.0_eb.or.y<=1.0_eb)then
+    if (x<=0.0_eb.or.y<=1.0_eb) then
         rdsang1 = 0.0_eb
     else
         xr = x*x + r*r
@@ -899,10 +899,10 @@
     
     do i = 1, nfire
         do j = 1, nup
-            if(zfire(i)>hlay)then
+            if (zfire(i)>hlay) then
                 beam = abs(zz(j)-zfire(i))
                 taufl(i,j) = 1.0_eb
-                if(.not.black)then
+                if (.not.black) then
                     taufu(i,j) = exp(-absorb(1)*beam)
                 else
                     taufu(i,j) = 0.0_eb
@@ -911,7 +911,7 @@
             else
                 beamu = zz(j) - hlay
                 beaml = hlay - zfire(i)
-                if(.not.black)then
+                if (.not.black) then
                     taufu(i,j) = exp(-absorb(1)*beamu)
                     taufl(i,j) = exp(-absorb(2)*beaml)
                 else
@@ -921,10 +921,10 @@
             endif
         end do
         do j = nup + 1, nzone
-            if(zfire(i)<=hlay)then
+            if (zfire(i)<=hlay) then
                 beam = abs(zz(j)-zfire(i))
                 taufu(i,j) = 1.0_eb
-                if(.not.black)then
+                if (.not.black) then
                     taufl(i,j) = exp(-absorb(2)*beam)
                 else
                     taufl(i,j) = 0.0_eb
@@ -933,7 +933,7 @@
             else
                 beamu = zfire(i) - hlay
                 beaml = hlay - zz(j)
-                if(.not.black)then
+                if (.not.black) then
                     taufu(i,j) = exp(-absorb(1)*beamu)
                     taufl(i,j) = exp(-absorb(2)*beaml)
                 else
@@ -969,14 +969,14 @@
     
     do i = 1, nup
         do j = i + 1, nup
-            if(.not.black)then
+            if (.not.black) then
                 tauu(i,j) = exp(-absorb(1)*beam(i,j))
             else
                 tauu(i,j) = 0.0_eb
             endif
             tauu(j,i) = tauu(i,j)
         end do
-        if(.not.black)then
+        if (.not.black) then
             tauu(i,i) = exp(-absorb(1)*beam(i,i))
         else
             tauu(i,i) = 0.0_eb
@@ -988,7 +988,7 @@
     do i = 1, nup
         do j = nup + 1, nzone
             fu = (zz(i)-hlay)/(zz(i)-zz(j))
-            if(.not.black)then
+            if (.not.black) then
                 tauu(i,j) = exp(-absorb(1)*beam(i,j)*fu)
             else
                 tauu(i,j) = 0.0_eb
@@ -1000,7 +1000,7 @@
     ! lower to lower
     do i = nup + 1, nzone
         do j = nup + 1, nzone
-            if(.not.black)then
+            if (.not.black) then
                 tauu(i,j) = 1.0_eb
             else
                 tauu(i,j) = 0.0_eb
@@ -1013,14 +1013,14 @@
     ! lower to lower
     do i = nup + 1, nzone
         do j = i + 1, nzone
-            if(.not.black)then
+            if (.not.black) then
                 taul(i,j) = exp(-absorb(2)*beam(i,j))
             else
                 taul(i,j) = 0.0_eb
             endif
             taul(j,i) = taul(i,j)
         end do
-        if(.not.black)then
+        if (.not.black) then
             taul(i,i) = exp(-absorb(2)*beam(i,i))
         else
             taul(i,i) = 0.0_eb
@@ -1031,7 +1031,7 @@
     
     do i = 1, nup
         do j = 1, nup
-            if(.not.black)then
+            if (.not.black) then
                 taul(i,j) = 1.0_eb
             else
                 taul(i,j) = 0.0_eb
@@ -1044,7 +1044,7 @@
     do i = nup + 1, nzone
         do j = 1, nup
             fl = (hlay-zz(i))/(zz(j)-zz(i))
-            if(.not.black)then
+            if (.not.black) then
                 taul(i,j) = exp(-absorb(2)*beam(i,j)*fl)
             else
                 taul(i,j) = 0.0_eb
@@ -1181,8 +1181,8 @@
     
     ng = zzgspec(cmpt, layer, co2)/mwco2
     plg = ng*rtv*l
-    !if(plg>1.0e-3_eb)then
-    if(plg>0.0_eb)then
+    !if (plg>1.0e-3_eb) then
+    if (plg>0.0_eb) then
         cplg = log10(plg)
         tglog = log10(tg)
         call linterp(co2xsize, co2ysize, tco2, plco2, eco2, tglog, cplg, aco2, xco2, yco2)
@@ -1195,8 +1195,8 @@
     
     ng = zzgspec(cmpt, layer, h2o)/mwh2o
     plg = ng*rtv*l
-    !if(plg>1.0e-3_eb)then
-    if(plg>0.0_eb)then
+    !if (plg>1.0e-3_eb) then
+    if (plg>0.0_eb) then
         cplg = log10(plg)
         tglog = log10(tg)
         call linterp(h2oxsize, h2oysize, th2o, plh2o, eh2o, tglog, cplg, ah2o, xh2o, yh2o)
@@ -1209,8 +1209,8 @@
     
     vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
-    if(prnslab)then
-        if(absorb==00.1_eb)then
+    if (prnslab) then
+        if (absorb==00.1_eb) then
             write(*,*)'STOP in absorb ', tg, ah2o, aco2
             stop
         end if
@@ -1250,14 +1250,14 @@
 
     ! check the special case of xval < x(1)
     
-    if(xval < x(1))then
+    if (xval < x(1)) then
         xerr = loerr
         xval = x(1)
         i = 1
 
         ! check the special case of xval > x(xdim)
         
-    else if(xval > x(xdim))then
+    else if (xval > x(xdim)) then
         xerr = hierr
         xval = x(xdim)
         i = xdim
@@ -1267,7 +1267,7 @@
     else
         xerr = noerr
         do count=2,xdim
-            if(xval < x(count))then
+            if (xval < x(count)) then
                 i = count - 1
                 go to 20
             endif 
@@ -1279,14 +1279,14 @@
 
     ! check the special case of yval < y(1)
     
-    if(yval < y(1))then
+    if (yval < y(1)) then
         yerr = loerr
         yval = y(1)
         j = 1
 
         ! check the special case of yval > y(ydim)
         
-    else if(yval > y(ydim))then
+    else if (yval > y(ydim)) then
         yerr = hierr
         yval = y(ydim)
         j = ydim
@@ -1296,7 +1296,7 @@
     else
         yerr = noerr
         do count=2,ydim
-            if(yval < y(count))then
+            if (yval < y(count)) then
                 j = count - 1
                 go to 40
             endif
@@ -1312,7 +1312,7 @@
     ! calculated. however, in those cases, delta x is zero, there is no contribution due to the change in x and the entire term may be set equal to zero.
     
     deltax = xval - x(i)
-    if(deltax /= 0.0_eb)then
+    if (deltax /= 0.0_eb) then
         dzdx = (z(i+1,j) - z(i,j))/(x(i+1) - x(i))
         delx = dzdx*deltax
     else
@@ -1322,7 +1322,7 @@
     ! calculate the z increment due to a change in y as above.
     
     deltay = yval - y(j)
-    if(deltay /= 0.0_eb)then
+    if (deltay /= 0.0_eb) then
         dzdy = (z(i,j+1) - z(i,j))/(y(j+1) - y(j))
         dely = dzdy*deltay
     else

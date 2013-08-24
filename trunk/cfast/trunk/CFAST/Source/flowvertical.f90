@@ -1,6 +1,3 @@
-
-! --------------------------- vflow -------------------------------------------
-
     subroutine vflow (tsec,flwvf,vflowflg)
 
     !     routine: vflow
@@ -9,7 +6,6 @@
     !                flwvf: change in mass and energy for each layer of each compartment
     !                vflowflg (output): true if vertical flow is included in the simulation
 
-    use precision_parameters
     use cenviro
     use cfast_main
     use flwptrs
@@ -17,34 +13,37 @@
     use params
     use vents
     implicit none
-    
-    real(eb), intent(in) :: tsec
-    
-    real(eb), intent(out) :: flwvf(nr,ns+2,2)
-    logical, intent(out) :: vflowflg
 
-    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, qcvfraction, voltop, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
+    real(8) :: flwvf(nr,ns+2,2), xmvent(2), tmvent(2), crosover, oco, epscut, xx0, xx1, qcvfraction, voltop, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
-    real(eb) :: area
+    logical :: vflowflg
+    real(8) :: area, tsec
 
     ! the selection rules are now implemented here.  the crossover is the relative fraction of the volume cloesest to the hole from which the mass will come
     vflowflg = .false.
     if (option(fvflow)/=on) return
     if (nvvent==0) return
     vflowflg = .true.
-    crosover = 0.5_eb
-    oco = 1.0_eb/crosover
-    epscut = 0.0001_eb
-
-    flwvf(1:n,1:ns+2,upper) = 0.0_eb
-    flwvf(1:n,1:ns+2,lower) = 0.0_eb
-    vmflo(1:n,1:n,upper) = 0.0_eb
-    vmflo(1:n,1:n,lower) = 0.0_eb
+    crosover = 0.5d0
+    oco = 1.0d0 / crosover
+    epscut = 0.0001d0
+    xx0 = 0.0d0
+    xx1 = 1.0d0
+    do i = 1, n
+        do j = 1, ns + 2
+            flwvf(i,j,upper) = xx0
+            flwvf(i,j,lower) = xx0
+        end do
+        do j = 1, n
+            vmflo(i,j,upper) = xx0
+            vmflo(i,j,lower) = xx0
+        end do
+    end do
 
     do i = 1, nvvent
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
-        area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
+        area = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
         call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay)
         do iflow = 1, 2
 
@@ -61,36 +60,36 @@
             ! determine mass and enthalpy fractions - first "from," then "to"
             if (ifrm<=nm1) then
                 if (ifrm==ibot) then
-                    volup = volfru(ifrm)*oco
-                    volup = min(volup, 1.0_eb)
-                    vollow = max(1.0_eb - volup, 0.0_eb)
+                    volup = volfru(ifrm) * oco
+                    volup = min(volup, xx1)
+                    vollow = max(xx1 - volup, xx0)
                 else
-                    vollow = volfrl(ifrm)*oco
-                    vollow = min(vollow,1.0_eb)
-                    volup = max(1.0_eb - vollow, 0.0_eb)
+                    vollow = volfrl(ifrm) * oco
+                    vollow = min(vollow,xx1)
+                    volup = max(xx1 - vollow, xx0)
                 endif
-                xxmu = volup*xmvent(iflow)
-                xxml = vollow*xmvent(iflow)
-                xxqu = cp*xxmu*zztemp(ifrm,upper)
-                xxql = cp*xxml*zztemp(ifrm,lower)
+                xxmu = volup  * xmvent(iflow)
+                xxml = vollow * xmvent(iflow)
+                xxqu = cp * xxmu * zztemp(ifrm,upper)
+                xxql = cp * xxml * zztemp(ifrm,lower)
                 xxtmp = volup*zztemp(ifrm,upper) + vollow*zztemp(ifrm,lower)
                 xxtq = xxqu + xxql
             else
-                xxmu = 0.0_eb
+                xxmu = xx0
                 xxml = xmvent(iflow)
-                xxqu = 0.0_eb
-                xxql = cp*xxml*eta(ifrm)
+                xxqu = xx0
+                xxql = cp * xxml * eta(ifrm)
                 xxtmp = zztemp(ifrm,lower)
                 xxtq = xxqu + xxql
             endif
 
-            fl = 0.0_eb
-            if (xxtmp<=zztemp(ito,lower)) fl = 1.0_eb
-            fu = 1.0_eb - fl
-            fumu = fu*xmvent(iflow)
-            fuml = fl*xmvent(iflow)
-            fuqu = fu*xxtq
-            fuql = fl*xxtq
+            fl = xx0
+            if (xxtmp<=zztemp(ito,lower)) fl = xx1
+            fu = xx1 - fl
+            fumu = fu * xmvent(iflow)
+            fuml = fl * xmvent(iflow)
+            fuqu = fu * xxtq
+            fuql = fl * xxtq
 
 
             ! deposit mass and enthalpy into "to" room varibles (not outside)
@@ -117,13 +116,13 @@
             do lsp = 1, ns
                 if (activs(lsp)) then
                     index = pp+lsp-1
-                    xxmixl = zzcspec(ifrm,lower,lsp)*xxml
-                    xxmixu = zzcspec(ifrm,upper,lsp)*xxmu
+                    xxmixl = zzcspec(ifrm,lower,lsp) * xxml
+                    xxmixu = zzcspec(ifrm,upper,lsp) * xxmu
 
                     ! deposit mass and enthalphy into "to" room variables (not outside)
                     if (ito<=nm1) then
-                        pmtoup = (xxmixu + xxmixl)*fu
-                        pmtolp = (xxmixu + xxmixl)*fl
+                        pmtoup = (xxmixu + xxmixl) * fu
+                        pmtolp = (xxmixu + xxmixl) * fl
                         flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
                         flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
                     endif
@@ -140,8 +139,6 @@
 
     return
     end subroutine vflow
-
-! --------------------------- ventcf -------------------------------------------
 
     subroutine ventcf(itop,ibot,avent,nshape,epsp,xmvent,tmvent,ilay)
 
@@ -160,41 +157,39 @@
     !                ilay(i)     i = 1, layer index next to vent in top room
     !                            i = 2, layer index next to vent in bottom room
 
-    use precision_parameters
     use cenviro
     use cfast_main
     implicit none
 
-    integer, intent(in) :: itop, ibot, nshape
-    integer, intent(out) :: ilay(2)
-    real(eb), intent(in) :: avent, epsp
-    real(eb), intent(out) :: xmvent(2), tmvent(2)
-    
-    real(eb) :: pabs(2), den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
-    integer ::  iroom(2)
+    real(8) :: xmvent(2), tmvent(2),pabs(2), den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
+    integer ::  ilay(2), iroom(2)
     
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
-    real(eb) :: gamcut, zzz, gammax, delp, delden, rho, eps, x, coef, epscut, srdelp, fnoise, w, gg, ff, rho2, v, cshape, d, delpfd, dpddpf, vexmax, vex
-    integer :: i
+    real(8) :: xxzero, xxone, xxtwo, gamcut, zzz, gammax, pi, delp, delden, rho, eps, x, coef, epsp, epscut, srdelp, fnoise, w, gg, ff, rho2, v, avent, cshape, d, delpfd, dpddpf, vexmax, vex
+    integer :: itop, ibot, nshape, i
     logical firstc
 
     data firstc /.true./
-    save firstc, gamcut, gammax
+    save firstc, gamcut, gammax, pi, xxtwo, xxone, xxzero
 
     ! initialization code - executed the first time ventcf is called.
     if (firstc) then
+        xxzero = 0.0d0
+        xxone = 1.0d0
+        xxtwo = 2.0d0
         firstc = .false.
-        gamcut = (2.0_eb/(gamma+1.0_eb))**(gamma/(gamma-1.0_eb))
-        zzz = gamma*((2.0_eb/(gamma+1.0_eb))**((gamma+1.0_eb)/(gamma-1.0_eb)))
+        gamcut = (xxtwo/(gamma+xxone)) ** (gamma/(gamma-xxone))
+        zzz = gamma * ((xxtwo/(gamma+xxone))**((gamma+xxone)/(gamma-xxone)))
         gammax = sqrt(zzz)
+        pi = 4.0d0 * atan(xxone)
     endif
 
     ! calculate the pabs(i), delp, the other properties adjacent to the two sides of the vent, and delden.
-    dp(1) = 0.0_eb
-    dp(2) = 0.0_eb
+    dp(1) = xxzero
+    dp(2) = xxzero
     if (ibot<=nm1) then
-        dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l) + zzrho(ibot,u)*zzhlay(ibot,u))
+        dp(2) = -g * (zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
         relp(2) = zzrelp(ibot)
     else
         relp(2) = epa(itop)
@@ -203,23 +198,23 @@
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con*hrp(ibot)*era(ibot)
+        dp(1) = -g * hrp(ibot) * era(ibot)
         relp(1) = epa(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset
     pabs(2) = relp(2) + dp(2) + pofset
 
     ! delp is pressure immediately below the vent less pressure immediately above the vent.
-    delp = relp(2) + dp(2) - (relp(1) + dp(1))
+    delp = relp(2) + dp(2) - (relp(1)+dp(1))
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
-    if (zzvol(itop,l)<=2.0_eb*zzvmin(itop)) then
+    if (zzvol(itop,l)<=xxtwo*zzvmin(itop)) then
         ilay(1) = u
     else
         ilay(1) = l
     endif
-    if (zzvol(ibot,u)<=2.0_eb*zzvmin(ibot)) then
+    if (zzvol(ibot,u)<=xxtwo*zzvmin(ibot)) then
         ilay(2) = l
     else
         ilay(2) = u
@@ -239,65 +234,65 @@
     delden = den(1) - den(2)
 
     ! calculate vst(i), the "standard" volume rate of flow through the vent into space i
-    if (delp>=0.0_eb) then
+    if (delp>=xxzero) then
         rho = den(2)
-        eps = delp/pabs(2)
+        eps = delp / pabs(2)
     else
         rho = den(1)
-        eps = -delp/pabs(1)
+        eps = -delp / pabs(1)
     endif
-    x = 1.0_eb - eps
-    coef = 0.68_eb + 0.17_eb*eps
-    epscut = epsp*max (1.0_eb, relp(1), relp(2))
+    x = xxone - eps
+    coef = 0.68d0 + 0.17d0 * eps
+    epscut = epsp * max (xxone, relp(1), relp(2))
     epscut = sqrt(epscut)
     srdelp = sqrt(abs(delp))
-    fnoise = 1.0_eb
-    if ((srdelp/epscut)<=130._eb) fnoise = 1.0_eb - exp(-srdelp/epscut)
+    fnoise = xxone
+    if ((srdelp/epscut)<=130.d0) fnoise = xxone - exp(-srdelp/epscut)
     if (eps<=0.1d-5) then
-        w = 1.0_eb - 0.75_eb*eps/gamma
+        w = xxone - 0.75d0 * eps / gamma
     else
         if (eps<gamcut) then
-            gg = x**(1.0_eb/gamma)
-            ff = sqrt((2.0_eb*gamma/(gamma-1.0_eb))*gg*gg*(1.0_eb-x/gg))
+            gg = x ** (xxone/gamma)
+            ff = sqrt((xxtwo*gamma/(gamma-xxone))*gg*gg*(xxone-x/gg))
         else
             ff = gammax
         endif
-        w = ff/sqrt(eps+eps)
+        w = ff / sqrt(eps+eps)
     endif
-    rho2 = 2.0_eb/rho
-    v = fnoise*coef*w*sqrt(rho2)*avent*srdelp
+    rho2 = 2.0d0/rho
+    v = fnoise * coef * w * sqrt(rho2) * avent * srdelp
 
     ! calculate vst for delp > 0, delp < 0 and delp = 0
-    if (delp>0.0_eb) then
+    if (delp>xxzero) then
         vst(1) = v
-        vst(2) = 0.0_eb
-    else if (delp<0.0_eb) then
-        vst(1) = 0.0_eb
+        vst(2) = xxzero
+    else if (delp<xxzero) then
+        vst(1) = xxzero
         vst(2) = v
     else
-        vst(1) = 0.0_eb
-        vst(2) = 0.0_eb
+        vst(1) = xxzero
+        vst(2) = xxzero
     endif
 
     ! calculate vex, the exchange volume rate of flow through the vent
-    if (delden>0.0_eb.and.avent/=0.0_eb) then
+    if (delden>xxzero.and.avent/=xxzero) then
 
         ! unstable configuration, calculate nonzero vex
         if (nshape==1) then
-            cshape = 0.754_eb
-            d = 2.0_eb*sqrt(avent/pi)
+            cshape = 0.754d0
+            d = xxtwo * sqrt(avent/pi)
         else
-            cshape = 0.942_eb
+            cshape = 0.942d0
             d = sqrt(avent)
         endif
-        delpfd = cshape**2*grav_con*delden*d**5/(2.0_eb*avent**2)
+        delpfd = cshape ** 2 * g * delden * d ** 5 / (xxtwo*avent**2)
         dpddpf = abs(delp/delpfd)
-        vexmax = 0.1_eb*sqrt(2.0_eb*grav_con*delden*sqrt(avent**5)/(den(1)+den(2)))
-        vex = max(vexmax*(1.0_eb-dpddpf),0.0_eb)
+        vexmax = 0.1d0 * sqrt(xxtwo*g*delden*sqrt(avent**5)/(den(1)+den(2)))
+        vex = max(vexmax*(xxone-dpddpf),xxzero)
     else
 
         ! stable configuration, set vex = 0
-        vex = 0.0_eb
+        vex = xxzero
     endif
 
     ! calculate vvent(i), the volume rate of flow through the vent into space i
@@ -313,7 +308,7 @@
     iroom(1) = ibot
     iroom(2) = itop
     do i = 1, 2
-        xmvent(i) = denvnt(i)*vvent(i)
+        xmvent(i) = denvnt(i) * vvent(i)
         if (iroom(i)<=nm1) then
 
             ! iroom(i) is an inside room so use the environment variable zztemp for temperature 
@@ -327,21 +322,17 @@
     return
     end
 
-! --------------------------- getvventinfo -------------------------------------------
-
     subroutine getvventinfo(iinvvent,itop,ibot,harea,hshape,hface)
 
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
 
-    use precision_parameters
     use cfast_main
     use vents
     
     implicit none
 
-    integer, intent(in) :: iinvvent
-    integer, intent(out) :: itop, ibot, hshape, hface
-    real(eb), intent(out) :: harea
+    integer :: itop, ibot, hshape, hface, iinvvent
+    real(8) :: harea
 
     itop = ivvent(iinvvent,1)
     ibot = ivvent(iinvvent,2)
@@ -355,8 +346,6 @@
 
     return
     end
-
-! --------------------------- rev_flowvertical -------------------------------------------
 
     integer function rev_flowvertical ()
 

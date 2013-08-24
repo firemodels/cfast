@@ -56,7 +56,7 @@
      
     abstwtg = abs(tw-tg)
     if (abstwtg<tdel) abstwtg = tdel
-    nuoverl = c*(grav_con*abstwtg*pr/(tf*alpha**2))**third
+    nuoverl = c*(g*abstwtg*pr/(tf*alpha**2))**third
     qdinl = nuoverl*k*(tg-tw)
     return
     end subroutine convec
@@ -384,7 +384,7 @@
       endif
    endif
    h = zc - zs
-   sqrtgh = sqrt(grav_con*h)
+   sqrtgh = sqrt(g*h)
    qh = qcont/(rhoht*cp*tht*sqrtgh*h**2)
    qhp = (qh**third)
    htct = rhoht*cp*sqrtgh*qhp

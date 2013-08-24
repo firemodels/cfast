@@ -339,8 +339,8 @@
     
     implicit none
 
-    integer, intent(out) :: itop, ibot, hshape, hface
     integer, intent(in) :: iinvvent
+    integer, intent(out) :: itop, ibot, hshape, hface
     real(eb), intent(out) :: harea
 
     itop = ivvent(iinvvent,1)

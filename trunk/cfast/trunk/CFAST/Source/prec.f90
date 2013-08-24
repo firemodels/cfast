@@ -15,7 +15,7 @@ integer, parameter :: eb = selected_real_kind(12)
 
 ! often used numbers
 
-real(eb) :: pi, sigma, twothirds, third, fourpi, pio2, pio4, grav_con, gsqrt
+real(eb) :: pi, sigma, twothirds, third, fourpi, pio2, pio4, grav_con, gsqrt, cos45
 
 contains
 
@@ -30,6 +30,7 @@ pio2 = pi/2.0_eb
 pio4 = pi/4.0_eb
 grav_con=9.8_eb
 gsqrt=sqrt(grav_con)
+cos45 = sqrt(2.0_eb)/2.0_eb
 
 end subroutine set_often_used
 

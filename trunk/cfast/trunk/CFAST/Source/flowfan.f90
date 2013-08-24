@@ -1,4 +1,7 @@
 
+
+! --------------------------- mvent -------------------------------------------
+
     subroutine mvent (tsec, hvpsolv, hvtsolv, tprime, flwmv, deltpmv, delttmv, prprime, nprod, ierror, hvacflg, filtered)
 
     !     routine: mvent
@@ -18,14 +21,18 @@
     !                hvacflg
     !                filtered
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use flwptrs
     use opt
     use params
     implicit none
+    
+    real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), prprime(*), tsec
+    real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), deltpmv(*), delttmv(*) 
 
-    real(8) :: flwmv(nr,ns+2,2), hvpsolv(*), hvtsolv(*), deltpmv(*), delttmv(*), tprime(*), prprime(*), flwmv0(nr,ns+2,2), deltpmv0(mnode), delttmv0(mbr), filter, qcifraction, tsec, xx0, xx1, filterm1, filtered(nr,ns+2,2)
+    real(eb) :: filter, qcifraction, filterm1, flwmv0(nr,ns+2,2), deltpmv0(mnode), delttmv0(mbr) 
     integer :: i, ii, j, k, ieqtyp, iroom, isys, ierror, nprod
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0
@@ -35,35 +42,16 @@
     hvacflg = .false.
     if (.not.mvcalc.or.option(fmvent)/=on.or.(nhvpvar==0.and.nhvtvar==0)) return
     hvacflg = .true.
-    xx0 = 0.0d0
-    xx1 = 1.0d0      
     if (first) then
         first = .false.
-        do i = 1, nbr
-            chv(i) = ductcv
-        end do
-        do i = 1, n
-            do j = 1, ns+2
-                flwmv0(i,j,upper) = xx0
-                flwmv0(i,j,lower) = xx0
-            end do
-        end do
+        chv(1:nbr) = ductcv
+        flwmv0(1:n,1:ns+2,1:2) = 0.0_eb
     endif
 
-    do i = 1, n
-        do j = 1, ns+2
-            flwmv(i,j,upper) = xx0
-            flwmv(i,j,lower) = xx0
-            filtered(i,j,upper) = xx0
-            filtered(i,j,lower) = xx0
-        end do
-    end do
-    do i = 1, nhvpvar
-        deltpmv(i) = hvpsolv(i)
-    end do
-    do i = 1, nhvtvar
-        delttmv(i) = hvtsolv(i)
-    end do
+    flwmv(1:n,1:ns+2,1:2) = 0.0_eb
+    filtered(1:n,1:ns+2,1:2) = 0.0_eb
+    deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
+    delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 
     if(option(fmodjac)==on)then
 
@@ -134,22 +122,18 @@
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,upper) = max(xx0,filter*flwmv(i,13,upper))
-        filtered(i,13,lower) = max(xx0,filter*flwmv(i,13,lower))
-        filtered(i,11,upper) = max(xx0,filter*flwmv(i,11,upper))
-        filtered(i,11,lower) = max(xx0,filter*flwmv(i,11,lower))
+        filtered(i,13,upper) = max(0.0_eb,filter*flwmv(i,13,upper))
+        filtered(i,13,lower) = max(0.0_eb,filter*flwmv(i,13,lower))
+        filtered(i,11,upper) = max(0.0_eb,filter*flwmv(i,11,upper))
+        filtered(i,11,lower) = max(0.0_eb,filter*flwmv(i,11,lower))
     end do
 
     if(option(fmodjac)==on)then
         if(jaccol==0)then
 
             ! save information for a later jacobian calculation
-            do i = 1, nhvpvar
-                deltpmv0(i) = deltpmv(i)
-            end do
-            do i = 1, nhvtvar
-                delttmv0(i) = delttmv(i)
-            end do
+            deltpmv0(1:nhvpvar) = deltpmv(1:nhvpvar)
+            delttmv0(1:nhvtvar) = delttmv(1:nhvtvar)
             do i = 1, n
                 flwmv0(i,m,upper) = flwmv(i,m,upper)
                 flwmv0(i,m,lower) = flwmv(i,m,lower)
@@ -168,6 +152,8 @@
     return
     end subroutine mvent
 
+! --------------------------- hvmflo -------------------------------------------
+
     subroutine hvmflo (tsec, deltpmv,ierror)
 
     !     routine: hvmflo
@@ -176,34 +162,37 @@
     !                deltpmv
     !                ierror   returns error codes
 
+    use precision_parameters
     use cfast_main
     use params
     implicit none
 
-    real(8), parameter :: xx1 = 1.0d0, xx2 = 2.0d0, xx0 = 0.0d0, xx1o2 = xx1 / xx2
-    real(8) :: deltpmv(*), tsec, pav, xtemp, f, dp, hvfan
-    integer :: ib, niter, iter, i, ii, j, k, ierror
+    real(eb), intent(in) :: tsec
+    real(eb), intent(out) :: deltpmv(*)
+    
+    real(eb) :: pav, xtemp, f, dp, hvfan
+    integer, intent(out) :: ierror
 
+    integer :: ib, niter, iter, i, ii, j, k
+
+    ierror = 0
+    
     ! calculate average temperatures and densities for each branch
-    do ib = 1, nbr
-        pav = pofset
-        rohb(ib) = pav/(hvrgas*tbr(ib))
-        bflo(ib) = xx1
-    end do
+    pav = pofset
+    rohb(1:nbr) = pav/(hvrgas*tbr(1:nbr))
+    bflo(1:nbr) = 1.0_eb
 
     ! start the iteration cycle
     niter = 2
     do iter = 1, niter
 
         ! initialize conductance
-        do ib = 1, nbr
-            ce(ib)=xx0
-        end do
+        ce(1:nbr)=0.0_eb
 
         ! convert from pressure to mass flow rate coefficients
         do ib = 1, nbr
-            if (ce(ib)/=xx0) then
-                xtemp = xx1 / sqrt(abs(ce(ib)))
+            if (ce(ib)/=0.0_eb) then
+                xtemp = 1.0_eb/sqrt(abs(ce(ib)))
                 ce (ib) = sign(xtemp, ce(ib))
             endif
         end do
@@ -251,6 +240,8 @@
     return
     end subroutine hvmflo
 
+! --------------------------- hvsflo -------------------------------------------
+
     subroutine hvsflo (tprime, delttmv)
 
     !     routine: hvsflo
@@ -258,34 +249,35 @@
     !     arguments: tprime
     !                deltpmv
 
+    use precision_parameters
     use cfast_main
     use opt
     use params
     implicit none
 
-    real(8), parameter :: xx0 = 0.0d0
-    real(8) :: tprime(*), delttmv(*), hvta, flowin, hvtemp
+    real(eb), intent(in) :: tprime(*)
+    real(eb), intent(out) :: delttmv(*)
+    
+    real(eb) :: hvta, flowin, hvtemp
     integer ib, i, ii, j
 
-    do ib = 1, nbr
-        delttmv(ib) = rohb(ib)*hvdvol(ib)*tprime(ib)/gamma
-    end do
+    delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
 
     do i = 1, nnode
 
         ! calculate temperatures & smoke flows in following loop at the connecting nodes
-        hvta = xx0
-        flowin = xx0
+        hvta = 0.0_eb
+        flowin = 0.0_eb
         do j = 1, ncnode(i)
-            if (hvflow(i,j)>xx0) then
+            if (hvflow(i,j)>0.0_eb) then
                 flowin = flowin + hvflow(i,j)
                 ib = icmv(i,j)
                 hvtemp = hvflow(i,j)
                 hvta = hvta + hvtemp*tbr(ib)
             endif
         end do
-        if (flowin>xx0) then
-            hvta = hvta / flowin
+        if (flowin>0.0_eb) then
+            hvta = hvta/flowin
         else
             
             ! this is a bad situation.  we have no flow, yet must calculate the inflow concentrations.
@@ -300,7 +292,7 @@
 
         ! now calculate the resulting temperature and concentrations in the ducts and fans
         do j = 1, ncnode(i)
-            if (hvflow(i,j)<xx0) then
+            if (hvflow(i,j)<0.0_eb) then
                 ib = icmv (i,j)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*abs(hvflow(i,j))
                 if(option(fhvloss)==on)then
@@ -308,7 +300,7 @@
                 endif
             endif
             ii = izhvie(mvintnode(i,j))
-            if(ii/=0.and.hvflow(i,j)>xx0) then
+            if(ii/=0.and.hvflow(i,j)>0.0_eb) then
                 ib = icmv(i,j)
                 hvta = hvextt(ii,upper)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
@@ -321,7 +313,9 @@
     return
     end
 
-    real(8) function hvfan(tsec,i,j,k,dp)
+! --------------------------- hvfan -------------------------------------------
+
+    real(eb) function hvfan(tsec,i,j,k,dp)
 
     !     routine: hvfan
     !     purpose: calculates mass flow through a fan. this function has been modified to prevent negative flow.  
@@ -333,12 +327,14 @@
     !                k      fan number
     !                dp     head pressure across the fan
 
+    use precision_parameters
     use cfast_main
     implicit none
-    
-    real(8), parameter :: xx0 = 0.0d0
-    real(8) :: hvfanl, openfraction, qcffraction, tsec, minimumopen, roh, d1mach, f, dp
-    integer :: i, j, k
+
+    real(eb), intent(in) :: tsec, dp
+    integer, intent(in) :: i,j,k
+        
+    real(eb) :: hvfanl, openfraction, qcffraction, minimumopen, roh, d1mach, f
     logical :: firstc = .true.
     save firstc
 
@@ -350,14 +346,16 @@
     endif
 
     ! the hyperbolic tangent allows for smooth transition from full flow to no flow within the fan cuttoff pressure range
-    f = 0.5 - tanh(8.0/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0)/2.0
+    f = 0.5_eb - tanh(8.0_eb/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0_eb)/2.0_eb
     f = max(minimumopen, f)
-    hvfanl = f * qmax(k) * roh
+    hvfanl = f*qmax(k)*roh
     openfraction = max (minimumopen, qcffraction (qcvm, k, tsec))
-    hvfan = hvfanl * openfraction
+    hvfan = hvfanl*openfraction
     return
 
     end function hvfan
+
+! --------------------------- hvfrex -------------------------------------------
 
     subroutine hvfrex (tsec, hvpsolv, hvtsolv)
 
@@ -367,13 +365,15 @@
     !                hvpsolv
     !                hvtsolv
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use params
     implicit none
 
-    real(8), parameter :: xx0 = 0.0d0, xx1 = 1.0d0, xxtenth = 0.1d0, xx0p5 = 0.5d0
-    real(8) :: hvpsolv(*), hvtsolv(*), tsec, z, xxl, xxll, fraction, zl, zu, rl, ru, xxrho
+    real(eb), intent(in) :: tsec, hvpsolv(*), hvtsolv(*)
+    
+    real(eb) :: z, xxl, xxll, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, k, ib, lsp
 
     do ii = 1, next
@@ -385,16 +385,16 @@
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate the scaling length of the duct
             xxl = sqrt(arext(ii))
         else
-            xxl = sqrt(arext(ii)) * xxtenth
+            xxl = sqrt(arext(ii))/10.0_eb
         endif
 
         ! then the bottom of the vent (above the floor)
-        xxll = max(xx0,min((hvelxt(ii) - xx0p5 * xxl),(hr(i)-xxl)))
+        xxll = max(0.0+eb,min((hvelxt(ii) - 0.5_eb*xxl),(hr(i)-xxl)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
-        fraction = max(xx0,min(xx1,max(xx0,(z-xxll)/xxl)))
-        hvfrac(upper,ii) = min(xx1,max(xx1-fraction,xx0))
-        hvfrac(lower,ii) = min(xx1,max(fraction,xx0))
+        fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxll)/1.0_eb)))
+        hvfrac(upper,ii) = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
+        hvfrac(lower,ii) = min(1.0_eb,max(fraction,0.0_eb))
     end do
 
     ! this is the actual duct initialization
@@ -404,16 +404,16 @@
         if (i<n) then
             z = zzhlay(i,lower)
             zl = min(z,hvelxt(ii))
-            zu = min(xx0,hvelxt(ii)-zl)
+            zu = min(0.0_eb,hvelxt(ii)-zl)
             ru = zzrho(i,upper)
             rl = zzrho(i,lower)
-            hvp(j) = zzrelp(i) - (ru*zu+rl*zl) * hvgrav
+            hvp(j) = zzrelp(i) - (ru*zu+rl*zl)*hvgrav
             hvextt(ii,upper) = zztemp(i,upper)
             hvextt(ii,lower) = zztemp(i,lower)
         else
             hvextt(ii,upper) = exta
             hvextt(ii,lower) = exta
-            hvp(j) =  expa - exra * hvgrav * hvelxt(ii)
+            hvp(j) =  expa - exra*hvgrav*hvelxt(ii)
         endif
         do lsp = 1, ns
             if (activs(lsp)) then
@@ -421,7 +421,7 @@
                     hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
                     hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
                 else
-                    xxrho = o2n2(lsp) * exra
+                    xxrho = o2n2(lsp)*exra
                     hvexcn(ii,lsp,upper) = xxrho
                     hvexcn(ii,lsp,lower) = xxrho
                 endif
@@ -432,11 +432,11 @@
         ii = izhvmapi(i)
         hvp(ii) = hvpsolv(i)
     end do
-    do ib = 1, nhvtvar
-        tbr(ib) = hvtsolv(ib)
-    end do
+    tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
     return
     end subroutine hvfrex
+
+! --------------------------- hvtoex -------------------------------------------
 
     subroutine hvtoex(tsec,prprime,nprod)
 
@@ -446,39 +446,36 @@
     !                prprime
     !                nprod
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use params
     implicit none
 
-    real(8), parameter :: xx0 = 0.0d0, xx1 = 1.0d0
-    real(8) :: prprime(*), tsec
-    integer i, ii, j, k, ib, isys, isof, nhvpr, nprod
+    real(eb), intent(in) :: tsec
+    real(eb), intent(out) :: prprime(*) 
+    integer, intent(in) :: nprod
+    
+    integer i, ii, j, k, ib, isys, isof, nhvpr
     
     ! sum product flows entering system
     nhvpr = nlspct*nhvsys
     if(nprod/=0)then
-        do i = 1, nhvpr
-            prprime(i) = xx0
-        end do
+        prprime(1:nhvpr) = 0.0_eb
     endif
     if(ns>0)then
-        do isys = 1, nhvsys
-            hvmfsys(isys) = xx0
-            do k = 1, ns
-                dhvprsys(isys,k) = xx0
-            end do
-        end do
+        hvmfsys(1:nhvsys) = 0.0_eb
+        dhvprsys(1:nhvsys,1:ns) = 0.0_eb
     endif
 
     ! flow into the isys system
     do ii = 1, next
         j = hvnode(2,ii)
         ib = icmv(j,1)
-        hveflo(upper,ii) = hvflow(j,1) * hvfrac(upper,ii)
-        hveflo(lower,ii) = hvflow(j,1) * hvfrac(lower,ii)
+        hveflo(upper,ii) = hvflow(j,1)*hvfrac(upper,ii)
+        hveflo(lower,ii) = hvflow(j,1)*hvfrac(lower,ii)
         isys = izhvsys(j)
-        if (hvflow(j,1)<xx0) then
+        if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if(nprod/=0)then
                 do k = 1, ns
@@ -493,7 +490,7 @@
         do k = 1, min(ns,9)
             if(activs(k))then
                 do isys = 1, nhvsys
-                    if (zzhvm(isys)/=xx0)then
+                    if (zzhvm(isys)/=0.0_eb)then
                         dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
                     endif
                 end do
@@ -504,7 +501,7 @@
         k = 11
         if(activs(k))then
             do isys = 1, nhvsys
-                if (zzhvm(isys)/=xx0)then
+                if (zzhvm(isys)/=0.0_eb)then
                     dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
                 endif
             end do
@@ -516,10 +513,10 @@
             if(activs(k))then
                 do isys = 1, nhvsys
                     isof = isof + 1
-                    if (zzhvm(isys)/=xx0)then
+                    if (zzhvm(isys)/=0.0_eb)then
                         prprime(isof) = dhvprsys(isys,k)
                     else
-                        prprime(isof) = xx0
+                        prprime(isof) = 0.0_eb
                     endif
                 end do
             endif
@@ -529,10 +526,10 @@
         if(activs(k))then
             do isys = 1, nhvsys
                 isof = isof + 1
-                if (zzhvm(isys)/=xx0)then
+                if (zzhvm(isys)/=0.0_eb)then
                     prprime(isof) = dhvprsys(isys,k)
                 else
-                    prprime(isof) = xx0
+                    prprime(isof) = 0.0_eb
                 endif
             end do
         endif
@@ -544,22 +541,22 @@
         isys = izhvsys(j)
         ! we allow only one connection from a node to an external duct
         ib = icmv(j,1)
-        if (hvflow(j,1)>xx0) then
+        if (hvflow(j,1)>0.0_eb) then
             hvextt(ii,upper) = tbr(ib)
             hvextt(ii,lower) = tbr(ib)
             do k = 1, ns
                 if (activs(k))then
                     ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
-                    if (zzhvm(isys)/=xx0) then
+                    if (zzhvm(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
                         ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass) - see keywordcases to change this
-                    elseif(hvmfsys(isys)/=xx0) then
+                    elseif(hvmfsys(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
                     else
-                        hvexcn(ii,k,upper) = xx0
-                        hvexcn(ii,k,lower) = xx0
+                        hvexcn(ii,k,upper) = 0.0_eb
+                        hvexcn(ii,k,lower) = 0.0_eb
                     endif
                 endif
             end do
@@ -567,6 +564,8 @@
     end do
     return
     end subroutine hvtoex
+
+! --------------------------- rev_flowfan -------------------------------------------
 
     integer function rev_flowfan ()
 

@@ -212,7 +212,7 @@
 
         ! initialize conductance
         do ib = 1, nbr
-            ce(ib)=xx0
+            ce(ib)=0.0_eb
         end do
 
         ! convert from pressure to mass flow rate coefficients

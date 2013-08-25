@@ -25,9 +25,7 @@
     !     whether in an action of contract, tort or otherwise, arising
     !     from, out of or in connection with the software or the use or
     !     other dealings in the software.
-    !
-    
-    use precision_parameters
+
     use cfast_main
     use cparams
     use cshell
@@ -38,8 +36,6 @@
 
     integer errorcode, rev_cfast, irev, i
     real(8) :: xdelt, tstop, tbeg, tend
-
-    call set_often_used
 
     version = 6300          ! Current CFAST version number
     crdate = (/2013,6,12/)  ! Current CFAST executable creation date

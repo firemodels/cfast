@@ -6,11 +6,16 @@ set BASEDIR=%CD%\..
 set SVNROOT=%BASEDIR%\..\
 set TIME_FILE=%SCRIPT_DIR%\smv_case_times.txt
 
-set CFASTEXE=%SVNROOT%\CFAST\intel_win_32\cfast6_win_32
+set BACKGROUNDEXE=%SVNROOT%\Validation\scripts\background.exe
+set "bg=%BACKGROUNDEXE% -u 85 -d 1 "
+Rem set bg=
+
+set CFASTEXE=%SVNROOT%\CFAST\intel_win_64\cfast6_win_64
 Rem set CFASTEXE=cfast
-set CFAST=%CFASTEXE%
+set CFAST=%bg%%CFASTEXE%
 set RUNCFAST=call %SVNROOT%\Validation\scripts\runcfast_win32.bat
 set RUNCFAST2=call %SVNROOT%\Validation\scripts\runcfast2_win32.bat
+
 
 echo You are about to run the CFAST Validation Test Suite.
 echo Press any key to proceed, CTRL c to abort

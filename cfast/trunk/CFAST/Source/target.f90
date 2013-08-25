@@ -232,9 +232,11 @@
     if(iter==1)then
 
         ! initialize flux counters: total, fire, wall, gas 
-        qtfflux(itarg,1:2) = 0.0_eb
-        qtgflux(itarg,1:2) = 0.0_eb
-        qtwflux(itarg,1:2) = 0.0_eb
+        do i = 1, 2
+            qtfflux(itarg,i) = 0.0_eb
+            qtgflux(itarg,i) = 0.0_eb
+            qtwflux(itarg,i) = 0.0_eb
+        end do
 
         nfirerm = ifrpnt(iroom,1)
         istart = ifrpnt(iroom,2)
@@ -287,9 +289,11 @@
 
         ! compute radiative flux from walls and gas
 
-        awallsum(1:2) = 0.0_eb   
-        qwtsum(1:2) = 0.0_eb
-        qgassum(1:2) = 0.0_eb
+        do i = 1, 2
+            awallsum(i) = 0.0_eb   
+            qwtsum(i) = 0.0_eb
+            qgassum(i) = 0.0_eb
+        end do
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout

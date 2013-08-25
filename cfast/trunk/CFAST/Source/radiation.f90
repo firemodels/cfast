@@ -36,8 +36,13 @@
     logical roomflg(nr)
     save flxrad0, flwrad0
 
-    flxrad(1:nm1,1:nwal) = 0.0_eb
-    flwrad(1:nm1,1:2) = 0.0_eb
+    do i = 1, nm1
+        do j = 1, nwal
+            flxrad(i,j) = 0.0_eb
+        end do
+        flwrad(i,1) = 0.0_eb
+        flwrad(i,2) = 0.0_eb
+    end do
 
     if (option(frad)==off) return
     black = .false.
@@ -45,7 +50,9 @@
 
     ! initially assume that we compute radiation transfer in every room
     
-    roomflg(1:nm1) = .true.
+    do i = 1, nm1
+        roomflg(i) = .true.
+    end do
 
     if (option(fmodjac)==on) then
         if (jaccol>0) then
@@ -54,7 +61,9 @@
             ! only compute the radiation heat transfer in the room where the dassl 
             ! solution variable has been perturbed
 
-            roomflg(1:nm1) = .false.
+            do i = 1, nm1
+                roomflg(i) = .false.
+            end do
             ieqtyp = izeqmap(jaccol,1)
             iroom = izeqmap(jaccol,2)
             if (ieqtyp==eqvu.or.ieqtyp==eqtu.or.ieqtyp==eqtl.or.ieqtyp==eqwt) then
@@ -122,7 +131,6 @@
                 if (prnslab) then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                 write(0,*)nrmfire,hr(i),"zfire=",zrfirepos(1),"hlay=",zzhlay(i,lower)
                 call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
@@ -160,16 +168,24 @@
             ! if the jacobian option is active and dassl is computing the base vector for
             ! the jacobian calculation then save the flow and flux calculation for later use
 
-            flxrad0(1:nm1,1:nwal) = flxrad(1:nm1,1:nwal)
-            flwrad0(1:nm1,1:2) = flwrad(1:nm1,1:2)
+            do iroom = 1, nm1
+                do iwall = 1, nwal
+                    flxrad0(iroom,iwall) = flxrad(iroom,iwall)
+                end do
+                flwrad0(iroom,1) = flwrad(iroom,1)
+                flwrad0(iroom,2) = flwrad(iroom,2)
+            end do
         else if (jaccol>0) then
 
             ! dassl is computing the jaccol'th column of a jacobian.  copy values into
             ! the flow and flux vectors that have not changed from the base vector
             do iroom = 1, nm1
                 if (.not.roomflg(iroom)) then
-                    flxrad(iroom,1:nwal) = flxrad0(iroom,1:nwal)
-                    flwrad(iroom,1:2) = flwrad0(iroom,1:2)
+                    do iwall = 1, nwal
+                        flxrad(iroom,iwall) = flxrad0(iroom,iwall)
+                    end do
+                    flwrad(iroom,1) = flwrad0(iroom,1)
+                    flwrad(iroom,2) = flwrad0(iroom,2)
                 end if
             end do
         endif
@@ -353,15 +369,23 @@
     ! note: each row k of the a matrix as defined by seigal and howell was divided by emis2(k) (in order to insure that this new 'a' was
     ! diagonally dominant.  now we have to multiply the solution to the modified problem by emis2(i) to get the original answers
 
-     dqde(1:2) = rhs(1:2)
-     qqout(1:2) = e(1:2) - (1.0_eb - emis(1:2))*dqde(1:2)
-     dq(1:2) = rhs(1:2)*emis2(1:2)
+    do k = 1, 2
+        dqde(k) = rhs(k)
+        qqout(k) = e(k) - (1.0_eb - emis(k))*dqde(k)
+        dq(k) = rhs(k) * emis2(k)
+    end do
 
     ! take solution and compute energy gain or loss to each panel and each layer.  also compute fluxes.  change sign so that
     ! a postive flux means that heat is flowing to the wall
+    qflux(1) = -dq(1)
+    qflux(2) = -dq(1)
+    qflux(3) = -dq(2)
+    qflux(4) = -dq(2)
 
-    qflux(1:4) = -dq(1:4)
-    qout(1:4) = qqout(1:4)
+    qout(1) = qqout(1)
+    qout(2) = qqout(1)
+    qout(3) = qqout(2)
+    qout(4) = qqout(2)
 
     ! compute radiation absorbed by each layer
     
@@ -511,7 +535,9 @@
 
     ! define e vector
 
-     e(1:4) = sigma*twall(1:4)**4
+    do i = 1, 4
+        e(i) = sigma * twall(i) ** 4
+    end do
 
     ! define 'a' and 'b' coefficient matrix
     do k = 1, 4
@@ -542,7 +568,9 @@
     if (info/=0) then
         call xerror('RAD4 - singular matrix',0,1,1)
         ierror = 18
-        rhs(1:4) = 0.0_eb
+        do k = 1, 4
+            rhs(k) = 0.0_eb
+        end do
     else
         call dgesl(a,4,4,ipvt,rhs,0)
     endif
@@ -550,14 +578,18 @@
     ! note: each row k of the a matrix, as defined by seigal and howell was divided by emis(k) (in order to insure that this new 'a' was
     ! diagonally dominant.  now we have to multiply the solution to the modified problem by emis(i) to get the answer to the original problem
 
-    dqde(1:4) = rhs(1:4)
-    qout(1:4) = e(1:4) - (1.0_eb - emis(1:4))*dqde(1:4)
-    dq(1:4) = rhs(1:4)*emis(1:4)
+    do k = 1, 4
+        dqde(k) = rhs(k)
+        qout(k) = e(k) - (1.0d0 - emis(k))*dqde(k)
+        dq(k) = rhs(k) * emis(k)
+    end do
 
     ! take solution and compute energy gain or loss to each panel and each layer.  also compute fluxes.  change sign so that
     ! a postive flux means that heat is flowing to the wall
     
-    qflux(1:4) = -dq(1:4)
+    do i = 1, 4
+        qflux(i) = -dq(i)
+    end do
 
     ! compute radiation absorbed by each layer
     call rabs(4,2,e,dqde,emis,area,figs,tauu,taul,qllay,qulay)
@@ -814,8 +846,6 @@
         f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
         fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
         f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
-        write(0,*)"xx",zroom-zfire(i),hlay-zfire(i),zfire(i)
-        write(0,*)"yy",f1,fd,f4
         firang(i,1) = f1
         firang(i,4) = f4
         if (zfire(i)<hlay) then

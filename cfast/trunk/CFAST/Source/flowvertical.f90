@@ -35,11 +35,16 @@
     crosover = 0.5_eb
     oco = 1.0_eb/crosover
     epscut = 0.0001_eb
-
-    flwvf(1:n,1:ns+2,upper) = 0.0_eb
-    flwvf(1:n,1:ns+2,lower) = 0.0_eb
-    vmflo(1:n,1:n,upper) = 0.0_eb
-    vmflo(1:n,1:n,lower) = 0.0_eb
+    do i = 1, n
+        do j = 1, ns + 2
+            flwvf(i,j,upper) = 0.0_eb
+            flwvf(i,j,lower) = 0.0_eb
+        end do
+        do j = 1, n
+            vmflo(i,j,upper) = 0.0_eb
+            vmflo(i,j,lower) = 0.0_eb
+        end do
+    end do
 
     do i = 1, nvvent
         itop = ivvent(i,toprm)

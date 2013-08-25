@@ -45,7 +45,12 @@
     ! temporary declaration
     nirm = nm1
 
-    uflw(1:nirm,1:nprod,1:2) = 0.0_eb
+    do ifrom = 1, nirm
+        do iprod = 1, nprod + 2
+            uflw(ifrom,iprod,lower) = 0.0_eb
+            uflw(ifrom,iprod,upper) = 0.0_eb
+        end do
+    end do
     if (option(fhflow)/=on) return
 
     call ventflag(ventflg,roomflg,anyvents)
@@ -137,19 +142,27 @@
                 ! (but only if the room is an inside room)
 
                 if (iroom1>=1.and.iroom1<=nirm) then
-                    uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw2(1,1:nprod+2,l)
-                    uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw2(1,1:nprod+2,u)
+                    do iprod = 1, nprod + 2
+                        uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
+                        uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
+                    end do
                     if (option(fentrain)==on) then
-                        uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw3(1,1:nprod+2,l)
-                        uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw3(1,1:nprod+2,u)
+                        do iprod = 1, nprod + 2
+                            uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw3(1,iprod,l)
+                            uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw3(1,iprod,u)
+                        end do
                     endif
                 endif
                 if (iroom2>=1.and.iroom2<=nirm) then
-                    uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw2(2,1:nprod+2,l)
-                    uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw2(2,1:nprod+2,u)
+                    do iprod = 1, nprod + 2
+                        uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
+                        uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)
+                    end do
                     if (option(fentrain)==on) then
-                        uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw3(2,1:nprod+2,l)
-                        uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw3(2,1:nprod+2,u)
+                        do iprod = 1, nprod + 2
+                            uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw3(2,iprod,l)
+                            uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw3(2,iprod,u)
+                        end do
                     endif
                 endif
             else
@@ -175,15 +188,21 @@
         if(jaccol==0)then
 
             ! we need to save the solution for later jacobian calculations
-            uflw0(1:nm1,1:nprod+2,lower) = uflw(1:nm1,1:nprod+2,lower)
-            uflw0(1:nm1,1:nprod+2,upper) = uflw(1:nm1,1:nprod+2,upper)
+            do iroom = 1, nm1
+                do iprod = 1, nprod + 2
+                    uflw0(iroom,iprod,lower) = uflw(iroom,iprod,lower)
+                    uflw0(iroom,iprod,upper) = uflw(iroom,iprod,upper)
+                end do
+            end do
         elseif(jaccol>0)then
 
             ! we are computing a jacobian, so get previously save solution for rooms that are not affected by perturbed solution variable
             do iroom = 1, nm1
                 if(.not.roomflg(iroom))then
-                    uflw(iroom,1:nprod+2,lower) = uflw0(iroom,1:nprod+2,lower)
-                    uflw(iroom,1:nprod+2,upper) = uflw0(iroom,1:nprod+2,upper)
+                    do iprod = 1, nprod + 2
+                        uflw(iroom,iprod,lower) = uflw0(iroom,iprod,lower)
+                        uflw(iroom,iprod,upper) = uflw0(iroom,iprod,upper)
+                    end do
                 endif
             end do
         endif
@@ -223,10 +242,14 @@
     real(eb) :: tmix, zd
 
     ! initialize outputs
-
-    uflw3(1:2,1:nprod+2,1:2) = 0.0_eb
-    vsas(1:2) = 0.0_eb
-    vasa(1:2) = 0.0_eb
+    do i = 1, 2
+        do iprod = 1, nprod + 2
+            uflw3(i,iprod,l) = 0.0_eb
+            uflw3(i,iprod,u) = 0.0_eb
+        end do
+        vsas(i) = 0.0_eb
+        vasa(i) = 0.0_eb
+    end do
 
     do n = 1, nslab
 
@@ -252,10 +275,14 @@
                     ! determine temperature and product concentrations of entrained flow
                     if (yslab(n)<ylay(ito)) then
                         tmix = tl(ito)
-                        pmix(1:nprod) = conl(1:nprod,ito)
+                        do iprod = 1, nprod
+                            pmix(iprod) = conl(iprod,ito)
+                        end do
                     else
                         tmix = tu(ito)
-                        pmix(1:nprod) = conu(1:nprod,ito)
+                        do iprod = 1, nprod
+                            pmix(iprod) = conu(iprod,ito)
+                        end do
                     endif
 
                     ! compute the size of the entrained mass flow
@@ -401,7 +428,9 @@
 
     ! turn all vents on
     anyvents = .true.
-    ventflg(1:nvents) = .true.
+    do i = 1, nvents
+        ventflg(i) = .true.
+    end do
 
     ! if the 2nd modified jacobian option is on and a jacobian is being computed (jaccol>0) then compute vent flows only for vents that that are connected
     ! to rooms whose pressure, layer height, layer temperature,  or oxygen level is being perturbed.
@@ -817,8 +846,12 @@
     real(eb) :: ylayer, ylow, yup, ttr, tts, ttu, ttl, yslabf, yslabt, yslab1, yslab2
 
     ! initialize outputs
-    uflw2(1:2,1:nprod+2,l) = 0.0_eb
-    uflw2(1:2,1:nprod+2,u) = 0.0_eb
+    do i = 1, 2
+        do iprod = 1, nprod + 2
+            uflw2(i,iprod,l) = 0.0_eb
+            uflw2(i,iprod,u) = 0.0_eb
+        end do
+    end do
 
     ! put each slab flow into appropriate layer of room i to and take slab flow out of appropriate layer of room ifrom
     do n = 1, nslab
@@ -917,10 +950,12 @@
         ! put flow into destination room
         xmterm = xmslab(n)
         qterm = qslab(n)
-        uflw2(ito,m,1:2) = uflw2(ito,m,1:2) + ff(1:2)*xmterm
-        uflw2(ito,q,1:2) = uflw2(ito,q,1:2) + ff(1:2)*qterm
-        do iprod = 1, nprod
-            uflw2(ito,2+iprod,1:2) = uflw2(ito,2+iprod,1:2) + ff(1:2) * pslab(n,iprod)
+        do ilay = 1, 2
+            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay)*xmterm
+            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay)*qterm
+            do iprod = 1, nprod
+                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay)*pslab(n,iprod)
+            end do
         end do
 
         ! take it out of the origin room
@@ -976,8 +1011,12 @@
     real(eb) :: ff(2), fl, fu, xmterm, qterm
 
     ! initialize outputs
-    uflw2(1:2,1:nprod+2,l) = 0.0_eb
-    uflw2(1:2,1:nprod+2,u) = 0.0_eb
+    do i = 1, 2
+        do iprod = 1, nprod + 2
+            uflw2(i,iprod,l) = 0.0_eb
+            uflw2(i,iprod,u) = 0.0_eb
+        end do
+    end do
 
     ! put each slab flow into appropriate layer of room i to and take slab flow out of appropriate layer of room ifrom
     do n = 1, nslab
@@ -1008,10 +1047,12 @@
         ! put flow into destination room
         xmterm = xmslab(n)
         qterm = qslab(n)
-        uflw2(ito,m,1:2) = uflw2(ito,m,1:2) + ff(1:2)*xmterm
-        uflw2(ito,q,1:2) = uflw2(ito,q,1:2) + ff(1:2)*qterm
-        do iprod = 1, nprod
-            uflw2(ito,2+iprod,1:2) = uflw2(ito,2+iprod,1:2) + ff(1:2)*pslab(n,iprod)
+        do ilay = 1, 2
+            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay)*xmterm
+            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay)*qterm
+            do iprod = 1, nprod
+                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay)*pslab(n,iprod)
+            end do
         end do
 
         ! take it out of the origin room
@@ -1061,9 +1102,11 @@
     integer :: iroom, i
     real(eb) :: dp1, dp2, epscut, dpold, zz
 
-    ygden(1:2) = -(ylay(1:2)-yflor(1:2))*denl(1:2)*grav_con
-    gdenl(1:2) = -denl(1:2)*grav_con
-    gdenu(1:2) = -denu(1:2)*grav_con
+    do iroom = 1, 2
+        ygden(iroom) = -(ylay(iroom)-yflor(iroom))*denl(iroom)*grav_con
+        gdenl(iroom) = -denl(iroom)*grav_con
+        gdenu(iroom) = -denu(iroom)*grav_con
+    end do
 
     do i = 1, nelev
         do iroom = 1, 2

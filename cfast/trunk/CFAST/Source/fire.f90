@@ -49,8 +49,12 @@
     integer cjetopt, lsp, iroom, logerr, nobj, iobj, i, j
 
     ! initialize summations and local data
-    
-    flwf(1:n,1:ns+2,1:2) = 0.0_eb
+    do lsp = 1, ns + 2
+        do iroom = 1, n
+            flwf(iroom,lsp,upper) = 0.0_eb
+            flwf(iroom,lsp,lower) = 0.0_eb
+        end do
+    end do
     nfire = 0
 
     if (option(ffire)/=fcfast) return
@@ -131,7 +135,10 @@
           fqlow(nobj) = heatlp(iroom)
           fqupr(nobj) = heatup(iroom)
           farea(nobj) = oareat
-          fopos(1:3,nobj) = objpos(1:3,iobj)
+          do j = 1,3
+             fopos (j,nobj) = objpos(j,iobj)
+          end do
+
        endif
     end do
 
@@ -207,8 +214,11 @@
     xqfr = 0.0_eb
     xems = 0.0_eb
 
-    xntms(1:2,1:ns) = 0.0_eb
-    xmass(1:ns) = 0.0_eb
+    do lsp = 1, ns
+        xntms(upper,lsp) = 0.0_eb
+        xntms(lower,lsp) = 0.0_eb
+        xmass(lsp) = 0.0_eb
+    end do
 
     ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of whether the fuel actually combusts here.
     ! this is consistent with the earlier chemistry routine. release it here and deposit it in the upper layer
@@ -789,8 +799,16 @@
     end do
 
     if(.not.djetflg)return
-    flwdjf(1:n,1:ns+2,1:2) = 0.0_eb
-    fqdj(1:n) = 0.0_eb
+    do ifrom = 1, n
+        do lsp = 1, ns + 2
+            flwdjf(ifrom,lsp,lower) = 0.0_eb
+            flwdjf(ifrom,lsp,upper) = 0.0_eb
+        end do
+    end do
+
+    do i = 1, n
+        fqdj(i) = 0.0_eb
+    end do
 
     hcombt = 5.005e+7_eb
 
@@ -828,15 +846,22 @@
 
            ! we need to save the solution for later jacobian calculations
             
-          flwdjf0(1:nm1,1:ns+2,1:2) = flwdjf(1:nm1,1:ns+2,1:2)
-          flwdjf0(iroom,lsp,upper) = flwdjf(iroom,lsp,upper)
+            do iroom = 1, nm1
+                do lsp = 1, ns + 2
+                    flwdjf0(iroom,lsp,lower) = flwdjf(iroom,lsp,lower)
+                    flwdjf0(iroom,lsp,upper) = flwdjf(iroom,lsp,upper)
+                end do
+            end do
        else if(jaccol>0)then
 
           ! we are computing a jacobian, so get previously saved solution for rooms
           ! that are not affected by the perturbed solution variable
           do iroom = 1, nm1
              if(.not.roomflg(iroom))then
-                flwdjf(iroom,1:ns+2,1:2) = flwdjf0(iroom,1:ns+2,1:2)
+                    do lsp = 1, ns+2
+                        flwdjf(iroom,lsp,lower) = flwdjf0(iroom,lsp,lower)
+                        flwdjf(iroom,lsp,upper) = flwdjf0(iroom,lsp,upper)
+                    end do
              endif
           end do
        endif
@@ -890,15 +915,19 @@
        ! how to handle it.
        dummy = -1.0_eb
        djflowflg = .true.
-       xmass(1:ns) = x0
+        do i = 1, ns
+            xmass(i) = x0
+        end do
        source_o2 = zzcspec(ito,lower,2)
        xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
        xxqspray = 0.0_eb
        call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
        qpyrol = xqpyrl
 
-       xntms(upper,1:ns) = xmass(1:ns)
-       xntms(lower,1:ns) = x0
+        do i = 1, ns
+            xntms(upper,i) = xmass(i)
+            xntms(lower,i) = x0
+        end do
     endif
     return
     end
@@ -988,14 +1017,14 @@
           q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(grav_con)*z_i1**2.5_eb)
           xi = tu/tl
           !           the effective fire source (qi2star) must be a positive number
-          if (1.0_eb+C_T*q_i1star**twothirds>xi) then
-             q_i2star = ((1.0_eb+C_T*q_i1star**twothirds)/(xi*C_T)-1.0_eb/C_T)**1.5_eb
-             z_i2 = (xi*q_i1star*C_T/(q_i2star**third*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
-             rhoamb = 352.981915_eb/tu
-             cp = 3.019e-7_eb*tu**2 - 1.217e-4_eb*tu + 1.014_eb
-             q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
-             z_eff = z-z_i1+z_i2
-             call PlumeTemp_M (q_eff, tu, z_eff, tplume)
+            if (1._eb+C_T*q_i1star**(2._eb/3._eb)>xi) then
+                q_i2star = ((1._eb+C_T*q_i1star**(2._eb/3._eb))/(xi*C_T)-1._eb/C_T)**(3._eb/2._eb)
+                z_i2 = (xi*q_i1star*C_T/(q_i2star**(1._eb/3._eb)*((xi-1._eb)*(Beta+1._eb)+xi*C_T*q_i2star**(2._eb/3._eb))))**(2._eb/5._eb)*z_i1
+                rhoamb = 352.981915_eb/tu
+                cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014_eb
+                q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*z_i2**(5._eb/2._eb)/(1.0_eb-xrad)*1000._eb
+                z_eff = z-z_i1+z_i2
+                call PlumeTemp_M (q_eff, tu, z_eff, tplume)
           else
              tplume = tu
           endif
@@ -1098,7 +1127,7 @@
         b  = 8.41_eb
     endif
 
-    theta = b*zstar**(2.*n-1.0_eb)
+    theta = b*zstar**(2._eb*real(n,eb)-1.0_eb)
     tplume = tgas*(1.0_eb+theta)
     return
     end subroutine PlumeTemp_M
@@ -1172,14 +1201,18 @@
        
        lsp = 9
        if (activs(lsp)) then
-          toxict(i,1:2,lsp) = ppmdv(1:2,i,lsp)*3778.0_eb
+            do k = upper, lower
+                toxict(i,k,lsp) = ppmdv(k,i,lsp) * 3778.0_eb
+            end do
        endif
 
        ! ct is the integration of the total "junk" being transported
        
        lsp = 10
        if (activs(lsp)) then
-          toxict(i,1:2,lsp) = toxict(i,1:2,lsp) + ppmdv(1:2,i,lsp)*1000.0_eb*deltt/60.0_eb
+            do k = upper, lower
+                toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp) * 1000.0_eb * deltt / 60.0_eb
+            end do
        endif
 
        ! ts (trace species) is the filtered concentration - this is the total mass. 
@@ -1188,7 +1221,9 @@
        
        lsp = 11
        if (activs(lsp)) then
-          toxict(i,1:2,lsp) = zzgspec(i,1:2,lsp) !/(tradio+1.0d-10)
+            do k = upper, lower
+                toxict(i,k,lsp) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
+            end do
        endif
 
     end do
@@ -1423,9 +1458,16 @@
     ! initialize summations and local data
 
     ! only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
-
-    flwhcl(1:n,1:ns+2,1:2) = 0.0_eb
-    flxhcl(1:n,1:4) = 0.0_eb
+    do iroom = 1, n
+        do j = 1, ns+2
+            flwhcl(iroom,j,upper) = 0.0_eb
+            flwhcl(iroom,j,lower) = 0.0_eb
+        end do
+        flxhcl(iroom,1) = 0.0_eb
+        flxhcl(iroom,2) = 0.0_eb
+        flxhcl(iroom,3) = 0.0_eb
+        flxhcl(iroom,4) = 0.0_eb
+    end do
     if (option(fhcl)==off) return
 
     ! calculate the hcl "added" to the layers from each surface

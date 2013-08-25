@@ -73,10 +73,12 @@
           dd(i)=factor*real(i,eb)/(2.0_eb*real(i,eb)-1.0_eb)
        end do
 
-       aim1(1:nr-1) = -cc(1:nr-1)
-       ai(1:nr-1) = 1.0_eb + factor
-       aip1(1:nr-1) = -dd(1:nr-1)
-       tnew(1:nr-1) = wtemp(1:nr-1)
+        do i = 1, nr-1
+            aim1(i) = -cc(i)
+            ai(i) = 1.0_eb + factor
+            aip1(i) = -dd(i)
+            tnew(i) = wtemp(i)
+        end do
 
        aim1(nr) = -cc(nr)
        ai(nr) = 1.0_eb + cc(nr)
@@ -112,7 +114,9 @@
           tnew(i) = tnew(i) - aip1(i) * tnew(i+1)
        end do
 
-       wtemp(1:nx) = tnew(1:nx)
+        do i = 1, nx
+            wtemp(i) = tnew(i)
+        end do
     end do
     return
     end

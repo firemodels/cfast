@@ -135,7 +135,9 @@
        ! store wall gradient for later use
        
        if(jaccol==0)then
-          vtgrad0(1:nwalls) = vtgrad(1:nwalls)
+            do iw = 1, nwalls
+                vtgrad0(iw) = vtgrad(iw)
+            end do
        elseif(jaccol>0)then
 
           ! use saved wall temperature gradient except for conduction problem corresponding to the perturbed wall temperature
@@ -206,8 +208,9 @@
     nx = numnode(1)
 
     ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break points are defined farther down.
-
-    tnew(2:nx-1) = wtemp(2:nx-1)
+    do i = 2, nx - 1
+        tnew(i) = wtemp(i)
+    end do
 
     ! set up tri-diagonal coefficient matrix
 
@@ -291,7 +294,9 @@
        c(i) = c(i)/a(i)
     end do
     a(nx) = a(nx) - b(nx)*c(nx-1)
-    tderiv(1:nx) = 0.0_eb
+    do i = 1, nx
+        tderiv(i) = 0.0_eb
+    end do
     tderiv(1) = 1.0_eb
 
     ! now construct guess at new temperature profile
@@ -312,7 +317,9 @@
 
     ! we don't keep solution unless update is 1 or 2
     if (update/=0) then
-       wtemp(1:nx) = tnew(1:nx)
+        do i = 1, nx
+            wtemp(i) = tnew(i)
+        end do
     endif
 
     ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that interpolates first three data points in 

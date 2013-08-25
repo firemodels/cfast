@@ -88,15 +88,23 @@
    logical roomflg(nr), wallflg(4*nr)
    save flwcv0, flxcv0
 
-   flwcv(1:nm1,1:2) = 0.0_eb
-   flxcv(1:nm1,1:nwal) = 0.0_eb
-    
+    do i = 1, nm1
+        flwcv(i,upper) = 0.0_eb
+        flwcv(i,lower) = 0.0_eb
+        do j = 1, nwal
+            flxcv(i,j) = 0.0_eb
+        end do
+    end do
    if (option(fconvec)/=on) return
 
    cjetopt = option(fcjet)
 
-   roomflg(1:nm1) = .true.
-   wallflg(1:nwalls) = .true.
+    do i = 1, nm1
+        roomflg(i) = .true.
+    end do
+    do i = 1, nwalls
+        wallflg(i) = .true.
+    end do
 
    if (option(fmodjac)==on) then
       if (jaccol>0) then
@@ -105,20 +113,24 @@
       ! only compute convection heat transfer in the room where the dassl 
       ! solution variable has been perturbed
 
-         roomflg(1:nm1) = .false.
-         wallflg(1:nwalls) = .false.
-
-         ieqtyp = izeqmap(jaccol,1)
-         iroom = izeqmap(jaccol,2)
-         roomflg(iroom) = .true.
-         if (ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqwt) then
-            if (ieqtyp==eqwt)iroom = izwall(iroom,1)
-            do iwall = 1, 4
-               if (switch(iwall,iroom)) then
-                  iw = izwmap2(iwall,iroom) - nofwt
-                  wallflg(iw) = .true.
-               endif
+            do i = 1, nm1
+                roomflg(i) = .false.
             end do
+            do i = 1, nwalls
+                wallflg(i) = .false.
+            end do
+
+            ieqtyp = izeqmap(jaccol,1)
+            iroom = izeqmap(jaccol,2)
+            if(ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqwt)then
+                if(ieqtyp==eqwt)iroom = izwall(iroom,1)
+                do iwall = 1, 4
+                    roomflg(iroom) = .true.
+                    if(switch(iwall,iroom))then
+                        iw = izwmap2(iwall,iroom) - nofwt
+                        wallflg(iw) = .true.
+                    endif
+                end do
          endif
       endif
    endif
@@ -150,15 +162,23 @@
 
       ! save the flux and flow vectors when we are about to compute a jacobian
             
-         flwcv0(1:nm1,1:2) = flwcv(1:nm1,1:2)
-         flxcv0(1:nm1,1:4) = flxcv(1:nm1,1:4)
+            do iroom = 1, nm1
+                flwcv0(iroom,1) = flwcv(iroom,1)
+                flwcv0(iroom,2) = flwcv(iroom,2)
+                do iwall = 1, 4
+                    flxcv0(iroom,iwall) = flxcv(iroom,iwall)
+                end do
+            end do
       elseif (jaccol>0) then
 
       ! we are computing the jaccol'th column of the jacobian.  if the solution hasn't changed then get it from the vectors saved above.
          do iroom = 1, nm1
             if (.not.roomflg(iroom)) then
-               flwcv(iroom,1:2) = flwcv0(iroom,1:2)
-               flxcv(iroom,1:4) = flxcv0(iroom,1:4)
+               flwcv(iroom,1) = flwcv0(iroom,1)
+               flwcv(iroom,2) = flwcv0(iroom,2)
+               do iwall = 1, 4
+                  flxcv(iroom,iwall) = flxcv0(iroom,iwall)
+               end do
             endif
          end do
       endif
@@ -852,9 +872,14 @@
    real(eb) :: dummy(100), zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
    integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
 
-   flxcjt(1:nm1,1:4) = 0.0_eb
-   flwcjt(1:nm1,1:2) = 0.0_eb
-   
+    do i = 1, nm1
+        flxcjt(i,1) = 0.0_eb
+        flxcjt(i,2) = 0.0_eb
+        flxcjt(i,3) = 0.0_eb
+        flxcjt(i,4) = 0.0_eb
+        flwcjt(i,1) = 0.0_eb
+        flwcjt(i,2) = 0.0_eb
+    end do
    do id = 1, ndtect
       iroom = ixdtect(id,droom)
       xdtect(id,dvel) = 0.0_eb

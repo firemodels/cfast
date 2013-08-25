@@ -44,14 +44,31 @@
     hvacflg = .true.
     if (first) then
         first = .false.
-        chv(1:nbr) = ductcv
-        flwmv0(1:n,1:ns+2,1:2) = 0.0_eb
+        do i = 1, nbr
+            chv(i) = ductcv
+        end do
+        do i = 1, n
+            do j = 1, ns+2
+                flwmv0(i,j,upper) = 0.0_eb
+                flwmv0(i,j,lower) = 0.0_eb
+            end do
+        end do
     endif
 
-    flwmv(1:n,1:ns+2,1:2) = 0.0_eb
-    filtered(1:n,1:ns+2,1:2) = 0.0_eb
-    deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
-    delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
+    do i = 1, n
+        do j = 1, ns+2
+            flwmv(i,j,upper) = 0.0_eb
+            flwmv(i,j,lower) = 0.0_eb
+            filtered(i,j,upper) = 0.0_eb
+            filtered(i,j,lower) = 0.0_eb
+        end do
+    end do
+    do i = 1, nhvpvar
+        deltpmv(i) = hvpsolv(i)
+    end do
+    do i = 1, nhvtvar
+        delttmv(i) = hvtsolv(i)
+    end do
 
     if(option(fmodjac)==on)then
 
@@ -132,8 +149,12 @@
         if(jaccol==0)then
 
             ! save information for a later jacobian calculation
-            deltpmv0(1:nhvpvar) = deltpmv(1:nhvpvar)
-            delttmv0(1:nhvtvar) = delttmv(1:nhvtvar)
+            do i = 1, nhvpvar
+                deltpmv0(i) = deltpmv(i)
+            end do
+            do i = 1, nhvtvar
+                delttmv0(i) = delttmv(i)
+            end do
             do i = 1, n
                 flwmv0(i,m,upper) = flwmv(i,m,upper)
                 flwmv0(i,m,lower) = flwmv(i,m,lower)
@@ -179,15 +200,20 @@
     
     ! calculate average temperatures and densities for each branch
     pav = pofset
-    rohb(1:nbr) = pav/(hvrgas*tbr(1:nbr))
-    bflo(1:nbr) = 1.0_eb
+    do ib = 1, nbr
+        pav = pofset
+        rohb(ib) = pav/(hvrgas*tbr(ib))
+        bflo(ib) = 1.0_eb
+    end do
 
     ! start the iteration cycle
     niter = 2
     do iter = 1, niter
 
         ! initialize conductance
-        ce(1:nbr)=0.0_eb
+        do ib = 1, nbr
+            ce(ib)=xx0
+        end do
 
         ! convert from pressure to mass flow rate coefficients
         do ib = 1, nbr
@@ -261,7 +287,9 @@
     real(eb) :: hvta, flowin, hvtemp
     integer ib, i, ii, j
 
-    delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
+    do ib = 1, nbr
+        delttmv(ib) = rohb(ib)*hvdvol(ib)*tprime(ib)/gamma
+    end do
 
     do i = 1, nnode
 
@@ -432,7 +460,9 @@
         ii = izhvmapi(i)
         hvp(ii) = hvpsolv(i)
     end do
-    tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
+    do ib = 1, nhvtvar
+        tbr(ib) = hvtsolv(ib)
+    end do
     return
     end subroutine hvfrex
 
@@ -461,11 +491,17 @@
     ! sum product flows entering system
     nhvpr = nlspct*nhvsys
     if(nprod/=0)then
-        prprime(1:nhvpr) = 0.0_eb
+        do i = 1, nhvpr
+            prprime(i) = 0.0_eb
+        end do
     endif
     if(ns>0)then
-        hvmfsys(1:nhvsys) = 0.0_eb
-        dhvprsys(1:nhvsys,1:ns) = 0.0_eb
+        do isys = 1, nhvsys
+            hvmfsys(isys) = 0.0_eb
+            do k = 1, ns
+                dhvprsys(isys,k) = 0.0_eb
+            end do
+        end do
     endif
 
     ! flow into the isys system

@@ -1,6 +1,3 @@
-
-! --------------------------- hallht -------------------------------------------
-
     subroutine hallht(iroom,idstart,nd)
 
     !     routine: hallht
@@ -11,15 +8,12 @@
     !                idstart - index of first detector in corridor iroom
     !                nd - number of detectors in room iroom
 
-    use precision_parameters
     use cenviro
     use cfast_main
     implicit none
-
-    integer, intent(in) :: iroom, idstart, nd    
-
-    real(eb) :: xx, yy, zz, xlen, temp, rho, vel
-    integer :: id
+    
+    real(8) :: xx, yy, zz, xlen, temp, rho, vel
+    integer :: id, idstart, nd, iroom
 
     do id = idstart, idstart + nd - 1
         xx = xdtect(id,dxloc)
@@ -37,29 +31,22 @@
     return
     end
 
-! --------------------------- halltrv -------------------------------------------
-
     subroutine halltrv (iroom,xloc,zloc,halltemp,hallrho,hallvel)
 
-    use precision_parameters
     use cenviro
     use cfast_main
     implicit none
     
-    real(eb), intent(in) :: xloc, zloc
-    real(eb), intent(out) ::  halltemp, hallrho, hallvel
-    integer, intent(in) :: iroom
-    
-    real(eb) :: cjetheight, c1, hhalf, dval0, dt0, fact
-    integer :: ihalf
+    real(8) :: cjetheight, xloc, zloc, c1, hhalf, d0, dt0, fact, halltemp, hallrho, hallvel
+    integer :: iroom, ihalf
 
     if(izhall(iroom,ihmode)==ihduring)then
-        dval0 = zzhall(iroom,ihdepth)
-        cjetheight = hr(iroom) - dval0
+        d0 = zzhall(iroom,ihdepth)
+        cjetheight = hr(iroom) - d0
 
         ! location is in hall ceiling jet
         if(zloc>=cjetheight.and.xloc<=zzhall(iroom,ihdist))then
-            c1 = 1.0_eb
+            c1 = 1.0d0
             ihalf = izhall(iroom,ihhalfflag)
             hhalf = zzhall(iroom,ihhalf)
             dt0 = zzhall(iroom,ihtemp)
@@ -67,15 +54,15 @@
             ! check to see if the user specified a hhalf value on the command line. if not (ie if ihalf==0) then calculate it using the correlations.
             if(ihalf==0)then
                 ! hhalf = -log10(2)/.018
-                hhalf = 16.70_eb
+                hhalf = 16.70d0
                 zzhall(iroom,ihhalf) = hhalf
             endif
 
             ! if hhalf < 0.0 then assume that the temperature does not decay (ie flow is adiabatic)
-            if(hhalf>0.0_eb)then
-                fact = 0.5_eb**(xloc/hhalf)
+            if(hhalf>0.0d0)then
+                fact = 0.5d0**(xloc/hhalf)
             else
-                fact = 1.0_eb
+                fact = 1.0d0
             endif
 
             halltemp = zztemp(iroom,lower) + dt0*fact
@@ -84,7 +71,7 @@
         else
             halltemp = zztemp(iroom,lower)
             hallrho = zzrho(iroom,lower)
-            hallvel = 0.10_eb
+            hallvel = 0.10d0
         endif
     else
 
@@ -96,28 +83,24 @@
             halltemp = zztemp(iroom,lower)
             hallrho = zzrho(iroom,lower)
         endif
-        hallvel = 0.10_eb
+        hallvel = 0.10d0
     endif
 
     return
     end subroutine halltrv
 
-! --------------------------- sethall -------------------------------------------
-
     subroutine sethall(itype, inum, ihall, tsec, width, htemp, hvel, hdepth)
 
-    use precision_parameters
     use cenviro
     use cfast_main
     use dervs
     use vents
     implicit none
 
-    real(eb), intent(in) :: tsec, width, htemp, hvel, hdepth
-    
-    real(eb) :: hhtemp, roomwidth, roomlength, ventwidth, fraction, halldepth, hallvel, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
+    real(8) :: xx0, htemp, hhtemp, roomwidth, roomlength, ventwidth, width, othird, fraction, halldepth, hdepth, hallvel, hvel, tsec, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
     integer :: ihall, inum, i, itype
     
+    xx0 = 0.0d0
     hhtemp = htemp - zztemp(ihall,lower)
 
     ! this routine is only executed if 1) hall flow has not started yet or 2)  hall flow has started and it is coming from the ivent'th vent
@@ -126,7 +109,8 @@
     roomwidth = min(br(ihall),dr(ihall))
     roomlength = max(br(ihall),dr(ihall))
     ventwidth = min(width,roomwidth)
-    fraction = (ventwidth/roomwidth)**third
+    othird = 1.0d0/3.0d0
+    fraction = (ventwidth/roomwidth)**othird
     halldepth = hdepth*fraction**2
     hallvel = hvel*fraction
 
@@ -134,12 +118,12 @@
     if(izhall(ihall,ihventnum)==0)then
 
         ! flow is going into the hall room and flow is below the soffit
-        if(hallvel>0.0_eb.and.halldepth>0.0_eb)then
+        if(hallvel>xx0.and.halldepth>xx0)then
             izhall(ihall,ihventnum) = inum
             izhall(ihall,ihmode) = ihduring
             zzhall(ihall,ihtime0) = tsec
             zzhall(ihall,ihtemp) = hhtemp
-            zzhall(ihall,ihdist) = 0.0_eb
+            zzhall(ihall,ihdist) = 0.0d0
             if(izhall(ihall,ihvelflag)==0)zzhall(ihall,ihvel) = hallvel
             if(izhall(ihall,ihdepthflag)==0)then
                 zzhall(ihall,ihdepth) = halldepth
@@ -166,7 +150,7 @@
             endif
             zzhall(ihall,ihorg) = ventdist0
 
-            ventdist = -1.0_eb
+            ventdist = -1.0d0
             ventdistmax = ventdist 
 
             ! compute distances relative to vent where flow is coming from. also compute the maximum distance
@@ -174,7 +158,7 @@
                 if(izvent(i,1)==ihall)then
 
                     ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" end of the corridor
-                    if(zzvent(i,4)>0.0_eb.and.ventdist0>=0.0_eb)then
+                    if(zzvent(i,4)>0.0d0.and.ventdist0>=0.0d0)then
                         ventdist = abs(zzvent(i,4) - ventdist0)
                     else
                         ventdist = roomlength - ventdist0
@@ -183,14 +167,14 @@
                 elseif(izvent(i,2)==ihall)then
 
                     ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" end of the corridor
-                    if(zzvent(i,5)>0.0_eb.and.ventdist0>=0.0_eb)then
+                    if(zzvent(i,5)>0.0d0.and.ventdist0>=0.0d0)then
                         ventdist = abs(zzvent(i,5) - ventdist0)
                     else
                         ventdist = roomlength - ventdist0
                     endif
                     zzventdist(ihall,i) = ventdist
                 else
-                    ventdist = -1.0_eb
+                    ventdist = -1.0d0
                     zzventdist(ihall,i) = ventdist
                 endif
             end do
@@ -228,8 +212,6 @@
     endif
     return
     end
-
-! --------------------------- rev_flowhall -------------------------------------------
 
     integer function rev_flowhall ()
 

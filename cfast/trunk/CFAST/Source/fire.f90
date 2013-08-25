@@ -1022,7 +1022,7 @@
                 z_i2 = (xi*q_i1star*C_T/(q_i2star**(1._eb/3._eb)*((xi-1._eb)*(Beta+1._eb)+xi*C_T*q_i2star**(2._eb/3._eb))))**(2._eb/5._eb)*z_i1
                 rhoamb = 352.981915_eb/tu
                 cp = 3.019d-7*tu**2 - 1.217d-4*tu + 1.014_eb
-                q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*z_i2**(5._eb/2._eb)/(1.0_eb-xrad)*1000._eb
+                q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**(5._eb/2._eb)/(1.0_eb-xrad)*1000._eb
                 z_eff = z-z_i1+z_i2
                 call PlumeTemp_M (q_eff, tu, z_eff, tplume)
           else

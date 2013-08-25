@@ -1,3 +1,6 @@
+
+! --------------------------- trheat -------------------------------------------
+
     subroutine trheat(update,method,dt,xpsolve,delta)
 
     !     routine: trheat (main target routine)
@@ -10,14 +13,19 @@
     !     revision: $revision: 464 $
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
     implicit none
 
+    integer, intent(in) :: update, method
+    real(eb), intent(in) :: dt, xpsolve(*) 
+    real(eb), intent(out) :: delta(*)
+    
     logical :: first=.true.
-    real(8) :: tmp(trgtnum), walldx(trgtnum), delta(*), xpsolve(*), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout, dt, tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, xl
-    integer :: update, method, nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    real(eb) :: tmp(trgtnum), walldx(trgtnum), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout, tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, xl
+    integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
 
     if(method==steady)return
@@ -26,14 +34,14 @@
     if(first)then
         first = .false.
         nnn = trgtnum - 1
-        tmp(1) = 1.0d0
-        tmp(nnn) = 1.0d0
+        tmp(1) = 1.0_eb
+        tmp(nnn) = 1.0_eb
         do i = 2, nnn/2 
-            tmp(i) = tmp(i-1)*1.50d0
+            tmp(i) = tmp(i-1)*1.50_eb
             tmp(nnn+1-i) = tmp(i)
         end do
-        if(mod(nnn,2)==1)tmp(nnn/2+1)=tmp(nnn/2)*1.50d0
-        sum = 0.0d0
+        if(mod(nnn,2)==1)tmp(nnn/2+1)=tmp(nnn/2)*1.50_eb
+        sum = 0.0_eb
         do i = 1, nnn
             sum = sum + tmp(i)
         end do
@@ -105,6 +113,8 @@
     return
     end subroutine trheat
 
+! --------------------------- target -------------------------------------------
+
     subroutine target(method)
 
     !     routine: target
@@ -112,20 +122,17 @@
     !              assuming that the sum of incoming and outgoing flux is zero, ie, assuming that the target is at steady state.
     !     arguments: method  
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
     implicit none
 
-    logical :: first = .true.
-    real(8) :: flux(2), dflux(2), ttarg(2), sigma, ddif
-    integer :: itarg, methtarg, method, iroom, niter, iter
-    save first, sigma
+    integer, intent(in) :: method
+    
+    real(eb) :: flux(2), dflux(2), ttarg(2), ddif
+    integer :: itarg, methtarg, iroom, niter, iter
 
-    if(first)then
-        first = .false.
-        sigma = 5.67d-8
-    endif
 
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     if (ntarg>nm1) then
@@ -142,7 +149,7 @@
                 ttarg(2) = xxtarg(trgtempb,itarg)
                 do iter = 1, niter
                     call targflux(iter,itarg,ttarg,flux,dflux)
-                    if(dflux(1)/=0.0d0.and.methtarg==steady)then
+                    if(dflux(1)/=0.0_eb.and.methtarg==steady)then
                         ddif = flux(1)/dflux(1)
                         ttarg(1) = ttarg(1) - ddif
                         if(abs(ddif)<=1.0d-5*ttarg(1)) exit
@@ -186,6 +193,8 @@
     return
     end subroutine target
 
+! --------------------------- targflux -------------------------------------------
+
     subroutine targflux(iter,itarg,ttarg,flux,dflux)
 
     !     routine: target
@@ -196,6 +205,7 @@
     !                flux   front and back output flux
     !                dflux  front and back output flux derivative
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
@@ -203,37 +213,28 @@
     use wnodes
     implicit none
 
-    real(8) :: svect(3), flux(2), dflux(2), ttarg(2), qwtsum(2), awallsum(2), qgassum(2), pi, sigma, cos45, xx1, absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
+    integer, intent(in) :: iter, itarg
+    real(eb), intent(in) :: ttarg(2)
+    real(eb), intent(out) :: flux(2), dflux(2) 
+    
+    real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
-    integer :: map10(10), iroom, itarg, iter, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
-    logical first
-    save first, pi, sigma, cos45
+    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
 
-    data first/.true./
     data map10/1,3,3,3,3,4,4,4,4,2/
 
-    if(first)then
-        first = .false.
-        xx1 = 1.0d0
-        pi = 4.0d0*atan(xx1)
-        sigma = 5.67d-8
-        cos45 = sqrt(xx1+xx1)/2.0d0
-    endif
-
-    absu = 0.50d0
-    absl = 0.01d0
+    absu = 0.50_eb
+    absl = 0.01_eb
     iroom = ixtarg(trgroom,itarg)
 
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then
 
         ! initialize flux counters: total, fire, wall, gas 
-        do i = 1, 2
-            qtfflux(itarg,i) = 0.0d0
-            qtgflux(itarg,i) = 0.0d0
-            qtwflux(itarg,i) = 0.0d0
-        end do
+        qtfflux(itarg,1:2) = 0.0_eb
+        qtgflux(itarg,1:2) = 0.0_eb
+        qtwflux(itarg,1:2) = 0.0_eb
 
         nfirerm = ifrpnt(iroom,1)
         istart = ifrpnt(iroom,2)
@@ -243,9 +244,9 @@
             svect(1) = xxtarg(trgcenx,itarg) - xfire(ifire,1)
             svect(2) = xxtarg(trgceny,itarg) - xfire(ifire,2)
             svect(3) = xxtarg(trgcenz,itarg) - xfire(ifire,3)
-            cosang = 0.0d0
+            cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),objclen(ifire))
-            if(s/=0.0d0)then
+            if(s/=0.0_eb)then
                 cosang = -ddot(3,svect,1,xxtarg(trgnormx,itarg),1)/s
             endif
             zfire = xfire(ifire,3)
@@ -257,9 +258,9 @@
             if(nfurn>0)then
                 absl=0.0
                 absu=0.0
-                taul = 1.0d0
-                tauu = 1.0d0
-                qfire = 0.0d0
+                taul = 1.0_eb
+                tauu = 1.0_eb
+                qfire = 0.0_eb
             else
                 absl = absorb(iroom, lower)
                 absu = absorb(iroom, upper)
@@ -267,14 +268,14 @@
                 tauu = exp(-absu*zu)
                 qfire = xfire(ifire,8)
             endif
-            if(s/=0.0d0)then
-                qft = qfire*abs(cosang)*tauu*taul/(4.0d0*pi*s**2)
+            if(s/=0.0_eb)then
+                qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
             else
-                qft = 0.0d0
+                qft = 0.0_eb
             endif
 
             ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution if the target is interior to the room
-            if(cosang>=0.0d0)then
+            if(cosang>=0.0_eb)then
                 qtfflux(itarg,1) = qtfflux(itarg,1) + qft
             else
                 if(ixtarg(trgback,itarg)==int)then
@@ -286,11 +287,9 @@
 
         ! compute radiative flux from walls and gas
 
-        do i = 1, 2
-            awallsum(i) = 0.0d0   
-            qwtsum(i) = 0.0d0
-            qgassum(i) = 0.0d0
-        end do
+        awallsum(1:2) = 0.0_eb   
+        qwtsum(1:2) = 0.0_eb
+        qgassum(1:2) = 0.0_eb
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout
@@ -300,9 +299,9 @@
             svect(1) = xxtarg(trgcenx,itarg) - zzwcen(iroom,iwall,1)
             svect(2) = xxtarg(trgceny,itarg) - zzwcen(iroom,iwall,2)
             svect(3) = xxtarg(trgcenz,itarg) - zzwcen(iroom,iwall,3)
-            cosangt = 0.0d0
+            cosangt = 0.0_eb
             s = dnrm2(3,svect,1)
-            if(s/=0.0d0)then
+            if(s/=0.0_eb)then
                 cosangt = -ddot(3,svect,1,xxtarg(trgnormx,itarg),1)/s
             endif
             zwall = zzwcen(iroom,iwall,3)
@@ -316,9 +315,9 @@
 
             ! find fractions transmitted and absorbed in lower and upper layer
             taul = exp(-absl*zl)
-            alphal = 1.0d0 - taul
+            alphal = 1.0_eb - taul
             tauu = exp(-absu*zu)
-            alphau = 1.0d0 - tauu
+            alphau = 1.0_eb - tauu
 
             awall = zzwarea2(iroom,iwall)
             qwt = qout*taul*tauu
@@ -328,7 +327,7 @@
                 qgas = tu**4*alphau*taul + tl**4*alphal
             endif
             qgt = sigma*qgas
-            if(cosangt>=0.0d0)then
+            if(cosangt>=0.0_eb)then
                 jj = 1
             else 
                 jj = 2
@@ -342,7 +341,7 @@
             endif
         end do
         do i = 1, 2
-            if(awallsum(i)==0.0d0)awallsum(i) = 1.0d0
+            if(awallsum(i)==0.0_eb)awallsum(i) = 1.0_eb
             qtwflux(itarg,i) = qwtsum(i)/awallsum(i)
             qtgflux(itarg,i) = qgassum(i)/awallsum(i)
         end do       
@@ -356,10 +355,10 @@
     ! compute convective flux
     ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.  
     zznorm = xxtarg(trgnormz,itarg)
-    if(zznorm<=1.0d0.and.zznorm>=cos45)then
+    if(zznorm<=1.0_eb.and.zznorm>=cos45)then
         iw = 2
         iwb = 1
-    elseif(zznorm>=-1.0d0.and.zznorm<=-cos45)then
+    elseif(zznorm>=-1.0_eb.and.zznorm<=-cos45)then
         iw = 1
         iwb = 2
     else
@@ -390,7 +389,7 @@
     dqdtarg = (q2-q1)/dttarg
 
     flux(1) = temis*(qtfflux(itarg,1) + qtwflux(itarg,1) + qtgflux(itarg,1)) + qtcflux(itarg,1) - temis*sigma*ttarg(1)**4
-    dflux(1) = -4.0d0*temis*sigma*ttarg(1)**3 + dqdtarg
+    dflux(1) = -4.0_eb*temis*sigma*ttarg(1)**3 + dqdtarg
 
     ! this is for "gauge" heat flux output ... it assumes an ambient temperature target
     gtflux(itarg,2) = qtfflux(itarg,1)
@@ -419,10 +418,12 @@
     dqdtargb = (q2b-q1b)/dttargb
 
     flux(2) = temis*(qtfflux(itarg,2) + qtwflux(itarg,2) + qtgflux(itarg,2)) + qtcflux(itarg,2) - temis*sigma*ttargb**4
-    dflux(2) = -4.0d0*temis*sigma*ttargb**3 + dqdtargb
+    dflux(2) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
 
     return
     end subroutine targflux
+
+! --------------------------- gettgas -------------------------------------------
 
     subroutine gettgas(irtarg,xtarg,ytarg,ztarg,tg)
 
@@ -434,22 +435,18 @@
     !                ztarg  z position of target in compartment
     !                tgas (output)   calculated gas temperature
 
+    use precision_parameters
     use cfast_main
     use cenviro
     use objects2
     implicit none
 
-    logical :: first = .true.
-    real(8) :: xx1, four, pi, xtarg, ytarg, ztarg, tg, qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
-    integer :: irtarg, i
-    save first, pi, four
+    integer, intent(in) :: irtarg
+    real(eb), intent(in) :: xtarg, ytarg, ztarg
+    real(eb), intent(out) :: tg
 
-    if(first)then
-        first = .false.
-        xx1 = 1.0d0
-        four = 4.0d0
-        pi = four*atan(xx1)
-    endif
+    integer :: i
+    real(eb) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
 
     ! default is the appropriate layer temperature
     if (ztarg>=zzhlay(irtarg,lower)) then
@@ -464,7 +461,7 @@
             if (xtarg==xfire(i,1).and.ytarg==xfire(i,2).and. ztarg>xfire(i,3)) then
                 qdot = fqf(i)
                 xrad = radconsplit(i)
-                dfire = sqrt(farea(i)*four/pi)
+                dfire = 2.0_eb*sqrt(farea(i)/pi)
                 tu = zztemp(irtarg,upper)
                 tl = zztemp(irtarg,lower)
                 zfire = xfire(i,3)
@@ -477,6 +474,8 @@
     end do 
     end subroutine gettgas 
 
+! --------------------------- getylyu -------------------------------------------
+
     subroutine getylyu(yo,y,yt,s,yl,yu)
 
     !     routine: gettylyu
@@ -488,19 +487,21 @@
     !                yl
     !                yu
 
+    use precision_parameters
     implicit none
-    real(8) :: yo, y, yt, s, yl, yu
+    real(eb), intent(in) :: yo, y, yt, s
+    real(eb), intent(out) :: yl, yu
 
 
     if(yo<=y)then
         if(yt<=y)then
-            yl = 1.0d0
+            yl = 1.0_eb
         else
             yl = (y-yo)/(yt-yo)
         endif
     else
         if(yt>=y)then
-            yl = 0.0d0
+            yl = 0.0_eb
         else
             yl = (y-yt)/(yo-yt)
         endif
@@ -509,6 +510,8 @@
     yu = s - yl
     return
     end subroutine getylyu
+
+! --------------------------- updtect -------------------------------------------
 
     subroutine updtect(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
 
@@ -523,17 +526,23 @@
     !                iquench if the j=iquench(i) is non-zero then the j'th sprinkler in the i'th room is quenching the fire
     !                idset   room where activated detector resides
 
+    use precision_parameters
     use cparams
     use dsize
     implicit none
-
-    real(8) :: zztemp(nr,2), zzhlay(nr,2), xdtect(mxdtect,*), tdtect, tcur, dstep, cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
-    integer :: ixdtect(mxdtect,*), iquench(*), idset, ifdtect, i, ndtect, iroom, imode, idold, iqu
+    
+    integer, intent(in) :: imode
+    integer, intent(out) :: idset, ifdtect, ixdtect(mxdtect,*), iquench(*)
+    
+    integer ::  i, ndtect, iroom, idold, iqu
+    real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
+    real(eb), intent(out) :: xdtect(mxdtect,*), tdtect
+    real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
 
     idset = 0
     ifdtect = 0
     tdtect = tcur+2*dstep
-    cjetmin = 0.10d0
+    cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
         tlinko = xdtect(i,dtemp)
@@ -559,14 +568,14 @@
             an = bn*tjeto
             bnp1 = sqrt(vel)/rti
             anp1 = bnp1*tjet
-            denom = 1.0d0 + dstep*bnp1*.5d0
-            fact1 = (1.0d0 - dstep*bn*.50d0)/denom
+            denom = 1.0_eb + dstep*bnp1*.5_eb
+            fact1 = (1.0_eb - dstep*bn*.50_eb)/denom
             fact2 = dstep/denom
-            tlink = fact1*tlinko + fact2*(an+anp1)*0.5d0
+            tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
         else
 
             ! when soot is calculated then set tlink to soot concentration. set it to zero for now.
-            tlink = 0.0d0
+            tlink = 0.0_eb
         endif
         if (imode>0) then
             xdtect(i,dtempo) = tlinko
@@ -608,6 +617,8 @@
     end do
     return
     end subroutine updtect
+
+! --------------------------- rev_target -------------------------------------------
 
     integer function rev_target ()
 

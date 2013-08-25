@@ -985,7 +985,7 @@
           rhoamb = 352.981915_eb/tl
           cp = 3.019e-7_eb*tl**2 - 1.217e-4_eb*tl + 1.014_eb
           z_i1 = zlayer - zfire
-          q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(g)*z_i1**2.5_eb)
+          q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(grav_con)*z_i1**2.5_eb)
           xi = tu/tl
           !           the effective fire source (qi2star) must be a positive number
           if (1.0_eb+C_T*q_i1star**twothirds>xi) then
@@ -993,7 +993,7 @@
              z_i2 = (xi*q_i1star*C_T/(q_i2star**third*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
              rhoamb = 352.981915_eb/tu
              cp = 3.019e-7_eb*tu**2 - 1.217e-4_eb*tu + 1.014_eb
-             q_eff = q_i2star*rhoamb*cp*tu*sqrt(g)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
+             q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
              z_eff = z-z_i1+z_i2
              call PlumeTemp_M (q_eff, tu, z_eff, tplume)
           else
@@ -1045,7 +1045,7 @@
 
     rhoamb = 352.981915_eb/tgas
     cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
-    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(g)))**0.4_eb
+    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(grav_con)))**0.4_eb
 
     if ((z-z0)/dstar<1.32) then
        dt = 2.91_eb*tgas
@@ -1053,12 +1053,12 @@
        zp1 = 1.32*dstar
        tp1 = 2.91*tgas
        zp2 = fheight
-       tp2 = 9.1_eb*(tgas/(g*cp**2*rhoamb**2))**third*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
+       tp2 = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**third*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
        a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
        b = tp1-a/zp1
        dt = a/(z-z0) + b
     else
-       dt = 9.1_eb*(tgas/(g*cp**2*rhoamb**2))**third*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
+       dt = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**third*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
     endif
     tplume = tgas + dt
 
@@ -1085,7 +1085,7 @@
 
     rhoamb = 352.981915_eb/tgas
     cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
-    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(g)))**0.4_eb
+    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(grav_con)))**0.4_eb
     zstar = z/dstar
     if (zstar>=0.0_eb .and. zstar<1.32_eb) then
         n = 0.5_eb

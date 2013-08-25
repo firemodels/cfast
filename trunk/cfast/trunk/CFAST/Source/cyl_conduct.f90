@@ -73,7 +73,7 @@
           dd(i)=factor*real(i,eb)/(2.0_eb*real(i,eb)-1.0_eb)
        end do
 
-       aim1(1:nr-1) = -cc(i)
+       aim1(1:nr-1) = -cc(1:nr-1)
        ai(1:nr-1) = 1.0_eb + factor
        aip1(1:nr-1) = -dd(1:nr-1)
        tnew(1:nr-1) = wtemp(1:nr-1)

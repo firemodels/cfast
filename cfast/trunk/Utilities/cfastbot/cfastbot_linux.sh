@@ -823,9 +823,12 @@ email_build_status()
    echo $THIS_CFAST_FAILED>$CFAST_STATUS_FILE
    stop_time=`date`
    echo "-------------------------------" > $TIME_LOG
-   echo "      host: $hostname " >> $TIME_LOG
-   echo "start time: $start_time " >> $TIME_LOG
-   echo " stop time: $stop_time " >> $TIME_LOG
+   echo "Host: $hostname " >> $TIME_LOG
+   echo "Start Time: $start_time " >> $TIME_LOG
+   echo "Stop Time: $stop_time " >> $TIME_LOG
+   echo "-------------------------------" > $TIME_LOG
+   echo "Nightly Manuals (public): https://drive.google.com/folderview?id=0B_wB1pJL2bFQSkhyNDJ0bEw0cVE#list" >> $TIME_LOG
+  echo "-------------------------------" >> $TIME_LOG
   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
     cat $SVN_SMVLOG >> $TIME_LOG
   fi

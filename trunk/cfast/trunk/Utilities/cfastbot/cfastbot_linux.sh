@@ -11,7 +11,7 @@
 #  = Input variables =
 #  ===================
 
-mailTo="gforney@gmail.com, cfast@nist.gov"
+mailTo="gforney@gmail.com, cfast@nist.gov, koverholt@gmail.com"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=

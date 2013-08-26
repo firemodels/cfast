@@ -745,30 +745,19 @@ check_matlab_validation()
 
 check_guide()
 {
-   CFASTBOT_MANDIR=/var/www/html/cfastbot/manuals
-   # Scan and report any errors in build process for guides
+   # Scan and report any errors or warnings in build process for guides
    cd $CFASTBOT_DIR
-   if [[ `grep "! LaTeX Error:" -I $1` == "" ]]
+   if [[ `grep -I "successfully" $1` == "" ]]
    then
-      if [ -d $CFASTBOT_MANDIR ] ; then
-        cp $2 $CFASTBOT_MANDIR/.
-      fi
-      cp $2 $GUIDE_DIR/.
-   else
-      echo "Errors from Stage 8 - Build CFAST Guides:" >> $ERROR_LOG
-      grep "! LaTeX Error:" -I $1 >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
-   fi
-
-   # Check for LaTeX warnings (undefined references or duplicate labels)
-   if [[ `grep -E "undefined|multiply defined|multiply-defined" -I ${1}` == "" ]]
-   then
-      # Continue along
-      :
-   else
-      echo "Stage 8 warnings:" >> $WARNING_LOG
-      grep -E "undefined|multiply defined|multiply-defined" -I $1 >> $WARNING_LOG
+      # There were errors/warnings in the guide build process
+      echo "Warnings from Stage 8 - Build CFAST Guides:" >> $WARNING_LOG
+      echo $3 >> $WARNING_LOG # Name of guide
+      cat $1 >> $WARNING_LOG # Contents of log file
       echo "" >> $WARNING_LOG
+   else
+      # Guide built successfully; there were no errors/warnings
+      # Copy guide to Firebot's local website
+      cp $2 /var/www/html/cfastbot/manuals/
    fi
 }
 
@@ -777,26 +766,19 @@ make_cfast_tech_guide()
    # Build CFAST tech Guide
    cd $CFAST_SVNROOT/Docs/Tech_Ref
    ./make_guide.sh
-   pdflatex -interaction nonstopmode Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
-   bibtex Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
-   pdflatex -interaction nonstopmode Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
-   pdflatex -interaction nonstopmode Tech_Ref &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $CFASTBOT_DIR/output/stage8_cfast_tech_guide $CFAST_SVNROOT/Docs/Tech_Ref/Tech_Ref.pdf
+   check_guide $CFASTBOT_DIR/output/stage8_cfast_tech_guide $CFAST_SVNROOT/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
 make_cfast_vv_guide()
 {
    # Build CFAST tech Guide
    cd $CFAST_SVNROOT/Docs/Validation_Guide
-   pdflatex -interaction nonstopmode Validation_Guide &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
-   bibtex Validation_Guide &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
-   pdflatex -interaction nonstopmode Validation_Guide &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
-   pdflatex -interaction nonstopmode Validation_Guide &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
+   ./make_guide.sh
 
    # Check guide for completion and copy to website if successful
-   check_guide $CFASTBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Validation_Guide/Validation_Guide.pdf
+   check_guide $CFASTBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
 }
 
 #  =====================================================

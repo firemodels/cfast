@@ -28,7 +28,7 @@ twothirds = 2.0_eb/3.0_eb
 fourpi = 4.0_eb*pi
 pio2 = pi/2.0_eb
 pio4 = pi/4.0_eb
-grav_con=9.8_eb
+grav_con=9.80665_eb
 gsqrt=sqrt(grav_con)
 cos45 = sqrt(2.0_eb)/2.0_eb
 

@@ -1,3 +1,6 @@
+
+! --------------------------- cnheat -------------------------------------------
+
     subroutine cnheat(update,dt,flxtot,delta)
 
     !     routine: cnheat (main conduction routine)
@@ -13,22 +16,24 @@
     !     revision: $revision: 464 $
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
-
+    use precision_parameters
     use cenviro
     use cfast_main
     use opt
     use wnodes
     implicit none
 
-    real(8) :: tgrad(2), delta(*), flxtot(nr,nwal), vtgrad0(4*nr), vtgrad(4*nr)
+    integer, intent(in) :: update
+    real(eb), intent(in) :: dt, flxtot(nr,nwal)
+    real(eb), intent(out) :: delta(*)
+    
+    real(eb) :: tgrad(2), vtgrad0(4*nr), vtgrad(4*nr)
     save vtgrad0
 
-    real(8) :: sigma, twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, dt, tderv
-    integer :: update, ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
+    real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
+    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
-
-    sigma = 5.67d-8
 
     ! solve conduction problem for all walls
 
@@ -74,7 +79,7 @@
 
                 ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.  if izheat(iroom) is not zero then
                 ! nwroom better not be zero!  nwroom should always be zero for iwall=3 and iwall=4
-                wfluxout = 0.0d0
+                wfluxout = 0.0_eb
                 nwroom = izhtfrac(iroom,0)
                 do jj = 1, nwroom
                     j = izhtfrac(iroom,jj)
@@ -83,28 +88,28 @@
                         yb = zzhlay(iroom,lower)
                         yt = zzyceil(iroom)
                     elseif(iwall==4)then
-                        yb = 0.0d0
+                        yb = 0.0_eb
                         yt = zzhlay(iroom,lower)
                     endif
                     dflor = zzyflor(j) - zzyflor(iroom)
                     yy = zzhlay(j,lower) + dflor
                     if(j/=nm1+1)then
                         if(yy>yt)then
-                            fu = 0.0d0
+                            fu = 0.0_eb
                         elseif(yy<yb)then
-                            fu = 1.0d0
+                            fu = 1.0_eb
                         else
                             if(yb/=yt)then
                                 fu = (yt-yy)/(yt-yb)
                             else
-                                fu = 0.0d0
+                                fu = 0.0_eb
                             endif
                         endif
                         fluxu = fu*flxtot(j,3)
-                        fluxl = (1.0d0-fu)*flxtot(j,4)
+                        fluxl = (1.0_eb-fu)*flxtot(j,4)
                     else
                         fluxu = wfluxsave
-                        fluxl = 0.0d0
+                        fluxl = 0.0_eb
                     endif
                     wfluxout = wfluxout + frac*(fluxu + fluxl)
                 end do
@@ -156,6 +161,8 @@
     return
     end subroutine cnheat
 
+! --------------------------- ccnduct -------------------------------------------
+
     subroutine cnduct(update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,numnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
 
 
@@ -178,13 +185,19 @@
     !            tgrad    temperature gradient
     !            tderv    partial of temperature gradient with respect to wall surface temperature.  this number is used to calculate wall jacobian elements.
 
+    use precision_parameters
     implicit none
-    integer, parameter :: nn = 60
-    real(8) :: a(nn), b(nn), c(nn), tnew(nn), tderiv(nn), ddif(3), tgrad(2), wk(*), wspec(*), wrho(*), wtemp(*), walldx(*)
-    integer :: numnode(*), update
     
-    integer :: nx, i, iwbound, ibeg, iend, islab, nslab, nintx, ibreak
-    real(8) :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
+    integer, parameter :: nn = 60
+
+    real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
+    real(eb), intent(out) :: wtemp(*), tgrad(2) 
+    integer, intent(in) :: update, nslab, iwbound, numnode(*)
+
+    
+    integer :: nx, i, ibeg, iend, islab, nintx, ibreak
+    real(eb) :: a(nn), b(nn), c(nn), tnew(nn), tderiv(nn), ddif(3)
+    real(eb) :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
 
     nx = numnode(1)
 
@@ -197,14 +210,14 @@
 
     ! setup first row
     if(iwbound/=4)then
-        a(1) = 1.0d0
-        b(1) = 0.0d0
-        c(1) = 0.0d0
+        a(1) = 1.0_eb
+        b(1) = 0.0_eb
+        c(1) = 0.0_eb
         tnew(1) = tempin
     else
-        a(1) = 1.0d0
-        b(1) = 0.0d0
-        c(1) = -1.0d0
+        a(1) = 1.0_eb
+        b(1) = 0.0_eb
+        c(1) = -1.0_eb
         tnew(1) = walldx(1) * wfluxin / wk(1)
     endif
 
@@ -213,13 +226,13 @@
     do islab = 1, nslab
         nintx = numnode(1+islab)
         xkrhoc = wk(islab) / (wspec(islab)*wrho(islab))
-        s = 2.0d0 * dt * xkrhoc
+        s = 2.0_eb * dt * xkrhoc
         ibeg = iend + 2
         iend = ibeg + nintx - 1
         do i = ibeg, iend
             hi = walldx(i)
             him1 = walldx(i-1)
-            a(i) = 1.0d0 + s / (hi*him1)
+            a(i) = 1.0_eb + s / (hi*him1)
             b(i) = -s / (him1*(hi+him1))
             c(i) = -s / (hi*(hi+him1))
         end do
@@ -233,30 +246,30 @@
         b(ibreak) = wspec(islab-1) * wrho(islab-1) / walldx(ibreak-1)
         c(ibreak) = wspec(islab) * wrho(islab) / walldx(ibreak)
         a(ibreak) = -(b(ibreak)+c(ibreak))
-        tnew(ibreak) = 0.0d0
+        tnew(ibreak) = 0.0_eb
     end do
 
     ! setup last row, note: last row depends on form of boundary condition
     if (iwbound==1) then
 
         ! constant temperature boundary condition (if we ever solve for both interior and exterior wall temperatures then use change tnew(nx) = tamb to tnew(nx) = tempout)
-        a(nx) = 1.0d0
-        b(nx) = 0.0d0
-        c(nx) = 0.0d0
+        a(nx) = 1.0_eb
+        b(nx) = 0.0_eb
+        c(nx) = 0.0_eb
         tnew(nx) = tempout
     else if (iwbound==2) then
 
         ! insulated boundary condition
-        a(nx) = 1.0d0
-        b(nx) = -1.0d0
-        c(nx) = 0.0d0
-        tnew(nx) = 0.0d0
+        a(nx) = 1.0_eb
+        b(nx) = -1.0_eb
+        c(nx) = 0.0_eb
+        tnew(nx) = 0.0_eb
     else if (iwbound==3.or.iwbound==4) then
 
         ! flux boundary condition (using lagged temperatures
-        a(nx) = 1.0d0
-        b(nx) = -1.0d0
-        c(nx) = 0.0d0
+        a(nx) = 1.0_eb
+        b(nx) = -1.0_eb
+        c(nx) = 0.0_eb
         tnew(nx) = walldx(nx-1) * wfluxout / wk(nslab)
     endif
 
@@ -270,9 +283,9 @@
     end do
     a(nx) = a(nx) - b(nx) * c(nx-1)
     do i = 1, nx
-        tderiv(i) = 0.0d0
+        tderiv(i) = 0.0_eb
     end do
-    tderiv(1) = 1.0d0
+    tderiv(1) = 1.0_eb
 
     ! now construct guess at new temperature profile
 
@@ -313,6 +326,8 @@
     tderv = tderiv(2)
     return
     end subroutine cnduct
+
+! --------------------------- rev_conduction -------------------------------------------
 
     integer function rev_conduction ()
 

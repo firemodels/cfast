@@ -828,7 +828,6 @@ email_build_status()
    echo "Stop Time: $stop_time " >> $TIME_LOG
    echo "-------------------------------" > $TIME_LOG
    echo "Nightly Manuals (public): https://drive.google.com/folderview?id=0B_wB1pJL2bFQSkhyNDJ0bEw0cVE#list" >> $TIME_LOG
-   echo "-------------------------------" >> $TIME_LOG
    if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
      cat $SVN_SMVLOG >> $TIME_LOG
    fi
@@ -838,7 +837,6 @@ email_build_status()
    if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
      cat $SVN_CFASTDOCSLOG >> $TIME_LOG
    fi
-   echo "-------------------------------" >> $TIME_LOG
    cd $CFASTBOT_DIR
    # Check for warnings and errors
    if [[ -e $WARNING_LOG && -e $ERROR_LOG ]]

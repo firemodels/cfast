@@ -60,7 +60,7 @@ export JOBPREFIX=CB_
 # This is a notification only and does not terminate cfastbot.
 # This check runs during Stages 3 and 5.
 
-# Start firebot timer
+# Start cfastbot timer
 START_TIME=$(date +%s)
 
 # Set time limit (43,200 seconds = 12 hours)
@@ -171,7 +171,7 @@ set_files_world_readable()
    chmod -R go+r *
 }
 
-clean_firebot_history()
+clean_cfastbot_history()
 {
    
    # Clean cfastbot metafiles
@@ -765,7 +765,7 @@ make_cfast_tech_guide()
 {
    # Build CFAST tech Guide
    cd $CFAST_SVNROOT/Docs/Tech_Ref
-   ./make_guide.sh
+   ./make_guide.sh &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
    check_guide $CFASTBOT_DIR/output/stage8_cfast_tech_guide $CFAST_SVNROOT/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
@@ -775,7 +775,7 @@ make_cfast_vv_guide()
 {
    # Build CFAST tech Guide
    cd $CFAST_SVNROOT/Docs/Validation_Guide
-   ./make_guide.sh
+   ./make_guide.sh &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
    check_guide $CFASTBOT_DIR/output/stage8_cfast_vv_guide $CFAST_SVNROOT/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
@@ -828,16 +828,16 @@ email_build_status()
    echo "Stop Time: $stop_time " >> $TIME_LOG
    echo "-------------------------------" > $TIME_LOG
    echo "Nightly Manuals (public): https://drive.google.com/folderview?id=0B_wB1pJL2bFQSkhyNDJ0bEw0cVE#list" >> $TIME_LOG
-  echo "-------------------------------" >> $TIME_LOG
-  if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
-    cat $SVN_SMVLOG >> $TIME_LOG
-  fi
-  if [[ $THIS_CFASTSOURCESVN != $LAST_CFASTSOUCESVN ]] ; then
-    cat $SVN_CFASTSOURCELOG >> $TIME_LOG
-  fi
-  if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
-    cat $SVN_CFASTDOCSLOG >> $TIME_LOG
-  fi
+   echo "-------------------------------" >> $TIME_LOG
+   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
+     cat $SVN_SMVLOG >> $TIME_LOG
+   fi
+   if [[ $THIS_CFASTSOURCESVN != $LAST_CFASTSOUCESVN ]] ; then
+     cat $SVN_CFASTSOURCELOG >> $TIME_LOG
+   fi
+   if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
+     cat $SVN_CFASTDOCSLOG >> $TIME_LOG
+   fi
    echo "-------------------------------" >> $TIME_LOG
    cd $CFASTBOT_DIR
    # Check for warnings and errors
@@ -882,7 +882,7 @@ fi
 
 hostname=`hostname`
 start_time=`date`
-clean_firebot_history
+clean_cfastbot_history
 
 ### Stage 0 ###
 update_and_compile_cfast

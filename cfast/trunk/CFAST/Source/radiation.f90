@@ -31,7 +31,7 @@
 
     ! work and dummy arrays passed to rad2 and rad4
     
-    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), dummy(4), flxrad0(nr,nwal), flwrad0(nr,2)
+    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), flxrad0(nr,nwal), flwrad0(nr,2)
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire), fheight
     logical roomflg(nr)
     save flxrad0, flwrad0
@@ -144,7 +144,7 @@
                 if(prnslab)then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad2(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
             endif
@@ -192,7 +192,7 @@
 
 ! --------------------------- rad2 -------------------------------------------
 
-    subroutine rad2(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
+    subroutine rad2(twall,tlay,emis,absorb,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
 
     !     routine: rad2
     !     purpose: This routine computes the radiative heat flux to 
@@ -222,7 +222,7 @@
     use precision_parameters
     implicit none
 
-    integer, intent(in) :: iroom, nfire, mxfire
+    integer, intent(in) :: nfire, mxfire
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay,qfire(*),xfire(*), yfire(*), zfire(*)
 
     integer, intent(out) :: ierror
@@ -424,7 +424,7 @@
     implicit none
 
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
-    real(eb), intent(in) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+    real(eb), intent(out) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
     
     integer, intent(out) :: ierror
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)

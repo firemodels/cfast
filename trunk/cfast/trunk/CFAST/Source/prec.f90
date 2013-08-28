@@ -15,23 +15,19 @@ integer, parameter :: eb = selected_real_kind(12)
 
 ! often used numbers
 
-real(eb) :: pi, sigma, twothirds, third, fourpi, pio2, pio4, grav_con, gsqrt, cos45
+real(eb), parameter :: pi=4._eb*atan(1.0_eb)
+real(eb), parameter :: fourpi=4._eb*pi
+real(eb), parameter :: pio2 = pi/2.0_eb
+real(eb), parameter :: pio4 = pi/4.0_eb
 
-contains
+real(eb), parameter :: sigma=5.67e-8_eb
 
-subroutine set_often_used
+real(eb), parameter :: third=1.0_eb/3.0_eb
+real(eb), parameter :: twothirds = 2.0_eb/3.0_eb
 
-pi=4._eb*atan(1.0_eb)
-sigma = 5.67e-8_eb
-third = 1.0_eb/3.0_eb
-twothirds = 2.0_eb/3.0_eb
-fourpi = 4.0_eb*pi
-pio2 = pi/2.0_eb
-pio4 = pi/4.0_eb
-grav_con=9.80665_eb
-gsqrt=sqrt(grav_con)
-cos45 = sqrt(2.0_eb)/2.0_eb
+real(eb), parameter :: grav_con=9.80665_eb
+real(eb), parameter :: gsqrt=sqrt(grav_con)
 
-end subroutine set_often_used
+real(eb), parameter :: cos45 = sqrt(2.0_eb)/2.0_eb
 
 end module precision_parameters

@@ -40,8 +40,6 @@
     integer errorcode, rev_cfast, irev, i
     real(8) :: xdelt, tstop, tbeg, tend
 
-    call set_often_used
-
     version = 6300          ! Current CFAST version number
     crdate = (/2013,6,12/)  ! Current CFAST executable creation date
 

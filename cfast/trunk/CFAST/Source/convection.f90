@@ -24,30 +24,30 @@
 
     tdel = 5.0_eb
 
-    qdinl = 0.0_eb
-    tf = (tw+tg) * 0.5_eb
+    qdinl = 0.0d0
+    tf = (tw+tg) * 0.5d0
 
     ! to keep k positive, make sure tf is below 3000.  of course the calculation will have long since lost any semblance to reality.
-    t3000 = 3000.0_eb
+    t3000 = 3000.0d0
     tff = min(tf,t3000)
-    if (tf<=0.0_eb) return
-    alpha = 1.e-9_eb * tf ** (1.75_eb)
-    k = (0.0209_eb+2.33e-5_eb*tff) / (1._eb-2.67e-4_eb*tff)
-    pr = 0.72_eb
+    if (tf<=0.0d0) return
+    alpha = 1.d-9 * tf ** (1.75d0)
+    k = (0.0209d0+2.33d-5*tff) / (1.d0-2.67d-4*tff)
+    pr = 0.72d0
 
     ! ceilings and floors
     ! use the hyperbolic tangent to smooth the coefficient c from cup to cdown over a temperature range of tdel degress. 
     ! note: tanh(x>>0)=1 and tanh(x<<0)=-1
-    cup = 0.16_eb
-    cdown = 0.13_eb
+    cup = 0.16d0
+    cdown = 0.13d0
     if (iw==1) then
-        c = (cup+cdown+(cup-cdown)*tanh((tg-tw)/tdel)) * 0.5_eb
+        c = (cup+cdown+(cup-cdown)*tanh((tg-tw)/tdel)) * 0.5d0
     else if (iw==2) then
-        c = (cup+cdown-(cup-cdown)*tanh((tg-tw)/tdel)) * 0.5_eb
+        c = (cup+cdown-(cup-cdown)*tanh((tg-tw)/tdel)) * 0.5d0
 
         ! vertical surfaces
     else
-        c = 0.121_eb
+        c = 0.121d0
     endif
 
     ! prevent the vertical tangent in the calculation of nuoverl by keeping abstwtg from going to zero.  

@@ -1,3 +1,6 @@
+
+! --------------------------- convec -------------------------------------------
+
     subroutine convec (iw,tg,tw,qdinl)
 
     !     routine: convec
@@ -10,54 +13,52 @@
     !                 tw     wall surface temperature
     !                 qdinl  convective flux into wall surface iw
 
+    use precision_parameters
     implicit none
-    integer iw
-    real(8) nuoverl, k, g, tdel, x1del, xthird, xxhalf, qdinl, tf, tw, tg, t3000, tff, alpha, pr, cup, cdown, c, abstwtg
-    logical :: first = .true.
-    save first, g, x1del, xthird, tdel, xxhalf
 
-    if (first) then
-        first = .false.
-        g = 9.80d0
-        tdel = 5.0d0
-        x1del = 1.0d0 / tdel
-        xthird = 1.0d0 / 3.0d0
-        xxhalf = 0.50d0
-    endif
+    integer, intent(in) :: iw
+    real(eb), intent(in) :: tg, tw
+    real(eb), intent(out) :: qdinl
+    
+    real(eb) :: nuoverl, k, tdel, tf, t3000, tff, alpha, pr, cup, cdown, c, abstwtg
 
-    qdinl = 0.0d0
-    tf = (tw+tg) * xxhalf
+    tdel = 5.0_eb
+
+    qdinl = 0.0_eb
+    tf = (tw+tg) * 0.5_eb
 
     ! to keep k positive, make sure tf is below 3000.  of course the calculation will have long since lost any semblance to reality.
-    t3000 = 3000.0d0
+    t3000 = 3000.0_eb
     tff = min(tf,t3000)
-    if (tf<=0.0d0) return
-    alpha = 1.d-9 * tf ** (1.75d0)
-    k = (0.0209d0+2.33d-5*tff) / (1.d0-2.67d-4*tff)
-    pr = 0.72d0
+    if (tf<=0.0_eb) return
+    alpha = 1.e-9_eb * tf ** (1.75_eb)
+    k = (0.0209_eb+2.33e-5_eb*tff) / (1._eb-2.67e-4_eb*tff)
+    pr = 0.72_eb
 
     ! ceilings and floors
     ! use the hyperbolic tangent to smooth the coefficient c from cup to cdown over a temperature range of tdel degress. 
     ! note: tanh(x>>0)=1 and tanh(x<<0)=-1
-    cup = 0.16d0
-    cdown = 0.13d0
+    cup = 0.16_eb
+    cdown = 0.13_eb
     if (iw==1) then
-        c = (cup+cdown+(cup-cdown)*tanh((tg-tw)*x1del)) * xxhalf
+        c = (cup+cdown+(cup-cdown)*tanh((tg-tw)/tdel)) * 0.5_eb
     else if (iw==2) then
-        c = (cup+cdown-(cup-cdown)*tanh((tg-tw)*x1del)) * xxhalf
+        c = (cup+cdown-(cup-cdown)*tanh((tg-tw)/tdel)) * 0.5_eb
 
         ! vertical surfaces
     else
-        c = 0.121d0
+        c = 0.121_eb
     endif
 
     ! prevent the vertical tangent in the calculation of nuoverl by keeping abstwtg from going to zero.  
     abstwtg = abs(tw-tg)
     if (abstwtg<tdel) abstwtg = tdel
-    nuoverl = c * (g*abstwtg*pr/(tf*alpha**2)) ** xthird
+    nuoverl = c * (grav_con*abstwtg*pr/(tf*alpha**2)) ** third
     qdinl = nuoverl * k * (tg-tw)
     return
     end subroutine convec
+
+! --------------------------- convec -------------------------------------------
 
     subroutine cvheat (flwcv,flxcv)
 
@@ -69,6 +70,7 @@
     !     outputs:    flwcv       net enthalphy into each layer 
     !                 flxcv       net heat flux onto surface
 
+    use precision_parameters
     use cparams
     use cenviro
     use cfast_main
@@ -76,18 +78,18 @@
     use wnodes
     implicit none
 
-    real(8) :: flwcv(nr,2), flxcv(nr,nwal), flwcv0(nr,2), flxcv0(nr,nwal)
-    real(8) :: xx0
+    real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
+    real(eb) :: flwcv0(nr,2), flxcv0(nr,nwal)
+    
     integer cjetopt, i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay
     logical roomflg(nr), wallflg(4*nr)
     save flwcv0, flxcv0
 
-    xx0 = 0.0d0
     do i = 1, nm1
-        flwcv(i,upper) = xx0
-        flwcv(i,lower) = xx0
+        flwcv(i,upper) = 0.0_eb
+        flwcv(i,lower) = 0.0_eb
         do j = 1, nwal
-            flxcv(i,j) = xx0
+            flxcv(i,j) = 0.0_eb
         end do
     end do
     if (option(fconvec)/=on) return
@@ -142,7 +144,7 @@
 
             ! ceiling jet heat transfer is not active if cjetopt=2.  use normal (call convec) instead
             if (cjetopt/=2.and.cjeton(iwall).and.nrmfire/=0) then
-                flxcv(i,iwall) = xx0
+                flxcv(i,iwall) = 0.0_eb
             else
                 call convec(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
             endif
@@ -177,6 +179,8 @@
     endif      
     return
     end subroutine cvheat
+
+! --------------------------- convec -------------------------------------------
 
     subroutine ceilht(mplume,qconv,atc,tl,tu,tw,xw,yw,zc,axf,ayf,zf,zlay,rhol,rhou,cjetopt,xd,yd,zd,nd,qceil,qfclga, &
     qfwla,qfwua,td,vd,tdmax,vdmax,ddmax)
@@ -275,7 +279,7 @@
     integer cjetopt, id, nd, ntab, n
     real(8) :: awl(8), awu(8), qfwcl(4), qfwcu(4), qfwlan(8), qfwuan(8), qfwsl(4), qfwsu(4), rc(4), rs(4), xd(*), yd(*), zd(*), td(*), vd(*)
     real(8) xx0, qceil, qfclga, qfwla, qfwua, mplume, qconv, tu, one, pi, g, ct, cp, pr, gsqrt, x2d3, x1d3, two, rk1, xf, axf, ayf, yf, &
-    rfmin, zc, zf, xw, wy, tc, atc, alpha, tl, zlay, qeq, zeq, rhol, alfm1, sigma, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, rhou, &
+    rfmin, zc, zf, xw, tc, atc, alpha, tl, zlay, qeq, zeq, rhol, alfm1, sigma, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, rhou, &
     h, sqrtgh, qh, qhp, yw, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rmax, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
     rlamr, tmaxmtu, ths, thta, tcj, tdmax, tw, sumaql, sumaqu, sumal, sumau, qfclg
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
@@ -550,6 +554,8 @@
     return
     end subroutine ceilht
 
+! --------------------------- convec -------------------------------------------
+
     subroutine int2d(xc,yc,xrect,yrect,r,ans)
     !
     !--------------------------------- NIST/BFRL ---------------------------------
@@ -601,6 +607,8 @@
     return
     end subroutine int2d
 
+! --------------------------- convec -------------------------------------------
+
     subroutine intsq (s1,s2,r,ans)
 
     !     routine:     intsq
@@ -640,6 +648,8 @@
     return
     end subroutine intsq
 
+! --------------------------- convec -------------------------------------------
+
     subroutine inttri (x,y,r,ans)
 
     !--------------------------------- nist/bfrl ---------------------------------
@@ -661,7 +671,7 @@
     implicit none
     
     integer :: n, j  
-    real(8) :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, theatj, thetaj, rj, arj, theta
+    real(8) :: xx0, x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, thetaj, rj, arj, theta
 
 
     xx0 = 0.0d0
@@ -700,6 +710,8 @@
     endif
     return
     end subroutine inttri
+
+! --------------------------- convec -------------------------------------------
 
     subroutine maktabl (r,n,func)
 
@@ -740,7 +752,9 @@
     end do
     return
     end subroutine maktabl
-    
+
+! --------------------------- convec -------------------------------------------
+
     subroutine inttabl (r,ans)
 
     !     Routine:     INTTABL
@@ -774,6 +788,8 @@
     return
     end subroutine inttabl
 
+! --------------------------- convec -------------------------------------------
+
     real(8) function qfclg (r)
 
     !     Description: This function computes the convective heat transfer 
@@ -805,7 +821,9 @@
     qfclg = htcl * (tad-tc)
     return
     end function qfclg
-    
+
+! --------------------------- convec -------------------------------------------
+
     subroutine sqfwst(rdh,h,c4,tht,htct,thtqhp,tw,qfwlow,qfwup,zc,zlay)
     !
     !     routine: sqfwst
@@ -856,6 +874,8 @@
     return
     end subroutine sqfwst
 
+! --------------------------- convec -------------------------------------------
+
     subroutine cjet (flwcjt,flxcjt)
 
     !     routine:     cjet
@@ -875,7 +895,7 @@
 
     implicit none
 
-    real(8) :: flwcjt(nr,2), flxcjt(nr,nwal), dummy(100), xx0, zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
+    real(8) :: flwcjt(nr,2), flxcjt(nr,nwal), xx0, zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
     integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
 
     xx0 = 0.0d0
@@ -949,6 +969,8 @@
     end do
     return
     end subroutine cjet
+
+! --------------------------- convec -------------------------------------------
 
     integer function rev_convection ()
 

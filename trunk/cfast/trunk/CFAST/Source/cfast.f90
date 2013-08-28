@@ -1,3 +1,6 @@
+
+! --------------------------- cfast -------------------------------------------
+
     program cfast
 
     !     Routine: cfast (main program)
@@ -38,7 +41,7 @@
     implicit none
 
     integer errorcode, rev_cfast, irev, i
-    real(8) :: xdelt, tstop, tbeg, tend
+    real(eb) :: xdelt, tstop, tbeg, tend
 
     version = 6300          ! Current CFAST version number
     crdate = (/2013,6,12/)  ! Current CFAST executable creation date
@@ -131,6 +134,8 @@
 5003 format ('Total execution time = ',1pg10.3,' seconds')
     end program cfast
 
+! --------------------------- initsoln -------------------------------------------
+
     subroutine initsoln(t,pdold,pdzero,rpar,ipar)
 
     !     Routine: initsoln
@@ -142,6 +147,7 @@
     !              temperatures are also determined to force mass and energy
     !              conservation.
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use opt
@@ -151,15 +157,17 @@
     implicit none
 
     external gres, gres2, gres3, gjac
-    integer ipar(*)
-    real(8) :: pdold(*), pdzero(*), rpar(*)
+    
+    integer, intent(in) :: ipar(*)
+    real(eb), intent(in) :: t,pdzero(*), rpar(*)
+    real(eb), intent(out) :: pdold(*)
 
     integer, parameter :: mxalg = 4*nr+mnode+mbr
-    real(8) deltamv(mxalg), hhvp(mxalg)
+    real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
-    real(8) :: work(lrw)
+    real(eb) :: work(lrw)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nalg2, nprint, i, ioff0,  info, ii, ieq1, ieq2, nodes
-    real(8) :: t, xx0 = 0.0d0, tol
+    real(eb) :: tol
 
 1   continue
 
@@ -268,17 +276,18 @@
     nodes = nofprd+1
     call resync(p,nodes)
     do i = 1, nhvpvar
-        pdold(i+nofpmv) = xx0
+        pdold(i+nofpmv) = 0.0_eb
     end do
     do i = 1, nhvtvar
-        pdold(i+noftmv) = xx0
+        pdold(i+noftmv) = 0.0_eb
     end do
     do i = 1, nwalls
-        pdold(i+nofwt) = xx0
+        pdold(i+nofwt) = 0.0_eb
     end do
     return
     end
 
+! --------------------------- solve -------------------------------------------
 
     subroutine solve(tstop,ierror)
 
@@ -322,6 +331,7 @@
     !     is presently used by DASSL. The important point is that NODES is set to
     !     NOFPRD which is the equivalent to NOFWT+NWALLS
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cfin
@@ -339,32 +349,32 @@
     use vents
     use wnodes
     implicit none
+    
+    integer, intent(out) :: ierror
+    real(eb), intent(in) :: tstop
 
     integer, parameter :: maxord = 5
     integer, parameter :: lrw = 40+(maxord+4)*maxeq+maxeq**2
     integer, parameter :: liw = 20+maxeq
     integer, parameter :: all = 1, some = 0
 
-    real(8) :: rwork(lrw), rpar(1)
+    real(eb) :: rwork(lrw), rpar(1)
     integer :: iwork(liw), info(15), ipar(3), info2(15)
     integer :: izp0(0:maxteq), izpmxmn(0:maxteq,2)
-    real(8) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
-    real(8) :: pdzero(maxteq) = 0.0d0
+    real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
+    real(eb) :: pdzero(maxteq) = 0.0d0
     logical :: iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
-    integer :: ios, ierror, idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
+    integer :: ios, idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
     integer(2) :: filecount, delfilesqq
-    real(8) :: ton, toff, xx0, xx1, x0001, tpaws, tstop, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
+    real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
         tplot, tspread, tout,  ostptime, tdtect, tobj, jac
     character(133) :: messg
     external resid, jac, delfilesqq
     integer :: funit
 
     call cptime(toff)
-    xx0 = 0.0d0
-    xx1 = 1.0d0
-    x0001 = 0.0001d0
     ierror = 0
-    tpaws = tstop + xx1
+    tpaws = tstop + 1.0_eb
     tstart = itmstp - 1
     told = tstart
     dt = tstop - tstart
@@ -384,30 +394,30 @@
     firstpassforsmokeview = .true.
 
     ! Output options
-    if (dprint<x0001.or.lprint==0) then
+    if (dprint<0.0001_eb.or.lprint==0) then
         iprint = .false.
-        tprint = tstop + xx1
+        tprint = tstop + 1.0_eb
     else
         iprint = .true.
     endif
 
-    if (dplot<x0001.or.ldiagp<=0) then
+    if (dplot<0.0001_eb.or.ldiagp<=0) then
         iplot = .false.
-        tplot = tstop + xx1
+        tplot = tstop + 1.0_eb
     else
         iplot = .true.
     endif
 
-    if (ddump<x0001.or.ldiago<=0) then
+    if (ddump<0.0001_eb.or.ldiago<=0) then
         idump = .false.
-        tdump = tstop + xx1
+        tdump = tstop + 1.0_eb
     else
         idump = .true.
     endif
 
-    if (dspread<x0001.or.lcopyss<=0) then
+    if (dspread<0.0001_eb.or.lcopyss<=0) then
         ispread = .false.
-        tspread = tstop + xx1
+        tspread = tstop + 1.0_eb
     else
         ispread = .true.
     endif
@@ -449,9 +459,9 @@
         vrtol(i+noftt) = rwtol
     end do
 
-    ovtime = xx0
-    tottime = xx0
-    prttime = xx0
+    ovtime = 0.0_eb
+    tottime = 0.0_eb
+    prttime = 0.0_eb
 
     ! See note in comments about the nodes=nofprd line below
     nodes = nofprd
@@ -491,7 +501,7 @@
     ! at the moment we do only the total and the radiological species
     ! make sure that the INTEGRATE routine is called before TOXIC
     call integrate_mass (t, dt)
-    call toxic(xx0)
+    call toxic(0.0_eb)
 
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
@@ -572,7 +582,7 @@
     if (idid>0) then
         ltarg = .false.
 
-        if (t+x0001>min(tprint,tstop).and.iprint) then
+        if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
 
             ! update target temperatures (only need to update just before we print target temperatures).
             ! if we actually use target temperatures in a calculation then this call will need to be moved to inside resid.
@@ -590,10 +600,10 @@
             numjac = 0
             numstep = 0
             numresd = 0
-            prttime = xx0
+            prttime = 0.0_eb
         endif
 
-        if (t+x0001>min(tplot,tstop).and.iplot) then
+        if (t+0.0001_eb>min(tplot,tstop).and.iplot) then
             itmstp = tplot
             if(.not.ltarg)then
                 call target(steady)
@@ -616,7 +626,7 @@
             call statusoutput (t, dt, errorcode)
         endif
 
-        if (t+x0001>min(tspread,tstop).and.ispread) then
+        if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
             itmstp = tspread
             if(.not.ltarg)then
                 call target(steady)
@@ -632,7 +642,7 @@
         endif
 
         ! diagnostics
-        if (t+x0001>tpaws) then
+        if (t+0.0001_eb>tpaws) then
             itmstp = tpaws
             call result(t,1)
             call debugpr(1,t,dt,ieqmax)
@@ -746,7 +756,7 @@
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
             call updobj(mdset,told,dt,ifobj,tobj,ierror)
-            write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,xx0) ! this prevents printing out a negative activation time
+            write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb) ! this prevents printing out a negative activation time
 5003        format(/,' Object #',i3,' (',a,') ignited at ', f10.3,' seconds')
             ! check to see if we are backing up objects igniting
             if (option(fbtobj)==on) then
@@ -836,25 +846,32 @@
 
     end
 
+! --------------------------- updrest -------------------------------------------
+
     subroutine updrest(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold, pdzero)
 
     !     routine: updrest
     !     purpose: update solution returned by dassl
 
+    use precision_parameters
     use fltarget
     implicit none
 
-    real(8) :: p(*), pold(*), pdnew(*), pdold(*), pdzero(*)
-    integer i, nodes, nequals, nlspct
-    real(8) :: dt, t, told, xx0 = 0.0d0
+    integer, intent(in) :: nodes, nequals, nlspct
+    real(eb), intent(in) :: pdnew(*), pdzero(*)
+    real(eb), intent(in) :: t, told
+    
+    real(eb), intent(out) :: p(*), pold(*), pdold(*)
+    
+    integer :: i
+    real(eb) :: dt 
 
     dt = t - told
-    xx0 = 0.d0
 
     ! advance species
     do i = nodes + 1, nequals
         p(i) = p(i) + dt*pdold(i)
-        p(i) = max (xx0, p(i))
+        p(i) = max (0.0_eb, p(i))
         pdold(i) = pdnew(i)
     end do
 
@@ -870,21 +887,29 @@
     return
     end subroutine updrest
 
+! --------------------------- ntract -------------------------------------------
+
     subroutine ntract(t,icode,tpaws,tout,ieqmax)
 
     !     routine: ntract
     !     purpose: keyboard routine for user interaction during simulation
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use dervs
     use opt
     implicit none
 
+    integer, intent(in) :: ieqmax
+    real(eb), intent(in) :: t
+    
+    integer, intent(out) :: icode
+    real(eb), intent(out) :: tpaws, tout
+
     logical :: slvhelp
     integer(2) :: ch, hit
-    integer :: icode, ieqmax
-    real(8) :: t, rcode, tpaws, tout
+    real(eb) :: rcode
 
     icode = 0
     call grabky(ch,hit)
@@ -936,6 +961,8 @@
 5010 format (' time = ',1pg12.4,', dt = ',1pg12.4)
     end subroutine ntract
 
+! --------------------------- slvhelp -------------------------------------------
+
     logical function slvhelp()
 
     !     Routine: slvhelp
@@ -948,7 +975,7 @@
     implicit none
 
     integer(2) :: ch, hit
-    integer ii
+    integer :: ii
 
     write (iofilo,*) '***Options Set***'
     write (iofilo,'(1x,20i3)') (option(ii),ii = 1,mxopt)
@@ -970,33 +997,35 @@
     return
     end
 
+! --------------------------- setinfo -------------------------------------------
+
     subroutine setinfo(info,rwork)
 
     !     routine: setinfo
     !     purpose: update solution flags for dassl solver
 
+    use precision_parameters
     use cparams
     use solver_parameters
     implicit none
 
-    integer :: info(*)
-    real(8) :: rwork(*)
+    integer, intent(out) :: info(*)
+    real(eb), intent(out) :: rwork(*)
+    
     integer :: i
-    real(8) :: xx0 = 0.0d0
 
-    xx0 = 0.0d0
     do i = 1, 11
         info(i) = 0
     end do
     info(3) = 1
     info(2) = 1
-    if (stpmax<=xx0) then
+    if (stpmax<=0.0_eb) then
         info(7) = 0
     else
         info(7) = 1
         rwork(2) = stpmax
     endif
-    if (dasslfts<xx0) then
+    if (dasslfts<0.0_eb) then
         info(8) = 0
     else
         info(8) = 1
@@ -1008,6 +1037,8 @@
     info(11) = 1
     return
     end
+
+! --------------------------- resid -------------------------------------------
 
     subroutine resid (tsec,x,xpsolve,delta,ires,rpar,ipar)
 
@@ -1048,6 +1079,7 @@
     !                        a partial / total flag for solution of the
     !                        species equations.
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use dervs
@@ -1058,43 +1090,47 @@
     use debug
     implicit none
 
+    real(eb), intent(in) :: tsec, x(*), xpsolve(*), rpar(*) 
+    integer, intent(in) :: ipar(*)
+
+    integer, intent(out) :: ires
+    real(eb), intent(out) :: delta(*)
+    
     integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
 
     ! data structures for dassl, the numerical solver
-    integer :: ipar(*)
-    real(8) :: rpar(*), x(*), xpsolve(*), xprime(maxteq), delta(*)
+    real(eb) :: xprime(maxteq)
 
     ! data structure for total flows and fluxes
-    real(8) :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+    real(eb) :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
 
     ! data structures for flow through vents
-    real(8) :: flwnvnt(nr,mxprd+2,2)
-    real(8) :: flwhvnt(nr,ns+2,2)
+    real(eb) :: flwnvnt(nr,mxprd+2,2)
+    real(eb) :: flwhvnt(nr,ns+2,2)
 
     ! data structures for fires
-    real(8) :: flwf(nr,ns+2,2)
+    real(eb) :: flwf(nr,ns+2,2)
 
     ! data structures for convection, radiation, and ceiling jets
-    real(8) :: flwcv(nr,2), flxcv(nr,nwal)
-    real(8) :: flwrad(nr,2), flxrad(nr,nwal)
-    real(8) :: flwcjet(nr,2), flxcjet(nr,nwal)
+    real(eb) :: flwcv(nr,2), flxcv(nr,nwal)
+    real(eb) :: flwrad(nr,2), flxrad(nr,nwal)
+    real(eb) :: flwcjet(nr,2), flxcjet(nr,nwal)
 
     ! data structures for mechanical vents
-    real(8) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+    real(eb) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
 
     ! data structures for hcl deposition
-    real(8) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
+    real(eb) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
     ! data structures for door jet fires
-    real(8) :: flwdjf(nr,ns+2,2)
+    real(eb) :: flwdjf(nr,ns+2,2)
     integer :: update, errorcode
 
     logical :: vflowflg, hvacflg, djetflg
-    integer :: ii, nprod, nirm, i, ires, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
-    real(8) :: xx0 = 0.0d0, tsec, epsp, xqu, xql, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
+    integer :: ii, nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
+    real(eb) :: epsp, xqu, xql, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
     ierror = 0
-    xx0 = 0.0d0
     nprod = nlspct
     dt = tsec - told
     numresd = numresd + 1
@@ -1126,7 +1162,7 @@
     epsp = rpar(1)
 
     do i = 1, n
-        qf(i) = xx0
+        qf(i) = 0.0_eb
     end do
 
     ! calculate flow due to unforced vents (hflow for horizontal flow
@@ -1227,7 +1263,7 @@
         if(izshaft(iroom)==1)then
             do iprod = 1, nprod + 2
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwtot(iroom,iprod,ll)
-                flwtot(iroom,iprod,ll) = xx0
+                flwtot(iroom,iprod,ll) = 0.0_eb
             end do
         endif
 
@@ -1296,7 +1332,7 @@
         if (option(fode)==on) then
             vlayd = vlayd - zzvol(iroom,uu) * pdot / (gamma*pabs)
         endif
-        if(izshaft(iroom)==1)vlayd = xx0
+        if(izshaft(iroom)==1)vlayd = 0.0_eb
 
         ! lower layer temperature equation
         tlaydl = (ql-cp*tml*zztemp(iroom,ll)) / (cp*zzmass(iroom,ll))
@@ -1332,17 +1368,17 @@
 
                 if (hinter<hceil) then
                     xprime(iprodu) = produ
-                else if(hinter>=hceil.and.flwtot(iroom,m,uu)<xx0)  then
+                else if(hinter>=hceil.and.flwtot(iroom,m,uu)<0.0_eb)  then
                     xprime(iprodu) = produ
                 else
-                    xprime(iprodu) = xx0
+                    xprime(iprodu) = 0.0_eb
                 endif
-                if (hinter>xx0) then
+                if (hinter>0.0_eb) then
                     xprime(iprodl) = prodl
-                else if (hinter<=xx0.and.flwtot(iroom,m,ll)>xx0) then
+                else if (hinter<=0.0_eb.and.flwtot(iroom,m,ll)>0.0_eb) then
                     xprime(iprodl) = prodl
                 else
-                    xprime(iprodl) = xx0
+                    xprime(iprodl) = 0.0_eb
                 endif
             end do
         end do
@@ -1361,7 +1397,7 @@
         ! smoke deposition and agglomeration.
         ! note that these are done only if smkagl is set
         do i = nofsmkw + 1, nofsmkw + 4 * nm1 * (smkagl+smkagl)
-            xprime(i) = xx0
+            xprime(i) = 0.0_eb
         end do
     endif
 
@@ -1415,6 +1451,8 @@
     return
     end
 
+! --------------------------- datacopy -------------------------------------------
+
     subroutine datacopy(pdif,iflag)
 
     !     routine: cfast (main program)
@@ -1431,6 +1469,7 @@
     !     iflag = odevarc  ==> species data and wall temperature profile.
     !                          use pdif array for species
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use dervs
@@ -1442,12 +1481,14 @@
     use wnodes
     implicit none
 
-    dimension pdif(*)
+    integer, intent(in) :: iflag
+    real(eb), intent(in) :: pdif(*)
+    
     integer frmask(mxccv)
 
-    integer :: iflag, iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
+    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
-    real(8) :: wtemp, xx0, xx1, xx2, vminfrac, xx, yy, yy2, zz, pdif, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
+    real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
 
     if(nfurn>0)then
@@ -1455,13 +1496,11 @@
         qfurnout=5.67*(273.3+wtemp)**4/10**8
     endif
 
-    xx0 = 0.0d0
-    xx2 = 2.0d0
-    xx1 = 1.0d0
+    xwall_center = 2.0d0
     vminfrac = 1.0d-4
     if (iflag==constvar) then
         do iroom = 1, n
-            zzvmin(iroom) = min(vminfrac * vr(iroom), xx1)
+            zzvmin(iroom) = min(vminfrac * vr(iroom), 1.0_eb)
             zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
         end do
         do iroom = 1, nm1
@@ -1470,40 +1509,40 @@
 
             ! define wall centers
             xx = br(iroom)
-            xx2 = xx/2.0d0
+            xwall_center = xx/2.0d0
             yy = dr(iroom)
-            yy2 = yy/2.0d0
+            ywall_center = yy/2.0d0
             zz = hrp(iroom)
-            zzwcen(iroom,1,1) = xx2
-            zzwcen(iroom,1,2) = yy2
+            zzwcen(iroom,1,1) = xwall_center
+            zzwcen(iroom,1,2) = ywall_center
             zzwcen(iroom,1,3) = zz
 
-            zzwcen(iroom,2,1) = xx2
+            zzwcen(iroom,2,1) = xwall_center
             zzwcen(iroom,2,2) = yy
 
             zzwcen(iroom,3,1) = xx
-            zzwcen(iroom,3,2) = yy2
+            zzwcen(iroom,3,2) = ywall_center
 
-            zzwcen(iroom,4,1) = xx2
+            zzwcen(iroom,4,1) = xwall_center
             zzwcen(iroom,4,2) = 0.0d0
 
             zzwcen(iroom,5,1) = 0.0d0
-            zzwcen(iroom,5,2) = yy2
+            zzwcen(iroom,5,2) = ywall_center
 
-            zzwcen(iroom,6,1) = xx2
+            zzwcen(iroom,6,1) = xwall_center
             zzwcen(iroom,6,2) = yy
 
             zzwcen(iroom,7,1) = xx
-            zzwcen(iroom,7,2) = yy2
+            zzwcen(iroom,7,2) = ywall_center
 
-            zzwcen(iroom,8,1) = xx2
+            zzwcen(iroom,8,1) = xwall_center
             zzwcen(iroom,8,2) = 0.0d0
 
             zzwcen(iroom,9,1) = 0.0d0
-            zzwcen(iroom,9,2) = yy2
+            zzwcen(iroom,9,2) = ywall_center
 
-            zzwcen(iroom,10,1) = xx2
-            zzwcen(iroom,10,2) = yy2
+            zzwcen(iroom,10,1) = xwall_center
+            zzwcen(iroom,10,2) = ywall_center
             zzwcen(iroom,10,3) = 0.0d0
         end do
 
@@ -1513,15 +1552,15 @@
         zzvol(n,lower) = 100000.0d0
         zzhlay(n,upper) = 0.0d0
         zzhlay(n,lower) = 100000.0d0
-        zzrelp(n) = xx0
+        zzrelp(n) = 0.0_eb
         zzpabs(n) = pofset
         zztemp(n,upper) = 300.0d0
         zztemp(n,lower) = 300.0d0
         do lsp = 3, ns
-            zzcspec(n,upper,lsp) = xx0
-            zzcspec(n,lower,lsp) = xx0
-            zzgspec(n,lower,lsp) = xx0
-            zzgspec(n,upper,lsp) = xx0
+            zzcspec(n,upper,lsp) = 0.0_eb
+            zzcspec(n,lower,lsp) = 0.0_eb
+            zzgspec(n,lower,lsp) = 0.0_eb
+            zzgspec(n,upper,lsp) = 0.0_eb
         end do
         zzcspec(n,upper,1) = 0.770d0
         zzcspec(n,lower,1) = 0.770d0
@@ -1572,12 +1611,12 @@
 
                             ! compute pressure rise due to wind.  this value is only defined for outside rooms
                             wcos = windc(iijk)
-                            if(j==n.and.wcos/=xx0)then
+                            if(j==n.and.wcos/=0.0_eb)then
 
                                 ! compute wind velocity and pressure rise at the average vent height
                                 havg = (zzvent(nvents,1) + zzvent(nvents,2))/2.0d0 
                                 havg = havg + zzyflor(i) 
-                                if(windrf/=xx0)then
+                                if(windrf/=0.0_eb)then
                                     windvnew = windv * (havg/windrf)**windpw
                                 else
                                     windvnew = windv
@@ -1585,7 +1624,7 @@
                                 winddp = wcos * exra * windvnew**2/2.0d0
                                 zzvent(nvents,6) = winddp
                             else
-                                zzvent(nvents,6) = xx0
+                                zzvent(nvents,6) = 0.0_eb
                             endif
 
                         endif
@@ -1760,9 +1799,9 @@
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
             volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom)) / vr(iroom)*(1.0d0-2.0d0*vminfrac)
-            volfru(iroom) = max(min(volfru(iroom),xx1),xx0)
+            volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
             volfrl(iroom) = 1.0d0 - volfru(iroom)
-            volfrl(iroom) = max(min(volfrl(iroom),xx1),xx0)
+            volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
 
             ! calculate layer height for non-rectangular rooms
             npts = izrvol(iroom)
@@ -1814,8 +1853,8 @@
             ! compute area of 4 wall segments
             zzwarea(iroom,1) = ar(iroom)
             zzwarea(iroom,2) = ar(iroom)
-            zzwarea(iroom,3) = (yy + xx)*zzu * xx2
-            zzwarea(iroom,4) = max(xx0,(yy+xx)*zzl*xx2)
+            zzwarea(iroom,3) = (yy + xx)*zzu * xwall_center
+            zzwarea(iroom,4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)
@@ -1901,14 +1940,14 @@
                     else
                         ppgas = pdif(isof)
                     endif
-                    zzgspec(iroom,upper,lsp) = max(ppgas,xx0)
+                    zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
                     isof = isof + 1
                     if (iflag==odevarb) then
                         ppgas = pold(isof) + dt * pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
-                    zzgspec(iroom,lower,lsp) = max(ppgas,xx0)
+                    zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
                 end do
             endif
         end do
@@ -1917,8 +1956,8 @@
         ! rather than total mass (this is equivalent to what was begin done 
         ! in chemie)
         do iroom = 1, nm1
-            totl = xx0
-            totu = xx0
+            totl = 0.0_eb
+            totu = 0.0_eb
             do lsp = 1, min(9,ns)
                 if (activs(lsp)) then
                     totu = totu + zzgspec(iroom,upper,lsp)
@@ -1927,8 +1966,8 @@
             end do
             rtotl = 1.0d0
             rtotu = 1.0d0
-            if (totl>xx0) rtotl = 1.0d0 / totl
-            if (totu>xx0) rtotu = 1.0d0 / totu
+            if (totl>0.0_eb) rtotl = 1.0d0 / totl
+            if (totu>0.0_eb) rtotu = 1.0d0 / totu
             do lsp = 1, ns
                 if (activs(lsp)) then
                     zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp) * rtotu
@@ -1943,8 +1982,8 @@
             ! zzgspec and zzcspec values for oxygen.
             ! make sure oxygen never goes negative
             if(option(foxygen)==on)then
-                oxyl = max(p(iroom+nofoxyl),xx0)
-                oxyu = max(p(iroom+nofoxyu),xx0)
+                oxyl = max(p(iroom+nofoxyl),0.0_eb)
+                oxyu = max(p(iroom+nofoxyu),0.0_eb)
                 zzgspec(iroom,lower,2) = oxyl
                 zzgspec(iroom,upper,2) = oxyu
                 zzcspec(iroom,lower,2) = oxyl / zzmass(iroom,lower)
@@ -1977,16 +2016,16 @@
     if (nhvsys/=0.and.ns/=0) then
         isof = nofhvpr
         do isys = 1, nhvsys
-            zzhvm(isys) = xx0
+            zzhvm(isys) = 0.0_eb
         end do
         do lsp = 1, ns
             if (activs(lsp)) then
                 do isys = 1, nhvsys
                     isof = isof + 1
                     if (iflag==odevarb) then
-                        pphv = max(xx0,pold(isof)+dt*pdold(isof))
+                        pphv = max(0.0_eb,pold(isof)+dt*pdold(isof))
                     else
-                        pphv = max(xx0,pdif(isof))
+                        pphv = max(0.0_eb,pdif(isof))
                     endif
                     zzhvpr(isys,lsp) = pphv
                     zzhvm(isys) = zzhvm(isys) + zzhvpr(isys,lsp)
@@ -1997,6 +2036,8 @@
     return
     end
 
+! --------------------------- resync -------------------------------------------
+
     subroutine resync(pdif,ibeg)
 
     !     routine: resync
@@ -2006,18 +2047,20 @@
     !     arguments: pdif   the p array to resync
     !                ibeg   the point at which species are started in p array
 
+    use precision_parameters
     use cenviro
     use cfast_main
     implicit none
 
-    real(8) :: pdif(*), factor(nr,2)
-    integer :: i, iroom, isof, ibeg, iprod
-    real(8) :: xx0 = 0.0d0
+    integer, intent(in) :: ibeg
+    real(eb), intent(out) :: pdif(*)
+    
+    real(eb) :: factor(nr,2)
+    integer :: i, iroom, isof, iprod
 
-    xx0 = 0.0d0
     do iroom = 1,nm1
-        factor(iroom,upper) = xx0
-        factor(iroom,lower) = xx0
+        factor(iroom,upper) = 0.0_eb
+        factor(iroom,lower) = 0.0_eb
     end do
 
     isof = ibeg
@@ -2033,12 +2076,12 @@
     end do
 
     do iroom = 1, nm1
-        if (factor(iroom,upper)>xx0.and.zzmass(iroom,upper)>xx0) then
+        if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
             factor(iroom,upper) = zzmass(iroom,upper) / factor(iroom,upper)
         else
             factor(iroom,upper) = 1.0d0
         endif
-        if (factor(iroom,lower)>xx0.and.zzmass(iroom,lower)>xx0) then
+        if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
             factor(iroom,lower) = zzmass(iroom,lower) / factor(iroom,lower)
         else
             factor(iroom,lower) = 1.0d0
@@ -2059,6 +2102,8 @@
 
     return
     end
+
+! --------------------------- rev_cfast -------------------------------------------
 
     integer function rev_cfast ()
 

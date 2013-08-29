@@ -133,16 +133,6 @@ run_auto()
   cat $MESSAGE_FILE | mail -s "cfastbot run initiated" $mailTo > /dev/null
 }
 
-MKDIR ()
-{
-  DIR=$1
-  if [ ! -d $DIR ]
-  then
-    echo Creating directory $DIR
-    mkdir $DIR
-  fi
-}
-
 check_time_limit()
 {
    if [ "$TIME_LIMIT_EMAIL_NOTIFICATION" == "sent" ]
@@ -176,12 +166,8 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   cd $CFASTBOT_HOME_DIR
-   mkdir $CFASTBOT_DIR
    cd $CFASTBOT_DIR
-   mkdir history
-   mkdir output
-   rm -f output/* > /dev/null
+   rm output/* > /dev/null
 }
 
 #  =========================
@@ -376,12 +362,11 @@ wait_verification_cases_short_end()
 
 run_verification_cases_short()
 {
+   cd $CFAST_SVNROOT/Validation/scripts
 
    #  =======================
    #  = Run all cfast cases =
    #  =======================
-
-   cd $CFAST_SVNROOT/Validation/scripts
 
    # Submit CFAST verification cases and wait for them to start
    echo 'Running cfast verification cases:' >> $CFASTBOT_DIR/output/stage3 2>&1

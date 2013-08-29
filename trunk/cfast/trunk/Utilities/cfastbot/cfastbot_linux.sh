@@ -15,12 +15,14 @@ mailTo="gforney@gmail.com, cfast@nist.gov, koverholt@gmail.com"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
-while getopts 'aq:s' OPTION
+while getopts 'anq:s' OPTION
 do
 case $OPTION in
   a)
    RUNAUTO="y"
    ;;
+  n)
+   NO_SVN_UPDATE=true
   q)
    CFASTBOT_QUEUE="$OPTARG"
    ;;
@@ -39,7 +41,6 @@ CFAST_SVNROOT="$CFASTBOT_HOME_DIR/cfast"
 ERROR_LOG=$CFASTBOT_DIR/output/errors
 TIME_LOG=$CFASTBOT_DIR/output/timings
 WARNING_LOG=$CFASTBOT_DIR/output/warnings
-GUIDE_DIR=$CFASTBOT_DIR/guides
 export TEXINPUTS=".:../LaTeX_Style_Files:"
 
 THIS_CFAST_FAILED=0
@@ -173,29 +174,27 @@ set_files_world_readable()
 
 clean_cfastbot_history()
 {
-   
    # Clean cfastbot metafiles
-   MKDIR $CFASTBOT_DIR
+   cd $CFASTBOT_HOME_DIR
+   mkdir $CFASTBOT_DIR
    cd $CFASTBOT_DIR
-   MKDIR guides
-   MKDIR history
-   MKDIR output
+   mkdir history
+   mkdir output
    rm -f output/* > /dev/null
 }
 
-#  ========================
-#  ========================
-#  = cfastbot Build Stages =
-#  ========================
-#  ========================
+#  =========================
+#  =========================
+#  = CFASTbot Build Stages =
+#  =========================
+#  =========================
 
 fix_svn_properties()
 {
    # This function fixes SVN properties
    # (e.g., svn:executable, svn:keywords, svn:eol-style, and svn:mime-type)
-   # throughout the FDS-SMV repository.
+   # throughout the CFAST repository.
 
-   # cd to SVN root
    cd $CFAST_SVNROOT
 
    # Delete all svn:executable properties
@@ -208,12 +207,12 @@ fix_svn_properties()
    Utilities/Subversion/svn-fix-props.pl ./ &> /dev/null
 
    # Commit back results
-   svn commit -m 'Cfastbot: Fix SVN properties throughout repository' &> /dev/null
+   svn commit -m 'CFASTbot: Fix SVN properties throughout repository' &> /dev/null
 }
 
-#  ===================================
-#  = Stage 0 - External dependencies =
-#  ===================================
+#  ====================================
+#  = Stage 0 - SVN operations (CFAST) =
+#  ====================================
 
 update_and_compile_cfast()
 {
@@ -223,28 +222,31 @@ update_and_compile_cfast()
    if [ -e "$CFAST_SVNROOT" ]
    # If yes, then update the CFAST repository and compile CFAST
    then
+      if [[ $NO_SVN_UPDATE ]] ; then
+         echo "Skipping SVN update (per user option):" > $CFASTBOT_DIR/output/stage0_cfast
+      else
       echo "Updating and compiling CFAST:" > $CFASTBOT_DIR/output/stage0_cfast
-      cd $CFAST_SVNROOT/CFAST
+      cd $CFAST_SVNROOT
+
+      # Clean unversioned and modified files
+      svn revert -Rq *
+      svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
       
       # Update to latest SVN revision
       svn update >> $CFASTBOT_DIR/output/stage0_cfast 2>&1
-      
-   # If no, then checkout the CFAST repository and compile CFAST
+      fi
+   # If repository does not exist, then checkout the CFAST repository
    else
       echo "Downloading and compiling CFAST:" > $CFASTBOT_DIR/output/stage0_cfast
-      mkdir -p $CFAST_SVNROOT
-      cd $CFAST_SVNROOT
-
-      svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk/CFAST CFAST >> $CFASTBOT_DIR/output/stage0_cfast 2>&1
-      
+      cd $CFASTBOT_HOME_DIR
+      svn co https://cfast.googlecode.com/svn/trunk/cfast/trunk/ cfast >> $CFASTBOT_DIR/output/stage0_cfast 2>&1
    fi
 
-    # Build debug CFAST
-
-    cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
-    rm -f cfast6_linux_64_db
-    make --makefile ../makefile clean &> /dev/null
-    ./make_cfast.sh >> $CFASTBOT_DIR/output/stage0_cfast 2>&1
+   # Build debug CFAST
+   cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
+   rm -f cfast6_linux_64_db
+   make --makefile ../makefile clean &> /dev/null
+   ./make_cfast.sh >> $CFASTBOT_DIR/output/stage0_cfast 2>&1
 
    # Check for errors in CFAST debug compilation
    cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
@@ -261,6 +263,7 @@ update_and_compile_cfast()
     ./make_cfast.sh >> $CFASTBOT_DIR/output/stage0_cfast 2>&1
 
    # Check for errors in CFAST release compilation
+
    cd $CFAST_SVNROOT/CFAST/intel_linux_64
    if [[ -e "cfast6_linux_64" && stage0_success==true ]]
    then
@@ -271,13 +274,11 @@ update_and_compile_cfast()
       cat $CFASTBOT_DIR/output/stage0_cfast >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
-
-
 }
 
-#  ============================
-#  = Stage 1 - SVN operations =
-#  ============================
+#  ==================================
+#  = Stage 1 - SVN operations (FDS) =
+#  ==================================
 
 clean_svn_repo()
 {
@@ -344,6 +345,10 @@ check_svn_checkout()
    fi
 }
 
+#  =================================================
+#  = Stage 3 - Run verification cases (debug mode) =
+#  =================================================
+
 wait_verification_cases_short_start()
 {
    # Scans qstat and waits for verification cases to start
@@ -371,9 +376,9 @@ wait_verification_cases_short_end()
 run_verification_cases_short()
 {
 
-   #  =====================
+   #  =======================
    #  = Run all cfast cases =
-   #  =====================
+   #  =======================
 
    cd $CFAST_SVNROOT/Validation/scripts
 
@@ -384,10 +389,6 @@ run_verification_cases_short()
 
    # Wait some additional time for all cases to start
    sleep 30
-
-   # Stop all cases
-   ./Run_CFAST_Cases.sh -d -s >> $CFASTBOT_DIR/output/stage3 2>&1
-   echo "" >> $CFASTBOT_DIR/output/stage3 2>&1
 
    # Wait for SMV verification cases to end
    wait_verification_cases_short_end
@@ -815,7 +816,7 @@ email_build_status()
    echo "Host: $hostname " >> $TIME_LOG
    echo "Start Time: $start_time " >> $TIME_LOG
    echo "Stop Time: $stop_time " >> $TIME_LOG
-   echo "-------------------------------" > $TIME_LOG
+   echo "-------------------------------" >> $TIME_LOG
    echo "Nightly Manuals (public): https://drive.google.com/folderview?id=0B_wB1pJL2bFQSkhyNDJ0bEw0cVE#list" >> $TIME_LOG
    if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
      cat $SVN_SMVLOG >> $TIME_LOG
@@ -878,9 +879,9 @@ update_and_compile_cfast
 clean_svn_repo
 do_svn_checkout
 check_svn_checkout
-#if [[ ! $SKIP_SVN_PROPS ]] ; then
-   #fix_svn_properties
-#fi
+if [[ ! $SKIP_SVN_PROPS ]] ; then
+   fix_svn_properties
+fi
 
 ### Stage 3 ###
 if [[ $stage0_success ]] ; then
@@ -895,12 +896,10 @@ if [[ $stage0_success ]] ; then
 fi
 
 ### Stage 6a ###
-# No stage dependencies
 compile_smv_utilities
 check_smv_utilities
 
 ### Stage 6b ###
-# No stage dependencies
 compile_smv_db
 check_compile_smv_db
 
@@ -929,9 +928,8 @@ check_matlab_validation
 
 
 ### Stage 8 ###
-# No stage dependencies
-  make_cfast_tech_guide
-  make_cfast_vv_guide
+make_cfast_tech_guide
+make_cfast_vv_guide
 
 ### Report results ###
 set_files_world_readable

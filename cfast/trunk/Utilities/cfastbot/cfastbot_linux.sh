@@ -858,6 +858,10 @@ hostname=`hostname`
 start_time=`date`
 clean_cfastbot_history
 
+if [[ ! $SKIP_SVN_PROPS ]] ; then
+   fix_svn_properties
+fi
+
 ### Stage 0 ###
 update_and_compile_cfast
 
@@ -865,9 +869,6 @@ update_and_compile_cfast
 clean_svn_repo
 do_svn_checkout
 check_svn_checkout
-if [[ ! $SKIP_SVN_PROPS ]] ; then
-   fix_svn_properties
-fi
 
 ### Stage 3 ###
 if [[ $stage0_success ]] ; then

@@ -696,22 +696,22 @@ check_matlab_validation()
    then
       stage7b_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation > $CFASTBOT_DIR/output/stage7b_errors
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation > $CFASTBOT_DIR/output/stage7b_warnings
 
-      echo "Errors from Stage 7b - Matlab plotting (validation):" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage7b_errors >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
+      echo "Warnings from Stage 7b - Matlab plotting (validation):" >> $WARNING_LOG
+      cat $CFASTBOT_DIR/output/stage7b_warnings >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
    fi
 
    if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_verification` == "" ]]
    then
       stage7c_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_verification > $CFASTBOT_DIR/output/stage7c_errors
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_verification > $CFASTBOT_DIR/output/stage7c_warnings
 
-      echo "Errors from Stage 7c - Matlab plotting (verification):" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage7c_errors >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
+      echo "Warnings from Stage 7c - Matlab plotting (verification):" >> $WARNING_LOG
+      cat $CFASTBOT_DIR/output/stage7c_warnings >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
    fi
 }
 

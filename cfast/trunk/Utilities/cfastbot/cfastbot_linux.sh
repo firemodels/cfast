@@ -212,7 +212,7 @@ update_and_compile_cfast()
       if [[ $NO_SVN_UPDATE ]] ; then
          echo "Skipping SVN update (per user option):" > $CFASTBOT_DIR/output/stage0_cfast
       else
-      echo "Updating and compiling CFAST:" > $CFASTBOT_DIR/output/stage0_cfast
+      echo "Updating and compiling CFAST:" >> $CFASTBOT_DIR/output/stage0_cfast
       cd $CFAST_SVNROOT
 
       # Clean unversioned and modified files

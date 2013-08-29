@@ -252,9 +252,9 @@ Public Class RunModel
         ' Start the model run and then just look for the status file every so often
         found = CFastInputFile.IndexOf(" ", 0)
         If found = 0 Then
-            CommandString = Application.StartupPath + "\CFAST.exe " + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile)
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile)
         Else
-            CommandString = Application.StartupPath + "\CFAST.exe " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """"
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """"
         End If
         RunOptions.Text = "RunOptions: "
         If TotalMassCFASTOutput Then

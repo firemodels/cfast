@@ -40,7 +40,7 @@ Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
 Output_File = [pwd, '/CFAST_verification_scatterplot_outputs.csv'];
 Stats_Output = 2;
 Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_statistics.tex'];
-Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_histograms.tex'];
+% Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_histograms.tex'];
 
 % Override the plot style options with NRC 1824 plot options
 

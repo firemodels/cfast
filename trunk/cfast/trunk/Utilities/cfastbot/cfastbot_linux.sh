@@ -688,29 +688,17 @@ check_matlab_license_server()
    scan_matlab_license_test
 }
 
-#  ===========================================
-#  = Stage 7b - Matlab plotting (validation) =
-#  ===========================================
+#  ==================================================================
+#  = Stages 7b & 7c - Matlab plotting (verification and validation) =
+#  ==================================================================
 
 run_matlab_validation()
 {
    # Run Matlab plotting script
-   cd $CFAST_SVNROOT/Utilities/Matlab/scripts
-
-   # Replace LaTeX with TeX for Interpreter in plot_style.m
-   # This allows displayless automatic Matlab plotting
-   # Otherwise Matlab crashes due to a known bug
-   sed -i 's/LaTeX/TeX/g' plot_style.m
-   
    cd $CFAST_SVNROOT/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
 
-   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7c_validation
-
-   # Restore LaTeX as plot_style interpreter
-   cd $CFAST_SVNROOT/Utilities/Matlab/scripts
-   sed -i 's/TeX/LaTeX/g' plot_style.m
-   cd ..
+   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7c_verification
 }
 
 check_matlab_validation()
@@ -727,13 +715,14 @@ check_matlab_validation()
       cat $CFASTBOT_DIR/output/stage7b_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
-   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_validation` == "" ]]
+
+   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_verification` == "" ]]
    then
       stage7c_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_validation > $CFASTBOT_DIR/output/stage7c_errors
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_verification > $CFASTBOT_DIR/output/stage7c_errors
 
-      echo "Errors from Stage 7c - Matlab plotting (validation):" >> $ERROR_LOG
+      echo "Errors from Stage 7c - Matlab plotting (verification):" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage7c_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
@@ -933,7 +922,7 @@ dummy=
 #  check_cfast_pictures
 fi
 
-### Stage 7b ###
+### Stages 7b & 7c ###
 check_matlab_license_server
 run_matlab_validation
 check_matlab_validation

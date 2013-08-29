@@ -23,6 +23,7 @@ case $OPTION in
    ;;
   n)
    NO_SVN_UPDATE=true
+   ;;
   q)
    CFASTBOT_QUEUE="$OPTARG"
    ;;

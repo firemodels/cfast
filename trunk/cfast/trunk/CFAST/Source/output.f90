@@ -246,8 +246,8 @@
 5020 format (T16,'Temp.',T26,'Temp.',T36,'Height',T46,'Vol.',T62,'Absorb',T73,'Absorb',T95,'Target',T106,'Target')
 5030 FORMAT (T17,'(C)',T26,'(C)',T36,'(m)',T46,'(m^3)',T62,'(m^-1)',T73,'(m^-1)',T85,'(Pa)',T95,'(W/m^2)',T106,'(W/m^2)')
 5040 format (' ',113('-'))
-5070 format (1x,a13,1P2G10.4,1PG10.4,1X,1pg8.2,'(',I3,'%) ',1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
-5071 format (1x,A13,1PG10.4,10(' '),10(' '),1X,1pg8.2,7(' '),1PG10.3,1X,10(' '),1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
+5070 format (1x,a13,1P2G11.4,1PG11.4,1X,1pg9.2,'(',I3,'%) ',1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
+5071 format (1x,A13,1PG11.4,10(' '),10(' '),1X,1pg9.2,7(' '),1PG10.3,1X,10(' '),1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
     end subroutine rsltlay
     
     subroutine rsltfir (isw)
@@ -635,7 +635,7 @@
     '               Temp.   Temp.   Height  Rate      Size                Target',/, &
     '               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)',/,' ',77('-'))
 5020 format ('  Outside',39x,1pg10.3)
-5030 format (i5,7x,2f8.1,2x,1pg8.2,1p4g10.3)
+5030 format (i5,7x,2f8.1,2x,1pg9.2,1p4g10.3)
 5031 format (i5,7x,f8.1,8(' '),2x,8(' '),1p4g10.3)
     end subroutine rsltcmp
 

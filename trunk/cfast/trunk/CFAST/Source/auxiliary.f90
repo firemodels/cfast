@@ -130,7 +130,7 @@
     return
     end
 
-    subroutine xerrmod(mesg,nmes,nerr,nnr,r1,r2)
+    subroutine xerrmod(mesg,nerr,nnr,r1,r2)
 
     !     routine: xerrmod
     !     purpose: xerrmod is a simplified version of the slatec error handling package. it just logs our error messages with codes as requested. adapted from code written by a. c. hindmarsh and p. n. brown at llnl.
@@ -144,7 +144,7 @@
     use cshell
     implicit none
 
-    integer :: nmes, nerr, nnr, lm
+    integer :: nerr, nnr, lm
     real(8) :: r1, r2
     character :: mesg*(*)
 

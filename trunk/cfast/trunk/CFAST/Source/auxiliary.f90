@@ -50,9 +50,9 @@
     use cshell
     implicit none
 
-    integer :: nmes, nerr, level, ni, i1, i2, nnr, i, lunit, mesflg, imessg(2048)
+    integer :: nmes, nerr, level, ni, i1, i2, nnr, i, lunit, mesflg
     real(8) :: r1, r2
-    character :: msg(nmes)*1, cc*1, foutnm*60
+    character :: msg(nmes)*1
 
     ! define message print flag and logical unit number
     mesflg = 1
@@ -144,11 +144,9 @@
     use cshell
     implicit none
 
-    integer :: nmes, nerr, nnr, lm, i, lunit, mesflg
+    integer :: nmes, nerr, nnr, lm
     real(8) :: r1, r2
     character :: mesg*(*)
-
-    character  cc*1, foutnm*60
 
     lm = len_trim(mesg)
 
@@ -176,7 +174,6 @@
 
     character name*(*)
     integer errorcode
-    logical doesthefileexist
 
     if (errorcode==0) then
         write(logerr, '(''Normal exit from '',a)') trim(name)
@@ -295,6 +292,8 @@
     !                chr    character to fill that space
 
     character temp*127, cmdlin*(*), chr
+    integer i1, i2, i3, i4, i5
+    
     temp = cmdlin
     temp(i1:i2) = cmdlin(i3:i4)
     temp(i5:i5) = chr
@@ -313,6 +312,7 @@
 
     character cmdlin*127
     integer first, last, lpoint
+    integer maxarg, iar, i, ic
     logical valid
 
     maxarg = 5 + 2
@@ -354,6 +354,7 @@
     character(*) :: coord
     character(20) :: decod
     integer :: first, last, type, i0
+    integer lfirst,llast
     real :: x0
 
     ! get data type
@@ -381,6 +382,8 @@
     !     arguments: strng - string containing number to be converted.
 
     character strng*(*)
+    integer ival,isgn,i,ic
+    
     ival = 0
     isgn = 1
     do i = 1, len(strng)
@@ -399,6 +402,9 @@
     !     arguments: strng - string containing number to be converted.
 
     character strng*(*), chr
+    integer isgn,idec,iesgn,iexp,ip,ic
+    real rval,eval
+    
     rval = 0.0
     isgn = 0
     idec = 0
@@ -611,7 +617,7 @@
     character(256) :: buf, xname
     character(*) :: exepath, datapath, project
     character (64) :: name(2)
-    logical :: exists, doesthefileexist
+    logical :: doesthefileexist
 
     character(3) :: drive(2)
     character(256) :: dir(2)
@@ -888,7 +894,7 @@
     
     implicit none
 
-    integer z, l, i
+    integer z, i
     character(len=z) p
     
     if (z>2048) stop 'error in message handler'
@@ -1183,10 +1189,9 @@
     implicit none
 
     integer(2) :: year, month, day
-    logical :: exists
-    character :: strs(8)*60, ic, toupper*1, logfile*60
+    character :: strs(8)*60, ic
     character(60) :: solveini
-    integer :: iarg(8), iopt(26), option, cmdflag, nargs
+    integer :: iarg(8), iopt(26), cmdflag, nargs
     cmdflag(ic) = iopt(ichar(ic)-ichar('A')+1)
 
     ! current date

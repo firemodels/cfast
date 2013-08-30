@@ -13,7 +13,6 @@
 
     real(8) :: yinter(nr), temparea(mxpts), temphgt(mxpts), xx0, xx1, deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
     integer numr, numc, ifail, ios, ierror, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
-    logical exists
     character :: messg*133, aversion*5
 
     !	Unit numbers defined in readop, openoutputfiles, readinputfiles
@@ -507,11 +506,11 @@
 
     integer, parameter :: maxin = 37
     
-    logical :: lfupdat, eof, countargs
+    logical :: lfupdat, countargs
     integer :: obpnt, compartment, lrowcount, xnumr, xnumc, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, ierror, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom
-    real(8) :: nter(nr), initialopening, lrarray(ncol),inter(nr), minpres, maxpres, heightfrom, heightto, areafrom, areato, xx0, xx1, xxm1, xxlocal, fanfraction, heatfplume, frac, tmpcond, dnrm2
-    character :: orientyp*1, messg*133, cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
-    character(128) :: lcarray(ncol), compfrom, compto
+    real(8) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato, xx0, xx1, xxm1, fanfraction, heatfplume, frac, tmpcond, dnrm2
+    character :: cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
+    character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
     data plumemodel /'McCaffrey', 'Heskestad'/
 
@@ -1751,7 +1750,7 @@
     character(5) :: label
     character(*) :: objname
     integer :: lrowcount, xnumr, xnumc, iobj, logerr = 3, midpoint = 1, base = 2, errorcode, ierror, ir, i, ii, nret, iroom
-    real(8) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength, flameheight
+    real(8) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength
     real(8), parameter :: xx0 = 0.0d0
 
     ! there are eight required inputs for each fire
@@ -1926,9 +1925,7 @@
     use debug
     implicit none
 
-    integer :: errorcode , lp, ld, lf, ios
-    integer(2) :: filecount
-    logical :: exists
+    integer :: errorcode , lp, ld, ios
     character(256) :: testpath, testproj 
 
     ! get the path and project names

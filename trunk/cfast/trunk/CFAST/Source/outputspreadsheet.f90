@@ -11,7 +11,7 @@
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     real(8) :: time, outarray(maxhead), xx0, fheight
     logical :: firstc
-    integer :: position, errorcode, i, itarg, izzvol, ifire
+    integer :: position, errorcode, i, itarg, izzvol
 
     data firstc/.true./
     save firstc
@@ -81,6 +81,7 @@
 
     real(8) :: array(*), valu
     integer :: ic
+    integer iounit,i
 
     ic = ic + 1
     ! We are imposing an arbitrary limit of 32000 columns
@@ -235,11 +236,10 @@
     implicit none
 
     integer, parameter :: maxoutput=4*nr+9*mxtarg
-    real(8) :: outarray(maxoutput), time, xiroom, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
+    real(8) :: outarray(maxoutput), time, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
     integer :: iwptr(4), errorcode, position,i,iw,itarg,itctemp,iroom
     external length
     data iwptr /1, 3, 4, 2/
-    character :: ctype*5, cact*3
     logical :: firstc
     data firstc /.true./
     save firstc
@@ -360,7 +360,6 @@
     implicit none
 
     integer, parameter :: maxhead = 1+22*nr
-    character(16) :: heading(3,maxhead)
     real(8) :: time, outarray(maxhead), ssvalue
     integer :: position, errorcode, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
@@ -417,7 +416,6 @@
     implicit none
 
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character(16) :: headline(3,maxhead)
     real(8) :: time, outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
     logical :: firstc
     integer :: position, errorcode
@@ -535,7 +533,7 @@
     implicit none
     
     ! data structure for total flows and fluxes
-    real(8) :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+    real(8) :: flwtot(nr,mxprd+2,2)
 
     ! data structures for flow through vents
     real(8) :: flwnvnt(nr,mxprd+2,2)
@@ -545,21 +543,18 @@
     real(8) :: flwf(nr,ns+2,2)
 
     ! data structures for convection, radiation, and ceiling jets
-    real(8) :: flwcv(nr,2), flxcv(nr,nwal)
-    real(8) :: flwrad(nr,2), flxrad(nr,nwal)
-    real(8) :: flwcjet(nr,2), flxcjet(nr,nwal)
+    real(8) :: flwcv(nr,2)
+    real(8) :: flwrad(nr,2)
+    real(8) :: flwcjet(nr,2)
 
     ! data structures for mechanical vents
     real(8) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
-
-    ! data structures for hcl deposition
-    real(8) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
 
     ! data structures for door jet fires
     real(8) :: flwdjf(nr,ns+2,2)
     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    real(8) :: time, outarray(maxhead), xx0, fheight
+    real(8) :: time, outarray(maxhead)
     logical :: firstc
     integer :: position, errorcode, i, j, k, nprod
     data firstc/.true./

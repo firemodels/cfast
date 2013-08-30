@@ -27,12 +27,12 @@ $RUNCFAST UL_NFPRF UL_NFPRF_1_20
 $RUNCFAST UL_NFPRF UL_NFPRF_1_21
 $RUNCFAST UL_NFPRF UL_NFPRF_1_22
 
-$RUNCFAST  ATF_Corridors ATF_Corridors_050_kW
-$RUNCFAST  ATF_Corridors ATF_Corridors_100_kW
-$RUNCFAST  ATF_Corridors ATF_Corridors_240_kW
-$RUNCFAST  ATF_Corridors ATF_Corridors_250_kW
-$RUNCFAST  ATF_Corridors ATF_Corridors_500_kW
-$RUNCFAST  ATF_Corridors ATF_Corridors_Mix_kW
+$RUNCFAST ATF_Corridors ATF_Corridors_050_kW
+$RUNCFAST ATF_Corridors ATF_Corridors_100_kW
+$RUNCFAST ATF_Corridors ATF_Corridors_240_kW
+$RUNCFAST ATF_Corridors ATF_Corridors_250_kW
+$RUNCFAST ATF_Corridors ATF_Corridors_500_kW
+$RUNCFAST ATF_Corridors ATF_Corridors_Mix_kW
 
 $RUNCFAST NIST_Dunes_2000 NIST_Dunes_2000_SDC02
 $RUNCFAST NIST_Dunes_2000 NIST_Dunes_2000_SDC05

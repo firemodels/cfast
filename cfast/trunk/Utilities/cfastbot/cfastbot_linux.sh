@@ -287,7 +287,17 @@ check_compile_cfast_db()
       echo "Errors from Stage 2 - Compile CFAST debug:" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage2 >> $ERROR_LOG
       echo "" >> $ERROR_LOG
+   fi
 
+   # Check for compiler warnings/remarks
+   if [[ `grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage2` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      echo "Warnings from Stage 2 - Compile CFAST debug:" >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${FIREBOT_DIR}/output/stage2 >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
    fi
 }
 
@@ -425,6 +435,17 @@ check_compile_cfast()
       echo "Errors from Stage 4 - Compile CFAST:" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage4 >> $ERROR_LOG
       echo "" >> $ERROR_LOG
+   fi
+
+   # Check for compiler warnings/remarks
+   if [[ `grep -A 5 -E 'warning|remark' ${FIREBOT_DIR}/output/stage4` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${FIREBOT_DIR}/output/stage4 >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
    fi
 }
 

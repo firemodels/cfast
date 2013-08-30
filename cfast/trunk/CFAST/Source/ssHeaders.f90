@@ -576,14 +576,13 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(15), LabelUnits(8), Layers(2), toIntString, Species(10)
+    character(35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2)
     integer position, i, j, k, l, nprod
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow', 'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
     'Convecxtive Flow', 'Radiative Flow', 'Ceiling Jet Flow'/
     data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/
-    data Species /'O2', 'CO2', 'CO', 'HCN', 'HCl', 'UHC', 'H20', 'C',  'CT', 'Trace'/
 
     !  spreadsheet header
     

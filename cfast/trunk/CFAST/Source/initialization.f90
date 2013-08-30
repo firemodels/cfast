@@ -1380,9 +1380,8 @@
     
     real(8), parameter :: xm1 = -1.0d0, x0 = 0.0d0
     real(8) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
-    integer :: ifail, itarg, iroom, iwall, iwall1, iwall2, ierror
+    integer :: ifail, itarg, iroom, iwall, iwall2, ierror
     integer :: map6(6) = (/1,3,3,3,3,2/)
-    character(133) :: messg
 
     ifail = 0
     do itarg = 1, ntarg
@@ -1815,7 +1814,7 @@
     use vents
     implicit none
 
-    real(8) :: vntopn(nv), factor2, qchfraction, height, width, tsec, avent
+    real(8) :: factor2, qchfraction, height, width, tsec, avent
     integer roomc(nr,nr), tempmat(nr,nr), i, j, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
 

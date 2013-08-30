@@ -80,6 +80,7 @@
     subroutine printfireparameters
 
     use cfast_main
+    integer i
 
     write(*,5) gmwf,hcomba,te,tgignt,qradrl,limo2
 5   format('gmwf,h,te,tg,q,o2 ',f8.3,g12.3,4f8.2)
@@ -115,6 +116,8 @@
     use cfast_main
     use fltarget
     use objects2
+    
+    integer iobj,j,i
 
     write(*,5) OBJGMW(IOBJ), objvt(iobj),objmas(iobj)
 5   format('gmwf,te,m ',3f8.3)
@@ -726,7 +729,7 @@
     implicit none
 
     integer :: i, iroom, itype
-    real(8) :: ctotal, tctemp, cjetmin, zdetect, tlay, tjet, vel, tlink
+    real(8) :: cjetmin, zdetect, tlay, tjet, vel, tlink
 
     character(5) :: ctype
     character(3) :: cact
@@ -817,7 +820,6 @@
     use iofiles
     implicit none
 
-    character chksum*8
     external length
     integer imajor, iminor, iminorrev, isw, length
 
@@ -1105,9 +1107,6 @@
 
     integer i, j, k
 
-    character wall(4)*7
-    data wall /'ceiling', 'floor', 'wall', 'wall'/
-
     ! check to see if any heat transfer is on
     do i = 1, nm1
         do j = 1, nwal
@@ -1160,10 +1159,9 @@
     integer :: io, i, j, nnv, length, is
     real(8) :: y_hcn, y_hcl
 
-    character cbuf*255, stype(ns)*5, ftype(0:4)*13
+    character cbuf*255, ftype(0:4)*13
     external length
     data ftype /'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/
-    data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O', 'OD', 'CT', 'TS'/
 
     if (numobjl>0) then
         do io = 1, mxoin
@@ -1384,7 +1382,7 @@
     implicit none
 
     real(8) :: wm(jacdim,*), buf(maxeq), xx0, tsec, wmii, wmij, tmp, tmp1
-    integer :: ioffst(8), itmp, itmp2, i, j, k, itemp, iounit, irdx, neqs, itcol, icdx, iitmp
+    integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, neqs, itcol, icdx, iitmp
     logical :: firstc
     character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
 
@@ -1998,7 +1996,7 @@
     implicit none
 
     character (*) :: outputfile
-    logical :: exists, doesthefileexist
+    logical :: doesthefileexist
     integer(2) :: filecount
 
     if (doesthefileexist(outputfile)) then

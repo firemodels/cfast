@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CFASTbot
-# This script is a simplified version of Kris Overholt's firebot script.
+# This script is a simplified version of Kris Overholt's Firebot script.
 # It runs the CFAST verification/validation suite on the latest
 # revision of the repository.
 
@@ -302,7 +302,7 @@ check_compile_cfast_db()
       :
    else
       echo "Warnings from Stage 2 - Compile CFAST debug:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${FIREBOT_DIR}/output/stage2 >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage2 >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -443,13 +443,13 @@ check_compile_cfast()
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${FIREBOT_DIR}/output/stage4` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage4` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${FIREBOT_DIR}/output/stage4 >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage4 >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -472,7 +472,7 @@ wait_vv_cases_release_end()
 
 run_vv_cases_release()
 {
-   # Start running all CFAST V&V cases (run all cases on firebot queue)
+   # Start running all CFAST V&V cases
    cd $CFAST_SVNROOT/Validation/scripts
    echo 'Running CFAST V&V cases:' >> $CFASTBOT_DIR/output/stage5 2>&1
    ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $CFASTBOT_DIR/output/stage5 2>&1
@@ -532,6 +532,11 @@ check_vv_cases_release()
 
 compile_smv_utilities()
 {  
+   # smokeview libraries
+   cd $FDS_SVNROOT/SMV/Build/LIBS/lib_linux_intel_64
+   echo 'Building Smokeview libraries:' >> $CFASTBOT_DIR/output/stage5pre 2>&1
+   ./makelibs.sh >> $CFASTBOT_DIR/output/stage5pre 2>&1
+
    # smokezip:
    cd $FDS_SVNROOT/Utilities/smokezip/intel_linux_64
    echo 'Compiling smokezip:' >> $CFASTBOT_DIR/output/stage6a 2>&1
@@ -800,7 +805,7 @@ check_guide()
       echo "" >> $WARNING_LOG
    else
       # Guide built successfully; there were no errors/warnings
-      # Copy guide to Firebot's local website
+      # Copy guide to CFASTbot's local website
       cp $2 /var/www/html/cfastbot/manuals/
    fi
 }

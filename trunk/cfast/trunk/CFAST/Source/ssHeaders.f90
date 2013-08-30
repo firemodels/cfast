@@ -10,7 +10,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
+    character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
     integer :: position, i, j
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
@@ -37,7 +37,7 @@
                 if (i/=3.or.izshaft(j)==0) then
                     position = position + 1
                     if (validate) then
-                        cRoom = toIntString(j)
+                        call toIntString(j,cRoom)
                         headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
                         headertext(2,position) = LabelUnits(i+1)
                         headertext(3,position) = ' '
@@ -55,7 +55,7 @@
     do i = 1, n
         position = position + 1
         if (validate) then
-            cRoom = toIntString(i)
+            call toIntString(i,cRoom)
             if (i==n) then
                 headertext(1,position) = trim(LabelsShort(9)) // 'Out'
             else
@@ -94,7 +94,7 @@
         do i = 1, 9
             position = position + 1
             if (validate) then
-                cFire = toIntString(j)
+                call toIntString(j,cFire)
                 headertext(1,position) = trim(LabelsShort(i+9))//trim(cFire)
                 headertext(2,position) = LabelUnits(i+9)
                 headertext(3,1) = ' '
@@ -124,7 +124,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23), toIntString
+    character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
     data tooutput /.false.,5*.true.,.false.,4*.true./ 
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
@@ -155,7 +155,7 @@
                     if(tooutput(lsp)) then
                         position = position + 1
                         if (validate) then
-                            cRoom = toIntString(i)
+                            call toIntString(i,cRoom)
                             headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
                             headertext(2,position) = LabelUnits((j-1)*11+lsp+1)
                             if (molfrac(lsp)) headertext(2,position) = 'mol frac'
@@ -205,7 +205,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+9*nr+8*mxtarg+4*mxdtect
-    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18), toIntString
+    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18)
     integer position, i, j, itarg, itype
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', 'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', 'Target Total Flux', 'Target Convective Flux', &
@@ -232,7 +232,7 @@
         do j = 1, 4
             position = position + 1
             if (validate) then
-                cRoom = toIntString(i)
+                call toIntString(i,cRoom)
                 headertext(1,position) = trim(LabelsShort(j+1))//trim(cRoom)
                 headertext(2,position) = LabelUnits(j+1)
                 headertext(3,position) = ' '
@@ -249,7 +249,7 @@
         if (ntarg>nm1) then
             do itarg = 1, ntarg-nm1
                 if (ixtarg(trgroom,itarg)==i) then
-                    cDet = toIntString(itarg)
+                    call toIntString(itarg,cDet)
                     do j = 1, 9
                         position = position + 1
                         if (validate) then
@@ -272,7 +272,7 @@
 
     !	Detectors
     do i = 1, ndtect
-        cDet = toIntString(i)
+        call toIntString(i,cDet)
         itype = ixdtect(i,dtype)
         if (itype==smoked) then
             cType = 'Smoke'
@@ -317,7 +317,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
-    character(35) :: headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(11), LabelsShort(11), LabelUnits(11), toIntString
+    character(35) :: headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(11), LabelsShort(11), LabelUnits(11)
     integer position, i, j, k, ih, ii, iijk, inode, irm
 
     data Labels / 'Time', 'HVENT Inflow', 'HVENT Outflow', 'HVENT Mixing to Upper Layer', 'HVENT Mixing to Lower Layer', 'VVENT Inflow', 'VVENT Outflow', 'MVENT Inflow', 'MVENT Outflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
@@ -351,13 +351,13 @@
                     if (j==n) then
                         cFrom = 'Outside'
                     else
-                        cFrom = toIntString(j)
+                        call toIntString(j,cFrom)
                     endif
                     do ih = 1, 4
                         if (j/=n.or.ih<3) then
                             position = position + 1
-                            cVent = toIntString(k)
-                            cTo = toIntString(i)
+                            call toIntString(k,cVent)
+                            call toIntString(i,cTo)
                             headertext(1,position) = Labels(ih+1)
                             if (validate) then
                                 write (ctemp,'(6a)') trim(LabelsShort(ih+1)),trim(cVent),'_',trim(cFrom),'-',trim(cTo)
@@ -379,9 +379,9 @@
 
         do j = 1, n
             if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
-                cFrom = toIntString(i)
+                call toIntString(i,cFrom)
                 if (i==n) cFrom = 'Outside'
-                cTo = toIntString(j)
+                call toIntString(j,cTo)
                 if (j==n) cTo = 'Outside'
                 do ih = 1,2
                     position = position + 1
@@ -406,9 +406,9 @@
                 ii = hvnode(1,i)
                 if (ii==irm) then
                     inode = hvnode(2,i)
-                    cFrom = toIntString(ii)
+                    call toIntString(ii,cFrom)
                     if (ii==n) cfrom = 'Outside'
-                    cTo = toIntString(inode)
+                    call toIntString(inode,cTo)
                     do ih = 1,4
                         position = position + 1
                         if (validate) then
@@ -457,7 +457,7 @@
     logical lmode
 
     integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
-    character(35) :: headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15), toIntString
+    character(35) :: headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
     integer position, i, j
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
@@ -474,7 +474,7 @@
         do i = 1, 6
             if (i==1.or.i==4.or.i==5.or.izshaft(j)==0) then
                 position = position + 1
-                cRoom = toIntString(j)
+                call toIntString(j,cRoom)
                 headertext(1,position) = LabelUnits(i+1)
                 headertext(2,position) = trim(LabelsShort(i+1)) //trim(cRoom)
                 call smvDeviceTag(headertext(2,position))
@@ -496,7 +496,7 @@
     do j = 1, numobjl
         do i = 1, 4
             position = position + 1
-            cFire = toIntString(j)
+            call toIntString(j,cFire)
             headertext(1,position) = LabelUnits(i+7)
             headertext(2,position) = trim(LabelsShort(i+7))//trim(cFire)
             call smvDeviceTag(headertext(2,position))
@@ -506,7 +506,7 @@
     ! Vent variables
     do i = 1, nvents
         position = position + 1
-        cVent = toIntString(i)
+        call toIntString(i,cVent)
         headertext(1,position) = LabelUnits(12)
         headertext(2,position) = trim(LabelsShort(12))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
@@ -514,7 +514,7 @@
     do i = 1, nvvent
         do j = 1,3
             position = position + 1
-            cVent = toIntString(i)
+            call toIntString(i,cVent)
             headertext(1,position) = LabelUnits(13+j-1)
             headertext(2,position) = trim(LabelsShort(13+j-1))//trim(cVent)
             call smvDeviceTag(headertext(2,position))
@@ -540,10 +540,11 @@
     end subroutine smvDeviceTag
 
 
-    character(*) function toIntString(i)
+    subroutine toIntString(i,istring)
     implicit none
     integer i
     character string*256
+    character(len=*) :: istring
     if (i<10) then
         write (string,'(i1)') i
     else if (i<100) then
@@ -559,9 +560,9 @@
     else
         string = 'error'
     endif
-    toIntString = trim(string)
+    istring = trim(string)
     return
-    end function toIntString
+    end subroutine toIntString
 
  subroutine ssHeadersResid
 
@@ -668,7 +669,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1 + mxvents*(4 + mxslab)
-    character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2), toIntString
+    character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
     integer :: position, i, j
 
     data Labels / 'time', 'Room 1','Room 2', 'Vent Num', 'Num Slabs', 'Slab'/
@@ -692,7 +693,7 @@
         do j = 1, mxslab
             position = position + 1
             headertext(1,position) = trim(Labels(6))
-            headertext(2,position) = toIntString(j)
+            call toIntString(j,headertext(2,position))
             headertext(3,position) = trim(LabelUnits(2))
         end do
     end do 

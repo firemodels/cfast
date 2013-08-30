@@ -218,7 +218,7 @@ do_svn_checkout()
    svn update >> $CFASTBOT_DIR/output/stage1 2>&1
 
    if [[ $NO_SVN_UPDATE ]] ; then
-      echo "Skipping SVN update (per user option):" > $CFASTBOT_DIR/output/stage1
+      echo "Skipping SVN update (per user option):" >> $CFASTBOT_DIR/output/stage1
    else
       cd $CFAST_SVNROOT
       echo "Checking out latest CFAST revision." >> $CFASTBOT_DIR/output/stage1 2>&1

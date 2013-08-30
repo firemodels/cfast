@@ -1,4 +1,4 @@
-subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -32,7 +32,6 @@ subroutine svout(plotfile, pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, 
     real(8), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
     integer, intent(in), dimension(nfires) :: froom_number
     real(8), intent(in), dimension(nfires) :: fx0, fy0, fz0
-    character(len=*), intent(in) :: plotfile
     real(8) :: vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
     real(8) :: harea, targetvector(6)
     integer ::i, hface, ibot, itop, hshape
@@ -115,7 +114,6 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 !
 ! this routine records data for the current time step into the smokeview zone fire data file
 !
-! plotfile - name of file containing zone fire modeling plot data to 
 !            be visualized by smokeview
 !     time - current time
 !   nrooms   number of rooms

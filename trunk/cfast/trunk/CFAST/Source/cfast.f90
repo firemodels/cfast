@@ -364,7 +364,7 @@
     real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0d0
     logical :: iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
-    integer :: ios, idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
+    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
     integer(2) :: filecount, delfilesqq
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
         tplot, tspread, tout,  ostptime, tdtect, tobj, jac
@@ -508,7 +508,7 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(smvdata, pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0d0, 1)
         icode = 0
         write (logerr, 5004)
@@ -612,7 +612,7 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(smvdata, pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -621,7 +621,7 @@
                 call svplothdr (version,nm1,nfires)
             endif
             call svplotdata(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
-            call spreadsheetsmv(t,ierror)
+            call spreadsheetsmv(t)
             tplot = tplot + dplot
             call statusoutput (t, dt, errorcode)
         endif
@@ -632,10 +632,10 @@
                 call target(steady)
                 ltarg = .true.
             endif
-            call spreadsheetnormal (t, ierror)
-            call spreadsheetspecies (t, ierror)
-            call spreadsheetflow (t, ierror)
-            call spreadsheetflux (t, ierror)
+            call spreadsheetnormal (t)
+            call spreadsheetspecies (t)
+            call spreadsheetflow (t)
+            call spreadsheetflux (t)
             if (ierror/=0) return
             tspread =tspread + dspread
             call statusoutput (t, dt, errorcode)
@@ -693,7 +693,7 @@
         ! make sure dassl is happy
 
         if (idid<0) then
-            call fnd_comp(iofilo,ieqmax)
+            call fnd_comp(ieqmax)
             write (messg,101)idid
 101         format('error, dassl - idid=', i3)
             call xerror(messg,0,1,1)
@@ -791,7 +791,7 @@
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then
-                    call fnd_comp(iofilo,ipar(3))
+                    call fnd_comp(ipar(3))
                     write (messg,101)idid
                     call xerror(messg,0,1,-2)
                     write(messg,'(a13,f10.5,1x,a8,f10.5)')'Backing from ',t,'to time ',tdout
@@ -1124,11 +1124,11 @@
 
     ! data structures for door jet fires
     real(eb) :: flwdjf(nr,ns+2,2)
-    integer :: update, errorcode
+    integer :: update
 
     logical :: vflowflg, hvacflg, djetflg
-    integer :: ii, nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
-    real(eb) :: epsp, xqu, xql, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
+    integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
+    real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
     ierror = 0
     nprod = nlspct
@@ -1178,7 +1178,7 @@
     endif
 
     ! calculate heat and mass flows due to fires
-    call fires (tsec,flwf,update)
+    call fires (tsec,flwf)
     call sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
     call djet (flwdjf,djetflg)
 
@@ -1284,7 +1284,7 @@
 
     if (update==all) then
         if (residprn) then
-            call spreadsheetresid(tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet, errorcode)
+            call spreadsheetresid(tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet)
         endif
     endif
     ! sum flux for inside rooms
@@ -2056,7 +2056,7 @@
     real(eb), intent(out) :: pdif(*)
     
     real(eb) :: factor(nr,2)
-    integer :: i, iroom, isof, iprod
+    integer :: iroom, isof, iprod
 
     do iroom = 1,nm1
         factor(iroom,upper) = 0.0_eb

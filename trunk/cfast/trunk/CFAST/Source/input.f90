@@ -552,14 +552,14 @@
 
         ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
     case ("TIMES")
-        if (countargs(label,5,lcarray, xnumc-1, nret)) then
+        if (countargs(5,lcarray, xnumc-1, nret)) then
             nsmax =  lrarray(1)
             lprint = lrarray(2)
             ldiago = lrarray(3)
             if (ldiago>0) ndumpr = 1
             ldiagp = lrarray(4)
             lcopyss =  lrarray(5)
-        else if (countargs(label,4,lcarray, xnumc-1, nret)) then
+        else if (countargs(4,lcarray, xnumc-1, nret)) then
             nsmax =  lrarray(1)
             lprint = lrarray(2)
             ldiagp = lrarray(3)
@@ -571,7 +571,7 @@
 
         ! TAMB REFERENCE AMBIENT TEMPERATURE (C), REFERENCE AMBIENT PRESSURE, REFERENCE PRESSURE, relative humidity
     case ("TAMB")
-        if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(4,lcarray, xnumc-1, nret)) then
             ierror = 2
             return
         endif
@@ -588,7 +588,7 @@
 
         ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE, REFERENCE EXTERNAL AMBIENT HEIGHT
     case ("EAMB")
-        if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(3,lcarray, xnumc-1, nret)) then
             ierror = 3
             return
         endif
@@ -599,7 +599,7 @@
 
         ! Limiting oxygen index
     case ("LIMO2")
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 4
             return
         endif
@@ -607,7 +607,7 @@
 
         ! Rename the THERMAL DATA FILE
     case ("THRMF")
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 6
             return
         endif
@@ -615,7 +615,7 @@
 
         ! Set the gaseous ignition temperature - this is a global parameter DJIGN
     case ('DJIGN')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             return
             ierror = 4
         endif
@@ -623,7 +623,7 @@
 
         ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
     case ('GLOBA')
-        if (countargs(label,2,lcarray,xnumc-1, nret)) then
+        if (countargs(2,lcarray,xnumc-1, nret)) then
             limo2 = lrarray(1) * 0.01d0
             tgignt = lrarray(2)
         else
@@ -634,7 +634,7 @@
         ! MATL short_name conductivity specific_heat density thickness emissivity long_name
         ! HCl deposition constants are only available for gypsum so we just add the automatically if the name of the material contains gypsum
     case ('MATL')
-        if(.not.countargs(label,7,lcarray,xnumc-1,nret)) then
+        if(.not.countargs(7,lcarray,xnumc-1,nret)) then
             ierror = 6
             return
         endif
@@ -668,7 +668,7 @@
 
         ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
     case ('COMPA')
-        if (.not.countargs(label,10,lcarray,xnumc-1,nret)) then
+        if (.not.countargs(10,lcarray,xnumc-1,nret)) then
             ierror = 8
             return
         endif
@@ -734,7 +734,7 @@
         !		    VFACE = THE RELATIVE FACE OF THE VENT: 1-4 FOR X PLANE (-), Y PLANE (+), X PLANE (+), Y PLANE (-)
         !		    Initial open fraction
     case ('HVENT')
-        if (.not.countargs(label,11,lcarray,xnumc-1,nret)) then
+        if (.not.countargs(11,lcarray,xnumc-1,nret)) then
             ierror = 10
             return
         endif
@@ -800,7 +800,7 @@
         ! EVENT - M Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time
         ! EVENT - F Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time    
     case ('EVENT')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 11
             return
         endif
@@ -810,7 +810,7 @@
 
         select case (venttype)
         case ('H')
-            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+            if (.not.countargs(7,lcarray, xnumc-1, nret)) then
                 ierror = 11
                 return
             endif
@@ -822,7 +822,7 @@
             qcvh(3,iijk) = lrarray(5) + lrarray(7)
             qcvh(4,iijk) = lrarray(6)
         case ('V')
-            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+            if (.not.countargs(7,lcarray, xnumc-1, nret)) then
                 ierror = 11
                 return
             endif
@@ -836,7 +836,7 @@
             qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
             qcvpp(4,ibot,itop) = lrarray(6)
         case ('M')
-            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+            if (.not.countargs(7,lcarray, xnumc-1, nret)) then
                 ierror = 11
                 return
             endif
@@ -845,7 +845,7 @@
             qcvm(3,fannumber) = lrarray(5) + lrarray(7)
             qcvm(4,fannumber) = lrarray(6)
         case ('F')
-            if (.not.countargs(label,7,lcarray, xnumc-1, nret)) then
+            if (.not.countargs(7,lcarray, xnumc-1, nret)) then
                 ierror = 11
                 return
             endif
@@ -866,7 +866,7 @@
 
         ! VVENT - from_compartment to_compartment area shape initial_fraction
     case ('VVENT')
-        if (.not.countargs(label,5,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(5,lcarray, xnumc-1, nret)) then
             ierror = 23
             return
         endif
@@ -895,7 +895,7 @@
 
         ! WIND - VELOCITY AT REFERENCE HEIGHT and EXPONENTIAL LAPSE RATE
     case ('WIND')
-        if (.not.countargs(label,3,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(3,lcarray, xnumc-1, nret)) then
             ierror = 24
             return
         endif
@@ -911,7 +911,7 @@
         ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
         ! (13) Initial fraction of the fan speed
     case ('MVENT')
-        if (.not.countargs(label,13,lcarray,xnumc-1,nret)) then 
+        if (.not.countargs(13,lcarray,xnumc-1,nret)) then 
             ierror = 12
             return
         endif
@@ -1021,7 +1021,7 @@
         ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
         ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
     case ('FIRE')
-        if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(11,lcarray, xnumc-1, nret)) then
             ierror = 32
             return
         endif
@@ -1115,13 +1115,13 @@
         endif 
 
         ! read and set the other stuff for this fire
-        call inputembeddedfire(objnin(obpnt), objrm(obpnt), lrowcount, xnumr, xnumc, obpnt, ierror)
+        call inputembeddedfire(objnin(obpnt), lrowcount, xnumc, obpnt, ierror)
         if (ierror/=0) return
 
         ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
     case ('OBJEC')
 
-        if (.not.countargs(label,11,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(11,lcarray, xnumc-1, nret)) then
             write(logerr,5310)
             ierror = 32
             return
@@ -1216,7 +1216,7 @@
 
         ! CJET - Ceiling jet for walls, ceiling, all, or off
     case ('CJET')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 34
             return
         endif
@@ -1243,7 +1243,7 @@
 
         ! STPMAX # - set the maximum time step to #
     case ('STPMA')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 35
             return
         endif
@@ -1251,7 +1251,7 @@
 
         ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
     case ('DETEC')
-        if (.not.countargs(label,9,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(9,lcarray, xnumc-1, nret)) then
             ierror = 34
             return
         endif
@@ -1316,7 +1316,7 @@
 
         !     VHEAT top_compartment bottom_compartment
     case ('VHEAT')
-        if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(2,lcarray, xnumc-1, nret)) then
             ierror = 37
             return
         endif
@@ -1337,7 +1337,7 @@
 
         ! ONEZ compartment number - This turns the compartment into a single zone
     case ('ONEZ')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 39
             return
         endif
@@ -1351,7 +1351,7 @@
         izshaft(iroom) = 1
         !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
     case ('TARGE')
-        if (countargs(label,10,lcarray, xnumc-1, nret).or.countargs(label,11,lcarray, xnumc-1, nret)) then
+        if (countargs(10,lcarray, xnumc-1, nret).or.countargs(11,lcarray, xnumc-1, nret)) then
             if(ntarg+1>mxtarg)then
                 write(logerr,5002) 
                 ierror = 42
@@ -1374,7 +1374,7 @@
                 xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
                 xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
             end do
-            if (countargs(label,11,lcarray, xnumc-1, nret)) then
+            if (countargs(11,lcarray, xnumc-1, nret)) then
                 xxtarg(trginterior,ntarg) = lrarray(11)
             else
                 xxtarg(trginterior,ntarg) = 0.5
@@ -1428,7 +1428,7 @@
         endif
         ! HALL Compartment Velocity Depth Decay_Distance
     case ('HALL')
-        if (.not.countargs(label,4,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(4,lcarray, xnumc-1, nret)) then
             ierror = 46
             return
         endif
@@ -1473,7 +1473,7 @@
         ! ROOMA Compartment Number_of_Area_Values Area_Values
         ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
     case ('ROOMA')
-        if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(2,lcarray, xnumc-1, nret)) then
             ierror = 47
             return
         endif
@@ -1515,7 +1515,7 @@
         ! ROOMH Compartment Number_of_Height_Values Height_Values
         ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
     case ('ROOMH')
-        if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(2,lcarray, xnumc-1, nret)) then
             ierror = 51
             return
         endif
@@ -1556,7 +1556,7 @@
 
         ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
     case ('DTCHE')
-        if (.not.countargs(label,2,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(2,lcarray, xnumc-1, nret)) then
             ierror = 55
             return
         endif
@@ -1568,7 +1568,7 @@
 
         ! SETP file_name
     case ('SETP')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 56
             return
         endif
@@ -1589,7 +1589,7 @@
         !   The first (single entry of the room number) - all connections based on horizontal flow
         !   The second is the compartment number followed by N pairs of compartments to which the heat will flow and the fraction of the vertical surface of the compartment that loses heat
     case ('HHEAT')
-        if (.not.countargs(label,1,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 58
             return
         endif
@@ -1645,7 +1645,7 @@
 
         !  HEATF Special fire - heat source only; no mass
     case ('HEATF')
-        if (.not.countargs(label,6,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(6,lcarray, xnumc-1, nret)) then
             ierror = 65
             return
         endif
@@ -1727,7 +1727,7 @@
 
     end subroutine keywordcases
 
-    subroutine inputembeddedfire(objname, iroom, lrowcount, xnumr, xnumc, iobj, ierror)
+    subroutine inputembeddedfire(objname, lrowcount, xnumc, iobj, ierror)
 
     !     routine: inputembeddedfire
     !     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
@@ -1749,7 +1749,7 @@
     character(128) :: lcarray(ncol)
     character(5) :: label
     character(*) :: objname
-    integer :: lrowcount, xnumr, xnumc, iobj, logerr = 3, midpoint = 1, base = 2, errorcode, ierror, ir, i, ii, nret, iroom
+    integer :: lrowcount, xnumc, iobj, logerr = 3, midpoint = 1, base = 2, errorcode, ierror, ir, i, ii, nret
     real(8) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength
     real(8), parameter :: xx0 = 0.0d0
 
@@ -1767,7 +1767,7 @@
 
             ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula, radiative fraction, heat of combustion, and material
         case ('CHEMI')
-            if (.not.countargs(label,8,lcarray,xnumc-1,nret)) then
+            if (.not.countargs(8,lcarray,xnumc-1,nret)) then
                 ierror = 4
                 return
             endif
@@ -1790,7 +1790,7 @@
             endif  
             omatl(iobj) = lcarray(8)
         case ('TIME')
-            lstat = countargs(label,2,lcarray,xnumc-1,nret)
+            lstat = countargs(2,lcarray,xnumc-1,nret)
             objlfm(iobj) = nret
             do ii = 1, nret
                 otime(ii,iobj) = lrarray(ii)
@@ -1908,7 +1908,7 @@
     cxtarg(ntarg) = omatl(iobj)
 
     ! Initialize object target
-    call set_target_object (ntarg,iobj,ierror)
+    call set_target_object (ntarg,iobj)
     return
     end subroutine initfireobject
 
@@ -2180,7 +2180,7 @@
 
     end subroutine positionobject
 
-    subroutine set_target_object (itarg,iobj,ierror)
+    subroutine set_target_object (itarg,iobj)
 
     !     routine: setobjtrg
     !     purpose: takes information from objects and sets a target for each.
@@ -2194,7 +2194,7 @@
     use objects2
     implicit none
     
-    integer :: i, itarg, iobj, ierror
+    integer :: i, itarg, iobj
 
     ixtarg(trgroom,itarg) = objrm(iobj)
     do i = 0,2

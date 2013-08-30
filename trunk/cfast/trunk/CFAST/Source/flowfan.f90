@@ -117,11 +117,11 @@
         endif
     endif
 
-    call hvfrex (tsec, hvpsolv,hvtsolv)
+    call hvfrex (hvpsolv,hvtsolv)
     call hvmflo (tsec, deltpmv,ierror)
     if (ierror/=0) return
     call hvsflo (tprime,delttmv)
-    call hvtoex (tsec, prprime,nprod)
+    call hvtoex (prprime,nprod)
     do ii = 1, next
         i = hvnode(1,ii)
         j = hvnode(2,ii)
@@ -384,7 +384,7 @@
 
 ! --------------------------- hvfrex -------------------------------------------
 
-    subroutine hvfrex (tsec, hvpsolv, hvtsolv)
+    subroutine hvfrex (hvpsolv, hvtsolv)
 
     !     routine: hvfrex
     !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow into the system from exterior nodes
@@ -398,7 +398,7 @@
     use params
     implicit none
 
-    real(eb) :: hvpsolv(*), hvtsolv(*), tsec, z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
+    real(eb) :: hvpsolv(*), hvtsolv(*), z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, ib, lsp
 
     do ii = 1, next
@@ -466,7 +466,7 @@
 
 ! --------------------------- hvtoex -------------------------------------------
 
-    subroutine hvtoex(tsec,prprime,nprod)
+    subroutine hvtoex(prprime,nprod)
 
     !     routine: hvfrex
     !     purpose: assign results of hvac simulation to the transfer variables (hvextt, hvexcn)
@@ -480,7 +480,6 @@
     use params
     implicit none
 
-    real(eb), intent(in) :: tsec
     real(eb), intent(out) :: prprime(*) 
     integer, intent(in) :: nprod
     

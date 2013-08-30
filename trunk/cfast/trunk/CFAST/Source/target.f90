@@ -470,7 +470,7 @@
                 zfire = xfire(i,3)
                 zlayer = zzhlay(irtarg,lower)
                 z = ztarg
-                call plumetemp (qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume)
+                call plumetemp (qdot, xrad, tu, tl, zfire, zlayer, z, tplume)
                 tg = tplume
             endif
         endif

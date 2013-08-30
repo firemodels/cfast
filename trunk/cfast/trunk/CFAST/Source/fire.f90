@@ -1,7 +1,7 @@
 
 ! --------------------------- fires -------------------------------------------
 
-    subroutine fires(tsec,flwf,update)
+    subroutine fires(tsec,flwf)
 
     !     routine: fires
     !     purpose: physical interface routine to calculate the current
@@ -42,7 +42,6 @@
     
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flwf(nr,ns+2,2)
-    integer, intent(in) :: update
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q1, q2, xqfr
@@ -938,7 +937,7 @@
 
 ! --------------------------- PlumeTemp -------------------------------------------
 
-    subroutine PlumeTemp (qdot, xrad, dfire, tu, tl, zfire, zlayer,zin, tplume)
+    subroutine PlumeTemp (qdot, xrad, tu, tl, zfire, zlayer,zin, tplume)
 
     !     routine: PlumeTemp
     !     purpose: Calculates plume centerline temperature at a specified height above the fire.
@@ -959,7 +958,7 @@
     use precision_parameters
     implicit none
     
-    real(eb), intent(in) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, zin
+    real(eb), intent(in) :: qdot, xrad, tu, tl, zfire, zlayer, zin
     real(eb), intent(out) :: tplume
     
     real(eb), parameter :: C_T = 9.115_eb, Beta = 0.955_eb

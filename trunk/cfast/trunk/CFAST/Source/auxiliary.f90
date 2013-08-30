@@ -453,7 +453,7 @@
     return
     end function rnum
 
-    logical function countargs (label,tocount,lcarray,numc,nret)
+    logical function countargs (tocount,lcarray,numc,nret)
 
     !     routine: countargs
     !     purpose: Count the number of non-blank arguments on the input line. Should be tocount. If not, then return an error (logical false). If tocount is zero or less, just count them
@@ -469,7 +469,6 @@
 
     integer :: tocount, i,numc,nret
     character(128) :: lcarray(numc)
-    character(5) :: label
 
     countargs = .false.
     nret = 0.
@@ -719,7 +718,7 @@
     return
     end subroutine grabky
 
-    subroutine mat2mult(mat1,mat2,idim,n,matiter)
+    subroutine mat2mult(mat1,mat2,idim,n)
 
     !     routine: mat2mult
     !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
@@ -732,7 +731,7 @@
     implicit none
     
     integer :: idim, n
-    integer :: mat1(idim,n), mat2(idim,n), i, j, idot, matiter
+    integer :: mat1(idim,n), mat2(idim,n), i, j, idot
     do i = 1, n
         do j = 1, n
             mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)

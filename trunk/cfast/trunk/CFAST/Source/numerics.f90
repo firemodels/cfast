@@ -496,7 +496,7 @@
     !  ddassl uses a weighted norm ddanrm to measure the size
     !  of vectors such as the estimated error in each step.
     !  a function subprogram
-    !    real(8) function ddanrm(neq,v,wt,rpar,ipar)
+    !    real(8) function ddanrm(neq,v,wt,ipar)
     !    dimension v(neq),wt(neq)
     !  is used to define this norm. here, v is the vector
     !  whose norm is to be computed, and wt is a vector of
@@ -869,7 +869,7 @@
     idid=1
     !
     !     set error weight vector wt
-    call ddawts(neq,info(2),rtol,atol,y,rwork(lwt),rpar,ipar)
+    call ddawts(neq,info(2),rtol,atol,y,rwork(lwt))
     do 305 i = 1,neq
         if(rwork(lwt+i-1)<=0.0d0) go to 713
 305 continue
@@ -894,7 +894,7 @@
     !     compute initial stepsize, to be used by either
     !     ddastp or ddaini, depending on info(11)
     ho = 0.001d0*tdist
-    ypnorm = ddanrm(neq,yprime,rwork(lwt),rpar,ipar)
+    ypnorm = ddanrm(neq,yprime,rwork(lwt),ipar)
     if (ypnorm > 0.5d0/ho) ho = 0.5d0/ypnorm
     ho = dsign(ho,tout-t)
     !     adjust ho if necessary to meet hmax bound
@@ -1025,7 +1025,7 @@
     go to 527
     !
     !     update wt
-510 call ddawts(neq,info(2),rtol,atol,rwork(lphi),rwork(lwt),rpar,ipar)
+510 call ddawts(neq,info(2),rtol,atol,rwork(lphi),rwork(lwt))
     do 520 i=1,neq
         if(rwork(i+lwt-1)>0.0d0)go to 520
         idid=-3
@@ -1033,7 +1033,7 @@
 520 continue
     !
     !     test for too much accuracy requested.
-    r=ddanrm(neq,rwork(lphi),rwork(lwt),rpar,ipar)*100.0d0*uround
+    r=ddanrm(neq,rwork(lphi),rwork(lwt),ipar)*100.0d0*uround
     if(r<=1.0d0)go to 525
     !     multiply rtol and atol by r and return
     if(info(2)==1)go to 523
@@ -1143,7 +1143,7 @@
 
     !     corrector convergence failed repeatedly or with h=hmin
 650 mesg = 'at t (=r1) and stepsize h (=r2) the corrector failed to converge repeatedly'// ' or with abs(h)=hmin'
-    call xerrmod(mesg,44,650,2,tn,h)
+    call xerrmod(mesg,650,2,tn,h)
     go to 690
 
     !     the iteration matrix is singular
@@ -1251,7 +1251,7 @@
     !-----------end of subroutine ddassl------------------------------------
     end subroutine ddassl
 
-    subroutine ddawts(neq,iwt,rtol,atol,y,wt,rpar,ipar)
+    subroutine ddawts(neq,iwt,rtol,atol,y,wt)
 
     !***begin prologue  ddawts
     !***refer to  ddassl
@@ -1268,8 +1268,8 @@
     !-----------------------------------------------------------------------
     !
     implicit none
-    real(8) :: rtol(*),atol(*),y(*),wt(*),rpar(*), atoli, rtoli
-    integer :: ipar(*), i, neq, iwt
+    real(8) :: rtol(*),atol(*),y(*),wt(*),atoli, rtoli
+    integer :: i, neq, iwt
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -1287,7 +1287,7 @@
     !-----------end of subroutine ddawts------------------------------------
     end
     
-    real(8) function ddanrm(neq,v,wt,rpar,ipar)
+    real(8) function ddanrm(neq,v,wt,ipar)
     !
     !***begin prologue  ddanrm
     !***refer to  ddassl
@@ -1306,7 +1306,7 @@
     implicit none
     
     integer :: ipar(*), i, neq
-    real(8) :: v(neq), wt(neq), rpar(*), vmax, sum
+    real(8) :: v(neq), wt(neq), vmax, sum
     ddanrm = 0.0d0
     vmax = 0.0d0
     ipar(3) = 1
@@ -1402,7 +1402,7 @@
     ncf=0
     nsf=0
     xold=x
-    ynorm=ddanrm(neq,y,wt,rpar,ipar)
+    ynorm=ddanrm(neq,y,wt,ipar)
     !
     !     save y and yprime in phi
     do i=1,neq
@@ -1477,7 +1477,7 @@
     !
     !     test for convergence of the iteration.
     !
-    delnrm=ddanrm(neq,delta,wt,rpar,ipar)
+    delnrm=ddanrm(neq,delta,wt,ipar)
     if (delnrm<=100.d0*uround*ynorm) go to 400
     !
     if (m>0) go to 340
@@ -1511,7 +1511,7 @@
         delta(i)=dmin1(y(i),0.0d0)
     end do
     !
-    delnrm=ddanrm(neq,delta,wt,rpar,ipar)
+    delnrm=ddanrm(neq,delta,wt,ipar)
     if (delnrm>0.33d0) go to 430
     !
     do i=1,neq
@@ -1536,7 +1536,7 @@
     do i=1,neq
         e(i)=y(i)-phi(i,1)
     end do
-    err=ddanrm(neq,e,wt,rpar,ipar)
+    err=ddanrm(neq,e,wt,ipar)
     !
     if (err<=1.0d0) return
     !
@@ -1737,7 +1737,7 @@
     logical convgd
     integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
     real(8) :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, &
-        temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, uround, oldnrm, rate, enorm, erk, terk, est, erk1, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, &
+        temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, uround, oldnrm, rate, enorm, erk, terk, est, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, &
         hmin, hnew, r
     external res,jac
     !
@@ -1880,7 +1880,7 @@
          yprime(i)=yprime(i)+gamma(j)*phi(i,j)
         end do
     end do
-    pnorm = ddanrm (neq,y,wt,rpar,ipar)
+    pnorm = ddanrm(neq,y,wt,ipar)
     !
     !
     !
@@ -1945,7 +1945,7 @@
     end do
     !
     !     test for convergence of the iteration
-    delnrm=ddanrm(neq,delta,wt,rpar,ipar)
+    delnrm=ddanrm(neq,delta,wt,ipar)
     if (delnrm <= 100.d0*uround*pnorm) go to 375
     if (m > 0) go to 365
     oldnrm = delnrm
@@ -1989,7 +1989,7 @@
     do i = 1,neq
         delta(i) = dmin1(y(i),0.0d0)
     end do
-    delnrm = ddanrm(neq,delta,wt,rpar,ipar)
+    delnrm = ddanrm(neq,delta,wt,ipar)
     if(delnrm > 0.33d0) go to 380
     do i = 1,neq
         e(i) = e(i) - delta(i)
@@ -2017,7 +2017,7 @@
     !-----------------------------------------------------------------------
     !
     !     estimate errors at orders k,k-1,k-2
-    enorm = ddanrm(neq,e,wt,rpar,ipar)
+    enorm = ddanrm(neq,e,wt,ipar)
     erk = sigma(k+1)*enorm
     terk = float(k+1)*erk
     est = erk
@@ -2026,7 +2026,7 @@
     do i = 1,neq
         delta(i) = phi(i,kp1) + e(i)
     end do
-    erkm1=sigma(k)*ddanrm(neq,delta,wt,rpar,ipar)
+    erkm1=sigma(k)*ddanrm(neq,delta,wt,ipar)
     terkm1 = float(k)*erkm1
     if(k > 2)go to 410
     if(terkm1 <= 0.5d0*terk)go to 420
@@ -2035,7 +2035,7 @@
     do i = 1,neq
         delta(i) = phi(i,k) + delta(i)
     end do
-    erkm2=sigma(k-1)*ddanrm(neq,delta,wt,rpar,ipar)
+    erkm2=sigma(k-1)*ddanrm(neq,delta,wt,ipar)
     terkm2 = float(k-1)*erkm2
     if(dmax1(terkm1,terkm2)>terk)go to 430
     !     lower the order
@@ -2081,7 +2081,7 @@
     do i=1,neq
         delta(i)=e(i)-phi(i,kp2)
     end do
-    erkp1 = (1.0d0/float(k+2))*ddanrm(neq,delta,wt,rpar,ipar)
+    erkp1 = (1.0d0/float(k+2))*ddanrm(neq,delta,wt,ipar)
     terkp1 = float(k+2)*erkp1
     if(k>1)go to 520
     if(terkp1>=0.5d0*terk)go to 550

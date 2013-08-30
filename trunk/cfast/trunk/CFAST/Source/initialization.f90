@@ -42,8 +42,8 @@
     use solver_parameters
     implicit none
 
-    real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
     integer :: nalg, i, ires, nnn, iflag
+    real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
     data pdzero /maxteq * 0.0d0/
     
     nalg = nm1 + nhvpvar + nhvtvar
@@ -1861,7 +1861,7 @@
     matiter = 1
     do i = 1, n
         if(n<=matiter) exit
-        call mat2mult(roomc,tempmat,nr,n,matiter)
+        call mat2mult(roomc,tempmat,nr,n)
         matiter = matiter*2
     end do
 

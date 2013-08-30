@@ -230,7 +230,7 @@ do_svn_checkout()
 check_svn_checkout()
 {
    # Check for SVN errors
-   if [[ `grep -E 'Updated|At revision' $CFASTBOT_DIR/output/stage1 | wc -l` -ne 1 ]];
+   if [[ `grep -E 'Updated|At revision' $CFASTBOT_DIR/output/stage1 | wc -l` -ne 2 ]];
    then
       echo "Errors from Stage 1 - SVN operations:" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage1 >> $ERROR_LOG

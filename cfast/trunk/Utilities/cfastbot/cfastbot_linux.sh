@@ -40,10 +40,11 @@ CFAST_SVNROOT="$CFASTBOT_HOME_DIR/cfast"
 ERROR_LOG=$CFASTBOT_DIR/output/errors
 TIME_LOG=$CFASTBOT_DIR/output/timings
 WARNING_LOG=$CFASTBOT_DIR/output/warnings
+SVN_LOG=$CFAST_HOME_DIR/SVN_LOG
 export TEXINPUTS=".:../LaTeX_Style_Files:"
 
 THIS_CFAST_FAILED=0
-CFAST_STATUS_FILE=$CFAST_SVNROOT/cfast_status
+CFAST_STATUS_FILE=$SVN_LOG/cfast_status
 LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
    LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
@@ -70,21 +71,21 @@ TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 run_auto()
 {
    SMV_SOURCE=$FDS_SVNROOT/SMV/source
-   SVN_SMVFILE=$FDS_SVNROOT/smokeview_source_revision
-   SVN_SMVLOG=$FDS_SVNROOT/smokeview_source_log
+   SVN_SMVFILE=$SVN_LOG/smokeview_source_revision
+   SVN_SMVLOG=$SVN_LOG/smokeview_source_log
 
    CFAST_SOURCE=$CFAST_SVNROOT/CFAST/Source
-   SVN_CFASTSOURCEFILE=$FDS_SVNROOT/cfast_source_revision
-   SVN_CFASTSOURCELOG=$FDS_SVNROOT/cfast_source_log
+   SVN_CFASTSOURCEFILE=$SVN_LOG/cfast_source_revision
+   SVN_CFASTSOURCELOG=$SVN_LOG/cfast_source_log
   
    CFAST_DOCS=$CFAST_SVNROOT/Docs
-   SVN_CFASTDOCSFILE=$CFAST_SVNROOT/cfast_docs_revision
-   SVN_CFASTDOCSLOG=$CFAST_SVNROOT/cfast_docs_log
+   SVN_CFASTDOCSFILE=$SVN_LOG/cfast_docs_revision
+   SVN_CFASTDOCSLOG=$SVN_LOG/cfast_docs_log
 
    SMOKEBOTDIR=~/CFASTBOT/
    SMOKEBOTEXE=./run_cfastbot.sh
 
-   MESSAGE_FILE=$CFAST_SVNROOT/message
+   MESSAGE_FILE=$SVN_LOG/message
 
    cd $SMV_SOURCE
    svn update > /dev/null

@@ -88,21 +88,21 @@ run_auto()
    MESSAGE_FILE=$SVN_LOG/message
 
    cd $SMV_SOURCE
-   svn update > /dev/null
+   svn update &> /dev/null
    THIS_SMVSVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
    THIS_SMVAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
    LAST_SMVSVN=`cat $SVN_SMVFILE`
    svn log -r $THIS_SMVSVN > $SVN_SMVLOG
 
    cd $CFAST_SOURCE
-   svn update > /dev/null
+   svn update &> /dev/null
    THIS_CFASTSOURCESVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
    THIS_CFASTSOURCEAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
    LAST_CFASTSOURCESVN=`cat $SVN_CFASTSOURCEFILE`
    svn log -r $THIS_CFASTSOURCESVN > $SVN_CFASTSOURCELOG
   
    cd $CFAST_DOCS
-   svn update > /dev/null
+   svn update &> /dev/null
    THIS_CFASTDOCSSVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
    THIS_CFASTDOCSAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
    LAST_CFASTDOCSSVN=`cat $SVN_CFASTDOCSFILE`
@@ -384,7 +384,7 @@ check_vv_cases_debug()
    then
       :
    else
-      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 > $CFASTBOT_DIR/output/stage3_errors
+      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage3_errors
@@ -405,7 +405,7 @@ check_vv_cases_debug()
    then
       :
    else
-      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 > $CFASTBOT_DIR/output/stage3_errors
+      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage3_errors
@@ -493,7 +493,7 @@ check_vv_cases_release()
    then
       :
    else
-      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage5 > $CFASTBOT_DIR/output/stage5_errors
+      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage5_errors
       grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage5_errors
       grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage5_errors
@@ -514,7 +514,7 @@ check_vv_cases_release()
    then
       :
    else
-      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage5 > $CFASTBOT_DIR/output/stage5_errors
+      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage5_errors
       grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage5_errors
       grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage5_errors
@@ -534,7 +534,7 @@ compile_smv_utilities()
 {  
    # smokezip:
    cd $FDS_SVNROOT/Utilities/smokezip/intel_linux_64
-   echo 'Compiling smokezip:' > $CFASTBOT_DIR/output/stage6a 2>&1
+   echo 'Compiling smokezip:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_zip.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
    echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
    
@@ -748,7 +748,7 @@ check_matlab_verification()
    then
       stage7a_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7a_verification > $CFASTBOT_DIR/output/stage7a_warnings
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7a_verification >> $CFASTBOT_DIR/output/stage7a_warnings
 
       echo "Warnings from Stage 7a - Matlab plotting (verification):" >> $WARNING_LOG
       cat $CFASTBOT_DIR/output/stage7a_warnings >> $WARNING_LOG
@@ -775,7 +775,7 @@ check_matlab_validation()
    then
       stage7b_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation > $CFASTBOT_DIR/output/stage7b_warnings
+      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation >> $CFASTBOT_DIR/output/stage7b_warnings
 
       echo "Warnings from Stage 7b - Matlab plotting (validation):" >> $WARNING_LOG
       cat $CFASTBOT_DIR/output/stage7b_warnings >> $WARNING_LOG
@@ -866,7 +866,7 @@ email_build_status()
 {
    echo $THIS_CFAST_FAILED>$CFAST_STATUS_FILE
    stop_time=`date`
-   echo "-------------------------------" > $TIME_LOG
+   echo "-------------------------------" >> $TIME_LOG
    echo "Host: $hostname " >> $TIME_LOG
    echo "Start Time: $start_time " >> $TIME_LOG
    echo "Stop Time: $stop_time " >> $TIME_LOG

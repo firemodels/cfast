@@ -9,7 +9,7 @@ HGL Depth: Closed Compartments,Measured Layer Depth (m),Predicted Layer Depth (m
 Flat Ceiling Jet Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,0.03 0.95,SouthEast,1,10,yes,linear,ScatterPlots/Flat_Ceiling_Jet_Temperature
 Ceiling Jet Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,0.03 0.95,SouthEast,1,10,yes,linear,ScatterPlots/Ceiling_Jet_Temperature
 Detector / Sprinkler Activation,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,500,0.03 0.95,SouthEast,1,10,yes,linear,ScatterPlots/Activation_Time
-Plume Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,500,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Plume_Temperature
+Plume Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,0.03 0.95,SouthEast,1,14,yes,linear,ScatterPlots/Plume_Temperature
 Oxygen Concentration,Measured Drop in Volume Fraction,Predicted Drop in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Oxygen_Concentration
 Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,9,yes,linear,ScatterPlots/Carbon_Dioxide_Concentration
 Smoke Concentration,Measured Density (mg/m3),Predicted Density (mg/m3),0,600,0.03 0.95,SouthEast,1,33,yes,linear,ScatterPlots/Smoke_Concentration

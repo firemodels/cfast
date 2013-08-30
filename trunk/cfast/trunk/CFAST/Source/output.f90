@@ -2,7 +2,9 @@
 
     use cshell
     implicit none
-    character name*(*), obuf*14, aminrev*2
+    
+    character(*), intent(in) :: name
+    character obuf*14, aminrev*2
     integer majver, minver, minrev
 
     ! first the date
@@ -38,7 +40,9 @@
     use cfast_main
     use cshell
     implicit none
-    integer rev_cfast, imajor, iminor, iminorrev, iunit
+    
+    integer, intent(in) :: iunit
+    integer rev_cfast, imajor, iminor, iminorrev
 
     call splitversion(version,imajor,iminor,iminorrev)
 
@@ -64,7 +68,12 @@
     end subroutine versionout
 
     subroutine splitversion (version,imajor,iminor,iminorrev)
-    integer version,imajor,iminor,iminorrev
+    
+    implicit none
+    
+    integer, intent(in) :: version
+    integer, intent(out) :: imajor,iminor,iminorrev
+    
     if (version>=1000) then
         imajor = version / 1000
         iminor = mod(version,1000) / 100
@@ -80,6 +89,8 @@
     subroutine printfireparameters
 
     use cfast_main
+    
+    implicit none
     integer i
 
     write(*,5) gmwf,hcomba,te,tgignt,qradrl,limo2
@@ -116,6 +127,7 @@
     use cfast_main
     use fltarget
     use objects2
+    implicit none
     
     integer iobj,j,i
 
@@ -175,8 +187,8 @@
     use cshell
     implicit none
 
-    integer isw
-    real(8) :: time
+    integer, intent(in) :: isw
+    real(8), intent(in) :: time
 
     if (outputformat>1) then
         write (iofilo,5000) time
@@ -249,7 +261,8 @@
     use objects1
     implicit none
 
-    integer length, i, isw, ir, j
+    integer, intent(in) :: isw
+    integer length, i, ir, j
     real(8) :: xx0, fheight, xems, xemp, xqf, xqupr, xqlow
 
     external length
@@ -311,11 +324,11 @@
     use cshell
     implicit none
 
-    logical swl(4)
-    integer iwptr(4)
-    character stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255,lnames(2)*5, wtype(4)*10
+    logical :: swl(4)
+    integer :: iwptr(4)
+    character :: stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255,lnames(2)*5, wtype(4)*10
     external length
-    integer length, i, j, layer, ic, lsp, iw
+    integer :: length, i, j, layer, ic, lsp, iw
 
     data lnames /'Upper', 'Lower'/
     data iwptr /1, 3, 4, 2/
@@ -394,13 +407,15 @@
     use cshell
     use vents
     implicit none
-
+    
+    real(8), intent(in) :: time
     integer :: irm, i, j, k, iijk, ii, inode, iii
-    real(8) :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow, time
+    real(8) :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow
 
     character ciout*8, cjout*12, outbuf*132
     dimension flow(6)
     logical first
+    
     xx0 = 0.0d0
     write (iofilo,5000)
 
@@ -525,8 +540,9 @@
     use vents
     implicit none
 
+    real(8), intent(in) :: time
     integer :: irm, i, ii, iii, inode
-    real(8) :: xx0, flow(6), time
+    real(8) :: xx0, flow(6)
 
     character :: ciout*14, cjout*12, outbuf*132
     logical first
@@ -590,7 +606,8 @@
     use objects2
     implicit none
 
-    integer :: i, iounit, ir
+    integer, intent(in) :: iounit
+    integer :: i, ir
     real(8) :: xx0, xemp, xqf
 
     xx0 = 0.0d0
@@ -636,7 +653,8 @@
     use fltarget
     implicit none
 
-    integer :: length, itprt, i, iw, itarg, itctemp, isw
+    integer, intent(in) :: isw, itprt
+    integer :: length, i, iw, itarg, itctemp
     real(8) :: xx0, x100, ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
 
     integer iwptr(4)
@@ -780,8 +798,9 @@
     use cshell
     implicit none
 
+    real(8), intent(in) :: time
     integer :: nhalls, i
-    real(8) :: tstart, vel, depth, dist, time
+    real(8) :: tstart, vel, depth, dist
 
 
     nhalls = 0
@@ -810,10 +829,9 @@
     return
     end subroutine rslthall
 
-    subroutine outinitial (ISW)
+    subroutine outinitial
 
     !     Description:  Output initial test case description
-    !     Arguments: ISW   Print switch for restart option, 1=Print
 
     use cfast_main
     use cshell
@@ -821,7 +839,7 @@
     implicit none
 
     external length
-    integer imajor, iminor, iminorrev, isw, length
+    integer imajor, iminor, iminorrev, length
 
     call splitversion(version,imajor,iminor,iminorrev)
 
@@ -1082,7 +1100,9 @@
     use cfast_main
     implicit none
 
-    integer :: i, ind, iext, irm
+    integer, intent(in) :: ind
+    integer, intent(out) :: irm, iext
+    integer :: i
 
     do i = 1, next
         if (hvnode(2,i)==ind) then
@@ -1202,7 +1222,8 @@
     character(8) function chksum(file)
     
     implicit none
-    character(*) :: file
+    
+    character(*), intent(in) :: file
     chksum = '00000000'
     return
     end function chksum
@@ -1216,7 +1237,8 @@
     use fltarget
     implicit none
 
-    integer :: itarg, isw, j
+    integer, intent(in) :: isw
+    integer :: itarg, j
 
     character cbuf*255
 
@@ -1301,8 +1323,9 @@
     use fltarget
     implicit none
 
-    real(8) :: positionvector(*)
-    integer :: targetnumber, i
+    integer, intent(in) :: targetnumber
+    real(8), intent(out) :: positionvector(*)
+    integer :: i
 
     do i = 1, 6
         positionvector (i) = xxtarg(i,targetnumber)
@@ -1381,8 +1404,10 @@
     
     implicit none
 
-    real(8) :: wm(jacdim,*), buf(maxeq), xx0, tsec, wmii, wmij, tmp, tmp1
-    integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, neqs, itcol, icdx, iitmp
+    real(8), intent(in) :: wm(jacdim,*), tsec
+    integer, intent(in) :: neqs
+    real(8) :: buf(maxeq), xx0, wmii, wmij, tmp, tmp1
+    integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, itcol, icdx, iitmp
     logical :: firstc
     character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
 
@@ -1498,7 +1523,7 @@
     
     implicit none
 
-    real(8) :: t
+    real(8), intent(in) :: t
     integer :: iounit
     logical :: firstc = .true.
     save iounit
@@ -1564,10 +1589,10 @@
     use cenviro
     use cfin
     use opt
-    
     implicit none
-    
-    integer :: icomp, itmp, irm, iw, iounit
+ 
+    integer, intent(in) :: iounit, icomp
+    integer :: itmp, irm, iw
 
     write(lbuf,*)'Solution component with the greatest error is'
     call xerror(lbuf,0,1,0)
@@ -1623,7 +1648,6 @@
     use cshell
     use params
     use wnodes
-    
     implicit none
 
     real(8) :: xqf, dp, dt, t
@@ -1789,7 +1813,10 @@
 
     implicit none
     
-    integer :: ic, count, mrkr, itin, ridx, retbuf(itin), mxdmp
+    integer, intent(in) :: ic, count, itin, mxdmp
+    integer, intent(out) :: ridx, retbuf(itin)
+    integer :: mrkr
+    
     mrkr = 106
     ridx = ridx + 1
     retbuf(ridx) = mrkr
@@ -1806,8 +1833,8 @@
 
     implicit none
     
-    integer errorcode
-    real(8) T, dT
+    integer, intent(out) :: errorcode
+    real(8), intent(in) :: T, dT
 
     rewind (12)
     write(12,5001) t, dt
@@ -1833,10 +1860,9 @@
     use params
     use solver_parameters
     use wnodes
-    
     implicit none
 
-    character(*) :: file
+    character(*), intent(in) :: file
     integer :: funit, nnnopt, i, j, iunit
 
     nnnopt = 21
@@ -1992,10 +2018,9 @@
     subroutine deleteoutputfiles (outputfile)
 
     use ifport
-    
     implicit none
 
-    character (*) :: outputfile
+    character(*), intent(in) :: outputfile
     logical :: doesthefileexist
     integer(2) :: filecount
 

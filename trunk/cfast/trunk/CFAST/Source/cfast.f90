@@ -112,7 +112,7 @@
             itmmax = xdelt + 1
             tstop = itmmax - 1
 
-            call outinitial(1)
+            call outinitial
 
             call cptime(tbeg)
             call solve(tstop,errorcode)

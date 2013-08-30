@@ -34,15 +34,19 @@ Dataplot_Inputs_File = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Verification/'];
 Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
+
+% Statistics output options
+
+Stats_Output = 1;
 Output_File = [pwd, '/CFAST_verification_scatterplot_outputs.csv'];
-Stats_Output = 2;
 Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_statistics.tex'];
-Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_histograms.tex'];
 
 % Override the plot style options with NRC 1824 plot options
 
-NRC_Options = true;
-Append_To_Scatterplot_Title = ' (CFAST)';
+NRC_Options = false;
+Append_To_Scatterplot_Title = '';
+
+% Run dataplot and scatplot scripts
 
 [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
 scatplot(saved_data, drange, ...
@@ -55,7 +59,7 @@ scatplot(saved_data, drange, ...
          'NRC_Options', NRC_Options, ...
          'Append_To_Scatterplot_Title', Append_To_Scatterplot_Title)
 
-% Miscellaneous other scripts for special cases
+% Special cases
 
  
 display('Verification scripts completed successfully!')

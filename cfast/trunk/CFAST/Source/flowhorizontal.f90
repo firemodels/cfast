@@ -39,7 +39,6 @@
     real(eb) :: factor2, qchfraction, height, width
     integer :: nirm, ifrom, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
     real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
-    integer :: errorcode
 
     ! temporary declaration
     nirm = nm1
@@ -88,7 +87,7 @@
                 vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
                 
                 if (prnslab) then
-                    call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, errorcode)
+                    call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab)
                 endif
 
                 ! update hall info for vents connected from fire room to hall

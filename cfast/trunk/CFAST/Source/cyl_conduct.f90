@@ -53,7 +53,7 @@
 
     ! declare local variables
 
-    integer :: nn, i, ii, nr, niter, iter
+    integer :: nn, i, nr, niter, iter
     parameter (nn = 50)
     real(eb), dimension(nn) :: aim1, ai, aip1, tnew
     real(eb), dimension(nn) :: cc, dd
@@ -123,12 +123,12 @@
 
 ! --------------------------- get_flux -------------------------------------------
 
-    subroutine get_flux(t,temp_cable,temp_amb,temp_shroud,flux_out)
+    subroutine get_flux(t,temp_cable,temp_shroud,flux_out)
     
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: t,temp_cable,temp_amb
+    real(eb), intent(in) :: t,temp_cable
     real(eb), intent(out) :: flux_out,temp_shroud
 
     real(eb) :: factor, factor2, temp_gas

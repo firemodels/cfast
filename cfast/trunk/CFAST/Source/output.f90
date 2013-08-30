@@ -194,14 +194,14 @@
         write (iofilo,5000) time
         call rsltlay
         call rsltfir(isw)
-        call rslttar(isw,1)
+        call rslttar(1)
         call rsltsprink
-        call rslthall(time)
+        call rslthall()
         call rsltsp
         if(trace) then
-            call rsltflwt (time)
+            call rsltflwt ()
         else
-            call rsltflw (time)
+            call rsltflw ()
         endif
     else if (outputformat==1) then
         write (iofilo,5000) time
@@ -399,7 +399,7 @@
 5060 format (a13)
     end subroutine rsltsp
 
-    subroutine rsltflw (time)
+    subroutine rsltflw ()
 
     !     Description:  Output the vent flow at the current time
 
@@ -408,7 +408,6 @@
     use vents
     implicit none
     
-    real(8), intent(in) :: time
     integer :: irm, i, j, k, iijk, ii, inode, iii
     real(8) :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow
 
@@ -531,7 +530,7 @@
 5020 format (' ',a7,8x,a12,1x,a)
     end subroutine rsltflw
 
-    subroutine rsltflwt (time)
+    subroutine rsltflwt ()
 
     !     Description:  Output the vent flow at the current time
 
@@ -540,7 +539,6 @@
     use vents
     implicit none
 
-    real(8), intent(in) :: time
     integer :: irm, i, ii, iii, inode
     real(8) :: xx0, flow(6)
 
@@ -641,7 +639,7 @@
 5031 format (i5,7x,f8.1,8(' '),2x,8(' '),1p4g10.3)
     end subroutine rsltcmp
 
-    subroutine rslttar (isw,itprt)
+    subroutine rslttar (itprt)
 
     !     description:  output the temperatures and fluxes on surfaces and targets at the current time
     !     arguments: isw   1 if called from cfast, 0 otherwise (effects printout of object names -- only cfast knows actual names, others just do it by numbers
@@ -653,7 +651,7 @@
     use fltarget
     implicit none
 
-    integer, intent(in) :: isw, itprt
+    integer, intent(in) :: itprt
     integer :: length, i, iw, itarg, itctemp
     real(8) :: xx0, x100, ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
 
@@ -789,7 +787,7 @@
     return
     end subroutine rsltsprink
     
-    subroutine rslthall (time)
+    subroutine rslthall ()
 
     !     Description:  Output the conditions for each hall
 
@@ -798,7 +796,6 @@
     use cshell
     implicit none
 
-    real(8), intent(in) :: time
     integer :: nhalls, i
     real(8) :: tstart, vel, depth, dist
 
@@ -1219,11 +1216,10 @@
 5070 format (1P10G10.2,2x,2g10.2)
     end subroutine outfire
 
-    character(8) function chksum(file)
+    character(8) function chksum()
     
     implicit none
     
-    character(*), intent(in) :: file
     chksum = '00000000'
     return
     end function chksum
@@ -1580,7 +1576,7 @@
     return
     end  subroutine opndbg
 
-    subroutine fnd_comp (iounit,icomp)
+    subroutine fnd_comp (icomp)
 
     !     Arguments: IOUNIT
     !                ICOMP
@@ -1591,7 +1587,7 @@
     use opt
     implicit none
  
-    integer, intent(in) :: iounit, icomp
+    integer, intent(in) :: icomp
     integer :: itmp, irm, iw
 
     write(lbuf,*)'Solution component with the greatest error is'
@@ -1737,7 +1733,7 @@
         write (*,*) ' '
     else if (ikey==3) then
         write (*,5090) t, dt
-        call fnd_comp(iofilo,ieqmax)
+        call fnd_comp(ieqmax)
         write(*,6030)
         do iroom = 1, nm1
             write(*,6000)iroom,zzrelp(iroom),zzhlay(iroom,lower),zztemp(iroom,lower),zztemp(iroom,upper),zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
@@ -1801,7 +1797,7 @@
 
     end subroutine debugpr
 
-    subroutine oput (ic,count,itin,mxdmp,ridx,retbuf)
+    subroutine oput (ic,count,itin,ridx,retbuf)
 
     !     arguments: ic
     !                count
@@ -1813,7 +1809,7 @@
 
     implicit none
     
-    integer, intent(in) :: ic, count, itin, mxdmp
+    integer, intent(in) :: ic, count, itin
     integer, intent(out) :: ridx, retbuf(itin)
     integer :: mrkr
     

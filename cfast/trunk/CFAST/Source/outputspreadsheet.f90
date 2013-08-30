@@ -1,4 +1,4 @@
-    subroutine SpreadSheetNormal (time, errorcode)
+    subroutine SpreadSheetNormal (time)
 
     ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
@@ -11,7 +11,7 @@
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     real(8) :: time, outarray(maxhead), xx0, fheight
     logical :: firstc
-    integer :: position, errorcode, i, itarg, izzvol
+    integer :: position, i, itarg, izzvol
 
     data firstc/.true./
     save firstc
@@ -104,7 +104,7 @@
     return
     end subroutine SSaddtolist
 
-    SUBROUTINE SpreadSheetFlow (Time, errorcode)
+    SUBROUTINE SpreadSheetFlow (Time)
 
     !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
@@ -117,7 +117,7 @@
     real(8) :: time, outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
     logical :: firstc
     data firstc /.true./
-    integer :: position, errorcode, irm, i,j,k,iijk,ii,iii,inode
+    integer :: position, irm, i,j,k,iijk,ii,iii,inode
     save firstc
 
     if (firstc) then
@@ -225,7 +225,7 @@
 
     end subroutine SpreadSheetFlow
 
-    subroutine SpreadSheetFlux (Time, errorcode)
+    subroutine SpreadSheetFlux (Time)
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
@@ -237,7 +237,7 @@
 
     integer, parameter :: maxoutput=4*nr+9*mxtarg
     real(8) :: outarray(maxoutput), time, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
-    integer :: iwptr(4), errorcode, position,i,iw,itarg,itctemp,iroom
+    integer :: iwptr(4), position,i,iw,itarg,itctemp,iroom
     external length
     data iwptr /1, 3, 4, 2/
     logical :: firstc
@@ -350,7 +350,7 @@
 5050 format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
     end subroutine spreadsheetflux
 
-    SUBROUTINE SpreadSheetSpecies (time, errorcode)
+    SUBROUTINE SpreadSheetSpecies (time)
 
     !	Write out the species to the spread sheet file
 
@@ -361,7 +361,7 @@
 
     integer, parameter :: maxhead = 1+22*nr
     real(8) :: time, outarray(maxhead), ssvalue
-    integer :: position, errorcode, i, lsp, layer
+    integer :: position, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
     data tooutput /.false.,5*.true.,.false.,4*.true./
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
@@ -406,7 +406,7 @@
 110 format('Exceeded size of output files in species spread sheet')
     END subroutine SpreadSheetSpecies
 
-    SUBROUTINE SpreadSheetSMV (time, errorcode)
+    SUBROUTINE SpreadSheetSMV (time)
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
 
@@ -418,7 +418,7 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(8) :: time, outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
     logical :: firstc
-    integer :: position, errorcode
+    integer :: position
     integer :: toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
     integer :: itop, ibot
     data toprm /1/, botrm /2/
@@ -523,7 +523,7 @@
     return
     end function rev_outputspreadsheet
     
-    subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet, errorcode)
+    subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet)
     
     use debug
     use cenviro
@@ -556,7 +556,7 @@
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
     real(8) :: time, outarray(maxhead)
     logical :: firstc
-    integer :: position, errorcode, i, j, k, nprod
+    integer :: position, i, j, k, nprod
     data firstc/.true./
     save firstc
     
@@ -614,7 +614,7 @@
     return
     end subroutine spreadsheetresid
     
-    subroutine SpreadSheetFSlabs (time, ir1, ir2, iv, nslab, qslab, errorcode)
+    subroutine SpreadSheetFSlabs (time, ir1, ir2, iv, nslab, qslab)
     
     use debug
     use cenviro
@@ -626,7 +626,7 @@
     implicit none
     
     real(8) :: time, qslab(mxslab)
-    integer :: ir1, ir2, iv, nslab, errorcode
+    integer :: ir1, ir2, iv, nslab
     real(8) :: r1, r2, v, slab
     
     integer,parameter :: maxhead = 1 + mxvents*(4 + mxslab)

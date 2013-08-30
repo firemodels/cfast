@@ -1,8 +1,8 @@
 % McGrattan
 % March 21, 2011
-% master_validation_script.m
+% CFAST_verification_script.m
 %
-% This script creates the plots that are included in the FDS Validation 
+% This script creates the plots that are included in the CFAST V&V
 % Guide. It consists of calls to other scripts contained within the
 % subfolder called "scripts". 
 %
@@ -27,9 +27,6 @@ addpath 'scripts'
 
 % Scripts that run prior to dataplot
 
-%flame_height
-%cat_mccaffrey
-%NIST_RSE
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
@@ -58,26 +55,7 @@ scatplot(saved_data, drange, ...
          'NRC_Options', NRC_Options, ...
          'Append_To_Scatterplot_Title', Append_To_Scatterplot_Title)
 
-cfil = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
-vdir = [pwd,'/../../Verification/'];
-plotdir = [pwd,'/../../Docs/Validation_Guide/FIGURES/'];
-qfil = [pwd,'/CFAST_verification_scatterplot_inputs.csv'];
-output_file = [pwd,'/CFAST_verification_scatterplot_output.csv'];
-
-[saved_data,drange] = dataplot(cfil,vdir,plotdir);
-scatplot(saved_data,drange,qfil,plotdir,output_file)
-
 % Miscellaneous other scripts for special cases
 
-%harrisonplumes
-%beyler_hood
-%check_hrr
-%sandia_helium_plume
-%sandia_methane_fire
-%spray_attenuation
-%Cup_burner
-%vettori_flat
-%vettori_sloped
-%flame_height2
  
 display('Verification scripts completed successfully!')

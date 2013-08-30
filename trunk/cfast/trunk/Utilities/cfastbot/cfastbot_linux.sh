@@ -183,8 +183,14 @@ clean_svn_repo()
    # Check to see if FDS repository exists
    if [ -e "$FDS_SVNROOT" ]
    then
-      # Continue along
-      :
+      if [[ $NO_SVN_UPDATE ]] ; then
+         echo "Skipping SVN revert (per user option):" >> $CFASTBOT_DIR/output/stage1
+      else
+         # Revert and clean up temporary unversioned and modified versioned repository files
+         cd $FDS_SVNROOT
+         svn revert -Rq *
+         svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
+      fi
    # If not, create FDS repository and checkout
    else
       echo "Downloading FDS repository:" >> $CFASTBOT_DIR/output/stage1 2>&1
@@ -271,9 +277,8 @@ compile_cfast_db()
 {
    # Build debug CFAST
    cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
-   rm -f cfast6_linux_64_db
-   make --makefile ../makefile clean &> /dev/null
-   ./make_cfast.sh >> $CFASTBOT_DIR/output/stage2 2>&1
+   make -f ../makefile clean &> /dev/null
+   ./make_cfast.sh &> $CFASTBOT_DIR/output/stage2
  }
 
 check_compile_cfast_db()
@@ -419,9 +424,8 @@ compile_cfast()
 { 
    # Build release CFAST
    cd $CFAST_SVNROOT/CFAST/intel_linux_64
-   rm -f cfast6_linux_64
-   make --makefile ../makefile clean &> /dev/null
-   ./make_cfast.sh >> $CFASTBOT_DIR/output/stage4 2>&1
+   make -f ../makefile clean &> /dev/null
+   ./make_cfast.sh &> $CFASTBOT_DIR/output/stage4
 }
 
 check_compile_cfast()
@@ -529,21 +533,18 @@ compile_smv_utilities()
 {  
    # smokezip:
    cd $FDS_SVNROOT/Utilities/smokezip/intel_linux_64
-   rm -f *.o smokezip_linux_64
    echo 'Compiling smokezip:' > $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_zip.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
    echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
    
    # smokediff:
    cd $FDS_SVNROOT/Utilities/smokediff/intel_linux_64
-   rm -f *.o smokediff_linux_64
    echo 'Compiling smokediff:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_diff.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
    echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
    
    # background:
    cd $FDS_SVNROOT/Utilities/background/intel_linux_32
-   rm -f *.o background
    echo 'Compiling background:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_background.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
 }
@@ -572,7 +573,6 @@ compile_smv_db()
 {
    # Clean and compile SMV DB
    cd $FDS_SVNROOT/SMV/Build/intel_linux_64_db
-   rm -f smokeview_linux_64_db
    ./make_smv.sh &> $CFASTBOT_DIR/output/stage6b
 }
 
@@ -636,7 +636,6 @@ compile_smv()
 {
    # Clean and compile SMV
    cd $FDS_SVNROOT/SMV/Build/intel_linux_64
-   rm -f smokeview_linux_64
    ./make_smv.sh &> $CFASTBOT_DIR/output/stage6d
 }
 

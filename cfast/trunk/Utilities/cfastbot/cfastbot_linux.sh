@@ -358,15 +358,36 @@ run_vv_cases_debug()
 
 check_vv_cases_debug()
 {
-   # Scan and report any errors in CFAST V&V cases
-   cd $CFAST_SVNROOT
+   # Scan and report any errors in CFAST Verification cases
+   cd $CFAST_SVNROOT/Verification
 
    if [[ `grep 'Run aborted' -rI ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
       [[ `grep ERROR: -rI *` == "" ]] && \
       [[ `grep 'STOP: Numerical' -rI *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI *` == "" ]]
    then
-      stage3_success=true
+      :
+   else
+      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 > $CFASTBOT_DIR/output/stage3_errors
+      grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage3_errors
+      grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage3_errors
+      
+      echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
+      cat $CFASTBOT_DIR/output/stage3_errors >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+      THIS_CFAST_FAILED=1
+   fi
+
+   # Scan and report any errors in CFAST Validation cases
+   cd $CFAST_SVNROOT/Validation
+
+   if [[ `grep 'Run aborted' -rI ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
+      [[ `grep ERROR: -rI *` == "" ]] && \
+      [[ `grep 'STOP: Numerical' -rI *` == "" ]] && \
+      [[ `grep -A 20 forrtl -rI *` == "" ]]
+   then
+      :
    else
       grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 > $CFASTBOT_DIR/output/stage3_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage3_errors
@@ -436,15 +457,36 @@ run_vv_cases_release()
 
 check_vv_cases_release()
 {
-   # Scan and report any errors in CFAST V&V cases
-   cd $CFAST_SVNROOT
+   # Scan and report any errors in CFAST Verificaion cases
+   cd $CFAST_SVNROOT/Verification
 
    if [[ `grep 'Run aborted' -rI ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
       [[ `grep ERROR: -rI *` == "" ]] && \
       [[ `grep 'STOP: Numerical' -rI *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI *` == "" ]]
    then
-      stage5_success=true
+      :
+   else
+      grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage5 > $CFASTBOT_DIR/output/stage5_errors
+      grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage5_errors
+      grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage5_errors
+      grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage5_errors
+      
+      echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
+      cat $CFASTBOT_DIR/output/stage5_errors >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+      THIS_CFAST_FAILED=1
+   fi
+
+   # Scan and report any errors in CFAST Validation cases
+   cd $CFAST_SVNROOT/Validation
+
+   if [[ `grep 'Run aborted' -rI ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
+      [[ `grep ERROR: -rI *` == "" ]] && \
+      [[ `grep 'STOP: Numerical' -rI *` == "" ]] && \
+      [[ `grep -A 20 forrtl -rI *` == "" ]]
+   then
+      :
    else
       grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage5 > $CFASTBOT_DIR/output/stage5_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage5_errors

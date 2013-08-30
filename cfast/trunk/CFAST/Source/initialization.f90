@@ -43,9 +43,10 @@
     implicit none
 
     integer :: nalg, i, ires, nnn, iflag
-    real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
+    real(8) :: hvpsolv(nnn), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
     data pdzero /maxteq * 0.0d0/
     
+    if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
     nalg = nm1 + nhvpvar + nhvtvar
     do i = 1, nalg
         p2(i) = hvpsolv(i)
@@ -114,9 +115,11 @@
     use solver_parameters
     implicit none
 
-    real(8) :: hvsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
+    real(8) :: hvsolv(nnn), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer :: i, ires, nnn, iflag
     data pdzero /maxteq * 0.0d0/
+    
+    if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
     do i = 1, nequals
         p2(i) = pinit(i)
     end do
@@ -183,11 +186,12 @@
     use solver_parameters
     implicit none
 
-    real(8) :: hvpsolv(*), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
+    real(8) :: hvpsolv(nnn), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer nalg, i, ii, ieq1, ieq2, ieq3, ires, nnn, iflag
     data pdzero /maxteq * 0.0d0/
     nalg = nm1 + nhvpvar + nhvtvar
 
+    if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
     do i = 1, nequals
         p2(i) = pinit(i)
     end do

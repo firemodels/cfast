@@ -1124,21 +1124,21 @@
     !     the maximum number of steps was taken before reaching tout
 
 610 mesg = 'at current t (=r1) 500 steps taken on this call before reaching tout'
-    call xerrmod(mesg,38,610,1,tn,0.0d0)
+    call xerrmod(mesg,610,1,tn,0.0d0)
     go to 690
 
     !     too much accuracy for machine precision
 620 mesg = 'at t (=r1) too much accuracy requested for precision of machine. rtol and atol'// ' were increased to appropriate values'
-    call xerrmod(mesg,47,620,1,tn,0.0d0)
+    call xerrmod(mesg,620,1,tn,0.0d0)
     go to 690
 
 630 mesg = 'at t (=r1) some element of wt has become <= 0.0'
-    call xerrmod(mesg,38,630,1,tn,0.0d0)
+    call xerrmod(mesg,630,1,tn,0.0d0)
     go to 690
 
     !     error test failed repeatedly or with h=hmin
 640 mesg = 'at t (=r1) and stepsize h (=r2) the error test failed repeatedly or with abs(h)=hmin'
-    call xerrmod(mesg,44,640,2,tn,h)
+    call xerrmod(mesg,640,2,tn,h)
     go to 690
 
     !     corrector convergence failed repeatedly or with h=hmin
@@ -1148,27 +1148,27 @@
 
     !     the iteration matrix is singular
 660 mesg = 'at t (=r1) and stepsize h (=r2) the iteration matrix is singular'
-    call xerrmod(mesg,44,660,2,tn,h)
+    call xerrmod(mesg,660,2,tn,h)
     go to 690
 
     !     corrector failure preceeded by error test failures.
 670 mesg = 'at t (=r1) and stepsize h (=r2) the corrector could not converge.  also, the'// ' error test failed repeatedly.'
-    call xerrmod(mesg,44,670,2,tn,h)
+    call xerrmod(mesg,670,2,tn,h)
     go to 690
 
     !     corrector failure because ires = -1
 675 mesg = 'at t (=r1) and stepsize h (=r2) the corrector could not converge because'// ' ires was equal to minus one'
-    call xerrmod(mesg,44,675,2,tn,h)
+    call xerrmod(mesg,675,2,tn,h)
     go to 690
 
     !     failure because ires = -2
 680 mesg = 'at t (=r1) and stepsize h (=r2) ires was equal to minus two'
-    call xerrmod(mesg,40,680,2,tn,h)
+    call xerrmod(mesg,680,2,tn,h)
     go to 690
 
     !     failed to compute initial yprime
 685 mesg = 'at t (=r1) and stepsize h (=r2) the initial yprime could not be computed'
-    call xerrmod(mesg,80,685,2,tn,h)
+    call xerrmod(mesg,685,2,tn,h)
     go to 690
 
     !     collective return from errors

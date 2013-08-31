@@ -1,3 +1,6 @@
+
+! --------------------------- xerror -------------------------------------------
+
     subroutine xerror(messg,nmessg,nerr,level)
 
     !     routine: xerror
@@ -16,11 +19,13 @@
     !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times this call is executed.
     !               (in this stub routine, LEVEL=2 causes a message to be printed and then a stop. LEVEL=-1,0,1 causes a message to be printed and then a return.
 
+    use precision_parameters
     implicit none
 
-    character(*) :: messg
-    real(8), parameter :: xx0 = 0.0d0
-    integer nmessg, nmess, level, nerr
+    character(*), intent(in) :: messg
+    integer, intent(in) :: nmessg, level, nerr
+    
+    integer :: nmess
 
     if(nmessg==0)then
         nmess = len_trim (messg)
@@ -29,10 +34,12 @@
     endif
     nmess = max(1,nmess)
 
-    if(level/=-2) call xerrwv(messg,nmess,nerr,level,0,0,0,0,xx0,xx0)
+    if(level/=-2) call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
 
     return
     end subroutine xerror
+
+! --------------------------- xerrwv -------------------------------------------
 
     subroutine xerrwv(msg,nmes,nerr,level,ni,i1,i2,nnr,r1,r2)
 
@@ -47,12 +54,15 @@
     !                nnr - number of reals (0, 1, or 2) to be printed with message.
     !                r1,r2 - reals to be printed, depending on nnr.
 
+    use precision_parameters
     use cshell
     implicit none
 
-    integer :: nmes, nerr, level, ni, i1, i2, nnr, i, lunit, mesflg
-    real(8) :: r1, r2
-    character :: msg(nmes)*1
+    integer, intent(in) :: nmes, nerr, level, ni, i1, i2, nnr
+    real(eb), intent(in) :: r1, r2
+    character, intent(in) :: msg(nmes)*1
+    
+    integer :: i, lunit, mesflg
 
     ! define message print flag and logical unit number
     mesflg = 1
@@ -79,7 +89,9 @@
 
     end subroutine xerrwv
 
-    real(8) function d1mach (i)
+! --------------------------- d1mach -------------------------------------------
+
+    real(eb) function d1mach (i)
 
     !     routine: d1mach
     !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.  it is a function subprogram with one
@@ -106,9 +118,12 @@
     !           i1mach(12) = emin, the smallest exponent e.
     !           i1mach(13) = emax, the largest exponent e.
     
+    use precision_parameters
     implicit none
-    integer :: i
-    real(8) :: b, x
+    
+    integer, intent(in) :: i
+    
+    real(eb) :: b, x
 
     x = 1.0d0
     b = radix(x)
@@ -130,6 +145,8 @@
     return
     end
 
+! --------------------------- xerrormod -------------------------------------------
+
     subroutine xerrmod(mesg,nerr,nnr,r1,r2)
 
     !     routine: xerrmod
@@ -140,13 +157,16 @@
     !                nnr - number of reals (0, 1, or 2) to be printed with message.
     !                r1,r2 - reals to be printed, depending on nnr.
 
+    use precision_parameters
     use cparams
     use cshell
     implicit none
 
-    integer :: nerr, nnr, lm
-    real(8) :: r1, r2
-    character :: mesg*(*)
+    integer, intent(in) :: nerr, nnr
+    real(eb), intent(in) :: r1, r2
+    character, intent(in) :: mesg*(*)
+    
+    integer :: lm
 
     lm = len_trim(mesg)
 
@@ -161,6 +181,8 @@
 5002 format('ierror,r1,r2 =',i5,2d14.4)
     end subroutine xerrmod
 
+! --------------------------- cfastexit -------------------------------------------
+
     subroutine cfastexit (name, errorcode)
 
     !     routine: cfastexit
@@ -172,8 +194,8 @@
     use cshell
     use iofiles
 
-    character name*(*)
-    integer errorcode
+    character, intent(in) :: name*(*)
+    integer, intent(in) :: errorcode
 
     if (errorcode==0) then
         write(logerr, '(''Normal exit from '',a)') trim(name)
@@ -184,6 +206,8 @@
     stop
 
     end subroutine cfastexit
+
+! --------------------------- cmdline -------------------------------------------
 
     subroutine cmdline (nargs,strs,iarg,iopt)
 
@@ -196,9 +220,12 @@
 
     implicit none
 
-    integer nargs 
-    integer iarg(nargs), iopt(26), ic, ia, i   
-    character strs(nargs)*(*), cmdlin*127, optsep
+    integer, intent(inout) :: nargs
+    integer, intent(out) :: iarg(nargs), iopt(26)
+    character, intent(out) :: strs(nargs)*(*) 
+    
+    integer :: ic, ia, i 
+    character :: cmdlin*127, optsep
 
     optsep = '/'
 
@@ -279,6 +306,8 @@
     return
     end subroutine cmdline
 
+! --------------------------- cmove -------------------------------------------
+
     subroutine cmove(cmdlin,i1,i2,i3,i4,i5,chr)
 
     !     routine: cmove
@@ -291,8 +320,12 @@
     !                i5     position of newly vacated space in the string
     !                chr    character to fill that space
 
-    character temp*127, cmdlin*(*), chr
-    integer i1, i2, i3, i4, i5
+    character, intent(in) :: chr
+    integer, intent(in) :: i1, i2, i3, i4, i5
+    
+    character, intent(out) :: cmdlin*(*)
+    
+    character :: temp*127 
     
     temp = cmdlin
     temp(i1:i2) = cmdlin(i3:i4)
@@ -300,6 +333,8 @@
     cmdlin = temp
     return
     end subroutine cmove
+
+! --------------------------- getcl -------------------------------------------
 
     subroutine getcl(cmdlin)
 
@@ -310,7 +345,8 @@
     use ifport
     use cfin
 
-    character cmdlin*127
+    character, intent(out) :: cmdlin*127
+    
     integer first, last, lpoint
     integer maxarg, iar, i, ic
     logical valid
@@ -337,6 +373,7 @@
     return
     end
 
+! --------------------------- convrt -------------------------------------------
 
     subroutine convrt(coord,first,last,type,i0,x0)
 
@@ -349,13 +386,18 @@
     !                i0     value if integer
     !                x0     value if real
 
+    use precision_parameters
     use cfin
 
-    character(*) :: coord
+    integer, intent(in) :: first, last, type
+    character(*), intent(in) :: coord
+    
+    integer, intent(out) :: i0
+    
+    real(fb), intent(out) :: x0
+    
     character(20) :: decod
-    integer :: first, last, type, i0
     integer lfirst,llast
-    real :: x0
 
     ! get data type
     call datype(coord,first,last,type)
@@ -375,13 +417,16 @@
     return
     end subroutine convrt
 
+! --------------------------- inum -------------------------------------------
+
     integer function inum(strng)
 
     !     routine: inum
     !     purpose: convert string into an integer
     !     arguments: strng - string containing number to be converted.
 
-    character strng*(*)
+    character, intent(in) :: strng*(*)
+    
     integer ival,isgn,i,ic
     
     ival = 0
@@ -395,13 +440,17 @@
     return
     end function inum
 
+! --------------------------- rnum -------------------------------------------
+
     real function rnum(strng)
 
     !     routine: rnum
     !     purpose: convert string into an real number
     !     arguments: strng - string containing number to be converted.
 
-    character strng*(*), chr
+    character, intent(in) :: strng*(*)
+    
+    character :: chr
     integer isgn,idec,iesgn,iexp,ip,ic
     real rval,eval
     
@@ -453,6 +502,8 @@
     return
     end function rnum
 
+! --------------------------- countargs -------------------------------------------
+
     logical function countargs (tocount,lcarray,numc,nret)
 
     !     routine: countargs
@@ -467,8 +518,12 @@
     
     implicit none
 
-    integer :: tocount, i,numc,nret
-    character(128) :: lcarray(numc)
+    integer, intent(in) :: tocount, numc
+    character(128), intent(in) :: lcarray(numc)
+    
+    integer, intent(out) :: nret
+    
+    integer :: i
 
     countargs = .false.
     nret = 0.
@@ -498,24 +553,30 @@
 5004 FORMAT('Error for key word: ',a5,' Required count = ',i2,' and there was only 1 entry')
     end function countargs
 
+! --------------------------- cptime -------------------------------------------
+
     subroutine cptime (cputim)
 
     !     routine: cptime
     !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.  this routine will generally be different for each computer.
     !     arguments: cputim (output) - elapsed cpu time 
 
+    use precision_parameters
     use ifport
     
     implicit none
     
-    real(8) :: cputim
+    real(eb), intent(out) :: cputim
+    
     integer(2) :: hrs, mins, secs, hsecs
 
     call gettim(hrs,mins,secs,hsecs)
     cputim = hrs * 3600 + mins * 60 + secs + hsecs / 100.0
     return
     end subroutine cptime
-    
+
+! --------------------------- datype -------------------------------------------
+
     subroutine datype (crd,n1,n2,dtype)
 
     !     routine: datype
@@ -527,9 +588,15 @@
 
     implicit none
     
+    character, intent(in) :: crd*(*)
+    integer, intent(in) :: n1, n2
+    
+    integer, intent(out) :: dtype
+    
+    
+    integer :: i, j
     logical :: period, efmt
-    integer n1, n2, dtype, i, j
-    character :: crd*(*), num(12)*1 = (/'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/)
+    character :: num(12)*1 = (/'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/)
     
     period = .false.
     efmt = .false.
@@ -572,6 +639,8 @@
     return
     end subroutine datype
 
+! --------------------------- doesthefileexist -------------------------------------------
+
     logical function doesthefileexist (checkfile)
 
     !     routine: doesthefileexist
@@ -580,7 +649,7 @@
 
     implicit none
     
-    character (*) checkfile
+    character(*), intent(in) :: checkfile
     logical yesorno
 
 
@@ -594,6 +663,8 @@
     return
 
     end function doesthefileexist
+
+! --------------------------- exehandle -------------------------------------------
 
     subroutine exehandle (exepath, datapath, project, errorcode)
 
@@ -611,17 +682,19 @@
 
     implicit none
     
+    character(*), intent(out) :: exepath, datapath, project
+    integer, intent(out) :: errorcode
+    
     integer :: i
     integer(2) :: n, status, loop, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
-    character(*) :: exepath, datapath, project
     character (64) :: name(2)
     logical :: doesthefileexist
 
     character(3) :: drive(2)
     character(256) :: dir(2)
     character(64) :: ext(2)
-    integer(4) :: length, errorcode, pathcount, splitpathqq, ilen
+    integer(4) :: length, pathcount, splitpathqq, ilen
 
     n = command_argument_count() + 1
     project = ' '
@@ -689,15 +762,18 @@
     return
 
     end subroutine exehandle
-    
+
+! --------------------------- grabky -------------------------------------------
+
     subroutine grabky (ich,it)
 
     use ifport
     
     implicit none
     
+    integer(2), intent(out) :: ich, it
+
     character(1) :: ch, getcharqq
-    integer(2) :: ich, it
     logical :: peekcharqq
 
     ich = 0
@@ -718,6 +794,8 @@
     return
     end subroutine grabky
 
+! --------------------------- mat2mult -------------------------------------------
+
     subroutine mat2mult(mat1,mat2,idim,n)
 
     !     routine: mat2mult
@@ -730,8 +808,12 @@
 
     implicit none
     
-    integer :: idim, n
-    integer :: mat1(idim,n), mat2(idim,n), i, j, idot
+    integer, intent(in) :: idim, n
+    integer, intent(inout) :: mat1(idim,n)
+    integer, intent(out) :: mat2(idim,n)
+    
+    integer :: i, j, idot
+    
     do i = 1, n
         do j = 1, n
             mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
@@ -746,6 +828,8 @@
     return
     end subroutine mat2mult
 
+! --------------------------- idot -------------------------------------------
+
     integer function idot(ix,inx,iy,iny,n)
 
     !     routine: idot
@@ -754,7 +838,10 @@
 
     implicit none
     
-    integer ix(*), iy(*), i, inx, iny, ii, jj, n
+    integer, intent(in) :: ix(*), iy(*), inx, iny, n
+    
+    integer :: i, ii, jj
+    
     idot = 0
     ii = 1 - inx
     jj = 1 - iny
@@ -765,6 +852,8 @@
     end do
     return
     end
+
+! --------------------------- indexi -------------------------------------------
 
     subroutine indexi (n,arrin,indx)
 
@@ -777,7 +866,10 @@
 
     implicit none
     
-    integer arrin(*), indx(*), ai, aip1, i, n, iswitch, itemp
+    integer, intent(in) :: n, arrin(*)
+    integer, intent(out) :: indx(*)
+    
+    integer ai, aip1, i, iswitch, itemp
     
     do i = 1, n
         indx(i) = i
@@ -805,7 +897,9 @@
     if(iswitch==1) go to 5
     return
     end subroutine indexi
-    
+
+! --------------------------- interp -------------------------------------------
+
     subroutine interp (x,y,n,t,icode,yint)
 
     !     routine: indexi
@@ -816,10 +910,18 @@
     !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n) and by extrapolation if t < x(1) or    t > x(n)
     !                yint (output) - interpolated value of the y array at t
 
+    use precision_parameters
     implicit none
 
-    real(8) :: x(*), y(*), yint, t, dydx
-    integer n, icode, ilast, imid, ia, iz
+    real(eb), intent(in) :: x(*), y(*), t
+    integer, intent(in) :: n, icode
+    
+    real(eb) :: yint
+    
+    integer :: ilast, imid, ia, iz
+    real(eb) :: dydx
+
+    
     save
     data ilast /1/
     if (n==1) then
@@ -871,8 +973,11 @@
     return
     end subroutine interp
 
+! --------------------------- length -------------------------------------------
+
     integer function length(string)
-    character string*(*)
+    character, intent(in) :: string*(*)
+    
     if (len(string)/=0) then
         length = len_trim(string)
     else
@@ -880,6 +985,8 @@
     endif
     return
     end function length
+
+! --------------------------- mess -------------------------------------------
 
     subroutine mess (p,z)
 
@@ -893,14 +1000,18 @@
     
     implicit none
 
-    integer z, i
-    character(len=z) p
+    integer, intent(in) :: z
+    character(len=z), intent(in) :: p
     
+    integer :: i
+
     if (z>2048) stop 'error in message handler'
     write (iofilo,'(1x,2048a1)') (p(i:i),i=1,z)
     return
 
     end subroutine mess
+
+! --------------------------- messnrf -------------------------------------------
 
     subroutine messnrf (string, l)
 
@@ -914,8 +1025,10 @@
     
     implicit none
 
-    integer :: l
-    character :: string*(*), formatt*100
+    integer, intent(in) :: l
+    character, intent(in) :: string*(*)
+    
+    character :: formatt*100
     
     write (formatt,4000) l
     write (iofilo,formatt) string(1:l)
@@ -924,6 +1037,8 @@
 4000 format('(1x,a',i2.2,',$)')
 
     end subroutine messnrf
+
+! --------------------------- readastu -------------------------------------------
 
     subroutine readastu (in, count, start, max, valid)
 
@@ -937,9 +1052,14 @@
     
     implicit none
 
-    integer :: start, count, i, ich, nc, max
-    logical :: valid
-    character :: ch, inn*256, in(max), c
+    integer, intent(in) :: max
+    
+    integer, intent(out) :: count, start
+    logical, intent(out) :: valid
+    character, intent(out) :: in(max)
+    
+    integer :: i, ich, nc
+    character :: ch, inn*256, c
 
 10  inn = ' '
     read(iofili,'(a256)',end=5) inn
@@ -982,6 +1102,8 @@
     return
     end subroutine readastu
 
+! --------------------------- readin -------------------------------------------
+
     subroutine readin (nreq, nret, fixed, flting)
 
     !     routine: readin
@@ -991,6 +1113,7 @@
     !                fixed - integer numbers returned
     !                flting - floting point numbers returned
 
+    use precision_parameters
     use cfin
     use cfio
     use cparams
@@ -998,9 +1121,14 @@
     
     implicit none
 
-    real(8) :: flting(*)
-    integer :: fixed(*), input = 0, lstart = 0, nret, i, j, nreq, llast, i0, iu, lenofch
-    real :: x0, xxbig
+    integer, intent(in) :: nreq
+    integer, intent(out) :: fixed(*)
+    
+    integer, intent(out) :: nret
+    real(eb), intent(out) :: flting(*)
+    
+    integer :: input = 0, lstart = 0, i, j, llast, i0, iu, lenofch
+    real(fb) :: x0, xxbig
     logical :: multi, eof
     character :: label*5, lable*5, slash*1 = '/', file*(*)
     save input, lstart
@@ -1108,24 +1236,26 @@
     return
     end  subroutine readin
 
+! --------------------------- readas -------------------------------------------
+
     subroutine readas (infile, inbuf, count, start, valid)
 
     !     routine: readas
     !     purpose:  read in a string from the input file, filtering out comments
-    !     arguments: infile
-    !                inbuf
-    !                count
-    !                start
-    !                valid
 
     use cparams
     use cshell
     
     implicit none
 
-    integer :: start, count, irec = 0, infile, ls
-    character :: inbuf*(*), cmt1*1 = '!', cmt2*1 = '#', frmt*30
-    logical :: valid
+    integer, intent(in) :: infile
+    character, intent(out) :: inbuf*(*)
+    logical, intent(out) :: valid
+    
+    integer, intent(out) :: count, start
+    
+    integer :: irec = 0, ls
+    character :: cmt1*1 = '!', cmt2*1 = '#', frmt*30
     save irec
 
     ! if we have reached an end of file, return nothing
@@ -1153,6 +1283,8 @@
     write(logerr,*) 'end of file for unit ',infile
     return
     end subroutine readas
+
+! --------------------------- readop -------------------------------------------
 
     subroutine readop
 
@@ -1231,12 +1363,18 @@
 5010 format (i4.4,'/',i2.2,'/',i2.2)
     end   subroutine readop
 
+! --------------------------- shellsort -------------------------------------------
+
     subroutine shellsort (ra, n)
 
+    use precision_parameters
     implicit none
-    
-    integer n, j, i, inc
-    real(8) ra(n), rra
+
+    integer, intent(in) :: n
+    real(eb), intent(out) :: ra(n)
+        
+    integer j, i, inc
+    real(eb) rra
 
     inc = 1
 1   inc = 3*inc+1
@@ -1258,6 +1396,8 @@
     return
     end  subroutine shellsort
 
+! --------------------------- sortbrm -------------------------------------------
+
     subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
 
     !     routine: sortbrm
@@ -1277,13 +1417,21 @@
     !                                 (r,1) = number of items (fires or detectors so far) in room r
     !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
 
+    use precision_parameters
     implicit none
   
     ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
     integer, parameter :: lwork=100
-    integer :: lix, ncolix, ncolx
-    integer :: ix(lix,ncolix), nrow, i, j, isort, iroom, nroom, lx, ldp, ipoint(ldp,*), iwork(lwork), iperm(lwork) 
-    real(8) :: x(lx,ncolx), work(lwork)
+    
+    
+    integer, intent(in) :: lix, ncolix, ncolx
+    integer, intent(in) :: nrow, isort, nroom, lx, ldp   
+    
+    integer, intent(out) :: ix(lix,ncolix), ipoint(ldp,*)
+    real(eb), intent(out) :: x(lx,ncolx)
+    
+    integer :: i, j, iroom, iwork(lwork), iperm(lwork)
+    real(eb) :: work(lwork)
 
     ! create a permutation vector using the isort'th column of ix
     if(nrow>lwork)then
@@ -1330,6 +1478,8 @@
         return
     end
 
+! --------------------------- sortfr -------------------------------------------
+
     subroutine sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
 
     !     routine: sortbrm
@@ -1340,12 +1490,18 @@
     !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r. (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
     !                nm1 number of compartments minus 1
 
+    use precision_parameters
     use cparams
     
     implicit none
     
-    real(8) :: xfire(mxfire,mxfirp), work(mxfire)
-    integer :: ifroom(mxfire), iperm(mxfire), iwork(mxfire), ifrpnt(nr,2), i, j, irm, nm1, nfire
+    integer, intent(in) :: nm1, nfire
+    
+    integer, intent(out) :: ifroom(mxfire), ifrpnt(nr,2)
+    real(eb), intent(out) :: xfire(mxfire,mxfirp)
+    
+    integer :: iperm(mxfire), iwork(mxfire), i, j, irm
+    real(eb) :: work(mxfire)
 
     ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
     do i = 1, nfire
@@ -1386,6 +1542,8 @@
     return
     end subroutine sortfr
 
+! --------------------------- sstrng -------------------------------------------
+
     subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrng
@@ -1401,9 +1559,14 @@
 
     implicit none
 
-    integer :: sfirst, slast, sstart, wcount, endstr, i, j
-    character :: string(*), space = ' ', comma = ','
-    logical :: svalid
+    integer, intent(in) :: sstart, wcount
+    character, intent(in) :: string(*)
+    logical, intent(out) :: svalid
+    
+    integer, intent(out) :: sfirst, slast
+    
+    integer :: endstr, i, j
+    character :: space = ' ', comma = ','
 
     svalid = .true.
 
@@ -1438,6 +1601,8 @@
 100 return
     end subroutine sstrng
 
+! --------------------------- sstrngp -------------------------------------------
+
     subroutine sstrngp (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrngp
@@ -1449,9 +1614,14 @@
     !                slast - ending position of the substring
     !                svalid - true if a valid substring is found
 
-    integer :: sfirst, slast, sstart, wcount, endstr, i, j
-    character :: string(128), space = ' ', comma = ',', rparen = ')', lparen = '('
-    logical :: svalid
+    integer, intent(in) :: sstart, wcount
+    character, intent(in) :: string(128)
+    logical, intent(out) :: svalid
+    
+    integer, intent(out) :: sfirst, slast
+    
+    integer :: endstr, i, j
+    character :: space = ' ', comma = ',', rparen = ')', lparen = '('
     
     svalid = .true.
     endstr = sstart + wcount - 1
@@ -1485,6 +1655,8 @@
 100 if (slast<sfirst) svalid = .false.
     end subroutine sstrngp
 
+! --------------------------- toupper -------------------------------------------
+
     character function toupper(ch)
 
     !     routine: toupper / tolower
@@ -1493,8 +1665,10 @@
 
     implicit none
     
+    character, intent(in) :: ch
+    
     integer :: ich
-    character :: ch, tolower
+    character :: tolower
 
     ! convert to upper case
     ich = ichar(ch)
@@ -1510,6 +1684,8 @@
     return
     end function toupper
 
+! --------------------------- upperall -------------------------------------------
+
     subroutine upperall(from,to)
 
     !     routine: upperall
@@ -1519,8 +1695,11 @@
 
     implicit none
     
+    character, intent(in) :: from*(*)
+    character, intent(out) :: to*(*)
+        
     integer nfrom, nto, nn, i
-    character :: from*(*), to*(*), c
+    character :: c
 
     nfrom = len_trim(from)
     nto = len(to)
@@ -1536,6 +1715,8 @@
     return
     end subroutine upperall
 
+! --------------------------- funit -------------------------------------------
+
     integer function funit (io)
 
     !     routine: funit
@@ -1544,8 +1725,10 @@
 
     implicit none
     
+    integer, intent(in) :: io
+    
     integer, parameter :: mxio=32767
-    integer :: io, itmp
+    integer :: itmp
     logical opend
 
     itmp = io-1
@@ -1561,6 +1744,8 @@
     return
     end function funit
 
+! --------------------------- opnotpt -------------------------------------------
+
     subroutine opnotpt (filname, iounit)
 
     !     routine: opnotpt
@@ -1570,8 +1755,12 @@
 
     implicit none
 
-    integer :: iounit, first, last , length, ilen, itmp   
-    character :: filname*(*), namefil*60, workfil*60, fmt*14
+    
+    integer, intent(in) :: iounit
+    character, intent(in) :: filname*(*)
+    
+    integer :: first, last , length, ilen, itmp   
+    character :: namefil*60, workfil*60, fmt*14
     logical :: existed, valid
 
     length = len (filname)
@@ -1593,6 +1782,7 @@
     return
     end subroutine opnotpt
 
+! --------------------------- xerbla -------------------------------------------
 
     subroutine xerbla ( srname, info )
 
@@ -1603,8 +1793,8 @@
 
     implicit none
     
-    integer :: info
-    character(6) :: srname
+    integer, intent(in) :: info
+    character(6), intent(in) :: srname
 
     write (*,99999) srname, info
     stop
@@ -1612,6 +1802,8 @@
 99999 format ( ' ** on entry to ', a6, ' parameter number ', i2,' had an illegal value' )
 
     end subroutine xerbla
+
+! --------------------------- laame -------------------------------------------
 
     logical function lsame ( ca, cb )
 
@@ -1622,7 +1814,8 @@
 
     implicit none
     
-    character(1) :: ca, cb
+    character(1), intent(in) :: ca, cb
+    
     integer, parameter :: ioff = 32
     intrinsic ichar
 
@@ -1634,6 +1827,8 @@
     return
 
     end function lsame
+
+! --------------------------- rev_auxilliary -------------------------------------------
 
     integer function rev_auxilliary ()
 

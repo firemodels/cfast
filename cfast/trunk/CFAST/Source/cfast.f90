@@ -2113,7 +2113,7 @@
     !     Revision Date: $Date$
 
     INTEGER :: MODULE_REV, rev_auxilliary, rev_conduction, rev_convection, rev_fire, rev_flowfan, rev_flowhall, rev_flowhorizontal, rev_flowvertical, rev_initialization, &
-    rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_target
+    rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_target, rev_ssHeaders
     CHARACTER(255) :: MODULE_DATE 
     CHARACTER(255), PARAMETER :: mainrev='$Revision$'
     CHARACTER(255), PARAMETER :: maindate='$Date$'
@@ -2121,7 +2121,8 @@
     WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
     READ (MODULE_DATE,'(I5)') MODULE_REV
     rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),rev_convection(),rev_fire(),rev_flowfan(),rev_flowhall(),rev_flowhorizontal(), &
-    rev_flowvertical(),rev_initialization(),rev_input(),rev_numerics(),rev_output(),rev_outputsmv(),rev_outputspreadsheet(),rev_radiation(),rev_target())
+    rev_flowvertical(),rev_initialization(),rev_input(),rev_numerics(),rev_output(),rev_outputsmv(),rev_outputspreadsheet(),rev_radiation(),rev_target(),&
+    rev_ssHeaders)
     WRITE(MODULE_DATE,'(A)') maindate
     return
     end function rev_cfast

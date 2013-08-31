@@ -1,3 +1,6 @@
+
+! --------------------------- ssHeadersNormal -------------------------------------------
+
     subroutine ssHeadersNormal
 
     ! This is the header information for the normal spreadsheet output
@@ -113,6 +116,8 @@
 
     end subroutine ssHeadersNormal
 
+! --------------------------- ssHeadersSpeccies -------------------------------------------
+
     subroutine ssHeadersSpecies
 
     ! This is the header information for the spreadsheet output
@@ -178,6 +183,8 @@
     if (.not.validate) write(23,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersSpecies
+
+! --------------------------- ssHeadersFlux -------------------------------------------
 
     subroutine ssHeadersFlux
 
@@ -304,7 +311,9 @@
     return
     end subroutine ssHeadersFlux
 
-    SUBROUTINE ssHeadersFlow
+! --------------------------- ssHeadersFlow -------------------------------------------
+
+    subroutine ssHeadersFlow
 
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to SpreadSheetFlow so the output should be parallel
@@ -443,6 +452,8 @@
 
     end subroutine ssHeadersFlow
 
+! --------------------------- ssHeadersSMV -------------------------------------------
+
     subroutine ssHeadersSMV(lMode)
 
     ! This is the header information for the smokeview spreadsheet output
@@ -454,7 +465,7 @@
     use vents
     implicit none
 
-    logical lmode
+    logical, intent(in) :: lmode
 
     integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
     character(35) :: headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
@@ -530,21 +541,28 @@
 
     end subroutine ssHeadersSMV
 
+! --------------------------- smvDeviceTag -------------------------------------------
+
     subroutine smvDeviceTag(string)
     implicit none
-    character string*(*)
+    character, intent(in) :: string*(*)
+    
     write (13,'(a)') 'DEVICE'
     write (13,'(4x,a)') trim(string)
     write (13,'(1x,3f6.1)') 0.,0.,0.
     return
     end subroutine smvDeviceTag
 
+! --------------------------- toIntString -------------------------------------------
 
     subroutine toIntString(i,istring)
     implicit none
-    integer i
-    character string*256
-    character(len=*) :: istring
+    
+    integer, intent(in) :: i
+    character(len=*), intent(out) :: istring
+    
+    character :: string*256
+    
     if (i<10) then
         write (string,'(i1)') i
     else if (i<100) then
@@ -563,6 +581,8 @@
     istring = trim(string)
     return
     end subroutine toIntString
+
+! --------------------------- ssHeadersResid -------------------------------------------
 
  subroutine ssHeadersResid
 
@@ -654,7 +674,9 @@
     write(ioresid,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
  end subroutine ssHeadersResid
- 
+
+! --------------------------- ssHeadersFSlabs -------------------------------------------
+
   subroutine ssHeadersFSlabs
 
     ! This is the header information for the normal spreadsheet output
@@ -704,3 +726,20 @@
     write(ioslab,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersFSlabs
+    
+! --------------------------- rev_ssHeaders -------------------------------------------
+
+    integer function rev_ssHeaders ()
+
+    integer :: module_rev
+    character(255) :: module_date 
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
+
+    write(module_date,'(A)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
+    read (module_date,'(i5)') module_rev
+    rev_ssHeaders = module_rev
+    write(module_date,'(a)') maindate
+    return
+    end function rev_ssHeaders
+    

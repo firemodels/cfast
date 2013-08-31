@@ -1,15 +1,21 @@
+
+! --------------------------- SpreadSheetNormal -------------------------------------------
+
     subroutine SpreadSheetNormal (time)
 
     ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
     use objects1
     implicit none
 
+    real(eb), intent(in) :: time
+    
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    real(8) :: time, outarray(maxhead), xx0, fheight
+    real(eb) :: outarray(maxhead), xx0, fheight
     logical :: firstc
     integer :: position, i, itarg, izzvol
 
@@ -23,7 +29,7 @@
     endif
 
     position = 0
-    CALL ssaddtolist (position,TIME,outarray)
+    call ssaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nm1
@@ -72,15 +78,22 @@
         end do
     endif
 
-    CALL SSprintresults (21, position, outarray)
+    call SSprintresults (21, position, outarray)
 
     return
     end subroutine spreadsheetnormal
 
+! --------------------------- SSaddtolist -------------------------------------------
+
     subroutine SSaddtolist (ic, valu, array)
 
-    real(8) :: array(*), valu
-    integer :: ic
+    use precision_parameters
+    implicit none
+    
+    real(eb), intent(in) :: valu
+    real(eb), intent(out) :: array(*)
+    integer, intent(out) :: ic
+    
     integer iounit,i
 
     ic = ic + 1
@@ -104,17 +117,22 @@
     return
     end subroutine SSaddtolist
 
-    SUBROUTINE SpreadSheetFlow (Time)
+! --------------------------- SpreadSheetFlow -------------------------------------------
+
+    subroutine SpreadSheetFlow (time)
 
     !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use vents
     implicit none
 
     integer, parameter :: maxoutput = mxvents*4
-    real(8) :: time, outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
+    
+    real(eb), intent(in) :: time
+    real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
     logical :: firstc
     data firstc /.true./
     integer :: position, irm, i,j,k,iijk,ii,iii,inode
@@ -225,10 +243,13 @@
 
     end subroutine SpreadSheetFlow
 
-    subroutine SpreadSheetFlux (Time)
+! --------------------------- SpreadSheetFlux -------------------------------------------
+
+    subroutine SpreadSheetFlux (time)
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -236,7 +257,9 @@
     implicit none
 
     integer, parameter :: maxoutput=4*nr+9*mxtarg
-    real(8) :: outarray(maxoutput), time, zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
+    real(eb), intent(in) :: time
+    
+    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
     integer :: iwptr(4), position,i,iw,itarg,itctemp,iroom
     external length
     data iwptr /1, 3, 4, 2/
@@ -256,7 +279,7 @@
 
     !	First the time
 
-    CALL SSaddtolist (position,TIME,outarray)
+    call SSaddtolist (position,time,outarray)
 
     !     First the temperatures for each compartment
 
@@ -316,7 +339,7 @@
 
     !      DO 40 I = 1, NM1
     !        IF(IZHALL(I,IHROOM)==0)GO TO 40
-    !        TSTART = ZZHALL(I,IHTIME0)
+    !        TSTART = ZZHALL(I,IHtime0)
     !        VEL = ZZHALL(I,IHVEL)
     !        DEPTH = ZZHALL(I,IHDEPTH)
     !        DIST = ZZHALL(I,IHDIST)
@@ -350,19 +373,25 @@
 5050 format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
     end subroutine spreadsheetflux
 
-    SUBROUTINE SpreadSheetSpecies (time)
+! --------------------------- SpreadSheetSpecies -------------------------------------------
+
+    subroutine SpreadSheetSpecies (time)
 
     !	Write out the species to the spread sheet file
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
     implicit none
 
     integer, parameter :: maxhead = 1+22*nr
-    real(8) :: time, outarray(maxhead), ssvalue
+    real(eb), intent(in) :: time
+    
+    real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
+    
     data tooutput /.false.,5*.true.,.false.,4*.true./
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     data firstc /.true./
@@ -380,7 +409,7 @@
 
     ! From now on, just the data, please
     position = 0
-    CALL SSaddtolist (position,TIME,outarray)
+    call SSaddtolist (position,time,outarray)
 
     do i = 1, nm1
         do layer = upper, lower
@@ -401,22 +430,27 @@
 
 90  call SSprintresults (23,position, outarray)
 
-    RETURN
+    return
 
 110 format('Exceeded size of output files in species spread sheet')
-    END subroutine SpreadSheetSpecies
+    end subroutine SpreadSheetSpecies
 
-    SUBROUTINE SpreadSheetSMV (time)
+! --------------------------- SpreadSheetSMV -------------------------------------------
+
+    subroutine SpreadSheetSMV (time)
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use vents
     implicit none
 
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    real(8) :: time, outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
+    real(eb), intent(in) :: time
+    
+    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
     logical :: firstc
     integer :: position
     integer :: toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
@@ -433,7 +467,7 @@
     endif
 
     position = 0
-    CALL SSaddtolist (position,TIME,outarray)
+    call SSaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nm1
@@ -509,22 +543,11 @@
     return
     end subroutine SpreadSheetSMV
 
-    integer function rev_outputspreadsheet ()
+! --------------------------- spreadsheetresid -------------------------------------------
 
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_outputspreadsheet = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_outputspreadsheet
-    
     subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet)
     
+    use precision_parameters
     use debug
     use cenviro
     use cfast_main
@@ -532,29 +555,31 @@
     use objects1
     implicit none
     
+
+    real(eb), intent(in) :: time
     ! data structure for total flows and fluxes
-    real(8) :: flwtot(nr,mxprd+2,2)
+    real(eb), intent(in) :: flwtot(nr,mxprd+2,2)
 
     ! data structures for flow through vents
-    real(8) :: flwnvnt(nr,mxprd+2,2)
-    real(8) :: flwhvnt(nr,ns+2,2)
+    real(eb), intent(in) :: flwnvnt(nr,mxprd+2,2)
+    real(eb), intent(in) :: flwhvnt(nr,ns+2,2)
 
     ! data structures for fires
-    real(8) :: flwf(nr,ns+2,2)
+    real(eb), intent(in) :: flwf(nr,ns+2,2)
 
     ! data structures for convection, radiation, and ceiling jets
-    real(8) :: flwcv(nr,2)
-    real(8) :: flwrad(nr,2)
-    real(8) :: flwcjet(nr,2)
+    real(eb), intent(in) :: flwcv(nr,2)
+    real(eb), intent(in) :: flwrad(nr,2)
+    real(eb), intent(in) :: flwcjet(nr,2)
 
     ! data structures for mechanical vents
-    real(8) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+    real(eb), intent(in) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
 
     ! data structures for door jet fires
-    real(8) :: flwdjf(nr,ns+2,2)
+    real(eb), intent(in) :: flwdjf(nr,ns+2,2)
     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    real(8) :: time, outarray(maxhead)
+    real(eb) :: outarray(maxhead)
     logical :: firstc
     integer :: position, i, j, k, nprod
     data firstc/.true./
@@ -568,7 +593,7 @@
 
     nprod = nlspct
     position = 0
-    CALL ssaddtolist (position,TIME,outarray)
+    call ssaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nm1
@@ -609,13 +634,16 @@
     !    end do
     !end do
 
-    CALL SSprintresid (ioresid, position, outarray)
+    call SSprintresid (ioresid, position, outarray)
 
     return
     end subroutine spreadsheetresid
-    
+
+! --------------------------- SpreadSheetFSlabs -------------------------------------------
+
     subroutine SpreadSheetFSlabs (time, ir1, ir2, iv, nslab, qslab)
     
+    use precision_parameters
     use debug
     use cenviro
     use cfast_main
@@ -625,12 +653,13 @@
     use vent_slab
     implicit none
     
-    real(8) :: time, qslab(mxslab)
-    integer :: ir1, ir2, iv, nslab
-    real(8) :: r1, r2, v, slab
+    real(eb), intent(in) :: time, qslab(mxslab)
+    integer, intent(in) :: ir1, ir2, iv, nslab
+    
+    real(eb) :: r1, r2, v, slab
     
     integer,parameter :: maxhead = 1 + mxvents*(4 + mxslab)
-    real(8) :: outarray(maxhead)
+    real(eb) :: outarray(maxhead)
     integer :: position, i
     logical :: firstc, nwline
     data firstc /.true./
@@ -668,4 +697,20 @@
     
     return
     end subroutine SpreadSheetFSlabs
+
+! --------------------------- rev_outputspreadsheet -------------------------------------------
+
+    integer function rev_outputspreadsheet ()
+
+    integer :: module_rev
+    character(255) :: module_date 
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
+
+    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
+    read (module_date,'(i5)') module_rev
+    rev_outputspreadsheet = module_rev
+    write(module_date,'(a)') maindate
+    return
+    end function rev_outputspreadsheet
     

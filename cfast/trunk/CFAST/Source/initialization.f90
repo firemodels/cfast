@@ -1,4 +1,6 @@
 
+! --------------------------- gettpp -------------------------------------------
+
     subroutine gettpp (name, tp, errorcode)
 
     !     Routine: gettpp
@@ -9,8 +11,11 @@
     use thermp
 
     implicit none
-    character name*(*), missingtpp*64
-    integer tp, errorcode, i
+    character, intent(in) :: name*(*)
+    integer, intent(out) :: errorcode
+    
+    character missingtpp*64
+    integer tp, i
 
     errorcode = 0
     do i = 1, maxct
@@ -23,6 +28,8 @@
     return
     end
 
+! --------------------------- gres -------------------------------------------
+
     subroutine gres(nnn,hvpsolv,deltamv,iflag)
 
     !     routine: gres
@@ -34,6 +41,7 @@
     !                deltamv
     !                iflag
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -42,8 +50,14 @@
     use solver_parameters
     implicit none
 
-    integer :: nalg, i, ires, nnn, iflag
-    real(8) :: hvpsolv(nnn), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), T
+    integer, intent(in) :: nnn
+    real(eb), intent(in) :: hvpsolv(nnn)
+    integer, intent(out) :: iflag
+    real(eb), intent(out) :: deltamv(*)
+    
+    integer :: nalg, i, ires
+    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
+    
     data pdzero /maxteq * 0.0d0/
     
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
@@ -95,6 +109,8 @@
     return
     end
 
+! --------------------------- gres2 -------------------------------------------
+
     subroutine gres2(nnn,hvsolv,deltamv,iflag)
 
     !     routine: gres2
@@ -107,6 +123,7 @@
     !                DELTAMV
     !                IFLAG
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -115,8 +132,13 @@
     use solver_parameters
     implicit none
 
-    real(8) :: hvsolv(nnn), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
-    integer :: i, ires, nnn, iflag
+    integer, intent(in) :: nnn
+    real(eb), intent(in) :: hvsolv(nnn)
+    integer, intent(out) :: iflag
+    real(eb), intent(out) :: deltamv(*)
+
+    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
+    integer :: i, ires
     data pdzero /maxteq * 0.0d0/
     
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
@@ -163,6 +185,8 @@
     return
     end
 
+! --------------------------- gres3 -------------------------------------------
+
     subroutine gres3(nnn,hvpsolv,deltamv,iflag)
 
     !     routine: gres2
@@ -178,6 +202,7 @@
     !                deltamv
     !                iflag
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -186,8 +211,13 @@
     use solver_parameters
     implicit none
 
-    real(8) :: hvpsolv(nnn), deltamv(*), p2(maxteq), delta(maxteq), pdzero(maxteq), t
-    integer nalg, i, ii, ieq1, ieq2, ieq3, ires, nnn, iflag
+    integer, intent(in) :: nnn
+    real(eb), intent(in) :: hvpsolv(nnn)
+    integer, intent(out) :: iflag
+    real(eb), intent(out) :: deltamv(*)
+    
+    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
+    integer nalg, i, ii, ieq1, ieq2, ieq3, ires
     data pdzero /maxteq * 0.0d0/
     nalg = nm1 + nhvpvar + nhvtvar
 
@@ -294,6 +324,8 @@
     return
     end
 
+! --------------------------- hvinit -------------------------------------------
+
     subroutine hvinit (ierror)
 
     !     routine: hvinit
@@ -308,21 +340,23 @@
     !     the flow is allowed to be negative (flow reversal) then this statement
     !     must be removed.
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use params
     implicit none
 
-    real(8) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
-    integer :: i, ii, j, k, ib, id, isys, ierror, lsp
-    real(8), parameter :: x1 = 1.0d0, x0 = 0.0d0, pi = 4.0d0 * atan(x1)
+    integer, intent(out) :: ierror
+    
+    real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
+    integer :: i, ii, j, k, ib, id, isys, lsp
 
     !    calculate min & max values for fan curve
 
     do k = 1, nfan
         f = hvbco(k,1)
-        df = x0
-        xx = x1
+        df = 0.0_eb
+        xx = 1.0_eb
         do j = 2, nfc(k)
             xxjm1 = j - 1
             df = df + xxjm1 * hvbco(k,j) * xx
@@ -330,13 +364,13 @@
             f = f + hvbco(k,j) * xx
         end do
         ! prevent negative flow
-        qmin(k) = max(x0,f)
+        qmin(k) = max(0.0_eb,f)
         dfmin(k) = df
     end do
     do k = 1, nfan
         f = hvbco(k,1)
-        df = x0
-        xx = x1
+        df = 0.0_eb
+        xx = 1.0_eb
         do j = 2, nfc(k)
             xxjm1 = j - 1
             df = df + xxjm1 * hvbco(k,j) * xx
@@ -344,7 +378,7 @@
             f = f + hvbco(k,j) * xx
         end do
         ! prevent negative flow
-        qmax(k) = max(x0,f)
+        qmax(k) = max(0.0_eb,f)
         dfmax(k) = df
     end do
 
@@ -386,7 +420,7 @@
             ierror = 223
             return
         endif
-        hvelxt(ii) = min(hr(i),max(x0,hvelxt(ii)))
+        hvelxt(ii) = min(hr(i),max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + hflr(i)
     end do
 
@@ -395,16 +429,16 @@
         hvp(i) = -1.0d0
     end do
     do i = 1, nbr
-        hvdara(i) = x0
-        hvdvol(i) = x0
-        hvconc(i,1) = -x1
-        tbr(i) = -x1
+        hvdara(i) = 0.0_eb
+        hvdvol(i) = 0.0_eb
+        hvconc(i,1) = -1.0_eb
+        tbr(i) = -1.0_eb
     end do
 
-    s1 = x0
-    s2 = x0
+    s1 = 0.0_eb
+    s2 = 0.0_eb
     do lsp = 1, ns
-        c3(lsp) = x0
+        c3(lsp) = 0.0_eb
     end do
     do ii = 1, next
         i = hvnode(1,ii)
@@ -446,13 +480,13 @@
         c3(lsp) = c3(lsp) / xnext
     end do
     do i = 1, nnode
-        if (hvp(i)<x0) then
+        if (hvp(i)<0.0_eb) then
             hvp(i) = pav
         endif
     end do
     do i = 1, nbr
-        if (tbr(i)<=x0) tbr(i) = tav
-        if (hvconc(i,1)<x0) then
+        if (tbr(i)<=0.0_eb) tbr(i) = tav
+        if (hvconc(i,1)<0.0_eb) then
             do lsp = 1, ns
                 hvconc(i,lsp) = c3(lsp)
             end do
@@ -475,7 +509,7 @@
 
     ! define total mass for each hvac system
     do isys = 1, nhvsys
-        hvtm(isys) = x0
+        hvtm(isys) = 0.0_eb
     end do     
     do ib = 1, nbr
         isys = izhvbsys(ib)
@@ -487,6 +521,8 @@
     mvcalc = .true.
     return
     end
+
+! --------------------------- hvmap -------------------------------------------
 
     subroutine hvmap
 
@@ -588,6 +624,8 @@
     return
     end
 
+! --------------------------- initamb -------------------------------------------
+
     subroutine initamb(yinter,iflag)
 
     !     routine: hvmap
@@ -601,6 +639,7 @@
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: yinter, iflag
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
@@ -608,9 +647,11 @@
     use params
     implicit none
 
-    real(8) :: yinter(*), dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
-    real(8), parameter :: xx0 = 0.0d0, xx2= 2.0d0
-    integer i, ii, iflag, iwall, iroom, itarg, ieq
+    integer, intent(in) :: iflag
+    real(eb), intent(out) :: yinter(*)
+    
+    real(eb) :: dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
+    integer i, ii, iwall, iroom, itarg, ieq
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
     ! were calculated using rho*g*h .  but outside pressures were calculated using
@@ -628,7 +669,7 @@
     end do
     eta(n) = exta
     era(n) = exra
-    epa(n) = xx0
+    epa(n) = 0.0_eb
 
 
     ! normalize pressures so that the smallest pressure is zero
@@ -659,7 +700,7 @@
             else
                 p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
             endif
-            yinter(i) = xx0
+            yinter(i) = 0.0_eb
         endif
         if(izshaft(i)==1)p(i+nofvu) = zzvmax(i)
         p(i+noftl) = tamb(i)
@@ -668,7 +709,7 @@
     ! define hvac pressures and temperatures.  these values are later refined by 
     ! snsqe so that each hvac node conserves mass and energy
     do i = 1, nhvpvar
-        p(i+nofpmv) = xx0
+        p(i+nofpmv) = 0.0_eb
     end do
     do i = 1, nhvtvar
         p(i+noftmv) = tamb(1)
@@ -703,7 +744,7 @@
         if(tdspray>0.0d0)then
             tdrate = 3.0d0/tdspray**1.8d0
         elseif(tdspray<0.0d0)then
-            tdrate = abs(tdspray)/log(xx2)
+            tdrate = abs(tdspray)/log(2.0_eb)
             tdspray = (3.0d0/tdrate)**(1.0d0/1.8d0)
         else
             tdspray = 0.0d0
@@ -713,7 +754,7 @@
 
         ! set initial ceiling jet and detector link temperatures to ambient
         xdtect(i,dspray) = tdspray
-        xdtect(i,dthalf) = tdrate*log(xx2)
+        xdtect(i,dthalf) = tdrate*log(2.0_eb)
         xdtect(i,drate) = tdrate
         xdtect(i,dtemp) = tamb(iroom)
         xdtect(i,dtempo) = tamb(iroom)
@@ -767,6 +808,8 @@
     return
     end
 
+! --------------------------- initmm -------------------------------------------
+
     subroutine initmm
 
     !     routine: initmm
@@ -774,6 +817,7 @@
     !              all modules that will run the model kernel
     !     Arguments: none
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cfin
@@ -784,8 +828,7 @@
     use vents
     implicit none
     
-    real(8) :: xlrg
-    real(8), parameter :: xx0 = 0.0d0, xx1 = 1.0d0, xm1 = -1.0d0
+    real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
 
     ! set some initialization - simple control stuff
@@ -794,7 +837,7 @@
 
     ! initialize the common block
     do i = 1, ns
-        o2n2(i) = xx0
+        o2n2(i) = 0.0_eb
         allowed(i) = .false.
         activs(i) = .true.
     end do
@@ -827,58 +870,58 @@
     ! initialize the flow variables
     do i = 1, nr
         izshaft(i) = 0
-        heatup(i) = xx0
-        heatlp(i) = xx0
-        heatvf(i) = xx0
+        heatup(i) = 0.0_eb
+        heatlp(i) = 0.0_eb
+        heatvf(i) = 0.0_eb
         do j = 1, nr
             ! do vertical vents (vvent,...)
             vshape(i,j) = 0
             nwv(i,j) = 0
-            vvarea(i,j) = xx0
+            vvarea(i,j) = 0.0_eb
             ! do horizontal vents (hvent,...)
             nw(i,j) = 0
         end do
     end do
 
     do ivent = 1, mxvents
-        ss1(ivent) = xx0
-        ss2(ivent) = xx0
-        sa1(ivent) = xx0
-        sa2(ivent) = xx0
-        as1(ivent) = xx0
-        as2(ivent) = xx0
-        aa1(ivent) = xx0
-        aa2(ivent) = xx0
-        sau1(ivent) = xx0
-        sau2(ivent) = xx0
-        asl1(ivent) = xx0
-        asl2(ivent) = xx0
+        ss1(ivent) = 0.0_eb
+        ss2(ivent) = 0.0_eb
+        sa1(ivent) = 0.0_eb
+        sa2(ivent) = 0.0_eb
+        as1(ivent) = 0.0_eb
+        as2(ivent) = 0.0_eb
+        aa1(ivent) = 0.0_eb
+        aa2(ivent) = 0.0_eb
+        sau1(ivent) = 0.0_eb
+        sau2(ivent) = 0.0_eb
+        asl1(ivent) = 0.0_eb
+        asl2(ivent) = 0.0_eb
     end do
 
     do i = 1, mext
-        hveflot(upper,i) = xx0
-        hveflot(lower,i) = xx0
-        tracet(upper,i) = xx0
-        tracet(lower,i) = xx0
+        hveflot(upper,i) = 0.0_eb
+        hveflot(lower,i) = 0.0_eb
+        tracet(upper,i) = 0.0_eb
+        tracet(lower,i) = 0.0_eb
     end do
 
     ! initialize the forcing functions
     do i = 1, nr
-        emp(i) = xx0
-        ems(i) = xx0
-        eme(i) = xx0
-        aps(i) = xx0
+        emp(i) = 0.0_eb
+        ems(i) = 0.0_eb
+        eme(i) = 0.0_eb
+        aps(i) = 0.0_eb
         do k = upper, lower
-            qr(k,i) = xx0
-            qc(k,i) = xx0
-            qfc(k,i) = xx0
+            qr(k,i) = 0.0_eb
+            qc(k,i) = 0.0_eb
+            qfc(k,i) = 0.0_eb
         end do
     end do
     do i = 1, mxfire
-        qfr(i) = xx0
+        qfr(i) = 0.0_eb
     end do
     do i = 1, maxteq
-        p(i) = xx0
+        p(i) = 0.0_eb
     end do
 
     ! define the outside world as infinity
@@ -888,16 +931,16 @@
         br(i) = xlrg
         hr(i) = xlrg
         hrp(i) = xlrg
-        hrl(i) = xx0
-        hflr(i) = xx0
-        cxabs(i) = xx0
-        cyabs(i) = xx0
+        hrl(i) = 0.0_eb
+        hflr(i) = 0.0_eb
+        cxabs(i) = 0.0_eb
+        cyabs(i) = 0.0_eb
         ar(i) = br(i) * dr(i)
         vr(i) = hr(i) * ar(i)
         do  j = 1, nwal
-            epw(j,i) = xx0
-            qsradw(j,i) = xx0
-            qscnv(j,i) = xx0
+            epw(j,i) = 0.0_eb
+            qsradw(j,i) = 0.0_eb
+            qscnv(j,i) = 0.0_eb
         end do
         do j = 1, nr
             nw(i,j) = 0
@@ -906,11 +949,11 @@
 
     ! initialize all vents to zero size
     do ivent = 1, mxvents
-        bw(ivent) = xx0
-        hh(ivent) = xx0
-        hl(ivent) = xx0
-        hhp(ivent) = xx0
-        hlp(ivent) = xx0
+        bw(ivent) = 0.0_eb
+        hh(ivent) = 0.0_eb
+        hl(ivent) = 0.0_eb
+        hhp(ivent) = 0.0_eb
+        hlp(ivent) = 0.0_eb
         vface(ivent) = 1
     end do
 
@@ -925,7 +968,7 @@
     rgas = (gamma-1.0d0) / gamma * cp
     minmas = 0.0d0
     g = 9.80d0
-    stime = xx0
+    stime = 0.0_eb
     tref = 288.d0
     limo2 = 0.10d0
     gmwf = 16.0d0
@@ -933,7 +976,7 @@
     pref = 1.013d+5
     pa = pref
     pofset = pref
-    sal = xx0
+    sal = 0.0_eb
     sal2 = -1.0d0
     te = tref
     ta = tref
@@ -941,15 +984,15 @@
     exta = ta
     expa = pa
     exsal = sal
-    windv = xx0
+    windv = 0.0_eb
     windrf = 10.d0
     windpw = 0.16d0
     do i = 0, mxfire
-        objmaspy(i) = xx0
-        radio(i) = xx0
+        objmaspy(i) = 0.0_eb
+        radio(i) = 0.0_eb
         radconsplit(i) = 0.15d0
     end do
-    tradio = xx0
+    tradio = 0.0_eb
     qradrl = 0.15d0
 
     ! normal air
@@ -962,14 +1005,14 @@
     lfmax = 1
     heatfl = .false.
     heatfq = 0.0
-    heatfp(1) = xm1
-    heatfp(2) = xm1
-    heatfp(3) = xm1
+    heatfp(1) = -1.0_eb
+    heatfp(2) = -1.0_eb
+    heatfp(3) = -1.0_eb
 
     ! set to -1 as a flag for nputp initialization - any value not set will be set to the default which is the center of the respective wall
-    fpos(1) = xm1
-    fpos(2) = xm1
-    fpos(3) = xm1
+    fpos(1) = -1.0_eb
+    fpos(2) = -1.0_eb
+    fpos(3) = -1.0_eb
 
     ! set up default values for the chemistry
     do i = 1, nv
@@ -979,42 +1022,42 @@
             qcvent(ivent,i) = 1.0d0
         end do
         tfired(i) = 86400.d0
-        hfired(i) = xx0
-        afired(i) = xx0
+        hfired(i) = 0.0_eb
+        afired(i) = 0.0_eb
         bfired(i) = 0.000d0
         qfired(i) = bfired(i) * hcomba
         hcratio(i) = 0.3333333d0
         hocbmb(i) = hcomba
-        coco2(i) = xx0
-        cco2(i) = xx0
+        coco2(i) = 0.0_eb
+        cco2(i) = 0.0_eb
     end do
 
     ! Start with vents open: h for hvent, v for vvent, and m for mvent
     do i = 1,mxvents
-        qcvh(1,i) = xx0
-        qcvh(2,i) = xx1
-        qcvh(3,i) = xx0
-        qcvh(4,j) = xx1
+        qcvh(1,i) = 0.0_eb
+        qcvh(2,i) = 1.0_eb
+        qcvh(3,i) = 0.0_eb
+        qcvh(4,j) = 1.0_eb
     end do
 
     do i = 1, nr
-        qcvv(1,i) = xx0
-        qcvv(2,i) = xx1
-        qcvv(3,i) = xx0
-        qcvv(4,i) = xx1
+        qcvv(1,i) = 0.0_eb
+        qcvv(2,i) = 1.0_eb
+        qcvv(3,i) = 0.0_eb
+        qcvv(4,i) = 1.0_eb
     end do
 
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
     ! way to have an intial value other than 0 (no filtering).
     do i = 1, mfan
-        qcvf(1,i) = xx0
-        qcvf(2,i) = xx0
-        qcvf(3,i) = xx0
-        qcvf(4,i) = xx0
-        qcvm(1,i) = xx0
-        qcvm(2,i) = xx1
-        qcvm(3,i) = xx0
-        qcvm(4,i) = xx1
+        qcvf(1,i) = 0.0_eb
+        qcvf(2,i) = 0.0_eb
+        qcvf(3,i) = 0.0_eb
+        qcvf(4,i) = 0.0_eb
+        qcvm(1,i) = 0.0_eb
+        qcvm(2,i) = 1.0_eb
+        qcvm(3,i) = 0.0_eb
+        qcvm(4,i) = 1.0_eb
     end do
 
     hcratt = hcratio(1)
@@ -1031,7 +1074,7 @@
     hvrgas = rgas
     mvcalc = .false.
     do i = 1, mnode
-        hvght(i) = xx0
+        hvght(i) = 0.0_eb
     end do
 
     ! initialize detectors
@@ -1107,9 +1150,9 @@
     do i = 1, nr
         izrvol(i) = 0
         do j = 1, mxpts
-            zzrvol(j,i) = xx0
-            zzrarea(j,i) = xx0
-            zzrhgt(j,i) = xx0
+            zzrvol(j,i) = 0.0_eb
+            zzrarea(j,i) = 0.0_eb
+            zzrhgt(j,i) = 0.0_eb
         end do
     end do
 
@@ -1122,7 +1165,7 @@
     ! initialize inter-compartment heat transfer fractions
     do i = 1, nr
         do j = 1, nr
-            zzhtfrac(i,j) = xx0
+            zzhtfrac(i,j) = 0.0_eb
         end do
     end do
 
@@ -1136,8 +1179,8 @@
     do lsp = 1, ns
         do j = upper, lower
             do i = 1, nr
-                zzgspec(i,j,lsp) = xx0
-                zzcspec(i,j,lsp) = xx0            
+                zzgspec(i,j,lsp) = 0.0_eb
+                zzcspec(i,j,lsp) = 0.0_eb            
             end do
         end do
     end do
@@ -1147,6 +1190,8 @@
 
     return
     end
+
+! --------------------------- initob -------------------------------------------
 
     subroutine initob
 
@@ -1181,12 +1226,15 @@
     return
     end
 
+! --------------------------- initslv -------------------------------------------
+
     subroutine initslv
 
     !     routine: initslv
     !     purpose: this routine initializes the solver variables from solver.ini if it exists
     !     arguments: none
 
+    use precision_parameters
     use cfast_main
     use cfin
     use cshell
@@ -1197,7 +1245,7 @@
     use wnodes
     implicit none
 
-    real(8) :: fract1, fract2, fract3, fsum
+    real(eb) :: fract1, fract2, fract3, fsum
     integer :: nopt, i, j, ibeg, iend
     logical existed
 
@@ -1265,6 +1313,8 @@
     return
     end subroutine initslv
 
+! --------------------------- initspecc -------------------------------------------
+
     subroutine initspec
 
     !     routine: initspec
@@ -1273,13 +1323,14 @@
     !              to one subroutine to make maintenance easier
     !     Arguments: none
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use params
     use thermp
     implicit none
 
-    real(8) :: xm(2), xt, xtemp, xh2o, toto2n2
+    real(eb) :: xm(2), xt, xtemp, xh2o, toto2n2
     integer i, j, k, ip, iprod, isof, isys, lsp
 
 
@@ -1370,21 +1421,25 @@
     return
     end subroutine initspec
 
+! --------------------------- inittarg -------------------------------------------
+
     subroutine inittarg (ierror)
 
     !     routine: inittarg
     !     purpose: Initialize target data structures
     !     Arguments: ierror:  Returns error codes
 
+    use precision_parameters
     use cfast_main
     use cshell
     use fltarget
     use thermp
     implicit none
     
-    real(8), parameter :: xm1 = -1.0d0, x0 = 0.0d0
-    real(8) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
-    integer :: ifail, itarg, iroom, iwall, iwall2, ierror
+    integer, intent(out) :: ierror
+    
+    real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
+    integer :: ifail, itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
 
     ifail = 0
@@ -1409,9 +1464,9 @@
         zsize = hrp(iroom)
 
         ! if the locator is -1, set to center of room on the floor
-        if(xloc==xm1) xloc = 0.5 * xsize
-        if(yloc==xm1) yloc = 0.5 * ysize
-        if(zloc==xm1) zloc = x0
+        if(xloc==-1.0_eb) xloc = 0.5 * xsize
+        if(yloc==-1.0_eb) yloc = 0.5 * ysize
+        if(zloc==-1.0_eb) zloc = 0.0_eb
         if(iwall/=0)then
             xxnorm = 0.0d0
             yynorm = 0.0d0
@@ -1483,12 +1538,12 @@
 
         xx = br(iroom)*0.50d0
         yy = dr(iroom)*0.50d0
-        zz = x0
+        zz = 0.0_eb
         xxtarg(trgcenx,ntarg) = xx
         xxtarg(trgceny,ntarg) = yy
         xxtarg(trgcenz,ntarg) = zz
-        xxtarg(trgnormx,ntarg) = x0
-        xxtarg(trgnormy,ntarg) = x0
+        xxtarg(trgnormx,ntarg) = 0.0_eb
+        xxtarg(trgnormy,ntarg) = 0.0_eb
         xxtarg(trgnormz,ntarg) = 1.0d0
         xxtarg(trginterior,ntarg) = 0.5
 
@@ -1501,6 +1556,8 @@
 
     return
     end
+
+! --------------------------- initwall -------------------------------------------
 
     subroutine initwall(tstop,ierror)
 
@@ -1524,6 +1581,7 @@
     !        thset is set if a name in the list of requested data sets matches one of the names in the list of data set names (nlist).
     !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use fltarget
@@ -1531,8 +1589,9 @@
     use wnodes
     implicit none
 
-    real(8) :: tstop
-    integer :: i, j, jj, k, icode, itarg, ifromr, itor, ifromw, itow, ierror, nslabf, nslabt, nptsf, nptst, wfrom, wto
+    integer, intent(out) :: ierror
+    real(eb), intent(in) :: tstop
+    integer :: i, j, jj, k, icode, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     character off*8, none*8, tcname*8
 
     ! tp is the pointer into the data base for each material
@@ -1663,6 +1722,8 @@
     return
     end
 
+! --------------------------- offset -------------------------------------------
+
     subroutine offset (ierror)
 
     ! routine: initspec
@@ -1703,7 +1764,9 @@
     use wnodes
     implicit none
     
-    integer :: i, j, ib, ierror, itarg, nimtarg, noxygen
+    integer, intent(out) :: ierror
+    
+    integer :: i, j, ib, itarg, nimtarg, noxygen
 
     ! count the of nodes (largest of ns and ne)
     nnode = max(na(1),ne(1))
@@ -1805,6 +1868,8 @@
     return
     end subroutine offset
 
+! --------------------------- roomcon -------------------------------------------
+
     subroutine roomcon(tsec)
 
     ! routine: roomcon
@@ -1812,13 +1877,16 @@
     !            isolated from the outside then snsqe has trouble finding an initial pressure solution.
     ! arguments: tsec: current simulation time 
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use params
     use vents
     implicit none
 
-    real(8) :: factor2, qchfraction, height, width, tsec, avent
+    real(eb), intent(in) :: tsec
+    
+    real(eb) :: factor2, qchfraction, height, width, avent
     integer roomc(nr,nr), tempmat(nr,nr), i, j, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
 
@@ -1880,6 +1948,8 @@
     return
     end subroutine roomcon
 
+! --------------------------- wset -------------------------------------------
+
     subroutine wset(numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
 
     ! routine: wset
@@ -1898,11 +1968,17 @@
     !            tamb     ambient temperature seen by interior wall
     !            text     ambient temperature seen by exterior wall
 
+    use precision_parameters
     implicit none
 
-    real(8) :: walldx(*), wk(*), wspec(*), wrho(*), wthick(*), wtemp(*), wsplit(*), xwall(100), xpos(10), xxnx, wlen, errfc05, xkrhoc, alpha, xb, tstop, xxnsplit, w, xxim1, xxiim1, &
-        wmxb, xxnslabm2, xxnint, xxi1, xxi2, xxi3, xxnintx, tamb, text, dtdw
-    integer :: numnode(*), cumpts(10), numpts(10), i, ii, nx, nintx, nslab, nsplit, islab, isum, nint, ibeg, iend
+    integer, intent(in) :: nslab
+    integer, intent(out) :: numnode(*) 
+    real(eb), intent(in) :: tstop, wsplit(*), wk(*), wspec(*), wrho(*), wthick(*), tamb, text
+    real(eb), intent(out) :: wlen, walldx(*)
+    
+    integer :: cumpts(10), numpts(10), i, ii, nx, nintx, nsplit, islab, isum, nint, ibeg, iend
+    real(eb) :: wtemp(*), xwall(100), xpos(10), xxnx, errfc05, xkrhoc, alpha, xb, xxnsplit, w, xxim1, xxiim1
+    real(eb) :: wmxb, xxnslabm2, xxnint, xxi1, xxi2, xxi3, xxnintx, dtdw
 
     nx = numnode(1)
     xxnx = nx
@@ -2023,6 +2099,8 @@
     end do
     return
     end
+
+! --------------------------- rev_initialization -------------------------------------------
 
     integer function rev_initialization ()
 

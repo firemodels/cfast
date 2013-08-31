@@ -1,8 +1,11 @@
 
+! --------------------------- readinputfile -------------------------------------------
+
     subroutine readinputfile (ierror)
 
     !	Read the input file and set up the data for processing
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -11,8 +14,10 @@
     use thermp
     implicit none
 
-    real(8) :: yinter(nr), temparea(mxpts), temphgt(mxpts), xx0, xx1, deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
-    integer numr, numc, ifail, ios, ierror, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
+    integer, intent(out) :: ierror
+    
+    real(eb) :: yinter(nr), temparea(mxpts), temphgt(mxpts), deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
+    integer numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
 
     !	Unit numbers defined in readop, openoutputfiles, readinputfiles
@@ -35,8 +40,6 @@
     !            (4) = side wall properties are defined for lower walls
 
     ifail = 0
-    xx0 = 0.0d0
-    xx1 = 1.0d0
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
@@ -127,13 +130,13 @@
 
     ! check and/or set heat source fire position
     if (heatfl) then
-        if ((heatfp(1)<xx0).or.(heatfp(1)>br(heatfr))) then
+        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>br(heatfr))) then
             heatfp(1) = br(heatfr) / 2.0d0
         endif
-        if ((heatfp(2)<xx0).or.(heatfp(2)>dr(heatfr))) then
+        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>dr(heatfr))) then
             heatfp(2) = dr(heatfr) / 2.0d0
         endif
-        if ((heatfp(3)<xx0).or.(heatfp(3)>hr(heatfr))) then
+        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>hr(heatfr))) then
             heatfp(3) = 0.0d0
         endif
         write(logerr,5021) heatfr,heatfp
@@ -141,16 +144,16 @@
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
-        if((objpos(1,i)<xx0).or.(objpos(1,i)>br(objrm(i)))) then
+        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>br(objrm(i)))) then
             objpos(1,i) = br(objrm(i)) / 2.0d0
             if (logerr>0) write (logerr,5080) i, objpos(1,i)
         endif
-        if((objpos(2,i)<xx0).or.(objpos(2,i)>dr(objrm(i)))) then
+        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>dr(objrm(i)))) then
             objpos(2,i) = dr(objrm(i)) / 2.0d0
             if (logerr>0) write (logerr,5090) i, objpos(2,i)
         endif
-        if((objpos(3,i)<xx0).or.(objpos(3,i)>hr(objrm(i)))) then
-            objpos(3,i) = xx0
+        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>hr(objrm(i)))) then
+            objpos(3,i) = 0.0_eb
             if (logerr>0) write (logerr,5100) i, objpos(3,i)
         endif
     end do
@@ -481,7 +484,9 @@
 
     end subroutine readinputfile
 
-    subroutine keywordcases(xnumr,xnumc,IERROR)
+! --------------------------- keywordcases -------------------------------------------
+
+    subroutine keywordcases(xnumr,xnumc,ierror)
 
     !     routine:  keywordcases (remaned from NPUTQ)
     !     purpose: Handles CFAST datafile keywords
@@ -489,6 +494,7 @@
     !                xnumc    number of columns in input file spreadsheet
     !                ierror  Returns error codes
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -506,18 +512,19 @@
 
     integer, parameter :: maxin = 37
     
+    integer, intent(in) :: xnumr, xnumc
+    integer, intent(out) :: ierror
+    
     logical :: lfupdat, countargs
-    integer :: obpnt, compartment, lrowcount, xnumr, xnumc, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, ierror, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom
-    real(8) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato, xx0, xx1, xxm1, fanfraction, heatfplume, frac, tmpcond, dnrm2
+    integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom
+    real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato, fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
     data plumemodel /'McCaffrey', 'Heskestad'/
 
     !	Start with a clean slate
-    xx0 = 0.0d0
-    xx1 = 1.0d0
-    xxm1= -1.0d0
+
     lfupdat=.false.
     iflgsetp = 0
     setpfile = ' '
@@ -785,15 +792,15 @@
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
-        hh(jik) = min(hr(j),max(xx0,hhp(jik)-hflr(j)))
-        hl(jik) = min(hh(jik),max(xx0,hlp(jik)-hflr(j)))
+        hh(jik) = min(hr(j),max(0.0_eb,hhp(jik)-hflr(j)))
+        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-hflr(j)))
 
         ! assure ourselves that the connections are symmetrical
 
         hhp(jik) = hh(jik) + hflr(j)
         hlp(jik) = hl(jik) + hflr(j)
-        hh(iijk) = min(hr(i),max(xx0,hhp(iijk)-hflr(i)))
-        hl(iijk) = min(hh(iijk),max(xx0,hlp(iijk)-hflr(i)))
+        hh(iijk) = min(hr(i),max(0.0_eb,hhp(iijk)-hflr(i)))
+        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-hflr(i)))
 
         ! EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
         ! EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time
@@ -998,7 +1005,7 @@
         nfc(nfan) = 1
         na(nbr) = hvnode(2,next-1)
         ne(nbr) = hvnode(2,next)
-        hvdvol(nbr) = xx0
+        hvdvol(nbr) = 0.0_eb
         hmin(nfan) = minpres
         hmax(nfan) = maxpres
         hvbco(nfan,1) = lrarray(10)
@@ -1008,7 +1015,7 @@
 
         ! to change from the zero volume calculation to a finite volume, use 1.0d1 (10 meter duct)
         ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation for flow through the external nodes
-        dl(ndt) = xx0 ! 1.0d1
+        dl(ndt) = 0.0_eb ! 1.0d1
         de(ndt) = lrarray(6)
         ibrd(ndt) = nbr
 
@@ -1727,6 +1734,8 @@
 
     end subroutine keywordcases
 
+! --------------------------- inputembeddedfire -------------------------------------------
+
     subroutine inputembeddedfire(objname, lrowcount, xnumc, iobj, ierror)
 
     !     routine: inputembeddedfire
@@ -1740,18 +1749,21 @@
     !                iobj:    pointer to the fire object that will contain all the data we read in here
     !                ierror:  error return index
 
+    use precision_parameters
     use cfast_main
     use iofiles
     use objects2
     implicit none
 
+    integer, intent(in) :: xnumc, iobj
+    character(*), intent(in) :: objname
+    integer, intent(out) :: lrowcount, ierror
+    
     logical :: countargs, lstat
     character(128) :: lcarray(ncol)
     character(5) :: label
-    character(*) :: objname
-    integer :: lrowcount, xnumc, iobj, logerr = 3, midpoint = 1, base = 2, errorcode, ierror, ir, i, ii, nret
-    real(8) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength
-    real(8), parameter :: xx0 = 0.0d0
+    integer :: logerr = 3, midpoint = 1, base = 2, errorcode, ir, i, ii, nret
+    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength
 
     ! there are eight required inputs for each fire
     do ir = 1, 8
@@ -1862,7 +1874,7 @@
     area = objxyz(1,iobj) * objxyz(2,iobj)
     d = max(0.33d0,sqrt(4.0/3.14*area))
     flamelength = d * (0.235d0*(max_hrr/1.0d3)**0.4 - 1.02)
-    flamelength = max (xx0, flamelength)
+    flamelength = max (0.0_eb, flamelength)
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
     if (hrrpm3>4.0d+6) then
@@ -1884,6 +1896,8 @@
 
     end subroutine inputembeddedfire
 
+! --------------------------- initfireobject -------------------------------------------
+
     subroutine initfireobject (iobj, ierror)
 
     !     routine: initfireobject
@@ -1896,7 +1910,9 @@
     use objects2
     implicit none
     
-    integer logerr, ierror, iobj
+    integer, intent(in) :: iobj
+    integer, intent(out) :: ierror
+    integer :: logerr
 
     ntarg = ntarg + 1
     if (ntarg>mxtarg) then
@@ -1912,6 +1928,8 @@
     return
     end subroutine initfireobject
 
+! --------------------------- readcfl -------------------------------------------
+
     subroutine readcf1 (errorcode)
 
     !     routine: readcf1
@@ -1925,7 +1943,9 @@
     use debug
     implicit none
 
-    integer :: errorcode , lp, ld, ios
+    integer, intent(out) :: errorcode
+    
+    integer :: lp, ld, ios
     character(256) :: testpath, testproj 
 
     ! get the path and project names
@@ -1991,6 +2011,8 @@
     return
     end subroutine readcf1
 
+! --------------------------- setp0 -------------------------------------------
+
     subroutine setp0 (p0, ip0, pmxmn, ipmxmn, iounit, ierror)
 
     !     routine: setp0
@@ -1999,15 +2021,22 @@
     !                ip0     array of flags for variables that have changes in p0
     !                ierror  error flag
 
+    use precision_parameters
     use cfast_main
     use cshell
     use iofiles
     use opt
     implicit none
 
-    real(8) :: p0(*), pmxmn(maxteq,2), local(2), x
+    integer, intent(in) :: ipmxmn(0:maxteq,2), iounit
+    real(eb), intent(in) :: pmxmn(maxteq,2)
+    
+    real(eb), intent(out) :: p0(*)
+    integer, intent(out) :: ip0(0:*), ierror
+    
+    real(eb) :: local(2), x
 
-    integer :: ip0(0:*), ipmxmn(0:maxteq,2), iounit, ilocal(2), ierror, i, io, nret, iroom
+    integer :: ilocal(2), i, io, nret, iroom
     character :: label*5, testfile*128, place*1, mxmn*1, toupper*1, testpath*256
     logical exists, doesthefileexist, eof
 
@@ -2107,6 +2136,8 @@
 
     end subroutine setp0
 
+! --------------------------- dop0 -------------------------------------------
+
     subroutine dop0(noflg, iroom, mxmn, x, p0, ip0, pmxmn, ipmxmn)
 
     !     routine: dop0
@@ -2119,13 +2150,17 @@
     !                pmxmn   array containing new limits of values for p vector
     !                ipmxmn  array of flags for limits that have been set in pmxmn
 
+    use precision_parameters
     use cfast_main
     use opt
     implicit none
 
-    real(8) :: p0(*), pmxmn(maxteq,2), x
-    integer :: ip0(0:*), ipmxmn(0:maxteq,2), noflg, iroom
-    character :: mxmn*1
+    integer, intent(in) :: noflg, iroom
+    real(eb), intent(in) ::  x
+    character, intent(in) :: mxmn*1
+
+    integer, intent(out) :: ipmxmn(0:maxteq,2), ip0(0:*)
+    real(eb), intent(out) :: pmxmn(maxteq,2), p0(*)
 
     if (mxmn=='X') then
         ipmxmn(0,1) = on
@@ -2144,6 +2179,8 @@
     return
     end subroutine dop0
 
+! --------------------------- positionobject -------------------------------------------
+
     subroutine positionobject (xyz,index,opoint,rpoint,criterion,defaultposition,minimumseparation,errorcode)
 
     !     routine: positionobject
@@ -2156,12 +2193,15 @@
     !		         defaultposition: to set to zero (base)(2) or midpoint(1)
     !		         minimumseparation: the closest the object can be to a wall
 
+    use precision_parameters
     implicit none
     
-    integer :: index, defaultposition, opoint,rpoint, errorcode
-    real(8) :: xyz(3,0:*), xx0 =0.0d0, minimumseparation, criterion(*)
-
-    IF((xyz(index,opoint)<xx0).or.(xyz(index,opoint)>criterion(rpoint))) THEN
+    integer, intent(in) :: index, defaultposition, opoint,rpoint
+    real(eb), intent(in) :: minimumseparation, criterion(*)
+    real(eb), intent(out) :: xyz(3,0:*)
+    integer, intent(out) :: errorcode
+    
+    IF((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) THEN
         select case (defaultposition)
         case (1) 
             xyz(index,opoint) = criterion(rpoint)/2.0d0
@@ -2170,7 +2210,7 @@
         case default
             errorcode = 222
         end select
-    else if (xyz(index,opoint)==xx0) then
+    else if (xyz(index,opoint)==0.0_eb) then
         xyz(index,opoint) = minimumseparation
     else if (xyz(index,opoint)==criterion(rpoint)) then
         xyz(index,opoint) = criterion(rpoint)-minimumseparation
@@ -2179,6 +2219,8 @@
     return
 
     end subroutine positionobject
+
+! --------------------------- set_target_object -------------------------------------------
 
     subroutine set_target_object (itarg,iobj)
 
@@ -2194,7 +2236,9 @@
     use objects2
     implicit none
     
-    integer :: i, itarg, iobj
+    integer, intent(in) :: itarg, iobj
+
+    integer :: i
 
     ixtarg(trgroom,itarg) = objrm(iobj)
     do i = 0,2
@@ -2206,6 +2250,8 @@
     ixtarg(trgeq,itarg) = ode
     return
     end subroutine set_target_object
+
+! --------------------------- readcsvformat -------------------------------------------
 
     subroutine readcsvformat (iunit,x,c,numr,numc,nstart,maxr,maxc,ierror)
 
@@ -2220,13 +2266,18 @@
     !                maxr     = actual number of rows read
     !                maxcc    = actual number of columns read
 
+    use precision_parameters
     use cshell
     implicit none
 
-    integer numr, numc
-    real(8) :: x(numr,numc)
-    character :: in*10000, token*128, c(numr,numc)*(*)
-    integer :: ierror, maxr, maxc, i, j, nstart, iunit, nrcurrent, ic, icomma, ios, nc
+    integer, intent(in) :: iunit, numr, numc, nstart
+
+    integer, intent(out) :: maxr, maxc, ierror
+    real(eb), intent(out) :: x(numr,numc)
+    character, intent(out) :: c(numr,numc)*(*)
+
+    character :: in*10000, token*128
+    integer :: i, j, nrcurrent, ic, icomma, ios, nc
 
     maxr = 0
     maxc = 0
@@ -2298,6 +2349,8 @@
 
     return
     end subroutine readcsvformat
+
+! --------------------------- rev_input -------------------------------------------
 
     integer function rev_input ()
 

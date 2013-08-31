@@ -660,10 +660,10 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        pamb(i) = -ra*g*hflr(i)
+        pamb(i) = -ra*grav_con*hflr(i)
         tamb(i) = ta
         ramb(i) = ra
-        epa(i) = -exra*g*hflr(i)
+        epa(i) = -exra*grav_con*hflr(i)
         eta(i) = exta
         era(i) = exra
     end do
@@ -731,7 +731,7 @@
         iroom=ixdtect(i,droom)
         if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
         if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
-        if(xdtect(i,dzloc)<0.0d0)then
+        if(xdtect(i,dzloc)<0.0_eb)then
             xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
         endif
         tdspray = xdtect(i,dspray)
@@ -741,13 +741,13 @@
         ! if tdspray < 0 then interpret abs(tdspray) as the time
         ! required to reduce the fire size by 50 per cent
         ! if tdspray = 0 then turn the sprinkler off
-        if(tdspray>0.0d0)then
-            tdrate = 3.0d0/tdspray**1.8d0
-        elseif(tdspray<0.0d0)then
+        if(tdspray>0.0_eb)then
+            tdrate = 3.0_eb/tdspray**1.8_eb
+        elseif(tdspray<0.0_eb)then
             tdrate = abs(tdspray)/log(2.0_eb)
-            tdspray = (3.0d0/tdrate)**(1.0d0/1.8d0)
+            tdspray = (3.0_eb/tdrate)**(1.0_eb/1.8_eb)
         else
-            tdspray = 0.0d0
+            tdspray = 0.0_eb
             tdrate = 1.0d10
             ixdtect(i,dquench) = 0
         endif
@@ -781,7 +781,7 @@
         tgtarg(itarg) = tamb(iroom)
 
         ! scale normal vectors to have length 1
-        scale = 1.0d0/dnrm2(3,xxtarg(trgnormx,itarg),1)
+        scale = 1.0_eb/dnrm2(3,xxtarg(trgnormx,itarg),1)
         call dscal(3,scale,xxtarg(trgnormx,itarg),1)
     end do
 
@@ -789,8 +789,8 @@
     ! after zzmass is defined)
     if(option(foxygen)==on)then
         do iroom = 1, nm1
-            p(iroom+nofoxyu)=0.23d0*zzmass(iroom,upper)
-            p(iroom+nofoxyl)=0.23d0*zzmass(iroom,lower)
+            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
+            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
         end do
     endif
 
@@ -959,15 +959,14 @@
 
     ! set the time step and inner step division for time splitting
     ! we do not let the user choose these
-    deltat = 1.0d0
+    deltat = 1.0_eb
 
     ! define all the "universal constants
     sigm = 5.67d-8
-    cp = 1012.0d0
-    gamma = 1.40d0
-    rgas = (gamma-1.0d0) / gamma * cp
-    minmas = 0.0d0
-    g = 9.80d0
+    cp = 1012.0_eb
+    gamma = 1.40_eb
+    rgas = (gamma-1.0_eb) / gamma * cp
+    minmas = 0.0_eb
     stime = 0.0_eb
     tref = 288.d0
     limo2 = 0.10d0
@@ -1070,7 +1069,7 @@
     nfilter = 0
     nbr = 0
     next = 0
-    hvgrav = g
+    hvgrav = grav_con
     hvrgas = rgas
     mvcalc = .false.
     do i = 1, mnode

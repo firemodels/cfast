@@ -98,7 +98,7 @@ module cfast_main
         farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 
     real(8) :: cp, deltat, heatfq, tracet(2,mext)
-    real(8) :: g, gamma, gmwf, hcomba, hvdelt, traces(2,mext)
+    real(8) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
     real(8) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
     real(8) :: ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
     real(8) :: termxx, tfiret, tfmaxt, tgignt

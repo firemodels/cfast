@@ -1,3 +1,6 @@
+
+! --------------------------- ddassl -------------------------------------------
+
     subroutine ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
     !
     !***begin prologue  ddassl
@@ -1251,6 +1254,8 @@
     !-----------end of subroutine ddassl------------------------------------
     end subroutine ddassl
 
+! --------------------------- ddawts -------------------------------------------
+
     subroutine ddawts(neq,iwt,rtol,atol,y,wt)
 
     !***begin prologue  ddawts
@@ -1326,7 +1331,9 @@
     return
     !------end of function ddanrm------
     end function ddanrm
-    
+
+! --------------------------- ddaini -------------------------------------------
+
     subroutine ddaini(x,y,yprime,neq,res,jac,h,wt,idid,rpar,ipar,phi,delta,e,wm,iwm,hmin,uround,nonneg,ntemp)
     !
     !***begin prologue  ddaini
@@ -1584,7 +1591,9 @@
     !
     !-------------end of subroutine ddaini----------------------
     end subroutine ddaini
-    
+
+! --------------------------- ddatrp -------------------------------------------
+
     subroutine ddatrp(x,xout,yout,ypout,neq,kold,phi,psi)
     !
     !***begin prologue  ddatrp
@@ -1646,7 +1655,9 @@
     !
     !------end of subroutine ddatrp------
     end subroutine ddatrp
-    
+
+! --------------------------- ddastp -------------------------------------------
+
     subroutine ddastp(x,y,yprime,neq,res,jac,h,wt,jstart,idid,rpar,ipar,phi,delta,e,wm,iwm,alpha,beta,gamma,psi,sigma,cj,cjold,hold,s,hmin,uround,iphase,jcalc,k,kold,ns,nonneg,ntemp)
     !
     !***begin prologue  ddastp
@@ -2261,7 +2272,9 @@
     !
     !------end of subroutine ddastp------
     end subroutine ddastp
-    
+
+! --------------------------- ddajac -------------------------------------------
+
     subroutine ddajac(neq,x,y,yprime,delta,cj,h,ier,wt,e,wm,iwm,res,ires,uround,jac,rpar,ipar,ntemp)
     !
     !***begin prologue  ddajac
@@ -2441,7 +2454,9 @@
     return
     !------end of subroutine ddajac------
     end subroutine ddajac
-    
+
+! --------------------------- ddaslv -------------------------------------------
+
     subroutine ddaslv(neq,delta,wm,iwm)
     !
     !***begin prologue  ddaslv
@@ -2498,6 +2513,8 @@
     return
     !------end of subroutine ddaslv------
     end subroutine ddaslv
+
+! --------------------------- snsqe -------------------------------------------
 
     subroutine snsqe(fcn,jac,iopt,n,x,fvec,tol,nprint,info,wa,lwa)
     !***begin prologue  snsqe
@@ -2866,7 +2883,9 @@
     !     last card of subroutine snsqe.
     !
     end subroutine snsqe
-    
+
+! --------------------------- dogleg -------------------------------------------
+
     subroutine dogleg(n,r,lr,diag,qtb,delta,x,wa1,wa2)
     !***begin prologue  dogleg
     !***refer to  snsq,snsqe
@@ -3042,7 +3061,9 @@
     !     last card of subroutine dogleg.
     !
     end subroutine dogleg
-    
+
+! --------------------------- enorm -------------------------------------------
+
     real(8) function enorm(n,x)
     !***begin prologue  enorm
     !***refer to  snls1,snls1e,snsq,snsqe
@@ -3153,7 +3174,9 @@
     !     last card of function enorm.
     !
     end function enorm
-    
+
+! --------------------------- fdjac1 -------------------------------------------
+
     subroutine fdjac1(fcn,n,x,fvec,fjac,ldfjac,iflag,ml,mu,epsfcn,wa1,wa2)
     !***begin prologue  fdjac1
     !***refer to  snsq,snsqe
@@ -3302,7 +3325,9 @@
     !     last card of subroutine fdjac1.
     !
     end subroutine fdjac1
-    
+
+! --------------------------- qform -------------------------------------------
+
     subroutine qform(m,n,q,ldq,wa)
     !***begin prologue  qform
     !***refer to  snsq,snsqe
@@ -3401,7 +3426,9 @@
     !     last card of subroutine qform.
     !
     end subroutine qform
-    
+
+! --------------------------- qrfac -------------------------------------------
+
     subroutine qrfac(m,n,a,lda,pivot,ipvt,lipvt,sigma,acnorm,wa)
     !***begin prologue  qrfac
     !***refer to  snls1,snls1e,snsq,snsqe
@@ -3566,7 +3593,9 @@
     !     last card of subroutine qrfac.
     !
     end subroutine qrfac
-    
+
+! --------------------------- r1mpyq -------------------------------------------
+
     subroutine r1mpyq(m,n,a,lda,v,w)
     !***begin prologue  r1mpyq
     !***refer to  snsq,snsqe
@@ -3661,7 +3690,9 @@
     !     last card of subroutine r1mpyq.
     !
     end subroutine r1mpyq
-    
+
+! --------------------------- r1updt -------------------------------------------
+
     subroutine r1updt(m,n,s,ls,u,v,w,sing)
     !***begin prologue  r1updt
     !***refer to  snsq,snsqe
@@ -3868,7 +3899,9 @@
     !     last card of subroutine r1updt.
     !
     end subroutine r1updt
-    
+
+! --------------------------- snsq -------------------------------------------
+
     subroutine snsq(fcn,jac,iopt,n,x,fvec,fjac,ldfjac,xtol,maxfev,ml,mu,epsfcn,diag,mode,factor,nprint,info,nfev,njev,r,lr,qtf,wa1,wa2,wa3,wa4)
     !***begin prologue  snsq
     !***date written   800301   (yymmdd)
@@ -4580,6 +4613,8 @@
     !     last card of subroutine snsq.
     !
     end subroutine snsq
+
+! --------------------------- idamax -------------------------------------------
 
     integer function idamax(n,dx,incx)
 
@@ -6318,6 +6353,8 @@
     return
     end function jacd
 
+! --------------------------- setderv -------------------------------------------
+
     subroutine setderv(j)
     !
     !--------------------------------- nist/bfrl ---------------------------------
@@ -6345,7 +6382,9 @@
     if(j>-10) jaccol = j
     return
     end
-    
+
+! --------------------------- incjac -------------------------------------------
+
     subroutine incjac
     !
     !--------------------------------- nist/bfrl ---------------------------------
@@ -6373,6 +6412,8 @@
     numjac = numjac + 1
     return
     end
+
+! --------------------------- rev_numerics -------------------------------------------
 
     integer function rev_numerics ()
 

@@ -140,7 +140,8 @@
     use objects2
     implicit none
     
-    integer iobj,j,i
+    integer, intent(in) :: iobj
+    integer :: j,i
 
     write(*,5) OBJGMW(IOBJ), objvt(iobj),objmas(iobj)
 5   format('gmwf,te,m ',3f8.3)
@@ -282,6 +283,7 @@
     implicit none
 
     integer, intent(in) :: isw
+    
     integer length, i, ir, j
     real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
 
@@ -634,6 +636,7 @@
     implicit none
 
     integer, intent(in) :: iounit
+    
     integer :: i, ir
     real(eb) :: xemp, xqf
 
@@ -683,10 +686,12 @@
     implicit none
 
     integer, intent(in) :: itprt
+    
     integer :: length, i, iw, itarg, itctemp
     real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
 
-    integer iwptr(4)
+    integer :: iwptr(4)
+    
     external length
     data iwptr /1, 3, 4, 2/
 
@@ -1146,6 +1151,7 @@
 
     integer, intent(in) :: ind
     integer, intent(out) :: irm, iext
+    
     integer :: i
 
     do i = 1, next
@@ -1290,6 +1296,7 @@
     implicit none
 
     integer, intent(in) :: isw
+    
     integer :: itarg, j
 
     character cbuf*255
@@ -1325,9 +1332,14 @@
     use solver_parameters
     implicit none
 
+    
+    
+    real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
+    character, intent(out) :: outbuf*(*)
+    
+    real :: flow(8),  x1000,x100,x10,x1,x01
+
     integer :: i
-    real(eb) :: flow(8), flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8, x1000,x100,x10,x1,x01
-    character outbuf*(*)
 
     outbuf = ' '
     flow(1) = flow1
@@ -1469,6 +1481,7 @@
 
     real(eb), intent(in) :: wm(jacdim,*), tsec
     integer, intent(in) :: neqs
+    
     real(eb) :: buf(maxeq), wmii, wmij, tmp, tmp1
     integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, itcol, icdx, iitmp
     logical :: firstc
@@ -1589,6 +1602,7 @@
     implicit none
 
     real(eb), intent(in) :: t
+    
     integer :: iounit
     logical :: firstc = .true.
     save iounit
@@ -1625,7 +1639,9 @@
     
     implicit none
 
-    integer funit, jaccnt, jacprn, iounit
+    integer, intent(in) :: jaccnt, jacprn
+    
+    integer funit, iounit
     logical :: firstc = .true.
     character :: cntfil*6 = 'JACCNT', prnfil*6 = 'JACPRN'
 
@@ -1647,6 +1663,8 @@
     return
     end  subroutine opndbg
 
+! --------------------------- fnd_comp -------------------------------------------
+
     subroutine fnd_comp (icomp)
 
     !     Arguments: IOUNIT
@@ -1659,6 +1677,7 @@
     implicit none
  
     integer, intent(in) :: icomp
+    
     integer :: itmp, irm, iw
 
     write(lbuf,*)'Solution component with the greatest error is'
@@ -1720,8 +1739,11 @@
     use wnodes
     implicit none
 
-    real(eb) :: xqf, dp, dt, t
-    integer :: bmap(mbr), i, j, ikey, iprod, il, isys, idt, iroom, ieqmax, iobj, itarg
+    integer, intent(in) :: ikey, ieqmax
+    real(eb), intent(in) :: t, dt
+    
+    real(eb) :: xqf, dp
+    integer :: bmap(mbr), i, j, iprod, il, isys, idt, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
@@ -1938,6 +1960,7 @@
     implicit none
 
     character(*), intent(in) :: file
+    
     integer :: funit, nnnopt, i, j, iunit
 
     nnnopt = 21
@@ -2100,6 +2123,7 @@
     implicit none
 
     character(*), intent(in) :: outputfile
+    
     logical :: doesthefileexist
     integer(2) :: filecount
 

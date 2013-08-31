@@ -1,3 +1,6 @@
+
+! --------------------------- cenviro -------------------------------------------
+
 module cenviro
     
     use cparams
@@ -52,6 +55,8 @@ module cenviro
     
 end module cenviro
 
+! --------------------------- cfast_main -------------------------------------------
+
 module cfast_main
     use cparams
     use dsize
@@ -104,7 +109,9 @@ module cfast_main
     character(128) :: title, compartmentnames(nr)
 
 end module cfast_main
-   
+
+! --------------------------- cfin -------------------------------------------
+
 module cfin
     
     implicit none
@@ -113,6 +120,8 @@ module cfin
     character(lbufln) :: lbuf, cbuf
     
 end module cfin
+
+! --------------------------- cfio -------------------------------------------
 
 module cfio
 
@@ -126,6 +135,8 @@ module cfio
       real :: xi
 
 end module cfio
+
+! --------------------------- cshell -------------------------------------------
 
 module cshell
 
@@ -144,6 +155,8 @@ module cshell
     
 end module cshell
 
+! --------------------------- dervs -------------------------------------------
+
 module dervs
 
     use cparams    
@@ -155,7 +168,9 @@ module dervs
     real(8) :: told, dt
 
 end module dervs
-    
+
+! --------------------------- fltarget -------------------------------------------
+
 module fltarget
     use cparams
     implicit none
@@ -205,7 +220,9 @@ module fltarget
     real(8), dimension(mxtarg,5)  :: gtflux
     integer, dimension(3) :: neqtarg
 end module fltarget
-    
+
+! --------------------------- iofiles -------------------------------------------
+
 module  iofiles
 
     implicit none
@@ -227,6 +244,8 @@ module  iofiles
 
 end module iofiles
 
+! --------------------------- debug -------------------------------------------
+
 module  debug
 
     implicit none
@@ -240,7 +259,9 @@ module  debug
     character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
 
 end module debug
-    
+
+! --------------------------- objects1 -------------------------------------------
+
 module objects1
 
     use cparams
@@ -253,6 +274,8 @@ module objects1
     integer, dimension(0:mxoin) :: objpnt
 
 end module objects1
+
+! --------------------------- objects2 -------------------------------------------
 
 module objects2
 
@@ -275,6 +298,8 @@ module objects2
     real(8) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
 
 end module objects2
+
+! --------------------------- opt -------------------------------------------
 
 module opt
 
@@ -344,6 +369,8 @@ module opt
 
       end module opt
 
+! --------------------------- params -------------------------------------------
+
 module params
 
     use cparams
@@ -371,6 +398,8 @@ module params
 
 end module params
 
+! --------------------------- smkview -------------------------------------------
+
 module smkview
 
     use cparams
@@ -383,6 +412,8 @@ module smkview
     real(8), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
   
 end module smkview
+
+! --------------------------- solver_parameters -------------------------------------------
 
 module solver_parameters
 
@@ -410,6 +441,8 @@ module solver_parameters
 
 end module solver_parameters
 
+! --------------------------- thermp -------------------------------------------
+
 module thermp
 
     use cparams
@@ -427,6 +460,8 @@ module thermp
     character(8), dimension(nthmax) :: nlist
 
 end module thermp
+
+! --------------------------- vents -------------------------------------------
 
 module vents
 
@@ -453,6 +488,8 @@ module vents
     
 end module vents
 
+! --------------------------- vent_slab -------------------------------------------
+
 module vent_slab
     
     implicit none
@@ -464,6 +501,8 @@ module vent_slab
       
 end module vent_slab
 
+! --------------------------- wdervs -------------------------------------------
+
 module wdervs
 
     implicit none
@@ -472,6 +511,8 @@ module wdervs
     integer :: jacn1, jacn2, jacn3, jacdim
       
 end module wdervs
+
+! --------------------------- wnodes -------------------------------------------
 
 module wnodes
 

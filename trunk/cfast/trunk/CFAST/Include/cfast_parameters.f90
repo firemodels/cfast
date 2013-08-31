@@ -1,3 +1,6 @@
+
+! --------------------------- cparams -------------------------------------------
+
 module cparams
 
     ! geometry parameters
@@ -61,6 +64,8 @@ module cparams
 
 end module cparams
 
+! --------------------------- dsize -------------------------------------------
+
 module dsize
 
     implicit none
@@ -98,6 +103,8 @@ module dsize
 
 end module dsize
 
+! --------------------------- fireptrs -------------------------------------------
+
 module fireptrs
 
     integer, parameter :: free = 1
@@ -106,6 +113,8 @@ module fireptrs
     integer, parameter :: pool = 4
       
 end module fireptrs
+
+! --------------------------- flwptrs -------------------------------------------
 
 module flwptrs
 

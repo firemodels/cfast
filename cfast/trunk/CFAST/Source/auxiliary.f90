@@ -125,7 +125,7 @@
     
     real(eb) :: b, x
 
-    x = 1.0d0
+    x = 1.0_eb
     b = radix(x)
     select case (i)
     case (1)
@@ -1135,7 +1135,7 @@
 
     nret = 0
     multi = .false.
-    xxbig = 10000000.0d0
+    xxbig = 10000000.0_eb
     do i = 1, nreq
         call sstrng (inbuf, count, start, first, last, valid)
         if (.not.valid) then

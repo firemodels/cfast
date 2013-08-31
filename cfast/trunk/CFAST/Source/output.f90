@@ -1,3 +1,6 @@
+
+! --------------------------- disclaim -------------------------------------------
+
     subroutine disclaim (name)
 
     use cshell
@@ -31,6 +34,8 @@
 2   format('Run ',I4.4,'/',I2.2,'/',I2.2)
 
     end subroutine disclaim
+
+! --------------------------- versionout -------------------------------------------
 
     subroutine versionout (iunit)
 
@@ -67,6 +72,8 @@
 30  format ('CFAST run with validation option = ',i2)    
     end subroutine versionout
 
+! --------------------------- splitversion -------------------------------------------
+
     subroutine splitversion (version,imajor,iminor,iminorrev)
     
     implicit none
@@ -85,6 +92,8 @@
     endif
     return
     end subroutine splitversion
+
+! --------------------------- printfireparameters -------------------------------------------
 
     subroutine printfireparameters
 
@@ -121,6 +130,8 @@
 
     return
     end subroutine printfireparameters
+
+! --------------------------- printobjectparameters -------------------------------------------
 
     subroutine printobjectparameters (iobj)
 
@@ -169,6 +180,8 @@
     return
     end subroutine printobjectparameters
 
+! --------------------------- result -------------------------------------------
+
     subroutine result(time,isw)
 
     !     Description:  Output the results of the simulation at the current time
@@ -184,11 +197,12 @@
     !                      printout of object names -- only CFAST knows actual
     !                      names, others just do it by numbers
 
+    use precision_parameters
     use cshell
     implicit none
 
     integer, intent(in) :: isw
-    real(8), intent(in) :: time
+    real(eb), intent(in) :: time
 
     if (outputformat>1) then
         write (iofilo,5000) time
@@ -211,10 +225,13 @@
 5000 format (//,' Time = ',f8.1,' seconds.')
     end subroutine result
 
+! --------------------------- rsltlay -------------------------------------------
+
     subroutine rsltlay
 
     !     Description:  Output the 2 layer environment at the current time
 
+    use precision_parameters
     use cfast_main
     use cenviro
     use cshell
@@ -230,7 +247,7 @@
     write (iofilo,5040)
     do i = 1, nm1
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
+        izzvol = zzvol(i,upper)/vr(i)*100._eb+0.5_eb
         if (izshaft(i)==1) then
             write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-273.15, zzvol(i,upper), &
             zzabsb(upper,i),zzrelp(i)-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
@@ -249,13 +266,16 @@
 5070 format (1x,a13,1P2G11.4,1PG11.4,1X,1pg9.2,'(',I3,'%) ',1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
 5071 format (1x,A13,1PG11.4,10(' '),10(' '),1X,1pg9.2,7(' '),1PG10.3,1X,10(' '),1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
     end subroutine rsltlay
-    
+
+! --------------------------- rsltfir -------------------------------------------
+
     subroutine rsltfir (isw)
 
     !     Description:  Output the fire environment at the current time
 
     !     Arguments: ISW    Print switch for object fire printout
 
+    use precision_parameters
     use cfast_main
     use cshell
     use objects1
@@ -263,10 +283,9 @@
 
     integer, intent(in) :: isw
     integer length, i, ir, j
-    real(8) :: xx0, fheight, xems, xemp, xqf, xqupr, xqlow
+    real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
 
     external length
-    xx0 = 0.0d0
     write (iofilo,5000)
     if (lfmax>0.and.lfbt>0.and.lfbo>0) then
         call flamhgt (fqf(0),farea(0),fheight)
@@ -287,11 +306,11 @@
     endif
     write (iofilo,'(a)') ' '
     do ir = 1, nm1
-        xems = xx0
-        xemp = xx0
-        xqf = xx0
-        xqupr = xx0
-        xqlow = xx0
+        xems = 0.0_eb
+        xemp = 0.0_eb
+        xqf = 0.0_eb
+        xqupr = 0.0_eb
+        xqlow = 0.0_eb
         do i = 0, numobjl
             if (ir==froom(i)) then
                 xems = xems + fems(i)
@@ -302,9 +321,9 @@
             endif
         end do
         xqf = xqf + fqdj(ir)
-        if (xems+xemp+xqf+xqupr+xqlow+fqdj(ir)/=xx0) write (iofilo,5030) compartmentnames(ir), xems, xemp, xqf, xqupr, xqlow, fqdj(ir)
+        if (xems+xemp+xqf+xqupr+xqlow+fqdj(ir)/=0.0_eb) write (iofilo,5030) compartmentnames(ir), xems, xemp, xqf, xqupr, xqlow, fqdj(ir)
     end do
-    if (fqdj(n)/=xx0) write (iofilo,5040) fqdj(n)
+    if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
 5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace',/, &
     '                          Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
@@ -314,7 +333,9 @@
 5030 format (' ',a14,10x,1p3g10.3,10x,1p3g10.3)
 5040 format ('  Outside',76x,1pg10.3)
     end subroutine rsltfir
-    
+
+! --------------------------- rsltsp -------------------------------------------
+
     subroutine rsltsp
 
     !     Description:  Output the layer and wall species at the current time
@@ -399,23 +420,25 @@
 5060 format (a13)
     end subroutine rsltsp
 
+! --------------------------- rsltflw -------------------------------------------
+
     subroutine rsltflw ()
 
     !     Description:  Output the vent flow at the current time
 
+    use precision_parameters
     use cfast_main
     use cshell
     use vents
     implicit none
     
     integer :: irm, i, j, k, iijk, ii, inode, iii
-    real(8) :: xx0, sum1, sum2, sum3, sum4, sum5, sum6, flow
+    real(eb) :: sum1, sum2, sum3, sum4, sum5, sum6, flow
 
     character ciout*8, cjout*12, outbuf*132
     dimension flow(6)
     logical first
     
-    xx0 = 0.0d0
     write (iofilo,5000)
 
     do irm = 1, n
@@ -446,7 +469,7 @@
                         sum4 = aa2(iijk) + as2(iijk)
                     endif
                     if (i==n) then
-                        call flwout(outbuf,sum1,sum2,sum3,sum4,xx0,xx0,xx0,xx0)
+                        call flwout(outbuf,sum1,sum2,sum3,sum4,0.0_eb,0.0_eb,0.0_eb,0.0_eb)
                     else
                         if(i<j)then
                             sum5 = sau2(iijk)
@@ -455,7 +478,7 @@
                             sum5 = sau1(iijk)
                             sum6 = asl1(iijk)
                         endif
-                        call flwout(outbuf,sum1,sum2,sum3,sum4,sum5,sum6,xx0,xx0)
+                        call flwout(outbuf,sum1,sum2,sum3,sum4,sum5,sum6,0.0_eb,0.0_eb)
                     endif
                     if (first) then
                         if (i/=1) write (iofilo,5010)
@@ -477,13 +500,13 @@
                     write (cjout,'(a1,1x,a4,i3)') 'V', 'Comp', j
                 endif
                 do ii = 1, 4
-                    flow(ii) = xx0
+                    flow(ii) = 0.0_eb
                 end do
-                if (vmflo(j,i,upper)>=xx0) flow(1) = vmflo(j,i,upper)
-                if (vmflo(j,i,upper)<xx0) flow(2) = -vmflo(j,i,upper)
-                if (vmflo(j,i,lower)>=xx0) flow(3) = vmflo(j,i,lower)
-                if (vmflo(j,i,lower)<xx0) flow(4) = -vmflo(j,i,lower)
-                call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),xx0,xx0,xx0,xx0)
+                if (vmflo(j,i,upper)>=0.0_eb) flow(1) = vmflo(j,i,upper)
+                if (vmflo(j,i,upper)<0.0_eb) flow(2) = -vmflo(j,i,upper)
+                if (vmflo(j,i,lower)>=0.0_eb) flow(3) = vmflo(j,i,lower)
+                if (vmflo(j,i,lower)<0.0_eb) flow(4) = -vmflo(j,i,lower)
+                call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
                 if (first) then
                     if (i/=1) write (iofilo,5010)
                     write (iofilo,5020) ciout, cjout, outbuf
@@ -502,15 +525,15 @@
                     inode = hvnode(2,i)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', inode
                     do iii = 1, 6
-                        flow(iii) = xx0
+                        flow(iii) = 0.0_eb
                     end do
-                    if (hveflo(upper,i)>=xx0) flow(1) = hveflo(upper,i)
-                    if (hveflo(upper,i)<xx0) flow(2) = -hveflo(upper,i)
-                    if (hveflo(lower,i)>=xx0) flow(3) = hveflo(lower,i)
-                    if (hveflo(lower,i)<xx0) flow(4) = -hveflo(lower,i)
+                    if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
+                    if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
+                    if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
+                    if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
                     flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
                     flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
-                    call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),xx0,xx0,flow(5),flow(6))
+                    call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
                     if (first) then
                         if (i/=1) write (iofilo,5010)
                         write (iofilo,5020) ciout, cjout, outbuf
@@ -530,21 +553,24 @@
 5020 format (' ',a7,8x,a12,1x,a)
     end subroutine rsltflw
 
+! --------------------------- rsltflwt -------------------------------------------
+
     subroutine rsltflwt ()
 
     !     Description:  Output the vent flow at the current time
 
+    use precision_parameters
     use cfast_main
     use cshell
     use vents
     implicit none
 
     integer :: irm, i, ii, iii, inode
-    real(8) :: xx0, flow(6)
+    real(eb) :: flow(6)
 
     character :: ciout*14, cjout*12, outbuf*132
     logical first
-    xx0 = 0.0d0
+    
     write (iofilo,5000)
 
     do irm = 1, n
@@ -567,15 +593,15 @@
                     inode = hvnode(2,i)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
                     do iii = 1, 4
-                        flow(iii) = xx0
+                        flow(iii) = 0.0_eb
                     end do
-                    if (hveflot(upper,i)>=xx0) flow(1) = hveflot(upper,i)
-                    if (hveflot(upper,i)<xx0) flow(2) = -hveflot(upper,i)
-                    if (hveflot(lower,i)>=xx0) flow(3) = hveflot(lower,i)
-                    if (hveflot(lower,i)<xx0) flow(4) = -hveflot(lower,i)
+                    if (hveflot(upper,i)>=0.0_eb) flow(1) = hveflot(upper,i)
+                    if (hveflot(upper,i)<0.0_eb) flow(2) = -hveflot(upper,i)
+                    if (hveflot(lower,i)>=0.0_eb) flow(3) = hveflot(lower,i)
+                    if (hveflot(lower,i)<0.0_eb) flow(4) = -hveflot(lower,i)
                     flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
                     flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
-                    call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),xx0,xx0)
+                    call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
                     if (first) then
                         if (i/=1) write (iofilo,5010)
                         write (iofilo,5020) ciout, cjout, outbuf
@@ -595,10 +621,13 @@
 5020 format (' ',a14,1x,a12,1x,a)
     end subroutine rsltflwt
 
+! --------------------------- rsltcmp -------------------------------------------
+
     subroutine rsltcmp (iounit)
 
     !     Description:  Output a compressed output for 80 column screens
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use objects2
@@ -606,14 +635,13 @@
 
     integer, intent(in) :: iounit
     integer :: i, ir
-    real(8) :: xx0, xemp, xqf
+    real(eb) :: xemp, xqf
 
-    xx0 = 0.0d0
     write (iounit,5000)
     write (iounit,5010)
     do ir = 1, nm1
-        xemp = xx0
-        xqf = xx0
+        xemp = 0.0_eb
+        xqf = 0.0_eb
         do i = 0, numobjl
             if (ir==froom(i)) then
                 xemp = xemp + femp(i)
@@ -639,12 +667,15 @@
 5031 format (i5,7x,f8.1,8(' '),2x,8(' '),1p4g10.3)
     end subroutine rsltcmp
 
+! --------------------------- rslttar -------------------------------------------
+
     subroutine rslttar (itprt)
 
     !     description:  output the temperatures and fluxes on surfaces and targets at the current time
     !     arguments: isw   1 if called from cfast, 0 otherwise (effects printout of object names -- only cfast knows actual names, others just do it by numbers
     !                itprt 1 if target printout specifically called for, 0 otherwise
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -653,13 +684,12 @@
 
     integer, intent(in) :: itprt
     integer :: length, i, iw, itarg, itctemp
-    real(8) :: xx0, x100, ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
+    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
 
     integer iwptr(4)
     external length
     data iwptr /1, 3, 4, 2/
-    xx0 = 0.0d0
-    x100 = 100.0d0
+
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
     write (iofilo,5000)
     do i=1,nm1
@@ -677,12 +707,12 @@
             gtotal = qtgflux(itarg,1)
             ctotal = qtcflux(itarg,1)
         endif
-        if (total<=1.0d-10) total = 0.0d0
-        if (ftotal<=1.0d-10) ftotal = 0.0d0
-        if (wtotal<=1.0d-10) wtotal = 0.0d0
-        if (gtotal<=1.0d-10) gtotal = 0.0d0
-        if (ctotal<=1.0d-10) ctotal = 0.0d0
-        if (total/=xx0) then
+        if (total<=1.0d-10) total = 0.0_eb
+        if (ftotal<=1.0d-10) ftotal = 0.0_eb
+        if (wtotal<=1.0d-10) wtotal = 0.0_eb
+        if (gtotal<=1.0d-10) gtotal = 0.0_eb
+        if (ctotal<=1.0d-10) ctotal = 0.0_eb
+        if (total/=0.0_eb) then
             write (iofilo,5010) compartmentnames(i),((twj(1,i,iwptr(iw))-273.15),iw=1,4),twj(1,i,2)-273.15, &
             total,ftotal,wtotal,gtotal,ctotal
         else
@@ -711,12 +741,12 @@
                         gtotal = qtgflux(itarg,1)
                         ctotal = qtcflux(itarg,1)
                     endif
-                    if (total<=1.0d-10) total = 0.0d0
-                    if (ftotal<=1.0d-10) ftotal = 0.0d0
-                    if (wtotal<=1.0d-10) wtotal = 0.0d0
-                    if (gtotal<=1.0d-10) gtotal = 0.0d0
-                    if (ctotal<=1.0d-10) ctotal = 0.0d0
-                    if (total/=xx0) then
+                    if (total<=1.0d-10) total = 0.0_eb
+                    if (ftotal<=1.0d-10) ftotal = 0.0_eb
+                    if (wtotal<=1.0d-10) wtotal = 0.0_eb
+                    if (gtotal<=1.0d-10) gtotal = 0.0_eb
+                    if (ctotal<=1.0d-10) ctotal = 0.0_eb
+                    if (total/=0.0_eb) then
                         write(iofilo,5030)itarg,tg-273.15,tttemp-273.15, tctemp-273.15, &
                         total,ftotal,wtotal,gtotal,ctotal
                     else
@@ -734,18 +764,21 @@
 5010 format (1x,a14,1p4g10.3,1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
 5030 format (55x,i4,4x,1p3g10.3,1x,5(1pg10.3,3x))
     end subroutine rslttar
-    
+
+! --------------------------- rsltsprink -------------------------------------------
+
     subroutine rsltsprink
 
     !     Description:  Output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
     implicit none
 
     integer :: i, iroom, itype
-    real(8) :: cjetmin, zdetect, tlay, tjet, vel, tlink
+    real(eb) :: cjetmin, zdetect, tlay, tjet, vel, tlink
 
     character(5) :: ctype
     character(3) :: cact
@@ -756,7 +789,7 @@
     '0                             Sensor                           Smoke',/, &
     ' Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
     ' ----------------------------------------------------------------------------')
-    cjetmin = 0.10d0
+    cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
 
@@ -786,18 +819,21 @@
     end do
     return
     end subroutine rsltsprink
-    
+
+! --------------------------- rslthall -------------------------------------------
+
     subroutine rslthall ()
 
     !     Description:  Output the conditions for each hall
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
     implicit none
 
     integer :: nhalls, i
-    real(8) :: tstart, vel, depth, dist
+    real(eb) :: tstart, vel, depth, dist
 
 
     nhalls = 0
@@ -825,6 +861,8 @@
 
     return
     end subroutine rslthall
+
+! --------------------------- outinitial -------------------------------------------
 
     subroutine outinitial
 
@@ -865,6 +903,8 @@
 10  format (' CFAST Version ',i1,'.',i1,'.',i2,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
 20  format (' CFAST Version ',i1,'.',i1,'.',i1,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
     end subroutine outinitial
+
+! --------------------------- outover -------------------------------------------
 
     subroutine outover
 
@@ -907,6 +947,8 @@
 5030 format ('0Ceiling jet is ',a)
     end subroutine outover
 
+! --------------------------- outamb -------------------------------------------
+
     subroutine outamb
 
     !     Description:  Output initial test case ambient conditions
@@ -926,6 +968,8 @@
     //,' ',2(f7.0,8x,f9.0,6x),f7.2,6x,2(f7.1,8x),f7.2)
      
     end subroutine outamb
+
+! --------------------------- outcomp -------------------------------------------
 
     subroutine outcomp
 
@@ -949,10 +993,13 @@
 5010 format (' ',i5,8x,a13,7(f7.2,3x))
     end subroutine outcomp
 
+! --------------------------- outvent -------------------------------------------
+
     subroutine outvent
 
     !     Description:  Output initial test case vent connections
 
+    use precision_parameters
     use cfast_main
     use cshell
     use params
@@ -960,7 +1007,7 @@
     implicit none
 
     integer :: i,j,k,iijk, isys, ibr, irm, iext
-    real(8) :: hrx, hrpx
+    real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
     logical :: first
 
@@ -1113,6 +1160,8 @@
     return
     end subroutine chkext
 
+! --------------------------- outthe -------------------------------------------
+
     subroutine outthe
 
     !     description:  output initial test case thermal properties
@@ -1160,12 +1209,15 @@
 
     end subroutine outthe
 
+! --------------------------- outfire -------------------------------------------
+
     subroutine outfire
 
     !     routine: outfire
     !     purpose: This routine outputs the fire specification for all the object fires
     !     Arguments: none
 
+    use precision_parameters
     use cfast_main
     use cshell
     use objects1
@@ -1174,7 +1226,7 @@
     implicit none
 
     integer :: io, i, j, nnv, length, is
-    real(8) :: y_hcn, y_hcl
+    real(eb) :: y_hcn, y_hcl
 
     character cbuf*255, ftype(0:4)*13
     external length
@@ -1196,8 +1248,8 @@
                 write (iofilo,5010) ('-',i = 1,is-1)
                 do i = 1, nnv
                     write (cbuf,5060) otime(i,j), omass(i,j), objhc(i,j), oqdot(i,j), ohigh(i,j)
-                    y_HCN = obj_n(j)*0.027028d0/objgmw(j)
-                    y_HCl = obj_cl(j)*0.036458d0/objgmw(j)
+                    y_HCN = obj_n(j)*0.027028_eb/objgmw(j)
+                    y_HCl = obj_cl(j)*0.036458_eb/objgmw(j)
                     write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,omprodr(i,10,j),omprodr(i,11,j)
                     write (iofilo,'(1x,a)') cbuf(1:length(cbuf))
                 end do
@@ -1216,6 +1268,8 @@
 5070 format (1P10G10.2,2x,2g10.2)
     end subroutine outfire
 
+! --------------------------- chksum -------------------------------------------
+
     character(8) function chksum()
     
     implicit none
@@ -1223,6 +1277,8 @@
     chksum = '00000000'
     return
     end function chksum
+
+! --------------------------- chksum -------------------------------------------
 
     subroutine outtarg (isw)
 
@@ -1258,16 +1314,19 @@
     return
     end subroutine outtarg
 
+! --------------------------- flwout -------------------------------------------
+
     subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
 
     !     description:  stuff the flow output after blanking appropriate zeros
 
+    use precision_parameters
     use cparams
     use solver_parameters
     implicit none
 
     integer :: i
-    real(8) :: flow(8), flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8, x1000,x100,x10,x1,x01
+    real(eb) :: flow(8), flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8, x1000,x100,x10,x1,x01
     character outbuf*(*)
 
     outbuf = ' '
@@ -1279,11 +1338,11 @@
     flow(6) = flow6
     flow(7) = flow7
     flow(8) = flow8
-    x1000 = 1000.0d0
-    x100 = 100.0d0
-    x10 = 10.0d0
-    x1 = 1.0d0
-    x01 = 0.1d0
+    x1000 = 1000.0_eb
+    x100 = 100.0_eb
+    x10 = 10.0_eb
+    x1 = 1.0_eb
+    x01 = 0.1_eb
     do i = 1, 8
         if (flow(i)>=x1000) then
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
@@ -1309,18 +1368,21 @@
 5040 format (f9.3,4x)
     end subroutine flwout
 
+! --------------------------- getabstarget -------------------------------------------
+
     subroutine getabstarget(targetnumber, positionvector)
 
     !	Routine to get the absolute position of a target in the computational space
 
     !	This is the protocol between cfast and smokeview
 
+    use precision_parameters
     use cfast_main
     use fltarget
     implicit none
 
     integer, intent(in) :: targetnumber
-    real(8), intent(out) :: positionvector(*)
+    real(eb), intent(out) :: positionvector(*)
     integer :: i
 
     do i = 1, 6
@@ -1334,6 +1396,8 @@
     return
 
     end subroutine getabstarget
+
+! --------------------------- setdbug -------------------------------------------
 
     subroutine setdbug
 
@@ -1389,10 +1453,13 @@
     return
     end subroutine setdbug
 
+! --------------------------- outjac -------------------------------------------
+
     subroutine outjac (tsec, wm, neqs)
 
     !     description: prints out the magnitude of the jacobian matrix
 
+    use precision_parameters
     use cfast_main
     use cenviro
     use opt
@@ -1400,9 +1467,9 @@
     
     implicit none
 
-    real(8), intent(in) :: wm(jacdim,*), tsec
+    real(eb), intent(in) :: wm(jacdim,*), tsec
     integer, intent(in) :: neqs
-    real(8) :: buf(maxeq), xx0, wmii, wmij, tmp, tmp1
+    real(eb) :: buf(maxeq), wmii, wmij, tmp, tmp1
     integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, itcol, icdx, iitmp
     logical :: firstc
     character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
@@ -1434,7 +1501,6 @@
         end do
         iounit = dbugsw(d_jac,d_prn,1)
     endif
-    xx0 = 0.0d0
     write(iounit,*)' '
     write(iounit,*)'jacobian',numjac + totjac,' time ',tsec
     write(iounit,*)' '
@@ -1458,7 +1524,7 @@
         icdx = 1
         itcol = 1
         wmii = wm(i,i)
-        if(wmii/=xx0)then
+        if(wmii/=0.0_eb)then
             iitmp = log(abs(wmii))
         else
             iitmp = 11
@@ -1484,17 +1550,17 @@
                 itcol = itcol + 1
             endif
             wmij = buf(j)
-            if (wmij/=xx0.and.wmii/=xx0) then
+            if (wmij/=0.0_eb.and.wmii/=0.0_eb) then
                 tmp1 = abs(wmij/wmii)
                 tmp = log(tmp1)
-            else if (wmii==xx0) then
+            else if (wmii==0.0_eb) then
                 tmp = 11
             else
                 tmp = -11
             endif
-            itmp = int(tmp + 0.5d0)
+            itmp = int(tmp + 0.5_eb)
 
-            if (wmij==0.0d0) then
+            if (wmij==0.0_eb) then
                 entry(itcol) = '  '
             else if (itmp<verysm) then
                 entry(itcol) = ' .'
@@ -1509,17 +1575,20 @@
     return
     end subroutine outjac
 
+! --------------------------- outjcmt -------------------------------------------
+
     subroutine outjcnt (t)
 
     !     description: print out numerical performance data; resid counts, jac counts, cpu times etc.
 
+    use precision_parameters
     use cparams
     use opt
     use wdervs
     
     implicit none
 
-    real(8), intent(in) :: t
+    real(eb), intent(in) :: t
     integer :: iounit
     logical :: firstc = .true.
     save iounit
@@ -1541,6 +1610,8 @@
 1001 format(1x,1pe9.2,4(1x,i4,1x,i6),1x,1pe9.2,1x,1pe9.2,1x,1pe9.2,1x,1pe9.2)
     return
     end subroutine outjcnt
+
+! --------------------------- opndbg -------------------------------------------
 
     subroutine opndbg (jaccnt, jacprn)
 
@@ -1637,8 +1708,11 @@
     return
     end subroutine fnd_comp
 
+! --------------------------- debugpr -------------------------------------------
+
     subroutine debugpr (ikey,t,dt,ieqmax)
 
+    use precision_parameters
     use cenviro
     use cfast_main
     use cshell
@@ -1646,7 +1720,7 @@
     use wnodes
     implicit none
 
-    real(8) :: xqf, dp, dt, t
+    real(eb) :: xqf, dp, dt, t
     integer :: bmap(mbr), i, j, ikey, iprod, il, isys, idt, iroom, ieqmax, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', '   TS'/), ccc*3
@@ -1797,6 +1871,8 @@
 
     end subroutine debugpr
 
+! --------------------------- oput -------------------------------------------
+
     subroutine oput (ic,count,itin,ridx,retbuf)
 
     !     arguments: ic
@@ -1827,10 +1903,11 @@
 
     !  Write the status information to the "statusfile"
 
+    use precision_parameters
     implicit none
     
     integer, intent(out) :: errorcode
-    real(8), intent(in) :: T, dT
+    real(eb), intent(in) :: T, dT
 
     rewind (12)
     write(12,5001) t, dt
@@ -1840,6 +1917,8 @@
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
     end subroutine statusoutput
+
+! --------------------------- writeini -------------------------------------------
 
     subroutine writeini(file)
 
@@ -1912,6 +1991,8 @@
     if (1==1) stop
     return
     end subroutine writeini
+
+! --------------------------- openoutputfiles -------------------------------------------
 
     subroutine openoutputfiles
 
@@ -2011,6 +2092,8 @@
 
     end subroutine openoutputfiles
 
+! --------------------------- deleteoutputfiles -------------------------------------------
+
     subroutine deleteoutputfiles (outputfile)
 
     use ifport
@@ -2027,6 +2110,8 @@
 
     return
     end subroutine deleteoutputfiles 
+
+! --------------------------- rev_output -------------------------------------------
 
     integer function rev_output ()
 

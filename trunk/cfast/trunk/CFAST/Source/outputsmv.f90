@@ -1,3 +1,6 @@
+
+! --------------------------- svout -------------------------------------------
+
 subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
@@ -24,16 +27,18 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
     !  froom_number - room containing fire
     !  fx0,fy0,fz0 - location of fire base
 
+    use precision_parameters
     use iofiles
     implicit none
 
-    real(8), intent(in) :: pabs_ref, pamb, tamb, stime
+    real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
-    real(8), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
+    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
     integer, intent(in), dimension(nfires) :: froom_number
-    real(8), intent(in), dimension(nfires) :: fx0, fy0, fz0
-    real(8) :: vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
-    real(8) :: harea, targetvector(6)
+    real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
+    
+    real(eb) :: vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
+    real(eb) :: harea, targetvector(6)
     integer ::i, hface, ibot, itop, hshape
     character(128) :: dir
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
@@ -109,6 +114,8 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
     return
 end subroutine svout
 
+! --------------------------- svplotdata -------------------------------------------
+
 subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
 !
@@ -125,13 +132,14 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 !     qdot - real array of size nfires of fire heat release rates
 !   height - real array of size nfires of fire heights
 !
+    use precision_parameters
     implicit none
 
-    real(8), intent(in) :: time
+    real(eb), intent(in) :: time
     integer, intent(in) :: nrooms
-    real(8), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
+    real(eb), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
     integer, intent(in) :: nfires
-    real(8), intent(in), dimension(nfires) :: qdot, height
+    real(eb), intent(in), dimension(nfires) :: qdot, height
     real xxtime, xxpr, xxylay, xxtl, xxtu, xxheight, xxqdot
 
     integer :: i
@@ -155,6 +163,7 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
 end subroutine svplotdata
 
+! --------------------------- svplothdr -------------------------------------------
 
 subroutine svplothdr (version, nrooms, nfires)
 
@@ -178,6 +187,8 @@ subroutine svplothdr (version, nrooms, nfires)
     return
 
 end subroutine svplothdr
+
+! --------------------------- rev_outputsmv -------------------------------------------
 
 integer function rev_outputsmv ()
           

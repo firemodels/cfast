@@ -94,19 +94,19 @@
 
         nlist(maxct) = 'DEFAULT'
         lnslb(maxct) = 1
-        lfkw(1,maxct) = 0.120d0
-        lcw(1,maxct) = 900.0d0
-        lrw(1,maxct) = 800.0d0
-        lflw(1,maxct) = 0.0120d0
-        lepw(maxct) = 0.90d0
+        lfkw(1,maxct) = 0.120_eb
+        lcw(1,maxct) = 900.0_eb
+        lrw(1,maxct) = 800.0_eb
+        lflw(1,maxct) = 0.0120_eb
+        lepw(maxct) = 0.90_eb
         do i = 1, 7
-            lhclbf(i,maxct) = 0.00d0
+            lhclbf(i,maxct) = 0.00_eb
         end do
 
         call initwall(tstop,errorcode)
         if (errorcode<=0) then
 
-            stime = 0.0d0
+            stime = 0.0_eb
             itmstp = 1
             xdelt = nsmax / deltat
             itmmax = xdelt + 1
@@ -362,7 +362,7 @@
     integer :: iwork(liw), info(15), ipar(3), info2(15)
     integer :: izp0(0:maxteq), izpmxmn(0:maxteq,2)
     real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
-    real(eb) :: pdzero(maxteq) = 0.0d0
+    real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
     integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
     integer(2) :: filecount, delfilesqq
@@ -488,7 +488,7 @@
 
     ! construct initial solution
     do i = 1, nequals
-        pdold(i) = 0.0d0
+        pdold(i) = 0.0_eb
         pold(i) = p(i)
     end do
     call initsoln(t,pdold,pdzero,rpar,ipar)
@@ -509,7 +509,7 @@
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
         call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
-        ntarg, 0.0d0, 1)
+        ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
         return
@@ -646,7 +646,7 @@
             itmstp = tpaws
             call result(t,1)
             call debugpr(1,t,dt,ieqmax)
-            tpaws = tstop + 1.0d0
+            tpaws = tstop + 1.0_eb
             call statusoutput (t, dt, errorcode)
         endif
 
@@ -1319,7 +1319,7 @@
         endif
 
         ! pressure equation
-        pdot = (gamma-1.0d0) * (ql + qu) / (aroom*hceil)
+        pdot = (gamma-1.0_eb) * (ql + qu) / (aroom*hceil)
 
         ! upper layer temperature equation
         tlaydu = (qu-cp*tmu*zztemp(iroom,uu)) / (cp*zzmass(iroom,uu))
@@ -1328,7 +1328,7 @@
         endif
 
         ! upper layer volume equation
-        vlayd = (gamma-1.0d0) * qu / (gamma*pabs)
+        vlayd = (gamma-1.0_eb) * qu / (gamma*pabs)
         if (option(fode)==on) then
             vlayd = vlayd - zzvol(iroom,uu) * pdot / (gamma*pabs)
         endif
@@ -1496,7 +1496,7 @@
         qfurnout=5.67*(273.3+wtemp)**4/10**8
     endif
 
-    xwall_center = 2.0d0
+    xwall_center = 2.0_eb
     vminfrac = 1.0d-4
     if (iflag==constvar) then
         do iroom = 1, n
@@ -1509,9 +1509,9 @@
 
             ! define wall centers
             xx = br(iroom)
-            xwall_center = xx/2.0d0
+            xwall_center = xx/2.0_eb
             yy = dr(iroom)
-            ywall_center = yy/2.0d0
+            ywall_center = yy/2.0_eb
             zz = hrp(iroom)
             zzwcen(iroom,1,1) = xwall_center
             zzwcen(iroom,1,2) = ywall_center
@@ -1524,9 +1524,9 @@
             zzwcen(iroom,3,2) = ywall_center
 
             zzwcen(iroom,4,1) = xwall_center
-            zzwcen(iroom,4,2) = 0.0d0
+            zzwcen(iroom,4,2) = 0.0_eb
 
-            zzwcen(iroom,5,1) = 0.0d0
+            zzwcen(iroom,5,1) = 0.0_eb
             zzwcen(iroom,5,2) = ywall_center
 
             zzwcen(iroom,6,1) = xwall_center
@@ -1536,36 +1536,36 @@
             zzwcen(iroom,7,2) = ywall_center
 
             zzwcen(iroom,8,1) = xwall_center
-            zzwcen(iroom,8,2) = 0.0d0
+            zzwcen(iroom,8,2) = 0.0_eb
 
-            zzwcen(iroom,9,1) = 0.0d0
+            zzwcen(iroom,9,1) = 0.0_eb
             zzwcen(iroom,9,2) = ywall_center
 
             zzwcen(iroom,10,1) = xwall_center
             zzwcen(iroom,10,2) = ywall_center
-            zzwcen(iroom,10,3) = 0.0d0
+            zzwcen(iroom,10,3) = 0.0_eb
         end do
 
-        zzyflor(n) = 0.0d0
-        zzyceil(n) = 100000.d0
-        zzvol(n,upper) = 0.0d0
-        zzvol(n,lower) = 100000.0d0
-        zzhlay(n,upper) = 0.0d0
-        zzhlay(n,lower) = 100000.0d0
+        zzyflor(n) = 0.0_eb
+        zzyceil(n) = 100000._eb
+        zzvol(n,upper) = 0.0_eb
+        zzvol(n,lower) = 100000.0_eb
+        zzhlay(n,upper) = 0.0_eb
+        zzhlay(n,lower) = 100000.0_eb
         zzrelp(n) = 0.0_eb
         zzpabs(n) = pofset
-        zztemp(n,upper) = 300.0d0
-        zztemp(n,lower) = 300.0d0
+        zztemp(n,upper) = 300.0_eb
+        zztemp(n,lower) = 300.0_eb
         do lsp = 3, ns
             zzcspec(n,upper,lsp) = 0.0_eb
             zzcspec(n,lower,lsp) = 0.0_eb
             zzgspec(n,lower,lsp) = 0.0_eb
             zzgspec(n,upper,lsp) = 0.0_eb
         end do
-        zzcspec(n,upper,1) = 0.770d0
-        zzcspec(n,lower,1) = 0.770d0
-        zzcspec(n,upper,2) = 0.230d0
-        zzcspec(n,lower,2) = 0.230d0
+        zzcspec(n,upper,1) = 0.770_eb
+        zzcspec(n,lower,1) = 0.770_eb
+        zzcspec(n,upper,2) = 0.230_eb
+        zzcspec(n,lower,2) = 0.230_eb
         do layer = upper, lower
             zzrho(n,layer) = zzpabs(n) / rgas / zztemp(n,layer)
             zzmass(n,layer) = zzrho(n,layer) * zzvol(n,layer)
@@ -1614,14 +1614,14 @@
                             if(j==n.and.wcos/=0.0_eb)then
 
                                 ! compute wind velocity and pressure rise at the average vent height
-                                havg = (zzvent(nvents,1) + zzvent(nvents,2))/2.0d0 
+                                havg = (zzvent(nvents,1) + zzvent(nvents,2))/2.0_eb 
                                 havg = havg + zzyflor(i) 
                                 if(windrf/=0.0_eb)then
                                     windvnew = windv * (havg/windrf)**windpw
                                 else
                                     windvnew = windv
                                 endif
-                                winddp = wcos * exra * windvnew**2/2.0d0
+                                winddp = wcos * exra * windvnew**2/2.0_eb
                                 zzvent(nvents,6) = winddp
                             else
                                 zzvent(nvents,6) = 0.0_eb
@@ -1656,7 +1656,7 @@
         itstop = xdelt + 1
         tstop = itstop - 1
 
-        zzdisc(0) = 0.0d0
+        zzdisc(0) = 0.0_eb
         zzdisc(1) = tstop
         iii = 1
 
@@ -1798,9 +1798,9 @@
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
-            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom)) / vr(iroom)*(1.0d0-2.0d0*vminfrac)
+            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom)) / vr(iroom)*(1.0_eb-2.0_eb*vminfrac)
             volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
-            volfrl(iroom) = 1.0d0 - volfru(iroom)
+            volfrl(iroom) = 1.0_eb - volfru(iroom)
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
 
             ! calculate layer height for non-rectangular rooms
@@ -1824,10 +1824,10 @@
             ! (because the rhs of the temperature equation is wrong).  the following
             ! code causes the temperature of the opposite layer to be used in these
             ! situations.
-            if(zztemp(iroom,upper)<0.0d0)then
+            if(zztemp(iroom,upper)<0.0_eb)then
                 zztemp(iroom,upper)=zztemp(iroom,lower)
             endif
-            if(zztemp(iroom,lower)<0.0d0)then
+            if(zztemp(iroom,lower)<0.0_eb)then
                 zztemp(iroom,lower)=zztemp(iroom,upper)
             endif
             if(izshaft(iroom)==1)then
@@ -1861,8 +1861,8 @@
 
             do i = 1, 4
                 ylay = zzhlay(iroom,lower)
-                zzwcen(iroom,i+1,3) =  (zzyceil(iroom)+ylay)/2.0d0
-                zzwcen(iroom,i+5,3) = ylay/2.0d0
+                zzwcen(iroom,i+1,3) =  (zzyceil(iroom)+ylay)/2.0_eb
+                zzwcen(iroom,i+5,3) = ylay/2.0_eb
             end do
 
             do layer = upper, lower
@@ -1964,10 +1964,10 @@
                     totl = totl + zzgspec(iroom,lower,lsp)
                 endif
             end do
-            rtotl = 1.0d0
-            rtotu = 1.0d0
-            if (totl>0.0_eb) rtotl = 1.0d0 / totl
-            if (totu>0.0_eb) rtotu = 1.0d0 / totu
+            rtotl = 1.0_eb
+            rtotu = 1.0_eb
+            if (totl>0.0_eb) rtotl = 1.0_eb / totl
+            if (totu>0.0_eb) rtotu = 1.0_eb / totu
             do lsp = 1, ns
                 if (activs(lsp)) then
                     zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp) * rtotu
@@ -2079,12 +2079,12 @@
         if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
             factor(iroom,upper) = zzmass(iroom,upper) / factor(iroom,upper)
         else
-            factor(iroom,upper) = 1.0d0
+            factor(iroom,upper) = 1.0_eb
         endif
         if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
             factor(iroom,lower) = zzmass(iroom,lower) / factor(iroom,lower)
         else
-            factor(iroom,lower) = 1.0d0
+            factor(iroom,lower) = 1.0_eb
         endif
     end do
 

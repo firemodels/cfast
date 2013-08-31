@@ -208,7 +208,7 @@
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -g * hrp(ibot) * era(ibot)
+        dp(1) = -grav_con * hrp(ibot) * era(ibot)
         relp(1) = epa(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset
@@ -295,7 +295,7 @@
             cshape = 0.942_eb
             d = sqrt(avent)
         endif
-        delpfd = cshape ** 2 * g * delden * d ** 5 / (2.0_eb*avent**2)
+        delpfd = cshape ** 2 * grav_con * delden * d ** 5 / (2.0_eb*avent**2)
         dpddpf = abs(delp/delpfd)
         vexmax = 0.1_eb * sqrt(2.0_eb*grav_con*delden*sqrt(avent**5)/(den(1)+den(2)))
         vex = max(vexmax*(1.0_eb-dpddpf),0.0_eb)

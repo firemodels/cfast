@@ -36,7 +36,7 @@
     if(first)then
         first = .false.
         nnn = trgtnum - 1
-        tmp(1) = 1.0d0
+        tmp(1) = 1.0_eb
         tmp(nnn) = 1.0_eb
         do i = 2, nnn/2 
             tmp(i) = tmp(i-1)*1.50_eb

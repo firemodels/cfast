@@ -995,7 +995,7 @@
     ' Compartment  Name           Width     Depth     Height    Area      Volume    Ceiling   Floor     ',/, &
     '                                                                               Height    Height    ',/, & 
     ' ',29x,3('(m)',7x),'(m^2)     ','(m^3)      ',2('(m)',7x),/,' ',96('-'))
-5010 format (' ',i5,8x,a13,7(f8.2,2x))
+5010 format (' ',i5,8x,a13,7(f9.2,1x))
     end subroutine outcomp
 
 ! --------------------------- outvent -------------------------------------------

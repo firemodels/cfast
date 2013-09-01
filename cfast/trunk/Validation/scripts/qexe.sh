@@ -60,6 +60,7 @@ fulldir=`pwd`/$dir
 
 out=$fulldir/$infile.err
 outlog=$fulldir/$infile.qlog
+errlog=$fulldir/$infile.err
 stopfile=$fulldir/$infile.stop
 
 # make sure files that are needed exist
@@ -70,6 +71,10 @@ fi
 if [ -e $outlog ]; then
   echo "Removing log file: $outlog"
   rm $outlog
+fi
+if [ -e $errlog ]; then
+  echo "Removing log file: $errlog"
+  rm $errlog
 fi
 if [ $STOPFDS ]; then
  echo "stopping case: $in"

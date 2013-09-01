@@ -57,7 +57,7 @@ export JOBPREFIX=CB_
 #  ==============================================
 
 # This routine checks the elapsed time of CFASTbot.
-# If CFASTbot runs more than 1 hour, an email notification is sent.
+# If CFASTbot runs more than 3 hours, an email notification is sent.
 # This is a notification only and does not terminate CFASTbot.
 # This check runs during Stages 3 and 5.
 
@@ -65,7 +65,7 @@ export JOBPREFIX=CB_
 START_TIME=$(date +%s)
 
 # Set time limit
-TIME_LIMIT=3600
+TIME_LIMIT=10800
 TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 
 run_auto()
@@ -144,7 +144,7 @@ check_time_limit()
 
       if [ $ELAPSED_TIME -gt $TIME_LIMIT ]
       then
-         echo -e "CFASTbot has been running for more than 1 hour in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail -s "CFASTbot Notice: CFASTbot has been running for more than 1 hour." $mailTo > /dev/null
+         echo -e "CFASTbot has been running for more than 3 hours in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail -s "CFASTbot Notice: CFASTbot has been running for more than 3 hours." $mailTo > /dev/null
          TIME_LIMIT_EMAIL_NOTIFICATION="sent"
       fi
    fi

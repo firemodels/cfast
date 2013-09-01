@@ -988,14 +988,14 @@
 
     write (iofilo,5000)
     do i = 1, nm1
-        write (iofilo,5010) i, compartmentnames(i), br(i), dr(i), hr(i), ar(i), vr(i), hrp(i), hflr(i)
+        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), ar(i), vr(i), hrp(i), hflr(i)
     end do
     return
 5000 format (//,' COMPARTMENTS',//, &
     ' Compartment  Name           Width     Depth     Height    Area      Volume    Ceiling   Floor     ',/, &
     '                                                                               Height    Height    ',/, & 
     ' ',29x,3('(m)',7x),'(m^2)     ','(m^3)      ',2('(m)',7x),/,' ',96('-'))
-5010 format (' ',i5,8x,a13,7(f7.2,3x))
+5010 format (' ',i5,8x,a13,7(f8.2,2x))
     end subroutine outcomp
 
 ! --------------------------- outvent -------------------------------------------

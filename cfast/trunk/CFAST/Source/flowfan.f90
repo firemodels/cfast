@@ -363,7 +363,7 @@
         
     real(eb) :: hvfanl, openfraction, qcffraction, minimumopen, roh, d1mach, f
     logical :: firstc = .true.
-    save firstc
+    save firstc, minimumopen
 
     roh = rohb(icmv(i,j))
 

@@ -321,6 +321,7 @@ $RUNCFAST Steckler_Compartment Steckler_018 /V
 $RUNCFAST Steckler_Compartment Steckler_710 /V
 $RUNCFAST Steckler_Compartment Steckler_810 /V
 $RUNCFAST Steckler_Compartment Steckler_016 /V
+$RUNCFAST Steckler_Compartment Steckler_017 /V
 $RUNCFAST Steckler_Compartment Steckler_022 /V
 $RUNCFAST Steckler_Compartment Steckler_023 /V
 $RUNCFAST Steckler_Compartment Steckler_030 /V

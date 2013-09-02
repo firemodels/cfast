@@ -848,6 +848,9 @@
         end do
     end do
     do i = 1, nr
+        deadroom(i) = 0
+    end do
+    do i = 1, nr
         switch(1,i) = .true.
         cname(1,i) = 'DEFAULT'
     end do

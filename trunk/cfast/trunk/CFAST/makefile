@@ -83,20 +83,20 @@ intel_linux_32 : obj = cfast6_linux_32
 intel_linux_32 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
-intel_linux_32_db : FFLAGS = -m32 -check all -warn unused -O0 -save -zero -auto -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0 -ftrapuv -debug full
+intel_linux_32_db : FFLAGS = -m32 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0 -debug full
 intel_linux_32_db : FCOMPL = ifort
 intel_linux_32_db : obj = cfast6_linux_32_db
 intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -fpp -m64 -O3 -static -vec_report0 -I $(INCLUDE)
+intel_linux_64 : FFLAGS = -fpp -m64 -O3 -gen-interfaces -warn interfaces -static -vec_report0 -I $(INCLUDE)
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = cfast6_linux_64
 intel_linux_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
-intel_linux_64_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -O0 -auto -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0
+intel_linux_64_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0 -debug full
 intel_linux_64_db : FCOMPL = ifort
 intel_linux_64_db : obj = cfast6_linux_64_db
 intel_linux_64_db : $(objf)

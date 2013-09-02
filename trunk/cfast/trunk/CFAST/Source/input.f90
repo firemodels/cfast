@@ -2028,11 +2028,11 @@
     use opt
     implicit none
 
-    integer, intent(in) :: ipmxmn(0:maxteq,2), iounit
-    real(eb), intent(in) :: pmxmn(maxteq,2)
+    integer, intent(in) :: iounit
+    real(eb), intent(out) :: pmxmn(maxteq,2)
     
     real(eb), intent(out) :: p0(*)
-    integer, intent(out) :: ip0(0:*), ierror
+    integer, intent(out) :: ipmxmn(0:maxteq,2), ip0(0:*), ierror
     
     real(eb) :: local(2), x
 

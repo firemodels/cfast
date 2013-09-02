@@ -389,7 +389,8 @@
     use precision_parameters
     use cfin
 
-    integer, intent(in) :: first, last, type
+    integer, intent(in) :: first, last
+    integer, intent(out) :: type
     character(*), intent(in) :: coord
     
     integer, intent(out) :: i0

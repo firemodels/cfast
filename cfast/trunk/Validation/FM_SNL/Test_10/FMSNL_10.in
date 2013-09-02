@@ -22,7 +22,6 @@ COMPA,Compartment 1,18.3,12.2,6.1,0,0,0,MariniteFM,ConcreteFM,MariniteFM
 !!Vent keywords
 !!
 HVENT,1,2,1,18.3,0.08,0,1,0,0,1,1
-HVENT,1,1,1,18.3,0.08,0,1,0,0,1,1
 VVENT,2,1,1.08,2,1
 MVENT,2,1,1,H,4.9,0.66,H,4.9,0.66,0.38,200,300,1
 EVENT,M,2,1,1,540,0,1

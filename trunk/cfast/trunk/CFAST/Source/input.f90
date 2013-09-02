@@ -801,6 +801,17 @@
         hlp(jik) = hl(jik) + hflr(j)
         hh(iijk) = min(hr(i),max(0.0_eb,hhp(iijk)-hflr(i)))
         hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-hflr(i)))
+        
+       ! DEADROOM dead_room_num connected_room_num
+       ! pressure in dead_room_num is not solved.  pressure for this room
+       ! is obtained from connected_room_num
+
+    case ('DEADROOM')  
+        i = lrarray(1)
+        j = lrarray(2)
+        if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then
+           deadroom(i) = j
+        endif
 
         ! EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
         ! EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time

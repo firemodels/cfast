@@ -1319,7 +1319,11 @@
         endif
 
         ! pressure equation
-        pdot = (gamma-1.0_eb) * (ql + qu) / (aroom*hceil)
+        if(deadroom(iroom).eq.0)then
+            pdot = (gamma-1.0_eb) * (ql + qu) / (aroom*hceil)
+        else
+            pdot = 0.0_eb
+        endif
 
         ! upper layer temperature equation
         tlaydu = (qu-cp*tmu*zztemp(iroom,uu)) / (cp*zzmass(iroom,uu))
@@ -1869,6 +1873,12 @@
                 zzrho(iroom,layer) = zzpabs(iroom) / rgas / zztemp(iroom,layer)
                 zzmass(iroom,layer) = zzrho(iroom,layer) * zzvol(iroom,layer)
             end do
+        end do
+        
+        do i = 1, nm1
+            if(deadroom(i).eq.0)cycle
+            zzrelp(i)=zzrelp(deadroom(i))
+            zzpabs(i) = zzpabs(deadroom(i))
         end do
 
         ! record which layer target is in

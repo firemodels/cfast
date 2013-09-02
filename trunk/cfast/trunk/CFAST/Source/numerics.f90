@@ -1291,7 +1291,9 @@
     return
     !-----------end of subroutine ddawts------------------------------------
     end
-    
+
+! --------------------------- ddanrm -------------------------------------------
+
     real(8) function ddanrm(neq,v,wt,ipar)
     !
     !***begin prologue  ddanrm
@@ -4688,6 +4690,8 @@
     return
     end 
 
+! --------------------------- dasum -------------------------------------------
+
     real(8) function dasum(n,dx,incx)
     !***begin prologue  dasum
     !***date written   791001   (yymmdd)
@@ -4756,6 +4760,8 @@
     end do
     return
     end
+
+! --------------------------- daxpy -------------------------------------------
 
     subroutine daxpy(n,da,dx,incx,dy,incy)
     !***begin prologue  daxpy
@@ -4847,6 +4853,8 @@
     return
     end 
 
+! --------------------------- ddot -------------------------------------------
+
     real(8) function ddot(n,dx,incx,dy,incy)
 
     !***begin prologue  ddot
@@ -4935,6 +4943,8 @@
     end do
     return
     end 
+
+! --------------------------- dnrm2 -------------------------------------------
 
     real(8) function dnrm2(n,dx,incx)
     !***begin prologue  dnrm2
@@ -5092,6 +5102,8 @@
     return
     end 
 
+! --------------------------- dscal -------------------------------------------
+
     subroutine dscal(n,da,dx,incx)
     !***begin prologue  dscal
     !***date written   791001   (yymmdd)
@@ -5164,7 +5176,9 @@
     end do
     return
     end 
-    
+
+! --------------------------- dgemv -------------------------------------------
+
     subroutine dgemv ( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
     
         
@@ -5424,7 +5438,9 @@
     !     end of dgemv .
     !
     end
-    
+
+! --------------------------- dgemm -------------------------------------------
+
     subroutine dgemm ( transa, transb, m, n, k, alpha, a, lda, b, ldb,beta, c, ldc )
     
     implicit none
@@ -5733,6 +5749,8 @@
     !
     end
 
+! --------------------------- dgefa -------------------------------------------
+
     subroutine dgefa(a,lda,n,ipvt,info)
     
     implicit none
@@ -5837,7 +5855,9 @@
     if (a(n,n)==0.0d0) info = n
     return
     end
-    
+
+! --------------------------- dgesl -------------------------------------------
+
     subroutine dgesl(a,lda,n,ipvt,b,job)
     
     implicit none
@@ -5956,7 +5976,9 @@
     endif
     return
     end
-    
+
+! --------------------------- dgbfa -------------------------------------------
+
     subroutine dgbfa(abd,lda,n,ml,mu,ipvt,info)
     implicit none
     integer :: lda, n, ml, mu, ipvt(*), info
@@ -6132,7 +6154,9 @@
     if (abd(m,n)==0.0d0) info = n
     return
     end
-    
+
+! --------------------------- dgbsl -------------------------------------------
+
     subroutine dgbsl(abd,lda,n,ml,mu,ipvt,b,job)
     
     implicit none
@@ -6272,6 +6296,8 @@
     return
     end
 
+! --------------------------- gjac -------------------------------------------
+
     subroutine gjac
     
     implicit none
@@ -6297,6 +6323,8 @@
 
     stop 'internal error in dassl - gjac not instantiated'
     end
+
+! --------------------------- jac -------------------------------------------
 
     subroutine jac
     
@@ -6324,6 +6352,8 @@
 
     stop 'internal error in dassl - jac not instantiated'
     end
+
+! --------------------------- jacd -------------------------------------------
 
     integer function jacd()
 

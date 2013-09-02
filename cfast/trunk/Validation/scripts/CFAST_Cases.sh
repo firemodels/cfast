@@ -314,6 +314,7 @@ $RUNCFAST High_Bay USN_Iceland_Test_20
 $RUNCFAST Steckler_Compartment Steckler_010 /V
 $RUNCFAST Steckler_Compartment Steckler_011 /V
 $RUNCFAST Steckler_Compartment Steckler_012 /V
+$RUNCFAST Steckler_Compartment Steckler_017 /V
 $RUNCFAST Steckler_Compartment Steckler_612 /V
 $RUNCFAST Steckler_Compartment Steckler_013 /V
 $RUNCFAST Steckler_Compartment Steckler_014 /V

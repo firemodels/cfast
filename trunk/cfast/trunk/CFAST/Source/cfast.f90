@@ -858,10 +858,10 @@
     implicit none
 
     integer, intent(in) :: nodes, nequals, nlspct
-    real(eb), intent(in) :: pdnew(*), pdzero(*)
+    real(eb), intent(in) :: pdzero(*)
     real(eb), intent(in) :: t, told
     
-    real(eb), intent(out) :: p(*), pold(*), pdold(*)
+    real(eb), intent(out) :: p(*), pold(*), pdold(*), pdnew(*)
     
     integer :: i
     real(eb) :: dt 

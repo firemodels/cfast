@@ -351,6 +351,11 @@ run_vv_cases_debug()
    # Wait some additional time for all cases to start
    sleep 30
 
+   # Stop all cases
+   ./Run_CFAST_Cases.sh -d -s >> $CFASTBOT_DIR/output/stage3 2>&1
+   echo "" >> $CFASTBOT_DIR/output/stage3 2>&1
+
+
    # Wait for V&V cases to end
    wait_vv_cases_debug_end
 

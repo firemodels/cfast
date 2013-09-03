@@ -3,6 +3,7 @@
 
 module cenviro
     
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -23,22 +24,22 @@ module cenviro
 
     logical updatehall, izdtflag, izcon(nr), izhvac(nr)
 
-    real(8), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs, zzyflor, zzyceil
-    real(8), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
-    real(8), dimension(nr,2,ns) :: zzgspec, zzcspec
-    real(8), dimension(nr,nwal) :: zzwspec
-    real(8), dimension(nr,nwal,2) :: zzwtemp
-    real(8), dimension(mxhvsys,ns) :: zzhvpr
-    real(8), dimension(mxhvsys) :: zzhvm
-    real(8), dimension(nr,4) :: zzwarea
-    real(8), dimension(nr,10,3) :: zzwcen
-    real(8), dimension(nr,10) :: zzwarea2
-    real(8), dimension(nr,8) :: zzhall
-    real(8), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
-    real(8), dimension(2,nr) :: zzabsb, zzbeam
-    real(8), dimension(0:nv+1) :: zzdisc
-    real(8), dimension(nr,nr) :: zzhtfrac
-    real(8) :: zzdtcrit
+    real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs, zzyflor, zzyceil
+    real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
+    real(eb), dimension(nr,nwal) :: zzwspec
+    real(eb), dimension(nr,nwal,2) :: zzwtemp
+    real(eb), dimension(mxhvsys,ns) :: zzhvpr
+    real(eb), dimension(mxhvsys) :: zzhvm
+    real(eb), dimension(nr,4) :: zzwarea
+    real(eb), dimension(nr,10,3) :: zzwcen
+    real(eb), dimension(nr,10) :: zzwarea2
+    real(eb), dimension(nr,8) :: zzhall
+    real(eb), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
+    real(eb), dimension(2,nr) :: zzabsb, zzbeam
+    real(eb), dimension(0:nv+1) :: zzdisc
+    real(eb), dimension(nr,nr) :: zzhtfrac
+    real(eb) :: zzdtcrit
  
     integer, dimension(ns+2) :: izpmap
     integer, dimension(2,nr) :: izwmap
@@ -58,6 +59,7 @@ end module cenviro
 ! --------------------------- cfast_main -------------------------------------------
 
 module cfast_main
+    use precision_parameters
     use cparams
     use dsize
     implicit none
@@ -79,7 +81,7 @@ module cfast_main
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), (nofprd,nofsets(11)), &
         (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), (nequals,nofsets(16)), (noffsm,nofsets(17))
 
-    real(8) :: mass(2,nr,ns), mprodr(nv,ns), mfiret(ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
+    real(eb) :: mass(2,nr,ns), mprodr(nv,ns), mfiret(ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
         sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), qr(2,nr), qc(2,nr), heatup(nr), heatlp(nr), heatvf(nr), &
         emp(nr), ems(nr), eme(nr), aps(nr), vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
@@ -88,7 +90,7 @@ module cfast_main
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
-    real(8) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+    real(eb) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
@@ -98,12 +100,12 @@ module cfast_main
         hclf(nv),femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 
-    real(8) :: cp, deltat, heatfq, tracet(2,mext)
-    real(8) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
-    real(8) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
-    real(8) :: ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
-    real(8) :: termxx, tfiret, tfmaxt, tgignt
-    real(8) :: tref, windpw, windrf, windv
+    real(eb) :: cp, deltat, heatfq, tracet(2,mext)
+    real(eb) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
+    real(eb) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
+    real(eb) :: ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
+    real(eb) :: termxx, tfiret, tfmaxt, tgignt
+    real(eb) :: tref, windpw, windrf, windv
 
     logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
 
@@ -160,19 +162,21 @@ end module cshell
 
 module dervs
 
+    use precision_parameters
     use cparams    
     implicit none
     save
 
     logical :: produp
-    real(8), dimension(maxteq) :: pdold, pold
-    real(8) :: told, dt
+    real(eb), dimension(maxteq) :: pdold, pold
+    real(eb) :: told, dt
 
 end module dervs
 
 ! --------------------------- fltarget -------------------------------------------
 
 module fltarget
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -216,9 +220,9 @@ module fltarget
 
     character(8) :: cxtarg(mxtarg)
 
-    real(8), dimension(mxtarg,2) :: qtflux, qtcflux, qtfflux, qtwflux, qtgflux
-    real(8), dimension(mxtarg) :: tgtarg
-    real(8), dimension(mxtarg,5)  :: gtflux
+    real(eb), dimension(mxtarg,2) :: qtflux, qtcflux, qtfflux, qtwflux, qtgflux
+    real(eb), dimension(mxtarg) :: tgtarg
+    real(eb), dimension(mxtarg,5)  :: gtflux
     integer, dimension(3) :: neqtarg
 end module fltarget
 
@@ -226,6 +230,7 @@ end module fltarget
 
 module  iofiles
 
+    use precision_parameters
     implicit none
     save
     
@@ -240,7 +245,7 @@ module  iofiles
 ! Work arrays for the csv input routines
 
     integer, parameter :: nrow=200, ncol=200
-    real(8) :: rarray(nrow,ncol) 
+    real(eb) :: rarray(nrow,ncol) 
     character(128) :: carray(nrow,ncol)
 
 end module iofiles
@@ -249,6 +254,7 @@ end module iofiles
 
 module  debug
 
+    use precision_parameters
     implicit none
 
     logical :: residprn, jacprn
@@ -256,7 +262,7 @@ module  debug
     logical :: jacfirst = .true.
     logical :: prnslab
     integer :: ioresid, iojac, ioslab
-    real(8) ::   dbtime
+    real(eb) ::   dbtime
     character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
 
 end module debug
@@ -280,6 +286,7 @@ end module objects1
 
 module objects2
 
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -289,14 +296,14 @@ module objects2
     character(60), dimension(0:mxoin) :: omatl
     integer, dimension(mxoin) :: objlfm,objtyp,obtarg, objset
     
-    real(8), dimension(mxoin) :: obj_c, obj_h, obj_o, obj_n, obj_cl
-    real(8), dimension(3,0:mxoin) :: objcri, objort
-    real(8), dimension(0:mxoin) :: objmas, objgmw, objvt, objclen
-    real(8), dimension(nv,0:mxoin) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
-    real(8), dimension(nv,ns,mxoin) :: omprodr
-    real(8), dimension(nv,mxoin) :: otime
-    real(8), dimension(2,0:mxoin) :: obcond
-    real(8) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
+    real(eb), dimension(mxoin) :: obj_c, obj_h, obj_o, obj_n, obj_cl
+    real(eb), dimension(3,0:mxoin) :: objcri, objort
+    real(eb), dimension(0:mxoin) :: objmas, objgmw, objvt, objclen
+    real(eb), dimension(nv,0:mxoin) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
+    real(eb), dimension(nv,ns,mxoin) :: omprodr
+    real(eb), dimension(nv,mxoin) :: otime
+    real(eb), dimension(2,0:mxoin) :: obcond
+    real(eb) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
 
 end module objects2
 
@@ -304,6 +311,7 @@ end module objects2
 
 module opt
 
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -360,7 +368,7 @@ module opt
 !*** this causes absorption coefs to take on constant default values rather than computed from data
     integer, dimension(mxopt) :: debug = 0
     
-    real(8) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
+    real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
     
     integer :: iprtalg = 0, jacchk = 0
     integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0
@@ -374,6 +382,7 @@ module opt
 
 module params
 
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -389,7 +398,7 @@ module params
     logical :: allowed(ns), exset
     integer :: mapltw(nwal), ihmlar(2,nr,nr), izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
 
-    real(8) :: qfr(mxfire), qfc(2,nr), qscnv(nwal,nr), qdout(nwal,nr), qsradw(nwal,nr), qdin(nwal,nr), qcvent(mxvents,nv), o2n2(ns), hwjdot(nwal,nr), exsal, &
+    real(eb) :: qfr(mxfire), qfc(2,nr), qscnv(nwal,nr), qdout(nwal,nr), qsradw(nwal,nr), qdin(nwal,nr), qcvent(mxvents,nv), o2n2(ns), hwjdot(nwal,nr), exsal, &
         htot(nr), htflow(nr,2), hmflow(nr,2), htfnet(2,nr,nr), volfru(nr), volfrl(nr), hvfrac(2,mext), expa, exta, exra, &
         hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), hvt, ductcv
 
@@ -403,6 +412,7 @@ end module params
 
 module smkview
 
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -410,7 +420,7 @@ module smkview
     integer :: smkunit, spltunit, flocal(mxfire+1)
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
-    real(8), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
   
 end module smkview
 
@@ -418,27 +428,28 @@ end module smkview
 
 module solver_parameters
 
+    use precision_parameters
     use cparams
     implicit none
     save
     
-    real(8), dimension(nt) :: pinit
-    real(8), dimension(1) :: rpar2
+    real(eb), dimension(nt) :: pinit
+    real(eb), dimension(1) :: rpar2
     integer, dimension(3) :: ipar2
-    real(8) :: aptol = 1.0d-6        ! absolute pressure tolerance
-    real(8) :: rptol = 1.0d-6        ! relative pressure tolerance
-    real(8) :: atol = 1.0d-5         ! absolute other tolerance
-    real(8) :: rtol = 1.0d-5         ! relative other tolerance
-    real(8) :: awtol = 1.0d-2        ! absolute wall tolerance
-    real(8) :: rwtol = 1.0d-2        ! relative wall tolerance
-    real(8) :: algtol = 1.0d-8       ! initialization tolerance
-    real(8) :: ahvptol = 1.0d-6      ! absolute HVAC pressure tolerance
-    real(8) :: rhvptol = 1.0d-6      ! relative HVAC pressure tolerance
-    real(8) :: ahvttol = 1.0d-5      ! absolute HVAC temperature tolerance
-    real(8) :: rhvttol = 1.0d-5      ! relative HVAC temperature tolerance
+    real(eb) :: aptol = 1.0e-6_eb        ! absolute pressure tolerance
+    real(eb) :: rptol = 1.0e-6_eb        ! relative pressure tolerance
+    real(eb) :: atol = 1.0e-5_eb         ! absolute other tolerance
+    real(eb) :: rtol = 1.0e-5_eb         ! relative other tolerance
+    real(eb) :: awtol = 1.0e-2_eb        ! absolute wall tolerance
+    real(eb) :: rwtol = 1.0e-2_eb        ! relative wall tolerance
+    real(eb) :: algtol = 1.0e-8_eb       ! initialization tolerance
+    real(eb) :: ahvptol = 1.0e-6_eb      ! absolute HVAC pressure tolerance
+    real(eb) :: rhvptol = 1.0e-6_eb      ! relative HVAC pressure tolerance
+    real(eb) :: ahvttol = 1.0e-5_eb      ! absolute HVAC temperature tolerance
+    real(eb) :: rhvttol = 1.0e-5_eb      ! relative HVAC temperature tolerance
     
-    real(8) :: stpmax = 1.0d0        ! maximum solver time step, if negative, then solver will decide
-    real(8) :: dasslfts = 0.005d0    ! first time step for DASSL
+    real(eb) :: stpmax = 1.0_eb        ! maximum solver time step, if negative, then solver will decide
+    real(eb) :: dasslfts = 0.005_eb    ! first time step for DASSL
 
 end module solver_parameters
 
@@ -446,13 +457,14 @@ end module solver_parameters
 
 module thermp
 
+    use precision_parameters
     use cparams
     implicit none
     save
     
-    real(8), dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
-    real(8), dimension(nthmax) :: lepw
-    real(8), dimension(7,nthmax) :: lhclbf
+    real(eb), dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
+    real(eb), dimension(nthmax) :: lepw
+    real(eb), dimension(7,nthmax) :: lhclbf
 
     logical, dimension(nwal,nr) :: thset
     integer maxct, numthrm
@@ -466,6 +478,7 @@ end module thermp
 
 module vents
 
+    use precision_parameters
     use cparams, only: nr, mxvent
     implicit none
     save
@@ -483,9 +496,9 @@ module vents
     ! izvent(3) = pairwise counter
     ! izvent(4 and 5) = hall (yes or no)
     ! izvent(6) = face (smokeview)
-    real(8), dimension(mxvent,6) :: zzvent, izvent
-    real(8), dimension(nr,mxvent) :: zzventdist
-    real(8), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    real(eb), dimension(mxvent,6) :: zzvent, izvent
+    real(eb), dimension(nr,mxvent) :: zzventdist
+    real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
     
 end module vents
 
@@ -493,10 +506,11 @@ end module vents
 
 module vent_slab
     
+    use precision_parameters
     implicit none
     save
     
-    real(8), dimension(10) :: yvelev, dpv1m2
+    real(eb), dimension(10) :: yvelev, dpv1m2
     integer, dimension(10) ::  dirs12
     integer :: nvelev, ioutf
       
@@ -517,18 +531,19 @@ end module wdervs
 
 module wnodes
 
+    use precision_parameters
     use cparams
     implicit none
     save
     
     integer :: nwpts = 30                                   ! number of wall nodes
     integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)
-    real(8), dimension(3) :: wsplit = (/0.50, 0.17, 0.33/)   ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
+    real(eb), dimension(3) :: wsplit = (/0.50, 0.17, 0.33/)   ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
     
     integer nwalls, nfurn
-    real(8), dimension (nr,4) :: wlength
-    real(8), dimension (nn,nr,4) :: walldx
-    real(8), dimension(nv) :: furn_time, furn_temp
-    real(8) :: qfurnout
+    real(eb), dimension (nr,4) :: wlength
+    real(eb), dimension (nn,nr,4) :: walldx
+    real(eb), dimension(nv) :: furn_time, furn_temp
+    real(eb) :: qfurnout
       
 end module wnodes

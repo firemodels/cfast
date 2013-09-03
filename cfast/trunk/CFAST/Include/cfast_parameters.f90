@@ -2,6 +2,7 @@
 ! --------------------------- cparams -------------------------------------------
 
 module cparams
+    use precision_parameters
 
     ! geometry parameters
     integer, parameter :: nr = 31           ! maximum number of compartments
@@ -38,7 +39,7 @@ module cparams
     integer, parameter :: mext = 2*nr       ! maximum number of external connections
     integer, parameter :: mbr = mfan+mdt    ! maximum number of branches in a system
     
-    real(8), parameter :: vfmaxdz=0.01d0    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
+    real(eb), parameter :: vfmaxdz=0.01_eb    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
     
     ! target parameters
     integer, parameter :: mxtarg = 10*nr    ! maximum number of targets

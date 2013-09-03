@@ -79,7 +79,7 @@
     title = carray(1,3)
 
     do i = 1, nr
-        yinter(i) = -1.0d0
+        yinter(i) = -1.0_eb
     end do
 
     maxct = 0
@@ -88,11 +88,11 @@
     call keywordcases (numr, numc, ierror)
 
     !	wait until the input file is parsed before dieing on temperature outside reasonable limits
-    if (exta>373.15.or.exta<223.15d0) then
+    if (exta>373.15_eb.or.exta<223.15_eb) then
         write(logerr,5022) exta
         ierror = 218
     endif
-    if (ta>373.15.or.ta<223.15d0) then
+    if (ta>373.15_eb.or.ta<223.15_eb) then
         write(logerr,5022) ta
         ierror = 218
     endif
@@ -131,13 +131,13 @@
     ! check and/or set heat source fire position
     if (heatfl) then
         if ((heatfp(1)<0.0_eb).or.(heatfp(1)>br(heatfr))) then
-            heatfp(1) = br(heatfr) / 2.0d0
+            heatfp(1) = br(heatfr) / 2.0_eb
         endif
         if ((heatfp(2)<0.0_eb).or.(heatfp(2)>dr(heatfr))) then
-            heatfp(2) = dr(heatfr) / 2.0d0
+            heatfp(2) = dr(heatfr) / 2.0_eb
         endif
         if ((heatfp(3)<0.0_eb).or.(heatfp(3)>hr(heatfr))) then
-            heatfp(3) = 0.0d0
+            heatfp(3) = 0.0_eb
         endif
         write(logerr,5021) heatfr,heatfp
     endif
@@ -145,11 +145,11 @@
     ! check and/or set position of fire objects
     do i = 1, numobjl
         if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>br(objrm(i)))) then
-            objpos(1,i) = br(objrm(i)) / 2.0d0
+            objpos(1,i) = br(objrm(i)) / 2.0_eb
             if (logerr>0) write (logerr,5080) i, objpos(1,i)
         endif
         if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>dr(objrm(i)))) then
-            objpos(2,i) = dr(objrm(i)) / 2.0d0
+            objpos(2,i) = dr(objrm(i)) / 2.0_eb
             if (logerr>0) write (logerr,5090) i, objpos(2,i)
         endif
         if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>hr(objrm(i)))) then
@@ -306,7 +306,7 @@
             call xerror(messg,0,1,1)
         endif
         rti = xdtect(i,drti)
-        if(rti<=0.0d0.and.ixdtect(i,dtype)/=smoked)then
+        if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
             write (messg,101)rti 
 101         format('Invalid DETECTOR specification - rti= ',e11.4, ' is not a valid.')
             ifail = 44
@@ -314,7 +314,7 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0d0.or.xloc>br(iroom).or.yloc<0.0d0.or.yloc>dr(iroom).or.zloc<0.0d0.or.zloc>hrp(iroom))then
+        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>hrp(iroom))then
             write(messg,102)xloc,yloc,zloc
 102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
             ifail = 45
@@ -328,7 +328,7 @@
     end do
 
     ! fire type and parameters
-    tfmaxt = 0.0d0
+    tfmaxt = 0.0_eb
     do i = 1, lfmax
         tfmaxt = max(tfmaxt,tfired(i))
     end do
@@ -339,9 +339,9 @@
         if(npts/=0)then
 
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
-            if(zzrhgt(1,i)/=0.0d0)then
+            if(zzrhgt(1,i)/=0.0_eb)then
                 temparea(1) = zzrarea(1,i)
-                temphgt(1) = 0.0d0
+                temphgt(1) = 0.0_eb
                 ioff = 1
             else
                 ioff = 0
@@ -366,14 +366,14 @@
             izrvol(i) = npts
 
             ! copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
-            zzrhgt(1,i) = 0.0d0
-            zzrvol(1,i) = 0.0d0
+            zzrhgt(1,i) = 0.0_eb
+            zzrvol(1,i) = 0.0_eb
             zzrarea(1,i) = temparea(1)
             j = 1
             do j = 2, npts
                 zzrhgt(j,i) = temphgt(j)
                 zzrarea(j,i) = temparea(j)
-                darea = (zzrarea(j,i)+zzrarea(j-1,i))/2.0d0
+                darea = (zzrarea(j,i)+zzrarea(j-1,i))/2.0_eb
                 dheight = zzrhgt(j,i) - zzrhgt(j-1,i)
                 zzrvol(j,i) = zzrvol(j-1,i) + darea*dheight
             end do
@@ -420,24 +420,24 @@
                 do k = 1, 4
                     nventij = nventij + ijk(i,j,k)
                 end do
-                if(nventij/=0)zzhtfrac(i,j) = 1.0d0
+                if(nventij/=0)zzhtfrac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if(j<=nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0d0
+                if(j<=nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0_eb
             end do
         endif
 
         ! normalize zzhtfrac fraction matrix so that rows sum to one
         if(izheat(i)/=0)then
-            sum = 0.0d0
+            sum = 0.0_eb
             do j = 1, nm1+1
                 sum = sum + zzhtfrac(i,j)
             end do
-            if(sum<1.d-5)then
+            if(sum<1.e-5_eb)then
                 do j = 1, nm1
-                    zzhtfrac(i,j) = 0.0d0
+                    zzhtfrac(i,j) = 0.0_eb
                 end do
-                zzhtfrac(i,nm1+1) = 1.0d0
+                zzhtfrac(i,nm1+1) = 1.0_eb
             else
                 do j = 1, nm1+1
                     zzhtfrac(i,j) = zzhtfrac(i,j)/sum
@@ -445,7 +445,7 @@
             endif
             jj = 0
             do j = 1, nm1
-                if(zzhtfrac(i,j)/=0.0d0)then
+                if(zzhtfrac(i,j)/=0.0_eb)then
                     izhtfrac(i,0) = izhtfrac(i,0) + 1
                     jj = jj + 1
                     izhtfrac(i,jj) = j
@@ -585,7 +585,7 @@
         ta = lrarray(1)
         pa = lrarray(2)
         sal = lrarray(3)
-        relhum = lrarray(4) * 0.01d0
+        relhum = lrarray(4) * 0.01_eb
         if (.not.exset) then
             exta = ta
             expa = pa
@@ -610,7 +610,7 @@
             ierror = 4
             return
         endif
-        limo2 = lrarray(1) * 0.01d0 
+        limo2 = lrarray(1) * 0.01_eb 
 
         ! Rename the THERMAL DATA FILE
     case ("THRMF")
@@ -631,7 +631,7 @@
         ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
     case ('GLOBA')
         if (countargs(2,lcarray,xnumc-1, nret)) then
-            limo2 = lrarray(1) * 0.01d0
+            limo2 = lrarray(1) * 0.01_eb
             tgignt = lrarray(2)
         else
             ierror = 4
@@ -660,16 +660,16 @@
         lflw(1,maxct) = lrarray(5)
         lepw(maxct) = lrarray(6)
         if (index(lcarray(1),'gypsum')/=0.or.index(lcarray(1),'GYPSUM')/=0.or.index(lcarray(7),'gypsum')/=0.or.index(lcarray(7),'GYPSUM')/=0) then
-            lhclbf(1,maxct) = 0.0063
-            lhclbf(2,maxct) = 191.8
-            lhclbf(3,maxct) = 0.0587
-            lhclbf(4,maxct) = 7476.0
-            lhclbf(5,maxct) = 193.0
-            lhclbf(6,maxct) = 1.021
-            lhclbf(7,maxct) = 0.431
+            lhclbf(1,maxct) = 0.0063_eb
+            lhclbf(2,maxct) = 191.8_eb
+            lhclbf(3,maxct) = 0.0587_eb
+            lhclbf(4,maxct) = 7476.0_eb
+            lhclbf(5,maxct) = 193.0_eb
+            lhclbf(6,maxct) = 1.021_eb
+            lhclbf(7,maxct) = 0.431_eb
         else
             do i = 1, 7
-                lhclbf(i,maxct) = 0.0
+                lhclbf(i,maxct) = 0.0_eb
             end do
         endif
 
@@ -1103,19 +1103,19 @@
         ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
         ! The critiria for temperature and flux are stored backupwards - this is historical
         ! See corresponding code in updobj
-        if (tmpcond>0.0d0) then
+        if (tmpcond>0.0_eb) then
             if (objign(obpnt)==1) then
                 objcri(1,obpnt) = tmpcond
-                objcri(2,obpnt) = 1.0d30
-                objcri(3,obpnt) = 1.0d30
+                objcri(2,obpnt) = 1.0e30_eb
+                objcri(3,obpnt) = 1.0e30_eb
             else if (objign(obpnt)==2) then
-                objcri(1,obpnt) = 1.0d30
-                objcri(2,obpnt) = 1.0d30
+                objcri(1,obpnt) = 1.0e30_eb
+                objcri(2,obpnt) = 1.0e30_eb
                 objcri(3,obpnt) = tmpcond
             else if (objign(obpnt)==3) then
-                objcri(1,obpnt) = 1.0d30
+                objcri(1,obpnt) = 1.0e30_eb
                 objcri(2,obpnt) = tmpcond
-                objcri(3,obpnt) = 1.0d30
+                objcri(3,obpnt) = 1.0e30_eb
             else
                 write(logerr,5358) objign(obpnt)
                 ierror = 13
@@ -1125,10 +1125,10 @@
             objon(obpnt) = .true.
         endif
         if (option(fbtobj)==off.and.objign(obpnt)/=1.) then
-            if (stpmax>0.0d0) then
-                stpmax = min(stpmax,1.d0)
+            if (stpmax>0.0_eb) then
+                stpmax = min(stpmax,1._eb)
             else
-                stpmax = 1.d0
+                stpmax = 1._eb
             endif
         endif 
 
@@ -1203,19 +1203,19 @@
         !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
         !!!!! The critiria for temperature and flux are stored backupwards - this is historical
         !!!!! See corresponding code in updobj
-        if (tmpcond>0.0d0) then
+        if (tmpcond>0.0_eb) then
             if (objign(obpnt)==1) then
                 objcri(1,obpnt) = tmpcond
-                objcri(2,obpnt) = 1.0d30
-                objcri(3,obpnt) = 1.0d30
+                objcri(2,obpnt) = 1.0e30_eb
+                objcri(3,obpnt) = 1.0e30_eb
             else if (objign(obpnt)==2) then
-                objcri(1,obpnt) = 1.0d30
-                objcri(2,obpnt) = 1.0d30
+                objcri(1,obpnt) = 1.0e30_eb
+                objcri(2,obpnt) = 1.0e30_eb
                 objcri(3,obpnt) = tmpcond
             else if (objign(obpnt)==3) then
-                objcri(1,obpnt) = 1.0d30
+                objcri(1,obpnt) = 1.0e30_eb
                 objcri(2,obpnt) = tmpcond
-                objcri(3,obpnt) = 1.0d30
+                objcri(3,obpnt) = 1.0e30_eb
             else
                 write(logerr,5358) objign(obpnt)
                 ierror = 13
@@ -1225,10 +1225,10 @@
             objon(obpnt) = .true.
         endif
         if (option(fbtobj)==off.and.objign(obpnt)/=1.) then
-            if (stpmax>0.0d0) then
-                stpmax = min(stpmax,1.d0)
+            if (stpmax>0.0_eb) then
+                stpmax = min(stpmax,1._eb)
             else
-                stpmax = 1.d0
+                stpmax = 1._eb
             endif
         endif
 
@@ -1300,16 +1300,16 @@
         xdtect(ndtect,dzloc) = lrarray(6)
         xdtect(ndtect,drti) =  lrarray(7)
         ixdtect(ndtect,dquench) = lrarray(8)
-        xdtect(ndtect,dspray) = lrarray(9)*1000.d0
+        xdtect(ndtect,dspray) = lrarray(9)*1000._eb
         ! if spray density is zero, then turn off the sprinkler
-        if(xdtect(ndtect,dspray)==0.0d0)then
+        if(xdtect(ndtect,dspray)==0.0_eb)then
             ixdtect(ndtect,dquench) = 0
         endif
         if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then
             if (stpmax>0) then
-                stpmax = min(stpmax,1.d0)
+                stpmax = min(stpmax,1._eb)
             else
-                stpmax = 1.d0
+                stpmax = 1._eb
             endif
         endif
         if (compartmentnames(i2)==' ') then
@@ -1464,10 +1464,10 @@
         izhall(iroom,ihvelflag) = 0
         izhall(iroom,ihdepthflag) = 0
         izhall(iroom,ihventnum) = 0
-        zzhall(iroom,ihtime0) = -1.0d0
-        zzhall(iroom,ihvel) = 0.0d0
-        zzhall(iroom,ihdepth) = -1.0d0
-        zzhall(iroom,ihhalf) = -1.0d0
+        zzhall(iroom,ihtime0) = -1.0_eb
+        zzhall(iroom,ihvel) = 0.0_eb
+        zzhall(iroom,ihdepth) = -1.0_eb
+        zzhall(iroom,ihhalf) = -1.0_eb
 
         ! HALL velocity; not set if negative
         if(lrarray(2)>=0) then
@@ -1517,7 +1517,7 @@
 
         ! make sure all data is positive 
         do  i = 1, npts
-            if(lrarray(i+2)<0.0d0)then
+            if(lrarray(i+2)<0.0_eb)then
                 write(logerr,5348) lrarray(i+2)
                 ierror = 50
                 return
@@ -1559,7 +1559,7 @@
 
         ! make sure all data is positive 
         do i = 1, npts
-            if(lrarray(i+2)<0.0d0)then
+            if(lrarray(i+2)<0.0_eb)then
                 write(logerr,5348) lrarray(i+2)
                 ierror = 54
                 return
@@ -1645,7 +1645,7 @@
                 ierror = 61
                 return
             endif
-            if(frac<0.0d0.or.frac>1.0d0)then
+            if(frac<0.0_eb.or.frac>1.0_eb)then
                 write(logerr, 5357) ifrom,ito,frac
                 ierror = 62
                 return
@@ -1774,7 +1774,7 @@
     character(128) :: lcarray(ncol)
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, errorcode, ir, i, ii, nret
-    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.d-3, area, d, flamelength
+    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.e-3_eb, area, d, flamelength
 
     ! there are eight required inputs for each fire
     do ir = 1, 8
@@ -1806,7 +1806,7 @@
 
             radconsplit(iobj) = lrarray(6)
             ohcomb = lrarray(7)
-            if (ohcomb<=0.0d0) then
+            if (ohcomb<=0.0_eb) then
                 write(logerr,5001) ohcomb
                 ierror = 32
                 return
@@ -1819,7 +1819,7 @@
                 otime(ii,iobj) = lrarray(ii)
             end do
         case ('HRR')
-            max_hrr = 0.0d0
+            max_hrr = 0.0_eb
             do ii = 1, nret
                 oqdot(ii,iobj) = lrarray(ii)
                 max_hrr = max(max_hrr, oqdot(ii,iobj))
@@ -1836,32 +1836,32 @@
         case ('TRACE')
             ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
             do ii = 1, nret
-                omprodr(ii,7,iobj) = 0.0d0
-                omprodr(ii,10,iobj) = 1.0d0
+                omprodr(ii,7,iobj) = 0.0_eb
+                omprodr(ii,10,iobj) = 1.0_eb
                 omprodr(ii,11,iobj) = lrarray(ii)   
             end do
         case ('AREA')
-            max_area = 0.0d0
+            max_area = 0.0_eb
             do ii = 1, nret
                 ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the ignition point.
                 ! It only occurs for objects which are on the floor and ignite after t=0
-                oarea(ii,iobj) = max(lrarray(ii),0.09d0)
+                oarea(ii,iobj) = max(lrarray(ii),0.09_eb)
                 max_area = max(max_area,oarea(ii,iobj))
             end do
 
             ! calculate size of the object based on the maximum area with a thickness assuming it's a cube
             ! as with the flame height calculation, the minimum area is 0.09 m^2 (about 1 ft^2)
-            objxyz(1,iobj) = sqrt(max(max_area,0.09d0))
+            objxyz(1,iobj) = sqrt(max(max_area,0.09_eb))
             objxyz(2,iobj) = objxyz(1,iobj)
             objxyz(3,iobj) = objxyz(1,iobj)
 
             ! calculate a characteristic length of an object (we assume the diameter). 
             ! This is used for point source radiation fire to target calculation as a minimum effective distance between the fire and the target
             ! which only impact very small fire to target distances
-            objclen(iobj) = 2.0d0*sqrt(max_area / (4.0D0*ATAN(1.0d0)))
+            objclen(iobj) = 2.0_eb*sqrt(max_area / pi)
         case ('HEIGH')
             do ii = 1, nret
-                ohigh(ii,iobj) = max(lrarray(ii),0.0d0)
+                ohigh(ii,iobj) = max(lrarray(ii),0.0_eb)
             end do
         case default
             write(logerr, 5000) label
@@ -1883,16 +1883,16 @@
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
     area = objxyz(1,iobj) * objxyz(2,iobj)
-    d = max(0.33d0,sqrt(4.0/3.14*area))
-    flamelength = d * (0.235d0*(max_hrr/1.0d3)**0.4 - 1.02)
+    d = max(0.33_eb,sqrt(4.0/3.14_eb*area))
+    flamelength = d * (0.235_eb*(max_hrr/1.0e3_eb)**0.4_eb - 1.02_eb)
     flamelength = max (0.0_eb, flamelength)
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
-    if (hrrpm3>4.0d+6) then
+    if (hrrpm3>4.0e6_eb) then
         write (logerr,5106)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
         errorcode = 221
         return
-    else if (hrrpm3>2.0d+6) then
+    else if (hrrpm3>2.0e6_eb) then
         write (logerr,5107)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
     else 
         write (logerr,5100)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
@@ -2054,7 +2054,7 @@
     ip0(0) = off
     ierror = 0
     do i = 1, maxteq
-        p0(i) = 0.d0
+        p0(i) = 0._eb
         ip0(i) = off
     end do
 
@@ -2215,7 +2215,7 @@
     IF((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) THEN
         select case (defaultposition)
         case (1) 
-            xyz(index,opoint) = criterion(rpoint)/2.0d0
+            xyz(index,opoint) = criterion(rpoint)/2.0_eb
         case (2) 
             xyz(index,opoint) = minimumseparation
         case default
@@ -2295,7 +2295,7 @@
     ierror = 0
     do i=1,numr
         do j=1,numc
-            x(i,j) = 0.
+            x(i,j) = 0.0_eb
             c(i,j) = ' '
         end do
     end do

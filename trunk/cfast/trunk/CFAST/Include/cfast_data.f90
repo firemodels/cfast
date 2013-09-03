@@ -21,10 +21,10 @@ module cenviro
 
     ! index for hall models
     integer, parameter :: ihbefore = 1, ihduring = 2, ihafter = 3
-
+    
     logical updatehall, izdtflag, izcon(nr), izhvac(nr)
-
-    real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs, zzyflor, zzyceil
+    
+    real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs
     real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
     real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
     real(eb), dimension(nr,nwal) :: zzwspec
@@ -32,7 +32,6 @@ module cenviro
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
     real(eb), dimension(mxhvsys) :: zzhvm
     real(eb), dimension(nr,4) :: zzwarea
-    real(eb), dimension(nr,10,3) :: zzwcen
     real(eb), dimension(nr,10) :: zzwarea2
     real(eb), dimension(nr,8) :: zzhall
     real(eb), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
@@ -54,6 +53,15 @@ module cenviro
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
     
+!  room data structure
+
+    type room_type
+      real(eb) :: yflor, yceil
+      real(eb) :: wall_center(10,3)
+    end type room_type
+
+    type(room_type), target :: roominfo(nr)
+
 end module cenviro
 
 ! --------------------------- cfast_main -------------------------------------------
@@ -110,6 +118,34 @@ module cfast_main
     logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
 
     character(128) :: title, compartmentnames(nr)
+    
+!            xfire(nfire,1) = objpos(1,iobj)
+!            xfire(nfire,2) = objpos(2,iobj)
+!            xfire(nfire,3) = objpos(3,iobj) + ohight
+!            xfire(nfire,4) = oplume(3,iobj)
+!            xfire(nfire,5) = oplume(1,iobj)
+!            xfire(nfire,6) = oplume(2,iobj)
+!            xfire(nfire,7) = qfc(1,iroom)
+!            xfire(nfire,8) = xqfr
+!            xfire(nfire,9) = heatlp(iroom) + heatup(iroom)
+!            xfire(nfire,10) = heatlp(iroom)
+!            xfire(nfire,11) = heatup(iroom)
+!            xfire(nfire,12) = objhct
+!            xfire(nfire,13) = y_soot
+!            xfire(nfire,14) = y_co
+!            !xfire(nfire,15) = hcratt
+!            !xfire(nfire,16) = ocratt
+!            !xfire(nfire,17) = clfrat
+!            !xfire(nfire,18) = cnfrat
+!            xfire(nfire,19) = objclen(iobj)
+!            xfire(nfire,20) = oareat
+
+! fire data structure
+
+     type fire_type
+     end type fire_type
+     
+     type(fire_type), target :: fireinfo(mxfire)
 
 end module cfast_main
 
@@ -483,6 +519,14 @@ module vents
     implicit none
     save
     
+    integer, dimension(mxvent,2) :: ivvent
+    integer :: nvents, nvvent
+    
+    real(eb), dimension(nr,mxvent) :: zzventdist
+    real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    
+! vent data structure
+
     type vent_type
         real(eb) :: sill, soffit, width
         real(eb) :: from_hall_offset, to_hall_offset
@@ -493,13 +537,6 @@ module vents
     end type vent_type
     
     type (vent_type), dimension(mxvent), target :: ventinfo
-    
-    
-    integer, dimension(mxvent,2) :: ivvent
-    integer :: nvents, nvvent
-    
-    real(eb), dimension(nr,mxvent) :: zzventdist
-    real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
     
 end module vents
 

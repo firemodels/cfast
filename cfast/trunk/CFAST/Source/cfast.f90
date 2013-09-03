@@ -1496,6 +1496,7 @@
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
         
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1510,8 +1511,10 @@
             zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
         end do
         do iroom = 1, nm1
-            zzyflor(iroom) = hflr(iroom)
-            zzyceil(iroom) = hrp(iroom)
+            roomptr=>roominfo(iroom)
+            
+            roomptr%yflor = hflr(iroom)
+            roomptr%yceil = hrp(iroom)
 
             ! define wall centers
             xx = br(iroom)
@@ -1519,41 +1522,44 @@
             yy = dr(iroom)
             ywall_center = yy/2.0_eb
             zz = hrp(iroom)
-            zzwcen(iroom,1,1) = xwall_center
-            zzwcen(iroom,1,2) = ywall_center
-            zzwcen(iroom,1,3) = zz
+            roomptr%wall_center(1,1) = xwall_center
+            roomptr%wall_center(1,2) = ywall_center
+            roomptr%wall_center(1,3) = zz
 
-            zzwcen(iroom,2,1) = xwall_center
-            zzwcen(iroom,2,2) = yy
+            roomptr%wall_center(2,1) = xwall_center
+            roomptr%wall_center(2,2) = yy
 
-            zzwcen(iroom,3,1) = xx
-            zzwcen(iroom,3,2) = ywall_center
+            roomptr%wall_center(3,1) = xx
+            roomptr%wall_center(3,2) = ywall_center
 
-            zzwcen(iroom,4,1) = xwall_center
-            zzwcen(iroom,4,2) = 0.0_eb
+            roomptr%wall_center(4,1) = xwall_center
+            roomptr%wall_center(4,2) = 0.0_eb
 
-            zzwcen(iroom,5,1) = 0.0_eb
-            zzwcen(iroom,5,2) = ywall_center
+            roomptr%wall_center(5,1) = 0.0_eb
+            roomptr%wall_center(5,2) = ywall_center
 
-            zzwcen(iroom,6,1) = xwall_center
-            zzwcen(iroom,6,2) = yy
+            roomptr%wall_center(6,1) = xwall_center
+            roomptr%wall_center(6,2) = yy
 
-            zzwcen(iroom,7,1) = xx
-            zzwcen(iroom,7,2) = ywall_center
+            roomptr%wall_center(7,1) = xx
+            roomptr%wall_center(7,2) = ywall_center
 
-            zzwcen(iroom,8,1) = xwall_center
-            zzwcen(iroom,8,2) = 0.0_eb
+            roomptr%wall_center(8,1) = xwall_center
+            roomptr%wall_center(8,2) = 0.0_eb
 
-            zzwcen(iroom,9,1) = 0.0_eb
-            zzwcen(iroom,9,2) = ywall_center
+            roomptr%wall_center(9,1) = 0.0_eb
+            roomptr%wall_center(9,2) = ywall_center
 
-            zzwcen(iroom,10,1) = xwall_center
-            zzwcen(iroom,10,2) = ywall_center
-            zzwcen(iroom,10,3) = 0.0_eb
+            roomptr%wall_center(10,1) = xwall_center
+            roomptr%wall_center(10,2) = ywall_center
+            roomptr%wall_center(10,3) = 0.0_eb
         end do
 
-        zzyflor(n) = 0.0_eb
-        zzyceil(n) = 100000._eb
+        roomptr=>roominfo(n)
+        
+        roomptr%yflor = 0.0_eb
+        roomptr%yceil = 100000._eb
+        
         zzvol(n,upper) = 0.0_eb
         zzvol(n,lower) = 100000.0_eb
         zzhlay(n,upper) = 0.0_eb
@@ -1583,6 +1589,8 @@
         end do
         nvents = 0
         do i = 1, nm1
+            roomptr=>roominfo(i)
+            
             do j = i + 1, n
                 if (nw(i,j)/=0) then
                     do k = 1, mxccv
@@ -1623,7 +1631,7 @@
 
                                 ! compute wind velocity and pressure rise at the average vent height
                                 havg = (ventptr%sill + ventptr%soffit)/2.0_eb 
-                                havg = havg + zzyflor(i) 
+                                havg = havg + roomptr%yflor
                                 if(windrf/=0.0_eb)then
                                     windvnew = windv * (havg/windrf)**windpw
                                 else
@@ -1799,6 +1807,8 @@
 
     else if (iflag==odevara) then
         do iroom = 1, nm1
+            roomptr=>roominfo(iroom)
+            
             zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
             zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
             zzvol(iroom,lower) = max(vr(iroom)-zzvol(iroom,upper),zzvmin(iroom))
@@ -1869,8 +1879,8 @@
 
             do i = 1, 4
                 ylay = zzhlay(iroom,lower)
-                zzwcen(iroom,i+1,3) =  (zzyceil(iroom)+ylay)/2.0_eb
-                zzwcen(iroom,i+5,3) = ylay/2.0_eb
+                roomptr%wall_center(i+1,3) =  (roomptr%yceil+ylay)/2.0_eb
+                roomptr%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
             do layer = upper, lower
@@ -1881,7 +1891,7 @@
         
         do i = 1, nm1
             if(deadroom(i).eq.0)cycle
-            zzrelp(i)=zzrelp(deadroom(i))
+            zzrelp(i) = zzrelp(deadroom(i))
             zzpabs(i) = zzpabs(deadroom(i))
         end do
 

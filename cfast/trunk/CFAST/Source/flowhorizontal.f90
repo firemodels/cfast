@@ -755,6 +755,7 @@
     real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
     
     logical :: hallflag
+    type(room_type), pointer :: roomptr
 
     hallflag = .false.
 
@@ -762,8 +763,10 @@
     up = upper
 
     if (iroom<n) then
-        yflor = zzyflor(iroom)
-        yceil = zzyceil(iroom)
+        roomptr=>roominfo(iroom)
+        
+        yflor = roomptr%yflor
+        yceil = roomptr%yceil
         pflor = zzrelp(iroom)
         ylay = zzhlay(iroom,lower)
 
@@ -799,8 +802,10 @@
             call halltrv(iroom,cjetdist,zloc,tu,rhou,hallvel)
         endif
     else
-        yflor = zzyflor(iroom2)
-        yceil = zzyceil(iroom2)
+        roomptr=>roominfo(iroom2)
+        
+        yflor = roomptr%yflor
+        yceil = roomptr%yceil
         pflor = epa(iroom2)
         ylay = zzhlay(iroom,lower)
         denu = era(iroom2)

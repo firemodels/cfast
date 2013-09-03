@@ -217,6 +217,9 @@
     ! delp is pressure immediately below the vent less pressure immediately above the vent.
     delp = relp(2) + dp(2) - (relp(1)+dp(1))
 
+    ! if the room above or the room below is dead then  there is no pressure difference at vent opening
+    if(deadroom(itop).ne.0.and.deadroom(ibot).ne.0.and.deadroom(itop).eq.ibot.or.deadroom(ibot).eq.itop)delp=0.0_eb
+
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
     if (zzvol(itop,l)<=2.0_eb*zzvmin(itop)) then

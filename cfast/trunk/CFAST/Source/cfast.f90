@@ -1141,7 +1141,7 @@
     call datacopy(x,odevara)
     call datacopy(x,odevarb)
 
-    ! If RESID is called by SOLVE THEN IPAR(2)==ALL all residuals
+    ! If RESID is called by SOLVE then IPAR(2)==ALL all residuals
     ! are computed.  If RESID is called by DASSL residuals are not
     ! computed for species.  Further, temperature profiles are only
     ! updated when RESID is called by SOLVE.
@@ -1269,15 +1269,15 @@
 
         ! calculate temperature of flow going into the upper layer
         ! of each room
-        IF(JACCOL<=0)THEN
-            XQU = FLWTOT(IROOM,Q,UPPER)
-            XMU = FLWTOT(IROOM,M,UPPER)
-            IF(XMU/=0.0D0)THEN
-                ZZFTEMP(IROOM,UPPER) = XQU/(CP*XMU)
-            ELSE
-                ZZFTEMP(IROOM,UPPER) = TAMB(IROOM)
-            ENDIF
-        ENDIF
+        if(jaccol<=0)then
+            xqu = flwtot(iroom,q,upper)
+            xmu = flwtot(iroom,m,upper)
+            if(xmu/=0.0_eb)then
+                zzftemp(iroom,upper) = xqu/(cp*xmu)
+            else
+                zzftemp(iroom,upper) = tamp(iroom)
+            endif
+        endif
 
 
     end do
@@ -1503,7 +1503,7 @@
     endif
 
     xwall_center = 2.0_eb
-    vminfrac = 1.0d-4
+    vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
             zzvmin(iroom) = min(vminfrac * vr(iroom), 1.0_eb)

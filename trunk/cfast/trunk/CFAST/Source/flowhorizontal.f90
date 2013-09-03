@@ -39,6 +39,8 @@
     real(eb) :: factor2, qchfraction, height, width
     integer :: nirm, ifrom, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
     real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
+    
+    type(vent_type), pointer :: ventptr
 
     ! temporary declaration
     nirm = nm1
@@ -55,9 +57,12 @@
     if(anyvents)then
         do i = 1, nvents
             if(.not.ventflg(i)) go to 80
-            iroom1 = izvent(i,1)
-            iroom2 = izvent(i,2)
-            ik = izvent(i,3)
+            ventptr=>ventinfo(i)
+            
+            iroom1 = ventptr%from
+            iroom2 = ventptr%to
+            ik = ventptr%counter
+            
 
             ! setup data structures for from room
             call getvar(i,iroom1,iroom2,nprod,yflor(1),yceil(1),ylay(1),pflor(1),denl(1),denu(1),conl(1,1),conu(1,1),tl(1),tu(1))
@@ -66,8 +71,8 @@
             call getvar(i,iroom2,iroom1,nprod,yflor(2),yceil(2),ylay(2),pflor(2),denl(2),denu(2),conl(1,2),conu(1,2),tl(2),tu(2))
 
             ! convert vent dimensions to absolute dimensions
-            yvbot = zzvent(i,1) + yflor(1)
-            yvtop = zzvent(i,2) + yflor(1)
+            yvbot = ventptr%sill + yflor(1)
+            yvtop = ventptr%soffit + yflor(1)
             ylay(1) = ylay(1) + yflor(1)
             ylay(2) = ylay(2) + yflor(2)
 
@@ -75,13 +80,13 @@
             im = min(iroom1,iroom2)
             ix = max(iroom1,iroom2)
             factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
-            height = zzvent(i,2) - zzvent(i,1)
-            width = zzvent(i,3)
+            height = ventptr%soffit - ventptr%sill
+            width = ventptr%width
             avent = factor2 * height * width
 
             ! augment floor pressure in the second room by the pressure induced by wind.
             ! (note this augmentation will be different for each vent)
-            pflor(2) = pflor(2) + zzvent(i,6)
+            pflor(2) = pflor(2) + ventptr%wind_dp
             if (avent>=1.d-10) then
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxslab,epsp,cslab,pslab,qslab, &
                 vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
@@ -94,12 +99,12 @@
 
                 if(updatehall)then
                     ventheight = yvtop - yvbot
-                    if(izvent(i,4)==1)then
+                    if(ventptr%is_from_hall==1)then
                         vlayerdepth = yvtop - ylay(2)
                         if(vlayerdepth>ventheight)vlayerdepth = ventheight
                         call sethall(1,i,iroom1,tsec,width,tslab(nslab),-ventvel,vlayerdepth)
                     endif
-                    if(izvent(i,5)==1)then
+                    if(ventptr%is_to_hall==1)then
                         vlayerdepth = yvtop - ylay(1)
                         if(vlayerdepth>ventheight)vlayerdepth = ventheight
                         call sethall(1,i,iroom2,tsec,width,tslab(nslab),ventvel,vlayerdepth)
@@ -424,6 +429,7 @@
     logical, intent(out) :: ventflg(mxvent), roomflg(nr), anyvents
     
     integer i, ieqtyp, iroom, iroom1, iroom2
+    type(vent_type), pointer :: ventptr
 
     ! turn all vents on
     anyvents = .true.
@@ -451,8 +457,10 @@
 
                 ! determine all rooms connected to perturbed rooms
                 do i = 1, nvents
-                    iroom1 = izvent(i,1)
-                    iroom2 = izvent(i,2)
+                    ventptr=>ventinfo(i)
+                    
+                    iroom1 = ventptr%from
+                    iroom2 = ventptr%to
                     if(iroom==iroom1.or.iroom==iroom2)then
                         roomflg(iroom1) = .true.
                         roomflg(iroom2) = .true.
@@ -462,8 +470,10 @@
 
                 ! determine all vents connected to the above rooms
                 do i = 1, nvents
-                    iroom1 = izvent(i,1)
-                    iroom2 = izvent(i,2)
+                    ventptr=>ventinfo(i)
+                    
+                    iroom1 = ventptr%from
+                    iroom2 = ventptr%to
                     if(roomflg(iroom1).or.roomflg(iroom2))then
                         ventflg(i) = .true.
                         anyvents = .true.
@@ -1288,14 +1298,17 @@
     integer, intent(in) :: i
     integer, intent(out) :: ifrom,ito,iface
     real(eb), intent(out) :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue 
+    type(vent_type), pointer :: ventptr
 
-    ifrom =IZVENT(i,1)
-    ito = IZVENT(i,2)
-    iface = izvent(i,6)
-    vwidth = zzvent(i,3)
-    voffset = zzvent(i,4)
-    vbottom = zzvent(i,1)
-    vtop = zzvent(i,2)
+    ventptr=>ventinfo(i)
+    
+    ifrom =ventptr%from
+    ito = ventptr%to
+    iface = ventptr%face
+    vwidth = ventptr%width
+    voffset = ventptr%from_hall_offset
+    vbottom = ventptr%sill
+    vtop = ventptr%soffit
     vred = 1.0_eb
     vgreen = 0.0_eb
     vblue = 1.0_eb

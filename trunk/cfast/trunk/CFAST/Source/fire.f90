@@ -742,7 +742,8 @@
     integer :: i, iroom1, iroom2, ifrom, lsp, iroom
     save flwdjf0
 
-    logical dj1flag, dj2flag, ventflg(mxvent), roomflg(nr), anyvents
+    logical :: dj1flag, dj2flag, ventflg(mxvent), roomflg(nr), anyvents
+    type(vent_type), pointer :: ventptr
 
     ! initialize summations and local data
     djetflg = .false.
@@ -751,9 +752,10 @@
 
     ! if no vents have a door jet fire then exit
     do i = 1, nvents
+        ventptr=>ventinfo(i)
 
         ! is there a door jet fire into room iroom1
-        iroom1 = izvent(i,1)
+        iroom1 = ventptr%from
         if(zztemp(iroom1,upper)>=tgignt)then
             flw1to2 = vss(1,i)+vsa(1,i)
             if(vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb)then
@@ -763,7 +765,7 @@
         endif
 
         !is there a door jet fire into room iroom2
-        iroom2 = izvent(i,2)
+        iroom2 = ventptr%to
         if(zztemp(iroom2,upper)>=tgignt)then
             flw2to1 = vss(2,i)+vsa(2,i)
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
@@ -785,15 +787,16 @@
         fqdj(i) = 0.0_eb
     end do
 
-    hcombt = 5.005d+07
+    hcombt = 5.005e7_eb
 
     ! calculate the heat for each of the door jet fires
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
         do i = 1, nvents
+            ventptr=>ventinfo(i)
             if(ventflg(i))then
-                iroom1 = izvent(i,1)
-                iroom2 = izvent(i,2)
+                iroom1 = ventptr%from
+                iroom2 = ventptr%to
                 flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
                 flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
                 call djfire(iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)

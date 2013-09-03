@@ -1494,6 +1494,8 @@
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
+        
+    type(vent_type), pointer :: ventptr
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1586,39 +1588,41 @@
                     do k = 1, mxccv
                         if (iand(frmask(k),nw(i,j))/=0) then
                             nvents = nvents + 1
+                            ventptr => ventinfo(nvents)
                             iijk = ijk(i,j,k)
-                            zzvent(nvents,1) = hl(iijk)
-                            zzvent(nvents,2) = hh(iijk)
-                            zzvent(nvents,3) = bw(iijk)
-                            zzvent(nvents,4) = halldist(iijk,1)
-                            zzvent(nvents,5) = halldist(iijk,2)
-                            izvent(nvents,1) = i
-                            izvent(nvents,2) = j
-                            izvent(nvents,3) = k
+                            ventptr%sill = hl(iijk)
+                            ventptr%soffit = hh(iijk)
+                            ventptr%width = bw(iijk)
+                            
+                            ventptr%from_hall_offset = halldist(iijk,1)
+                            ventptr%to_hall_offset = halldist(iijk,2)
+                            ventptr%from=i
+                            ventptr%to=j
+                            ventptr%counter=k
 
                             ! is "from" room a hall?
                             if(izhall(i,ihroom)==1)then
-                                izvent(nvents,4) = 1
+                                ventptr%is_from_hall=1
                             else
-                                izvent(nvents,4) = 0
+                                ventptr%is_from_hall=0
                             endif
 
                             ! is "to" room a hall?
                             if(izhall(j,ihroom)==1)then
-                                izvent(nvents,5) = 1
+                                ventptr%is_to_hall=1
                             else
-                                izvent(nvents,5) = 0
+                                ventptr%is_to_hall=0
                             endif
 
                             ! add face (vface) to the data structure
-                            izvent(nvents,6) = vface(iijk)
+                            ventptr%face = vface(iijk)
 
                             ! compute pressure rise due to wind.  this value is only defined for outside rooms
                             wcos = windc(iijk)
                             if(j==n.and.wcos/=0.0_eb)then
 
                                 ! compute wind velocity and pressure rise at the average vent height
-                                havg = (zzvent(nvents,1) + zzvent(nvents,2))/2.0_eb 
+                                havg = (ventptr%sill + ventptr%soffit)/2.0_eb 
                                 havg = havg + zzyflor(i) 
                                 if(windrf/=0.0_eb)then
                                     windvnew = windv * (havg/windrf)**windpw
@@ -1626,9 +1630,9 @@
                                     windvnew = windv
                                 endif
                                 winddp = wcos * exra * windvnew**2/2.0_eb
-                                zzvent(nvents,6) = winddp
+                                ventptr%wind_dp = winddp
                             else
-                                zzvent(nvents,6) = 0.0_eb
+                                ventptr%wind_dp = 0.0_eb
                             endif
 
                         endif

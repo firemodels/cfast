@@ -103,7 +103,7 @@ module cfast_main
     real(eb) :: cp, deltat, heatfq, tracet(2,mext)
     real(eb) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
     real(eb) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
-    real(eb) :: ra, relhum, rgas, sal, sal2, sigm, stime, ta, te
+    real(eb) :: ra, relhum, rgas, sal, sal2, stime, ta, te
     real(eb) :: termxx, tfiret, tfmaxt, tgignt
     real(eb) :: tref, windpw, windrf, windv
 

@@ -17,6 +17,12 @@ if ! [ -e $fulldir/$infile.in ]; then
   echo "The input file, $fulldir/$infile.in, does not exit. Run aborted."
   exit
 fi
+if [ $STOPFDS ]; then
+ echo "stopping case: $infile"
+ touch $fulldir/$stopfile
+ exit
+fi
+
 cd $fulldir
 echo -----------------------------
 echo running $infile in $fulldir

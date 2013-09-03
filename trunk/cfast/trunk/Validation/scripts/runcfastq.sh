@@ -16,6 +16,14 @@ dir=$1
 infile=$2
 
 fulldir=$BASEDIR/$dir
+stopfile=$infile.stop
+
+if [ $STOPFDS ]; then
+ echo "stopping case: $infile"
+ touch $fulldir/$stopfile
+ exit
+fi
+
 
 echo --------------------------------------------
 echo running $infile in $fulldir using the $queue queue

@@ -209,8 +209,6 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 99 ..\..\bin\cfast.exe LLNL_63 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe LLNL_64 /V
 cd ..\
-..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Pressure_Correction_Inputs.csv
-copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y
 if %1==LLNL_Enclosure goto end
 :NBS_1Room
 echo NBS 1 room furniture tests 1, 6
@@ -485,8 +483,6 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\scripts\background -u 99 ..\..\bin\cfast.exe Steckler_161 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe Steckler_166 /V
 cd ..\
-..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Temperature_Profile_inputs.csv
-copy profiles.csv Steckler_Compartment /Y
 if %1==Steckler_Compartment goto end
 :Dunes2000
 echo NIST Dunes 2000 tests
@@ -505,3 +501,9 @@ if %1==Dunes2000 goto end
 :end
 echo.| time
 echo CFAST simulations complete.
+echo If necessary, run the following to create profiles and corrected outputs once all model runs are complete
+echo
+echo ..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Pressure_Correction_Inputs.csv
+echo copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y
+echo ..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Temperature_Profile_inputs.csv
+echo copy profiles.csv Steckler_Compartment /Y

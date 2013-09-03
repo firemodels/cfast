@@ -965,7 +965,6 @@
     deltat = 1.0_eb
 
     ! define all the "universal constants
-    sigm = 5.67d-8
     cp = 1012.0_eb
     gamma = 1.40_eb
     rgas = (gamma-1.0_eb) / gamma * cp

@@ -1275,7 +1275,7 @@
             if(xmu/=0.0_eb)then
                 zzftemp(iroom,upper) = xqu/(cp*xmu)
             else
-                zzftemp(iroom,upper) = tamp(iroom)
+                zzftemp(iroom,upper) = tamb(iroom)
             endif
         endif
 
@@ -1499,7 +1499,7 @@
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
-        qfurnout=5.67*(273.3+wtemp)**4/10**8
+        qfurnout=sigma*(273.3_eb+wtemp)**4
     endif
 
     xwall_center = 2.0_eb

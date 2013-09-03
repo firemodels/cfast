@@ -116,6 +116,9 @@
     
     real(eb) :: hhtemp, roomwidth, roomlength, ventwidth, fraction, halldepth, hallvel, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
     integer :: ihall, inum, i, itype
+    type(vent_type), pointer :: ventptr
+    
+    ventptr=>ventinfo(inum)
     
     hhtemp = htemp - zztemp(ihall,lower)
 
@@ -148,10 +151,10 @@
             ! corridor flow coming from a vent 
 
             if(itype==1)then
-                if(izvent(inum,1)==ihall)then
-                    ventdist0 = zzvent(inum,4)
-                elseif(izvent(inum,2)==ihall)then
-                    ventdist0 = zzvent(inum,5)
+                if(ventptr%from==ihall)then
+                    ventdist0 = ventptr%from_hall_offset
+                elseif(ventptr%to==ihall)then
+                    ventdist0 = ventptr%to_hall_offset
                 endif
             endif
 
@@ -170,20 +173,21 @@
 
             ! compute distances relative to vent where flow is coming from. also compute the maximum distance
             do i = 1, nvents
-                if(izvent(i,1)==ihall)then
+                ventptr=>ventinfo(i)
+                if(ventptr%from==ihall)then
 
                     ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" end of the corridor
-                    if(zzvent(i,4)>0.0_eb.and.ventdist0>=0.0_eb)then
-                        ventdist = abs(zzvent(i,4) - ventdist0)
+                    if(ventptr%from_hall_offset>0.0_eb.and.ventdist0>=0.0_eb)then
+                        ventdist = abs(ventptr%from_hall_offset - ventdist0)
                     else
                         ventdist = roomlength - ventdist0
                     endif
                     zzventdist(ihall,i) = ventdist
-                elseif(izvent(i,2)==ihall)then
+                elseif(ventptr%to==ihall)then
 
                     ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" end of the corridor
-                    if(zzvent(i,5)>0.0_eb.and.ventdist0>=0.0_eb)then
-                        ventdist = abs(zzvent(i,5) - ventdist0)
+                    if(ventptr%to_hall_offset>0.0_eb.and.ventdist0>=0.0_eb)then
+                        ventdist = abs(ventptr%to_hall_offset - ventdist0)
                     else
                         ventdist = roomlength - ventdist0
                     endif

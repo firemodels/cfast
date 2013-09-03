@@ -1891,6 +1891,8 @@
     real(eb) :: factor2, qchfraction, height, width, avent
     integer roomc(nr,nr), tempmat(nr,nr), i, j, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
+    
+    type(vent_type), pointer :: ventptr
 
     ! initially assume that no rooms are connected
     do i = 1, n
@@ -1902,14 +1904,16 @@
 
     ! check horizontal vent flow
     do i = 1, nvents
-        iroom1 = izvent(i,1)
-        iroom2 = izvent(i,2)
-        ik = izvent(i,3)
+        ventptr=>ventinfo(i)
+        
+        iroom1 = ventptr%from
+        iroom2 = ventptr%to
+        ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
         factor2 = qchfraction(qcvh,ijk(im,ix,ik),tsec)
-        height = zzvent(i,2) - zzvent(i,1)
-        width = zzvent(i,3)
+        height = ventptr%soffit - ventptr%sill
+        width = ventptr%width
         avent = factor2 * height * width
         if(avent/=0.0d0)then
             roomc(iroom1,iroom2) = 1

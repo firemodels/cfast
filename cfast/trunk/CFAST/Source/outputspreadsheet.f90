@@ -455,8 +455,9 @@
     integer :: position
     integer :: toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
     integer :: itop, ibot
+    
+    type(vent_type), pointer :: ventptr
     data toprm /1/, botrm /2/
-
     data firstc/.true./
     save firstc
 
@@ -510,14 +511,16 @@
 
     ! vents
     do i = 1, nvents
-        iroom1 = izvent(i,1)
-        iroom2 = izvent(i,2)
-        ik = izvent(i,3)
+        ventptr=>ventinfo(i)
+        
+        iroom1 = ventptr%from
+        iroom2 = ventptr%to
+        ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
         factor2 = qchfraction (qcvh, ijk(im,ix,ik),time)
-        height = zzvent(i,2) - zzvent(i,1)
-        width = zzvent(i,3)
+        height = ventptr%soffit - ventptr%sill
+        width = ventptr%width
         avent = factor2 * height * width
         call ssaddtolist (position,avent,outarray)       
     end do

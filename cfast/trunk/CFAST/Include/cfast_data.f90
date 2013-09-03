@@ -483,20 +483,21 @@ module vents
     implicit none
     save
     
+    type vent_type
+        real(eb) :: sill, soffit, width
+        real(eb) :: from_hall_offset, to_hall_offset
+        real(eb) :: wind_dp
+        integer :: from, to, counter
+        integer :: is_from_hall, is_to_hall
+        integer :: face
+    end type vent_type
+    
+    type (vent_type), dimension(mxvent), target :: ventinfo
+    
+    
     integer, dimension(mxvent,2) :: ivvent
     integer :: nvents, nvvent
     
-    ! zzvent(1) = sill
-    ! zzvent(2) = soffit
-    ! zzvent(3) = width
-    ! zzvent(4 and 5) = hall offsets
-
-    ! izvent(1) = from
-    ! izvent(2) = to
-    ! izvent(3) = pairwise counter
-    ! izvent(4 and 5) = hall (yes or no)
-    ! izvent(6) = face (smokeview)
-    real(eb), dimension(mxvent,6) :: zzvent, izvent
     real(eb), dimension(nr,mxvent) :: zzventdist
     real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
     

@@ -13,20 +13,17 @@ mailTo="gforney@gmail.com, cfast@nist.gov, koverholt@gmail.com"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
-while getopts 'anq:s' OPTION
+while getopts 'anq:' OPTION
 do
 case $OPTION in
    a)
      RUNAUTO="y"
      ;;
    n)
-     NO_SVN_UPDATE=true
+     NO_SVN_UPDATE_OR_PROPFIX=true
      ;;
    q)
      CFASTBOT_QUEUE="$OPTARG"
-     ;;
-   s)
-     SKIP_SVN_PROPS=true
      ;;
 esac
 done
@@ -184,14 +181,10 @@ clean_svn_repo()
    # Check to see if FDS repository exists
    if [ -e "$FDS_SVNROOT" ]
    then
-      if [[ $NO_SVN_UPDATE ]] ; then
-         echo "Skipping SVN revert (per user option):" >> $CFASTBOT_DIR/output/stage1
-      else
-         # Revert and clean up temporary unversioned and modified versioned repository files
-         cd $FDS_SVNROOT
-         svn revert -Rq *
-         svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
-      fi
+      # Revert and clean up temporary unversioned and modified versioned repository files
+      cd $FDS_SVNROOT
+      svn revert -Rq *
+      svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
    # If not, create FDS repository and checkout
    else
       echo "Downloading FDS repository:" >> $CFASTBOT_DIR/output/stage1 2>&1
@@ -202,14 +195,10 @@ clean_svn_repo()
    # Check to see if CFAST repository exists
    if [ -e "$CFAST_SVNROOT" ]
    then
-      if [[ $NO_SVN_UPDATE ]] ; then
-         echo "Skipping SVN revert (per user option):" >> $CFASTBOT_DIR/output/stage1
-      else
-         # Revert and clean up temporary unversioned and modified versioned repository files
-         cd $CFAST_SVNROOT
-         svn revert -Rq *
-         svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
-      fi
+      # Revert and clean up temporary unversioned and modified versioned repository files
+      cd $CFAST_SVNROOT
+      svn revert -Rq *
+      svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
    # If not, create CFAST repository and checkout
    else
       echo "Downloading CFAST repository:" >> $CFASTBOT_DIR/output/stage1 2>&1
@@ -224,14 +213,10 @@ do_svn_checkout()
    echo "Checking out latest FDS-SMV revision." >> $CFASTBOT_DIR/output/stage1 2>&1
    svn update >> $CFASTBOT_DIR/output/stage1 2>&1
 
-   if [[ $NO_SVN_UPDATE ]] ; then
-      echo "Skipping SVN update (per user option):" >> $CFASTBOT_DIR/output/stage1
-   else
-      cd $CFAST_SVNROOT
-      echo "Checking out latest CFAST revision." >> $CFASTBOT_DIR/output/stage1 2>&1
-      svn update >> $CFASTBOT_DIR/output/stage1 2>&1
-      SVN_REVISION=`tail -n 1 $CFASTBOT_DIR/output/stage1 | sed "s/[^0-9]//g"`
-   fi
+   cd $CFAST_SVNROOT
+   echo "Checking out latest CFAST revision." >> $CFASTBOT_DIR/output/stage1 2>&1
+   svn update >> $CFASTBOT_DIR/output/stage1 2>&1
+   SVN_REVISION=`tail -n 1 $CFASTBOT_DIR/output/stage1 | sed "s/[^0-9]//g"`
 }
 
 check_svn_checkout()
@@ -939,10 +924,10 @@ start_time=`date`
 clean_cfastbot_history
 
 ### Stage 1 ###
-clean_svn_repo
-do_svn_checkout
-check_svn_checkout
-if [[ ! $SKIP_SVN_PROPS ]] ; then
+if [[ ! $NO_SVN_UPDATE_OR_PROPFIX ]] ; then
+   clean_svn_repo
+   do_svn_checkout
+   check_svn_checkout   
    fix_svn_properties
 fi
 

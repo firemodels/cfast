@@ -13,17 +13,17 @@ mailTo="gforney@gmail.com, cfast@nist.gov, koverholt@gmail.com"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
-while getopts 'anq:' OPTION
+while getopts 'aq:s' OPTION
 do
 case $OPTION in
    a)
      RUNAUTO="y"
      ;;
-   n)
-     NO_SVN_UPDATE_OR_PROPFIX=true
-     ;;
    q)
      CFASTBOT_QUEUE="$OPTARG"
+     ;;
+   s)
+     SKIP_SVN_UPDATE_AND_PROPFIX=true
      ;;
 esac
 done
@@ -924,10 +924,10 @@ start_time=`date`
 clean_cfastbot_history
 
 ### Stage 1 ###
-if [[ ! $NO_SVN_UPDATE_OR_PROPFIX ]] ; then
+if [[ ! $SKIP_SVN_UPDATE_AND_PROPFIX ]] ; then
    clean_svn_repo
    do_svn_checkout
-   check_svn_checkout   
+   check_svn_checkout
    fix_svn_properties
 fi
 

@@ -20,7 +20,7 @@
     integer numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
     
-    type(room_type), pointer :: roomi, fireroom, objectroom
+    type(room_type), pointer :: roomi, fireroom, objectroom, top_room, bottom_room, room1, room2
 
     !	Unit numbers defined in readop, openoutputfiles, readinputfiles
     !
@@ -128,8 +128,8 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        hrl(i) = hflr(i)
-        hrp(i) = roomi%hr + hflr(i)
+        roomi%hrl = roomi%hflr
+        roomi%hrp = roomi%hr + roomi%hflr
     end do
 
     ! check and/or set heat source fire position
@@ -170,16 +170,20 @@
     ! here rather than right after keywordcases because hrl and hrp were just defined
     ! above
     do itop = 1, nm1
+        top_room=>roominfo(itop)
+        
         if (nwv(itop,itop)/=0) then
             if (logerr>0) write (logerr,*) ' A room can not be connected to itself'
             nwv(itop,itop) = 0
         endif
         do ibot = 1, itop - 1
+            bottom_room=>roominfo(ibot)
+            
             if (nwv(itop,ibot)/=0.or.nwv(ibot,itop)/=0) then
 
                 ! see which room is on top (if any) - this is like a bubble sort
-                deps1 = hrl(itop) - hrp(ibot)
-                deps2 = hrl(ibot) - hrp(itop)
+                deps1 = top_room%hrl - bottom_room%hrp
+                deps2 = bottom_room%hrl - top_room%hrp
                 if (nwv(itop,ibot)/=1.or.abs(deps1)>=vfmaxdz) then
                     if (nwv(ibot,itop)/=1.or.abs(deps2)>=vfmaxdz) then
                         if (nwv(itop,ibot)==1.and.abs(deps2)<vfmaxdz) then
@@ -214,8 +218,8 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        ar(i) = roomi%br * roomi%dr
-        vr(i) = ar(i) * roomi%hr
+        roomi%ar = roomi%br * roomi%dr
+        roomi%vr = roomi%ar * roomi%hr
     end do
 
 
@@ -225,6 +229,8 @@
     do i = 1, nswal
         iroom1 = izswal(i,1)
         iroom2 = izswal(i,3)
+        room1=>roominfo(iroom1)
+        room2=>roominfo(iroom2)
 
         ! room numbers must be between 1 and nm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
@@ -249,8 +255,8 @@
         endif
 
         ! floor of one room must be adjacent to ceiling of the other
-        dwall1 = abs(hrl(iroom1) - hrp(iroom2))
-        dwall2 = abs(hrl(iroom2) - hrp(iroom1))
+        dwall1 = abs(room1%hrl - room2%hrp)
+        dwall2 = abs(room2%hrl - room1%hrp)
         if(dwall1<vfmaxdz.or.dwall2<=vfmaxdz)then
             if(dwall1<vfmaxdz)then
                 izswal(ii,2) = 2
@@ -326,7 +332,7 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>roomi%br.or.yloc<0.0_eb.or.yloc>roomi%dr.or.zloc<0.0_eb.or.zloc>hrp(iroom))then
+        if(xloc<0.0_eb.or.xloc>roomi%br.or.yloc<0.0_eb.or.yloc>roomi%dr.or.zloc<0.0_eb.or.zloc>roomi%hrp)then
             write(messg,102)xloc,yloc,zloc
 102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
             ifail = 45
@@ -400,11 +406,11 @@
             ! br*dr=ar and br/dr remain the same as entered on
             ! the width and depth  commands.
 
-            vr(i) = zzrvol(npts,i)
-            ar(i) = vr(i)/roomi%hr
+            roomi%vr = zzrvol(npts,i)
+            roomi%ar = roomi%vr/roomi%hr
             xx = roomi%br/roomi%dr
-            roomi%br = sqrt(ar(i)*xx)
-            roomi%dr = sqrt(ar(i)/xx)
+            roomi%br = sqrt(roomi%ar*xx)
+            roomi%dr = sqrt(roomi%ar/xx)
         endif
     end do
 
@@ -714,7 +720,7 @@
         roomi%hr = lrarray(4)
         cxabs(compartment) = lrarray(5)
         cyabs(compartment) = lrarray(6)
-        hflr(compartment) = lrarray(7)
+        roomi%hflr = lrarray(7)
 
         ! Ceiling
         tcname = lcarray(8)
@@ -750,7 +756,7 @@
         nx = compartment
         roomi=>roominfo(nx)
 
-        write (logerr,5063) compartment, compartmentnames(nx), roomi%br,roomi%dr, roomi%hr,cxabs(nx),cyabs(nx),hflr(nx),(switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
+        write (logerr,5063) compartment, compartmentnames(nx), roomi%br,roomi%dr, roomi%hr,cxabs(nx),cyabs(nx),roomi%hflr,(switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
         !		    BW = width, HH = soffit, HL = sill, 
@@ -807,21 +813,21 @@
         qcvh(2,iijk) = initialopening
         qcvh(4,iijk) = initialopening
 
-        hhp(iijk) = hh(iijk) + hflr(i)
-        hlp(iijk) = hl(iijk) + hflr(i)
+        hhp(iijk) = hh(iijk) + roomi%hflr
+        hlp(iijk) = hl(iijk) + roomi%hflr
 
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
-        hh(jik) = min(roomj%hr,max(0.0_eb,hhp(jik)-hflr(j)))
-        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-hflr(j)))
+        hh(jik) = min(roomj%hr,max(0.0_eb,hhp(jik)-roomj%hflr))
+        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomj%hflr))
 
         ! assure ourselves that the connections are symmetrical
 
-        hhp(jik) = hh(jik) + hflr(j)
-        hlp(jik) = hl(jik) + hflr(j)
-        hh(iijk) = min(roomi%hr,max(0.0_eb,hhp(iijk)-hflr(i)))
-        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-hflr(i)))
+        hhp(jik) = hh(jik) + roomj%hflr
+        hlp(jik) = hl(jik) + roomj%hflr
+        hh(iijk) = min(roomi%hr,max(0.0_eb,hhp(iijk)-roomi%hflr))
+        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomi%hflr))
         
        ! DEADROOM dead_room_num connected_room_num
        ! pressure in dead_room_num is not solved.  pressure for this room
@@ -2165,7 +2171,7 @@
         call dop0(nofp,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
     else if (label=='INTER') then
         mxmn = place
-        x = (roomi%hr - x)*ar(iroom)
+        x = (roomi%hr - x)*roomi%ar
         call dop0(nofvu,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
     else
         close(io)

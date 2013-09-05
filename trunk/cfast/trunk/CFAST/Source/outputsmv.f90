@@ -1,7 +1,7 @@
 
 ! --------------------------- svout -------------------------------------------
 
-subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -34,7 +34,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, nvents, nvvent, nfires,froo
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
-    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0
+    real(eb), dimension(nrooms), intent(in) :: x0, y0
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
     
@@ -75,7 +75,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, nvents, nvvent, nfires,froo
         
         write(13,"(a,1x)")"ROOM"
         write(13,10) roomi%br, roomi%dr, roomi%hr
-        write(13,10) x0(i), y0(i), z0(i)
+        write(13,10) x0(i), y0(i), roomi%hrl
 10      format(1x,e11.4,1x,e11.4,1x,e11.4)
     end do
 

@@ -425,7 +425,7 @@
         roomi=>roominfo(i)
         
         hvelxt(ii) = min(roomi%hr,max(0.0_eb,hvelxt(ii)))
-        hvght(j) = hvelxt(ii) + hflr(i)
+        hvght(j) = hvelxt(ii) + roomi%hflr
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
@@ -666,10 +666,12 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        pamb(i) = -ra*grav_con*hflr(i)
+        roomi=>roominfo(i)
+        
+        pamb(i) = -ra*grav_con*roomi%hflr
         tamb(i) = ta
         ramb(i) = ra
-        epa(i) = -exra*grav_con*hflr(i)
+        epa(i) = -exra*grav_con*roomi%hflr
         eta(i) = exta
         era(i) = exra
     end do
@@ -696,6 +698,8 @@
 
     ! define the p array, the solution to the ode
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         p(i) = pamb(i)
         p(i+noftu) = tamb(i)
 
@@ -704,7 +708,7 @@
             if (yinter(i)<0.d0) then
                 p(i+nofvu) = zzvmin(i)
             else
-                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
+                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*roomi%ar))
             endif
             yinter(i) = 0.0_eb
         endif
@@ -740,7 +744,7 @@
         if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=roomi%br*.5d0
         if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=roomi%dr*.5d0
         if(xdtect(i,dzloc)<0.0_eb)then
-            xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
+            xdtect(i,dzloc)=roomi%hrp+xdtect(i,dzloc)
         endif
         tdspray = xdtect(i,dspray)
 
@@ -947,13 +951,13 @@
         roomi%dr = xlrg
         roomi%br = xlrg
         roomi%hr = xlrg
-        hrp(i) = xlrg
-        hrl(i) = 0.0_eb
-        hflr(i) = 0.0_eb
+        roomi%hrp = xlrg
+        roomi%hrl = 0.0_eb
+        roomi%hflr = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
-        ar(i) = roomi%br * roomi%dr
-        vr(i) = roomi%hr * ar(i)
+        roomi%ar = roomi%br * roomi%dr
+        roomi%vr = roomi%hr * roomi%ar
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qsradw(j,i) = 0.0_eb
@@ -1481,7 +1485,7 @@
         zznorm = xxtarg(trgnormz,itarg)
         xsize = roomi%br
         ysize = roomi%dr
-        zsize = hrp(iroom)
+        zsize = roomi%hrp
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5 * xsize

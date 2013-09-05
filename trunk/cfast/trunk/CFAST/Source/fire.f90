@@ -1445,10 +1445,10 @@
             do iwall = 1, 4
                 if (switch(iwall,iroom)) then
                     if (iwall==1) then
-                        arw = ar(iroom)
+                        arw = roomi%ar
                         layer = upper
                     else if (iwall==2) then
-                        arw = ar(iroom)
+                        arw = roomi%ar
                         layer = lower
                     else if (iwall==3) then
                         arw = (roomi%br+roomi%dr) * zzhlay(iroom,upper) * 2.0_eb

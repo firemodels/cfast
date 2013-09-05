@@ -240,6 +240,7 @@
     implicit none
 
     integer :: i, itarg, izzvol
+    type(room_type), pointer :: roomi
 
     write (iofilo,5000)
     write (iofilo,5010)
@@ -247,8 +248,10 @@
     write (iofilo,5030)
     write (iofilo,5040)
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100._eb+0.5_eb
+        izzvol = zzvol(i,upper)/roomi%vr*100._eb+0.5_eb
         if (izshaft(i)==1) then
             write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-273.15, zzvol(i,upper), &
             zzabsb(upper,i),zzrelp(i)-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
@@ -993,7 +996,7 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        write (iofilo,5010) i, trim(compartmentnames(i)), roomi%br, roomi%dr, roomi%hr, ar(i), vr(i), hrp(i), hflr(i)
+        write (iofilo,5010) i, trim(compartmentnames(i)), roomi%br, roomi%dr, roomi%hr, roomi%ar, roomi%vr, roomi%hrp, roomi%hflr
     end do
     return
 5000 format (//,' COMPARTMENTS',//, &
@@ -1022,7 +1025,7 @@
     character :: ciout*8, cjout*14, csout*6
     logical :: first
     
-    type(room_type), pointer :: roomj
+    type(room_type), pointer :: roomi, roomj
 
     !     horizontal flow vents
     if (nvents==0) then
@@ -1049,6 +1052,7 @@
     else
         write (iofilo,5040)
         do i = 1, n
+            roomi=>roominfo(i)
             do j = 1, n
                 roomj=>roominfo(j)
                 if (nwv(i,j)/=0) then
@@ -1060,10 +1064,10 @@
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
                         hrx = roomj%hr
-                        hrpx = hrp(j)
+                        hrpx = roomj%hrp
                     else
-                        hrx = hrl(i)
-                        hrpx = hrl(i)
+                        hrx = roomi%hrl
+                        hrpx = roomi%hrl
                     endif
                     write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx,hrpx
                 endif
@@ -1400,6 +1404,7 @@
     use precision_parameters
     use cfast_main
     use fltarget
+    use cenviro
     implicit none
 
     integer, intent(in) :: targetnumber
@@ -1412,7 +1417,7 @@
 
     positionvector(1) = positionvector(1) + cxabs(ixtarg(trgroom,targetnumber))
     positionvector(2) = positionvector(2) + cyabs(ixtarg(trgroom,targetnumber))
-    positionvector(3) = positionvector(3) + hrl(ixtarg(trgroom,targetnumber))
+    positionvector(3) = positionvector(3) + roominfo(ixtarg(trgroom,targetnumber))%hrl
 
     return
 

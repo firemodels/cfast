@@ -371,6 +371,8 @@
     character(133) :: messg
     external resid, jac, delfilesqq
     integer :: funit
+    
+    type(room_type), pointer :: roomi
 
     call cptime(toff)
     ierror = 0
@@ -508,7 +510,7 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(pref, expa, exta, nm1, cxabs, cyabs, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -612,7 +614,7 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(pref, expa, exta, nm1, cxabs, cyabs, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -1308,7 +1310,7 @@
     do iroom = 1, nirm
         roomi=>roominfo(iroom)
         
-        aroom = ar(iroom)
+        aroom = roomi%ar
         hceil = roomi%hr
         pabs = zzpabs(iroom)
         hinter = zzhlay(iroom,ll)
@@ -1513,21 +1515,23 @@
     vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
-            zzvmin(iroom) = min(vminfrac * vr(iroom), 1.0_eb)
-            zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
+            roomi=>roominfo(i)
+            
+            zzvmin(iroom) = min(vminfrac * roomi%vr, 1.0_eb)
+            zzvmax(iroom) = roomi%vr - zzvmin(iroom)
         end do
         do iroom = 1, nm1
             roomi=>roominfo(iroom)
             
-            roomi%yflor = hflr(iroom)
-            roomi%yceil = hrp(iroom)
+            roomi%yflor = roomi%hflr
+            roomi%yceil = roomi%hrp
 
             ! define wall centers
             xx = roomi%br
             xwall_center = xx/2.0_eb
             yy = roomi%dr
             ywall_center = yy/2.0_eb
-            zz = hrp(iroom)
+            zz = roomi%hrp
             roomi%wall_center(1,1) = xwall_center
             roomi%wall_center(1,2) = ywall_center
             roomi%wall_center(1,3) = zz
@@ -1817,12 +1821,12 @@
             
             zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
             zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
-            zzvol(iroom,lower) = max(vr(iroom)-zzvol(iroom,upper),zzvmin(iroom))
+            zzvol(iroom,lower) = max(roomi%vr-zzvol(iroom,upper),zzvmin(iroom))
             zzvol(iroom,lower) = min(zzvol(iroom,lower),zzvmax(iroom))
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
-            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom)) / vr(iroom)*(1.0_eb-2.0_eb*vminfrac)
+            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*roomi%vr) / roomi%vr*(1.0_eb-2.0_eb*vminfrac)
             volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
             volfrl(iroom) = 1.0_eb - volfru(iroom)
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
@@ -1830,8 +1834,8 @@
             ! calculate layer height for non-rectangular rooms
             npts = izrvol(iroom)
             if(npts==0)then
-                zzhlay(iroom,upper) = zzvol(iroom,upper) / ar(iroom)
-                zzhlay(iroom,lower) = zzvol(iroom,lower) / ar(iroom)
+                zzhlay(iroom,upper) = zzvol(iroom,upper) / roomi%ar
+                zzhlay(iroom,lower) = zzvol(iroom,lower) / roomi%ar
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
                 zzhlay(iroom,upper) = roomi%hr - zzhlay(iroom,lower)
@@ -1863,7 +1867,7 @@
             yy = roomi%dr
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
-            zzwarea2(iroom,1) = ar(iroom)
+            zzwarea2(iroom,1) = roomi%ar
             zzwarea2(iroom,2) = zzu*xx
             zzwarea2(iroom,3) = zzu*yy
             zzwarea2(iroom,4) = zzu*xx
@@ -1872,11 +1876,11 @@
             zzwarea2(iroom,7) = zzl*yy
             zzwarea2(iroom,8) = zzl*xx
             zzwarea2(iroom,9) = zzl*yy
-            zzwarea2(iroom,10) = ar(iroom)
+            zzwarea2(iroom,10) = roomi%ar
 
             ! compute area of 4 wall segments
-            zzwarea(iroom,1) = ar(iroom)
-            zzwarea(iroom,2) = ar(iroom)
+            zzwarea(iroom,1) = roomi%ar
+            zzwarea(iroom,2) = roomi%ar
             zzwarea(iroom,3) = (yy + xx)*zzu * xwall_center
             zzwarea(iroom,4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
 

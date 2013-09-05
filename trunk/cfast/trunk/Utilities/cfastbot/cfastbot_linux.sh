@@ -255,6 +255,17 @@ fix_svn_properties()
    svn commit -m 'CFASTbot: Fix SVN properties throughout repository' &> /dev/null
 }
 
+print_svn_revision_on_skip()
+{
+   # Prints log output and SVN revision number when SKIP_SVN_UPDATE_AND_PROPFIX option is used
+   cd $CFAST_SVNROOT
+   SVN_REVISION=`svnversion`
+
+   echo "CFASTbot was invoked with the -s option (SKIP_SVN_UPDATE_AND_PROPFIX)." >> $CFASTBOT_DIR/output/stage1 2>&1
+   echo "Skipping SVN revert, update, and property fix operations." >> $CFASTBOT_DIR/output/stage1 2>&1
+   echo "The current SVN revision is ${SVN_REVISION}" >> $CFASTBOT_DIR/output/stage1 2>&1
+}
+
 #  =================================
 #  = Stage 2 - Compile CFAST debug =
 #  =================================
@@ -861,6 +872,11 @@ email_build_status()
 {
    echo $THIS_CFAST_FAILED>$CFAST_STATUS_FILE
    stop_time=`date`
+   if [[ $SKIP_SVN_UPDATE_AND_PROPFIX ]] ; then
+      echo "CFASTbot was invoked with the -s option (SKIP_SVN_UPDATE_AND_PROPFIX)." >> $TIME_LOG
+      echo "Skipping SVN revert, update, and property fix operations." >> $TIME_LOG
+      echo "The current SVN revision is ${SVN_REVISION}" >> $TIME_LOG
+   fi
    echo "-------------------------------" >> $TIME_LOG
    echo "Host: $hostname " >> $TIME_LOG
    echo "Start Time: $start_time " >> $TIME_LOG
@@ -924,7 +940,9 @@ start_time=`date`
 clean_cfastbot_history
 
 ### Stage 1 ###
-if [[ ! $SKIP_SVN_UPDATE_AND_PROPFIX ]] ; then
+if [[ $SKIP_SVN_UPDATE_AND_PROPFIX ]] ; then
+   print_svn_revision_on_skip
+else
    clean_svn_repo
    do_svn_checkout
    check_svn_checkout

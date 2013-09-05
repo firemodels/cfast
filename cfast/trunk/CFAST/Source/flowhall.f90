@@ -52,9 +52,11 @@
     
     real(eb) :: cjetheight, c1, hhalf, dt0, fact
     integer :: ihalf
+    type(room_type), pointer :: roomi
 
+    roomi=>roominfo(iroom)
     if(izhall(iroom,ihmode)==ihduring)then
-        cjetheight = hr(iroom) - zzhall(iroom,ihdepth)
+        cjetheight = roomi%hr - zzhall(iroom,ihdepth)
 
         ! location is in hall ceiling jet
         if(zloc>=cjetheight.and.xloc<=zzhall(iroom,ihdist))then
@@ -117,6 +119,7 @@
     real(eb) :: hhtemp, roomwidth, roomlength, ventwidth, fraction, halldepth, hallvel, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
     integer :: ihall, inum, i, itype
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: hallroom
     
     ventptr=>ventinfo(inum)
     
@@ -124,9 +127,10 @@
 
     ! this routine is only executed if 1) hall flow has not started yet or 2)  hall flow has started and it is coming from the ivent'th vent
 
+    hallroom=>roominfo(ihall)
     if(izhall(ihall,ihventnum)/=0.and.izhall(ihall,ihventnum)/=inum)return
-    roomwidth = min(br(ihall),dr(ihall))
-    roomlength = max(br(ihall),dr(ihall))
+    roomwidth = min(hallroom%br,hallroom%dr)
+    roomlength = max(hallroom%br,hallroom%dr)
     ventwidth = min(width,roomwidth)
     fraction = (ventwidth/roomwidth)**third
     halldepth = hdepth*fraction**2

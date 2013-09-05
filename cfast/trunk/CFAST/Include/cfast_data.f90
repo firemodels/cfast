@@ -1,9 +1,41 @@
 
+! --------------------------- types -------------------------------------------
+
+module types
+    use precision_parameters
+!  room data structure
+
+    type room_type
+      real(eb) :: yflor, yceil
+      real(eb) :: wall_center(10,3)
+      real(eb) :: br, dr, hr
+    end type room_type
+
+! fire data structure
+
+     type fire_type
+     end type fire_type
+
+! vent data structure
+
+    type vent_type
+        real(eb) :: sill, soffit, width
+        real(eb) :: from_hall_offset, to_hall_offset
+        real(eb) :: wind_dp
+        integer :: from, to, counter
+        integer :: is_from_hall, is_to_hall
+        integer :: face
+    end type vent_type
+     
+    
+end module types
+
 ! --------------------------- cenviro -------------------------------------------
 
 module cenviro
     
     use precision_parameters
+    use types
     use cparams
     implicit none
     save
@@ -53,13 +85,6 @@ module cenviro
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
     
-!  room data structure
-
-    type room_type
-      real(eb) :: yflor, yceil
-      real(eb) :: wall_center(10,3)
-    end type room_type
-
     type(room_type), target :: roominfo(nr)
 
 end module cenviro
@@ -68,6 +93,7 @@ end module cenviro
 
 module cfast_main
     use precision_parameters
+    use types
     use cparams
     use dsize
     implicit none
@@ -94,7 +120,7 @@ module cfast_main
         sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), qr(2,nr), qc(2,nr), heatup(nr), heatlp(nr), heatvf(nr), &
         emp(nr), ems(nr), eme(nr), aps(nr), vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
         bfired(nv), afired(nv), hfired(nv), tfired(nv), hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
-        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
+        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), ar(nr), hrp(nr), &
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
@@ -140,12 +166,7 @@ module cfast_main
 !            xfire(nfire,19) = objclen(iobj)
 !            xfire(nfire,20) = oareat
 
-! fire data structure
-
-     type fire_type
-     end type fire_type
-     
-     type(fire_type), target :: fireinfo(mxfire)
+     type(fire_type), target, dimension(mxfire)  :: fireinfo
 
 end module cfast_main
 
@@ -515,6 +536,7 @@ end module thermp
 module vents
 
     use precision_parameters
+    use types
     use cparams, only: nr, mxvent
     implicit none
     save
@@ -524,17 +546,6 @@ module vents
     
     real(eb), dimension(nr,mxvent) :: zzventdist
     real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
-    
-! vent data structure
-
-    type vent_type
-        real(eb) :: sill, soffit, width
-        real(eb) :: from_hall_offset, to_hall_offset
-        real(eb) :: wind_dp
-        integer :: from, to, counter
-        integer :: is_from_hall, is_to_hall
-        integer :: face
-    end type vent_type
     
     type (vent_type), dimension(mxvent), target :: ventinfo
     

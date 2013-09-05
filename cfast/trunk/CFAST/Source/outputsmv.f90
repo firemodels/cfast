@@ -1,7 +1,7 @@
 
 ! --------------------------- svout -------------------------------------------
 
-subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -29,11 +29,12 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
 
     use precision_parameters
     use iofiles
+    use cenviro
     implicit none
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
-    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
+    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
     
@@ -44,6 +45,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
     integer(4) :: length, splitpathqq
     integer :: ifrom, ito, iface
+    type(room_type), pointer :: roomi
 
     ! this code is to trim the file name to the name itself along with the extension
     ! for compatibility with version 4 and later of smokeview
@@ -69,8 +71,10 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
     write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
     do i = 1, nrooms
+        roomi=>roominfo(i)
+        
         write(13,"(a,1x)")"ROOM"
-        write(13,10) dx(i), dy(i), dz(i)
+        write(13,10) roomi%br, roomi%dr, roomi%hr
         write(13,10) x0(i), y0(i), z0(i)
 10      format(1x,e11.4,1x,e11.4,1x,e11.4)
     end do

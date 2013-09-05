@@ -400,11 +400,15 @@
 
     real(eb) :: hvpsolv(*), hvtsolv(*), z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, ib, lsp
+    
+    type(room_type), pointer :: roomi
 
     do ii = 1, next
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         z = zzhlay(i,lower)
+        roomi=>roominfo(i)
+        
         if (hvorien(ii)==1) then
 
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate the scaling length of the duct
@@ -414,7 +418,7 @@
         endif
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb * xxlower),(hr(i)-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb * xxlower),(roomi%hr-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))

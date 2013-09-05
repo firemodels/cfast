@@ -33,7 +33,7 @@
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
 
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomi
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
 
@@ -62,7 +62,7 @@
         iwall = izwall(iw,2)
         icond = nofwt + iw
 
-        roomptr => roominfo(iroom)
+        roomi=>roominfo(iroom)
 
         ! use exterior wall temperature from last time step to ...
         twint = zzwtemp(iroom,iwall,1)
@@ -90,12 +90,12 @@
                     frac = zzhtfrac(iroom,j)
                     if(iwall==3)then
                         yb = zzhlay(iroom,lower)
-                        yt = roomptr%yceil
+                        yt = roomi%yceil
                     elseif(iwall==4)then
                         yb = 0.0_eb
                         yt = zzhlay(iroom,lower)
                     endif
-                    dflor = roominfo(j)%yflor - roomptr%yflor
+                    dflor = roominfo(j)%yflor - roomi%yflor
                     yy = zzhlay(j,lower) + dflor
                     if(j/=nm1+1)then
                         if(yy>yt)then

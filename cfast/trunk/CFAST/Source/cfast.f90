@@ -508,7 +508,7 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -612,7 +612,7 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -1129,6 +1129,8 @@
     logical :: vflowflg, hvacflg, djetflg
     integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
     real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
+    
+    type(room_type), pointer :: roomi
 
     ierror = 0
     nprod = nlspct
@@ -1304,8 +1306,10 @@
 
     ! calculate rhs of ode's for each room
     do iroom = 1, nirm
+        roomi=>roominfo(iroom)
+        
         aroom = ar(iroom)
-        hceil = hr(iroom)
+        hceil = roomi%hr
         pabs = zzpabs(iroom)
         hinter = zzhlay(iroom,ll)
         ql = flwtot(iroom,q,ll)
@@ -1360,7 +1364,9 @@
         iprodu = nofprd - 1
         do iprod = 1, nprod
             do iroom = 1, nm1
-                hceil = hr(iroom)
+                roomi=>roominfo(iroom)
+                
+                hceil = roomi%hr
                 hinter = zzhlay(iroom,ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
@@ -1496,7 +1502,7 @@
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
         
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomi
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1511,54 +1517,54 @@
             zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
         end do
         do iroom = 1, nm1
-            roomptr=>roominfo(iroom)
+            roomi=>roominfo(iroom)
             
-            roomptr%yflor = hflr(iroom)
-            roomptr%yceil = hrp(iroom)
+            roomi%yflor = hflr(iroom)
+            roomi%yceil = hrp(iroom)
 
             ! define wall centers
-            xx = br(iroom)
+            xx = roomi%br
             xwall_center = xx/2.0_eb
-            yy = dr(iroom)
+            yy = roomi%dr
             ywall_center = yy/2.0_eb
             zz = hrp(iroom)
-            roomptr%wall_center(1,1) = xwall_center
-            roomptr%wall_center(1,2) = ywall_center
-            roomptr%wall_center(1,3) = zz
+            roomi%wall_center(1,1) = xwall_center
+            roomi%wall_center(1,2) = ywall_center
+            roomi%wall_center(1,3) = zz
 
-            roomptr%wall_center(2,1) = xwall_center
-            roomptr%wall_center(2,2) = yy
+            roomi%wall_center(2,1) = xwall_center
+            roomi%wall_center(2,2) = yy
 
-            roomptr%wall_center(3,1) = xx
-            roomptr%wall_center(3,2) = ywall_center
+            roomi%wall_center(3,1) = xx
+            roomi%wall_center(3,2) = ywall_center
 
-            roomptr%wall_center(4,1) = xwall_center
-            roomptr%wall_center(4,2) = 0.0_eb
+            roomi%wall_center(4,1) = xwall_center
+            roomi%wall_center(4,2) = 0.0_eb
 
-            roomptr%wall_center(5,1) = 0.0_eb
-            roomptr%wall_center(5,2) = ywall_center
+            roomi%wall_center(5,1) = 0.0_eb
+            roomi%wall_center(5,2) = ywall_center
 
-            roomptr%wall_center(6,1) = xwall_center
-            roomptr%wall_center(6,2) = yy
+            roomi%wall_center(6,1) = xwall_center
+            roomi%wall_center(6,2) = yy
 
-            roomptr%wall_center(7,1) = xx
-            roomptr%wall_center(7,2) = ywall_center
+            roomi%wall_center(7,1) = xx
+            roomi%wall_center(7,2) = ywall_center
 
-            roomptr%wall_center(8,1) = xwall_center
-            roomptr%wall_center(8,2) = 0.0_eb
+            roomi%wall_center(8,1) = xwall_center
+            roomi%wall_center(8,2) = 0.0_eb
 
-            roomptr%wall_center(9,1) = 0.0_eb
-            roomptr%wall_center(9,2) = ywall_center
+            roomi%wall_center(9,1) = 0.0_eb
+            roomi%wall_center(9,2) = ywall_center
 
-            roomptr%wall_center(10,1) = xwall_center
-            roomptr%wall_center(10,2) = ywall_center
-            roomptr%wall_center(10,3) = 0.0_eb
+            roomi%wall_center(10,1) = xwall_center
+            roomi%wall_center(10,2) = ywall_center
+            roomi%wall_center(10,3) = 0.0_eb
         end do
 
-        roomptr=>roominfo(n)
+        roomi=>roominfo(n)
         
-        roomptr%yflor = 0.0_eb
-        roomptr%yceil = 100000._eb
+        roomi%yflor = 0.0_eb
+        roomi%yceil = 100000._eb
         
         zzvol(n,upper) = 0.0_eb
         zzvol(n,lower) = 100000.0_eb
@@ -1589,7 +1595,7 @@
         end do
         nvents = 0
         do i = 1, nm1
-            roomptr=>roominfo(i)
+            roomi=>roominfo(i)
             
             do j = i + 1, n
                 if (nw(i,j)/=0) then
@@ -1631,7 +1637,7 @@
 
                                 ! compute wind velocity and pressure rise at the average vent height
                                 havg = (ventptr%sill + ventptr%soffit)/2.0_eb 
-                                havg = havg + roomptr%yflor
+                                havg = havg + roomi%yflor
                                 if(windrf/=0.0_eb)then
                                     windvnew = windv * (havg/windrf)**windpw
                                 else
@@ -1807,7 +1813,7 @@
 
     else if (iflag==odevara) then
         do iroom = 1, nm1
-            roomptr=>roominfo(iroom)
+            roomi=>roominfo(iroom)
             
             zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
             zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
@@ -1828,7 +1834,7 @@
                 zzhlay(iroom,lower) = zzvol(iroom,lower) / ar(iroom)
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
-                zzhlay(iroom,upper) = hr(iroom) - zzhlay(iroom,lower)
+                zzhlay(iroom,upper) = roomi%hr - zzhlay(iroom,lower)
             endif
 
             zzrelp(iroom) = pdif(iroom)
@@ -1853,8 +1859,8 @@
             endif
 
             ! compute area of 10 wall segments
-            xx = br(iroom)
-            yy = dr(iroom)
+            xx = roomi%br
+            yy = roomi%dr
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
             zzwarea2(iroom,1) = ar(iroom)
@@ -1879,8 +1885,8 @@
 
             do i = 1, 4
                 ylay = zzhlay(iroom,lower)
-                roomptr%wall_center(i+1,3) =  (roomptr%yceil+ylay)/2.0_eb
-                roomptr%wall_center(i+5,3) = ylay/2.0_eb
+                roomi%wall_center(i+1,3) =  (roomi%yceil+ylay)/2.0_eb
+                roomi%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
             do layer = upper, lower

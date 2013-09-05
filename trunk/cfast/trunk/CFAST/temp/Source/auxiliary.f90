@@ -7,7 +7,7 @@
     !     purpose: XERROR processes a diagnostic message. It is a stub routine written for the book above. Actually, XERROR is a sophisticated
     !              error handling package with many options. Our version has the same calling sequence
     !              but only prints an error message and either returns (if the input value of ABS(LEVEL) is less than 2) or stops (if the input value of ABS(LEVEL) equals 2).
-    !     Revision: $Revision: 1136 $
+    !     Revision: $Revision$
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: MESSG - the Hollerith message to be processed.
     !                NMESSG- the actual number of characters in MESSG. (this is ignored in this stub routine)

@@ -5,8 +5,8 @@
 
     !     Routine: gettpp
     !     Purpose: check for and return index to a thermal property
-    !     Revision: $Revision: 1159 $
-    !     Revision Date: $Date: 2013-09-03 14:43:00 -0400 (Tue, 03 Sep 2013) $
+    !     Revision: $Revision$
+    !     Revision Date: $Date$
 
     use thermp
 
@@ -2128,8 +2128,8 @@
 
     integer :: module_rev
     character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision: 1159 $'
-    character(255), parameter :: maindate='$Date: 2013-09-03 14:43:00 -0400 (Tue, 03 Sep 2013) $'
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
 
     write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
     read (module_date,'(i5)') module_rev

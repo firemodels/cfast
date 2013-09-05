@@ -6449,8 +6449,8 @@
 
     integer :: module_rev
     character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision: 1142 $'
-    character(255), parameter :: maindate='$Date: 2013-09-02 15:38:48 -0400 (Mon, 02 Sep 2013) $'
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
 
     write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
     read (module_date,'(i5)') module_rev

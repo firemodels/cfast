@@ -208,7 +208,7 @@
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con * hrp(ibot) * era(ibot)
+        dp(1) = -grav_con * roominfo(ibot)%hrp * era(ibot)
         relp(1) = epa(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset

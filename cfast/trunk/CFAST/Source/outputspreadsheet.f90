@@ -15,9 +15,11 @@
     real(eb), intent(in) :: time
     
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    real(eb) :: outarray(maxhead), xx0, fheight
+    real(eb) :: outarray(maxhead), fheight
     logical :: firstc
     integer :: position, i, itarg, izzvol
+    
+    type(room_type), pointer :: roomi
 
     data firstc/.true./
     save firstc
@@ -33,8 +35,10 @@
 
     ! compartment information
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
+        izzvol = zzvol(i,upper)/roomi%vr*100._eb+0.5_eb
         call ssaddtolist (position,zztemp(i,upper)-273.15,outarray)
         if (izshaft(i)==0) then
             call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
@@ -51,7 +55,6 @@
         call SSaddtolist (position,fqdj(i),outarray)
     end do
     
-    xx0 = 0.0d0
     if (lfmax>0.and.lfbt>0.and.lfbo>0) then
         call flamhgt (fqf(0),farea(0),fheight)
         call ssaddtolist (position,fems(0),outarray)
@@ -100,7 +103,7 @@
     ! We are imposing an arbitrary limit of 32000 columns
     if (ic>32000) return
     if (abs(valu)<=1.0d-100) then
-        array(ic) = 0.0d0
+        array(ic) = 0.0_eb
     else
         array(ic) = valu
     end if
@@ -132,7 +135,7 @@
     integer, parameter :: maxoutput = mxvents*4
     
     real(eb), intent(in) :: time
-    real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout,xx0
+    real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout
     logical :: firstc
     data firstc /.true./
     integer :: position, irm, i,j,k,iijk,ii,iii,inode
@@ -143,7 +146,6 @@
         firstc = .false.
     endif
 
-    xx0 = 0.0d0
     position = 0
 
     ! first the time
@@ -197,12 +199,12 @@
         do j = 1, n
             if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
                 do ii = 1, 6
-                    flow(ii) = xx0
+                    flow(ii) = 0.0_eb
                 end do
-                if (vmflo(j,i,upper)>=xx0) flow(1) = vmflo(j,i,upper)
-                if (vmflo(j,i,upper)<xx0) flow(2) = -vmflo(j,i,upper)
-                if (vmflo(j,i,lower)>=xx0) flow(3) = vmflo(j,i,lower)
-                if (vmflo(j,i,lower)<xx0) flow(4) = -vmflo(j,i,lower)
+                if (vmflo(j,i,upper)>=0.0_eb) flow(1) = vmflo(j,i,upper)
+                if (vmflo(j,i,upper)<0.0_eb) flow(2) = -vmflo(j,i,upper)
+                if (vmflo(j,i,lower)>=0.0_eb) flow(3) = vmflo(j,i,lower)
+                if (vmflo(j,i,lower)<0.0_eb) flow(4) = -vmflo(j,i,lower)
                 ! we show only net flow in the spreadsheets
                 sumin = flow(1) + flow(3)
                 sumout = flow(2) + flow(4)
@@ -218,12 +220,12 @@
                 if (ii==irm) then
                     inode = hvnode(2,i)
                     do iii = 1, 6
-                        flow(iii) = xx0
+                        flow(iii) = 0.0_eb
                     end do
-                    if (hveflo(upper,i)>=xx0) flow(1)=hveflo(upper,i)
-                    if (hveflo(upper,i)<xx0) flow(2)=-hveflo(upper,i)
-                    if (hveflo(lower,i)>=xx0) flow(3)=hveflo(lower,i)
-                    if (hveflo(lower,i)<xx0) flow(4)=-hveflo(lower,i)
+                    if (hveflo(upper,i)>=0.0_eb) flow(1)=hveflo(upper,i)
+                    if (hveflo(upper,i)<0.0_eb) flow(2)=-hveflo(upper,i)
+                    if (hveflo(lower,i)>=0.0_eb) flow(3)=hveflo(lower,i)
+                    if (hveflo(lower,i)<0.0_eb) flow(4)=-hveflo(lower,i)
                     sumin = flow(1) + flow(3)
                     sumout = flow(2) + flow(4)
                     flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
@@ -259,7 +261,7 @@
     integer, parameter :: maxoutput=4*nr+9*mxtarg
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, xx0,x100,tgtemp,total,cjetmin
+    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, tgtemp,total,cjetmin
     integer :: iwptr(4), position,i,iw,itarg,itctemp,iroom
     external length
     data iwptr /1, 3, 4, 2/
@@ -271,9 +273,6 @@
         call ssHeadersFlux
         firstc = .false.
     endif
-
-    xx0 = 0.0d0
-    x100 = 100.0d0
 
     position = 0
 
@@ -307,11 +306,11 @@
                     if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
                     if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
                     if (validate.or.netheatflux) then
-                        total = gtflux(itarg,1) /1000.d0
-                        ftotal = gtflux(itarg,2) /1000.d0
-                        wtotal = gtflux(itarg,3) /1000.d0
-                        gtotal = gtflux(itarg,4) /1000.d0
-                        ctotal = gtflux(itarg,5) /1000.d0
+                        total = gtflux(itarg,1) /1000._eb
+                        ftotal = gtflux(itarg,2) /1000._eb
+                        wtotal = gtflux(itarg,3) /1000._eb
+                        gtotal = gtflux(itarg,4) /1000._eb
+                        ctotal = gtflux(itarg,5) /1000._eb
                         rtotal = total - ctotal
                     else
                         total = xxtarg(trgtfluxf,itarg)
@@ -348,7 +347,7 @@
     !   40 CONTINUE
 
     ! detectors (including sprinklers)
-    cjetmin = 0.10d0
+    cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
         zdetect = xdtect(i,dzloc)
@@ -417,8 +416,8 @@
                 if (layer==upper.or.izshaft(i)==0) then
                     if (tooutput(lsp)) then
                         ssvalue = toxict(i,layer,lsp)
-                        if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01d0 ! converts ppm to  molar fraction
-                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903 ! converts od to mg/m^3 (see toxict od calculation)
+                        if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
+                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see toxict od calculation)
                         call ssaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90
@@ -450,13 +449,15 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, xx0, flow(4), sumin, sumout
+    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, flow(4), sumin, sumout
     logical :: firstc
     integer :: position
     integer :: toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
     integer :: itop, ibot
     
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomi
+    
     data toprm /1/, botrm /2/
     data firstc/.true./
     save firstc
@@ -472,8 +473,10 @@
 
     ! compartment information
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
+        izzvol = zzvol(i,upper)/roomi%vr*100._eb+0.5_eb
         call ssaddtolist(position,zztemp(i,upper)-273.15,outarray)
         if (izshaft(i)==0) then
             call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
@@ -487,7 +490,6 @@
     end do
 
     ! fires
-    xx0 = 0.0d0
     nfire = 0
     if (lfmax>0.and.lfbt>0.and.lfbo>0) then
         nfire = nfire + 1
@@ -531,10 +533,10 @@
         avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
         call ssaddtolist (position,avent,outarray)
         flow = 0
-        if (vmflo(itop,ibot,upper)>=xx0) flow(1) = vmflo(itop,ibot,upper)
-        if (vmflo(itop,ibot,upper)<xx0) flow(2) = -vmflo(itop,ibot,upper)
-        if (vmflo(itop,ibot,lower)>=xx0) flow(3) = vmflo(itop,ibot,lower)
-        if (vmflo(itop,ibot,lower)<xx0) flow(4) = -vmflo(itop,ibot,lower)
+        if (vmflo(itop,ibot,upper)>=0.0_eb) flow(1) = vmflo(itop,ibot,upper)
+        if (vmflo(itop,ibot,upper)<0.0_eb) flow(2) = -vmflo(itop,ibot,upper)
+        if (vmflo(itop,ibot,lower)>=0.0_eb) flow(3) = vmflo(itop,ibot,lower)
+        if (vmflo(itop,ibot,lower)<0.0_eb) flow(4) = -vmflo(itop,ibot,lower)
         sumin = flow(1) + flow(3)
         sumout = flow(2) + flow(4)
         call ssaddtolist (position,sumin,outarray)

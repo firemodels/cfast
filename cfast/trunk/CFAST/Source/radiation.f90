@@ -76,8 +76,8 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(ar(i) + zzhlay(i, lower)*(roomi%dr + roomi%br))
-        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(ar(i) + zzhlay(i, upper)*(roomi%dr + roomi%br))
+        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomi%ar + zzhlay(i, lower)*(roomi%dr + roomi%br))
+        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomi%ar + zzhlay(i, upper)*(roomi%dr + roomi%br))
     end do
 
     defabsup = 0.5_eb
@@ -92,8 +92,8 @@
         if(roomflg(i))then
             tg(upper) = zztemp(i,upper)
             tg(lower) = zztemp(i,lower)
-            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(ar(i) + zzhlay(i, lower)*(roomi%dr + roomi%br))
-            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(ar(i) + zzhlay(i, upper)*(roomi%dr + roomi%br))
+            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomi%ar + zzhlay(i, lower)*(roomi%dr + roomi%br))
+            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomi%ar + zzhlay(i, upper)*(roomi%dr + roomi%br))
             do iwall = 1, 4
                 if(mod(iwall,2)==1)then
                     ilay = upper

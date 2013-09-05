@@ -197,8 +197,8 @@ integer function rev_outputsmv ()
           
       integer :: module_rev
       character(255) :: module_date 
-      character(255), parameter :: mainrev='$Revision: 1108 $'
-      Character(255), parameter :: maindate='$Date: 2013-08-30 23:13:18 -0400 (Fri, 30 Aug 2013) $'
+      character(255), parameter :: mainrev='$Revision$'
+      Character(255), parameter :: maindate='$Date$'
       
       write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
       read (module_date,'(i5)') module_rev

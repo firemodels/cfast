@@ -1327,8 +1327,8 @@
 
     INTEGER :: MODULE_REV
     CHARACTER(255) :: MODULE_DATE 
-    CHARACTER(255), PARAMETER :: mainrev='$Revision: 1161 $'
-    CHARACTER(255), PARAMETER :: maindate='$Date: 2013-09-03 16:14:50 -0400 (Tue, 03 Sep 2013) $'
+    CHARACTER(255), PARAMETER :: mainrev='$Revision$'
+    CHARACTER(255), PARAMETER :: maindate='$Date$'
 
     WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
     READ (MODULE_DATE,'(I5)') MODULE_REV

@@ -7,8 +7,8 @@
     !     purpose: physical interface routine to calculate the current
     !              rates of mass and energy flows into the layers from
     !              all fires in the building.
-    !     revision: $Revision: 1157 $
-    !     revision date: $Date: 2013-09-03 14:40:42 -0400 (Tue, 03 Sep 2013) $
+    !     revision: $Revision$
+    !     revision date: $Date$
     !     arguments: tsec   current simulation time (s)
     !                flwf   mass and energy flows into layers due to fires.
     !                       standard source routine data structure.
@@ -1589,8 +1589,8 @@
 
     integer :: module_rev
     character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision: 1157 $'
-    character(255), parameter :: maindate='$Date: 2013-09-03 14:40:42 -0400 (Tue, 03 Sep 2013) $'
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
 
     write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
     read (module_date,'(i5)') module_rev

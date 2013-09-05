@@ -46,6 +46,8 @@
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q1, q2, xqfr
     integer lsp, iroom, logerr, nobj, iobj, i, j
+    
+    type(room_type), pointer :: roomi
 
     ! initialize summations and local data
     do lsp = 1, ns + 2
@@ -75,8 +77,9 @@
                 stmass(upper,lsp) = zzgspec(iroom,upper,lsp)
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
-
-            call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
+            
+            roomi=>roominfo(iroom)
+            call dofire(i,iroom,oplume(1,iobj),roomi%hr,roomi%br,roomi%dr,objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
             objpos(3,iobj)+ohight,objclen(i),oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
@@ -1418,6 +1421,8 @@
     
     real(eb) :: arw, hclg, hclw, h2o, rho, tg, tw, flux, hwdot, hnet
     integer :: j, iroom, iwall, layer
+    
+    type(room_type), pointer :: roomi
 
     ! only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
     do iroom = 1, n
@@ -1435,6 +1440,8 @@
     ! calculate the hcl "added" to the layers from each surface
     if (activs(6)) then
         do iroom = 1, nm1
+            roomi=>roominfo(iroom)
+            
             do iwall = 1, 4
                 if (switch(iwall,iroom)) then
                     if (iwall==1) then
@@ -1444,10 +1451,10 @@
                         arw = ar(iroom)
                         layer = lower
                     else if (iwall==3) then
-                        arw = (br(iroom)+dr(iroom)) * zzhlay(iroom,upper) * 2.0_eb
+                        arw = (roomi%br+roomi%dr) * zzhlay(iroom,upper) * 2.0_eb
                         layer = upper
                     else if (iwall==4) then
-                        arw = (br(iroom)+dr(iroom)) * (hr(iroom) - zzhlay(iroom,upper)) * 2.0_eb
+                        arw = (roomi%br+roomi%dr) * (roomi%hr - zzhlay(iroom,upper)) * 2.0_eb
                         arw = max(0.0_eb,arw)
                         layer = lower
                     endif

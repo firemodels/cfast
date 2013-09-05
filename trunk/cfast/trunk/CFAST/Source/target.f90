@@ -224,14 +224,14 @@
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomi
 
     data map10/1,3,3,3,3,4,4,4,4,2/
 
     absu = 0.50_eb
     absl = 0.01_eb
     iroom = ixtarg(trgroom,itarg)
-    roomptr => roominfo(iroom)
+    roomi=>roominfo(iroom)
     
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then
@@ -305,15 +305,15 @@
             else
                 qout = rdqout(map10(iwall),iroom)
             endif
-            svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
-            svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
-            svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
+            svect(1) = xxtarg(trgcenx,itarg) - roomi%wall_center(iwall,1)
+            svect(2) = xxtarg(trgceny,itarg) - roomi%wall_center(iwall,2)
+            svect(3) = xxtarg(trgcenz,itarg) - roomi%wall_center(iwall,3)
             cosangt = 0.0_eb
             s = dnrm2(3,svect,1)
             if(s/=0.0_eb)then
                 cosangt = -ddot(3,svect,1,xxtarg(trgnormx,itarg),1)/s
             endif
-            zwall = roomptr%wall_center(iwall,3)
+            zwall = roomi%wall_center(iwall,3)
             ztarg = xxtarg(trgcenz,itarg)
             zlay = zzhlay(iroom,lower)
             tl = zztemp(iroom,lower)

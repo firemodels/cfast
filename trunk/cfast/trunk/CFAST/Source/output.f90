@@ -982,13 +982,18 @@
 
     use cfast_main
     use cshell
+    use cenviro
     implicit none
+    
+    type(room_type), pointer :: roomi
 
     integer i
 
     write (iofilo,5000)
     do i = 1, nm1
-        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), ar(i), vr(i), hrp(i), hflr(i)
+        roomi=>roominfo(i)
+        
+        write (iofilo,5010) i, trim(compartmentnames(i)), roomi%br, roomi%dr, roomi%hr, ar(i), vr(i), hrp(i), hflr(i)
     end do
     return
 5000 format (//,' COMPARTMENTS',//, &
@@ -1008,6 +1013,7 @@
     use cfast_main
     use cshell
     use params
+    use cenviro
     use vents
     implicit none
 
@@ -1015,6 +1021,8 @@
     real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
     logical :: first
+    
+    type(room_type), pointer :: roomj
 
     !     horizontal flow vents
     if (nvents==0) then
@@ -1042,6 +1050,7 @@
         write (iofilo,5040)
         do i = 1, n
             do j = 1, n
+                roomj=>roominfo(j)
                 if (nwv(i,j)/=0) then
                     write (ciout,'(i5,3x)') i
                     if (i==n) ciout = ' Outside'
@@ -1050,7 +1059,7 @@
                     csout = 'Round'
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
-                        hrx = hr(j)
+                        hrx = roomj%hr
                         hrpx = hrp(j)
                     else
                         hrx = hrl(i)

@@ -910,6 +910,8 @@
 
     real(eb) :: zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
     integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
+    
+    type(room_type), pointer :: roomi
 
     do i = 1, nm1
         flxcjt(i,1) = 0.0_eb
@@ -936,6 +938,7 @@
         nrmfire = ifrpnt(i,1)
         id = idtpnt(i,2)
         nd = idtpnt(i,1)
+        roomi=>roominfo(i)
 
         ! handle ceiling jets that are not in active halls
 
@@ -952,8 +955,8 @@
                 else
                     tuwall = zztemp(i,upper)
                 endif
-                call ceilht(xfire(ifpnt,4),xfire(ifpnt,7),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,br(i),dr(i), &
-                hr(i),xfire(ifpnt,1),xfire(ifpnt,2),xfire(ifpnt,3),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
+                call ceilht(xfire(ifpnt,4),xfire(ifpnt,7),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,roomi%br,roomi%dr, &
+                roomi%hr,xfire(ifpnt,1),xfire(ifpnt,2),xfire(ifpnt,3),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
                 xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
                 flxcjt(i,1) = flxcjt(i,1) + qfclga
                 flxcjt(i,3) = flxcjt(i,3) + qfwua

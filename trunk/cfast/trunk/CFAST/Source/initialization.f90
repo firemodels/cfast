@@ -350,6 +350,8 @@
     
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
+    
+    type(room_type), pointer :: roomi
 
     !    calculate min & max values for fan curve
 
@@ -420,7 +422,9 @@
             ierror = 223
             return
         endif
-        hvelxt(ii) = min(hr(i),max(0.0_eb,hvelxt(ii)))
+        roomi=>roominfo(i)
+        
+        hvelxt(ii) = min(roomi%hr,max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + hflr(i)
     end do
 
@@ -652,6 +656,8 @@
     
     real(eb) :: dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
     integer i, ii, iwall, iroom, itarg, ieq
+    
+    type(room_type), pointer :: roomi
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
     ! were calculated using rho*g*h .  but outside pressures were calculated using
@@ -729,8 +735,10 @@
     ! establish default values for detector data
     do i = 1, ndtect
         iroom=ixdtect(i,droom)
-        if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
-        if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
+        roomi=>roominfo(iroom)
+        
+        if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=roomi%br*.5d0
+        if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=roomi%dr*.5d0
         if(xdtect(i,dzloc)<0.0_eb)then
             xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
         endif
@@ -796,8 +804,10 @@
 
     ! define ihxy in izhall (dimension that is longest)
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         if(izhall(i,ihroom)==1)then
-            if(dr(i)>br(i))then
+            if(roomi%dr>roomi%br)then
                 izhall(i,ihxy) = 1
             else
                 izhall(i,ihxy) = 2
@@ -830,6 +840,8 @@
     
     real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
+    
+    type(room_type), pointer :: roomi
 
     ! set some initialization - simple control stuff
     exset = .false.
@@ -930,16 +942,18 @@
     ! define the outside world as infinity
     xlrg = 1.d+5
     do i = 1, nr
-        dr(i) = xlrg
-        br(i) = xlrg
-        hr(i) = xlrg
+        roomi=>roominfo(i)
+        
+        roomi%dr = xlrg
+        roomi%br = xlrg
+        roomi%hr = xlrg
         hrp(i) = xlrg
         hrl(i) = 0.0_eb
         hflr(i) = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
-        ar(i) = br(i) * dr(i)
-        vr(i) = hr(i) * ar(i)
+        ar(i) = roomi%br * roomi%dr
+        vr(i) = roomi%hr * ar(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qsradw(j,i) = 0.0_eb
@@ -1435,6 +1449,7 @@
     use cshell
     use fltarget
     use thermp
+    use cenviro
     implicit none
     
     integer, intent(out) :: ierror
@@ -1442,12 +1457,16 @@
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: ifail, itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
+    
+    type(room_type), pointer :: roomi
 
     ifail = 0
     do itarg = 1, ntarg
 
         ! room number must be between 1 and nm1
         iroom = ixtarg(trgroom,itarg)
+        roomi=>roominfo(iroom)
+        
         if(iroom<1.or.iroom>nm1)then
             write(logerr,'(a,i3)') 'Target assigned to non-existent compartment',iroom
             ierror = 213
@@ -1460,8 +1479,8 @@
         xxnorm = xxtarg(trgnormx,itarg)
         yynorm = xxtarg(trgnormy,itarg)
         zznorm = xxtarg(trgnormz,itarg)
-        xsize = br(iroom)
-        ysize = dr(iroom)
+        xsize = roomi%br
+        ysize = roomi%dr
         zsize = hrp(iroom)
 
         ! if the locator is -1, set to center of room on the floor
@@ -1532,13 +1551,15 @@
 
     ! add a target in the center of the floor of each room
     do iroom = 1, nm1
+        roomi=>roominfo(iroom)
+        
         ntarg = ntarg + 1
         ixtarg(trgroom,ntarg) = iroom
         ixtarg(trgmeth,ntarg) = steady
         ixtarg(trgback,ntarg) = ext
 
-        xx = br(iroom)*0.50d0
-        yy = dr(iroom)*0.50d0
+        xx = roomi%br*0.50d0
+        yy = roomi%dr*0.50d0
         zz = 0.0_eb
         xxtarg(trgcenx,ntarg) = xx
         xxtarg(trgceny,ntarg) = yy

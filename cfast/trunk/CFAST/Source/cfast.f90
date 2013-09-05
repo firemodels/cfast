@@ -372,8 +372,6 @@
     external resid, jac, delfilesqq
     integer :: funit
     
-    type(room_type), pointer :: roomi
-
     call cptime(toff)
     ierror = 0
     tpaws = tstop + 1.0_eb

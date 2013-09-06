@@ -1212,7 +1212,7 @@
 
     ! calculate absorbance for co2
     
-    ng = zzgspec(cmpt, layer, co2)/mwco2
+    ng = roomi%zzgspec(layer, co2)/mwco2
     plg = ng*rtv*l
     !if(plg>1.0e-3_eb)then
     if(plg>0.0_eb)then
@@ -1226,7 +1226,7 @@
 
     ! calculate absorbance for h2o
     
-    ng = zzgspec(cmpt, layer, h2o)/mwh2o
+    ng = roomi%zzgspec(layer, h2o)/mwh2o
     plg = ng*rtv*l
     !if(plg>1.0e-3_eb)then
     if(plg>0.0_eb)then
@@ -1240,7 +1240,7 @@
 
     ! calculate total absorbance
     
-    vfs = zzgspec(cmpt,layer,soot)/(roomi%zzvol(layer)*rhos)
+    vfs = roomi%zzgspec(layer,soot)/(roomi%zzvol(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
     if(prnslab)then
         if(absorb==00.1_eb)then

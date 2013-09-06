@@ -1577,15 +1577,15 @@
         roomi%zztemp(upper) = 300.0_eb
         roomi%zztemp(lower) = 300.0_eb
         do lsp = 3, ns
-            zzcspec(n,upper,lsp) = 0.0_eb
-            zzcspec(n,lower,lsp) = 0.0_eb
-            zzgspec(n,lower,lsp) = 0.0_eb
-            zzgspec(n,upper,lsp) = 0.0_eb
+            roomi%zzcspec(upper,lsp) = 0.0_eb
+            roomi%zzcspec(lower,lsp) = 0.0_eb
+            roomi%zzgspec(lower,lsp) = 0.0_eb
+            roomi%zzgspec(upper,lsp) = 0.0_eb
         end do
-        zzcspec(n,upper,1) = 0.770_eb
-        zzcspec(n,lower,1) = 0.770_eb
-        zzcspec(n,upper,2) = 0.230_eb
-        zzcspec(n,lower,2) = 0.230_eb
+        roomi%zzcspec(upper,1) = 0.770_eb
+        roomi%zzcspec(lower,1) = 0.770_eb
+        roomi%zzcspec(upper,2) = 0.230_eb
+        roomi%zzcspec(lower,2) = 0.230_eb
         do layer = upper, lower
             roomi%zzrho(layer) = roomi%zzpabs / rgas / roomi%zztemp(layer)
             roomi%zzmass(layer) = roomi%zzrho(layer) * roomi%zzvol(layer)
@@ -1973,20 +1973,22 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 do iroom = 1, nm1
+                    roomi=>roominfo(iroom)
+                    
                     isof = isof + 1
                     if (iflag==odevarb) then
                         ppgas = pold(isof) + dt * pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
-                    zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
+                    roomi%zzgspec(upper,lsp) = max(ppgas,0.0_eb)
                     isof = isof + 1
                     if (iflag==odevarb) then
                         ppgas = pold(isof) + dt * pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
-                    zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
+                    roomi%zzgspec(lower,lsp) = max(ppgas,0.0_eb)
                 end do
             endif
         end do
@@ -2001,8 +2003,8 @@
             
             do lsp = 1, min(9,ns)
                 if (activs(lsp)) then
-                    totu = totu + zzgspec(iroom,upper,lsp)
-                    totl = totl + zzgspec(iroom,lower,lsp)
+                    totu = totu + roomi%zzgspec(upper,lsp)
+                    totl = totl + roomi%zzgspec(lower,lsp)
                 endif
             end do
             rtotl = 1.0_eb
@@ -2011,10 +2013,10 @@
             if (totu>0.0_eb) rtotu = 1.0_eb / totu
             do lsp = 1, ns
                 if (activs(lsp)) then
-                    zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp) * rtotu
-                    zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp) * rtotl
+                    roomi%zzcspec(upper,lsp) = roomi%zzgspec(upper,lsp) * rtotu
+                    roomi%zzcspec(lower,lsp) = roomi%zzgspec(lower,lsp) * rtotl
                     if(izshaft(iroom)==1)then
-                        zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
+                        roomi%zzcspec(lower,lsp) = roomi%zzcspec(upper,lsp)
                     endif
                 endif
             end do
@@ -2025,12 +2027,12 @@
             if(option(foxygen)==on)then
                 oxyl = max(p(iroom+nofoxyl),0.0_eb)
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
-                zzgspec(iroom,lower,2) = oxyl
-                zzgspec(iroom,upper,2) = oxyu
-                zzcspec(iroom,lower,2) = oxyl / roomi%zzmass(lower)
-                zzcspec(iroom,upper,2) = oxyu / roomi%zzmass(upper)
+                roomi%zzgspec(lower,2) = oxyl
+                roomi%zzgspec(upper,2) = oxyu
+                roomi%zzcspec(lower,2) = oxyl / roomi%zzmass(lower)
+                roomi%zzcspec(upper,2) = oxyu / roomi%zzmass(upper)
                 if(izshaft(iroom)==1)then
-                    zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
+                    roomi%zzcspec(lower,2) = roomi%zzcspec(upper,2)
                 endif
             endif
         end do

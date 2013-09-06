@@ -1803,7 +1803,7 @@
             if (nlspct>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
                 if (activs(iprod)) then
-                    write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
+                    write (*,5030) spname(iprod), (roomi%zzcspec(il,iprod),il= upper,lower)
                 endif
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
@@ -1858,7 +1858,7 @@
         do iroom = 1, nm1
             roomi=>roominfo(iroom)
             
-            write(*,6000)iroom,roomi%zzrelp,roomi%zzhlay(lower),roomi%zztemp(lower),roomi%zztemp(upper),zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
+            write(*,6000)iroom,roomi%zzrelp,roomi%zzhlay(lower),roomi%zztemp(lower),roomi%zztemp(upper),roomi%zzcspec(lower,2),roomi%zzcspec(upper,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)

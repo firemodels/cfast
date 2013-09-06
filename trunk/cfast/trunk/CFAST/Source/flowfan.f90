@@ -452,8 +452,8 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 if (i<n) then
-                    hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
-                    hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
+                    hvexcn(ii,lsp,upper) = roomi%zzcspec(upper,lsp)
+                    hvexcn(ii,lsp,lower) = roomi%zzcspec(lower,lsp)
                 else
                     xxrho = o2n2(lsp) * exra
                     hvexcn(ii,lsp,upper) = xxrho

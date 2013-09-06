@@ -792,8 +792,8 @@
         denl = roomi%zzrho(lower)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod) = zzcspec(iroom,lower,ip)
-            conu(iprod) = zzcspec(iroom,up,ip)
+            conl(iprod) = roomi%zzcspec(lower,ip)
+            conu(iprod) = roomi%zzcspec(up,ip)
         end do
         tu = roomi%zztemp(up)
         tl = roomi%zztemp(lower)
@@ -812,8 +812,8 @@
         denl = era(iroom2)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod) = zzcspec(iroom2,lower,ip)  ! changed to iroom2 - make sure this is correct
-            conu(iprod) = zzcspec(iroom2,up,ip)  !  ! changed to iroom2 - make sure this is correct
+            conl(iprod) = roomi%zzcspec(lower,ip)  ! original code used roominfo(iroom) - make sure it is correct
+            conu(iprod) = roomi%zzcspec(up,ip)  !  ! original code used roominfo(iroom) - make sure it is correct
         end do
         tu = eta(iroom2)
         tl = eta(iroom2)

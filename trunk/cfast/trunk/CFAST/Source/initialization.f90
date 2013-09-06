@@ -1199,11 +1199,14 @@
         end do
     end do
 
-    do lsp = 1, ns
-        do j = upper, lower
-            do i = 1, nr
-                zzgspec(i,j,lsp) = 0.0_eb
-                zzcspec(i,j,lsp) = 0.0_eb            
+    do i = 1, nr
+        roomi=>roominfo(i)
+        
+        do lsp = 1, ns
+            do j = upper, lower
+                
+                roomi%zzgspec(j,lsp) = 0.0_eb
+                roomi%zzcspec(j,lsp) = 0.0_eb            
             end do
         end do
     end do

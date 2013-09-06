@@ -1486,7 +1486,7 @@
                     h2o = roomi%zzcspec(layer,8)
                     rho = roomi%zzrho(layer)
                     tg = roomi%zztemp(layer)
-                    hclw = zzwspec(iroom,iwall)
+                    hclw = roomi%zzwspec(iwall)
                     flux = qscnv(iwall,iroom)
                     tw = twj(1,iroom,iwall)
                     call hcltran(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)

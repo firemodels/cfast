@@ -38,14 +38,14 @@
         roomi=>roominfo(i)
         
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/roomi%vr*100._eb+0.5_eb
-        call ssaddtolist (position,zztemp(i,upper)-273.15,outarray)
+        izzvol = roomi%zzvol(upper)/roomi%vr*100._eb+0.5_eb
+        call ssaddtolist (position,roomi%zztemp(upper)-273.15,outarray)
         if (izshaft(i)==0) then
-            call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
-            call ssaddtolist (position,zzhlay(i,lower),outarray)
+            call ssaddtolist(position,roomi%zztemp(lower)-273.15,outarray)
+            call ssaddtolist (position,roomi%zzhlay(lower),outarray)
         endif
-        call ssaddtolist (position,zzvol(i,upper),outarray)
-        call ssaddtolist (position,zzrelp(i) - pamb(i),outarray)
+        call ssaddtolist (position,roomi%zzvol(upper),outarray)
+        call ssaddtolist (position,roomi%zzrelp - pamb(i),outarray)
         call ssaddtolist (position,ontarget(i),outarray)
         call ssaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
     end do
@@ -266,6 +266,8 @@
     external length
     data iwptr /1, 3, 4, 2/
     logical :: firstc
+    type(room_type), pointer :: roomi
+    
     data firstc /.true./
     save firstc
 
@@ -350,11 +352,13 @@
     cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
+        roomi=>roominfo(iroom)
+        
         zdetect = xdtect(i,dzloc)
-        if(zdetect>zzhlay(iroom,lower))then
-            tlay = zztemp(iroom,upper)
+        if(zdetect>roomi%zzhlay(lower))then
+            tlay = roomi%zztemp(upper)
         else
-            tlay = zztemp(iroom,lower)
+            tlay = roomi%zztemp(lower)
         endif
         xact = ixdtect(i,dact)
         tjet = max(xdtect(i,dtjet),tlay)
@@ -476,13 +480,13 @@
         roomi=>roominfo(i)
         
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/roomi%vr*100._eb+0.5_eb
-        call ssaddtolist(position,zztemp(i,upper)-273.15,outarray)
+        izzvol = roomi%zzvol(upper)/roomi%vr*100._eb+0.5_eb
+        call ssaddtolist(position,roomi%zztemp(upper)-273.15,outarray)
         if (izshaft(i)==0) then
-            call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
-            call ssaddtolist(position,zzhlay(i,lower),outarray)
+            call ssaddtolist(position,roomi%zztemp(lower)-273.15,outarray)
+            call ssaddtolist(position,roomi%zzhlay(lower),outarray)
         endif
-        call ssaddtolist(position,zzrelp(i) - pamb(i),outarray)
+        call ssaddtolist(position,roomi%zzrelp - pamb(i),outarray)
         call ssaddtolist(position,toxict(i,upper,9),outarray)
         if (izshaft(i)==0) then
             call ssaddtolist(position,toxict(i,lower,9),outarray)
@@ -587,6 +591,9 @@
     real(eb) :: outarray(maxhead)
     logical :: firstc
     integer :: position, i, j, k, nprod
+    
+    type(room_type), pointer :: roomi
+    
     data firstc/.true./
     save firstc
     
@@ -602,10 +609,12 @@
 
     ! compartment information
     do i = 1, nm1
-        call SSaddtolist (position,zzrelp(i),outarray)
-        call SSaddtolist (position,zzvol(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,lower),outarray)
+        roomi=>roominfo(i)
+        
+        call SSaddtolist (position,roomi%zzrelp,outarray)
+        call SSaddtolist (position,roomi%zzvol(upper),outarray)
+        call SSaddtolist(position,roomi%zztemp(upper),outarray)
+        call SSaddtolist(position,roomi%zztemp(lower),outarray)
         do j = 1, 2
             do k = 1, 2
                 call ssaddtolist (position,flwtot(i,k,j),outarray)

@@ -33,7 +33,7 @@
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
 
-    type(room_type), pointer :: roomi
+    type(room_type), pointer :: roomi, roomj
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
 
@@ -87,16 +87,18 @@
                 nwroom = izhtfrac(iroom,0)
                 do jj = 1, nwroom
                     j = izhtfrac(iroom,jj)
+                    roomj=>roominfo(j)
+                    
                     frac = zzhtfrac(iroom,j)
                     if(iwall==3)then
-                        yb = zzhlay(iroom,lower)
+                        yb = roomi%zzhlay(lower)
                         yt = roomi%yceil
                     elseif(iwall==4)then
                         yb = 0.0_eb
-                        yt = zzhlay(iroom,lower)
+                        yt = roomi%zzhlay(lower)
                     endif
-                    dflor = roominfo(j)%yflor - roomi%yflor
-                    yy = zzhlay(j,lower) + dflor
+                    dflor = roomj%yflor - roomi%yflor
+                    yy = roomj%zzhlay(lower) + dflor
                     if(j/=nm1+1)then
                         if(yy>yt)then
                             fu = 0.0_eb

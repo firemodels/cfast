@@ -620,7 +620,7 @@
                 firstpassforsmokeview = .false.
                 call svplothdr (version,nm1,nfires)
             endif
-            call svplotdata(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
+            call svplotdata(t,nm1,nfires, fqlocal,fhlocal)
             call spreadsheetsmv(t)
             tplot = tplot + dplot
             call statusoutput (t, dt, errorcode)
@@ -726,7 +726,7 @@
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
-        call updtect(mdchk,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+        call updtect(mdchk,told,dt,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         call updobj(mdchk,told,dt,ifobj,tobj,ierror)
         td = min(tdtect,tobj)
 
@@ -734,7 +734,7 @@
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
             isroom = ixdtect(isensor,droom)
-            call updtect(mdset,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call updtect(mdset,told,dt,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
             write(lbuf,*) ' '
             call xerror(lbuf,0,1,0)
             write(lbuf,76)isensor,tdtect,isroom
@@ -750,7 +750,7 @@
                 idset = 0
             endif
         else
-            call updtect(mdupdt,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call updtect(mdupdt,told,dt,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         endif
 
         ! object ignition is the first thing to happen
@@ -1310,8 +1310,8 @@
         
         aroom = roomi%ar
         hceil = roomi%hr
-        pabs = zzpabs(iroom)
-        hinter = zzhlay(iroom,ll)
+        pabs = roomi%zzpabs
+        hinter = roomi%zzhlay(ll)
         ql = flwtot(iroom,q,ll)
         qu = flwtot(iroom,q,uu)
         tmu = flwtot(iroom,m,uu)
@@ -1330,22 +1330,22 @@
         endif
 
         ! upper layer temperature equation
-        tlaydu = (qu-cp*tmu*zztemp(iroom,uu)) / (cp*zzmass(iroom,uu))
+        tlaydu = (qu-cp*tmu*roomi%zztemp(uu)) / (cp*roomi%zzmass(uu))
         if (option(fode)==on) then
-            tlaydu = tlaydu + pdot / (cp*zzrho(iroom,uu))
+            tlaydu = tlaydu + pdot / (cp*roomi%zzrho(uu))
         endif
 
         ! upper layer volume equation
         vlayd = (gamma-1.0_eb) * qu / (gamma*pabs)
         if (option(fode)==on) then
-            vlayd = vlayd - zzvol(iroom,uu) * pdot / (gamma*pabs)
+            vlayd = vlayd - roomi%zzvol(uu) * pdot / (gamma*pabs)
         endif
         if(izshaft(iroom)==1)vlayd = 0.0_eb
 
         ! lower layer temperature equation
-        tlaydl = (ql-cp*tml*zztemp(iroom,ll)) / (cp*zzmass(iroom,ll))
+        tlaydl = (ql-cp*tml*roomi%zztemp(ll)) / (cp*roomi%zzmass(ll))
         if (option(fode)==on) then
-            tlaydl = tlaydl + pdot / (cp*zzrho(iroom,ll))
+            tlaydl = tlaydl + pdot / (cp*roomi%zzrho(ll))
         endif
 
         xprime(iroom) = pdot
@@ -1367,7 +1367,7 @@
                 roomi=>roominfo(iroom)
                 
                 hceil = roomi%hr
-                hinter = zzhlay(iroom,ll)
+                hinter = roomi%zzhlay(ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
                 prodl = flwtot(iroom,iprod+2,ll)
@@ -1502,7 +1502,7 @@
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
         
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomi
+    type(room_type), pointer :: roomi, dead_room
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1568,14 +1568,14 @@
         roomi%yflor = 0.0_eb
         roomi%yceil = 100000._eb
         
-        zzvol(n,upper) = 0.0_eb
-        zzvol(n,lower) = 100000.0_eb
-        zzhlay(n,upper) = 0.0_eb
-        zzhlay(n,lower) = 100000.0_eb
-        zzrelp(n) = 0.0_eb
-        zzpabs(n) = pofset
-        zztemp(n,upper) = 300.0_eb
-        zztemp(n,lower) = 300.0_eb
+        roomi%zzvol(upper) = 0.0_eb
+        roomi%zzvol(lower) = 100000.0_eb
+        roomi%zzhlay(upper) = 0.0_eb
+        roomi%zzhlay(lower) = 100000.0_eb
+        roomi%zzrelp = 0.0_eb
+        roomi%zzpabs = pofset
+        roomi%zztemp(upper) = 300.0_eb
+        roomi%zztemp(lower) = 300.0_eb
         do lsp = 3, ns
             zzcspec(n,upper,lsp) = 0.0_eb
             zzcspec(n,lower,lsp) = 0.0_eb
@@ -1587,8 +1587,8 @@
         zzcspec(n,upper,2) = 0.230_eb
         zzcspec(n,lower,2) = 0.230_eb
         do layer = upper, lower
-            zzrho(n,layer) = zzpabs(n) / rgas / zztemp(n,layer)
-            zzmass(n,layer) = zzrho(n,layer) * zzvol(n,layer)
+            roomi%zzrho(layer) = roomi%zzpabs / rgas / roomi%zztemp(layer)
+            roomi%zzmass(layer) = roomi%zzrho(layer) * roomi%zzvol(layer)
         end do
 
         ! define vent data structures
@@ -1817,14 +1817,14 @@
         do iroom = 1, nm1
             roomi=>roominfo(iroom)
             
-            zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
-            zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
-            zzvol(iroom,lower) = max(roomi%vr-zzvol(iroom,upper),zzvmin(iroom))
-            zzvol(iroom,lower) = min(zzvol(iroom,lower),zzvmax(iroom))
+            roomi%zzvol(upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
+            roomi%zzvol(upper) = min(roomi%zzvol(upper),zzvmax(iroom))
+            roomi%zzvol(lower) = max(roomi%vr-roomi%zzvol(upper),zzvmin(iroom))
+            roomi%zzvol(lower) = min(roomi%zzvol(lower),zzvmax(iroom))
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
-            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*roomi%vr) / roomi%vr*(1.0_eb-2.0_eb*vminfrac)
+            volfru(iroom) = (roomi%zzvol(upper)-vminfrac*roomi%vr) / roomi%vr*(1.0_eb-2.0_eb*vminfrac)
             volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
             volfrl(iroom) = 1.0_eb - volfru(iroom)
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
@@ -1832,17 +1832,17 @@
             ! calculate layer height for non-rectangular rooms
             npts = izrvol(iroom)
             if(npts==0)then
-                zzhlay(iroom,upper) = zzvol(iroom,upper) / roomi%ar
-                zzhlay(iroom,lower) = zzvol(iroom,lower) / roomi%ar
+                roomi%zzhlay(upper) = roomi%zzvol(upper) / roomi%ar
+                roomi%zzhlay(lower) = roomi%zzvol(lower) / roomi%ar
             else
-                call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
-                zzhlay(iroom,upper) = roomi%hr - zzhlay(iroom,lower)
+                call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,roomi%zzvol(lower),1,roomi%zzhlay(lower))
+                roomi%zzhlay(upper) = roomi%hr - roomi%zzhlay(lower)
             endif
 
-            zzrelp(iroom) = pdif(iroom)
-            zzpabs(iroom) = pdif(iroom) + pofset
-            zztemp(iroom,upper) = pdif(iroom+noftu)
-            zztemp(iroom,lower) = pdif(iroom+noftl)
+            roomi%zzrelp = pdif(iroom)
+            roomi%zzpabs = pdif(iroom) + pofset
+            roomi%zztemp(upper) = pdif(iroom+noftu)
+            roomi%zztemp(lower) = pdif(iroom+noftl)
 
             ! there is a problem with how flow is being withdrawn from layers
             ! when the layers are small and the flow is large (for example with
@@ -1850,21 +1850,21 @@
             ! (because the rhs of the temperature equation is wrong).  the following
             ! code causes the temperature of the opposite layer to be used in these
             ! situations.
-            if(zztemp(iroom,upper)<0.0_eb)then
-                zztemp(iroom,upper)=zztemp(iroom,lower)
+            if(roomi%zztemp(upper)<0.0_eb)then
+                roomi%zztemp(upper)=roomi%zztemp(lower)
             endif
-            if(zztemp(iroom,lower)<0.0_eb)then
-                zztemp(iroom,lower)=zztemp(iroom,upper)
+            if(roomi%zztemp(lower)<0.0_eb)then
+                roomi%zztemp(lower)=roomi%zztemp(upper)
             endif
             if(izshaft(iroom)==1)then
-                zztemp(iroom,lower) = zztemp(iroom,upper)
+                roomi%zztemp(lower) = roomi%zztemp(upper)
             endif
 
             ! compute area of 10 wall segments
             xx = roomi%br
             yy = roomi%dr
-            zzu = zzhlay(iroom,upper)
-            zzl = zzhlay(iroom,lower)
+            zzu = roomi%zzhlay(upper)
+            zzl = roomi%zzhlay(lower)
             zzwarea2(iroom,1) = roomi%ar
             zzwarea2(iroom,2) = zzu*xx
             zzwarea2(iroom,3) = zzu*yy
@@ -1886,27 +1886,32 @@
             ! (other coordinates are static and are defined earlier)
 
             do i = 1, 4
-                ylay = zzhlay(iroom,lower)
+                ylay = roomi%zzhlay(lower)
                 roomi%wall_center(i+1,3) =  (roomi%yceil+ylay)/2.0_eb
                 roomi%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
             do layer = upper, lower
-                zzrho(iroom,layer) = zzpabs(iroom) / rgas / zztemp(iroom,layer)
-                zzmass(iroom,layer) = zzrho(iroom,layer) * zzvol(iroom,layer)
+                roomi%zzrho(layer) = roomi%zzpabs / rgas / roomi%zztemp(layer)
+                roomi%zzmass(layer) = roomi%zzrho(layer) * roomi%zzvol(layer)
             end do
         end do
         
         do i = 1, nm1
+            roomi=>roominfo(i)
+            
             if(deadroom(i).eq.0)cycle
-            zzrelp(i) = zzrelp(deadroom(i))
-            zzpabs(i) = zzpabs(deadroom(i))
+            dead_room=>roominfo(deadroom(i))
+            roomi%zzrelp = dead_room%zzrelp
+            roomi%zzpabs = dead_room%zzpabs
         end do
 
         ! record which layer target is in
         do itarg = 1, ntarg
             iroom = ixtarg(trgroom,itarg)
-            ylay = zzhlay(iroom,lower)
+            roomi=>roominfo(itarg)
+            
+            ylay = roomi%zzhlay(lower)
             ytarg = xxtarg(trgcenz,itarg)
             if(ytarg>=ylay)then
                 ixtarg(trglayer,itarg) = upper
@@ -1929,6 +1934,8 @@
     else if (iflag==odevarb.or.iflag==odevarc) then
         isof = nofwt
         do iroom = 1, nm1
+            roomi=>roominfo(iroom)
+            
             do iwall = 1, nwal
                 iwalleq = izwmap2(iwall,iroom)
                 if(iwalleq/=0)then
@@ -1956,7 +1963,7 @@
                     else
                         ilay = lower
                     endif
-                    zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
+                    zzwtemp(iroom,iwall,1) = roomi%zztemp(ilay)
                 endif
             end do
         end do
@@ -1990,6 +1997,8 @@
         do iroom = 1, nm1
             totl = 0.0_eb
             totu = 0.0_eb
+            roomi=>roominfo(iroom)
+            
             do lsp = 1, min(9,ns)
                 if (activs(lsp)) then
                     totu = totu + zzgspec(iroom,upper,lsp)
@@ -2018,8 +2027,8 @@
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
                 zzgspec(iroom,lower,2) = oxyl
                 zzgspec(iroom,upper,2) = oxyu
-                zzcspec(iroom,lower,2) = oxyl / zzmass(iroom,lower)
-                zzcspec(iroom,upper,2) = oxyu / zzmass(iroom,upper)
+                zzcspec(iroom,lower,2) = oxyl / roomi%zzmass(lower)
+                zzcspec(iroom,upper,2) = oxyu / roomi%zzmass(upper)
                 if(izshaft(iroom)==1)then
                     zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
                 endif
@@ -2089,6 +2098,8 @@
     
     real(eb) :: factor(nr,2)
     integer :: iroom, isof, iprod
+    
+    type(room_type), pointer :: roomi
 
     do iroom = 1,nm1
         factor(iroom,upper) = 0.0_eb
@@ -2108,13 +2119,15 @@
     end do
 
     do iroom = 1, nm1
-        if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
-            factor(iroom,upper) = zzmass(iroom,upper) / factor(iroom,upper)
+        roomi=>roominfo(iroom)
+        
+        if (factor(iroom,upper)>0.0_eb.and.roomi%zzmass(upper)>0.0_eb) then
+            factor(iroom,upper) = roomi%zzmass(upper) / factor(iroom,upper)
         else
             factor(iroom,upper) = 1.0_eb
         endif
-        if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
-            factor(iroom,lower) = zzmass(iroom,lower) / factor(iroom,lower)
+        if (factor(iroom,lower)>0.0_eb.and.roomi%zzmass(lower)>0.0_eb) then
+            factor(iroom,lower) = roomi%zzmass(lower) / factor(iroom,lower)
         else
             factor(iroom,lower) = 1.0_eb
         endif

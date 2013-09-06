@@ -76,8 +76,8 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomi%ar + zzhlay(i, lower)*(roomi%dr + roomi%br))
-        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomi%ar + zzhlay(i, upper)*(roomi%dr + roomi%br))
+        zzbeam(lower,i) = (1.8_eb*roomi%zzvol(lower))/(roomi%ar + roomi%zzhlay(lower)*(roomi%dr + roomi%br))
+        zzbeam(upper,i) = (1.8_eb*roomi%zzvol(upper))/(roomi%ar + roomi%zzhlay(upper)*(roomi%dr + roomi%br))
     end do
 
     defabsup = 0.5_eb
@@ -90,10 +90,10 @@
         roomi=>roominfo(i)
         
         if(roomflg(i))then
-            tg(upper) = zztemp(i,upper)
-            tg(lower) = zztemp(i,lower)
-            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomi%ar + zzhlay(i, lower)*(roomi%dr + roomi%br))
-            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomi%ar + zzhlay(i, upper)*(roomi%dr + roomi%br))
+            tg(upper) = roomi%zztemp(upper)
+            tg(lower) = roomi%zztemp(lower)
+            zzbeam(lower,i) = (1.8_eb*roomi%zzvol(lower))/(roomi%ar + roomi%zzhlay(lower)*(roomi%dr + roomi%br))
+            zzbeam(upper,i) = (1.8_eb*roomi%zzvol(upper))/(roomi%ar + roomi%zzhlay(upper)*(roomi%dr + roomi%br))
             do iwall = 1, 4
                 if(mod(iwall,2)==1)then
                     ilay = upper
@@ -105,7 +105,7 @@
                     twall(imap) = zzwtemp(i,iwall,1)
                     emis(imap) = epw(iwall,i)
                 else
-                    twall(imap) = zztemp(i,ilay)
+                    twall(imap) = roomi%zztemp(ilay)
                     emis(imap) = 1.0_eb
                 endif
             end do
@@ -133,9 +133,9 @@
                     endif
                 endif
                 if(prnslab)then
-                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
+                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), roomi%zzhlay(lower)
                 end if 
-                call rad4(twall,tg,emis,zzabsb(1,i),i,roomi%br,roomi%dr,roomi%hr,zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad4(twall,tg,emis,zzabsb(1,i),i,roomi%br,roomi%dr,roomi%hr,roomi%zzhlay(lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
                 if(.not.black)then
@@ -148,9 +148,9 @@
                     endif
                 endif
                 if(prnslab)then
-                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
+                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), roomi%zzhlay(lower)
                 end if 
-                call rad2(twall,tg,emis,zzabsb(1,i),roomi%br,roomi%dr,roomi%hr,zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad2(twall,tg,emis,zzabsb(1,i),roomi%br,roomi%dr,roomi%hr,roomi%zzhlay(lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
             endif
@@ -1145,6 +1145,8 @@
     integer :: xco2, yco2, xh2o, yh2o
     real(eb) :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
     real(eb) :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
+    
+    type(room_type), pointer :: roomi
 
     ! declare module data
 
@@ -1200,8 +1202,10 @@
 
     ! calculate layer-specific factors
     
-    tg = zztemp(cmpt, layer)
-    rtv = (rg*tg)/zzvol(cmpt, layer)
+    roomi=>roominfo(cmpt)
+    
+    tg = roomi%zztemp(layer)
+    rtv = (rg*tg)/roomi%zzvol(layer)
     l = zzbeam(layer,cmpt)
 
     ag = 0.0_eb
@@ -1236,7 +1240,7 @@
 
     ! calculate total absorbance
     
-    vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer)*rhos)
+    vfs = zzgspec(cmpt,layer,soot)/(roomi%zzvol(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
     if(prnslab)then
         if(absorb==00.1_eb)then

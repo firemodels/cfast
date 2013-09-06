@@ -120,7 +120,7 @@ end subroutine svout
 
 ! --------------------------- svplotdata -------------------------------------------
 
-subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
+subroutine  svplotdata(time,nrooms,nfires,qdot,height)
 
 !
 ! this routine records data for the current time step into the smokeview zone fire data file
@@ -128,23 +128,21 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 !            be visualized by smokeview
 !     time - current time
 !   nrooms   number of rooms
-!       pr - real array of size nrooms of room pressures
-!     ylay - real array of size nrooms of layer interface heights
-!       tl - real array of size nrooms of lower layer temperatures 
-!       tu - real array of size nrooms of upper layer temperatures 
 !   nfires - number of fires
 !     qdot - real array of size nfires of fire heat release rates
 !   height - real array of size nfires of fire heights
 !
     use precision_parameters
+    use cenviro
     implicit none
 
     real(eb), intent(in) :: time
     integer, intent(in) :: nrooms
-    real(eb), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
     integer, intent(in) :: nfires
     real(eb), intent(in), dimension(nfires) :: qdot, height
-    real xxtime, xxpr, xxylay, xxtl, xxtu, xxheight, xxqdot
+    real xxtime, xxheight, xxqdot
+    
+    type(room_type), pointer :: roomi
 
     integer :: i
 
@@ -152,11 +150,9 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
     write(14) xxtime
 
     do i = 1, nrooms
-        xxpr = pr(i)
-        xxylay = ylay(i)
-        xxtl = tl(i)
-        xxtu = tu(i)
-        write(14) xxpr, xxylay, xxtl, xxtu
+        roomi=>roominfo(i)
+        
+        write(14) roomi%zzrelp, roomi%zzhlay(lower), roomi%zztemp(lower), roomi%zztemp(upper)
     end do
 
     do i = 1, nfires

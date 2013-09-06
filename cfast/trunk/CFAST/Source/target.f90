@@ -258,7 +258,7 @@
             endif
             zfire = xfire(ifire,3)
             ztarg = xxtarg(trgcenz,itarg)
-            zlay = zzhlay(iroom,lower)
+            zlay = roomi%zzhlay(lower)
 
             ! compute portion of path in lower and upper layers
             call getylyu(zfire,zlay,ztarg,s,zl,zu)
@@ -315,9 +315,9 @@
             endif
             zwall = roomi%wall_center(iwall,3)
             ztarg = xxtarg(trgcenz,itarg)
-            zlay = zzhlay(iroom,lower)
-            tl = zztemp(iroom,lower)
-            tu = zztemp(iroom,upper)
+            zlay = roomi%zzhlay(lower)
+            tl = roomi%zztemp(lower)
+            tu = roomi%zztemp(upper)
 
             ! compute path length in lower (zl) and upper (zu) layer
             call getylyu(zwall,zlay,ztarg,s,zl,zu)
@@ -456,14 +456,18 @@
     real(eb), intent(out) :: tg
         
     real(eb) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
+    
+    type(room_type), pointer :: target_room
 
     integer :: i
 
+    target_room=>roominfo(irtarg)
+    
     ! default is the appropriate layer temperature
-    if (ztarg>=zzhlay(irtarg,lower)) then
-        tg = zztemp(irtarg,upper)
+    if (ztarg>=target_room%zzhlay(lower)) then
+        tg = target_room%zztemp(upper)
     else
-        tg = zztemp(irtarg,lower)
+        tg = target_room%zztemp(lower)
     endif
 
     ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
@@ -473,10 +477,10 @@
                 qdot = fqf(i)
                 xrad = radconsplit(i)
                 dfire = 2.0_eb*sqrt(farea(i)/pi)
-                tu = zztemp(irtarg,upper)
-                tl = zztemp(irtarg,lower)
+                tu = target_room%zztemp(upper)
+                tl = target_room%zztemp(lower)
                 zfire = xfire(i,3)
-                zlayer = zzhlay(irtarg,lower)
+                zlayer = target_room%zzhlay(lower)
                 z = ztarg
                 call plumetemp (qdot, xrad, tu, tl, zfire, zlayer, z, tplume)
                 tg = tplume
@@ -519,7 +523,7 @@
     
 ! --------------------------- updtect -------------------------------------------
 
-    subroutine updtect(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+    subroutine updtect(imode,tcur,dstep,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
 
     !     routine: gettylyu
     !     purpose: this routine updates the temperature of each detector link.  it also determine whether the detector has activated 
@@ -533,18 +537,21 @@
     !                idset   room where activated detector resides
 
     use precision_parameters
+    use cenviro
     use cparams
     use dsize
     implicit none
 
     integer, intent(in) :: imode, ndtect
-    real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
+    real(eb), intent(in) :: tcur, dstep
     
     integer, intent(out) :: idset, ifdtect, ixdtect(mxdtect,*), iquench(*)
     real(eb), intent(out) :: xdtect(mxdtect,*), tdtect
     
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
+    
+    type(room_type), pointer :: roomi
 
     idset = 0
     ifdtect = 0
@@ -553,12 +560,14 @@
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
         tlinko = xdtect(i,dtemp)
+        
+        roomi=>roominfo(iroom)
 
         zdetect = xdtect(i,dzloc)
-        if(zdetect>zzhlay(iroom,lower))then
-            tlay = zztemp(iroom,upper)
+        if(zdetect>roomi%zzhlay(lower))then
+            tlay = roomi%zztemp(upper)
         else
-            tlay = zztemp(iroom,lower)
+            tlay = roomi%zztemp(lower)
         endif
 
         tjet = max(xdtect(i,dtjet),tlay)

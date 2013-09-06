@@ -448,11 +448,13 @@
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         ib = icmv(j,1)
+        roomi=>roominfo(i)
+        
         ! the outside is defined to be at the base of the structure for mv
         if (i<n) then
             hvextt(ii,upper) = tamb(i)
             hvextt(ii,lower) = tamb(i)
-            hvp(j) = zzrelp(i) - hvgrav * ramb(i) * hvelxt(ii)
+            hvp(j) = roomi%zzrelp - hvgrav * ramb(i) * hvelxt(ii)
         else
             hvextt(ii,upper) = exta
             hvextt(ii,lower) = exta
@@ -801,8 +803,10 @@
     ! after zzmass is defined)
     if(option(foxygen)==on)then
         do iroom = 1, nm1
-            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
-            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
+            roomi=>roominfo(iroom)
+            
+            p(iroom+nofoxyu)=0.23_eb*roomi%zzmass(upper)
+            p(iroom+nofoxyl)=0.23_eb*roomi%zzmass(lower)
         end do
     endif
 
@@ -1351,11 +1355,14 @@
 
     real(eb) :: xm(2), xt, xtemp, xh2o, toto2n2
     integer i, j, k, ip, iprod, isof, isys, lsp
+    type(room_type), pointer :: roomi
 
 
     do i = 1, nm1
-        xm(1) = ramb(i) * zzvol(i,upper)
-        xm(2) = ramb(i) * zzvol(i,lower)
+        roomi=>roominfo(i)
+        
+        xm(1) = ramb(i) * roomi%zzvol(upper)
+        xm(2) = ramb(i) * roomi%zzvol(lower)
 
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam

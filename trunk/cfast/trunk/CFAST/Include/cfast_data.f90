@@ -7,7 +7,7 @@ module types
 !  room data structure
 
     type room_type
-      integer :: izshaft
+      integer :: izshaft, izrvol
       real(eb) :: yflor, yceil
       real(eb) :: wall_center(10,3)
       real(eb) :: br, dr, hr
@@ -84,7 +84,6 @@ module cenviro
     integer, dimension(4*nr,5) :: izwall
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
-    integer, dimension(nr) :: izrvol, iznwall(nr)
     integer, dimension(nr,7) :: izhall
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac

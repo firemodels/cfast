@@ -1175,7 +1175,7 @@
     do i = 1, nr
         roomi=>roominfo(i)
         
-        izrvol(i) = 0
+        roomi%izrvol = 0
         do j = 1, mxpts
             roomi%zzrvol(j) = 0.0_eb
             roomi%zzrarea(j) = 0.0_eb

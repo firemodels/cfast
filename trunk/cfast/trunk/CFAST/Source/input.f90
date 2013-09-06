@@ -357,7 +357,7 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        npts = izrvol(i)
+        npts = roomi%izrvol
         if(npts/=0)then
 
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
@@ -385,7 +385,7 @@
             endif
 
             npts = npts + ioff + ioff2
-            izrvol(i) = npts
+            roomi%izrvol = npts
 
             ! copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
             roomi%zzrhgt(1) = 0.0_eb
@@ -1549,8 +1549,8 @@
             ierror = 49
             return
         endif
-        if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
-        izrvol(iroom) = npts
+        if(roomi%izrvol/=0) npts = min(roomi%izrvol,npts)
+        roomi%izrvol = npts
 
         ! make sure all data is positive 
         do  i = 1, npts
@@ -1591,8 +1591,8 @@
             ierror = 53
             return
         endif
-        if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
-        izrvol(iroom) = npts
+        if(roomi%izrvol/=0)npts = min(roomi%izrvol,npts)
+        roomi%izrvol = npts
 
         ! make sure all data is positive 
         do i = 1, npts

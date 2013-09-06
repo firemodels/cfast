@@ -1726,14 +1726,12 @@
         end do
         do iroom = 1, nm1
             icnt = 0
-            iznwall(iroom) = 0
             do iwall = 1, 4
                 if (switch(iwall,iroom)) then
                     ieq = ieq + 1
                     izwmap2(iwall,iroom) = ieq
                     icnt = icnt + 1
                     icol = icol + 1
-                    iznwall(iroom) = iznwall(iroom) + 1
 
                     ! define izwall, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
@@ -1832,7 +1830,7 @@
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
 
             ! calculate layer height for non-rectangular rooms
-            npts = izrvol(iroom)
+            npts = roomi%izrvol
             if(npts==0)then
                 roomi%zzhlay(upper) = roomi%zzvol(upper) / roomi%ar
                 roomi%zzhlay(lower) = roomi%zzvol(lower) / roomi%ar

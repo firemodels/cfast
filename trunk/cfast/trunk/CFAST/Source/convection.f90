@@ -120,12 +120,14 @@
 
             ieqtyp = izeqmap(jaccol,1)
             iroom = izeqmap(jaccol,2)
+            roomi=>roominfo(iroom)
+            
             if(ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqwt)then
                 if(ieqtyp==eqwt)iroom = izwall(iroom,1)
                 do iwall = 1, 4
                     roomflg(iroom) = .true.
                     if(switch(iwall,iroom))then
-                        iw = izwmap2(iwall,iroom) - nofwt
+                        iw = roomi%izwmap2(iwall) - nofwt
                         wallflg(iw) = .true.
                     endif
                 end do

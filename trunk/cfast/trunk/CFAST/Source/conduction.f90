@@ -68,7 +68,7 @@
         twint = roomi%zzwtemp(iwall,1)
         twext = roomi%zzwtemp(iwall,2)
         tgas = eta(iroom)
-        iweq = izwmap2(iwall,iroom) - nofwt
+        iweq = roomi%izwmap2(iwall) - nofwt
         iwb = izwall(iweq,5)
 
         ! compute flux seen by exterior of wall

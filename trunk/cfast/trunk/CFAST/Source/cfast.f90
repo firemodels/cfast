@@ -168,6 +168,8 @@
     real(eb) :: work(lrw)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nalg2, nprint, i, ioff0,  info, ii, ieq1, ieq2, nodes
     real(eb) :: tol
+    
+    type(room_type), pointer :: fire_room
 
 1   continue
 
@@ -184,7 +186,7 @@
     nalg0 = nhvalg
     nalg1 = nm1 + nhvalg
     nprint = -1
-
+    
     ! room pressures
     do i = 1, nm1
         hhvp(i) = p(i+nofp)
@@ -206,16 +208,18 @@
     if (option(fpsteady)==1) then
         call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrw)
     elseif (option(fpsteady)==2) then
+        fire_room=>roominfo(lfbo)
+        
         ioff0 = nalg1
 
         ! upper layer temperatures
         nalg2 = nalg1 + 1
-        hhvp(1+ioff0) = roominfo(lfbo)%zzftemp(upper)
+        hhvp(1+ioff0) = fire_room%zzftemp(upper)
 
         ! wall temperatures
         ii = 0
-        ieq1 = izwmap2(1,lfbo)
-        ieq2 = izwmap2(3,lfbo)
+        ieq1 = fire_room%izwmap2(1)
+        ieq2 = fire_room%izwmap2(3)
         if(ieq1/=0)then
             ii = ii + 1
             nalg2 = nalg2 + 1
@@ -1504,7 +1508,7 @@
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
         
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomi, dead_room
+    type(room_type), pointer :: roomi, dead_room, from_room, to_room
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1722,14 +1726,16 @@
         ieq = nofwt
         ! set izwmap2 for the outside room first
         do iwall = 1,4
-            izwmap2(iwall,nm1+1) = 0
+            roominfo(nm1+1)%izwmap2(iwall) = 0
         end do
         do iroom = 1, nm1
+            roomi=>roominfo(iroom)
+            
             icnt = 0
             do iwall = 1, 4
                 if (switch(iwall,iroom)) then
                     ieq = ieq + 1
-                    izwmap2(iwall,iroom) = ieq
+                    roomi%izwmap2(iwall) = ieq
                     icnt = icnt + 1
                     icol = icol + 1
 
@@ -1748,11 +1754,11 @@
                     izwall(ii,5) = iwbound
 
                 else
-                    izwmap2(iwall,iroom) = 0
+                    roomi%izwmap2(iwall) = 0
                 endif
             end do
-            izwmap(1,iroom) = icol - icnt + 1
-            izwmap(2,iroom) = icnt
+            roomi%izwmap(1) = icol - icnt + 1
+            roomi%izwmap(2) = icnt
         end do
 
         ! update izwall for ceiling/floors that are connected 
@@ -1761,8 +1767,11 @@
             ifromw = izswal(i,2)
             itor = izswal(i,3)
             itow = izswal(i,4)
-            ieqfrom = izwmap2(ifromw,ifromr) - nofwt
-            ieqto = izwmap2(itow,itor) - nofwt
+            from_room=>roominfo(ifromr)
+            to_room=>roominfo(itor)
+            
+            ieqfrom = from_room%izwmap2(ifromw) - nofwt
+            ieqto = to_room%izwmap2(itow) - nofwt
 
             izwall(ieqfrom,3) = itor
             izwall(ieqfrom,4) = itow
@@ -1937,15 +1946,18 @@
             roomi=>roominfo(iroom)
             
             do iwall = 1, nwal
-                iwalleq = izwmap2(iwall,iroom)
+                iwalleq = roomi%izwmap2(iwall)
                 if(iwalleq/=0)then
                     ieqfrom = iwalleq - nofwt
                     ifromr = izwall(ieqfrom,1)
                     ifromw = izwall(ieqfrom,2)
                     itor = izwall(ieqfrom,3)
                     itow = izwall(ieqfrom,4)
+
+                    to_room=>roominfo(itor)
+                    
                     roomi%zzwtemp(iwall,1) = pdif(iwalleq)
-                    iwalleq2 = izwmap2(itow,itor)
+                    iwalleq2 = to_room%izwmap2(itow)
                     iinode = numnode(1,iwall,iroom)
                     if(iwalleq2==0)then
                         roomi%zzwtemp(iwall,2) = twj(iinode,iroom,iwall)

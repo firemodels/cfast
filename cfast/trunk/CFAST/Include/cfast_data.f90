@@ -17,6 +17,7 @@ module types
       real(eb) :: zzgspec(2,ns), zzcspec(2,ns)
       real(eb) :: zzwspec(nwal)
       real(eb) :: zzvmin, zzvmax
+      real(eb) :: zzrvol(mxpts), zzrarea(mxpts), zzrhgt(mxpts)
     end type room_type
 
 ! fire data structure
@@ -71,7 +72,6 @@ module cenviro
     real(eb), dimension(nr,4) :: zzwarea
     real(eb), dimension(nr,10) :: zzwarea2
     real(eb), dimension(nr,8) :: zzhall
-    real(eb), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
     real(eb), dimension(2,nr) :: zzabsb, zzbeam
     real(eb), dimension(0:nv+1) :: zzdisc
     real(eb), dimension(nr,nr) :: zzhtfrac

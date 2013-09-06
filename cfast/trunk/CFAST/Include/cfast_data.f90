@@ -3,6 +3,7 @@
 
 module types
     use precision_parameters
+    use cparams
 !  room data structure
 
     type room_type
@@ -12,6 +13,7 @@ module types
       real(eb) :: ar, vr, hrp, hrl, hflr
       real(eb) :: zzrelp, zzpabs
       real(eb) :: zzvol(2), zzhlay(2), zztemp(2), zzrho(2), zzmass(2)
+      real(eb) :: zzgspec(2,ns), zzcspec(2,ns)
     end type room_type
 
 ! fire data structure
@@ -61,7 +63,6 @@ module cenviro
     
     real(eb), dimension(nr) :: zzvmin, zzvmax
     real(eb), dimension(nr,2) :: zzftemp
-    real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
     real(eb), dimension(nr,nwal) :: zzwspec
     real(eb), dimension(nr,nwal,2) :: zzwtemp
     real(eb), dimension(mxhvsys,ns) :: zzhvpr

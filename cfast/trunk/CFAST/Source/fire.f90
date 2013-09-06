@@ -76,8 +76,8 @@
             oplume(1,iobj) = omasst
 
             do lsp = 1, ns
-                stmass(upper,lsp) = zzgspec(iroom,upper,lsp)
-                stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
+                stmass(upper,lsp) = roomi%zzgspec(upper,lsp)
+                stmass(lower,lsp) = roomi%zzgspec(lower,lsp)
             end do
             
             call dofire(i,iroom,oplume(1,iobj),roomi%hr,roomi%br,roomi%dr,objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
@@ -254,7 +254,7 @@
             xeme = min(xeme,qheatl/(max((xtu-xtl),1.0_eb)*cp))
             xems = xemp + xeme
 
-            source_o2 = zzcspec(iroom,lower,2)
+            source_o2 = roomi%zzcspec(lower,2)
             if (iquench(iroom)>0) then
                 activated_time = xdtect(iquench(iroom),dtact)
                 activated_rate = xdtect(iquench(iroom),drate)
@@ -319,7 +319,7 @@
 
             call firplm(fplume(ifire), objectsize,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
-            source_o2 = zzcspec(iroom,upper,2)
+            source_o2 = roomi%zzcspec(upper,2)
             call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
             xqfr = xqpyrl * chirad + xqfr
@@ -813,8 +813,8 @@
                 from_room=>roominfo(iroom1)
                 to_room=>roominfo(iroom2)
                 
-                flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
-                flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
+                flw1to2 = from_room%zzcspec(upper,7)*(vss(1,i)+vsa(1,i))
+                flw2to1 = to_room%zzcspec(upper,7)*(vss(2,i)+vsa(2,i))
                 call djfire(iroom2,from_room%zztemp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
                 call djfire(iroom1,to_room%zztemp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
@@ -895,9 +895,13 @@
 
     real(eb) :: xmass(ns), dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
     integer :: i
+    
+    type(room_type), pointer :: to_room
 
     qpyrol = 0.0_eb
     djflowflg = .false.
+    
+    to_room=>roominfo(ito)
 
     ! we only wnat to do the door jet calculation if there is fuel, oxygen, and sufficient temperature in the door jet
     if (xxnetfl>0.0_eb.and.sas>0.0_eb.and.tjet>=tgignt) then
@@ -910,7 +914,7 @@
         do i = 1, ns
             xmass(i) = 0.0_eb
         end do
-        source_o2 = zzcspec(ito,lower,2)
+        source_o2 = to_room%zzcspec(lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
         call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
@@ -1156,7 +1160,7 @@
         do k = upper, lower
             air(k) = 0.0_eb
             do lsp = 1, 9
-                air(k) = air(k) + zzgspec(i,k,lsp) / aweigh(lsp)
+                air(k) = air(k) + roomi%zzgspec(k,lsp) / aweigh(lsp)
             end do
             air(k) = max(avagad,air(k))
         end do
@@ -1165,7 +1169,7 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 do k = upper, lower
-                    ppmdv(k,i,lsp) = zzgspec(i,k,lsp) / v(k)
+                    ppmdv(k,i,lsp) = roomi%zzgspec(k,lsp) / v(k)
                 end do
             endif
         end do
@@ -1175,9 +1179,9 @@
             if (activs(lsp)) then
                 do k = upper, lower
                     if (ppmcal(lsp)) then
-                        toxict(i,k,lsp) = 1.d+6 * zzgspec(i,k,lsp) / (air(k)*aweigh(lsp))
+                        toxict(i,k,lsp) = 1.e6_eb * roomi%zzgspec(k,lsp) / (air(k)*aweigh(lsp))
                     else
-                        toxict(i,k,lsp) = 100._eb * zzgspec(i,k,lsp) / (air(k)*aweigh(lsp))
+                        toxict(i,k,lsp) = 100._eb * roomi%zzgspec(k,lsp) / (air(k)*aweigh(lsp))
                     endif
                 end do
             endif
@@ -1208,7 +1212,7 @@
         lsp = 11
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
+                toxict(i,k,lsp) = roomi%zzgspec(k,lsp) ! / (tradio+1.0d-10)
             end do
         endif
 
@@ -1478,8 +1482,8 @@
                     endif
 
                     ! use environment variables
-                    hclg = zzcspec(iroom,layer,6)
-                    h2o = zzcspec(iroom,layer,8)
+                    hclg = roomi%zzcspec(layer,6)
+                    h2o = roomi%zzcspec(layer,8)
                     rho = roomi%zzrho(layer)
                     tg = roomi%zztemp(layer)
                     hclw = zzwspec(iroom,iwall)

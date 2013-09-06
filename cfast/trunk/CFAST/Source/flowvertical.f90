@@ -125,8 +125,8 @@
             do lsp = 1, ns
                 if (activs(lsp)) then
                     index = pp+lsp-1
-                    xxmixl = zzcspec(ifrm,lower,lsp) * xxml
-                    xxmixu = zzcspec(ifrm,upper,lsp) * xxmu
+                    xxmixl = from_room%zzcspec(lower,lsp) * xxml
+                    xxmixu = from_room%zzcspec(upper,lsp) * xxmu
 
                     ! deposit mass and enthalphy into "to" room variables (not outside)
                     if (ito<=nm1) then

@@ -152,7 +152,7 @@
             else
                 call convec(iwall,roomi%zztemp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
             endif
-            flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)
+            flwcv(i,ilay) = flwcv(i,ilay) - roomi%zzwarea(iwall)*flxcv(i,iwall)
         endif
     end do
 
@@ -985,7 +985,7 @@
             if (.not.(switch(iwall,i).and.cjeton(iwall).and.nrmfire>0)) then
                 flxcjt(i,iwall) = 0.0_eb
             endif
-            flwcjt(i,ilay) = flwcjt(i,ilay) - zzwarea(i,iwall)*flxcjt(i,iwall)
+            flwcjt(i,ilay) = flwcjt(i,ilay) - roomi%zzwarea(iwall)*flxcjt(i,iwall)
         end do
     end do
     return

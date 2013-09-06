@@ -1867,22 +1867,22 @@
             yy = roomi%dr
             zzu = roomi%zzhlay(upper)
             zzl = roomi%zzhlay(lower)
-            zzwarea2(iroom,1) = roomi%ar
-            zzwarea2(iroom,2) = zzu*xx
-            zzwarea2(iroom,3) = zzu*yy
-            zzwarea2(iroom,4) = zzu*xx
-            zzwarea2(iroom,5) = zzu*yy
-            zzwarea2(iroom,6) = zzl*xx
-            zzwarea2(iroom,7) = zzl*yy
-            zzwarea2(iroom,8) = zzl*xx
-            zzwarea2(iroom,9) = zzl*yy
-            zzwarea2(iroom,10) = roomi%ar
+            roomi%zzwarea2(1) = roomi%ar
+            roomi%zzwarea2(2) = zzu*xx
+            roomi%zzwarea2(3) = zzu*yy
+            roomi%zzwarea2(4) = zzu*xx
+            roomi%zzwarea2(5) = zzu*yy
+            roomi%zzwarea2(6) = zzl*xx
+            roomi%zzwarea2(7) = zzl*yy
+            roomi%zzwarea2(8) = zzl*xx
+            roomi%zzwarea2(9) = zzl*yy
+            roomi%zzwarea2(10) = roomi%ar
 
             ! compute area of 4 wall segments
-            zzwarea(iroom,1) = roomi%ar
-            zzwarea(iroom,2) = roomi%ar
-            zzwarea(iroom,3) = (yy + xx)*zzu * xwall_center
-            zzwarea(iroom,4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
+            roomi%zzwarea(1) = roomi%ar
+            roomi%zzwarea(2) = roomi%ar
+            roomi%zzwarea(3) = (yy + xx)*zzu * xwall_center
+            roomi%zzwarea(4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)

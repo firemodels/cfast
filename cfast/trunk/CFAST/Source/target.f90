@@ -328,7 +328,7 @@
             tauu = exp(-absu*zu)
             alphau = 1.0_eb - tauu
 
-            awall = zzwarea2(iroom,iwall)
+            awall = roomi%zzwarea2(iwall)
             qwt = qout*taul*tauu
             if(iwall<=5)then
                 qgas = tl**4*alphal*tauu + tu**4*alphau

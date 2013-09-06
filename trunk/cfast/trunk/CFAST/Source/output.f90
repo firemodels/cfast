@@ -852,11 +852,15 @@
 
     integer :: nhalls, i
     real(eb) :: tstart, vel, depth, dist
+    
+    type(room_type), pointer :: roomi
 
 
     nhalls = 0
     do i = 1, nm1
-        if(izhall(i,ihroom)==1)nhalls = nhalls + 1
+        roomi=>roominfo(i)
+        
+        if(roomi%izhall(ihroom)==1)nhalls = nhalls + 1
     end do
     if(nhalls==0)return
     write(iofilo,5000)
@@ -866,12 +870,14 @@
     '-----------------------------------------------------------------')
 
     do i = 1, nm1
-        if(izhall(i,ihroom)/=0) then
-            tstart = zzhall(i,ihtime0)
-            vel = zzhall(i,ihvel)
-            depth = zzhall(i,ihdepth)
-            dist = zzhall(i,ihdist)
-            if(dist>zzhall(i,ihmaxlen))dist = zzhall(i,ihmaxlen)
+        roomi=>roominfo(i)
+        
+        if(roomi%izhall(ihroom)/=0) then
+            tstart = roomi%zzhall(ihtime0)
+            vel = roomi%zzhall(ihvel)
+            depth = roomi%zzhall(ihdepth)
+            dist = roomi%zzhall(ihdist)
+            if(dist>roomi%zzhall(ihmaxlen))dist = roomi%zzhall(ihmaxlen)
             write(iofilo,30)i,tstart,vel,depth,dist
 30          format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
         end if

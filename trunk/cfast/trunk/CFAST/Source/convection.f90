@@ -950,7 +950,7 @@
 
         ! handle ceiling jets that are not in active halls
 
-        if (cjeton(nwal+1).and.nrmfire>0.and.izhall(i,ihmode)/=ihduring) then
+        if (cjeton(nwal+1).and.nrmfire>0.and.roomi%izhall(ihmode)/=ihduring) then
             do ifire = 1, nrmfire
                 ifpnt = ifrpnt(i,2) + ifire - 1
                 if (switch(1,i)) then
@@ -973,7 +973,7 @@
         endif
 
         ! handle ceiling jets that are in active halls
-        if(izhall(i,ihmode)==ihduring)call hallht(i,id,nd)
+        if(roomi%izhall(ihmode)==ihduring)call hallht(i,id,nd)
 
         do iwall = 1, 4
             if(mod(iwall,2)==1)then

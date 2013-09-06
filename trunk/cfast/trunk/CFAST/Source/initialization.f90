@@ -820,11 +820,11 @@
     do i = 1, nm1
         roomi=>roominfo(i)
         
-        if(izhall(i,ihroom)==1)then
+        if(roomi%izhall(ihroom)==1)then
             if(roomi%dr>roomi%br)then
-                izhall(i,ihxy) = 1
+                roomi%izhall(ihxy) = 1
             else
-                izhall(i,ihxy) = 2
+                roomi%izhall(ihxy) = 2
             endif
         endif
     end do
@@ -855,7 +855,7 @@
     real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
     
-    type(room_type), pointer :: roomi
+    type(room_type), pointer :: roomi, roomj
 
     ! set some initialization - simple control stuff
     exset = .false.
@@ -1148,20 +1148,22 @@
 
     ! initialize hall start time
     do i = 1, nr
-        zzhall(i,ihtime0) = -1.0d0
-        zzhall(i,ihvel) = -1.0d0
-        zzhall(i,ihdepth) = -1.0d0
-        zzhall(i,ihmaxlen) = -1.0d0
-        zzhall(i,ihhalf) = -1.0d0
-        zzhall(i,ihtemp) = 0.0d0
-        zzhall(i,ihorg) = -1.0d0
-        izhall(i,ihdepthflag) = 0
-        izhall(i,ihhalfflag) = 0
-        izhall(i,ihmode) = ihafter
-        izhall(i,ihroom) = 0
-        izhall(i,ihvelflag) = 0
-        izhall(i,ihventnum) = 0
-        izhall(i,ihxy) = 0
+        roomi=>roominfo(i)
+        
+        roomi%zzhall(ihtime0) = -1.0d0
+        roomi%zzhall(ihvel) = -1.0d0
+        roomi%zzhall(ihdepth) = -1.0d0
+        roomi%zzhall(ihmaxlen) = -1.0d0
+        roomi%zzhall(ihhalf) = -1.0d0
+        roomi%zzhall(ihtemp) = 0.0d0
+        roomi%zzhall(ihorg) = -1.0d0
+        roomi%izhall(ihdepthflag) = 0
+        roomi%izhall(ihhalfflag) = 0
+        roomi%izhall(ihmode) = ihafter
+        roomi%izhall(ihroom) = 0
+        roomi%izhall(ihvelflag) = 0
+        roomi%izhall(ihventnum) = 0
+        roomi%izhall(ihxy) = 0
         do ivent = 1, mxvent
             zzventdist(i,ivent) = -1.
         end do
@@ -1203,7 +1205,9 @@
     end do
 
     do j = 0, nr
-        izheat(j) = 0
+        roomj=>roominfo(j)
+        
+        roomj%izheat = 0
         do i = 1, nr
             izhtfrac(i,j) = 0
         end do

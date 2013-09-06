@@ -771,11 +771,11 @@
         ylay = roomi%zzhlay(lower)
 
         ! this is a hall, the vent number is defined and flow is occuring
-        if(izhall(iroom,ihroom)==1.and.ivent/=0.and.izhall(iroom,ihmode)==ihduring)then
+        if(roomi%izhall(ihroom)==1.and.ivent/=0.and.roomi%izhall(ihmode)==ihduring)then
             ventdist = zzventdist(iroom,ivent)
             if(ventdist>0.0_eb)then
-                time0 = zzhall(iroom,ihtime0)
-                vel = zzhall(iroom,ihvel)
+                time0 = roomi%zzhall(ihtime0)
+                vel = roomi%zzhall(ihvel)
                 cjetdist = vel*(stime-time0)
                 if(cjetdist<ventdist)then
                     up = lower
@@ -797,7 +797,7 @@
         end do
         tu = roomi%zztemp(up)
         tl = roomi%zztemp(lower)
-        zloc = roomi%hr - zzhall(iroom,ihdepth)/2.0_eb
+        zloc = roomi%hr - roomi%zzhall(ihdepth)/2.0_eb
         if(hallflag)then
             call halltrv(iroom,cjetdist,zloc,tu,rhou,hallvel)
         endif

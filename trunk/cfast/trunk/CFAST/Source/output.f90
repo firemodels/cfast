@@ -355,6 +355,8 @@
     character :: stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255,lnames(2)*5, wtype(4)*10
     external length
     integer :: length, i, j, layer, ic, lsp, iw
+    
+    type(room_type), pointer :: roomi
 
     data lnames /'Upper', 'Lower'/
     data iwptr /1, 3, 4, 2/
@@ -395,6 +397,8 @@
             write (iofilo,5030) ('-',i = 1,ic)
             write (ciout,5010)
             do i = 1, nm1
+                roomi=>roominfo(i)
+                
                 write (ciout,5060) compartmentnames(i)
                 ic = 14
                 if (layer==upper.or.izshaft(i)==0) then
@@ -405,7 +409,7 @@
                     if (activs(6)) then
                         do iw = 1, 4
                             if (swl(iwptr(iw))) then
-                                write (ciout(ic:ic+9),5040) zzwspec(i,iwptr(iw))
+                                write (ciout(ic:ic+9),5040) roomi%zzwspec(iwptr(iw))
                                 ic = ic + 10
                             endif
                         end do

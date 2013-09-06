@@ -2041,6 +2041,8 @@
         if (activs(6)) then
             isof = nofhcl
             do iroom = 1, nm1
+                roomi=>roominfo(iroom)
+                
                 do lsp = 1, nwal
                     isof = isof + 1
                     if (iflag==odevarb) then
@@ -2048,7 +2050,7 @@
                     else
                         ppwgas = pdif(isof)
                     endif
-                    zzwspec(iroom,lsp) = ppwgas
+                    roomi%zzwspec(lsp) = ppwgas
                 end do
             end do
         endif

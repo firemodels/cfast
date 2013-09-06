@@ -9,6 +9,7 @@ module types
     type room_type
       integer :: izshaft, izrvol
       integer :: izwmap(2), izwmap2(4)
+      integer :: izhall(7), izheat
       real(eb) :: yflor, yceil
       real(eb) :: wall_center(10,3)
       real(eb) :: br, dr, hr
@@ -22,6 +23,7 @@ module types
       real(eb) :: zzwarea(4), zzwarea2(10)
       real(eb) :: zzftemp(2)
       real(eb) :: zzwtemp(nwal,2)
+      real(eb) :: zzhall(8)
 
     end type room_type
 
@@ -72,7 +74,6 @@ module cenviro
     
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
     real(eb), dimension(mxhvsys) :: zzhvm
-    real(eb), dimension(nr,8) :: zzhall
     real(eb), dimension(2,nr) :: zzabsb, zzbeam
     real(eb), dimension(0:nv+1) :: zzdisc
     real(eb), dimension(nr,nr) :: zzhtfrac
@@ -83,12 +84,10 @@ module cenviro
     integer, dimension(4*nr,5) :: izwall
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
-    integer, dimension(nr,7) :: izhall
-    integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
     
-    type(room_type), target :: roominfo(nr)
+    type(room_type), target :: roominfo(0:nr)
 
 end module cenviro
 

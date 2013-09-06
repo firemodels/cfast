@@ -20,12 +20,16 @@
 
     real(eb) :: xx, yy, zz, xlen, temp, rho, vel
     integer :: id
+    
+    type(room_type), pointer :: roomi
 
+    roomi=>roominfo(iroom)
+    
     do id = idstart, idstart + nd - 1
         xx = xdtect(id,dxloc)
         yy = xdtect(id,dyloc)
         zz = xdtect(id,dzloc)
-        if(izhall(iroom,ihxy)==1)then
+        if(roomi%izhall(ihxy)==1)then
             xlen = xx
         else
             xlen = yy
@@ -56,21 +60,21 @@
 
     roomi=>roominfo(iroom)
     
-    if(izhall(iroom,ihmode)==ihduring)then
-        cjetheight = roomi%hr - zzhall(iroom,ihdepth)
+    if(roomi%izhall(ihmode)==ihduring)then
+        cjetheight = roomi%hr - roomi%zzhall(ihdepth)
 
         ! location is in hall ceiling jet
-        if(zloc>=cjetheight.and.xloc<=zzhall(iroom,ihdist))then
+        if(zloc>=cjetheight.and.xloc<=roomi%zzhall(ihdist))then
             c1 = 1.0_eb
-            ihalf = izhall(iroom,ihhalfflag)
-            hhalf = zzhall(iroom,ihhalf)
-            dt0 = zzhall(iroom,ihtemp)
+            ihalf = roomi%izhall(ihhalfflag)
+            hhalf = roomi%zzhall(ihhalf)
+            dt0 = roomi%zzhall(ihtemp)
 
             ! check to see if the user specified a hhalf value on the command line. if not (ie if ihalf==0) then calculate it using the correlations.
             if(ihalf==0)then
                 ! hhalf = -log10(2)/.018
                 hhalf = 16.70_eb
-                zzhall(iroom,ihhalf) = hhalf
+                roomi%zzhall(ihhalf) = hhalf
             endif
 
             ! if hhalf < 0.0 then assume that the temperature does not decay (ie flow is adiabatic)
@@ -82,7 +86,7 @@
 
             halltemp = roomi%zztemp(lower) + dt0*fact
             hallrho = roomi%zzpabs/(rgas*halltemp)
-            hallvel = zzhall(iroom,ihvel)
+            hallvel = roomi%zzhall(ihvel)
         else
             halltemp = roomi%zztemp(lower)
             hallrho = roomi%zzrho(lower)
@@ -129,7 +133,7 @@
 
     ! this routine is only executed if 1) hall flow has not started yet or 2)  hall flow has started and it is coming from the ivent'th vent
 
-    if(izhall(ihall,ihventnum)/=0.and.izhall(ihall,ihventnum)/=inum)return
+    if(hallroom%izhall(ihventnum)/=0.and.hallroom%izhall(ihventnum)/=inum)return
     roomwidth = min(hallroom%br,hallroom%dr)
     roomlength = max(hallroom%br,hallroom%dr)
     ventwidth = min(width,roomwidth)
@@ -138,18 +142,18 @@
     hallvel = hvel*fraction
 
     ! hall flow has not started yet
-    if(izhall(ihall,ihventnum)==0)then
+    if(hallroom%izhall(ihventnum)==0)then
 
         ! flow is going into the hall room and flow is below the soffit
         if(hallvel>0.0_eb.and.halldepth>0.0_eb)then
-            izhall(ihall,ihventnum) = inum
-            izhall(ihall,ihmode) = ihduring
-            zzhall(ihall,ihtime0) = tsec
-            zzhall(ihall,ihtemp) = hhtemp
-            zzhall(ihall,ihdist) = 0.0_eb
-            if(izhall(ihall,ihvelflag)==0)zzhall(ihall,ihvel) = hallvel
-            if(izhall(ihall,ihdepthflag)==0)then
-                zzhall(ihall,ihdepth) = halldepth
+            hallroom%izhall(ihventnum) = inum
+            hallroom%izhall(ihmode) = ihduring
+            hallroom%zzhall(ihtime0) = tsec
+            hallroom%zzhall(ihtemp) = hhtemp
+            hallroom%zzhall(ihdist) = 0.0_eb
+            if(hallroom%izhall(ihvelflag)==0)hallroom%zzhall(ihvel) = hallvel
+            if(hallroom%izhall(ihdepthflag)==0)then
+                hallroom%zzhall(ihdepth) = halldepth
             endif
             ventdist0 = -1.
 
@@ -165,13 +169,13 @@
 
             ! corridor flow coming from the main fire. this is a restriction, but lets get it right for the main fire before we worry about objects
             if(itype==2)then
-                if(izhall(ihall,ihxy)==1)then
+                if(hallroom%izhall(ihxy)==1)then
                     ventdist0 = xfire(1,1)
                 else
                     ventdist0 = xfire(1,2)
                 endif
             endif
-            zzhall(ihall,ihorg) = ventdist0
+            hallroom%zzhall(ihorg) = ventdist0
 
             ventdist = -1.0_eb
             ventdistmax = ventdist 
@@ -204,7 +208,7 @@
             end do
 
             ! let the maximum distance that flow in a corridor can flow be the width of the room, ie:
-            zzhall(ihall,ihmaxlen) = roomlength - ventdist0
+            hallroom%zzhall(ihmaxlen) = roomlength - ventdist0
 
             return
         endif
@@ -212,27 +216,27 @@
     endif
 
     ! hall flow is coming from a vent or a fire
-    if(izhall(ihall,ihventnum)==inum)then
-        thall0 = zzhall(ihall,ihtime0)
+    if(hallroom%izhall(ihventnum)==inum)then
+        thall0 = hallroom%zzhall(ihtime0)
         f1 = (told - thall0)/(stime-thall0)
         f2 = (stime - told)/(stime-thall0)
-        if(izhall(ihall,ihvelflag)==0)then
-            zzhall(ihall,ihvel) = zzhall(ihall,ihvel)*f1 + abs(hallvel)*f2
+        if(hallroom%izhall(ihvelflag)==0)then
+            hallroom%zzhall(ihvel) = hallroom%zzhall(ihvel)*f1 + abs(hallvel)*f2
         endif
-        if(izhall(ihall,ihdepthflag)==0)then
-            zzhall(ihall,ihdepth) = zzhall(ihall,ihdepth)*f1 + halldepth*f2
+        if(hallroom%izhall(ihdepthflag)==0)then
+            hallroom%zzhall(ihdepth) = hallroom%zzhall(ihdepth)*f1 + halldepth*f2
         endif
-        zzhall(ihall,ihtemp) = zzhall(ihall,ihtemp)*f1 + hhtemp*f2
-        ventdistmax = zzhall(ihall,ihmaxlen)
+        hallroom%zzhall(ihtemp) = hallroom%zzhall(ihtemp)*f1 + hhtemp*f2
+        ventdistmax = hallroom%zzhall(ihmaxlen)
         ventdistmin = roomlength - ventdistmax
-        cjetdist = zzhall(ihall,ihdist) + dt*zzhall(ihall,ihvel)
+        cjetdist = hallroom%zzhall(ihdist) + dt*hallroom%zzhall(ihvel)
 
         ! if ceiling jet has reached the end of the hall then indicate this fact in izhall  
         if(cjetdist>=ventdistmax)then
-            izhall(ihall,ihmode) = ihafter
+            hallroom%izhall(ihmode) = ihafter
             cjetdist = ventdistmax
         endif
-        zzhall(ihall,ihdist) = cjetdist
+        hallroom%zzhall(ihdist) = cjetdist
     endif
     return
     end

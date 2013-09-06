@@ -1508,7 +1508,7 @@
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
         
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomi, dead_room, from_room, to_room
+    type(room_type), pointer :: roomi, roomj, dead_room, from_room, to_room
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1606,6 +1606,7 @@
             roomi=>roominfo(i)
             
             do j = i + 1, n
+                roomj=>roominfo(j)
                 if (nw(i,j)/=0) then
                     do k = 1, mxccv
                         if (iand(frmask(k),nw(i,j))/=0) then
@@ -1623,14 +1624,14 @@
                             ventptr%counter=k
 
                             ! is "from" room a hall?
-                            if(izhall(i,ihroom)==1)then
+                            if(roomi%izhall(ihroom)==1)then
                                 ventptr%is_from_hall=1
                             else
                                 ventptr%is_from_hall=0
                             endif
 
                             ! is "to" room a hall?
-                            if(izhall(j,ihroom)==1)then
+                            if(roomj%izhall(ihroom)==1)then
                                 ventptr%is_to_hall=1
                             else
                                 ventptr%is_to_hall=0

@@ -79,7 +79,7 @@
             call convec(irevwc(iwall),tgas,twext,wfluxout)
             wfluxout = wfluxout + sigma * (tgas**4-twext**4)
             wfluxsave = wfluxout
-            if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
+            if(roomi%izheat/=0.and.iwall/=1.and.iwall/=2)then
 
                 ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.  if izheat(iroom) is not zero then
                 ! nwroom better not be zero!  nwroom should always be zero for iwall=3 and iwall=4

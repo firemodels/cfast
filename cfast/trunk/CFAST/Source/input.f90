@@ -427,16 +427,20 @@
     ! 0. .25 .25 .25 .25
 
     ! force all rooms to transfer heat between connected rooms
-    if(izheat(0)==1)then
+    if(roominfo(0)%izheat==1)then
         do i = 1, nm1
-            izheat(i) = 1
+            roomi=>roominfo(i)
+            
+            roomi%izheat = 1
         end do
     endif
 
     do i = 1, nm1
+    
+        roomi=>roominfo(i)
 
         ! force heat transfer between rooms connected by vents.
-        if(izheat(i)==1)then
+        if(roomi%izheat==1)then
             do j = 1, nm1+1
                 nventij = 0
                 do k = 1, 4
@@ -450,7 +454,7 @@
         endif
 
         ! normalize zzhtfrac fraction matrix so that rows sum to one
-        if(izheat(i)/=0)then
+        if(roomi%izheat/=0)then
             sum = 0.0_eb
             do j = 1, nm1+1
                 sum = sum + zzhtfrac(i,j)
@@ -544,7 +548,7 @@
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
     
-    type(room_type), pointer :: roomi, roomj
+    type(room_type), pointer :: roomi, roomj, from_room
     
     data plumemodel /'McCaffrey', 'Heskestad'/
 
@@ -1487,7 +1491,8 @@
             return
         endif
 
-        IROOM = lrarray(1)
+        iroom = lrarray(1)
+        roomi=>roominfo(iroom)
 
         ! check that specified room is valid
         if(iroom<0.or.iroom>n)then
@@ -1496,32 +1501,32 @@
             return
         endif
 
-        izhall(iroom,ihroom) = 1
-        izhall(iroom,ihvelflag) = 0
-        izhall(iroom,ihdepthflag) = 0
-        izhall(iroom,ihventnum) = 0
-        zzhall(iroom,ihtime0) = -1.0_eb
-        zzhall(iroom,ihvel) = 0.0_eb
-        zzhall(iroom,ihdepth) = -1.0_eb
-        zzhall(iroom,ihhalf) = -1.0_eb
+        roomi%izhall(ihroom) = 1
+        roomi%izhall(ihvelflag) = 0
+        roomi%izhall(ihdepthflag) = 0
+        roomi%izhall(ihventnum) = 0
+        roomi%zzhall(ihtime0) = -1.0_eb
+        roomi%zzhall(ihvel) = 0.0_eb
+        roomi%zzhall(ihdepth) = -1.0_eb
+        roomi%zzhall(ihhalf) = -1.0_eb
 
         ! HALL velocity; not set if negative
         if(lrarray(2)>=0) then
-            zzhall(iroom,ihvel) = lrarray(2)
-            izhall(iroom,ihvelflag) = 1
+            roomi%zzhall(ihvel) = lrarray(2)
+            roomi%izhall(ihvelflag) = 1
         endif
 
         ! HALL layer depth; not set if negative
         if (lrarray(3)>=0) then
-            zzhall(iroom,ihdepth) = lrarray(3)
-            izhall(iroom,ihdepthflag) = 1
+            roomi%zzhall(ihdepth) = lrarray(3)
+            roomi%izhall(ihdepthflag) = 1
         endif
 
         ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
         if (lrarray(4)>=0) then
-            zzhall(iroom,ihhalf) = lrarray(4)
-            izhall(iroom,ihhalfflag) = 1
-            izhall(iroom,ihmode) = ihbefore
+            roomi%zzhall(ihhalf) = lrarray(4)
+            roomi%izhall(ihhalfflag) = 1
+            roomi%izhall(ihmode) = ihbefore
         endif
 
         ! ROOMA Compartment Number_of_Area_Values Area_Values
@@ -1651,9 +1656,10 @@
 
         nto = 0
         ifrom = lrarray(1)
+        from_room=>roominfo(ifrom)
 
         if (nret==1) then
-            izheat(ifrom) = 1
+            from_room%izheat = 1
             go to 10
         else
             nto = lrarray(2)
@@ -1662,8 +1668,7 @@
                 ierror = 59
                 return
             endif
-            izheat(ifrom) = 2
-            izheat(ifrom) = 2
+            from_room%izheat = 2
         endif
 
         if (2*nto/=(nret-2)) then

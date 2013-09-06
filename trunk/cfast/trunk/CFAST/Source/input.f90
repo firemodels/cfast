@@ -361,8 +361,8 @@
         if(npts/=0)then
 
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
-            if(zzrhgt(1,i)/=0.0_eb)then
-                temparea(1) = zzrarea(1,i)
+            if(roomi%zzrhgt(1)/=0.0_eb)then
+                temparea(1) = roomi%zzrarea(1)
                 temphgt(1) = 0.0_eb
                 ioff = 1
             else
@@ -371,14 +371,14 @@
 
             ! copy data to temporary arrays
             do j = 1, npts
-                temparea(j+ioff) = zzrarea(j,i)
-                temphgt(j+ioff) = zzrhgt(j,i)
+                temparea(j+ioff) = roomi%zzrarea(j)
+                temphgt(j+ioff) = roomi%zzrhgt(j)
             end do
 
             ! force last elevation to be at the ceiling (as defined by hr(i)
-            if(roomi%hr/=zzrhgt(npts,i))then
+            if(roomi%hr/=roomi%zzrhgt(npts))then
                 ioff2 = 1
-                temparea(npts+ioff+ioff2) = zzrarea(npts,i)
+                temparea(npts+ioff+ioff2) = roomi%zzrarea(npts)
                 temphgt(npts+ioff+ioff2) = roomi%hr
             else
                 ioff2 = 0
@@ -388,16 +388,16 @@
             izrvol(i) = npts
 
             ! copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
-            zzrhgt(1,i) = 0.0_eb
-            zzrvol(1,i) = 0.0_eb
-            zzrarea(1,i) = temparea(1)
+            roomi%zzrhgt(1) = 0.0_eb
+            roomi%zzrvol(1) = 0.0_eb
+            roomi%zzrarea(1) = temparea(1)
             j = 1
             do j = 2, npts
-                zzrhgt(j,i) = temphgt(j)
-                zzrarea(j,i) = temparea(j)
-                darea = (zzrarea(j,i)+zzrarea(j-1,i))/2.0_eb
-                dheight = zzrhgt(j,i) - zzrhgt(j-1,i)
-                zzrvol(j,i) = zzrvol(j-1,i) + darea*dheight
+                roomi%zzrhgt(j) = temphgt(j)
+                roomi%zzrarea(j) = temparea(j)
+                darea = (roomi%zzrarea(j)+roomi%zzrarea(j-1))/2.0_eb
+                dheight = roomi%zzrhgt(j) - roomi%zzrhgt(j-1)
+                roomi%zzrvol(j) = roomi%zzrvol(j-1) + darea*dheight
             end do
 
             ! re-define volume, area, breadth and depth arrays 
@@ -408,7 +408,7 @@
             ! br*dr=ar and br/dr remain the same as entered on
             ! the width and depth  commands.
 
-            roomi%vr = zzrvol(npts,i)
+            roomi%vr = roomi%zzrvol(npts)
             roomi%ar = roomi%vr/roomi%hr
             xx = roomi%br/roomi%dr
             roomi%br = sqrt(roomi%ar*xx)
@@ -1532,7 +1532,8 @@
             return
         endif
 
-        IROOM = lrarray(1)
+        iroom = lrarray(1)
+        roomi=>roominfo(iroom)
 
         ! make sure the room number is valid
         if(iroom<1.or.iroom>n)then
@@ -1562,9 +1563,9 @@
 
         ! put the data in its place
         do i = 1, npts
-            zzrarea(i,iroom) = lrarray(i+2)
+            roomi%zzrarea(i) = lrarray(i+2)
         end do
-        write(logerr,5351) iroom, (zzrarea(iroom,i),i=1,npts)
+        write(logerr,5351) iroom, (roomi%zzrarea(i),i=1,npts)  ! original code zzrarea(iroom,i) should be zzrarea(i,iroom)
 
         ! ROOMH Compartment Number_of_Height_Values Height_Values
         ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
@@ -1604,9 +1605,9 @@
 
         ! put the data in its place
         do i = 1, npts
-            zzrhgt(i,iroom) = lrarray(i+2)
+            roomi%zzrhgt(i) = lrarray(i+2)
         end do
-        write(logerr,5352) iroom, (zzrhgt(iroom,i),i=1,npts)
+        write(logerr,5352) iroom, (roomi%zzrhgt(i),i=1,npts)  ! original code zzrhgt(iroom,i) should be zzrhgt(i,iroom)
 
         ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
     case ('DTCHE')

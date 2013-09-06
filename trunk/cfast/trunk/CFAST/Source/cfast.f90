@@ -1837,7 +1837,7 @@
                 roomi%zzhlay(upper) = roomi%zzvol(upper) / roomi%ar
                 roomi%zzhlay(lower) = roomi%zzvol(lower) / roomi%ar
             else
-                call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,roomi%zzvol(lower),1,roomi%zzhlay(lower))
+                call interp(roomi%zzrvol(1),roomi%zzrhgt(1),npts,roomi%zzvol(lower),1,roomi%zzhlay(lower))
                 roomi%zzhlay(upper) = roomi%hr - roomi%zzhlay(lower)
             endif
 

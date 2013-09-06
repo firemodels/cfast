@@ -1173,11 +1173,13 @@
 
     ! initialize variable cross sectional area to none
     do i = 1, nr
+        roomi=>roominfo(i)
+        
         izrvol(i) = 0
         do j = 1, mxpts
-            zzrvol(j,i) = 0.0_eb
-            zzrarea(j,i) = 0.0_eb
-            zzrhgt(j,i) = 0.0_eb
+            roomi%zzrvol(j) = 0.0_eb
+            roomi%zzrarea(j) = 0.0_eb
+            roomi%zzrhgt(j) = 0.0_eb
         end do
     end do
 

@@ -1812,16 +1812,16 @@
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (switch(1,i)) then
-                write (*,5040) zzwtemp(i,1,1)
+                write (*,5040) roomi%zzwtemp(1,1)
             endif
             if (switch(3,i)) then
-                write (*,5060) zzwtemp(i,3,1)
+                write (*,5060) roomi%zzwtemp(3,1)
             endif
             if (switch(4,i)) then
-                write (iofilo,5070) zzwtemp(i,4,1)
+                write (iofilo,5070) roomi%zzwtemp(4,1)
             endif
             if (switch(2,i)) then
-                write (iofilo,5050) zzwtemp(i,2,1)
+                write (iofilo,5050) roomi%zzwtemp(2,1)
             endif
         end do
         write (*,*) ' '
@@ -1875,12 +1875,14 @@
         end do
         write(*,6070)
         do iroom = 1, nm1
+            roomi=>roominfo(iroom)
+            
             xqf = 0.
             do iobj = 0, numobjl
                 if (iroom==froom(iobj))xqf = xqf + fqf(iobj)
             end do
             xqf = xqf + fqdj(iroom)
-            write(*,6060)iroom,zzwtemp(iroom,1,1),zzwtemp(iroom,3,1),zzwtemp(iroom,4,1),zzwtemp(iroom,2,1),xqf
+            write(*,6060)iroom,roomi%zzwtemp(1,1),roomi%zzwtemp(3,1),roomi%zzwtemp(4,1),roomi%zzwtemp(2,1),xqf
         end do
         if(numobjl>0)then
             write(*,6080)

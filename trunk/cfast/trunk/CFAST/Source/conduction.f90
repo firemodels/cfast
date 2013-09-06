@@ -36,7 +36,7 @@
     type(room_type), pointer :: roomi, roomj
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
-
+    
     ! solve conduction problem for all walls
 
     ibeg = 1
@@ -61,12 +61,12 @@
         iroom = izwall(iw,1)
         iwall = izwall(iw,2)
         icond = nofwt + iw
-
+        
         roomi=>roominfo(iroom)
 
         ! use exterior wall temperature from last time step to ...
-        twint = zzwtemp(iroom,iwall,1)
-        twext = zzwtemp(iroom,iwall,2)
+        twint = roomi%zzwtemp(iwall,1)
+        twext = roomi%zzwtemp(iwall,2)
         tgas = eta(iroom)
         iweq = izwmap2(iwall,iroom) - nofwt
         iwb = izwall(iweq,5)

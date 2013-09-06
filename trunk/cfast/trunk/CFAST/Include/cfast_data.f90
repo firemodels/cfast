@@ -19,6 +19,8 @@ module types
       real(eb) :: zzvmin, zzvmax
       real(eb) :: zzrvol(mxpts), zzrarea(mxpts), zzrhgt(mxpts)
       real(eb) :: zzwarea(4), zzwarea2(10)
+      real(eb) :: zzftemp(2)
+      real(eb) :: zzwtemp(nwal,2)
 
     end type room_type
 
@@ -67,8 +69,6 @@ module cenviro
     
     logical updatehall, izdtflag, izcon(nr), izhvac(nr)
     
-    real(eb), dimension(nr,2) :: zzftemp
-    real(eb), dimension(nr,nwal,2) :: zzwtemp
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
     real(eb), dimension(mxhvsys) :: zzhvm
     real(eb), dimension(nr,8) :: zzhall

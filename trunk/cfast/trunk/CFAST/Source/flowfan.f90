@@ -405,9 +405,11 @@
 
     do ii = 1, next
         i = hvnode(1,ii)
-        j = hvnode(2,ii)
-        z = zzhlay(i,lower)
         roomi=>roominfo(i)
+
+        j = hvnode(2,ii)
+
+        z = roomi%zzhlay(lower)
         
         if (hvorien(ii)==1) then
 
@@ -429,16 +431,19 @@
     ! this is the actual duct initialization
     do ii = 1, next
         i = hvnode(1,ii)
+        roomi=>roominfo(i)
+        
         j = hvnode(2,ii)
+        
         if (i<n) then
-            z = zzhlay(i,lower)
+            z = roomi%zzhlay(lower)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
-            ru = zzrho(i,upper)
-            rl = zzrho(i,lower)
-            hvp(j) = zzrelp(i) - (ru*zu+rl*zl) * hvgrav
-            hvextt(ii,upper) = zztemp(i,upper)
-            hvextt(ii,lower) = zztemp(i,lower)
+            ru = roomi%zzrho(upper)
+            rl = roomi%zzrho(lower)
+            hvp(j) = roomi%zzrelp - (ru*zu+rl*zl) * hvgrav
+            hvextt(ii,upper) = roomi%zztemp(upper)
+            hvextt(ii,lower) = roomi%zztemp(lower)
         else
             hvextt(ii,upper) = exta
             hvextt(ii,lower) = exta

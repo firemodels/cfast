@@ -55,6 +55,7 @@
     type(room_type), pointer :: roomi
 
     roomi=>roominfo(iroom)
+    
     if(izhall(iroom,ihmode)==ihduring)then
         cjetheight = roomi%hr - zzhall(iroom,ihdepth)
 
@@ -79,23 +80,23 @@
                 fact = 1.0_eb
             endif
 
-            halltemp = zztemp(iroom,lower) + dt0*fact
-            hallrho = zzpabs(iroom)/(rgas*halltemp)
+            halltemp = roomi%zztemp(lower) + dt0*fact
+            hallrho = roomi%zzpabs/(rgas*halltemp)
             hallvel = zzhall(iroom,ihvel)
         else
-            halltemp = zztemp(iroom,lower)
-            hallrho = zzrho(iroom,lower)
+            halltemp = roomi%zztemp(lower)
+            hallrho = roomi%zzrho(lower)
             hallvel = 0.10_eb
         endif
     else
 
         ! hall jet is not flowing (either has not started or has finished) so, use regular layer temperatures and densities
-        if(zloc>zzhlay(iroom,lower))then
-            halltemp = zztemp(iroom,upper)
-            hallrho = zzrho(iroom,upper)
+        if(zloc>roomi%zzhlay(lower))then
+            halltemp = roomi%zztemp(upper)
+            hallrho = roomi%zzrho(upper)
         else
-            halltemp = zztemp(iroom,lower)
-            hallrho = zzrho(iroom,lower)
+            halltemp = roomi%zztemp(lower)
+            hallrho = roomi%zzrho(lower)
         endif
         hallvel = 0.10_eb
     endif
@@ -122,12 +123,12 @@
     type(room_type), pointer :: hallroom
     
     ventptr=>ventinfo(inum)
+    hallroom=>roominfo(ihall)
     
-    hhtemp = htemp - zztemp(ihall,lower)
+    hhtemp = htemp - hallroom%zztemp(lower)
 
     ! this routine is only executed if 1) hall flow has not started yet or 2)  hall flow has started and it is coming from the ivent'th vent
 
-    hallroom=>roominfo(ihall)
     if(izhall(ihall,ihventnum)/=0.and.izhall(ihall,ihventnum)/=inum)return
     roomwidth = min(hallroom%br,hallroom%dr)
     roomlength = max(hallroom%br,hallroom%dr)

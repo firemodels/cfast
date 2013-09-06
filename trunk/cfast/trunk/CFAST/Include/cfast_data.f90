@@ -10,6 +10,8 @@ module types
       real(eb) :: wall_center(10,3)
       real(eb) :: br, dr, hr
       real(eb) :: ar, vr, hrp, hrl, hflr
+      real(eb) :: zzrelp, zzpabs
+      real(eb) :: zzvol(2), zzhlay(2), zztemp(2), zzrho(2), zzmass(2)
     end type room_type
 
 ! fire data structure
@@ -57,8 +59,8 @@ module cenviro
     
     logical updatehall, izdtflag, izcon(nr), izhvac(nr)
     
-    real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs
-    real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real(eb), dimension(nr) :: zzvmin, zzvmax
+    real(eb), dimension(nr,2) :: zzftemp
     real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
     real(eb), dimension(nr,nwal) :: zzwspec
     real(eb), dimension(nr,nwal,2) :: zzwtemp

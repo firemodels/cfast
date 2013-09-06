@@ -84,6 +84,8 @@
     integer cjetopt, i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay
     logical roomflg(nr), wallflg(4*nr)
     save flwcv0, flxcv0
+    
+    type(room_type), pointer :: roomi
 
     do i = 1, nm1
         flwcv(i,upper) = 0.0_eb
@@ -134,6 +136,8 @@
     do iw = 1, nwalls
         if(wallflg(iw)) then
             i = izwall(iw,1)
+            roomi=>roominfo(i)
+            
             iwall = izwall(iw,2)
             nrmfire = ifrpnt(i,1)
             if(mod(iwall,2)==1)then
@@ -146,7 +150,7 @@
             if (cjetopt/=2.and.cjeton(iwall).and.nrmfire/=0) then
                 flxcv(i,iwall) = 0.0_eb
             else
-                call convec(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
+                call convec(iwall,roomi%zztemp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
             endif
             flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)
         endif
@@ -923,12 +927,14 @@
     end do
     do id = 1, ndtect
         iroom = ixdtect(id,droom)
+        roomi=>roominfo(iroom)
+        
         xdtect(id,dvel) = 0.0_eb
         zloc = xdtect(id,dzloc)
-        if(zloc>zzhlay(iroom,lower))then
-            xdtect(id,dtjet) = zztemp(iroom,upper)
+        if(zloc>roomi%zzhlay(lower))then
+            xdtect(id,dtjet) = roomi%zztemp(upper)
         else
-            xdtect(id,dtjet) = zztemp(iroom,lower)
+            xdtect(id,dtjet) = roomi%zztemp(lower)
         endif
     end do
     if (option(fcjet)==off) return
@@ -948,15 +954,15 @@
                 if (switch(1,i)) then
                     tceil = twj(1,i,1)
                 else
-                    tceil = zztemp(i,upper)
+                    tceil = roomi%zztemp(upper)
                 endif
                 if (switch(3,i)) then
                     tuwall = twj(1,i,3)
                 else
-                    tuwall = zztemp(i,upper)
+                    tuwall = roomi%zztemp(upper)
                 endif
-                call ceilht(xfire(ifpnt,4),xfire(ifpnt,7),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,roomi%br,roomi%dr, &
-                roomi%hr,xfire(ifpnt,1),xfire(ifpnt,2),xfire(ifpnt,3),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
+                call ceilht(xfire(ifpnt,4),xfire(ifpnt,7),tceil,roomi%zztemp(lower),roomi%zztemp(upper),tuwall,roomi%br,roomi%dr, &
+                roomi%hr,xfire(ifpnt,1),xfire(ifpnt,2),xfire(ifpnt,3),roomi%zzhlay(lower),roomi%zzrho(lower),roomi%zzrho(upper),cjetopt, &
                 xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
                 flxcjt(i,1) = flxcjt(i,1) + qfclga
                 flxcjt(i,3) = flxcjt(i,3) + qfwua

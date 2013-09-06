@@ -767,8 +767,8 @@
         
         yflor = roomi%yflor
         yceil = roomi%yceil
-        pflor = zzrelp(iroom)
-        ylay = zzhlay(iroom,lower)
+        pflor = roomi%zzrelp
+        ylay = roomi%zzhlay(lower)
 
         ! this is a hall, the vent number is defined and flow is occuring
         if(izhall(iroom,ihroom)==1.and.ivent/=0.and.izhall(iroom,ihmode)==ihduring)then
@@ -788,15 +788,15 @@
             endif
         endif
 
-        denu = zzrho(iroom,up)
-        denl = zzrho(iroom,lower)
+        denu = roomi%zzrho(up)
+        denl = roomi%zzrho(lower)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
             conl(iprod) = zzcspec(iroom,lower,ip)
             conu(iprod) = zzcspec(iroom,up,ip)
         end do
-        tu = zztemp(iroom,up)
-        tl = zztemp(iroom,lower)
+        tu = roomi%zztemp(up)
+        tl = roomi%zztemp(lower)
         zloc = roomi%hr - zzhall(iroom,ihdepth)/2.0_eb
         if(hallflag)then
             call halltrv(iroom,cjetdist,zloc,tu,rhou,hallvel)
@@ -807,13 +807,13 @@
         yflor = roomi%yflor
         yceil = roomi%yceil
         pflor = epa(iroom2)
-        ylay = zzhlay(iroom,lower)
+        ylay = roomi%zzhlay(lower) ! original code used roominfo(iroom) - make sure it is correct
         denu = era(iroom2)
         denl = era(iroom2)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod) = zzcspec(iroom,lower,ip)
-            conu(iprod) = zzcspec(iroom,up,ip)
+            conl(iprod) = zzcspec(iroom2,lower,ip)  ! changed to iroom2 - make sure this is correct
+            conu(iprod) = zzcspec(iroom2,up,ip)  !  ! changed to iroom2 - make sure this is correct
         end do
         tu = eta(iroom2)
         tl = eta(iroom2)

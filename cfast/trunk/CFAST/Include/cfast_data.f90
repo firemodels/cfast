@@ -8,6 +8,7 @@ module types
 
     type room_type
       integer :: izshaft, izrvol
+      integer :: izwmap(2), izwmap2(4)
       real(eb) :: yflor, yceil
       real(eb) :: wall_center(10,3)
       real(eb) :: br, dr, hr
@@ -78,8 +79,6 @@ module cenviro
     real(eb) :: zzdtcrit
  
     integer, dimension(ns+2) :: izpmap
-    integer, dimension(2,nr) :: izwmap
-    integer, dimension(4,nr) :: izwmap2
     integer, dimension(nr,4) :: izswal
     integer, dimension(4*nr,5) :: izwall
     integer, dimension(mxtarg) :: iztarg

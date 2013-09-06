@@ -218,7 +218,13 @@
     
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer nalg, i, ii, ieq1, ieq2, ieq3, ires
+    
+    type(room_type), pointer :: fire_room
+    
     data pdzero /maxteq * 0.0d0/
+    
+    fire_room=>roominfo(lfbo)
+    
     nalg = nm1 + nhvpvar + nhvtvar
 
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
@@ -236,8 +242,8 @@
 
     ! copy wall temperatures
     ii = 0
-    ieq1 = izwmap2(1,lfbo)
-    ieq2 = izwmap2(3,lfbo)
+    ieq1 = fire_room%izwmap2(1)
+    ieq2 = fire_room%izwmap2(3)
     if(ieq1/=0)then
         ii = ii + 1
         p2(ieq1) = hvpsolv(ii+nalg+1)
@@ -260,8 +266,8 @@
         ii = 1
         write(iofilo,*)'upper layer temperature in fire room'
         write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(lfbo+noftu)
-        ieq1 = izwmap2(1,lfbo)
-        ieq3 = izwmap2(3,lfbo)
+        ieq1 = fire_room%izwmap2(1)
+        ieq3 = fire_room%izwmap2(3)
         if(ieq1/=0.or.ieq3/=0)then
             write(iofilo,*)'wall temperatures'
             if(ieq1/=0)then
@@ -305,8 +311,8 @@
         end do
         write(iofilo,*)'upper layer temperature in fire room'
         write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(lfbo+noftu)
-        ieq1 = izwmap2(1,lfbo)
-        ieq3 = izwmap2(3,lfbo)
+        ieq1 = fire_room%izwmap2(1)
+        ieq3 = fire_room%izwmap2(3)
         if(ieq1/=0.or.ieq3/=0)then
             write(iofilo,*)'wall temperatures'
             if(ieq1/=0)then

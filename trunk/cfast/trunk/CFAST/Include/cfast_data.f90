@@ -7,6 +7,7 @@ module types
 !  room data structure
 
     type room_type
+      integer :: izshaft
       real(eb) :: yflor, yceil
       real(eb) :: wall_center(10,3)
       real(eb) :: br, dr, hr
@@ -15,6 +16,7 @@ module types
       real(eb) :: zzvol(2), zzhlay(2), zztemp(2), zzrho(2), zzmass(2)
       real(eb) :: zzgspec(2,ns), zzcspec(2,ns)
       real(eb) :: zzwspec(nwal)
+      real(eb) :: zzvmin, zzvmax
     end type room_type
 
 ! fire data structure
@@ -62,7 +64,6 @@ module cenviro
     
     logical updatehall, izdtflag, izcon(nr), izhvac(nr)
     
-    real(eb), dimension(nr) :: zzvmin, zzvmax
     real(eb), dimension(nr,2) :: zzftemp
     real(eb), dimension(nr,nwal,2) :: zzwtemp
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
@@ -83,7 +84,7 @@ module cenviro
     integer, dimension(4*nr,5) :: izwall
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
-    integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
+    integer, dimension(nr) :: izrvol, iznwall(nr)
     integer, dimension(nr,7) :: izhall
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac

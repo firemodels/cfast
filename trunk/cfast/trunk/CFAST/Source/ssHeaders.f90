@@ -15,6 +15,8 @@
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
     integer :: position, i, j
+    
+    type(room_type), pointer :: roomj
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
     'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
@@ -35,9 +37,11 @@
 
     ! Compartment variables
     do j = 1, nm1
+        roomj=>roominfo(j)
+        
         do i = 1, 7
-            if (i/=2.or.izshaft(j)==0) then
-                if (i/=3.or.izshaft(j)==0) then
+            if (i/=2.or.roomj%izshaft==0) then
+                if (i/=3.or.roomj%izshaft==0) then
                     position = position + 1
                     if (validate) then
                         call toIntString(j,cRoom)
@@ -134,6 +138,7 @@
     data tooutput /.false.,5*.true.,.false.,4*.true./ 
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     integer position, i, j, lsp
+    type(room_type), pointer :: roomi
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', 'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', 'C-T Product Upper Layer', 'Trace Species Upper Layer',&
     'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', 'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer', 'C-T Product Lower Layer', 'Trace Species Lower Layer' / 
@@ -154,9 +159,11 @@
 
     ! Species by compartment, then layer, then species type
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         do j = upper, lower
-            if (j==upper.or.izshaft(j)==0) then
-                do lsp = 1, NS
+            if (j==upper.or.roomi%izshaft==0) then  ! *** original code izshaft(j) should be izshaft(i)
+                do lsp = 1, ns
                     if(tooutput(lsp)) then
                         position = position + 1
                         if (validate) then
@@ -470,6 +477,7 @@
     integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
     character(35) :: headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
     integer position, i, j
+    type(room_type), pointer :: roomj
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2', 'kg/s', 'kg/s' /
@@ -482,8 +490,10 @@
 
     ! Compartment variables
     do j = 1, nm1
+        roomj=>roominfo(j)
+        
         do i = 1, 6
-            if (i==1.or.i==4.or.i==5.or.izshaft(j)==0) then
+            if (i==1.or.i==4.or.i==5.or.roomj%izshaft==0) then
                 position = position + 1
                 call toIntString(j,cRoom)
                 headertext(1,position) = LabelUnits(i+1)

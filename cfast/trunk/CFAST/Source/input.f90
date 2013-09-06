@@ -296,7 +296,9 @@
 
     ! check shafts
     do iroom = nm1 + 1, nr
-        if(izshaft(iroom)/=0)then
+        roomi=>roominfo(iroom)
+        
+        if(roomi%izshaft/=0)then
             call xerror(' invalid SHAFT specification:',0,1,1)
             ifail = 42
             write (messg,206)iroom,nm1
@@ -1393,12 +1395,14 @@
         endif
 
         iroom = lrarray(1)
+        roomi=>roominfo(iroom)
+        
         if(iroom<1.or.iroom>n)then
             write(logerr, 5001) i1
             ierror = 40
             return
         endif
-        izshaft(iroom) = 1
+        roomi%izshaft = 1
         !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
     case ('TARGE')
         if (countargs(10,lcarray, xnumc-1, nret).or.countargs(11,lcarray, xnumc-1, nret)) then

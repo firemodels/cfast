@@ -40,7 +40,7 @@
         itarg = ntarg - nm1 + i
         izzvol = roomi%zzvol(upper)/roomi%vr*100._eb+0.5_eb
         call ssaddtolist (position,roomi%zztemp(upper)-273.15,outarray)
-        if (izshaft(i)==0) then
+        if (roomi%izshaft==0) then
             call ssaddtolist(position,roomi%zztemp(lower)-273.15,outarray)
             call ssaddtolist (position,roomi%zzhlay(lower),outarray)
         endif
@@ -395,6 +395,8 @@
     integer :: position, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
     
+    type(room_type), pointer :: roomi
+    
     data tooutput /.false.,5*.true.,.false.,4*.true./
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     data firstc /.true./
@@ -415,9 +417,11 @@
     call SSaddtolist (position,time,outarray)
 
     do i = 1, nm1
+        roomi=>roominfo(i)
+        
         do layer = upper, lower
             do lsp = 1, ns
-                if (layer==upper.or.izshaft(i)==0) then
+                if (layer==upper.or.roomi%izshaft==0) then
                     if (tooutput(lsp)) then
                         ssvalue = toxict(i,layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
@@ -482,13 +486,13 @@
         itarg = ntarg - nm1 + i
         izzvol = roomi%zzvol(upper)/roomi%vr*100._eb+0.5_eb
         call ssaddtolist(position,roomi%zztemp(upper)-273.15,outarray)
-        if (izshaft(i)==0) then
+        if (roomi%izshaft==0) then
             call ssaddtolist(position,roomi%zztemp(lower)-273.15,outarray)
             call ssaddtolist(position,roomi%zzhlay(lower),outarray)
         endif
         call ssaddtolist(position,roomi%zzrelp - pamb(i),outarray)
         call ssaddtolist(position,toxict(i,upper,9),outarray)
-        if (izshaft(i)==0) then
+        if (roomi%izshaft==0) then
             call ssaddtolist(position,toxict(i,lower,9),outarray)
         endif
     end do

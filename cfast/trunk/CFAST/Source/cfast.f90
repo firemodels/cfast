@@ -1218,6 +1218,8 @@
 
     ! sum flow for inside rooms
     do iroom = 1, nirm
+    
+        roomi=>roominfo(iroom)
 
         do iprod = 1, nprod + 2
             ip = izpmap(iprod)
@@ -1262,7 +1264,7 @@
         ! this is done by combining flows from to both
         ! layers into upper layer flow and setting lower layer flow to
         ! zero.
-        if(izshaft(iroom)==1)then
+        if(roomi%izshaft==1)then
             do iprod = 1, nprod + 2
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwtot(iroom,iprod,ll)
                 flwtot(iroom,iprod,ll) = 0.0_eb
@@ -1340,7 +1342,7 @@
         if (option(fode)==on) then
             vlayd = vlayd - roomi%zzvol(uu) * pdot / (gamma*pabs)
         endif
-        if(izshaft(iroom)==1)vlayd = 0.0_eb
+        if(roomi%izshaft==1)vlayd = 0.0_eb
 
         ! lower layer temperature equation
         tlaydl = (ql-cp*tml*roomi%zztemp(ll)) / (cp*roomi%zzmass(ll))
@@ -1515,8 +1517,8 @@
         do iroom = 1, n
             roomi=>roominfo(i)
             
-            zzvmin(iroom) = min(vminfrac * roomi%vr, 1.0_eb)
-            zzvmax(iroom) = roomi%vr - zzvmin(iroom)
+            roomi%zzvmin = min(vminfrac * roomi%vr, 1.0_eb)
+            roomi%zzvmax = roomi%vr - roomi%zzvmin
         end do
         do iroom = 1, nm1
             roomi=>roominfo(iroom)
@@ -1817,10 +1819,10 @@
         do iroom = 1, nm1
             roomi=>roominfo(iroom)
             
-            roomi%zzvol(upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
-            roomi%zzvol(upper) = min(roomi%zzvol(upper),zzvmax(iroom))
-            roomi%zzvol(lower) = max(roomi%vr-roomi%zzvol(upper),zzvmin(iroom))
-            roomi%zzvol(lower) = min(roomi%zzvol(lower),zzvmax(iroom))
+            roomi%zzvol(upper) = max(pdif(iroom+nofvu),roomi%zzvmin)
+            roomi%zzvol(upper) = min(roomi%zzvol(upper),roomi%zzvmax)
+            roomi%zzvol(lower) = max(roomi%vr-roomi%zzvol(upper),roomi%zzvmin)
+            roomi%zzvol(lower) = min(roomi%zzvol(lower),roomi%zzvmax)
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
@@ -1856,7 +1858,7 @@
             if(roomi%zztemp(lower)<0.0_eb)then
                 roomi%zztemp(lower)=roomi%zztemp(upper)
             endif
-            if(izshaft(iroom)==1)then
+            if(roomi%izshaft==1)then
                 roomi%zztemp(lower) = roomi%zztemp(upper)
             endif
 
@@ -2015,7 +2017,7 @@
                 if (activs(lsp)) then
                     roomi%zzcspec(upper,lsp) = roomi%zzgspec(upper,lsp) * rtotu
                     roomi%zzcspec(lower,lsp) = roomi%zzgspec(lower,lsp) * rtotl
-                    if(izshaft(iroom)==1)then
+                    if(roomi%izshaft==1)then
                         roomi%zzcspec(lower,lsp) = roomi%zzcspec(upper,lsp)
                     endif
                 endif
@@ -2031,7 +2033,7 @@
                 roomi%zzgspec(upper,2) = oxyu
                 roomi%zzcspec(lower,2) = oxyl / roomi%zzmass(lower)
                 roomi%zzcspec(upper,2) = oxyu / roomi%zzmass(upper)
-                if(izshaft(iroom)==1)then
+                if(roomi%izshaft==1)then
                     roomi%zzcspec(lower,2) = roomi%zzcspec(upper,2)
                 endif
             endif

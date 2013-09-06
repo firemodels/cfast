@@ -252,7 +252,7 @@
         
         itarg = ntarg - nm1 + i
         izzvol = roomi%zzvol(upper)/roomi%vr*100._eb+0.5_eb
-        if (izshaft(i)==1) then
+        if (roomi%izshaft==1) then
             write (iofilo,5071) compartmentnames(i), roomi%zztemp(upper)-273.15, roomi%zzvol(upper), &
             zzabsb(upper,i),roomi%zzrelp-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         else
@@ -401,7 +401,7 @@
                 
                 write (ciout,5060) compartmentnames(i)
                 ic = 14
-                if (layer==upper.or.izshaft(i)==0) then
+                if (layer==upper.or.roomi%izshaft==0) then
                     do lsp = 1, ns
                         write (ciout(ic:ic+9),5040) toxict(i,layer,lsp)
                         ic = ic + 11
@@ -663,7 +663,7 @@
             endif
         end do
         xqf = xqf + fqdj(ir)
-        if (izshaft(ir)==1) then
+        if (roomi%izshaft==1) then
             write (iounit,5031) ir, roomi%zztemp(upper)-273.15, xemp, xqf, roomi%zzrelp - pamb(ir), ontarget(ir)
         else
             write (iounit,5030) ir, roomi%zztemp(upper)-273.15, roomi%zztemp(lower)-273.15, roomi%zzhlay(lower), xemp, xqf, roomi%zzrelp - pamb(ir),ontarget(ir)

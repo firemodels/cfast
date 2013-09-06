@@ -708,13 +708,13 @@
         ! check for a special setting of the interface height
         if (iflag==1) then
             if (yinter(i)<0.d0) then
-                p(i+nofvu) = zzvmin(i)
+                p(i+nofvu) = roomi%zzvmin
             else
-                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*roomi%ar))
+                p(i+nofvu) = min(roomi%zzvmax,max(roomi%zzvmin,yinter(i)*roomi%ar))
             endif
             yinter(i) = 0.0_eb
         endif
-        if(izshaft(i)==1)p(i+nofvu) = zzvmax(i)
+        if(roomi%izshaft==1)p(i+nofvu) = roomi%zzvmax
         p(i+noftl) = tamb(i)
     end do
 
@@ -892,7 +892,9 @@
 
     ! initialize the flow variables
     do i = 1, nr
-        izshaft(i) = 0
+        roomi=>roominfo(i)
+        
+        roomi%izshaft = 0
         heatup(i) = 0.0_eb
         heatlp(i) = 0.0_eb
         heatvf(i) = 0.0_eb

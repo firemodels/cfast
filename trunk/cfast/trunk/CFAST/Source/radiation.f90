@@ -102,7 +102,7 @@
                 endif
                 imap = map(iwall)
                 if(switch(iwall,i))then
-                    twall(imap) = zzwtemp(i,iwall,1)
+                    twall(imap) = roomi%zzwtemp(iwall,1)
                     emis(imap) = epw(iwall,i)
                 else
                     twall(imap) = roomi%zztemp(ilay)

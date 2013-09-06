@@ -210,7 +210,7 @@
 
         ! upper layer temperatures
         nalg2 = nalg1 + 1
-        hhvp(1+ioff0) = zzftemp(lfbo,upper)
+        hhvp(1+ioff0) = roominfo(lfbo)%zzftemp(upper)
 
         ! wall temperatures
         ii = 0
@@ -1277,9 +1277,9 @@
             xqu = flwtot(iroom,q,upper)
             xmu = flwtot(iroom,m,upper)
             if(xmu/=0.0_eb)then
-                zzftemp(iroom,upper) = xqu/(cp*xmu)
+                roomi%zzftemp(upper) = xqu/(cp*xmu)
             else
-                zzftemp(iroom,upper) = tamb(iroom)
+                roomi%zzftemp(upper) = tamb(iroom)
             endif
         endif
 
@@ -1944,13 +1944,13 @@
                     ifromw = izwall(ieqfrom,2)
                     itor = izwall(ieqfrom,3)
                     itow = izwall(ieqfrom,4)
-                    zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                    roomi%zzwtemp(iwall,1) = pdif(iwalleq)
                     iwalleq2 = izwmap2(itow,itor)
                     iinode = numnode(1,iwall,iroom)
                     if(iwalleq2==0)then
-                        zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
+                        roomi%zzwtemp(iwall,2) = twj(iinode,iroom,iwall)
                     else
-                        zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
+                        roomi%zzwtemp(iwall,2) = pdif(iwalleq2)
                     endif
                 else
 
@@ -1963,7 +1963,7 @@
                     else
                         ilay = lower
                     endif
-                    zzwtemp(iroom,iwall,1) = roomi%zztemp(ilay)
+                    roomi%zzwtemp(iwall,1) = roomi%zztemp(ilay)
                 endif
             end do
         end do

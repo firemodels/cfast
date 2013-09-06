@@ -150,7 +150,7 @@
             if (cjetopt/=2.and.cjeton(iwall).and.nrmfire/=0) then
                 flxcv(i,iwall) = 0.0_eb
             else
-                call convec(iwall,roomi%zztemp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
+                call convec(iwall,roomi%zztemp(ilay),roomi%zzwtemp(iwall,1),flxcv(i,iwall))
             endif
             flwcv(i,ilay) = flwcv(i,ilay) - roomi%zzwarea(iwall)*flxcv(i,iwall)
         endif

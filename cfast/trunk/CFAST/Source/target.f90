@@ -134,6 +134,8 @@
     
     real(eb) :: flux(2), dflux(2), ttarg(2), ddif
     integer :: itarg, methtarg, iroom, niter, iter
+    
+    type(room_type), pointer :: roomi
 
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     if (ntarg>nm1) then
@@ -172,6 +174,8 @@
     ! calculate flux to floor targets for the pre-existing data structure, ontarget, and a flashover indicator on the floor
     if(method==steady)then
         do iroom = 1, nm1
+            roomi=>roominfo(iroom)
+            
             itarg = ntarg - nm1 + iroom
 
             ! ambient target
@@ -183,7 +187,7 @@
             ontarget(iroom) = xxtarg(trgtfluxf,itarg)-sigma*ttarg(1)**4
 
             ! flashover indicator
-            ttarg(1) = zzwtemp(iroom,2,1)
+            ttarg(1) = roomi%zzwtemp(2,1)
             xxtarg(trgtempf,itarg) = ttarg(1)
             call targflux(1,itarg,ttarg,flux,dflux)
             xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)

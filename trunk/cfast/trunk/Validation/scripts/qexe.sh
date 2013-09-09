@@ -59,7 +59,8 @@ nnodes=1
 fulldir=`pwd`/$dir
 
 out=$fulldir/$infile.err
-outlog=$fulldir/$infile.qlog
+outlog=$fulldir/$infile.log
+qoutlog=$fulldir/$infile.qlog
 errlog=$fulldir/$infile.err
 stopfile=$fulldir/$infile.stop
 
@@ -67,6 +68,10 @@ stopfile=$fulldir/$infile.stop
 
 if ! [ -e $command ]; then
   echo "The command, $command, does not exist. Run aborted."
+fi
+if [ -e $qoutlog ]; then
+  echo "Removing log file: $qoutlog"
+  rm $qoutlog
 fi
 if [ -e $outlog ]; then
   echo "Removing log file: $outlog"

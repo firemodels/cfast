@@ -34,7 +34,7 @@
     endif
     nmess = max(1,nmess)
 
-    if(level/=-2) call xerrwv('***error: '//messg,nmess+10,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+    if(level/=-2) call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
 
     return
     end subroutine xerror

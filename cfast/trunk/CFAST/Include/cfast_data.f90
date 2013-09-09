@@ -1,57 +1,9 @@
 
-! --------------------------- types -------------------------------------------
-
-module types
-    use precision_parameters
-    use cparams
-!  room data structure
-
-    type room_type
-      integer :: izshaft, izrvol
-      integer :: izwmap(2), izwmap2(4)
-      integer :: izhall(7), izheat
-      real(eb) :: yflor, yceil
-      real(eb) :: wall_center(10,3)
-      real(eb) :: br, dr, hr
-      real(eb) :: ar, vr, hrp, hrl, hflr
-      real(eb) :: zzrelp, zzpabs
-      real(eb) :: zzvol(2), zzhlay(2), zztemp(2), zzrho(2), zzmass(2)
-      real(eb) :: zzgspec(2,ns), zzcspec(2,ns)
-      real(eb) :: zzwspec(nwal)
-      real(eb) :: zzvmin, zzvmax
-      real(eb) :: zzrvol(mxpts), zzrarea(mxpts), zzrhgt(mxpts)
-      real(eb) :: zzwarea(4), zzwarea2(10)
-      real(eb) :: zzftemp(2)
-      real(eb) :: zzwtemp(nwal,2)
-      real(eb) :: zzhall(8)
-
-    end type room_type
-
-! fire data structure
-
-     type fire_type
-     end type fire_type
-
-! vent data structure
-
-    type vent_type
-        real(eb) :: sill, soffit, width
-        real(eb) :: from_hall_offset, to_hall_offset
-        real(eb) :: wind_dp
-        integer :: from, to, counter
-        integer :: is_from_hall, is_to_hall
-        integer :: face
-    end type vent_type
-     
-    
-end module types
-
 ! --------------------------- cenviro -------------------------------------------
 
 module cenviro
     
     use precision_parameters
-    use types
     use cparams
     implicit none
     save
@@ -72,22 +24,43 @@ module cenviro
     
     logical updatehall, izdtflag, izcon(nr), izhvac(nr)
     
+    real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs
+    real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
+    real(eb), dimension(nr,nwal) :: zzwspec
+    real(eb), dimension(nr,nwal,2) :: zzwtemp
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
     real(eb), dimension(mxhvsys) :: zzhvm
+    real(eb), dimension(nr,4) :: zzwarea
+    real(eb), dimension(nr,10) :: zzwarea2
+    real(eb), dimension(nr,8) :: zzhall
+    real(eb), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
     real(eb), dimension(2,nr) :: zzabsb, zzbeam
     real(eb), dimension(0:nv+1) :: zzdisc
     real(eb), dimension(nr,nr) :: zzhtfrac
     real(eb) :: zzdtcrit
  
     integer, dimension(ns+2) :: izpmap
+    integer, dimension(2,nr) :: izwmap
+    integer, dimension(4,nr) :: izwmap2
     integer, dimension(nr,4) :: izswal
     integer, dimension(4*nr,5) :: izwall
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
+    integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
+    integer, dimension(nr,7) :: izhall
+    integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
     
-    type(room_type), target :: roominfo(0:nr)
+!  room data structure
+
+    type room_type
+      real(eb) :: yflor, yceil
+      real(eb) :: wall_center(10,3)
+    end type room_type
+
+    type(room_type), target :: roominfo(nr)
 
 end module cenviro
 
@@ -95,7 +68,6 @@ end module cenviro
 
 module cfast_main
     use precision_parameters
-    use types
     use cparams
     use dsize
     implicit none
@@ -122,13 +94,13 @@ module cfast_main
         sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), qr(2,nr), qc(2,nr), heatup(nr), heatlp(nr), heatvf(nr), &
         emp(nr), ems(nr), eme(nr), aps(nr), vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
         bfired(nv), afired(nv), hfired(nv), tfired(nv), hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
-        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin),  &
-        vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
+        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
+        vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
     real(eb) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
-        ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
+        hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
         hvp(mnode), hvght(mnode), hmfnet(2,nr,nr), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
         qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), dfmin(mfan), dfmax(mfan), qmin(mfan), de(mdt), da(mdt), &
@@ -168,7 +140,12 @@ module cfast_main
 !            xfire(nfire,19) = objclen(iobj)
 !            xfire(nfire,20) = oareat
 
-     type(fire_type), target, dimension(mxfire)  :: fireinfo
+! fire data structure
+
+     type fire_type
+     end type fire_type
+     
+     type(fire_type), target :: fireinfo(mxfire)
 
 end module cfast_main
 
@@ -538,7 +515,6 @@ end module thermp
 module vents
 
     use precision_parameters
-    use types
     use cparams, only: nr, mxvent
     implicit none
     save
@@ -548,6 +524,17 @@ module vents
     
     real(eb), dimension(nr,mxvent) :: zzventdist
     real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    
+! vent data structure
+
+    type vent_type
+        real(eb) :: sill, soffit, width
+        real(eb) :: from_hall_offset, to_hall_offset
+        real(eb) :: wind_dp
+        integer :: from, to, counter
+        integer :: is_from_hall, is_to_hall
+        integer :: face
+    end type vent_type
     
     type (vent_type), dimension(mxvent), target :: ventinfo
     

@@ -755,7 +755,7 @@
     real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
     
     logical :: hallflag
-    type(room_type), pointer :: roomi, roomi2
+    type(room_type), pointer :: roomptr
 
     hallflag = .false.
 
@@ -763,19 +763,19 @@
     up = upper
 
     if (iroom<n) then
-        roomi=>roominfo(iroom)
+        roomptr=>roominfo(iroom)
         
-        yflor = roomi%yflor
-        yceil = roomi%yceil
-        pflor = roomi%zzrelp
-        ylay = roomi%zzhlay(lower)
+        yflor = roomptr%yflor
+        yceil = roomptr%yceil
+        pflor = zzrelp(iroom)
+        ylay = zzhlay(iroom,lower)
 
         ! this is a hall, the vent number is defined and flow is occuring
-        if(roomi%izhall(ihroom)==1.and.ivent/=0.and.roomi%izhall(ihmode)==ihduring)then
+        if(izhall(iroom,ihroom)==1.and.ivent/=0.and.izhall(iroom,ihmode)==ihduring)then
             ventdist = zzventdist(iroom,ivent)
             if(ventdist>0.0_eb)then
-                time0 = roomi%zzhall(ihtime0)
-                vel = roomi%zzhall(ihvel)
+                time0 = zzhall(iroom,ihtime0)
+                vel = zzhall(iroom,ihvel)
                 cjetdist = vel*(stime-time0)
                 if(cjetdist<ventdist)then
                     up = lower
@@ -788,33 +788,32 @@
             endif
         endif
 
-        denu = roomi%zzrho(up)
-        denl = roomi%zzrho(lower)
+        denu = zzrho(iroom,up)
+        denl = zzrho(iroom,lower)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod) = roomi%zzcspec(lower,ip)
-            conu(iprod) = roomi%zzcspec(up,ip)
+            conl(iprod) = zzcspec(iroom,lower,ip)
+            conu(iprod) = zzcspec(iroom,up,ip)
         end do
-        tu = roomi%zztemp(up)
-        tl = roomi%zztemp(lower)
-        zloc = roomi%hr - roomi%zzhall(ihdepth)/2.0_eb
+        tu = zztemp(iroom,up)
+        tl = zztemp(iroom,lower)
+        zloc = hr(iroom) - zzhall(iroom,ihdepth)/2.0_eb
         if(hallflag)then
             call halltrv(iroom,cjetdist,zloc,tu,rhou,hallvel)
         endif
     else
-        roomi=>roominfo(iroom)
-        roomi2=>roominfo(iroom2)
+        roomptr=>roominfo(iroom2)
         
-        yflor = roomi2%yflor
-        yceil = roomi2%yceil
+        yflor = roomptr%yflor
+        yceil = roomptr%yceil
         pflor = epa(iroom2)
-        ylay = roomi%zzhlay(lower) ! original code used roominfo(iroom) - make sure it is correct
+        ylay = zzhlay(iroom,lower)
         denu = era(iroom2)
         denl = era(iroom2)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod) = roomi%zzcspec(lower,ip)  ! original code used roominfo(iroom) - make sure it is correct
-            conu(iprod) = roomi%zzcspec(up,ip)  !  ! original code used roominfo(iroom) - make sure it is correct
+            conl(iprod) = zzcspec(iroom,lower,ip)
+            conu(iprod) = zzcspec(iroom,up,ip)
         end do
         tu = eta(iroom2)
         tl = eta(iroom2)

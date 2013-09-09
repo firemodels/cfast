@@ -1,7 +1,7 @@
 
 ! --------------------------- svout -------------------------------------------
 
-subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -29,12 +29,11 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0, nvents, nvvent, nfires,froom_n
 
     use precision_parameters
     use iofiles
-    use cenviro
     implicit none
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
-    real(eb), dimension(nrooms), intent(in) :: x0, y0
+    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
     
@@ -45,7 +44,6 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0, nvents, nvvent, nfires,froom_n
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
     integer(4) :: length, splitpathqq
     integer :: ifrom, ito, iface
-    type(room_type), pointer :: roomi
 
     ! this code is to trim the file name to the name itself along with the extension
     ! for compatibility with version 4 and later of smokeview
@@ -71,11 +69,9 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0, nvents, nvvent, nfires,froom_n
     write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
     do i = 1, nrooms
-        roomi=>roominfo(i)
-        
         write(13,"(a,1x)")"ROOM"
-        write(13,10) roomi%br, roomi%dr, roomi%hr
-        write(13,10) x0(i), y0(i), roomi%hrl
+        write(13,10) dx(i), dy(i), dz(i)
+        write(13,10) x0(i), y0(i), z0(i)
 10      format(1x,e11.4,1x,e11.4,1x,e11.4)
     end do
 
@@ -120,7 +116,7 @@ end subroutine svout
 
 ! --------------------------- svplotdata -------------------------------------------
 
-subroutine  svplotdata(time,nrooms,nfires,qdot,height)
+subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
 !
 ! this routine records data for the current time step into the smokeview zone fire data file
@@ -128,21 +124,23 @@ subroutine  svplotdata(time,nrooms,nfires,qdot,height)
 !            be visualized by smokeview
 !     time - current time
 !   nrooms   number of rooms
+!       pr - real array of size nrooms of room pressures
+!     ylay - real array of size nrooms of layer interface heights
+!       tl - real array of size nrooms of lower layer temperatures 
+!       tu - real array of size nrooms of upper layer temperatures 
 !   nfires - number of fires
 !     qdot - real array of size nfires of fire heat release rates
 !   height - real array of size nfires of fire heights
 !
     use precision_parameters
-    use cenviro
     implicit none
 
     real(eb), intent(in) :: time
     integer, intent(in) :: nrooms
+    real(eb), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
     integer, intent(in) :: nfires
     real(eb), intent(in), dimension(nfires) :: qdot, height
-    real xxtime, xxheight, xxqdot
-    
-    type(room_type), pointer :: roomi
+    real xxtime, xxpr, xxylay, xxtl, xxtu, xxheight, xxqdot
 
     integer :: i
 
@@ -150,9 +148,11 @@ subroutine  svplotdata(time,nrooms,nfires,qdot,height)
     write(14) xxtime
 
     do i = 1, nrooms
-        roomi=>roominfo(i)
-        
-        write(14) roomi%zzrelp, roomi%zzhlay(lower), roomi%zztemp(lower), roomi%zztemp(upper)
+        xxpr = pr(i)
+        xxylay = ylay(i)
+        xxtl = tl(i)
+        xxtu = tu(i)
+        write(14) xxpr, xxylay, xxtl, xxtu
     end do
 
     do i = 1, nfires

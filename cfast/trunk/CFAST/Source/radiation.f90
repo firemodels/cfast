@@ -35,8 +35,6 @@
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire), fheight
     logical roomflg(nr)
     save flxrad0, flwrad0
-    
-    type(room_type), pointer :: roomi
 
     do i = 1, nm1
         do j = 1, nwal
@@ -74,10 +72,8 @@
     endif
 
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        zzbeam(lower,i) = (1.8_eb*roomi%zzvol(lower))/(roomi%ar + roomi%zzhlay(lower)*(roomi%dr + roomi%br))
-        zzbeam(upper,i) = (1.8_eb*roomi%zzvol(upper))/(roomi%ar + roomi%zzhlay(upper)*(roomi%dr + roomi%br))
+        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(ar(i) + zzhlay(i, lower)*(dr(i) + br(i)))
+        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(ar(i) + zzhlay(i, upper)*(dr(i) + br(i)))
     end do
 
     defabsup = 0.5_eb
@@ -87,13 +83,11 @@
     endif
 
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
         if(roomflg(i))then
-            tg(upper) = roomi%zztemp(upper)
-            tg(lower) = roomi%zztemp(lower)
-            zzbeam(lower,i) = (1.8_eb*roomi%zzvol(lower))/(roomi%ar + roomi%zzhlay(lower)*(roomi%dr + roomi%br))
-            zzbeam(upper,i) = (1.8_eb*roomi%zzvol(upper))/(roomi%ar + roomi%zzhlay(upper)*(roomi%dr + roomi%br))
+            tg(upper) = zztemp(i,upper)
+            tg(lower) = zztemp(i,lower)
+            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(ar(i) + zzhlay(i, lower)*(dr(i) + br(i)))
+            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(ar(i) + zzhlay(i, upper)*(dr(i) + br(i)))
             do iwall = 1, 4
                 if(mod(iwall,2)==1)then
                     ilay = upper
@@ -102,10 +96,10 @@
                 endif
                 imap = map(iwall)
                 if(switch(iwall,i))then
-                    twall(imap) = roomi%zzwtemp(iwall,1)
+                    twall(imap) = zzwtemp(i,iwall,1)
                     emis(imap) = epw(iwall,i)
                 else
-                    twall(imap) = roomi%zztemp(ilay)
+                    twall(imap) = zztemp(i,ilay)
                     emis(imap) = 1.0_eb
                 endif
             end do
@@ -116,8 +110,8 @@
                 yrfirepos(j) = xfire(ifire+j-1,2)
                 !zrfirepos(j) = xfire(ifire+j-1,3) ! This is point radiation at the base of the fire
                 call flamhgt (xfire(ifire+j-1,8),xfire(ifire+j-1,20),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
-                if(fheight+xfire(ifire+j-1,3)>roomi%hr)then
-                    zrfirepos(j) = xfire(ifire+j-1,3) + (roomi%hr-xfire(ifire+j,3))/2.0_eb
+                if(fheight+xfire(ifire+j-1,3)>hr(i))then
+                    zrfirepos(j) = xfire(ifire+j-1,3) + (hr(i)-xfire(ifire+j,3))/2.0_eb
                 else
                     zrfirepos(j) = xfire(ifire+j-1,3) + fheight/2.0_eb
                 end if
@@ -133,9 +127,9 @@
                     endif
                 endif
                 if(prnslab)then
-                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), roomi%zzhlay(lower)
+                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad4(twall,tg,emis,zzabsb(1,i),i,roomi%br,roomi%dr,roomi%hr,roomi%zzhlay(lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
                 if(.not.black)then
@@ -148,9 +142,9 @@
                     endif
                 endif
                 if(prnslab)then
-                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), roomi%zzhlay(lower)
+                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad2(twall,tg,emis,zzabsb(1,i),roomi%br,roomi%dr,roomi%hr,roomi%zzhlay(lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
             endif
@@ -1145,8 +1139,6 @@
     integer :: xco2, yco2, xh2o, yh2o
     real(eb) :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
     real(eb) :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
-    
-    type(room_type), pointer :: roomi
 
     ! declare module data
 
@@ -1202,17 +1194,15 @@
 
     ! calculate layer-specific factors
     
-    roomi=>roominfo(cmpt)
-    
-    tg = roomi%zztemp(layer)
-    rtv = (rg*tg)/roomi%zzvol(layer)
+    tg = zztemp(cmpt, layer)
+    rtv = (rg*tg)/zzvol(cmpt, layer)
     l = zzbeam(layer,cmpt)
 
     ag = 0.0_eb
 
     ! calculate absorbance for co2
     
-    ng = roomi%zzgspec(layer, co2)/mwco2
+    ng = zzgspec(cmpt, layer, co2)/mwco2
     plg = ng*rtv*l
     !if(plg>1.0e-3_eb)then
     if(plg>0.0_eb)then
@@ -1226,7 +1216,7 @@
 
     ! calculate absorbance for h2o
     
-    ng = roomi%zzgspec(layer, h2o)/mwh2o
+    ng = zzgspec(cmpt, layer, h2o)/mwh2o
     plg = ng*rtv*l
     !if(plg>1.0e-3_eb)then
     if(plg>0.0_eb)then
@@ -1240,7 +1230,7 @@
 
     ! calculate total absorbance
     
-    vfs = roomi%zzgspec(layer,soot)/(roomi%zzvol(layer)*rhos)
+    vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
     if(prnslab)then
         if(absorb==00.1_eb)then

@@ -19,8 +19,6 @@
     real(eb) :: yinter(nr), temparea(mxpts), temphgt(mxpts), deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
     integer numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
-    
-    type(room_type), pointer :: roomi, fireroom, objectroom, top_room, bottom_room, room1, room2
 
     !	Unit numbers defined in readop, openoutputfiles, readinputfiles
     !
@@ -126,23 +124,19 @@
 
     ! floor plan dependent parameters
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        roomi%hrl = roomi%hflr
-        roomi%hrp = roomi%hr + roomi%hflr
+        hrl(i) = hflr(i)
+        hrp(i) = hr(i) + hflr(i)
     end do
 
     ! check and/or set heat source fire position
-    fireroom=>roominfo(heatfr)
-    
     if (heatfl) then
-        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>fireroom%br)) then
-            heatfp(1) = fireroom%br / 2.0_eb
+        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>br(heatfr))) then
+            heatfp(1) = br(heatfr) / 2.0_eb
         endif
-        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>fireroom%dr)) then
-            heatfp(2) = fireroom%dr / 2.0_eb
+        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>dr(heatfr))) then
+            heatfp(2) = dr(heatfr) / 2.0_eb
         endif
-        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>fireroom%hr)) then
+        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>hr(heatfr))) then
             heatfp(3) = 0.0_eb
         endif
         write(logerr,5021) heatfr,heatfp
@@ -150,17 +144,15 @@
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
-        objectroom=>roominfo(objrm(i))
-        
-        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>objectroom%br)) then
-            objpos(1,i) = objectroom%br / 2.0_eb
+        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>br(objrm(i)))) then
+            objpos(1,i) = br(objrm(i)) / 2.0_eb
             if (logerr>0) write (logerr,5080) i, objpos(1,i)
         endif
-        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>objectroom%dr)) then
-            objpos(2,i) = objectroom%dr / 2.0_eb
+        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>dr(objrm(i)))) then
+            objpos(2,i) = dr(objrm(i)) / 2.0_eb
             if (logerr>0) write (logerr,5090) i, objpos(2,i)
         endif
-        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>objectroom%hr)) then
+        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>hr(objrm(i)))) then
             objpos(3,i) = 0.0_eb
             if (logerr>0) write (logerr,5100) i, objpos(3,i)
         endif
@@ -170,20 +162,16 @@
     ! here rather than right after keywordcases because hrl and hrp were just defined
     ! above
     do itop = 1, nm1
-        top_room=>roominfo(itop)
-        
         if (nwv(itop,itop)/=0) then
             if (logerr>0) write (logerr,*) ' A room can not be connected to itself'
             nwv(itop,itop) = 0
         endif
         do ibot = 1, itop - 1
-            bottom_room=>roominfo(ibot)
-            
             if (nwv(itop,ibot)/=0.or.nwv(ibot,itop)/=0) then
 
                 ! see which room is on top (if any) - this is like a bubble sort
-                deps1 = top_room%hrl - bottom_room%hrp
-                deps2 = bottom_room%hrl - top_room%hrp
+                deps1 = hrl(itop) - hrp(ibot)
+                deps2 = hrl(ibot) - hrp(itop)
                 if (nwv(itop,ibot)/=1.or.abs(deps1)>=vfmaxdz) then
                     if (nwv(ibot,itop)/=1.or.abs(deps2)>=vfmaxdz) then
                         if (nwv(itop,ibot)==1.and.abs(deps2)<vfmaxdz) then
@@ -216,10 +204,8 @@
 
     ! Compartment area and volume
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        roomi%ar = roomi%br * roomi%dr
-        roomi%vr = roomi%ar * roomi%hr
+        ar(i) = br(i) * dr(i)
+        vr(i) = ar(i) * hr(i)
     end do
 
 
@@ -229,8 +215,6 @@
     do i = 1, nswal
         iroom1 = izswal(i,1)
         iroom2 = izswal(i,3)
-        room1=>roominfo(iroom1)
-        room2=>roominfo(iroom2)
 
         ! room numbers must be between 1 and nm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
@@ -255,8 +239,8 @@
         endif
 
         ! floor of one room must be adjacent to ceiling of the other
-        dwall1 = abs(room1%hrl - room2%hrp)
-        dwall2 = abs(room2%hrl - room1%hrp)
+        dwall1 = abs(hrl(iroom1) - hrp(iroom2))
+        dwall2 = abs(hrl(iroom2) - hrp(iroom1))
         if(dwall1<vfmaxdz.or.dwall2<=vfmaxdz)then
             if(dwall1<vfmaxdz)then
                 izswal(ii,2) = 2
@@ -296,9 +280,7 @@
 
     ! check shafts
     do iroom = nm1 + 1, nr
-        roomi=>roominfo(iroom)
-        
-        if(roomi%izshaft/=0)then
+        if(izshaft(iroom)/=0)then
             call xerror(' invalid SHAFT specification:',0,1,1)
             ifail = 42
             write (messg,206)iroom,nm1
@@ -317,8 +299,6 @@
     ! check detectors
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
-        roomi=>roominfo(iroom)
-        
         if(iroom<1.or.iroom>nm1)then
             write (messg,104)iroom 
 104         format('Invalid DETECTOR specification: room ',i3, ' is not a valid')
@@ -334,7 +314,7 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>roomi%br.or.yloc<0.0_eb.or.yloc>roomi%dr.or.zloc<0.0_eb.or.zloc>roomi%hrp)then
+        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>hrp(iroom))then
             write(messg,102)xloc,yloc,zloc
 102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
             ifail = 45
@@ -355,14 +335,12 @@
 
     ! check variable cross-sectional area specs and convert to volume
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        npts = roomi%izrvol
+        npts = izrvol(i)
         if(npts/=0)then
 
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
-            if(roomi%zzrhgt(1)/=0.0_eb)then
-                temparea(1) = roomi%zzrarea(1)
+            if(zzrhgt(1,i)/=0.0_eb)then
+                temparea(1) = zzrarea(1,i)
                 temphgt(1) = 0.0_eb
                 ioff = 1
             else
@@ -371,33 +349,33 @@
 
             ! copy data to temporary arrays
             do j = 1, npts
-                temparea(j+ioff) = roomi%zzrarea(j)
-                temphgt(j+ioff) = roomi%zzrhgt(j)
+                temparea(j+ioff) = zzrarea(j,i)
+                temphgt(j+ioff) = zzrhgt(j,i)
             end do
 
             ! force last elevation to be at the ceiling (as defined by hr(i)
-            if(roomi%hr/=roomi%zzrhgt(npts))then
+            if(hr(i)/=zzrhgt(npts,i))then
                 ioff2 = 1
-                temparea(npts+ioff+ioff2) = roomi%zzrarea(npts)
-                temphgt(npts+ioff+ioff2) = roomi%hr
+                temparea(npts+ioff+ioff2) = zzrarea(npts,i)
+                temphgt(npts+ioff+ioff2) = hr(i)
             else
                 ioff2 = 0
             endif
 
             npts = npts + ioff + ioff2
-            roomi%izrvol = npts
+            izrvol(i) = npts
 
             ! copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
-            roomi%zzrhgt(1) = 0.0_eb
-            roomi%zzrvol(1) = 0.0_eb
-            roomi%zzrarea(1) = temparea(1)
+            zzrhgt(1,i) = 0.0_eb
+            zzrvol(1,i) = 0.0_eb
+            zzrarea(1,i) = temparea(1)
             j = 1
             do j = 2, npts
-                roomi%zzrhgt(j) = temphgt(j)
-                roomi%zzrarea(j) = temparea(j)
-                darea = (roomi%zzrarea(j)+roomi%zzrarea(j-1))/2.0_eb
-                dheight = roomi%zzrhgt(j) - roomi%zzrhgt(j-1)
-                roomi%zzrvol(j) = roomi%zzrvol(j-1) + darea*dheight
+                zzrhgt(j,i) = temphgt(j)
+                zzrarea(j,i) = temparea(j)
+                darea = (zzrarea(j,i)+zzrarea(j-1,i))/2.0_eb
+                dheight = zzrhgt(j,i) - zzrhgt(j-1,i)
+                zzrvol(j,i) = zzrvol(j-1,i) + darea*dheight
             end do
 
             ! re-define volume, area, breadth and depth arrays 
@@ -408,11 +386,11 @@
             ! br*dr=ar and br/dr remain the same as entered on
             ! the width and depth  commands.
 
-            roomi%vr = roomi%zzrvol(npts)
-            roomi%ar = roomi%vr/roomi%hr
-            xx = roomi%br/roomi%dr
-            roomi%br = sqrt(roomi%ar*xx)
-            roomi%dr = sqrt(roomi%ar/xx)
+            vr(i) = zzrvol(npts,i)
+            ar(i) = vr(i)/hr(i)
+            xx = br(i)/dr(i)
+            br(i) = sqrt(ar(i)*xx)
+            dr(i) = sqrt(ar(i)/xx)
         endif
     end do
 
@@ -427,20 +405,16 @@
     ! 0. .25 .25 .25 .25
 
     ! force all rooms to transfer heat between connected rooms
-    if(roominfo(0)%izheat==1)then
+    if(izheat(0)==1)then
         do i = 1, nm1
-            roomi=>roominfo(i)
-            
-            roomi%izheat = 1
+            izheat(i) = 1
         end do
     endif
 
     do i = 1, nm1
-    
-        roomi=>roominfo(i)
 
         ! force heat transfer between rooms connected by vents.
-        if(roomi%izheat==1)then
+        if(izheat(i)==1)then
             do j = 1, nm1+1
                 nventij = 0
                 do k = 1, 4
@@ -454,7 +428,7 @@
         endif
 
         ! normalize zzhtfrac fraction matrix so that rows sum to one
-        if(roomi%izheat/=0)then
+        if(izheat(i)/=0)then
             sum = 0.0_eb
             do j = 1, nm1+1
                 sum = sum + zzhtfrac(i,j)
@@ -547,9 +521,6 @@
     character :: cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
-    
-    type(room_type), pointer :: roomi, roomj, from_room
-    
     data plumemodel /'McCaffrey', 'Heskestad'/
 
     !	Start with a clean slate
@@ -720,13 +691,12 @@
         compartmentnames(compartment) = lcarray(1)
 
         ! Size
-        roomi=>roominfo(compartment)
-        roomi%br = lrarray(2)
-        roomi%dr = lrarray(3)
-        roomi%hr = lrarray(4)
+        br(compartment) = lrarray(2)
+        dr(compartment) = lrarray(3)
+        hr(compartment) = lrarray(4)
         cxabs(compartment) = lrarray(5)
         cyabs(compartment) = lrarray(6)
-        roomi%hflr = lrarray(7)
+        hflr(compartment) = lrarray(7)
 
         ! Ceiling
         tcname = lcarray(8)
@@ -760,9 +730,8 @@
         ! Reset this each time in case this is the last entry
         n = compartment+1
         nx = compartment
-        roomi=>roominfo(nx)
 
-        write (logerr,5063) compartment, compartmentnames(nx), roomi%br,roomi%dr, roomi%hr,cxabs(nx),cyabs(nx),roomi%hflr,(switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
+        write (logerr,5063) compartment, compartmentnames(nx), br(nx),dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),(switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
         !		    BW = width, HH = soffit, HL = sill, 
@@ -780,8 +749,6 @@
         i = lrarray(1)
         j = lrarray(2)
         k = lrarray(3)
-        roomi=>roominfo(i)
-        roomj=>roominfo(j)
         imin = min(i,j)
         jmax = max(i,j)
         if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
@@ -819,21 +786,21 @@
         qcvh(2,iijk) = initialopening
         qcvh(4,iijk) = initialopening
 
-        hhp(iijk) = hh(iijk) + roomi%hflr
-        hlp(iijk) = hl(iijk) + roomi%hflr
+        hhp(iijk) = hh(iijk) + hflr(i)
+        hlp(iijk) = hl(iijk) + hflr(i)
 
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
-        hh(jik) = min(roomj%hr,max(0.0_eb,hhp(jik)-roomj%hflr))
-        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomj%hflr))
+        hh(jik) = min(hr(j),max(0.0_eb,hhp(jik)-hflr(j)))
+        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-hflr(j)))
 
         ! assure ourselves that the connections are symmetrical
 
-        hhp(jik) = hh(jik) + roomj%hflr
-        hlp(jik) = hl(jik) + roomj%hflr
-        hh(iijk) = min(roomi%hr,max(0.0_eb,hhp(iijk)-roomi%hflr))
-        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomi%hflr))
+        hhp(jik) = hh(jik) + hflr(j)
+        hlp(jik) = hl(jik) + hflr(j)
+        hh(iijk) = min(hr(i),max(0.0_eb,hhp(iijk)-hflr(i)))
+        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-hflr(i)))
         
        ! DEADROOM dead_room_num connected_room_num
        ! pressure in dead_room_num is not solved.  pressure for this room
@@ -1100,9 +1067,7 @@
         objpos(1,obpnt) = lrarray(2)
         objpos(2,obpnt) = lrarray(3)
         objpos(3,obpnt) = lrarray(4)
-        roomi=>roominfo(iroom)
-        
-        if (objpos(1,obpnt)>roomi%br.or.objpos(2,obpnt)>roomi%dr.or.objpos(3,obpnt)>roomi%hr) then
+        if (objpos(1,obpnt)>br(iroom).or.objpos(2,obpnt)>dr(iroom).or.objpos(3,obpnt)>hr(iroom)) then
             write(logerr,5323) obpnt
             ierror = 82
             return
@@ -1204,9 +1169,7 @@
         objpos(1,obpnt) = lrarray(3)
         objpos(2,obpnt) = lrarray(4)
         objpos(3,obpnt) = lrarray(5)
-        roomi=>roominfo(iroom)
-        
-        if (objpos(1,obpnt)>roomi%br.or.objpos(2,obpnt)>roomi%dr.or.objpos(3,obpnt)>roomi%hr) then
+        if (objpos(1,obpnt)>br(iroom).or.objpos(2,obpnt)>dr(iroom).or.objpos(3,obpnt)>hr(iroom)) then
             write(logerr,5323) obpnt
             ierror = 82
             return
@@ -1363,8 +1326,7 @@
             write(*,*)
         endif
 
-        roomi=>roominfo(i2)
-        if(xdtect(ndtect,dxloc)>roomi%br.or.xdtect(ndtect,dyloc)>roomi%dr.or.xdtect(ndtect,dzloc)>roomi%hr) then
+        if(xdtect(ndtect,dxloc)>br(i2).or.xdtect(ndtect,dyloc)>dr(i2).or.xdtect(ndtect,dzloc)>hr(i2)) then
             write(logerr,5339) ndtect,compartmentnames(i2)
             ierror = 80
             return
@@ -1399,14 +1361,12 @@
         endif
 
         iroom = lrarray(1)
-        roomi=>roominfo(iroom)
-        
         if(iroom<1.or.iroom>n)then
             write(logerr, 5001) i1
             ierror = 40
             return
         endif
-        roomi%izshaft = 1
+        izshaft(iroom) = 1
         !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
     case ('TARGE')
         if (countargs(10,lcarray, xnumc-1, nret).or.countargs(11,lcarray, xnumc-1, nret)) then
@@ -1491,8 +1451,7 @@
             return
         endif
 
-        iroom = lrarray(1)
-        roomi=>roominfo(iroom)
+        IROOM = lrarray(1)
 
         ! check that specified room is valid
         if(iroom<0.or.iroom>n)then
@@ -1501,32 +1460,32 @@
             return
         endif
 
-        roomi%izhall(ihroom) = 1
-        roomi%izhall(ihvelflag) = 0
-        roomi%izhall(ihdepthflag) = 0
-        roomi%izhall(ihventnum) = 0
-        roomi%zzhall(ihtime0) = -1.0_eb
-        roomi%zzhall(ihvel) = 0.0_eb
-        roomi%zzhall(ihdepth) = -1.0_eb
-        roomi%zzhall(ihhalf) = -1.0_eb
+        izhall(iroom,ihroom) = 1
+        izhall(iroom,ihvelflag) = 0
+        izhall(iroom,ihdepthflag) = 0
+        izhall(iroom,ihventnum) = 0
+        zzhall(iroom,ihtime0) = -1.0_eb
+        zzhall(iroom,ihvel) = 0.0_eb
+        zzhall(iroom,ihdepth) = -1.0_eb
+        zzhall(iroom,ihhalf) = -1.0_eb
 
         ! HALL velocity; not set if negative
         if(lrarray(2)>=0) then
-            roomi%zzhall(ihvel) = lrarray(2)
-            roomi%izhall(ihvelflag) = 1
+            zzhall(iroom,ihvel) = lrarray(2)
+            izhall(iroom,ihvelflag) = 1
         endif
 
         ! HALL layer depth; not set if negative
         if (lrarray(3)>=0) then
-            roomi%zzhall(ihdepth) = lrarray(3)
-            roomi%izhall(ihdepthflag) = 1
+            zzhall(iroom,ihdepth) = lrarray(3)
+            izhall(iroom,ihdepthflag) = 1
         endif
 
         ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
         if (lrarray(4)>=0) then
-            roomi%zzhall(ihhalf) = lrarray(4)
-            roomi%izhall(ihhalfflag) = 1
-            roomi%izhall(ihmode) = ihbefore
+            zzhall(iroom,ihhalf) = lrarray(4)
+            izhall(iroom,ihhalfflag) = 1
+            izhall(iroom,ihmode) = ihbefore
         endif
 
         ! ROOMA Compartment Number_of_Area_Values Area_Values
@@ -1537,8 +1496,7 @@
             return
         endif
 
-        iroom = lrarray(1)
-        roomi=>roominfo(iroom)
+        IROOM = lrarray(1)
 
         ! make sure the room number is valid
         if(iroom<1.or.iroom>n)then
@@ -1554,8 +1512,8 @@
             ierror = 49
             return
         endif
-        if(roomi%izrvol/=0) npts = min(roomi%izrvol,npts)
-        roomi%izrvol = npts
+        if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
+        izrvol(iroom) = npts
 
         ! make sure all data is positive 
         do  i = 1, npts
@@ -1568,9 +1526,9 @@
 
         ! put the data in its place
         do i = 1, npts
-            roomi%zzrarea(i) = lrarray(i+2)
+            zzrarea(i,iroom) = lrarray(i+2)
         end do
-        write(logerr,5351) iroom, (roomi%zzrarea(i),i=1,npts)  ! original code zzrarea(iroom,i) should be zzrarea(i,iroom)
+        write(logerr,5351) iroom, (zzrarea(iroom,i),i=1,npts)
 
         ! ROOMH Compartment Number_of_Height_Values Height_Values
         ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
@@ -1596,8 +1554,8 @@
             ierror = 53
             return
         endif
-        if(roomi%izrvol/=0)npts = min(roomi%izrvol,npts)
-        roomi%izrvol = npts
+        if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
+        izrvol(iroom) = npts
 
         ! make sure all data is positive 
         do i = 1, npts
@@ -1610,9 +1568,9 @@
 
         ! put the data in its place
         do i = 1, npts
-            roomi%zzrhgt(i) = lrarray(i+2)
+            zzrhgt(i,iroom) = lrarray(i+2)
         end do
-        write(logerr,5352) iroom, (roomi%zzrhgt(i),i=1,npts)  ! original code zzrhgt(iroom,i) should be zzrhgt(i,iroom)
+        write(logerr,5352) iroom, (zzrhgt(iroom,i),i=1,npts)
 
         ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
     case ('DTCHE')
@@ -1656,10 +1614,9 @@
 
         nto = 0
         ifrom = lrarray(1)
-        from_room=>roominfo(ifrom)
 
         if (nret==1) then
-            from_room%izheat = 1
+            izheat(ifrom) = 1
             go to 10
         else
             nto = lrarray(2)
@@ -1668,7 +1625,8 @@
                 ierror = 59
                 return
             endif
-            from_room%izheat = 2
+            izheat(ifrom) = 2
+            izheat(ifrom) = 2
         endif
 
         if (2*nto/=(nret-2)) then
@@ -1806,7 +1764,6 @@
     use cfast_main
     use iofiles
     use objects2
-    use cenviro
     implicit none
 
     integer, intent(in) :: xnumc, iobj
@@ -1818,8 +1775,6 @@
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, errorcode, ir, i, ii, nret
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.e-3_eb, area, d, flamelength
-    
-    type(room_type), pointer :: roomi
 
     ! there are eight required inputs for each fire
     do ir = 1, 8
@@ -1918,13 +1873,11 @@
     call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    roomi=>roominfo(objrm(iobj))
-    
-    call positionobject(objpos,1,iobj,roomi%br,midpoint,minimumheight,errorcode)
+    call positionobject(objpos,1,iobj,objrm(iobj),br,midpoint,minimumheight,errorcode)
     if (errorcode/=0) return
-    call positionobject(objpos,2,iobj,roomi%dr,midpoint,minimumheight,errorcode)
+    call positionobject(objpos,2,iobj,objrm(iobj),dr,midpoint,minimumheight,errorcode)
     if (errorcode/=0) return
-    call positionobject(objpos,3,iobj,roomi%hr,base,minimumheight,errorcode)
+    call positionobject(objpos,3,iobj,objrm(iobj),hr,base,minimumheight,errorcode)
     if (errorcode/=0) return
 
     ! diagnostic - check for the maximum heat release per unit volume.
@@ -2082,7 +2035,6 @@
     use precision_parameters
     use cfast_main
     use cshell
-    use cenviro
     use iofiles
     use opt
     implicit none
@@ -2098,8 +2050,6 @@
     integer :: ilocal(2), i, io, nret, iroom
     character :: label*5, testfile*128, place*1, mxmn*1, toupper*1, testpath*256
     logical exists, doesthefileexist, eof
-    
-    type(room_type), pointer :: roomi
 
     ip0(0) = off
     ierror = 0
@@ -2158,7 +2108,6 @@
 
     call readin(2,nret,ilocal,local)
     iroom = ilocal(1)
-    roomi=>roominfo(iroom)
     x = local(2)
     call readfl(place)
     place = toupper(place)
@@ -2181,7 +2130,7 @@
         call dop0(nofp,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
     else if (label=='INTER') then
         mxmn = place
-        x = (roomi%hr - x)*roomi%ar
+        x = (hr(iroom) - x)*ar(iroom)
         call dop0(nofvu,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
     else
         close(io)
@@ -2243,13 +2192,14 @@
 
 ! --------------------------- positionobject -------------------------------------------
 
-    subroutine positionobject (xyz,index,opoint,criterion,defaultposition,minimumseparation,errorcode)
+    subroutine positionobject (xyz,index,opoint,rpoint,criterion,defaultposition,minimumseparation,errorcode)
 
     !     routine: positionobject
     !     purpose: Position an object in a compartment
     !     arguments: xyz: objposition (objpos)
     !                index: 1, 2 or 3 for x, y or z
     !		         opoint: the object pointer
+    !		         rpoint: the compartment
     !		         criterion: the maximum extent
     !		         defaultposition: to set to zero (base)(2) or midpoint(1)
     !		         minimumseparation: the closest the object can be to a wall
@@ -2257,15 +2207,15 @@
     use precision_parameters
     implicit none
     
-    integer, intent(in) :: index, defaultposition, opoint
-    real(eb), intent(in) :: minimumseparation, criterion
+    integer, intent(in) :: index, defaultposition, opoint,rpoint
+    real(eb), intent(in) :: minimumseparation, criterion(*)
     real(eb), intent(out) :: xyz(3,0:*)
     integer, intent(out) :: errorcode
     
-    IF((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion)) THEN
+    IF((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) THEN
         select case (defaultposition)
         case (1) 
-            xyz(index,opoint) = criterion/2.0_eb
+            xyz(index,opoint) = criterion(rpoint)/2.0_eb
         case (2) 
             xyz(index,opoint) = minimumseparation
         case default
@@ -2273,8 +2223,8 @@
         end select
     else if (xyz(index,opoint)==0.0_eb) then
         xyz(index,opoint) = minimumseparation
-    else if (xyz(index,opoint)==criterion) then
-        xyz(index,opoint) = criterion-minimumseparation
+    else if (xyz(index,opoint)==criterion(rpoint)) then
+        xyz(index,opoint) = criterion(rpoint)-minimumseparation
     endif
 
     return

@@ -20,16 +20,12 @@
 
     real(eb) :: xx, yy, zz, xlen, temp, rho, vel
     integer :: id
-    
-    type(room_type), pointer :: roomi
 
-    roomi=>roominfo(iroom)
-    
     do id = idstart, idstart + nd - 1
         xx = xdtect(id,dxloc)
         yy = xdtect(id,dyloc)
         zz = xdtect(id,dzloc)
-        if(roomi%izhall(ihxy)==1)then
+        if(izhall(iroom,ihxy)==1)then
             xlen = xx
         else
             xlen = yy
@@ -56,25 +52,22 @@
     
     real(eb) :: cjetheight, c1, hhalf, dt0, fact
     integer :: ihalf
-    type(room_type), pointer :: roomi
 
-    roomi=>roominfo(iroom)
-    
-    if(roomi%izhall(ihmode)==ihduring)then
-        cjetheight = roomi%hr - roomi%zzhall(ihdepth)
+    if(izhall(iroom,ihmode)==ihduring)then
+        cjetheight = hr(iroom) - zzhall(iroom,ihdepth)
 
         ! location is in hall ceiling jet
-        if(zloc>=cjetheight.and.xloc<=roomi%zzhall(ihdist))then
+        if(zloc>=cjetheight.and.xloc<=zzhall(iroom,ihdist))then
             c1 = 1.0_eb
-            ihalf = roomi%izhall(ihhalfflag)
-            hhalf = roomi%zzhall(ihhalf)
-            dt0 = roomi%zzhall(ihtemp)
+            ihalf = izhall(iroom,ihhalfflag)
+            hhalf = zzhall(iroom,ihhalf)
+            dt0 = zzhall(iroom,ihtemp)
 
             ! check to see if the user specified a hhalf value on the command line. if not (ie if ihalf==0) then calculate it using the correlations.
             if(ihalf==0)then
                 ! hhalf = -log10(2)/.018
                 hhalf = 16.70_eb
-                roomi%zzhall(ihhalf) = hhalf
+                zzhall(iroom,ihhalf) = hhalf
             endif
 
             ! if hhalf < 0.0 then assume that the temperature does not decay (ie flow is adiabatic)
@@ -84,23 +77,23 @@
                 fact = 1.0_eb
             endif
 
-            halltemp = roomi%zztemp(lower) + dt0*fact
-            hallrho = roomi%zzpabs/(rgas*halltemp)
-            hallvel = roomi%zzhall(ihvel)
+            halltemp = zztemp(iroom,lower) + dt0*fact
+            hallrho = zzpabs(iroom)/(rgas*halltemp)
+            hallvel = zzhall(iroom,ihvel)
         else
-            halltemp = roomi%zztemp(lower)
-            hallrho = roomi%zzrho(lower)
+            halltemp = zztemp(iroom,lower)
+            hallrho = zzrho(iroom,lower)
             hallvel = 0.10_eb
         endif
     else
 
         ! hall jet is not flowing (either has not started or has finished) so, use regular layer temperatures and densities
-        if(zloc>roomi%zzhlay(lower))then
-            halltemp = roomi%zztemp(upper)
-            hallrho = roomi%zzrho(upper)
+        if(zloc>zzhlay(iroom,lower))then
+            halltemp = zztemp(iroom,upper)
+            hallrho = zzrho(iroom,upper)
         else
-            halltemp = roomi%zztemp(lower)
-            hallrho = roomi%zzrho(lower)
+            halltemp = zztemp(iroom,lower)
+            hallrho = zzrho(iroom,lower)
         endif
         hallvel = 0.10_eb
     endif
@@ -124,36 +117,34 @@
     real(eb) :: hhtemp, roomwidth, roomlength, ventwidth, fraction, halldepth, hallvel, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
     integer :: ihall, inum, i, itype
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: hallroom
     
     ventptr=>ventinfo(inum)
-    hallroom=>roominfo(ihall)
     
-    hhtemp = htemp - hallroom%zztemp(lower)
+    hhtemp = htemp - zztemp(ihall,lower)
 
     ! this routine is only executed if 1) hall flow has not started yet or 2)  hall flow has started and it is coming from the ivent'th vent
 
-    if(hallroom%izhall(ihventnum)/=0.and.hallroom%izhall(ihventnum)/=inum)return
-    roomwidth = min(hallroom%br,hallroom%dr)
-    roomlength = max(hallroom%br,hallroom%dr)
+    if(izhall(ihall,ihventnum)/=0.and.izhall(ihall,ihventnum)/=inum)return
+    roomwidth = min(br(ihall),dr(ihall))
+    roomlength = max(br(ihall),dr(ihall))
     ventwidth = min(width,roomwidth)
     fraction = (ventwidth/roomwidth)**third
     halldepth = hdepth*fraction**2
     hallvel = hvel*fraction
 
     ! hall flow has not started yet
-    if(hallroom%izhall(ihventnum)==0)then
+    if(izhall(ihall,ihventnum)==0)then
 
         ! flow is going into the hall room and flow is below the soffit
         if(hallvel>0.0_eb.and.halldepth>0.0_eb)then
-            hallroom%izhall(ihventnum) = inum
-            hallroom%izhall(ihmode) = ihduring
-            hallroom%zzhall(ihtime0) = tsec
-            hallroom%zzhall(ihtemp) = hhtemp
-            hallroom%zzhall(ihdist) = 0.0_eb
-            if(hallroom%izhall(ihvelflag)==0)hallroom%zzhall(ihvel) = hallvel
-            if(hallroom%izhall(ihdepthflag)==0)then
-                hallroom%zzhall(ihdepth) = halldepth
+            izhall(ihall,ihventnum) = inum
+            izhall(ihall,ihmode) = ihduring
+            zzhall(ihall,ihtime0) = tsec
+            zzhall(ihall,ihtemp) = hhtemp
+            zzhall(ihall,ihdist) = 0.0_eb
+            if(izhall(ihall,ihvelflag)==0)zzhall(ihall,ihvel) = hallvel
+            if(izhall(ihall,ihdepthflag)==0)then
+                zzhall(ihall,ihdepth) = halldepth
             endif
             ventdist0 = -1.
 
@@ -169,13 +160,13 @@
 
             ! corridor flow coming from the main fire. this is a restriction, but lets get it right for the main fire before we worry about objects
             if(itype==2)then
-                if(hallroom%izhall(ihxy)==1)then
+                if(izhall(ihall,ihxy)==1)then
                     ventdist0 = xfire(1,1)
                 else
                     ventdist0 = xfire(1,2)
                 endif
             endif
-            hallroom%zzhall(ihorg) = ventdist0
+            zzhall(ihall,ihorg) = ventdist0
 
             ventdist = -1.0_eb
             ventdistmax = ventdist 
@@ -208,7 +199,7 @@
             end do
 
             ! let the maximum distance that flow in a corridor can flow be the width of the room, ie:
-            hallroom%zzhall(ihmaxlen) = roomlength - ventdist0
+            zzhall(ihall,ihmaxlen) = roomlength - ventdist0
 
             return
         endif
@@ -216,27 +207,27 @@
     endif
 
     ! hall flow is coming from a vent or a fire
-    if(hallroom%izhall(ihventnum)==inum)then
-        thall0 = hallroom%zzhall(ihtime0)
+    if(izhall(ihall,ihventnum)==inum)then
+        thall0 = zzhall(ihall,ihtime0)
         f1 = (told - thall0)/(stime-thall0)
         f2 = (stime - told)/(stime-thall0)
-        if(hallroom%izhall(ihvelflag)==0)then
-            hallroom%zzhall(ihvel) = hallroom%zzhall(ihvel)*f1 + abs(hallvel)*f2
+        if(izhall(ihall,ihvelflag)==0)then
+            zzhall(ihall,ihvel) = zzhall(ihall,ihvel)*f1 + abs(hallvel)*f2
         endif
-        if(hallroom%izhall(ihdepthflag)==0)then
-            hallroom%zzhall(ihdepth) = hallroom%zzhall(ihdepth)*f1 + halldepth*f2
+        if(izhall(ihall,ihdepthflag)==0)then
+            zzhall(ihall,ihdepth) = zzhall(ihall,ihdepth)*f1 + halldepth*f2
         endif
-        hallroom%zzhall(ihtemp) = hallroom%zzhall(ihtemp)*f1 + hhtemp*f2
-        ventdistmax = hallroom%zzhall(ihmaxlen)
+        zzhall(ihall,ihtemp) = zzhall(ihall,ihtemp)*f1 + hhtemp*f2
+        ventdistmax = zzhall(ihall,ihmaxlen)
         ventdistmin = roomlength - ventdistmax
-        cjetdist = hallroom%zzhall(ihdist) + dt*hallroom%zzhall(ihvel)
+        cjetdist = zzhall(ihall,ihdist) + dt*zzhall(ihall,ihvel)
 
         ! if ceiling jet has reached the end of the hall then indicate this fact in izhall  
         if(cjetdist>=ventdistmax)then
-            hallroom%izhall(ihmode) = ihafter
+            izhall(ihall,ihmode) = ihafter
             cjetdist = ventdistmax
         endif
-        hallroom%zzhall(ihdist) = cjetdist
+        zzhall(ihall,ihdist) = cjetdist
     endif
     return
     end

@@ -25,8 +25,6 @@
     real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, qcvfraction, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
     real(eb) :: area
-    
-    type(room_type), pointer :: from_room, to_room
 
     ! the selection rules are now implemented here.  the crossover is the relative fraction of the volume cloesest to the hole from which the mass will come
     vflowflg = .false.
@@ -63,8 +61,6 @@
                 ifrm = itop
                 ito = ibot
             endif
-            from_room=>roominfo(ifrm)
-            to_room=>roominfo(ito)
 
             ! determine mass and enthalpy fractions - first "from," then "to"
             if (ifrm<=nm1) then
@@ -79,21 +75,21 @@
                 endif
                 xxmu = volup  * xmvent(iflow)
                 xxml = vollow * xmvent(iflow)
-                xxqu = cp * xxmu * from_room%zztemp(upper)
-                xxql = cp * xxml * from_room%zztemp(lower)
-                xxtmp = volup*from_room%zztemp(ifrm) + vollow*from_room%zztemp(lower)
+                xxqu = cp * xxmu * zztemp(ifrm,upper)
+                xxql = cp * xxml * zztemp(ifrm,lower)
+                xxtmp = volup*zztemp(ifrm,upper) + vollow*zztemp(ifrm,lower)
                 xxtq = xxqu + xxql
             else
                 xxmu = 0.0_eb
                 xxml = xmvent(iflow)
                 xxqu = 0.0_eb
                 xxql = cp * xxml * eta(ifrm)
-                xxtmp = from_room%zztemp(lower)
+                xxtmp = zztemp(ifrm,lower)
                 xxtq = xxqu + xxql
             endif
 
             fl = 0.0_eb
-            if (xxtmp<=to_room%zztemp(lower)) fl = 1.0_eb
+            if (xxtmp<=zztemp(ito,lower)) fl = 1.0_eb
             fu = 1.0_eb - fl
             fumu = fu * xmvent(iflow)
             fuml = fl * xmvent(iflow)
@@ -125,8 +121,8 @@
             do lsp = 1, ns
                 if (activs(lsp)) then
                     index = pp+lsp-1
-                    xxmixl = from_room%zzcspec(lower,lsp) * xxml
-                    xxmixu = from_room%zzcspec(upper,lsp) * xxmu
+                    xxmixl = zzcspec(ifrm,lower,lsp) * xxml
+                    xxmixu = zzcspec(ifrm,upper,lsp) * xxmu
 
                     ! deposit mass and enthalphy into "to" room variables (not outside)
                     if (ito<=nm1) then
@@ -187,8 +183,6 @@
     real(eb) :: gamcut, zzz, gammax, delp, delden, rho, eps, x, coef, epscut, srdelp, fnoise, w, gg, ff, rho2, v, cshape, d, delpfd, dpddpf, vexmax, vex
     integer :: i
     logical firstc
-    
-    type(room_type), pointer :: bottom_room, top_room
 
     data firstc /.true./
     save firstc, gamcut, gammax
@@ -200,24 +194,21 @@
         zzz = gamma * ((2.0_eb/(gamma+1.0_eb))**((gamma+1.0_eb)/(gamma-1.0_eb)))
         gammax = sqrt(zzz)
     endif
-    
-    bottom_room=>roominfo(ibot)
-    top_room=>roominfo(itop)
 
     ! calculate the pabs(i), delp, the other properties adjacent to the two sides of the vent, and delden.
     dp(1) = 0.0_eb
     dp(2) = 0.0_eb
     if (ibot<=nm1) then
-        dp(2) = -grav_con * (bottom_room%zzrho(l)*bottom_room%zzhlay(l)+bottom_room%zzrho(u)*bottom_room%zzhlay(u))
-        relp(2) = bottom_room%zzrelp
+        dp(2) = -grav_con * (zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
+        relp(2) = zzrelp(ibot)
     else
         relp(2) = epa(itop)
     endif
 
     if (itop<=nm1) then
-        relp(1) = top_room%zzrelp
+        relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con * bottom_room%hrp * era(ibot)
+        dp(1) = -grav_con * hrp(ibot) * era(ibot)
         relp(1) = epa(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset
@@ -231,12 +222,12 @@
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
-    if (top_room%zzvol(l)<=2.0_eb*top_room%zzvmin) then
+    if (zzvol(itop,l)<=2.0_eb*zzvmin(itop)) then
         ilay(1) = u
     else
         ilay(1) = l
     endif
-    if (bottom_room%zzvol(u)<=2.0_eb*bottom_room%zzvmin) then
+    if (zzvol(ibot,u)<=2.0_eb*zzvmin(ibot)) then
         ilay(2) = l
     else
         ilay(2) = u
@@ -244,12 +235,12 @@
 
     ! delden is density immediately above the vent less density immediately below the vent
     if (itop<=nm1) then
-        den(1) = top_room%zzrho(ilay(1))
+        den(1) = zzrho(itop,ilay(1))
     else
         den(1) = era(ibot)
     endif
     if (ibot<=nm1) then
-        den(2) = bottom_room%zzrho(ilay(2))
+        den(2) = zzrho(ibot,ilay(2))
     else
         den(2) = era(itop)
     endif
@@ -334,7 +325,7 @@
         if (iroom(i)<=nm1) then
 
             ! iroom(i) is an inside room so use the environment variable zztemp for temperature 
-            tmvent(i) = roominfo(iroom(i))%zztemp(ilay(3-i))
+            tmvent(i) = zztemp(iroom(i),ilay(3-i))
         else
 
             ! iroom(i) is an outside room so use eta(iroom(3-i) for temperature

@@ -218,13 +218,7 @@
     
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer nalg, i, ii, ieq1, ieq2, ieq3, ires
-    
-    type(room_type), pointer :: fire_room
-    
     data pdzero /maxteq * 0.0d0/
-    
-    fire_room=>roominfo(lfbo)
-    
     nalg = nm1 + nhvpvar + nhvtvar
 
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
@@ -242,8 +236,8 @@
 
     ! copy wall temperatures
     ii = 0
-    ieq1 = fire_room%izwmap2(1)
-    ieq2 = fire_room%izwmap2(3)
+    ieq1 = izwmap2(1,lfbo)
+    ieq2 = izwmap2(3,lfbo)
     if(ieq1/=0)then
         ii = ii + 1
         p2(ieq1) = hvpsolv(ii+nalg+1)
@@ -266,8 +260,8 @@
         ii = 1
         write(iofilo,*)'upper layer temperature in fire room'
         write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(lfbo+noftu)
-        ieq1 = fire_room%izwmap2(1)
-        ieq3 = fire_room%izwmap2(3)
+        ieq1 = izwmap2(1,lfbo)
+        ieq3 = izwmap2(3,lfbo)
         if(ieq1/=0.or.ieq3/=0)then
             write(iofilo,*)'wall temperatures'
             if(ieq1/=0)then
@@ -311,8 +305,8 @@
         end do
         write(iofilo,*)'upper layer temperature in fire room'
         write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(lfbo+noftu)
-        ieq1 = fire_room%izwmap2(1)
-        ieq3 = fire_room%izwmap2(3)
+        ieq1 = izwmap2(1,lfbo)
+        ieq3 = izwmap2(3,lfbo)
         if(ieq1/=0.or.ieq3/=0)then
             write(iofilo,*)'wall temperatures'
             if(ieq1/=0)then
@@ -356,8 +350,6 @@
     
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
-    
-    type(room_type), pointer :: roomi
 
     !    calculate min & max values for fan curve
 
@@ -428,10 +420,8 @@
             ierror = 223
             return
         endif
-        roomi=>roominfo(i)
-        
-        hvelxt(ii) = min(roomi%hr,max(0.0_eb,hvelxt(ii)))
-        hvght(j) = hvelxt(ii) + roomi%hflr
+        hvelxt(ii) = min(hr(i),max(0.0_eb,hvelxt(ii)))
+        hvght(j) = hvelxt(ii) + hflr(i)
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
@@ -454,13 +444,11 @@
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         ib = icmv(j,1)
-        roomi=>roominfo(i)
-        
         ! the outside is defined to be at the base of the structure for mv
         if (i<n) then
             hvextt(ii,upper) = tamb(i)
             hvextt(ii,lower) = tamb(i)
-            hvp(j) = roomi%zzrelp - hvgrav * ramb(i) * hvelxt(ii)
+            hvp(j) = zzrelp(i) - hvgrav * ramb(i) * hvelxt(ii)
         else
             hvextt(ii,upper) = exta
             hvextt(ii,lower) = exta
@@ -664,8 +652,6 @@
     
     real(eb) :: dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
     integer i, ii, iwall, iroom, itarg, ieq
-    
-    type(room_type), pointer :: roomi
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
     ! were calculated using rho*g*h .  but outside pressures were calculated using
@@ -674,12 +660,10 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        pamb(i) = -ra*grav_con*roomi%hflr
+        pamb(i) = -ra*grav_con*hflr(i)
         tamb(i) = ta
         ramb(i) = ra
-        epa(i) = -exra*grav_con*roomi%hflr
+        epa(i) = -exra*grav_con*hflr(i)
         eta(i) = exta
         era(i) = exra
     end do
@@ -706,21 +690,19 @@
 
     ! define the p array, the solution to the ode
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
         p(i) = pamb(i)
         p(i+noftu) = tamb(i)
 
         ! check for a special setting of the interface height
         if (iflag==1) then
             if (yinter(i)<0.d0) then
-                p(i+nofvu) = roomi%zzvmin
+                p(i+nofvu) = zzvmin(i)
             else
-                p(i+nofvu) = min(roomi%zzvmax,max(roomi%zzvmin,yinter(i)*roomi%ar))
+                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
             endif
             yinter(i) = 0.0_eb
         endif
-        if(roomi%izshaft==1)p(i+nofvu) = roomi%zzvmax
+        if(izshaft(i)==1)p(i+nofvu) = zzvmax(i)
         p(i+noftl) = tamb(i)
     end do
 
@@ -747,12 +729,10 @@
     ! establish default values for detector data
     do i = 1, ndtect
         iroom=ixdtect(i,droom)
-        roomi=>roominfo(iroom)
-        
-        if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=roomi%br*.5d0
-        if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=roomi%dr*.5d0
+        if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
+        if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
         if(xdtect(i,dzloc)<0.0_eb)then
-            xdtect(i,dzloc)=roomi%hrp+xdtect(i,dzloc)
+            xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
         endif
         tdspray = xdtect(i,dspray)
 
@@ -809,22 +789,18 @@
     ! after zzmass is defined)
     if(option(foxygen)==on)then
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
-            
-            p(iroom+nofoxyu)=0.23_eb*roomi%zzmass(upper)
-            p(iroom+nofoxyl)=0.23_eb*roomi%zzmass(lower)
+            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
+            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
         end do
     endif
 
     ! define ihxy in izhall (dimension that is longest)
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        if(roomi%izhall(ihroom)==1)then
-            if(roomi%dr>roomi%br)then
-                roomi%izhall(ihxy) = 1
+        if(izhall(i,ihroom)==1)then
+            if(dr(i)>br(i))then
+                izhall(i,ihxy) = 1
             else
-                roomi%izhall(ihxy) = 2
+                izhall(i,ihxy) = 2
             endif
         endif
     end do
@@ -854,8 +830,6 @@
     
     real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
-    
-    type(room_type), pointer :: roomi, roomj
 
     ! set some initialization - simple control stuff
     exset = .false.
@@ -898,9 +872,7 @@
 
     ! initialize the flow variables
     do i = 1, nr
-        roomi=>roominfo(i)
-        
-        roomi%izshaft = 0
+        izshaft(i) = 0
         heatup(i) = 0.0_eb
         heatlp(i) = 0.0_eb
         heatvf(i) = 0.0_eb
@@ -958,18 +930,16 @@
     ! define the outside world as infinity
     xlrg = 1.d+5
     do i = 1, nr
-        roomi=>roominfo(i)
-        
-        roomi%dr = xlrg
-        roomi%br = xlrg
-        roomi%hr = xlrg
-        roomi%hrp = xlrg
-        roomi%hrl = 0.0_eb
-        roomi%hflr = 0.0_eb
+        dr(i) = xlrg
+        br(i) = xlrg
+        hr(i) = xlrg
+        hrp(i) = xlrg
+        hrl(i) = 0.0_eb
+        hflr(i) = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
-        roomi%ar = roomi%br * roomi%dr
-        roomi%vr = roomi%hr * roomi%ar
+        ar(i) = br(i) * dr(i)
+        vr(i) = hr(i) * ar(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qsradw(j,i) = 0.0_eb
@@ -1148,22 +1118,20 @@
 
     ! initialize hall start time
     do i = 1, nr
-        roomi=>roominfo(i)
-        
-        roomi%zzhall(ihtime0) = -1.0d0
-        roomi%zzhall(ihvel) = -1.0d0
-        roomi%zzhall(ihdepth) = -1.0d0
-        roomi%zzhall(ihmaxlen) = -1.0d0
-        roomi%zzhall(ihhalf) = -1.0d0
-        roomi%zzhall(ihtemp) = 0.0d0
-        roomi%zzhall(ihorg) = -1.0d0
-        roomi%izhall(ihdepthflag) = 0
-        roomi%izhall(ihhalfflag) = 0
-        roomi%izhall(ihmode) = ihafter
-        roomi%izhall(ihroom) = 0
-        roomi%izhall(ihvelflag) = 0
-        roomi%izhall(ihventnum) = 0
-        roomi%izhall(ihxy) = 0
+        zzhall(i,ihtime0) = -1.0d0
+        zzhall(i,ihvel) = -1.0d0
+        zzhall(i,ihdepth) = -1.0d0
+        zzhall(i,ihmaxlen) = -1.0d0
+        zzhall(i,ihhalf) = -1.0d0
+        zzhall(i,ihtemp) = 0.0d0
+        zzhall(i,ihorg) = -1.0d0
+        izhall(i,ihdepthflag) = 0
+        izhall(i,ihhalfflag) = 0
+        izhall(i,ihmode) = ihafter
+        izhall(i,ihroom) = 0
+        izhall(i,ihvelflag) = 0
+        izhall(i,ihventnum) = 0
+        izhall(i,ihxy) = 0
         do ivent = 1, mxvent
             zzventdist(i,ivent) = -1.
         end do
@@ -1181,13 +1149,11 @@
 
     ! initialize variable cross sectional area to none
     do i = 1, nr
-        roomi=>roominfo(i)
-        
-        roomi%izrvol = 0
+        izrvol(i) = 0
         do j = 1, mxpts
-            roomi%zzrvol(j) = 0.0_eb
-            roomi%zzrarea(j) = 0.0_eb
-            roomi%zzrhgt(j) = 0.0_eb
+            zzrvol(j,i) = 0.0_eb
+            zzrarea(j,i) = 0.0_eb
+            zzrhgt(j,i) = 0.0_eb
         end do
     end do
 
@@ -1205,22 +1171,17 @@
     end do
 
     do j = 0, nr
-        roomj=>roominfo(j)
-        
-        roomj%izheat = 0
+        izheat(j) = 0
         do i = 1, nr
             izhtfrac(i,j) = 0
         end do
     end do
 
-    do i = 1, nr
-        roomi=>roominfo(i)
-        
-        do lsp = 1, ns
-            do j = upper, lower
-                
-                roomi%zzgspec(j,lsp) = 0.0_eb
-                roomi%zzcspec(j,lsp) = 0.0_eb            
+    do lsp = 1, ns
+        do j = upper, lower
+            do i = 1, nr
+                zzgspec(i,j,lsp) = 0.0_eb
+                zzcspec(i,j,lsp) = 0.0_eb            
             end do
         end do
     end do
@@ -1372,14 +1333,11 @@
 
     real(eb) :: xm(2), xt, xtemp, xh2o, toto2n2
     integer i, j, k, ip, iprod, isof, isys, lsp
-    type(room_type), pointer :: roomi
 
 
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        xm(1) = ramb(i) * roomi%zzvol(upper)
-        xm(2) = ramb(i) * roomi%zzvol(lower)
+        xm(1) = ramb(i) * zzvol(i,upper)
+        xm(2) = ramb(i) * zzvol(i,lower)
 
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -1477,7 +1435,6 @@
     use cshell
     use fltarget
     use thermp
-    use cenviro
     implicit none
     
     integer, intent(out) :: ierror
@@ -1485,16 +1442,12 @@
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: ifail, itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
-    
-    type(room_type), pointer :: roomi
 
     ifail = 0
     do itarg = 1, ntarg
 
         ! room number must be between 1 and nm1
         iroom = ixtarg(trgroom,itarg)
-        roomi=>roominfo(iroom)
-        
         if(iroom<1.or.iroom>nm1)then
             write(logerr,'(a,i3)') 'Target assigned to non-existent compartment',iroom
             ierror = 213
@@ -1507,9 +1460,9 @@
         xxnorm = xxtarg(trgnormx,itarg)
         yynorm = xxtarg(trgnormy,itarg)
         zznorm = xxtarg(trgnormz,itarg)
-        xsize = roomi%br
-        ysize = roomi%dr
-        zsize = roomi%hrp
+        xsize = br(iroom)
+        ysize = dr(iroom)
+        zsize = hrp(iroom)
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5 * xsize
@@ -1579,15 +1532,13 @@
 
     ! add a target in the center of the floor of each room
     do iroom = 1, nm1
-        roomi=>roominfo(iroom)
-        
         ntarg = ntarg + 1
         ixtarg(trgroom,ntarg) = iroom
         ixtarg(trgmeth,ntarg) = steady
         ixtarg(trgback,ntarg) = ext
 
-        xx = roomi%br*0.50d0
-        yy = roomi%dr*0.50d0
+        xx = br(iroom)*0.50d0
+        yy = dr(iroom)*0.50d0
         zz = 0.0_eb
         xxtarg(trgcenx,ntarg) = xx
         xxtarg(trgceny,ntarg) = yy

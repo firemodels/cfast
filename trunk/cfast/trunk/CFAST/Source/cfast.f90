@@ -168,8 +168,6 @@
     real(eb) :: work(lrw)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nalg2, nprint, i, ioff0,  info, ii, ieq1, ieq2, nodes
     real(eb) :: tol
-    
-    type(room_type), pointer :: fire_room
 
 1   continue
 
@@ -186,7 +184,7 @@
     nalg0 = nhvalg
     nalg1 = nm1 + nhvalg
     nprint = -1
-    
+
     ! room pressures
     do i = 1, nm1
         hhvp(i) = p(i+nofp)
@@ -208,18 +206,16 @@
     if (option(fpsteady)==1) then
         call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrw)
     elseif (option(fpsteady)==2) then
-        fire_room=>roominfo(lfbo)
-        
         ioff0 = nalg1
 
         ! upper layer temperatures
         nalg2 = nalg1 + 1
-        hhvp(1+ioff0) = fire_room%zzftemp(upper)
+        hhvp(1+ioff0) = zzftemp(lfbo,upper)
 
         ! wall temperatures
         ii = 0
-        ieq1 = fire_room%izwmap2(1)
-        ieq2 = fire_room%izwmap2(3)
+        ieq1 = izwmap2(1,lfbo)
+        ieq2 = izwmap2(3,lfbo)
         if(ieq1/=0)then
             ii = ii + 1
             nalg2 = nalg2 + 1
@@ -375,7 +371,7 @@
     character(133) :: messg
     external resid, jac, delfilesqq
     integer :: funit
-    
+
     call cptime(toff)
     ierror = 0
     tpaws = tstop + 1.0_eb
@@ -512,7 +508,7 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(pref, expa, exta, nm1, cxabs, cyabs, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -616,7 +612,7 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(pref, expa, exta, nm1, cxabs, cyabs, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -624,7 +620,7 @@
                 firstpassforsmokeview = .false.
                 call svplothdr (version,nm1,nfires)
             endif
-            call svplotdata(t,nm1,nfires, fqlocal,fhlocal)
+            call svplotdata(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call spreadsheetsmv(t)
             tplot = tplot + dplot
             call statusoutput (t, dt, errorcode)
@@ -730,7 +726,7 @@
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
-        call updtect(mdchk,told,dt,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+        call updtect(mdchk,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         call updobj(mdchk,told,dt,ifobj,tobj,ierror)
         td = min(tdtect,tobj)
 
@@ -738,7 +734,7 @@
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
             isroom = ixdtect(isensor,droom)
-            call updtect(mdset,told,dt,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call updtect(mdset,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
             write(lbuf,*) ' '
             call xerror(lbuf,0,1,0)
             write(lbuf,76)isensor,tdtect,isroom
@@ -754,7 +750,7 @@
                 idset = 0
             endif
         else
-            call updtect(mdupdt,told,dt,ndtect,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call updtect(mdupdt,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         endif
 
         ! object ignition is the first thing to happen
@@ -1133,8 +1129,6 @@
     logical :: vflowflg, hvacflg, djetflg
     integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
     real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
-    
-    type(room_type), pointer :: roomi
 
     ierror = 0
     nprod = nlspct
@@ -1222,8 +1216,6 @@
 
     ! sum flow for inside rooms
     do iroom = 1, nirm
-    
-        roomi=>roominfo(iroom)
 
         do iprod = 1, nprod + 2
             ip = izpmap(iprod)
@@ -1268,7 +1260,7 @@
         ! this is done by combining flows from to both
         ! layers into upper layer flow and setting lower layer flow to
         ! zero.
-        if(roomi%izshaft==1)then
+        if(izshaft(iroom)==1)then
             do iprod = 1, nprod + 2
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwtot(iroom,iprod,ll)
                 flwtot(iroom,iprod,ll) = 0.0_eb
@@ -1281,9 +1273,9 @@
             xqu = flwtot(iroom,q,upper)
             xmu = flwtot(iroom,m,upper)
             if(xmu/=0.0_eb)then
-                roomi%zzftemp(upper) = xqu/(cp*xmu)
+                zzftemp(iroom,upper) = xqu/(cp*xmu)
             else
-                roomi%zzftemp(upper) = tamb(iroom)
+                zzftemp(iroom,upper) = tamb(iroom)
             endif
         endif
 
@@ -1312,12 +1304,10 @@
 
     ! calculate rhs of ode's for each room
     do iroom = 1, nirm
-        roomi=>roominfo(iroom)
-        
-        aroom = roomi%ar
-        hceil = roomi%hr
-        pabs = roomi%zzpabs
-        hinter = roomi%zzhlay(ll)
+        aroom = ar(iroom)
+        hceil = hr(iroom)
+        pabs = zzpabs(iroom)
+        hinter = zzhlay(iroom,ll)
         ql = flwtot(iroom,q,ll)
         qu = flwtot(iroom,q,uu)
         tmu = flwtot(iroom,m,uu)
@@ -1336,22 +1326,22 @@
         endif
 
         ! upper layer temperature equation
-        tlaydu = (qu-cp*tmu*roomi%zztemp(uu)) / (cp*roomi%zzmass(uu))
+        tlaydu = (qu-cp*tmu*zztemp(iroom,uu)) / (cp*zzmass(iroom,uu))
         if (option(fode)==on) then
-            tlaydu = tlaydu + pdot / (cp*roomi%zzrho(uu))
+            tlaydu = tlaydu + pdot / (cp*zzrho(iroom,uu))
         endif
 
         ! upper layer volume equation
         vlayd = (gamma-1.0_eb) * qu / (gamma*pabs)
         if (option(fode)==on) then
-            vlayd = vlayd - roomi%zzvol(uu) * pdot / (gamma*pabs)
+            vlayd = vlayd - zzvol(iroom,uu) * pdot / (gamma*pabs)
         endif
-        if(roomi%izshaft==1)vlayd = 0.0_eb
+        if(izshaft(iroom)==1)vlayd = 0.0_eb
 
         ! lower layer temperature equation
-        tlaydl = (ql-cp*tml*roomi%zztemp(ll)) / (cp*roomi%zzmass(ll))
+        tlaydl = (ql-cp*tml*zztemp(iroom,ll)) / (cp*zzmass(iroom,ll))
         if (option(fode)==on) then
-            tlaydl = tlaydl + pdot / (cp*roomi%zzrho(ll))
+            tlaydl = tlaydl + pdot / (cp*zzrho(iroom,ll))
         endif
 
         xprime(iroom) = pdot
@@ -1370,10 +1360,8 @@
         iprodu = nofprd - 1
         do iprod = 1, nprod
             do iroom = 1, nm1
-                roomi=>roominfo(iroom)
-                
-                hceil = roomi%hr
-                hinter = roomi%zzhlay(ll)
+                hceil = hr(iroom)
+                hinter = zzhlay(iroom,ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
                 prodl = flwtot(iroom,iprod+2,ll)
@@ -1508,7 +1496,7 @@
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
         
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomi, roomj, dead_room, from_room, to_room
+    type(room_type), pointer :: roomptr
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1519,82 +1507,80 @@
     vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
-            roomi=>roominfo(i)
-            
-            roomi%zzvmin = min(vminfrac * roomi%vr, 1.0_eb)
-            roomi%zzvmax = roomi%vr - roomi%zzvmin
+            zzvmin(iroom) = min(vminfrac * vr(iroom), 1.0_eb)
+            zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
         end do
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
+            roomptr=>roominfo(iroom)
             
-            roomi%yflor = roomi%hflr
-            roomi%yceil = roomi%hrp
+            roomptr%yflor = hflr(iroom)
+            roomptr%yceil = hrp(iroom)
 
             ! define wall centers
-            xx = roomi%br
+            xx = br(iroom)
             xwall_center = xx/2.0_eb
-            yy = roomi%dr
+            yy = dr(iroom)
             ywall_center = yy/2.0_eb
-            zz = roomi%hrp
-            roomi%wall_center(1,1) = xwall_center
-            roomi%wall_center(1,2) = ywall_center
-            roomi%wall_center(1,3) = zz
+            zz = hrp(iroom)
+            roomptr%wall_center(1,1) = xwall_center
+            roomptr%wall_center(1,2) = ywall_center
+            roomptr%wall_center(1,3) = zz
 
-            roomi%wall_center(2,1) = xwall_center
-            roomi%wall_center(2,2) = yy
+            roomptr%wall_center(2,1) = xwall_center
+            roomptr%wall_center(2,2) = yy
 
-            roomi%wall_center(3,1) = xx
-            roomi%wall_center(3,2) = ywall_center
+            roomptr%wall_center(3,1) = xx
+            roomptr%wall_center(3,2) = ywall_center
 
-            roomi%wall_center(4,1) = xwall_center
-            roomi%wall_center(4,2) = 0.0_eb
+            roomptr%wall_center(4,1) = xwall_center
+            roomptr%wall_center(4,2) = 0.0_eb
 
-            roomi%wall_center(5,1) = 0.0_eb
-            roomi%wall_center(5,2) = ywall_center
+            roomptr%wall_center(5,1) = 0.0_eb
+            roomptr%wall_center(5,2) = ywall_center
 
-            roomi%wall_center(6,1) = xwall_center
-            roomi%wall_center(6,2) = yy
+            roomptr%wall_center(6,1) = xwall_center
+            roomptr%wall_center(6,2) = yy
 
-            roomi%wall_center(7,1) = xx
-            roomi%wall_center(7,2) = ywall_center
+            roomptr%wall_center(7,1) = xx
+            roomptr%wall_center(7,2) = ywall_center
 
-            roomi%wall_center(8,1) = xwall_center
-            roomi%wall_center(8,2) = 0.0_eb
+            roomptr%wall_center(8,1) = xwall_center
+            roomptr%wall_center(8,2) = 0.0_eb
 
-            roomi%wall_center(9,1) = 0.0_eb
-            roomi%wall_center(9,2) = ywall_center
+            roomptr%wall_center(9,1) = 0.0_eb
+            roomptr%wall_center(9,2) = ywall_center
 
-            roomi%wall_center(10,1) = xwall_center
-            roomi%wall_center(10,2) = ywall_center
-            roomi%wall_center(10,3) = 0.0_eb
+            roomptr%wall_center(10,1) = xwall_center
+            roomptr%wall_center(10,2) = ywall_center
+            roomptr%wall_center(10,3) = 0.0_eb
         end do
 
-        roomi=>roominfo(n)
+        roomptr=>roominfo(n)
         
-        roomi%yflor = 0.0_eb
-        roomi%yceil = 100000._eb
+        roomptr%yflor = 0.0_eb
+        roomptr%yceil = 100000._eb
         
-        roomi%zzvol(upper) = 0.0_eb
-        roomi%zzvol(lower) = 100000.0_eb
-        roomi%zzhlay(upper) = 0.0_eb
-        roomi%zzhlay(lower) = 100000.0_eb
-        roomi%zzrelp = 0.0_eb
-        roomi%zzpabs = pofset
-        roomi%zztemp(upper) = 300.0_eb
-        roomi%zztemp(lower) = 300.0_eb
+        zzvol(n,upper) = 0.0_eb
+        zzvol(n,lower) = 100000.0_eb
+        zzhlay(n,upper) = 0.0_eb
+        zzhlay(n,lower) = 100000.0_eb
+        zzrelp(n) = 0.0_eb
+        zzpabs(n) = pofset
+        zztemp(n,upper) = 300.0_eb
+        zztemp(n,lower) = 300.0_eb
         do lsp = 3, ns
-            roomi%zzcspec(upper,lsp) = 0.0_eb
-            roomi%zzcspec(lower,lsp) = 0.0_eb
-            roomi%zzgspec(lower,lsp) = 0.0_eb
-            roomi%zzgspec(upper,lsp) = 0.0_eb
+            zzcspec(n,upper,lsp) = 0.0_eb
+            zzcspec(n,lower,lsp) = 0.0_eb
+            zzgspec(n,lower,lsp) = 0.0_eb
+            zzgspec(n,upper,lsp) = 0.0_eb
         end do
-        roomi%zzcspec(upper,1) = 0.770_eb
-        roomi%zzcspec(lower,1) = 0.770_eb
-        roomi%zzcspec(upper,2) = 0.230_eb
-        roomi%zzcspec(lower,2) = 0.230_eb
+        zzcspec(n,upper,1) = 0.770_eb
+        zzcspec(n,lower,1) = 0.770_eb
+        zzcspec(n,upper,2) = 0.230_eb
+        zzcspec(n,lower,2) = 0.230_eb
         do layer = upper, lower
-            roomi%zzrho(layer) = roomi%zzpabs / rgas / roomi%zztemp(layer)
-            roomi%zzmass(layer) = roomi%zzrho(layer) * roomi%zzvol(layer)
+            zzrho(n,layer) = zzpabs(n) / rgas / zztemp(n,layer)
+            zzmass(n,layer) = zzrho(n,layer) * zzvol(n,layer)
         end do
 
         ! define vent data structures
@@ -1603,10 +1589,9 @@
         end do
         nvents = 0
         do i = 1, nm1
-            roomi=>roominfo(i)
+            roomptr=>roominfo(i)
             
             do j = i + 1, n
-                roomj=>roominfo(j)
                 if (nw(i,j)/=0) then
                     do k = 1, mxccv
                         if (iand(frmask(k),nw(i,j))/=0) then
@@ -1624,14 +1609,14 @@
                             ventptr%counter=k
 
                             ! is "from" room a hall?
-                            if(roomi%izhall(ihroom)==1)then
+                            if(izhall(i,ihroom)==1)then
                                 ventptr%is_from_hall=1
                             else
                                 ventptr%is_from_hall=0
                             endif
 
                             ! is "to" room a hall?
-                            if(roomj%izhall(ihroom)==1)then
+                            if(izhall(j,ihroom)==1)then
                                 ventptr%is_to_hall=1
                             else
                                 ventptr%is_to_hall=0
@@ -1646,7 +1631,7 @@
 
                                 ! compute wind velocity and pressure rise at the average vent height
                                 havg = (ventptr%sill + ventptr%soffit)/2.0_eb 
-                                havg = havg + roomi%yflor
+                                havg = havg + roomptr%yflor
                                 if(windrf/=0.0_eb)then
                                     windvnew = windv * (havg/windrf)**windpw
                                 else
@@ -1727,18 +1712,18 @@
         ieq = nofwt
         ! set izwmap2 for the outside room first
         do iwall = 1,4
-            roominfo(nm1+1)%izwmap2(iwall) = 0
+            izwmap2(iwall,nm1+1) = 0
         end do
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
-            
             icnt = 0
+            iznwall(iroom) = 0
             do iwall = 1, 4
                 if (switch(iwall,iroom)) then
                     ieq = ieq + 1
-                    roomi%izwmap2(iwall) = ieq
+                    izwmap2(iwall,iroom) = ieq
                     icnt = icnt + 1
                     icol = icol + 1
+                    iznwall(iroom) = iznwall(iroom) + 1
 
                     ! define izwall, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
@@ -1755,11 +1740,11 @@
                     izwall(ii,5) = iwbound
 
                 else
-                    roomi%izwmap2(iwall) = 0
+                    izwmap2(iwall,iroom) = 0
                 endif
             end do
-            roomi%izwmap(1) = icol - icnt + 1
-            roomi%izwmap(2) = icnt
+            izwmap(1,iroom) = icol - icnt + 1
+            izwmap(2,iroom) = icnt
         end do
 
         ! update izwall for ceiling/floors that are connected 
@@ -1768,11 +1753,8 @@
             ifromw = izswal(i,2)
             itor = izswal(i,3)
             itow = izswal(i,4)
-            from_room=>roominfo(ifromr)
-            to_room=>roominfo(itor)
-            
-            ieqfrom = from_room%izwmap2(ifromw) - nofwt
-            ieqto = to_room%izwmap2(itow) - nofwt
+            ieqfrom = izwmap2(ifromw,ifromr) - nofwt
+            ieqto = izwmap2(itow,itor) - nofwt
 
             izwall(ieqfrom,3) = itor
             izwall(ieqfrom,4) = itow
@@ -1825,34 +1807,34 @@
 
     else if (iflag==odevara) then
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
+            roomptr=>roominfo(iroom)
             
-            roomi%zzvol(upper) = max(pdif(iroom+nofvu),roomi%zzvmin)
-            roomi%zzvol(upper) = min(roomi%zzvol(upper),roomi%zzvmax)
-            roomi%zzvol(lower) = max(roomi%vr-roomi%zzvol(upper),roomi%zzvmin)
-            roomi%zzvol(lower) = min(roomi%zzvol(lower),roomi%zzvmax)
+            zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
+            zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
+            zzvol(iroom,lower) = max(vr(iroom)-zzvol(iroom,upper),zzvmin(iroom))
+            zzvol(iroom,lower) = min(zzvol(iroom,lower),zzvmax(iroom))
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
-            volfru(iroom) = (roomi%zzvol(upper)-vminfrac*roomi%vr) / roomi%vr*(1.0_eb-2.0_eb*vminfrac)
+            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom)) / vr(iroom)*(1.0_eb-2.0_eb*vminfrac)
             volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
             volfrl(iroom) = 1.0_eb - volfru(iroom)
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
 
             ! calculate layer height for non-rectangular rooms
-            npts = roomi%izrvol
+            npts = izrvol(iroom)
             if(npts==0)then
-                roomi%zzhlay(upper) = roomi%zzvol(upper) / roomi%ar
-                roomi%zzhlay(lower) = roomi%zzvol(lower) / roomi%ar
+                zzhlay(iroom,upper) = zzvol(iroom,upper) / ar(iroom)
+                zzhlay(iroom,lower) = zzvol(iroom,lower) / ar(iroom)
             else
-                call interp(roomi%zzrvol(1),roomi%zzrhgt(1),npts,roomi%zzvol(lower),1,roomi%zzhlay(lower))
-                roomi%zzhlay(upper) = roomi%hr - roomi%zzhlay(lower)
+                call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
+                zzhlay(iroom,upper) = hr(iroom) - zzhlay(iroom,lower)
             endif
 
-            roomi%zzrelp = pdif(iroom)
-            roomi%zzpabs = pdif(iroom) + pofset
-            roomi%zztemp(upper) = pdif(iroom+noftu)
-            roomi%zztemp(lower) = pdif(iroom+noftl)
+            zzrelp(iroom) = pdif(iroom)
+            zzpabs(iroom) = pdif(iroom) + pofset
+            zztemp(iroom,upper) = pdif(iroom+noftu)
+            zztemp(iroom,lower) = pdif(iroom+noftl)
 
             ! there is a problem with how flow is being withdrawn from layers
             ! when the layers are small and the flow is large (for example with
@@ -1860,68 +1842,63 @@
             ! (because the rhs of the temperature equation is wrong).  the following
             ! code causes the temperature of the opposite layer to be used in these
             ! situations.
-            if(roomi%zztemp(upper)<0.0_eb)then
-                roomi%zztemp(upper)=roomi%zztemp(lower)
+            if(zztemp(iroom,upper)<0.0_eb)then
+                zztemp(iroom,upper)=zztemp(iroom,lower)
             endif
-            if(roomi%zztemp(lower)<0.0_eb)then
-                roomi%zztemp(lower)=roomi%zztemp(upper)
+            if(zztemp(iroom,lower)<0.0_eb)then
+                zztemp(iroom,lower)=zztemp(iroom,upper)
             endif
-            if(roomi%izshaft==1)then
-                roomi%zztemp(lower) = roomi%zztemp(upper)
+            if(izshaft(iroom)==1)then
+                zztemp(iroom,lower) = zztemp(iroom,upper)
             endif
 
             ! compute area of 10 wall segments
-            xx = roomi%br
-            yy = roomi%dr
-            zzu = roomi%zzhlay(upper)
-            zzl = roomi%zzhlay(lower)
-            roomi%zzwarea2(1) = roomi%ar
-            roomi%zzwarea2(2) = zzu*xx
-            roomi%zzwarea2(3) = zzu*yy
-            roomi%zzwarea2(4) = zzu*xx
-            roomi%zzwarea2(5) = zzu*yy
-            roomi%zzwarea2(6) = zzl*xx
-            roomi%zzwarea2(7) = zzl*yy
-            roomi%zzwarea2(8) = zzl*xx
-            roomi%zzwarea2(9) = zzl*yy
-            roomi%zzwarea2(10) = roomi%ar
+            xx = br(iroom)
+            yy = dr(iroom)
+            zzu = zzhlay(iroom,upper)
+            zzl = zzhlay(iroom,lower)
+            zzwarea2(iroom,1) = ar(iroom)
+            zzwarea2(iroom,2) = zzu*xx
+            zzwarea2(iroom,3) = zzu*yy
+            zzwarea2(iroom,4) = zzu*xx
+            zzwarea2(iroom,5) = zzu*yy
+            zzwarea2(iroom,6) = zzl*xx
+            zzwarea2(iroom,7) = zzl*yy
+            zzwarea2(iroom,8) = zzl*xx
+            zzwarea2(iroom,9) = zzl*yy
+            zzwarea2(iroom,10) = ar(iroom)
 
             ! compute area of 4 wall segments
-            roomi%zzwarea(1) = roomi%ar
-            roomi%zzwarea(2) = roomi%ar
-            roomi%zzwarea(3) = (yy + xx)*zzu * xwall_center
-            roomi%zzwarea(4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
+            zzwarea(iroom,1) = ar(iroom)
+            zzwarea(iroom,2) = ar(iroom)
+            zzwarea(iroom,3) = (yy + xx)*zzu * xwall_center
+            zzwarea(iroom,4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)
 
             do i = 1, 4
-                ylay = roomi%zzhlay(lower)
-                roomi%wall_center(i+1,3) =  (roomi%yceil+ylay)/2.0_eb
-                roomi%wall_center(i+5,3) = ylay/2.0_eb
+                ylay = zzhlay(iroom,lower)
+                roomptr%wall_center(i+1,3) =  (roomptr%yceil+ylay)/2.0_eb
+                roomptr%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
             do layer = upper, lower
-                roomi%zzrho(layer) = roomi%zzpabs / rgas / roomi%zztemp(layer)
-                roomi%zzmass(layer) = roomi%zzrho(layer) * roomi%zzvol(layer)
+                zzrho(iroom,layer) = zzpabs(iroom) / rgas / zztemp(iroom,layer)
+                zzmass(iroom,layer) = zzrho(iroom,layer) * zzvol(iroom,layer)
             end do
         end do
         
         do i = 1, nm1
-            roomi=>roominfo(i)
-            
             if(deadroom(i).eq.0)cycle
-            dead_room=>roominfo(deadroom(i))
-            roomi%zzrelp = dead_room%zzrelp
-            roomi%zzpabs = dead_room%zzpabs
+            zzrelp(i) = zzrelp(deadroom(i))
+            zzpabs(i) = zzpabs(deadroom(i))
         end do
 
         ! record which layer target is in
         do itarg = 1, ntarg
             iroom = ixtarg(trgroom,itarg)
-            roomi=>roominfo(itarg)
-            
-            ylay = roomi%zzhlay(lower)
+            ylay = zzhlay(iroom,lower)
             ytarg = xxtarg(trgcenz,itarg)
             if(ytarg>=ylay)then
                 ixtarg(trglayer,itarg) = upper
@@ -1944,26 +1921,21 @@
     else if (iflag==odevarb.or.iflag==odevarc) then
         isof = nofwt
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
-            
             do iwall = 1, nwal
-                iwalleq = roomi%izwmap2(iwall)
+                iwalleq = izwmap2(iwall,iroom)
                 if(iwalleq/=0)then
                     ieqfrom = iwalleq - nofwt
                     ifromr = izwall(ieqfrom,1)
                     ifromw = izwall(ieqfrom,2)
                     itor = izwall(ieqfrom,3)
                     itow = izwall(ieqfrom,4)
-
-                    to_room=>roominfo(itor)
-                    
-                    roomi%zzwtemp(iwall,1) = pdif(iwalleq)
-                    iwalleq2 = to_room%izwmap2(itow)
+                    zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                    iwalleq2 = izwmap2(itow,itor)
                     iinode = numnode(1,iwall,iroom)
                     if(iwalleq2==0)then
-                        roomi%zzwtemp(iwall,2) = twj(iinode,iroom,iwall)
+                        zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
                     else
-                        roomi%zzwtemp(iwall,2) = pdif(iwalleq2)
+                        zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
                     endif
                 else
 
@@ -1976,7 +1948,7 @@
                     else
                         ilay = lower
                     endif
-                    roomi%zzwtemp(iwall,1) = roomi%zztemp(ilay)
+                    zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
                 endif
             end do
         end do
@@ -1986,22 +1958,20 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 do iroom = 1, nm1
-                    roomi=>roominfo(iroom)
-                    
                     isof = isof + 1
                     if (iflag==odevarb) then
                         ppgas = pold(isof) + dt * pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
-                    roomi%zzgspec(upper,lsp) = max(ppgas,0.0_eb)
+                    zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
                     isof = isof + 1
                     if (iflag==odevarb) then
                         ppgas = pold(isof) + dt * pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
-                    roomi%zzgspec(lower,lsp) = max(ppgas,0.0_eb)
+                    zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
                 end do
             endif
         end do
@@ -2012,12 +1982,10 @@
         do iroom = 1, nm1
             totl = 0.0_eb
             totu = 0.0_eb
-            roomi=>roominfo(iroom)
-            
             do lsp = 1, min(9,ns)
                 if (activs(lsp)) then
-                    totu = totu + roomi%zzgspec(upper,lsp)
-                    totl = totl + roomi%zzgspec(lower,lsp)
+                    totu = totu + zzgspec(iroom,upper,lsp)
+                    totl = totl + zzgspec(iroom,lower,lsp)
                 endif
             end do
             rtotl = 1.0_eb
@@ -2026,10 +1994,10 @@
             if (totu>0.0_eb) rtotu = 1.0_eb / totu
             do lsp = 1, ns
                 if (activs(lsp)) then
-                    roomi%zzcspec(upper,lsp) = roomi%zzgspec(upper,lsp) * rtotu
-                    roomi%zzcspec(lower,lsp) = roomi%zzgspec(lower,lsp) * rtotl
-                    if(roomi%izshaft==1)then
-                        roomi%zzcspec(lower,lsp) = roomi%zzcspec(upper,lsp)
+                    zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp) * rtotu
+                    zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp) * rtotl
+                    if(izshaft(iroom)==1)then
+                        zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
                     endif
                 endif
             end do
@@ -2040,12 +2008,12 @@
             if(option(foxygen)==on)then
                 oxyl = max(p(iroom+nofoxyl),0.0_eb)
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
-                roomi%zzgspec(lower,2) = oxyl
-                roomi%zzgspec(upper,2) = oxyu
-                roomi%zzcspec(lower,2) = oxyl / roomi%zzmass(lower)
-                roomi%zzcspec(upper,2) = oxyu / roomi%zzmass(upper)
-                if(roomi%izshaft==1)then
-                    roomi%zzcspec(lower,2) = roomi%zzcspec(upper,2)
+                zzgspec(iroom,lower,2) = oxyl
+                zzgspec(iroom,upper,2) = oxyu
+                zzcspec(iroom,lower,2) = oxyl / zzmass(iroom,lower)
+                zzcspec(iroom,upper,2) = oxyu / zzmass(iroom,upper)
+                if(izshaft(iroom)==1)then
+                    zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
                 endif
             endif
         end do
@@ -2054,8 +2022,6 @@
         if (activs(6)) then
             isof = nofhcl
             do iroom = 1, nm1
-                roomi=>roominfo(iroom)
-                
                 do lsp = 1, nwal
                     isof = isof + 1
                     if (iflag==odevarb) then
@@ -2063,7 +2029,7 @@
                     else
                         ppwgas = pdif(isof)
                     endif
-                    roomi%zzwspec(lsp) = ppwgas
+                    zzwspec(iroom,lsp) = ppwgas
                 end do
             end do
         endif
@@ -2115,8 +2081,6 @@
     
     real(eb) :: factor(nr,2)
     integer :: iroom, isof, iprod
-    
-    type(room_type), pointer :: roomi
 
     do iroom = 1,nm1
         factor(iroom,upper) = 0.0_eb
@@ -2136,15 +2100,13 @@
     end do
 
     do iroom = 1, nm1
-        roomi=>roominfo(iroom)
-        
-        if (factor(iroom,upper)>0.0_eb.and.roomi%zzmass(upper)>0.0_eb) then
-            factor(iroom,upper) = roomi%zzmass(upper) / factor(iroom,upper)
+        if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
+            factor(iroom,upper) = zzmass(iroom,upper) / factor(iroom,upper)
         else
             factor(iroom,upper) = 1.0_eb
         endif
-        if (factor(iroom,lower)>0.0_eb.and.roomi%zzmass(lower)>0.0_eb) then
-            factor(iroom,lower) = roomi%zzmass(lower) / factor(iroom,lower)
+        if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
+            factor(iroom,lower) = zzmass(iroom,lower) / factor(iroom,lower)
         else
             factor(iroom,lower) = 1.0_eb
         endif

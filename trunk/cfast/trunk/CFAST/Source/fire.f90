@@ -46,8 +46,6 @@
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q1, q2, xqfr
     integer lsp, iroom, logerr, nobj, iobj, i, j
-    
-    type(room_type), pointer :: roomi
 
     ! initialize summations and local data
     do lsp = 1, ns + 2
@@ -69,22 +67,20 @@
     do i = 1, numobjl
         if (objpnt(i)>0) then
             iroom = objrm(i)
-            roomi=>roominfo(iroom)
-
             iobj = objpnt(i)
             call pyrols(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
             oplume(1,iobj) = omasst
 
             do lsp = 1, ns
-                stmass(upper,lsp) = roomi%zzgspec(upper,lsp)
-                stmass(lower,lsp) = roomi%zzgspec(lower,lsp)
+                stmass(upper,lsp) = zzgspec(iroom,upper,lsp)
+                stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
-            
-            call dofire(i,iroom,oplume(1,iobj),roomi%hr,roomi%br,roomi%dr,objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
+
+            call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
             objpos(3,iobj)+ohight,objclen(i),oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
-            xtl = roomi%zztemp(lower)
+            xtl = zztemp(iroom,lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
             q1 = cp * oplume(1,iobj) * te
@@ -189,16 +185,12 @@
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatu
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, activated_rate, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
-    
-    type(room_type), pointer :: roomi
-    
-    roomi=>roominfo(iroom)
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
-    xz = roomi%zzhlay(upper)
-    xtl = roomi%zztemp(lower)
-    xtu = roomi%zztemp(upper)
+    xz = zzhlay(iroom,upper)
+    xtl = zztemp(iroom,lower)
+    xtu = zztemp(iroom,upper)
     xqfc(lower) = 0.0_eb
     xqfc(upper) = 0.0_eb
     xqlp = 0.0_eb
@@ -254,7 +246,7 @@
             xeme = min(xeme,qheatl/(max((xtu-xtl),1.0_eb)*cp))
             xems = xemp + xeme
 
-            source_o2 = roomi%zzcspec(lower,2)
+            source_o2 = zzcspec(iroom,lower,2)
             if (iquench(iroom)>0) then
                 activated_time = xdtect(iquench(iroom),dtact)
                 activated_rate = xdtect(iquench(iroom),drate)
@@ -319,7 +311,7 @@
 
             call firplm(fplume(ifire), objectsize,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
-            source_o2 = roomi%zzcspec(upper,2)
+            source_o2 = zzcspec(iroom,upper,2)
             call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
             xqfr = xqpyrl * chirad + xqfr
@@ -752,7 +744,6 @@
 
     logical :: dj1flag, dj2flag, ventflg(mxvent), roomflg(nr), anyvents
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: from_room, to_room
 
     ! initialize summations and local data
     djetflg = .false.
@@ -765,9 +756,7 @@
 
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
-        from_room=>roominfo(iroom1)
-        
-        if(from_room%zztemp(upper)>=tgignt)then
+        if(zztemp(iroom1,upper)>=tgignt)then
             flw1to2 = vss(1,i)+vsa(1,i)
             if(vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb)then
                 djetflg = .true.
@@ -777,9 +766,7 @@
 
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
-        to_room=>roominfo(iroom2)
-        
-        if(to_room%zztemp(upper)>=tgignt)then
+        if(zztemp(iroom2,upper)>=tgignt)then
             flw2to1 = vss(2,i)+vsa(2,i)
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
                 djetflg = .true.
@@ -810,13 +797,10 @@
             if(ventflg(i))then
                 iroom1 = ventptr%from
                 iroom2 = ventptr%to
-                from_room=>roominfo(iroom1)
-                to_room=>roominfo(iroom2)
-                
-                flw1to2 = from_room%zzcspec(upper,7)*(vss(1,i)+vsa(1,i))
-                flw2to1 = to_room%zzcspec(upper,7)*(vss(2,i)+vsa(2,i))
-                call djfire(iroom2,from_room%zztemp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call djfire(iroom1,to_room%zztemp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+                flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
+                flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
+                call djfire(iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                call djfire(iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if(dj1flag)then
@@ -895,13 +879,9 @@
 
     real(eb) :: xmass(ns), dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
     integer :: i
-    
-    type(room_type), pointer :: to_room
 
     qpyrol = 0.0_eb
     djflowflg = .false.
-    
-    to_room=>roominfo(ito)
 
     ! we only wnat to do the door jet calculation if there is fuel, oxygen, and sufficient temperature in the door jet
     if (xxnetfl>0.0_eb.and.sas>0.0_eb.and.tjet>=tgignt) then
@@ -914,7 +894,7 @@
         do i = 1, ns
             xmass(i) = 0.0_eb
         end do
-        source_o2 = to_room%zzcspec(lower,2)
+        source_o2 = zzcspec(ito,lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
         call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
@@ -1143,7 +1123,6 @@
     real(eb) :: aweigh(ns), air(2), v(2), aweigh7, avagad
     integer i, k, lsp
     logical ppmcal(ns)
-    type(room_type), pointer :: roomi
 
     ! aweigh's are molar weights of the species, avagad is the reciprocal
     ! of avagadro's number (so you can't have less than an atom of a species
@@ -1153,14 +1132,12 @@
     aweigh(7) = aweigh7 * (1.0_eb+hcratt)
 
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        v(upper) = roomi%zzvol(upper)
-        v(lower) = roomi%zzvol(lower)
+        v(upper) = zzvol(i,upper)
+        v(lower) = zzvol(i,lower)
         do k = upper, lower
             air(k) = 0.0_eb
             do lsp = 1, 9
-                air(k) = air(k) + roomi%zzgspec(k,lsp) / aweigh(lsp)
+                air(k) = air(k) + zzgspec(i,k,lsp) / aweigh(lsp)
             end do
             air(k) = max(avagad,air(k))
         end do
@@ -1169,7 +1146,7 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 do k = upper, lower
-                    ppmdv(k,i,lsp) = roomi%zzgspec(k,lsp) / v(k)
+                    ppmdv(k,i,lsp) = zzgspec(i,k,lsp) / v(k)
                 end do
             endif
         end do
@@ -1179,9 +1156,9 @@
             if (activs(lsp)) then
                 do k = upper, lower
                     if (ppmcal(lsp)) then
-                        toxict(i,k,lsp) = 1.e6_eb * roomi%zzgspec(k,lsp) / (air(k)*aweigh(lsp))
+                        toxict(i,k,lsp) = 1.d+6 * zzgspec(i,k,lsp) / (air(k)*aweigh(lsp))
                     else
-                        toxict(i,k,lsp) = 100._eb * roomi%zzgspec(k,lsp) / (air(k)*aweigh(lsp))
+                        toxict(i,k,lsp) = 100._eb * zzgspec(i,k,lsp) / (air(k)*aweigh(lsp))
                     endif
                 end do
             endif
@@ -1212,7 +1189,7 @@
         lsp = 11
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = roomi%zzgspec(k,lsp) ! / (tradio+1.0d-10)
+                toxict(i,k,lsp) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
             end do
         endif
 
@@ -1220,9 +1197,7 @@
 
     ! ontarget is the radiation received on a target on the floor
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        ontarget(i) = sigma * (roomi%zztemp(upper)**4-tamb(i)**4)
+        ontarget(i) = sigma * (zztemp(i,upper)**4-tamb(i)**4)
         if (ontarget(i)<1.0_eb) ontarget(i) = 0.0_eb
     end do
     return
@@ -1443,8 +1418,6 @@
     
     real(eb) :: arw, hclg, hclw, h2o, rho, tg, tw, flux, hwdot, hnet
     integer :: j, iroom, iwall, layer
-    
-    type(room_type), pointer :: roomi
 
     ! only zero out mass (lsp=1) and hcl (lsp=2+6) entries of flwhcl
     do iroom = 1, n
@@ -1462,31 +1435,29 @@
     ! calculate the hcl "added" to the layers from each surface
     if (activs(6)) then
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
-            
             do iwall = 1, 4
                 if (switch(iwall,iroom)) then
                     if (iwall==1) then
-                        arw = roomi%ar
+                        arw = ar(iroom)
                         layer = upper
                     else if (iwall==2) then
-                        arw = roomi%ar
+                        arw = ar(iroom)
                         layer = lower
                     else if (iwall==3) then
-                        arw = (roomi%br+roomi%dr) * roomi%zzhlay(upper) * 2.0_eb
+                        arw = (br(iroom)+dr(iroom)) * zzhlay(iroom,upper) * 2.0_eb
                         layer = upper
                     else if (iwall==4) then
-                        arw = (roomi%br+roomi%dr) * (roomi%hr - roomi%zzhlay(upper)) * 2.0_eb
+                        arw = (br(iroom)+dr(iroom)) * (hr(iroom) - zzhlay(iroom,upper)) * 2.0_eb
                         arw = max(0.0_eb,arw)
                         layer = lower
                     endif
 
                     ! use environment variables
-                    hclg = roomi%zzcspec(layer,6)
-                    h2o = roomi%zzcspec(layer,8)
-                    rho = roomi%zzrho(layer)
-                    tg = roomi%zztemp(layer)
-                    hclw = roomi%zzwspec(iwall)
+                    hclg = zzcspec(iroom,layer,6)
+                    h2o = zzcspec(iroom,layer,8)
+                    rho = zzrho(iroom,layer)
+                    tg = zztemp(iroom,layer)
+                    hclw = zzwspec(iroom,iwall)
                     flux = qscnv(iwall,iroom)
                     tw = twj(1,iroom,iwall)
                     call hcltran(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)

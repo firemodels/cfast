@@ -33,10 +33,10 @@
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
 
-    type(room_type), pointer :: roomi, roomj
+    type(room_type), pointer :: roomptr
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
-    
+
     ! solve conduction problem for all walls
 
     ibeg = 1
@@ -61,14 +61,14 @@
         iroom = izwall(iw,1)
         iwall = izwall(iw,2)
         icond = nofwt + iw
-        
-        roomi=>roominfo(iroom)
+
+        roomptr => roominfo(iroom)
 
         ! use exterior wall temperature from last time step to ...
-        twint = roomi%zzwtemp(iwall,1)
-        twext = roomi%zzwtemp(iwall,2)
+        twint = zzwtemp(iroom,iwall,1)
+        twext = zzwtemp(iroom,iwall,2)
         tgas = eta(iroom)
-        iweq = roomi%izwmap2(iwall) - nofwt
+        iweq = izwmap2(iwall,iroom) - nofwt
         iwb = izwall(iweq,5)
 
         ! compute flux seen by exterior of wall
@@ -79,7 +79,7 @@
             call convec(irevwc(iwall),tgas,twext,wfluxout)
             wfluxout = wfluxout + sigma * (tgas**4-twext**4)
             wfluxsave = wfluxout
-            if(roomi%izheat/=0.and.iwall/=1.and.iwall/=2)then
+            if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
                 ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.  if izheat(iroom) is not zero then
                 ! nwroom better not be zero!  nwroom should always be zero for iwall=3 and iwall=4
@@ -87,18 +87,16 @@
                 nwroom = izhtfrac(iroom,0)
                 do jj = 1, nwroom
                     j = izhtfrac(iroom,jj)
-                    roomj=>roominfo(j)
-                    
                     frac = zzhtfrac(iroom,j)
                     if(iwall==3)then
-                        yb = roomi%zzhlay(lower)
-                        yt = roomi%yceil
+                        yb = zzhlay(iroom,lower)
+                        yt = roomptr%yceil
                     elseif(iwall==4)then
                         yb = 0.0_eb
-                        yt = roomi%zzhlay(lower)
+                        yt = zzhlay(iroom,lower)
                     endif
-                    dflor = roomj%yflor - roomi%yflor
-                    yy = roomj%zzhlay(lower) + dflor
+                    dflor = roominfo(j)%yflor - roomptr%yflor
+                    yy = zzhlay(j,lower) + dflor
                     if(j/=nm1+1)then
                         if(yy>yt)then
                             fu = 0.0_eb

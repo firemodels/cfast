@@ -240,7 +240,6 @@
     implicit none
 
     integer :: i, itarg, izzvol
-    type(room_type), pointer :: roomi
 
     write (iofilo,5000)
     write (iofilo,5010)
@@ -248,16 +247,14 @@
     write (iofilo,5030)
     write (iofilo,5040)
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
         itarg = ntarg - nm1 + i
-        izzvol = roomi%zzvol(upper)/roomi%vr*100._eb+0.5_eb
-        if (roomi%izshaft==1) then
-            write (iofilo,5071) compartmentnames(i), roomi%zztemp(upper)-273.15, roomi%zzvol(upper), &
-            zzabsb(upper,i),roomi%zzrelp-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+        izzvol = zzvol(i,upper)/vr(i)*100._eb+0.5_eb
+        if (izshaft(i)==1) then
+            write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-273.15, zzvol(i,upper), &
+            zzabsb(upper,i),zzrelp(i)-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         else
-            write (iofilo,5070) compartmentnames(i), roomi%zztemp(upper)-273.15, roomi%zztemp(lower)-273.15, &
-            roomi%zzhlay(lower), roomi%zzvol(upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), roomi%zzrelp-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+            write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-273.15, zztemp(i,lower)-273.15, &
+            zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), zzrelp(i)-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         endif
     end do
     return
@@ -355,8 +352,6 @@
     character :: stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255,lnames(2)*5, wtype(4)*10
     external length
     integer :: length, i, j, layer, ic, lsp, iw
-    
-    type(room_type), pointer :: roomi
 
     data lnames /'Upper', 'Lower'/
     data iwptr /1, 3, 4, 2/
@@ -397,11 +392,9 @@
             write (iofilo,5030) ('-',i = 1,ic)
             write (ciout,5010)
             do i = 1, nm1
-                roomi=>roominfo(i)
-                
                 write (ciout,5060) compartmentnames(i)
                 ic = 14
-                if (layer==upper.or.roomi%izshaft==0) then
+                if (layer==upper.or.izshaft(i)==0) then
                     do lsp = 1, ns
                         write (ciout(ic:ic+9),5040) toxict(i,layer,lsp)
                         ic = ic + 11
@@ -409,7 +402,7 @@
                     if (activs(6)) then
                         do iw = 1, 4
                             if (swl(iwptr(iw))) then
-                                write (ciout(ic:ic+9),5040) roomi%zzwspec(iwptr(iw))
+                                write (ciout(ic:ic+9),5040) zzwspec(i,iwptr(iw))
                                 ic = ic + 10
                             endif
                         end do
@@ -646,14 +639,10 @@
     
     integer :: i, ir
     real(eb) :: xemp, xqf
-    
-    type(room_type), pointer :: roomi
 
     write (iounit,5000)
     write (iounit,5010)
     do ir = 1, nm1
-        roomi=>roominfo(ir)
-        
         xemp = 0.0_eb
         xqf = 0.0_eb
         do i = 0, numobjl
@@ -663,10 +652,10 @@
             endif
         end do
         xqf = xqf + fqdj(ir)
-        if (roomi%izshaft==1) then
-            write (iounit,5031) ir, roomi%zztemp(upper)-273.15, xemp, xqf, roomi%zzrelp - pamb(ir), ontarget(ir)
+        if (izshaft(ir)==1) then
+            write (iounit,5031) ir, zztemp(ir,upper)-273.15, xemp, xqf, zzrelp(ir) - pamb(ir), ontarget(ir)
         else
-            write (iounit,5030) ir, roomi%zztemp(upper)-273.15, roomi%zztemp(lower)-273.15, roomi%zzhlay(lower), xemp, xqf, roomi%zzrelp - pamb(ir),ontarget(ir)
+            write (iounit,5030) ir, zztemp(ir,upper)-273.15, zztemp(ir,lower)-273.15, zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - pamb(ir),ontarget(ir)
         endif
     end do
     write (iounit,5020) fqdj(n)
@@ -798,7 +787,6 @@
 
     character(5) :: ctype
     character(3) :: cact
-    type(room_type), pointer :: roomi
 
     if(ndtect==0)return
     write(iofilo,5000)
@@ -809,13 +797,12 @@
     cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
-        roomi=>roominfo(iroom)
 
         zdetect = xdtect(i,dzloc)
-        if(zdetect>roomi%zzhlay(lower))then
-            tlay = roomi%zztemp(upper)
+        if(zdetect>zzhlay(iroom,lower))then
+            tlay = zztemp(iroom,upper)
         else
-            tlay = roomi%zztemp(lower)
+            tlay = zztemp(iroom,lower)
         endif
 
         tjet = max(xdtect(i,dtjet),tlay)-273.15
@@ -852,15 +839,11 @@
 
     integer :: nhalls, i
     real(eb) :: tstart, vel, depth, dist
-    
-    type(room_type), pointer :: roomi
 
 
     nhalls = 0
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        if(roomi%izhall(ihroom)==1)nhalls = nhalls + 1
+        if(izhall(i,ihroom)==1)nhalls = nhalls + 1
     end do
     if(nhalls==0)return
     write(iofilo,5000)
@@ -870,14 +853,12 @@
     '-----------------------------------------------------------------')
 
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        if(roomi%izhall(ihroom)/=0) then
-            tstart = roomi%zzhall(ihtime0)
-            vel = roomi%zzhall(ihvel)
-            depth = roomi%zzhall(ihdepth)
-            dist = roomi%zzhall(ihdist)
-            if(dist>roomi%zzhall(ihmaxlen))dist = roomi%zzhall(ihmaxlen)
+        if(izhall(i,ihroom)/=0) then
+            tstart = zzhall(i,ihtime0)
+            vel = zzhall(i,ihvel)
+            depth = zzhall(i,ihdepth)
+            dist = zzhall(i,ihdist)
+            if(dist>zzhall(i,ihmaxlen))dist = zzhall(i,ihmaxlen)
             write(iofilo,30)i,tstart,vel,depth,dist
 30          format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
         end if
@@ -1001,18 +982,13 @@
 
     use cfast_main
     use cshell
-    use cenviro
     implicit none
-    
-    type(room_type), pointer :: roomi
 
     integer i
 
     write (iofilo,5000)
     do i = 1, nm1
-        roomi=>roominfo(i)
-        
-        write (iofilo,5010) i, trim(compartmentnames(i)), roomi%br, roomi%dr, roomi%hr, roomi%ar, roomi%vr, roomi%hrp, roomi%hflr
+        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), ar(i), vr(i), hrp(i), hflr(i)
     end do
     return
 5000 format (//,' COMPARTMENTS',//, &
@@ -1032,7 +1008,6 @@
     use cfast_main
     use cshell
     use params
-    use cenviro
     use vents
     implicit none
 
@@ -1040,8 +1015,6 @@
     real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
     logical :: first
-    
-    type(room_type), pointer :: roomi, roomj
 
     !     horizontal flow vents
     if (nvents==0) then
@@ -1068,9 +1041,7 @@
     else
         write (iofilo,5040)
         do i = 1, n
-            roomi=>roominfo(i)
             do j = 1, n
-                roomj=>roominfo(j)
                 if (nwv(i,j)/=0) then
                     write (ciout,'(i5,3x)') i
                     if (i==n) ciout = ' Outside'
@@ -1079,11 +1050,11 @@
                     csout = 'Round'
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
-                        hrx = roomj%hr
-                        hrpx = roomj%hrp
+                        hrx = hr(j)
+                        hrpx = hrp(j)
                     else
-                        hrx = roomi%hrl
-                        hrpx = roomi%hrl
+                        hrx = hrl(i)
+                        hrpx = hrl(i)
                     endif
                     write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx,hrpx
                 endif
@@ -1420,7 +1391,6 @@
     use precision_parameters
     use cfast_main
     use fltarget
-    use cenviro
     implicit none
 
     integer, intent(in) :: targetnumber
@@ -1433,7 +1403,7 @@
 
     positionvector(1) = positionvector(1) + cxabs(ixtarg(trgroom,targetnumber))
     positionvector(2) = positionvector(2) + cyabs(ixtarg(trgroom,targetnumber))
-    positionvector(3) = positionvector(3) + roominfo(ixtarg(trgroom,targetnumber))%hrl
+    positionvector(3) = positionvector(3) + hrl(ixtarg(trgroom,targetnumber))
 
     return
 
@@ -1777,8 +1747,6 @@
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
-    
-    type(room_type), pointer :: roomi
     save bmap
 
     !     debug printing
@@ -1803,31 +1771,29 @@
     else if (ikey==2) then
         write (iofilo,5000) t, dt
         do i = 1, nm1
-            roomi=>roominfo(i)
-            
             write (*,5010) i
-            write (*,5020) '   Upper temp(K)', roomi%zztemp(upper)
-            write (*,5020) '   Lower temp(K)', roomi%zztemp(lower)
-            write (*,5020) ' Interface ht(m)', roomi%zzhlay(lower)
-            write (*,5020) '   Pressure (pa)', roomi%zzrelp
+            write (*,5020) '   Upper temp(K)', zztemp(i,upper)
+            write (*,5020) '   Lower temp(K)', zztemp(i,lower)
+            write (*,5020) ' Interface ht(m)', zzhlay(i,lower)
+            write (*,5020) '   Pressure (pa)', zzrelp(i)
             if (nlspct>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
                 if (activs(iprod)) then
-                    write (*,5030) spname(iprod), (roomi%zzcspec(il,iprod),il= upper,lower)
+                    write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
                 endif
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (switch(1,i)) then
-                write (*,5040) roomi%zzwtemp(1,1)
+                write (*,5040) zzwtemp(i,1,1)
             endif
             if (switch(3,i)) then
-                write (*,5060) roomi%zzwtemp(3,1)
+                write (*,5060) zzwtemp(i,3,1)
             endif
             if (switch(4,i)) then
-                write (iofilo,5070) roomi%zzwtemp(4,1)
+                write (iofilo,5070) zzwtemp(i,4,1)
             endif
             if (switch(2,i)) then
-                write (iofilo,5050) roomi%zzwtemp(2,1)
+                write (iofilo,5050) zzwtemp(i,2,1)
             endif
         end do
         write (*,*) ' '
@@ -1866,9 +1832,7 @@
         call fnd_comp(ieqmax)
         write(*,6030)
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
-            
-            write(*,6000)iroom,roomi%zzrelp,roomi%zzhlay(lower),roomi%zztemp(lower),roomi%zztemp(upper),roomi%zzcspec(lower,2),roomi%zzcspec(upper,2)
+            write(*,6000)iroom,zzrelp(iroom),zzhlay(iroom,lower),zztemp(iroom,lower),zztemp(iroom,upper),zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)
@@ -1881,14 +1845,12 @@
         end do
         write(*,6070)
         do iroom = 1, nm1
-            roomi=>roominfo(iroom)
-            
             xqf = 0.
             do iobj = 0, numobjl
                 if (iroom==froom(iobj))xqf = xqf + fqf(iobj)
             end do
             xqf = xqf + fqdj(iroom)
-            write(*,6060)iroom,roomi%zzwtemp(1,1),roomi%zzwtemp(3,1),roomi%zzwtemp(4,1),roomi%zzwtemp(2,1),xqf
+            write(*,6060)iroom,zzwtemp(iroom,1,1),zzwtemp(iroom,3,1),zzwtemp(iroom,4,1),zzwtemp(iroom,2,1),xqf
         end do
         if(numobjl>0)then
             write(*,6080)

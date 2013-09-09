@@ -400,17 +400,11 @@
 
     real(eb) :: hvpsolv(*), hvtsolv(*), z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, ib, lsp
-    
-    type(room_type), pointer :: roomi
 
     do ii = 1, next
         i = hvnode(1,ii)
-        roomi=>roominfo(i)
-
         j = hvnode(2,ii)
-
-        z = roomi%zzhlay(lower)
-        
+        z = zzhlay(i,lower)
         if (hvorien(ii)==1) then
 
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate the scaling length of the duct
@@ -420,7 +414,7 @@
         endif
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb * xxlower),(roomi%hr-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb * xxlower),(hr(i)-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
@@ -431,19 +425,16 @@
     ! this is the actual duct initialization
     do ii = 1, next
         i = hvnode(1,ii)
-        roomi=>roominfo(i)
-        
         j = hvnode(2,ii)
-        
         if (i<n) then
-            z = roomi%zzhlay(lower)
+            z = zzhlay(i,lower)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
-            ru = roomi%zzrho(upper)
-            rl = roomi%zzrho(lower)
-            hvp(j) = roomi%zzrelp - (ru*zu+rl*zl) * hvgrav
-            hvextt(ii,upper) = roomi%zztemp(upper)
-            hvextt(ii,lower) = roomi%zztemp(lower)
+            ru = zzrho(i,upper)
+            rl = zzrho(i,lower)
+            hvp(j) = zzrelp(i) - (ru*zu+rl*zl) * hvgrav
+            hvextt(ii,upper) = zztemp(i,upper)
+            hvextt(ii,lower) = zztemp(i,lower)
         else
             hvextt(ii,upper) = exta
             hvextt(ii,lower) = exta
@@ -452,8 +443,8 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 if (i<n) then
-                    hvexcn(ii,lsp,upper) = roomi%zzcspec(upper,lsp)
-                    hvexcn(ii,lsp,lower) = roomi%zzcspec(lower,lsp)
+                    hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
+                    hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
                 else
                     xxrho = o2n2(lsp) * exra
                     hvexcn(ii,lsp,upper) = xxrho

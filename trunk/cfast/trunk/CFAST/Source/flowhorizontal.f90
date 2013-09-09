@@ -755,7 +755,7 @@
     real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
     
     logical :: hallflag
-    type(room_type), pointer :: roomi
+    type(room_type), pointer :: roomi, roomi2
 
     hallflag = .false.
 
@@ -802,10 +802,11 @@
             call halltrv(iroom,cjetdist,zloc,tu,rhou,hallvel)
         endif
     else
-        roomi=>roominfo(iroom2)
+        roomi=>roominfo(iroom)
+        roomi2=>roominfo(iroom2)
         
-        yflor = roomi%yflor
-        yceil = roomi%yceil
+        yflor = roomi2%yflor
+        yceil = roomi2%yceil
         pflor = epa(iroom2)
         ylay = roomi%zzhlay(lower) ! original code used roominfo(iroom) - make sure it is correct
         denu = era(iroom2)

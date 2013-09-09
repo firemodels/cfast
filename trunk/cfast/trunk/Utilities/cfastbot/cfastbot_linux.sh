@@ -381,6 +381,7 @@ check_vv_cases_debug()
    if [[ `grep 'Run aborted' -rI ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
       [[ `grep ERROR: -rI *` == "" ]] && \
       [[ `grep 'STOP: Numerical' -rI *` == "" ]] && \
+      [[ `grep 'snsq' -rI *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI *` == "" ]]
    then
       :
@@ -388,6 +389,7 @@ check_vv_cases_debug()
       grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'snsq' -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
@@ -402,6 +404,7 @@ check_vv_cases_debug()
    if [[ `grep 'Run aborted' -rI ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
       [[ `grep ERROR: -rI *` == "" ]] && \
       [[ `grep 'STOP: Numerical' -rI *` == "" ]] && \
+      [[ `grep 'snsq' -rI *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI *` == "" ]]
    then
       :
@@ -409,6 +412,7 @@ check_vv_cases_debug()
       grep 'Run aborted' -rI $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
       grep ERROR: -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep 'STOP: Numerical' -rI * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'snsq' -rI * >> $CFASTBOT_DIR/output/stage3_errors
       grep -A 20 forrtl -rI * >> $CFASTBOT_DIR/output/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG

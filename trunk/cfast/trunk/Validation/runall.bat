@@ -491,10 +491,10 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC02 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC05 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC07 /V
-..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC09 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC10 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC33 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC35 /V
+..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC38 /V
 ..\scripts\background -u 99 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC39 /V
 cd ..\
 if %1==Dunes2000 goto end

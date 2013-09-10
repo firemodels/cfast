@@ -813,11 +813,17 @@
     integer, intent(inout) :: mat1(idim,n)
     integer, intent(out) :: mat2(idim,n)
     
-    integer :: i, j, idot
-    
+    integer :: i, j, k, idot
+
     do i = 1, n
         do j = 1, n
-            mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
+!  the line below crashes with Intel version 13sp1
+!            mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
+!  the above line is replaced with the following and works!
+            mat2(i,j) = 0
+            do k = 1, n
+                mat2(i,j) = mat1(i,k)*mat1(k,j)
+            end do
             if(mat2(i,j)>=1)mat2(i,j) = 1
         end do
     end do

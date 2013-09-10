@@ -96,11 +96,11 @@ cat << EOF > $scriptfile
 #!/bin/bash -f
 #PBS -N $TITLE
 #PBS -e $out
-#PBS -o $outlog
+#PBS -o $qoutlog
 #PBS -l nodes=$nnodes:ppn=$nprocesses_per_node
 #\$ -N $TITLE
 #\$ -e $out
-#\$ -o $outlog
+#\$ -o $qoutlog
 #\$ -l nodes=$nnodes:ppn=$nprocesses_per_node
 
 cd $fulldir

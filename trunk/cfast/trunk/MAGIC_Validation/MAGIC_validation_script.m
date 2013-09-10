@@ -43,7 +43,7 @@ Statistics_Tex_Output = [pwd, '/Docs/FIGURES/Scatterplots/validation_statistics.
 Histogram_Tex_Output = [pwd, '/Docs/FIGURES/Scatterplots/validation_histograms.tex'];
 
 % Override the plot style options with NRC 1824 plot options
-NRC_Options = false;
+NRC_Options = true;
 Append_To_Scatterplot_Title = '';
 
 [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);

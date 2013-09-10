@@ -34,7 +34,7 @@ Dataplot_Inputs_File = [pwd,'/CFAST_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
 Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
-Output_File = [pwd, '/CFAST_validation_scatterplot_outputs.csv'];
+Output_File = [pwd, '/CFAST_validation_scatterplot_output.csv'];
 Stats_Output = 2;
 Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/validation_statistics.tex'];
 Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/validation_histograms.tex'];
@@ -43,7 +43,7 @@ Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/
 NRC_Options = true;
 Append_To_Scatterplot_Title = ' (CFAST)';
 
-[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
+[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir,[609:646]);
 scatplot(saved_data, drange, ...
          'Scatterplot_Inputs_File', Scatterplot_Inputs_File, ...
          'Manuals_Dir', Manuals_Dir, ...

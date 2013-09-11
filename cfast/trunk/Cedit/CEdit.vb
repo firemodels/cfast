@@ -5702,10 +5702,10 @@ Public Class CeditMain
         Dim CommandString As String, found As Integer, ProcessID As Integer
         If myEnvironment.FileChanged Then SaveDataFile(True)
         found = myEnvironment.InputFileName.IndexOf(" ", 0)
-        If found = 0 Then
-            CommandString = Application.StartupPath + "\CFAST.exe " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + " /i"
+        If found <= 0 Then
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + "/i"
         Else
-            CommandString = Application.StartupPath + "\CFAST.exe " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """" + " /i"
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """" + "/i"
         End If
         If MenuShowCFAST.Checked Then
             ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True)
@@ -5721,10 +5721,10 @@ Public Class CeditMain
         If myEnvironment.FileChanged Then SaveDataFile(True)
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
-            If found = 0 Then
-                CommandString = Application.StartupPath + "\smokeview.exe " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
+            If found <= 0 Then
+                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
             Else
-                CommandString = Application.StartupPath + "\smokeview.exe " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
+                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
             End If
             ProcessID = Shell(CommandString, AppWinStyle.NormalFocus, True)
         Catch ex As Exception

@@ -6,4 +6,4 @@ target=${dir##*/}
 source $IFORT_COMPILER/bin/compilervars.sh $platform
 
 echo Building $target
-make VPATH="../Source:../Include" -f ../makefile $target
+make VPATH=".." -f ../makefile $target

@@ -155,7 +155,7 @@
     ! Species by compartment, then layer, then species type
     do i = 1, nm1
         do j = upper, lower
-            if (j==upper.or.izshaft(j)==0) then
+            if (j==upper.or.izshaft(i)==0) then
                 do lsp = 1, NS
                     if(tooutput(lsp)) then
                         position = position + 1

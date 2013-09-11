@@ -1528,7 +1528,7 @@
         do i = 1, npts
             zzrarea(i,iroom) = lrarray(i+2)
         end do
-        write(logerr,5351) iroom, (zzrarea(iroom,i),i=1,npts)
+        write(logerr,5351) iroom, (zzrarea(i,iroom),i=1,npts)
 
         ! ROOMH Compartment Number_of_Height_Values Height_Values
         ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
@@ -1570,7 +1570,7 @@
         do i = 1, npts
             zzrhgt(i,iroom) = lrarray(i+2)
         end do
-        write(logerr,5352) iroom, (zzrhgt(iroom,i),i=1,npts)
+        write(logerr,5352) iroom, (zzrhgt(i,iroom),i=1,npts)
 
         ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
     case ('DTCHE')

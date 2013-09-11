@@ -807,13 +807,16 @@
         yflor = roomptr%yflor
         yceil = roomptr%yceil
         pflor = epa(iroom2)
-        ylay = zzhlay(iroom,lower)
+!        ylay = zzhlay(iroom,lower) ! double check that line following is correct
+        ylay = zzhlay(iroom2,lower)
         denu = era(iroom2)
         denl = era(iroom2)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod) = zzcspec(iroom,lower,ip)
-            conu(iprod) = zzcspec(iroom,up,ip)
+!            conl(iprod) = zzcspec(iroom,lower,ip)  ! double check that
+!            conu(iprod) = zzcspec(iroom,up,ip)     ! 2 lines following are correct
+            conl(iprod) = zzcspec(iroom2,lower,ip)
+            conu(iprod) = zzcspec(iroom2,up,ip)
         end do
         tu = eta(iroom2)
         tl = eta(iroom2)

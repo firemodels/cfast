@@ -2,7 +2,7 @@
 echo.| time
 echo Running CFAST simulations. $Rev$
 if "%1"=="" goto Help
-if %1==ALL goto All
+if %1==ALL goto ALL
 if %1==ATF goto ATF
 if %1==Vettori_Flat goto Vettori_Flat
 if %1==LLNL_Enclosure goto LLNL_Enclosure

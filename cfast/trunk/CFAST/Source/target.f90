@@ -26,7 +26,7 @@
 
     logical :: first=.true.
     real(eb) :: tmp(trgtnum), walldx(trgtnum), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
-    real(eb) :: tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, xl
+    real(eb) :: tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, wfluxavg, xl
     integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
 
@@ -89,7 +89,8 @@
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
-                    call cylcnduct(xxtarg(trgtempf,itarg),nmnode(1),(wfluxin+wfluxout),dt,wk(1),wrho(1),wspec(1),xl)          
+                    wfluxavg = (wfluxin+wfluxout)/2.0d0
+                    call cylcnduct(xxtarg(trgtempf,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
 
                 ! compute the ode residual

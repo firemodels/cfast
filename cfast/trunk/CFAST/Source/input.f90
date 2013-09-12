@@ -584,16 +584,14 @@
         endif
         ta = lrarray(1)
         pa = lrarray(2)
-        sal = lrarray(3)
         relhum = lrarray(4) * 0.01_eb
         if (.not.exset) then
             exta = ta
             expa = pa
             exra = ra
-            exsal = sal
         endif
 
-        ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE, REFERENCE EXTERNAL AMBIENT HEIGHT
+        ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE
     case ("EAMB")
         if (.not.countargs(3,lcarray, xnumc-1, nret)) then
             ierror = 3
@@ -601,7 +599,6 @@
         endif
         exta = lrarray(1)
         expa = lrarray(2)
-        exsal = lrarray(3)
         exset = .true.
 
         ! Limiting oxygen index

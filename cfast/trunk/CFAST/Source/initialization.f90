@@ -977,14 +977,11 @@
     pref = 1.013d+5
     pa = pref
     pofset = pref
-    sal = 0.0_eb
-    sal2 = -1.0d0
     te = tref
     ta = tref
     tgignt = te + 200.d0
     exta = ta
     expa = pa
-    exsal = sal
     windv = 0.0_eb
     windrf = 10.d0
     windpw = 0.16d0

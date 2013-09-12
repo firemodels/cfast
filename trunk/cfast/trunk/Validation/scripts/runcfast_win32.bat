@@ -16,9 +16,9 @@ Rem test existence of CFAST input file %fulldir%/%in%
 
 Rem erase %fulldir%\%stopfile%
 
-cd %fulldir%
+cd "%fulldir%"
 echo **********************
-echo %in% started
+echo %in% started in %CD%
 %CFAST% %in%  /V
 echo %in% completed
 echo **********************

@@ -963,14 +963,14 @@
     use params
     implicit none
 
-    write (iofilo,5000) ta-273.15, pa + pofset, exta-273.15, expa + pofset, sal, windv, windrf, windpw
+    write (iofilo,5000) ta-273.15, pa + pofset, exta-273.15, expa + pofset, windv, windrf, windpw
     return
 
 5000 format (//,' AMBIENT CONDITIONS',//, &
-    ' Interior       Interior       Exterior       Exterior       Station        Wind           Wind           Wind           ',/, &
-    ' Temperature    Pressure       Temperature    Pressure       Elevation      Speed          Ref. Height    Power',/,' ', &
-    '  (C)            (Pa)           (C)            (Pa)           (m)            (m/s)          (m)', &
-    //,' ',2(f7.0,8x,f9.0,6x),f7.2,6x,2(f7.1,8x),f7.2)
+    ' Interior       Interior       Exterior       Exterior       Wind           Wind           Wind           ',/, &
+    ' Temperature    Pressure       Temperature    Pressure       Speed          Ref. Height    Power',/,' ', &
+    '  (C)            (Pa)           (C)            (Pa)          (m/s)          (m)', &
+    //,' ',2(f7.0,8x,f9.0,6x),2(f7.1,8x),f7.2)
      
     end subroutine outamb
 

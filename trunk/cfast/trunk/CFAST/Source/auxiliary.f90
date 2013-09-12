@@ -813,13 +813,10 @@
     integer, intent(inout) :: mat1(idim,n)
     integer, intent(out) :: mat2(idim,n)
     
-    integer :: i, j, k, idot
+    integer :: i, j, k
 
     do i = 1, n
         do j = 1, n
-!  the line below crashes with Intel version 13sp1
-!            mat2(i,j) = idot(mat1(i,1),idim,mat1(1,j),1,n)
-!  the above line is replaced with the following and works!
             mat2(i,j) = 0
             do k = 1, n
                 mat2(i,j) = mat1(i,k)*mat1(k,j)
@@ -834,31 +831,6 @@
     end do
     return
     end subroutine mat2mult
-
-! --------------------------- idot -------------------------------------------
-
-    integer function idot(ix,inx,iy,iny,n)
-
-    !     routine: idot
-    !     purpose: this routine computes the integer dot product of two integer vectors.
-    !     arguments: ix, iy - two integer vectors
-
-    implicit none
-    
-    integer, intent(in) :: ix(*), iy(*), inx, iny, n
-    
-    integer :: i, ii, jj
-    
-    idot = 0
-    ii = 1 - inx
-    jj = 1 - iny
-    do i = 1, n
-        ii = ii + inx
-        jj = jj + iny
-        idot = idot + ix(ii)*iy(jj)
-    end do
-    return
-    end
 
 ! --------------------------- indexi -------------------------------------------
 

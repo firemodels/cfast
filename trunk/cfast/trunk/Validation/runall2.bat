@@ -1,22 +1,22 @@
 @echo off
 
-set curdir="%CD%"
-set cfastroot="%curdir%"\..
-set background="%cfastroot%"\Validation\scripts\background.exe -u 99
-Rem set cfast="%cfastroot%"\bin\cfast.exe
-set cfastsourcedir="%cfastroot%"\CFAST\intel_win_64
-set cfast="%cfastsourcedir%"\cfast6_win_64.exe
+set curdir=%CD%
+set cfastroot=%curdir%\..
+set background="%cfastroot%\Validation\scripts\background.exe" -u 99
+Rem set cfast="%cfastroot%\bin\"cfast.exe
+set cfastsourcedir=%cfastroot%\CFAST\intel_win_64
+set cfast=%cfastsourcedir%\cfast6_win_64.exe
 
 
 Rem Build cfast
 
 echo Building cfast
 
-cd %cfastsourcedir%
+cd "%cfastsourcedir%"
 erase *.obj *.mod
 call make_cfast
 
-cd %curdir%
+cd "%curdir%"
 
 echo.| time
 echo Running CFAST simulations. $Rev: 1207 $

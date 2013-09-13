@@ -381,7 +381,6 @@ check_vv_cases_debug()
    if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log *` == "" ]] && \
-      [[ `grep "***Warning" -riI --include *.log *` == "" ]] && \
       [[ `grep snsq -rI --include *.log *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
    then
@@ -390,7 +389,6 @@ check_vv_cases_debug()
       grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
       grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Warning" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       grep snsq -rI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       
@@ -406,7 +404,6 @@ check_vv_cases_debug()
    if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
       [[ `grep "***Error" -rI --include *.log *` == "" ]] && \
       [[ `grep "***Fatal error" -rI --include *.log *` == "" ]] && \
-      [[ `grep "***Warning" -rI --include *.log *` == "" ]] && \
       [[ `grep snsq -rI --include *.log *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
    then
@@ -415,7 +412,6 @@ check_vv_cases_debug()
       grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
       grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Warning" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       grep snsq -rI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
       
@@ -498,7 +494,6 @@ check_vv_cases_release()
    if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log *` == "" ]] && \
-      [[ `grep "***Warning" -riI --include *.log *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
    then
       :
@@ -506,7 +501,6 @@ check_vv_cases_release()
       grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
       grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
       grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Warning" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
       grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
@@ -521,7 +515,6 @@ check_vv_cases_release()
    if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log *` == "" ]] && \
-      [[ `grep "***Warning" -riI --include *.log *` == "" ]] && \
       [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
    then
       :
@@ -529,7 +522,6 @@ check_vv_cases_release()
       grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
       grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
       grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Warning" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
       grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG

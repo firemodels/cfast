@@ -64,6 +64,10 @@
             ik = ventptr%counter
             
 
+            ! setup data structures for from and to room
+            !note: getvars is intended to replace two calls to getvar.
+            !call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+            
             ! setup data structures for from room
             call getvar(i,iroom1,iroom2,nprod,yflor(1),yceil(1),ylay(1),pflor(1),denl(1),denu(1),conl(1,1),conu(1,1),tl(1),tu(1))
 
@@ -721,6 +725,94 @@
     endif
     return
     end
+
+
+! --------------------------- getvars -------------------------------------------
+
+    subroutine getvars(ivent,from_room,to_room,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+
+    !     routine: getvar
+    !     purpose: routine to interface between global data structures and natural vent data structures.
+    !     arguments: ivent - vent number
+    !                iroom - room number
+    !                yflor   height of floor above datum elevation [m]
+    !                yceil - height of ceiling above datum elevation [m]
+    !                ylay    height of layer above datum elevation [m]
+    !                pflor   pressure at floor relative to ambient [p]
+    !                denl    density of lower layer [kg/m**3]
+    !                denu    density of upper layer [kg/m**3]
+    !                conl    concentration of lower layer for each product [unit of product/kg of layer]
+    !                conu    concentration of upper layer for each product [unit of product/kg of layer]
+    !                tl      temperature of lower layer [k]
+    !                tu      temperature of upper layer [k]
+
+    use precision_parameters
+    use cenviro
+    use cfast_main
+    use vents
+    implicit none
+
+    integer, intent(in) :: ivent, from_room, to_room, nprod
+    real(eb), intent(out) :: conl(mxprd,2), conu(mxprd,2)
+    real(eb), intent(out) :: yflor(2), yceil(2), ylay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
+    
+    integer :: up, iprod, ip, room_index(2), iroom, i
+    real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
+    
+    logical :: hallflag
+    type(room_type), pointer :: roomptr
+
+
+    ! for rooms that are halls only use upper layer properties if the ceiling jet is beyond the vent
+    
+    room_index(1)=from_room
+    room_index(2)=to_room
+
+    do i = 1, 2
+       hallflag = .false.
+       up = upper
+       iroom = room_index(i)
+       roomptr=>roominfo(iroom)
+        
+        yflor(i) = roomptr%yflor
+        yceil(i) = roomptr%yceil
+        pflor(i) = zzrelp(iroom)
+        ylay(i) = zzhlay(iroom,lower)
+
+        ! this is a hall, the vent number is defined and flow is occuring
+        if(izhall(iroom,ihroom)==1.and.ivent/=0.and.izhall(iroom,ihmode)==ihduring)then
+            ventdist = zzventdist(iroom,ivent)
+            if(ventdist>0.0_eb)then
+                time0 = zzhall(iroom,ihtime0)
+                vel = zzhall(iroom,ihvel)
+                cjetdist = vel*(stime-time0)
+                if(cjetdist<ventdist)then
+                    up = lower
+                else
+                    up = upper
+                    hallflag = .true.
+                endif
+            else
+                up = lower
+            endif
+        endif
+
+        denu(i) = zzrho(iroom,up)
+        denl(i) = zzrho(iroom,lower)
+        do iprod = 1, nprod
+            ip = izpmap(iprod+2) - 2
+            conl(iprod,i) = zzcspec(iroom,lower,ip)
+            conu(iprod,i) = zzcspec(iroom,up,ip)
+        end do
+        tu(i) = zztemp(iroom,up)
+        tl(i) = zztemp(iroom,lower)
+        if(hallflag)then
+            zloc = hr(iroom) - zzhall(iroom,ihdepth)/2.0_eb
+            call halltrv(iroom,cjetdist,zloc,tu(i),rhou(i),hallvel)
+        endif
+    end do
+    return
+    end subroutine getvars
 
 ! --------------------------- getvar -------------------------------------------
 

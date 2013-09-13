@@ -1446,7 +1446,7 @@
         ! room number must be between 1 and nm1
         iroom = ixtarg(trgroom,itarg)
         if(iroom<1.or.iroom>nm1)then
-            write(logerr,'(a,i3)') 'Target assigned to non-existent compartment',iroom
+            write(logerr,'(a,i3)') '***Error: Target assigned to non-existent compartment',iroom
             ierror = 213
             return
         endif
@@ -1521,7 +1521,7 @@
 
         ! center coordinates need to be within room
         if(xloc<0.0d0.or.xloc>xsize.or.yloc<0.0d0.or.yloc>ysize.or.zloc<0.0d0.or.zloc>zsize)then
-            write(logerr,'(a,i3,1x,3f10.3)') 'Target located outside of compartment', iroom, xloc, yloc, zloc
+            write(logerr,'(a,i3,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             ierror = 214
             return
         endif

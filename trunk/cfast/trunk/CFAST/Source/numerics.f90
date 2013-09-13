@@ -819,8 +819,8 @@
     !     by an error condition from ddastp,and
     !     appropriate action was not taken. this
     !     is a fatal error.
-    msg = 'dassl--  the last step terminated with a negative'
-    call xerrwv(msg,49,201,0,0,0,0,0,0.0d0,0.0d0)
+    msg = 'Fatal error: dassl--  the last step terminated with a negative'
+    call xerrwv(msg,len_trim(msg),201,0,0,0,0,0,0.0d0,0.0d0)
     msg = 'dassl--  value (=i1) of idid and no appropriate'
     call xerrwv(msg,47,202,0,1,idid,0,0,0.0d0,0.0d0)
     msg = 'dassl--  action was taken. run terminated'
@@ -1126,51 +1126,51 @@
 
     !     the maximum number of steps was taken before reaching tout
 
-610 mesg = 'at current t (=r1) 500 steps taken on this call before reaching tout'
+610 mesg = '***Error: at current t (=r1) 500 steps taken on this call before reaching tout'
     call xerrmod(mesg,610,1,tn,0.0d0)
     go to 690
 
     !     too much accuracy for machine precision
-620 mesg = 'at t (=r1) too much accuracy requested for precision of machine. rtol and atol'// ' were increased to appropriate values'
+620 mesg = '***Error: at t (=r1) too much accuracy requested for precision of machine. rtol and atol'// ' were increased to appropriate values'
     call xerrmod(mesg,620,1,tn,0.0d0)
     go to 690
 
-630 mesg = 'at t (=r1) some element of wt has become <= 0.0'
+630 mesg = '***Error: at t (=r1) some element of wt has become <= 0.0'
     call xerrmod(mesg,630,1,tn,0.0d0)
     go to 690
 
     !     error test failed repeatedly or with h=hmin
-640 mesg = 'at t (=r1) and stepsize h (=r2) the error test failed repeatedly or with abs(h)=hmin'
+640 mesg = '***Error: at t (=r1) and stepsize h (=r2) the error test failed repeatedly or with abs(h)=hmin'
     call xerrmod(mesg,640,2,tn,h)
     go to 690
 
     !     corrector convergence failed repeatedly or with h=hmin
-650 mesg = 'at t (=r1) and stepsize h (=r2) the corrector failed to converge repeatedly'// ' or with abs(h)=hmin'
+650 mesg = '***Error: at t (=r1) and stepsize h (=r2) the corrector failed to converge repeatedly'// ' or with abs(h)=hmin'
     call xerrmod(mesg,650,2,tn,h)
     go to 690
 
     !     the iteration matrix is singular
-660 mesg = 'at t (=r1) and stepsize h (=r2) the iteration matrix is singular'
+660 mesg = '***Error: at t (=r1) and stepsize h (=r2) the iteration matrix is singular'
     call xerrmod(mesg,660,2,tn,h)
     go to 690
 
     !     corrector failure preceeded by error test failures.
-670 mesg = 'at t (=r1) and stepsize h (=r2) the corrector could not converge.  also, the'// ' error test failed repeatedly.'
+670 mesg = '***Error: at t (=r1) and stepsize h (=r2) the corrector could not converge.  also, the'// ' error test failed repeatedly.'
     call xerrmod(mesg,670,2,tn,h)
     go to 690
 
     !     corrector failure because ires = -1
-675 mesg = 'at t (=r1) and stepsize h (=r2) the corrector could not converge because'// ' ires was equal to minus one'
+675 mesg = '***Error: at t (=r1) and stepsize h (=r2) the corrector could not converge because'// ' ires was equal to minus one'
     call xerrmod(mesg,675,2,tn,h)
     go to 690
 
     !     failure because ires = -2
-680 mesg = 'at t (=r1) and stepsize h (=r2) ires was equal to minus two'
+680 mesg = '***Error: at t (=r1) and stepsize h (=r2) ires was equal to minus two'
     call xerrmod(mesg,680,2,tn,h)
     go to 690
 
     !     failed to compute initial yprime
-685 mesg = 'at t (=r1) and stepsize h (=r2) the initial yprime could not be computed'
+685 mesg = '***Error: at t (=r1) and stepsize h (=r2) the initial yprime could not be computed'
     call xerrmod(mesg,685,2,tn,h)
     go to 690
 
@@ -1188,68 +1188,68 @@
     !     called. if this happens twice in succession, execution is terminated
     !-------------------------------------------------------------------------
 
-701 msg = 'dassl--  some element of info vector is not zero or one'
-    call xerrwv(msg,55,1,0,0,0,0,0,0.0d0,0.0d0)
+701 msg = '***Fatal error: dassl--  some element of info vector is not zero or one'
+    call xerrwv(msg,len_trim(msg),1,0,0,0,0,0,0.0d0,0.0d0)
     go to 750
-702 msg = 'dassl--  neq (=i1) <= 0'
-    call xerrwv(msg,25,2,0,1,neq,0,0,0.0d0,0.0d0)
+702 msg = '***Fatal error: dassl--  neq (=i1) <= 0'
+    call xerrwv(msg,len_trim(msg),2,0,1,neq,0,0,0.0d0,0.0d0)
     go to 750
-703 msg = 'dassl--  maxord (=i1) not in range'
-    call xerrwv(msg,34,3,0,1,mxord,0,0,0.0d0,0.0d0)
+703 msg = '***Fatal error: dassl--  maxord (=i1) not in range'
+    call xerrwv(msg,len_trim(msg),3,0,1,mxord,0,0,0.0d0,0.0d0)
     go to 750
-704 msg='dassl--  rwork length needed, lenrw (=i1), exceeds lrw (=i2)'
-    call xerrwv(msg,60,4,0,2,lenrw,lrw,0,0.0d0,0.0d0)
+704 msg='***Fatal error: dassl--  rwork length needed, lenrw (=i1), exceeds lrw (=i2)'
+    call xerrwv(msg,len_trim(msg),4,0,2,lenrw,lrw,0,0.0d0,0.0d0)
     go to 750
-705 msg='dassl--  iwork length needed, leniw (=i1), exceeds liw (=i2)'
-    call xerrwv(msg,60,5,0,2,leniw,liw,0,0.0d0,0.0d0)
+705 msg='***Fatal error: dassl--  iwork length needed, leniw (=i1), exceeds liw (=i2)'
+    call xerrwv(msg,len_trim(msg),5,0,2,leniw,liw,0,0.0d0,0.0d0)
     go to 750
-706 msg = 'dassl--  some element of rtol is < 0'
-    call xerrwv(msg,39,6,0,0,0,0,0,0.0d0,0.0d0)
+706 msg = '***Fatal error: dassl--  some element of rtol is < 0'
+    call xerrwv(msg,len_trim(msg),6,0,0,0,0,0,0.0d0,0.0d0)
     go to 750
-707 msg = 'dassl--  some element of atol is < 0'
-    call xerrwv(msg,39,7,0,0,0,0,0,0.0d0,0.0d0)
+707 msg = '***Fatal error: dassl--  some element of atol is < 0'
+    call xerrwv(msg,len_trim(msg),7,0,0,0,0,0,0.0d0,0.0d0)
     go to 750
-708 msg = 'dassl--  all elements of rtol and atol are zero'
-    call xerrwv(msg,47,8,0,0,0,0,0,0.0d0,0.0d0)
+708 msg = '***Fatal error: dassl--  all elements of rtol and atol are zero'
+    call xerrwv(msg,len_trim(msg),8,0,0,0,0,0,0.0d0,0.0d0)
     go to 750
-709 msg='dassl--  info(4) = 1 and tstop (=r1) behind tout (=r2)'
-    call xerrwv(msg,54,9,0,0,0,0,2,tstop,tout)
+709 msg='***Fatal error: dassl--  info(4) = 1 and tstop (=r1) behind tout (=r2)'
+    call xerrwv(msg,len_trim(msg),9,0,0,0,0,2,tstop,tout)
     go to 750
-710 msg = 'dassl--  hmax (=r1) < 0.0'
-    call xerrwv(msg,28,10,0,0,0,0,1,hmax,0.0d0)
+710 msg = '***Fatal error: dassl--  hmax (=r1) < 0.0'
+    call xerrwv(msg,len_trim(msg),10,0,0,0,0,1,hmax,0.0d0)
     go to 750
-711 msg = 'dassl--  tout (=r1) behind t (=r2)'
-    call xerrwv(msg,34,11,0,0,0,0,2,tout,t)
+711 msg = '***Fatal error: dassl--  tout (=r1) behind t (=r2)'
+    call xerrwv(msg,len_trim(msg),11,0,0,0,0,2,tout,t)
     go to 750
-712 msg = 'dassl--  info(8)=1 and h0=0.0'
-    call xerrwv(msg,29,12,0,0,0,0,0,0.0d0,0.0d0)
+712 msg = '***Fatal error: dassl--  info(8)=1 and h0=0.0'
+    call xerrwv(msg,len_trim(msg),12,0,0,0,0,0,0.0d0,0.0d0)
     go to 750
-713 msg = 'dassl--  some element of wt is <= 0.0'
-    call xerrwv(msg,39,13,0,0,0,0,0,0.0d0,0.0d0)
+713 msg = '***Fatal error: dassl--  some element of wt is <= 0.0'
+    call xerrwv(msg,len_trim(msg),13,0,0,0,0,0,0.0d0,0.0d0)
     go to 750
-714 msg='dassl-- tout (=r1) too close to t (=r2) to start integration'
-    call xerrwv(msg,60,14,0,0,0,0,2,tout,t)
+714 msg='***Fatal error: dassl-- tout (=r1) too close to t (=r2) to start integration'
+    call xerrwv(msg,len_trim(msg),14,0,0,0,0,2,tout,t)
     go to 750
-715 msg = 'dassl--  info(4)=1 and tstop (=r1) behind t (=r2)'
-    call xerrwv(msg,49,15,0,0,0,0,2,tstop,t)
+715 msg = '***Fatal error: dassl--  info(4)=1 and tstop (=r1) behind t (=r2)'
+    call xerrwv(msg,len_trim(msg),15,0,0,0,0,2,tstop,t)
     go to 750
-717 msg = 'dassl--  ml (=i1) illegal. either < 0 or > neq'
-    call xerrwv(msg,52,17,0,1,iwork(lml),0,0,0.0d0,0.0d0)
+717 msg = '***Fatal error: dassl--  ml (=i1) illegal. either < 0 or > neq'
+    call xerrwv(msg,len_trim(msg),17,0,1,iwork(lml),0,0,0.0d0,0.0d0)
     go to 750
-718 msg = 'dassl--  mu (=i1) illegal. either < 0 or > neq'
-    call xerrwv(msg,52,18,0,1,iwork(lmu),0,0,0.0d0,0.0d0)
+718 msg = '***Fatal error: dassl--  mu (=i1) illegal. either < 0 or > neq'
+    call xerrwv(msg,len_trim(msg),18,0,1,iwork(lmu),0,0,0.0d0,0.0d0)
     go to 750
-719 msg = 'dassl--  tout (=r1) is equal to t (=r2)'
-    call xerrwv(msg,39,19,0,0,0,0,2,tout,t)
+719 msg = '***Fatal error: dassl--  tout (=r1) is equal to t (=r2)'
+    call xerrwv(msg,len_trim(msg),19,0,0,0,0,2,tout,t)
     go to 750
 750 if(info(1)==-1) go to 760
     info(1)=-1
     idid=-33
     return
-760 msg = 'dassl--  repeated occurrences of illegal input'
-    call xerrwv(msg,46,801,0,0,0,0,0,0.0d0,0.0d0)
-770 msg = 'dassl--  run terminated. apparent infinite loop'
-    call xerrwv(msg,47,802,1,0,0,0,0,0.0d0,0.0d0)
+760 msg = '***Fatal error: dassl--  repeated occurrences of illegal input'
+    call xerrwv(msg,len_trim(msg),801,0,0,0,0,0,0.0d0,0.0d0)
+770 msg = '***Fatal error: dassl--  run terminated. apparent infinite loop'
+    call xerrwv(msg,len_trim(msg),802,1,0,0,0,0,0.0d0,0.0d0)
     return
     !-----------end of subroutine ddassl------------------------------------
     end subroutine ddassl

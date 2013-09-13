@@ -464,23 +464,23 @@
 
 5000 format ('Setting X cood. of fire position to default ',F12.5)
 5001 format ('Opening a version ',i2,' file in normal mode')
-5002 format ('Not a compatible version ',2a8,2x,2i10)
-5003 format ('Too many lines in the main data file')
+5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
+5003 format ('***Error: Too many lines in the main data file')
 5010 format ('Setting Y cood. of fire position to default ',F12.5)
 5020 format ('Setting Z cood. of fire position to default ',F12.5)
 5021 format ('The constant heat source (heatf) is in compartment ',i3,' at ',3f12.5)
-5022 format ('Initial temperature outside of allowable range (-50 to +100)',f5.2)
+5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
     ! read format list
 5030 format (A5,2X,I3,128A1)
-5050 format (' Error opening the input file = ',I6)
+5050 format ('***Error: Error opening the input file = ',I6)
 
     ! output for objects
 5080 format (' Object no. ',I3,' X cood. set to ',F12.5)
 5090 format (' Object no. ',I3,' Y cood. set to ',F12.5)
 5100 format (' Object no. ',I3,' Z cood. set to ',F12.5)
-5101 format ('Not an allowed fire type ',i3)
-5102 format ('Too many targets are being defined for object fires')
+5101 format ('***Error: Not an allowed fire type ',i3)
+5102 format ('***Error: Too many targets are being defined for object fires')
 
     end subroutine readinputfile
 
@@ -1688,56 +1688,56 @@
     end select
     go to 10 
 
-912 format ('Invalid TARGET METHOD:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
-913 format('Invalid equation type specified in TARGET:',A3,' Valid choices are:ODE, PDE or CYL')
-5001 format ('ONEZ requires a defined compartment ',i3)
-5002 format ('Too many targets are being defined')
-5003 format ('The compartment specified by TARGET does not exist',i3)
-5051 format ('The key word ',a5,' is not recognized')
-5062 format ('Compartment number outside of allowable range',i5)
+912 format ('***Error: Invalid TARGET METHOD:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
+913 format('***Error: Invalid equation type specified in TARGET:',A3,' Valid choices are:ODE, PDE or CYL')
+5001 format ('***Error: ONEZ requires a defined compartment ',i3)
+5002 format ('***Error: Too many targets are being defined')
+5003 format ('***Error: The compartment specified by TARGET does not exist',i3)
+5051 format ('***Error: The key word ',a5,' is not recognized')
+5062 format ('***Error: Compartment number outside of allowable range',i5)
 5063 format ('Compartment ',i3,1x,a8,1x,6f6.1,4l1,1x,4a10)
-5070 format ('VENT parameter(s) outside of allowable range',2I4)
-5080 format ('Too many pairwise horizontal connections',4I5)
-5081 format ('Too many horizontal connections ',3i5)
+5070 format ('***Error: VENT parameter(s) outside of allowable range',2I4)
+5080 format ('***Error: Too many pairwise horizontal connections',4I5)
+5081 format ('***Error: Too many horizontal connections ',3i5)
 5090 format ('The connection',3I3,' is being redefined')
-5130 format ('THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
-5140 format ('Specification for interface height is outside of',' allowable range',2I4)
-5191 format ('Compartments specified in MVENT have not been defined ',2i3)
-5192 format ('Exceeded maximum number of nodes/openings in MVENT ',2i3)
-5193 format ('MVENT(MID) is not consistent ',2i3)
-5194 format ('Pressure for zero flow must exceed the lower limit',f10.2)
-5195 format ('Too many fan systems',i3)
-5196 format ('Fan (MID) has not been defined for this filter ',i3)
-5300 format ('Too many objects defined in datafile')
-5310 format ('Incorrect number of parameters for OBJECT')
-5320 format ('Object specification error, room ',I4,' out of range')
-5321 format ('Object specification error, not an allowed fire type',i3)
-5322 format ('Object normal vector must be non-zero')
-5323 format ('Object ',i3,' is outside its compartment')
-5338 format ('Exceed allowed number of detectors')
-5339 format ('Detector ',i3,' is outside of compartment ',a)
+5130 format ('***Error: THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
+5140 format ('***Error: Specification for interface height is outside of',' allowable range',2I4)
+5191 format ('***Error: Compartments specified in MVENT have not been defined ',2i3)
+5192 format ('***Error: Exceeded maximum number of nodes/openings in MVENT ',2i3)
+5193 format ('***Error: MVENT(MID) is not consistent ',2i3)
+5194 format ('***Error: Pressure for zero flow must exceed the lower limit',f10.2)
+5195 format ('***Error: Too many fan systems',i3)
+5196 format ('***Error: Fan (MID) has not been defined for this filter ',i3)
+5300 format ('***Error: Too many objects defined in datafile')
+5310 format ('***Error: Incorrect number of parameters for OBJECT')
+5320 format ('***Error: Object specification error, room ',I4,' out of range')
+5321 format ('***Error: Object specification error, not an allowed fire type',i3)
+5322 format ('***Error: Object normal vector must be non-zero')
+5323 format ('***Error: Object ',i3,' is outside its compartment')
+5338 format ('***Error: Exceed allowed number of detectors')
+5339 format ('***Error: Detector ',i3,' is outside of compartment ',a)
 5340 format ('Set point file name is - ',A)
 5341 format ('Ceiling jet calculation has been set: ',5l2)
-5342 format ('Invalid DETECTOR specification - room ',i3)
+5342 format ('***Error: Invalid DETECTOR specification - room ',i3)
 5343 format ('A type ',i3,' detector has been placed in ',a128)
-5344 format ('A referenced compartment is not yet defined ',i3)
-5345 format ('VHEAT has specified a non-existent compartment')
-5346 format ('HALL has specified a non-existent compartment',i3)
-5347 format ('Compartment specified by ROOMA does not exist ',i3)
-5348 format ('Data on the ROOMA (or H) line must be positive ',1pg12.3)
-5349 format ('Compartment specified by ROOMH is not defined ',i3)
-5350 format ('ROOMH error on data line ',i3)
+5344 format ('***Error: A referenced compartment is not yet defined ',i3)
+5345 format ('***Error: VHEAT has specified a non-existent compartment')
+5346 format ('***Error: HALL has specified a non-existent compartment',i3)
+5347 format ('***Error: Compartment specified by ROOMA does not exist ',i3)
+5348 format ('***Error: Data on the ROOMA (or H) line must be positive ',1pg12.3)
+5349 format ('***Error: Compartment specified by ROOMH is not defined ',i3)
+5350 format ('***Error: ROOMH error on data line ',i3)
 5351 format ('Compartment',i3,' has been redefined as a variable space' ,'- area: ',20f8.1)
 5352 format ('Compartment',i3,' has been redefined as a variable space' ,'- height: ',20f8.1)
 5353 format ('Trying to reset the point file name is - ',A)
-5354 format ('HHEAT to compartment out of bounds or not defined - ',i3)
-5355 format ('HHEAT fraction pairs is not consistent ',2i3)
-5356 format ('HHEAT specification error in compartment pairs: ',2i3)
-5357 format ('Error in fraction for HHEAT:',2i3,f6.3)
-5358 format ('Not a valid ignition criterion ',I5)
+5354 format ('***Error: HHEAT to compartment out of bounds or not defined - ',i3)
+5355 format ('***Error: HHEAT fraction pairs is not consistent ',2i3)
+5356 format ('***Error: HHEAT specification error in compartment pairs: ',2i3)
+5357 format ('***Error: Error in fraction for HHEAT:',2i3,f6.3)
+5358 format ('***Error: Not a valid ignition criterion ',I5)
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
-5402 format ('Plume index out of range ',i3)
+5402 format ('***Error: Plume index out of range ',i3)
 5403 format ('Plume model for this fire: ',a10)
 
     end subroutine keywordcases
@@ -1924,7 +1924,7 @@
 
     ntarg = ntarg + 1
     if (ntarg>mxtarg) then
-        write(logerr, *) 'Too many targets created for fire objects'
+        write(logerr, *) '***Error: Too many targets created for fire objects'
         ierror = 201
         return
     endif
@@ -2117,7 +2117,7 @@
         else if (place=='L') then
             call dop0(noftl,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
         else
-            write(logerr,*) 'parameter not supported by setp'
+            write(logerr,*) '***Error: parameter not supported by setp'
             ierror = 77
             close(io)
             return
@@ -2136,10 +2136,10 @@
 
     goto 20
 
-    write(logerr,*)'error reading the "setp" file'
+    write(logerr,*)'***Error: error reading the "setp" file'
     ierror = 76
     return
-5000 format ('Cannot find the object fire file in either the executable path or the local directory ',/,a)
+5000 format ('***Error: Cannot find the object fire file in either the executable path or the local directory ',/,a)
 5001 format ('Open the SETPARAMETER file ',a)
 
     end subroutine setp0

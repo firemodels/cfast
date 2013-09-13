@@ -757,7 +757,7 @@
     real(eb), intent(out) :: yflor(2), yceil(2), ylay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
     
     integer :: up, iprod, ip, room_index(2), iroom, i
-    real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
+    real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou(2), hallvel
     
     logical :: hallflag
     type(room_type), pointer :: roomptr

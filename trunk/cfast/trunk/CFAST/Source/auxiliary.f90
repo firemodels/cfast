@@ -48,7 +48,7 @@
     else if(level==-3)then
        call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
     else
-       call xerrwv(error_label//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+       call xerrwv(trim(error_label)//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
     endif
 
     return

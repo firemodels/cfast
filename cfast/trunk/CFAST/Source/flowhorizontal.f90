@@ -56,7 +56,7 @@
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
         do i = 1, nvents
-            if(.not.ventflg(i)) go to 80
+            if(.not.ventflg(i)) cycle
             ventptr=>ventinfo(i)
             
             iroom1 = ventptr%from
@@ -183,7 +183,6 @@
                 asl1(iijk) = 0.0_eb
                 asl2(iijk) = 0.0_eb
             endif
-80          continue
         end do
     endif
 

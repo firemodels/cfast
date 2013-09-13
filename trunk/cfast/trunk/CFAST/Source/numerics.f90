@@ -819,7 +819,7 @@
     !     by an error condition from ddastp,and
     !     appropriate action was not taken. this
     !     is a fatal error.
-    msg = 'Fatal error: dassl--  the last step terminated with a negative'
+    msg = '***Fatal error: dassl--  the last step terminated with a negative'
     call xerrwv(msg,len_trim(msg),201,0,0,0,0,0,0.0d0,0.0d0)
     msg = 'dassl--  value (=i1) of idid and no appropriate'
     call xerrwv(msg,47,202,0,1,idid,0,0,0.0d0,0.0d0)

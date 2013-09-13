@@ -38,7 +38,7 @@ Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
 % Statistics output options
 
 Stats_Output = 1;
-Output_File = [pwd, '/CFAST_verification_scatterplot_outputs.csv'];
+Output_File = [pwd, '/CFAST_verification_scatterplot_output.csv'];
 Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_statistics.tex'];
 
 % Override the plot style options with NRC 1824 plot options

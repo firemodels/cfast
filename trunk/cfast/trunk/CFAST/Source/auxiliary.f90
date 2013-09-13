@@ -44,7 +44,12 @@
     endif
     nmess = max(1,nmess)
 
-    if(level/=-2) call xerrwv(error_label//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+    if(level==-2)then
+    else if(level==-3)then
+       call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+    else
+       call xerrwv(error_label//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+    endif
 
     return
     end subroutine xerror

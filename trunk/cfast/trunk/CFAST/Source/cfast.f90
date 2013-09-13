@@ -736,10 +736,10 @@
             isroom = ixdtect(isensor,droom)
             call updtect(mdset,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
             write(lbuf,*) ' '
-            call xerror(lbuf,0,1,0)
+            call xerror(lbuf,0,1,-3)
             write(lbuf,76)isensor,tdtect,isroom
 76          format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
-            call xerror(lbuf,0,1,0)
+            call xerror(lbuf,0,1,-3)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset

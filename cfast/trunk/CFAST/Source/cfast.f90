@@ -240,7 +240,7 @@
     if (info/=1) then
         if(option(fpsteady)/=off)then
             option(fpsteady) = off
-            call xerror('Trying non-steady initial guess' ,0,101,1)
+            call xerror('Trying non-steady initial guess' ,0,101,0)
             go to 1
         endif
         call xerror('Solver could not find an initial solution' ,0,102,2)

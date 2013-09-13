@@ -4609,7 +4609,7 @@
     if (info == 0) call xerror( 'snsq   -- invalid input parameter.',34,2,1)
     if (info == 2) call xerror( 'snsq   -- too many function evaluations.',40,9,1)
     if (info == 3) call xerror( 'snsq   -- xtol too small. no further improvement possible.',58,3,1)
-    if (info > 4) call xerror( 'snsq   -- iteration not making good progress.',45,1,1)
+    if (info > 4) call xerror( 'snsq   -- iteration not making good progress.',45,1,0)
     return
     !
     !     last card of subroutine snsq.

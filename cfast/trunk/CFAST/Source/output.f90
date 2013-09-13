@@ -2102,7 +2102,7 @@
 11  write(logerr,5040) mod(ios,256),trim(smvhead),trim(smvdata)
     stop 105
     !	this one comes from writing to the status file
-81  write(logerr,*) 'Fatal error writing to the status file ',ios
+81  write(logerr,*) '***Fatal error writing to the status file ',ios
     stop 106
 
 5001 format ('Open the history file ',a)
@@ -2110,8 +2110,8 @@
 5003 format ('Open the smokeview files - ',a,2x,a)
 5004 format ('Send output to the consol')
 5005 format ('Open the spreadsheet files - ',4(a,2x))
-5030 FORMAT ('Error ',i4,' while accessing history, file = ',A)
-5040 FORMAT ('Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
+5030 FORMAT ('***Error ',i4,' while accessing history, file = ',A)
+5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
 
     end subroutine openoutputfiles
 

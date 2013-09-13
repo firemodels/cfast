@@ -25,16 +25,26 @@
     character(*), intent(in) :: messg
     integer, intent(in) :: nmessg, level, nerr
     
+    character(32) :: error_label
+    
     integer :: nmess
 
+    if(level==2)then
+       error_label = "***Fatal error:"
+    else if(level==1)then
+       error_label = "***Error:"
+    else
+       error_label = "***Warning:"
+    endif
+
     if(nmessg==0)then
-        nmess = len_trim (messg)
+        nmess = len_trim(messg)
     else
         nmess = nmessg
     endif
     nmess = max(1,nmess)
 
-    if(level/=-2) call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+    if(level/=-2) call xerrwv(error_label//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
 
     return
     end subroutine xerror
@@ -200,7 +210,7 @@
     if (errorcode==0) then
         write(logerr, '(''Normal exit from '',a)') trim(name)
     else
-        write(logerr,'(''Error exit from '',a,'' code = '',i5)') trim(name), errorcode
+        write(logerr,'(''***Error exit from '',a,'' code = '',i5)') trim(name), errorcode
     endif
 
     stop
@@ -1778,7 +1788,7 @@
     write (*,99999) srname, info
     stop
 
-99999 format ( ' ** on entry to ', a6, ' parameter number ', i2,' had an illegal value' )
+99999 format ( '***Error: ** on entry to ', a6, ' parameter number ', i2,' had an illegal value' )
 
     end subroutine xerbla
 

@@ -129,7 +129,7 @@
     call cfastexit ('CFAST', errorcode)
 
 5000 format ('Date stamp from CFAST initialization ',a14)
-5001 format ('Error encountered in opening data files; code = ',i4)
+5001 format ('***Error: Error encountered in opening data files; code = ',i4)
 5002 format ('The project files are based on the root: ',a64)
 5003 format ('Total execution time = ',1pg10.3,' seconds')
     end program cfast

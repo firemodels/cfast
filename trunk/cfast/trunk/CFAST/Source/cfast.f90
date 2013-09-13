@@ -1566,8 +1566,8 @@
         zzhlay(n,lower) = 100000.0_eb
         zzrelp(n) = 0.0_eb
         zzpabs(n) = pofset
-        zztemp(n,upper) = 300.0_eb
-        zztemp(n,lower) = 300.0_eb
+        zztemp(n,upper) = exta
+        zztemp(n,lower) = exta
         do lsp = 3, ns
             zzcspec(n,upper,lsp) = 0.0_eb
             zzcspec(n,lower,lsp) = 0.0_eb

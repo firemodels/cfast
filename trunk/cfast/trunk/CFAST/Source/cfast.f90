@@ -1275,7 +1275,7 @@
             if(xmu/=0.0_eb)then
                 zzftemp(iroom,upper) = xqu/(cp*xmu)
             else
-                zzftemp(iroom,upper) = tamb(iroom)
+                zzftemp(iroom,upper) = interior_temperature
             endif
         endif
 

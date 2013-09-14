@@ -276,6 +276,7 @@
 
     use precision_parameters
     use cfast_main
+    use cenviro
     use opt
     use params
     implicit none
@@ -323,7 +324,7 @@
                 ib = icmv (i,j)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*abs(hvflow(i,j))
                 if(option(fhvloss)==on)then
-                    delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-tamb(1))*hvdara(ib)
+                    delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
                 endif
             endif
             ii = izhvie(mvintnode(i,j))
@@ -332,7 +333,7 @@
                 hvta = hvextt(ii,upper)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
                 if(option(fhvloss)==on)then
-                    delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-tamb(1))*hvdara(ib)
+                    delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
                 endif
             endif
         end do

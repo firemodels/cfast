@@ -92,8 +92,8 @@
         write(logerr,5022) exterior_temperature
         ierror = 218
     endif
-    if (ta>373.15_eb.or.ta<223.15_eb) then
-        write(logerr,5022) ta
+    if (interior_temperature>373.15_eb.or.interior_temperature<223.15_eb) then
+        write(logerr,5022) interior_temperature
         ierror = 218
     endif
 
@@ -102,7 +102,7 @@
     ! We now know what output is going to be generated, so create the files
     call openoutputfiles
 
-    ra = pa / ta / rgas
+    interior_density = pa / interior_temperature / rgas
     exterior_density = expa / exterior_temperature / rgas
 
     ! turn on the subsidiary equations if they are neeeded - this is always true
@@ -582,13 +582,13 @@
             ierror = 2
             return
         endif
-        ta = lrarray(1)
+        interior_temperature = lrarray(1)
         pa = lrarray(2)
         relhum = lrarray(4) * 0.01_eb
         if (.not.exset) then
-            exterior_temperature = ta
+            exterior_temperature = interior_temperature
             expa = pa
-            exterior_density = ra
+            exterior_density = interior_density
         endif
 
         ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE

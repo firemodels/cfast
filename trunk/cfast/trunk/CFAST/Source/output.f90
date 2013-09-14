@@ -964,7 +964,7 @@
     use params
     implicit none
 
-    write (iofilo,5000) ta-273.15, pa + pofset, exterior_temperature-273.15, expa + pofset, windv, windrf, windpw
+    write (iofilo,5000) interior_temperature-273.15, pa + pofset, exterior_temperature-273.15, expa + pofset, windv, windrf, windpw
     return
 
 5000 format (//,' AMBIENT CONDITIONS',//, &

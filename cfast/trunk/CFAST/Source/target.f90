@@ -176,7 +176,7 @@
             itarg = ntarg - nm1 + iroom
 
             ! ambient target
-            ttarg(1) = tamb(iroom)
+            ttarg(1) = interior_temperature
             ttarg(2) = exterior_temperature
             xxtarg(trgtempf,itarg) = ttarg(1)
             call targflux(1,itarg,ttarg,flux,dflux)
@@ -358,7 +358,7 @@
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
         if(ixtarg(trgback,itarg)==ext.or.qtgflux(itarg,2)==0.0)then
-            qtgflux(itarg,2) = sigma*tamb(iroom)**4
+            qtgflux(itarg,2) = sigma*interior_temperature**4
         endif
     endif
 
@@ -384,7 +384,7 @@
     if(ixtarg(trgback,itarg)==int)then
         tgb = tg
     else
-        tgb = tamb(iroom)
+        tgb = interior_temperature
     endif
     ttargb = ttarg(2)
     dttarg = 1.0d-7*ttarg(1)
@@ -408,13 +408,13 @@
     
     ! Adjust each one for the ambient losses
     total_radiation = gtflux(itarg,2) + gtflux(itarg,3) + gtflux(itarg,4)
-    re_radiation = sigma*tamb(iroom)**4
+    re_radiation = sigma*interior_temperature**4
     gtflux(itarg,2) = gtflux(itarg,2) - re_radiation*gtflux(itarg,2)/total_radiation
     gtflux(itarg,3) = gtflux(itarg,3) - re_radiation*gtflux(itarg,3)/total_radiation
     gtflux(itarg,4) = gtflux(itarg,4) - re_radiation*gtflux(itarg,4)/total_radiation
     
     !add in the convection 
-    call convec(iw,tg,tamb(iroom),q1g)
+    call convec(iw,tg,interior_temperature,q1g)
     gtflux(itarg,5) = q1g
     
     ! and the total is just the sum of these

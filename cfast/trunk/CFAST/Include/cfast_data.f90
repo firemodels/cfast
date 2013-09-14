@@ -40,7 +40,7 @@ module cenviro
     real(eb), dimension(nr,nr) :: zzhtfrac
     real(eb) :: zzdtcrit
 
-    real(eb) :: exterior_temperature, exterior_density
+    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
  
     integer, dimension(ns+2) :: izpmap
     integer, dimension(2,nr) :: izwmap
@@ -100,7 +100,7 @@ module cfast_main
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
-    real(eb) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+    real(eb) :: ppmdv(2,nr,ns), pamb(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
@@ -113,7 +113,7 @@ module cfast_main
     real(eb) :: cp, deltat, heatfq, tracet(2,mext)
     real(eb) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
     real(eb) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
-    real(eb) :: ra, relhum, rgas, stime, ta, te
+    real(eb) :: relhum, rgas, stime, te
     real(eb) :: termxx, tfiret, tfmaxt, tgignt
     real(eb) :: tref, windpw, windrf, windv
 

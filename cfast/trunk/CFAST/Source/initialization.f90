@@ -446,9 +446,9 @@
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<n) then
-            hvextt(ii,upper) = tamb(i)
-            hvextt(ii,lower) = tamb(i)
-            hvp(j) = zzrelp(i) - hvgrav * ramb(i) * hvelxt(ii)
+            hvextt(ii,upper) = interior_temperature
+            hvextt(ii,lower) = interior_temperature
+            hvp(j) = zzrelp(i) - hvgrav * interior_density * hvelxt(ii)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
@@ -460,8 +460,8 @@
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<n) then
-                hvexcn(ii,lsp,upper) = o2n2(lsp) * ramb(i)
-                hvexcn(ii,lsp,lower) = o2n2(lsp) * ramb(i)
+                hvexcn(ii,lsp,upper) = o2n2(lsp) * interior_density
+                hvexcn(ii,lsp,lower) = o2n2(lsp) * interior_density
             else
                 hvexcn(ii,lsp,upper) = o2n2(lsp) * exterior_density
                 hvexcn(ii,lsp,lower) = o2n2(lsp) * exterior_density
@@ -660,9 +660,7 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        pamb(i) = -ra*grav_con*hflr(i)
-        tamb(i) = ta
-        ramb(i) = ra
+        pamb(i) = -interior_density*grav_con*hflr(i)
         epa(i) = -exterior_density*grav_con*hflr(i)
     end do
     epa(n) = 0.0_eb
@@ -687,7 +685,7 @@
     ! define the p array, the solution to the ode
     do i = 1, nm1
         p(i) = pamb(i)
-        p(i+noftu) = tamb(i)
+        p(i+noftu) = interior_temperature
 
         ! check for a special setting of the interface height
         if (iflag==1) then
@@ -699,7 +697,7 @@
             yinter(i) = 0.0_eb
         endif
         if(izshaft(i)==1)p(i+nofvu) = zzvmax(i)
-        p(i+noftl) = tamb(i)
+        p(i+noftl) = interior_temperature
     end do
 
     ! define hvac pressures and temperatures.  these values are later refined by 
@@ -708,7 +706,7 @@
         p(i+nofpmv) = 0.0_eb
     end do
     do i = 1, nhvtvar
-        p(i+noftmv) = tamb(1)
+        p(i+noftmv) = interior_temperature
     end do
 
     ! define interior surface wall temperatures
@@ -717,7 +715,7 @@
         do iwall = 1, nwal
             if (switch(iwall,i)) then
                 ii = ii + 1
-                p(ii) = tamb(i)
+                p(ii) = interior_temperature
             endif
         end do
     end do
@@ -752,10 +750,10 @@
         xdtect(i,dspray) = tdspray
         xdtect(i,dthalf) = tdrate*log(2.0_eb)
         xdtect(i,drate) = tdrate
-        xdtect(i,dtemp) = tamb(iroom)
-        xdtect(i,dtempo) = tamb(iroom)
-        xdtect(i,dtjet) = tamb(iroom)
-        xdtect(i,dtjeto) = tamb(iroom)
+        xdtect(i,dtemp) = interior_temperature
+        xdtect(i,dtempo) = interior_temperature
+        xdtect(i,dtjet) = interior_temperature
+        xdtect(i,dtjeto) = interior_temperature
     end do
 
     call sortbrm(xdtect,mxdtect,ixdtect,mxdtect,ndtect,dtxcol,dticol,droom,nr,nm1,idtpnt)
@@ -769,12 +767,12 @@
         iroom = ixtarg(trgroom,itarg)
         if(ixtarg(trgmeth,itarg)==mplicit)then
             ieq = iztarg(itarg)
-            p(noftt+ieq) = tamb(iroom)
+            p(noftt+ieq) = interior_temperature
         endif  
         do i=trgtempf,trgtempb
-            xxtarg(i,itarg)=tamb(iroom)
+            xxtarg(i,itarg)=interior_temperature
         end do
-        tgtarg(itarg) = tamb(iroom)
+        tgtarg(itarg) = interior_temperature
 
         ! scale normal vectors to have length 1
         scale = 1.0_eb/dnrm2(3,xxtarg(trgnormx,itarg),1)
@@ -974,9 +972,9 @@
     pa = pref
     pofset = pref
     te = tref
-    ta = tref
+    interior_temperature = tref
     tgignt = te + 200.d0
-    exterior_temperature = ta
+    exterior_temperature = interior_temperature
     expa = pa
     windv = 0.0_eb
     windrf = 10.d0
@@ -1329,15 +1327,15 @@
 
 
     do i = 1, nm1
-        xm(1) = ramb(i) * zzvol(i,upper)
-        xm(2) = ramb(i) * zzvol(i,lower)
+        xm(1) = interior_density * zzvol(i,upper)
+        xm(2) = interior_density * zzvol(i,lower)
 
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry.  we are being clever
         ! here.  the final result in o2n2 should be the value used in stport for
         ! the outside ambient.
-        xt = tamb(i)
+        xt = interior_temperature
         xtemp = 23.2d0 - 3.816d3 / (xt-46.d0)
         xh2o = exp(xtemp) / 101325.0d0 * (18.d0/28.4d0)
         o2n2(8) = relhum * xh2o
@@ -1625,7 +1623,7 @@
         do j = 1, nwal
             twe(j,i) = exterior_temperature
             do k = 1, nn 
-                twj(k,i,j) = tamb(i)
+                twj(k,i,j) = interior_temperature
             end do
         end do
     end do
@@ -1634,7 +1632,7 @@
     do i = 1, nm1
         do j = 1, nwal
             if (switch(j,i)) then
-                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),wlength(i,j),twj(1,i,j),tamb(i),exterior_temperature)
+                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
             endif
         end do
     end do

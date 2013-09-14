@@ -770,8 +770,12 @@ run_matlab_validation()
 {
    # Run Matlab plotting script
    cd $CFAST_SVNROOT/Utilities/Matlab
+   summary_base=CFAST_validation_scatterplot_output
+   rm -f ${summary_base}.csv
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
-   cp CFAST_validation_scatterplot_output.csv /var/www/html/cfastbot/manuals/.
+   if [ -e ${summary_base}.csv ] ; then
+      cp ${summary_base}.csv /var/www/html/cfastbot/manuals/${summary_base}_${SVN_REVISION}.csv
+   fi
 }
 
 check_matlab_validation()

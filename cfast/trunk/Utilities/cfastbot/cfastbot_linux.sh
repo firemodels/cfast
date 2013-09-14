@@ -762,16 +762,14 @@ check_matlab_verification()
    fi
 }
 
-#  ===========================================
-#  = Stage 7b - Matlab plotting (validation) =
-#  ===========================================
+#  ==========================================================
+#  = Stage 7b - Matlab plotting and statistics (validation) =
+#  ==========================================================
 
 run_matlab_validation()
 {
    # Run Matlab plotting script
    cd $CFAST_SVNROOT/Utilities/Matlab
-   summary_base=CFAST_validation_scatterplot_output
-   rm -f ${summary_base}.csv
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
 }
 
@@ -791,16 +789,50 @@ check_matlab_validation()
    fi
 }
 
-archive_matlab_validation()
+check_validation_stats()
 {
    cd $CFAST_SVNROOT/Utilities/Matlab
 
-   if [ -e ${summary_base}.csv ] ; then
+   STATS_FILE_BASE=CFAST_validation_scatterplot_output
+
+   CURRENT_STATS_FILE=$CFAST_SVNROOT/Utilities/Matlab/${STATS_FILE_BASE}.csv
+
+   RECENT_STATS_FILE=`ls -v $CFASTBOT_DIR/history/${STATS_FILE_BASE}* | tail -n 1`
+   RECENT_STATS_FILE_SVN=${RECENT_STATS_FILE//[^0-9]/}
+
+   if [ -e ${CURRENT_STATS_FILE} ]
+   then
+      if [[ `diff ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE}` == "" ]]
+      then
+         # Continue along
+         :
+      else
+         echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
+         echo "Validation statistics have changed since last run:" >> $WARNING_LOG
+         echo "Old validation statistics file (Revision ${SVN_REVISION}):" >> $WARNING_LOG
+         cat RECENT_STATS_FILE >> $WARNING_LOG
+         echo "Current validation statistics file (Revision ${RECENT_STATS_FILE_SVN}):" >> $WARNING_LOG
+         cat CURRENT_STATS_FILE >> $WARNING_LOG
+         echo "" >> $WARNING_LOG
+      fi
+   else
+      echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
+      echo "Error: The validation statistics output file does not exist." >> $WARNING_LOG
+      echo "Expected the file Utilities/Matlab/CFAST_validation_scatterplot_output.csv" >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
+   fi
+}
+
+archive_validation_stats()
+{
+   cd $CFAST_SVNROOT/Utilities/Matlab
+
+   if [ -e ${CURRENT_STATS_FILE} ] ; then
       # Copy to CFASTbot history
-      cp ${summary_base}.csv "$CFASTBOT_DIR/history/${summary_base}_${SVN_REVISION}.csv"
+      cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}.csv"
 
       # Copy to web results
-      cp ${summary_base}.csv /var/www/html/cfastbot/manuals/Validation_Statistics/${summary_base}_${SVN_REVISION}.csv
+      cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASE}_${SVN_REVISION}.csv
    fi
 }
 
@@ -1016,7 +1048,8 @@ check_matlab_verification
 ### Stage 7b ###
 run_matlab_validation
 check_matlab_validation
-archive_matlab_validation
+check_validation_stats
+archive_validation_stats
 
 ### Stage 8 ###
 make_cfast_tech_guide

@@ -775,6 +775,7 @@ run_matlab_validation()
    # Run Matlab plotting script
    cd $CFAST_SVNROOT/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
+   cp CFAST_validation_scatterplot_output.csv /var/www/html/cfastbot/manuals/.
 }
 
 check_matlab_validation()

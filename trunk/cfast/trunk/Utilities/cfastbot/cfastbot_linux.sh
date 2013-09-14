@@ -773,9 +773,6 @@ run_matlab_validation()
    summary_base=CFAST_validation_scatterplot_output
    rm -f ${summary_base}.csv
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_validation
-   if [ -e ${summary_base}.csv ] ; then
-      cp ${summary_base}.csv /var/www/html/cfastbot/manuals/${summary_base}_${SVN_REVISION}.csv
-   fi
 }
 
 check_matlab_validation()
@@ -791,6 +788,19 @@ check_matlab_validation()
       echo "Warnings from Stage 7b - Matlab plotting (validation):" >> $WARNING_LOG
       cat $CFASTBOT_DIR/output/stage7b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
+   fi
+}
+
+archive_matlab_validation()
+{
+   cd $FDS_SVNROOT/Utilities/Matlab
+
+   if [ -e ${summary_base}.csv ] ; then
+      # Copy to CFASTbot history
+      cp ${summary_base}.csv "$CFASTBOT_DIR/history/${summary_base}_${SVN_REVISION}.csv"
+
+      # Copy to web results
+      cp ${summary_base}.csv /var/www/html/cfastbot/manuals/Validation_Statistics/${summary_base}_${SVN_REVISION}.csv
    fi
 }
 
@@ -1006,6 +1016,7 @@ check_matlab_verification
 ### Stage 7b ###
 run_matlab_validation
 check_matlab_validation
+archive_matlab_validation
 
 ### Stage 8 ###
 make_cfast_tech_guide

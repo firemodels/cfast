@@ -808,10 +808,11 @@ check_validation_stats()
          :
       else
          echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
-         echo "Validation statistics have changed since last run:" >> $WARNING_LOG
-         echo "" >> $WARNING_LOG
-         echo "Difference between validation statistics files" >> $WARNING_LOG
+         echo "Validation statistics have changed since last run." >> $WARNING_LOG
+         echo "-------------------------------" >> $WARNING_LOG
+         echo "Difference between validation statistics files," >> $WARNING_LOG
          echo "(Revision ${RECENT_STATS_FILE_SVN}) vs. (Revision ${SVN_REVISION}):" >> $WARNING_LOG
+         echo "-------------------------------" >> $WARNING_LOG
          diff ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE} >> $WARNING_LOG
          echo "" >> $WARNING_LOG
       fi

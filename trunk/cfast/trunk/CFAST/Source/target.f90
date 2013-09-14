@@ -177,7 +177,7 @@
 
             ! ambient target
             ttarg(1) = tamb(iroom)
-            ttarg(2) = eta(iroom)
+            ttarg(2) = exterior_temperature
             xxtarg(trgtempf,itarg) = ttarg(1)
             call targflux(1,itarg,ttarg,flux,dflux)
             xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)

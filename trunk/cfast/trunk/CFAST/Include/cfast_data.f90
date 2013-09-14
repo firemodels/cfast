@@ -39,6 +39,8 @@ module cenviro
     real(eb), dimension(0:nv+1) :: zzdisc
     real(eb), dimension(nr,nr) :: zzhtfrac
     real(eb) :: zzdtcrit
+
+    real(eb) :: exterior_temperature, exterior_density
  
     integer, dimension(ns+2) :: izpmap
     integer, dimension(2,nr) :: izwmap
@@ -98,7 +100,7 @@ module cfast_main
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
-    real(eb) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), eta(nr), era(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+    real(eb) :: ppmdv(2,nr,ns), tamb(nr), ramb(nr), pamb(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
@@ -435,7 +437,7 @@ module params
     integer :: mapltw(nwal), ihmlar(2,nr,nr), izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
 
     real(eb) :: qfr(mxfire), qfc(2,nr), qscnv(nwal,nr), qdout(nwal,nr), qsradw(nwal,nr), qdin(nwal,nr), qcvent(mxvents,nv), o2n2(ns), hwjdot(nwal,nr), &
-        htot(nr), htflow(nr,2), hmflow(nr,2), htfnet(2,nr,nr), volfru(nr), volfrl(nr), hvfrac(2,mext), expa, exta, exra, &
+        htot(nr), htflow(nr,2), hmflow(nr,2), htfnet(2,nr,nr), volfru(nr), volfrl(nr), hvfrac(2,mext), expa, &
         hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), hvt, ductcv
 
     !common qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, expa, exta, exra, qcvent, o2n2, hwjdot, &

@@ -535,8 +535,8 @@ compile_smv_utilities()
 {  
    # smokeview libraries
    cd $FDS_SVNROOT/SMV/Build/LIBS/lib_linux_intel_64
-   echo 'Building Smokeview libraries:' >> $CFASTBOT_DIR/output/stage5pre 2>&1
-   ./makelibs.sh >> $CFASTBOT_DIR/output/stage5pre 2>&1
+   echo 'Building Smokeview libraries:' >> $CFASTBOT_DIR/output/stage6a 2>&1
+   ./makelibs.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
 
    # smokezip:
    cd $FDS_SVNROOT/Utilities/smokezip/intel_linux_64

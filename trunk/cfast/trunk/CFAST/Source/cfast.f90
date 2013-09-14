@@ -1200,8 +1200,6 @@
 
     ! reset parallel data structures
     do i = 1, nm1
-        qc(ll,i) = flwcjet(i,ll) + flwcv(i,ll)
-        qc(uu,i) = flwcjet(i,uu) + flwcv(i,uu)
         ! add in vent fires to the total.  dofire does the total of
         ! qf for normal fires, but vent fires are done afterwards with djet
         do j = 1, nwal

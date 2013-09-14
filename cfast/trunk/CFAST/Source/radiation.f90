@@ -155,8 +155,6 @@
 
             flwrad(i,1) = qlay(1)
             flwrad(i,2) = qlay(2)
-            qr(1,i) = qlay(1)
-            qr(2,i) = qlay(2)
         endif
     end do
 

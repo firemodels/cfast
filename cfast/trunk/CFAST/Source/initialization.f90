@@ -853,10 +853,6 @@
     nlspct = 0
     nrestr = 0
     numthrm = 0
-    mapltw(1) = 1
-    mapltw(2) = 2
-    mapltw(3) = 1
-    mapltw(4) = 2
     hcldep = 0
     smkagl = 0
     n = 0
@@ -904,18 +900,9 @@
 
     ! initialize the forcing functions
     do i = 1, nr
-        emp(i) = 0.0_eb
-        ems(i) = 0.0_eb
-        eme(i) = 0.0_eb
-        aps(i) = 0.0_eb
         do k = upper, lower
-            qr(k,i) = 0.0_eb
-            qc(k,i) = 0.0_eb
             qfc(k,i) = 0.0_eb
         end do
-    end do
-    do i = 1, mxfire
-        qfr(i) = 0.0_eb
     end do
     do i = 1, maxteq
         p(i) = 0.0_eb
@@ -936,7 +923,6 @@
         vr(i) = hr(i) * ar(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
-            qsradw(j,i) = 0.0_eb
             qscnv(j,i) = 0.0_eb
         end do
         do j = 1, nr
@@ -1010,9 +996,6 @@
     do i = 1, nv
 
         ! define the vents as being open
-        do ivent=1, mxvents
-            qcvent(ivent,i) = 1.0d0
-        end do
         tfired(i) = 86400.d0
         hfired(i) = 0.0_eb
         afired(i) = 0.0_eb

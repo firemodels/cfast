@@ -66,13 +66,13 @@
 
             ! setup data structures for from and to room
             !note: getvars is intended to replace two calls to getvar.
-            call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+            !call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
             
             ! setup data structures for from room
-            !call getvar(i,iroom1,iroom2,nprod,yflor(1),yceil(1),ylay(1),pflor(1),denl(1),denu(1),conl(1,1),conu(1,1),tl(1),tu(1))
+            call getvar(i,iroom1,iroom2,nprod,yflor(1),yceil(1),ylay(1),pflor(1),denl(1),denu(1),conl(1,1),conu(1,1),tl(1),tu(1))
 
             ! setup data structures for to room
-            !call getvar(i,iroom2,iroom1,nprod,yflor(2),yceil(2),ylay(2),pflor(2),denl(2),denu(2),conl(1,2),conu(1,2),tl(2),tu(2))
+            call getvar(i,iroom2,iroom1,nprod,yflor(2),yceil(2),ylay(2),pflor(2),denl(2),denu(2),conl(1,2),conu(1,2),tl(2),tu(2))
 
             ! convert vent dimensions to absolute dimensions
             yvbot = ventptr%sill + yflor(1)

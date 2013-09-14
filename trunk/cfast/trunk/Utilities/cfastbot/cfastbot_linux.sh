@@ -793,7 +793,7 @@ check_matlab_validation()
 
 archive_matlab_validation()
 {
-   cd $FDS_SVNROOT/Utilities/Matlab
+   cd $CFAST_SVNROOT/Utilities/Matlab
 
    if [ -e ${summary_base}.csv ] ; then
       # Copy to CFASTbot history

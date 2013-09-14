@@ -88,8 +88,8 @@
     call keywordcases (numr, numc, ierror)
 
     !	wait until the input file is parsed before dieing on temperature outside reasonable limits
-    if (exta>373.15_eb.or.exta<223.15_eb) then
-        write(logerr,5022) exta
+    if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
+        write(logerr,5022) exterior_temperature
         ierror = 218
     endif
     if (ta>373.15_eb.or.ta<223.15_eb) then
@@ -103,7 +103,7 @@
     call openoutputfiles
 
     ra = pa / ta / rgas
-    exra = expa / exta / rgas
+    exterior_density = expa / exterior_temperature / rgas
 
     ! turn on the subsidiary equations if they are neeeded - this is always true
     if (activs(6)) hcldep = 1
@@ -586,9 +586,9 @@
         pa = lrarray(2)
         relhum = lrarray(4) * 0.01_eb
         if (.not.exset) then
-            exta = ta
+            exterior_temperature = ta
             expa = pa
-            exra = ra
+            exterior_density = ra
         endif
 
         ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE
@@ -597,7 +597,7 @@
             ierror = 3
             return
         endif
-        exta = lrarray(1)
+        exterior_temperature = lrarray(1)
         expa = lrarray(2)
         exset = .true.
 

@@ -67,7 +67,7 @@
         ! use exterior wall temperature from last time step to ...
         twint = zzwtemp(iroom,iwall,1)
         twext = zzwtemp(iroom,iwall,2)
-        tgas = eta(iroom)
+        tgas = exterior_temperature
         iweq = izwmap2(iwall,iroom) - nofwt
         iwb = izwall(iweq,5)
 

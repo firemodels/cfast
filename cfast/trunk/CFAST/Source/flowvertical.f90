@@ -83,7 +83,7 @@
                 xxmu = 0.0_eb
                 xxml = xmvent(iflow)
                 xxqu = 0.0_eb
-                xxql = cp * xxml * eta(ifrm)
+                xxql = cp * xxml * exterior_temperature
                 xxtmp = zztemp(ifrm,lower)
                 xxtq = xxqu + xxql
             endif
@@ -208,7 +208,7 @@
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con * hrp(ibot) * era(ibot)
+        dp(1) = -grav_con * hrp(ibot) * exterior_density
         relp(1) = epa(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset
@@ -237,12 +237,12 @@
     if (itop<=nm1) then
         den(1) = zzrho(itop,ilay(1))
     else
-        den(1) = era(ibot)
+        den(1) = exterior_density
     endif
     if (ibot<=nm1) then
         den(2) = zzrho(ibot,ilay(2))
     else
-        den(2) = era(itop)
+        den(2) = exterior_density
     endif
     delden = den(1) - den(2)
 
@@ -328,8 +328,8 @@
             tmvent(i) = zztemp(iroom(i),ilay(3-i))
         else
 
-            ! iroom(i) is an outside room so use eta(iroom(3-i) for temperature
-            tmvent(i) = eta(iroom(3-i))
+            ! iroom(i) is an outside room so use exterior_temperature for temperature
+            tmvent(i) = exterior_temperature
         endif
     end do
     return

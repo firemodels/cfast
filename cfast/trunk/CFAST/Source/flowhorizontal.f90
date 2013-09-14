@@ -899,15 +899,15 @@
         yceil = roomptr%yceil
         pflor = epa(iroom2)
         ylay = zzhlay(iroom,lower)
-        denu = era(iroom2)
-        denl = era(iroom2)
+        denu = exterior_density
+        denl = exterior_density
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
             conl(iprod) = zzcspec(iroom,lower,ip)
             conu(iprod) = zzcspec(iroom,up,ip)
         end do
-        tu = eta(iroom2)
-        tl = eta(iroom2)
+        tu = exterior_temperature
+        tl = exterior_temperature
     endif
     return
     end subroutine getvar

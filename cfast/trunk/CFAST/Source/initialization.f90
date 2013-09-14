@@ -450,9 +450,9 @@
             hvextt(ii,lower) = tamb(i)
             hvp(j) = zzrelp(i) - hvgrav * ramb(i) * hvelxt(ii)
         else
-            hvextt(ii,upper) = exta
-            hvextt(ii,lower) = exta
-            hvp(j) = expa - hvgrav * exra * hvelxt(ii)
+            hvextt(ii,upper) = exterior_temperature
+            hvextt(ii,lower) = exterior_temperature
+            hvp(j) = expa - hvgrav * exterior_density * hvelxt(ii)
         endif
         tbr(ib) = hvextt(ii,upper)
         s1 = s1 + hvp(j)
@@ -463,8 +463,8 @@
                 hvexcn(ii,lsp,upper) = o2n2(lsp) * ramb(i)
                 hvexcn(ii,lsp,lower) = o2n2(lsp) * ramb(i)
             else
-                hvexcn(ii,lsp,upper) = o2n2(lsp) * exra
-                hvexcn(ii,lsp,lower) = o2n2(lsp) * exra
+                hvexcn(ii,lsp,upper) = o2n2(lsp) * exterior_density
+                hvexcn(ii,lsp,lower) = o2n2(lsp) * exterior_density
             endif
             hvconc(j,lsp) = hvexcn(ii,lsp,upper)
             c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
@@ -663,12 +663,8 @@
         pamb(i) = -ra*grav_con*hflr(i)
         tamb(i) = ta
         ramb(i) = ra
-        epa(i) = -exra*grav_con*hflr(i)
-        eta(i) = exta
-        era(i) = exra
+        epa(i) = -exterior_density*grav_con*hflr(i)
     end do
-    eta(n) = exta
-    era(n) = exra
     epa(n) = 0.0_eb
 
 
@@ -980,7 +976,7 @@
     te = tref
     ta = tref
     tgignt = te + 200.d0
-    exta = ta
+    exterior_temperature = ta
     expa = pa
     windv = 0.0_eb
     windrf = 10.d0
@@ -1627,7 +1623,7 @@
     ! Initialize the interior temperatures to the interior ambient
     do i = 1, nm1
         do j = 1, nwal
-            twe(j,i) = eta(i)
+            twe(j,i) = exterior_temperature
             do k = 1, nn 
                 twj(k,i,j) = tamb(i)
             end do
@@ -1638,7 +1634,7 @@
     do i = 1, nm1
         do j = 1, nwal
             if (switch(j,i)) then
-                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),wlength(i,j),twj(1,i,j),tamb(i),eta(i))
+                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),wlength(i,j),twj(1,i,j),tamb(i),exterior_temperature)
             endif
         end do
     end do

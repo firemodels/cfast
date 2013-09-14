@@ -436,9 +436,9 @@
             hvextt(ii,upper) = zztemp(i,upper)
             hvextt(ii,lower) = zztemp(i,lower)
         else
-            hvextt(ii,upper) = exta
-            hvextt(ii,lower) = exta
-            hvp(j) =  expa - exra * hvgrav * hvelxt(ii)
+            hvextt(ii,upper) = exterior_temperature
+            hvextt(ii,lower) = exterior_temperature
+            hvp(j) =  expa - exterior_density * hvgrav * hvelxt(ii)
         endif
         do lsp = 1, ns
             if (activs(lsp)) then
@@ -446,7 +446,7 @@
                     hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
                     hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
                 else
-                    xxrho = o2n2(lsp) * exra
+                    xxrho = o2n2(lsp) * exterior_density
                     hvexcn(ii,lsp,upper) = xxrho
                     hvexcn(ii,lsp,lower) = xxrho
                 endif

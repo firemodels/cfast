@@ -508,7 +508,7 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(pref, expa, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -612,7 +612,7 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(pref, expa, exta, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(pref, expa, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -1566,8 +1566,8 @@
         zzhlay(n,lower) = 100000.0_eb
         zzrelp(n) = 0.0_eb
         zzpabs(n) = pofset
-        zztemp(n,upper) = exta
-        zztemp(n,lower) = exta
+        zztemp(n,upper) = exterior_temperature
+        zztemp(n,lower) = exterior_temperature
         do lsp = 3, ns
             zzcspec(n,upper,lsp) = 0.0_eb
             zzcspec(n,lower,lsp) = 0.0_eb
@@ -1637,7 +1637,7 @@
                                 else
                                     windvnew = windv
                                 endif
-                                winddp = wcos * exra * windvnew**2/2.0_eb
+                                winddp = wcos * exterior_density * windvnew**2/2.0_eb
                                 ventptr%wind_dp = winddp
                             else
                                 ventptr%wind_dp = 0.0_eb

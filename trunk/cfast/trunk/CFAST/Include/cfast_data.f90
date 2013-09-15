@@ -95,26 +95,26 @@ module cfast_main
         ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
         sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), heatup(nr), heatlp(nr), heatvf(nr), &
         vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
-        bfired(nv), afired(nv), hfired(nv), tfired(nv), hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
+        hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
         halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
-        rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
-        hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
-        arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
-        hvp(mnode), hvght(mnode), hmfnet(2,nr,nr), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
+        rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nn,nr,nwal), fopos(3,0:mxfire), &
+        hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), hlp(mxvents), hvextt(mext,2), &
+        arext(mext), hvelxt(mext), ocrati(nv), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
+        hvp(mnode), hvght(mnode), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
         qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), dfmin(mfan), dfmax(mfan), qmin(mfan), de(mdt), da(mdt), &
-        dl(mdt), rr(mdt), ductar(mdt), hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcnf(nv),hcrf(nv), &
+        dl(mdt), rr(mdt), ductar(mdt), hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcrf(nv), &
         hclf(nv),femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 
-    real(eb) :: cp, deltat, heatfq, tracet(2,mext)
-    real(eb) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
-    real(eb) :: hvgrav, hvrgas, interior_abs_pressure, pofset, pref, qradrl
+    real(eb) :: cp, deltat, tracet(2,mext)
+    real(eb) :: gamma, hcomba, traces(2,mext)
+    real(eb) :: hvgrav, hvrgas, interior_abs_pressure, pofset, pref
     real(eb) :: relhum, rgas, stime, te
-    real(eb) :: termxx, tfiret, tfmaxt, tgignt
+    real(eb) :: tgignt
     real(eb) :: tref, windpw, windrf, windv
 
     logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl

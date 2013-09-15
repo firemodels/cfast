@@ -952,7 +952,6 @@
     stime = 0.0_eb
     tref = 288.d0
     limo2 = 0.10d0
-    gmwf = 16.0d0
     hcomba = 50000000.0d0
     pref = 1.013d+5
     interior_abs_pressure = pref
@@ -971,7 +970,6 @@
         radconsplit(i) = 0.15d0
     end do
     tradio = 0.0_eb
-    qradrl = 0.15d0
 
     ! normal air
     o2n2(1) = 0.77d0
@@ -982,7 +980,6 @@
     lfbo = 0
     lfmax = 1
     heatfl = .false.
-    heatfq = 0.0
     heatfp(1) = -1.0_eb
     heatfp(2) = -1.0_eb
     heatfp(3) = -1.0_eb
@@ -996,15 +993,8 @@
     do i = 1, nv
 
         ! define the vents as being open
-        tfired(i) = 86400.d0
-        hfired(i) = 0.0_eb
-        afired(i) = 0.0_eb
-        bfired(i) = 0.000d0
-        qfired(i) = bfired(i) * hcomba
         hcratio(i) = 0.3333333d0
         hocbmb(i) = hcomba
-        coco2(i) = 0.0_eb
-        cco2(i) = 0.0_eb
     end do
 
     ! Start with vents open: h for hvent, v for vvent, and m for mvent
@@ -1379,9 +1369,6 @@
     if (activs(9)) then
     endif
 
-    ! connect hvac to the rest of the world
-    hvdelt = deltat
-
     ! define product map array
     izpmap(1) = 1
     izpmap(2) = 2
@@ -1604,7 +1591,6 @@
     ! Initialize the interior temperatures to the interior ambient
     do i = 1, nm1
         do j = 1, nwal
-            twe(j,i) = exterior_temperature
             do k = 1, nn 
                 twj(k,i,j) = interior_temperature
             end do

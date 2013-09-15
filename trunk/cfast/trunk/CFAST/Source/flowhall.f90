@@ -106,6 +106,7 @@
     subroutine sethall(itype, inum, ihall, tsec, width, htemp, hvel, hdepth)
 
     use precision_parameters
+    use fireptrs
     use cenviro
     use cfast_main
     use dervs
@@ -161,9 +162,9 @@
             ! corridor flow coming from the main fire. this is a restriction, but lets get it right for the main fire before we worry about objects
             if(itype==2)then
                 if(izhall(ihall,ihxy)==1)then
-                    ventdist0 = xfire(1,1)
+                    ventdist0 = xfire(1,f_fire_xpos)
                 else
-                    ventdist0 = xfire(1,2)
+                    ventdist0 = xfire(1,f_fire_ypos)
                 endif
             endif
             zzhall(ihall,ihorg) = ventdist0

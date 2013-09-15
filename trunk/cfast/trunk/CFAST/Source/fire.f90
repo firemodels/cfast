@@ -31,6 +31,7 @@
     !                      (i,20) fire area
 
     use precision_parameters
+    use fireptrs
     use cenviro
     use cfast_main
     use flwptrs
@@ -98,26 +99,26 @@
             ! fire physics uses the sorted arrays, sorted by compartment
             nfire = nfire + 1
             ifroom(nfire) = iroom
-            xfire(nfire,1) = objpos(1,iobj)
-            xfire(nfire,2) = objpos(2,iobj)
-            xfire(nfire,3) = objpos(3,iobj) + ohight
-            xfire(nfire,4) = oplume(3,iobj)
-            xfire(nfire,5) = oplume(1,iobj)
-            xfire(nfire,6) = oplume(2,iobj)
-            xfire(nfire,7) = qfc(1,iroom)
-            xfire(nfire,8) = xqfr
-            xfire(nfire,9) = heatlp(iroom) + heatup(iroom)
-            xfire(nfire,10) = heatlp(iroom)
-            xfire(nfire,11) = heatup(iroom)
-            xfire(nfire,12) = objhct
-            xfire(nfire,13) = y_soot
-            xfire(nfire,14) = y_co
+            xfire(nfire,f_fire_xpos) = objpos(1,iobj)
+            xfire(nfire,f_fire_ypos) = objpos(2,iobj)
+            xfire(nfire,f_fire_zpos) = objpos(3,iobj) + ohight
+            xfire(nfire,f_plume_zpos) = oplume(3,iobj)
+            xfire(nfire,f_plume_xpos) = oplume(1,iobj)
+            xfire(nfire,f_plume_ypos) = oplume(2,iobj)
+            xfire(nfire,f_qfc) = qfc(1,iroom)
+            xfire(nfire,f_qfr) = xqfr
+            xfire(nfire,f_heatlpup) = heatlp(iroom) + heatup(iroom)
+            xfire(nfire,f_heatlp) = heatlp(iroom)
+            xfire(nfire,f_heatup) = heatup(iroom)
+            xfire(nfire,f_objct) = objhct
+            xfire(nfire,f_ysoot) = y_soot
+            xfire(nfire,f_yco) = y_co
             !xfire(nfire,15) = hcratt
             !xfire(nfire,16) = ocratt
             !xfire(nfire,17) = clfrat
             !xfire(nfire,18) = cnfrat
-            xfire(nfire,19) = objclen(iobj)
-            xfire(nfire,20) = oareat
+            xfire(nfire,f_obj_length) = objclen(iobj)
+            xfire(nfire,f_obj_area) = oareat
             nobj = nobj + 1
             froom(nobj) = iroom
             femp(nobj) = oplume(1,iobj)

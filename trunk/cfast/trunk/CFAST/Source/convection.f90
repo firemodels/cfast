@@ -889,6 +889,7 @@
     !                flxcjt  net enthalphy flux onto surface
 
     use cenviro
+    use fireptrs
     use cfast_main
     use opt
     use wdervs
@@ -940,8 +941,8 @@
                 else
                     tuwall = zztemp(i,upper)
                 endif
-                call ceilht(xfire(ifpnt,4),xfire(ifpnt,7),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,br(i),dr(i), &
-                hr(i),xfire(ifpnt,1),xfire(ifpnt,2),xfire(ifpnt,3),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
+                call ceilht(xfire(ifpnt,f_plume_zpos),xfire(ifpnt,f_qfc),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,br(i),dr(i), &
+                hr(i),xfire(ifpnt,f_fire_xpos),xfire(ifpnt,f_fire_ypos),xfire(ifpnt,f_fire_zpos),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
                 xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
                 flxcjt(i,1) = flxcjt(i,1) + qfclga
                 flxcjt(i,3) = flxcjt(i,3) + qfwua

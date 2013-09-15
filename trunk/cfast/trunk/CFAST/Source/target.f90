@@ -208,6 +208,7 @@
     !                dflux  front and back output flux derivative
 
     use precision_parameters
+    use fireptrs
     use cenviro
     use cfast_main
     use fltarget
@@ -249,15 +250,15 @@
 
         ! compute radiative flux from fire
         do ifire = istart, istart + nfirerm - 1
-            svect(1) = xxtarg(trgcenx,itarg) - xfire(ifire,1)
-            svect(2) = xxtarg(trgceny,itarg) - xfire(ifire,2)
-            svect(3) = xxtarg(trgcenz,itarg) - xfire(ifire,3)
+            svect(1) = xxtarg(trgcenx,itarg) - xfire(ifire,f_fire_xpos)
+            svect(2) = xxtarg(trgceny,itarg) - xfire(ifire,f_fire_ypos)
+            svect(3) = xxtarg(trgcenz,itarg) - xfire(ifire,f_fire_zpos)
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),objclen(ifire))
             if(s/=0.0_eb)then
                 cosang = -ddot(3,svect,1,xxtarg(trgnormx,itarg),1)/s
             endif
-            zfire = xfire(ifire,3)
+            zfire = xfire(ifire,f_fire_zpos)
             ztarg = xxtarg(trgcenz,itarg)
             zlay = zzhlay(iroom,lower)
 
@@ -274,7 +275,7 @@
                 absu = absorb(iroom, upper)
                 taul = exp(-absl*zl)
                 tauu = exp(-absu*zu)
-                qfire = xfire(ifire,8)
+                qfire = xfire(ifire,f_qfr)
             endif
             if(s/=0.0_eb)then
                 qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
@@ -446,6 +447,7 @@
     !                tgas (output)   calculated gas temperature
 
     use precision_parameters
+    use fireptrs
     use cfast_main
     use cenviro
     use objects2
@@ -470,13 +472,13 @@
     ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
     do i = 1,nfire
         if (ifroom(i)==irtarg) then
-            if (xtarg==xfire(i,1).and.ytarg==xfire(i,2).and. ztarg>xfire(i,3)) then
+            if (xtarg==xfire(i,f_fire_xpos).and.ytarg==xfire(i,f_fire_ypos).and. ztarg>xfire(i,f_fire_zpos)) then
                 qdot = fqf(i)
                 xrad = radconsplit(i)
                 dfire = 2.0_eb*sqrt(farea(i)/pi)
                 tu = zztemp(irtarg,upper)
                 tl = zztemp(irtarg,lower)
-                zfire = xfire(i,3)
+                zfire = xfire(i,f_fire_zpos)
                 zlayer = zzhlay(irtarg,lower)
                 z = ztarg
                 call plumetemp (qdot, xrad, tu, tl, zfire, zlayer, z, tplume)

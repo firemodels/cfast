@@ -15,6 +15,7 @@
 
     use precision_parameters
     use cenviro
+    use fireptrs
     use cfast_main
     use fltarget
     use opt
@@ -106,14 +107,14 @@
             ifire = ifrpnt(i,2)
             nrmfire = ifrpnt(i,1)
             do j = 1, nrmfire
-                xrfirepos(j) = xfire(ifire+j-1,1)
-                yrfirepos(j) = xfire(ifire+j-1,2)
-                !zrfirepos(j) = xfire(ifire+j-1,3) ! This is point radiation at the base of the fire
-                call flamhgt (xfire(ifire+j-1,8),xfire(ifire+j-1,20),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
-                if(fheight+xfire(ifire+j-1,3)>hr(i))then
-                    zrfirepos(j) = xfire(ifire+j-1,3) + (hr(i)-xfire(ifire+j,3))/2.0_eb
+                xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
+                yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
+                !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
+                call flamhgt (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
+                if(fheight+xfire(ifire+j-1,f_fire_zpos)>hr(i))then
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (hr(i)-xfire(ifire+j,f_fire_zpos))/2.0_eb
                 else
-                    zrfirepos(j) = xfire(ifire+j-1,3) + fheight/2.0_eb
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/2.0_eb
                 end if
             end do
             if(nrmfire/=0)then
@@ -129,7 +130,7 @@
                 if(prnslab)then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
                 if(.not.black)then
@@ -144,7 +145,7 @@
                 if(prnslab)then
                     write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
-                call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,8),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
 
             endif
@@ -221,7 +222,7 @@
     implicit none
 
     integer, intent(in) :: nfire, mxfire
-    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay,qfire(*),xfire(*), yfire(*), zfire(*)
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay,qfire(*), xfire(*), yfire(*), zfire(*)
 
     integer, intent(out) :: ierror
     real(eb), intent(out) :: qlay(2), qflux(4), qout(4)

@@ -79,9 +79,8 @@ module cfast_main
         ncnode(mnode), ne(mbr), mvintnode(mnode,mcon), icmv(mnode,mcon), nfc(mfan), nw(nr,nr), nslb(nwal,nr), &
         nf(mbr), hcldep, smkagl, vshape(nr,nr), objrm(0:mxoin), objign(mxoin), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixtarg(trgirow,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
-        ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mdt), nfire, ipntfsm, ijk(nr,nr,mxccv), &
-        nventijk,nfopt,vface(mxvents),itermxx, fplume(0:mxfire), lcopyss,heatfr, nfilter, dmpoutput(4096),&
-        deadroom(nr)
+        ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mdt), nfire, ijk(nr,nr,mxccv), &
+        nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofhcl, nofsmkw, nofsmk, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbo, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
@@ -91,28 +90,28 @@ module cfast_main
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), (nofprd,nofsets(11)), &
         (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), (nequals,nofsets(16)), (noffsm,nofsets(17))
 
-    real(eb) :: mass(2,nr,ns), mprodr(nv,ns), mfiret(ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
+    real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
-        sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), heatup(nr), heatlp(nr), heatvf(nr), &
-        vvarea(nr,nr), hwj(nwal,nr), hocbmb(nv), hveflo(2,mext), hveflot(2,mext), &
+        sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), heatup(nr), heatlp(nr),  &
+        vvarea(nr,nr), hveflo(2,mext), hveflot(2,mext), &
         hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
         halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
-        xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
+        xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nn,nr,nwal), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), hlp(mxvents), hvextt(mext,2), &
-        arext(mext), hvelxt(mext), ocrati(nv), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
+        arext(mext), hvelxt(mext), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
         hvp(mnode), hvght(mnode), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
-        qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), dfmin(mfan), dfmax(mfan), qmin(mfan), de(mdt), da(mdt), &
+        qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), de(mdt), da(mdt), &
         dl(mdt), rr(mdt), ductar(mdt), hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcrf(nv), &
-        hclf(nv),femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
+        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 
     real(eb) :: cp, deltat, tracet(2,mext)
     real(eb) :: gamma, hcomba, traces(2,mext)
-    real(eb) :: hvgrav, hvrgas, interior_abs_pressure, pofset, pref
+    real(eb) :: interior_abs_pressure, pofset, pref
     real(eb) :: relhum, rgas, stime, te
     real(eb) :: tgignt
     real(eb) :: tref, windpw, windrf, windv

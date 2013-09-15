@@ -104,6 +104,17 @@ module dsize
 
 end module dsize
 
+
+! --------------------------- wallptrs -------------------------------------------
+
+module wallptrs
+   integer, parameter :: w_from_room=1
+   integer, parameter :: w_from_wall=2
+   integer, parameter :: w_to_room=3
+   integer, parameter :: w_to_wall=4
+   integer, parameter :: w_boundary_condition=5
+end module wallptrs
+
 ! --------------------------- fireptrs -------------------------------------------
 
 module fireptrs

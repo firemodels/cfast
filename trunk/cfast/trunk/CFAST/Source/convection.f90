@@ -71,6 +71,7 @@
     !                 flxcv       net heat flux onto surface
 
     use precision_parameters
+    use wallptrs
     use cparams
     use cenviro
     use cfast_main
@@ -119,7 +120,7 @@
             ieqtyp = izeqmap(jaccol,1)
             iroom = izeqmap(jaccol,2)
             if(ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqwt)then
-                if(ieqtyp==eqwt)iroom = izwall(iroom,1)
+                if(ieqtyp==eqwt)iroom = izwall(iroom,w_from_room)
                 do iwall = 1, 4
                     roomflg(iroom) = .true.
                     if(switch(iwall,iroom))then
@@ -133,8 +134,8 @@
 
     do iw = 1, nwalls
         if(wallflg(iw)) then
-            i = izwall(iw,1)
-            iwall = izwall(iw,2)
+            i = izwall(iw,w_from_room)
+            iwall = izwall(iw,w_from_wall)
             nrmfire = ifrpnt(i,1)
             if(mod(iwall,2)==1)then
                 ilay = upper

@@ -635,7 +635,6 @@
     subroutine rslttar (itprt)
 
     !     description:  output the temperatures and fluxes on surfaces and targets at the current time
-    !     arguments: isw   1 if called from cfast, 0 otherwise (effects printout of object names -- only cfast knows actual names, others just do it by numbers
     !                itprt 1 if target printout specifically called for, 0 otherwise
 
     use precision_parameters
@@ -1099,6 +1098,8 @@
 5150 format (' ')
      
     end  subroutine outvent
+
+! --------------------------- chkext -------------------------------------------
 
     subroutine chkext (ind,irm,iext)
 
@@ -1592,9 +1593,6 @@
 
     !     Description: opens a file on unit iounit
 
-    !     Arguments: JACCNT
-    !                JACPRN
-
     use cparams
     use opt
     
@@ -1628,10 +1626,8 @@
 
     subroutine fnd_comp (icomp)
 
-    !     Arguments: IOUNIT
-    !                ICOMP
-
     use cfast_main
+    use wallptrs
     use cenviro
     use cfin
     use opt
@@ -1668,8 +1664,8 @@
         endif
     else if (icomp<=nofprd) then
         itmp = icomp - nofwt
-        irm = izwall(itmp,1)
-        iw = izwall(itmp,2)
+        irm = izwall(itmp,w_from_room)
+        iw = izwall(itmp,w_from_wall)
         if (iw==1) then
             write(lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
             call xerror(lbuf,0,1,0)
@@ -1858,14 +1854,6 @@
 ! --------------------------- oput -------------------------------------------
 
     subroutine oput (ic,count,itin,ridx,retbuf)
-
-    !     arguments: ic
-    !                count
-    !                itin
-    !                mxdmp
-    !                ridx
-    !                retbuf
-    !
 
     implicit none
     

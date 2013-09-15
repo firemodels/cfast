@@ -257,7 +257,7 @@ module fltarget
 
     character(8) :: cxtarg(mxtarg)
 
-    real(eb), dimension(mxtarg,2) :: qtflux, qtcflux, qtfflux, qtwflux, qtgflux
+    real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
     real(eb), dimension(mxtarg) :: tgtarg
     real(eb), dimension(mxtarg,5)  :: gtflux
     integer, dimension(3) :: neqtarg

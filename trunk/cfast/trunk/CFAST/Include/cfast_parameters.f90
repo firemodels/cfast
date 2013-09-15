@@ -104,7 +104,15 @@ module dsize
 
 end module dsize
 
+! --------------------------- targptrs -------------------------------------------
 
+module targptrs
+   integer, parameter :: t_total=1
+   integer, parameter :: t_ftotal=2
+   integer, parameter :: t_wtotal=3
+   integer, parameter :: t_gtotal=4
+   integer, parameter :: t_ctotal=5
+end module targptrs
 ! --------------------------- wallptrs -------------------------------------------
 
 module wallptrs

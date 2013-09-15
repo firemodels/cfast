@@ -6,6 +6,7 @@
     !	Read the input file and set up the data for processing
 
     use precision_parameters
+    use wallptrs
     use cenviro
     use cfast_main
     use cshell
@@ -213,8 +214,8 @@
     nswall2 = nswal
     ii = 0
     do i = 1, nswal
-        iroom1 = izswal(i,1)
-        iroom2 = izswal(i,3)
+        iroom1 = izswal(i,w_from_room)
+        iroom2 = izswal(i,w_to_room)
 
         ! room numbers must be between 1 and nm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
@@ -231,10 +232,10 @@
         else
             ii = ii + 1
             if(i/=ii)then
-                izswal(ii,1) = izswal(i,1)
-                izswal(ii,2) = izswal(i,2)
-                izswal(ii,3) = izswal(i,3)
-                izswal(ii,4) = izswal(i,4)
+                izswal(ii,w_from_room) = izswal(i,w_from_room)
+                izswal(ii,w_from_wall) = izswal(i,w_from_wall)
+                izswal(ii,w_to_room) = izswal(i,w_to_room)
+                izswal(ii,w_to_wall) = izswal(i,w_to_wall)
             endif
         endif
 
@@ -243,11 +244,11 @@
         dwall2 = abs(hrl(iroom2) - hrp(iroom1))
         if(dwall1<vfmaxdz.or.dwall2<=vfmaxdz)then
             if(dwall1<vfmaxdz)then
-                izswal(ii,2) = 2
-                izswal(ii,4) = 1
+                izswal(ii,w_from_wall) = 2
+                izswal(ii,w_to_wall) = 1
             else
-                izswal(ii,2) = 1
-                izswal(ii,4) = 2
+                izswal(ii,w_from_wall) = 1
+                izswal(ii,w_to_wall) = 2
             endif
         else
             ifail = 40
@@ -258,8 +259,8 @@
         ! walls must be turned on, ie switch must be set
         ! for the ceiling in the lower room and the floor of
         ! the upper room
-        iwall1 = izswal(ii,2)
-        iwall2 = izswal(ii,4)
+        iwall1 = izswal(ii,w_from_wall)
+        iwall2 = izswal(ii,w_to_wall)
         if(.not.switch(iwall1,iroom1).or..not.switch(iwall2,iroom2))then
             write (messg,203)
 203         format(' Invalid CFCON specification:')
@@ -489,6 +490,7 @@
     !                ierror  Returns error codes
 
     use precision_parameters
+    use wallptrs
     use cenviro
     use cfast_main
     use cshell
@@ -1339,10 +1341,10 @@
         endif
 
         nswal = nswal + 1
-        izswal(nswal,1) = i1
-        izswal(nswal,2) = 1
-        izswal(nswal,3) = i2
-        izswal(nswal,4) = 3
+        izswal(nswal,w_from_room) = i1
+        izswal(nswal,w_from_wall) = 1
+        izswal(nswal,w_to_room) = i2
+        izswal(nswal,w_to_wall) = 3
 
         ! ONEZ compartment number - This turns the compartment into a single zone
     case ('ONEZ')

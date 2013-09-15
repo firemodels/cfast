@@ -1748,10 +1748,10 @@
 
         ! update izwall for ceiling/floors that are connected 
         do i = 1, nswal
-            ifromr = izswal(i,1)
-            ifromw = izswal(i,2)
-            itor = izswal(i,3)
-            itow = izswal(i,4)
+            ifromr = izswal(i,w_from_room)
+            ifromw = izswal(i,w_from_wall)
+            itor = izswal(i,w_to_room)
+            itow = izswal(i,w_to_wall)
             ieqfrom = izwmap2(ifromw,ifromr) - nofwt
             ieqto = izwmap2(itow,itor) - nofwt
 

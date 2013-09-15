@@ -209,6 +209,7 @@
 
     use precision_parameters
     use fireptrs
+    use targptrs
     use cenviro
     use cfast_main
     use fltarget
@@ -403,23 +404,23 @@
     dflux(1) = -4.0_eb*temis*sigma*ttarg(1)**3 + dqdtarg
 
     ! this is for "gauge" heat flux output ... it assumes an ambient temperature target
-    gtflux(itarg,2) = qtfflux(itarg,1)
-    gtflux(itarg,3) = qtwflux(itarg,1)
-    gtflux(itarg,4) = qtgflux(itarg,1)
+    gtflux(itarg,t_ftotal) = qtfflux(itarg,1)
+    gtflux(itarg,t_wtotal) = qtwflux(itarg,1)
+    gtflux(itarg,t_gtotal) = qtgflux(itarg,1)
     
     ! Adjust each one for the ambient losses
-    total_radiation = gtflux(itarg,2) + gtflux(itarg,3) + gtflux(itarg,4)
+    total_radiation = gtflux(itarg,t_ftotal) + gtflux(itarg,t_wtotal) + gtflux(itarg,t_gtotal)
     re_radiation = sigma*interior_temperature**4
-    gtflux(itarg,2) = gtflux(itarg,2) - re_radiation*gtflux(itarg,2)/total_radiation
-    gtflux(itarg,3) = gtflux(itarg,3) - re_radiation*gtflux(itarg,3)/total_radiation
-    gtflux(itarg,4) = gtflux(itarg,4) - re_radiation*gtflux(itarg,4)/total_radiation
+    gtflux(itarg,t_ftotal) = gtflux(itarg,t_ftotal) - re_radiation*gtflux(itarg,t_ftotal)/total_radiation
+    gtflux(itarg,t_wtotal) = gtflux(itarg,t_wtotal) - re_radiation*gtflux(itarg,t_wtotal)/total_radiation
+    gtflux(itarg,t_gtotal) = gtflux(itarg,t_gtotal) - re_radiation*gtflux(itarg,t_gtotal)/total_radiation
     
     !add in the convection 
     call convec(iw,tg,interior_temperature,q1g)
-    gtflux(itarg,5) = q1g
+    gtflux(itarg,t_ctotal) = q1g
     
     ! and the total is just the sum of these
-    gtflux(itarg,1) = gtflux(itarg,2) + gtflux(itarg,3) + gtflux(itarg,4) + gtflux(itarg,5)
+    gtflux(itarg,t_total) = gtflux(itarg,t_ftotal) + gtflux(itarg,t_wtotal) + gtflux(itarg,t_gtotal) + gtflux(itarg,t_ctotal)
 
 
     ! convection for the back

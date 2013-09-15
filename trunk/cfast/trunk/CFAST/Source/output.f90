@@ -638,6 +638,7 @@
     !                itprt 1 if target printout specifically called for, 0 otherwise
 
     use precision_parameters
+    use targptrs
     use cenviro
     use cfast_main
     use cshell
@@ -659,11 +660,11 @@
     do i=1,nm1
         itarg = ntarg-nm1+i
         if (validate.or.netheatflux) then
-            total = gtflux(itarg,1)
-            ftotal = gtflux(itarg,2)
-            wtotal = gtflux(itarg,3)
-            gtotal = gtflux(itarg,4)
-            ctotal = gtflux(itarg,5)
+            total = gtflux(itarg,t_total)
+            ftotal = gtflux(itarg,t_ftotal)
+            wtotal = gtflux(itarg,t_wtotal)
+            gtotal = gtflux(itarg,t_gtotal)
+            ctotal = gtflux(itarg,t_ctotal)
         else
             total = xxtarg(trgtfluxf,itarg)
             ftotal = qtfflux(itarg,1)
@@ -693,11 +694,11 @@
                     if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
                     if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
                     if (validate.or.netheatflux) then
-                        total = gtflux(itarg,1)
-                        ftotal = gtflux(itarg,2)
-                        wtotal = gtflux(itarg,3)
-                        gtotal = gtflux(itarg,4)
-                        ctotal = gtflux(itarg,5)
+                        total = gtflux(itarg,t_total)
+                        ftotal = gtflux(itarg,t_ftotal)
+                        wtotal = gtflux(itarg,t_wtotal)
+                        gtotal = gtflux(itarg,t_gtotal)
+                        ctotal = gtflux(itarg,t_ctotal)
                     else
                         total = xxtarg(trgtfluxf,itarg)
                         ftotal = qtfflux(itarg,1)

@@ -58,7 +58,7 @@
     integer :: nalg, i, ires
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
     
-    data pdzero /maxteq * 0.0d0/
+    data pdzero /maxteq*0.0_eb/
     
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
     nalg = nm1 + nhvpvar + nhvtvar
@@ -88,7 +88,7 @@
         deltamv(i) = delta(i)
     end do
     do i = 1, nm1
-        if(.not.izcon(i))deltamv(i) = 0.0d0
+        if(.not.izcon(i))deltamv(i) = 0.0_eb
     end do
     if(iprtalg/=0)then
         write(iofilo,*)'room pressure residuals'
@@ -139,7 +139,7 @@
 
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer :: i, ires
-    data pdzero /maxteq * 0.0d0/
+    data pdzero /maxteq*0.0_eb/
     
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
     do i = 1, nequals
@@ -218,7 +218,7 @@
     
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer nalg, i, ii, ieq1, ieq2, ieq3, ires
-    data pdzero /maxteq * 0.0d0/
+    data pdzero /maxteq*0.0_eb/
     nalg = nm1 + nhvpvar + nhvtvar
 
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
@@ -280,7 +280,7 @@
         deltamv(i) = delta(i)
     end do
     do i = 1, nm1
-        if(.not.izcon(i))deltamv(i) = 0.0d0
+        if(.not.izcon(i))deltamv(i) = 0.0_eb
     end do
     deltamv(1+nalg) = delta(lfbo+noftu)
     ii = 0
@@ -359,9 +359,9 @@
         xx = 1.0_eb
         do j = 2, nfc(k)
             xxjm1 = j - 1
-            df = df + xxjm1 * hvbco(k,j) * xx
-            xx = xx * hmin(k)
-            f = f + hvbco(k,j) * xx
+            df = df + xxjm1*hvbco(k,j)*xx
+            xx = xx*hmin(k)
+            f = f + hvbco(k,j)*xx
         end do
     end do
     do k = 1, nfan
@@ -370,9 +370,9 @@
         xx = 1.0_eb
         do j = 2, nfc(k)
             xxjm1 = j - 1
-            df = df + xxjm1 * hvbco(k,j) * xx
-            xx = xx * hmax(k)
-            f = f + hvbco(k,j) * xx
+            df = df + xxjm1*hvbco(k,j)*xx
+            xx = xx*hmax(k)
+            f = f + hvbco(k,j)*xx
         end do
         ! prevent negative flow
         qmax(k) = max(0.0_eb,f)
@@ -422,7 +422,7 @@
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
     do i = 1, nnode
-        hvp(i) = -1.0d0
+        hvp(i) = -1.0_eb
     end do
     do i = 1, nbr
         hvdara(i) = 0.0_eb
@@ -444,11 +444,11 @@
         if (i<n) then
             hvextt(ii,upper) = interior_temperature
             hvextt(ii,lower) = interior_temperature
-            hvp(j) = zzrelp(i) - grav_con * interior_density * hvelxt(ii)
+            hvp(j) = zzrelp(i) - grav_con*interior_density*hvelxt(ii)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) = exterior_abs_pressure - grav_con * exterior_density * hvelxt(ii)
+            hvp(j) = exterior_abs_pressure - grav_con*exterior_density*hvelxt(ii)
         endif
         tbr(ib) = hvextt(ii,upper)
         s1 = s1 + hvp(j)
@@ -456,11 +456,11 @@
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<n) then
-                hvexcn(ii,lsp,upper) = o2n2(lsp) * interior_density
-                hvexcn(ii,lsp,lower) = o2n2(lsp) * interior_density
+                hvexcn(ii,lsp,upper) = o2n2(lsp)*interior_density
+                hvexcn(ii,lsp,lower) = o2n2(lsp)*interior_density
             else
-                hvexcn(ii,lsp,upper) = o2n2(lsp) * exterior_density
-                hvexcn(ii,lsp,lower) = o2n2(lsp) * exterior_density
+                hvexcn(ii,lsp,upper) = o2n2(lsp)*exterior_density
+                hvexcn(ii,lsp,lower) = o2n2(lsp)*exterior_density
             endif
             hvconc(j,lsp) = hvexcn(ii,lsp,upper)
             c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
@@ -470,10 +470,10 @@
     ! this is to initialize the nodes and branches to something
     ! we will then let the system equilibrate to give us the true answer
     xnext = next
-    pav = s1 / xnext
-    tav = s2 / xnext
+    pav = s1/xnext
+    tav = s2/xnext
     do lsp = 1, ns
-        c3(lsp) = c3(lsp) / xnext
+        c3(lsp) = c3(lsp)/xnext
     end do
     do i = 1, nnode
         if (hvp(i)<0.0_eb) then
@@ -492,10 +492,10 @@
     ! calculate area, relative roughness, effective diameter and volume of ducts
     ! volume and roughness
     do id = 1, ndt
-        da(id) = (pi*de(id)**2) / 4.0d0
-        rr(id) = ductar(id) / de(id)
+        da(id) = (pi*de(id)**2)/4.0_eb
+        rr(id) = ductar(id)/de(id)
         ib = ibrd(id)
-        hvdvol(ib) = hvdvol(ib) + da(id) * dl(id)
+        hvdvol(ib) = hvdvol(ib) + da(id)*dl(id)
         hvdara(ib) = hvdara(ib) + pi*de(id)*dl(id)
     end do
 
@@ -685,7 +685,7 @@
 
         ! check for a special setting of the interface height
         if (iflag==1) then
-            if (yinter(i)<0.d0) then
+            if (yinter(i)<0.0_eb) then
                 p(i+nofvu) = zzvmin(i)
             else
                 p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
@@ -719,8 +719,8 @@
     ! establish default values for detector data
     do i = 1, ndtect
         iroom=ixdtect(i,droom)
-        if(xdtect(i,dxloc)<0.0d0)xdtect(i,dxloc)=br(iroom)*.5d0
-        if(xdtect(i,dyloc)<0.0d0)xdtect(i,dyloc)=dr(iroom)*.5d0
+        if(xdtect(i,dxloc)<0.0_eb)xdtect(i,dxloc)=br(iroom)*.5_eb
+        if(xdtect(i,dyloc)<0.0_eb)xdtect(i,dyloc)=dr(iroom)*.5_eb
         if(xdtect(i,dzloc)<0.0_eb)then
             xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
         endif
@@ -904,7 +904,7 @@
     end do
 
     ! define the outside world as infinity
-    xlrg = 1.d+5
+    xlrg = 1.0e+5_eb
     do i = 1, nr
         dr(i) = xlrg
         br(i) = xlrg
@@ -914,8 +914,8 @@
         hflr(i) = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
-        ar(i) = br(i) * dr(i)
-        vr(i) = hr(i) * ar(i)
+        ar(i) = br(i)*dr(i)
+        vr(i) = hr(i)*ar(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qscnv(j,i) = 0.0_eb
@@ -942,33 +942,33 @@
     ! define all the "universal constants
     cp = 1012.0_eb
     gamma = 1.40_eb
-    rgas = (gamma-1.0_eb) / gamma * cp
+    rgas = (gamma-1.0_eb)/gamma*cp
     minmas = 0.0_eb
     stime = 0.0_eb
-    tref = 288.d0
-    limo2 = 0.10d0
-    hcomba = 50000000.0d0
-    pref = 1.013d+5
+    tref = 288.0_eb
+    limo2 = 0.10_eb
+    hcomba = 50000000.0_eb
+    pref = 1.013e+5_eb
     interior_abs_pressure = pref
     pofset = pref
     te = tref
     interior_temperature = tref
-    tgignt = te + 200.d0
+    tgignt = te + 200.0_eb
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
     windv = 0.0_eb
-    windrf = 10.d0
-    windpw = 0.16d0
+    windrf = 10.0_eb
+    windpw = 0.16_eb
     do i = 0, mxfire
         objmaspy(i) = 0.0_eb
         radio(i) = 0.0_eb
-        radconsplit(i) = 0.15d0
+        radconsplit(i) = 0.15_eb
     end do
     tradio = 0.0_eb
 
     ! normal air
-    o2n2(1) = 0.77d0
-    o2n2(2) = 0.23d0
+    o2n2(1) = 0.77_eb
+    o2n2(2) = 0.23_eb
 
     ! a specified fire in the center of the room
     lfbt = 2
@@ -988,7 +988,7 @@
     do i = 1, nv
 
         ! define the vents as being open
-        hcratio(i) = 0.3333333d0
+        hcratio(i) = 0.3333333_eb
     end do
 
     ! Start with vents open: h for hvent, v for vvent, and m for mvent
@@ -1036,15 +1036,15 @@
 
     ! initialize detectors
     do i = 1, mxdtect
-        xdtect(i,drti) = 50.0d0
-        xdtect(i,dspray) = -300.d0
-        xdtect(i,dxloc) = -1.0d0
-        xdtect(i,dyloc) = -1.0d0
-        xdtect(i,dzloc) = -3.0d0/39.37d0
-        xdtect(i,dtrig) = 330.3722d0
-        xdtect(i,dvel) = 0.d0
-        xdtect(i,dvelo) = 0.d0
-        xdtect(i,dtact) = 99999.d0
+        xdtect(i,drti) = 50.0_eb
+        xdtect(i,dspray) = -300.0_eb
+        xdtect(i,dxloc) = -1.0_eb
+        xdtect(i,dyloc) = -1.0_eb
+        xdtect(i,dzloc) = -3.0_eb/39.37_eb
+        xdtect(i,dtrig) = 330.3722_eb
+        xdtect(i,dvel) = 0.0_eb
+        xdtect(i,dvelo) = 0.0_eb
+        xdtect(i,dtact) = 99999.0_eb
         ixdtect(i,dtype) = 2
         ixdtect(i,droom) = 1
         ixdtect(i,dquench) = 0
@@ -1074,13 +1074,13 @@
 
     ! initialize hall start time
     do i = 1, nr
-        zzhall(i,ihtime0) = -1.0d0
-        zzhall(i,ihvel) = -1.0d0
-        zzhall(i,ihdepth) = -1.0d0
-        zzhall(i,ihmaxlen) = -1.0d0
-        zzhall(i,ihhalf) = -1.0d0
-        zzhall(i,ihtemp) = 0.0d0
-        zzhall(i,ihorg) = -1.0d0
+        zzhall(i,ihtime0) = -1.0_eb
+        zzhall(i,ihvel) = -1.0_eb
+        zzhall(i,ihdepth) = -1.0_eb
+        zzhall(i,ihmaxlen) = -1.0_eb
+        zzhall(i,ihhalf) = -1.0_eb
+        zzhall(i,ihtemp) = 0.0_eb
+        zzhall(i,ihorg) = -1.0_eb
         izhall(i,ihdepthflag) = 0
         izhall(i,ihhalfflag) = 0
         izhall(i,ihmode) = ihafter
@@ -1114,7 +1114,7 @@
     end do
 
     ! initialzie time step checking
-    zzdtcrit = 1.0d-09
+    zzdtcrit = 1.0e-09_eb
     izdtnum = 0
     izdtmax = 100
     izdtflag = .true.
@@ -1206,7 +1206,7 @@
     integer :: nopt, i, j, ibeg, iend
     logical existed
 
-    ductcv = 0.0d0
+    ductcv = 0.0_eb
 
     inquire (file=solverini,exist=existed)
     if (.not.existed) return
@@ -1226,8 +1226,8 @@
     read (iofili,*)
     read (iofili,*) nopt
     nopt = max(0, min(mxopt, nopt))
-    do i = 1, (nopt-1) / 5 + 1
-        ibeg = 1 + (i-1) * 5
+    do i = 1, (nopt-1)/5 + 1
+        ibeg = 1 + (i-1)*5
         iend = min(ibeg+4,nopt)
         read (iofili,*)
         read (iofili,*) (option(j),j = ibeg,iend)
@@ -1250,9 +1250,9 @@
     read (iofili,*)
     read (iofili,*) iwbound
     fsum = abs(fract1) + abs(fract2) + abs(fract3)
-    wsplit(1) = abs(fract1) / fsum
-    wsplit(2) = abs(fract2) / fsum
-    wsplit(3) = abs(fract3) / fsum
+    wsplit(1) = abs(fract1)/fsum
+    wsplit(2) = abs(fract2)/fsum
+    wsplit(3) = abs(fract3)/fsum
 
     ! read in maximum desired solve step size, if negative then then solve will decide
     read (iofili,*)
@@ -1292,8 +1292,8 @@
 
 
     do i = 1, nm1
-        xm(1) = interior_density * zzvol(i,upper)
-        xm(2) = interior_density * zzvol(i,lower)
+        xm(1) = interior_density*zzvol(i,upper)
+        xm(2) = interior_density*zzvol(i,lower)
 
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -1301,23 +1301,23 @@
         ! here.  the final result in o2n2 should be the value used in stport for
         ! the outside ambient.
         xt = interior_temperature
-        xtemp = 23.2d0 - 3.816d3 / (xt-46.d0)
-        xh2o = exp(xtemp) / 101325.0d0 * (18.d0/28.4d0)
-        o2n2(8) = relhum * xh2o
+        xtemp = 23.2_eb - 3.816d3/(xt-46.0_eb)
+        xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
+        o2n2(8) = relhum*xh2o
 
         ! normalize the atmosphere
-        toto2n2 = 0.0d0
+        toto2n2 = 0.0_eb
         do j = 1, ns
             toto2n2 = toto2n2 + o2n2(j)
         end do
         do j = 1, ns
-            o2n2(j) = o2n2(j) / toto2n2
+            o2n2(j) = o2n2(j)/toto2n2
         end do
 
         do k = upper, lower
             do lsp = 1, ns
-                toxict(i,k,lsp) = 0.0d0
-                mass(k,i,lsp) = o2n2(lsp) * xm(k)
+                toxict(i,k,lsp) = 0.0_eb
+                mass(k,i,lsp) = o2n2(lsp)*xm(k)
             end do
         end do
     end do
@@ -1418,44 +1418,44 @@
         zsize = hrp(iroom)
 
         ! if the locator is -1, set to center of room on the floor
-        if(xloc==-1.0_eb) xloc = 0.5 * xsize
-        if(yloc==-1.0_eb) yloc = 0.5 * ysize
+        if(xloc==-1.0_eb) xloc = 0.5_eb*xsize
+        if(yloc==-1.0_eb) yloc = 0.5_eb*ysize
         if(zloc==-1.0_eb) zloc = 0.0_eb
         if(iwall/=0)then
-            xxnorm = 0.0d0
-            yynorm = 0.0d0
-            zznorm = 0.0d0
+            xxnorm = 0.0_eb
+            yynorm = 0.0_eb
+            zznorm = 0.0_eb
         endif
         if(iwall==1)then
-            zznorm = -1.0d0
+            zznorm = -1.0_eb
             xx = xloc
             yy = yloc
             zz = zsize
         elseif(iwall==2)then
-            yynorm = -1.0d0
+            yynorm = -1.0_eb
             xx = xsize
             yy = ysize
             zz = yloc
         elseif(iwall==3)then
-            xxnorm = -1.0d0
+            xxnorm = -1.0_eb
             xx = xsize
             yy = xloc
             zz = yloc
         elseif(iwall==4)then
-            yynorm = 1.0d0
+            yynorm = 1.0_eb
             xx = xloc
-            yy = 0.0d0
+            yy = 0.0_eb
             zz = yloc
         elseif(iwall==5)then
-            xxnorm = 1.0d0
-            xx = 0.0d0
+            xxnorm = 1.0_eb
+            xx = 0.0_eb
             yy = ysize
             zz = yloc
         elseif(iwall==6)then
-            zznorm = 1.0d0
+            zznorm = 1.0_eb
             xx = xloc
             yy = ysize
-            zz = 0.0d0
+            zz = 0.0_eb
         endif
         if(iwall/=0)then
             xxtarg(trgcenx,itarg) = xx
@@ -1476,7 +1476,7 @@
         endif
 
         ! center coordinates need to be within room
-        if(xloc<0.0d0.or.xloc>xsize.or.yloc<0.0d0.or.yloc>ysize.or.zloc<0.0d0.or.zloc>zsize)then
+        if(xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize)then
             write(logerr,'(a,i3,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             ierror = 214
             return
@@ -1490,15 +1490,15 @@
         ixtarg(trgmeth,ntarg) = steady
         ixtarg(trgback,ntarg) = ext
 
-        xx = br(iroom)*0.50d0
-        yy = dr(iroom)*0.50d0
+        xx = br(iroom)*0.50_eb
+        yy = dr(iroom)*0.50_eb
         zz = 0.0_eb
         xxtarg(trgcenx,ntarg) = xx
         xxtarg(trgceny,ntarg) = yy
         xxtarg(trgcenz,ntarg) = zz
         xxtarg(trgnormx,ntarg) = 0.0_eb
         xxtarg(trgnormy,ntarg) = 0.0_eb
-        xxtarg(trgnormz,ntarg) = 1.0d0
+        xxtarg(trgnormz,ntarg) = 1.0_eb
         xxtarg(trginterior,ntarg) = 0.5
 
         if(switch(2,iroom))then
@@ -1810,10 +1810,10 @@
     noftt = nofoxyu + noxygen
     nofwt = noftt + nimtarg
     nofprd = nofwt + nwalls
-    nofhcl = nofprd + 2 * nm1 * nlspct
-    nofsmkw = nofhcl + 4 * nm1 * hcldep
-    nofsmk = nofsmkw + 4 * nm1 * smkagl
-    nofhvpr = nofsmk + 4 * nm1 * smkagl
+    nofhcl = nofprd + 2*nm1*nlspct
+    nofsmkw = nofhcl + 4*nm1*hcldep
+    nofsmk = nofsmkw + 4*nm1*smkagl
+    nofhvpr = nofsmk + 4*nm1*smkagl
 
     ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.  after nhvsys is defined the following statement can be used to define nequals
     ! nequals = nofhvpr + nhvsys*nlspct
@@ -1866,8 +1866,8 @@
         factor2 = qchfraction(qcvh,ijk(im,ix,ik),tsec)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
-        avent = factor2 * height * width
-        if(avent/=0.0d0)then
+        avent = factor2*height*width
+        if(avent/=0.0_eb)then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1
         endif
@@ -1877,7 +1877,7 @@
     do i = 1, nvvent
         iroom1 = ivvent(i,toprm)
         iroom2 = ivvent(i,botrm)
-        if(vvarea(iroom1,iroom2)/=0.0d0)then
+        if(vvarea(iroom1,iroom2)/=0.0_eb)then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1
         endif
@@ -1943,38 +1943,38 @@
 
     nintx = nx - (nslab+1)
     if (nslab<=2) then
-        nsplit = (wsplit(1)+wsplit(2)) * xxnx
+        nsplit = (wsplit(1)+wsplit(2))*xxnx
     else
-        nsplit = wsplit(1) * xxnx
+        nsplit = wsplit(1)*xxnx
     endif
 
     ! calculate total walldepth
-    xpos(1) = 0.0d0
+    xpos(1) = 0.0_eb
     do islab = 1, nslab
         xpos(islab+1) = xpos(islab) + wthick(islab)
     end do
     wlen = xpos(nslab+1)
 
     ! calculate break point based on first slab's properties
-    errfc05 = 1.30d0
-    xkrhoc = wk(1) / (wspec(1)*wrho(1))
+    errfc05 = 1.30_eb
+    xkrhoc = wk(1)/(wspec(1)*wrho(1))
     alpha = sqrt(xkrhoc)
-    xb = 2.0d0 * alpha * sqrt(tstop) * errfc05 * wlen
-    if (xb>.50d0*wlen) xb = .5d0 * wlen
+    xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wlen
+    if (xb>.50_eb*wlen) xb = 0.5_eb*wlen
     if (nslab==1) then
 
         ! set up wall node locations for 1 slab case, bunch points at interior and exterior boundary
         xxnsplit = nsplit
-        w = 1.0d0 / xxnsplit 
+        w = 1.0_eb/xxnsplit 
         do i = 1, nsplit + 1 
             xxim1 = i - 1
-            xwall(i) = xb * (xxim1*w) ** 2
+            xwall(i) = xb*(xxim1*w)**2
         end do
-        w = 1.0d0 / (xxnx-(xxnsplit+1.0d0))
+        w = 1.0_eb/(xxnx-(xxnsplit+1.0_eb))
         do i = nsplit +2, nx
             ii = nx + 1 - i 
             xxiim1 = ii - 1
-            xwall(i) = wlen - (wlen-xb) * (xxiim1*w) ** 2
+            xwall(i) = wlen - (wlen-xb)*(xxiim1*w)**2
         end do
         numnode(1+nslab) = nintx
     else
@@ -1983,20 +1983,20 @@
 
         ! calculate number of points interior to each slab
         xxnintx = nintx
-        numpts(1) = wsplit(1) * xxnintx * min(xb,wthick(1)) / wlen
+        numpts(1) = wsplit(1)*xxnintx*min(xb,wthick(1))/wlen
         if (numpts(1)<1) numpts(1) = 1
         wmxb = wlen - xb
-        numpts(nslab) = wsplit(3) * xxnintx * min(wmxb,wthick(nslab))/ wlen
+        numpts(nslab) = wsplit(3)*xxnintx*min(wmxb,wthick(nslab))/ wlen
         if (numpts(nslab)<1) numpts(nslab) = 1
         isum = nintx - numpts(1) - numpts(nslab)
         xxnslabm2 = nslab - 2
         do i = 2, nslab - 1
-            numpts(i) = xxnx * wsplit(2)*wthick(nslab)/xxnslabm2/wlen
+            numpts(i) = xxnx*wsplit(2)*wthick(nslab)/xxnslabm2/wlen
             if (numpts(i)<1) numpts(i) = 1
             isum = isum - numpts(i)
         end do
         numpts(1) = numpts(1) + (isum-isum/2)
-        numpts(nslab) = numpts(nslab) + isum / 2
+        numpts(nslab) = numpts(nslab) + isum/2
         if (numpts(nslab)<1) then
             numpts(1) = numpts(1) + numpts(nslab) - 1
             numpts(nslab) = 1
@@ -2014,7 +2014,7 @@
         xxnint = nint
         do i = 1, nint
             xxim1 = i - 1
-            xwall(i) = xxim1 ** 2 * xpos(2) / xxnint**2
+            xwall(i) = xxim1**2*xpos(2)/xxnint**2
         end do
 
         ! calculate wall positions for middle slabs (uniform)
@@ -2025,7 +2025,7 @@
             do i = ibeg, iend
                 xxi1 = iend+1-i
                 xxi2 = i-ibeg
-                xwall(i) = (xpos(islab)*xxi1+xpos(islab+1)*xxi2) / xxi3
+                xwall(i) = (xpos(islab)*xxi1+xpos(islab+1)*xxi2)/xxi3
             end do
         end do
 
@@ -2038,7 +2038,7 @@
             xxi3 = iend - ibeg
             do i = ibeg, iend
                 xxi1 = iend - i
-                xwall(i) = xpos(nslab+1) - xxi1 ** 2 * (xpos(nslab+1) - xpos(nslab)) / xxi3 ** 2
+                xwall(i) = xpos(nslab+1) - xxi1**2*(xpos(nslab+1) - xpos(nslab))/xxi3**2
             end do
         endif
     endif

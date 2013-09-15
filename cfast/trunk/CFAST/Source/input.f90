@@ -327,12 +327,6 @@
         endif
     end do
 
-    ! fire type and parameters
-    tfmaxt = 0.0_eb
-    do i = 1, lfmax
-        tfmaxt = max(tfmaxt,tfired(i))
-    end do
-
     ! check variable cross-sectional area specs and convert to volume
     do i = 1, nm1
         npts = izrvol(i)
@@ -1674,8 +1668,6 @@
         heatfp(2) = lrarray(3)
         heatfp(3) = lrarray(4)
         heatfplume =  lrarray(5)
-        ! This is a constant heat source only
-        heatfq = lrarray(6)
 
         ! Outdated keywords
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER')

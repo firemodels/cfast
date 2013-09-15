@@ -1536,6 +1536,7 @@
     !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
     use precision_parameters
+    use wallptrs
     use cenviro
     use cfast_main
     use fltarget
@@ -1600,10 +1601,10 @@
 
     ! concatenate slab properties of wall nodes that are connected to each other
     do i = 1, nswal
-        ifromr = izswal(i,1)
-        ifromw = izswal(i,2)
-        itor = izswal(i,3)
-        itow = izswal(i,4)
+        ifromr = izswal(i,w_from_room)
+        ifromw = izswal(i,w_from_wall)
+        itor = izswal(i,w_to_room)
+        itow = izswal(i,w_to_wall)
 
         nslabf = nslb(ifromw,ifromr)
         nslabt = nslb(itow,itor)

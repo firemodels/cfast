@@ -250,6 +250,7 @@
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
     use precision_parameters
+    use targptrs
     use cenviro
     use cfast_main
     use cshell
@@ -307,11 +308,11 @@
                     if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
                     if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
                     if (validate.or.netheatflux) then
-                        total = gtflux(itarg,1) /1000.d0
-                        ftotal = gtflux(itarg,2) /1000.d0
-                        wtotal = gtflux(itarg,3) /1000.d0
-                        gtotal = gtflux(itarg,4) /1000.d0
-                        ctotal = gtflux(itarg,5) /1000.d0
+                        total = gtflux(itarg,t_total) /1000.d0
+                        ftotal = gtflux(itarg,t_ftotal) /1000.d0
+                        wtotal = gtflux(itarg,t_wtotal) /1000.d0
+                        gtotal = gtflux(itarg,t_gtotal) /1000.d0
+                        ctotal = gtflux(itarg,t_ctotal) /1000.d0
                         rtotal = total - ctotal
                     else
                         total = xxtarg(trgtfluxf,itarg)

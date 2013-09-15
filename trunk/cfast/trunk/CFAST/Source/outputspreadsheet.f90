@@ -29,21 +29,21 @@
     endif
 
     position = 0
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nm1
         itarg = ntarg - nm1 + i
         izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
-        call ssaddtolist (position,zztemp(i,upper)-273.15,outarray)
+        call SSaddtolist (position,zztemp(i,upper)-273.15,outarray)
         if (izshaft(i)==0) then
-            call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
-            call ssaddtolist (position,zzhlay(i,lower),outarray)
+            call SSaddtolist(position,zztemp(i,lower)-273.15,outarray)
+            call SSaddtolist (position,zzhlay(i,lower),outarray)
         endif
-        call ssaddtolist (position,zzvol(i,upper),outarray)
-        call ssaddtolist (position,zzrelp(i) - pamb(i),outarray)
-        call ssaddtolist (position,ontarget(i),outarray)
-        call ssaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
+        call SSaddtolist (position,zzvol(i,upper),outarray)
+        call SSaddtolist (position,zzrelp(i) - pamb(i),outarray)
+        call SSaddtolist (position,ontarget(i),outarray)
+        call SSaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
     end do
 
     ! Fires
@@ -54,27 +54,27 @@
     xx0 = 0.0d0
     if (lfmax>0.and.lfbt>0.and.lfbo>0) then
         call flamhgt (fqf(0),farea(0),fheight)
-        call ssaddtolist (position,fems(0),outarray)
-        call ssaddtolist (position,femp(0),outarray)
-        call ssaddtolist (position,fqf(0),outarray)
-        call ssaddtolist (position,fheight,outarray)
-        call ssaddtolist (position,fqfc(0),outarray)
-        call ssaddtolist (position,objmaspy(0),outarray)
-        call ssaddtolist (position,radio(0),outarray)
+        call SSaddtolist (position,fems(0),outarray)
+        call SSaddtolist (position,femp(0),outarray)
+        call SSaddtolist (position,fqf(0),outarray)
+        call SSaddtolist (position,fheight,outarray)
+        call SSaddtolist (position,fqfc(0),outarray)
+        call SSaddtolist (position,objmaspy(0),outarray)
+        call SSaddtolist (position,radio(0),outarray)
     endif
 
     if (numobjl/=0) then
         do i = 1, numobjl
             call flamhgt (fqf(i),farea(i),fheight)
-            call ssaddtolist (position,fems(i),outarray)
-            call ssaddtolist (position,femp(i),outarray)
-            call ssaddtolist (position,fqf(i),outarray)
+            call SSaddtolist (position,fems(i),outarray)
+            call SSaddtolist (position,femp(i),outarray)
+            call SSaddtolist (position,fqf(i),outarray)
             call SSaddtolist (position,fqlow(i),outarray)
             call SSaddtolist (position,fqupr(i),outarray)
-            call ssaddtolist (position,fheight,outarray)
-            call ssaddtolist (position,fqfc(i),outarray)
-            call ssaddtolist (position,objmaspy(i),outarray)
-            call ssaddtolist (position,radio(i),outarray)
+            call SSaddtolist (position,fheight,outarray)
+            call SSaddtolist (position,fqfc(i),outarray)
+            call SSaddtolist (position,objmaspy(i),outarray)
+            call SSaddtolist (position,radio(i),outarray)
         end do
     endif
 
@@ -147,7 +147,7 @@
     position = 0
 
     ! first the time
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     do irm = 1, n
 
@@ -171,8 +171,8 @@
                     if (j==n) then
                         sumin = sum1 + sum3
                         sumout = sum2 + sum4
-                        call ssaddtolist (position,sumin,outarray)
-                        call ssaddtolist (position,sumout,outarray)
+                        call SSaddtolist (position,sumin,outarray)
+                        call SSaddtolist (position,sumout,outarray)
                     else
                         if (i<j)then
                             sum5 = sau2(iijk)
@@ -184,10 +184,10 @@
                         ! we show only net flow in the spreadsheets
                         sumin = sum1 + sum3
                         sumout = sum2 + sum4
-                        call ssaddtolist (position,sumin,outarray)
-                        call ssaddtolist (position,sumout,outarray)
-                        call ssaddtolist (position,sum5,outarray)
-                        call ssaddtolist (position,sum6,outarray)
+                        call SSaddtolist (position,sumin,outarray)
+                        call SSaddtolist (position,sumout,outarray)
+                        call SSaddtolist (position,sum5,outarray)
+                        call SSaddtolist (position,sum6,outarray)
                     endif
                 endif
             end do
@@ -206,8 +206,8 @@
                 ! we show only net flow in the spreadsheets
                 sumin = flow(1) + flow(3)
                 sumout = flow(2) + flow(4)
-                call ssaddtolist (position,sumin,outarray)
-                call ssaddtolist (position,sumout,outarray)
+                call SSaddtolist (position,sumin,outarray)
+                call SSaddtolist (position,sumout,outarray)
             endif
         end do
 
@@ -228,10 +228,10 @@
                     sumout = flow(2) + flow(4)
                     flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
                     flow(6) =abs(traces(upper,i))+abs(traces(lower,i))
-                    call ssaddtolist (position, sumin, outarray)
-                    call ssaddtolist (position, sumout, outarray)
-                    call ssaddtolist (position, flow(5), outarray)
-                    call ssaddtolist (position, flow(6), outarray)
+                    call SSaddtolist (position, sumin, outarray)
+                    call SSaddtolist (position, sumout, outarray)
+                    call SSaddtolist (position, flow(5), outarray)
+                    call SSaddtolist (position, flow(6), outarray)
                 endif
             end do
         endif
@@ -285,7 +285,7 @@
 
     do i=1,nm1
         do iw = 1, 4
-            call ssaddtolist (position,twj(1,i,iwptr(iw))-273.15,outarray)
+            call SSaddtolist (position,twj(1,i,iwptr(iw))-273.15,outarray)
         end do
     end do
 
@@ -321,15 +321,15 @@
                         ctotal = qtcflux(itarg,1)
                         rtotal = total - ctotal
                     endif
-                    call ssaddtolist (position, tgtemp-273.15, outarray)
-                    call ssaddtolist (position, tttemp-273.15, outarray)
-                    call ssaddtolist (position, tctemp-273.15, outarray)
-                    call ssaddtolist (position, total, outarray)
-                    call ssaddtolist (position, ctotal, outarray)
-                    call ssaddtolist (position, rtotal, outarray)
-                    call ssaddtolist (position, ftotal, outarray)
-                    call ssaddtolist (position, wtotal, outarray)
-                    call ssaddtolist (position, gtotal, outarray)
+                    call SSaddtolist (position, tgtemp-273.15, outarray)
+                    call SSaddtolist (position, tttemp-273.15, outarray)
+                    call SSaddtolist (position, tctemp-273.15, outarray)
+                    call SSaddtolist (position, total, outarray)
+                    call SSaddtolist (position, ctotal, outarray)
+                    call SSaddtolist (position, rtotal, outarray)
+                    call SSaddtolist (position, ftotal, outarray)
+                    call SSaddtolist (position, wtotal, outarray)
+                    call SSaddtolist (position, gtotal, outarray)
                 endif
             end do
         endif
@@ -361,10 +361,10 @@
         tjet = max(xdtect(i,dtjet),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
         tlink =  xdtect(i,dtemp)
-        call ssaddtolist(position, tlink-273.15, outarray)
-        call ssaddtolist(position, xact, outarray)
-        call ssaddtolist(position, tjet-273.15, outarray)
-        call ssaddtolist(position, vel, outarray)
+        call SSaddtolist(position, tlink-273.15, outarray)
+        call SSaddtolist(position, xact, outarray)
+        call SSaddtolist(position, tjet-273.15, outarray)
+        call SSaddtolist(position, vel, outarray)
     end do
 
     call ssprintresults (24, position, outarray)
@@ -419,7 +419,7 @@
                         ssvalue = toxict(i,layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01d0 ! converts ppm to  molar fraction
                         if (validate.and.lsp==9) ssvalue = ssvalue *264.6903 ! converts od to mg/m^3 (see toxict od calculation)
-                        call ssaddtolist (position,ssvalue,outarray)
+                        call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90
                     endif
@@ -474,15 +474,15 @@
     do i = 1, nm1
         itarg = ntarg - nm1 + i
         izzvol = zzvol(i,upper)/vr(i)*100.d0+0.5d0
-        call ssaddtolist(position,zztemp(i,upper)-273.15,outarray)
+        call SSaddtolist(position,zztemp(i,upper)-273.15,outarray)
         if (izshaft(i)==0) then
-            call ssaddtolist(position,zztemp(i,lower)-273.15,outarray)
-            call ssaddtolist(position,zzhlay(i,lower),outarray)
+            call SSaddtolist(position,zztemp(i,lower)-273.15,outarray)
+            call SSaddtolist(position,zzhlay(i,lower),outarray)
         endif
-        call ssaddtolist(position,zzrelp(i) - pamb(i),outarray)
-        call ssaddtolist(position,toxict(i,upper,9),outarray)
+        call SSaddtolist(position,zzrelp(i) - pamb(i),outarray)
+        call SSaddtolist(position,toxict(i,upper,9),outarray)
         if (izshaft(i)==0) then
-            call ssaddtolist(position,toxict(i,lower,9),outarray)
+            call SSaddtolist(position,toxict(i,lower,9),outarray)
         endif
     end do
 
@@ -492,20 +492,20 @@
     if (lfmax>0.and.lfbt>0.and.lfbo>0) then
         nfire = nfire + 1
         call flamhgt (fqf(0),farea(0),fheight)
-        call ssaddtolist (position,fqf(0)/1000.,outarray)
-        call ssaddtolist (position,fheight,outarray)
-        call ssaddtolist (position,xfire(1,3),outarray)
-        call ssaddtolist (position,farea(0),outarray)
+        call SSaddtolist (position,fqf(0)/1000.,outarray)
+        call SSaddtolist (position,fheight,outarray)
+        call SSaddtolist (position,xfire(1,3),outarray)
+        call SSaddtolist (position,farea(0),outarray)
     endif
 
     if (numobjl/=0) then
         do i = 1, numobjl
             nfire = nfire + 1
             call flamhgt (fqf(i),farea(i),fheight)
-            call ssaddtolist (position,fqf(i)/1000.,outarray)
-            call ssaddtolist (position,fheight,outarray)
-            call ssaddtolist (position,xfire(nfire,3),outarray)
-            call ssaddtolist (position,farea(i),outarray)          
+            call SSaddtolist (position,fqf(i)/1000.,outarray)
+            call SSaddtolist (position,fheight,outarray)
+            call SSaddtolist (position,xfire(nfire,3),outarray)
+            call SSaddtolist (position,farea(i),outarray)          
         end do
     endif
 
@@ -522,14 +522,14 @@
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = factor2 * height * width
-        call ssaddtolist (position,avent,outarray)       
+        call SSaddtolist (position,avent,outarray)       
     end do
 
     do i = 1, nvvent
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
         avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
-        call ssaddtolist (position,avent,outarray)
+        call SSaddtolist (position,avent,outarray)
         flow = 0
         if (vmflo(itop,ibot,upper)>=xx0) flow(1) = vmflo(itop,ibot,upper)
         if (vmflo(itop,ibot,upper)<xx0) flow(2) = -vmflo(itop,ibot,upper)
@@ -537,8 +537,8 @@
         if (vmflo(itop,ibot,lower)<xx0) flow(4) = -vmflo(itop,ibot,lower)
         sumin = flow(1) + flow(3)
         sumout = flow(2) + flow(4)
-        call ssaddtolist (position,sumin,outarray)
-        call ssaddtolist (position,sumout,outarray)
+        call SSaddtolist (position,sumin,outarray)
+        call SSaddtolist (position,sumout,outarray)
     end do
 
     call ssprintresults (15, position, outarray)
@@ -596,7 +596,7 @@
 
     nprod = nlspct
     position = 0
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nm1
@@ -606,13 +606,13 @@
         call SSaddtolist(position,zztemp(i,lower),outarray)
         do j = 1, 2
             do k = 1, 2
-                call ssaddtolist (position,flwtot(i,k,j),outarray)
-                call ssaddtolist (position,flwnvnt(i,k,j),outarray)
-                call ssaddtolist (position,flwf(i,k,j),outarray)
-                call ssaddtolist (position,flwhvnt(i,k,j),outarray)
-                call ssaddtolist (position,flwmv(i,k,j),outarray)
-                call ssaddtolist (position,filtered(i,k,j),outarray)
-                call ssaddtolist (position,flwdjf(i,k,j),outarray)
+                call SSaddtolist (position,flwtot(i,k,j),outarray)
+                call SSaddtolist (position,flwnvnt(i,k,j),outarray)
+                call SSaddtolist (position,flwf(i,k,j),outarray)
+                call SSaddtolist (position,flwhvnt(i,k,j),outarray)
+                call SSaddtolist (position,flwmv(i,k,j),outarray)
+                call SSaddtolist (position,filtered(i,k,j),outarray)
+                call SSaddtolist (position,flwdjf(i,k,j),outarray)
             end do
             call SSaddtolist (position,flwcv(i,j),outarray)
             call SSaddtolist (position,flwrad(i,j),outarray)
@@ -623,13 +623,13 @@
     !do i = 1, nm1
     !    do j = 1, 2
     !        do k = 3, nprod + 2
-    !            call ssaddtolist (position,flwtot(i,k,j),outarray)
-    !            call ssaddtolist (position,flwnvnt(i,k,j),outarray)
-    !            call ssaddtolist (position,flwf(i,k,j),outarray)
-    !            call ssaddtolist (position,flwhvnt(i,k,j),outarray)
-    !            call ssaddtolist (position,flwmv(i,k,j),outarray)
-    !            call ssaddtolist (position,filtered(i,k,j),outarray)
-    !            call ssaddtolist (position,flwdjf(i,k,j),outarray)
+    !            call SSaddtolist (position,flwtot(i,k,j),outarray)
+    !            call SSaddtolist (position,flwnvnt(i,k,j),outarray)
+    !            call SSaddtolist (position,flwf(i,k,j),outarray)
+    !            call SSaddtolist (position,flwhvnt(i,k,j),outarray)
+    !            call SSaddtolist (position,flwmv(i,k,j),outarray)
+    !            call SSaddtolist (position,filtered(i,k,j),outarray)
+    !            call SSaddtolist (position,flwdjf(i,k,j),outarray)
     !        end do
     !        call SSaddtolist (position,flwcv(i,j),outarray)
     !        call SSaddtolist (position,flwrad(i,j),outarray)

@@ -802,7 +802,7 @@ check_validation_stats()
 
    if [ -e ${CURRENT_STATS_FILE} ]
    then
-      if [[ `diff ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE}` == "" ]]
+      if [[ `diff -u ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE}` == "" ]]
       then
          # Continue along
          :
@@ -813,7 +813,7 @@ check_validation_stats()
          echo "Difference between validation statistics files," >> $WARNING_LOG
          echo "(Revision ${RECENT_STATS_FILE_SVN}) vs. (Revision ${SVN_REVISION}):" >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
-         diff ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE} >> $WARNING_LOG
+         diff -u ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE} >> $WARNING_LOG
          echo "" >> $WARNING_LOG
       fi
    else

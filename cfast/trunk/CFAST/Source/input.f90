@@ -102,8 +102,8 @@
     ! We now know what output is going to be generated, so create the files
     call openoutputfiles
 
-    interior_density = pa / interior_temperature / rgas
-    exterior_density = expa / exterior_temperature / rgas
+    interior_density = interior_abs_pressure / interior_temperature / rgas
+    exterior_density = exterior_abs_pressure / exterior_temperature / rgas
 
     ! turn on the subsidiary equations if they are neeeded - this is always true
     if (activs(6)) hcldep = 1
@@ -583,11 +583,11 @@
             return
         endif
         interior_temperature = lrarray(1)
-        pa = lrarray(2)
+        interior_abs_pressure = lrarray(2)
         relhum = lrarray(4) * 0.01_eb
         if (.not.exset) then
             exterior_temperature = interior_temperature
-            expa = pa
+            exterior_abs_pressure = interior_abs_pressure
             exterior_density = interior_density
         endif
 
@@ -598,7 +598,7 @@
             return
         endif
         exterior_temperature = lrarray(1)
-        expa = lrarray(2)
+        exterior_abs_pressure = lrarray(2)
         exset = .true.
 
         ! Limiting oxygen index

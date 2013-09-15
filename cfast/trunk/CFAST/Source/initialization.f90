@@ -452,7 +452,7 @@
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) = expa - hvgrav * exterior_density * hvelxt(ii)
+            hvp(j) = exterior_abs_pressure - hvgrav * exterior_density * hvelxt(ii)
         endif
         tbr(ib) = hvextt(ii,upper)
         s1 = s1 + hvp(j)
@@ -660,31 +660,31 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        pamb(i) = -interior_density*grav_con*hflr(i)
-        epa(i) = -exterior_density*grav_con*hflr(i)
+        interior_rel_pressure(i) = -interior_density*grav_con*hflr(i)
+        exterior_rel_pressure(i) = -exterior_density*grav_con*hflr(i)
     end do
-    epa(n) = 0.0_eb
+    exterior_rel_pressure(n) = 0.0_eb
 
 
     ! normalize pressures so that the smallest pressure is zero
-    xxpmin = pamb(1)
-    do i = 1, nm1
-        xxpmin = min(xxpmin,pamb(i),epa(i))
+    xxpmin = min(interior_rel_pressure(1),exterior_rel_pressure(1))
+    do i = 2, nm1
+        xxpmin = min(xxpmin,interior_rel_pressure(i),exterior_rel_pressure(i))
     end do
     do i = 1, nm1
-        epa(i) = epa(i) - xxpmin
-        pamb(i) = pamb(i) - xxpmin
+        exterior_rel_pressure(i) = exterior_rel_pressure(i) - xxpmin
+        interior_rel_pressure(i) = interior_rel_pressure(i) - xxpmin
     end do
     pofset = pofset + xxpmin
-    pa = pa + xxpmin - pofset
-    expa = expa + xxpmin - pofset
+    interior_abs_pressure = interior_abs_pressure + xxpmin - pofset
+    exterior_abs_pressure = exterior_abs_pressure + xxpmin - pofset
 
     ! copy all of the variables from the initial values into the data arrays
     call datacopy(dummy,constvar)
 
     ! define the p array, the solution to the ode
     do i = 1, nm1
-        p(i) = pamb(i)
+        p(i) = interior_rel_pressure(i)
         p(i+noftu) = interior_temperature
 
         ! check for a special setting of the interface height
@@ -955,13 +955,13 @@
     gmwf = 16.0d0
     hcomba = 50000000.0d0
     pref = 1.013d+5
-    pa = pref
+    interior_abs_pressure = pref
     pofset = pref
     te = tref
     interior_temperature = tref
     tgignt = te + 200.d0
     exterior_temperature = interior_temperature
-    expa = pa
+    exterior_abs_pressure = interior_abs_pressure
     windv = 0.0_eb
     windrf = 10.d0
     windpw = 0.16d0

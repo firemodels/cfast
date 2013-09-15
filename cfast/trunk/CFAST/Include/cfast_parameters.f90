@@ -113,6 +113,22 @@ module fireptrs
     integer, parameter :: fsm = 3
     integer, parameter :: pool = 4
       
+    integer, parameter :: f_fire_xpos=1
+    integer, parameter :: f_fire_ypos=2
+    integer, parameter :: f_fire_zpos=3
+    integer, parameter :: f_plume_zpos=4
+    integer, parameter :: f_plume_xpos=5
+    integer, parameter :: f_plume_ypos=6
+    integer, parameter :: f_qfc=7
+    integer, parameter :: f_qfr=8
+    integer, parameter :: f_heatlpup=9
+    integer, parameter :: f_heatlp=10
+    integer, parameter :: f_heatup=11
+    integer, parameter :: f_objct=12
+    integer, parameter :: f_ysoot=13
+    integer, parameter :: f_yco=14
+    integer, parameter :: f_obj_length=19
+    integer, parameter :: f_obj_area=20
 end module fireptrs
 
 ! --------------------------- flwptrs -------------------------------------------

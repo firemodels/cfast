@@ -1693,6 +1693,7 @@
     subroutine debugpr (ikey,t,dt,ieqmax)
 
     use precision_parameters
+    use fireptrs
     use cenviro
     use cfast_main
     use cshell
@@ -1816,7 +1817,7 @@
         if(numobjl>0)then
             write(*,6080)
             do iobj = 1, numobjl
-                write(*,6085)iobj,xfire(iobj,10),xfire(iobj,11)
+                write(*,6085)iobj,xfire(iobj,f_heatlp),xfire(iobj,f_heatup)
             end do
         endif
         if(ntarg>0)then

@@ -17,6 +17,7 @@
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
     use precision_parameters
+    use wallptrs
     use cenviro
     use cfast_main
     use opt
@@ -58,8 +59,8 @@
     endif
 
     do iw = ibeg, iend
-        iroom = izwall(iw,1)
-        iwall = izwall(iw,2)
+        iroom = izwall(iw,w_from_room)
+        iwall = izwall(iw,w_from_wall)
         icond = nofwt + iw
 
         roomptr => roominfo(iroom)
@@ -69,7 +70,7 @@
         twext = zzwtemp(iroom,iwall,2)
         tgas = exterior_temperature
         iweq = izwmap2(iwall,iroom) - nofwt
-        iwb = izwall(iweq,5)
+        iwb = izwall(iweq,w_boundary_condition)
 
         ! compute flux seen by exterior of wall
         if (iwb==3) then
@@ -156,8 +157,8 @@
     if(update/=2)then
         do iw = 1, nwalls
             icond = nofwt + iw
-            iroom = izwall(iw,1)
-            iwall = izwall(iw,2)
+            iroom = izwall(iw,w_from_room)
+            iwall = izwall(iw,w_from_wall)
             delta(icond) = flxtot(iroom,iwall) + vtgrad(iw) * fkw(1,iwall,iroom)
         end do
     endif

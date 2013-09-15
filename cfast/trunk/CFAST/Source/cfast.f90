@@ -1472,6 +1472,7 @@
     !                          use pdif array for species
 
     use precision_parameters
+    use wallptrs
     use cenviro
     use cfast_main
     use dervs
@@ -1726,16 +1727,16 @@
                     ! define izwall, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
                     ii = ieq - nofwt
-                    izwall(ii,1) = iroom
-                    izwall(ii,2) = iwall
-                    izwall(ii,3) = nm1 + 1
+                    izwall(ii,w_from_room) = iroom
+                    izwall(ii,w_from_wall) = iwall
+                    izwall(ii,w_to_room) = nm1 + 1
                     if(iwall==1.or.iwall==2)then
                         iwfar = 3 - iwall
                     else
                         iwfar = iwall
                     endif
-                    izwall(ii,4) = iwfar
-                    izwall(ii,5) = iwbound
+                    izwall(ii,w_to_wall) = iwfar
+                    izwall(ii,w_boundary_condition) = iwbound
 
                 else
                     izwmap2(iwall,iroom) = 0
@@ -1754,13 +1755,13 @@
             ieqfrom = izwmap2(ifromw,ifromr) - nofwt
             ieqto = izwmap2(itow,itor) - nofwt
 
-            izwall(ieqfrom,3) = itor
-            izwall(ieqfrom,4) = itow
-            izwall(ieqfrom,5) = 1
+            izwall(ieqfrom,w_to_room) = itor
+            izwall(ieqfrom,w_to_wall) = itow
+            izwall(ieqfrom,w_boundary_condition) = 1
 
-            izwall(ieqto,3) = ifromr
-            izwall(ieqto,4) = ifromw
-            izwall(ieqto,5) = 1
+            izwall(ieqto,w_to_room) = ifromr
+            izwall(ieqto,w_to_wall) = ifromw
+            izwall(ieqto,w_boundary_condition) = 1
 
         end do 
 
@@ -1923,10 +1924,10 @@
                 iwalleq = izwmap2(iwall,iroom)
                 if(iwalleq/=0)then
                     ieqfrom = iwalleq - nofwt
-                    ifromr = izwall(ieqfrom,1)
-                    ifromw = izwall(ieqfrom,2)
-                    itor = izwall(ieqfrom,3)
-                    itow = izwall(ieqfrom,4)
+                    ifromr = izwall(ieqfrom,w_from_room)
+                    ifromw = izwall(ieqfrom,w_from_wall)
+                    itor = izwall(ieqfrom,w_to_room)
+                    itow = izwall(ieqfrom,w_to_wall)
                     zzwtemp(iroom,iwall,1) = pdif(iwalleq)
                     iwalleq2 = izwmap2(itow,itor)
                     iinode = numnode(1,iwall,iroom)

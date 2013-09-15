@@ -846,7 +846,6 @@
 
     do i = 1, n
         fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
-        heatvf(i) = flwdjf(i,q,upper)
     end do
     return
     end subroutine djet

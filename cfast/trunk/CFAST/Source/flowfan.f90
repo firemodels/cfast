@@ -201,7 +201,7 @@
     ! calculate average temperatures and densities for each branch
     do ib = 1, nbr
         pav = pofset
-        rohb(ib) = pav/(hvrgas*tbr(ib))
+        rohb(ib) = pav/(rgas*tbr(ib))
         bflo(ib) = 1.0_eb
     end do
 
@@ -225,7 +225,7 @@
         ! calculate hydrostatic pressure difference terms
         do i = 1, nnode
             do j = 1, ncnode(i)
-                dpz(i,j) = rohb(icmv(i,j))*hvgrav*(hvght(mvintnode(i,j)) - hvght(i))
+                dpz(i,j) = rohb(icmv(i,j))*grav_con*(hvght(mvintnode(i,j)) - hvght(i))
             end do
         end do
 
@@ -433,13 +433,13 @@
             zu = min(0.0_eb,hvelxt(ii)-zl)
             ru = zzrho(i,upper)
             rl = zzrho(i,lower)
-            hvp(j) = zzrelp(i) - (ru*zu+rl*zl) * hvgrav
+            hvp(j) = zzrelp(i) - (ru*zu+rl*zl) * grav_con
             hvextt(ii,upper) = zztemp(i,upper)
             hvextt(ii,lower) = zztemp(i,lower)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) =  exterior_abs_pressure - exterior_density * hvgrav * hvelxt(ii)
+            hvp(j) =  exterior_abs_pressure - exterior_density * grav_con * hvelxt(ii)
         endif
         do lsp = 1, ns
             if (activs(lsp)) then

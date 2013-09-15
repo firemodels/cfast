@@ -363,9 +363,6 @@
             xx = xx * hmin(k)
             f = f + hvbco(k,j) * xx
         end do
-        ! prevent negative flow
-        qmin(k) = max(0.0_eb,f)
-        dfmin(k) = df
     end do
     do k = 1, nfan
         f = hvbco(k,1)
@@ -379,7 +376,6 @@
         end do
         ! prevent negative flow
         qmax(k) = max(0.0_eb,f)
-        dfmax(k) = df
     end do
 
     ! if there are no connections between the hvac system and the
@@ -448,11 +444,11 @@
         if (i<n) then
             hvextt(ii,upper) = interior_temperature
             hvextt(ii,lower) = interior_temperature
-            hvp(j) = zzrelp(i) - hvgrav * interior_density * hvelxt(ii)
+            hvp(j) = zzrelp(i) - grav_con * interior_density * hvelxt(ii)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) = exterior_abs_pressure - hvgrav * exterior_density * hvelxt(ii)
+            hvp(j) = exterior_abs_pressure - grav_con * exterior_density * hvelxt(ii)
         endif
         tbr(ib) = hvextt(ii,upper)
         s1 = s1 + hvp(j)
@@ -513,7 +509,7 @@
     end do     
     do ib = 1, nbr
         isys = izhvbsys(ib)
-        rden = (pofset+pav)/(hvrgas*tbr(ib))
+        rden = (pofset+pav)/(rgas*tbr(ib))
         hvtm(isys) = hvtm(isys) + rden*hvdvol(ib)
     end do
 
@@ -865,7 +861,6 @@
         izshaft(i) = 0
         heatup(i) = 0.0_eb
         heatlp(i) = 0.0_eb
-        heatvf(i) = 0.0_eb
         do j = 1, nr
             ! do vertical vents (vvent,...)
             vshape(i,j) = 0
@@ -994,7 +989,6 @@
 
         ! define the vents as being open
         hcratio(i) = 0.3333333d0
-        hocbmb(i) = hcomba
     end do
 
     ! Start with vents open: h for hvent, v for vvent, and m for mvent
@@ -1035,8 +1029,6 @@
     nfilter = 0
     nbr = 0
     next = 0
-    hvgrav = grav_con
-    hvrgas = rgas
     mvcalc = .false.
     do i = 1, mnode
         hvght(i) = 0.0_eb

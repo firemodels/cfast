@@ -41,7 +41,7 @@
             call SSaddtolist (position,zzhlay(i,lower),outarray)
         endif
         call SSaddtolist (position,zzvol(i,upper),outarray)
-        call SSaddtolist (position,zzrelp(i) - pamb(i),outarray)
+        call SSaddtolist (position,zzrelp(i) - interior_rel_pressure(i),outarray)
         call SSaddtolist (position,ontarget(i),outarray)
         call SSaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
     end do
@@ -479,7 +479,7 @@
             call SSaddtolist(position,zztemp(i,lower)-273.15,outarray)
             call SSaddtolist(position,zzhlay(i,lower),outarray)
         endif
-        call SSaddtolist(position,zzrelp(i) - pamb(i),outarray)
+        call SSaddtolist(position,zzrelp(i) - interior_rel_pressure(i),outarray)
         call SSaddtolist(position,toxict(i,upper,9),outarray)
         if (izshaft(i)==0) then
             call SSaddtolist(position,toxict(i,lower,9),outarray)

@@ -897,7 +897,7 @@
         
         yflor = roomptr%yflor
         yceil = roomptr%yceil
-        pflor = epa(iroom2)
+        pflor = exterior_rel_pressure(iroom2)
         ylay = zzhlay(iroom,lower)
         denu = exterior_density
         denl = exterior_density

@@ -202,14 +202,14 @@
         dp(2) = -grav_con * (zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
         relp(2) = zzrelp(ibot)
     else
-        relp(2) = epa(itop)
+        relp(2) = exterior_rel_pressure(itop)
     endif
 
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
         dp(1) = -grav_con * hrp(ibot) * exterior_density
-        relp(1) = epa(ibot)
+        relp(1) = exterior_rel_pressure(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset
     pabs(2) = relp(2) + dp(2) + pofset

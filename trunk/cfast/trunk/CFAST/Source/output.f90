@@ -251,10 +251,10 @@
         izzvol = zzvol(i,upper)/vr(i)*100._eb+0.5_eb
         if (izshaft(i)==1) then
             write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-273.15, zzvol(i,upper), &
-            zzabsb(upper,i),zzrelp(i)-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+            zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         else
             write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-273.15, zztemp(i,lower)-273.15, &
-            zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), zzrelp(i)-pamb(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+            zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         endif
     end do
     return
@@ -653,9 +653,9 @@
         end do
         xqf = xqf + fqdj(ir)
         if (izshaft(ir)==1) then
-            write (iounit,5031) ir, zztemp(ir,upper)-273.15, xemp, xqf, zzrelp(ir) - pamb(ir), ontarget(ir)
+            write (iounit,5031) ir, zztemp(ir,upper)-273.15, xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir), ontarget(ir)
         else
-            write (iounit,5030) ir, zztemp(ir,upper)-273.15, zztemp(ir,lower)-273.15, zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - pamb(ir),ontarget(ir)
+            write (iounit,5030) ir, zztemp(ir,upper)-273.15, zztemp(ir,lower)-273.15, zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir),ontarget(ir)
         endif
     end do
     write (iounit,5020) fqdj(n)
@@ -964,7 +964,7 @@
     use params
     implicit none
 
-    write (iofilo,5000) interior_temperature-273.15, pa + pofset, exterior_temperature-273.15, expa + pofset, windv, windrf, windpw
+    write (iofilo,5000) interior_temperature-273.15, interior_abs_pressure + pofset, exterior_temperature-273.15, exterior_abs_pressure + pofset, windv, windrf, windpw
     return
 
 5000 format (//,' AMBIENT CONDITIONS',//, &

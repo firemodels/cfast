@@ -439,7 +439,7 @@
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) =  expa - exterior_density * hvgrav * hvelxt(ii)
+            hvp(j) =  exterior_abs_pressure - exterior_density * hvgrav * hvelxt(ii)
         endif
         do lsp = 1, ns
             if (activs(lsp)) then

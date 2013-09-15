@@ -100,8 +100,8 @@ module cfast_main
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), objstrt(2,mxoin),radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
 
-    real(eb) :: ppmdv(2,nr,ns), pamb(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
-        rw(mxslb,nwal,nr), epa(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
+    real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+        rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), qfired(nv), twj(nn,nr,nwal), twe(nwal,nr), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),cco2(nv),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), coco2(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ocrati(nv), objma1(mxoin), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
         hvp(mnode), hvght(mnode), hmfnet(2,nr,nr), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
@@ -112,7 +112,7 @@ module cfast_main
 
     real(eb) :: cp, deltat, heatfq, tracet(2,mext)
     real(eb) :: gamma, gmwf, hcomba, hvdelt, traces(2,mext)
-    real(eb) :: hvgrav, hvrgas, pa, pofset, pref, qradrl
+    real(eb) :: hvgrav, hvrgas, interior_abs_pressure, pofset, pref, qradrl
     real(eb) :: relhum, rgas, stime, te
     real(eb) :: termxx, tfiret, tfmaxt, tgignt
     real(eb) :: tref, windpw, windrf, windv
@@ -437,10 +437,10 @@ module params
     integer :: izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
 
     real(eb) :: qfc(2,nr), qscnv(nwal,nr), o2n2(ns), &
-        volfru(nr), volfrl(nr), hvfrac(2,mext), expa, &
+        volfru(nr), volfrl(nr), hvfrac(2,mext), exterior_abs_pressure, &
         hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), ductcv
 
-    !common qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, expa, exta, exra, qcvent, o2n2, hwjdot, &
+    !common qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, exterior_abs_pressure, exta, exra, qcvent, o2n2, hwjdot, &
     !    htot, htflow, htfnet, volfru, volfrl, hvfrac, hcratt, ihmlar, hvmfsys,dhvprsys,hvtm,hvdara,hvt,chv,ductcv, &
     !    exset, allowed, izhvmapi,izhvmape,izhvie,nhvpvar,nhvtvar, izhvsys,izhvbsys,nhvsys
 

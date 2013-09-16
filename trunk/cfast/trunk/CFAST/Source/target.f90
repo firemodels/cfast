@@ -89,7 +89,7 @@
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
-                    wfluxavg = (wfluxin+wfluxout)/2.0d0
+                    wfluxavg = (wfluxin+wfluxout)/2.0_eb
                     call cylcnduct(xxtarg(trgtempf,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
 

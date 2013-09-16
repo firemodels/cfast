@@ -49,26 +49,26 @@ setup_win:
 # ------------- Windows -------------------
 
 # 32 bit
-intel_win_32_db : FFLAGS = -fpp -D pp_ibmpc /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+intel_win_32_db : FFLAGS = /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_32_db : FCOMPL = ifort
 intel_win_32_db : obj = cfast6_win_32_db
 intel_win_32_db : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
-intel_win_32 : FFLAGS = -O2 -fpp -D pp_ibmpc /Qvec_report0 /Qsave /Qzero
+intel_win_32 : FFLAGS = -O2 /Qvec_report0 /Qsave /Qzero
 intel_win_32 : FCOMPL = ifort
 intel_win_32 : obj = cfast6_win_32
 intel_win_32 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
 # 64 bit
-intel_win_64 : FFLAGS = -O2 -fpp -D pp_ibmpc /Qvec_report0  /Qsave /Qzero
+intel_win_64 : FFLAGS = -O2 /Qvec_report0  /Qsave /Qzero
 intel_win_64 : FCOMPL = ifort
 intel_win_64 : obj = cfast6_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = -fpp -D pp_ibmpc /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+intel_win_64_db : FFLAGS = /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_64_db : FCOMPL = ifort
 intel_win_64_db : obj = cfast6_win_64_db
 intel_win_64_db : setup_win $(objwin)

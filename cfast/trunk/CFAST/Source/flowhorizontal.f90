@@ -65,15 +65,8 @@
             
 
             ! setup data structures for from and to room
-            !note: getvars is intended to replace two calls to getvar.
-            !call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+            call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
             
-            ! setup data structures for from room
-            call getvar(i,iroom1,iroom2,nprod,yflor(1),yceil(1),ylay(1),pflor(1),denl(1),denu(1),conl(1,1),conu(1,1),tl(1),tu(1))
-
-            ! setup data structures for to room
-            call getvar(i,iroom2,iroom1,nprod,yflor(2),yceil(2),ylay(2),pflor(2),denl(2),denu(2),conl(1,2),conu(1,2),tl(2),tu(2))
-
             ! convert vent dimensions to absolute dimensions
             yvbot = ventptr%sill + yflor(1)
             yvtop = ventptr%soffit + yflor(1)
@@ -813,104 +806,6 @@
     end do
     return
     end subroutine getvars
-
-! --------------------------- getvar -------------------------------------------
-
-    subroutine getvar(ivent,iroom,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
-
-    !     routine: getvar
-    !     purpose: routine to interface between global data structures and natural vent data structures.
-    !     arguments: ivent - vent number
-    !                iroom - room number
-    !                yflor   height of floor above datum elevation [m]
-    !                yceil - height of ceiling above datum elevation [m]
-    !                ylay    height of layer above datum elevation [m]
-    !                pflor   pressure at floor relative to ambient [p]
-    !                denl    density of lower layer [kg/m**3]
-    !                denu    density of upper layer [kg/m**3]
-    !                conl    concentration of lower layer for each product [unit of product/kg of layer]
-    !                conu    concentration of upper layer for each product [unit of product/kg of layer]
-    !                tl      temperature of lower layer [k]
-    !                tu      temperature of upper layer [k]
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use vents
-    implicit none
-
-    integer, intent(in) :: ivent, iroom, iroom2, nprod
-    real(eb), intent(out) :: conl(mxprd), conu(mxprd), yflor, yceil, ylay, pflor, denl, denu, tl, tu
-    
-    integer :: up, iprod, ip
-    real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou, hallvel
-    
-    logical :: hallflag
-    type(room_type), pointer :: roomptr
-
-    hallflag = .false.
-
-    ! for rooms that are halls only use upper layer properties if the ceiling jet is beyond the vent
-    up = upper
-
-    if (iroom<n) then
-        roomptr=>roominfo(iroom)
-        
-        yflor = roomptr%yflor
-        yceil = roomptr%yceil
-        pflor = zzrelp(iroom)
-        ylay = zzhlay(iroom,lower)
-
-        ! this is a hall, the vent number is defined and flow is occuring
-        if(izhall(iroom,ihroom)==1.and.ivent/=0.and.izhall(iroom,ihmode)==ihduring)then
-            ventdist = zzventdist(iroom,ivent)
-            if(ventdist>0.0_eb)then
-                time0 = zzhall(iroom,ihtime0)
-                vel = zzhall(iroom,ihvel)
-                cjetdist = vel*(stime-time0)
-                if(cjetdist<ventdist)then
-                    up = lower
-                else
-                    up = upper
-                    hallflag = .true.
-                endif
-            else
-                up = lower
-            endif
-        endif
-
-        denu = zzrho(iroom,up)
-        denl = zzrho(iroom,lower)
-        do iprod = 1, nprod
-            ip = izpmap(iprod+2) - 2
-            conl(iprod) = zzcspec(iroom,lower,ip)
-            conu(iprod) = zzcspec(iroom,up,ip)
-        end do
-        tu = zztemp(iroom,up)
-        tl = zztemp(iroom,lower)
-        zloc = hr(iroom) - zzhall(iroom,ihdepth)/2.0_eb
-        if(hallflag)then
-            call halltrv(iroom,cjetdist,zloc,tu,rhou,hallvel)
-        endif
-    else
-        roomptr=>roominfo(iroom2)
-        
-        yflor = roomptr%yflor
-        yceil = roomptr%yceil
-        pflor = exterior_rel_pressure(iroom2)
-        ylay = zzhlay(iroom,lower)
-        denu = exterior_density
-        denl = exterior_density
-        do iprod = 1, nprod
-            ip = izpmap(iprod+2) - 2
-            conl(iprod) = zzcspec(iroom,lower,ip)
-            conu(iprod) = zzcspec(iroom,up,ip)
-        end do
-        tu = exterior_temperature
-        tl = exterior_temperature
-    endif
-    return
-    end subroutine getvar
 
 ! --------------------------- flogo2 -------------------------------------------
 

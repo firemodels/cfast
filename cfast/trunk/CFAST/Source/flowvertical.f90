@@ -147,12 +147,13 @@
     return
     end subroutine vflow
 
-! --------------------------- getvvfraction-------------------------------------
+! --------------------------- getventfraction-------------------------------------
 
     subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
     
     use precision_parameters
     use cenviro
+    use cfast_main, only: qcvv
     implicit none
     
     character, intent(in) :: venttype
@@ -162,7 +163,7 @@
     
     integer :: iramp, i
     real(eb), parameter :: mintime=1.0e-6_eb
-    real(eb) :: dt, deltat, dy, dydt
+    real(eb) :: dt, dtfull, dy, dydt, qcvfraction
     type(ramp_type), pointer :: rampptr
     
     fraction = 1.0_eb
@@ -179,10 +180,10 @@
                     do i=2,rampptr%npoints
                         if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
                             dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
-                            deltat = max(time-rampptr%time(i-1),mintime)
+                            dtfull = max(time-rampptr%time(i-1),mintime)
                             dy = rampptr%value(i)-rampptr%value(i-1)
                             dydt = dy / dt
-                            fraction = rampptr%value(i-1)+dydt * deltat
+                            fraction = rampptr%value(i-1)+dydt * dtfull
                             return
                         end if
                     end do
@@ -190,6 +191,10 @@
             end if
         end do
     end if
+ 
+    ! This is for backwards compatibility with the older EVENT format for single vent changes
+    fraction = 1.0_eb
+    if (venttype=='V') fraction = qcvfraction(qcvv, vent_index, time)
 
     end subroutine getventfraction
 

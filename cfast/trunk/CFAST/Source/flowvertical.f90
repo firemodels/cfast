@@ -24,7 +24,7 @@
     
     real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, qcvfraction, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
-    real(eb) :: area
+    real(eb) :: area, vvfraction
 
     ! the selection rules are now implemented here.  the crossover is the relative fraction of the volume cloesest to the hole from which the mass will come
     vflowflg = .false.
@@ -48,7 +48,9 @@
     do i = 1, nvvent
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
-        area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
+        call getventfraction ('V',itop,ibot,1,i,tsec,vvfraction)
+        area = vvfraction * vvarea(itop,ibot)
+        !area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
         call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay)
         do iflow = 1, 2
 
@@ -144,6 +146,52 @@
 
     return
     end subroutine vflow
+
+! --------------------------- getvvfraction-------------------------------------
+
+    subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
+    
+    use precision_parameters
+    use cenviro
+    implicit none
+    
+    character, intent(in) :: venttype
+    integer, intent(in) :: room1, room2, vent_number, vent_index
+    real(eb), intent(in) :: time
+    real(eb), intent(out) :: fraction
+    
+    integer :: iramp, i
+    real(eb), parameter :: mintime=1.0e-6_eb
+    real(eb) :: dt, deltat, dy, dydt
+    type(ramp_type), pointer :: rampptr
+    
+    fraction = 1.0_eb
+
+    if (nramps>0) then
+        do iramp = 1, nramps
+            rampptr=>rampinfo(iramp)
+            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.rampptr%vent_number==vent_number) then
+                if (time<=rampptr%time(1)) then
+                    fraction = rampptr%value(1)
+                else if (time>=rampptr%time(rampptr%npoints)) then
+                    fraction = rampptr%value(rampptr%npoints)
+                else
+                    do i=2,rampptr%npoints
+                        if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
+                            dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
+                            deltat = max(time-rampptr%time(i-1),mintime)
+                            dy = rampptr%value(i)-rampptr%value(i-1)
+                            dydt = dy / dt
+                            fraction = rampptr%value(i-1)+dydt * deltat
+                            return
+                        end if
+                    end do
+                end if
+            end if
+        end do
+    end if
+
+    end subroutine getventfraction
 
 ! --------------------------- ventcf -------------------------------------------
 

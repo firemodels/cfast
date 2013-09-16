@@ -55,14 +55,23 @@ module cenviro
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
     
-!  room data structure
-
+    !  room data structure
     type room_type
       real(eb) :: yflor, yceil
       real(eb) :: wall_center(10,3)
     end type room_type
 
     type(room_type), target :: roominfo(nr)
+    
+    ! ramp data structure
+    type ramp_type
+        character :: type
+        integer :: from_room, to_room, vent_number, npoints
+        real(eb) :: time(nv), value(nv)
+    end type ramp_type
+    
+    integer :: nramps = 0
+    type(ramp_type), target :: rampinfo(mxramps)
 
 end module cenviro
 

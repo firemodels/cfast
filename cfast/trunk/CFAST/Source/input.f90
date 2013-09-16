@@ -511,13 +511,14 @@
     integer, intent(in) :: xnumr, xnumc
     integer, intent(out) :: ierror
     
-    logical :: lfupdat, countargs
-    integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom
+    logical :: lfupdat, countargs, lstat
+    integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato, fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
     data plumemodel /'McCaffrey', 'Heskestad'/
+    type(ramp_type), pointer :: rampptr
 
     !	Start with a clean slate
 
@@ -874,6 +875,33 @@
             ierror = 71
             return
         end select 
+        
+        ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
+    case ('RAMP')
+        lstat = countargs(2,lcarray,xnumc-1,nret)
+        if (nret<9) then
+            ierror=11
+            return
+        else if (lrarray(5)<=1) then
+            ierror=11
+            return
+        else if (nret/=5+2*lrarray(5)) then
+            ierror=11
+            return
+        end if
+        if (nramps<=mxramps) then
+            nramps = nramps + 1
+            rampptr=>rampinfo(nramps)
+            rampptr%type = lcarray(1)
+            rampptr%from_room = lrarray(2)
+            rampptr%to_room = lrarray(3)
+            rampptr%vent_number = lrarray(4)
+            rampptr%npoints = lrarray(5)
+            do iramp = 1,rampptr%npoints
+                rampptr%time(iramp) = lrarray(4+2*iramp)
+                rampptr%value(iramp) = lrarray(5+2*iramp)
+            end do
+        end if
 
         ! VVENT - from_compartment to_compartment area shape initial_fraction
     case ('VVENT')

@@ -39,6 +39,8 @@ module cparams
     integer, parameter :: mext = 2*nr       ! maximum number of external connections
     integer, parameter :: mbr = mfan+mdt    ! maximum number of branches in a system
     
+    integer, parameter :: mxramps = 8*mxfire+mxvent+mxvv+mxhvsys ! maximum number of possible time-based ramps
+    
     real(eb), parameter :: vfmaxdz=0.01_eb    ! maximum vertical distance between elements before they are considered separate elements (connected compartments for example)
     
     ! target parameters

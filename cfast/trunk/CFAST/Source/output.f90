@@ -82,12 +82,12 @@
     integer, intent(out) :: imajor,iminor,iminorrev
     
     if (version>=1000) then
-        imajor = version / 1000
-        iminor = mod(version,1000) / 100
+        imajor = version/1000
+        iminor = mod(version,1000)/100
         iminorrev = mod(version,100)
     else
-        imajor = version / 100
-        iminor = mod(version,100) / 10
+        imajor = version/100
+        iminor = mod(version,100)/10
         iminorrev = mod(version,10)
     endif
     return
@@ -208,12 +208,12 @@
     write (iofilo,5040)
     do i = 1, nm1
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100._eb+0.5_eb
+        izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
         if (izshaft(i)==1) then
-            write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-273.15, zzvol(i,upper), &
+            write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zzvol(i,upper), &
             zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         else
-            write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-273.15, zztemp(i,lower)-273.15, &
+            write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zztemp(i,lower)-kelvin_c_offset, &
             zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         endif
     end do
@@ -613,9 +613,9 @@
         end do
         xqf = xqf + fqdj(ir)
         if (izshaft(ir)==1) then
-            write (iounit,5031) ir, zztemp(ir,upper)-273.15, xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir), ontarget(ir)
+            write (iounit,5031) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir), ontarget(ir)
         else
-            write (iounit,5030) ir, zztemp(ir,upper)-273.15, zztemp(ir,lower)-273.15, zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir),ontarget(ir)
+            write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir),ontarget(ir)
         endif
     end do
     write (iounit,5020) fqdj(n)
@@ -672,16 +672,16 @@
             gtotal = qtgflux(itarg,1)
             ctotal = qtcflux(itarg,1)
         endif
-        if (total<=1.0d-10) total = 0.0_eb
-        if (ftotal<=1.0d-10) ftotal = 0.0_eb
-        if (wtotal<=1.0d-10) wtotal = 0.0_eb
-        if (gtotal<=1.0d-10) gtotal = 0.0_eb
-        if (ctotal<=1.0d-10) ctotal = 0.0_eb
+        if (total<=1.0e-10_eb) total = 0.0_eb
+        if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
+        if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
+        if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
+        if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
         if (total/=0.0_eb) then
-            write (iofilo,5010) compartmentnames(i),((twj(1,i,iwptr(iw))-273.15),iw=1,4),twj(1,i,2)-273.15, &
+            write (iofilo,5010) compartmentnames(i),((twj(1,i,iwptr(iw))-kelvin_c_offset),iw=1,4),twj(1,i,2)-kelvin_c_offset, &
             total,ftotal,wtotal,gtotal,ctotal
         else
-            write (iofilo,5010) compartmentnames(i),(twj(1,i,iwptr(iw))-273.15,iw=1,4),twj(1,i,2)-273.15
+            write (iofilo,5010) compartmentnames(i),(twj(1,i,iwptr(iw))-kelvin_c_offset,iw=1,4),twj(1,i,2)-kelvin_c_offset
         endif
         if (ntarg>nm1) then
             do itarg = 1, ntarg-nm1
@@ -706,16 +706,16 @@
                         gtotal = qtgflux(itarg,1)
                         ctotal = qtcflux(itarg,1)
                     endif
-                    if (total<=1.0d-10) total = 0.0_eb
-                    if (ftotal<=1.0d-10) ftotal = 0.0_eb
-                    if (wtotal<=1.0d-10) wtotal = 0.0_eb
-                    if (gtotal<=1.0d-10) gtotal = 0.0_eb
-                    if (ctotal<=1.0d-10) ctotal = 0.0_eb
+                    if (total<=1.0e-10_eb) total = 0.0_eb
+                    if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
+                    if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
+                    if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
+                    if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
                     if (total/=0.0_eb) then
-                        write(iofilo,5030)itarg,tg-273.15,tttemp-273.15, tctemp-273.15, &
+                        write(iofilo,5030)itarg,tg-kelvin_c_offset,tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
                         total,ftotal,wtotal,gtotal,ctotal
                     else
-                        write(iofilo,5030)itarg,tg-273.15,tttemp-273.15,tctemp-273.15
+                        write(iofilo,5030)itarg,tg-kelvin_c_offset,tttemp-kelvin_c_offset,tctemp-kelvin_c_offset
                     endif
                 endif
             end do
@@ -765,9 +765,9 @@
             tlay = zztemp(iroom,lower)
         endif
 
-        tjet = max(xdtect(i,dtjet),tlay)-273.15
+        tjet = max(xdtect(i,dtjet),tlay)-kelvin_c_offset
         vel = max(xdtect(i,dvel),cjetmin)
-        tlink =  xdtect(i,dtemp)-273.15
+        tlink =  xdtect(i,dtemp)-kelvin_c_offset
 
         itype = ixdtect(i,dtype)
         if(itype==smoked)then
@@ -924,7 +924,7 @@
     use params
     implicit none
 
-    write (iofilo,5000) interior_temperature-273.15, interior_abs_pressure + pofset, exterior_temperature-273.15, exterior_abs_pressure + pofset, windv, windrf, windpw
+    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pofset, exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset, windv, windrf, windpw
     return
 
 5000 format (//,' AMBIENT CONDITIONS',//, &
@@ -989,7 +989,7 @@
                     if (j==n) cjout = ' Outside'
                     if (iand(1,ishft(nw(i,j),-k))/=0) then
                         iijk = ijk(i,j,k)
-                        write (iofilo,5020) compartmentnames(i), cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk), (hhp(iijk)-hlp(iijk)) * bw(iijk)
+                        write (iofilo,5020) compartmentnames(i), cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk), (hhp(iijk)-hlp(iijk))*bw(iijk)
                     endif
                 end do
             end do
@@ -1207,7 +1207,7 @@
                 j = objpnt(io)
                 nnv = objlfm(j)
                 write (iofilo,5020) objnin(j)(1:length(objnin(j))), j
-                write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), objpos(3,j), relhum * 100., limo2 * 100.,radconsplit(j)
+                write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), objpos(3,j), relhum*100., limo2*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)

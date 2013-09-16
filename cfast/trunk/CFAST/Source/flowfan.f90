@@ -411,11 +411,11 @@
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate the scaling length of the duct
             xxlower = sqrt(arext(ii))
         else
-            xxlower = sqrt(arext(ii)) / 10.0_eb
+            xxlower = sqrt(arext(ii))/10.0_eb
         endif
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb * xxlower),(hr(i)-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(hr(i)-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
@@ -433,13 +433,13 @@
             zu = min(0.0_eb,hvelxt(ii)-zl)
             ru = zzrho(i,upper)
             rl = zzrho(i,lower)
-            hvp(j) = zzrelp(i) - (ru*zu+rl*zl) * grav_con
+            hvp(j) = zzrelp(i) - (ru*zu+rl*zl)*grav_con
             hvextt(ii,upper) = zztemp(i,upper)
             hvextt(ii,lower) = zztemp(i,lower)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) =  exterior_abs_pressure - exterior_density * grav_con * hvelxt(ii)
+            hvp(j) =  exterior_abs_pressure - exterior_density*grav_con*hvelxt(ii)
         endif
         do lsp = 1, ns
             if (activs(lsp)) then
@@ -447,7 +447,7 @@
                     hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
                     hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
                 else
-                    xxrho = o2n2(lsp) * exterior_density
+                    xxrho = o2n2(lsp)*exterior_density
                     hvexcn(ii,lsp,upper) = xxrho
                     hvexcn(ii,lsp,lower) = xxrho
                 endif

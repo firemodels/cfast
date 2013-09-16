@@ -78,7 +78,7 @@
             ! back wall is connected to the outside
 
             call convec(irevwc(iwall),tgas,twext,wfluxout)
-            wfluxout = wfluxout + sigma * (tgas**4-twext**4)
+            wfluxout = wfluxout + sigma*(tgas**4-twext**4)
             wfluxsave = wfluxout
             if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
@@ -159,7 +159,7 @@
             icond = nofwt + iw
             iroom = izwall(iw,w_from_room)
             iwall = izwall(iw,w_from_wall)
-            delta(icond) = flxtot(iroom,iwall) + vtgrad(iw) * fkw(1,iwall,iroom)
+            delta(icond) = flxtot(iroom,iwall) + vtgrad(iw)*fkw(1,iwall,iroom)
         end do
     endif
 
@@ -223,23 +223,23 @@
         a(1) = 1.0_eb
         b(1) = 0.0_eb
         c(1) = -1.0_eb
-        tnew(1) = walldx(1) * wfluxin / wk(1)
+        tnew(1) = walldx(1)*wfluxin/wk(1)
     endif
 
     ! do interior points for each slab
     iend = 0
     do islab = 1, nslab
         nintx = numnode(1+islab)
-        xkrhoc = wk(islab) / (wspec(islab)*wrho(islab))
-        s = 2.0_eb * dt * xkrhoc
+        xkrhoc = wk(islab)/(wspec(islab)*wrho(islab))
+        s = 2.0_eb*dt*xkrhoc
         ibeg = iend + 2
         iend = ibeg + nintx - 1
         do i = ibeg, iend
             hi = walldx(i)
             him1 = walldx(i-1)
-            a(i) = 1.0_eb + s / (hi*him1)
-            b(i) = -s / (him1*(hi+him1))
-            c(i) = -s / (hi*(hi+him1))
+            a(i) = 1.0_eb + s/(hi*him1)
+            b(i) = -s/(him1*(hi+him1))
+            c(i) = -s/(hi*(hi+him1))
         end do
     end do
 
@@ -248,8 +248,8 @@
     do islab = 2, nslab
         nintx = numnode(islab)
         ibreak = ibreak + nintx + 1
-        b(ibreak) = wspec(islab-1) * wrho(islab-1) / walldx(ibreak-1)
-        c(ibreak) = wspec(islab) * wrho(islab) / walldx(ibreak)
+        b(ibreak) = wspec(islab-1)*wrho(islab-1)/walldx(ibreak-1)
+        c(ibreak) = wspec(islab)*wrho(islab)/walldx(ibreak)
         a(ibreak) = -(b(ibreak)+c(ibreak))
         tnew(ibreak) = 0.0_eb
     end do
@@ -275,18 +275,18 @@
         a(nx) = 1.0_eb
         b(nx) = -1.0_eb
         c(nx) = 0.0_eb
-        tnew(nx) = walldx(nx-1) * wfluxout / wk(nslab)
+        tnew(nx) = walldx(nx-1)*wfluxout/wk(nslab)
     endif
 
     ! now perform an l-u factorization of this matrix (see atkinson p.455) note: matrix is diagonally dominant so we don't have to pivot
 
     ! note we do the following in case a(1) is not 1
-    c(1) = c(1) / a(1)
+    c(1) = c(1)/a(1)
     do i = 2, nx - 1
-        a(i) = a(i) - b(i) * c(i-1)
-        c(i) = c(i) / a(i)
+        a(i) = a(i) - b(i)*c(i-1)
+        c(i) = c(i)/a(i)
     end do
-    a(nx) = a(nx) - b(nx) * c(nx-1)
+    a(nx) = a(nx) - b(nx)*c(nx-1)
     do i = 1, nx
         tderiv(i) = 0.0_eb
     end do
@@ -295,17 +295,17 @@
     ! now construct guess at new temperature profile
 
     ! forward substition
-    tnew(1) = tnew(1) / a(1)
+    tnew(1) = tnew(1)/a(1)
     tderiv(1) = tderiv(1)/a(1)
     do i = 2, nx
-        tnew(i) = (tnew(i)-b(i)*tnew(i-1)) / a(i)
-        tderiv(i) = (tderiv(i)-b(i)*tderiv(i-1)) / a(i)
+        tnew(i) = (tnew(i)-b(i)*tnew(i-1))/a(i)
+        tderiv(i) = (tderiv(i)-b(i)*tderiv(i-1))/a(i)
     end do
 
     ! backward substition
     do i = nx - 1, 1, -1
-        tnew(i) = tnew(i) - c(i) * tnew(i+1)
-        tderiv(i) = tderiv(i) - c(i) * tderiv(i+1)
+        tnew(i) = tnew(i) - c(i)*tnew(i+1)
+        tderiv(i) = tderiv(i) - c(i)*tderiv(i+1)
     end do
 
     ! we don't keep solution unless update is 1 or 2
@@ -320,14 +320,14 @@
     ! the temperature profile.  we will use divided differences.
 
     ! first divided difference
-    ddif(1) = (tnew(2)-tnew(1)) / walldx(1)
-    ddif(2) = (tnew(3)-tnew(2)) / walldx(2)
+    ddif(1) = (tnew(2)-tnew(1))/walldx(1)
+    ddif(2) = (tnew(3)-tnew(2))/walldx(2)
 
     ! second divided difference
-    ddif(2) = (ddif(2)-ddif(1)) / (walldx(1)+walldx(2))
+    ddif(2) = (ddif(2)-ddif(1))/(walldx(1)+walldx(2))
 
     tgrad(1) = (ddif(1)-ddif(2)*walldx(1))
-    tgrad(2) = (tnew(2)-tnew(1)) / walldx(1)
+    tgrad(2) = (tnew(2)-tnew(1))/walldx(1)
     tderv = tderiv(2)
     return
     end subroutine cnduct

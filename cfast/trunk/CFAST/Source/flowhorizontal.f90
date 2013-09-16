@@ -79,12 +79,12 @@
             factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
             height = ventptr%soffit - ventptr%sill
             width = ventptr%width
-            avent = factor2 * height * width
+            avent = factor2*height*width
 
             ! augment floor pressure in the second room by the pressure induced by wind.
             ! (note this augmentation will be different for each vent)
             pflor(2) = pflor(2) + ventptr%wind_dp
-            if (avent>=1.d-10) then
+            if (avent>=1.0e-10_eb) then
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxslab,epsp,cslab,pslab,qslab, &
                 vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
                 
@@ -307,18 +307,18 @@
 
                             ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment to try to approximate the reduced kelvin-helmholz type mixing.
 
-                            uflw3(ito,m,l) = uflw3(ito,m,l) * 0.25_eb
+                            uflw3(ito,m,l) = uflw3(ito,m,l)*0.25_eb
                             vasa(ito) = uflw3(ito,m,l)
                             uflw3(ito,m,u) = -uflw3(ito,m,l)
                         endif
                     endif
 
                     ! compute enthalpy and product flow rates of entrained flow from the mass flow rate
-                    uflw3(ito,q,l) = cp * uflw3(ito,m,l) * tmix
-                    uflw3(ito,q,u) = cp * uflw3(ito,m,u) * tmix
+                    uflw3(ito,q,l) = cp*uflw3(ito,m,l)*tmix
+                    uflw3(ito,q,u) = cp*uflw3(ito,m,u)*tmix
                     do iprod = 3, 2 + nprod
-                        uflw3(ito,iprod,l) = uflw3(ito,m,l) * pmix(iprod-2)
-                        uflw3(ito,iprod,u) = uflw3(ito,m,u) * pmix(iprod-2)
+                        uflw3(ito,iprod,l) = uflw3(ito,m,l)*pmix(iprod-2)
+                        uflw3(ito,iprod,u) = uflw3(ito,m,u)*pmix(iprod-2)
                     end do
                 endif
             endif
@@ -354,9 +354,9 @@
     data firstc /.true./
 
     ! define assignment statement subroutines to compute three parts of correlation
-    fm1(zq) = zq ** .566_eb
-    fm2(zq) = zq ** .909_eb
-    fm3(zq) = zq ** 1.895_eb
+    fm1(zq) = zq**0.566_eb
+    fm2(zq) = zq**0.909_eb
+    fm3(zq) = zq**1.895_eb
 
     ! first time in firplm calculate coeff's to insure that mccaffrey correlation is continuous. that is, for a1 = .011, compute a2, a3 such that
 
@@ -368,42 +368,42 @@
         firstc = .false.
 
         ! breakpoints for "forward" correlation
-        t1 = .08_eb
-        t2 = .20_eb
+        t1 = 0.08_eb
+        t2 = 0.20_eb
 
         ! coef's for "forward" correlation
-        a1 = .011_eb
-        a2 = a1 * fm1(t1) / fm2(t1)
-        a3 = a2 * fm2(t2) / fm3(t2)
+        a1 = 0.011_eb
+        a2 = a1*fm1(t1)/fm2(t1)
+        a3 = a2*fm2(t2)/fm3(t2)
 
         ! exponents for "inverse" correlation
-        e1 = 1.0_eb / .566_eb
-        e2 = 1.0_eb / .909_eb
-        e3 = 1.0_eb / 1.895_eb
+        e1 = 1.0_eb/.566_eb
+        e2 = 1.0_eb/.909_eb
+        e3 = 1.0_eb/1.895_eb
 
         ! breakpoints for "inverse" correlation
-        f1 = a1 * fm1(t1)
-        f2 = a2 * fm2(t2)
+        f1 = a1*fm1(t1)
+        f2 = a2*fm2(t2)
     endif
 
-    xqj = cp * (tu-tl) * 0.001_eb
-    qj = xqj * fmd
-    fmdqj = 1._eb / xqj
+    xqj = cp*(tu-tl)*0.001_eb
+    qj = xqj*fmd
+    fmdqj = 1.0_eb/xqj
     if (fmdqj>=0.0_eb.and.fmdqj<=f1) then
-        z0dq = (fmdqj/a1) ** e1
+        z0dq = (fmdqj/a1)**e1
     else if (fmdqj>f1.and.fmdqj<=f2) then
-        z0dq = (fmdqj/a2) ** e2
+        z0dq = (fmdqj/a2)**e2
     else
-        z0dq = (fmdqj/a3) ** e3
+        z0dq = (fmdqj/a3)**e3
     endif
 
-    zdq = z / qj ** 0.4_eb + z0dq
+    zdq = z/qj**0.4_eb + z0dq
     if (zdq>0.2_eb) then
-        fmz = a3 * fm3(zdq) * qj
+        fmz = a3*fm3(zdq)*qj
     else if (zdq>0.08_eb) then
-        fmz = a2 * fm2(zdq) * qj
+        fmz = a2*fm2(zdq)*qj
     else
-        fmz = a1 * fm1(zdq) * qj
+        fmz = a1*fm1(zdq)*qj
     endif
 
     fmz = max(0.0_eb,fmz-fmd)
@@ -559,11 +559,11 @@
         if (dp1m2(i)*dp1m2(i+1)<0.0_eb) then
             nneut = nneut + 1
             dpp = dp1m2(i) - dp1m2(i+1)
-            yn(nneut) = (yelev(i+1)*dp1m2(i)-yelev(i)*dp1m2(i+1)) / dpp
+            yn(nneut) = (yelev(i+1)*dp1m2(i)-yelev(i)*dp1m2(i+1))/dpp
 
             ! fail safe in case interpolation calculation fails
             if (yn(nneut)<yelev(i).or.yn(nneut)>yelev(i+1)) then
-                yn(nneut) = (yelev(i)+yelev(i+1)) / 2.0_eb
+                yn(nneut) = (yelev(i)+yelev(i+1))/2.0_eb
             endif
             yvelev(nvelev) = yn(nneut)
             dpv1m2(nvelev) = 0.0_eb
@@ -574,7 +574,7 @@
     dpv1m2(nvelev) = dp1m2(nelev)
     nslab = nvelev - 1
     do i = 1, nslab
-        yslab(i) = (yvelev(i)+yvelev(i+1)) / 2.0_eb
+        yslab(i) = (yvelev(i)+yvelev(i+1))/2.0_eb
     end do
 
     ! initialize cfast data structures for flow storage
@@ -610,7 +610,7 @@
 
         ! for nonzero-flow slabs determine xmslab(n) and yslab(n)
         xmslab(n) = 0.0_eb
-        qslab(n) = 0._eb
+        qslab(n) = 0.0_eb
         do iprod = 1, nprod
             pslab(n,iprod) = 0.0_eb
         end do
@@ -624,11 +624,11 @@
             r1 = max(rslab(n),0.0_eb)
             y2 = yvelev(n+1)
             y1 = yvelev(n)
-            cvent = .70_eb
+            cvent = 0.70_eb
 
-            area = avent * (y2-y1) / (yvtop-yvbot)
+            area = avent*(y2-y1)/(yvtop-yvbot)
             r1m8 = 8.0_eb*r1
-            xmslab(n) = cvent * sqrt(r1m8) * area * (p2+p1rt*p2rt+p1) / (p2rt+p1rt) / 3.0_eb
+            xmslab(n) = cvent*sqrt(r1m8)*area*(p2+p1rt*p2rt+p1)/(p2rt+p1rt)/3.0_eb
             ventvel = 0.0_eb
             if(n==nslab)then
                 if(area/=0.0_eb.and.r1/=0.0_eb)then
@@ -636,10 +636,10 @@
                     if(dirs12(n)<0)ventvel = -ventvel
                 endif
             endif
-            qslab(n) = cp * xmslab(n) * tslab(n)
+            qslab(n) = cp*xmslab(n)*tslab(n)
             sum = 0.0_eb
             do iprod = 1, nprod
-                pslab(n,iprod) = cslab(n,iprod) * xmslab(n)
+                pslab(n,iprod) = cslab(n,iprod)*xmslab(n)
                 sum = sum + pslab(n,iprod)
             end do
         endif
@@ -951,10 +951,10 @@
         xmterm = xmslab(n)
         qterm = qslab(n)
         do ilay = 1, 2
-            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay) * xmterm
-            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay) * qterm
+            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay)*xmterm
+            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay)*qterm
             do iprod = 1, nprod
-                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay) * pslab(n,iprod)
+                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay)*pslab(n,iprod)
             end do
         end do
 
@@ -1050,10 +1050,10 @@
         xmterm = xmslab(n)
         qterm = qslab(n)
         do ilay = 1, 2
-            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay) * xmterm
-            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay) * qterm
+            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay)*xmterm
+            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay)*qterm
             do iprod = 1, nprod
-                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay) * pslab(n,iprod)
+                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay)*pslab(n,iprod)
             end do
         end do
 
@@ -1105,9 +1105,9 @@
     real(eb) :: dp1, dp2, epscut, dpold, zz
 
     do iroom = 1, 2
-        ygden(iroom) = -(ylay(iroom)-yflor(iroom)) * denl(iroom) * grav_con
-        gdenl(iroom) = -denl(iroom) * grav_con
-        gdenu(iroom) = -denu(iroom) * grav_con
+        ygden(iroom) = -(ylay(iroom)-yflor(iroom))*denl(iroom)*grav_con
+        gdenl(iroom) = -denl(iroom)*grav_con
+        gdenu(iroom) = -denu(iroom)*grav_con
     end do
 
     do i = 1, nelev
@@ -1115,11 +1115,11 @@
             if (yflor(iroom)<=y(i).and.y(i)<=ylay(iroom)) then
 
                 ! the height, y, is in the lower layer
-                proom(iroom) = (y(i)-yflor(iroom)) * gdenl(iroom)
+                proom(iroom) = (y(i)-yflor(iroom))*gdenl(iroom)
             else if (y(i)>ylay(iroom)) then
 
                 ! the height, y, is in the upper layer
-                proom(iroom) = ygden(iroom) + gdenu(iroom) * (y(i) - ylay(iroom))
+                proom(iroom) = ygden(iroom) + gdenu(iroom)*(y(i) - ylay(iroom))
             else
                 proom(iroom) = 0.0_eb
             endif
@@ -1130,13 +1130,13 @@
         dp2 = pflor(2) + proom(2)
 
         ! test of delp fudge
-        epscut = 10.0_eb * epsp * max(1.0_eb,abs(dp1),abs(dp2))
+        epscut = 10.0_eb*epsp*max(1.0_eb,abs(dp1),abs(dp2))
         dpold = dp1 - dp2
 
         ! test for underflow
         if (abs(dpold/epscut)<=130.0_eb) then
-            zz = 1._eb - exp(-abs(dpold/epscut))
-            dp(i) = zz * dpold
+            zz = 1.0_eb - exp(-abs(dpold/epscut))
+            dp(i) = zz*dpold
         else
             dp(i) = dpold
         endif
@@ -1184,8 +1184,8 @@
         dt = max(points(3,index) - points(1,index),mintime)
         deltat = max(time - points(1,index),mintime)
         dy = points(4,index) - points(2,index)
-        dydt = dy / dt
-        qchfraction = points(2,index) + dydt * deltat
+        dydt = dy/dt
+        qchfraction = points(2,index) + dydt*deltat
     endif
     return
     end function qchfraction
@@ -1212,8 +1212,8 @@
         dt = max(points(3,index) - points(1,index),mintime)
         deltat = max(time - points(1,index),mintime)
         dy = points(4,index) - points(2,index)
-        dydt = dy / dt
-        qcvfraction = points(2,index) + dydt * deltat
+        dydt = dy/dt
+        qcvfraction = points(2,index) + dydt*deltat
     endif
     return
     end function qcvfraction
@@ -1230,7 +1230,7 @@
     
     real(eb) :: dt, dy, dydt, mintime
     real(eb) :: deltat
-    data mintime/1.0d-6/
+    data mintime/1.0e-6_eb/
 
     if (time<points(1,index)) then
         qcffraction = points(2,index)
@@ -1240,8 +1240,8 @@
         dt = max(points(3,index) - points(1,index), mintime)
         deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
-        dydt = dy / dt
-        qcffraction = points(2,index) + dydt * deltat
+        dydt = dy/dt
+        qcffraction = points(2,index) + dydt*deltat
     endif
     return
     end function qcffraction
@@ -1260,7 +1260,7 @@
     
     real(eb) :: dt, dy, dydt, mintime
     real(eb) :: deltat
-    data mintime/1.0d-6/
+    data mintime/1.0e-6_eb/
 
     if (time<points(1,index)) then
         qcifraction = points(2,index)
@@ -1270,8 +1270,8 @@
         dt = max(points(3,index) - points(1,index),mintime)
         deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
-        dydt = dy / dt
-        qcifraction = points(2,index) + dydt * deltat
+        dydt = dy/dt
+        qcifraction = points(2,index) + dydt*deltat
     endif
     return
     end function qcifraction

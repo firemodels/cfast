@@ -61,7 +61,7 @@
 
     nr = nn
     dr = (diam/2.0_eb)/nr
-    alpha = wk / (wspec*wrho)
+    alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
     niter = dt/dt_iter + 0.5_eb
     dt_iter=dt/niter
@@ -94,24 +94,24 @@
 
        ! note we do the following in case a(1) is not 1
 
-       aip1(1) = aip1(1) / ai(1)
+       aip1(1) = aip1(1)/ai(1)
        do i = 2, nx - 1
-          ai(i) = ai(i) - aim1(i) * aip1(i-1)
-          aip1(i) = aip1(i) / ai(i)
+          ai(i) = ai(i) - aim1(i)*aip1(i-1)
+          aip1(i) = aip1(i)/ai(i)
        end do
-       ai(nx) = ai(nx) - aim1(nx) * aip1(nx-1)
+       ai(nx) = ai(nx) - aim1(nx)*aip1(nx-1)
 
         ! now construct guess at new temperature profile
 
         ! forward substition
-       tnew(1) = tnew(1) / ai(1)
+       tnew(1) = tnew(1)/ai(1)
        do i = 2, nx
-          tnew(i) = (tnew(i)-aim1(i)*tnew(i-1)) / ai(i)
+          tnew(i) = (tnew(i)-aim1(i)*tnew(i-1))/ai(i)
        end do
 
        ! backward substition
        do i = nx - 1, 1, -1
-          tnew(i) = tnew(i) - aip1(i) * tnew(i+1)
+          tnew(i) = tnew(i) - aip1(i)*tnew(i+1)
        end do
 
        do i = 1, nx
@@ -151,9 +151,9 @@
         factor2 = 24.0_eb
     endif
 
-    temp_shroud = 273.0_eb + 24.0_eb*(1.0_eb-factor)+480.0_eb*factor
-    temp_gas = factor2 + 273.0_eb
-    flux_out = .95_eb*sigma*(temp_shroud**4-temp_cable**4)
+    temp_shroud = kelvin_c_offset + 24.0_eb*(1.0_eb-factor)+480.0_eb*factor
+    temp_gas = factor2 + kelvin_c_offset
+    flux_out = 0.95_eb*sigma*(temp_shroud**4-temp_cable**4)
     ! flux_out = flux_out + 10*(temp_shroud - temp_cable)
 
     end subroutine get_flux      

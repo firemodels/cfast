@@ -85,7 +85,7 @@
 
         call initspec
 
-        xdelt = nsmax / deltat
+        xdelt = nsmax/deltat
         itmmax = xdelt + 1
         tstop = itmmax - 1
 
@@ -108,7 +108,7 @@
 
             stime = 0.0_eb
             itmstp = 1
-            xdelt = nsmax / deltat
+            xdelt = nsmax/deltat
             itmmax = xdelt + 1
             tstop = itmmax - 1
 
@@ -1076,7 +1076,7 @@
     !                        These are used for communication between SOLVE and
     !                        RESID via DASSL. They are not altered by DASSL.
     !                        Currently, only IPAR is used in RESID to pass
-    !                        a partial / total flag for solution of the
+    !                        a partial/total flag for solution of the
     !                        species equations.
 
     use precision_parameters
@@ -1318,28 +1318,28 @@
 
         ! pressure equation
         if(deadroom(iroom).eq.0)then
-            pdot = (gamma-1.0_eb) * (ql + qu) / (aroom*hceil)
+            pdot = (gamma-1.0_eb)*(ql + qu)/(aroom*hceil)
         else
             pdot = 0.0_eb
         endif
 
         ! upper layer temperature equation
-        tlaydu = (qu-cp*tmu*zztemp(iroom,uu)) / (cp*zzmass(iroom,uu))
+        tlaydu = (qu-cp*tmu*zztemp(iroom,uu))/(cp*zzmass(iroom,uu))
         if (option(fode)==on) then
-            tlaydu = tlaydu + pdot / (cp*zzrho(iroom,uu))
+            tlaydu = tlaydu + pdot/(cp*zzrho(iroom,uu))
         endif
 
         ! upper layer volume equation
-        vlayd = (gamma-1.0_eb) * qu / (gamma*pabs)
+        vlayd = (gamma-1.0_eb)*qu/(gamma*pabs)
         if (option(fode)==on) then
-            vlayd = vlayd - zzvol(iroom,uu) * pdot / (gamma*pabs)
+            vlayd = vlayd - zzvol(iroom,uu)*pdot/(gamma*pabs)
         endif
         if(izshaft(iroom)==1)vlayd = 0.0_eb
 
         ! lower layer temperature equation
-        tlaydl = (ql-cp*tml*zztemp(iroom,ll)) / (cp*zzmass(iroom,ll))
+        tlaydl = (ql-cp*tml*zztemp(iroom,ll))/(cp*zzmass(iroom,ll))
         if (option(fode)==on) then
-            tlaydl = tlaydl + pdot / (cp*zzrho(iroom,ll))
+            tlaydl = tlaydl + pdot/(cp*zzrho(iroom,ll))
         endif
 
         xprime(iroom) = pdot
@@ -1398,7 +1398,7 @@
 
         ! smoke deposition and agglomeration.
         ! note that these are done only if smkagl is set
-        do i = nofsmkw + 1, nofsmkw + 4 * nm1 * (smkagl+smkagl)
+        do i = nofsmkw + 1, nofsmkw + 4*nm1*(smkagl+smkagl)
             xprime(i) = 0.0_eb
         end do
     endif
@@ -1499,14 +1499,14 @@
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
-        qfurnout=sigma*(273.3_eb+wtemp)**4
+        qfurnout=sigma*(kelvin_c_offset+wtemp)**4
     endif
 
     xwall_center = 2.0_eb
     vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
-            zzvmin(iroom) = min(vminfrac * vr(iroom), 1.0_eb)
+            zzvmin(iroom) = min(vminfrac*vr(iroom), 1.0_eb)
             zzvmax(iroom) = vr(iroom) - zzvmin(iroom)
         end do
         do iroom = 1, nm1
@@ -1557,7 +1557,7 @@
         roomptr=>roominfo(n)
         
         roomptr%yflor = 0.0_eb
-        roomptr%yceil = 100000._eb
+        roomptr%yceil = 100000.0_eb
         
         zzvol(n,upper) = 0.0_eb
         zzvol(n,lower) = 100000.0_eb
@@ -1578,13 +1578,13 @@
         zzcspec(n,upper,2) = 0.230_eb
         zzcspec(n,lower,2) = 0.230_eb
         do layer = upper, lower
-            zzrho(n,layer) = zzpabs(n) / rgas / zztemp(n,layer)
-            zzmass(n,layer) = zzrho(n,layer) * zzvol(n,layer)
+            zzrho(n,layer) = zzpabs(n)/rgas/zztemp(n,layer)
+            zzmass(n,layer) = zzrho(n,layer)*zzvol(n,layer)
         end do
 
         ! define vent data structures
         do i = 1, mxccv
-            frmask(i) = 2 ** i
+            frmask(i) = 2**i
         end do
         nvents = 0
         do i = 1, nm1
@@ -1632,11 +1632,11 @@
                                 havg = (ventptr%sill + ventptr%soffit)/2.0_eb 
                                 havg = havg + roomptr%yflor
                                 if(windrf/=0.0_eb)then
-                                    windvnew = windv * (havg/windrf)**windpw
+                                    windvnew = windv*(havg/windrf)**windpw
                                 else
                                     windvnew = windv
                                 endif
-                                winddp = wcos * exterior_density * windvnew**2/2.0_eb
+                                winddp = wcos*exterior_density*windvnew**2/2.0_eb
                                 ventptr%wind_dp = winddp
                             else
                                 ventptr%wind_dp = 0.0_eb
@@ -1667,7 +1667,7 @@
 
         ! define discontinuity array.  first we look at vent openings
 
-        xdelt = nsmax / deltat
+        xdelt = nsmax/deltat
         itstop = xdelt + 1
         tstop = itstop - 1
 
@@ -1815,7 +1815,7 @@
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
-            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom)) / vr(iroom)*(1.0_eb-2.0_eb*vminfrac)
+            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*vr(iroom))/vr(iroom)*(1.0_eb-2.0_eb*vminfrac)
             volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
             volfrl(iroom) = 1.0_eb - volfru(iroom)
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
@@ -1823,8 +1823,8 @@
             ! calculate layer height for non-rectangular rooms
             npts = izrvol(iroom)
             if(npts==0)then
-                zzhlay(iroom,upper) = zzvol(iroom,upper) / ar(iroom)
-                zzhlay(iroom,lower) = zzvol(iroom,lower) / ar(iroom)
+                zzhlay(iroom,upper) = zzvol(iroom,upper)/ar(iroom)
+                zzhlay(iroom,lower) = zzvol(iroom,lower)/ar(iroom)
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
                 zzhlay(iroom,upper) = hr(iroom) - zzhlay(iroom,lower)
@@ -1870,7 +1870,7 @@
             ! compute area of 4 wall segments
             zzwarea(iroom,1) = ar(iroom)
             zzwarea(iroom,2) = ar(iroom)
-            zzwarea(iroom,3) = (yy + xx)*zzu * xwall_center
+            zzwarea(iroom,3) = (yy + xx)*zzu*xwall_center
             zzwarea(iroom,4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
 
             ! define z wall centers (the z coordinate changes with time)
@@ -1883,8 +1883,8 @@
             end do
 
             do layer = upper, lower
-                zzrho(iroom,layer) = zzpabs(iroom) / rgas / zztemp(iroom,layer)
-                zzmass(iroom,layer) = zzrho(iroom,layer) * zzvol(iroom,layer)
+                zzrho(iroom,layer) = zzpabs(iroom)/rgas/zztemp(iroom,layer)
+                zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)
             end do
         end do
         
@@ -1959,14 +1959,14 @@
                 do iroom = 1, nm1
                     isof = isof + 1
                     if (iflag==odevarb) then
-                        ppgas = pold(isof) + dt * pdold(isof)
+                        ppgas = pold(isof) + dt*pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
                     zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
                     isof = isof + 1
                     if (iflag==odevarb) then
-                        ppgas = pold(isof) + dt * pdold(isof)
+                        ppgas = pold(isof) + dt*pdold(isof)
                     else
                         ppgas = pdif(isof)
                     endif
@@ -1989,12 +1989,12 @@
             end do
             rtotl = 1.0_eb
             rtotu = 1.0_eb
-            if (totl>0.0_eb) rtotl = 1.0_eb / totl
-            if (totu>0.0_eb) rtotu = 1.0_eb / totu
+            if (totl>0.0_eb) rtotl = 1.0_eb/totl
+            if (totu>0.0_eb) rtotu = 1.0_eb/totu
             do lsp = 1, ns
                 if (activs(lsp)) then
-                    zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp) * rtotu
-                    zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp) * rtotl
+                    zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp)*rtotu
+                    zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp)*rtotl
                     if(izshaft(iroom)==1)then
                         zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
                     endif
@@ -2009,8 +2009,8 @@
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
                 zzgspec(iroom,lower,2) = oxyl
                 zzgspec(iroom,upper,2) = oxyu
-                zzcspec(iroom,lower,2) = oxyl / zzmass(iroom,lower)
-                zzcspec(iroom,upper,2) = oxyu / zzmass(iroom,upper)
+                zzcspec(iroom,lower,2) = oxyl/zzmass(iroom,lower)
+                zzcspec(iroom,upper,2) = oxyu/zzmass(iroom,upper)
                 if(izshaft(iroom)==1)then
                     zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
                 endif
@@ -2024,7 +2024,7 @@
                 do lsp = 1, nwal
                     isof = isof + 1
                     if (iflag==odevarb) then
-                        ppwgas = pold(isof) + dt * pdold(isof)
+                        ppwgas = pold(isof) + dt*pdold(isof)
                     else
                         ppwgas = pdif(isof)
                     endif
@@ -2100,12 +2100,12 @@
 
     do iroom = 1, nm1
         if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
-            factor(iroom,upper) = zzmass(iroom,upper) / factor(iroom,upper)
+            factor(iroom,upper) = zzmass(iroom,upper)/factor(iroom,upper)
         else
             factor(iroom,upper) = 1.0_eb
         endif
         if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
-            factor(iroom,lower) = zzmass(iroom,lower) / factor(iroom,lower)
+            factor(iroom,lower) = zzmass(iroom,lower)/factor(iroom,lower)
         else
             factor(iroom,lower) = 1.0_eb
         endif
@@ -2115,9 +2115,9 @@
     do iprod = 1, min(ns,9)
         if (activs(iprod)) then
             do iroom = 1, nm1
-                pdif(isof) = pdif(isof) * factor(iroom,upper)
+                pdif(isof) = pdif(isof)*factor(iroom,upper)
                 isof = isof + 1
-                pdif(isof) = pdif(isof) * factor(iroom,lower)
+                pdif(isof) = pdif(isof)*factor(iroom,lower)
                 isof = isof + 1
             end do
         endif

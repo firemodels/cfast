@@ -15,8 +15,8 @@ integer, parameter :: eb = selected_real_kind(12)
 
 ! often used numbers
 
-real(eb), parameter :: pi=4._eb*atan(1.0_eb)
-real(eb), parameter :: fourpi=4._eb*pi
+real(eb), parameter :: pi=4.0_eb*atan(1.0_eb)
+real(eb), parameter :: fourpi=4.0_eb*pi
 real(eb), parameter :: pio2 = pi/2.0_eb
 real(eb), parameter :: pio4 = pi/4.0_eb
 
@@ -30,5 +30,6 @@ real(eb), parameter :: grav_con=9.8_eb
 real(eb), parameter :: gsqrt=sqrt(grav_con)
 
 real(eb), parameter :: cos45 = sqrt(2.0_eb)/2.0_eb
+real(eb), parameter :: kelvin_c_offset=273.15_eb
 
 end module precision_parameters

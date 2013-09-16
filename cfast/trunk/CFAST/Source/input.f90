@@ -66,9 +66,9 @@
     ivers = rarray(1,2)
     ! new version numbering 600->6000, so current version is 6100
     if (version>=1000) then
-        iversion = version / 1000
+        iversion = version/1000
     else
-        iversion = version / 100
+        iversion = version/100
     endif
     if (aversion==heading.and.ivers==iversion) then
         write (logerr,5001) ivers
@@ -103,8 +103,8 @@
     ! We now know what output is going to be generated, so create the files
     call openoutputfiles
 
-    interior_density = interior_abs_pressure / interior_temperature / rgas
-    exterior_density = exterior_abs_pressure / exterior_temperature / rgas
+    interior_density = interior_abs_pressure/interior_temperature/rgas
+    exterior_density = exterior_abs_pressure/exterior_temperature/rgas
 
     ! turn on the subsidiary equations if they are neeeded - this is always true
     if (activs(6)) hcldep = 1
@@ -132,10 +132,10 @@
     ! check and/or set heat source fire position
     if (heatfl) then
         if ((heatfp(1)<0.0_eb).or.(heatfp(1)>br(heatfr))) then
-            heatfp(1) = br(heatfr) / 2.0_eb
+            heatfp(1) = br(heatfr)/2.0_eb
         endif
         if ((heatfp(2)<0.0_eb).or.(heatfp(2)>dr(heatfr))) then
-            heatfp(2) = dr(heatfr) / 2.0_eb
+            heatfp(2) = dr(heatfr)/2.0_eb
         endif
         if ((heatfp(3)<0.0_eb).or.(heatfp(3)>hr(heatfr))) then
             heatfp(3) = 0.0_eb
@@ -146,11 +146,11 @@
     ! check and/or set position of fire objects
     do i = 1, numobjl
         if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>br(objrm(i)))) then
-            objpos(1,i) = br(objrm(i)) / 2.0_eb
+            objpos(1,i) = br(objrm(i))/2.0_eb
             if (logerr>0) write (logerr,5080) i, objpos(1,i)
         endif
         if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>dr(objrm(i)))) then
-            objpos(2,i) = dr(objrm(i)) / 2.0_eb
+            objpos(2,i) = dr(objrm(i))/2.0_eb
             if (logerr>0) write (logerr,5090) i, objpos(2,i)
         endif
         if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>hr(objrm(i)))) then
@@ -205,8 +205,8 @@
 
     ! Compartment area and volume
     do i = 1, nm1
-        ar(i) = br(i) * dr(i)
-        vr(i) = ar(i) * hr(i)
+        ar(i) = br(i)*dr(i)
+        vr(i) = ar(i)*hr(i)
     end do
 
 
@@ -580,7 +580,7 @@
         endif
         interior_temperature = lrarray(1)
         interior_abs_pressure = lrarray(2)
-        relhum = lrarray(4) * 0.01_eb
+        relhum = lrarray(4)*0.01_eb
         if (.not.exset) then
             exterior_temperature = interior_temperature
             exterior_abs_pressure = interior_abs_pressure
@@ -603,7 +603,7 @@
             ierror = 4
             return
         endif
-        limo2 = lrarray(1) * 0.01_eb 
+        limo2 = lrarray(1)*0.01_eb 
 
         ! Rename the THERMAL DATA FILE
     case ("THRMF")
@@ -624,7 +624,7 @@
         ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
     case ('GLOBA')
         if (countargs(2,lcarray,xnumc-1, nret)) then
-            limo2 = lrarray(1) * 0.01_eb
+            limo2 = lrarray(1)*0.01_eb
             tgignt = lrarray(2)
         else
             ierror = 4
@@ -764,7 +764,7 @@
         ijk(j,i,k) = ijk(i,j,k)
         iijk = ijk(i,j,k)
         jik = iijk
-        koffst = 2 ** k
+        koffst = 2**k
         if (iand(koffst,nw(i,j))/=0) write (iofilo,5090) i, j, k
         nw(i,j) = ior(nw(i,j),koffst)
         bw(iijk) = lrarray(4)
@@ -1117,11 +1117,11 @@
         else
             objon(obpnt) = .true.
         endif
-        if (option(fbtobj)==off.and.objign(obpnt)/=1.) then
+        if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
             if (stpmax>0.0_eb) then
-                stpmax = min(stpmax,1._eb)
+                stpmax = min(stpmax,1.0_eb)
             else
-                stpmax = 1._eb
+                stpmax = 1.0_eb
             endif
         endif 
 
@@ -1217,11 +1217,11 @@
         else
             objon(obpnt) = .true.
         endif
-        if (option(fbtobj)==off.and.objign(obpnt)/=1.) then
+        if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
             if (stpmax>0.0_eb) then
-                stpmax = min(stpmax,1._eb)
+                stpmax = min(stpmax,1.0_eb)
             else
-                stpmax = 1._eb
+                stpmax = 1.0_eb
             endif
         endif
 
@@ -1293,16 +1293,16 @@
         xdtect(ndtect,dzloc) = lrarray(6)
         xdtect(ndtect,drti) =  lrarray(7)
         ixdtect(ndtect,dquench) = lrarray(8)
-        xdtect(ndtect,dspray) = lrarray(9)*1000._eb
+        xdtect(ndtect,dspray) = lrarray(9)*1000.0_eb
         ! if spray density is zero, then turn off the sprinkler
         if(xdtect(ndtect,dspray)==0.0_eb)then
             ixdtect(ndtect,dquench) = 0
         endif
         if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then
             if (stpmax>0) then
-                stpmax = min(stpmax,1._eb)
+                stpmax = min(stpmax,1.0_eb)
             else
-                stpmax = 1._eb
+                stpmax = 1.0_eb
             endif
         endif
         if (compartmentnames(i2)==' ') then
@@ -1792,7 +1792,7 @@
             obj_o(iobj) = lrarray(3)
             obj_n(iobj) = lrarray(4)
             obj_cl(iobj) = lrarray(5)
-            objgmw(iobj) = (12.01 * obj_c(iobj) + 1.008 * obj_h(iobj) + 16.0 * obj_o(iobj) + 14.01 * obj_n(iobj) + 35.45 * obj_cl(iobj)) / 1000.0
+            objgmw(iobj) = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + 14.01*obj_n(iobj) + 35.45*obj_cl(iobj))/1000.0
             objvt(iobj) = te
 
             radconsplit(iobj) = lrarray(6)
@@ -1814,7 +1814,7 @@
             do ii = 1, nret
                 oqdot(ii,iobj) = lrarray(ii)
                 max_hrr = max(max_hrr, oqdot(ii,iobj))
-                omass(ii,iobj) = oqdot(ii,iobj) / ohcomb
+                omass(ii,iobj) = oqdot(ii,iobj)/ohcomb
             end do
         case ('SOOT')
             do ii = 1, nret
@@ -1849,7 +1849,7 @@
             ! calculate a characteristic length of an object (we assume the diameter). 
             ! This is used for point source radiation fire to target calculation as a minimum effective distance between the fire and the target
             ! which only impact very small fire to target distances
-            objclen(iobj) = 2.0_eb*sqrt(max_area / pi)
+            objclen(iobj) = 2.0_eb*sqrt(max_area/pi)
         case ('HEIGH')
             do ii = 1, nret
                 ohigh(ii,iobj) = max(lrarray(ii),0.0_eb)
@@ -1873,9 +1873,9 @@
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-    area = objxyz(1,iobj) * objxyz(2,iobj)
+    area = objxyz(1,iobj)*objxyz(2,iobj)
     d = max(0.33_eb,sqrt(4.0/3.14_eb*area))
-    flamelength = d * (0.235_eb*(max_hrr/1.0e3_eb)**0.4_eb - 1.02_eb)
+    flamelength = d*(0.235_eb*(max_hrr/1.0e3_eb)**0.4_eb - 1.02_eb)
     flamelength = max (0.0_eb, flamelength)
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
@@ -2045,7 +2045,7 @@
     ip0(0) = off
     ierror = 0
     do i = 1, maxteq
-        p0(i) = 0._eb
+        p0(i) = 0.0_eb
         ip0(i) = off
     end do
 

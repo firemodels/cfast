@@ -154,7 +154,7 @@
                     if(dflux(1)/=0.0_eb.and.methtarg==steady)then
                         ddif = flux(1)/dflux(1)
                         ttarg(1) = ttarg(1) - ddif
-                        if(abs(ddif)<=1.0d-5*ttarg(1)) exit
+                        if(abs(ddif)<=1.0e-5_eb*ttarg(1)) exit
                     endif
                 end do
                 if(methtarg==steady)then
@@ -389,8 +389,8 @@
         tgb = interior_temperature
     endif
     ttargb = ttarg(2)
-    dttarg = 1.0d-7*ttarg(1)
-    dttargb = 1.0d-7*ttarg(2)
+    dttarg = 1.0e-7_eb*ttarg(1)
+    dttargb = 1.0e-7_eb*ttarg(2)
 
     temis = xxtarg(trgemis,itarg)
 

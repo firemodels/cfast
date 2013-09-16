@@ -84,8 +84,8 @@
             xtl = zztemp(iroom,lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
-            q1 = cp * oplume(1,iobj) * te
-            q2 = cp * oplume(2,iobj) * xtl
+            q1 = cp*oplume(1,iobj)*te
+            q2 = cp*oplume(2,iobj)*xtl
             flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q1 + q2
             flwf(iroom,q,lower) = flwf(iroom,q,lower) - q2
             do lsp = 1, ns
@@ -124,7 +124,7 @@
             femp(nobj) = oplume(1,iobj)
             fems(nobj) = oplume(3,iobj)
             ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemie and pyrols)
-            femr(nobj) = oplume(1,iobj) * y_trace
+            femr(nobj) = oplume(1,iobj)*y_trace
             fqf(nobj) = heatlp(iroom) + heatup(iroom)
             fqfc(nobj) = qfc(1,iroom)
             fqlow(nobj) = heatlp(iroom)
@@ -261,7 +261,7 @@
             xqpyrl = max(0.0_eb, (xqpyrl+cp*(te-xtl)*xemp)*(1.0_eb-chirad))
 
             if (xqpyrl<qheatl) then
-                xeme = xeme * (xqpyrl/qheatl)
+                xeme = xeme*(xqpyrl/qheatl)
                 qheatl = xqpyrl
                 ipass = ipass + 1
                 cycle
@@ -285,7 +285,7 @@
         if(xtemp==0.0_eb) xtemp = 1.0_eb
         do lsp = 1, ns
             if (activs(lsp)) then
-                xnet = xeme * stmass(lower,lsp) / xtemp
+                xnet = xeme*stmass(lower,lsp)/xtemp
                 xntms(upper,lsp) = xntms(upper,lsp) + xnet
                 xntms(lower,lsp) = xntms(lower,lsp) - xnet
             endif
@@ -294,8 +294,8 @@
         ! add in the fuel. everything else is done by chemie.
         xntms(upper,7) = xntms(upper,7) + xemp
         
-        xqfr = xqpyrl * chirad
-        xqfc(upper) = xqpyrl * (1.0_eb-chirad)
+        xqfr = xqpyrl*chirad
+        xqfc(upper) = xqpyrl*(1.0_eb-chirad)
         xqlp = xqpyrl
         xqf = xqpyrl
 
@@ -307,7 +307,7 @@
         uplmep = max(0.0_eb,xemp-xntfl)
 
         if (uplmep>0.0_eb) then
-            qheatu = hcombt * uplmep + qheatl
+            qheatu = hcombt*uplmep + qheatl
             height = max (0.0_eb, min(xz,xxfireu))
 
             call firplm(fplume(ifire), objectsize,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
@@ -315,8 +315,8 @@
             source_o2 = zzcspec(iroom,upper,2)
             call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
-            xqfr = xqpyrl * chirad + xqfr
-            xqfc(upper) = xqpyrl * (1.0_eb-chirad) + xqfc(upper)
+            xqfr = xqpyrl*chirad + xqfr
+            xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
             xqup = xqpyrl
             xqf = xqpyrl + xqf
             do i = 1, ns
@@ -370,8 +370,8 @@
     real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn
     real(eb) :: net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct
 
-    o2f = 1.31d+7
-    o2fi = 1.0_eb / o2f
+    o2f = 1.31e7_eb
+    o2fi = 1.0_eb/o2f
 
     ! calculate the actual burning rate constrained by available o2.
 
@@ -379,11 +379,11 @@
     ! about ~4. the function inside the tanh scales the ordinate to
     ! ~o2range.  the remainder of the function scales the result 
     ! to 0-1
-    o2_entrained = entrainment_rate * source_o2
-    o2_factor = tanh(800.0_eb*(source_o2-lower_o2_limit)-4.0_eb) * 0.5_eb + 0.5_eb
-    o2_available = o2_entrained * o2_factor
+    o2_entrained = entrainment_rate*source_o2
+    o2_factor = tanh(800.0_eb*(source_o2-lower_o2_limit)-4.0_eb)*0.5_eb + 0.5_eb
+    o2_available = o2_entrained*o2_factor
     hrr_constrained = max(0.0_eb,min(pyrolysis_rate*h_c,o2_available*o2f))
-    pyrolysis_rate_constrained = hrr_constrained / h_c
+    pyrolysis_rate_constrained = hrr_constrained/h_c
 
 
     ! Here we do a reduction for sprinklers if activation has occurred. Otherwise we just save the current value of the HRR
@@ -494,7 +494,7 @@
         ! if a sprinkler is active then interpolate at current time
         ! and when sprinkler first activated.  make sure that specified
         ! heat release rate is the smaller of rate at current time
-        ! and rate at sprinkler activation time * exp( ...) 
+        ! and rate at sprinkler activation time*exp( ...) 
         tdrate = xdtect(id,drate)
         xxtimef = xdtect(id,dtact) - objcri(1,objn)
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,qt)
@@ -586,18 +586,18 @@
     real(eb), parameter :: fire_at_wall = 1.0e-3_eb
 
     ! define assignment statement subroutines to compute three parts of correlation
-    fm1(zq) = zq ** .566_eb
-    fm2(zq) = zq ** .909_eb
-    fm3(zq) = zq ** 1.895_eb
+    fm1(zq) = zq**0.566_eb
+    fm2(zq) = zq**0.909_eb
+    fm3(zq) = zq**1.895_eb
 
     ! first time in firplm calculate coeff's to insure that mccaffrey correlation is continuous.  
-    ! that is, for a1 = .011, compute a2, a3 such that
-    ! a1*zq**.566 = a2*zq**.909  for zq = .08
-    ! a2*zq**.909 = a3*zq**1.895 for zq = .2
+    ! that is, for a1 = 0.011, compute a2, a3 such that
+    ! a1*zq**0.566 = a2*zq**0.909  for zq = 0.08
+    ! a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
 
-    t1 = .08_eb
-    t2 = .20_eb
-    a1 = .011_eb
+    t1 = 0.08_eb
+    t2 = 0.20_eb
+    a1 = 0.011_eb
     a2 = a1*fm1(t1)/fm2(t1)
     a3 = a2*fm2(t2)/fm3(t2)
 
@@ -605,15 +605,15 @@
     xf = 1.0_eb
     if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
     if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
-    qj = 0.001_eb * qjl
-    if (zz>0._eb.and.qj>0.0_eb) then
-        zdq = zz / (xf*qj) ** 0.4_eb
+    qj = 0.001_eb*qjl
+    if (zz>0.0_eb.and.qj>0.0_eb) then
+        zdq = zz/(xf*qj)**0.4_eb
         if (zdq>t2) then
-            xems = a3 * fm3(zdq) * qj
+            xems = a3*fm3(zdq)*qj
         else if (zdq>t1) then
-            xems = a2 * fm2(zdq) * qj
+            xems = a2*fm2(zdq)*qj
         else
-            xems = a1 * fm1(zdq) * qj
+            xems = a1*fm1(zdq)*qj
         endif
         xems = max(xemp,xems)
         xeme = max(xems-xemp,0.0_eb)
@@ -645,10 +645,10 @@
     
     real(eb) :: qj, z0, deltaz
 
-    qj = 0.001_eb * q
-    z0 = -1.02_eb * od + 0.083_eb * qj**0.4
+    qj = 0.001_eb*q
+    z0 = -1.02_eb*od + 0.083_eb*qj**0.4_eb
     deltaz = max(0.0001_eb, z-z0)
-    eme = 0.071 * qj**0.333 * deltaz**1.67 * (1.0_eb+0.026_eb*qj**0.67 * deltaz**(-1.67))
+    eme = 0.071_eb*qj**third*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
     ems = emp + eme    
 
     end subroutine heskestad
@@ -933,7 +933,7 @@
     else
         d = sqrt(4.0_eb*area/pi)
     endif
-    fheight = -1.02*d + 0.235*(qdot/1.0e3_eb)**0.4_eb
+    fheight = -1.02_eb*d + 0.235_eb*(qdot/1.0e3_eb)**0.4_eb
     fheight = max (0.0_eb, fheight)
     return
     end subroutine flamhgt
@@ -983,19 +983,19 @@
 
             !       fire is in lower layer and target is in upper layer
         else
-            qdot_c = qdot*(1.0_eb - xrad)/1000._eb
+            qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
             rhoamb = 352.981915_eb/tl
             cp = 3.019e-7_eb*tl**2 - 1.217e-4_eb*tl + 1.014_eb
             z_i1 = zlayer - zfire
-            q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(grav_con)*z_i1**(5._eb/2._eb))
+            q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(grav_con)*z_i1**2.5_eb)
             xi = tu/tl
             !           the effective fire source (qi2star) must be a positive number
-            if (1._eb+C_T*q_i1star**(2._eb/3._eb)>xi) then
-                q_i2star = ((1._eb+C_T*q_i1star**(2._eb/3._eb))/(xi*C_T)-1._eb/C_T)**(3._eb/2._eb)
-                z_i2 = (xi*q_i1star*C_T/(q_i2star**(1._eb/3._eb)*((xi-1._eb)*(Beta+1._eb)+xi*C_T*q_i2star**(2._eb/3._eb))))**(2._eb/5._eb)*z_i1
+            if (1.0_eb+C_T*q_i1star**twothirds>xi) then
+                q_i2star = ((1.0_eb+C_T*q_i1star**twothirds)/(xi*C_T)-1.0_eb/C_T)**1.5_eb
+                z_i2 = (xi*q_i1star*C_T/(q_i2star**third*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
                 rhoamb = 352.981915_eb/tu
                 cp = 3.019e-7_eb*tu**2 - 1.217e-4_eb*tu + 1.014_eb
-                q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**(5._eb/2._eb)/(1.0_eb-xrad)*1000._eb
+                q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
                 z_eff = z-z_i1+z_i2
                 call PlumeTemp_M (q_eff, tu, z_eff, tplume)
             else
@@ -1037,29 +1037,29 @@
     call flamhgt (qdot,pio4*dfire**2,fheight)
 
     ! z0 = virtual origin, qdot_c = convective HRR
-    if (dfire>0._eb) then
-        z0 = -1.02_eb*dfire + 0.083_eb*(qdot/1000._eb)**0.4_eb
+    if (dfire>0.0_eb) then
+        z0 = -1.02_eb*dfire + 0.083_eb*(qdot/1000.0_eb)**0.4_eb
     else
-        z0 = 0._eb
+        z0 = 0.0_eb
     endif
-    qdot_c = qdot*(1.0_eb - xrad)/1000._eb
+    qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
 
     rhoamb = 352.981915_eb/tgas
     cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
-    dstar = (qdot/1000._eb/(rhoamb*cp*tgas*sqrt(grav_con)))**0.4_eb
+    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(grav_con)))**0.4_eb
 
     if ((z-z0)/dstar<1.32) then
         dt = 2.91_eb*tgas
     else if ((z-z0)<fheight) then
-        zp1 = 1.32*dstar
-        tp1 = 2.91*tgas
+        zp1 = 1.32_eb*dstar
+        tp1 = 2.91_eb*tgas
         zp2 = fheight
-        tp2 = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**(1._eb/3._eb)*qdot_c**(2._eb/3._eb)*(zp2)**(-5._eb/3._eb)
+        tp2 = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**third*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
         a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
         b = tp1-a/zp1
         dt = a/(z-z0) + b
     else
-        dt = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**(1._eb/3._eb)*qdot_c**(2._eb/3._eb)*(z-z0)**(-5._eb/3._eb)
+        dt = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**third*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
     endif
     tplume = tgas + dt
 
@@ -1085,21 +1085,21 @@
 
     rhoamb = 352.981915_eb/tgas
     cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
-    dstar = (qdot/1000._eb/(rhoamb*cp*tgas*sqrt(grav_con)))**(0.4_eb)
+    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(grav_con)))**(0.4_eb)
     zstar = z/dstar
-    if (zstar>=0._eb .and. zstar<1.32_eb) then
+    if (zstar>=0.0_eb .and. zstar<1.32_eb) then
         n = 0.5_eb
         b = 2.91_eb
     else if (zstar>=1.32_eb .and. zstar<3.30_eb) then
-        n = 0._eb
+        n = 0.0_eb
         b = 3.81_eb
     elseif (zstar>=3.30_eb) then
-        n = -1._eb/3._eb
+        n = -third
         b  = 8.41_eb
     endif
 
-    theta = b*zstar**(2.*n-1.)
-    tplume = tgas*(1.+theta)
+    theta = b*zstar**(2.0_eb*n-1.0_eb)
+    tplume = tgas*(1.0_eb+theta)
     return
     end subroutine PlumeTemp_M
 
@@ -1126,10 +1126,10 @@
 
     ! aweigh's are molar weights of the species, avagad is the reciprocal
     ! of avagadro's number (so you can't have less than an atom of a species
-    data aweigh, aweigh7 /28._eb, 32._eb, 44._eb, 28._eb, 27._eb, 37._eb, 12._eb, 18._eb, 12._eb, 0._eb, 0.0_eb, 12._eb/
+    data aweigh, aweigh7 /28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb, 12.0_eb/
     data avagad /1.66e-24_eb/
-    data ppmcal /3 * .false., 3 * .true., 5 * .false./
-    aweigh(7) = aweigh7 * (1.0_eb+hcratt)
+    data ppmcal /3*.false., 3*.true., 5*.false./
+    aweigh(7) = aweigh7*(1.0_eb+hcratt)
 
     do i = 1, nm1
         v(upper) = zzvol(i,upper)
@@ -1137,7 +1137,7 @@
         do k = upper, lower
             air(k) = 0.0_eb
             do lsp = 1, 9
-                air(k) = air(k) + zzgspec(i,k,lsp) / aweigh(lsp)
+                air(k) = air(k) + zzgspec(i,k,lsp)/aweigh(lsp)
             end do
             air(k) = max(avagad,air(k))
         end do
@@ -1146,7 +1146,7 @@
         do lsp = 1, ns
             if (activs(lsp)) then
                 do k = upper, lower
-                    ppmdv(k,i,lsp) = zzgspec(i,k,lsp) / v(k)
+                    ppmdv(k,i,lsp) = zzgspec(i,k,lsp)/v(k)
                 end do
             endif
         end do
@@ -1156,9 +1156,9 @@
             if (activs(lsp)) then
                 do k = upper, lower
                     if (ppmcal(lsp)) then
-                        toxict(i,k,lsp) = 1.d+6 * zzgspec(i,k,lsp) / (air(k)*aweigh(lsp))
+                        toxict(i,k,lsp) = 1.0e+6_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
                     else
-                        toxict(i,k,lsp) = 100._eb * zzgspec(i,k,lsp) / (air(k)*aweigh(lsp))
+                        toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
                     endif
                 end do
             endif
@@ -1171,7 +1171,7 @@
         lsp = 9
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = ppmdv(k,i,lsp) * 3778.0_eb
+                toxict(i,k,lsp) = ppmdv(k,i,lsp)*3778.0_eb
             end do
         endif
 
@@ -1179,7 +1179,7 @@
         lsp = 10
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp) * 1000.0_eb * deltt / 60.0_eb
+                toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp)*1000.0_eb*deltt/60.0_eb
             end do
         endif
 
@@ -1189,7 +1189,7 @@
         lsp = 11
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = zzgspec(i,k,lsp) ! / (tradio+1.0d-10)
+                toxict(i,k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
             end do
         endif
 
@@ -1197,7 +1197,7 @@
 
     ! ontarget is the radiation received on a target on the floor
     do i = 1, nm1
-        ontarget(i) = sigma * (zztemp(i,upper)**4-interior_temperature**4)
+        ontarget(i) = sigma*(zztemp(i,upper)**4-interior_temperature**4)
         if (ontarget(i)<1.0_eb) ontarget(i) = 0.0_eb
     end do
     return
@@ -1266,7 +1266,7 @@
 
     do i = 1, maxint
         if(i>1) then
-            if (mdot(i)*qdot(i)<=0._eb) then
+            if (mdot(i)*qdot(i)<=0.0_eb) then
                 hdot(i) = hinitial
             else
                 hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
@@ -1312,7 +1312,7 @@
     integer :: iobj, ignflg, iobtarg
 
     ifobj = 0
-    tobj = told + 2._eb*dt
+    tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
     ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature and flux are stored backupwards - this historical
@@ -1325,7 +1325,7 @@
                 if (objcri(1,iobj)<=tnobj) then
                     tobj = min(objcri(1,iobj),tobj)
                     ifobj = iobj
-                    tmpob(1,iobj) = 1._eb
+                    tmpob(1,iobj) = 1.0_eb
                     tmpob(2,iobj) = objcri(1,iobj)
                 else
                     tmpob(1,iobj) = 0.0_eb
@@ -1390,7 +1390,7 @@
         ifobj = iobj
     else
         tmpob(1) = 0.0_eb
-        tmpob(2) = told + 2._eb*dt
+        tmpob(2) = told + 2.0_eb*dt
     endif
 
     return
@@ -1444,10 +1444,10 @@
                         arw = ar(iroom)
                         layer = lower
                     else if (iwall==3) then
-                        arw = (br(iroom)+dr(iroom)) * zzhlay(iroom,upper) * 2.0_eb
+                        arw = (br(iroom)+dr(iroom))*zzhlay(iroom,upper)*2.0_eb
                         layer = upper
                     else if (iwall==4) then
-                        arw = (br(iroom)+dr(iroom)) * (hr(iroom) - zzhlay(iroom,upper)) * 2.0_eb
+                        arw = (br(iroom)+dr(iroom))*(hr(iroom) - zzhlay(iroom,upper))*2.0_eb
                         arw = max(0.0_eb,arw)
                         layer = lower
                     endif
@@ -1511,9 +1511,9 @@
     if ((hclg==0.).and.(hclw==0.)) return
 
     ! note that we calculate density on the fly, since ppmdv is not updated often enough
-    xhclf = hclg * tg * 2.25e-3_eb
-    hclp = xhclf * 1.0e6_eb
-    twc = tw - 273.0_eb
+    xhclf = hclg*tg*2.25e-3_eb
+    hclp = xhclf*1.0e6_eb
+    twc = tw - kelvin_c_offset
 
     ! specific values for painted gypsum - b1 and b2 are for gas phase reactions, and b3 and b4 are for the wall itself
     b1 = hclbf(1,iwall,icomp)
@@ -1527,26 +1527,26 @@
     if (b1<=0) return
 
     ! calculate hcl gas-surface partition coefficient h2os is the saturation concentration of water.
-    if (twc<=40._eb) then
-        if (hclp>10._eb) then
-            h2os = (1.8204_eb-0.18890_eb*log(hclp)+0.06466_eb*twc+1.650e-3_eb*twc**2+7.408e-5_eb*twc**3) / tw
+    if (twc<=40.0_eb) then
+        if (hclp>10.0_eb) then
+            h2os = (1.8204_eb-0.18890_eb*log(hclp)+0.06466_eb*twc+1.650e-3_eb*twc**2+7.408e-5_eb*twc**3)/tw
         else
-            xtemp = 17.64262_eb - 5164.1_eb / tw
+            xtemp = 17.64262_eb - 5164.1_eb/tw
             exptw = exp(xtemp)
-            bcoef = (7.696e-5_eb+3.5920e-6_eb*twc+9.166e-8_eb*twc**2+4.116e-9_eb*twc**3) / tw - 1.e-7_eb * exptw
-            h2os = 0.018_eb * exptw + 1.8e4_eb * bcoef * hclp
+            bcoef = (7.696e-5_eb+3.5920e-6_eb*twc+9.166e-8_eb*twc**2+4.116e-9_eb*twc**3)/tw - 1.e-7_eb*exptw
+            h2os = 0.018_eb*exptw + 1.8e4_eb*bcoef*hclp
         endif
     else if ((twc>40.0_eb).and.(twc<=60.0_eb)) then
-        h2os = (7.044_eb-2.2416e3_eb*xhclf-3.874e-3_eb*twc**2+2.328e-4_eb*twc**3+2.376e6_eb*xhclf**2-5.527e8_eb*xhclf**3+4.918e10_eb*xhclf**4-1.359e12_eb*xhclf**5-1.4033e2_eb*twc*xhclf+2.431e4_eb*twc*xhclf**2-1.6023e6_eb*twc*xhclf**3) / tw
+        h2os = (7.044_eb-2.2416e3_eb*xhclf-3.874e-3_eb*twc**2+2.328e-4_eb*twc**3+2.376e6_eb*xhclf**2-5.527e8_eb*xhclf**3+4.918e10_eb*xhclf**4-1.359e12_eb*xhclf**5-1.4033e2_eb*twc*xhclf+2.431e4_eb*twc*xhclf**2-1.6023e6_eb*twc*xhclf**3)/tw
     else if ((twc>60.0_eb).and.(twc<=80.0_eb)) then
-        h2os = (107.46_eb-4.129_eb*twc+5.096e-2_eb*twc**2-3.1915e8_eb*xhclf**3+1.0408e10_eb*xhclf**4-2.2793e11_eb*xhclf**5-5.8194_eb*twc**2*xhclf+7.6883e4_eb*twc*xhclf**2-7.4363e2_eb*twc**2*xhclf**2+.059067_eb*twc**3*xhclf+1.8132e6_eb*twc*xhclf**3) / tw
+        h2os = (107.46_eb-4.129_eb*twc+5.096e-2_eb*twc**2-3.1915e8_eb*xhclf**3+1.0408e10_eb*xhclf**4-2.2793e11_eb*xhclf**5-5.8194_eb*twc**2*xhclf+7.6883e4_eb*twc*xhclf**2-7.4363e2_eb*twc**2*xhclf**2+.059067_eb*twc**3*xhclf+1.8132e6_eb*twc*xhclf**3)/tw
     else if ((twc>80.0_eb).and.(twc<=95.0_eb)) then
-        h2os = (2.583e2_eb-8.0386_eb*twc+1.739e5_eb*xhclf+7.608e-2_eb*twc**2-1.5492e7_eb*xhclf**2+3.956e9_eb*xhclf**3-2.065e11_eb*xhclf**4+1.3747e13_eb*xhclf**5-4.086e3_eb*twc*xhclf+24.06_eb*twc**2*xhclf+1.3558e5_eb*twc*xhclf**2-3.076e7_eb*twc*xhclf**3) / tw
+        h2os = (2.583e2_eb-8.0386_eb*twc+1.739e5_eb*xhclf+7.608e-2_eb*twc**2-1.5492e7_eb*xhclf**2+3.956e9_eb*xhclf**3-2.065e11_eb*xhclf**4+1.3747e13_eb*xhclf**5-4.086e3_eb*twc*xhclf+24.06_eb*twc**2*xhclf+1.3558e5_eb*twc*xhclf**2-3.076e7_eb*twc*xhclf**3)/tw
     else if ((twc>95.0_eb).and.(twc<=110.0_eb)) then
-        h2os = (6.431e2_eb-16.374_eb*twc+2.822e5_eb*xhclf+0.12117_eb*twc**2-8.224e7_eb*xhclf**2-7.387e6_eb*xhclf**3-5.247e3_eb*twc*xhclf+24.30_eb*twc**2*xhclf+1.5465e6_eb*twc*xhclf**2-7.250e3_eb*twc**2*xhclf**2) / tw
+        h2os = (6.431e2_eb-16.374_eb*twc+2.822e5_eb*xhclf+0.12117_eb*twc**2-8.224e7_eb*xhclf**2-7.387e6_eb*xhclf**3-5.247e3_eb*twc*xhclf+24.30_eb*twc**2*xhclf+1.5465e6_eb*twc*xhclf**2-7.250e3_eb*twc**2*xhclf**2)/tw
     else if (twc>110.0_eb) then
-        xtemp = 18.3036_eb - 3816.44_eb / (tw-46.13_eb)
-        h2os = 0.2885_eb * exp(xtemp) / tw
+        xtemp = 18.3036_eb - 3816.44_eb/(tw-46.13_eb)
+        h2os = 0.2885_eb*exp(xtemp)/tw
     else
         call xerror('hcltran - h2o out of range',0,1,1)
         ierror = 12
@@ -1562,18 +1562,18 @@
         rk = abs(flux/(max(0.001_eb,tg-tw)*rho*cp))
     endif
     if (h2os>h2o) then
-        xtemp = 1500.0_eb / tw
+        xtemp = 1500.0_eb/tw
         exptw = exp(xtemp)
-        rke = b1 * exptw / (1.0_eb+b2*exptw*hclg) * (1.0_eb+b5*h2o**b6/((h2os-h2o)**b7))
+        rke = b1*exptw/(1.0_eb+b2*exptw*hclg)*(1.0_eb+b5*h2o**b6/((h2os-h2o)**b7))
     else
         rke = 1.0e4_eb
     endif
 
     ! calculate the derivatives
-    hclcof = rk * (hclg-hclw/(rke+1.0e-20_eb))
-    hnet = -hclcof * arw
-    xtemp = -b4 / (8.31_eb*tw)
-    hwdot = hclcof - b3 * exp(xtemp) * hclw
+    hclcof = rk*(hclg-hclw/(rke+1.0e-20_eb))
+    hnet = -hclcof*arw
+    xtemp = -b4/(8.31_eb*tw)
+    hwdot = hclcof - b3*exp(xtemp)*hclw
     return
     end
 

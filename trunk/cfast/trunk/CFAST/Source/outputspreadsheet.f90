@@ -35,9 +35,9 @@
     do i = 1, nm1
         itarg = ntarg - nm1 + i
         izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
-        call SSaddtolist (position,zztemp(i,upper)-273.15_eb,outarray)
+        call SSaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (izshaft(i)==0) then
-            call SSaddtolist(position,zztemp(i,lower)-273.15_eb,outarray)
+            call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call SSaddtolist (position,zzhlay(i,lower),outarray)
         endif
         call SSaddtolist (position,zzvol(i,upper),outarray)
@@ -281,7 +281,7 @@
 
     do i=1,nm1
         do iw = 1, 4
-            call SSaddtolist (position,twj(1,i,iwptr(iw))-273.15_eb,outarray)
+            call SSaddtolist (position,twj(1,i,iwptr(iw))-kelvin_c_offset,outarray)
         end do
     end do
 
@@ -317,9 +317,9 @@
                         ctotal = qtcflux(itarg,1)
                         rtotal = total - ctotal
                     endif
-                    call SSaddtolist (position, tgtemp-273.15_eb, outarray)
-                    call SSaddtolist (position, tttemp-273.15_eb, outarray)
-                    call SSaddtolist (position, tctemp-273.15_eb, outarray)
+                    call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
+                    call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
+                    call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
                     call SSaddtolist (position, total, outarray)
                     call SSaddtolist (position, ctotal, outarray)
                     call SSaddtolist (position, rtotal, outarray)
@@ -357,9 +357,9 @@
         tjet = max(xdtect(i,dtjet),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
         tlink =  xdtect(i,dtemp)
-        call SSaddtolist(position, tlink-273.15_eb, outarray)
+        call SSaddtolist(position, tlink-kelvin_c_offset, outarray)
         call SSaddtolist(position, xact, outarray)
-        call SSaddtolist(position, tjet-273.15_eb, outarray)
+        call SSaddtolist(position, tjet-kelvin_c_offset, outarray)
         call SSaddtolist(position, vel, outarray)
     end do
 
@@ -470,9 +470,9 @@
     do i = 1, nm1
         itarg = ntarg - nm1 + i
         izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
-        call SSaddtolist(position,zztemp(i,upper)-273.15_eb,outarray)
+        call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (izshaft(i)==0) then
-            call SSaddtolist(position,zztemp(i,lower)-273.15_eb,outarray)
+            call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call SSaddtolist(position,zzhlay(i,lower),outarray)
         endif
         call SSaddtolist(position,zzrelp(i) - interior_rel_pressure(i),outarray)
@@ -516,14 +516,14 @@
         factor2 = qchfraction (qcvh, ijk(im,ix,ik),time)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
-        avent = factor2 * height * width
+        avent = factor2*height*width
         call SSaddtolist (position,avent,outarray)       
     end do
 
     do i = 1, nvvent
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
-        avent = qcvfraction(qcvv, i, tsec) * vvarea(itop,ibot)
+        avent = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
         call SSaddtolist (position,avent,outarray)
         flow = 0
         if (vmflo(itop,ibot,upper)>=0.0_eb) flow(1) = vmflo(itop,ibot,upper)

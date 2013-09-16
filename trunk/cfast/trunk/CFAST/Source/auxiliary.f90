@@ -450,9 +450,9 @@
     do i = 1, len(strng)
         if (strng(i:i)=='-') isgn = -1
         ic = ichar(strng(i:i)) - ichar('0')
-        if (ic>=0.and.ic<=9) ival = ival * 10 + ic
+        if (ic>=0.and.ic<=9) ival = ival*10 + ic
     end do
-    inum = isgn * ival
+    inum = isgn*ival
     return
     end function inum
 
@@ -464,6 +464,9 @@
     !     purpose: convert string into an real number
     !     arguments: strng - string containing number to be converted.
 
+    use precision_parameters
+    implicit none
+    
     character, intent(in) :: strng*(*)
     
     character :: chr
@@ -485,7 +488,7 @@
         if (chr=='-') isgn = -1
         if (chr=='.') idec = 1
         if (ic>=0.and.ic<=9) then
-            rval = rval * 10. + ic
+            rval = rval*10.0_eb + ic
         endif
 
         ! if we've found the mantissa, check for exponent
@@ -499,22 +502,22 @@
         if (chr=='.') then
         idec = 1
     else if (ic>=0.and.ic<=9) then
-        rval = rval * 10. + ic
+        rval = rval*10.0_eb + ic
         if (idec/=0) idec = idec + 1
     endif
 
     ! if exponent just keep track of it
     else
-        if (ic>=0.and.ic<=9) iexp = iexp * 10 + ic
+        if (ic>=0.and.ic<=9) iexp = iexp*10 + ic
     endif
     endif
     ip = ip + 1
     if (ip<len(strng)) go to 10
     if (idec/=0) idec = idec - 1
-    eval = 10. ** (abs(iesgn*iexp-idec))
+    eval = 10.0_eb**(abs(iesgn*iexp-idec))
     iesgn = isign(1,iesgn*iexp-idec)
-    if (iesgn==1) rnum = isgn * rval * eval
-    if (iesgn==-1) rnum = isgn * rval / eval
+    if (iesgn==1) rnum = isgn*rval*eval
+    if (iesgn==-1) rnum = isgn*rval/eval
     return
     end function rnum
 
@@ -587,7 +590,7 @@
     integer(2) :: hrs, mins, secs, hsecs
 
     call gettim(hrs,mins,secs,hsecs)
-    cputim = hrs * 3600 + mins * 60 + secs + hsecs / 100.0
+    cputim = real(hrs,eb)*3600.0_eb + real(mins,eb)*60.0_eb + real(secs,eb) + real(hsecs,eb)/100.0_eb
     return
     end subroutine cptime
 
@@ -951,7 +954,7 @@
     ia = 1
     iz = n - 1
 10  continue
-    imid = (ia+iz) / 2
+    imid = (ia+iz)/2
     if (t<x(imid)) then
         iz = imid - 1
         go to 10
@@ -961,8 +964,8 @@
         go to 10
     endif
 20  continue
-    dydx = (y(imid+1)-y(imid)) / (x(imid+1)-x(imid))
-    yint = y(imid) + dydx * (t-x(imid))
+    dydx = (y(imid+1)-y(imid))/(x(imid+1)-x(imid))
+    yint = y(imid) + dydx*(t-x(imid))
     ilast = imid
     return
     end subroutine interp
@@ -1374,7 +1377,7 @@
 1   inc = 3*inc+1
     if (inc<=n) go to 1
 2   continue
-    inc = inc / 3
+    inc = inc/3
     do i = inc+1, n
         rra = ra(i)
         j = i

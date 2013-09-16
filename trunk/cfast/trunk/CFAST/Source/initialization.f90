@@ -738,7 +738,7 @@
             tdspray = (3.0_eb/tdrate)**(1.0_eb/1.8_eb)
         else
             tdspray = 0.0_eb
-            tdrate = 1.0d10
+            tdrate = 1.0e10_eb
             ixdtect(i,dquench) = 0
         endif
 
@@ -1301,7 +1301,7 @@
         ! here.  the final result in o2n2 should be the value used in stport for
         ! the outside ambient.
         xt = interior_temperature
-        xtemp = 23.2_eb - 3.816d3/(xt-46.0_eb)
+        xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
         o2n2(8) = relhum*xh2o
 

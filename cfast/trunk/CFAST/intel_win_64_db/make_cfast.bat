@@ -9,5 +9,5 @@ echo Setting up compiler environment
 call %intelbin%\ifortvars intel64
 
 :envexist
-make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64
+make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64_db
 pause

@@ -39,10 +39,10 @@
 
     do i = 1, nm1
         do j = 1, nwal
-            flxrad(i,j) = 0.0d0
+            flxrad(i,j) = 0.0_eb
         end do
-        flwrad(i,1) = 0.0d0
-        flwrad(i,2) = 0.0d0
+        flwrad(i,1) = 0.0_eb
+        flwrad(i,2) = 0.0_eb
     end do
 
     if(option(frad)==off) return
@@ -367,7 +367,7 @@
     do k = 1, 2
         dqde(k) = rhs(k)
         qqout(k) = e(k) - (1.0_eb - emis(k))*dqde(k)
-        dq(k) = rhs(k) * emis2(k)
+        dq(k) = rhs(k)*emis2(k)
     end do
 
     ! take solution and compute energy gain or loss to each panel and each layer.  also compute fluxes.  change sign so that
@@ -480,31 +480,31 @@
     ! define transmission factors for surfaces, but first define beam lengths
     
     zz(1) = zroom
-    zz(2) = (hlay+zroom) *.50_eb
-    zz(3) = hlay * .50_eb
-    zz(4) = 0.0d0
-    dx2 = (xroom*.50_eb) ** 2
-    dy2 = (yroom*.50_eb) ** 2
-    x2 = xroom ** 2
-    y2 = yroom ** 2
+    zz(2) = (hlay+zroom)*0.50_eb
+    zz(3) = hlay*0.50_eb
+    zz(4) = 0.0_eb
+    dx2 = (xroom*0.50_eb)**2
+    dy2 = (yroom*0.50_eb)**2
+    x2 = xroom**2
+    y2 = yroom**2
 
     beam(1,1) = 0.0_eb
 
     dz2 = (zz(1)-zz(2))**2
-    beam(1,2) = (sqrt(dz2+dx2)+sqrt(dz2+dy2))*.5_eb
+    beam(1,2) = (sqrt(dz2+dx2)+sqrt(dz2+dy2))*0.5_eb
 
     dz2 = (zz(1)-zz(3))**2
-    beam(1,3) = (sqrt(dz2+dx2)+sqrt(dz2+dy2))*.5_eb
+    beam(1,3) = (sqrt(dz2+dx2)+sqrt(dz2+dy2))*0.5_eb
 
     beam(1,4) = zroom
-    beam(2,2) = (xroom+yroom)*.5_eb
-    dz2 = (zroom*.5_eb)**2
-    beam(2,3) = (sqrt(dz2+x2)+sqrt(dz2+y2))*.5_eb
-    dz2 = ((zroom+hlay)*.5_eb)**2
-    beam(2,4) = (sqrt(dz2+dx2)+sqrt(dz2+dy2))*.5_eb
+    beam(2,2) = (xroom+yroom)*0.5_eb
+    dz2 = (zroom*0.5_eb)**2
+    beam(2,3) = (sqrt(dz2+x2)+sqrt(dz2+y2))*0.5_eb
+    dz2 = ((zroom+hlay)*0.5_eb)**2
+    beam(2,4) = (sqrt(dz2+dx2)+sqrt(dz2+dy2))*0.5_eb
     beam(3,3) = beam(2,2)
-    dh2 = (hlay*.5_eb)**2
-    beam(3,4) = (sqrt(dh2+dx2)+sqrt(dh2+dy2))*.5_eb
+    dh2 = (hlay*0.5_eb)**2
+    beam(3,4) = (sqrt(dh2+dx2)+sqrt(dh2+dy2))*0.5_eb
     beam(4,4) = 0.0_eb
     do i = 1, 4
         do j = i + 1, 4
@@ -530,7 +530,7 @@
 
     ! define e vector
     do i = 1, 4
-        e(i) = sigma * twall(i) ** 4
+        e(i) = sigma*twall(i)**4
     end do
 
     ! define 'a' and 'b' coefficient matrix
@@ -573,8 +573,8 @@
     ! diagonally dominant.  now we have to multiply the solution to the modified problem by emis(i) to get the answer to the original problem
     do k = 1, 4
         dqde(k) = rhs(k)
-        qout(k) = e(k) - (1.0d0 - emis(k))*dqde(k)
-        dq(k) = rhs(k) * emis(k)
+        qout(k) = e(k) - (1.0_eb - emis(k))*dqde(k)
+        dq(k) = rhs(k)*emis(k)
     end do
 
     ! take solution and compute energy gain or loss to each panel and each layer.  also compute fluxes.  change sign so that

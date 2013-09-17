@@ -1,0 +1,39 @@
+VERSN,6,"Ul NIST Vents Test 2"
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,1800,-50,10,5
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GYPSUM,0.16,1090,676,0.016,0.9,Gypsum Board (5/8 in)
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,6.1,4.3,2.4,0,0,0,GYPSUM,CONCRETE,GYPSUM
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,0.9,2.1,0,1,4.3,0,1,1
+VVENT,2,1,2.44,2,1
+RAMP,V,2,1,1,5,0,0,569,0,571,0.5,819,0.5,871,1.0
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!UL_NIST_Test1
+FIRE,1,0,4.3,0,1,1,0,0,0,1,UL_NIST_Test1
+CHEMI,1,4,0,0,0,0.25,5E+07,METHANE
+TIME,0,10,930,950
+HRR,0,2144000,2144000,0
+SOOT,0,0,0,0
+CO,0,0,0,0
+TRACE,0,0,0,0
+AREA,0.64,0.64,0.64,0.64
+HEIGH,0.4,0.4,0.4,0.4

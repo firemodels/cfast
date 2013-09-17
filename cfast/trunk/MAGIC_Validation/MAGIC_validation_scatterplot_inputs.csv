@@ -14,8 +14,8 @@ Oxygen Concentration (MAGIC),Measured Drop in Volume Fraction,Predicted Drop in 
 Carbon Dioxide Concentration,Measured Rise in Volume Fraction,Predicted Rise in Volume Fraction,0,0.15,0.03 0.95,SouthEast,1,8,yes,linear,ScatterPlots/Carbon_Dioxide_Concentration
 Smoke Concentration (MAGIC),Measured Density (mg/m^3),Predicted Density (mg/m3),0,600,0.03 0.95,SouthEast,1,19,yes,linear,ScatterPlots/Smoke_Concentration
 Carbon Monoxide Concentration,Measured Change in Volume Fraction,Predicted Change in Volume Fraction,0,0.001,0.03 0.95,SouthEast,1,8,yes,linear,ScatterPlots/Carbon_Monoxide_Concentration
-Compartment Over-Pressure (MAGIC),Measured Pressure Rise (Pa),Predicted Pressure Rise (Pa),0,400,0.03 0.95,SouthEast,1,25,yes,linear,ScatterPlots/Compartment_Pressure
-Open Compartment Over-Pressure (MAGIC),Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,30,0.03 0.95,SouthEast,1,25,yes,linear,ScatterPlots/Open_Compartment_Pressure
+Compartment Over-Pressure (MAGIC),Measured Pressure Rise (Pa),Predicted Pressure Rise (Pa),0,400,0.03 0.95,SouthEast,1,21,yes,linear,ScatterPlots/Compartment_Pressure
+Open Compartment Over-Pressure (MAGIC),Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,30,0.03 0.95,SouthEast,1,21,yes,linear,ScatterPlots/Open_Compartment_Pressure
 Target Temperature (MAGIC),Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,0.03 0.95,SouthEast,1,7,yes,linear,ScatterPlots/Target_Temperature
 Surface Temperature (MAGIC),Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,0.03 0.95,SouthEast,1,7,yes,linear,ScatterPlots/Surface_Temperature
 Wall Temperature (MAGIC),Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,0.03 0.95,SouthEast,1,7,yes,linear,ScatterPlots/Wall_Temperature

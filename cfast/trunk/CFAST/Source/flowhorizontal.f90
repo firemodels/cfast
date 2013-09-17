@@ -1190,6 +1190,8 @@
     return
     end function qchfraction
 
+! --------------------------- qcvfraction -------------------------------------------
+
     real(eb) function qcvfraction (points, index, time)
 
     !	This is the open/close function for buoyancy driven vertical flow
@@ -1217,6 +1219,8 @@
     endif
     return
     end function qcvfraction
+
+! --------------------------- qcffraction -------------------------------------------
 
     real(eb) function qcffraction (points, index, time)
 

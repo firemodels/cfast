@@ -181,7 +181,11 @@
                         end if
                         pressure_correction_data(ntest_pressure_correction,irr,2) = delta_py
                     end do  
-                    pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                    if (index(d2_filename,'p_n.csv')/=0) then
+                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-7)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                    else
+                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                    end if
                 end if
                 
             ! Incorrect inputs, just throw up hands and quit

@@ -96,8 +96,9 @@ module cfast_main
         nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, ndumpr, nrestr, ndt, next, nnode, nft, nfan, nbr
     
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
-        (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), (nofprd,nofsets(11)), &
-        (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), (nequals,nofsets(16)), (noffsm,nofsets(17))
+        (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), &
+        (nofprd,nofsets(11)), (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), &
+        (nequals,nofsets(16)), (noffsm,nofsets(17))
 
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
@@ -195,7 +196,8 @@ module cshell
     ! rundat is today's date, crdate is the creation date of the module, and is kept in the main cfast data module.  
     ! rundat is copied to mpsdat as soon as the model kernel is started. done in initfs and cfast body.
     ! trace determines the type of output (print file) for mechanical ventilation - current or total
-    logical :: header=.false., nokbd=.false., initializeonly=.false., debugging=.false., trace=.false., validate=.false., netheatflux=.false.
+    logical :: header=.false., nokbd=.false., initializeonly=.false.
+    logical :: debugging=.false., trace=.false., validate=.false., netheatflux=.false.
     integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
     integer, dimension(3) :: rundat
     character(128) :: thrmfile="thermal", setpfile
@@ -408,8 +410,14 @@ module opt
     integer, parameter :: verybg = 9
 
     integer, dimension(mxopt) :: option = &
-        ! fire, hflow, entrain, vflow, cjet, door-fire, convec, rad, conduct, debug, exact ode,  hcl , mflow, keyboard, type of initialization,  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
-        (/ 2,   1,      1,       1,     2,    1,         1,      4,   1,       0,     1,          1,    1,     1,        1,                       0,            1,       0,           0,                  0,                   0/)
+        ! fire, hflow, entrain, vflow, cjet
+        (/   2,     1,       1,     1,   2,  &
+        ! door-fire, convec, rad, conduct, debug
+                  1,      1,   4,       1,     0,  &
+        ! exact ode,  hcl, mflow, keyboard, type of initialization
+                  1,    1,     1,        1,     1,  &
+        !  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
+                      0,       1,           0,                  0,                   0,                    0/)
 !*** in above change default rad option from 2 to 4
 !*** this causes absorption coefs to take on constant default values rather than computed from data
     integer, dimension(mxopt) :: debug = 0

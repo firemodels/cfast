@@ -22,7 +22,7 @@
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
     
-    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, qcvfraction, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
+    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
     real(eb) :: area, vvfraction
 

@@ -5,8 +5,7 @@ CFASTBOT_DIR="$CFASTBOT_HOME_DIR/CFASTBOT"
 CFAST_SVNROOT="$CFASTBOT_HOME_DIR/cfast"
 RUNNING=$CFASTBOT_DIR/running
 
-#for f in r30 r35 r40 r45 r50 r55 r60 r65 r70 
-for f in r30 r35 
+for f in r30 r35 r40 r45 r50 r55 r60 r65 r70 
 do
    while [ -e $RUNNING ]; do
       echo trying to run case $f
@@ -21,4 +20,5 @@ do
    ./run_cfastbot.sh -s -l $f
    sleep 30
 done
+echo metabot complete
 

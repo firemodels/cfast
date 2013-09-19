@@ -13,14 +13,18 @@ mailTo="gforney@gmail.com, rpeacoc@nist.gov, koverholt@gmail.com"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
-while getopts 'aq:s' OPTION
+LABEL=
+while getopts 'al:q:s' OPTION
 do
 case $OPTION in
    a)
      RUNAUTO="y"
      ;;
-   q)
+   l)
      CFASTBOT_QUEUE="$OPTARG"
+     ;;
+   q)
+     LABEL="$OPTARG"
      ;;
    s)
      SKIP_SVN_UPDATE_AND_PROPFIX=true
@@ -833,6 +837,9 @@ archive_validation_stats()
    if [ -e ${CURRENT_STATS_FILE} ] ; then
       # Copy to CFASTbot history
       cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}.csv"
+      if [ "$LABEL" != "" ]; then
+        cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}_${LABEL}.csv"
+      fi
 
       # Copy to web results
       cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASE}_${SVN_REVISION}.csv

@@ -11,7 +11,7 @@ do case $OPTION in
   m)
    MAKEMOVIES="-m"
   ;;
-  m)
+  s)
    SKIP="-s"
   ;;
 esac

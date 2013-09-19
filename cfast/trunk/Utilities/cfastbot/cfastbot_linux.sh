@@ -38,6 +38,7 @@ ERROR_LOG=$CFASTBOT_DIR/output/errors
 TIME_LOG=$CFASTBOT_DIR/output/timings
 WARNING_LOG=$CFASTBOT_DIR/output/warnings
 SVN_LOG=$CFASTBOT_HOME_DIR/SVN_LOG
+FINISH=$CFASTBOT_DIR/output/finished
 export TEXINPUTS=".:../LaTeX_Style_Files:"
 
 THIS_CFAST_FAILED=0
@@ -46,6 +47,7 @@ LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
    LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
 fi
+rm -f $FINISH
 
 export JOBPREFIX=CB_
 
@@ -1060,3 +1062,4 @@ make_cfast_vv_guide
 set_files_world_readable
 save_build_status
 email_build_status
+touch $FINISH

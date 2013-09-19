@@ -1,11 +1,22 @@
 #!/bin/bash  
 
 MAKEMOVIES=
-while getopts 'm' OPTION
+LABEL=
+SKIP=
+while getopts 'l:ms' OPTION
 do case $OPTION in
+   l)
+    LABEL="$OPTARG"
+    ;;
   m)
    MAKEMOVIES="-m"
   ;;
+  m)
+   SKIP="-s"
+  ;;
 esac
 done
-run-one bash -lc "./cfastbot_linux.sh -q fire70s " &
+if [ "$LABEL" != "" ]; then
+  LABEL="-l $LABEL"
+fi
+run-one bash -lc "./cfastbot_linux.sh $LABEL $SKIP -q fire7080s " &

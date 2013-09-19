@@ -24,7 +24,7 @@ case $OPTION in
      LABEL="$OPTARG"
      ;;
    q)
-     LABEL="$OPTARG"
+     CFASTBOT_QUEUE="$OPTARG"
      ;;
    s)
      SKIP_SVN_UPDATE_AND_PROPFIX=true

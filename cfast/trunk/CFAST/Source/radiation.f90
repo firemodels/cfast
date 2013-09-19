@@ -81,11 +81,11 @@
     !defabsup = 0.65_eb
     !defabsup = 0.60_eb
     !defabsup = 0.55_eb
-    !defabsup = 0.50_eb
+    defabsup = 0.50_eb
     !defabsup = 0.45_eb
     !defabsup = 0.40_eb
     !defabsup = 0.35_eb
-    defabsup = 0.30_eb
+    !defabsup = 0.30_eb
     defabslow = 0.01_eb
     if(lfbo/=0.and.option(frad)/=4.and.lfbt/=1)then
         defabsup = absorb(lfbo,upper)

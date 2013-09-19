@@ -21,7 +21,7 @@ case $OPTION in
      RUNAUTO="y"
      ;;
    l)
-     CFASTBOT_QUEUE="$OPTARG"
+     LABEL="$OPTARG"
      ;;
    q)
      LABEL="$OPTARG"

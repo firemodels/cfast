@@ -839,6 +839,7 @@ archive_validation_stats()
       cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}.csv"
       if [ "$LABEL" != "" ]; then
         cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}_${LABEL}.csv"
+        cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASE}_${SVN_REVISION}_${LABEL}.csv
       fi
 
       # Copy to web results

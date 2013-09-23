@@ -76,6 +76,9 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 90 ..\..\bin\cfast.exe SP_AST_Test_1 /V
 ..\scripts\background -u 90 ..\..\bin\cfast.exe SP_AST_Test_2 /V
 ..\scripts\background -u 90 ..\..\bin\cfast.exe SP_AST_Test_3 /V
+..\scripts\background -u 90 ..\..\bin\cfast.exe SP_AST_Diesel_1p1 /V
+..\scripts\background -u 90 ..\..\bin\cfast.exe SP_AST_Diesel_1p9 /V
+..\scripts\background -u 90 ..\..\bin\cfast.exe SP_AST_Heptane_1p1 /V
 cd ..
 if %1==SP_AST goto end
 

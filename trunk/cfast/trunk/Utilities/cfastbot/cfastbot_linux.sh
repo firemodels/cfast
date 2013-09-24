@@ -799,16 +799,14 @@ check_validation_stats()
 {
    cd $CFAST_SVNROOT/Utilities/Matlab
 
-   STATS_FILE_BASE=CFAST_validation_scatterplot_output
+   STATS_FILE_BASENAME=CFAST_validation_scatterplot_output
 
-   CURRENT_STATS_FILE=$CFAST_SVNROOT/Utilities/Matlab/${STATS_FILE_BASE}.csv
-
-   RECENT_STATS_FILE=`ls -v $CFASTBOT_DIR/history/${STATS_FILE_BASE}* | tail -n 1`
-   RECENT_STATS_FILE_SVN=${RECENT_STATS_FILE//[^0-9]/}
+   BASELINE_STATS_FILE=$CFAST_SVNROOT/Utilities/Matlab/${STATS_FILE_BASENAME}_baseline.csv
+   CURRENT_STATS_FILE=$CFAST_SVNROOT/Utilities/Matlab/${STATS_FILE_BASENAME}.csv
 
    if [ -e ${CURRENT_STATS_FILE} ]
    then
-      if [[ `diff -u ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE}` == "" ]]
+      if [[ `diff -u ${BASELINE_STATS_FILE} ${CURRENT_STATS_FILE}` == "" ]]
       then
          # Continue along
          :
@@ -817,9 +815,9 @@ check_validation_stats()
          echo "Validation statistics have changed since last run." >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
          echo "Difference between validation statistics files," >> $WARNING_LOG
-         echo "(Revision ${RECENT_STATS_FILE_SVN}) vs. (Revision ${SVN_REVISION}):" >> $WARNING_LOG
+         echo "Baseline validation statistics vs. (Revision ${SVN_REVISION}):" >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
-         diff -u ${RECENT_STATS_FILE} ${CURRENT_STATS_FILE} >> $WARNING_LOG
+         diff -u ${BASELINE_STATS_FILE} ${CURRENT_STATS_FILE} >> $WARNING_LOG
          echo "" >> $WARNING_LOG
       fi
    else
@@ -836,14 +834,14 @@ archive_validation_stats()
 
    if [ -e ${CURRENT_STATS_FILE} ] ; then
       # Copy to CFASTbot history
-      cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}.csv"
+      cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASENAME}_${SVN_REVISION}.csv"
       if [ "$LABEL" != "" ]; then
-        cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASE}_${SVN_REVISION}_${LABEL}.csv"
-        cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASE}_${SVN_REVISION}_${LABEL}.csv
+        cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASENAME}_${SVN_REVISION}_${LABEL}.csv"
+        cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${SVN_REVISION}_${LABEL}.csv
       fi
 
       # Copy to web results
-      cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASE}_${SVN_REVISION}.csv
+      cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${SVN_REVISION}.csv
    fi
 }
 

@@ -345,38 +345,13 @@ run_vv_cases_debug()
    #  = Run all cfast cases =
    #  =======================
 
-   # Submit CFAST V&V cases and wait for them to start
+   # Submit CFAST V&V cases
    echo 'Running CFAST V&V cases:' >> $CFASTBOT_DIR/output/stage3 2>&1
    ./Run_CFAST_Cases.sh -d -q $CFASTBOT_QUEUE >> $CFASTBOT_DIR/output/stage3 2>&1
    wait_vv_cases_debug_start
 
-   # Wait some additional time for all cases to start
-   sleep 30
-
-   # Stop all cases
-   ./Run_CFAST_Cases.sh -d -s >> $CFASTBOT_DIR/output/stage3 2>&1
-   echo "" >> $CFASTBOT_DIR/output/stage3 2>&1
-
-
    # Wait for V&V cases to end
    wait_vv_cases_debug_end
-
-   #  ======================
-   #  = Remove .stop files =
-   #  ======================
-
-   # Remove all .stop and .err files from V&V directories (recursively)
-   cd $CFAST_SVNROOT/Verification
-   find . -name '*.stop' -exec rm -f {} \;
-   find . -name '*.err' -exec rm -f {} \;
-   find . -name '*.smv' -exec rm -f {} \;
-   find . -name '*.out' -exec rm -f {} \;
-
-   cd $CFAST_SVNROOT/Validation
-   find . -name '*.stop' -exec rm -f {} \;
-   find . -name '*.err' -exec rm -f {} \;
-   find . -name '*.smv' -exec rm -f {} \;
-   find . -name '*.out' -exec rm -f {} \;
 }
 
 check_vv_cases_debug()
@@ -384,17 +359,17 @@ check_vv_cases_debug()
    # Scan and report any errors in CFAST Verification cases
    cd $CFAST_SVNROOT/Verification
 
-   if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log *` == "" ]] && \
-      [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
+      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
-      grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage3_errors >> $ERROR_LOG
@@ -405,23 +380,34 @@ check_vv_cases_debug()
    # Scan and report any errors in CFAST Validation cases
    cd $CFAST_SVNROOT/Validation
 
-   if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
-      [[ `grep "***Error" -rI --include *.log *` == "" ]] && \
-      [[ `grep "***Fatal error" -rI --include *.log *` == "" ]] && \
-      [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
+      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
-      grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage3_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
    fi
+
+   #  =====================
+   #  = Remove case files =
+   #  =====================
+
+   # Remove all unversioned case files from V&V directories (recursively)
+   cd $CFAST_SVNROOT/Verification
+   svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
+
+   cd $CFAST_SVNROOT/Validation
+   svn status --no-ignore | grep '^[I?]' | cut -c 9- | while IFS= read -r f; do rm -rf "$f"; done
 }
 
 #  ===================================
@@ -493,17 +479,17 @@ check_vv_cases_release()
    # Scan and report any errors in CFAST Verificaion cases
    cd $CFAST_SVNROOT/Verification
 
-   if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log *` == "" ]] && \
-      [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
+      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
-      grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage5_errors >> $ERROR_LOG
@@ -514,17 +500,17 @@ check_vv_cases_release()
    # Scan and report any errors in CFAST Validation cases
    cd $CFAST_SVNROOT/Validation
 
-   if [[ `grep 'Run aborted' -rI --include *.log ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log *` == "" ]] && \
-      [[ `grep -A 20 forrtl -rI --include *.log *` == "" ]]
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
+      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -rI --include *.log $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Fatal error" -riI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
-      grep -A 20 forrtl -rI --include *.log * >> $CFASTBOT_DIR/output/stage5_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
       cat $CFASTBOT_DIR/output/stage5_errors >> $ERROR_LOG
@@ -845,9 +831,9 @@ archive_validation_stats()
    fi
 }
 
-#  ==================================
+#  ================================
 #  = Stage 8 - Build CFAST Guides =
-#  ==================================
+#  ================================
 
 check_guide()
 {

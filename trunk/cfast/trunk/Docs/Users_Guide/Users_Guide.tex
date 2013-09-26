@@ -10,6 +10,34 @@
 \usepackage{datetime}
 \newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
 
+\usepackage{listings}
+\usepackage{textcomp}
+\definecolor{lbcolor}{rgb}{0.96,0.96,0.96}
+\lstset{
+    %backgroundcolor=\color{lbcolor},
+    tabsize=4,
+    rulecolor=,
+    language=Fortran,
+        basicstyle=\footnotesize\ttfamily,
+        upquote=true,
+        aboveskip={\baselineskip},
+        belowskip={\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+        breaklines=true,
+        breakatwhitespace=true,
+        frame=none,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,0},
+        commentstyle=\color[rgb]{0,0,0},
+        stringstyle=\color[rgb]{0,0,0},
+}
+
+\usepackage{wrapfig}
+
 \renewcommand{\bibname}{References}
 
 \setlength{\textwidth}{6.5in}
@@ -211,6 +239,9 @@ Support to refine the software development and quality assurance process for CFA
 \mainmatter
 
 \include{Background_Chapter}
+\include{Getting_Started_Chapter}
+\include{Running_CFAST_Chapter}
+\include{Input_File_Chapter}
 %\include{Summary_Chapter}
 
 %\backmatter

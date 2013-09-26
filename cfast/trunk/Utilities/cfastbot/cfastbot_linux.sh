@@ -792,7 +792,7 @@ check_validation_stats()
 
    if [ -e ${CURRENT_STATS_FILE} ]
    then
-      if [[ `diff -u ${BASELINE_STATS_FILE} ${CURRENT_STATS_FILE}` == "" ]]
+      if [[ `diff -u -U100 <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE})` == "" ]]
       then
          # Continue along
          :
@@ -803,7 +803,7 @@ check_validation_stats()
          echo "Difference between validation statistics files," >> $WARNING_LOG
          echo "Baseline validation statistics vs. (Revision ${SVN_REVISION}):" >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
-         diff -u ${BASELINE_STATS_FILE} ${CURRENT_STATS_FILE} >> $WARNING_LOG
+         diff -u -U100 <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE}) >> $WARNING_LOG
          echo "" >> $WARNING_LOG
       fi
    else

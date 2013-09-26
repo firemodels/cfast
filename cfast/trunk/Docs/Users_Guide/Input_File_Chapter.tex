@@ -5,7 +5,49 @@
 CFAST is a computer program that uses an input file and generates one or more output files. The first step in performing a calculation is to generate a text input file that provides the program with all of the necessary information to describe the scenario under consideration.  The most important inputs determine the geometry of the compartments in the scenario and the connections between these compartments. Next, the fire, detection, and suppression characteristics of the scenario are defined. Finally, there are a number of parameters that customize the output from the model.  Each line of the file contains a keyword label that identifies the input, followed by a number of numerical or text inputs corresponding to the particular input keyword. A simple input file is shown below. This example is used in the discussion of the output in Chapter 5.
 
 \begin{lstlisting}
-VERSN,6,Cable tray fire -- base caseTIMES,1800,120,0,30EAMB,293.15,101300,0TAMB,293.15,101300,0,50LIMO2,10WIND,0,10,0.16COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETEHVENT,1,2,1,1,2.4,0,1,0,0,1,1OBJECT,bunsen,1,4.55,2.5,0,1,1,0,0,0,1OBJECT,Wood_Wall,1,4.55,2.5,0,1,1,0,0,0,1TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE\end{lstlisting}
+VERSN,6,Cable tray fire -- base case
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,1800,-120,10,30
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,WALLS
+WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,1,2.4,0,1,0,0,1,1
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!Wood_Wall
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,Wood_Wall
+CHEMI,1,4,0,0,0,0.33,1.81E+07,HARDWOOD
+TIME,0,8000
+HRR,0,1000000
+SOOT,0.02,0.02
+CO,0.02,0.02
+TRACE,0,0
+AREA,0.05,9
+HEIGH,0,3
+!!
+!!Target and detector keywords
+!!
+TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
+\end{lstlisting}
 
 All of the inputs to the model are discussed in this chapter.  Following the discussion that details each input, their engineering units and default values, notes are included that provided additional guidance or frequently addressed problems that may be encountered by the user. These notes take the form of a bulleted list such as:
 
@@ -101,7 +143,8 @@ The thermal properties file contains material properties for compartment surface
 Ambient conditions define the environment at which the scenario begins. This allows the user to specify the temperature, pressure, and station elevation of the ambient atmosphere, as well as the absolute wind pressure to which the structure is subjected.  Pressure interior to a structure is calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}.  This modification is applied to the vents which connect to the exterior ambient.  The calculated pressure change is modified by the wind coefficient for each vent.  This coefficient, which can vary from -1.0 to +1.0, nominally from -0.8 to +0.8, determines whether the vent is facing away from or into the wind.  The pressure change is multiplied by the vent wind coefficient and added to the external ambient for each vent which is connected to the outside. There is an ambient for the interior and for the exterior of the structure.  Three keywords define the ambient conditions: TAMB for the interior of the structure, EAMB for the exterior of the structure is EAMB, and WIND for the wind information.
 
 \begin{lstlisting}
-EAMB,293.15,101300,0TAMB,293.15,101300,0,50
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
 WIND,0,10,0.16
 \end{lstlisting}
 
@@ -145,4 +188,216 @@ The Compartment Geometry page defines the size, position, materials of construct
 \end{center}
 \end{figure}
 
-Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the compartment geometry page are as follows:
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the compartment geometry page are as follows: \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
+\end{wrapfigure}
+
+Use the Add button to create a new compartment with default values for all entries. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Duplicate_Button}
+\end{wrapfigure}
+
+Use the Duplicate button to create a copy of the compartment currently selected in the summary table at the top of the page. The new compartment is added to the end of the list with the named changed to indicate it is a copy of the selected item. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Move_Up_Button}
+\end{wrapfigure}
+
+Use the Move Up and Move Down buttons to change the order of the list of compartments in the summary table. This simply changes the automatically assigned compartment numbers for the compartments. Compartments can be ordered as desired.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
+\end{wrapfigure}
+
+Use the Remove button to delete the selected compartment from the list of compartments in the summary table.  Other compartments are renumbered once the compartment is deleted.
+
+\subsection{Defining the Compartment}
+
+In order to model a fire scenario, the size and elevation of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 6 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
+
+At least one compartment must be specified in the input file.  There are no defaults for compartment size. There are defaults for absolute positioning (0,0,0). The fully mixed (single zone) and corridor models are turned off by default.
+
+\begin{wrapfigure}{r}{0pt}
+  \includegraphics[width=2.0in]{FIGURES/Input_File/CFAST_Coordinates}
+\end{wrapfigure}
+
+Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for utilizing the corridor flow algorithm with the HALL command and for positioning the compartments for visualization in SMOKEVIEW. 
+
+The relevant CFAST keywords are COMPA to define the compartment size and materials, HALL or ONEZ to define flow characteristics in the compartment, and ROOMA / ROOMH to define a variable cross-sectional area for the compartment. The COMPA command is required for each compartment as a basic definition for the compartment, even if there are subsequent modifications by the HALL, ONEZ, ROOMA, or ROOMH keywords which follow.  Details of the CFAST keywords are included in Appendix A.
+
+\begin{lstlisting}
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+\end{lstlisting}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.0in]{FIGURES/Input_File/Compartment_Name}
+\end{center}
+\end{figure}
+
+\textbf{Compartment Name:} Compartments are identified by a unique alphanumeric name.  This may be a simple as a single character or number, or a description of the compartment.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3.552in]{FIGURES/Input_File/Compartment_Size}
+\end{center}
+\end{figure}
+
+\textbf{Width:} specifies the width of the compartment as measured on the X axis from the origin (0,0,0) of the compartment.  
+
+\textbf{Depth:} specifies the depth of the compartment as measured on the Y axis from the origin (0,0,0) of the compartment.  
+
+\textbf{Height:} specifies the height of the compartment as measured on the Z axis from the origin (0,0,0) of the compartment.  
+
+\begin{wrapfigure}{r}{0pt}
+  \includegraphics[width=2.0in]{FIGURES/Input_File/CFAST_Absolute_Positioning}
+\end{wrapfigure}
+
+\textbf{Absolute Width Position:} specifies the absolute x coordinate of the lower, left, front corner of the room.
+
+\textbf{Absolute Depth Position:} specifies the absolute y coordinate of the lower, left, front corner of the room.
+
+\textbf{Absolute Floor Height:} specifies the height of the floor of each compartment with respect to station elevation specified by the internal ambient conditions reference height parameter.  The reference point must be the same for all elevations in the input data.  For example, the two rooms in the sample to the right would be located at (0,0,0) and (0,2,2.3).
+
+\subsection{Thermal Properties of Bounding Surfaces}
+
+To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if calculation of inter-compartment heat transfer is to be calculated.
+
+The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Currently, thermal properties for materials are read from the CFAST input file with a thermal database file of common materials included in the CFAST distribution.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three). See the explanation in the section on auxiliary files for additional details.
+
+\begin{lstlisting}
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
+\end{lstlisting}
+
+\begin{figure}[h!]
+\includegraphics[width=6.5in]{FIGURES/Input_File/Compartment_Materials}
+\end{figure}
+
+The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction and radiation as well as defining the compartments, unless these phenomena are explicitly turned off. 
+
+\textbf{Ceiling Material} (default value: Gypsum Board): material name from the thermal properties data file used for the ceiling surface of the compartment. 
+
+\textbf{Wall Material} (default value: Gypsum Board): material name from the thermal properties data file used for the wall surfaces of the compartment.
+
+\textbf{Floor Material} (default value: Off): material name from the thermal properties data file used for the floor surface of the compartment.
+
+\begin{itemize}
+\item If the thermophysical properties of the enclosing surfaces are not included, CFAST will treat them as adiabatic (no heat transfer).
+
+\item If a name is used which is not in the database, the model should stop with an error message. The keyword in the data file simply gives a name (such as CONCRETE) which refers to the properties for that material in the thermal data file (see section 4.2.3 and Appendix A for details on the thermophysical database).
+
+\item Since most of the heat conduction is through the ceiling, and since the conduction calculation takes a significant fraction of the computation time, it is recommended that initial calculations be made using the ceiling only.  Adding the walls generally has a small effect on the results, and the floor contribution is usually negligible.  Clearly, there are cases where the above generalization does not hold, but it may prove to be a useful screening technique. A caveat in including floor properties is that the set of equations describing heat transfer becomes difficult to solve once the thermal wave from the compartments reaches the unexposed side of a floor. The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
+\end{itemize}
+
+\section{Compartment Connections}
+
+Flow through vents can be natural flow through doors, windows, or openings in ceilings and floors; or forced flow in a mechanical ventilation system.  Natural flow comes in two varieties.  The first is referred to as horizontal flow.  It is the flow which is normally thought of in discussing fires.  It encompasses flow through doors, windows and so on.  The other is vertical flow and can occur if there is a hole in the ceiling or floor of a compartment.  This latter phenomena is useful in some scenarios such as in a ship where openings in floors and ceilings through scuttles are common and in buildings with manual or automatic heat and smoke venting.
+
+Flow through normal vents is governed by the pressure difference across a vent.  There are two situaÂtions which give rise to flow through vents.  The first is flow of air or smoke driven from a compartment by buoyancy.  The second type of flow is due to expansion which is particularly important when conditions in the fire environment are changing rapidÂly.  Rather than depending entirely on density differences between the two gases, the flow is forced by volumetric expansion.
+
+In addition to natural flow, forced flow from mechanical ventilation can affect a fire as well. More important than affecting the fire, however, is the dispersal of the smoke and toxic gases from the fire to adjacent spaces, if ventilation continues to operate after a fire starts.
+
+Atmospheric pressure is about 100 000 Pa. Fires produce pressure changes from 1 Pa to 1000 Pa and mechanical ventilation systems typically involve pressure differentials of about 1 Pa to 100 Pa.  In order to address pressure-induced flow, pressure differences of about 0.1 Pa out of 100 000 Pa for the overall problem or $10^{-4}$ Pa for adjacent compartments must be tracked.
+
+The keywords which describe the various flow regimes are:
+
+\begin{itemize}
+\item Windows and doors (horizontal flow through vertical vents): HVENT, specifies vent which connect compartments horizontally
+\item Holes in a ceiling/floor (vertical flow through horizontal vents: VVENT, specifies a vent which connects compartments vertically
+\item HVAC specification: MVENT specifies a vent which connects compartments with a forced flow
+\end{itemize}
+
+For all three types of vents the size of the vent opening (expressed as a fraction of the original opening) may be changed:
+
+\begin{itemize}
+\item EVENT change the opening fraction of the specified vent at a chosen time.
+\item RAMP change the opening fraction as a function of time by specifying a series of time and fraction pairs
+\end{itemize}
+
+Each of these commands is discussed in the sections that follow.
+
+\subsection{Defining Natural Flow Connections Through Doors and Windows}
+
+Horizontal flow connections may include doors between compartments or to the outdoors as well as windows in the compartments.  These specifications do not necessarily correspond to physically connecting the walls between specified compartments.  Rather, lack of an opening simply prevents flow between the compartments.  Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors. 
+
+Horizontal connections can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the outÂdoors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section.  The relevant CFAST keyword is HVENT.  Details of the CFAST keywords are included in the appendix.
+
+\begin{figure}[h!]
+\includegraphics[width=6.5in]{FIGURES/Input_File/Natural_Flow_Tab}
+\end{figure}
+
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the horizontal flow vents page are as follows.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
+\end{wrapfigure}
+
+Use the Add button to create a new horizontal flow vent with default values for all entries. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Duplicate_Button}
+\end{wrapfigure}
+
+Use the Duplicate button to create a copy of the horizontal flow vent currently selected in the summary table at the top of the page. The new vent is added to the end of the list with the named changed to indicate it is a copy of the selected item. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Move_Up_Button}
+\end{wrapfigure}
+
+Use the Move Up and Move Down buttons to change the order of the list of horizontal flow vents in the summary table. This simply changes the automatically assigned vent numbers for the vents. Vents can be ordered as desired. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
+\end{wrapfigure}
+
+Use the Remove button to delete the selected horizontal flow vent from the list of horizontal flow vents in the summary table.  Other vents are renumbered once the compartment is deleted. \\~ \\
+
+\begin{lstlisting}
+HVENT,1,2,1,1,2.4,0,1,0,0,1,1
+\end{lstlisting}
+
+\begin{figure}[h!]
+\includegraphics[width=6.5in]{FIGURES/Input_File/Compartment_From_To}
+\end{figure}
+
+\textbf{First Compartment:} First of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
+
+\textbf{Second Compartment:} Second of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
+
+\textbf{Vent Number:} It is possible to define a total of 25 horizontal flow connections between any pair of compartments. A number from 1 to 25 uniquely identifies the connection. This number is automatically assigned by the input editor based on the order they appear in the summary table on the horizontal flow vents page.
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=1.1in]{FIGURES/Input_File/Vent_Size}
+\end{center}
+\end{figure}
+
+\textbf{Sill} (default units: m, default value: none): Sill height is the height of the bottom of the opening relative to the floor of the compartment selected as the first compartment. 
+
+\textbf{Soffit} (default units: m, default value: none): Position of the top of the opening relative to the floor of the compartment selected as the first compartment.   
+
+\textbf{Width} (default units: m, default value: none): The width of the opening.
+
+Horizontal flow vents may be opened or closed during the fire. The relevant CFAST keyword is EVENT. The initial format of EVENT is similar to HVENT specifying the connecting compartments and vent number.  Each EVENT line in the input file details the open/close time dependent characteristics for one horizontal flow vent by specifying a fractional value and a time.  The default is 1.0 which is a fully open vent.  A value of 0.5 would specify a vent which is halfway open.
+
+Initial Opening Fraction: Flow through horizontal vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent width is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
+
+Change Opening Fraction At Time: Time during the simulation at which to change the opening fraction.
+
+Final Opening Fraction: for horizontal flow vents, the fraction specifies the fractional width opening of the vent. Fractional values must be between 0 and 1.
+
+Wind: The wind coefficient is the cosine of the angle between the wind vector and the vent opening.  This applies only to vents which connect to the outside.  The range of values is -1.0 to 1.0 with a default value of zero.  In the input editor, this is specified as the angle between the face of the vent and the wind direction.
+
+There are also two parameters which are used to locate the compartments relative to each other. These are used to incorporate additional three dimensional information of the relative location of the vents with respect to each other. In the compartment view of CFAST, the orientation is that the rotation/translation point of the compartment is the back/bottom/left. In this view, both parameters would be with respect to the left hand side of the respective compartments. This allows the corridor filling model to incorporate a delay time for filling based on the separation between the vents. These parameters are needed only if the HALL command is used. 
+
+First Compartment Offset: Horizontal distance between the centerline of this vent and the reference point in the first compartment.
+
+Second Compartment Offset: Horizontal distance between the centerline of this vent and the reference point in the second compartment.
+\begin{itemize}
+\item The soffit and sill specifications are with respect to the first compartment specified and is not necessarily symmetric since the elevation of the second compartment may be different than the first.  Reversing the order of the compartment designations does make a difference.
+\end{itemize}

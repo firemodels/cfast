@@ -61,7 +61,7 @@ All of the inputs to the model are discussed in this chapter.  Following the dis
 \item Inputs are in standard SI units.  The maximum line length is 1024 characters, so all data for each keyword must fit in this number of characters.
 \end{itemize}
 
-The installation program creates a shortcut to the input editor on the Windows start menu labeled “CFAST” that points to the input editor.  Once started, the user is presented with a series of tabbed-pages for the various inputs in a CFAST input data file.
+The installation program creates a shortcut to the input editor on the Windows start menu labeled "CFAST" that points to the input editor.  Once started, the user is presented with a series of tabbed-pages for the various inputs in a CFAST input data file.
 
 \begin{figure}[h!]
 \begin{center}
@@ -154,7 +154,7 @@ WIND,0,10,0.16
 \end{center}
 \end{figure}
 
-\textbf{Ambient Temperature} (default units: °C, default value: 20 °C): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
+\textbf{Ambient Temperature} (default units: \degc~C, default value: 20 \degc~C): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
 
 \textbf{Ambient Pressure} (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside (for TAMB) and outside (for EAMB) the structure at the station elevation. Default value is standard atmospheric pressure at sea level (0 m elevation) of 101.3 kPa. Input units are in Pa. These values define standard conditions as defined in Standard Atmosphere as noted in the Handbook of Chemistry and Physics  . There is a set of numerical approximations in the CFAST code which duplicate the pressure/temperature/altitude relationships in the handbook.
 
@@ -180,7 +180,7 @@ The wind speed, scale height, and power law are used to calculate the wind coeff
 
 \section{Compartment Geometry}
 
-The Compartment Geometry page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the “Add” button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.  
+The Compartment Geometry page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the ÔøΩAddÔøΩ button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.  
 
 \begin{figure}[h!]
 \begin{center}
@@ -297,7 +297,7 @@ The bounding surfaces are the ceilings, walls and floors that define a compartme
 
 Flow through vents can be natural flow through doors, windows, or openings in ceilings and floors; or forced flow in a mechanical ventilation system.  Natural flow comes in two varieties.  The first is referred to as horizontal flow.  It is the flow which is normally thought of in discussing fires.  It encompasses flow through doors, windows and so on.  The other is vertical flow and can occur if there is a hole in the ceiling or floor of a compartment.  This latter phenomena is useful in some scenarios such as in a ship where openings in floors and ceilings through scuttles are common and in buildings with manual or automatic heat and smoke venting.
 
-Flow through normal vents is governed by the pressure difference across a vent.  There are two situa¬tions which give rise to flow through vents.  The first is flow of air or smoke driven from a compartment by buoyancy.  The second type of flow is due to expansion which is particularly important when conditions in the fire environment are changing rapid¬ly.  Rather than depending entirely on density differences between the two gases, the flow is forced by volumetric expansion.
+Flow through normal vents is governed by the pressure difference across a vent.  There are two situations which give rise to flow through vents.  The first is flow of air or smoke driven from a compartment by buoyancy.  The second type of flow is due to expansion which is particularly important when conditions in the fire environment are changing rapidly.  Rather than depending entirely on density differences between the two gases, the flow is forced by volumetric expansion.
 
 In addition to natural flow, forced flow from mechanical ventilation can affect a fire as well. More important than affecting the fire, however, is the dispersal of the smoke and toxic gases from the fire to adjacent spaces, if ventilation continues to operate after a fire starts.
 
@@ -324,7 +324,7 @@ Each of these commands is discussed in the sections that follow.
 
 Horizontal flow connections may include doors between compartments or to the outdoors as well as windows in the compartments.  These specifications do not necessarily correspond to physically connecting the walls between specified compartments.  Rather, lack of an opening simply prevents flow between the compartments.  Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors. 
 
-Horizontal connections can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the out¬doors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section.  The relevant CFAST keyword is HVENT.  Details of the CFAST keywords are included in the appendix.
+Horizontal connections can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the outdoors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section.  The relevant CFAST keyword is HVENT.  Details of the CFAST keywords are included in the appendix. It is possible to define a total of 25 horizontal flow connections between any pair of compartments. A number from 1 to 25 uniquely identifies the connection. This number is automatically assigned by the input editor based on the order they appear in the summary table on the horizontal flow vents page.
 
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Input_File/Natural_Flow_Tab}
@@ -354,10 +354,11 @@ Use the Move Up and Move Down buttons to change the order of the list of horizon
   \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
 \end{wrapfigure}
 
-Use the Remove button to delete the selected horizontal flow vent from the list of horizontal flow vents in the summary table.  Other vents are renumbered once the compartment is deleted. \\~ \\
+Use the Remove button to delete the selected horizontal flow vent from the list of horizontal flow vents in the summary table.  Other vents are renumbered once the vent is deleted. \\~ \\
 
 \begin{lstlisting}
 HVENT,1,2,1,1,2.4,0,1,0,0,1,1
+EVENT,H,1,2,1,120,1,1
 \end{lstlisting}
 
 \begin{figure}[h!]
@@ -368,8 +369,11 @@ HVENT,1,2,1,1,2.4,0,1,0,0,1,1
 
 \textbf{Second Compartment:} Second of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
-\textbf{Vent Number:} It is possible to define a total of 25 horizontal flow connections between any pair of compartments. A number from 1 to 25 uniquely identifies the connection. This number is automatically assigned by the input editor based on the order they appear in the summary table on the horizontal flow vents page.
+There are also two parameters which are used to locate the compartments relative to each other. These are used to incorporate additional three dimensional information of the relative location of the vents with respect to each other. In the compartment view of CFAST, the orientation is that the rotation/translation point of the compartment is the back/bottom/left. In this view, both parameters would be with respect to the left hand side of the respective compartments. This allows the corridor filling model to incorporate a delay time for filling based on the separation between the vents. These parameters are needed only if the HALL command is used. 
 
+\textbf{First Compartment Offset} (default units: m, Default value: 0 m): Horizontal distance between the centerline of this vent and the reference point in the first compartment.
+
+\textbf{Second Compartment Offset } (default units: m, Default value: 0 m): Horizontal distance between the centerline of this vent and the reference point in the second compartment.
 
 \begin{figure}[h!]
 \begin{center}
@@ -383,21 +387,226 @@ HVENT,1,2,1,1,2.4,0,1,0,0,1,1
 
 \textbf{Width} (default units: m, default value: none): The width of the opening.
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3.1in]{FIGURES/Input_File/Vent_Open_Close}
+\end{center}
+\end{figure}
+
 Horizontal flow vents may be opened or closed during the fire. The relevant CFAST keyword is EVENT. The initial format of EVENT is similar to HVENT specifying the connecting compartments and vent number.  Each EVENT line in the input file details the open/close time dependent characteristics for one horizontal flow vent by specifying a fractional value and a time.  The default is 1.0 which is a fully open vent.  A value of 0.5 would specify a vent which is halfway open.
 
-Initial Opening Fraction: Flow through horizontal vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent width is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
+\textbf{Initial Opening Fraction} (default value: 1): Flow through horizontal vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent width is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
 
-Change Opening Fraction At Time: Time during the simulation at which to change the opening fraction.
+\textbf{Change Opening Fraction At Time}  (default units: s, default value: 0 s)  Time during the simulation at which to change the opening fraction.
 
-Final Opening Fraction: for horizontal flow vents, the fraction specifies the fractional width opening of the vent. Fractional values must be between 0 and 1.
+\textbf{Final Opening Fraction} (default value: 1): for horizontal flow vents, the fraction specifies the fractional width opening of the vent. Fractional values must be between 0 and 1.
 
-Wind: The wind coefficient is the cosine of the angle between the wind vector and the vent opening.  This applies only to vents which connect to the outside.  The range of values is -1.0 to 1.0 with a default value of zero.  In the input editor, this is specified as the angle between the face of the vent and the wind direction.
+\textbf{Wind} (default value 0): The wind coefficient is the cosine of the angle between the wind vector and the vent opening.  This applies only to vents which connect to the outside.  The range of values is -1.0 to 1.0.  In the input editor, this is specified as the angle between the face of the vent and the wind direction.
 
-There are also two parameters which are used to locate the compartments relative to each other. These are used to incorporate additional three dimensional information of the relative location of the vents with respect to each other. In the compartment view of CFAST, the orientation is that the rotation/translation point of the compartment is the back/bottom/left. In this view, both parameters would be with respect to the left hand side of the respective compartments. This allows the corridor filling model to incorporate a delay time for filling based on the separation between the vents. These parameters are needed only if the HALL command is used. 
+\textbf{Face:} For visualization, FACE specifies which wall the vent will be displayed on in smokeview.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane.
 
-First Compartment Offset: Horizontal distance between the centerline of this vent and the reference point in the first compartment.
-
-Second Compartment Offset: Horizontal distance between the centerline of this vent and the reference point in the second compartment.
 \begin{itemize}
 \item The soffit and sill specifications are with respect to the first compartment specified and is not necessarily symmetric since the elevation of the second compartment may be different than the first.  Reversing the order of the compartment designations does make a difference.
 \end{itemize}
+
+\subsection{Defining Natural Flow Connection Through Ceiling and Floor Openings}
+
+This section of the input data file describes these vertical flow openings. Examples of these openings are scuddles in a ship, or a hole in the roof of a residence. Combined buoyancy- and pressure-driven (i.e., forced) flow through a vertical flow vent is possible when the connected spaces adjacent to the vent are filled with gases of different density in an unstable configuration, with the density of the top space larger than that of the bottom space. With a moderate cross-vent pressure difference, the instability leads to a bi-directional flow between the two spaces. For relatively large cross-vent pressure difference the flow through the vent is unidirectional, from the high- to the low-pressure space. 
+Connections can exist between compartments or between a compartment and the outdoors. Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments defined in the scenario.  These connections are described by the VVENT keyword. Each VVENT line in the input file describes one vertical vent.  There are four parameters which include each of the connected compartments, the shape of the opening, and the effective area of the vent.
+
+\begin{figure}[h!]
+\includegraphics[width=6.5in]{FIGURES/Input_File/Vertical_Flow_Tab}
+\end{figure}
+ 
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the vertical flow vents page are as follows.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
+\end{wrapfigure}
+
+Use the Add button to create a new vertical flow vent with default values for all entries. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Duplicate_Button}
+\end{wrapfigure}
+
+Use the Duplicate button to create a copy of the vertical flow vent currently selected in the summary table at the top of the page. The new vent is added to the end of the list with the named changed to indicate it is a copy of the selected item. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
+\end{wrapfigure}
+
+Use the Remove button to delete the selected vertical flow vent from the list of vertical flow vents in the summary table.  Other vents are renumbered once the vent is deleted. \\~ \\
+
+\begin{lstlisting}
+VVENT,2,1,2.44,2,1
+EVENT,V,1,2,1,120,1,1
+\end{lstlisting}
+
+\textbf{Top Compartment:} The top or first of the two compartments to be connected by a vertical flow vent. The vent is through the floor of this compartment.  Compartments are numbered automatically by the input editor and by the model in the order that they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
+
+\textbf{Bottom Compartment:} The bottom or second of the two compartments to be connected by a horizontal flow vent. The vent is through the ceiling of this compartment. Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
+
+\textbf{Cross-sectional Area} (default units: m$^2$, default value: none): specifies the cross-sectional area of the vent connecting the two compartments.
+
+\textbf{Shape:} The shape factor is 1 for circular openings and 2 for square openings.
+
+\textbf{Initial Opening Fraction:} Flow through vertical vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent area is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
+
+\textbf{Change Opening Fraction At Time} (default units: s, default value: 0 s): Time during the simulation at which to change the opening fraction.
+
+\textbf{Final Opening Fraction:} for vertical flow vents, the fraction specifies the fractional cross-sectional area of the vent. Fractional values must be between 0 and 1.
+
+\begin{itemize}
+\item Although obvious, note that the top or first compartment must be the compartment on top of the bottom or second compartment.
+\item CFAST allows only a single connection between any pair of compartments included in a simulation. This limitation is based on the implementation of the vertical flow algorithm in CFAST and on the validation efforts for the original algorithm development  which only studied a single opening between connected compartments.
+\item Vertical connections can only be created between compartments that could be physically stacked based on specified floor and ceiling elevations for the compartments.  Some overlap between the absolute floor height of one compartment and the absolute ceiling height of another compartment is allowed.  However, whether the compartments are stacked or overlap somewhat, the ceiling/floor absolute elevations must be within 0.01 m of each other. The check is not done when the connection is to the outside.
+\end{itemize}
+
+\subsection{Defining Mechanical Ventilation Connections}
+
+Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a systems with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers \cite{ASHRAE:2001}.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Mechanical_Vent_Tab}
+\end{center}
+\end{figure}
+
+The model for mechanical ventilation used in CFAST is based on the theory of networks and is based on the model developed by Klote \cite{Klote:1988a}.  This is a simplified form of Kirchoff's law which says that flow into a node must be balanced by flow out of the node. The equations used describe the relationship between the pressure drop across a duct, the resistance of a duct, and the mass flow.  The pressure can be changed by conditions in a compartment, or a fan in line in the duct system.  Resistance arises from the finite size of ducts, roughness on duct surfaces, bends and joints. In CFAST, default values are used for the duct properties, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
+
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the mechanical flow vents page are as follows.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
+\end{wrapfigure}
+
+Use the Add button to create a new mechanical flow vent with default values for all entries. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Duplicate_Button}
+\end{wrapfigure}
+
+Use the Duplicate button to create a copy of the mechanical flow vent currently selected in the summary table at the top of the page. The new vent is added to the end of the list with the named changed to indicate it is a copy of the selected item. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
+\end{wrapfigure}
+
+Use the Remove button to delete the selected mechanical flow vent from the list of vertical flow vents in the summary table.  Other vents are renumbered once the vent is deleted. \\~ \\
+
+\begin{lstlisting}
+MVENT,2,3,1,V,0.6,0.4225,V,0.75,0.0731,0.167,2000,3000,1
+\end{lstlisting}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.553in]{FIGURES/Input_File/Mechanical_Vent_From_To}
+\end{center}
+\end{figure}
+ 
+\textbf{From Compartment:} The first compartment to which the mechanical ventilation system diffuser is connected. Fan flow is from this compartment.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
+
+\textbf{From Compartment Area} (default units: m$^2$, default value: none): Cross-sectional area of the opening into the compartment. The area will be truncated if the midpoint (height) is set such that the height plus or minus the effective length is above the compartment ceiling or below the floor.
+
+\textbf{From Compartment Height} (default units: m, default value: none): Height of the duct opening above the floor of the compartment measured from the midpoint of the register.
+
+\textbf{From Compartment Orientation:} The orientation of the diffuser relative to the floor of the compartment.  A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
+
+\textbf{To Compartment:} The bottom or second of the two compartments to be connected by a horizontal flow vent. The vent is through the ceiling of this compartment. Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
+
+\textbf{To Compartment Area} (default units: m$^2$, default value: none): Cross-sectional area of the opening into the compartment. The area will be truncated if the midpoint (height) is set such that the height plus or minus the effective length is above the compartment ceiling or below the floor.
+
+\textbf{To Compartment Height} (default units: m, default value: none): Height of the duct opening above the floor of the compartment measured from the midpoint of the register.
+
+\textbf{To Compartment Orientation:} The orientation of the diffuser relative to the floor of the compartment.  A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.487in]{FIGURES/Input_File/Mechanical_Vent_Flowrate}
+\end{center}
+\end{figure}
+
+\textbf{Flow Rate} (default units: m$^3$/s, default value: none): Constant flow rate of the forced-air flow from the first compartment to the second compartment.
+
+\textbf{Begin Drop Off Pressure} (default units: Pa, default value: 200 Pa): The description of the fan includes a drop off in flow beginning at a pressure specified by the user.  Above this pressure drop, the flow gradually drops to zero flow.
+
+\textbf{Zero Flow Pressure} (default units: Pa, default value: 300 Pa): Specifies the pressure above which the flow through the mechanical ventilation connection is zero.
+
+\textbf{Initial Opening Fraction:} Flow through mechanical vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the fan flow rate is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
+
+\textbf{Change Opening Fraction At Time} (default units: s, default value: none): Time during the simulation at which to change the opening fraction.
+
+\textbf{Final Opening Fraction:} for mechanical flow vents, the fraction specifies the fractional fan flow rate for the vent. Fractional values must be between 0 and 1.
+
+\textbf{Filter Efficiency} (default units:~\%, default value: none): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied, that is all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, the user may specify the fraction of the soot and trace species mass to be removed as a percentage.
+
+\textbf{Begin Filtering At Time} (default units: s, default value: none): Time during the simulation at which the mechanical vent filtering begins.
+
+\begin{itemize}
+\item CFAST does not include provisions for reverse flow through a fan. Calibration for backward flow is not provided by fan manufacturers, so the equations incorporated in CFAST do not allow for such flow. The problem is simply that in this flow regime, the fan has stalled, and likely will soon fail. 
+\item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
+\end{itemize}
+
+\section{Prescribing Fires}
+
+A simulated fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate (the pyrolysis rate). Energy is released by the fuel and combustion products are created as it burns. In the fire, species production is calculated based on production yields prescribed by the user. In addition, the pyrolysis rate and resulting energy and species generation may be limited by the oxygen available for combustion. When sufficient oxygen is available for combustion, the heat release rate for the constrained fire is the same as for the unconstrained fire.
+
+The model can simulate multiple fires in one or more compartments of the building.  These fires are treated as totally separate entities, with no interaction of the plumes. These fires are generally referred to as ‚Äúobjects‚Äù and can be ignited at a prescribed time, temperature or heat flux.
+
+CFAST does not include a pyrolysis model to pre¬¨dict fire growth. Rather, pyrolysis rates for each fire are prescribed by the user.  ¬¨While this approach does not directly account for increased pyrolysis due to radiative feedback from the flame or com¬¨part¬¨ment, in theory these effects could be prescribed by the user as described in this section.  In an actual fire, this is an important consideration, and the specification used should consider the experimental conditions as closely as possible.
+
+A fire releases energy based on the pyrolysis of fuel, but may be constrained by the oxygen available for combustion depending on the compartment conditions. Complete burning will take place only where there is suffi¬¨cient oxygen.  When insufficient oxygen is entrained into the fire plume, unburned fuel will be transported from zone to zone until there is sufficient oxygen and a high enough temperature to support combustion.  In general, CFAST uses a simple definition of a combustion reaction that includes major products of combustion for hydrocarbon fuels:
+\be  \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
+     \nu_\So \, \mathrm{Soot}  + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee
+assuming that all the nitrogen and chlorine in the fuel are converted to HCN and HCl. The stoichiometric coefficients $\nu_\So$, $\nu_\CO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation. For complete combustion of the simplest hydrocarbon fuel, methane reacts with oxygen to form carbon dioxide and water. The only inputs required are the fuel composition, heat release rate, and heat of combustion. For fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes more complex. Stoichiometry is used to insure conservation of mass and elements in the reaction. The species which are calculated are oxygen, carbon dioxide, carbon monoxide, water, total unburned hydrocarbons (tuhc), and soot. Gaseous nitrogen is included, but only acts as a diluent. 
+
+Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields.  
+
+The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion. For the constrained fire, the burning rate may be less than the pyrolysis rate and cannot be simplified as in the case of the unconstrained fire. As fuel and oxygen are consumed, heat is released and various products of combustion are formed.
+
+For a constrained fire, the heat release rate is limited by available oxygen. This limit is applied in three places: The first is burning in the portion of the plume which is in the lower layer of the room of fire origin; the second is the portion of the plume in the upper layer, also in the room of origin; the third is in the vent flow which entrains air from a lower layer into an upper layer in an adjacent compartment. The unburned hydrocarbons are tracked in this model. Combustion of CO to CO$_2$ is not included in the model. Actual combustion chemistry is not considered in CFAST due to the complexities associated with detailed kinetics and transport.
+
+There are two calculations involving radiation in this model. One is for energy balance and is based on broadband radiation absorption. The amount of radiation absorbed in sensitive to the species present, specifically water vapor, soot and carbon dioxide. The other is for visibility of egress signs. This calculation is based solely on the soot volume fraction and is reported as optical depth (per meter). The conversion factor is based on the recent work by Mulholland and Croarkin \cite{Mullholland:2000}. The value for converting mass density in kg/m3 to optical depth is 3817 m$^2$/kg. The value reported is intended specifically for assessing the visibility of egress signs, based on the work of Jin \cite{Jin:1979}.  It is not applicable to the far blue or red regions of the spectrum and so should not be used for assessing optical detection of fires through smoke.
+
+\newpage
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Tab}
+\end{center}
+\end{figure}
+ 
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the fires page are as follows.
+
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
+\end{wrapfigure}
+
+Use the Add button to create a new fire with default values for all entries. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Duplicate_Button}
+\end{wrapfigure}
+
+Use the Duplicate button to create a copy of the fire currently selected in the summary table at the top of the page. The new fire is added to the end of the list with the named changed to indicate it is a copy of the selected item. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
+\end{wrapfigure}
+
+Use the Remove button to delete the selected fire from the list of vertical flow vents in the summary table.  Other fires are renumbered once the fire is deleted. \\~ \\
+
+\begin{lstlisting}
+!!Wood_Wall
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,Wood_Wall
+CHEMI,1,4,0,0,0,0.33,1.81E+07,HARDWOOD
+TIME,0,8000
+HRR,0,1000000
+SOOT,0.02,0.02
+CO,0.02,0.02
+TRACE,0,0
+AREA,0.05,9
+HEIGH,0,3
+\end{lstlisting}

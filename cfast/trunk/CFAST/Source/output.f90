@@ -949,14 +949,14 @@
 
     write (iofilo,5000)
     do i = 1, nm1
-        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), ar(i), vr(i), hrp(i), hflr(i)
+        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), hrp(i), hflr(i)
     end do
     return
 5000 format (//,' COMPARTMENTS',//, &
-    ' Compartment  Name           Width     Depth     Height    Area      Volume    Ceiling   Floor     ',/, &
-    '                                                                               Height    Height    ',/, & 
-    ' ',29x,3('(m)',7x),'(m^2)     ','(m^3)      ',2('(m)',7x),/,' ',96('-'))
-5010 format (' ',i5,8x,a13,7(f9.2,1x))
+    ' Compartment  Name                Width        Depth        Height       Ceiling      Floor     ',/, &
+    '                                                                         Height       Height    ',/, & 
+    ' '33x,5('(m)',10x),/,' ',96('-'))
+5010 format (' ',i5,8x,a13,5(f12.2,1x))
     end subroutine outcomp
 
 ! --------------------------- outvent -------------------------------------------
@@ -989,7 +989,7 @@
                     if (j==n) cjout = ' Outside'
                     if (iand(1,ishft(nw(i,j),-k))/=0) then
                         iijk = ijk(i,j,k)
-                        write (iofilo,5020) compartmentnames(i), cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk), (hhp(iijk)-hlp(iijk))*bw(iijk)
+                        write (iofilo,5020) compartmentnames(i), cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk)
                     endif
                 end do
             end do
@@ -1076,9 +1076,10 @@
 
 5000 format (//,' VENT CONNECTIONS',//,' There are no horizontal natural flow connections')
 5010 format (//,' VENT CONNECTIONS',//,' Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
-    ' From           ','To             ','Vent      ','Width     ','Sill      ','Soffit    ','Abs.      ','Abs.      ','Area',/, & 
-    ' ','Compartment    ','Compartment    ','Number    ',10X,'Height    ','Height    ','Sill      ','Soffit',/,' ',40X,5('(m)       '),1('(m^2)',5X),/,' ',100('-'))
-5020 format (' ',a14,1X,A14,I3,5X,6(F7.2,3X))
+    ' From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      ',/, & 
+    ' Compartment    Compartment    Number                 Height      Height      Sill        Soffit',/, &
+    ' ',41X,5('(m)         '),/,' ',100('-'))
+5020 format (' ',a14,1X,A14,I3,5X,5(F9.2,3X))
 5030 format (//,' There are no vertical natural flow connections')
 5040 format (//,' Vertical Natural Flow Connections (Ceiling, ...)',//,' Top            Bottom         Shape     Area      ','Relative  Absolute',/,' ', &
     'Compartment    Compartment                        Height    Height',/,' ',40X,'(m^2)     ',2('(m)       '),/,' ',70('-'))

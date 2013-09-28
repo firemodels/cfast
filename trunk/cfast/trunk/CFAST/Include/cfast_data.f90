@@ -594,7 +594,8 @@ module wnodes
     
     integer :: nwpts = 30                                   ! number of wall nodes
     integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)
-    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)   ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
+     ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
+    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)  
     
     integer nwalls, nfurn
     real(eb), dimension (nr,4) :: wlength

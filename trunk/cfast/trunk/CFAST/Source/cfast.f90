@@ -508,7 +508,8 @@
         call target(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
-        call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+        call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
+                   nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -612,7 +613,8 @@
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
-            call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
+            call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
+                       hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -1128,7 +1130,8 @@
 
     logical :: vflowflg, hvacflg, djetflg
     integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
-    real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml, oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
+    real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
+    real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
     ierror = 0
     nprod = nlspct
@@ -1170,7 +1173,8 @@
     ! horizontal vents)
     call hflow (tsec,epsp,nprod,flwnvnt)
     call vflow (tsec,flwhvnt,vflowflg)
-    call mvent (tsec,x(nofpmv+1),x(noftmv+1),xpsolve(noftmv+1),flwmv,delta(nofpmv+1),delta(noftmv+1),xprime(nofhvpr+1),nprod,ierror,hvacflg,filtered)
+    call mvent (tsec,x(nofpmv+1),x(noftmv+1),xpsolve(noftmv+1),flwmv,delta(nofpmv+1),&
+                delta(noftmv+1),xprime(nofhvpr+1),nprod,ierror,hvacflg,filtered)
 
     if (ierror/=0) then
         ires = -2
@@ -2135,17 +2139,19 @@
     !     Revision: $Revision$
     !     Revision Date: $Date$
 
-    INTEGER :: MODULE_REV, rev_auxilliary, rev_conduction, rev_convection, rev_fire, rev_flowfan, rev_flowhall, rev_flowhorizontal, rev_flowvertical, rev_initialization, &
+    integer :: MODULE_REV, rev_auxilliary, rev_conduction, rev_convection, rev_fire, rev_flowfan
+    integer :: rev_flowhall, rev_flowhorizontal, rev_flowvertical, rev_initialization, &
     rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_target, rev_ssHeaders
-    CHARACTER(255) :: MODULE_DATE 
-    CHARACTER(255), PARAMETER :: mainrev='$Revision$'
-    CHARACTER(255), PARAMETER :: maindate='$Date$'
+    character(255) :: MODULE_DATE 
+    character(255), parameter :: mainrev='$Revision$'
+    character(255), parameter :: maindate='$Date$'
 
-    WRITE(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
-    READ (MODULE_DATE,'(I5)') MODULE_REV
-    rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),rev_convection(),rev_fire(),rev_flowfan(),rev_flowhall(),rev_flowhorizontal(), &
+    write(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
+    read (MODULE_DATE,'(I5)') MODULE_REV
+    rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),rev_convection(),rev_fire(),&
+                     rev_flowfan(),rev_flowhall(),rev_flowhorizontal(), &
     rev_flowvertical(),rev_initialization(),rev_input(),rev_numerics(),rev_output(),rev_outputsmv(),rev_outputspreadsheet(),rev_radiation(),rev_target(),&
     rev_ssHeaders())
-    WRITE(MODULE_DATE,'(A)') maindate
+    write(MODULE_DATE,'(A)') maindate
     return
     end function rev_cfast

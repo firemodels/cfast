@@ -4,20 +4,23 @@
     subroutine xerror(messg,nmessg,nerr,level)
 
     !     routine: xerror
-    !     purpose: XERROR processes a diagnostic message. It is a stub routine written for the book above. Actually, XERROR is a sophisticated
-    !              error handling package with many options. Our version has the same calling sequence
-    !              but only prints an error message and either returns (if the input value of ABS(LEVEL) is less than 2) or stops (if the input value of ABS(LEVEL) equals 2).
+    !     purpose: XERROR processes a diagnostic message. It is a stub routine written for the book above. 
+    !              Actually, XERROR is a sophisticated error handling package with many options. Our version 
+    !              has the same calling sequence but only prints an error message and either returns (if 
+    !              the input value of ABS(LEVEL) is less than 2) or stops (if the input value of ABS(LEVEL) equals 2).
     !     Revision: $Revision$
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: MESSG - the Hollerith message to be processed.
     !                NMESSG- the actual number of characters in MESSG. (this is ignored in this stub routine)
-    !                NERR  - the error number associated with this message. NERR must not be zero. (this is ignored in this stub routine)
+    !                NERR  - the error number associated with this message. NERR must not be zero. (this is 
+    !                        ignored in this stub routine)
     !                LEVEL - error category.
     !                       = 2 means this is an unconditionally fatal error.
     !                       = 1 means this is a recoverable error.  (I.e., it is non-fatal if XSETF has been appropriately called.)
     !                       = 0 means this is a warning message only.
-    !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times this call is executed.
-    !               (in this stub routine, LEVEL=2 causes a message to be printed and then a stop. LEVEL=-1,0,1 causes a message to be printed and then a return.
+    !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times 
+    !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then a stop. 
+    !                          LEVEL=-1,0,1 causes a message to  be printed and then a return.
 
     use precision_parameters
     implicit none
@@ -59,7 +62,8 @@
     subroutine xerrwv(msg,nmes,nerr,level,ni,i1,i2,nnr,r1,r2)
 
     !     routine: xerrwv
-    !     purpose: xerrwv, as given here, constitutes a simplified version of the slatec error handling package. It just prints our error messages with codes as requested
+    !     purpose: xerrwv, as given here, constitutes a simplified version of the slatec error handling package. It just prints 
+    !              our error messages with codes as requested
     !     arguments: msg - the message (character array).
     !                nmes - the length of msg (number of characters).
     !                nerr - the error number (not used).
@@ -109,11 +113,14 @@
     real(eb) function d1mach (i)
 
     !     routine: d1mach
-    !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.  it is a function subprogram with one
-    !              (input) argument. reference  p. a. fox, a. d. hall and n. l. schryer, framework for a portable library, acm transactions on mathematical software 4, 2 (june 1978), pp. 177-188.
+    !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.  
+    !              it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and 
+    !              n. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
+    !              2 (june 1978), pp. 177-188.
     !     arguments:  i
     !
-    !           where i = 1,...,5.  the (output) value of a above is determined by the (input) value of i.  the results for various values of i are discussed below.
+    !           where i = 1,...,5.  the (output) value of a above is determined by the (input) value of i.  the 
+    !           results for various values of i are discussed below.
     !
     !           d1mach(1) = b**(emin-1), the smallest positive magnitude.
     !           d1mach(2) = b**emax*(1 - b**(-t)), the largest magnitude.
@@ -165,7 +172,8 @@
     subroutine xerrmod(mesg,nerr,nnr,r1,r2)
 
     !     routine: xerrmod
-    !     purpose: xerrmod is a simplified version of the slatec error handling package. it just logs our error messages with codes as requested. adapted from code written by a. c. hindmarsh and p. n. brown at llnl.
+    !     purpose: xerrmod is a simplified version of the slatec error handling package. it just logs our error messages
+    !              with codes as requested. adapted from code written by a. c. hindmarsh and p. n. brown at llnl.
     !     arguments: msg - the message (character array).
     !                nmes - the length of msg (number of characters).
     !                nerr - the error number (not used).
@@ -227,7 +235,8 @@
     subroutine cmdline (nargs,strs,iarg,iopt)
 
     !     routine: cmdline
-    !     purpose: gets argument list and options from command line. options may be of the form c:<string> where <c> is the desired option a-z and <string> is a character string associated with that option.
+    !     purpose: gets argument list and options from command line. options may be of the form c:<string> where <c> 
+    !              is the desired option a-z and <string> is a character string associated with that option.
     !     arguments: nargs maximum number of arguments expected (dimension limit on input, actual number on output.
     !                strs  returned strings of arguments and options
     !                iarg  returned list of pointers to elements in strs corresponding to arguments 1..nargs
@@ -526,7 +535,8 @@
     logical function countargs (tocount,lcarray,numc,nret)
 
     !     routine: countargs
-    !     purpose: Count the number of non-blank arguments on the input line. Should be tocount. If not, then return an error (logical false). If tocount is zero or less, just count them
+    !     purpose: Count the number of non-blank arguments on the input line. Should be tocount. If not, 
+    !              then return an error (logical false). If tocount is zero or less, just count them
     !     arguments: label - CFAST keyword for this input
     !                tocount - expected number of arguments for this input
     !                lcarray - character array of arguments.  There should be tocount non-blank entries
@@ -577,7 +587,8 @@
     subroutine cptime (cputim)
 
     !     routine: cptime
-    !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.  this routine will generally be different for each computer.
+    !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.  
+    !              this routine will generally be different for each computer.
     !     arguments: cputim (output) - elapsed cpu time 
 
     use precision_parameters
@@ -599,7 +610,9 @@
     subroutine datype (crd,n1,n2,dtype)
 
     !     routine: datype
-    !     purpose: this routine determines the data type of a string. the character string is examined between given starting and ending positions to determine if the substring is an integer, a real number, or a non-numeric string.
+    !     purpose: this routine determines the data type of a string. the character string is examined 
+    !              between given starting and ending positions to determine if the substring is an integer, 
+    !              a real number, or a non-numeric string.
     !     arguments: crd    string containing number to be typed
     !                n1     starting position
     !                n2     ending position
@@ -691,7 +704,8 @@
     !     purpose: get the arguments used to call the main program
     !     arguments: exepath - path (without the name) to the folder where the executable resides
     !                datapath - path (without a file name) to the folder where the project data file resides
-    !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of datapath + project cannot exceed 256 characters
+    !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of 
+    !                          datapath + project cannot exceed 256 characters
     !                errorcode - error code on return (i*4)
     !					100 program called with no arguments
     !					101 the filename has an extension
@@ -818,7 +832,8 @@
     subroutine mat2mult(mat1,mat2,idim,n)
 
     !     routine: mat2mult
-    !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
+    !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix 
+    !              mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
     !     arguments: mat1 - matrix
     !                mat2 - work array of same size as mat1
     !                idim - actual dimensino limit on first subscript of mat1
@@ -855,8 +870,9 @@
     subroutine indexi (n,arrin,indx)
 
     !     routine: indexi
-    !     purpose: this routines sorts the array arrin passively via the permuation array indx.  the elements arrin(indx(i)), i=1, ..., n are in increasing order. this routine uses a bubble sort.  it should not be used
-    !              for large n (n>30), since bubble sorts are not efficient.  
+    !     purpose: this routines sorts the array arrin passively via the permuation array indx. the 
+    !              elements arrin(indx(i)), i=1, ..., n are in increasing order. this routine uses a 
+    !              bubble sort.  it should not be used for large n (n>30), since bubble sorts are not efficient.  
     !     arguments: n     number of elements in n
     !                arrin array to be passively sorted
     !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
@@ -904,7 +920,8 @@
     !     arguments: x,y - arrays of size n to be interpolated at x=t
     !                icode - code to select how to extrapolate values if t is less than x(1) or greater than x(n).
     !                          if icode = 1 then yint = y(1) for t < x(1) and yint = y(n) for t > x(n).
-    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n) and by extrapolation if t < x(1) or    t > x(n)
+    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n) 
+    !                              and by extrapolation if t < x(1) or    t > x(n)
     !                yint (output) - interpolated value of the y array at t
 
     use precision_parameters
@@ -1041,7 +1058,9 @@
 
     !     routine: readastu
     !     purpose: read in a string from the standard input device
-    !              this version of readas(tu) is similar to the one used by everone else (readas) except that this contains automatic conversion to upper case. this is to filter commands from the console so that they are not case sensitive.
+    !              this version of readas(tu) is similar to the one used by everone else (readas) except 
+    !              that this contains automatic conversion to upper case. this is to filter commands from the 
+    !              console so that they are not case sensitive.
     !     arguments: 
 
     use cparams
@@ -1480,11 +1499,13 @@
     subroutine sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
 
     !     routine: sortbrm
-    !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used in this order by the ceiling jet and radiation algorithms
+    !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used 
+    !              in this order by the ceiling jet and radiation algorithms
     !     arguments: nfire   number of fires
     !                ifroom (output)  room numbers for each of the fires
     !                xfire   fire related quantities used by other routines. see routine fires for definition.
-    !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r. (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
+    !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r. 
+    !                        (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
     !                nm1 number of compartments minus 1
 
     use precision_parameters
@@ -1544,9 +1565,11 @@
     subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrng
-    !     purpose: this routine finds positions of substrings within a character string.  a space, comma, - , (, or ) indicates the beginning or end of a substring.  
-    !              when called, the string is passed as an integer(choose) along with the number of characters in the string(wcount) and a starting position(sstart).  beginning at
-    !              "sstart", the routine searches for a substring. if a substring is found, its first and last character positions are returned along with a true value in "svalid"; otherwise "svalid" is set false.
+    !     purpose: this routine finds positions of substrings within a character string.  a space, comma, - , (, or ) 
+    !              indicates the beginning or end of a substring. when called, the string is passed as an integer(choose) 
+    !              along with the number of characters in the string(wcount) and a starting position(sstart).  beginning at
+    !              "sstart", the routine searches for a substring. if a substring is found, its first and last character 
+    !              positions are returned along with a true value in "svalid"; otherwise "svalid" is set false.
     !     arguments: string - the character string
     !                wcount - number of characters in the string
     !                sstart - beginning position in string to look for a substring
@@ -1603,7 +1626,8 @@
     subroutine sstrngp (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrngp
-    !     purpose: this routine finds positions of substrings within a character string.  similar to sstrng, except entries can be grouped with parenthesis
+    !     purpose: this routine finds positions of substrings within a character string.  similar to sstrng, 
+    !              except entries can be grouped with parenthesis
     !     arguments: string - the character string
     !                wcount - number of characters in the string
     !                sstart - beginning position in string to look for a substring
@@ -1805,7 +1829,8 @@
     logical function lsame ( ca, cb )
 
     !     routine: lsame
-    !     purpose: tests if ca is the same letter as cb regardless of case. cb is assumed to be an upper case letter. lsame returns .true. if ca is either the same as cb or the equivalent lower case letter.
+    !     purpose: tests if ca is the same letter as cb regardless of case. cb is assumed to be an upper 
+    !              case letter. lsame returns .true. if ca is either the same as cb or the equivalent lower case letter.
     !     arguments: ca - first character
     !                cb - second character
 

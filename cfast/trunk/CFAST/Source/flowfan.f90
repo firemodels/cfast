@@ -9,17 +9,6 @@
     !     it returns rates of mass and energy flows into the layers from all mechancial vents in the building.
     !     revision: $revision: 461 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: hvpsolv
-    !                hvtsolv
-    !                tprime
-    !                flwmv
-    !                deltpmv
-    !                delttmv
-    !                prprime
-    !                nprod
-    !                ierror   returns error codes
-    !                hvacflg
-    !                filtered
 
     use precision_parameters
     use cenviro
@@ -37,7 +26,8 @@
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0
 
-    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by initslv.  chv should eventually be defined elsewhere.
+    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by initslv.  
+    ! chv should eventually be defined elsewhere.
 
     hvacflg = .false.
     if (.not.mvcalc.or.option(fmvent)/=on.or.(nhvpvar==0.and.nhvtvar==0)) return
@@ -85,7 +75,9 @@
             elseif(ieqtyp==eqtt.or.ieqtyp==eqwt)then
                 doit = .false.
 
-                ! if we're computing a jacobian and anything else is being perturbed then do it. if there are no hvac connections in the room where the variable is being perturbed then we shouldn't have to do the hvac computation but that isn't working now.
+                ! if we're computing a jacobian and anything else is being perturbed then do it.  if there are no 
+                ! hvac connections in the room where the variable is being perturbed then we shouldn't have to do 
+                ! the hvac computation but that isn't working now.
             else
                 iroom = izeqmap(jaccol,2)
                 if(.not.izhvac(iroom))doit = .false.
@@ -137,7 +129,8 @@
                 flwmv(i,2+k,upper) = flwmv(i,2+k,upper) + hvexcn(ii,k,upper)*hveflo(upper,ii)
             endif
         end do
-        !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that filtering is always negative. same as agglomeration and settling
+        !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that 
+        !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
         filtered(i,13,upper) = max(0.0_eb,filter*flwmv(i,13,upper))
         filtered(i,13,lower) = max(0.0_eb,filter*flwmv(i,13,lower))
@@ -271,8 +264,6 @@
 
     !     routine: hvsflo
     !     purpose: species calculation for mechanical vents
-    !     arguments: tprime
-    !                deltpmv
 
     use precision_parameters
     use cfast_main
@@ -347,8 +338,9 @@
 
     !     routine: hvfan
     !     purpose: calculates mass flow through a fan. this function has been modified to prevent negative flow.  
-    !              a max function was inserted just after the calculation off, the flow to do this.  if the flow is allowed to be negative (flow reversal) then this statement must be removed.
-    !              also, there is now a flow restriction on the fan, using qcmfraction
+    !              a max function was inserted just after the calculation off, the flow to do this.  if the flow is 
+    !              allowed to be negative (flow reversal) then this statement must be removed. !lso, there is now a flow 
+    !              restriction on the fan, using qcmfraction
     !     arguments: tsec   current simulation time
     !                i      node number
     !                j      jj'th connection to node ii 
@@ -388,10 +380,8 @@
     subroutine hvfrex (hvpsolv, hvtsolv)
 
     !     routine: hvfrex
-    !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow into the system from exterior nodes
-    !     arguments: tsec   current simulation time
-    !                hvpsolv
-    !                hvtsolv
+    !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow 
+    !              into the system from exterior nodes
 
     use precision_parameters
     use cenviro
@@ -399,7 +389,9 @@
     use params
     implicit none
 
-    real(eb) :: hvpsolv(*), hvtsolv(*), z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
+    real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
+    
+    real(eb) :: z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, ib, lsp
 
     do ii = 1, next
@@ -513,7 +505,8 @@
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if(nprod/=0)then
                 do k = 1, ns
-                    if (activs(k)) dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(upper,ii))*hvexcn(ii,k,upper) + abs(hveflo(lower,ii))*hvexcn(ii,k,lower)
+                    if (activs(k)) dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(upper,ii))*hvexcn(ii,k,upper) + &
+                                                      abs(hveflo(lower,ii))*hvexcn(ii,k,lower)
                 end do
             endif
         endif

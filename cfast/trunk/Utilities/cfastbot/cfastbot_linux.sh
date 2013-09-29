@@ -798,9 +798,8 @@ check_validation_stats()
          :
       else
          echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
-         echo "Validation statistics have changed since last run." >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
-         echo "Difference between validation statistics files," >> $WARNING_LOG
+         echo "Validation statistics are different from baseline statistics." >> $WARNING_LOG
          echo "Baseline validation statistics vs. Revision ${SVN_REVISION}:" >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
          diff -u <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE}) >> $WARNING_LOG

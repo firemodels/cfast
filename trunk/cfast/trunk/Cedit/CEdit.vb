@@ -4376,14 +4376,10 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
         '
-        'C1PrintDocument1
-        '
-        Me.C1PrintDocument1.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, False, "1in", "1in", "1in", "1in", System.Drawing.Printing.PaperSourceKind.FormSource, 15, Nothing, System.Drawing.Printing.PrinterResolutionKind.Custom, 600, 600)
-        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
-        Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1004, 685)
         Me.Controls.Add(Me.MainOpen)

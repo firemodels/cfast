@@ -82,7 +82,7 @@ if Stats_Output == 1
 end
 
 % Write statistics information to a LaTeX table for inclusion
-% in the FDS Validation Guide or FDTs Validation Guide
+% in the FDS Validation Guide or Correlation Guide
 if Stats_Output == 2
     fid = fopen(Statistics_Tex_Output, 'wt');
     % Generate table header information in .tex file
@@ -90,10 +90,10 @@ if Stats_Output == 2
     fprintf(fid, '%s\n', '\begin{longtable}{|l|c|c|c|c|c|}');
     fprintf(fid, '%s\n', '\caption[Summary statistics]{Summary statistics for all quantities of interest}');
     fprintf(fid, '%s\n', '\\ \hline');
-    fprintf(fid, '%s\n', 'Quantity & Datasets  & Points    & $\widetilde{\sigma}_E$ & $\widetilde{\sigma}_M$ & Bias \\ \hline \hline');
+    fprintf(fid, '%s\n', 'Quantity & Datasets  & Points    & $\widetilde{\sigma}_{\rm E}$ & $\widetilde{\sigma}_{\rm M}$ & Bias \\ \hline \hline');
     fprintf(fid, '%s\n', '\endfirsthead');
     fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Quantity & Datasets  & Points    & $\widetilde{\sigma}_E$ & $\widetilde{\sigma}_M$ & Bias \\ \hline \hline');
+    fprintf(fid, '%s\n', 'Quantity & Datasets  & Points    & $\widetilde{\sigma}_{\rm E}$ & $\widetilde{\sigma}_{\rm M}$ & Bias \\ \hline \hline');
     fprintf(fid, '%s\n', '\endhead');
     [rows, cols] = size(output_stats);
     for i_row = 2:rows
@@ -125,7 +125,7 @@ if Stats_Output == 2
 end
 
 % Write histogram information to a LaTeX file for inclusion
-% in the FDS Validation Guide or FDTs Validation Guide
+% in the FDS Validation Guide or Correlation Guide
 if (Stats_Output == 2) && (exist('Output_Histograms','var') == 1) && (isempty(Output_Histograms) == 0)
     fid = fopen(Histogram_Tex_Output, 'wt');
     % Write plots to LaTeX figures, eight per page

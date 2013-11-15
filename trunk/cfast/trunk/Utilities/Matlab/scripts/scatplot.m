@@ -65,7 +65,7 @@ Size_Save_Quantity = size(Save_Quantity);
 % This is also used to enable histogram plotting for validation cases.
 % Stats_Output = 0: No output statistics
 % Stats_Output = 1: FDS verification statistics
-% Stats_Output = 2: FDS or FDTs validation statistics
+% Stats_Output = 2: FDS or Correlation validation statistics
 if exist('Stats_Output', 'var') == 0
     Stats_Output = 0;
 end
@@ -168,8 +168,8 @@ for j=2:length(Q);
             
             % Perform this code block for FDS verification scatterplot output
             if Stats_Output == 1
-                single_measured_metric = Measured_Metric(k,:,:);
-                single_predicted_metric = Predicted_Metric(k,:,:);
+                single_measured_metric = Nonzeros_Measured_Metric;
+                single_predicted_metric = Nonzeros_Predicted_Metric;
                 % Loop over multiple line comparisons and build output_stats cell
                 for m=1:length(single_measured_metric)
                     
@@ -190,7 +190,7 @@ for j=2:length(Q);
                     if error_val <= error_tolerance
                         within_tolerance = 'Yes';
                     else
-                        within_tolerance = 'No';
+                        within_tolerance = 'Out of Tolerance';
                     end
                     
                     % Write descriptive statistics to output_stats cell
@@ -221,19 +221,20 @@ for j=2:length(Q);
         % Weight the data -- for each point on the scatterplot compute a
         % "weight" to provide sparse data with greater importance in the
         % calculation of the accuracy statistics
+        
         weight = zeros(size(Measured_Values));
         
         if strcmp(Weight_Data,'yes')
             Max_Measured_Value = max(Measured_Values);
             Bin_Size = Max_Measured_Value/10;
             for ib=1:10
-                bin_indices = find(Measured_Values>=(ib-1)*Bin_Size & Measured_Values<ib*Bin_Size);
+                bin_indices = find(Measured_Values>(ib-1)*Bin_Size & Measured_Values<=ib*Bin_Size);
                 bin_weight(ib) = n_pts/length(bin_indices);
                 clear bin_indices
             end
             for iv=1:n_pts
                 for ib=1:10
-                    if Measured_Values(iv)>=(ib-1)*Bin_Size && Measured_Values(iv)<ib*Bin_Size; weight(iv) = bin_weight(ib); end
+                    if Measured_Values(iv)>(ib-1)*Bin_Size && Measured_Values(iv)<=ib*Bin_Size; weight(iv) = bin_weight(ib); end
                 end
             end
         else
@@ -243,6 +244,7 @@ for j=2:length(Q);
         end
         
         % Calculate statistics
+        
         E_bar = sum(log(Measured_Values).*weight)/sum(weight);
         M_bar = sum(log(Predicted_Values).*weight)/sum(weight);
         Size_Measured = size(Measured_Values);
@@ -298,15 +300,15 @@ for j=2:length(Q);
   
         if Sigma_E > 0.0
             text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min),...
-                 ['Exp. Uncertainty: ',num2str(Sigma_E,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+                 ['Exp. Rel. Std. Dev.: ',num2str(Sigma_E,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
          
         if strcmp(Model_Error,'yes')
             text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.10)*(Plot_Max-Plot_Min),...
-                ['Model Uncertainty: ',num2str(Sigma_M,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+                ['Model Rel. Std. Dev.: ',num2str(Sigma_M,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
             
             text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.15)*(Plot_Max-Plot_Min),...
-                ['Bias Factor: ',num2str(delta,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+                ['Model Bias Factor: ',num2str(delta,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
         
         C = stripcell(Group_Key_Label);

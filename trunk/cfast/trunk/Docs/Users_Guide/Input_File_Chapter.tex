@@ -610,3 +610,18 @@ TRACE,0,0
 AREA,0.05,9
 HEIGH,0,3
 \end{lstlisting}
+
+\subsection{Defining Individual Fires}
+
+Fires in CFAST are defined as a series of individual fire objects which are then placed as desired in compartments in a simulation.
+
+Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases , but may be useful for any trace amounts released by a fire.
+
+Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o' and saving in the CFAST input file for the current simulation'. As many fire objects as desired may be defined by the user.  
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Object_Plot}
+\end{center}
+\end{figure}
+ 

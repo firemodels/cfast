@@ -39,6 +39,7 @@
     use objects2
     use opt
     use params
+    use cshell, only : logerr
     implicit none
     
     real(eb), intent(in) :: tsec
@@ -46,7 +47,7 @@
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q1, q2, xqfr
-    integer lsp, iroom, logerr, nobj, iobj, i, j
+    integer lsp, iroom, nobj, iobj, i, j
 
     ! initialize summations and local data
     do lsp = 1, ns + 2

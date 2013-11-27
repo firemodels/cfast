@@ -575,11 +575,6 @@
 
     return
 
-5000 FORMAT('Error for key word: ',a5,' Required count = ',i2,' and there were only ',i2,' entries')
-5001 FORMAT('Key word ',a5,' parameter(s) = ',20a10)
-5002 FORMAT('Key word (ext) ',a5,' parameter(s) = ',128a10)
-5003 FORMAT('Error for key word: ',a5,' Required count = ',i2,' and there were no entries')
-5004 FORMAT('Error for key word: ',a5,' Required count = ',i2,' and there was only 1 entry')
     end function countargs
 
 ! --------------------------- cptime -------------------------------------------

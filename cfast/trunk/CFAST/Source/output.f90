@@ -1085,11 +1085,6 @@
     'Compartment    Compartment                        Height    Height',/,' ',40X,'(m^2)     ',2('(m)       '),/,' ',70('-'))
 5050 format (' ',a8,7x,a8,7x,a6,2x,3(f7.2,3x))
 5060 formaT (//,' There are no mechanical flow connections')
-5070 format (//' Mechanical Flow Connections (Fans, Ducts, ...)',//, 'Connections and Ducts',//, &
-    ' System    From           From      To             To        Length    Area      Rough',/,' ', &
-    '                         Elev.                    Elev.',/,' ',25x,'(m)                      (m)       (m)   ','    (m^2)     (mm)',/,' ',86('-'))
-5080 format (' ',i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,4(f7.2,3x))
-5090 format (' ',10x,a4,i3,5x,f7.2,6x,a4,i3,5x,4(f7.2,3x))
 5100 format (' ',i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
 5110 format (' ',10x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
 5120 format (//,' Fans',//,' System    From           From      To             To        Fan       Minimum   Maximum    Fan Curve',/, &
@@ -1097,7 +1092,6 @@
     '(m)                      (m)             ','    (Pa)      (Pa)',/,' ',100('-'))
 5130 format (' ',i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),1p5g10.2)
 5140 format (' ',10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),1p5g10.2)
-5150 format (' ')
      
     end  subroutine outvent
 
@@ -1159,7 +1153,7 @@
     end do
 
     !     print out the properties of the materials used
-60  write (iofilo,5030) thrmfile
+    write (iofilo,5030) thrmfile
     do i = 1, maxct
         write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i), (lhclbf(k,i),k = 1,5) 
         do j = 2, lnslb(i)
@@ -1278,7 +1272,6 @@
         endif
 5004    format ('Floor, compartment ',I2)
 5005    format (A8,'  Floor, compartment ',I2)
-5006    format (' ')
         write(iofilo,5010) itarg,compartmentnames(ixtarg(trgroom,itarg)),(xxtarg(trgcenx+j,itarg),j=0,2),(xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
 5010    format(' ',i5,t11,a14,t21,6(f7.2,2x),t76,a8)
     end do
@@ -1837,7 +1830,6 @@
 5070 format (' Low wall temp(K) ',e12.2)
 5080 format (' from ',I2,' pressure ',e10.3,' to ',i2,' pressure ',g10.3,' mass flow is ',g10.3,' temp ',g10.3)
 5090 format (' Returned from dassl at T = ',1pg14.6,',  dt = ',1pg12.4)
-5095 formaT (' Solution Component with the most error: ',i3)
 6000 format (1x,i3,1x,6e13.6)
 6010 format (' HVAC pressures:',4e13.6)
 6020 format (' HVAC temperatues:',4E13.6)

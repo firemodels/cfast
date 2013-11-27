@@ -457,25 +457,19 @@
     close (iofili)
     return
 
-5000 format ('Setting X cood. of fire position to default ',F12.5)
 5001 format ('Opening a version ',i2,' file in normal mode')
 5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
 5003 format ('***Error: Too many lines in the main data file')
-5010 format ('Setting Y cood. of fire position to default ',F12.5)
-5020 format ('Setting Z cood. of fire position to default ',F12.5)
 5021 format ('The constant heat source (heatf) is in compartment ',i3,' at ',3f12.5)
 5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
     ! read format list
-5030 format (A5,2X,I3,128A1)
 5050 format ('***Error: Error opening the input file = ',I6)
 
     ! output for objects
 5080 format (' Object no. ',I3,' X cood. set to ',F12.5)
 5090 format (' Object no. ',I3,' Y cood. set to ',F12.5)
 5100 format (' Object no. ',I3,' Z cood. set to ',F12.5)
-5101 format ('***Error: Not an allowed fire type ',i3)
-5102 format ('***Error: Too many targets are being defined for object fires')
 
     end subroutine readinputfile
 
@@ -617,8 +611,8 @@
         ! Set the gaseous ignition temperature - this is a global parameter DJIGN
     case ('DJIGN')
         if (.not.countargs(1,lcarray, xnumc-1, nret)) then
-            return
             ierror = 4
+            return
         endif
         tgignt = lrarray(2)
 
@@ -1722,8 +1716,6 @@
 5080 format ('***Error: Too many pairwise horizontal connections',4I5)
 5081 format ('***Error: Too many horizontal connections ',3i5)
 5090 format ('The connection',3I3,' is being redefined')
-5130 format ('***Error: THE INTERFACE HEIGHT MUST BE SPECIFIED IN PAIRS',I4)
-5140 format ('***Error: Specification for interface height is outside of',' allowable range',2I4)
 5191 format ('***Error: Compartments specified in MVENT have not been defined ',2i3)
 5192 format ('***Error: Exceeded maximum number of nodes/openings in MVENT ',2i3)
 5193 format ('***Error: MVENT(MID) is not consistent ',2i3)
@@ -1938,11 +1930,11 @@
     use cfast_main
     use fltarget
     use objects2
+    use cshell, only : logerr
     implicit none
     
     integer, intent(in) :: iobj
     integer, intent(out) :: ierror
-    integer :: logerr
 
     ntarg = ntarg + 1
     if (ntarg>mxtarg) then
@@ -2158,9 +2150,6 @@
 
     goto 20
 
-    write(logerr,*)'***Error: error reading the "setp" file'
-    ierror = 76
-    return
 5000 format ('***Error: Cannot find the object fire file in either the executable path or the local directory ',/,a)
 5001 format ('Open the SETPARAMETER file ',a)
 

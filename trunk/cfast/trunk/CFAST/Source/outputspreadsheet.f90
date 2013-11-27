@@ -366,7 +366,6 @@
     call ssprintresults (24, position, outarray)
     return
 
-5050 format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
     end subroutine spreadsheetflux
 
 ! --------------------------- SpreadSheetSpecies -------------------------------------------
@@ -428,7 +427,6 @@
 
     return
 
-110 format('Exceeded size of output files in species spread sheet')
     end subroutine SpreadSheetSpecies
 
 ! --------------------------- SpreadSheetSMV -------------------------------------------

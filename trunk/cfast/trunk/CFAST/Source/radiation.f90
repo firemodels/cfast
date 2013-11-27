@@ -430,14 +430,15 @@
     use precision_parameters
     implicit none
 
+    integer, parameter :: u = 1, l = 2, mxroom = 100
+    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfire
+    
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
     real(eb), intent(out) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
     
     integer, intent(out) :: ierror
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
 
-    integer, parameter :: u = 1, l = 2, mxroom = 100
-    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfire
     real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
     real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
     real(eb) :: rdparfig, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14

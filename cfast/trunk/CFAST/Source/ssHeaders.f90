@@ -204,7 +204,6 @@
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
 
 
-    use cenviro
     use cfast_main
     use cshell
     use fltarget
@@ -318,7 +317,6 @@
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to SpreadSheetFlow so the output should be parallel
 
-    use cenviro
     use cfast_main
     use cshell
     use vents
@@ -460,8 +458,6 @@
 
     use cenviro
     use cfast_main
-    use cshell
-    use objects1
     use vents
     implicit none
 
@@ -588,9 +584,7 @@
 
     ! This is the header information for the normal spreadsheet output
 
-    use cenviro
     use cfast_main
-    use cshell
     use objects1
     use debug
     implicit none
@@ -681,10 +675,7 @@
 
     ! This is the header information for the normal spreadsheet output
 
-    use cenviro
-    use cfast_main
-    use cshell
-    use objects1
+    use cparams
     use debug
     use vents
     implicit none

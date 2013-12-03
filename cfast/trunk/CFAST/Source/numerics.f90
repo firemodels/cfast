@@ -6435,7 +6435,6 @@
     !
     !---------------------------- all rights reserved ----------------------------
 
-    use cparams
     use opt
     implicit none
     !

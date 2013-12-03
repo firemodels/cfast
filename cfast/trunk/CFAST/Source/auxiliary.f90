@@ -213,9 +213,7 @@
     !     arguments: name - routine name calling for exit ... at this point, it's always "CFAST"
     !                errorcode - numeric code indicating reason for an error exit.  0 for a normal exit
 
-    use cparams
     use cshell
-    use iofiles
 
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
@@ -542,9 +540,7 @@
     !                lcarray - character array of arguments.  There should be tocount non-blank entries
     !                numc - dimension limit on lcarray
     !                nret - actual number of arguments
-
-    use cshell
-    
+ 
     implicit none
 
     integer, intent(in) :: tocount, numc
@@ -1004,7 +1000,6 @@
     !     arguments: phrase - character string to be written
     !                z - length of the string
 
-    use cparams
     use cshell
     
     implicit none
@@ -1029,7 +1024,6 @@
     !     arguments: phrase - character string to be written
     !                l - length of the string
 
-    use cparams
     use cshell
     
     implicit none
@@ -1058,7 +1052,6 @@
     !              console so that they are not case sensitive.
     !     arguments: 
 
-    use cparams
     use cshell
     
     implicit none
@@ -1125,7 +1118,6 @@
     !                flting - floting point numbers returned
 
     use precision_parameters
-    use cfin
     use cfio
     use cparams
     use cshell
@@ -1254,7 +1246,6 @@
     !     routine: readas
     !     purpose:  read in a string from the input file, filtering out comments
 
-    use cparams
     use cshell
     
     implicit none

@@ -639,7 +639,6 @@
 
     use precision_parameters
     use targptrs
-    use cenviro
     use cfast_main
     use cshell
     use fltarget
@@ -1285,7 +1284,6 @@
     !     description:  stuff the flow output after blanking appropriate zeros
 
     use precision_parameters
-    use cparams
     use solver_parameters
     implicit none
 
@@ -1430,7 +1428,6 @@
 
     use precision_parameters
     use cfast_main
-    use cenviro
     use opt
     use wdervs
     
@@ -1552,7 +1549,6 @@
     !     description: print out numerical performance data; resid counts, jac counts, cpu times etc.
 
     use precision_parameters
-    use cparams
     use opt
     use wdervs
     
@@ -1588,7 +1584,6 @@
 
     !     Description: opens a file on unit iounit
 
-    use cparams
     use opt
     
     implicit none
@@ -1896,7 +1891,6 @@
     !                   solve.ini (so as to not overwrite solver.ini if
     !                   it is present)
 
-    use cparams
     use opt
     use params
     use solver_parameters

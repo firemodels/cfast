@@ -496,7 +496,6 @@
     use params
     use solver_parameters
     use thermp
-    use vents
     use wnodes
     implicit none
 
@@ -2170,7 +2169,6 @@
     !                ipmxmn  array of flags for limits that have been set in pmxmn
 
     use precision_parameters
-    use cfast_main
     use opt
     implicit none
 
@@ -2251,7 +2249,6 @@
 
     use cfast_main
     use fltarget
-    use objects1
     use objects2
     implicit none
     

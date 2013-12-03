@@ -18,7 +18,6 @@
     use cfast_main
     use flwptrs
     use opt
-    use params
     use vents
     use vent_slab
     use debug
@@ -416,10 +415,8 @@
 
     use cenviro
     use cfast_main
-    use flwptrs
     use opt
     use vents
-    use vent_slab
     implicit none
 
     logical, intent(out) :: ventflg(mxvent), roomflg(nr), anyvents

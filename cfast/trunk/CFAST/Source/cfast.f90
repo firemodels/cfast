@@ -33,9 +33,7 @@
     
     use precision_parameters
     use cfast_main
-    use cparams
     use cshell
-    use dsize
     use iofiles
     use thermp
     implicit none
@@ -44,7 +42,7 @@
     real(eb) :: xdelt, tstop, tbeg, tend
 
     version = 6300          ! Current CFAST version number
-    crdate = (/2013,11,12/)  ! Current CFAST executable creation date
+    crdate = (/2013,12,03/)  ! Current CFAST executable creation date
 
     errorcode = 0
 
@@ -367,7 +365,7 @@
     integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
     integer(2) :: filecount, delfilesqq
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
-        tplot, tspread, tout,  ostptime, tdtect, tobj, jac
+        tplot, tspread, tout,  ostptime, tdtect, tobj
     character(133) :: messg
     external resid, jac, delfilesqq
     integer :: funit
@@ -897,7 +895,6 @@
     !     purpose: keyboard routine for user interaction during simulation
 
     use precision_parameters
-    use cenviro
     use cfast_main
     use dervs
     use opt
@@ -970,8 +967,6 @@
     !     Routine: slvhelp
     !     Purpose: quick output of keyboard shortcuts available during simulaiton
 
-    use cenviro
-    use cfast_main
     use cshell
     use opt
     implicit none
@@ -1007,7 +1002,6 @@
     !     purpose: update solution flags for dassl solver
 
     use precision_parameters
-    use cparams
     use solver_parameters
     implicit none
 

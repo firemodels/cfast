@@ -17,7 +17,6 @@
     use cenviro
     use fireptrs
     use cfast_main
-    use fltarget
     use opt
     use debug
     implicit none

@@ -123,7 +123,6 @@
     !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
     use precision_parameters
-    use cenviro
     use cfast_main
     use vents
     implicit none
@@ -547,7 +546,6 @@
     use debug
     use cenviro
     use cfast_main
-    use fltarget
     use objects1
     implicit none
     
@@ -640,11 +638,8 @@
     subroutine SpreadSheetFSlabs (time, ir1, ir2, iv, nslab, qslab)
     
     use precision_parameters
+    use cparams
     use debug
-    use cenviro
-    use cfast_main
-    use fltarget
-    use objects1
     use vents
     use vent_slab
     implicit none

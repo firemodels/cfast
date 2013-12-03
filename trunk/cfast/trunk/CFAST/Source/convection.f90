@@ -866,7 +866,6 @@
     use fireptrs
     use cfast_main
     use opt
-    use wdervs
 
     implicit none
 

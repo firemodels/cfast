@@ -665,7 +665,6 @@
     !                 deltt   current time step
 
     use precision_parameters
-    use cenviro
     use cfast_main
     use params
     implicit none  
@@ -733,7 +732,6 @@
     use cfast_main
     use flwptrs
     use opt
-    use params
     use vents
     implicit none
     

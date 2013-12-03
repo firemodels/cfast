@@ -124,7 +124,6 @@
     !                IFLAG
 
     use precision_parameters
-    use cenviro
     use cfast_main
     use cshell
     use opt
@@ -810,7 +809,6 @@
     use precision_parameters
     use cenviro
     use cfast_main
-    use cfin
     use cshell
     use fltarget
     use params
@@ -1193,7 +1191,6 @@
 
     use precision_parameters
     use cfast_main
-    use cfin
     use cshell
     use iofiles
     use opt
@@ -1710,7 +1707,7 @@
     ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
 
     ! an important note - solve sets the last variable to be solved to nofprd which is the beginning of the species (-1) and the end of the array which is presently used by dassl
-    use cenviro
+    
     use cfast_main
     use fltarget
     use opt
@@ -1834,7 +1831,6 @@
     use precision_parameters
     use cenviro
     use cfast_main
-    use params
     use vents
     implicit none
 

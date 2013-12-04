@@ -1436,7 +1436,7 @@
     real(eb), intent(in) :: wm(jacdim,*), tsec
     integer, intent(in) :: neqs
     
-    real(eb) :: buf(maxeq), wmii, wmij, tmp, tmp1
+    real(eb) :: wmii, wmij, tmp, tmp1
     integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, itcol, icdx, iitmp
     logical :: firstc
     character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
@@ -1516,7 +1516,7 @@
                 entry(itcol) = ' |'
                 itcol = itcol + 1
             endif
-            wmij = buf(j)
+            wmij = wm(i,j)
             if (wmij/=0.0_eb.and.wmii/=0.0_eb) then
                 tmp1 = abs(wmij/wmii)
                 tmp = log(tmp1)

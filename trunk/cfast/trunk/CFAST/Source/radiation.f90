@@ -1268,7 +1268,7 @@
     implicit none
 
     integer, intent(in) :: xdim, ydim
-    real(eb), intent(out) :: xval, yval
+    real(eb), intent(inout) :: xval, yval
     integer, intent(out) :: xerr, yerr
 
     real(eb), intent(in) :: x(xdim), y(ydim), z(xdim,ydim)

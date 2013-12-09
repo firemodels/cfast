@@ -345,7 +345,7 @@
     character, intent(in) :: chr
     integer, intent(in) :: i1, i2, i3, i4, i5
     
-    character, intent(out) :: cmdlin*(*)
+    character, intent(inout) :: cmdlin*(*)
     
     character :: temp*127 
     

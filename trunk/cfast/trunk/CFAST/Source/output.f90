@@ -1847,7 +1847,8 @@
     implicit none
     
     integer, intent(in) :: ic, count, itin
-    integer, intent(out) :: ridx, retbuf(itin)
+    integer, intent(inout) :: ridx
+    integer, intent(out) :: retbuf(itin)
     integer :: mrkr
     
     mrkr = 106

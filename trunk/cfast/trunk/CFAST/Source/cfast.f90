@@ -904,7 +904,8 @@
     real(eb), intent(in) :: t
     
     integer, intent(out) :: icode
-    real(eb), intent(out) :: tpaws, tout
+    real(eb), intent(out) :: tpaws
+    real(eb), intent(inout) :: tout
 
     logical :: slvhelp
     integer(2) :: ch, hit

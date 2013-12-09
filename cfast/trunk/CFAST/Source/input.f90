@@ -2215,10 +2215,10 @@
     
     integer, intent(in) :: index, defaultposition, opoint,rpoint
     real(eb), intent(in) :: minimumseparation, criterion(*)
-    real(eb), intent(out) :: xyz(3,0:*)
+    real(eb), intent(inout) :: xyz(3,0:*)
     integer, intent(out) :: errorcode
     
-    IF((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) THEN
+    if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) then
         select case (defaultposition)
         case (1) 
             xyz(index,opoint) = criterion(rpoint)/2.0_eb

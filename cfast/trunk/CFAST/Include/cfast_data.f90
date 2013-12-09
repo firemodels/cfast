@@ -420,7 +420,7 @@ module opt
                       0,       1,           0,                  0,                   0,                    0/)
 !*** in above change default rad option from 2 to 4
 !*** this causes absorption coefs to take on constant default values rather than computed from data
-    integer, dimension(mxopt) :: debug = 0
+    integer, dimension(mxopt) :: d_debug = 0
     
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
     

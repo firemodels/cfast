@@ -365,7 +365,8 @@
     integer, intent(in) :: source_room, activated_room, activated_sprinkler
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit
     real(eb), intent(in) :: activated_time, activated_rate, model_time
-    real(eb), intent(out) :: hrr_constrained, hrr_at_activation, pyrolysis_rate_constrained, species_rates(:)
+    real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
+    real(eb), intent(inout) :: hrr_at_activation
 
     real(eb) :: o2f, o2fi, o2_entrained, o2_factor, o2_available, quenching_factor
     real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn
@@ -1377,7 +1378,8 @@
     real(eb), intent(in) :: told, dt, cond, trip, oldcond
     
     integer, intent(out) :: ifobj
-    real(eb), intent(out) :: tmpob(2),  tobj
+    real(eb), intent(out) :: tmpob(2)
+    real(eb), intent(inout) :: tobj
     
     real(eb) :: delta
 

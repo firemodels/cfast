@@ -91,7 +91,7 @@
     
     real(eb), intent(in) :: valu
     real(eb), intent(out) :: array(*)
-    integer, intent(out) :: ic
+    integer, intent(inout) :: ic
     
     integer iounit,i
 

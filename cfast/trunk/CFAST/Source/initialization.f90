@@ -1926,7 +1926,7 @@
     implicit none
 
     integer, intent(in) :: nslab
-    integer, intent(out) :: numnode(*) 
+    integer, intent(inout) :: numnode(*) 
     real(eb), intent(in) :: tstop, wsplit(*), wk(*), wspec(*), wrho(*), wthick(*), tamb, text
     real(eb), intent(out) :: wlen, walldx(*)
     

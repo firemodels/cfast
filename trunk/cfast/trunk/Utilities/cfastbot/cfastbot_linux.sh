@@ -775,7 +775,7 @@ check_matlab_validation()
    else
       grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_validation >> $CFASTBOT_DIR/output/stage7b_warnings
 
-      echo "Warnings from Stage 7b - Matlab plotting (validation):" >> $WARNING_LOG
+      echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
       cat $CFASTBOT_DIR/output/stage7b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
@@ -802,6 +802,8 @@ check_validation_stats()
          echo "Validation statistics are different from baseline statistics." >> $WARNING_LOG
          echo "Baseline validation statistics vs. Revision ${SVN_REVISION}:" >> $WARNING_LOG
          echo "-------------------------------" >> $WARNING_LOG
+         head -n 1 ${BASELINE_STATS_FILE} >> $WARNING_LOG
+         echo "" >> $WARNING_LOG
          diff -u <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE}) >> $WARNING_LOG
          echo "" >> $WARNING_LOG
       fi

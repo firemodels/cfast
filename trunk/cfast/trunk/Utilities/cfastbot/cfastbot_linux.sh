@@ -41,6 +41,7 @@ CFAST_SVNROOT="$CFASTBOT_HOME_DIR/cfast"
 ERROR_LOG=$CFASTBOT_DIR/output/errors
 TIME_LOG=$CFASTBOT_DIR/output/timings
 WARNING_LOG=$CFASTBOT_DIR/output/warnings
+VALIDATION_STATS_LOG=$CFASTBOT_DIR/output/statistics
 SVN_LOG=$CFASTBOT_HOME_DIR/SVN_LOG
 RUNNING=$CFASTBOT_DIR/running
 export TEXINPUTS=".:../LaTeX_Style_Files:"
@@ -797,15 +798,15 @@ check_validation_stats()
          # Continue along
          :
       else
-         echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
-         echo "-------------------------------" >> $WARNING_LOG
-         echo "Validation statistics are different from baseline statistics." >> $WARNING_LOG
-         echo "Baseline validation statistics vs. Revision ${SVN_REVISION}:" >> $WARNING_LOG
-         echo "-------------------------------" >> $WARNING_LOG
-         head -n 1 ${BASELINE_STATS_FILE} >> $WARNING_LOG
-         echo "" >> $WARNING_LOG
-         diff -u <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE}) >> $WARNING_LOG
-         echo "" >> $WARNING_LOG
+         echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $VALIDATION_STATS_LOG
+         echo "-------------------------------" >> $VALIDATION_STATS_LOG
+         echo "Validation statistics are different from baseline statistics." >> $VALIDATION_STATS_LOG
+         echo "Baseline validation statistics vs. Revision ${SVN_REVISION}:" >> $VALIDATION_STATS_LOG
+         echo "-------------------------------" >> $VALIDATION_STATS_LOG
+         head -n 1 ${BASELINE_STATS_FILE} >> $VALIDATION_STATS_LOG
+         echo "" >> $VALIDATION_STATS_LOG
+         diff -u <(sed 's/"//g' ${BASELINE_STATS_FILE}) <(sed 's/"//g' ${CURRENT_STATS_FILE}) >> $VALIDATION_STATS_LOG
+         echo "" >> $VALIDATION_STATS_LOG
       fi
    else
       echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
@@ -963,6 +964,12 @@ email_build_status()
    else
       # Send empty email with success message
       mail -s "CFASTbot build success on ${hostname}! Revision ${SVN_REVISION}." $mailTo < $TIME_LOG > /dev/null
+   fi
+
+   # Send email notification if validation statistics have changed.
+   if [ -e $VALIDATION_STATS_LOG ]
+   then
+      mail -s "CFASTbot notice. Validation statistics have changed for Revision ${SVN_REVISION}." $mailTo < $VALIDATION_STATS_LOG > /dev/null      
    fi
 }
 

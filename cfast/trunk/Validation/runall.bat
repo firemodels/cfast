@@ -66,6 +66,20 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_20 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_21 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_22 /V
+
+echo Running UL_NFPRF Series II
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_01 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_03 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_04 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_06 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_07 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_08 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_09 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_12 /V
 cd ..
 if %1==UL_NFPRF goto end
 

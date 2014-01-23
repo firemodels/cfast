@@ -10,4 +10,4 @@ call %intelbin%\ifortvars ia32
 
 :envexist
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_32
-pause
+

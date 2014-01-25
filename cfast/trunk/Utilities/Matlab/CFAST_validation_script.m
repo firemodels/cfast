@@ -35,7 +35,7 @@ Working_Dir = [pwd, '/../../Validation/'];
 Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
 Output_File = [pwd, '/CFAST_validation_scatterplot_output.csv'];
-Stats_Output = 2;
+Stats_Output = 'Validation';
 Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/validation_statistics.tex'];
 Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/validation_histograms.tex'];
 

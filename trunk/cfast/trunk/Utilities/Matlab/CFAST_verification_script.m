@@ -37,7 +37,7 @@ Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
 
 % Statistics output options
 
-Stats_Output = 1;
+Stats_Output = 'Verification';
 Output_File = [pwd, '/CFAST_verification_scatterplot_output.csv'];
 Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_statistics.tex'];
 

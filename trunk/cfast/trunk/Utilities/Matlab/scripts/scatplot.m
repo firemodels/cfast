@@ -63,11 +63,11 @@ Size_Save_Quantity = size(Save_Quantity);
 
 % If a statistics output file is specified, then enable statistics throughout.
 % This is also used to enable histogram plotting for validation cases.
-% Stats_Output = 0: No output statistics
-% Stats_Output = 1: FDS verification statistics
-% Stats_Output = 2: FDS or Correlation validation statistics
+% Stats_Output = 'None': No output statistics
+% Stats_Output = 'Verification': FDS verification statistics
+% Stats_Output = 'Validation': FDS or Correlation validation statistics
 if exist('Stats_Output', 'var') == 0
-    Stats_Output = 0;
+    Stats_Output = 'None';
 end
 
 % Read in global plot options
@@ -85,7 +85,7 @@ H = textscan(Q{1},'%q','delimiter',',');
 headers = H{:}'; clear H
 
 % Generate header information for verification output_stats
-if Stats_Output == 1
+if strcmp(Stats_Output, 'Verification')
     output_stats = {};
     output_stats{1,1} = 'Dataplot Line Number';
     output_stats{1,2} = 'Verification Group';
@@ -103,7 +103,7 @@ if Stats_Output == 1
 end
 
 % Generate header information for validation output_stats
-if Stats_Output == 2
+if strcmp(Stats_Output, 'Validation')
     output_stats = {};
     output_stats{1,1} = 'Quantity';
     output_stats{1,2} = 'Number of Datasets';
@@ -154,20 +154,20 @@ for j=2:length(Q);
             
             if strcmp(Plot_Type,'linear')
                 K(k) = plot(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
-                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i)),'MarkerSize',Marker_Size); hold on
             elseif strcmp(Plot_Type,'loglog')
                 K(k) = loglog(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
-                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i)),'MarkerSize',Marker_Size); hold on
             elseif strcmp(Plot_Type,'semilogx')
                 K(k) = semilogx(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
-                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i)),'MarkerSize',Marker_Size); hold on
             elseif strcmp(Plot_Type,'semilogy')
                 K(k) = semilogy(Nonzeros_Measured_Metric,Nonzeros_Predicted_Metric,...
-                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i))); hold on
+                char(Save_Group_Style(i)),'MarkerFaceColor',char(Save_Fill_Color(i)),'MarkerSize',Marker_Size); hold on
             end
             
             % Perform this code block for FDS verification scatterplot output
-            if Stats_Output == 1
+            if strcmp(Stats_Output, 'Verification')
                 single_measured_metric = Nonzeros_Measured_Metric;
                 single_predicted_metric = Nonzeros_Predicted_Metric;
                 % Loop over multiple line comparisons and build output_stats cell
@@ -345,7 +345,7 @@ for j=2:length(Q);
         statistics_histogram
         
         % Perform this code block for FDS validation scatterplot output
-        if Stats_Output == 2
+        if strcmp(Stats_Output, 'Validation')
             % Write descriptive statistics to output_stats cell
             output_stats{stat_line,1} = Scatter_Plot_Title; % Quantity
             output_stats{stat_line,2} = size(B, 2); % Number of data sets

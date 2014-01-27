@@ -38,7 +38,7 @@ Working_Dir = [pwd, '/../MAGIC_Validation/'];
 Manuals_Dir = [pwd, '/Docs/FIGURES/'];
 Scatterplot_Inputs_File = [pwd, '/MAGIC_validation_scatterplot_inputs.csv'];
 Output_File = [pwd, '/MAGIC_validation_scatterplot_outputs.csv'];
-Stats_Output = 2;
+Stats_Output = 'Validation';
 Statistics_Tex_Output = [pwd, '/Docs/FIGURES/Scatterplots/validation_statistics.tex'];
 Histogram_Tex_Output = [pwd, '/Docs/FIGURES/Scatterplots/validation_histograms.tex'];
 

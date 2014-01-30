@@ -611,17 +611,77 @@ AREA,0.05,9
 HEIGH,0,3
 \end{lstlisting}
 
+\subsection{Global Fire Inputs}
+
+Three inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Ceiling_Jet}
+\end{wrapfigure}
+
+\textbf{Ceiling Jet}: If the fire is large enough, the plume from the fire will penetrate the upper layer, impinge on the ceiling surface, and increase the convective heat transfer to the ceiling or increase the temperature nearby targets or detectors near the ceiling.  CFAST includes an algorithm to account for some of these effects.  Details of the inputs are included in the section on ceiling jets included in the Special Features chapter, below.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/LOL}
+\end{wrapfigure}
+
+\textbf{Lower Oxygen Limit} (default units: \%, default value: 10~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Gaseous_Ignition_Temperature}
+\end{wrapfigure}
+
+\textbf{Gaseous Ignition Temperature} (default units: \degc, default value: ambient temperature plus 100 K): The lower temperature limit on the burning of fuel in a gas layer. Since CFAST does not support a combustion kinetics model, this is the algorithm used for fires out of vents.  Normally, this value would not be changed by the user.
+
 \subsection{Defining Individual Fires}
 
 Fires in CFAST are defined as a series of individual fire objects which are then placed as desired in compartments in a simulation.
 
-Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases , but may be useful for any trace amounts released by a fire.
+Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
-Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o' and saving in the CFAST input file for the current simulation'. As many fire objects as desired may be defined by the user.  
+Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o' and saved in the CFAST input file for the current simulation. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions.
 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Object_Plot}
 \end{center}
 \end{figure}
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Edit_Button}
+\end{wrapfigure}
+
+Use the Edit button to edit the currently selected fire object. Fire Objects can also be changed from the Tools menu. A separate window allows the user to view or change any of the available fire objects. Details of fire inputs for a fire is included below. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Create_t2_Button}
+\end{wrapfigure}
+
+Use the Add t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000 BTU/s) in 600 s, 300 s, and 150 s, respectively were proposed for design of fire detection systems .  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054 kW in 75 s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
  
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Create_New_Button}
+\end{wrapfigure}
+
+Use the Create New button to create a new fire object with default values for all entries.  No time-dependent values are included in the new fire.  \\~ \\
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Object_Edit}
+\end{center}
+\end{figure}
+
+\textbf{Fire Name:} The name from the collection of fire objects for the desired object.  This corresponds to the name of the fire object file, without the extension. Specifying a name not found in the database causes CFAST to stop with an appropriate error message.
+
+\textbf{Material} (default value: none): material name from the thermal properties data file used for the object. The material properties are used to calculate heat transfer into the object from its surroundings.
+
+\textbf{C, H, O, N, Cl}: Molecular formula of the burning fuel. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least Carbon and Hydrogen and optionally Oxygen, Nitrogen, and Chlorine. These five inputs define the stoiciometry of the fuel as it is burned.  Thus, for example, all of the specified Nitrogen and Chlorine is assumed to completely react to form HCN and HCl.  If only partial conversion is desired, a smaller ratio for Nitrogen and/or Chlorine can be specified.
+
+\textbf{Heat of Combustion} (default units: J/kg, default value: 50 000 000 J/kg): The energy released per kilogram of mass burned.
+
+\textbf{Soot Yield} (default units: kg/kg, default value: 0 kg/kg): Constant species yields of soot expressed as ratios of carbon to fuel produced by the pyrolysis of the fuel. This input allows the user to specify a single value for soot yield for all time points in the fire time line. Individual time points can be changed as desired in the spreadsheet input described below.
+
+\textbf{CO Yield} (default units: kg/kg, default value: determined by
+
+\textbf{Radiative Fraction}: The fraction of the energy produced in combustion that is radiated from the fire and plume. Within CFAST, the radiative fraction defaults to 0.30 ; i.e., 30 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.

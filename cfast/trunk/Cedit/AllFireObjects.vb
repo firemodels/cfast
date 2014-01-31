@@ -313,7 +313,7 @@ Public Class AllFireObjects
         Me.FireNewObject.Name = "FireNewObject"
         Me.FireNewObject.Size = New System.Drawing.Size(75, 23)
         Me.FireNewObject.TabIndex = 2
-        Me.FireNewObject.Text = "New"
+        Me.FireNewObject.Text = "Create New"
         '
         'FireDupObject
         '
@@ -426,7 +426,7 @@ Public Class AllFireObjects
         Me.FireNewt2.Name = "FireNewt2"
         Me.FireNewt2.Size = New System.Drawing.Size(75, 23)
         Me.FireNewt2.TabIndex = 145
-        Me.FireNewt2.Text = "New t²"
+        Me.FireNewt2.Text = "Create t²"
         '
         'AllFireObjects
         '

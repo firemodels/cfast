@@ -2977,7 +2977,7 @@ Public Class CeditMain
         Me.GroupFire.Controls.Add(Me.FireYNormal)
         Me.GroupFire.Controls.Add(Me.FireZNormal)
         Me.GroupFire.Controls.Add(Me.Label68)
-        Me.GroupFire.Location = New System.Drawing.Point(89, 168)
+        Me.GroupFire.Location = New System.Drawing.Point(89, 412)
         Me.GroupFire.Name = "GroupFire"
         Me.GroupFire.Size = New System.Drawing.Size(798, 138)
         Me.GroupFire.TabIndex = 0
@@ -3246,7 +3246,7 @@ Public Class CeditMain
         Me.GroupFireObject.Controls.Add(Me.FireRadiativeFraction)
         Me.GroupFireObject.Controls.Add(Me.FirePeakArea)
         Me.GroupFireObject.Controls.Add(Me.FireMolarMass)
-        Me.GroupFireObject.Location = New System.Drawing.Point(56, 312)
+        Me.GroupFireObject.Location = New System.Drawing.Point(56, 165)
         Me.GroupFireObject.Name = "GroupFireObject"
         Me.GroupFireObject.Size = New System.Drawing.Size(864, 234)
         Me.GroupFireObject.TabIndex = 17

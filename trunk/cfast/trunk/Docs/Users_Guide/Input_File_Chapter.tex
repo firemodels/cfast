@@ -82,6 +82,7 @@ These tabbed-pages organize the inputs for CFAST simulations into several catego
 
 Each of these tabbed-pages is described in more detail below. In addition, a series of menus allow the user to open and save files; run the simulation, or access help and program information.
 
+\newpage
 \section{Simulation Environment}
 
 The Simulation Environment page defines the initial conditions and simulation time for the CFAST input file. 
@@ -178,6 +179,7 @@ The wind speed, scale height, and power law are used to calculate the wind coeff
 \item These three parameters are optional. If they are not included in the input file, default values are used.
 \end{itemize}
 
+\newpage
 \section{Compartment Geometry}
 
 The Compartment Geometry page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the �Add� button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.  
@@ -293,6 +295,7 @@ The bounding surfaces are the ceilings, walls and floors that define a compartme
 \item Since most of the heat conduction is through the ceiling, and since the conduction calculation takes a significant fraction of the computation time, it is recommended that initial calculations be made using the ceiling only.  Adding the walls generally has a small effect on the results, and the floor contribution is usually negligible.  Clearly, there are cases where the above generalization does not hold, but it may prove to be a useful screening technique. A caveat in including floor properties is that the set of equations describing heat transfer becomes difficult to solve once the thermal wave from the compartments reaches the unexposed side of a floor. The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
 \end{itemize}
 
+\newpage
 \section{Compartment Connections}
 
 Flow through vents can be natural flow through doors, windows, or openings in ceilings and floors; or forced flow in a mechanical ventilation system.  Natural flow comes in two varieties.  The first is referred to as horizontal flow.  It is the flow which is normally thought of in discussing fires.  It encompasses flow through doors, windows and so on.  The other is vertical flow and can occur if there is a hole in the ceiling or floor of a compartment.  This latter phenomena is useful in some scenarios such as in a ship where openings in floors and ceilings through scuttles are common and in buildings with manual or automatic heat and smoke venting.
@@ -548,6 +551,7 @@ MVENT,2,3,1,V,0.6,0.4225,V,0.75,0.0731,0.167,2000,3000,1
 \item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
 \end{itemize}
 
+\newpage
 \section{Prescribing Fires}
 
 A simulated fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate (the pyrolysis rate). Energy is released by the fuel and combustion products are created as it burns. In the fire, species production is calculated based on production yields prescribed by the user. In addition, the pyrolysis rate and resulting energy and species generation may be limited by the oxygen available for combustion. When sufficient oxygen is available for combustion, the heat release rate for the constrained fire is the same as for the unconstrained fire.
@@ -568,8 +572,6 @@ The heat release rate for a constrained fire may be reduced below its prescribed
 For a constrained fire, the heat release rate is limited by available oxygen. This limit is applied in three places: The first is burning in the portion of the plume which is in the lower layer of the room of fire origin; the second is the portion of the plume in the upper layer, also in the room of origin; the third is in the vent flow which entrains air from a lower layer into an upper layer in an adjacent compartment. The unburned hydrocarbons are tracked in this model. Combustion of CO to CO$_2$ is not included in the model. Actual combustion chemistry is not considered in CFAST due to the complexities associated with detailed kinetics and transport.
 
 There are two calculations involving radiation in this model. One is for energy balance and is based on broadband radiation absorption. The amount of radiation absorbed in sensitive to the species present, specifically water vapor, soot and carbon dioxide. The other is for visibility of egress signs. This calculation is based solely on the soot volume fraction and is reported as optical depth (per meter). The conversion factor is based on the recent work by Mulholland and Croarkin \cite{Mullholland:2000}. The value for converting mass density in kg/m3 to optical depth is 3817 m$^2$/kg. The value reported is intended specifically for assessing the visibility of egress signs, based on the work of Jin \cite{Jin:1979}.  It is not applicable to the far blue or red regions of the spectrum and so should not be used for assessing optical detection of fires through smoke.
-
-\newpage
 
 \begin{figure}[h!]
 \begin{center}
@@ -596,7 +598,7 @@ Use the Duplicate button to create a copy of the fire currently selected in the 
   \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
 \end{wrapfigure}
 
-Use the Remove button to delete the selected fire from the list of vertical flow vents in the summary table.  Other fires are renumbered once the fire is deleted. \\~ \\
+Use the Remove button to delete the selected fire from the list of fires in the summary table.  Other fires are renumbered once the fire is deleted. \\~ \\
 
 \begin{lstlisting}
 !!Wood_Wall
@@ -616,19 +618,19 @@ HEIGH,0,3
 Three inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
 
 \begin{wrapfigure}{l}{0pt}
-  \includegraphics[width=0.781in]{FIGURES/Input_File/Ceiling_Jet}
+  \includegraphics[width=1.865in]{FIGURES/Input_File/Ceiling_Jet}
 \end{wrapfigure}
 
 \textbf{Ceiling Jet}: If the fire is large enough, the plume from the fire will penetrate the upper layer, impinge on the ceiling surface, and increase the convective heat transfer to the ceiling or increase the temperature nearby targets or detectors near the ceiling.  CFAST includes an algorithm to account for some of these effects.  Details of the inputs are included in the section on ceiling jets included in the Special Features chapter, below.
 
 \begin{wrapfigure}{l}{0pt}
-  \includegraphics[width=0.781in]{FIGURES/Input_File/LOL}
+  \includegraphics[width=2.240in]{FIGURES/Input_File/LOL}
 \end{wrapfigure}
 
 \textbf{Lower Oxygen Limit} (default units: \%, default value: 10~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
 
 \begin{wrapfigure}{l}{0pt}
-  \includegraphics[width=0.781in]{FIGURES/Input_File/Gaseous_Ignition_Temperature}
+  \includegraphics[width=2.021in]{FIGURES/Input_File/Gaseous_Ignition_Temperature}
 \end{wrapfigure}
 
 \textbf{Gaseous Ignition Temperature} (default units: \degc, default value: ambient temperature plus 100 K): The lower temperature limit on the burning of fuel in a gas layer. Since CFAST does not support a combustion kinetics model, this is the algorithm used for fires out of vents.  Normally, this value would not be changed by the user.
@@ -639,32 +641,37 @@ Fires in CFAST are defined as a series of individual fire objects which are then
 
 Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
-Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o' and saved in the CFAST input file for the current simulation. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions.
-
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Object_Plot}
 \end{center}
 \end{figure}
 
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=1.948in]{FIGURES/Input_File/Fire_Pulldown}
+\end{wrapfigure}
+
+Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o' and saved in the CFAST input file for the current simulation. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions. A pull-down allows the user to select one of the predifined fire objects to place in the chosen compartment. \\~ \\~ \\
+
 \begin{wrapfigure}{l}{0pt}
   \includegraphics[width=0.781in]{FIGURES/Input_File/Edit_Button}
 \end{wrapfigure}
 
-Use the Edit button to edit the currently selected fire object. Fire Objects can also be changed from the Tools menu. A separate window allows the user to view or change any of the available fire objects. Details of fire inputs for a fire is included below. \\~ \\
+Use the Edit button to edit the currently selected fire object. Fire Objects can also be changed from the Tools menu. A separate window allows the user to view or change any of the available fire objects. Details of fire inputs for a fire is included below.
 
 \begin{wrapfigure}{l}{0pt}
   \includegraphics[width=0.781in]{FIGURES/Input_File/Create_t2_Button}
 \end{wrapfigure}
 
-Use the Add t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000 BTU/s) in 600 s, 300 s, and 150 s, respectively were proposed for design of fire detection systems .  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054 kW in 75 s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
+Use the Create t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000 BTU/s) in 600 s, 300 s, and 150 s, respectively were proposed for design of fire detection systems .  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054 kW in 75 s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
  
 
 \begin{wrapfigure}{l}{0pt}
   \includegraphics[width=0.781in]{FIGURES/Input_File/Create_New_Button}
 \end{wrapfigure}
 
-Use the Create New button to create a new fire object with default values for all entries.  No time-dependent values are included in the new fire.  \\~ \\
+Use the Create New button to create a new fire object with default values for all entries.  No time-dependent values are included in the new fire.
 
 \begin{figure}[h!]
 \begin{center}
@@ -682,6 +689,172 @@ Use the Create New button to create a new fire object with default values for al
 
 \textbf{Soot Yield} (default units: kg/kg, default value: 0 kg/kg): Constant species yields of soot expressed as ratios of carbon to fuel produced by the pyrolysis of the fuel. This input allows the user to specify a single value for soot yield for all time points in the fire time line. Individual time points can be changed as desired in the spreadsheet input described below.
 
-\textbf{CO Yield} (default units: kg/kg, default value: determined by
+\textbf{CO Yield} (default units: kg/kg, default value: determined by correlation): Constant species yield of carbon monoxide expressed as a fraction of the fuel mass converted into carbon monoxide.  By default, the CO yield is related to the soot yield via the correlation developed by K\"oyl\"u and Faeth
+
+\be
+y_{CO} = \frac{12n_C}{M_fv_f}0.0014 + 0.37y_s \label{eq:Koylu} \ee
+where $n_C$ is the number of carbon atoms in a fuel molecule, $M_f$ is the molecular weight of the fuel, and $v_f$ is the stoichiometric coefficient of the fuel, assumed to be 1 here \cite{Koylu:1991}. Note that this correlation refers to well-ventilated fires. Yields of CO and soot in underventilated fires is still a subject of active research.
 
 \textbf{Radiative Fraction}: The fraction of the energy produced in combustion that is radiated from the fire and plume. Within CFAST, the radiative fraction defaults to 0.30 ; i.e., 30 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
+
+\subsection{T-squared Fires}
+
+For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=5in]{FIGURES/Input_File/Create_t2}
+\end{center}
+\end{figure}
+
+\textbf{Fire Growth Rate}: A set of specific t-squared fires labeled slow, medium, fast, or ultra-fast with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000 BTU/s) in 600 s, 300 s, and 150 s, are available.  Each of these growth rates (with corresponding decay rates) can be selected. A fifth, custom, selection allows the user to define any growth or decay rate desired.
+
+\textbf{Time to Peak}: (default units: s, default value: 300 s): The time for the fire to reach the peak fire size.
+
+\textbf{Peak HRR}: (default units: kW, default value: 1054 kW): The peak heat release rate of the t-squared fire.  Fire size is constant beginning at a time consistent with the time to reach the peak value,   and continues at that value for the time specified in the steady burning period, below.
+
+\textbf{Steady Burning Period}: (default units: s, default value: 300 s): Duration of time that the fire continues burning at the rate specified by the maximum HRR input, above.
+
+\textbf{Decay Period}: (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.219in]{FIGURES/Input_File/Fire_Spreadsheet}
+\end{center}
+\end{figure}
+
+For all fires, including t-squared fires, values are calculated for time dependent variables, including default values for species generation. For all inputs, these values can be changed. All of the time dependent variables depend on a predefined time line. The time input specifies a sequence of time points that define the timing of the fire.  An entry indicates a point on the time-line when the mass loss rate, fuel height and other time dependent values are specified for the fire.  This time is independent of the simulation time which is specified by the TIMES line. If the simulation time is longer than the total duration of the fire, the final values specified for the fire (mass loss rate, fuel height, fuel area, and species) are continued until the end of the simulation.
+
+\textbf{Time} (default units: s, default values: none): specify a sequence of time points that define the timing of the main fire.  An entry indicates a point on the time-line when the heat release loss rate, fuel height and other time dependent values are specified for the fire.
+
+\textbf{Heat Release Rate (Qdot)} (default units: kW, default values: none): Heat release rate of the fire as a series of time points consistent with the time specification.
+
+\textbf{Fire Height} (default units: m, default values: 0 m): Time-based values for height of the base of the fire.  Actual height of the base of the fire is the sum of the constant value specified for the fire and this height specification for a particular time in the fire development.
+
+\textbf{Area} of the Base of the Fire (default units: m$^2$, default values: 0.3 m$^2$): Cross-sectional area of the base of the fire.
+
+\textbf{CO Yield} (default units: kg/kg, default values: constant value from correlation, in eq. \ref{eq:Koylu}): yield of carbon monoxide expressed as a fraction of the fuel mass converted into carbon monoxide.
+
+\textbf{Soot Yield} (default units kg/kg, default values: none): yield of soot expressed as a fraction of fuel mass converted into smoke paertiulate..
+
+\textbf{Ct} (default units: kg/kg, default values: none): Yield of a fictitious toxic species per mass of fuel produced in the pyrolysis of the fuel. 
+
+\textbf{TS} (default units: kg/kg, default values: none): Yield of user-defined trace species per mass of fuel produced in the pyrolysis of the fuel. 
+
+\begin{itemize}
+\item With the two parameters, heat of combustion ($H_C$) and heat release rate $\dQ$, the pyrolysis rate of the fuel is determined by $\dm=\frac{\dQ}{H_C}$.  
+\item By default, the fire is placed in the center of the compartment on the floor.  If values for any of the three variables are invalid (i.e., less than zero or greater than the compartment dimension in the appropriate direction), the location for that direction defaults to the center of the appropriate direction. 
+\item The area of the base of the fire should not be left at a value of zero. Radiation from the fire is determined by a point source calculation from the vertical center of the flame which is in turned determined by Heskestad's flame height correlation \cite{Heskestad:2002}, a function of heat release rate and fire area.
+\item For “normally toxic” materials, Ct takes a value of 1 and is typically changed by an order of magnitude for particularly toxic or non-toxic materials.  It is not part of the mass balance for the fuel and system, but it just carried along as a transported species in flow through the structure. Ct is used as a measure of toxicity of a material.  Typically the integrated Ct versus time product is calculated. For normal materials, a concentration-time product of 900 mg min/m$^3$ is an indication of incapacitation.
+\item The trace species is transported along with fire gases, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance calculated by the model. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate. If necessary, the trace species can be scaled to a smaller value (e.g., divided by 1000) for the simulation and converted back for analysis (e.g., multiplied by 1000).
+\item In the input editor, time-dependent data are entered in a simple spreadsheet. Normal windows copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts are available for data editing. In addition, Alt-Ins will insert a complete row above the currently-selected row in the spreadsheet and Alt-Del will delete the current row in the spreadsheet.
+\end{itemize}
+
+\subsection{Associating Fire Objects with One or More Instances of the Fire in the Compartments of the Simulation}
+
+Fires  are placed in defined positions within a compartment of a simulation and oriented with a normal vector to the surface of the object.  Ignition of an object may be at a specified time, a specified net incident heat flux on the surface of the object, or at a specified surface temperature of the object. The relevant CFAST keywords are FIRE, CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH.
+
+\begin{lstlisting}
+!!Wood_Wall
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,Wood_Wall
+CHEMI,1,4,0,0,0,0.33,1.81E+07,HARDWOOD
+TIME,0,8000
+HRR,0,1000000
+SOOT,0.02,0.02
+CO,0.02,0.02
+TRACE,0,0
+AREA,0.05,9
+HEIGH,0,3
+\end{lstlisting}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Positioning}
+\end{center}
+\end{figure}
+
+\textbf{Compartment} of Fire Origin: specifies the compartment that contains the main fire for the simulation.  Any compartment defined is valid.
+
+\textbf{Position X}: (default units: m, default value: compartment width / 2): Position of the center of the base of the fire measured in the x direction from the front lower left corner of the compartment origin (0,0,0) in the compartment of fire origin.
+
+\textbf{Position Y}: (default units: m, default value: compartment depth / 2): Position of the center of the base of the fire measured in the y direction from the front lower left corner of the compartment origin (0,0,0) in the compartment of fire origin.
+
+\textbf{Position Z}: (default units: m, default value: 0 m): Position of the center of the base of the fire measured in the z direction from the front lower left corner of the compartment origin (0,0,0) in the compartment of fire origin. Actual height of the base of the fire is the sum of the value specified by FPOS and by FHIGH for a particular time in the fire development.
+
+\textbf{Normal  X} Component: specifies a vector of unit length perpendicular to the exposed surface of the object. (Depth) component is in the direction from the rear wall of the object compartment. Default value is a horizontal, upward facing object, unit vector = (0,0,1)
+
+\textbf{Normal  Y} Component: specifies a vector of unit length perpendicular to the exposed surface of the object. (Breadth) component is in the direction from the left wall of the object compartment. Default value is a horizontal, upward facing object, unit vector = (0,0,1)
+
+\textbf{Normal  Z} Component: specifies a vector of unit length perpendicular to the exposed surface of the object. (Breadth) component is in the direction from the floor of the object compartment. Default value is a horizontal, upward facing object, unit vector = (0,0,1)
+
+\textbf{Plume Correlation}: specifies the algorithm used to calculate entrainment of air into the plume.  At present, a plume based on the work of McCaffrey or the work of Heskestad is allowed. By default, the McCaffrey plume is used.
+
+\textbf{Ignition Criterion}: The type of ignition condition specified by the Ignition Criterion Value. Acceptable values are 1 for time, 2 for object surface temperature, and 3 for incident flux to object surface.
+
+\textbf{Ignition Value}: The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
+
+\subsection{Calculating Normal Vectors}
+
+The general equations for determining the normal vectors in the x, y, and z directions are \\~
+
+Normal vector in the x direction, $x = \sfrac{x}{\sqrt{x^2 + y^2 + z^2}}$ \\
+
+Normal vector in the y direction, $y = \sfrac{y}{\sqrt{x^2 + y^2 + z^2}}$ \\
+
+Normal vector in the z direction, $z = \sfrac{z}{\sqrt{x^2 + y^2 + z^2}}$ \\
+
+The simplest way to calculate the unit vector is to draw an imaginary line at right angles (i.e., 90$^\circ$ angle) from the exposed surface of the target and to extend this imaginary line until it hits the walls, floor or ceiling of the compartment in which it is located.  This imaginary line is actually a vector that starts at the surface of the exposed target and terminates on a wall, floor, or ceiling.  Once the start point and the end point of a vector are known, the unit vector for this imaginary line may be calculated as follows:
+
+\begin{equation}
+  \begin{aligned}
+ x &= \sfrac{x_{end} - x_{start}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + {z_{end} - z_{start}}^2}} \\
+ y &= \sfrac{y_{end} - y_{start}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + {z_{end} - z_{start}}^2}} \\
+ z &= \sfrac{z_{end} - z_{start}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + {z_{end} - z_{start}}^2}}
+  \end{aligned}
+\end{equation}
+
+As an example, assume the following scenario:
+
+\begin{itemize}
+\item A square shaped target object is located in the middle of the floor of a compartment.
+\item The target is constructed from no-combustible materials except the top.
+\item The square shaped material is 1 m in depth, 1 m in breadth, and 1 m high.
+\item The reference point (0,0,0) in the compartment is the lower left hand side of the rear wall.
+\item The compartment is 3 meters in the x direction (i.e., the distance from the rear wall to the front wall of the compartment), 4 meters in the y direction (i.e., the distance from the left wall to the right wall of the compartment), and 5 meters in the z direction (i.e., the distance from the floor to the ceiling of the compartment).
+\end{itemize}
+
+Since the only side of the target that is combustible is the top surface of the target object, an imaginary line is draw perpendicular (i.e., at a 90$^\circ$ angle) from the top surface of the target object and extended until it reaches the outer boundary of the compartment.  In this case, since the top of the target object is facing the ceiling, the imaginary line would run straight up to the ceiling, running parallel to the four walls of the compartment, and terminating at the ceiling at the point (1.5 m, 2 m, 5 m).  Since the vector starts at point (1.5-m, 2-m, 1-m) and terminates at (1.5-m, 2-m, 5-m), the unit vectors can be calculated as follows:
+
+
+\begin{equation}
+  \begin{aligned}
+ x &= \sfrac{x_{end} - x_{start}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + {z_{end} - z_{start}}^2}} &= \sfrac{1.5 - 1.5}{\sqrt{\brackets{1.5 - 1.5}^2 + \brackets{2 - 2}^2 + {5 - 1}^2}} \\
+ y &= \sfrac{y_{end} - y_{start}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + {z_{end} - z_{start}}^2}} &= \sfrac{2 - 2}{\sqrt{\brackets{1.5 - 1.5}^2 + \brackets{2 - 2}^2 + {5 - 1}^2}} \\
+ z &= \sfrac{z_{end} - z_{start}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + {z_{end} - z_{start}}^2}}  &= \sfrac{5 - 1}{\sqrt{\brackets{1.5 - 1.5}^2 + \brackets{2 - 2}^2 + {5 - 1}^2}} \\
+  \end{aligned}
+\end{equation}
+
+In this case, the unit vector in the +Z direction.
+
+\newpage
+\section{Special Features}
+
+The following section describe some special features that are only required for more advanced simulations with CFAST
+
+\subsection{Sprinklers and Detectors}
+
+Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.  A maximum of 10 sprinklers or detectors can be included in a single compartment in a CFAST input file and model run. The DETEC keyword is used for both detectors and sprinklers. The first three parameters are required. The next three have defaults. The last three must be specified if the input is a heat detector or sprinkler.
+
+\begin{lstlisting}
+!!
+!!target and detector keywords
+!!
+DETECT,2,1,347.04,4.55,2.5,4.554,100,1,7E-05
+\end{lstlisting}
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Detector_Tab}
+\end{center}
+\end{figure}

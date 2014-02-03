@@ -858,3 +858,152 @@ DETECT,2,1,347.04,4.55,2.5,4.554,100,1,7E-05
 \includegraphics[width=6.5in]{FIGURES/Input_File/Detector_Tab}
 \end{center}
 \end{figure}
+
+\textbf{Type}: type of detector, select smoke detector, heat detector, or sprinkler.
+
+\textbf{Compartment}: the compartment in which the detector or sprinkler is located.
+
+\textbf{Activation Temperature} (default units: \degc, default value: dependent on type): the temperature at or above which the detector link activates.
+
+\textbf{Width (X}) Position (default units: m, default value: none): position of the object as a distance from the left wall of the compartment (X direction).
+
+\textbf{Depth (Y}) Position (default units: m, default value: none): position of the detector or sprinkler as a distance from the front wall of the compartment (Y direction).
+
+\textbf{Height (Z)} Position (default units: m, default value: none): position of the object as a distance from the floor of the compartment (Z direction).
+
+\textbf{RTI} (default units: (m ∙ s)1/2, default value: none): the Response Time Index (RTI) for the sprinkler or detection device.
+
+\textbf{Spray Density} (default units: m/s, default value: none): the amount of water dispersed by a water spray-sprinkler.  The units for spray density are length/time.  These units are derived by dividing the volumetric rate of water flow by the area protected by the water spray. The suppression calculation is based upon an experimental correlation by Evans , and depends upon the RTI, activation temperature, and spray density to determine the behavior of the sprinkler.
+
+\begin{itemize}
+\item Often, the activation of smoke alarms is simulated with a temperature-based criterion, typically in the range of 5~\degc to 10~\degc above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments \cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\degc corresponded to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\degc in NUREG-1805 \cite{NRCNUREG1805} .
+\item Several cautions should be observed when using estimates of sprinkler suppression within the model: 1) the first sprinkler activated controls the effect of the sprinkler on the heat release rate of the fire.  Subsequent sprinklers which may activate have no additional effect on the fire simulation. 2) The fire suppression algorithm assumes the effect of the sprinkler is solely to reduce the heat release rate of the fire. Any effects of the sprinkler spray on gas temperatures or mixing within the compartment are ignored. 3) The sprinkler always reduces the heat release rate of the fire. The ability of a fire to overwhelm an under-designed sprinkler is not modeled. 4) Since the dynamics of the sprinkler and direct effects of the spray on gas temperatures and velocities are not modeled, calculated times of activation of secondary sprinklers and / or detectors after the first sprinkler is activated should be not be modeled since the impact of the first sprinkler on the activation of additional sprinklers is not included in the CFAST model.
+\end{itemize}
+
+\subsection{Defining Targets}
+
+CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets.  The relevant keyword used to specify targets is TARGE. 
+
+\newpage
+
+\begin{lstlisting}
+!!
+!!Target and detector keywords
+!!
+TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
+\end{lstlisting}
+
+In addition to any user-defined targets, there are always two targets that are automatically placed in any compartment containing a fire. Both are included for reporting purposes. The first is an “ambient target” and is intended to represent the net flux to a human body. This is used for the flux in the hazard calculation for tenability. The assumption is that the target will remain at ambient temperature, which is a surrogate for body temperature. The second determines the net flux to a horizontal target on the floor whose temperature is assumed to be the same as the floor surface. The calculation can be used to estimate the ignition of combustibles on the floor as a surrogate for estimating time to flashover, typically taken to be 20 kW/m$^2$. Thus if one of the target keywords is used, it will be in addition to these two predefined targets.
+
+For all targets, heat flux is calculated to the surface specified by the user (with the direction determined by the normal vector). Conduction into the target is assumed to occur only from this surface into the target.
+
+
+\textbf{Compartment}: The compartment in which the target is located.
+
+\textbf{Width (X)} Position (default units: m, default value: none): Position of the target as a distance from the left wall of the target compartment (X direction).
+
+\textbf{Depth (Y)} Position(default units: m, default value: none): Position of the target as a distance from the front wall of the target compartment (Y direction).
+
+\textbf{Height (Z)} Position(default units: m, default value: none): Height of the target above the floor (Z direction).
+
+\textbf{Normal Vector X} Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Width) component in the direction from the left wall of the target compartment. A value of 1 defines a vertical target facing into the compartment, unit vector = (1,0,0). The X, Y, and Z component of the normal vector can also be calculated automatically with a pull down menu that allows selection of surfaces and fires in the compartment visible from the target location.
+
+\textbf{Normal Vector Y} Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Depth) component in the direction from the front wall of the target compartment. A value of 1 defines a vertical target facing to the right, unit vector = (0,1,0). 
+
+\textbf{Normal Vector Z} Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Height) component in the direction from the floor of the target compartment. Default value is a horizontal, upward facing target, unit vector = (0,0,1).
+
+\textbf{Material}: Used to specify the wall material of the target.  Any material from the thermal database used to represent wall materials may be used here.  Since the transient heat conduction problem is not solved now for the target this parameter is not used. 
+
+\textbf{Target Type}: If the solution method is not STEADY, this parameter further indicates the solutions equations.  Specifiy Thermally Thick, Thermally Thin, or Cylindrical.  For thermally thin materials, CFAST uses ordinary differential equations; for thermally thick materials, partial differential equations, and for cylindrical targets, cylindrical corrdinates.
+
+\textbf{Solution Method}: Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
+
+\begin{itemize}
+
+\item The TARGE keyword performs a heat transfer calculation between the compartment and the target. The steady state option assumes that the target material reacts instantly to changing conditions and computes the target temperature that would result in a balance of incoming and outgoing heat (i.e., a steady state). If a transient target temperature is modeled, then one can either assume that there is a temperature variation within the target or assume that the target is “thin” and can be modeled using only one temperature. If the target is assumed to be thin then the ODE option should be used set since this is how the equations are solved. If the target is assumed to be thick then the PDE option should set. Finally, if one of the two transient options are set (ODE or PDE), the numerical solution can be solved using an explicit or an implicit method.  Typically, the implicit method will work in all cases.  The explicit method is recommended only when the implicit method fails to come to a solution.
+
+\end{itemize}
+
+\subsection{Modeling a Compartment as a Tall Shaft or Long Corridor}
+
+For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire. This is used in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, and compartments far from the fire.
+For long hallways or corridors, there can be a significant delay time for the initial hot gas layer to travel along the ceiling to the far end of the compartment. By estimating the time required for a ceiling jet to travel in a corridor and the temperature distribution along the corridor, CFAST can delay flow into compartments connected to corridors until the ceiling jet has passed the connections to these compartments.
+
+
+
+\textbf{50 \% Decay Velocity} (default units: m/s, default value: calculated by software): ceiling jet velocity at the distance from the reference point where the temperature falls off by 50 \%. Default velocity and depth are calculated by the program based on the vent size, flow and layer thickness in the horizontal vent from which flow first enters the hallway, and on the width of the hallway1.
+
+\textbf{50 \% Decay Depth} (default units: m, default value: calculated by software): ceiling jet depth at the distance from the reference point where the temperature falls off by 50 \%. 
+
+\textbf{50 \% Decay Distance} (default units: m, default value: calculated by software): distance from the reference point where the temperature falls off by 50 \%.
+
+\begin{itemize}
+\item  Since the algorithm depends on the flow into the hallway to determine default ceiling jet velocity and depth, the main fire compartment should not be specified as a hallway. In the main fire compartment, a stable layer will build before flow into the compartment through horizontal vents.
+\item The zone model concept best applies for an enclosure in which the width and length are not too different.  If the horizontal dimensions of the room differ too much (i.e., the room looks like a corridor), the flow pattern in the room may become asymmetrical. If the enclosure is too shallow, the temperature may have significant radial differences. The width of the plume may at some height become equal to the width of the room and the model assumptions may fail in a tall and narrow enclosure. Therefore, the user should recognize approximate limits on the ratio of the length (L), width (W), and height (H) of the compartment. 
+\item If the aspect ratio (the maximum of length/width or width/length) is greater than about 5, the corridor flow algorithm can be used to provide the appropriate filling time. By contrast, a single zone approximation is more appropriate for tall shafts (elevators and stairways).  This is due to interaction of the plume, lower layer, and shaft walls that leads to complete mixing.  This is the inverse of the corridor problem, and occurs at an aspect ratio (the maximum of height/width or height/length) of about 5. Recommended guidance is as follows:  If the width to length aspect ratio (the maximum of length/width or width/length) is greater than 5, use of the corridor flow algorithm is appropriate. If the width to length aspect ratio is greater than 3 but less than 5, the corridor flow algorithm may or may not be appropriate; consider the results from a simulation with and without the algorithm to assess its appropriateness. If the room is not a corridor and the height aspect ratio (the maximum height/width or height/length) is greater than 5, the single zone approximation is appropriate.
+\end{itemize}
+
+\subsection{Defining Compartment Area}
+
+The Compartment Geometry page includes two additional entries that may be used for defining compartment properties for spaces which are not rectangular in area.  Values are entered in a spreadsheet. The CFAST keywords ROOMA and ROOMH keywords allow the user to define non-rectangular rooms by specifying cross-sectional area as a function of height. One set of values is included for each compartment that has a variable cross-sectional area.
+
+\begin{lstlisting}
+!!
+!!Compartment keywords
+!!
+COMPA,Cable Spreading Room,40,18.5,4,0,0,0,CSRConcrete,CSRConcrete,CSRConcrete
+ROOMA,1,14,700.04,700.04,571.44,571.44,411.44,411.44,410.44,410.44,570.44,570.44,699.04,699.04,267.04,267.04
+ROOMH,1,14,0,1.799,1.8,2.199,2.2,2.399,2.4,2.799,2.8,3.199,3.2,3.599,3.6,4
+\end{lstlisting}
+
+ 
+\textbf{Height Value(s)} (default units: m, default values: none): Values of height for the corresponding cross-sectional area values measured from the floor of the compartment. The values for the compartment correspond to cross-sectional area values included for the same compartment on the ROOMA command.
+
+\textbf{Area Value(s)} (default units m$^2$, default values: none): Values of cross-sectional area of the compartment as a function of height measured from the floor of the compartment. The values for the compartment correspond to height values included for the same compartment on the ROOMH command.
+
+\subsection{Surface Connections}
+
+The Surface Connections page allows the user to define heat transfer between compartments in a simulation. Energy can be transferred from compartment to compartment through solid boundaries (walls, ceilings and floors) by means of conduction. The heat transfer between connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  The heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall. As before, temperatures are determined by the solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.  This option is implemented with the VHEAT (for vertical heat transfer) and the HHEAT (for horizontal heat transfer) keywords. 
+
+\textbf{Vertical Heat Transfer}: Heat transfer between the ceiling and floor of specified compartments is included with the VHEAT keyword. Ceiling to floor heat transfer occurs between interior compartments of the structure or between an interior compartment and the outdoors. The model checks to make sure that the ceiling and floor are reasonably contiguous (within 0.01 m).  The assumption is made that this is true for the entire ceiling and floor.
+
+\begin{lstlisting}
+!!
+!!Heat flow keywords
+!!
+VHEAT,2,1
+\end{lstlisting}
+
+\textbf{Horizontal Heat Transfer}: Horizontal conduction between specified compartments is included with the HHEAT keyword.  Conduction through vertical partitions (walls) occurs between interior compartments of the structure or between an interior compartment and the outdoors.
+
+\begin{lstlisting}
+!!
+!!Heat flow keywords
+!!
+HHEAT,2,1
+\end{lstlisting}
+ 
+First Compartment: First of the connected compartments. Order of the inputs is not important.
+Second Compartment: Second of the connected compartments. Order of the inputs is not important.
+Fraction: Specifies the fraction of the vertical surface areas of the compartments which are connected can be specified. The fraction specifies the fraction of the vertical surface area connecting the first and second compartment pair.
+Top Compartment: The top or first of the two compartments to be connected by a vertical heat transfer connection. The connection is through the floor of this compartment.
+Bottom Compartment: The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
+
+\subsection{The Ceiling Jet – An Additional Zone}
+
+Typically, zone models incorporate two zones in each compartment, one for the upper layer and one for the lower layer. A plume from a fire then pumps energy from the fire and lower layer into the upper layer. However, it has been observed that the heat loss from the upper layer to the ceiling and walls is higher than this paradigm would indicate. The cause is that a plume does not truly mix with the upper layer initially as indicated in the figure 
+This leads to higher convective heat transfer than the mixed model would indicate. CFAST has incorporated a model of this additional heat loss based on the work of Cooper . Heat loss by this mechanism to the ceiling is well established, the loss to walls is somewhat more uncertain due to the uncertainty of how far the plume descends below the ceiling. 
+
+ To include ceiling jet effects in the calculation of the surface temperature of the ceiling, wall, or both surfaces, the CJET keyword is used.  In the input editor, CEdit, this is included on the fires page. The ceiling jet calculation can be used for the ceiling, walls, or all surfaces. At present, this keyword effects only the calculation of the convective heating boundary condition for the conduction routines.  If a particular surface is on, the ceiling jet algorithm is used to determine the convective heating of the surface.  If the ceiling jet is off, the bulk temperature of the upper layer determines the convective heating.
+
+\begin{itemize}
+\item Using this option affects all fires and it is suggested that this option be turned on and set to “CEILING.”
+\end{itemize}
+
+\subsection{Filtering}
+ 
+For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off. It is turned on with the EVENT key word, defined in the input editor with a Filter Efficiency and Begin File At time. The relevant CFAST keyword is EVENT.
+
+\begin{itemize}
+\item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
+\end{itemize}

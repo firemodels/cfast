@@ -618,12 +618,12 @@ HEIGH,0,3
 Three inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
 
 \begin{wrapfigure}{l}{0pt}
-  \includegraphics[width=1.865in]{FIGURES/Input_File/Ceiling_Jet}
+  \includegraphics[width=2.313in]{FIGURES/Input_File/Ceiling_Jet}
 \end{wrapfigure}
 
 \textbf{Ceiling Jet}: If the fire is large enough, the plume from the fire will penetrate the upper layer, impinge on the ceiling surface, and increase the convective heat transfer to the ceiling or increase the temperature nearby targets or detectors near the ceiling.  CFAST includes an algorithm to account for some of these effects.  Details of the inputs are included in the section on ceiling jets included in the Special Features chapter, below.
 
-\begin{wrapfigure}{l}{0pt}
+\begin{wrapfigure}{r}{0pt}
   \includegraphics[width=2.240in]{FIGURES/Input_File/LOL}
 \end{wrapfigure}
 
@@ -648,7 +648,7 @@ Each fire object defines the time dependent variables of the fire are described 
 \end{figure}
 
 
-\begin{wrapfigure}{l}{0pt}
+\begin{wrapfigure}{r}{0pt}
   \includegraphics[width=1.948in]{FIGURES/Input_File/Fire_Pulldown}
 \end{wrapfigure}
 
@@ -895,6 +895,12 @@ TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
 
 In addition to any user-defined targets, there are always two targets that are automatically placed in any compartment containing a fire. Both are included for reporting purposes. The first is an “ambient target” and is intended to represent the net flux to a human body. This is used for the flux in the hazard calculation for tenability. The assumption is that the target will remain at ambient temperature, which is a surrogate for body temperature. The second determines the net flux to a horizontal target on the floor whose temperature is assumed to be the same as the floor surface. The calculation can be used to estimate the ignition of combustibles on the floor as a surrogate for estimating time to flashover, typically taken to be 20 kW/m$^2$. Thus if one of the target keywords is used, it will be in addition to these two predefined targets.
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Target_Tab}
+\end{center}
+\end{figure}
+
 For all targets, heat flux is calculated to the surface specified by the user (with the direction determined by the normal vector). Conduction into the target is assumed to occur only from this surface into the target.
 
 
@@ -905,6 +911,10 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 \textbf{Depth (Y)} Position(default units: m, default value: none): Position of the target as a distance from the front wall of the target compartment (Y direction).
 
 \textbf{Height (Z)} Position(default units: m, default value: none): Height of the target above the floor (Z direction).
+
+\begin{wrapfigure}{r}{0pt}
+  \includegraphics[width=1.875in]{FIGURES/Input_File/Target_Points_To}
+\end{wrapfigure}
 
 \textbf{Normal Vector X} Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Width) component in the direction from the left wall of the target compartment. A value of 1 defines a vertical target facing into the compartment, unit vector = (1,0,0). The X, Y, and Z component of the normal vector can also be calculated automatically with a pull down menu that allows selection of surfaces and fires in the compartment visible from the target location.
 
@@ -919,7 +929,6 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 \textbf{Solution Method}: Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
 
 \begin{itemize}
-
 \item The TARGE keyword performs a heat transfer calculation between the compartment and the target. The steady state option assumes that the target material reacts instantly to changing conditions and computes the target temperature that would result in a balance of incoming and outgoing heat (i.e., a steady state). If a transient target temperature is modeled, then one can either assume that there is a temperature variation within the target or assume that the target is “thin” and can be modeled using only one temperature. If the target is assumed to be thin then the ODE option should be used set since this is how the equations are solved. If the target is assumed to be thick then the PDE option should set. Finally, if one of the two transient options are set (ODE or PDE), the numerical solution can be solved using an explicit or an implicit method.  Typically, the implicit method will work in all cases.  The explicit method is recommended only when the implicit method fails to come to a solution.
 
 \end{itemize}
@@ -927,9 +936,14 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 \subsection{Modeling a Compartment as a Tall Shaft or Long Corridor}
 
 For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire. This is used in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, and compartments far from the fire.
+
 For long hallways or corridors, there can be a significant delay time for the initial hot gas layer to travel along the ceiling to the far end of the compartment. By estimating the time required for a ceiling jet to travel in a corridor and the temperature distribution along the corridor, CFAST can delay flow into compartments connected to corridors until the ceiling jet has passed the connections to these compartments.
 
-
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.5in]{FIGURES/Input_File/Corridor_Flow}
+\end{center}
+\end{figure}
 
 \textbf{50 \% Decay Velocity} (default units: m/s, default value: calculated by software): ceiling jet velocity at the distance from the reference point where the temperature falls off by 50 \%. Default velocity and depth are calculated by the program based on the vent size, flow and layer thickness in the horizontal vent from which flow first enters the hallway, and on the width of the hallway1.
 
@@ -951,11 +965,15 @@ The Compartment Geometry page includes two additional entries that may be used f
 !!
 !!Compartment keywords
 !!
-COMPA,Cable Spreading Room,40,18.5,4,0,0,0,CSRConcrete,CSRConcrete,CSRConcrete
-ROOMA,1,14,700.04,700.04,571.44,571.44,411.44,411.44,410.44,410.44,570.44,570.44,699.04,699.04,267.04,267.04
-ROOMH,1,14,0,1.799,1.8,2.199,2.2,2.399,2.4,2.799,2.8,3.199,3.2,3.599,3.6,4
+ROOMA,1,6,700.04,700.04,571.44,571.44,411.44,411.44
+ROOMH,1,6,0,1.799,1.8,2.199,2.2,2.399
 \end{lstlisting}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.5in]{FIGURES/Input_File/Variable_Area}
+\end{center}
+\end{figure}
  
 \textbf{Height Value(s)} (default units: m, default values: none): Values of height for the corresponding cross-sectional area values measured from the floor of the compartment. The values for the compartment correspond to cross-sectional area values included for the same compartment on the ROOMA command.
 
@@ -965,7 +983,13 @@ ROOMH,1,14,0,1.799,1.8,2.199,2.2,2.399,2.4,2.799,2.8,3.199,3.2,3.599,3.6,4
 
 The Surface Connections page allows the user to define heat transfer between compartments in a simulation. Energy can be transferred from compartment to compartment through solid boundaries (walls, ceilings and floors) by means of conduction. The heat transfer between connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  The heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall. As before, temperatures are determined by the solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.  This option is implemented with the VHEAT (for vertical heat transfer) and the HHEAT (for horizontal heat transfer) keywords. 
 
-\textbf{Vertical Heat Transfer}: Heat transfer between the ceiling and floor of specified compartments is included with the VHEAT keyword. Ceiling to floor heat transfer occurs between interior compartments of the structure or between an interior compartment and the outdoors. The model checks to make sure that the ceiling and floor are reasonably contiguous (within 0.01 m).  The assumption is made that this is true for the entire ceiling and floor.
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Surface_Connection_Tab}
+\end{center}
+\end{figure}
+
+\textbf{Vertical Connections}: Heat transfer by conduction  between the ceiling and floor of specified compartments is included with the VHEAT keyword. Ceiling to floor heat transfer occurs between interior compartments of the structure or between an interior compartment and the outdoors. The model checks to make sure that the ceiling and floor are reasonably contiguous (within 0.01 m).  The assumption is made that this is true for the entire ceiling and floor. \\~ \\
 
 \begin{lstlisting}
 !!
@@ -974,7 +998,7 @@ The Surface Connections page allows the user to define heat transfer between com
 VHEAT,2,1
 \end{lstlisting}
 
-\textbf{Horizontal Heat Transfer}: Horizontal conduction between specified compartments is included with the HHEAT keyword.  Conduction through vertical partitions (walls) occurs between interior compartments of the structure or between an interior compartment and the outdoors.
+\textbf{Horizontal Connections}: Heat transfer byl conduction between specified compartment wall surfaces is included with the HHEAT keyword.  Conduction through vertical partitions (walls) occurs between interior compartments of the structure or between an interior compartment and the outdoors.
 
 \begin{lstlisting}
 !!
@@ -983,26 +1007,43 @@ VHEAT,2,1
 HHEAT,2,1
 \end{lstlisting}
  
-First Compartment: First of the connected compartments. Order of the inputs is not important.
-Second Compartment: Second of the connected compartments. Order of the inputs is not important.
-Fraction: Specifies the fraction of the vertical surface areas of the compartments which are connected can be specified. The fraction specifies the fraction of the vertical surface area connecting the first and second compartment pair.
-Top Compartment: The top or first of the two compartments to be connected by a vertical heat transfer connection. The connection is through the floor of this compartment.
-Bottom Compartment: The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
+\textbf{First Compartment}: First of the connected compartments. Order of the inputs is not important.
+
+\textbf{Second Compartment}: Second of the connected compartments. Order of the inputs is not important.
+
+\textbf{Fraction}: Specifies the fraction of the vertical surface areas of the compartments which are connected can be specified. The fraction specifies the fraction of the vertical surface area connecting the first and second compartment pair.
+
+\textbf{Top Compartment}: The top or first of the two compartments to be connected by a vertical heat transfer connection. The connection is through the floor of this compartment.
+
+\textbf{Bottom Compartment}: The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
 
 \subsection{The Ceiling Jet – An Additional Zone}
 
-Typically, zone models incorporate two zones in each compartment, one for the upper layer and one for the lower layer. A plume from a fire then pumps energy from the fire and lower layer into the upper layer. However, it has been observed that the heat loss from the upper layer to the ceiling and walls is higher than this paradigm would indicate. The cause is that a plume does not truly mix with the upper layer initially as indicated in the figure 
-This leads to higher convective heat transfer than the mixed model would indicate. CFAST has incorporated a model of this additional heat loss based on the work of Cooper . Heat loss by this mechanism to the ceiling is well established, the loss to walls is somewhat more uncertain due to the uncertainty of how far the plume descends below the ceiling. 
+Typically, zone models incorporate two zones in each compartment, one for the upper layer and one for the lower layer. A plume from a fire then pumps energy from the fire and lower layer into the upper layer. However, it has been observed that the heat loss from the upper layer to the ceiling and walls is higher than this paradigm would indicate. The cause is that a plume does not initially mix with the upper layer. This leads to higher convective heat transfer than the mixed model would indicate. CFAST has incorporated a model of this additional heat loss based on the work of Cooper \cite{Cooper:1988} . Heat loss by this mechanism to the ceiling is well established, the loss to walls is somewhat more uncertain due to the uncertainty of how far the plume descends below the ceiling. 
 
- To include ceiling jet effects in the calculation of the surface temperature of the ceiling, wall, or both surfaces, the CJET keyword is used.  In the input editor, CEdit, this is included on the fires page. The ceiling jet calculation can be used for the ceiling, walls, or all surfaces. At present, this keyword effects only the calculation of the convective heating boundary condition for the conduction routines.  If a particular surface is on, the ceiling jet algorithm is used to determine the convective heating of the surface.  If the ceiling jet is off, the bulk temperature of the upper layer determines the convective heating.
+\begin{wrapfigure}{r}{0pt}
+  \includegraphics[width=2.313in]{FIGURES/Input_File/Ceiling_Jet}
+\end{wrapfigure}
+
+To include ceiling jet effects in the calculation of the surface temperature of the ceiling, wall, or both surfaces, the CJET keyword is used.  In the input editor, CEdit, this is included on the fires tab. The ceiling jet calculation can be used for the ceiling, walls, or all surfaces. At present, this keyword effects only the calculation of the convective heating boundary condition for the conduction routines.  If a particular surface is on, the ceiling jet algorithm is used to determine the convective heating of the surface.  If the ceiling jet is off, the bulk temperature of the upper layer determines the convective heating.
 
 \begin{itemize}
-\item Using this option affects all fires and it is suggested that this option be turned on and set to “CEILING.”
+\item Using this option affects all fires.”
 \end{itemize}
 
 \subsection{Filtering}
  
-For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off. It is turned on with the EVENT key word, defined in the input editor with a Filter Efficiency and Begin File At time. The relevant CFAST keyword is EVENT.
+For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off. It is turned on with the EVENT key word, defined in the input editor with a Filter Efficiency and Begin Filter At time. The relevant CFAST keyword is EVENT.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Filtering}
+\end{center}
+\end{figure}
+
+\textbf{Filter Efficiency} (default units:~\%, default value: none): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied, that is all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, the user may specify the fraction of the soot and trace species mass to be removed as a percentage.
+
+\textbf{Begin Filtering At Time} (default units: s, default value: none): Time during the simulation at which the mechanical vent filtering begins.
 
 \begin{itemize}
 \item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.

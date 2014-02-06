@@ -1,28 +1,53 @@
 VERSN,6,Cable tray fire -- base case
 !!
-!!Environmental Keywords
+!!Scenario Configuration Keywords
 !!
-TIMES,1800,-120,0,10,30
+TIMES,1800,-120,10,30
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
 CJET,WALLS
-CHEMI,10,393.15
 WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
 !!Compartment keywords
 !!
 COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
 !!
-!!vent keywords
+!!Vent keywords
 !!
 HVENT,1,2,1,1,2.4,0,1,0,0,1,1
 VVENT,2,1,1,1,1
 !!
-!!fire keywords
+!!Fire keywords
 !!
-OBJECT,bunsen,1,4.55,2.5,0,1,1,0,0,0,1
-OBJECT,Wood_Wall,1,4.55,2.5,0,1,1,0,0,0,1
+GLOBA,10,393.15
+!!bunsen
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,bunsen
+CHEMI,1,4,0,0,0,0.33,5E+07,METHANE
+TIME,0,60,120,180,240,300,360,420,480,540,1800
+HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
+SOOT,0,0,0,0,0,0,0,0,0,0,0
+CO,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221
+TRACE,0,0,0,0,0,0,0,0,0,0,0
+AREA,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
+HEIGH,0,0,0,0,0,0,0,0,0,0,0
+!!Wood_Wall
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,Wood_Wall
+CHEMI,1,4,0,0,0,0.33,1.81E+07,HARDWOOD
+TIME,0,8000
+HRR,0,1000000
+SOOT,0.02,0.02
+CO,0.02,0.02
+TRACE,0,0
+AREA,0.05,9
+HEIGH,0,3
 !!
-!!target and detector keywords
+!!Target and detector keywords
 !!
 TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5

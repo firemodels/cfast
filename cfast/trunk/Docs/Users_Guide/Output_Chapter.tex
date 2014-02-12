@@ -425,15 +425,178 @@ The second section is for fires. There are seven entries per fire.  This informa
 At present, the nine species, oxygen (O2), carbon dioxide (CO2), carbon monoxide (CO),  hydrogen cyanide (HCN), hydrogen chloride (HCL), water vapor (H2O), optical depth (OD), concentration-time dose (CT) and trace species (TS) are listed. This set of nine is enumerated for the upper and lower layer, and are done sequentially by compartment.
 
 \begin{itemize}
-\item \textbf{Time} (units: s): 
-\item \textbf{O2 Upper/Lower Layer} (units: mol \%): 
-\item \textbf{CO2 Uppe/Lowerr Layer} (units: mol \%): 
-\item \textbf{CO Uppe/Lowerr Layer} (units: ppm): 
-\item \textbf{HCN Uppe/Lowerr Layer} (units: ppm): 
-\item \textbf{HCL Uppe/Lowerr Layer} (units: ppm): 
-\item \textbf{H2O Uppe/Lowerr Layer} (units: mol \%): 
-\item \textbf{Optical Density Uppe/Lowerr Layer} (units: m$^{-1}$): 
-\item \textbf{C-T Product Upper/Lower Layer} (units: g-min/m$^3$): 
-\item \textbf{Trace Species Upper/Lower Layer} (units: kg): 
+\item \textbf{Time} (units: s)
+\item \textbf{O2 Upper/Lower Layer} (units: mol \%): oxygen concentration in the upper (or lower) layer in the current compartment
+\item \textbf{CO2 Uppe/Lowerr Layer} (units: mol \%):  carbon dioxide concentration in the upper (or lower) layer in the current compartment
+\item \textbf{CO Uppe/Lowerr Layer} (units: ppm):  carbon monoxide concentration in the upper (or lower) layer in the current compartment
+\item \textbf{HCN Uppe/Lowerr Layer} (units: ppm):  HCN concentration in the upper (or lower) layer in the current compartment
+\item \textbf{HCL Uppe/Lowerr Layer} (units: ppm):  HCl concentration in the upper (or lower) layer in the current compartment
+\item \textbf{H2O Uppe/Lowerr Layer} (units: mol \%):  water vapor concentration in the upper (or lower) layer in the current compartment
+\item \textbf{Optical Density Uppe/Lowerr Layer} (units: m$^{-1}$):  optical density in the upper (or lower) layer in the current compartment
+\item \textbf{C-T Product Upper/Lower Layer} (units: g-min/m$^3$):  integrated concentration-time product in the upper (or lower) layer in the current compartment
+\item \textbf{Trace Species Upper/Lower Layer} (units: kg):  total mass of trace species in the upper (or lower) layer in the current compartment
 \end{itemize}
+
+\subsection{Vent Flow (project\_f.csv}
+
+First is the horizontal flow through vertical vents such as windows and doors. There are two types of output, first to and from the outside, and second for interior compartments. The flow is broken down to flow in and out of the compartments. For flow to and from the outside (compartment N) there are two entries.
+
+\begin{itemize}
+\item \textbf{Time} (units: s)
+\item \textbf{HVENT Inflow Vent \# 1 Outside-1} (units: kg/s): mass flow into the current compartment through the current horizontal flow (door/windows) vent connected to the current compartment
+\item \textbf{HVENT Outflow Vent \# 1 Outside-1} (units: kg/s): mass flow out of the current compartment through the current horizontal flow (door/windows) vent connected to the current compartment
+\end{itemize}
+
+ For interior compartments, there are additional entries for mixing entrainment into the upper and lower layers. Please see the technical reference guide for a detailed description of these flow fields.
+
+\begin{itemize}
+\item \textbf{HVENT Mixing to Upper Layer Vent \# 2 2-1} (units: kg/s): mass flow entrained from the lower to the upper layer by mixing at the current horizontal flow (door/windows) vent connected to the current compartment
+\item \textbf{HVENT Mixing to Upper Layer Vent \# 2 2-1} (units: kg/s): mass flow entrained from the upper to the lower layer by mixing at the current horizontal flow (door/windows) vent connected to the current compartment
+\end{itemize}
+
+Second is the vertical flow through horizontal vents. There are two entries for each vent in each compartment, showing the total flow into or out of each vent in each compartment.
+
+\begin{itemize}
+\item \textbf{VVENT Inflow Vent \# 1-Outside} (units: kg/s):  mass flow into the current compartment through the current vertical flow (ceiling/floor) vent connected to the current compartment
+\item \textbf{VVENT Outflow Vent \# 1-Outside Vent Connection at Node 1-2} (units: kg/s):  mass flow out of the current  compartment through the current vertical flow (ceiling/floor) vent connected to the current compartment
+\end{itemize}
+
+Third is the mechanical ventilation. Once again, there will be an entry for each node/compartment pair, showing the total flow into or out of the compartment through this node. In addition, the total amount of trace species through fliters and captured on filters in mechanical ventilation connected to the compartment is included.
+
+\begin{itemize}
+\item \textbf{MVENT Inflow Vent Connection at Node 1-2} (units: kg/s): mass flow into the current compartment through the current mechanical flow (HVAC) vent connected to the current compartment
+\item \textbf{MVENT Outflow} (units: kg/s): current mass flow out of the compartment through the current mechanical flow (HVAC) vent connected to the current compartment
+\item \textbf{MVENT Trace Species Flow Fan at Node 2} (units: kg/s): current total mass of trace species flowing through the filter at the fan in the current mechanical vent connected to the current compartment
+\item \textbf{MVENT Trace Species Filtered Fan at Node 2} (units: kg/s): total mass of trace species captured onthe filter at the fan in the current mechanical vent connected to the current compartment
+\end{itemize}
+
+\subsection{Surface and Target Temperature and Heat Flux (project\_w.csv}
+
+This spreadsheet provides information on surface and target temperatures and flux, and reports on the current state of detectors and sprinklers (as a sub-set of detectors). The output is in three sections, one for wall surface temperatures, one for target temperature and heat flux, and one for detector/sprinkler temeprature and activation. First is the temperature of compartment surfaces.
+
+\begin{itemize}
+\item \textbf{Time} (units: \degc)
+\item \textbf{Ceiling Temperature} (units: \degc): temperature of the ceiling surface in the current compartment
+\item \textbf{Upper Wall Temperature} (units: \degc): temperature of the wall surface adjancent to the upper layer in the current compartment
+\item \textbf{Lower Wall Temperature} (units: \degc): temperature of the  wall surface adjancent to the lower layer in the current compartment
+\item \textbf{Floor Temperature} (units: \degc): temperature of the floor surface in the current compartment
+\end{itemize}
+
+Second is a series of entries for each target included in the simulation.  User-defined targets are list first followed by automatically-defined targets, one at the center of each compartment at floor level and one at the location of each fire in the simulation.
+
+\begin{itemize}
+\item \textbf{Target Surrounding Gas Temperature} (units: \degc): gas temperature nearby the current target
+\item \textbf{Target Surface Temperature} (units: \degc): temperature of the surface of the current target
+\item \textbf{Target Center Temperature} (units: \degc): interior temperature of the current target
+\item \textbf{Target Total Flux} (units: kW/m$2$): total net heat flux to the front surface of the current target
+\item \textbf{Target Convective Flux} (units: kW/m$2$): convective heat flux tothe  front surface of the current target
+\item \textbf{Target Radiative Flux} (units: kW/m$2$): radiative heat flux to the front surface of the current target
+\item \textbf{Target Fire Radiative Flux} (units: kW/m$2$): radiative heat flux from fires to the front surface of the current target
+\item \textbf{Target Surface Radiative Flux} (units: kW/m$2$): radiative heat flux from compartment surfaces to the front surface of the current target
+\item \textbf{Target Gas Radiative Flux} (units: kW/m$2$):   radiative heat flux from the upper and lower gas layers to the front surface of the current target
+\end{itemize}
+
+Following the compartment and target information is the detector/sprinkler output. 
+
+\begin{itemize}
+\item \textbf{Sensor Temperature} (units: \degc): temperature of the current detector / sprinkler
+\item \textbf{Sensor Activation} (units: none): indicator of activation of the current detector / sprinkler; takes a value of zero if the sensor has not activated and one if it has
+\item \textbf{Sensor Surrounding Gas Temperature} (units: \degc): gas temperature nearby the current detector / sprinkler. This is the ceiling jet temperature at the device location if the device is in the ceiling jet or the appropriate gas layer temperature if the device is lower in the compartment
+\item \textbf{Sensor Surrounding Gas Velocity} (units: m/s): gas velocity nearby the current detector / sprinkler. The is the velocity of the ceiling jet at the device location if the device is in the ceiling jet or a default value of 0.1 m/s if the device is lower in the compartment
+\end{itemize}
+
+\newpage
+
+\section{Error Messages}
+
+In some (hopefully rare) cases, a simulation will fail to complete. In those cases, an error message provides guidance to the user on possible reasons for the failure. The message will contain an error number which provides a reference to additional information from the table below. Most often, these errors result from improper information in the input data files.
+During initialization of the program for a simulation, CFAST may stop with an error message if the simulation cannot be initialized due to a missing or incorrect file specification. The error codes are as follows:
+
+\begin{itemize}
+\item \textbf{100} program called with no arguments (no input file)
+\item \textbf{101} internal error in fire input; code for a free burning fire should not be reachable
+\item \textbf{102} project file does not exist
+\item \textbf{103} total file name length including path  is more than 256 characters
+\item \textbf{104} one of the output files is not accessible (for example, if a cfast case with this name is already running)
+\item \textbf{105} error writing to an output file (openoutputfiles)
+\item \textbf{106} a system fault has occurred. Applies to all open/close pairs once the model is running
+\item \textbf{107} incompatible options
+\item \textbf{108} not currently used
+\item \textbf{109} cannot find/open a file
+\item \textbf{110} error in handling the status input/output
+\end{itemize}
+
+Error codes from 1 to 99 are from the routine which parses the input and will be reported in the .log file.  The first set indicates a command with the wrong number of arguments. These errors indicate an error in a particular input command as follows:
+
+\begin{itemize}
+\item \textbf{1} TIMES command
+\item \textbf{2} TAMB command
+\item \textbf{3} EAMB command
+\item \textbf{4} LIMO2 command
+\item \textbf{5} THERMAL or FIRE commands
+\item \textbf{7} MAINF command
+\item \textbf{8} COMPA command
+\item \textbf{10} HVENT command
+\item \textbf{11} EVENT command
+\item \textbf{12} MVENT command
+\item \textbf{23} VVENT command
+\item \textbf{24} WIND command
+\item \textbf{25} INTER command
+\item \textbf{26} MVOPN command
+\item \textbf{28} MVDCT command
+\item \textbf{29} MVFAN command
+\item \textbf{32} OBJECT command
+\item \textbf{34} CJET and DETEC command
+\item \textbf{35} STPMAX command
+\item \textbf{37} VHEAT command
+\item \textbf{39} ONEZ command
+\item \textbf{41} TARGE command
+\item \textbf{46} HALL command
+\item \textbf{47} ROOMA command
+\item \textbf{51} ROOMH command
+\item \textbf{55} DTCHE command
+\item \textbf{56} SETP command
+\item \textbf{58} HHEAT command
+\item \textbf{65} HEATF command
+\end{itemize}
+
+The second set of errors related to parsing the input indicate specific errors with a command as follows:
+
+\begin{itemize}
+\item \textbf{9, compa} Compartment out of range
+\item \textbf{26, inter} Not a defined compartment
+\item \textbf{27, mvopn} Specified node number too large for this system
+\item \textbf{30, mvfan} Fan curve has incorrect specification
+\item \textbf{31, mvfan} Exceeded allowed number of fans
+\item \textbf{33, object} Object must be assigned to an existing compartment
+\item \textbf{35, detect} Invalid DETECTOR specification
+\item \textbf{36, detect} A referenced compartment is not yet defined
+\item \textbf{38, vheat} VHEAT has specified a non-existent compartment
+\item \textbf{42, target} Too many targets are being defined
+\item \textbf{43, target} The compartment specified by TARGET does not exist
+\item \textbf{44, target} Invalid TARGET solution method specified
+\item \textbf{45,  target} Invalid equation type specified in TARGET
+\item \textbf{49, rooma} Compartment specified by ROOMA does not exist
+\item \textbf{52, roomh} Compartment specified by ROOMH is not defined
+\item \textbf{53, roomh} ROOMH error on data line
+\item \textbf{54, roomh} Data on the ROOMA (or H) line must be positive
+\item \textbf{57, setp} Trying to reset the SETP parameters
+\item \textbf{61, hheat} HHEAT specification error in compartment pairs
+\item \textbf{62, hheat} Error in fraction for HHEAT
+\item \textbf{63, object} Fire type out of range
+\item \textbf{64, object} The fire must be assigned to an existing compartment
+\item \textbf{66, heatf} The heat source must be assigned to an existing compartment
+\item \textbf{67, mvent} Compartment has not been defined
+\item \textbf{68, mvent} Exceed one of the array bounds, ierror=68 (external), 69 (internal)  and 70 (fan)
+\item \textbf{71, event} Undefined vent type
+\item \textbf{72, inter} Specification for interface height is outside of allowable range
+\item \textbf{73, inter} Compartments must be defined in pairs
+\item \textbf{74, setp} The requested “SETP” command does not exists
+\item \textbf{75, setp} Incorrect file reference
+\item \textbf{76, setp} Cannot read the parameter file
+\item \textbf{77, setp} Unsupported parameter
+\end{itemize}
+
+Errors 400 and above are failures while the model is running. 610 through 685 are failures in the numerical routines; these are rarely seen, but typically an internal error in the model.
+
 

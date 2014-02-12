@@ -1,0 +1,31 @@
+\chapter{Scenario and Sofware Limits}
+
+CFAST is intended for use with a wide variety of fire scenarios.  A number of limits to the inputs in the software implementation of the model are noted below. 
+
+%\IfFileExists{FIGURES/ScatterPlots/validation_statistics.tex}{\input{FIGURES/ScatterPlots/validation_statistics.tex}}{\typeout{Error: Missing file FIGURES/ScatterPlots/validation_statistics.tex}}
+
+\begin{center}
+\begin{tabular}{|p{15cm}|c|}
+\hline
+Maximum simulation time in seconds & 86400 \\ \hline
+
+\\ \hline
+
+Maximum number of compartments & 30 \\ \hline
+Maximum number of horizontal flow (door/window) vent connections that can be included in a single test case & 775 \\ \hline
+Maximum number of vent connections between a pair of compartments that can be included in a single test case & 25 \\ \hline
+Maximum number of vertical flow (ceiling/floor) vent connections which can be included in a single test case & 62 \\ \hline
+Maximum total number of connections between compartments and mechanical ventilation systems which can be included in a single test case & 60 \\ \hline
+Maximum number of fans that can be included in a single test cases  & 15 \\ \hline
+
+Maximum number of fires which can be included in a single test case & 62 \\ \hline
+Maximum number of data points for a single  fire definition & 199 \\ \hline
+Maximum number of data points in a variable cross-sectional area definition for a single compartment & 21 \\ \hline
+Maximum number of material thermal property definitions which can be included in a single thermal database file & 125 \\ \hline
+
+Maximum number of targets which can be included in a single test case. In addition, the CFAST model includes a target on the floor of each compartment in the simulation and one for each object fire in simulation. & 310 \\ \hline
+Maximum number of detectors/sprinklers which can be included in a single test case. & 100 \\ \hline
+
+\hline
+\end{tabular}
+\end{center}

@@ -1,0 +1,131 @@
+\chapter{CFAST Keywords}
+
+All key words are case sensitive and all parameters are required. There are no defaults. If a parameter is missing, the model will terminate with an appropriate stop code. 
+
+\section{CHEMI}
+
+\begin{lstlisting}
+CHEMI, Lower_oxygen_limit,  Ignition_temperature
+\end{lstlisting}
+
+This parameter is global and applies to all fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door-jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters.
+
+This key word replaces LIMO2 and DJIGN.
+
+Example:
+
+\begin{lstlisting}
+CHEMI,10,488
+\end{lstlisting}
+
+This sets the limiting oxygen index to 10 \% and the ignition temperature to 488 K. These are the default values.
+
+\section{CJET}
+
+\begin{lstlisting}
+CJET, Ceiling_jet_flag
+\end{lstlisting}
+
+This directive tells the model to calculate the effects of a ceiling jet in all compartments containing a fire. The possible flags are OFF, CEILING, WALL, or ALL.
+
+OFF - not calculate ceiling jets effect
+
+CEILING - include calculations for ceiling surfaces only
+
+WALL - to include calculations for wall surfaces only (not recommended)
+
+ALL - to include calculations for both ceiling and wall surfaces
+
+Example:
+
+\begin{lstlisting}
+CJET,CEILING
+\end{lstlisting}
+
+\section{COMPA}
+
+\begin{lstlisting}
+COMPA, Name, Width, Depth, Internal_height, Absolute_x_position, Absolute_y_position, Floor_height, Ceiling_material_name,  Floor_materia_name, Wall_material_name
+\end{lstlisting}
+
+The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands.
+
+Example:
+
+\begin{lstlisting}
+COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+\end{lstlisting}
+
+\section{DETEC}
+
+\begin{lstlisting}
+DETEC, Type, Compartmen,t Activation_Temperatur,e Depth, Widt,h Heigh,t RTI, Suppression, Spray_Density
+\end{lstlisting}
+
+The DETEC keyword is used for both detectors and sprinklers. Sprinklers and detectors are both considered detection devices and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
+
+For the type of detector, use 1 for smoke detector and 2 for heat detector or sprinklers. If suppression is set to a value of 1, a sprinkler will quench the fire with the specified spray density of water. If turned off (a value of 0), the device is handled as a heat or smoke detector only - values entered for activation temperature, RTI, and spray density are ignored. 
+
+The spray density is the amount of water dispersed by a water sprinkler.  The units for spray density are length/time.  These units are derived by dividing the volumetric rate of water flow by the area protected by the water spray. The suppression calculation is based upon an experimental correlation by Evans, and depends upon the RTI, activation temperature, and spray density to determine the behavior of the sprinkler.
+
+Example:
+
+\begin{lstlisting}
+DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
+\end{lstlisting}
+
+\section{DTCHE}
+
+\begin{lstlisting}
+DTCHE, Minimum_Time, Count
+\end{lstlisting}
+
+The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as a stalling condition, when it is simply the set of equations has reached a point that requires a very small increment in time for the solver to converge. A negative entry on DTCHECK turns off the time step checking algorithm.
+
+Example:
+
+\begin{lstlisting}
+DTCHECK,1.E-9,100
+\end{lstlisting}
+
+\section{EAMB and TAMB}
+
+\begin{lstlisting}
+TAMB, Ambient_temperature, Ambient_pressure, Station_elevation, Relative_humidity
+EAMB, Ambient_temperature, Ambient_pressure, Station_elevation, Relative_humidity
+\end{lstlisting}
+
+This keyword sets ambient conditions, TAMB for the internal and EAMB for outside the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  For the external ambient, it sets the water content for air flowing into compartments through vents connecting to the exterior. Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent.
+
+Example:
+
+\begin{lstlisting}
+EAMB,300,101300,0,
+TAMB,300,101300,0,5
+\end{lstlisting}
+
+\section{EVENT}
+
+EVENT, Type, First_Compartment, Second_Compartmen,t Vent_Number, Time, Final_Fraction
+
+Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.  Final_Fraction is the percent of the full opening width expressed as a fraction for vents and fraction of trace species and soot removed for filters.
+
+EVENT is used to open or close a vent or to change filtering. This replaces the earlier CVENT and applies to all vents for vertical flow (V), horizontal flow (H) mechanical flow (M), and filtering of mechanical ventilation (F). The intent is to allow these events to be triggered by time, temperature or flux as is done with detectors. However, at the moment, time is the only option.
+
+The form for EVENT is
+
+\begin{lstlisting}
+EVENT, H, First_compartment     Second_Compartment Vent_Number Time Final_Fraction Decay_time
+EVENT, V, First_compartment     Second_Compartment V_ID        Time Final_Fraction Decay_time
+EVENT, M, First_compartment     Second_compartment MVENT_ID    Time Final_Fraction Decay_time
+EVENT, F, First_Compartment     Second_compartment MVENT_ID    Time Final_Fraction Decay_time   
+\end{lstlisting}
+
+Decay time is the duration of the event and the units are seconds.
+
+Example:
+EVENT,H,1,2,1,10.,0.3,1
+
+The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. For filtering, 0 indicates no filtering and 1 is a completely blocked vent. 
+
+Filtering applies only to trace species and particulate (smoke) and only to mechanical ventilation vents.

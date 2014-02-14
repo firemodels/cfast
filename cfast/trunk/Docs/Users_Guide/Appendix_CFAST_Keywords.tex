@@ -106,9 +106,11 @@ TAMB,300,101300,0,5
 
 \section{EVENT}
 
+\begin{lstlisting}
 EVENT, Type, First_Compartment, Second_Compartmen,t Vent_Number, Time, Final_Fraction
+\end{lstlisting}
 
-Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.  Final_Fraction is the percent of the full opening width expressed as a fraction for vents and fraction of trace species and soot removed for filters.
+Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.  Final\_Fraction is the percent of the full opening width expressed as a fraction for vents and fraction of trace species and soot removed for filters.
 
 EVENT is used to open or close a vent or to change filtering. This replaces the earlier CVENT and applies to all vents for vertical flow (V), horizontal flow (H) mechanical flow (M), and filtering of mechanical ventilation (F). The intent is to allow these events to be triggered by time, temperature or flux as is done with detectors. However, at the moment, time is the only option.
 
@@ -124,8 +126,11 @@ EVENT, F, First_Compartment     Second_compartment MVENT_ID    Time Final_Fracti
 Decay time is the duration of the event and the units are seconds.
 
 Example:
+
+\begin{lstlisting}
 EVENT,H,1,2,1,10.,0.3,1
+\end{lstlisting}
 
-The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. For filtering, 0 indicates no filtering and 1 is a completely blocked vent. 
+The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filtering applies only to trace species and particulate (soot) and only to mechanical ventilation vents. For filtering, 0 indicates no filtering and 1 indicates that all soot and trace species flowing through the fan is removed. 
 
-Filtering applies only to trace species and particulate (smoke) and only to mechanical ventilation vents.
+

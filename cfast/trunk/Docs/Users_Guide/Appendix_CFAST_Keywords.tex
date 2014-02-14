@@ -5,7 +5,7 @@ All key words are case sensitive and all parameters are required. There are no d
 \section{CHEMI}
 
 \begin{lstlisting}
-CHEMI, Lower_oxygen_limit,  Ignition_temperature
+CHEMI, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
 \end{lstlisting}
 
 This parameter is global and applies to all fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door-jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters.
@@ -23,7 +23,7 @@ This sets the limiting oxygen index to 10 \% and the ignition temperature to 488
 \section{CJET}
 
 \begin{lstlisting}
-CJET, Ceiling_jet_flag
+CJET, CEILING_JET_FLAG
 \end{lstlisting}
 
 This directive tells the model to calculate the effects of a ceiling jet in all compartments containing a fire. The possible flags are OFF, CEILING, WALL, or ALL.
@@ -45,7 +45,7 @@ CJET,CEILING
 \section{COMPA}
 
 \begin{lstlisting}
-COMPA, Name, Width, Depth, Internal_height, Absolute_x_position, Absolute_y_position, Floor_height, Ceiling_material_name,  Floor_materia_name, Wall_material_name
+COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIA_NAME, WALL_MATERIAL_NAME
 \end{lstlisting}
 
 The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands.
@@ -59,7 +59,7 @@ COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
 \section{DETEC}
 
 \begin{lstlisting}
-DETEC, Type, Compartmen,t Activation_Temperatur,e Depth, Widt,h Heigh,t RTI, Suppression, Spray_Density
+DETEC, TYPE, COMPARTMEN,T ACTIVATION_TEMPERATUR,E DEPTH, WIDTH, HEIGHT, RTI, SUPPRESSION, SPRAY_DENSITY
 \end{lstlisting}
 
 The DETEC keyword is used for both detectors and sprinklers. Sprinklers and detectors are both considered detection devices and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
@@ -77,7 +77,7 @@ DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
 \section{DTCHE}
 
 \begin{lstlisting}
-DTCHE, Minimum_Time, Count
+DTCHE, MINIMUM_TIME, COUNT
 \end{lstlisting}
 
 The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as a stalling condition, when it is simply the set of equations has reached a point that requires a very small increment in time for the solver to converge. A negative entry on DTCHECK turns off the time step checking algorithm.
@@ -91,8 +91,8 @@ DTCHECK,1.E-9,100
 \section{EAMB and TAMB}
 
 \begin{lstlisting}
-TAMB, Ambient_temperature, Ambient_pressure, Station_elevation, Relative_humidity
-EAMB, Ambient_temperature, Ambient_pressure, Station_elevation, Relative_humidity
+TAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, STATION_ELEVATION, RELATIVE_HUMIDITY
+EAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, STATION_ELEVATION, RELATIVE_HUMIDITY
 \end{lstlisting}
 
 This keyword sets ambient conditions, TAMB for the internal and EAMB for outside the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  For the external ambient, it sets the water content for air flowing into compartments through vents connecting to the exterior. Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent.
@@ -107,7 +107,7 @@ TAMB,300,101300,0,5
 \section{EVENT}
 
 \begin{lstlisting}
-EVENT, Type, First_Compartment, Second_Compartmen,t Vent_Number, Time, Final_Fraction
+EVENT, TYPE, FIRST_COMPARTMENT, SECOND_COMPARTMEN,T VENT_NUMBER, TIME, FINAL_FRACTION
 \end{lstlisting}
 
 Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.  Final\_Fraction is the percent of the full opening width expressed as a fraction for vents and fraction of trace species and soot removed for filters.
@@ -117,10 +117,10 @@ EVENT is used to open or close a vent or to change filtering. This replaces the 
 The form for EVENT is
 
 \begin{lstlisting}
-EVENT, H, First_compartment     Second_Compartment Vent_Number Time Final_Fraction Decay_time
-EVENT, V, First_compartment     Second_Compartment V_ID        Time Final_Fraction Decay_time
-EVENT, M, First_compartment     Second_compartment MVENT_ID    Time Final_Fraction Decay_time
-EVENT, F, First_Compartment     Second_compartment MVENT_ID    Time Final_Fraction Decay_time   
+EVENT, H, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, TIME, FINAL_FRACTION, DECAY_TIME
+EVENT, V, FIRST_COMPARTMENT, SECOND_COMPARTMENT, V_ID, TIME, FINAL_FRACTION, DECAY_TIME
+EVENT, M, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME
+EVENT, F, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME   
 \end{lstlisting}
 
 Decay time is the duration of the event and the units are seconds.
@@ -133,4 +133,240 @@ EVENT,H,1,2,1,10.,0.3,1
 
 The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filtering applies only to trace species and particulate (soot) and only to mechanical ventilation vents. For filtering, 0 indicates no filtering and 1 indicates that all soot and trace species flowing through the fan is removed. 
 
+\section{HALL}
 
+\begin{lstlisting}
+HALL, COMPARTMENT, VELOCITY, DEPTH, DECAY_DISTANCE
+\end{lstlisting}
+
+This command invokes the corridor flow algorithm. For long hallways or corridors, there can be a significant delay time for the initial hot gas layer to travel along the ceiling to the far end of the compartment. By estimating the time required for a ceiling jet to travel in a corridor and the temperature distribution along the corridor, CFAST can delay flow into compartments connected to corridors until the ceiling jet has passed the connections to these compartments.
+
+If the aspect ratio of a compartment (the maximum of length/width or width/length) is greater than about five, this algorithm should be used.
+
+Example:
+
+\begin{lstlisting}
+HALL, 3 , 0.15, 0.1, 16.7
+\end{lstlisting}
+
+For each of the Velocity, Depth and Decay, using a value of (-1) will bypass this setting. This is so that, for example, the decay distance can be set while using default values for velocity and depth.
+
+\section{HHEAT}
+
+\begin{lstlisting}
+HHEAT, FIRST_COMPARTMENT, NUMBER_OF_PARTS, N PAIRS OF {SECOND_COMPARTMENT, FRACTION}
+\end{lstlisting}
+
+Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first uses only a compartment number. In this case, the conduction connection 
+
+The first form is to use only a compartment number. In this case, CFAST will calculate the conductive heat transfer to all compartments connected to this compartment by horizontal convective flow. The second form specifies the compartments to be connected and what fraction of the compartment is connected to an adjacent compartment. This latter is particularly useful for rooms which are connected to adjacent rooms as well as hallways. The user of the model is responsible for the consistency of these pairings.  The model does not check to insure that the specified compartment pairs are located next to one another.
+
+Example:
+
+\begin{lstlisting}
+HHEAT,1,1,2,0.5
+\end{lstlisting}
+
+specifies that compartment one has one connection to compartment two and the fraction of wall surface through which heat is transferred is ½ of the wall surface of compartment one.
+
+\section{HVENT}
+
+\begin{lstlisting}
+HVENT FIRST_COMPARTMENT SECOND_COMPARTMENT VENT_NUMBER WIDTH SOFFIT SILL WIND_COEFFICIENT FIRST_COMPARTMENT_OFFSET SECOND_COMPARTMENT_OFFSET FACE INITIAL_OPENING_FRACTION
+\end{lstlisting}
+
+Vent which allows horizontal flow of gases, through vents such as doors and windows. Compartment offsets are triplets from the compartment origin.  FACE is an integer from 1 to 4 counterclockwise from the origin defining which wall face to place the vent on when visualizing with Smokeview. It doesn't affect the dynamics of the calculation, just the way it looks. The size of the opening can be modified by EVENT. This changes the Opening\_Fraction from the initial value (set above) to some other value. Typical use is to start with the door open (Initial\_Opening\_Fraction = 1) and use EVENT to close the door (Final\_Fraction = 0).
+
+Example:
+
+\begin{lstlisting}
+HVENT,1,2,1,2.4,1.0,0.,0.,0.,0.,1,0.9
+\end{lstlisting}
+
+\section{INTER}
+
+\begin{lstlisting}
+INTER INITIAL_INTERFACE_HEIGHT_1 INITIAL_INTERFACE_HEIGHT_2 ... INITIAL_INTERFACE_HEIGHT_N
+\end{lstlisting}
+
+This is used to set the initial interface height below the top of the compartment. A great deal of care is needed to use this, as the model has only rudimentary checks for the limits imposed (for example, the initial value must specify a height not greater than the compartment height. This does change the nature of a zone in the context of a zone model.
+
+Example: 
+
+\begin{lstlisting}
+INTER 2   1.2     3   2.0
+\end{lstlisting}
+
+\section{MVENT}
+
+\begin{lstlisting}
+MVENT, FROM_COMPARTMENT, TO_COMPARTMENT, ID_NUMBER, FROM_OPENING_ORIENTATION, FROM_CENTER_HEIGHT, FROM_OPENING_AREA, TO_OPENINGORIENTATION, TO_CENTER_HEIGHT, TO_OPENING_AREA, FLOW, BEGIN_DROPOFF_PRESSURE, ZERO_FLOW_PRESSURE, INITIAL_FRACTION
+\end{lstlisting}
+
+This replaces the more complex mechanical ventilation commands with a constant flow fan connection.  The original commands MVOPN MVFAN MVDCT and INELV are not supported in this version. The command specifies a pair of openings connected by a constant volume flow fan. The fan flow can be modified with the EVENT key word.
+
+Example:
+
+\begin{lstlisting}
+MVENT,5,7,1,V,0.50,1.00,H,2.40,1.10,2.00,200.,300.,1.0
+\end{lstlisting}
+
+\section{OBJECT}
+
+\begin{lstlisting}
+OBJECT, NAME, ROOM, X_POSITION, Y_POSITION, Z_POSITION, PLUME, IGNITION_TYPE, IGNITION_CRITERION, NORMAL_X, NORMAL_Y, NORMAL_Z
+\end{lstlisting}
+
+This key word places a fire (designated objects for version 6) into a compartment. The NAME on the object line should match the name in the file. OBJECTs are intended to simulate real burning items and must have attributes such as an orientation. A position vector of (-1,-1,-1) puts the object in the center of the compartment on the floor. A pointing vector of (0,0,1) is facing upward.
+
+Example:
+
+\begin{lstlisting}
+OBJECT,WARDROBE,1,-1,-1,0.,1,0,0.00,-1,-1,-1
+\end{lstlisting}
+
+\section{ONEZ}
+
+\begin{lstlisting}
+ONEZ, COMPARTMENT
+\end{lstlisting}
+
+For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source where the two-zone layer stratification is less pronounced than in compartments near the fire. This is used in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, and compartments far from the fire.
+
+Example:
+
+\begin{lstlisting}
+ONEZ,2
+\end{lstlisting}
+
+\section{ROOMA and ROOMH}
+
+\begin{lstlisting}
+ROOMA AND ROOMH, COMPARTMENT, NUMBER_OF_VALUES, AREA(OR HEIGHT) VALUES
+\end{lstlisting}
+
+These key words allow the user to define non-rectangular rooms by specifying cross-sectional area as a function of height. One set of values is included for each compartment that has a variable cross-sectional area. The format in both cases is the key followed by an index of the number of values. These key words must be used in pairs.
+
+Example:
+
+\begin{lstlisting}
+ROOMA 1    3     10.0  5.0  3.0
+ROOMH 1    3     0.0   1.0  2.0
+\end{lstlisting}
+
+specifies that compartment 1 has a cross-sectional area of 10 m2, 5 m2 and 3 m2 at elevations 0.0 m, 1.0 m and 2.0 m respectively.
+
+\section{THRMF}
+
+\begin{lstlisting}
+THRMF, THERMOPHYSICAL_PROPERTIES_FILE
+\end{lstlisting}
+
+By default, thermophysical properties are obtained from the thermal.csv which is located in the directory where the model executables reside. This allows for another file to be used.
+
+Example:
+
+\begin{lstlisting}
+THRMF,NEWTHERMALFILE
+\end{lstlisting}
+
+\section{STPMAX}
+
+\begin{lstlisting}
+STPMAX, MAXIMUM_TIME_STEP
+\end{lstlisting}
+
+This specifies the largest time step that the model will take. The default value is one second. In most cases, the numerical routines adjust the time step appropriately; however, for long simulation times and slowly varying conditions, a larger value is appropriate. In cases where the fire height and vent soffits interact, the time step may need to be smaller.
+
+Example:
+
+\begin{lstlisting}
+STPMAX,0.2
+\end{lstlisting}
+
+\section{TARGE}
+
+\begin{lstlisting}
+TARGE, COMPARTMENT, WIDTH, DEPTH, HEIGHT, NORMAL_DEPTH, NORMAL_BREADTH, NORMAL_HEIGHT, MATERIAL, METHOD, EQUATION_TYPE, INTERNAL_LOCATION
+\end{lstlisting}
+
+CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets. A non-zero normal vector must be specified as must a material from the thermophysical database. Method can be one of STEADY for steady state solution, XPLICIT for explicit solution, and MPLICIT for an implicit solution. Equation\_Type can be one of ODE, PDE, or CYL.
+
+Example:
+
+\begin{lstlisting}
+TARGE,1,2.20,1.88,2.34,0.00,0.00,1.00,CONCRETE,IMPLICIT,PDE
+\end{lstlisting}
+
+\section{TIMES}
+
+\begin{lstlisting}
+TIMES, SIMULATION_TIME, PRINT_INTERVAL, SPREADSHEET_OUTPUT_INTERVAL, SMOKEVIEW_OUTPUT_INTERVAL
+\end{lstlisting}
+
+Example:
+
+\begin{lstlisting}
+TIMES,360,-120,130,140,150,
+\end{lstlisting}
+
+Printed output will be on the screen or in a file named project.out. The four spreadsheet listings are in project.(project\_n.csv, project\_w.csv, project\_f.csv and project\_s.csv). The Smokeview output interval are for graphical output using the companion program Smokeview.
+
+
+\section{VERSN}
+
+\begin{lstlisting}
+VERSN,version number, Title
+\end{lstlisting}
+
+This input must be the first line in a CFAST input and largely specifies a title for the simulation. The major version number from the file must match the major version number kept internally (6 at the moment).
+
+Example
+
+\begin{lstlisting}
+VERSN,6,"Simple test of the object file input"
+\end{lstlisting}
+
+\section{VHEAT}
+
+\begin{lstlisting}
+VHEAT, FIRST_COMPARTMENT, SECOND_COMPARTMENT
+\end{lstlisting}
+
+Heat transfer between the ceiling and floor of specified compartments can be incorporated with the VHEAT key word. Ceiling to floor heat transfer occurs between interior compartments of the structure or between an interior compartment and the outdoors. The model checks to make sure that the ceiling and floor are reasonably contiguous (within 0.01 m), and the assumption is made that this is true for the entire ceiling and floor.
+
+Example:
+
+\begin{lstlisting}
+VHEAT,1,2
+\end{lstlisting}
+
+The floor properties of the top compartment (1 in this case) and the ceiling properties of the bottom compartment (2 in this case) must be defined by COMPA and included in the thermophysical file.
+
+\section{VVENT}
+
+\begin{lstlisting}
+VVENT, FROM_COMPARTMENT, TO_COMPARTMENT, AREA, SHAPE, INITIAL_FRACTION
+\end{lstlisting}
+
+Combined buoyancy and pressure driven (i.e., forced) flow through a horizontal vent (vertical flow) is possible when the connected spaces are filled with gases of different density in an unstable configuration, with the density of the top space larger than that of the bottom space. This type of flow is inherently different from horizontal flow (vertical vent) in that there is not layer to layer mixing from inverted plumes. This key word describes those horizontal openings between the compartments through which this type of flow occurs. Each VVENT line in the input file describes one horizontal vent.  There are four parameters, the connected compartments, the shape of the opening, and the effective area of the vent.
+
+Example:
+
+\begin{lstlisting}
+VVENT,1,2,4.0,2,0.9
+\end{lstlisting}
+
+\section{WIND}
+
+\begin{lstlisting}
+WIND, WIND_SPEED, SCALE_HEIGHT, POWER_LAW_COEFFICIENT
+\end{lstlisting}
+
+The wind speed, scale height, and power law are used to calculate the wind coefficient for each vent connected to the outside.  The wind velocity is specified at some reference height.  The power law then provides a lapse rate for the wind speed.  An assumption is that the wind speed is zero at the surface. This is the same format as in version 5. Please see the technical reference guide on the formula used in this calculation.
+
+Example:
+
+\begin{lstlisting}
+WIND,3.,10.,0.16
+\end{lstlisting}

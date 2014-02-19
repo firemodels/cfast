@@ -2,24 +2,6 @@
 
 All key words are case sensitive and all parameters are required. There are no defaults. If a parameter is missing, the model will terminate with an appropriate stop code. 
 
-\section{CHEMI}
-
-\begin{lstlisting}
-CHEMI, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
-\end{lstlisting}
-
-This parameter is global and applies to all fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door-jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters.
-
-This key word replaces LIMO2 and DJIGN.
-
-Example:
-
-\begin{lstlisting}
-CHEMI,10,488
-\end{lstlisting}
-
-This sets the limiting oxygen index to 10 \% and the ignition temperature to 488 K. These are the default values.
-
 \section{CJET}
 
 \begin{lstlisting}
@@ -133,6 +115,26 @@ EVENT,H,1,2,1,10.,0.3,1
 
 The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filtering applies only to trace species and particulate (soot) and only to mechanical ventilation vents. For filtering, 0 indicates no filtering and 1 indicates that all soot and trace species flowing through the fan is removed. 
 
+\section{GLOBA}
+
+\begin{lstlisting}
+GLOBA, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
+\end{lstlisting}
+
+This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
+
+This two-entry key word replaces LIMO2 and DJIGN.
+
+Example:
+
+\begin{lstlisting}
+GLOBA,10,488
+\end{lstlisting}
+
+With more than two parameters, this command is used as part of a fire definition.  See the FIRE keyword for this format of the command.
+
+This sets the limiting oxygen index to 10 \% and the ignition temperature to 488 K. These are the default values.
+
 \section{HALL}
 
 \begin{lstlisting}
@@ -197,6 +199,27 @@ Example:
 INTER 2   1.2     3   2.0
 \end{lstlisting}
 
+\section{LIMO2}
+
+\begin{lstlisting}
+LIMO2, LOWER_OXYGEN_INDEX
+\end{lstlisting}
+
+This parameter is global and applies to all fires. The single entry sets the lower oxygen limit for combustion.  Please read the technical reference manual for the meaning and implication of modifying these parameters \cite{CFAST_Tech_Guide_6}.
+
+\section{MATL}
+
+\begin{lstlisting}
+MATL, SHORT_NAME, CONDUCTIVITY, SPECIFIC_HEAT, DENSITY, THICKNESS, EMISSIVITY, LONG_NAME
+\end{lstlisting}
+
+This command defines the thickness and thermal properties for a single material that may be referenced as a compartment surface material, target material, or fire object. Each name must be unique within a single input file.
+
+\begin{lstlisting}
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
+\end{lstlisting}
+
 \section{MVENT}
 
 \begin{lstlisting}
@@ -256,20 +279,6 @@ ROOMH 1    3     0.0   1.0  2.0
 
 specifies that compartment 1 has a cross-sectional area of 10 m2, 5 m2 and 3 m2 at elevations 0.0 m, 1.0 m and 2.0 m respectively.
 
-\section{THRMF}
-
-\begin{lstlisting}
-THRMF, THERMOPHYSICAL_PROPERTIES_FILE
-\end{lstlisting}
-
-By default, thermophysical properties are obtained from the thermal.csv which is located in the directory where the model executables reside. This allows for another file to be used.
-
-Example:
-
-\begin{lstlisting}
-THRMF,NEWTHERMALFILE
-\end{lstlisting}
-
 \section{STPMAX}
 
 \begin{lstlisting}
@@ -312,6 +321,19 @@ TIMES,360,-120,130,140,150,
 
 Printed output will be on the screen or in a file named project.out. The four spreadsheet listings are in project.(project\_n.csv, project\_w.csv, project\_f.csv and project\_s.csv). The Smokeview output interval are for graphical output using the companion program Smokeview.
 
+\section{THRMF}
+
+\begin{lstlisting}
+THRMF, THERMOPHYSICAL_PROPERTIES_FILE
+\end{lstlisting}
+
+By default, thermophysical properties are obtained from the thermal.csv which is located in the directory where the model executables reside. This allows for another file to be used.
+
+Example:
+
+\begin{lstlisting}
+THRMF,NEWTHERMALFILE
+\end{lstlisting}
 
 \section{VERSN}
 

@@ -268,11 +268,10 @@ COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
 
 To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if calculation of inter-compartment heat transfer is to be calculated.
 
-The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Currently, thermal properties for materials are read from the CFAST input file with a thermal database file of common materials included in the CFAST distribution.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three). See the explanation in the section on auxiliary files for additional details.
+The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Currently, thermal properties for materials are read from the CFAST input file with a thermal database file of common materials included in the CFAST distribution.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three). 
 
 \begin{lstlisting}
-MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
-MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
 \end{lstlisting}
 
 \begin{figure}[h!]
@@ -839,7 +838,11 @@ In this case, the unit vector in the +Z direction.
 \newpage
 \section{Special Features}
 
-The following section describe some special features that are only required for more advanced simulations with CFAST
+The following section describe some special features that are only required for more advanced simulations with CFAST.
+
+\subsection{Additional Thermal Properties}
+
+The default CFAST installation includes a set of thermal properties for common building materials taken from textbook references.  While these may be useful for a range of problems, the user can also define additional materials for use with a specific simulation.
 
 \subsection{Sprinklers and Detectors}
 

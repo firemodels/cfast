@@ -615,7 +615,7 @@
         endif
         tgignt = lrarray(2)
 
-        ! Set global chemistry parameters, CHEMIE.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
+        ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
     case ('GLOBA')
         if (countargs(2,lcarray,xnumc-1, nret)) then
             limo2 = lrarray(1)*0.01_eb

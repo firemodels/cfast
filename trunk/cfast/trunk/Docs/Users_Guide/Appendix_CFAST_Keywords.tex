@@ -38,6 +38,14 @@ Example:
 COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
 \end{lstlisting}
 
+\section{DEADROOM}
+
+\begin{lstlisting}
+DEADROOM, DEAD_ROOM_NUMBER, CONNECTED_ROOM_NUMBER
+\end{lstlisting}
+
+The DEADROOM command specifies a compartment that is only connected to another compartment that in turn is not connected to the outside.  Compartment pressure is not calculated for the ``dead'' room. Pressure for this room is assumed to be the same as that of the connected room.
+
 \section{DETEC}
 
 \begin{lstlisting}
@@ -54,6 +62,22 @@ Example:
 
 \begin{lstlisting}
 DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
+\end{lstlisting}
+
+\section{DJIGN}
+
+\begin{lstlisting}
+DJIGN, 373.15
+\end{lstlisting}
+
+This entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
+
+This entry is superceded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
+
+Example:
+
+\begin{lstlisting}
+DJIGN,488
 \end{lstlisting}
 
 \section{DTCHE}
@@ -115,13 +139,62 @@ EVENT,H,1,2,1,10.,0.3,1
 
 The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filtering applies only to trace species and particulate (soot) and only to mechanical ventilation vents. For filtering, 0 indicates no filtering and 1 indicates that all soot and trace species flowing through the fan is removed. 
 
+\section{FIRE}
+
+\begin{lstlisting}
+FIRE, COMPARTMENT, X_POSITION, Y_POSITION, Z_POSITION, IGNITION_TYPE, IGNITION_CRITERION, X_NORMAL_VECTOR, Y_NORMAL_VECTOR, Z_NORMAL_VECTOR, NAME
+\end{lstlisting}
+
+This key word places a fire  into a compartment. The asociated keywords CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH completely specifiy the fire for the current simulation.
+
+Example:
+
+\begin{lstlisting}
+!!bunsen
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,bunsen
+CHEMI,1,4,0,0,0,0.33,5E+07,METHANE
+TIME,0,60,120,180,240,300,360,420,480,540,1800
+HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
+SOOT,0,0,0,0,0,0,0,0,0,0,0
+CO,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221
+TRACE,0,0,0,0,0,0,0,0,0,0,0
+AREA,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
+HEIGH,0,0,0,0,0,0,0,0,0,0,0
+\end{lstlisting}
+
+\subsection{CHEMI}
+
+\begin{lstlisting}
+CHEMI, FORMULA_C, FORMULA_H, FORMULA_O, FORMULA_N, FORMULA_Cl,  RADIATIVE_FRACTION, HEAT_OF_COMBUSTION, MATERIAL_ID
+\end{lstlisting}
+
+The CHEMI input defines the chemical formula of the burning material (FORMULA\_C, \_H, \_O, \_N, and \_Cl), its heat of combustion, and fractoin of its head given off by radiation. The last input defines the thermal properties of the material for heat transfer to the material prior to its ignition.
+
+\subsection{TIME}
+
+\begin{lstlisting}
+TIME, T_1, T_2, T_3, ... , T_N-1, T_N
+\end{lstlisting}
+
+The TIME input defines a series of time points which correspond to entries on the otehr fire inputs HRR, SOOT, CO, TRACE, AREA, and HEIGH.  These define the time-based variation of the fire size, fire area, and species yields for the specified fire.
+
+\subsection{HRR}
+
+\begin{lstlisting}
+HRR, Q_1, Q_2, Q_3, ... , Q_N-1,QT_N
+\end{lstlisting}
+
+The HRR input defines a series of heat release rates which correspond to entries on the otehr fire inputs HRR, SOOT, CO, TRACE, AREA, and HEIGH.  These define the time-based variation of the fire size, fire area, and species yields for the specified fire.
+
+
+
 \section{GLOBA}
 
 \begin{lstlisting}
 GLOBA, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
 \end{lstlisting}
 
-This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
+This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the ignition temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
 
 This two-entry key word replaces LIMO2 and DJIGN.
 
@@ -207,6 +280,8 @@ LIMO2, LOWER_OXYGEN_INDEX
 
 This parameter is global and applies to all fires. The single entry sets the lower oxygen limit for combustion.  Please read the technical reference manual for the meaning and implication of modifying these parameters \cite{CFAST_Tech_Guide_6}.
 
+This entry is superceded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
+
 \section{MATL}
 
 \begin{lstlisting}
@@ -232,20 +307,6 @@ Example:
 
 \begin{lstlisting}
 MVENT,5,7,1,V,0.50,1.00,H,2.40,1.10,2.00,200.,300.,1.0
-\end{lstlisting}
-
-\section{OBJECT}
-
-\begin{lstlisting}
-OBJECT, NAME, ROOM, X_POSITION, Y_POSITION, Z_POSITION, PLUME, IGNITION_TYPE, IGNITION_CRITERION, NORMAL_X, NORMAL_Y, NORMAL_Z
-\end{lstlisting}
-
-This key word places a fire (designated objects for version 6) into a compartment. The NAME on the object line should match the name in the file. OBJECTs are intended to simulate real burning items and must have attributes such as an orientation. A position vector of (-1,-1,-1) puts the object in the center of the compartment on the floor. A pointing vector of (0,0,1) is facing upward.
-
-Example:
-
-\begin{lstlisting}
-OBJECT,WARDROBE,1,-1,-1,0.,1,0,0.00,-1,-1,-1
 \end{lstlisting}
 
 \section{ONEZ}

@@ -276,7 +276,7 @@
 
     call SSaddtolist (position,time,outarray)
 
-    !     First the temperatures for each compartment
+    !     First the surface temperatures for each compartment
 
     do i=1,nm1
         do iw = 1, 4

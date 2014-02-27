@@ -1060,13 +1060,13 @@ HHEAT,2,1
 Typically, zone models incorporate two zones in each compartment, one for the upper layer and one for the lower layer. A plume from a fire then pumps energy from the fire and lower layer into the upper layer. However, it has been observed that the heat loss from the upper layer to the ceiling and walls is higher than this paradigm would indicate. The cause is that a plume does not initially mix with the upper layer. This leads to higher convective heat transfer than the mixed model would indicate. CFAST has incorporated a model of this additional heat loss based on the work of Cooper \cite{Cooper:1988} . Heat loss by this mechanism to the ceiling is well established, the loss to walls is somewhat more uncertain due to the uncertainty of how far the plume descends below the ceiling. 
 
 \begin{wrapfigure}{r}{0pt}
-  \includegraphics[width=2.313in]{FIGURES/Input_File/Ceiling_Jet}
+\includegraphics[width=2.313in]{FIGURES/Input_File/Ceiling_Jet}
 \end{wrapfigure}
 
-To include ceiling jet effects in the calculation of the surface temperature of the ceiling, wall, or both surfaces, the CJET keyword is used.  In the input editor, CEdit, this is included on the fires tab. The ceiling jet calculation can be used for the ceiling, walls, or all surfaces. At present, this keyword effects only the calculation of the convective heating boundary condition for the conduction routines.  If a particular surface is on, the ceiling jet algorithm is used to determine the convective heating of the surface.  If the ceiling jet is off, the bulk temperature of the upper layer determines the convective heating.
+\textbf{Ceiling Jet} (default units: none, default value: Ceiling): To include ceiling jet effects in the calculation of the surface temperature of the ceiling, wall, or both surfaces, the CJET keyword is used.  In the input editor, CEdit, this is included on the fires tab. The ceiling jet calculation can be used for the ceiling, walls, or all surfaces. At present, this keyword effects only the calculation of the convective heating boundary condition for the conduction routines.  If a particular surface is on, the ceiling jet algorithm is used to determine the convective heating of the surface.  If the ceiling jet is off, the bulk temperature of the upper layer determines the convective heating.
 
 \begin{itemize}
-\item Using this option affects all fires.”
+\item Using this option affects all fires.
 \end{itemize}
 
 \subsection{Filtering}

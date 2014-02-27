@@ -14,9 +14,11 @@ WIND,0,10,0.16
 !!Compartment keywords
 !!
 COMPA,Compartment 1,5,5,5,0,0,0,OFF,OFF,OFF
+COMPA,Compartment 2,5,5,5,5,0,0,OFF,OFF,OFF
 !!
 !!Vent keywords
 !!
-MVENT,2,1,1,V,2.5,1,V,2.5,1,0.1,2000,3000,1
-EVENT,M,2,1,1,10,0,1
+MVENT,3,1,1,V,2.5,1,V,2.5,1,0.1,2000,3000,1
+MVENT,1,2,2,V,2.5,1,V,2.5,1,0.1,2000,3000,1
+MVENT,2,3,3,V,2.5,1,V,2.5,1,0.1,2000,3000,1
 GLOBA,10,393.15

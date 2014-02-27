@@ -36,6 +36,7 @@ if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast basic_pressure_vent /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_pressure_wallsoff /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_mechvent_dropoff /V
+..\scripts\background -u 98 ..\..\bin\cfast basic_mechvent /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_connection_floorceiling_mechvent /V
 cd ..
 if %1==NoFire goto end

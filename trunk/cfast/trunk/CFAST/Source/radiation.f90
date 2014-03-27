@@ -1338,30 +1338,14 @@
 40      continue
     endif
 
-    ! calculate delta x, slope x and the z increment due to a change in x. if xval = x(xdim), then (i+1) is undefined and the slope can not be
-    ! calculated. however, in those cases, delta x is zero, there is no contribution due to the change in x and the entire term may be set equal to zero.
-    
-    deltax = xval - x(i)
-    if(deltax /= 0.0_eb)then
-        dzdx = (z(i+1,j) - z(i,j))/(x(i+1) - x(i))
-        delx = dzdx*deltax
-    else
-        delx = 0.
-    endif
-
-    ! calculate the z increment due to a change in y as above.
-    
-    deltay = yval - y(j)
-    if(deltay /= 0.0_eb)then
-        dzdy = (z(i,j+1) - z(i,j))/(y(j+1) - y(j))
-        dely = dzdy*deltay
-    else
-        dely = 0.
-    endif
-
     ! interpolate a value for f(x,y)
     
-    zval = z(i,j) + delx + dely
+    zval = z(i,j)*(x(i+1)-xval)*(y(j+1)-yval)
+    zval = zval + z(i+1,j)*(xval - x(i))*(y(j+1)-yval)
+    zval = zval + z(i,j+1)*(x(i+1)-xval)*(yval - y(j))
+    zval = zval + z(i+1,j+1)*(xval - x(i))*(yval-y(j))
+    zval = zval/((x(i+1)-x(i))*(y(j+1)-y(j))) 
+    
     return
     end subroutine linterp
 

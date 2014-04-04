@@ -1,0 +1,19 @@
+VERSN,6,CFAST Simulation
+!!
+!!Environmental Keywords
+!!
+TIMES,900,-50,0,10,10
+EAMB,293.15,101300,0
+TAMB,293.15,101300,0,50
+CJET,OFF
+CHEMI,0,273.15
+WIND,0,10,0.16
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,10,10,10,0,0,0,OFF,OFF,OFF
+ONEZ,1
+!!
+!!fire keywords
+!!
+OBJECT,6MW_constant,1,-1,-1,-1,1,1,0,0,0,1

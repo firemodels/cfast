@@ -326,11 +326,11 @@ Public Class RunModel
                             Me.RunSummary(ir, 0) = Val(ln.Substring(0, 5))
                             Me.RunSummary(ir, 1) = Math.Round(myUnits.Convert(UnitsNum.Temperature).FromSI(Val(ln.Substring(12, 8)) + 273.15), 1).ToString
                             Me.RunSummary(ir, 2) = Math.Round(myUnits.Convert(UnitsNum.Temperature).FromSI(Val(ln.Substring(20, 8)) + 273.15), 1).ToString
-                            Me.RunSummary(ir, 3) = Math.Round(myUnits.Convert(UnitsNum.Length).FromSI(Val(ln.Substring(30, 8))), 2).ToString
-                            Me.RunSummary(ir, 4) = Math.Round(myUnits.Convert(UnitsNum.MassLoss).FromSI(Val(ln.Substring(38, 10))), 5).ToString
-                            Me.RunSummary(ir, 5) = Math.Round(myUnits.Convert(UnitsNum.HRR).FromSI(Val(ln.Substring(48, 10))), 2).ToString
-                            Me.RunSummary(ir, 6) = Math.Round(myUnits.Convert(UnitsNum.Pressure).FromSI(Val(ln.Substring(58, 10))), 4).ToString
-                            Me.RunSummary(ir, 7) = Math.Round(myUnits.Convert(UnitsNum.HeatFlux).FromSI(Val(ln.Substring(68, 10))), 3).ToString
+                            Me.RunSummary(ir, 3) = Math.Round(myUnits.Convert(UnitsNum.Length).FromSI(Val(ln.Substring(30, 9))), 2).ToString
+                            Me.RunSummary(ir, 4) = Math.Round(myUnits.Convert(UnitsNum.MassLoss).FromSI(Val(ln.Substring(39, 10))), 5).ToString
+                            Me.RunSummary(ir, 5) = Math.Round(myUnits.Convert(UnitsNum.HRR).FromSI(Val(ln.Substring(49, 10))), 2).ToString
+                            Me.RunSummary(ir, 6) = Math.Round(myUnits.Convert(UnitsNum.Pressure).FromSI(Val(ln.Substring(59, 10))), 4).ToString
+                            Me.RunSummary(ir, 7) = Math.Round(myUnits.Convert(UnitsNum.HeatFlux).FromSI(Val(ln.Substring(69, 10))), 3).ToString
                         Else
                             Me.RunSummary(ir, 0) = "Outside"
                             Me.RunSummary(ir, 5) = Math.Round(myUnits.Convert(UnitsNum.HRR).FromSI(Val(ln.Substring(48, 10))), 2).ToString

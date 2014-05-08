@@ -176,18 +176,18 @@ The same test can be repeated with all surfaces turned off.  With the absence of
 \label{fig:Different_Ambients_Nonconducting}
 \end{figure}
 
-A model examining heat added to a system can be demonstrated with a test case containing a 10~s, 100 kW fire.  With non-conducting surfaces and no ventilation, the heat released from the fire can be determined since $Q=m c_p \Delta T$.  Using the CFAST generated final layer height of 3.26 m, the volume of the upper layer is calculated to be 43.451 m$^3$ and the lower layer is 81.549 m$3$.  Densities and specific heats are obtained using the temperature of each layer.  With this information the air mass of the upper layer is 49.62 kg and the lower layer air mass is 97.44 kg.  The heat added to the system can be calculated as
+A model examining heat added to a system can be demonstrated with a test case containing a 10~s, 100 kW fire.  With non-conducting surfaces and no ventilation, the heat released from the fire can be determined since $Q=m c_p \Delta T$.  Using the CFAST generated final layer height of 3.12 m, the volume of the upper layer is calculated to be 47.05 m$^3$ and the lower layer is 77.95 m$3$.  Densities and specific heats are obtained using the temperature of each layer.  With this information the air mass of the upper layer is 53.27 kg and the lower layer air mass is 93.81 kg.  The heat added to the system can be calculated as
 
 \begin{eqnarray}
 Q &=& m c_p \Delta T \nonumber \\
-Q_{upper} &=& 49.62 \cdot 1.142 (308.912 - 273.15) \nonumber \\
-Q_{upper} &=& 786.25 \text{\ kJ} \nonumber \\
-Q_{lower} &=& 97.44 \cdot 1.195 (295.268 - 273.15) \\
-Q_{lower} &=& 207.251 \text{\ kJ} \nonumber \\
-Q_{total} &=& 993.497 \text{\ kJ} \nonumber
+Q_{upper} &=& 53.27 \cdot 1.005 (311.63 - 293.15) \nonumber \\
+Q_{upper} &=& 989.85 \text{\ kJ} \nonumber \\
+Q_{lower} &=& 97.44 \cdot 1.195 (293.16 - 293.15) \\
+Q_{lower} &=& 0.63 \text{\ kJ} \nonumber \\
+Q_{total} &=& 990.48 \text{\ kJ} \nonumber
 \end{eqnarray}
 
-or a total heat release of 993.497 kJ, or 99.35 kW over 10 s, a 0.65~\% relative difference from the CFAST input of 100 kW.The difference comes from the enrgy used to raise the pyrolyzing fuel to its ignition temperature. Figure \ref{fig:Analytical_Heat_Release_Rate} shows the simulated conditions for this test.
+or a total heat release of 990.48 kJ, or 99.05 kW over 10 s, a -0.9~\% relative difference from the CFAST input of 100 kW.The difference comes from the energy used to raise the pyrolyzing fuel to its ignition temperature, to raise the pressure in the compartment slightly and from a small energy loss out the vent near the floor to keep the compartment pressure near ambient conditions. Figure \ref{fig:Analytical_Heat_Release_Rate} shows the simulated conditions for this test.
 
 \begin{figure}[h]
 \begin{center}
@@ -201,7 +201,7 @@ or a total heat release of 993.497 kJ, or 99.35 kW over 10 s, a 0.65~\% relative
 
 In addition to the comparisons of test cases with analytical solutions discussed in the previous section, we have included a number of simple test cases intended to demonstrate the impact of individual model features.  While these are too complex to provide analytical solutions, many can be estimated with simpler engineering calculations.  Together, these form a set of simulations that can be routinely run to verify continued consistency of the calculation results as the model is further developed to insure unintended side-effects of modifications to the model are prevented.
 
-For completeness, the first examples dupicate the simple examples in the previsou section. As in the previous section,  most of the examples presented in this section share the same basic geometry, a single 5 m x 5 m x 5 m compartment. Unless otherwise detailed, the ‘base case’ has a single window centered on the front wall that is 2 m x 1 m and has 5/8 in Gypsum Board walls and ceiling. Depending on the exact simulation, additional details will be added to verify individual model results. 
+For completeness, the first examples dupicate the simple examples in the previous section. As in the previous section,  most of the examples presented in this section share the same basic geometry, a single 5 m x 5 m x 5 m compartment. Unless otherwise detailed, the ‘base case’ has a single window centered on the front wall that is 2 m x 1 m and has 5/8 in Gypsum Board walls and ceiling. Depending on the exact simulation, additional details will be added to verify individual model results. 
 
 To begin, the simplest example is the base case compartment set at uniform ambient conditions with no ventilation, fires, or additional modeled features. With no added mass or energy to the system, conditions are expected to remain at the initial ambient. Figure \ref{fig:Ambient_Conditions_Reference} shows the simulated conditions for this simple test.
 
@@ -279,4 +279,4 @@ With the exterior temperature still set to 25 \degc, the wind is raised to 10 m/
 \label{fig:Temperature_Equilibrium_Wind_Speed}
 \end{figure}
 
-Two identical 5 m x 5 m x 5m compartments are set next to each other.  A 1 m$^2$ mechanical vent is added on the front face of compartment one, the shared wall between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1 m$^3$/s or 0.12 kg/s of air.  The mass flow through each of these vents is not expected to change because the flow rate in is constant.  Figure \ref{fig: shows the simulated conditions for the test case.
+Two identical 5 m x 5 m x 5m compartments are set next to each other.  A 1 m$^2$ mechanical vent is added on the front face of compartment one, the shared wall between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1 m$^3$/s or 0.12 kg/s of air.  The mass flow through each of these vents is not expected to change because the flow rate in is constant.  

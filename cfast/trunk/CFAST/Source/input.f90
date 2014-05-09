@@ -793,7 +793,7 @@
        ! pressure in dead_room_num is not solved.  pressure for this room
        ! is obtained from connected_room_num
 
-    case ('DEADROOM')  
+    case ('DEADR')  
         i = lrarray(1)
         j = lrarray(2)
         if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then

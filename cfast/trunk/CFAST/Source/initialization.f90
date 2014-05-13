@@ -943,7 +943,7 @@
     rgas = (gamma-1.0_eb)/gamma*cp
     minmas = 0.0_eb
     stime = 0.0_eb
-    tref = 288.0_eb
+    tref = 293.15_eb
     limo2 = 0.10_eb
     hcomba = 50000000.0_eb
     pref = 1.013e+5_eb

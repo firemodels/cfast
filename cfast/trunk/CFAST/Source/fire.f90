@@ -46,7 +46,7 @@
     real(eb), intent(out) :: flwf(nr,ns+2,2)
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q1, q2, xqfr
+    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_entrained, xqfr
     integer lsp, iroom, nobj, iobj, i, j
 
     ! initialize summations and local data
@@ -85,10 +85,9 @@
             xtl = zztemp(iroom,lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
-            q1 = cp*oplume(1,iobj)*te
-            q2 = cp*oplume(2,iobj)*xtl
-            flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q1 + q2
-            flwf(iroom,q,lower) = flwf(iroom,q,lower) - q2
+            q_entrained = cp*oplume(2,iobj)*xtl
+            flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q_entrained
+            flwf(iroom,q,lower) = flwf(iroom,q,lower) - q_entrained
             do lsp = 1, ns
                 flwf(iroom,lsp+2,upper) = flwf(iroom,lsp+2,upper) + xntms(upper,lsp)
                 flwf(iroom,lsp+2,lower) = flwf(iroom,lsp+2,lower) + xntms(lower,lsp)
@@ -224,7 +223,7 @@
     ! convection drives the plume entrainment
 
     chirad = max(min(radconsplit(ifire),1.0_eb),0.0_eb)
-    qheatl = max((xqpyrl+cp*(te-xtl)*xemp)*(1.0_eb-chirad),0.0_eb)
+    qheatl = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
     if (lfbt==free) then
         ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
@@ -259,7 +258,7 @@
             call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass) 
 
             ! limit the amount entrained to that actually entrained by the fuel burned
-            xqpyrl = max(0.0_eb, (xqpyrl+cp*(te-xtl)*xemp)*(1.0_eb-chirad))
+            xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
 
             if (xqpyrl<qheatl) then
                 xeme = xeme*(xqpyrl/qheatl)

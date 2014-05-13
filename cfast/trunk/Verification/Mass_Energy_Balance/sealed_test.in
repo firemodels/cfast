@@ -1,19 +1,32 @@
 VERSN,6,CFAST Simulation
 !!
-!!Environmental Keywords
+!!Scenario Configuration Keywords
 !!
-TIMES,900,-50,0,10,10
+TIMES,900,-50,10,10
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
-CJET,OFF
-CHEMI,0,273.15
+CJET,WALLS
 WIND,0,10,0.16
+!!
+!!Material Properties
+!!
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
 !!
 !!Compartment keywords
 !!
 COMPA,Compartment 1,10,10,10,0,0,0,OFF,OFF,OFF
 ONEZ,1
 !!
-!!fire keywords
+!!Fire keywords
 !!
-OBJECT,6MW_constant,1,-1,-1,-1,1,1,0,0,0,1
+GLOBA,10,393.15
+!!100 kW
+FIRE,1,5,5,0,1,1,0,0,0,1,100 kW
+CHEMI,1,4,0,0,0,0,5E+07,METHANE
+TIME,0,1800
+HRR,100000,100000
+SOOT,0,0
+CO,0,0
+TRACE,0,0
+AREA,0,0
+HEIGH,0,0

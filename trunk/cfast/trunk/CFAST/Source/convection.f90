@@ -305,7 +305,7 @@
     if (first) then
         first = .false.
         ct = 9.115_eb
-        cp = 1000.0_eb
+        cp = 1012.0_eb
         pr = 0.70_eb
         rk1 = (0.23_eb/0.77_eb)*log(sqrt(2.0_eb)-1.0_eb)
     endif

@@ -46,7 +46,7 @@
     real(eb), intent(out) :: flwf(nr,ns+2,2)
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_entrained, xqfr
+    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr
     integer lsp, iroom, nobj, iobj, i, j
 
     ! initialize summations and local data
@@ -85,8 +85,9 @@
             xtl = zztemp(iroom,lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
+            q_firemass = cp*oplume(1,iobj)*xtl
             q_entrained = cp*oplume(2,iobj)*xtl
-            flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q_entrained
+            flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q_firemass + q_entrained
             flwf(iroom,q,lower) = flwf(iroom,q,lower) - q_entrained
             do lsp = 1, ns
                 flwf(iroom,lsp+2,upper) = flwf(iroom,lsp+2,upper) + xntms(upper,lsp)

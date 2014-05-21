@@ -82,9 +82,9 @@ Differential equations for the layer volumes can be obtained by substituting equ
 
 \be \dbydt{V_i} = \frac{1}{P \gamma} \brackets{\brackets{\gamma -1} \dot h_i - V_i \dbydt{P}} \label{eq:layer_volume} \ee
 
-Equation \ref{eq:internal_energy} can be rewritten using eq \ref{eq:layer_volume} to eliminate $dV/dt$ to yield
+Equation \ref{eq:first_law} can be rewritten using eq \ref{eq:layer_volume} to eliminate $dV/dt$ to yield
 
-\be \dbydt{E_i} = \frac{1}{\gamma} \brackets{\dot h_i + V \dbydt{P}} \ee
+\be \dbydt{E_i} = \frac{1}{\gamma} \brackets{\dot h_i + V_i \dbydt{P}} \ee
 
 A differential equation for density can be derived by applying the quotient rule to $\frac{d \rho_i}{dt} = \frac{d}{dt} \brackets{\frac{m_i}{V_i}}$ and using eq \ref{eq:layer_volume} to eliminate $\frac{dV_i}{dt}$ to obtain
 
@@ -271,7 +271,7 @@ As fuel and oxygen are consumed, heat is released and various products of combus
 \begin{eqnarray} Q_{f,R} &=& \chi_R Q_f \\
 Q_{f,C} &=& \brackets{1-\chi_R} Q_f
 \end{eqnarray}
-where, $\chi_R$ is the fraction  of the fire�s heat release rate given off as radiation.  The convective
+where, $\chi_R$ is the fraction  of the fire's heat release rate given off as radiation.  The convective
 enthalpy, $Q_{f,C}$ then becomes the driving term in the plume flow.  For a constrained fire there is
 radiation to both the upper and lower layers, whereas the convective part contributes only to the
 upper layer.

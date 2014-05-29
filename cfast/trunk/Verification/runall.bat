@@ -3,6 +3,7 @@ echo.| time
 echo Running CFAST simulations. $Rev: 846 $
 if "%1"=="" goto Help
 if %1==ALL goto All
+if %1==Base goto Base
 if %1==Analytical goto Analytical
 if %1==NoFire goto NoFire
 if %1==Fire goto Fire
@@ -12,18 +13,10 @@ echo Choose ALL, Analytical, Fire, DOE
 goto end
 :ALL
 call cleanall.bat
-:Analytical
-echo Running Analytical Tests
-cd Mass_Energy_Balance
-if NOT %1==ALL call ..\..\Validation\cleancfast.bat
-..\..\bin\cfast basic_mechvent /V
-..\..\bin\cfast 100kW_fire /V
-cd ..
-if %1==Analytical goto end
 
-:NoFire
-echo Running No Fire Tests
-cd Mass_Energy_Balance
+:Base
+echo Running Base Case Tests
+cd Analytical
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast Base /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib /V
@@ -32,11 +25,25 @@ if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib_window_elevation /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib_window_geometry /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib_window_wind /V
+cd ..
+if %1==Base goto end
+
+:Analytical
+echo Running Basic Mass Balance Tests
+cd Analytical\Mass
+if NOT %1==ALL call ..\..\Validation\cleancfast.bat
+..\..\..\bin\cfast basic_mechvent /V
+cd ..\..
+if %1==Analytical goto end
+
+:NoFire
+echo Running Basic Energy Balance Tests
+cd Mass_Energy_Balance
+if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast basic_pressure /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_pressure_vent /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_pressure_wallsoff /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_mechvent_dropoff /V
-..\scripts\background -u 98 ..\..\bin\cfast basic_mechvent /V
 ..\scripts\background -u 98 ..\..\bin\cfast basic_connection_floorceiling_mechvent /V
 cd ..
 if %1==NoFire goto end
@@ -45,6 +52,7 @@ if %1==NoFire goto end
 echo Running Fire Tests
 cd Mass_Energy_Balance
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
+..\..\bin\cfast 100kW_fire /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_window /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_window_windowchange /V

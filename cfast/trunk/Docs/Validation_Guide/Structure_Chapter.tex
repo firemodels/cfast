@@ -113,7 +113,7 @@ The CFAST code has also been checked by compiling and running the model on a var
 
 The CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6} contains a detailed description of the CFAST subroutine structure and interactions between the subroutines.
 
-\section{Comparison with Analytical Solutions}
+\section{Simple Analytical Comparisons}
 
 Certain CFAST sub-models address phenomena that have analytical solutions, for example, one dimensional heat conduction through a solid or pressure increase in a sealed or slightly leaky compartment as a result of a fire or fan.  The developers of CFAST use analytical solutions to test sub-models to verify the correctness of the coding of the model as part of the development. This section provides an overview of the verification testing conducted with each change of the model to verify the basic underlying principles of the model, the mass and energy balances.
 
@@ -127,26 +127,8 @@ For most of the examples presented in this chapter, the same basic geometry is u
 \caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial conditions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Test}
 \end{figure}
 
-As a simple test of the mass and energy balance, consider the base case with the addition of a fixed amount of air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.195 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.239 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the idela gas law, the expected pressure rise can be calculated as
 
-\begin{eqnarray}
-   \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Added_Mass}  \\
-   P_f &=& \frac{P_i N_f  T_f}{N_i T_i}  \nonumber \\
-  P_f &=& \frac{101300 \cdot 5.239 \cdot 294.13}{5.195 \cdot 293.15} \nonumber \\
-  &=& 102491.3 \text{\ Pa} \nonumber
-\end{eqnarray}
-
-or a pressure rise of 1191.3 Pa, matching the calculated CFAST output of 1191.3 Pa to within 0.002~\%. Figure \ref{fig:Added_Mass_Test} shows the simulated conditions for this test.
-
-\begin{figure}
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Temperature_Added_Mass} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure_Added_Mass}
-\end{tabular*}
-\caption{Ambient conditions for test case with no fire and non-conducting surfaces, with a mechanical ventilation system injecting 0.1~m$^3$/s of air into the compartment for 10 s. CFAST verification file Added\_Mass.in.} \label{fig:Added_Mass_Test}
-\end{figure}
-
-A similar example can be tested when the temperature of the base case compartment is raised from an initial condition of 20 \degc to 25 \degc. With conducting compartment surfaecs, the interior compartment temeprature is expected to equilibrate to the exterior. From the ideal gas law, the pressure rise can be calculated as
+Raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the temperature to equilibrate to the exterior. With conducting compartment surfaecs, the interior compartment temeprature is expected to equilibrate to the exterior. From the ideal gas law, the pressure rise can be calculated as
 
 \begin{eqnarray}
    \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Temperature_Equilibrium}  \\
@@ -174,6 +156,37 @@ The same test can be repeated with all surfaces turned off.  With the absence of
 \end{tabular*}
 \caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_wallsoff.in.} 
 \label{fig:Different_Ambients_Nonconducting}
+\end{figure}
+
+The compartment surfaces are then turned back on, returning to the original base case.  With exterior conditions set to 25 \degc and an open window present, conditions are expected to equilibrate to those of the exterior. For this example, the open window allows the pressure to equlibrate as well. Figure \ref{fig:Temperature_Equilibrium_With_Window} shows the simulated conditions for the test case.
+
+\begin{figure}[h]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test_With_Window} &
+\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Window}
+\end{tabular*}
+\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_window.in.} 
+\label{fig:Temperature_Equilibrium_With_Window}
+\end{figure}
+
+
+As a simple test of the mass and energy balance, consider the base case with the addition of a fixed amount of ambient air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.195 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.239 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the ideal gas law, the expected pressure rise can be calculated as
+
+\begin{eqnarray}
+   \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Added_Mass}  \\
+   P_f &=& \frac{P_i N_f  T_f}{N_i T_i}  \nonumber \\
+  P_f &=& \frac{101300 \cdot 5.239 \cdot 294.13}{5.195 \cdot 293.15} \nonumber \\
+  &=& 102491.3 \text{\ Pa} \nonumber
+\end{eqnarray}
+
+or a pressure rise of 1191.3 Pa, matching the calculated CFAST output to within 0.002~\%. Figure \ref{fig:Added_Mass_Test} shows the simulated conditions for this test.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Temperature_Added_Mass} &
+\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure_Added_Mass}
+\end{tabular*}
+\caption{Ambient conditions for test case with no fire and non-conducting surfaces, with a mechanical ventilation system injecting 0.1~m$^3$/s of air into the compartment for 10 s. CFAST verification file Added\_Mass.in.} \label{fig:Added_Mass_Test}
 \end{figure}
 
 A model examining heat added to a system can be demonstrated with a test case containing a 10~s, 100 kW fire.  With non-conducting surfaces and no ventilation, the heat released from the fire can be determined since $Q=m c_p \Delta T$.  Using the CFAST generated final layer height of 3.12 m, the volume of the upper layer is calculated to be 47.05 m$^3$ and the lower layer is 77.95 m$3$.  Densities and specific heats are obtained using the temperature of each layer.  With this information the air mass of the upper layer is 53.27 kg and the lower layer air mass is 93.81 kg.  The heat added to the system can be calculated as
@@ -211,39 +224,6 @@ To begin, the simplest example is the base case compartment set at uniform ambie
 \includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure}
 \end{tabular*}
 \caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial conditions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Reference}
-\end{figure}
-
-Raising the temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc, as in \ref{fig:Temperature_Equilibrium} allows the temperature to equilibrate to the exterior. Figure \ref{fig:Temperature_Equilibrium_Reference} shows the simulated conditions for this test.
-
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test}
-\end{tabular*}
-\caption{Ambient conditions for test case with no fire and Gypsum board surfaces, with interal initial temperature of 20~\degc and external initial temperature of 25~\degc. CFAST verification file basic\_tempequilib.in.} \label{fig:Temperature_Equilibrium_Reference}
-\end{figure}
-
-The same test can be repeated with all surfaces turned off.  With the absence of conductive surfaces, compartment conditions are not expected to change. Figure \ref{fig:Different_Ambients_Nonconducting_Reference}  shows the simulated conditions for the test case.
-
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Walls_Off} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Walls_Off}
-\end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_wallsoff.in.} 
-\label{fig:Different_Ambients_Nonconducting_Reference}
-\end{figure}
-
-The compartment surfaces are then turned back on, returning to the original base case.  With exterior conditions set to 25 \degc and a window present, conditions are expected to equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_With_Window} shows the simulated conditions for the test case.
-
-
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test_With_Window} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Window}
-\end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_window.in.} 
-\label{fig:Temperature_Equilibrium_With_Window}
 \end{figure}
 
 With the exterior temperature still set to 25 \degc, the elevation is raised to 1500 m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case.

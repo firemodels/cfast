@@ -127,8 +127,7 @@ For most of the examples presented in this chapter, the same basic geometry is u
 \caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial conditions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Test}
 \end{figure}
 
-
-Raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the temperature to equilibrate to the exterior. With conducting compartment surfaecs, the interior compartment temeprature is expected to equilibrate to the exterior. From the ideal gas law, the pressure rise can be calculated as
+As a simple test of the energy balance,raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the temperature to equilibrate to the exterior. With conducting compartment surfaecs, the interior compartment temeprature is expected to equilibrate to the exterior. From the ideal gas law, the pressure rise can be calculated as
 
 \begin{eqnarray}
    \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Temperature_Equilibrium}  \\
@@ -170,7 +169,7 @@ The compartment surfaces are then turned back on, returning to the original base
 \end{figure}
 
 
-As a simple test of the mass and energy balance, consider the base case with the addition of a fixed amount of ambient air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.195 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.239 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the ideal gas law, the expected pressure rise can be calculated as
+To test both the mass and energy balance, consider the base case with the addition of a fixed amount of ambient air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.195 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.239 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the ideal gas law, the expected pressure rise can be calculated as
 
 \begin{eqnarray}
    \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Added_Mass}  \\

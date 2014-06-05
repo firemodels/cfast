@@ -4,7 +4,8 @@ echo Running CFAST simulations. $Rev: 846 $
 if "%1"=="" goto Help
 if %1==ALL goto All
 if %1==Base goto Base
-if %1==Analytical goto Analytical
+if %1==Mass goto Mass
+if %1==Energy goto Energy
 if %1==NoFire goto NoFire
 if %1==Fire goto Fire
 if %1==DOE goto DOE
@@ -28,13 +29,21 @@ if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 cd ..
 if %1==Base goto end
 
-:Analytical
+:Mass
 echo Running Basic Mass Balance Tests
 cd Analytical\Mass
-if NOT %1==ALL call ..\..\Validation\cleancfast.bat
-..\..\..\bin\cfast basic_mechvent /V
+if NOT %1==ALL call ..\..\..\Validation\cleancfast.bat
+..\..\scripts\background -u 98 ..\..\..\bin\cfast basic_mechvent /V
 cd ..\..
-if %1==Analytical goto end
+if %1==Mass goto end
+
+:Energy
+echo Running Basic Mass Balance Tests
+cd Analytical
+if NOT %1==ALL call ..\..\Validation\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast sealed_test /V
+cd ..
+if %1==Energy goto end
 
 :NoFire
 echo Running Basic Energy Balance Tests

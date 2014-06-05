@@ -188,24 +188,26 @@ or a pressure rise of 1191.3 Pa, matching the calculated CFAST output to within 
 \caption{Ambient conditions for test case with no fire and non-conducting surfaces, with a mechanical ventilation system injecting 0.1~m$^3$/s of air into the compartment for 10 s. CFAST verification file Added\_Mass.in.} \label{fig:Added_Mass_Test}
 \end{figure}
 
-A model examining heat added to a system can be demonstrated with a test case containing a 10~s, 100 kW fire.  With non-conducting surfaces and no ventilation, the heat released from the fire can be determined since $Q=m c_p \Delta T$.  Using the CFAST generated final layer height of 3.12 m, the volume of the upper layer is calculated to be 47.05 m$^3$ and the lower layer is 77.95 m$3$.  Densities and specific heats are obtained using the temperature of each layer.  With this information the air mass of the upper layer is 53.27 kg and the lower layer air mass is 93.81 kg.  The heat added to the system can be calculated as
+A model examining heat added to a system can be demonstrated with a test case containing a constant 100 kW fire.  With non-conducting surface and no ventilation, the heat and mass released from the fire (and added to the compartment) can be determined.  Here we use a single zone simulation to simplfy the calculaitons (CFAST simply assumes the entire volume is taken up by the upper layer).  Densities are obtained using the calculated temperature. The energy and mass added to the system can be calculated as
 
 \begin{eqnarray}
-Q &=& m c_p \Delta T \nonumber \\
-Q_{upper} &=& 53.27 \cdot 1.005 (311.63 - 293.15) \nonumber \\
-Q_{upper} &=& 989.85 \text{\ kJ} \nonumber \\
-Q_{lower} &=& 97.44 \cdot 1.195 (293.16 - 293.15) \\
-Q_{lower} &=& 0.63 \text{\ kJ} \nonumber \\
-Q_{total} &=& 990.48 \text{\ kJ} \nonumber
+m_0 &=& V \cdot \rho_{ambient} \nonumber \\
+ &=& 150 \cdot 1.195 \nonumber \\
+ &=& 149.39 \text{\ kg} \nonumber \\
+m &=& m_0 + \dm_f \cdot t \nonumber \\
+E_0 &=& m_0 \cdot c_v \cdot T_{ambient} \\
+ &=& 149.39 \cdot 1012/1.4 \cdot 293.15 \\
+ &=& 31.65  \text{\ MJ} \nonumber \\
+E &=& E_0 + Q_f \cdot t + \dm_f \cdot c_v \cdot T \nonumber
 \end{eqnarray}
 
-or a total heat release of 990.48 kJ, or 99.05 kW over 10 s, a -0.9~\% relative difference from the CFAST input of 100 kW.The difference comes from the energy used to raise the pyrolyzing fuel to its ignition temperature, to raise the pressure in the compartment slightly and from a small energy loss out the vent near the floor to keep the compartment pressure near ambient conditions. Figure \ref{fig:Analytical_Heat_Release_Rate} shows the simulated conditions for this test.
+ Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calculated and CFAST results for this test. The average difference between the calculations is approximately 0.01 \%, with the difference due to the way CFAST handles a single layer calculation while maintaining its default equation set that includes both a lower and upper layer.
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=3.0in]{FIGURES/Verification/Analytical_Heat_Release_Rate}
-\caption{Heat release rate conditions for test case with a 10 s, 100 kW fire.  CFAST verification file 100kW\_fire.in.}
-\label{fig:Analytical_Heat_Release_Rate}
+\includegraphics[width=3.0in]{FIGURES/Verification/Sealed_Compartment_Temperature}
+\caption{Comparison of CFAST calculations and analytical solution for a 100 kW fire in a closed 5 m x 5 m x 5 m compartment.  CFAST verification file sealed\_test.in.}
+\label{fig:Analytical_Closed_Compartment}
 \end{center}
 \end{figure}
 

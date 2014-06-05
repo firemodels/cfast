@@ -14,7 +14,7 @@ MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,10,10,10,0,0,0,OFF,OFF,OFF
+COMPA,Compartment 1,5,5,5,0,0,0,OFF,OFF,OFF
 ONEZ,1
 !!
 !!Fire keywords

@@ -302,7 +302,7 @@ Two identical 5 m x 5 m x 5m compartments are stacked on each other.  A 1 m$^2$ 
 \end{center}
 \end{figure}
 
-\subsection{Fires}
+\subsection{Fires and Ventilation}
 
 A fire was added to the base case.  The fire is positioned at X=2.5 m, Y=2.5 m, Z= 0, with a methane fire at a maximum heat release rate of 1054 kW. All other fire inputs remain as the standard setting. Unless otherwise defined, the following reference cases contain this defined fire.
 
@@ -315,7 +315,7 @@ A fire was added to the base case.  The fire is positioned at X=2.5 m, Y=2.5 m, 
 \end{center}
 \end{figure}
 
-Figure \ref{fig:Fire_No_Window} shows compartment temperatures, layer height, and species concentrations for the base case with a 1054 kW fire.  Figures \ref{fig:Fire_Window} compare this base case to a range of cases that vary the ventilation in the compartment.
+Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and species concentrations for the base case with a 1054 kW fire.  Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Vent_Only} show a range of cases that vary the ventilation in the compartment, keeping the fire input constant.
 
 \begin{figure}[h]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -326,7 +326,7 @@ Figure \ref{fig:Fire_No_Window} shows compartment temperatures, layer height, an
 \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Fire_Base}
 \end{center}
 \caption{Test case conditions for the base case model with a 1054 kW fire and no vent.  CFAST verification file fire.in.} 
-\label{fig:Fire_No_Window}
+\label{fig:Fire_Base}
 \end{figure}
 
 \begin{figure}[h]
@@ -351,20 +351,67 @@ Figure \ref{fig:Fire_No_Window} shows compartment temperatures, layer height, an
 
 \begin{figure}[h]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Ceiling_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Ceiling_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Ceiling_Vent} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with 2 m$^2$ ceiling vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
+\label{fig:Fire_Window_Compartment_Vertical_Vent}
+\end{figure}
+
+\begin{figure}[h]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Mechanical_Only_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Mechanical_Only_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Mechanical_Only_Vent} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a mechanical vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
+\label{fig:Fire_Window_Compartment_Mechanical_Vent_Only}
+\end{figure}
+
+\subsection{Fire Characteristics}
+
+Returning to the base case with and added fire, the heat release rate curve was then altered to have the same area under the curve but a different shape.  The altered curve had a maximum heat release rate of 1333.3 kW and reached peak heat release rate at 450 s. The altered fire is shown in Figure \ref{fig:Altered_Fire_Configuration}. Figure \ref{fig:Fire_Alternate_HRR} shows the base fire and alternate fire.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=5.772in]{FIGURES/Verification/Test_Case_Altered_HRR.png}
+\includegraphics[width=5.772in]{FIGURES/Verification/Test_Case_Altered_HRR_Chart.png}
+\caption{Alternate defined fire for base case model with added fire with the same total heat released as the base fire from Figure \ref{fig:Base_Fire_Configuration}.}
+\label{fig:Altered_Fire_Configuration}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_HRR_Area_Change} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_HRR_Area_Change} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_HRR_Area_Change} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a trapezoidal 1054 kW fire and a single 1 m x 2 m window (left) and a triangular 1333 kW fire and a single 1 m x 2 m window. The same total heat is released in both fires.  CFAST verification file fire\_HRRarea2.in.} 
+\label{fig:Fire_Alternate_HRR}
+\end{figure}
+
+The chemical composition of the fire can also be changed in CFAST.  Figure \ref{fig:fire_fuel_composition} shows the base fire configuration with a window with several different fual compositions for the fire.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=3.0in]{FIGURES/Verification/Upper_Layer_Temperature_Materials} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Lower_Layer_Temperature_Materials} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Materials} 
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window with several different fuel compositions (methane, hexane, urethane, and wood) for the fire.  CFAST verification file fire\_fuels.in.} 
+\label{fig:fire_fuel_composition}
+\end{center}
+\end{figure}
+
+\subsection{Compartment Geometry}
+
+\begin{figure}[h]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Compartment_Geometry_Increase} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Compartment_Geometry_Increase} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase} 
 \end{tabular*}
 \caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment size increased to 10 m x 10 m x 5 m (right).  CFAST verification file fire\_window\_windowchange.in.} 
 \label{fig:Fire_Window_Compartment_Geometry_Increase}
-\end{figure}
-
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Ceiling_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Ceiling_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Ceiling_Vent} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with 1 m$^2$ ceiling vent added in addition to the window (right).  CFAST verification file fire\_ceiling.in.} 
-\label{fig:Fire_Window_Compartment_Vertical_Vent}
 \end{figure}

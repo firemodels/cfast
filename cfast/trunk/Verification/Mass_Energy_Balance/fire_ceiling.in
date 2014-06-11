@@ -19,8 +19,7 @@ COMPA,Compartment 1,5,5,5,0,0,0,GYPSUM,OFF,GYPSUM
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,1,3.5,1.5,1,2,2,1,1
-VVENT,2,1,1,2,1
+VVENT,2,1,2,2,1
 !!
 !!Fire keywords
 !!

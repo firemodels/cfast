@@ -138,7 +138,7 @@ As a simple test of the energy balance,raising the external temperature of the b
 
 or a pressure rise of 1727.78, matching the output from CFAST.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test}
@@ -148,7 +148,7 @@ or a pressure rise of 1727.78, matching the output from CFAST.  Figure \ref{fig:
 
 The same test can be repeated with all surfaces turned off.  With the absence of conductive surfaces, compartment conditions are not expected to change. Figure \ref{fig:Different_Ambients_Nonconducting}  shows the simulated conditions for the test case.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Walls_Off} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Walls_Off}
@@ -159,7 +159,7 @@ The same test can be repeated with all surfaces turned off.  With the absence of
 
 The compartment surfaces are then turned back on, returning to the original base case.  With exterior conditions set to 25 \degc and an open window present, conditions are expected to equilibrate to those of the exterior. For this example, the open window allows the pressure to equlibrate as well. Figure \ref{fig:Temperature_Equilibrium_With_Window} shows the simulated conditions for the test case.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test_With_Window} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Window}
@@ -167,7 +167,6 @@ The compartment surfaces are then turned back on, returning to the original base
 \caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_window.in.} 
 \label{fig:Temperature_Equilibrium_With_Window}
 \end{figure}
-
 
 To test both the mass and energy balance, consider the base case with the addition of a fixed amount of ambient air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.195 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.239 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the ideal gas law, the expected pressure rise can be calculated as
 
@@ -210,7 +209,7 @@ E = M \cdot c_v \cdot T \text{, or, rearranging, } T = \frac{E}{c_v \cdot M}
 
 Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calculated and CFAST results for this test. The average difference between the calculations is approximately 0.01 \%, with the difference due to the way CFAST handles a single layer calculation while maintaining its default equation set that includes both a lower and upper layer.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Verification/Sealed_Compartment_Temperature}
 \caption{Comparison of CFAST calculations and analytical solution for a 100 kW fire in a closed 5 m x 5 m x 5 m compartment.  CFAST verification file sealed\_test.in.}
@@ -228,7 +227,7 @@ For completeness, the first examples dupicate the simple examples in the previou
 
 To begin, the simplest example is the base case compartment set at uniform ambient conditions with no ventilation, fires, or additional modeled features. With no added mass or energy to the system, conditions are expected to remain at the initial ambient. Figure \ref{fig:Ambient_Conditions_Reference} shows the simulated conditions for this simple test.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Temperature} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure}
@@ -238,7 +237,7 @@ To begin, the simplest example is the base case compartment set at uniform ambie
 
 With the exterior temperature still set to 25 \degc, the elevation is raised to 1500 m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Elevation_Change} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Elevation}
@@ -249,7 +248,7 @@ With the exterior temperature still set to 25 \degc, the elevation is raised to 
 
 With the exterior temperature still set to 25 \degc, the compartment dimensions are altered to 10 m x 10 m x 5 m.  Conditions are predicted to equilibrate to those of the exterior more slowly than that of the base case model. Figure \ref{fig:Temperature_Equilibrium_Bigger} shows the simulated conditions for the test case.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Compartment_Dimension_Change} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Compartment}
@@ -260,7 +259,7 @@ With the exterior temperature still set to 25 \degc, the compartment dimensions 
 
 With the exterior temperature still set to 25 \degc, the wind is raised to 10 m/s.  Temperature conditions are expected to equilibrate to those of the exterior, while the pressure will remain at a constant pressure greater than zero due to wind pressure.  Figure \ref{fig:Temperature_Equilibrium_Wind_Speed} shows the simulated conditions for the test case.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Wind_Speed_Change} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Wind}
@@ -271,7 +270,7 @@ With the exterior temperature still set to 25 \degc, the wind is raised to 10 m/
 
 Returning to the base case input, the interior pressure is lowered from the default value of 101300 Pa down to 100000 Pa.  Conditions are expected to equilibrate to those of the exterior.  Figure \ref{fig:Pressure_Equilibrium} shows the simulated conditions for the test case.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Change_Pressure_Equilibrium_Test_With_Window} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Equilibrium_Ventilation}
@@ -280,11 +279,37 @@ Returning to the base case input, the interior pressure is lowered from the defa
 \label{fig:Pressure_Equilibrium}
 \end{figure}
 
+\subsection{Compartment Geometry}
+
+Figure \ref{fig:Fire_Window_Compartment_Aspect_Ratio} shows the results of a  simulation where the aspect ratio of the compartment is changed from the base model of 5 m x 5 m to one 10 m x 2.5 m.  Ceiling height and other details are the same as the base case.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window_Aspect_Ratio} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window_Aspect_Ratio} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window_Aspect_Ratio} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment aspect ratio changed to 10 m x 2.5 m x 5 m (right).  CFAST verification file fire\_window\_aspect\_ratio.in.} 
+\label{fig:Fire_Window_Compartment_Aspect_Ratio}
+\end{figure}
+
+Figure \ref{fig:Fire_Window_Compartment_Geometry_Increase} shows the results of a simulation where the size of the compartment  is increased from the base model of 5 m x 5 m to one 10 m x 10 m.  Ceiling height and other details are the same as the base case.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Compartment_Geometry_Increase} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Compartment_Geometry_Increase} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment size increased to 10 m x 10 m x 5 m (right).  CFAST verification file fire\_window\_windowchange.in.} 
+\label{fig:Fire_Window_Compartment_Geometry_Increase}
+\end{figure}
+
 \subsection{Ventilation}
 
-All ambient conditions are returned to the standard base case.  A mechanical vent is added to the test case with a flow rate of 0.1 m$^3$/s for 10 s. Figure \ref{fig:Mechanical_Vent Cutoff} shows the pressure building in the compartment for the default fan cutoff pressure of 200 Pa to 300 Pa compared to a raised fan cutoff pressure of 2000 Pa.
+All ambient conditions are returned to the standard base case.  A mechanical vent is added to the test case with a flow rate of 0.1 m$^3$/s for 10 s. Figure \ref{fig:Mechanical_Vent_Cutoff} shows the pressure building in the compartment for the default fan cutoff pressure of 200 Pa to 300 Pa compared to a raised fan cutoff pressure of 2000 Pa.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Dropoff_Test}
 \caption{Model with mechanical vent and non-inhibited drop off pressure of 2000 Pa versus model with mechanical vent and interfering drop off pressure of 200 Pa..  CFAST verification files basic\_mechvent\_n.csv and basic\_mechvent\_dropoff\_n.csv.}
@@ -294,7 +319,7 @@ All ambient conditions are returned to the standard base case.  A mechanical ven
 
 Two identical 5 m x 5 m x 5m compartments are stacked on each other.  A 1 m$^2$ mechanical vent is added on the front face of compartment one, the shared ceiling/floor between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1 m$^3$/s or 0.12 kg/s of air.  The mass flow through each of these vents is expected to the same because the flow rate in is constant and there is no change in temperature.   Figure \ref{fig:Mechanical_Flow_Two_Compartments} shows vent flows for all vents in the simulation.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Verification/Mass_Flow_Test_Mechanical_Vent}
 \caption{Side-by-side base case compartments with mechanical vents added from outside to compartment one, compartment one to compartment two, and compartment two to outside.  CFAST verification file basic\_connection\_floorceiling\_mechvent.in.}
@@ -302,11 +327,11 @@ Two identical 5 m x 5 m x 5m compartments are stacked on each other.  A 1 m$^2$ 
 \end{center}
 \end{figure}
 
-\subsection{Fires and Ventilation}
+\subsection{Fire Characteristics}
 
 A fire was added to the base case.  The fire is positioned at X=2.5 m, Y=2.5 m, Z= 0, with a methane fire at a maximum heat release rate of 1054 kW. All other fire inputs remain as the standard setting. Unless otherwise defined, the following reference cases contain this defined fire.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{center}
 \includegraphics[width=5.772in]{FIGURES/Verification/Test_Case_HRR.png}
 \includegraphics[width=5.772in]{FIGURES/Verification/Test_Case_HRR_Chart.png}
@@ -315,9 +340,9 @@ A fire was added to the base case.  The fire is positioned at X=2.5 m, Y=2.5 m, 
 \end{center}
 \end{figure}
 
-Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and species concentrations for the base case with a 1054 kW fire.  Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Vent_Only} show a range of cases that vary the ventilation in the compartment, keeping the fire input constant.
+Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and species concentrations for the base case with a 1054 kW fire.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Fire_Base} &
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Fire_Base}
@@ -329,51 +354,9 @@ Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and spe
 \label{fig:Fire_Base}
 \end{figure}
 
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and no vent (left) with the same model with a single 1 m x 2 m window (right).  CFAST verification file fire\_window.in.} 
-\label{fig:Fire_Window}
-\end{figure}
+Returning to the base case with an added fire, the heat release rate curve was then altered to have the same area under the curve but a different shape.  The altered curve had a maximum heat release rate of 1333.3 kW and reached peak heat release rate at 450 s. The altered fire is shown in Figure \ref{fig:Altered_Fire_Configuration}. Figure \ref{fig:Fire_Alternate_HRR} shows the base fire and alternate fire.
 
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Two_Windows} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Two_Windows} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Two_Windows} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a two 1 m x 2 m windows (right).  CFAST verification file fire\_window\_windowchange.in.} 
-\label{fig:Fire_Two_Windows}
-\end{figure}
-
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Ceiling_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Ceiling_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Ceiling_Vent} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with 2 m$^2$ ceiling vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
-\label{fig:Fire_Window_Compartment_Vertical_Vent}
-\end{figure}
-
-\begin{figure}[h]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Mechanical_Only_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Mechanical_Only_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Mechanical_Only_Vent} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a mechanical vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
-\label{fig:Fire_Window_Compartment_Mechanical_Vent_Only}
-\end{figure}
-
-\subsection{Fire Characteristics}
-
-Returning to the base case with and added fire, the heat release rate curve was then altered to have the same area under the curve but a different shape.  The altered curve had a maximum heat release rate of 1333.3 kW and reached peak heat release rate at 450 s. The altered fire is shown in Figure \ref{fig:Altered_Fire_Configuration}. Figure \ref{fig:Fire_Alternate_HRR} shows the base fire and alternate fire.
-
-\begin{figure}[h]
+\begin{figure}
 \begin{center}
 \includegraphics[width=5.772in]{FIGURES/Verification/Test_Case_Altered_HRR.png}
 \includegraphics[width=5.772in]{FIGURES/Verification/Test_Case_Altered_HRR_Chart.png}
@@ -382,7 +365,7 @@ Returning to the base case with and added fire, the heat release rate curve was 
 \end{center}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_HRR_Area_Change} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_HRR_Area_Change} \\
@@ -394,7 +377,7 @@ Returning to the base case with and added fire, the heat release rate curve was 
 
 The chemical composition of the fire can also be changed in CFAST.  Figure \ref{fig:fire_fuel_composition} shows the base fire configuration with a window with several different fual compositions for the fire.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Verification/Upper_Layer_Temperature_Materials} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/Lower_Layer_Temperature_Materials} \\
@@ -404,14 +387,99 @@ The chemical composition of the fire can also be changed in CFAST.  Figure \ref{
 \end{center}
 \end{figure}
 
-\subsection{Compartment Geometry}
+Returning to the base case with a window vent, the soot yield is changed to 0.5 kg/kg.  Figure \ref{fig:fire_soot_yield} shows the results.
 
-\begin{figure}[h]
+\begin{figure}
+\begin{center}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Compartment_Geometry_Increase} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Compartment_Geometry_Increase} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_O2} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_CO2} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_H2O} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_OD}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment size increased to 10 m x 10 m x 5 m (right).  CFAST verification file fire\_window\_windowchange.in.} 
-\label{fig:Fire_Window_Compartment_Geometry_Increase}
+\caption{Test case conditions with the soot yield raised to 0.500, versus the base case model.  CFAST verification file fire\_sootyield.in.} 
+\label{fig:fire_soot_yield}
+\end{center}
+\end{figure}
+
+\subsection{Fires and Ventilation}
+
+Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Vent_Only} show a range of cases that vary the ventilation in the compartment, keeping the fire input constant.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and no vent (left) with the same model with a single 1 m x 2 m window (right).  CFAST verification file fire\_window.in.} 
+\label{fig:Fire_Window}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Two_Windows} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Two_Windows} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Two_Windows} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a two 1 m x 2 m windows (right).  CFAST verification file fire\_window\_windowchange.in.} 
+\label{fig:Fire_Two_Windows}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Ceiling_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Ceiling_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Ceiling_Vent} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with 2 m$^2$ ceiling vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
+\label{fig:Fire_Window_Compartment_Vertical_Vent}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Mechanical_Only_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Mechanical_Only_Vent} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Mechanical_Only_Vent} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a mechanical vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
+\label{fig:Fire_Window_Compartment_Mechanical_Vent_Only}
+\end{figure}
+
+\subsection{Sprinklers}
+
+The following plots compare the base case model to an array of test cases that vary the sprinkler feature of CFAST.  The following test cases include a graph depicting the sensor activation time.  When these graphs rise from zero to one, this indicates the time that the sprinkler was activated.  The sprinkler was added at X=2.5 m, Y=2.5 m, and Z=4.95 m.  Figure \ref{fig:fire_sprinkler_base} shows the base case fire with a single 1 m by 2 m window with and without a sprinkler.  Sprinkler was defined with an operating temperature of 57 \degc (135 \degf), an RTI of 100~$\sqrt{\text{m~s}}$, and a spray density of 7 x 10$^{-5}$ m/s. Figure \ref{fig:fire_sprinkler_density} shows results with the spray density doubled, Figure \ref{fig:fire_sprinkler_RTI} shows results with the RTI cut in half, and Figure \ref{fig:fire_sprinkler_HRR_doubled} shows results with the peak heat release rate of the fire doubled. 
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Sprinkler} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Sprinkler} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a sprinkler added (right).  CFAST verification file fire\_sprinkler.in.} 
+\label{fig:fire_sprinkler_base}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Sprinkler_Density_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Sprinkler_Density_Doubled} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler_Density_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler_Density_Doubled} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the sprinkler spray density doubled (right).  CFAST verification file fire\_sprinkler\_density.in.}
+\label{fig:fire_sprinkler_density}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Half_Sprinkler_RTI} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Half_Sprinkler_RTI} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Half_Sprinkler_RTI} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Half_Sprinkler_RTI} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the sprinkler RTI reduced by 50~\% (right).  CFAST verification file fire\_sprinkler\_RTI.in.}
+\label{fig:fire_sprinkler_RTI}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Sprinkler_and_HRR_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Sprinkler_and_HRR_Doubled} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler_and_HRR_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler_and_HRR_Doubled} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the peak heat release rate of the fire doubled (right).  CFAST verification file fire\_sprinkler\_HRRdoubled.in.}
+\label{fig:fire_sprinkler_HRR_doubled}
 \end{figure}

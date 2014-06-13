@@ -199,7 +199,7 @@ E_0 &=& M_0 \cdot c_v \cdot T_{ambient} \nonumber \\
  &=& 31.65  \text{\ MJ} \nonumber \\
 E &=& E_0 + Q_f \cdot t + \dm_f \cdot c_v \cdot T
 \end{eqnarray}
-where $M_0$ is the initial mass of air in the compartment, $V$ is the compartment volume, $\rho_{ambient}$ is the air density at ambient conditions, $M$ is the mass of gases in the compartment at time $t$, $\dm_f$ is the pyrolysis rate of the burning fuel, $E_0$ is the initial internal energy of the system, $c_v$ is the heat capacity of air at constant volume, $T_{ambient}$ is the temperature of the compartment at ambient conditions, $E$ is the internal energy of the system at time $t$, $Q_f$ is the convective heat release rate of the fire, and $T$ is the temperature of the compartment at time $t$.
+where $M_0$ is the initial mass of air in the compartment, $V$ is the compartment volume, $\rho_{ambient}$ is the air density at ambient conditions, $M$ is the mass of gases in the compartment at time $t$\, $\dm_f$ is the pyrolysis rate of the burning fuel, $E_0$ is the initial internal energy of the system, $c_v$ is the heat capacity of air at constant volume, $T_{ambient}$ is the temperature of the compartment at ambient conditions, $E$ is the internal energy of the system at time $t$, $Q_f$ is the convective heat release rate of the fire, and $T$ is the temperature of the compartment at time $t$.
 
 Finally, the temperature of the compartment can be calculated from the definition of internal energy of the system
 
@@ -277,32 +277,6 @@ Returning to the base case input, the interior pressure is lowered from the defa
 \end{tabular*}
 \caption{Ambient conditions for test case with ventilation and conducting surfaces. Interior pressure is initially set to 100000 Pa.  CFAST verification file basic\_pressure\_vent.in.} 
 \label{fig:Pressure_Equilibrium}
-\end{figure}
-
-\subsection{Compartment Geometry}
-
-Figure \ref{fig:Fire_Window_Compartment_Aspect_Ratio} shows the results of a  simulation where the aspect ratio of the compartment is changed from the base model of 5 m x 5 m to one 10 m x 2.5 m.  Ceiling height and other details are the same as the base case.
-
-\begin{figure}
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window_Aspect_Ratio} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window_Aspect_Ratio} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window_Aspect_Ratio} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment aspect ratio changed to 10 m x 2.5 m x 5 m (right).  CFAST verification file fire\_window\_aspect\_ratio.in.} 
-\label{fig:Fire_Window_Compartment_Aspect_Ratio}
-\end{figure}
-
-Figure \ref{fig:Fire_Window_Compartment_Geometry_Increase} shows the results of a simulation where the size of the compartment  is increased from the base model of 5 m x 5 m to one 10 m x 10 m.  Ceiling height and other details are the same as the base case.
-
-\begin{figure}
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Compartment_Geometry_Increase} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Compartment_Geometry_Increase} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase} 
-\end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment size increased to 10 m x 10 m x 5 m (right).  CFAST verification file fire\_window\_windowchange.in.} 
-\label{fig:Fire_Window_Compartment_Geometry_Increase}
 \end{figure}
 
 \subsection{Ventilation}
@@ -442,6 +416,32 @@ Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Ven
 \end{tabular*}
 \caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a mechanical vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
 \label{fig:Fire_Window_Compartment_Mechanical_Vent_Only}
+\end{figure}
+
+\subsection{Compartment Geometry}
+
+Figure \ref{fig:Fire_Window_Compartment_Aspect_Ratio} shows the results of a  simulation where the aspect ratio of the compartment is changed from the base model of 5 m x 5 m to one 10 m x 2.5 m.  Ceiling height and other details are the same as the base case.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window_Aspect_Ratio} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window_Aspect_Ratio} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window_Aspect_Ratio} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment aspect ratio changed to 10 m x 2.5 m x 5 m (right).  CFAST verification file fire\_window\_aspect\_ratio.in.} 
+\label{fig:Fire_Window_Compartment_Aspect_Ratio}
+\end{figure}
+
+Figure \ref{fig:Fire_Window_Compartment_Geometry_Increase} shows the results of a simulation where the size of the compartment  is increased from the base model of 5 m x 5 m to one 10 m x 10 m.  Ceiling height and other details are the same as the base case.
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Compartment_Geometry_Increase} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Compartment_Geometry_Increase} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase} 
+\end{tabular*}
+\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment size increased to 10 m x 10 m x 5 m (right).  CFAST verification file fire\_window\_windowchange.in.} 
+\label{fig:Fire_Window_Compartment_Geometry_Increase}
 \end{figure}
 
 \subsection{Sprinklers}

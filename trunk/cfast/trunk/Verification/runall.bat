@@ -66,6 +66,7 @@ if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast fire_window /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_window_windowchange /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_window_geochange /V
+..\scripts\background -u 98 ..\..\bin\cfast fire_window_aspect_ratio /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_ceiling /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_ceiling_ventsize /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_ceiling_geochange /V
@@ -85,6 +86,8 @@ if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast fire_filterefficiency_half /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_CO_yield /V
 ..\scripts\background -u 98 ..\..\bin\cfast fire_soot_yield /V
+..\scripts\background -u 98 ..\..\bin\cfast fire_mechanical_vent_only /V
+..\scripts\background -u 98 ..\..\bin\cfast fire_HRRarea1 /V
 cd ..
 if %1==Fire goto end
 

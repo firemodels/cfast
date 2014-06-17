@@ -483,3 +483,35 @@ The following plots compare the base case model to an array of test cases that v
 \caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the peak heat release rate of the fire doubled (right).  CFAST verification file fire\_sprinkler\_HRRdoubled.in.}
 \label{fig:fire_sprinkler_HRR_doubled}
 \end{figure}
+
+\section{Complex Examples}
+
+In addition to the numerous validation experiements included in this guide, organizations have developed a number of detailed example cases with different versions of CFAST.  This section includes a selection of these cases run with the current version of CFAST.
+
+\subsection{NRC Fire Modeling Application Guide Examples}
+
+The U.S. Nuclear Regulatory Commission provides guide to users of fire model for nuclear power plant applications in NUREG-1934 \cite{NRCNUREG1934}.  This section presents the outputs (using the current version of CFAST) for the four of these example applications that included analysis using CFAST. Table\ref{tab:NUREG_1934_Tests} shows the four examples included in this section.
+
+\begin{table}[h!]
+\caption[Summary of NRC example scenarios from NUREG-1934]{Summary of NRC example scenarios from NUREG-1934  \cite{NRCNUREG1934} run using CFAST}
+\begin{center}
+\begin{tabular*}{\textwidth}{|c|@{\extracolsep{\fill}}L{5.0in}|}
+\hline
+Example & Scenario Description \\ \hline \hline
+A & Determination of the time to main control room abandonment given a low voltage panel fire. \\ \hline
+B & Determination of the potential for a switchgear panel fire to damage cables above the fire and adjacent to the fire. \\ \hline
+D & Determination of the potential for a motor control center panel fire to damage cables via the hot gas layer in an irregularly-shaped enclosure \\ \hline
+E & Determination of the potential for a transient trash fire to damage cables in a stack of horizontal cable trays located directly above the fire \\ \hline
+\end{tabular*}
+\end{center}
+\label{tab:NUREG_1934_Tests}
+\end{table}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/ULT_NRC_Test_1} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_NRC_Test_1} \\
+\includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_NRC_Test_1} & \includegraphics[width=3.0in]{FIGURES/Verification/OD_NRC_Test_1} 
+\end{tabular*}
+\caption{Test case conditions for the NRC main control room fire.  CFAST verification file Cabinet\_fire\_in\_MCR.in.in.}
+\label{fig:NRC_Test_1}
+\end{figure}

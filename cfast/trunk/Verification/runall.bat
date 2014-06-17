@@ -8,6 +8,7 @@ if %1==Mass goto Mass
 if %1==Energy goto Energy
 if %1==NoFire goto NoFire
 if %1==Fire goto Fire
+if %1==NRC goto NRC
 if %1==DOE goto DOE
 :Help
 echo Choose ALL, Analytical, Fire, DOE
@@ -90,6 +91,16 @@ if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast fire_HRRarea1 /V
 cd ..
 if %1==Fire goto end
+
+:NRC
+echo Running DOE Tests
+cd NRC_Users_Guide
+if NOT %1==ALL call ..\..\Validation\cleancfast.bat
+cd 1_Cabinet_Fire_in_MCR
+..\..\..\bin\cfast Cabinet_fire_in_MCR /V
+..\..\..\bin\cfast Cabinet_fire_in_MCR_no_ventilation /V
+cd ..\..
+if %1==NRC goto end
 
 :DOE
 echo Running DOE Tests

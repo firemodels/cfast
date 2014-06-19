@@ -93,12 +93,16 @@ cd ..
 if %1==Fire goto end
 
 :NRC
-echo Running DOE Tests
+echo Running NRC Tests
 cd NRC_Users_Guide
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 cd 1_Cabinet_Fire_in_MCR
 ..\..\..\bin\cfast Cabinet_fire_in_MCR /V
 ..\..\..\bin\cfast Cabinet_fire_in_MCR_no_ventilation /V
+cd ..
+cd 2_Cabinet_Fire_in_Switchgear
+..\..\..\bin\cfast Initial_fire_only /V
+..\..\..\bin\cfast Cabinet_fire_in_switchgear /V
 cd ..\..
 if %1==NRC goto end
 

@@ -349,6 +349,11 @@
 
     do irm = 1, n
         i = irm
+        if (i==n) then
+            cTo = 'Outside'
+        else
+            call toIntString(i,cTo)
+        endif
 
         ! Natural flow through vertical vents (horizontal flow)
         do j = 1, n
@@ -364,15 +369,14 @@
                         if (j/=n.or.ih<3) then
                             position = position + 1
                             call toIntString(k,cVent)
-                            call toIntString(i,cTo)
-                            headertext(1,position) = Labels(ih+1)
                             if (validate) then
-                                write (ctemp,'(6a)') trim(LabelsShort(ih+1)),trim(cVent),'_',trim(cFrom),'-',trim(cTo)
+                                write (ctemp,'(6a)') trim(LabelsShort(ih+1)),trim(cFrom),'>',trim(cTo),'_#',trim(cVent)
                                 headertext(1,position) = ctemp
                                 headertext(2,position) = LabelUnits(ih+1)
                                 headertext(3,position) = ' '
                             else
-                                write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cVent),trim(cFrom),'-',trim(cTo)
+                                headertext(1,position) = Labels(ih+1)
+                                write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cVent),trim(cFrom),'>',trim(cTo)
                                 headertext(2,position) = ctemp
                                 headertext(3,position) = LabelUnits(ih+1)
                             endif
@@ -393,13 +397,13 @@
                 do ih = 1,2
                     position = position + 1
                     if (validate) then
-                        write (ctemp,'(5a)') trim(LabelsShort(ih+5)),'_',trim(cFrom),'-',trim(cTo)
+                        write (ctemp,'(5a)') trim(LabelsShort(ih+5)),'_',trim(cFrom),'>',trim(cTo)
                         headertext(1,position) = cTemp
                         headertext(2,position) = LabelUnits(ih+5)
                         headertext(3,position) = ' '
                     else
                         headertext(1,position) = Labels(ih+5)
-                        write (ctemp,'(a,1x,3a)') 'Vent #',trim(cFrom),'-',trim(cTo)
+                        write (ctemp,'(a,1x,3a)') 'Vent #',trim(cFrom),'>',trim(cTo)
                         headertext(2,position) = cTemp
                         headertext(3,position) = LabelUnits(ih+5)
                     endif
@@ -420,16 +424,20 @@
                         position = position + 1
                         if (validate) then
                             if (ih<=2) then
-                                headertext(1,position) = trim(LabelsShort(ih+7)) //'Vent_' // trim(cFrom) // '-' // trim(cTo)
+                                if (cFrom=='Outside') then
+                                    headertext(1,position) = trim(LabelsShort(ih+7)) // trim(cFrom) // '>N' // trim(cTo)
+                                else
+                                    headertext(1,position) = trim(LabelsShort(ih+7)) //'C' // trim(cFrom) // '>N' // trim(cTo)
+                                end if
                             else
-                                headertext(1,position) = trim(LabelsShort(ih+7)) // 'Fan_' // trim(cTo)
+                                headertext(1,position) = trim(LabelsShort(ih+7)) // 'Fan_N' // trim(cTo)
                             endif
                             headertext(2,position) = LabelUnits(ih+7)
                             headertext(3,position) = ' '
                         else
                             headertext(1,position) = Labels(ih+7)
                             if (ih<=2) then 
-                                headertext(2,position) = 'Vent Connection at Node ' // trim(cFrom) // '-' // trim(cTo)
+                                headertext(2,position) = 'Vent Connection in Compartment ' // trim(cFrom) // '> Node ' // trim(cTo)
                             else
                                 headertext(2,position) = 'Fan at Node ' // trim(cTo)
                             endif

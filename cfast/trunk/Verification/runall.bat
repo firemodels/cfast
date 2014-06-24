@@ -103,13 +103,20 @@ cd ..
 cd 2_Cabinet_Fire_in_Switchgear
 ..\..\..\bin\cfast Initial_fire_only /V
 ..\..\..\bin\cfast Cabinet_fire_in_switchgear /V
+cd ..
+cd 4_MCC_Fire_in_Switchgear
+..\..\..\bin\cfast MCC_in_switchgear /V
+cd ..
+cd 5_Trash_Fire_in_Cable_Spreading_Room
+..\..\..\bin\cfast Trash_fire_in_cable_spreading_room /V
 cd ..\..
 if %1==NRC goto end
 
 :DOE
 echo Running DOE Tests
-cd Mass_Energy_Balance
+cd DOE_Guidance_Report
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
+..\..\bin\cfast DOE201 /V
 ..\..\bin\cfast DOE202 /V
 cd ..
 if %1==DOE goto end

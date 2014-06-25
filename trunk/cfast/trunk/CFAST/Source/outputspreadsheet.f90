@@ -130,7 +130,7 @@
     integer, parameter :: maxoutput = mxvents*4
     
     real(eb), intent(in) :: time
-    real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout
+    real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout, netflow, netmixing
     logical :: firstc
     data firstc /.true./
     integer :: position, irm, i,j,k,iijk,ii,iii,inode
@@ -166,11 +166,16 @@
                         sum4 = aa2(iijk) + as2(iijk)
                     endif
                     if (j==n) then
+                        ! we show only net flow in the spreadsheets
                         sumin = sum1 + sum3
                         sumout = sum2 + sum4
-                        call SSaddtolist (position,sumin,outarray)
-                        call SSaddtolist (position,sumout,outarray)
+                        netflow = sumin - sumout
+                        call SSaddtolist (position,netflow,outarray)
                     else
+                        ! we show only net flow in the spreadsheets
+                        sumin = sum1 + sum3
+                        sumout = sum2 + sum4
+                        netflow = sumin-sumout
                         if (i<j)then
                             sum5 = sau2(iijk)
                             sum6 = asl2(iijk)
@@ -178,13 +183,9 @@
                             sum5 = sau1(iijk)
                             sum6 = asl1(iijk)
                         endif
-                        ! we show only net flow in the spreadsheets
-                        sumin = sum1 + sum3
-                        sumout = sum2 + sum4
-                        call SSaddtolist (position,sumin,outarray)
-                        call SSaddtolist (position,sumout,outarray)
-                        call SSaddtolist (position,sum5,outarray)
-                        call SSaddtolist (position,sum6,outarray)
+                        netmixing = sum5 - sum6
+                        call SSaddtolist (position,netflow,outarray)
+                        call SSaddtolist (position,netmixing,outarray)
                     endif
                 endif
             end do
@@ -203,8 +204,8 @@
                 ! we show only net flow in the spreadsheets
                 sumin = flow(1) + flow(3)
                 sumout = flow(2) + flow(4)
-                call SSaddtolist (position,sumin,outarray)
-                call SSaddtolist (position,sumout,outarray)
+                netflow = sumin - sumout
+                call SSaddtolist (position,netflow,outarray)
             endif
         end do
 
@@ -225,8 +226,8 @@
                     sumout = flow(2) + flow(4)
                     flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
                     flow(6) =abs(traces(upper,i))+abs(traces(lower,i))
-                    call SSaddtolist (position, sumin, outarray)
-                    call SSaddtolist (position, sumout, outarray)
+                    netflow = sumin - sumout
+                    call SSaddtolist (position, netflow, outarray)
                     call SSaddtolist (position, flow(5), outarray)
                     call SSaddtolist (position, flow(6), outarray)
                 endif

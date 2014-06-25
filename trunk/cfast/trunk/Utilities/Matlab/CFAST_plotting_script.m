@@ -53,4 +53,4 @@ Append_To_Scatterplot_Title = '';
 % Special cases
 
  
-display('Verification scripts completed successfully!')
+display('Plotting scripts completed successfully!')

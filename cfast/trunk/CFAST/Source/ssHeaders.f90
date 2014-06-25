@@ -324,14 +324,14 @@
 
     ! local variables     
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
-    character(35) :: headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(11), LabelsShort(11), LabelUnits(11)
+    character(35) :: headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(7), LabelsShort(7), LabelUnits(7)
     integer position, i, j, k, ih, ii, iijk, inode, irm
 
-    data Labels / 'Time', 'HVENT Inflow', 'HVENT Outflow', 'HVENT Mixing to Upper Layer', 'HVENT Mixing to Lower Layer', 'VVENT Inflow', 'VVENT Outflow', 'MVENT Inflow', 'MVENT Outflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
+    data Labels / 'Time', 'HVENT Net Inflow', 'HVENT Net Mixing to Upper Layer', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
 
-    data LabelsShort /'Time', 'H_IN_', 'H_OUT_', 'H_MIXUP_', 'H_MIXLOW_', 'V_IN_', 'V_OUT_', 'MV_IN_', 'MV_OUT_', 'MV_TRACE_', 'MV_FILTERED_' /
+    data LabelsShort /'Time', 'H_', 'H_MIX_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_' /
 
-    data LabelUnits / 9*'kg/s', 2*'kg' /
+    data LabelUnits / 's', 4*'kg/s', 2*'kg' /
 
     !  spreadsheet header
     if (validate) then
@@ -365,8 +365,8 @@
                     else
                         call toIntString(j,cFrom)
                     endif
-                    do ih = 1, 4
-                        if (j/=n.or.ih<3) then
+                    do ih = 1, 2
+                        if (j/=n.or.ih<2) then
                             position = position + 1
                             call toIntString(k,cVent)
                             if (validate) then
@@ -394,20 +394,18 @@
                 if (i==n) cFrom = 'Outside'
                 call toIntString(j,cTo)
                 if (j==n) cTo = 'Outside'
-                do ih = 1,2
-                    position = position + 1
-                    if (validate) then
-                        write (ctemp,'(5a)') trim(LabelsShort(ih+5)),'_',trim(cFrom),'>',trim(cTo)
-                        headertext(1,position) = cTemp
-                        headertext(2,position) = LabelUnits(ih+5)
-                        headertext(3,position) = ' '
-                    else
-                        headertext(1,position) = Labels(ih+5)
-                        write (ctemp,'(a,1x,3a)') 'Vent #',trim(cFrom),'>',trim(cTo)
-                        headertext(2,position) = cTemp
-                        headertext(3,position) = LabelUnits(ih+5)
-                    endif
-                end do
+                position = position + 1
+                if (validate) then
+                    write (ctemp,'(5a)') trim(LabelsShort(4)),trim(cFrom),'>',trim(cTo)
+                    headertext(1,position) = cTemp
+                    headertext(2,position) = LabelUnits(4)
+                    headertext(3,position) = ' '
+                else
+                    headertext(1,position) = Labels(4)
+                    write (ctemp,'(a,1x,3a)') 'Vent #',trim(cFrom),'>',trim(cTo)
+                    headertext(2,position) = cTemp
+                    headertext(3,position) = LabelUnits(4)
+                endif
             endif
         end do
 
@@ -420,28 +418,28 @@
                     call toIntString(ii,cFrom)
                     if (ii==n) cfrom = 'Outside'
                     call toIntString(inode,cTo)
-                    do ih = 1,4
+                    do ih = 1,3
                         position = position + 1
                         if (validate) then
-                            if (ih<=2) then
+                            if (ih==1) then
                                 if (cFrom=='Outside') then
-                                    headertext(1,position) = trim(LabelsShort(ih+7)) // trim(cFrom) // '>N' // trim(cTo)
+                                    headertext(1,position) = trim(LabelsShort(ih+4)) // trim(cFrom) // '>N' // trim(cTo)
                                 else
-                                    headertext(1,position) = trim(LabelsShort(ih+7)) //'C' // trim(cFrom) // '>N' // trim(cTo)
+                                    headertext(1,position) = trim(LabelsShort(ih+4)) //'C' // trim(cFrom) // '>N' // trim(cTo)
                                 end if
                             else
-                                headertext(1,position) = trim(LabelsShort(ih+7)) // 'Fan_N' // trim(cTo)
+                                headertext(1,position) = trim(LabelsShort(ih+4)) // 'Fan_N' // trim(cTo)
                             endif
-                            headertext(2,position) = LabelUnits(ih+7)
+                            headertext(2,position) = LabelUnits(ih+4)
                             headertext(3,position) = ' '
                         else
-                            headertext(1,position) = Labels(ih+7)
-                            if (ih<=2) then 
-                                headertext(2,position) = 'Vent Connection in Compartment ' // trim(cFrom) // '> Node ' // trim(cTo)
+                            headertext(1,position) = Labels(ih+4)
+                            if (ih==1) then 
+                                headertext(2,position) = 'Vent ' // trim(cFrom) // '> Node ' // trim(cTo)
                             else
                                 headertext(2,position) = 'Fan at Node ' // trim(cTo)
                             endif
-                            headertext(3,position) = LabelUnits(ih+7)
+                            headertext(3,position) = LabelUnits(ih+4)
                         endif
                     end do
                 endif

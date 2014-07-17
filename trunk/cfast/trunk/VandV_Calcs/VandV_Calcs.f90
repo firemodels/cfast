@@ -8,6 +8,7 @@
     integer, parameter :: do_activation_time = 1        ! if calculating activation times from data
     integer, parameter :: do_temperature_profile = 2    ! if calculating temperature profiles in a compartment
     integer, parameter :: do_pressure_correction = 3    ! if calculating pressure corrected to measurement height
+    integer, parameter :: do_add_columns = 4            ! if calculating total net flows through multiple vents
 
 
     integer, parameter :: ntests = 200, nrow = 10000, ncol = 500, list_nrow = 1000, list_ncol = 100
@@ -18,7 +19,7 @@
     integer list_numr, list_numc, model_numr, model_numc, find_column, io_error, ir, ic, it, i, istat, irr
     integer :: switch_id_column
     integer :: d2_filename_column, d2_calculation_type_column, d2_col_name_row_column, d2_ind_col_name_column, d2_data_row_column, &
-        d2_data_col_name_column, d2_data_column_count_column, d2_constants_count_column, d2_constants_column
+        d2_data_col_name_column, d2_data_column_count_column, d2_constants_count_column, d2_constants_column, d2_text_column
 
     character :: d2_filename*128, d2_ind_col_name*128, d2_data_col_names(list_ncol)*128, d2_data_col_name*128
     integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_data_column_count, d2x_len, d2y_len, d2ys_len(list_ncol), &
@@ -39,7 +40,11 @@
     real :: tu1, tl1, h1, delta_pf1, rhou1, rhol1, delta_p1, tu2, tl2, h2, delta_pf2, rhou2, rhol2, delta_p2
     real :: delta_py, rhoinf, g, hflr, y
     character :: pressure_correction_name(ntests)*30
-    integer :: ntest_pressure_correction, numrows_pressure_correction(ntests), max_numrows
+    integer :: ntest_pressure_correction, numrows_pressure_correction(ntests), max_numrows_pressure_correction
+    
+    real :: add_columns_data(ntests,nrow,2)           ! for flow summing calculation
+    integer :: ntest_add_columns, numrows_add_columns(ntests), max_numrows_add_columns
+    character :: add_columns_name(ntests)*30
 
     ! Body of ModelVandV
     base_folder = '..\..\cfast\Validation\'
@@ -65,11 +70,14 @@
     d2_data_col_name_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Data_Col_Name')
     d2_constants_count_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Constants_Column_Count')
     d2_constants_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Constants')
+    d2_text_column = find_column(list_carray,list_nrow,list_ncol,1,'d2_Text')
 
     ir=0
     ntest_temperature_profile = 0
     ntest_pressure_correction = 0
-    max_numrows = 0
+    ntest_add_columns = 0
+    max_numrows_pressure_correction = 0
+    max_numrows_add_columns = 0
 10  ir = ir + 1
     switch_id = list_carray(ir,switch_id_column)
 
@@ -108,10 +116,33 @@
 
             ! Here's where the various calculations should go
             select case (d2_calculation_type)
-
-            ! Calculations detector / sprinkler activation times
+                
+            ! Calculations to add flow columns together
+            case (do_add_columns)
+                do ic = 1,d2_data_column_count
+                    if (d2x_len/=d2ys_len(ic)) then
+                        write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2ys_len(ic),ic
+                        stop
+                    end if
+                end do
+                if (d2_text_column==0) then
+                    write (*,*) 'Data error, no column name for summed flow output', ic
+                    stop
+                end if
+                ntest_add_columns = ntest_add_columns + 1
+                numrows_add_columns(ntest_add_columns) = d2x_len
+                max_numrows_add_columns=max(max_numrows_add_columns,d2x_len)
+                add_columns_name(ntest_add_columns) = list_carray(ir,d2_text_column)
+                do irr = 1, d2x_len
+                    add_columns_data(ntest_add_columns,irr,1) = d2x(irr)
+                    add_columns_data(ntest_add_columns,irr,2) = 0.0
+                    do ic = 1, d2_data_column_count
+                        add_columns_data(ntest_add_columns,irr,2) = add_columns_data(ntest_add_columns,irr,2) + d2ys(irr,ic)
+                    end do
+                end do
+                
+            ! Calculations of detector / sprinkler activation times
             case (do_activation_time)
-                ! Calculations of the activation times
                 if (d2x_len==d2ys_len(1)) then
                     do i = 1, d2x_len
                         if (d2ys(i,1)/=0.0) then
@@ -146,7 +177,7 @@
                 if (d2x_len==d2ys_len(1).and.d2x_len==d2ys_len(2).and.d2x_len==d2ys_len(3).and.d2x_len==d2ys_len(4)) then
                     ntest_pressure_correction = ntest_pressure_correction + 1
                     numrows_pressure_correction(ntest_pressure_correction) = d2x_len
-                    max_numrows=max(max_numrows,d2x_len)
+                    max_numrows_pressure_correction=max(max_numrows_pressure_correction,d2x_len)
                     g = 9.8
                     rhoinf = 352.8/(d2ys(1,2)+273.15) ! gas density assuming surrounding ambient is initial temperature of lower layer
                     do irr = 1, d2x_len
@@ -197,7 +228,29 @@
 
     if (ir.le.list_numr.and.list_carray(ir,1).ne.'End') go to 10
     close (unit=9)
-
+    
+    if (ntest_add_columns>=1) then
+        open (unit=10,file='added_flows.csv',form='formatted', action='write', iostat=io_error)
+        if (io_error==0) then
+            write (10,'(2000(a,'',''))') ('TIME_'//trim(add_columns_name(ic)),trim(add_columns_name(ic)), ic=1,ntest_add_columns)
+            write (10,'(2000(a,'',''))') ('s','kg/s', ic=1,ntest_add_columns)
+            do irr = 1, max_numrows_add_columns
+                position = 0
+                do it = 1, ntest_add_columns
+                    if (irr<=numrows_add_columns(it)) then
+                        call SSaddtolist(position,1,add_columns_data(it,irr,1),' ',print_array)
+                        call SSaddtolist(position,1,add_columns_data(it,irr,2),' ',print_array)
+                    else
+                        call SSaddtolist(position,2,0.0,'NaN',print_array)
+                        call SSaddtolist(position,2,0.0,'NaN',print_array)
+                    end if
+                end do
+                    call SSprintresults(10,position,print_array)
+            end do
+        end if
+        close (unit=10)
+    end if
+        
     if (ntest_temperature_profile>=1) then
         open (unit=10,file='profiles.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
@@ -210,12 +263,13 @@
             close (unit=10)
         end if
     end if
+    
     if (ntest_pressure_correction>=1) then
-        open (unit=11,file='pressures.csv',form='formatted', action='write', iostat=io_error)
+        open (unit=10,file='pressures.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
-            write (11,'(2000(a,'',''))') ('TIME_'//trim(pressure_correction_name(ic)),'PRS_'//trim(pressure_correction_name(ic)), ic=1,ntest_pressure_correction)
-            write (11,'(2000(a,'',''))') ('s','Pa', ic=1,ntest_pressure_correction)
-            do irr = 1, max_numrows
+            write (10,'(2000(a,'',''))') ('TIME_'//trim(pressure_correction_name(ic)),'PRS_'//trim(pressure_correction_name(ic)), ic=1,ntest_pressure_correction)
+            write (10,'(2000(a,'',''))') ('s','Pa', ic=1,ntest_pressure_correction)
+            do irr = 1, max_numrows_pressure_correction
                 position = 0
                 do it = 1, ntest_pressure_correction
                     if (irr<=numrows_pressure_correction(it)) then
@@ -226,10 +280,10 @@
                         call SSaddtolist(position,2,0.0,'NaN',print_array)
                     end if
                 end do
-                    call SSprintresults(11,position,print_array)
+                    call SSprintresults(10,position,print_array)
             end do
         end if
-        close (unit=11)
+        close (unit=10)
     end if
 
     end program VandV_Calcs

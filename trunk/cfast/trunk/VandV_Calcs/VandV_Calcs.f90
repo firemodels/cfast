@@ -47,7 +47,8 @@
     character :: add_columns_name(ntests)*30
 
     ! Body of ModelVandV
-    base_folder = '..\..\cfast\Validation\'
+    base_folder=''
+    !base_folder = '..\..\cfast\Validation\'
     call getarg (1,filename,istat)
     if (istat.le.0) then
         stop 'No data file specified'

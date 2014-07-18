@@ -16,6 +16,19 @@ goto end
 :ALL
 call cleanall.bat
 
+:DOE
+echo Running DOE Tests
+cd DOE_Guidance_Report
+if NOT %1==ALL call ..\..\Validation\cleancfast.bat
+..\..\bin\cfast DOE201 /V
+..\..\bin\cfast DOE202 /V
+..\..\bin\cfast DOE203 /V
+..\..\bin\cfast DOE204 /V
+..\..\bin\cfast DOE205 /V
+..\..\bin\cfast DOE206 /V
+cd ..
+if %1==DOE goto end
+
 :Base
 echo Running Base Case Tests
 cd Analytical
@@ -111,15 +124,6 @@ cd 5_Trash_Fire_in_Cable_Spreading_Room
 ..\..\..\bin\cfast Trash_fire_in_cable_spreading_room /V
 cd ..\..
 if %1==NRC goto end
-
-:DOE
-echo Running DOE Tests
-cd DOE_Guidance_Report
-if NOT %1==ALL call ..\..\Validation\cleancfast.bat
-..\..\bin\cfast DOE201 /V
-..\..\bin\cfast DOE202 /V
-cd ..
-if %1==DOE goto end
 
 :end
 echo.| time

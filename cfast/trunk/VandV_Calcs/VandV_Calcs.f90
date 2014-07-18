@@ -230,7 +230,7 @@
     close (unit=9)
     
     if (ntest_add_columns>=1) then
-        open (unit=10,file='added_flows.csv',form='formatted', action='write', iostat=io_error)
+        open (unit=10,file='summed_flows.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
             write (10,'(2000(a,'',''))') ('TIME_'//trim(add_columns_name(ic)),trim(add_columns_name(ic)), ic=1,ntest_add_columns)
             write (10,'(2000(a,'',''))') ('s','kg/s', ic=1,ntest_add_columns)

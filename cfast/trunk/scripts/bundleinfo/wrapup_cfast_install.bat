@@ -15,8 +15,8 @@ call "%CD%\set_path.exe" -s -m -f "%CD%" >Nul
 echo.
 echo *** Associating the .in file extension with CEdit.exe
 
-ftype inCEdit="%CD%\CEdit.exe"  >Nul
-assoc .in=inCEdit>Nul
+ftype ceditDoc="%CD%\CEdit.exe" %%1 >Nul
+assoc .in=ceditDoc>Nul
 
 :: ftype smvDoc="%CD%\bin\smokeview.exe" "%%1" >Nul
 :: assoc .smv=smvDoc>Nul
@@ -27,13 +27,15 @@ echo.
 echo *** Adding document shortcuts to the Start menu.
 
 set cfaststartmenu=%ALLUSERSPROFILE%\Start Menu\Programs\cfast
-if exist "%cfaststartmenu%" rmdir /q /s "%cfaststartmenu%"
+if exist "%cfaststartmenu%" rmdir /q /s "%cfaststartmenu%" >Nul
 
 mkdir "%cfaststartmenu%"
 
-mkdir "%cfaststartmenu%\Guides and Release Notes"
+mkdir "%cfaststartmenu%\Guides"
 :: the following line is a placeholder - need to update with actual documents
-"%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides and Release Notes\CFAST Users Guide.lnk"       /T:"%CD%\Documentation\CFAST_Users_Guide.pdf" /A:C >NUL
+"%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Users Guide.lnk"       /T:"%CD%\Documents\NIST.SP.1041r1.pdf" /A:C >NUL
+"%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Technical Reference Guide.lnk"       /T:"%CD%\Documents\NIST.SP.1026r1.pdf" /A:C >NUL
+"%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Software Development and Model Evaluation Guide.lnk"       /T:"%CD%\Documents\NIST.SP.1086r1.pdf" /A:C >NUL
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\CEdit.lnk"       /T:"%CD%\CEdit.exe" /A:C >NUL
 
 erase "%CD%"\set_path.exe

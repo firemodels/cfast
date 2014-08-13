@@ -15,7 +15,7 @@ call "%CD%\set_path.exe" -s -m -f "%CD%" >Nul
 echo.
 echo *** Associating the .in file extension with CEdit.exe
 
-ftype inCEdit="%CD%\CEdit.exe" "%%1" >Nul
+ftype inCEdit="%CD%\CEdit.exe"  >Nul
 assoc .in=inCEdit>Nul
 
 :: ftype smvDoc="%CD%\bin\smokeview.exe" "%%1" >Nul

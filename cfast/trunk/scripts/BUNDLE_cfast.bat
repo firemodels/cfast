@@ -4,9 +4,8 @@ Title Bundle cfast for Windows
 
 :: installation settings settings
 
-set installerbase=cftest6
-set cfast_version=6.1.11
-set distname=cfast%cfast_version%
+set installerbase=cfast6_installer
+set distname=cfast6
 
 :: VVVVVVVVVVVVVVVVV shouldn't need to change anything below VVVVVVVVVVVVVVV
 
@@ -23,8 +22,8 @@ set DISTDIR=%svn_root%\scripts\BUNDLEDIR\%installerbase%
 set bundleinfo=%svn_root%\scripts\bundleinfo
 
 copy "%bundleinfo%\wrapup_cfast_install.bat" "%DISTDIR%\wrapup_cfast_install.bat"
-:: erase or comment out following line once actual wrapup batch file is complete
-copy "%bundleinfo%\wrapup_dummy.bat" "%DISTDIR%\wrapup_cfast_install.bat"
+copy "%bundleinfo%\shortcut.exe" "%DISTDIR%\shortcut.exe"
+copy "%bundleinfo%\set_path.exe" "%DISTDIR%\set_path.exe"
 
 cd %DISTDIR%
 wzzip -a -r -P ..\%installerbase%.zip * > Nul
@@ -36,10 +35,12 @@ echo ***Creating installer
 echo.
 
 cd %DISTDIR%\..
-echo Setup is about to install CFAST %cfast_version% > %bundleinfo%\message.txt
+echo Setup is about to install CFAST 6 > %bundleinfo%\message.txt
 echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
-wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast %cfast_version% Setup" -d "c:\Program Files\%distname%" -c wrapup_cfast_install.bat
+wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 6 Setup" -d "c:\Program Files\%distname%" -c wrapup_cfast_install.bat
+
+copy %installerbase%.exe "%userprofile%\google drive\cftest"
 
 
 echo.

@@ -718,7 +718,7 @@
     character(3) :: drive(2)
     character(256) :: dir(2)
     character(64) :: ext(2)
-    integer(4) :: length, pathcount, splitpathqq, ilen
+    integer(4) :: length, pathcount, splitpathqq, ilen,j
 
     n = command_argument_count() + 1
     project = ' '
@@ -745,6 +745,10 @@
 
             !	Split out the components
 
+            drive(i) = ' '
+            dir(i) = ' '
+            name(i) = ' '
+            ext(i) = ' '
             length = SPLITPATHQQ(xname, drive(i), dir(i), name(i), ext(i))
             ld(i) = len_trim(drive(i))
             li(i) = len_trim(dir(i))
@@ -763,7 +767,12 @@
     ! Now check that the project.in file exists - this is the data file
     buf = ' '
     if (le(2)/=0) then
-        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2)) // '.in'
+        if (ext(2)(1:le(2))=='.in') then
+            buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+        else
+            errorcode = 104
+            return
+        end if
     else
         buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
     endif
@@ -777,7 +786,7 @@
         !	The project file exists
         exepath = drive(1)(1:ld(1)) // dir(1)(1:li(1))
         datapath = drive(2)(1:ld(2)) // dir(2)(1:li(2))
-        project = name(2)(1:ln(2)) // ext(2)(1:le(2))
+        project = name(2)(1:ln(2))
         return
     else
         ! Note that we do not yet have the logerr file open, so write to the console

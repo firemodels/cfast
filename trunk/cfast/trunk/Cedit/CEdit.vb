@@ -5582,28 +5582,32 @@ Public Class CeditMain
     End Sub
     Private Sub OpenDataFile(ByVal FileName As String)
         Dim PathName As String
-        myUnits.SI = True
-        InitNew()
-        PathName = System.IO.Path.GetDirectoryName(FileName) & "\"
-        ChDir(PathName)
-        ' Initialize thermal properties with ones from the current directory, if they exist
-        IO.ReadThermalProperties(".\" + "thermal.csv")
-        UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-        UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-        UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-        UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
-        ' Initialize fire objects with ones from the current directory, if they exist
-        myFireObjects.Clear()
-        IO.ReadFireObjects(PathName)
-        IO.ReadFireObjects(Application.StartupPath + "\")
-        UpdateGUI.InitFireObjectList(Me.FireName)
-        ' Now we should be ready to read the input file
-        ReadInputFile(FileName)
-        myEnvironment.InputFileName = FileName
-        myEnvironment.InputFilePath = FileName
-        myRecentFiles.Add(FileName)
-        myUnits.SI = False
-        UpdateGUI.InitFireObjectList(Me.FireName)
+        If My.Computer.FileSystem.FileExists(FileName) Then
+            myUnits.SI = True
+            InitNew()
+            PathName = System.IO.Path.GetDirectoryName(FileName) & "\"
+            ChDir(PathName)
+            ' Initialize thermal properties with ones from the current directory, if they exist
+            IO.ReadThermalProperties(".\" + "thermal.csv")
+            UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+            UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+            UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+            UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+            ' Initialize fire objects with ones from the current directory, if they exist
+            myFireObjects.Clear()
+            IO.ReadFireObjects(PathName)
+            IO.ReadFireObjects(Application.StartupPath + "\")
+            UpdateGUI.InitFireObjectList(Me.FireName)
+            ' Now we should be ready to read the input file
+            ReadInputFile(FileName)
+            myEnvironment.InputFileName = FileName
+            myEnvironment.InputFilePath = FileName
+            myRecentFiles.Add(FileName)
+            myUnits.SI = False
+            UpdateGUI.InitFireObjectList(Me.FireName)
+        Else
+            MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
+        End If
     End Sub
     Private Sub MenuSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSave.Click
         SaveDataFile(False)

@@ -135,7 +135,7 @@
                     endif
                 endif
                 if(prnslab)then
-                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
+                    !write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
                 call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
@@ -150,7 +150,7 @@
                     endif
                 endif
                 if(prnslab)then
-                    write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
+                    !write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
                 end if 
                 call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)

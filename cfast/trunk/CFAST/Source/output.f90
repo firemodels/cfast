@@ -1630,26 +1630,26 @@
     write(lbuf,*)'Solution component with the greatest error is'
     call xerror(lbuf,0,1,0)
     if (icomp<=nofp+nm1) then
-        write(lbuf,'(a18,i2)')' pressure in room ',icomp
+        write(lbuf,'(a,i2)')' pressure in room ',icomp
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftu) then
-        write(lbuf,'(a18,i2)')' either hvac or fsm ',icomp-nm1
+        write(lbuf,'(a,i2)')' either hvac or fsm ',icomp-nm1
         call xerror(lbuf,0,1,0)
     else if (icomp<=nofvu) then
-        write(lbuf,'(a27,i2)')' upper layer temp in room ',icomp-noftu
+        write(lbuf,'(a,i2)')' upper layer temp in room ',icomp-noftu
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftl) then
-        write(lbuf,'(a26,i2)')' upper layer vol in room ',icomp-nofvu
+        write(lbuf,'(a,i2)')' upper layer vol in room ',icomp-nofvu
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftl+nm1) then
-        write(lbuf,'(a27,i2)')' lower layer temp in room ',icomp-noftl
+        write(lbuf,'(a,i2)')' lower layer temp in room ',icomp-noftl
         call xerror(lbuf,0,1,0)
     else if (icomp<=nofwt) then
         if (option(foxygen)==on) then
-            write(lbuf,'(a18,i2)')' oxygen component ',icomp-nofoxyl
+            write(lbuf,'(a,i2)')' oxygen component ',icomp-nofoxyl
             call xerror(lbuf,0,1,0)
         else
-            write(lbuf,'(a15,i2)')' target number ',icomp-noftt
+            write(lbuf,'(a,i2)')' target number ',icomp-noftt
             call xerror(lbuf,0,1,0)
         endif
     else if (icomp<=nofprd) then

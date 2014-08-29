@@ -25,8 +25,12 @@ Partial Class ViewFile
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ViewFile))
         Me.C1PrintPreviewControl1 = New C1.Win.C1Preview.C1PrintPreviewControl()
         Me.PreviewDocument = New C1.C1Preview.C1PrintDocument()
+        Me.C1PrintDocument1 = New C1.C1Preview.C1PrintDocument()
         CType(Me.C1PrintPreviewControl1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.C1PrintPreviewControl1.SuspendLayout()
+        CType(Me.PreviewDocument, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.C1PrintDocument1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'C1PrintPreviewControl1
@@ -148,8 +152,6 @@ Partial Class ViewFile
         'PreviewDocument
         '
         Me.PreviewDocument.DocumentInfo.Creator = "C1Reports Engine version 2.6.20103.54202"
-        Me.PreviewDocument.PageLayouts.Default.PageSettings = New C1.C1Preview.C1PageSettings(False, System.Drawing.Printing.PaperKind.Letter, True, "1in", "1in", "1in", "1in", System.Drawing.Printing.PaperSourceKind.Upper, 0, Nothing, System.Drawing.Printing.PrinterResolutionKind.Custom, 0, 0)
-        Me.PreviewDocument.TagsInputDialogClass = Nothing
         '
         'ViewFile
         '
@@ -161,12 +163,16 @@ Partial Class ViewFile
         Me.Name = "ViewFile"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "ViewFile"
+        CType(Me.C1PrintPreviewControl1.PreviewPane, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1PrintPreviewControl1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.C1PrintPreviewControl1.ResumeLayout(False)
         Me.C1PrintPreviewControl1.PerformLayout()
+        CType(Me.PreviewDocument, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.C1PrintDocument1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
     Friend WithEvents C1PrintPreviewControl1 As C1.Win.C1Preview.C1PrintPreviewControl
     Friend WithEvents PreviewDocument As C1.C1Preview.C1PrintDocument
+    Friend WithEvents C1PrintDocument1 As C1.C1Preview.C1PrintDocument
 End Class

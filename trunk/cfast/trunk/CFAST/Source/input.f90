@@ -1038,9 +1038,9 @@
         ! add a simple duct to connect the two nodes/fan - this is artificial since we do not worry about the species in the system
         ndt = ndt + 1
 
-        ! to change from the zero volume calculation to a finite volume, use 1.0d1 (10 meter duct)
+        ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
         ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation for flow through the external nodes
-        dl(ndt) = 0.0_eb ! 1.0d1
+        dl(ndt) = 1.0_eb ! 1.0d1
         de(ndt) = lrarray(6)
         ibrd(ndt) = nbr
 

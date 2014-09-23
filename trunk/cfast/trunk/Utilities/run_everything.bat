@@ -13,11 +13,6 @@ cd ..\Utilities\matlab
 call run_matlab_validation.bat
 call run_matlab_verification.bat
 cd ..\
-echo Make Technical Reference Guide
-cd ..\Docs\Tech_Ref
-pdflatex -interaction nonstopmode $ Tech_Ref > $doc.err
-bibtex Tech_Ref >> $doc.err
-pdflatex -interaction nonstopmode Tech_Ref >> Tech_Ref.err
-pdflatex -interaction nonstopmode Tech_Ref >> Tech_Ref.err
+call make_docs.bat
 echo.| time
 

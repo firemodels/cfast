@@ -526,7 +526,13 @@ module thermp
     character(8), dimension(nwal,nr) :: cname
     character(8), dimension(nthmax) :: nlist
 
-end module thermp
+    end module thermp
+    
+! --------------------------- fires -------------------------------------------
+    
+module fires
+
+end module fires
 
 ! --------------------------- vents -------------------------------------------
 

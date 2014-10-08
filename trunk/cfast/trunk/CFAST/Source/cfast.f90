@@ -1177,7 +1177,7 @@
     endif
 
     ! calculate heat and mass flows due to fires
-    call fires (tsec,flwf)
+    call fire (tsec,flwf)
     call sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
     call djet (flwdjf,djetflg)
 

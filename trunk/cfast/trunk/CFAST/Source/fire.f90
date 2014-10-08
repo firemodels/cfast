@@ -1,11 +1,10 @@
 
 ! --------------------------- fires -------------------------------------------
 
-    subroutine fires(tsec,flwf)
+    subroutine fire(tsec,flwf)
 
-    !     routine: fires
-    !     purpose: physical interface routine to calculate the current
-    !              rates of mass and energy flows into the layers from
+    !     routine: fire
+    !     purpose: physical interface routine to calculate the current rates of mass and energy flows into the layers from
     !              all fires in the building.
     !     revision: $Revision$
     !     revision date: $Date$
@@ -19,16 +18,13 @@
     !                       (i,4) = mass into upper layer from fire i (ems)
     !                       (i,5) = pyrolysis rate from fire i (emp)
     !                       (i,6) = mass entrained in plume by fire i (eme)
-    !                       (i,7 & 8) = convective, and radiative heat into
-    !                               upper layer, fire i
+    !                       (i,7 & 8) = convective, and radiative heat into upper layer, fire i
     !                       (i,9) = total heat released by fire i
     !                       (i,10) = total heat into lower layer by fire i
     !                       (i,11) = total heat into upper layer by fire i
-    !                       (i,12 to 18) = heat of combustion, c/co2,
-    !                                co/co2, h/c, o/c, hcl, hcn yields for
-    !                                fire i
-    !					   (i,19) characteristic length of the burning volume
-    !                      (i,20) fire area
+    !                       (i,12 to 18) = heat of combustion, c/co2, co/co2, h/c, o/c, hcl, hcn yields for fire i
+    !					    (i,19) characteristic length of the burning volume
+    !                       (i,20) fire area
 
     use precision_parameters
     use fireptrs

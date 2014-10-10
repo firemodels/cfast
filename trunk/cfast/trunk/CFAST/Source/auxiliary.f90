@@ -852,9 +852,9 @@
         do j = 1, n
             mat2(i,j) = 0
             do k = 1, n
-                mat2(i,j) = mat1(i,k)*mat1(k,j)
+                mat2(i,j) = mat2(i,j)+mat1(i,k)*mat1(k,j)
             end do
-            if(mat2(i,j)>=1)mat2(i,j) = 1
+            if(mat2(i,j)>=1) mat2(i,j) = 1
         end do
     end do
     do i = 1, n

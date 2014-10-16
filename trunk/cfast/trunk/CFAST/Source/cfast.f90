@@ -1491,7 +1491,7 @@
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
-        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv
+        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv, xt, xtemp, xh2o
         
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -1576,6 +1576,18 @@
         zzcspec(n,lower,1) = 0.770_eb
         zzcspec(n,upper,2) = 0.230_eb
         zzcspec(n,lower,2) = 0.230_eb
+        
+        !  set the water content to relhum - the polynomial fit is to (t-273), and
+        ! is for saturation pressure of water.  this fit comes from the steam
+        ! tables in the handbook of physics and chemistry.  we are being clever
+        ! here.  the final result in o2n2 should be the value used in stport for
+        ! the outside ambient.
+        xt = exterior_temperature
+        xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
+        xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
+        zzcspec(n,upper,8) = relhum*xh2o
+        zzcspec(n,lower,8) = relhum*xh2o
+        
         do layer = upper, lower
             zzrho(n,layer) = zzpabs(n)/rgas/zztemp(n,layer)
             zzmass(n,layer) = zzrho(n,layer)*zzvol(n,layer)

@@ -120,7 +120,7 @@
                 aa2(iijk) = vaa(2,i)
 
                 !call flogo1(dirs12,yslab,xmslab,nslab,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
-                call flogo2(dirs12,yslab,xmslab,tslab,nslab,tu,tl,yflor,yceil,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
+                call flogo2(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
 
                 !  calculate entrainment type mixing at the vents
 
@@ -806,19 +806,17 @@
 
 ! --------------------------- flogo2 -------------------------------------------
 
-    subroutine flogo2(dirs12, yslab, xmslab, tslab, nslab, tu, tl, yflor, yceil, ylay, qslab, pslab, mxprd, nprod, mxslab, uflw2)
+    subroutine flogo2(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
 
     !     routine: flogo2
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
-    !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. 
+    !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. (if inflow is hot, it goes to upper layer, etc.)
     !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab
     !                yslab - slab heights in rooms 1,2 above datum elevation [m]
     !                xmslab - mass flow rate in slabs [kg/s]
+    !                tslab  - temperature of slabs [K]
     !                nslab  - number of slabs between bottom and top of vent
-    !                tu     - upper layer temperature in each room [K]
-    !                tl     - lower layer temperature in each room [K]
-    !                yflor  - height of floor in each room above datum elevation [m]
-    !                yceil  - height of ceiling in each room above datum elevation [m]
+    !                tu,tl  - upper and lower layer temperatures in rooms 1,2
     !                ylay   - height of layer in each room above datum elevation [m]
     !                qslab  - enthalpy flow rate in each slab [w]
     !                pslab  - flow rate of product in each slab [(unit of product/s]
@@ -834,13 +832,14 @@
     use flwptrs
     implicit none
     
-    integer, intent(in) :: nprod, dirs12(*), mxprd, mxslab
-    
-    integer :: i, iprod, n, nslab, ifrom, ito, ilay
-    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), tu(*), tl(*), yflor(*), yceil(*), ylay(*), pslab(mxslab,*)
+    integer, intent(in) :: dirs12(*)
+    integer, intent(in) :: nprod, nslab, mxprd, mxslab
+    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxslab,*), tu(*), tl(*)
     real(eb), intent(out) :: uflw2(2,mxprd+2,2)
     
-    real(eb) :: ff(2), fl, fu, xmterm, qterm, ylayer, ylow, yup, ttr, tts, ttu, ttl, yslabf, yslabt
+    integer :: i, iprod, n, ifrom, ito, ilay
+    real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
+    real(eb), parameter :: deltatemp_min = 1.0_eb
 
     ! initialize outputs
     do i = 1, 2
@@ -861,102 +860,40 @@
             ifrom = 2
             ito = 1
         else
-
             ! no flow in this slab so we can skip it
-            go to 70
+            cycle
         endif
 
-        ! apportion flow between layers of destination room
-        ylayer = ylay(ito)
-        ylow = yflor(ito)
-        yup = yceil(ito)
-        tts = tslab(n)
-        ttu = tu(ito)
-        ttl = tl(ito)
-        if (ito==1) then
-            yslabt = yslab(n)
-            yslabf = yslab(n)
+        ! put slab flow into "to" flow according to slab temperature
+        temp_slab = tslab(n)
+        temp_upper = tu(ito)
+        temp_lower = tl(ito)
+        
+        if (temp_slab>=temp_upper+deltatemp_min) then
+            fupper = 1.0_eb
+        elseif (temp_slab<=temp_lower-deltatemp_min) then
+            fupper = 0.0_eb
         else
-            yslabt = yslab(n)
-            yslabf = yslab(n)
-        end if
+            fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
+        endif
         
-        ! no upper layer
-        if (ylayer.ge.yup) then
-            if (tts>ttl+1.0_eb) then
-                fu = 1.0_eb
-                ttr = ttl
-            else
-                fu = 0.0_eb
-                ttr = ttl
-            end if
-            
-        ! no lower layer
-        else if (ylayer<=ylow) then
-            if (tts>=ttu+1.0_eb) then
-                fu = 1.0_eb
-                ttr = ttu
-            else
-                fu = 0.0_eb
-                ttr = ttu
-            end if
-            
-        ! upper layer temperature > lower layer temperature
-        else if (ttu>ttl) then
-            if (tts>=ttu) then
-                fu = 1.0_eb
-            else if (tts<=ttl) then
-                fu = 0.0_eb
-            else
-                fu = (tts-ttl)/(ttu-ttl)
-            end if
-            if (yslabt>ylayer) then
-                ttr = ttu
-            else if (yslabt<ylayer) then
-                ttr = ttl
-            else
-                ttr = (ttu+ttl)/2.0_eb
-            end if
-        
-        ! upper layer temperature <= lower layer temperature
-        else if (ttu<=ttl) then
-            if (tts>ttu) then
-                fu = 1.0_eb
-                ttr = ttu
-            else if (tts.lt.ttu) then
-                fu = 0.0_eb
-                ttr = ttl
-            else
-                if (yslabt>ylayer) then
-                    fu = 1.0_eb
-                    ttr = ttu
-                else if (yslabt<ylayer) then
-                    fu = 0.0_eb
-                    ttr = ttl
-                else
-                    fu = 0.5_eb
-                    ttr = ttl
-                end if
-            end if
-        end if
-       
-        fl = 1.0_eb - fu
-        ff(l) = fl
-        ff(u) = fu
+        flower = 1.0_eb - fupper
+        flow_fraction(l) = flower
+        flow_fraction(u) = fupper
 
         ! put flow into destination room
         xmterm = xmslab(n)
         qterm = qslab(n)
         do ilay = 1, 2
-            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay)*xmterm
-            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay)*qterm
+            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + flow_fraction(ilay)*xmterm
+            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + flow_fraction(ilay)*qterm
             do iprod = 1, nprod
-                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay)*pslab(n,iprod)
+                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + flow_fraction(ilay)*pslab(n,iprod)
             end do
         end do
 
         ! take it out of the origin room
-        if (yslabf>=ylay(ifrom)) then
+        if (yslab(n)>=ylay(ifrom)) then
             uflw2(ifrom,m,u) = uflw2(ifrom,m,u) - xmterm
             uflw2(ifrom,q,u) = uflw2(ifrom,q,u) - qterm
             do iprod = 1, nprod
@@ -969,11 +906,10 @@
                 uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n,iprod)
             end do
         endif
-70      continue
     end do
     return
     end subroutine flogo2
-
+    
 ! --------------------------- flogo1 -------------------------------------------
 
     subroutine flogo1(dirs12,yslab,xmslab,nslab,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)

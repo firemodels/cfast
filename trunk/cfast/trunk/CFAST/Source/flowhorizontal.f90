@@ -811,7 +811,7 @@
     !     routine: flogo2
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
     !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. (if inflow is hot, it goes to upper layer, etc.)
-    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab
+    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab, 1 = 1--> 2, -1 = 2 --> 1, 0 = no flow
     !                yslab - slab heights in rooms 1,2 above datum elevation [m]
     !                xmslab - mass flow rate in slabs [kg/s]
     !                tslab  - temperature of slabs [K]

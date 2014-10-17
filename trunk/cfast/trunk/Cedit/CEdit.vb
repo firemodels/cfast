@@ -53,7 +53,6 @@ Public Class CeditMain
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
     Friend WithEvents MenuDebugOutput As System.Windows.Forms.MenuItem
-    Friend WithEvents C1PrintDocument1 As C1.C1Preview.C1PrintDocument
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -790,7 +789,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.C1PrintDocument1 = New C1.C1Preview.C1PrintDocument()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -844,7 +842,6 @@ Public Class CeditMain
         Me.TabMain.SuspendLayout()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.C1PrintDocument1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'StatusBar
@@ -4477,7 +4474,6 @@ Public Class CeditMain
         Me.TabMain.ResumeLayout(False)
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.C1PrintDocument1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub

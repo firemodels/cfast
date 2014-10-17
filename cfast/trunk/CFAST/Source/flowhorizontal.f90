@@ -120,7 +120,7 @@
                 aa2(iijk) = vaa(2,i)
 
                 !call flogo1(dirs12,yslab,xmslab,nslab,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
-                call flogo2(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
+                call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
 
                 !  calculate entrainment type mixing at the vents
 
@@ -219,12 +219,12 @@
     !     routine: entrain
     !     purpose: 
     !     arguments: dirs12 - a measure of the direction of the room 1 to room flow in each slab
-    !                yslab  - slab heights in rooms 1,2 above datum elevation [m]
+    !                yslab  - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
     !                nslab  - number of slabs between bottom and top of vent
     !                tu     - upper layer temperature in each room [k]
     !                tl     - lower layer temperature in each room [k]
-    !                ylay   - height of layer in each room above datum elevation [m]
+    !                ylay   - height of layer in each room above absolute reference elevation [m]
     !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer of room i due to entrainment
     !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) layer of room i entrainment
     !                uflw3(i,2+k,j), i=1 or 2, k=1 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2) or lower (j=1) layer of room i due entrainment
@@ -487,15 +487,15 @@
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
     !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing the two-layer
     !              environment in each of the two rooms and other input data calculated in subroutine comwl1.
-    !     arguments: yflor - height of floor above datum elevation [m]
-    !                ylay  - height of layer above datum elevation [m]
+    !     arguments: yflor - height of floor above absolute reference elevation [m]
+    !                ylay  - height of layer above absolute reference elevation [m]
     !                tu    - upper layer temperature [k]
     !                tl    - lower layer temperature [k]
     !                denl  - lower layer density [kg/m**3]
     !                denu  - upper layer density [kg/m**3]
-    !                pflor - pressure at floor above datum pressure [kg/(m*s**2) = pascal]
-    !                yvtop - elevation of top of vent above datum elevation [m]
-    !                yvbot - elevation of bottom of vent above datum elevation [m]
+    !                pflor - pressure at floor above absolute reference pressure [kg/(m*s**2) = pascal]
+    !                yvtop - elevation of top of vent above absolute reference elevation [m]
+    !                yvbot - elevation of bottom of vent above absolute reference elevation [m]
     !                avent - area of the vent [m**2]
     !                dp1m2 - pressure in room 1 - pressure in room 2 at elevations yelev [kg/(m*s**2) = pascal]
     !                cp    - specific heat [w*s/(kg*k)]
@@ -511,8 +511,8 @@
     !                dirs12 (output) - a measure of the direction of the room 1 to room 2 flow in each slab
     !                rslab (output) - density of the flow in each slab [kg/m**3]
     !                tslab (output) - absolute temperature of the flow in each slab [k]
-    !                yslab (output) - elevations above the datum elevation of the centroids of momentum of each slab [m]
-    !                yvelev - elevations above the datum elevations of vent boundaries, layers, and neutral planes [m]
+    !                yslab (output) - elevations above the absolute reference elevation of the centroids of momentum of each slab [m]
+    !                yvelev - elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
     !                nvelev - number of unique elevations delineating slabs
     !                nslab  - number of slabs between bottom and top of the vent
@@ -716,7 +716,6 @@
     return
     end
 
-
 ! --------------------------- getvars -------------------------------------------
 
     subroutine getvars(ivent,from_room,to_room,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
@@ -725,9 +724,9 @@
     !     purpose: routine to interface between global data structures and natural vent data structures.
     !     arguments: ivent - vent number
     !                iroom - room number
-    !                yflor   height of floor above datum elevation [m]
-    !                yceil - height of ceiling above datum elevation [m]
-    !                ylay    height of layer above datum elevation [m]
+    !                yflor   height of floor above absolute reference elevation [m]
+    !                yceil - height of ceiling above absolute reference elevation [m]
+    !                ylay    height of layer above absolute reference elevation [m]
     !                pflor   pressure at floor relative to ambient [p]
     !                denl    density of lower layer [kg/m**3]
     !                denu    density of upper layer [kg/m**3]
@@ -804,20 +803,20 @@
     return
     end subroutine getvars
 
-! --------------------------- flogo2 -------------------------------------------
+! --------------------------- flogo -------------------------------------------
 
-    subroutine flogo2(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
+    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
 
-    !     routine: flogo2
+    !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
     !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. (if inflow is hot, it goes to upper layer, etc.)
     !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab, 1 = 1--> 2, -1 = 2 --> 1, 0 = no flow
-    !                yslab - slab heights in rooms 1,2 above datum elevation [m]
+    !                yslab - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                xmslab - mass flow rate in slabs [kg/s]
     !                tslab  - temperature of slabs [K]
     !                nslab  - number of slabs between bottom and top of vent
     !                tu,tl  - upper and lower layer temperatures in rooms 1,2
-    !                ylay   - height of layer in each room above datum elevation [m]
+    !                ylay   - height of layer in each room above absolute reference elevation [m]
     !                qslab  - enthalpy flow rate in each slab [w]
     !                pslab  - flow rate of product in each slab [(unit of product/s]
     !                mxprd  - maximum number of products currently available.
@@ -908,7 +907,7 @@
         endif
     end do
     return
-    end subroutine flogo2
+    end subroutine flogo
     
 ! --------------------------- flogo1 -------------------------------------------
 
@@ -919,10 +918,10 @@
     !              through a vertical, constant-width vent.  this version implements the cfast rules for flow depostion. (upper
     !              layer to upper layer and lower layer to lower layer)
     !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab
-    !                yslab - slab heights in rooms 1,2 above datum elevation [m]
+    !                yslab - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                xmslab - mass flow rate in slabs [kg/s]
     !                nslab  - number of slabs between bottom and top of vent
-    !                ylay   - height of layer in each room above datum elevation [m]
+    !                ylay   - height of layer in each room above absolute reference elevation [m]
     !                qslab  - enthalpy flow rate in each slab [w]
     !                pslab  - flow rate of product in each slab [(unit of product/s]
     !                mxprd  - maximum number of products currently available.
@@ -1016,14 +1015,14 @@
     !     routine: delp
     !     purpose: calculation of the absolute hydrostatic pressures at a specified elevation in each of two adjacent
     !              rooms and the pressure difference.  the basic calculation involves a determination and differencing of hydrostatic
-    !              pressures above a specified datum pressure.
-    !     arguments: y     - vector of heights above datum elevation where pressure difference is to be calculated [m]
+    !              pressures above a specified absolute reference pressure.
+    !     arguments: y     - vector of heights above absolute reference elevation where pressure difference is to be calculated [m]
     !                nelev - number of heights to be calculated
-    !                yflor - height of floor in each room above datum elevation [m]
-    !                ylay  - height of layer in each room above datum elevation [m]
+    !                yflor - height of floor in each room above absolute reference elevation [m]
+    !                ylay  - height of layer in each room above absolute reference elevation [m]
     !                denl  - lower layer density in each room [kg/m**3]
     !                denu  - upper layer density in each room [kg/m**3]
-    !                pflor - pressure at base of each room above datum pressure [kg/(m*s**2) = pascal]
+    !                pflor - pressure at base of each room above absolute reference pressure [kg/(m*s**2) = pascal]
     !                dp    - change in pressure between two rooms [kg/(m*s**2) = pascal]
 
     use precision_parameters

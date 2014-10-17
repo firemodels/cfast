@@ -11,6 +11,7 @@ Public Class ViewFile
                 _fileName = value
                 Me.Text = _fileName
                 Me.PreviewDocument.Body.Children.Clear()
+                Me.PreviewDocument.PageLayouts.Default.Document.PageLayout.PageSettings.Landscape = True
                 FileOpen(io, _fileName, OpenMode.Input, OpenAccess.Read, OpenShare.Shared)
                 Do Until EOF(io)
                     ln = LineInput(io)

@@ -4692,7 +4692,12 @@ Public Class CeditMain
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             aCompartment = myCompartments.Item(CurrentCompartment)
             numPoints = UpdateGUI.CountGridPoints(Me.CompVariableArea)
-            If numPoints > 0 Then
+            If numPoints = 0 Then
+                Dim AreaPoints(0) As Single, HeightPoints(0) As Single
+                aCompartment.SetVariableArea(AreaPoints, HeightPoints)
+                myCompartments.Item(CurrentCompartment) = aCompartment
+                UpdateGUI.Geometry(CurrentCompartment)
+            ElseIf numPoints > 0 Then
                 Dim AreaPoints(numPoints) As Single, HeightPoints(numPoints) As Single
                 For ir = 1 To numPoints
                     HeightPoints(ir) = Val(Me.CompVariableArea(ir, 0))

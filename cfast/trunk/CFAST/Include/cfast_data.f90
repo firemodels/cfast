@@ -4,6 +4,7 @@
 module cenviro
     
     use precision_parameters
+    use cfast_types
     use cparams
     implicit none
     save
@@ -54,21 +55,8 @@ module cenviro
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
-    
-    !  room data structure
-    type room_type
-      real(eb) :: yflor, yceil
-      real(eb) :: wall_center(10,3)
-    end type room_type
 
     type(room_type), target :: roominfo(nr)
-    
-    ! ramp data structure
-    type ramp_type
-        character :: type
-        integer :: from_room, to_room, vent_number, npoints
-        real(eb) :: time(nv), value(nv)
-    end type ramp_type
     
     integer :: nramps = 0
     type(ramp_type), target :: rampinfo(mxramps)
@@ -79,6 +67,7 @@ end module cenviro
 
 module cfast_main
     use precision_parameters
+    use cfast_types  
     use cparams
     use dsize
     implicit none
@@ -129,33 +118,7 @@ module cfast_main
     logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
 
     character(128) :: title, compartmentnames(nr)
-    
-!            xfire(nfire,1) = objpos(1,iobj)
-!            xfire(nfire,2) = objpos(2,iobj)
-!            xfire(nfire,3) = objpos(3,iobj) + ohight
-!            xfire(nfire,4) = oplume(3,iobj)
-!            xfire(nfire,5) = oplume(1,iobj)
-!            xfire(nfire,6) = oplume(2,iobj)
-!            xfire(nfire,7) = qfc(1,iroom)
-!            xfire(nfire,8) = xqfr
-!            xfire(nfire,9) = heatlp(iroom) + heatup(iroom)
-!            xfire(nfire,10) = heatlp(iroom)
-!            xfire(nfire,11) = heatup(iroom)
-!            xfire(nfire,12) = objhct
-!            xfire(nfire,13) = y_soot
-!            xfire(nfire,14) = y_co
-!            !xfire(nfire,15) = hcratt
-!            !xfire(nfire,16) = ocratt
-!            !xfire(nfire,17) = clfrat
-!            !xfire(nfire,18) = cnfrat
-!            xfire(nfire,19) = objclen(iobj)
-!            xfire(nfire,20) = oareat
-
-! fire data structure
-
-     type fire_type
-     end type fire_type
-     
+   
      type(fire_type), target :: fireinfo(mxfire)
 
 end module cfast_main

@@ -1181,7 +1181,7 @@
     call sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
     call djet (flwdjf,djetflg)
 
-    ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation
+    ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
     call cjet (flwcjet,flxcjet)
     call cvheat (flwcv,flxcv)
     call rdheat (flwrad,flxrad,ierror)

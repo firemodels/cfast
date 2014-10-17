@@ -68,13 +68,9 @@ Public Class UpdateGUI
         MainWin.EnvIntAmbTemp.Text = myEnvironment.IntAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         MainWin.EnvIntAmbPress.Text = myEnvironment.IntAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvIntAmbElevation.Text = myEnvironment.IntAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
-        MainWin.EnvIntAmbRH.Text = myEnvironment.IntAmbRH.ToString + " %"
         MainWin.EnvExtAmbTemp.Text = myEnvironment.ExtAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         MainWin.EnvExtAmbPress.Text = myEnvironment.ExtAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvExtAmbElevation.Text = myEnvironment.ExtAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
-        MainWin.EnvWindSpeed.Text = myEnvironment.ExtWindSpeed.ToString + myUnits.Convert(UnitsNum.Velocity).Units
-        MainWin.EnvWindHeight.Text = myEnvironment.ExtScaleHeight.ToString + myUnits.Convert(UnitsNum.Length).Units
-        MainWin.EnvPowerLaw.Text = myEnvironment.ExtPowerLawCoefficient.ToString
         MainWin.EnvErrors.Text = ""
         If myErrors.Count > 0 Then
             Dim myEnumerator As System.Collections.IEnumerator = myErrors.Queue.GetEnumerator()

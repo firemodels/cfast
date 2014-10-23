@@ -1062,7 +1062,7 @@
     do itarg = 1, mxtarg
         ixtarg(trgmeth,itarg) = xplicit
         ixtarg(trgeq,itarg) = pde
-        ixtarg(trgback,itarg) = int
+        ixtarg(trgback,itarg) = interior
         cxtarg(itarg) = 'DEFAULT'
     end do
 
@@ -1485,7 +1485,7 @@
         ntarg = ntarg + 1
         ixtarg(trgroom,ntarg) = iroom
         ixtarg(trgmeth,ntarg) = steady
-        ixtarg(trgback,ntarg) = ext
+        ixtarg(trgback,ntarg) = exterior
 
         xx = br(iroom)*0.50_eb
         yy = dr(iroom)*0.50_eb

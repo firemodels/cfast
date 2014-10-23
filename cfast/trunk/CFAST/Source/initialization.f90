@@ -664,7 +664,7 @@
     ! normalize pressures so that the smallest pressure is zero
     xxpmin = min(interior_rel_pressure(1),exterior_rel_pressure(1))
     do i = 2, nm1
-        xxpmin = min(xxpmin,interior_rel_pressure(i),exterior_rel_pressure(i))
+        xxpmin = max(xxpmin,interior_rel_pressure(i),exterior_rel_pressure(i))
     end do
     do i = 1, nm1
         exterior_rel_pressure(i) = exterior_rel_pressure(i) - xxpmin

@@ -288,7 +288,7 @@
             if(cosang>=0.0_eb)then
                 qtfflux(itarg,1) = qtfflux(itarg,1) + qft
             else
-                if(ixtarg(trgback,itarg)==int)then
+                if(ixtarg(trgback,itarg)==interior)then
                     qtfflux(itarg,2) = qtfflux(itarg,2) + qft
                 endif
             endif
@@ -346,7 +346,7 @@
             endif
 
             ! calculate flux on the target front.  calculate flux on the target back only if the rear of the target is interior to the room.
-            if(jj==1.or.ixtarg(trgback,itarg)==int)then
+            if(jj==1.or.ixtarg(trgback,itarg)==interior)then
                 qwtsum(jj) = qwtsum(jj) + qwt*awall
                 qgassum(jj) = qgassum(jj) + qgt*awall
                 awallsum(jj) = awallsum(jj) + awall
@@ -359,7 +359,7 @@
         end do       
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if(ixtarg(trgback,itarg)==ext.or.qtgflux(itarg,2)==0.0)then
+        if(ixtarg(trgback,itarg)==exterior.or.qtgflux(itarg,2)==0.0)then
             qtgflux(itarg,2) = sigma*interior_temperature**4
         endif
     endif
@@ -383,7 +383,7 @@
     ztarg = xxtarg(trgcenz,itarg)
     call gettgas(irtarg,xtarg,ytarg,ztarg,tg)
     tgtarg(itarg) = tg
-    if(ixtarg(trgback,itarg)==int)then
+    if(ixtarg(trgback,itarg)==interior)then
         tgb = tg
     else
         tgb = interior_temperature

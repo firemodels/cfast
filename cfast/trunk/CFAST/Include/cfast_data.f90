@@ -226,8 +226,8 @@ module fltarget
     integer, parameter :: steady = 1
     integer, parameter :: mplicit = 2
     integer, parameter :: xplicit = 3
-    integer, parameter :: int = 1
-    integer, parameter :: ext =2
+    integer, parameter :: interior = 1
+    integer, parameter :: exterior = 2
 
     character(8) :: cxtarg(mxtarg)
 

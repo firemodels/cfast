@@ -1894,7 +1894,7 @@
             end do
 
             do layer = upper, lower
-                zzrho(iroom,layer) = zzpabs(iroom)/rgas/zztemp(iroom,layer)
+                zzrho(iroom,layer) = pofset/rgas/zztemp(iroom,layer)
                 zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)
             end do
         end do

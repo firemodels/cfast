@@ -572,14 +572,14 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
-   cd $FDS_SVNROOT/SMV/Build/intel_linux_64_db
-   ./make_smv.sh &> $CFASTBOT_DIR/output/stage6b
+   cd $FDS_SVNROOT/SMV/Build/intel_linux_64
+   ./make_smv_db.sh &> $CFASTBOT_DIR/output/stage6b
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   cd $FDS_SVNROOT/SMV/Build/intel_linux_64_db
+   cd $FDS_SVNROOT/SMV/Build/intel_linux_64
    if [ -e "smokeview_linux_64_db" ]
    then
       stage6b_success=true

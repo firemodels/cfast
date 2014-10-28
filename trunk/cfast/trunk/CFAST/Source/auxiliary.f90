@@ -718,7 +718,7 @@
     character(3) :: drive(2)
     character(256) :: dir(2)
     character(64) :: ext(2)
-    integer(4) :: length, pathcount, splitpathqq, ilen,j
+    integer(4) :: length, pathcount, splitpathqq, ilen
 
     n = command_argument_count() + 1
     project = ' '
@@ -749,7 +749,7 @@
             dir(i) = ' '
             name(i) = ' '
             ext(i) = ' '
-            length = SPLITPATHQQ(xname, drive(i), dir(i), name(i), ext(i))
+            length = splitpathqq(xname, drive(i), dir(i), name(i), ext(i))
             ld(i) = len_trim(drive(i))
             li(i) = len_trim(dir(i))
             ln(i) = len_trim(name(i))

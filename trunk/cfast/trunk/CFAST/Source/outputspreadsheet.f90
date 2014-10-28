@@ -87,6 +87,7 @@
     subroutine SSaddtolist (ic, valu, array)
 
     use precision_parameters
+    use cshell, only: validate
     implicit none
     
     real(eb), intent(in) :: valu
@@ -107,7 +108,11 @@
 
     entry SSprintresults (iounit,ic,array)
 
-    write (iounit,"(1024(e13.6,','))" ) (array(i),i=1,ic)
+    if (validate) then
+        write (iounit,"(1024(e19.12,','))" ) (array(i),i=1,ic)
+    else
+        write (iounit,"(1024(e13.6,','))" ) (array(i),i=1,ic)
+    end if
     return
     
     entry SSprintresid (iounit,ic,array)

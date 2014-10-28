@@ -1272,7 +1272,7 @@
     integer, intent(out) :: xerr, yerr
 
     real(eb), intent(in) :: x(xdim), y(ydim), z(xdim,ydim)
-    real(eb) :: deltax, deltay, delx, dely, dzdx, dzdy, zval
+    real(eb) :: zval
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
     integer :: count, i, j
 

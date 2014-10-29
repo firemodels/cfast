@@ -1,13 +1,9 @@
 @echo off
-set intelbin="%IFORT_COMPILER14%\bin"
 
-IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
+:: setup compiler environment
+call ..\scripts\setup_intel_compilers.bat intel64
 
-set SETUP_IFORT_COMPILER_64=1
+Title Building debug cfast for 64 bit Windows
 
-echo Setting up compiler environment
-call %intelbin%\ifortvars intel64
-
-:envexist
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64_db
 pause

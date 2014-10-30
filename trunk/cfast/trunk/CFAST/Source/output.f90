@@ -1285,6 +1285,7 @@
 
     use precision_parameters
     use solver_parameters
+    use cshell, only: validate
     implicit none
 
     
@@ -1325,6 +1326,7 @@
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
         endif
         if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
+        if (validate.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
     end do
     return
 
@@ -1333,6 +1335,7 @@
 5020 format (f7.1,6x)
 5030 format (f8.2,5x)
 5040 format (f9.3,4x)
+5050 format (2x,e11.4)
     end subroutine flwout
 
 ! --------------------------- getabstarget -------------------------------------------

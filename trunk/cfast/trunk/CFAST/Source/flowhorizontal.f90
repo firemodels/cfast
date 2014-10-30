@@ -36,7 +36,7 @@
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
+    integer :: nirm, ifrom, ito, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
     real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
     
     type(vent_type), pointer :: ventptr
@@ -121,7 +121,13 @@
 
                 !call flogo1(dirs12,yslab,xmslab,nslab,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
                 call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
+                
+                ! copy flows into vent data structures for output
 
+                do ilay = 1, 2 
+                    ventptr%mflow(1,ilay) = uflw2(1,m,ilay)
+                    ventptr%mflow(2,ilay) = uflw2(2,m,ilay)
+                end do
                 !  calculate entrainment type mixing at the vents
 
                 if (option(fentrain)==on) then
@@ -130,13 +136,17 @@
                     sau2(iijk) = vsas(1,i)
                     asl1(iijk) = vasa(2,i)
                     asl2(iijk) = vasa(1,i)
+                    do ilay = 1, 2
+                        ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
+                        ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
+                    end do
                 else
                     sau1(iijk) = 0.0_eb
                     sau2(iijk) = 0.0_eb
                     asl1(iijk) = 0.0_eb
                     asl2(iijk) = 0.0_eb
-                endif
-
+                end if
+                
                 ! sum flows from both rooms for each layer and type of product
                 ! (but only if the room is an inside room)
 
@@ -869,10 +879,20 @@
         temp_lower = tl(ito)
         
         if (temp_slab>=temp_upper+deltatemp_min) then
+            ! if it's really hot, it goes to the upper layer
             fupper = 1.0_eb
         elseif (temp_slab<=temp_lower-deltatemp_min) then
+            ! if it's really cold, it goes to the lower layer
             fupper = 0.0_eb
+        !else if (tu(ito)-tl(ito)<2.0_eb*deltatemp_min) then
+        !    ! if the two layers are nearly the same temperature, just use lower to lower and upper to upper
+        !    if (yslab(n)>ylay(ito)) then
+        !        fupper = 1.0_eb
+        !    else
+        !        fupper = 0.0_eb
+        !    end if
         else
+            ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in between then mix the flow
             fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
         endif
         

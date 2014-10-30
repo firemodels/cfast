@@ -518,6 +518,7 @@ module vents
         real(eb) :: sill, soffit, width
         real(eb) :: from_hall_offset, to_hall_offset
         real(eb) :: wind_dp
+        real(eb) :: mflow(2,2), mflow_mix(2,2)  ! (from or to,u or l)
         integer :: from, to, counter
         integer :: is_from_hall, is_to_hall
         integer :: face

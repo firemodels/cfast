@@ -452,28 +452,26 @@
                 else
                     write (iofilo,5020) ' ', cjout, outbuf
                 endif
-            endif
-        end do
 
         !     mechanical vents
         if (nnode/=0.and.next/=0) then
-            do i = 1, next
-                ii = hvnode(1,i)
+            do j = 1, next
+                ii = hvnode(1,j)
                 if (ii==irm) then
-                    inode = hvnode(2,i)
+                    inode = hvnode(2,j)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', inode
                     do iii = 1, 6
                         flow(iii) = 0.0_eb
                     end do
-                    if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
-                    if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
-                    if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
-                    if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
-                    flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
-                    flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
+                    if (hveflo(upper,j)>=0.0_eb) flow(1) = hveflo(upper,j)
+                    if (hveflo(upper,j)<0.0_eb) flow(2) = -hveflo(upper,j)
+                    if (hveflo(lower,j)>=0.0_eb) flow(3) = hveflo(lower,j)
+                    if (hveflo(lower,j)<0.0_eb) flow(4) = -hveflo(lower,j)
+                    flow(5) = abs(tracet(upper,j)) + abs(tracet(lower,j))
+                    flow(6) = abs(traces(upper,j)) + abs(traces(lower,j))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
                     if (first) then
-                        if (i/=1) write (iofilo,5010)
+                        if (j/=1) write (iofilo,5010)
                         write (iofilo,5020) ciout, cjout, outbuf
                         first = .false.
                     else

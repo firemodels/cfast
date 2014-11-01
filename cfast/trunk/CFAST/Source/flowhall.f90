@@ -173,7 +173,7 @@
             ventdistmax = ventdist 
 
             ! compute distances relative to vent where flow is coming from. also compute the maximum distance
-            do i = 1, nvents
+            do i = 1, n_hvents
                 ventptr=>ventinfo(i)
                 if(ventptr%from==ihall)then
 

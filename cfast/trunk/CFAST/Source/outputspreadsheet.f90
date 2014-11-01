@@ -508,7 +508,7 @@
     endif
 
     ! vents
-    do i = 1, nvents
+    do i = 1, n_hvents
         ventptr=>ventinfo(i)
         
         iroom1 = ventptr%from
@@ -523,7 +523,7 @@
         call SSaddtolist (position,avent,outarray)       
     end do
 
-    do i = 1, nvvent
+    do i = 1, n_vvents
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
         avent = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)

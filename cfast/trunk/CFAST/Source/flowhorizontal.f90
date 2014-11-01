@@ -36,7 +36,7 @@
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, ito, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
+    integer :: nirm, ifrom, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
     real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
     
     type(vent_type), pointer :: ventptr
@@ -54,7 +54,7 @@
 
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
-        do i = 1, nvents
+        do i = 1, n_hvents
             if(.not.ventflg(i)) cycle
             ventptr=>ventinfo(i)
             
@@ -62,6 +62,12 @@
             iroom2 = ventptr%to
             ik = ventptr%counter
             
+            do ilay = 1,2
+                ventptr%mflow(1,ilay) = 0.0_eb
+                ventptr%mflow(2,ilay) = 0.0_eb
+                ventptr%mflow_mix(1,ilay) = 0.0_eb
+                ventptr%mflow_mix(2,ilay) = 0.0_eb
+            end do
 
             ! setup data structures for from and to room
             call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
@@ -436,7 +442,7 @@
 
     ! turn all vents on
     anyvents = .true.
-    do i = 1, nvents
+    do i = 1, n_hvents
         ventflg(i) = .true.
     end do
 
@@ -450,7 +456,7 @@
             ieqtyp = izeqmap(jaccol,1)
             iroom = izeqmap(jaccol,2)
             anyvents = .false.
-            do i = 1, nvents
+            do i = 1, n_hvents
                 ventflg(i) = .false.
             end do
             do i = 1, nm1
@@ -459,7 +465,7 @@
             if(ieqtyp==eqp.or.ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqoxyl.or.ieqtyp==eqoxyu)then
 
                 ! determine all rooms connected to perturbed rooms
-                do i = 1, nvents
+                do i = 1, n_hvents
                     ventptr=>ventinfo(i)
                     
                     iroom1 = ventptr%from
@@ -472,7 +478,7 @@
                 roomflg(nm1+1) = .false.
 
                 ! determine all vents connected to the above rooms
-                do i = 1, nvents
+                do i = 1, n_hvents
                     ventptr=>ventinfo(i)
                     
                     iroom1 = ventptr%from

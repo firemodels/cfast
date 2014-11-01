@@ -507,7 +507,7 @@
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
         call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
-                   nvents, nvvent, nfires, flocal, fxlocal, fylocal, fzlocal, &
+                   n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -612,7 +612,7 @@
             ! can have the latest time step information. remapfires just puts all of the information in a single list
             call remapfires (nfires)
             call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
-                       hrl, br, dr, hr, nvents, nvvent, nfires, flocal, fxlocal, & 
+                       hrl, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, & 
             fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -1597,7 +1597,7 @@
         do i = 1, mxccv
             frmask(i) = 2**i
         end do
-        nvents = 0
+        n_hvents = 0
         do i = 1, nm1
             roomptr=>roominfo(i)
             
@@ -1605,8 +1605,8 @@
                 if (nw(i,j)/=0) then
                     do k = 1, mxccv
                         if (iand(frmask(k),nw(i,j))/=0) then
-                            nvents = nvents + 1
-                            ventptr => ventinfo(nvents)
+                            n_hvents = n_hvents + 1
+                            ventptr => ventinfo(n_hvents)
                             iijk = ijk(i,j,k)
                             ventptr%sill = hl(iijk)
                             ventptr%soffit = hh(iijk)
@@ -1661,17 +1661,17 @@
 
         !define vents for vertical flow
 
-        nvvent = 0
+        n_vvents = 0
         do i = 1, n
             do j = 1, n
                 if (nwv(i,j)/=0) then
-                    nvvent = nvvent + 1
-                    ivvent(nvvent,1) = i
-                    ivvent(nvvent,2) = j
-                    qcvv(1,nvvent) = qcvpp(1,i,j)
-                    qcvv(2,nvvent) = qcvpp(2,i,j)
-                    qcvv(3,nvvent) = qcvpp(3,i,j)
-                    qcvv(4,nvvent) = qcvpp(4,i,j)
+                    n_vvents = n_vvents + 1
+                    ivvent(n_vvents,1) = i
+                    ivvent(n_vvents,2) = j
+                    qcvv(1,n_vvents) = qcvpp(1,i,j)
+                    qcvv(2,n_vvents) = qcvpp(2,i,j)
+                    qcvv(3,n_vvents) = qcvpp(3,i,j)
+                    qcvv(4,n_vvents) = qcvpp(4,i,j)
                 endif
             end do
         end do
@@ -1687,13 +1687,13 @@
         iii = 1
 
         ! add each of the change arrays to the discontinuity list
-        do  i = 1, nvents
+        do  i = 1, n_hvents
             iii = iii + 1
             zzdisc(iii) = qcvh(1,i)
             iii = iii + 1
             zzdisc(iii) = qcvh(3,i)
         end do
-        do  i = 1, nvvent
+        do  i = 1, n_vvents
             iii = iii + 1
             zzdisc(iii) = qcvv(1,i)
             iii = iii + 1

@@ -507,7 +507,7 @@ module vents
     save
     
     integer, dimension(mxvent,2) :: ivvent
-    integer :: nvents, nvvent
+    integer :: n_hvents, n_vvents
     
     real(eb), dimension(nr,mxvent) :: zzventdist
     real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa

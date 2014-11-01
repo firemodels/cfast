@@ -748,7 +748,7 @@
 
 
     ! if no vents have a door jet fire then exit
-    do i = 1, nvents
+    do i = 1, n_hvents
         ventptr=>ventinfo(i)
 
         ! is there a door jet fire into room iroom1
@@ -789,7 +789,7 @@
     ! calculate the heat for each of the door jet fires
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
-        do i = 1, nvents
+        do i = 1, n_hvents
             ventptr=>ventinfo(i)
             if(ventflg(i))then
                 iroom1 = ventptr%from

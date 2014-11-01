@@ -517,14 +517,14 @@
     end do
 
     ! Vent variables
-    do i = 1, nvents
+    do i = 1, n_hvents
         position = position + 1
         call toIntString(i,cVent)
         headertext(1,position) = LabelUnits(12)
         headertext(2,position) = trim(LabelsShort(12))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
     end do
-    do i = 1, nvvent
+    do i = 1, n_vvents
         do j = 1,3
             position = position + 1
             call toIntString(i,cVent)
@@ -702,7 +702,7 @@
  
     position = 1
     
-    do i = 1, nvents
+    do i = 1, n_hvents
         do j = 1, 4
             position = position + 1
             headertext(1,position) = trim(Labels(j+1))

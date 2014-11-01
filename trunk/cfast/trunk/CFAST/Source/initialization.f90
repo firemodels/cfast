@@ -1851,7 +1851,7 @@
     end do
 
     ! check horizontal vent flow
-    do i = 1, nvents
+    do i = 1, n_hvents
         ventptr=>ventinfo(i)
         
         iroom1 = ventptr%from
@@ -1870,7 +1870,7 @@
     end do
 
     ! check vertical vent flow
-    do i = 1, nvvent
+    do i = 1, n_vvents
         iroom1 = ivvent(i,toprm)
         iroom2 = ivvent(i,botrm)
         if(vvarea(iroom1,iroom2)/=0.0_eb)then

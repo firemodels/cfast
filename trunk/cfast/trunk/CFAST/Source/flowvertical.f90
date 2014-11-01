@@ -29,7 +29,7 @@
     ! the selection rules are now implemented here.  the crossover is the relative fraction of the volume cloesest to the hole from which the mass will come
     vflowflg = .false.
     if (option(fvflow)/=on) return
-    if (nvvent==0) return
+    if (n_vvents==0) return
     vflowflg = .true.
     crosover = 0.5_eb
     oco = 1.0_eb/crosover
@@ -45,7 +45,7 @@
         end do
     end do
 
-    do i = 1, nvvent
+    do i = 1, n_vvents
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
         call getventfraction ('V',itop,ibot,1,i,tsec,vvfraction)

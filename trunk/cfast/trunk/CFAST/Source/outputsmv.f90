@@ -1,7 +1,7 @@
 
 ! --------------------------- svout -------------------------------------------
 
-subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -16,7 +16,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
     !  nrooms -     number of rooms
     !  x0,y0,z0 -   room origin
     !  dx,dy,dz -   room dimensions
-    !  nvents -     number of vents
+    !  n_hvents -     number of vents
     !  vfrom -      from room number
     !  vto =        to room number 
     !  vface -      face number
@@ -32,7 +32,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
     implicit none
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
-    integer, intent(in) :: nrooms, nscount, nvents, nfires, nvvent, ntarg
+    integer, intent(in) :: nrooms, nscount, n_hvents, nfires, n_vvents, ntarg
     real(eb), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
@@ -75,7 +75,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
 10      format(1x,e11.4,1x,e11.4,1x,e11.4)
     end do
 
-    do i = 1, nvents
+    do i = 1, n_hvents
         write(13,"(a)")"VENTGEOM"
         call getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
         write(13,20) ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
@@ -88,7 +88,7 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, nvents, nvvent, nf
 30      format(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)
     end do
 
-    do i = 1, nvvent
+    do i = 1, n_vvents
         write(13,"(a)") "VFLOWGEOM"
         call getvventinfo(i,itop,ibot,harea,hshape,hface)
         write(13,35) itop,ibot,hface,harea,hshape

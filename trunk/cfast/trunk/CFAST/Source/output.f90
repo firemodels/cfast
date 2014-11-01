@@ -392,82 +392,58 @@
     use cfast_main
     use cshell
     use vents
+    use flwptrs
     implicit none
     
-    integer :: irm, i, j, k, iijk, ii, inode, iii
-    real(eb) :: sum1, sum2, sum3, sum4, sum5, sum6, flow
+    integer :: irm, i, j, ii, inode, iii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
+    real(eb) :: flow
 
-    character ciout*8, cjout*12, outbuf*132
+    character ciout*8, cjout*12, outbuf*132, cifrom*12, cito*12
     dimension flow(6)
     logical first
     
+    type(vent_type), pointer :: ventptr
+    
     write (iofilo,5000)
 
-    do irm = 1, n
-        i = irm
-        first = .true.
-        write (ciout,'(a8)') compartmentnames(irm)
-        if (irm==n) ciout = 'Outside'
+    !     horizontal flow natural vents    
+    do i = 1, n_hvents
 
-        !     horizontal flow natural vents
-        do j = 1, n
-            do k = 1, mxccv
-                iijk = ijk(i,j,k)
-                if (iand(1,ishft(nw(i,j),-k))/=0) then
-                    if (j==n) then
-                        write (cjout,'(a1,1x,a7,a2,i1)') 'H', 'Outside', ' #', k
-                    else
-                        write (cjout,'(a1,1x,a4,i3,a2,i1)') 'H', 'Comp', J,' #', k
-                    endif
-                    if(i<j)then
-                        sum1 = ss2(iijk) + sa2(iijk)
-                        sum2 = ss1(iijk) + sa1(iijk)
-                        sum3 = aa2(iijk) + as2(iijk)
-                        sum4 = aa1(iijk) + as1(iijk)
-                    else
-                        sum1 = ss1(iijk) + sa1(iijk)
-                        sum2 = ss2(iijk) + sa2(iijk)
-                        sum3 = aa1(iijk) + as1(iijk)
-                        sum4 = aa2(iijk) + as2(iijk)
-                    endif
-                    if (i==n) then
-                        call flwout(outbuf,sum1,sum2,sum3,sum4,0.0_eb,0.0_eb,0.0_eb,0.0_eb)
-                    else
-                        if(i<j)then
-                            sum5 = sau2(iijk)
-                            sum6 = asl2(iijk)
-                        else
-                            sum5 = sau1(iijk)
-                            sum6 = asl1(iijk)
-                        endif
-                        call flwout(outbuf,sum1,sum2,sum3,sum4,sum5,sum6,0.0_eb,0.0_eb)
-                    endif
-                    if (first) then
-                        if (i/=1) write (iofilo,5010)
-                        write (iofilo,5020) ciout, cjout, outbuf
-                        first = .false.
-                    else
-                        write (iofilo,5020) ' ', cjout, outbuf
-                    endif
-                endif
-            end do
-        end do
+        ventptr=>ventinfo(i)
 
-        !     vertical flow natural vents
-        do j = 1, n
-            if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
-                if (j==n) then
-                    write (cjout,'(a1,1x,a7)') 'V', 'Outside'
-                else
-                    write (cjout,'(a1,1x,a4,i3)') 'V', 'Comp', j
-                endif
+        ifrom = ventptr%from
+        write (cifrom,'(a12)') compartmentnames(ifrom)
+        if (ifrom==n) cifrom = 'Outside'
+        
+        ito = ventptr%to
+        write (cito,'(a12)') compartmentnames(ito)
+        if (ito==n) cito = 'Outside'
+        
+        if (ito==n) then
+            call flwout(outbuf,ventptr%mflow(1,1),ventptr%mflow(2,1),ventptr%mflow(1,2),ventptr%mflow(2,2),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
+        else
+            call flwout(outbuf,ventptr%mflow(1,1),ventptr%mflow(2,1),ventptr%mflow(1,2),ventptr%mflow(2,2),ventptr%mflow_mix(1,1),ventptr%mflow_mix(2,1),0.0_eb,0.0_eb)
+        end if
+         write (iofilo,5030) 'H', i, cifrom, cito, outbuf
+    end do
+
+    !     vertical flow natural vents
+    do i = 1, n_vvents
+        
+        itop = ivvent(i,toprm)
+        write (cifrom,'(a12)') compartmentnames(itop)
+        if (itop==n) cifrom = 'Outside'
+        
+        ibot = ivvent(i,botrm)
+        write (cito,'(a12)') compartmentnames(ibot)
+        if (ibot==n) cito = 'Outside'
                 do ii = 1, 4
                     flow(ii) = 0.0_eb
                 end do
-                if (vmflo(j,i,upper)>=0.0_eb) flow(1) = vmflo(j,i,upper)
-                if (vmflo(j,i,upper)<0.0_eb) flow(2) = -vmflo(j,i,upper)
-                if (vmflo(j,i,lower)>=0.0_eb) flow(3) = vmflo(j,i,lower)
-                if (vmflo(j,i,lower)<0.0_eb) flow(4) = -vmflo(j,i,lower)
+                if (vmflo(ibot,itop,upper)>=0.0_eb) flow(1) = vmflo(ibot,itop,upper)
+                if (vmflo(ibot,itop,upper)<0.0_eb) flow(2) = -vmflo(ibot,itop,upper)
+                if (vmflo(ibot,itop,lower)>=0.0_eb) flow(3) = vmflo(ibot,itop,lower)
+                if (vmflo(ibot,itop,lower)<0.0_eb) flow(4) = -vmflo(ibot,itop,lower)
                 call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
                 if (first) then
                     if (i/=1) write (iofilo,5010)
@@ -509,10 +485,11 @@
     end do
 
 5000 format (//,' Flow Through Vents (kg/s)',/, &
-    '0To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)'/, &
-    ' Compartment    Vent                 Inflow       Outflow      Inflow       Outflow  To Upper     To Lower     Vented     Filtered',/,134('-'))
+    '0                      Connecting to    Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)'/, &
+    ' Vent   Compartment    Compartment      Inflow       Outflow      Inflow       Outflow  To Upper     To Lower     Vented     Filtered',/,134('-'))
 5010 format (' ')
 5020 format (' ',a7,8x,a12,1x,a)
+5030 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
     end subroutine rsltflw
 
 ! --------------------------- rsltflwt -------------------------------------------
@@ -884,7 +861,7 @@
     integer :: jpos
 
     write (iofilo,5000) 
-    write (iofilo,5010) nm1, nvents, nvvent, next
+    write (iofilo,5010) nm1, n_hvents, n_vvents, next
     write (iofilo,5020) nsmax, lprint, ldiagp, lcopyss
     if (cjeton(5)) then
         if (cjeton(1)) then
@@ -977,7 +954,7 @@
     logical :: first
 
     !     horizontal flow vents
-    if (nvents==0) then
+    if (n_hvents==0) then
         write (iofilo,5000)
     else
         write (iofilo,5010)
@@ -996,7 +973,7 @@
     endif
 
     !     vertical flow vents
-    if (nvvent==0) then
+    if (n_vvents==0) then
         write (iofilo,5030)
     else
         write (iofilo,5040)

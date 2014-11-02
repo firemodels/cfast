@@ -395,7 +395,7 @@
     use flwptrs
     implicit none
     
-    integer :: irm, i, j, ii, inode, iii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
+    integer :: irm, i, ii, inode, iii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
     real(eb) :: flow
 
     character ciout*8, cjout*12, outbuf*132, cifrom*12, cito*12
@@ -429,22 +429,49 @@
 
     !     vertical flow natural vents
     do i = 1, n_vvents
-        
+
         itop = ivvent(i,toprm)
         write (cifrom,'(a12)') compartmentnames(itop)
         if (itop==n) cifrom = 'Outside'
-        
+
         ibot = ivvent(i,botrm)
         write (cito,'(a12)') compartmentnames(ibot)
         if (ibot==n) cito = 'Outside'
-                do ii = 1, 4
-                    flow(ii) = 0.0_eb
+        do ii = 1, 4
+            flow(ii) = 0.0_eb
+        end do
+        if (vmflo(ibot,itop,upper)>=0.0_eb) flow(1) = vmflo(ibot,itop,upper)
+        if (vmflo(ibot,itop,upper)<0.0_eb) flow(2) = -vmflo(ibot,itop,upper)
+        if (vmflo(ibot,itop,lower)>=0.0_eb) flow(3) = vmflo(ibot,itop,lower)
+        if (vmflo(ibot,itop,lower)<0.0_eb) flow(4) = -vmflo(ibot,itop,lower)
+        call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
+        if (first) then
+            if (i/=1) write (iofilo,5010)
+            write (iofilo,5020) ciout, cjout, outbuf
+            first = .false.
+        else
+            write (iofilo,5020) ' ', cjout, outbuf
+        endif
+
+    end do
+
+    !     mechanical vents
+    if (nnode/=0.and.next/=0) then
+        do i = 1, next
+            ii = hvnode(1,i)
+            if (ii==irm) then
+                inode = hvnode(2,i)
+                write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', inode
+                do iii = 1, 6
+                    flow(iii) = 0.0_eb
                 end do
-                if (vmflo(ibot,itop,upper)>=0.0_eb) flow(1) = vmflo(ibot,itop,upper)
-                if (vmflo(ibot,itop,upper)<0.0_eb) flow(2) = -vmflo(ibot,itop,upper)
-                if (vmflo(ibot,itop,lower)>=0.0_eb) flow(3) = vmflo(ibot,itop,lower)
-                if (vmflo(ibot,itop,lower)<0.0_eb) flow(4) = -vmflo(ibot,itop,lower)
-                call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
+                if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
+                if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
+                if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
+                if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
+                flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
+                flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
+                call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
                 if (first) then
                     if (i/=1) write (iofilo,5010)
                     write (iofilo,5020) ciout, cjout, outbuf
@@ -452,35 +479,9 @@
                 else
                     write (iofilo,5020) ' ', cjout, outbuf
                 endif
-
-        !     mechanical vents
-        if (nnode/=0.and.next/=0) then
-            do j = 1, next
-                ii = hvnode(1,j)
-                if (ii==irm) then
-                    inode = hvnode(2,j)
-                    write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', inode
-                    do iii = 1, 6
-                        flow(iii) = 0.0_eb
-                    end do
-                    if (hveflo(upper,j)>=0.0_eb) flow(1) = hveflo(upper,j)
-                    if (hveflo(upper,j)<0.0_eb) flow(2) = -hveflo(upper,j)
-                    if (hveflo(lower,j)>=0.0_eb) flow(3) = hveflo(lower,j)
-                    if (hveflo(lower,j)<0.0_eb) flow(4) = -hveflo(lower,j)
-                    flow(5) = abs(tracet(upper,j)) + abs(tracet(lower,j))
-                    flow(6) = abs(traces(upper,j)) + abs(traces(lower,j))
-                    call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
-                    if (first) then
-                        if (j/=1) write (iofilo,5010)
-                        write (iofilo,5020) ciout, cjout, outbuf
-                        first = .false.
-                    else
-                        write (iofilo,5020) ' ', cjout, outbuf
-                    endif
-                endif
-            end do
-        endif
-    end do
+            endif
+        end do
+    endif
 
 5000 format (//,' Flow Through Vents (kg/s)',/, &
     '0                      Connecting to    Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)'/, &

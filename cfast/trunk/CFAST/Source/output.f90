@@ -421,11 +421,18 @@
         if (ito==n) cito = 'Outside'
         
         if (ito==n) then
-            call flwout(outbuf,ventptr%mflow(1,1),ventptr%mflow(2,1),ventptr%mflow(1,2),ventptr%mflow(2,2),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
+            call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
         else
-            call flwout(outbuf,ventptr%mflow(1,1),ventptr%mflow(2,1),ventptr%mflow(1,2),ventptr%mflow(2,2),ventptr%mflow_mix(1,1),ventptr%mflow_mix(2,1),0.0_eb,0.0_eb)
+            call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),ventptr%mflow_mix(1,1),ventptr%mflow_mix(2,1),0.0_eb,0.0_eb)
         end if
-         write (iofilo,5030) 'H', i, cifrom, cito, outbuf
+        write (iofilo,5030) 'H', i, cifrom, outbuf
+         
+        if (ito==n) then
+            call flwout(outbuf,ventptr%mflow(2,1,1),ventptr%mflow(2,1,2),ventptr%mflow(2,2,1),ventptr%mflow(2,2,2),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
+        else
+            call flwout(outbuf,ventptr%mflow(2,1,1),ventptr%mflow(2,1,2),ventptr%mflow(2,2,1),ventptr%mflow(2,2,2),ventptr%mflow_mix(1,2),ventptr%mflow_mix(2,2),0.0_eb,0.0_eb)
+        end if
+        write (iofilo,5040) cito, outbuf
     end do
 
     !     vertical flow natural vents
@@ -446,41 +453,34 @@
         if (vmflo(ibot,itop,lower)>=0.0_eb) flow(3) = vmflo(ibot,itop,lower)
         if (vmflo(ibot,itop,lower)<0.0_eb) flow(4) = -vmflo(ibot,itop,lower)
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
-        if (first) then
-            if (i/=1) write (iofilo,5010)
-            write (iofilo,5020) ciout, cjout, outbuf
-            first = .false.
-        else
-            write (iofilo,5020) ' ', cjout, outbuf
-        endif
+
+        write (iofilo,5020) 'V', i, cifrom, cito, outbuf
 
     end do
 
     !     mechanical vents
     if (nnode/=0.and.next/=0) then
         do i = 1, next
+            
             ii = hvnode(1,i)
-            if (ii==irm) then
-                inode = hvnode(2,i)
-                write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', inode
-                do iii = 1, 6
-                    flow(iii) = 0.0_eb
-                end do
-                if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
-                if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
-                if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
-                if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
-                flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
-                flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
-                call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
-                if (first) then
-                    if (i/=1) write (iofilo,5010)
-                    write (iofilo,5020) ciout, cjout, outbuf
-                    first = .false.
-                else
-                    write (iofilo,5020) ' ', cjout, outbuf
-                endif
-            endif
+             write (cifrom,'(a12)') compartmentnames(ii)
+            if (ii==n) cifrom = 'Outside'
+            
+            inode = hvnode(2,i)
+            write (cito,'(a5,i3)') 'Node ', inode
+            
+            do iii = 1, 6
+                flow(iii) = 0.0_eb
+            end do
+            if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
+            if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
+            if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
+            if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
+            flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
+            flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
+            call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
+            
+            write (iofilo,5020) 'M', i, cifrom, cito, outbuf
         end do
     endif
 
@@ -488,8 +488,9 @@
     '0                      Connecting to    Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)'/, &
     ' Vent   Compartment    Compartment      Inflow       Outflow      Inflow       Outflow  To Upper     To Lower     Vented     Filtered',/,134('-'))
 5010 format (' ')
-5020 format (' ',a7,8x,a12,1x,a)
-5030 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
+5020 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
+5030 format (' ',a1,i3,3x,a12,16x,a)
+5040 format (' ',22x,a12,1x,a)    
     end subroutine rsltflw
 
 ! --------------------------- rsltflwt -------------------------------------------
@@ -931,7 +932,7 @@
 5000 format (//,' COMPARTMENTS',//, &
     ' Compartment  Name                Width        Depth        Height       Ceiling      Floor     ',/, &
     '                                                                         Height       Height    ',/, & 
-    ' '33x,5('(m)',10x),/,' ',96('-'))
+    ' ',33x,5('(m)',10x),/,' ',96('-'))
 5010 format (' ',i5,8x,a13,5(f12.2,1x))
     end subroutine outcomp
 

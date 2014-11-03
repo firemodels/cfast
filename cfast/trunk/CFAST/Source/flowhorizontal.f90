@@ -63,8 +63,10 @@
             ik = ventptr%counter
             
             do ilay = 1,2
-                ventptr%mflow(1,ilay) = 0.0_eb
-                ventptr%mflow(2,ilay) = 0.0_eb
+                ventptr%mflow(1,ilay,1) = 0.0_eb
+                ventptr%mflow(2,ilay,1) = 0.0_eb
+                ventptr%mflow(1,ilay,2) = 0.0_eb
+                ventptr%mflow(2,ilay,2) = 0.0_eb
                 ventptr%mflow_mix(1,ilay) = 0.0_eb
                 ventptr%mflow_mix(2,ilay) = 0.0_eb
             end do
@@ -125,15 +127,8 @@
                 aa1(iijk) = vaa(1,i)
                 aa2(iijk) = vaa(2,i)
 
-                !call flogo1(dirs12,yslab,xmslab,nslab,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
-                call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
-                
-                ! copy flows into vent data structures for output
+                call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,ventptr%mflow,uflw2)
 
-                do ilay = 1, 2 
-                    ventptr%mflow(1,ilay) = uflw2(1,m,ilay)
-                    ventptr%mflow(2,ilay) = uflw2(2,m,ilay)
-                end do
                 !  calculate entrainment type mixing at the vents
 
                 if (option(fentrain)==on) then
@@ -210,7 +205,7 @@
             end do
         elseif(jaccol>0)then
 
-            ! we are computing a jacobian, so get previously save solution for rooms that are not affected by perturbed solution variable
+            ! we are computing a jacobian, so get previously saved solution for rooms that are not affected by perturbed solution variable
             do iroom = 1, nm1
                 if(.not.roomflg(iroom))then
                     do iprod = 1, nprod + 2
@@ -821,7 +816,7 @@
 
 ! --------------------------- flogo -------------------------------------------
 
-    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
+    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,mflows,uflw2)
 
     !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
@@ -838,6 +833,7 @@
     !                mxprd  - maximum number of products currently available.
     !                nprod  - number of products
     !                mxslab - maximum number of slabs currently available.
+    !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
     !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [kg/s]
     !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [w]
     !                uflw2(i,3,j), i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [(kg oxygen)/s]
@@ -850,13 +846,14 @@
     integer, intent(in) :: dirs12(*)
     integer, intent(in) :: nprod, nslab, mxprd, mxslab
     real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxslab,*), tu(*), tl(*)
-    real(eb), intent(out) :: uflw2(2,mxprd+2,2)
+    real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxprd+2,2)
     
     integer :: i, iprod, n, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
     real(eb), parameter :: deltatemp_min = 1.0_eb
 
     ! initialize outputs
+    mflows = 0.0_eb
     do i = 1, 2
         do iprod = 1, nprod + 2
             uflw2(i,iprod,l) = 0.0_eb
@@ -906,10 +903,29 @@
         flow_fraction(l) = flower
         flow_fraction(u) = fupper
 
-        ! put flow into destination room
         xmterm = xmslab(n)
         qterm = qslab(n)
+        
+        ! take it out of the origin room
+        if (yslab(n)>=ylay(ifrom)) then
+            mflows(ifrom,u,2) = mflows(ifrom,u,2) + xmterm
+            uflw2(ifrom,m,u) = uflw2(ifrom,m,u) - xmterm
+            uflw2(ifrom,q,u) = uflw2(ifrom,q,u) - qterm
+            do iprod = 1, nprod
+                uflw2(ifrom,2+iprod,u) = uflw2(ifrom,2+iprod,u) - pslab(n,iprod)
+            end do
+        else
+            mflows(ifrom,l,2) = mflows(ifrom,l,2) + xmterm
+            uflw2(ifrom,m,l) = uflw2(ifrom,m,l) - xmterm
+            uflw2(ifrom,q,l) = uflw2(ifrom,q,l) - qterm
+            do iprod = 1, nprod
+                uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n,iprod)
+            end do
+        endif
+
+        ! put flow into destination room        
         do ilay = 1, 2
+            mflows(ito,ilay,1) = mflows(ito,ilay,1) + flow_fraction(ilay)*xmterm
             uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + flow_fraction(ilay)*xmterm
             uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + flow_fraction(ilay)*qterm
             do iprod = 1, nprod
@@ -917,123 +933,10 @@
             end do
         end do
 
-        ! take it out of the origin room
-        if (yslab(n)>=ylay(ifrom)) then
-            uflw2(ifrom,m,u) = uflw2(ifrom,m,u) - xmterm
-            uflw2(ifrom,q,u) = uflw2(ifrom,q,u) - qterm
-            do iprod = 1, nprod
-                uflw2(ifrom,2+iprod,u) = uflw2(ifrom,2+iprod,u) - pslab(n,iprod)
-            end do
-        else
-            uflw2(ifrom,m,l) = uflw2(ifrom,m,l) - xmterm
-            uflw2(ifrom,q,l) = uflw2(ifrom,q,l) - qterm
-            do iprod = 1, nprod
-                uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n,iprod)
-            end do
-        endif
     end do
     return
     end subroutine flogo
-    
-! --------------------------- flogo1 -------------------------------------------
-
-    subroutine flogo1(dirs12,yslab,xmslab,nslab,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
-
-    !     routine: flogo1
-    !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
-    !              through a vertical, constant-width vent.  this version implements the cfast rules for flow depostion. (upper
-    !              layer to upper layer and lower layer to lower layer)
-    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab
-    !                yslab - slab heights in rooms 1,2 above absolute reference elevation [m]
-    !                xmslab - mass flow rate in slabs [kg/s]
-    !                nslab  - number of slabs between bottom and top of vent
-    !                ylay   - height of layer in each room above absolute reference elevation [m]
-    !                qslab  - enthalpy flow rate in each slab [w]
-    !                pslab  - flow rate of product in each slab [(unit of product/s]
-    !                mxprd  - maximum number of products currently available.
-    !                nprod  - number of products
-    !                mxslab - maximum number of slabs currently available.
-    !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [kg/s]
-    !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [w]
-    !                uflw2(i,3,j), i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [(kg oxygen)/s]
-    !                uflw2(i,3+k,j), i=1 or 2, k=2 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
-
-    use precision_parameters
-    use flwptrs
-    implicit none
-    
-    integer, intent(in) :: dirs12(*)
-    integer, intent(in) :: nprod, nslab, mxprd, mxslab
-    real(eb), intent(in) :: yslab(*), xmslab(*), qslab(*), ylay(*), pslab(mxslab,*)
-    real(eb), intent(out) :: uflw2(2,mxprd+2,2)
-    
-    integer :: i, iprod, n, ifrom, ito, ilay
-    real(eb) :: ff(2), fl, fu, xmterm, qterm
-
-    ! initialize outputs
-    do i = 1, 2
-        do iprod = 1, nprod + 2
-            uflw2(i,iprod,l) = 0.0_eb
-            uflw2(i,iprod,u) = 0.0_eb
-        end do
-    end do
-
-    ! put each slab flow into appropriate layer of room i to and take slab flow out of appropriate layer of room ifrom
-    do n = 1, nslab
-
-        ! determine where room flow is coming from
-        if (dirs12(n)==1) then
-            ifrom = 1
-            ito = 2
-        else if (dirs12(n)==-1) then
-            ifrom = 2
-            ito = 1
-        else
-
-            ! no flow in this slab so we can skip it
-            go to 70
-        endif
-
-        ! lower to lower or upper to upper
-        if (yslab(n)>=ylay(ifrom)) then
-            fu = 1.0_eb
-        else
-            fu = 0.0_eb
-        endif
-        fl = 1.0_eb - fu
-        ff(l) = fl
-        ff(u) = fu
-
-        ! put flow into destination room
-        xmterm = xmslab(n)
-        qterm = qslab(n)
-        do ilay = 1, 2
-            uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + ff(ilay)*xmterm
-            uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + ff(ilay)*qterm
-            do iprod = 1, nprod
-                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + ff(ilay)*pslab(n,iprod)
-            end do
-        end do
-
-        ! take it out of the origin room
-        if (yslab(n)>=ylay(ifrom)) then
-            uflw2(ifrom,m,u) = uflw2(ifrom,m,u) - xmterm
-            uflw2(ifrom,q,u) = uflw2(ifrom,q,u) - qterm
-            do iprod = 1, nprod
-                uflw2(ifrom,2+iprod,u) = uflw2(ifrom,2+iprod,u) - pslab(n,iprod)
-            end do
-        else
-            uflw2(ifrom,m,l) = uflw2(ifrom,m,l) - xmterm
-            uflw2(ifrom,q,l) = uflw2(ifrom,q,l) - qterm
-            do iprod = 1, nprod
-                uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n,iprod)
-            end do
-        endif
-70      continue
-    end do
-    return
-    end subroutine flogo1
-
+ 
 ! --------------------------- delp -------------------------------------------
 
     subroutine delp(y,nelev,yflor,ylay,denl,denu,pflor,epsp,dp)

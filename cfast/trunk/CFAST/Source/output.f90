@@ -400,11 +400,12 @@
 
     character ciout*8, cjout*12, outbuf*132, cifrom*12, cito*12
     dimension flow(6)
-    logical first
+    logical :: first = .true.
     
     type(vent_type), pointer :: ventptr
     
     write (iofilo,5000)
+    
 
     !     horizontal flow natural vents    
     do i = 1, n_hvents

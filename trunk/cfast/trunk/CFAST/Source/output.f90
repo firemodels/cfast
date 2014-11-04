@@ -485,8 +485,8 @@
     endif
 
 5000 format (//,' Flow Through Vents (kg/s)',/, &
-    '0                      Connecting to    Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)'/, &
-    ' Vent   Compartment    Compartment      Inflow       Outflow      Inflow       Outflow  To Upper     To Lower     Vented     Filtered',/,134('-'))
+    '0                      Connecting to   Upper Layer               Lower Layer               Mixing       Mixing       Trace Species (kg)'/, &
+    ' Vent   Compartment    Compartment     Inflow       Outflow      Inflow       Outflow      To Upper     To Lower     Vented       Filtered',/,134('-'))
 5010 format (' ')
 5020 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
 5030 format (' ',a1,i3,3x,a12,16x,a)

@@ -832,7 +832,7 @@
 
         ! calculate the mass of objects that have been pyrolized
         ! at the moment we do only the total and the radiological species
-        ! It is important to call the routine to integrate the mass before call the toxicology calculatino
+        ! It is important to call the routine to integrate the mass before call the toxicology calculation
         call integrate_mass (t, dt)
 
         ! calculate gas dosage

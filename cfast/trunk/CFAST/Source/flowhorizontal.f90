@@ -850,7 +850,7 @@
     
     integer :: i, iprod, n, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
-    real(eb), parameter :: deltatemp_min = 1.0_eb
+    real(eb), parameter :: deltatemp_min = 0.01_eb
 
     ! initialize outputs
     mflows = 0.0_eb
@@ -882,18 +882,11 @@
         temp_lower = tl(ito)
         
         if (temp_slab>=temp_upper+deltatemp_min) then
-            ! if it's really hot, it goes to the upper layer
+            ! if it's relatively hot, it goes to the upper layer
             fupper = 1.0_eb
         elseif (temp_slab<=temp_lower-deltatemp_min) then
             ! if it's really cold, it goes to the lower layer
             fupper = 0.0_eb
-        !else if (tu(ito)-tl(ito)<2.0_eb*deltatemp_min) then
-        !    ! if the two layers are nearly the same temperature, just use lower to lower and upper to upper
-        !    if (yslab(n)>ylay(ito)) then
-        !        fupper = 1.0_eb
-        !    else
-        !        fupper = 0.0_eb
-        !    end if
         else
             ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in between then mix the flow
             fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)

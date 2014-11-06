@@ -66,4 +66,4 @@ call ..\..\cleancfast.bat
 ..\..\scripts\background -u 98  ..\..\..\bin\cfast LLNL_64p /V
 cd ..\..
 ..\VandV_Calcs\Release\VandV_Calcs.exe CFAST_Pressure_Correction_Inputs.csv
-copy ..\..\pressures.csv LLNL_Ambient_pressures.csv /Y
+copy pressures.csv LLNL_Enclosure\Pressure_Test\LLNL_Ambient_pressures.csv /Y

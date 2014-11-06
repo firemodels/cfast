@@ -2,7 +2,7 @@ VERSN,6,9_TL_200kW
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,4000,-50,0,10,10
+TIMES,4000,-50,10,10
 EAMB,306.15,101325,0
 TAMB,306.15,101325,0,50
 CJET,WALLS
@@ -10,7 +10,6 @@ WIND,0,10,0.16
 !!
 !!Material Properties
 !!
-MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
 MATL,LLNL Walls,0.39,1000,1440,0.1,0.94,Test Cell Walls
 MATL,LLNL Ceil,0.63,1000,1920,0.1,0.94,Test Cell Floor and Ceiling
 !!
@@ -20,5 +19,6 @@ COMPA,Full Test Cell,4,6,4.5,0,0,0,LLNL Ceil,LLNL Ceil,LLNL Walls
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,0.134,0.567,0.433,1,1,1,1,1
+HVENT,1,2,1,0.27,0.567,0.433,1,1,1,1,1
 MVENT,1,2,1,H,3.6,0.4225,H,0.75,0.0731,0.402,2000,3000,1
+GLOBA,10,393.15

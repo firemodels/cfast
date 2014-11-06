@@ -395,12 +395,11 @@
     use flwptrs
     implicit none
     
-    integer :: irm, i, ii, inode, iii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
+    integer :: i, ii, inode, iii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
     real(eb) :: flow
 
-    character ciout*8, cjout*12, outbuf*132, cifrom*12, cito*12
+    character outbuf*132, cifrom*12, cito*12
     dimension flow(6)
-    logical :: first = .true.
     
     type(vent_type), pointer :: ventptr
     

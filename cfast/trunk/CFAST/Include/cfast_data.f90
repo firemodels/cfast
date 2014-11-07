@@ -103,8 +103,8 @@ module cfast_main
         hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
         hvp(mnode), hvght(mnode), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
-        qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), de(mdt), da(mdt), &
-        dl(mdt), rr(mdt), ductar(mdt), hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcrf(nv), &
+        qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), eff_duct_diameter(mdt), duct_area(mdt), duct_length(mdt), &
+        hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcrf(nv), &
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
 

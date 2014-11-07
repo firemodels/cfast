@@ -489,13 +489,11 @@
     end do
 
     ! calculate area, relative roughness, effective diameter and volume of ducts
-    ! volume and roughness
     do id = 1, ndt
-        da(id) = (pi*de(id)**2)/4.0_eb
-        rr(id) = ductar(id)/de(id)
+        duct_area(id) = (pi*eff_duct_diameter(id)**2)/4.0_eb
         ib = ibrd(id)
-        hvdvol(ib) = hvdvol(ib) + da(id)*dl(id)
-        hvdara(ib) = hvdara(ib) + pi*de(id)*dl(id)
+        hvdvol(ib) = hvdvol(ib) + duct_area(id)*duct_length(id)
+        hvdara(ib) = hvdara(ib) + pi*eff_duct_diameter(id)*duct_length(id)
     end do
 
 

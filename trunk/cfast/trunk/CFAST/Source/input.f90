@@ -1035,13 +1035,13 @@
         hmax(nfan) = maxpres
         hvbco(nfan,1) = lrarray(10)
 
-        ! add a simple duct to connect the two nodes/fan - this is artificial since we do not worry about the species in the system
+        ! add a simple duct to connect the two nodes/fan - this is artificial since we do not worry about the species within the system
         ndt = ndt + 1
 
         ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
         ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation for flow through the external nodes
-        dl(ndt) = 1.0_eb
-        de(ndt) = lrarray(6)
+        duct_length(ndt) = 1.0_eb
+        eff_duct_diameter(ndt) = lrarray(6)
         ibrd(ndt) = nbr
 
         ! finally, we set the initial fraction opening

@@ -224,7 +224,7 @@
 5020 format (T16,'Temp.',T26,'Temp.',T36,'Height',T46,'Vol.',T62,'Absorb',T73,'Absorb',T95,'Target',T106,'Target')
 5030 FORMAT (T17,'(C)',T26,'(C)',T36,'(m)',T46,'(m^3)',T62,'(m^-1)',T73,'(m^-1)',T85,'(Pa)',T95,'(W/m^2)',T106,'(W/m^2)')
 5040 format (' ',113('-'))
-5070 format (1x,a13,1P2G11.4,1PG11.4,1X,1pg9.2,'(',I3,'%) ',1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
+5070 format (1x,a13,3(1PG11.4),1X,1pg9.2,'(',I3,'%) ',1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
 5071 format (1x,A13,1PG11.4,11(' '),11(' '),1X,1pg9.2,7(' '),1PG10.3,1X,10(' '),1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
     end subroutine rsltlay
 
@@ -290,9 +290,9 @@
 5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace',/, &
     '                          Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
     '                          (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)' ,/,' ',138('-'))
-5010 format (' ',14x,a8,2x,1p4g10.3,30x,1p3g10.3,2x,g10.3)
-5020 format (' ',13x,'Object ',i2,2x,1p4g10.3,30x,1p3g10.3,2x,g10.3)
-5030 format (' ',a14,10x,1p3g10.3,10x,1p3g10.3)
+5010 format (' ',14x,a8,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
+5020 format (' ',13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
+5030 format (' ',a14,10x,3(1pg10.3),10x,3(1pg10.3))
 5040 format ('  Outside',76x,1pg10.3)
     end subroutine rsltfir
 
@@ -603,8 +603,8 @@
     '               Temp.   Temp.   Height  Rate      Size                Target',/, &
     '               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)',/,' ',77('-'))
 5020 format ('  Outside',39x,1pg10.3)
-5030 format (i5,7x,2f8.1,2x,1pg9.2,1p4g10.3)
-5031 format (i5,7x,f8.1,8(' '),2x,8(' '),1p4g10.3)
+5030 format (i5,7x,2f8.1,2x,1pg9.2,4(1pg10.3))
+5031 format (i5,7x,f8.1,8(' '),2x,8(' '),4(1pg10.3))
     end subroutine rsltcmp
 
 ! --------------------------- rslttar -------------------------------------------
@@ -702,8 +702,8 @@
     '0Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire         Surface      Gas',/, &
     '                Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
     '                (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,1x,144('-'))
-5010 format (1x,a14,1p4g10.3,1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
-5030 format (55x,i4,4x,1p3g10.3,1x,5(1pg10.3,3x))
+5010 format (1x,a14,4(1pg10.3),1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
+5030 format (55x,i4,4x,3(1pg10.3),1x,5(1pg10.3,3x))
     end subroutine rslttar
 
 ! --------------------------- rsltsprink -------------------------------------------
@@ -1066,8 +1066,8 @@
 5120 format (//,' Fans',//,' System    From           From      To             To        Fan       Minimum   Maximum    Fan Curve',/, &
     ' ','                         Elev.                    Elev.','     Number',/,' ',25x, &
     '(m)                      (m)             ','    (Pa)      (Pa)',/,' ',100('-'))
-5130 format (' ',i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),1p5g10.2)
-5140 format (' ',10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),1p5g10.2)
+5130 format (' ',i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
+5140 format (' ',10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
      
     end  subroutine outvent
 
@@ -1139,13 +1139,13 @@
     write (iofilo,5060)
     return
 
-5000 FORMAT (//,' Heat transfer for all surfaces is turned off')
-5010 FORMAT (//,' THERMAL PROPERTIES',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
-5020 FORMAT (' ',a13,3(A10,3X))
-5030 FORMAT (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',3X,'Emissivity',16X,'HCL B''s (1->5)')
-5040 FORMAT (' ',A8,1P5G13.3,5E10.2)
-5050 FORMAT (' ',8X,1P4G13.3)
-5060 FORMAT (' ')
+5000 format (//,' Heat transfer for all surfaces is turned off')
+5010 format (//,' Thermal Properties',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
+5020 format (' ',a13,3(a10,3x))
+5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',3X,'Emissivity',16X,'HCL B''s (1->5)')
+5040 format (' ',a8,5(1pg13.3),5e10.2)
+5050 format (' ',8x,4(1pg13.3))
+5060 format (' ')
 
     end subroutine outthe
 
@@ -1204,8 +1204,8 @@
 5031 format (' Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/,1x,5(f7.3,3x),//)
 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
 5050 format ('Soot      CO        HCN       HCl       CT        TS')
-5060 format (F7.0,3X,1P4G10.2)
-5070 format (1P10G10.2,2x,2g10.2)
+5060 format (F7.0,3X,4(1PG10.2))
+5070 format (10(1PG10.2),2x,2g10.2)
     end subroutine outfire
 
 ! --------------------------- chksum -------------------------------------------

@@ -2,7 +2,7 @@ VERSN,6,"BE 3, Test 13, XPE Cable, Heptane, Door Closed, MV Off"
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,1800,-10,0,10,1
+TIMES,1800,-10,10,1
 EAMB,304.15,101300,0
 TAMB,304.15,101300,0,52
 CJET,WALLS
@@ -23,10 +23,11 @@ COMPA,Compartment 1,21.7,7.04,3.82,0,0,0,MARIBE3,GYPBE3,MARIBE3
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,11.9,3.82,3.81,1,0.555,0,4,1
+HVENT,1,2,1,8.33,3.82,3.81,1,0.555,0,4,1
 !!
 !!Fire keywords
 !!
+GLOBA,10,393.15
 !!NIST_NRC_T13
 FIRE,1,10.85,3.52,0,1,1,0,0,0,1,NIST_NRC_T13
 CHEMI,7,16,0,0,0,0.44,4.5E+07,METHANE

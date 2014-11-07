@@ -1,4 +1,4 @@
-# Makefile for CFAST, Version 6
+	# Makefile for CFAST, Version 6
 
 # To use this makefile, select the appropriate compiler and OS from the list below. For example, to
 # compile the 32 bit version of CFAST under Linux using the Intel compilers type:
@@ -49,26 +49,26 @@ setup_win:
 # ------------- Windows -------------------
 
 # 32 bit
-intel_win_32_db : FFLAGS = /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+intel_win_32_db : FFLAGS = /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_32_db : FCOMPL = ifort
 intel_win_32_db : obj = cfast6_win_32_db
 intel_win_32_db : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
-intel_win_32 : FFLAGS = -O2 /Qvec_report0 /Qsave /Qzero
+intel_win_32 : FFLAGS = -O2 /Qopt-report:0 /Qopt-report-phase:vec /Qsave /Qinit:zero /traceback
 intel_win_32 : FCOMPL = ifort
 intel_win_32 : obj = cfast6_win_32
 intel_win_32 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
 # 64 bit
-intel_win_64 : FFLAGS = -O2 /Qvec_report0  /Qsave /Qzero
+intel_win_64 : FFLAGS = -O2 /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /traceback
 intel_win_64 : FCOMPL = ifort
 intel_win_64 : obj = cfast6_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qvec_report0  /Qsave /Qzero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+intel_win_64_db : FFLAGS = /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_64_db : FCOMPL = ifort
 intel_win_64_db : obj = cfast6_win_64_db
 intel_win_64_db : setup_win $(objwin)
@@ -77,13 +77,13 @@ intel_win_64_db : setup_win $(objwin)
 # ------------- Linux -------------------
 
 # 32 bit
-intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report0 -I $(INCLUDE)
+intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report:0 -I $(INCLUDE)
 intel_linux_32 : FCOMPL = ifort
 intel_linux_32 : obj = cfast6_linux_32
 intel_linux_32 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
-intel_linux_32_db : FFLAGS = -m32 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fltconsistency -static -vec_report0 -debug full
+intel_linux_32_db : FFLAGS = -m32 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fltconsistency -static -vec_report:0 -debug full
 intel_linux_32_db : FCOMPL = ifort
 intel_linux_32_db : obj = cfast6_linux_32_db
 intel_linux_32_db : setup $(obj)
@@ -108,13 +108,13 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # 32 bit
-intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report0 -I $(INCLUDE)
+intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report:0 -I $(INCLUDE)
 intel_osx_32 : FCOMPL = ifort
 intel_osx_32 : obj = cfast6_osx_32
 intel_osx_32 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
-intel_osx_32_db : FFLAGS = -check -warn unused -O0 -save -zero -m32 -g -traceback -fpe:0 -fltconsistency -FR -WB -vec_report0
+intel_osx_32_db : FFLAGS = -check -warn unused -O0 -save -zero -m32 -g -traceback -fpe:0 -fltconsistency -FR -WB -vec_report:0
 intel_osx_32_db : FCOMPL = ifort
 intel_osx_32_db : obj = cfast6_osx_32_db
 intel_osx_32_db : setup $(obj)
@@ -127,7 +127,7 @@ intel_osx_64 : obj = cfast6_osx_64
 intel_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
-intel_osx_64_db : FFLAGS = -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fltconsistency -fp-stack-check -FR -WB -vec_report0
+intel_osx_64_db : FFLAGS = -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fltconsistency -fp-stack-check -FR -WB -vec_report:0
 intel_osx_64_db : FCOMPL = ifort
 intel_osx_64_db : obj = cfast6_osx_64_db
 intel_osx_64_db : setup $(obj)

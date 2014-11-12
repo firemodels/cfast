@@ -324,24 +324,37 @@ $RUNCFAST Steckler_Compartment Steckler_710 /V
 $RUNCFAST Steckler_Compartment Steckler_810 /V
 
 $RUNCFAST ../Verification/Miscellaneous cfast_test
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_mechvent
-$RUNCFAST ../Verification/Mass_Energy_Balance 100kW_fire
-$RUNCFAST ../Verification/Mass_Energy_Balance Base 
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_tempequilib
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_tempequilib_wallsoff
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_tempequilib_window
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_tempequilib_window_elevation
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_tempequilib_window_geometry
-$RUNCFAST ../Verification/Mass_Energy_Balance basic_tempequilib_window_wind
+
+$RUNCFAST ../Verification/DOE_Guidance_Report DOE201
+$RUNCFAST ../Verification/DOE_Guidance_Report DOE202
+$RUNCFAST ../Verification/DOE_Guidance_Report DOE203
+$RUNCFAST ../Verification/DOE_Guidance_Report DOE204
+$RUNCFAST ../Verification/DOE_Guidance_Report DOE205
+$RUNCFAST ../Verification/DOE_Guidance_Report DOE206
+
+$RUNCFAST ../Verification/Analytical Base
+$RUNCFAST ../Verification/Analytical basic_tempequilib
+$RUNCFAST ../Verification/Analytical basic_tempequilib_wallsoff
+$RUNCFAST ../Verification/Analytical basic_tempequilib_window
+$RUNCFAST ../Verification/Analytical basic_tempequilib_window_elevation
+$RUNCFAST ../Verification/Analytical basic_tempequilib_window_geometry
+$RUNCFAST ../Verification/Analytical basic_tempequilib_window_wind 
+
+$RUNCFAST2 ../Verification/Analytical Mass basic_mechvent
+
+$RUNCFAST ../Verification/Analytical sealed_test
+
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_pressure
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_pressure_vent
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_pressure_wallsoff
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_mechvent_dropoff
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_connection_floorceiling_mechvent
+
 $RUNCFAST ../Verification/Mass_Energy_Balance fire
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_window
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_window_windowchange
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_window_geochange 
+$RUNCFAST ../Verification/Mass_Energy_Balance fire_window_aspect_ratio 
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_ceiling
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_ceiling_ventsize
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_ceiling_geochange
@@ -361,4 +374,13 @@ $RUNCFAST ../Verification/Mass_Energy_Balance fire_filterefficiency
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_filterefficiency_half
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_CO_yield
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_soot_yield
-$RUNCFAST ../Verification/Mass_Energy_Balance DOE202
+$RUNCFAST ../Verification/Mass_Energy_Balance fire_mechanical_vent_only
+$RUNCFAST ../Verification/Mass_Energy_Balance fire_HRRarea1
+
+$RUNCFAST2 ../Verification/NRC_Users_Guide 1_Cabinet_Fire_in_MCR Cabinet_fire_in_MCR 
+$RUNCFAST2 ../Verification/NRC_Users_Guide 1_Cabinet_Fire_in_MCR Cabinet_fire_in_MCR_no_ventilation
+$RUNCFAST2 ../Verification/NRC_Users_Guide 2_Cabinet_Fire_in_Switchgear Initial_fire_only
+$RUNCFAST2 ../Verification/NRC_Users_Guide 2_Cabinet_Fire_in_Switchgear Cabinet_fire_in_switchgear 
+$RUNCFAST2 ../Verification/NRC_Users_Guide 4_MCC_Fire_in_Switchgear MCC_in_switchgear
+$RUNCFAST2 ../Verification/NRC_Users_Guide 5_Trash_Fire_in_Cable_Spreading_Room Trash_fire_in_cable_spreading_room
+

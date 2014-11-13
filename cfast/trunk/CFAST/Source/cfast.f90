@@ -28,8 +28,6 @@
     !     whether in an action of contract, tort or otherwise, arising
     !     from, out of or in connection with the software or the use or
     !     other dealings in the software.
-    !
-    !     dummy change to force cfastbot run 
     
     use precision_parameters
     use cfast_main
@@ -41,8 +39,8 @@
     integer errorcode, rev_cfast, irev, i
     real(eb) :: xdelt, tstop, tbeg, tend
 
-    version = 6300          ! Current CFAST version number
-    crdate = (/2013,12,03/)  ! Current CFAST executable creation date
+    version = 6300           ! Current CFAST version number
+    crdate = (/2014,11,15/)  ! Current CFAST executable creation date
 
     errorcode = 0
 

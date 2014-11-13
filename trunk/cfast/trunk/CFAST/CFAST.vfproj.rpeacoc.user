@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<VisualStudioUserFile ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{5B8BF04C-0BF0-41CD-94D4-40BB0FEE09E4}">
-	<Configurations>
-		<Configuration Name="Debug|Win32" CommandArguments="Test /V"/>
-		<Configuration Name="Release|Win32" CommandArguments="test"/>
-		<Configuration Name="Debug|x64"/>
-		<Configuration Name="Release|x64"/>
-		<Configuration Name="x64|Win32"/>
-		<Configuration Name="x64|x64"/></Configurations></VisualStudioUserFile>

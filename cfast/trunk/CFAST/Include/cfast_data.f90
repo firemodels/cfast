@@ -503,6 +503,7 @@ module vents
 
     use precision_parameters
     use cparams, only: nr, mxvent
+    use cfast_types, only: vent_type
     implicit none
     save
     
@@ -511,18 +512,6 @@ module vents
     
     real(eb), dimension(nr,mxvent) :: zzventdist
     real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
-    
-! vent data structure
-
-    type vent_type
-        real(eb) :: sill, soffit, width
-        real(eb) :: from_hall_offset, to_hall_offset
-        real(eb) :: wind_dp
-        real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2<1, upper or lower, in or out)
-        integer :: from, to, counter
-        integer :: is_from_hall, is_to_hall
-        integer :: face
-    end type vent_type
     
     type (vent_type), dimension(mxvent), target :: ventinfo
     

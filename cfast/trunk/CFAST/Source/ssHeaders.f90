@@ -322,10 +322,11 @@
     use vents
     implicit none
 
-    ! local variables     
+    ! local variables
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
-    character(35) :: headertext(3,maxhead), cTemp, cFrom, cTo, cVent, Labels(7), LabelsShort(7), LabelUnits(7)
-    integer position, i, j, k, ih, ii, iijk, inode, irm
+    character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(7), LabelsShort(7), LabelUnits(7)
+    integer position, i, j, k, ih, ii, iijk, inode, irm, ifrom, ito
+    type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'HVENT Net Mixing to Upper Layer', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
 
@@ -346,106 +347,96 @@
     position = 1
 
     !	Do the output by compartments
+    do i = 1, n_hvents
+        ventptr=>ventinfo(i)
 
-    do irm = 1, n
-        i = irm
-        if (i==n) then
-            cTo = 'Outside'
-        else
-            call toIntString(i,cTo)
-        endif
+        ifrom = ventptr%from
+        write (cifrom,'(a12)') compartmentnames(ifrom)
+        if (ifrom==n) cifrom = 'Outside'
 
-        ! Natural flow through vertical vents (horizontal flow)
-        do j = 1, n
-            do k = 1, mxccv
-                if (iand(1,ishft(nw(i,j),-k))/=0) then
-                    iijk = ijk(i,j,k)
-                    if (j==n) then
-                        cFrom = 'Outside'
-                    else
-                        call toIntString(j,cFrom)
-                    endif
-                    do ih = 1, 2
-                        if (j/=n.or.ih<2) then
-                            position = position + 1
-                            call toIntString(k,cVent)
-                            if (validate) then
-                                write (ctemp,'(6a)') trim(LabelsShort(ih+1)),trim(cFrom),'>',trim(cTo),'_#',trim(cVent)
-                                headertext(1,position) = ctemp
-                                headertext(2,position) = LabelUnits(ih+1)
-                                headertext(3,position) = ' '
-                            else
-                                headertext(1,position) = Labels(ih+1)
-                                write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cVent),trim(cFrom),'>',trim(cTo)
-                                headertext(2,position) = ctemp
-                                headertext(3,position) = LabelUnits(ih+1)
-                            endif
-                        endif
-                    end do
+        ito = ventptr%to
+        write (cito,'(a12)') compartmentnames(ito)
+        if (ito==n) cito = 'Outside'
+
+        do ih = 1, 2
+            if (ito/=n.or.ih<2) then
+                position = position + 1
+                call toIntString(ventptr%counter,cVent)
+                if (validate) then
+                    write (ctemp,'(6a)') trim(LabelsShort(ih+1)),trim(ciFrom),'>',trim(ciTo),'_#',trim(cVent)
+                    headertext(1,position) = ctemp
+                    headertext(2,position) = LabelUnits(ih+1)
+                    headertext(3,position) = ' '
+                else
+                    headertext(1,position) = Labels(ih+1)
+                    write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cVent),trim(ciFrom),'>',trim(ciTo)
+                    headertext(2,position) = ctemp
+                    headertext(3,position) = LabelUnits(ih+1)
                 endif
-            end do
+            endif
         end do
+    end do
 
-        ! Natural flow through horizontal vents (vertical flow)
-
+    ! Natural flow through horizontal vents (vertical flow)
+    do i = 1,n
         do j = 1, n
             if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
-                call toIntString(i,cFrom)
-                if (i==n) cFrom = 'Outside'
-                call toIntString(j,cTo)
-                if (j==n) cTo = 'Outside'
+                call toIntString(i,ciFrom)
+                if (i==n) ciFrom = 'Outside'
+                call toIntString(j,ciTo)
+                if (j==n) ciTo = 'Outside'
                 position = position + 1
                 if (validate) then
-                    write (ctemp,'(5a)') trim(LabelsShort(4)),trim(cFrom),'>',trim(cTo)
+                    write (ctemp,'(5a)') trim(LabelsShort(4)),trim(ciFrom),'>',trim(ciTo)
                     headertext(1,position) = cTemp
                     headertext(2,position) = LabelUnits(4)
                     headertext(3,position) = ' '
                 else
                     headertext(1,position) = Labels(4)
-                    write (ctemp,'(a,1x,3a)') 'Vent #',trim(cFrom),'>',trim(cTo)
+                    write (ctemp,'(a,1x,3a)') 'Vent #',trim(ciFrom),'>',trim(ciTo)
                     headertext(2,position) = cTemp
                     headertext(3,position) = LabelUnits(4)
                 endif
             endif
         end do
-
-        ! Mechanical ventilation
-        if (nnode/=0.and.next/=0) then
-            do i = 1, next
-                ii = hvnode(1,i)
-                if (ii==irm) then
-                    inode = hvnode(2,i)
-                    call toIntString(ii,cFrom)
-                    if (ii==n) cfrom = 'Outside'
-                    call toIntString(inode,cTo)
-                    do ih = 1,3
-                        position = position + 1
-                        if (validate) then
-                            if (ih==1) then
-                                if (cFrom=='Outside') then
-                                    headertext(1,position) = trim(LabelsShort(ih+4)) // trim(cFrom) // '>N' // trim(cTo)
-                                else
-                                    headertext(1,position) = trim(LabelsShort(ih+4)) //'C' // trim(cFrom) // '>N' // trim(cTo)
-                                end if
-                            else
-                                headertext(1,position) = trim(LabelsShort(ih+4)) // 'Fan_N' // trim(cTo)
-                            endif
-                            headertext(2,position) = LabelUnits(ih+4)
-                            headertext(3,position) = ' '
-                        else
-                            headertext(1,position) = Labels(ih+4)
-                            if (ih==1) then 
-                                headertext(2,position) = 'Vent ' // trim(cFrom) // '> Node ' // trim(cTo)
-                            else
-                                headertext(2,position) = 'Fan at Node ' // trim(cTo)
-                            endif
-                            headertext(3,position) = LabelUnits(ih+4)
-                        endif
-                    end do
-                endif
-            end do
-        endif
     end do
+
+    ! Mechanical ventilation
+    if (nnode/=0.and.next/=0) then
+        do i = 1, next
+            ii = hvnode(1,i)
+            if (ii==irm) then
+                inode = hvnode(2,i)
+                call toIntString(ii,ciFrom)
+                if (ii==n) cifrom = 'Outside'
+                call toIntString(inode,ciTo)
+                do ih = 1,3
+                    position = position + 1
+                    if (validate) then
+                        if (ih==1) then
+                            if (ciFrom=='Outside') then
+                                headertext(1,position) = trim(LabelsShort(ih+4)) // trim(ciFrom) // '>N' // trim(ciTo)
+                            else
+                                headertext(1,position) = trim(LabelsShort(ih+4)) //'C' // trim(ciFrom) // '>N' // trim(ciTo)
+                            end if
+                        else
+                            headertext(1,position) = trim(LabelsShort(ih+4)) // 'Fan_N' // trim(ciTo)
+                        endif
+                        headertext(2,position) = LabelUnits(ih+4)
+                        headertext(3,position) = ' '
+                    else
+                        headertext(1,position) = Labels(ih+4)
+                        if (ih==1) then
+                            headertext(2,position) = 'Vent ' // trim(ciFrom) // '> Node ' // trim(ciTo)
+                        else
+                            headertext(2,position) = 'Fan at Node ' // trim(ciTo)
+                        endif
+                        headertext(3,position) = LabelUnits(ih+4)
+                    endif
+                end do
+            endif
+        end do
+    endif
 
     ! write out header
     write(22,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)

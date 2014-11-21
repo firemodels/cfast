@@ -16,28 +16,6 @@ module cfast_types
         real(eb) :: time(nv), value(nv)
     end type ramp_type
     
-        
-!            xfire(nfire,1) = objpos(1,iobj)
-!            xfire(nfire,2) = objpos(2,iobj)
-!            xfire(nfire,3) = objpos(3,iobj) + ohight
-!            xfire(nfire,4) = oplume(3,iobj)
-!            xfire(nfire,5) = oplume(1,iobj)
-!            xfire(nfire,6) = oplume(2,iobj)
-!            xfire(nfire,7) = qfc(1,iroom)
-!            xfire(nfire,8) = xqfr
-!            xfire(nfire,9) = heatlp(iroom) + heatup(iroom)
-!            xfire(nfire,10) = heatlp(iroom)
-!            xfire(nfire,11) = heatup(iroom)
-!            xfire(nfire,12) = objhct
-!            xfire(nfire,13) = y_soot
-!            xfire(nfire,14) = y_co
-!            !xfire(nfire,15) = hcratt
-!            !xfire(nfire,16) = ocratt
-!            !xfire(nfire,17) = clfrat
-!            !xfire(nfire,18) = cnfrat
-!            xfire(nfire,19) = objclen(iobj)
-!            xfire(nfire,20) = oareat
-
     ! fire data structure
 
     type fire_type
@@ -52,5 +30,17 @@ module cfast_types
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
     end type fire_type
+    
+    ! vent data structure
+
+    type vent_type
+        real(eb) :: sill, soffit, width
+        real(eb) :: from_hall_offset, to_hall_offset
+        real(eb) :: wind_dp
+        real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
+        integer :: from, to, counter
+        integer :: is_from_hall, is_to_hall
+        integer :: face
+    end type vent_type
      
 end module cfast_types

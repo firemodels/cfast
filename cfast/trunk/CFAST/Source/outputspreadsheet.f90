@@ -136,8 +136,8 @@
     
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout, netflow, netmixing
-    integer :: position, irm, i,j,k,iijk,ii,iii,inode, ifrom, ito
+    real(eb) :: outarray(maxoutput),flow(6), sumin, sumout, netflow, netmixing
+    integer :: position, irm, i,j,ii,iii,inode, ifrom, ito
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc

@@ -1013,15 +1013,15 @@ fi
 compile_cfast
 check_compile_cfast
 
+### Stage 6a ###
+compile_smv_utilities
+check_smv_utilities
+
 ### Stage 5 ###
 if [[ $stage4_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
-
-### Stage 6a ###
-compile_smv_utilities
-check_smv_utilities
 
 ### Stage 6b ###
 compile_smv_db

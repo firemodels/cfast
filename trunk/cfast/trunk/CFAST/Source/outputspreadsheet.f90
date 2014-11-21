@@ -135,10 +135,11 @@
     integer, parameter :: maxoutput = mxvents*4
     
     real(eb), intent(in) :: time
+    
     real(eb) :: outarray(maxoutput),sum1,sum2,sum3,sum4,sum5,sum6, flow(6), sumin, sumout, netflow, netmixing
-    logical :: firstc
-    data firstc /.true./
-    integer :: position, irm, i,j,k,iijk,ii,iii,inode
+    integer :: position, irm, i,j,k,iijk,ii,iii,inode, ifrom, ito
+    type(vent_type), pointer :: ventptr
+    logical :: firstc = .true.
     save firstc
 
     if (firstc) then
@@ -150,53 +151,23 @@
 
     ! first the time
     call SSaddtolist (position,time,outarray)
+        
+    ! next the horizontal flow through vertical vents
+    do i = 1, n_hvents
+        ventptr=>ventinfo(i)
 
-    do irm = 1, n
-
-        ! next the horizontal flow through vertical vents
-        do j = 1, n
-            do k = 1, mxccv
-                i = irm
-                if (iand(1,ishft(nw(i,j),-k))/=0) then
-                    iijk = ijk(i,j,k)
-                    if (i<j)then
-                        sum1 = ss2(iijk) + sa2(iijk)
-                        sum2 = ss1(iijk) + sa1(iijk)
-                        sum3 = aa2(iijk) + as2(iijk)
-                        sum4 = aa1(iijk) + as1(iijk)
-                    else
-                        sum1 = ss1(iijk) + sa1(iijk)
-                        sum2 = ss2(iijk) + sa2(iijk)
-                        sum3 = aa1(iijk) + as1(iijk)
-                        sum4 = aa2(iijk) + as2(iijk)
-                    endif
-                    if (j==n) then
-                        ! we show only net flow in the spreadsheets
-                        sumin = sum1 + sum3
-                        sumout = sum2 + sum4
-                        netflow = sumin - sumout
-                        call SSaddtolist (position,netflow,outarray)
-                    else
-                        ! we show only net flow in the spreadsheets
-                        sumin = sum1 + sum3
-                        sumout = sum2 + sum4
-                        netflow = sumin-sumout
-                        if (i<j)then
-                            sum5 = sau2(iijk)
-                            sum6 = asl2(iijk)
-                        else
-                            sum5 = sau1(iijk)
-                            sum6 = asl1(iijk)
-                        endif
-                        netmixing = sum5 - sum6
-                        call SSaddtolist (position,netflow,outarray)
-                        call SSaddtolist (position,netmixing,outarray)
-                    endif
-                endif
-            end do
-        end do
+        ifrom = ventptr%from
+        ito = ventptr%to
+        netflow = ventptr%mflow(2,1,1) - ventptr%mflow(2,1,2) + ventptr%mflow(2,2,1) - ventptr%mflow(2,2,2)
+        call SSaddtolist (position,netflow,outarray)
+        if (ito/=n) then
+            netmixing = ventptr%mflow_mix(1,2) + ventptr%mflow_mix(2,2)
+            call SSaddtolist (position,netmixing,outarray)
+        end if
+    end do
 
         ! next natural flow through horizontal vents (vertical flow)
+    do irm = 1, n
         do j = 1, n
             if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
                 do ii = 1, 6

@@ -4445,7 +4445,7 @@ Public Class CeditMain
         ' Add a compartment to the end of the list of compartments
         If myCompartments.Count + 1 <= myCompartments.Maximum Then
             Dim aCompartment As New Compartment
-            aCompartment.Name = "Compartment " + (myCompartments.Count + 1).ToString
+            aCompartment.Name = "Comp " + (myCompartments.Count + 1).ToString
             myCompartments.Add(aCompartment)
             CurrentCompartment = myCompartments.Count - 1
             UpdateGUI.Geometry(CurrentCompartment)

@@ -137,7 +137,7 @@
     real(eb), intent(in) :: time
     
     real(eb) :: outarray(maxoutput),flow(6), sumin, sumout, netflow, netmixing
-    integer :: position, irm, i,j,ii,iii,inode, ifrom, ito
+    integer :: position,i,j,ii,iii,inode, ifrom, ito
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc
@@ -166,8 +166,8 @@
         end if
     end do
 
-        ! next natural flow through horizontal vents (vertical flow)
-    do irm = 1, n
+    ! next natural flow through horizontal vents (vertical flow)
+    do i = 1, n
         do j = 1, n
             if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
                 do ii = 1, 6
@@ -184,33 +184,30 @@
                 call SSaddtolist (position,netflow,outarray)
             endif
         end do
-
-        ! finally, mechanical ventilation
-        if (nnode/=0.and.next/=0) then
-            do i = 1, next
-                ii = hvnode(1,i)
-                if (ii==irm) then
-                    inode = hvnode(2,i)
-                    do iii = 1, 6
-                        flow(iii) = 0.0_eb
-                    end do
-                    if (hveflo(upper,i)>=0.0_eb) flow(1)=hveflo(upper,i)
-                    if (hveflo(upper,i)<0.0_eb) flow(2)=-hveflo(upper,i)
-                    if (hveflo(lower,i)>=0.0_eb) flow(3)=hveflo(lower,i)
-                    if (hveflo(lower,i)<0.0_eb) flow(4)=-hveflo(lower,i)
-                    sumin = flow(1) + flow(3)
-                    sumout = flow(2) + flow(4)
-                    flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
-                    flow(6) =abs(traces(upper,i))+abs(traces(lower,i))
-                    netflow = sumin - sumout
-                    call SSaddtolist (position, netflow, outarray)
-                    call SSaddtolist (position, flow(5), outarray)
-                    call SSaddtolist (position, flow(6), outarray)
-                endif
-            end do
-        endif
-
     end do
+
+    ! finally, mechanical ventilation
+    if (nnode/=0.and.next/=0) then
+        do i = 1, next
+            ii = hvnode(1,i)
+            inode = hvnode(2,i)
+            do iii = 1, 6
+                flow(iii) = 0.0_eb
+            end do
+            if (hveflo(upper,i)>=0.0_eb) flow(1)=hveflo(upper,i)
+            if (hveflo(upper,i)<0.0_eb) flow(2)=-hveflo(upper,i)
+            if (hveflo(lower,i)>=0.0_eb) flow(3)=hveflo(lower,i)
+            if (hveflo(lower,i)<0.0_eb) flow(4)=-hveflo(lower,i)
+            sumin = flow(1) + flow(3)
+            sumout = flow(2) + flow(4)
+            flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
+            flow(6) =abs(traces(upper,i))+abs(traces(lower,i))
+            netflow = sumin - sumout
+            call SSaddtolist (position, netflow, outarray)
+            call SSaddtolist (position, flow(5), outarray)
+            call SSaddtolist (position, flow(6), outarray)
+        end do
+    endif
 
     call ssprintresults(22, position, outarray)
     return

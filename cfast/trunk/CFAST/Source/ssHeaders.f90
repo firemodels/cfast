@@ -405,36 +405,34 @@
     if (nnode/=0.and.next/=0) then
         do i = 1, next
             ii = hvnode(1,i)
-            if (ii==irm) then
-                inode = hvnode(2,i)
-                call toIntString(ii,ciFrom)
-                if (ii==n) cifrom = 'Outside'
-                call toIntString(inode,ciTo)
-                do ih = 1,3
-                    position = position + 1
-                    if (validate) then
-                        if (ih==1) then
-                            if (ciFrom=='Outside') then
-                                headertext(1,position) = trim(LabelsShort(ih+4)) // trim(ciFrom) // '>N' // trim(ciTo)
-                            else
-                                headertext(1,position) = trim(LabelsShort(ih+4)) //'C' // trim(ciFrom) // '>N' // trim(ciTo)
-                            end if
+            inode = hvnode(2,i)
+            call toIntString(ii,ciFrom)
+            if (ii==n) cifrom = 'Outside'
+            call toIntString(inode,ciTo)
+            do ih = 1,3
+                position = position + 1
+                if (validate) then
+                    if (ih==1) then
+                        if (ciFrom=='Outside') then
+                            headertext(1,position) = trim(LabelsShort(ih+4)) // trim(ciFrom) // '>N' // trim(ciTo)
                         else
-                            headertext(1,position) = trim(LabelsShort(ih+4)) // 'Fan_N' // trim(ciTo)
-                        endif
-                        headertext(2,position) = LabelUnits(ih+4)
-                        headertext(3,position) = ' '
+                            headertext(1,position) = trim(LabelsShort(ih+4)) //'C' // trim(ciFrom) // '>N' // trim(ciTo)
+                        end if
                     else
-                        headertext(1,position) = Labels(ih+4)
-                        if (ih==1) then
-                            headertext(2,position) = 'Vent ' // trim(ciFrom) // '> Node ' // trim(ciTo)
-                        else
-                            headertext(2,position) = 'Fan at Node ' // trim(ciTo)
-                        endif
-                        headertext(3,position) = LabelUnits(ih+4)
+                        headertext(1,position) = trim(LabelsShort(ih+4)) // 'Fan_N' // trim(ciTo)
                     endif
-                end do
-            endif
+                    headertext(2,position) = LabelUnits(ih+4)
+                    headertext(3,position) = ' '
+                else
+                    headertext(1,position) = Labels(ih+4)
+                    if (ih==1) then
+                        headertext(2,position) = 'Vent ' // trim(ciFrom) // '> Node ' // trim(ciTo)
+                    else
+                        headertext(2,position) = 'Fan at Node ' // trim(ciTo)
+                    endif
+                    headertext(3,position) = LabelUnits(ih+4)
+                endif
+            end do
         end do
     endif
 

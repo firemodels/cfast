@@ -325,7 +325,7 @@
     ! local variables
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
     character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(7), LabelsShort(7), LabelUnits(7)
-    integer position, i, j, k, ih, ii, iijk, inode, irm, ifrom, ito
+    integer position, i, j, ih, ii, inode, ifrom, ito
     type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'HVENT Net Mixing to Upper Layer', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /

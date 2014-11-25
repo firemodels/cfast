@@ -351,11 +351,11 @@
         ventptr=>ventinfo(i)
 
         ifrom = ventptr%from
-        write (cifrom,'(a12)') compartmentnames(ifrom)
+        call toIntString(ifrom,cifrom)
         if (ifrom==n) cifrom = 'Outside'
 
         ito = ventptr%to
-        write (cito,'(a12)') compartmentnames(ito)
+        call toIntString(ito,cito)
         if (ito==n) cito = 'Outside'
 
         do ih = 1, 2

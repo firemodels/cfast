@@ -10,8 +10,9 @@ call runall.bat ALL
 call runadjustments.bat
 echo Running matlab plotting analysis
 cd ..\Utilities\matlab
-call run_matlab_validation.bat
-call run_matlab_verification.bat
+Compiled\Validation.exe
+Compiled\Verification.exe
+Compiled\Plotting.exe
 cd ..\
 call make_docs.bat
 echo.| time

@@ -136,8 +136,8 @@
     
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxoutput),flow(6), sumin, sumout, netflow, netmixing
-    integer :: position,i,j,ii,iii,inode, ifrom, ito
+    real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow, netmixing
+    integer :: position, i, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc
@@ -167,23 +167,29 @@
     end do
 
     ! next natural flow through horizontal vents (vertical flow)
-    do i = 1, n
-        do j = 1, n
-            if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
-                do ii = 1, 6
-                    flow(ii) = 0.0_eb
-                end do
-                if (vmflo(j,i,upper)>=0.0_eb) flow(1) = vmflo(j,i,upper)
-                if (vmflo(j,i,upper)<0.0_eb) flow(2) = -vmflo(j,i,upper)
-                if (vmflo(j,i,lower)>=0.0_eb) flow(3) = vmflo(j,i,lower)
-                if (vmflo(j,i,lower)<0.0_eb) flow(4) = -vmflo(j,i,lower)
-                ! we show only net flow in the spreadsheets
-                sumin = flow(1) + flow(3)
-                sumout = flow(2) + flow(4)
-                netflow = sumin - sumout
-                call SSaddtolist (position,netflow,outarray)
-            endif
-        end do
+    do i = 1, n_vvents
+
+        ifrom = ivvent(i,botrm)
+        ito = ivvent(i,toprm)
+
+        flow = 0.0_eb
+        if (vmflo(ifrom,ito,upper)>=0.0_eb) flow(5) = vmflo(ifrom,ito,upper)
+        if (vmflo(ifrom,ito,upper)<0.0_eb) flow(6) = -vmflo(ifrom,ito,upper)
+        if (vmflo(ifrom,ito,lower)>=0.0_eb) flow(7) = vmflo(ifrom,ito,lower)
+        if (vmflo(ifrom,ito,lower)<0.0_eb) flow(8) = -vmflo(ifrom,ito,lower)
+        if (vmflo(ito,ifrom,upper)>=0.0_eb) flow(1) = vmflo(ito,ifrom,upper)
+        if (vmflo(ito,ifrom,upper)<0.0_eb) flow(2) = -vmflo(ito,ifrom,upper)
+        if (vmflo(ito,ifrom,lower)>=0.0_eb) flow(3) = vmflo(ito,ifrom,lower)
+        if (vmflo(ito,ifrom,lower)<0.0_eb) flow(4) = -vmflo(ito,ifrom,lower)
+
+        sumin = flow(5) + flow(7)
+        sumout = flow(6) + flow(8)
+        netflow = sumin - sumout
+        call SSaddtolist (position,netflow,outarray)
+        sumin = flow(1) + flow(3)
+        sumout = flow(2) + flow(4)
+        netflow = sumin - sumout
+        call SSaddtolist (position,netflow,outarray)
     end do
 
     ! finally, mechanical ventilation
@@ -191,9 +197,7 @@
         do i = 1, next
             ii = hvnode(1,i)
             inode = hvnode(2,i)
-            do iii = 1, 6
-                flow(iii) = 0.0_eb
-            end do
+            flow = 0.0_eb
             if (hveflo(upper,i)>=0.0_eb) flow(1)=hveflo(upper,i)
             if (hveflo(upper,i)<0.0_eb) flow(2)=-hveflo(upper,i)
             if (hveflo(lower,i)>=0.0_eb) flow(3)=hveflo(lower,i)

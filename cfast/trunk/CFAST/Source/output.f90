@@ -395,7 +395,7 @@
     use flwptrs
     implicit none
     
-    integer :: i, ii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
+    integer :: i, ii, ifrom, ito, toprm = 1, botrm = 2
     real(eb), dimension(8) :: flow
 
     character outbuf*132, cifrom*12, cito*12
@@ -412,7 +412,6 @@
         ifrom = ventptr%from
         write (cifrom,'(a12)') compartmentnames(ifrom)
         if (ifrom==n) cifrom = 'Outside'
-        
         ito = ventptr%to
         write (cito,'(a12)') compartmentnames(ito)
         if (ito==n) cito = 'Outside'
@@ -424,25 +423,23 @@
     !     vertical flow natural vents
     do i = 1, n_vvents
 
-        itop = ivvent(i,toprm)
-        write (cito,'(a12)') compartmentnames(itop)
-        if (itop==n) cito = 'Outside'
-
-        ibot = ivvent(i,botrm)
-        write (cifrom,'(a12)') compartmentnames(ibot)
-        if (ibot==n) cifrom = 'Outside'
-        do ii = 1, 4
-            flow(ii) = 0.0_eb
-        end do
-        if (vmflo(ibot,itop,upper)>=0.0_eb) flow(5) = vmflo(ibot,itop,upper)
-        if (vmflo(ibot,itop,upper)<0.0_eb) flow(6) = -vmflo(ibot,itop,upper)
-        if (vmflo(ibot,itop,lower)>=0.0_eb) flow(7) = vmflo(ibot,itop,lower)
-        if (vmflo(ibot,itop,lower)<0.0_eb) flow(8) = -vmflo(ibot,itop,lower)
+        ifrom = ivvent(i,botrm)
+        write (cifrom,'(a12)') compartmentnames(ifrom)
+        if (ifrom==n) cifrom = 'Outside'
+        ito = ivvent(i,toprm)
+        write (cito,'(a12)') compartmentnames(ito)
+        if (ito==n) cito = 'Outside'
         
-        if (vmflo(itop,ibot,upper)>=0.0_eb) flow(1) = vmflo(itop,ibot,upper)
-        if (vmflo(itop,ibot,upper)<0.0_eb) flow(2) = -vmflo(itop,ibot,upper)
-        if (vmflo(itop,ibot,lower)>=0.0_eb) flow(3) = vmflo(itop,ibot,lower)
-        if (vmflo(itop,ibot,lower)<0.0_eb) flow(4) = -vmflo(itop,ibot,lower)
+        flow = 0.0_eb
+        if (vmflo(ifrom,ito,upper)>=0.0_eb) flow(5) = vmflo(ifrom,ito,upper)
+        if (vmflo(ifrom,ito,upper)<0.0_eb) flow(6) = -vmflo(ifrom,ito,upper)
+        if (vmflo(ifrom,ito,lower)>=0.0_eb) flow(7) = vmflo(ifrom,ito,lower)
+        if (vmflo(ifrom,ito,lower)<0.0_eb) flow(8) = -vmflo(ifrom,ito,lower)        
+        if (vmflo(ito,ifrom,upper)>=0.0_eb) flow(1) = vmflo(ito,ifrom,upper)
+        if (vmflo(ito,ifrom,upper)<0.0_eb) flow(2) = -vmflo(ito,ifrom,upper)
+        if (vmflo(ito,ifrom,lower)>=0.0_eb) flow(3) = vmflo(ito,ifrom,lower)
+        if (vmflo(ito,ifrom,lower)<0.0_eb) flow(4) = -vmflo(ito,ifrom,lower)
+        
         
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
         write (iofilo,5020) 'V', i, cifrom, cito, outbuf

@@ -21,7 +21,7 @@
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'ATARG_', 'FTARG_', 'DJET_', 'PLUM_', 'PYROL_', 'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W/m^2', 'W/m^2', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
-    !  spreadsheet header
+    !  spreadsheet header.  Add time first
     if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
@@ -140,7 +140,7 @@
     data LabelsShort / 'Time', 'ULN2', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_', 'ULCT_', 'ULTS_', 'LLN2', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
     data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', 'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
 
-    !  spreadsheet header
+    !  spreadsheet header.  Add time first
     if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
@@ -325,7 +325,7 @@
     ! local variables
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
     character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(7), LabelsShort(7), LabelUnits(7)
-    integer position, i, j, ih, ii, inode, ifrom, ito
+    integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'HVENT Net Mixing to Upper Layer', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
@@ -334,7 +334,7 @@
 
     data LabelUnits / 's', 4*'kg/s', 2*'kg' /
 
-    !  spreadsheet header
+    !  spreadsheet header.  Add time first
     if (validate) then
         headertext(1,1) = LabelsShort(1)
         headertext(2,1) = LabelUnits(1)
@@ -351,54 +351,64 @@
         ventptr=>ventinfo(i)
 
         ifrom = ventptr%from
-        call toIntString(ifrom,cifrom)
+        call tointstring(ifrom,cifrom)
         if (ifrom==n) cifrom = 'Outside'
-
         ito = ventptr%to
-        call toIntString(ito,cito)
+        call tointstring(ito,cito)
         if (ito==n) cito = 'Outside'
 
         do ih = 1, 2
             if (ito/=n.or.ih<2) then
                 position = position + 1
-                call toIntString(ventptr%counter,cVent)
+                call tointstring(ventptr%counter,cvent)
                 if (validate) then
-                    write (ctemp,'(6a)') trim(LabelsShort(ih+1)),trim(ciFrom),'>',trim(ciTo),'_#',trim(cVent)
+                    write (ctemp,'(6a)') trim(labelsshort(ih+1)),trim(cifrom),'>',trim(cito),'_#',trim(cvent)
                     headertext(1,position) = ctemp
-                    headertext(2,position) = LabelUnits(ih+1)
+                    headertext(2,position) = labelunits(ih+1)
                     headertext(3,position) = ' '
                 else
-                    headertext(1,position) = Labels(ih+1)
-                    write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cVent),trim(ciFrom),'>',trim(ciTo)
+                    headertext(1,position) = labels(ih+1)
+                    write (ctemp,'(a,1x,a,1x,3a)') 'vent #',trim(cvent),trim(cifrom),'>',trim(cito)
                     headertext(2,position) = ctemp
-                    headertext(3,position) = LabelUnits(ih+1)
+                    headertext(3,position) = labelunits(ih+1)
                 endif
             endif
         end do
     end do
 
     ! Natural flow through horizontal vents (vertical flow)
-    do i = 1,n
-        do j = 1, n
-            if (nwv(i,j)/=0.or.nwv(j,i)/=0) then
-                call toIntString(i,ciFrom)
-                if (i==n) ciFrom = 'Outside'
-                call toIntString(j,ciTo)
-                if (j==n) ciTo = 'Outside'
-                position = position + 1
-                if (validate) then
-                    write (ctemp,'(5a)') trim(LabelsShort(4)),trim(ciFrom),'>',trim(ciTo)
-                    headertext(1,position) = cTemp
-                    headertext(2,position) = LabelUnits(4)
-                    headertext(3,position) = ' '
-                else
-                    headertext(1,position) = Labels(4)
-                    write (ctemp,'(a,1x,3a)') 'Vent #',trim(ciFrom),'>',trim(ciTo)
-                    headertext(2,position) = cTemp
-                    headertext(3,position) = LabelUnits(4)
-                endif
-            endif
-        end do
+    do i = 1,n_vvents
+
+        ifrom = ivvent(i,botrm)
+        call tointstring(ifrom,ciFrom)
+        if (ifrom==n) cifrom = 'Outside'
+        ito = ivvent(i,toprm)
+        call tointstring(ito,cito)
+        if (ito==n) cito = 'Outside'
+        position = position + 1
+        
+        if (validate) then
+            write (ctemp,'(5a)') trim(labelsshort(4)),trim(cifrom),'>',trim(cito)
+            headertext(1,position) = ctemp
+            headertext(2,position) = labelunits(4)
+            headertext(3,position) = ' '
+            position = position + 1
+            write (ctemp,'(5a)') trim(labelsshort(4)),trim(cito),'>',trim(cifrom)
+            headertext(1,position) = ctemp
+            headertext(2,position) = labelunits(4)
+            headertext(3,position) = ' '
+        else
+            headertext(1,position) = labels(4)
+            write (ctemp,'(a,1x,3a)') 'vent #',trim(cifrom),'>',trim(cito)
+            headertext(2,position) = ctemp
+            headertext(3,position) = labelunits(4)
+            position = position + 1
+            headertext(1,position) = labels(4)
+            write (ctemp,'(a,1x,3a)') 'Vent #',trim(cito),'>',trim(cifrom)
+            headertext(2,position) = cTemp
+            headertext(3,position) = LabelUnits(4)
+        endif
+        
     end do
 
     ! Mechanical ventilation
@@ -465,7 +475,7 @@
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2', 'kg/s', 'kg/s' /
 
-    !  spreadsheet header
+    !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)
     headertext(2,1) = LabelsShort(1)
     call smvDeviceTag('TIME')
@@ -594,8 +604,7 @@
     data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/
 
-    !  spreadsheet header
-    
+    !  spreadsheet header.  Add time first
     headertext(1,1) = Labels(1)
     headertext(2,1) = ' '
     headertext(3,1) = LabelUnits(1)
@@ -683,8 +692,7 @@
     data Labels / 'time', 'Room 1','Room 2', 'Vent Num', 'Num Slabs', 'Slab'/
     data LabelUnits / 'sec', 'w'/
 
-    !  spreadsheet header
-    
+    !  spreadsheet header.  Add time first
     headertext(1,1) = Labels(1)
     headertext(2,1) = ' '
     headertext(3,1) = LabelUnits(1)

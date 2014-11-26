@@ -395,7 +395,7 @@
     use flwptrs
     implicit none
     
-    integer :: i, ii, inode, iii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
+    integer :: i, ii, ifrom, ito, itop, ibot, toprm = 1, botrm = 2
     real(eb), dimension(8) :: flow
 
     character outbuf*132, cifrom*12, cito*12
@@ -425,21 +425,26 @@
     do i = 1, n_vvents
 
         itop = ivvent(i,toprm)
-        write (cifrom,'(a12)') compartmentnames(itop)
-        if (itop==n) cifrom = 'Outside'
+        write (cito,'(a12)') compartmentnames(itop)
+        if (itop==n) cito = 'Outside'
 
         ibot = ivvent(i,botrm)
-        write (cito,'(a12)') compartmentnames(ibot)
-        if (ibot==n) cito = 'Outside'
+        write (cifrom,'(a12)') compartmentnames(ibot)
+        if (ibot==n) cifrom = 'Outside'
         do ii = 1, 4
             flow(ii) = 0.0_eb
         end do
-        if (vmflo(ibot,itop,upper)>=0.0_eb) flow(1) = vmflo(ibot,itop,upper)
-        if (vmflo(ibot,itop,upper)<0.0_eb) flow(2) = -vmflo(ibot,itop,upper)
-        if (vmflo(ibot,itop,lower)>=0.0_eb) flow(3) = vmflo(ibot,itop,lower)
-        if (vmflo(ibot,itop,lower)<0.0_eb) flow(4) = -vmflo(ibot,itop,lower)
-        call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,0.0_eb,0.0_eb)
-
+        if (vmflo(ibot,itop,upper)>=0.0_eb) flow(5) = vmflo(ibot,itop,upper)
+        if (vmflo(ibot,itop,upper)<0.0_eb) flow(6) = -vmflo(ibot,itop,upper)
+        if (vmflo(ibot,itop,lower)>=0.0_eb) flow(7) = vmflo(ibot,itop,lower)
+        if (vmflo(ibot,itop,lower)<0.0_eb) flow(8) = -vmflo(ibot,itop,lower)
+        
+        if (vmflo(itop,ibot,upper)>=0.0_eb) flow(1) = vmflo(itop,ibot,upper)
+        if (vmflo(itop,ibot,upper)<0.0_eb) flow(2) = -vmflo(itop,ibot,upper)
+        if (vmflo(itop,ibot,lower)>=0.0_eb) flow(3) = vmflo(itop,ibot,lower)
+        if (vmflo(itop,ibot,lower)<0.0_eb) flow(4) = -vmflo(itop,ibot,lower)
+        
+        call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
         write (iofilo,5020) 'V', i, cifrom, cito, outbuf
 
     end do
@@ -461,6 +466,7 @@
             if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
             if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
             if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
+            
             if (hveflo(upper,i+1)>=0.0_eb) flow(5) = hveflo(upper,i+1)
             if (hveflo(upper,i+1)<0.0_eb) flow(6) = -hveflo(upper,i+1)
             if (hveflo(lower,i+1)>=0.0_eb) flow(7) = hveflo(lower,i+1)
@@ -468,8 +474,8 @@
             !flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
             !flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
             !call flwout(outbuf_from,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
-            call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
             
+            call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))            
             write (iofilo,5020) 'M', i, cifrom, cito, outbuf
         end do
     endif
@@ -477,7 +483,7 @@
     5000 format (//,' Flow Through Vents (kg/s)',/, &
     '0                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
     '                                        Upper Layer               Lower Layer               Upper Layer               Lower Layer',/, &
-    ' Vent   From           To               Inflow       Outflow      Inflow       Outflow      Inflow       Outflow      Inflow       Outflow',/,134('-'))
+    ' Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow       Outflow      Inflow       Outflow',/,134('-'))
 5010 format (' ')
 5020 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
 5030 format (' ',a1,i3,3x,a12,3x,a,3x,a12,3x,a)

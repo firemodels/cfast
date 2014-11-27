@@ -263,13 +263,6 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe fm21 /V
 cd ..\
 if %1==FM_NBS goto end
-:PLAZA
-echo NBS Plaza Hotel test 7
-cd Multi
-if NOT %1==ALL call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
-cd ..\
-if %1==PLAZA goto end
 :VTT
 cd VTT
 echo VTT Cases 1, 2, 3
@@ -529,6 +522,13 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC39 /V
 cd ..\
 if %1==Dunes2000 goto end
+:PLAZA
+echo NBS Plaza Hotel test 7
+cd Multi
+if NOT %1==ALL call ..\cleancfast.bat
+..\..\bin\cfast.exe Multi /V
+cd ..\
+if %1==PLAZA goto end
 :end
 echo.| time
 echo CFAST simulations complete.

@@ -136,7 +136,7 @@
     
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow, netmixing
+    real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
     integer :: position, i, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
@@ -160,10 +160,8 @@
         ito = ventptr%to
         netflow = ventptr%mflow(2,1,1) - ventptr%mflow(2,1,2) + ventptr%mflow(2,2,1) - ventptr%mflow(2,2,2)
         call SSaddtolist (position,netflow,outarray)
-        if (ito/=n) then
-            netmixing = ventptr%mflow_mix(1,2) + ventptr%mflow_mix(2,2)
-            call SSaddtolist (position,netmixing,outarray)
-        end if
+        netflow = ventptr%mflow(1,1,1) - ventptr%mflow(1,1,2) + ventptr%mflow(1,2,1) - ventptr%mflow(1,2,2)
+        call SSaddtolist (position,netflow,outarray)
     end do
 
     ! next natural flow through horizontal vents (vertical flow)

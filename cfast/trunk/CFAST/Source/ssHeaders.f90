@@ -357,23 +357,29 @@
         call tointstring(ito,cito)
         if (ito==n) cito = 'Outside'
 
-        do ih = 1, 2
-            if (ito/=n.or.ih<2) then
-                position = position + 1
-                call tointstring(ventptr%counter,cvent)
-                if (validate) then
-                    write (ctemp,'(6a)') trim(labelsshort(ih+1)),trim(cifrom),'>',trim(cito),'_#',trim(cvent)
-                    headertext(1,position) = ctemp
-                    headertext(2,position) = labelunits(ih+1)
-                    headertext(3,position) = ' '
-                else
-                    headertext(1,position) = labels(ih+1)
-                    write (ctemp,'(a,1x,a,1x,3a)') 'vent #',trim(cvent),trim(cifrom),'>',trim(cito)
-                    headertext(2,position) = ctemp
-                    headertext(3,position) = labelunits(ih+1)
-                endif
-            endif
-        end do
+        position = position + 1
+        call tointstring(ventptr%counter,cvent)
+        if (validate) then
+            write (ctemp,'(6a)') trim(labelsshort(2)),trim(cifrom),'>',trim(cito),'_#',trim(cvent)
+            headertext(1,position) = ctemp
+            headertext(2,position) = labelunits(2)
+            headertext(3,position) = ' '
+            position = position + 1
+            write (ctemp,'(6a)') trim(labelsshort(2)),trim(cito),'>',trim(cifrom),'_#',trim(cvent)
+            headertext(1,position) = ctemp
+            headertext(2,position) = labelunits(2)
+            headertext(3,position) = ' '
+        else
+            headertext(1,position) = labels(2)
+            write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cvent),trim(cifrom),'>',trim(cito)
+            headertext(2,position) = ctemp
+            headertext(3,position) = labelunits(2)
+            position = position + 1
+            headertext(1,position) = labels(2)
+            write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cvent),trim(cito),'>',trim(cifrom)
+            headertext(2,position) = ctemp
+            headertext(3,position) = labelunits(2)
+        endif
     end do
 
     ! Natural flow through horizontal vents (vertical flow)
@@ -399,12 +405,12 @@
             headertext(3,position) = ' '
         else
             headertext(1,position) = labels(4)
-            write (ctemp,'(a,1x,3a)') 'vent #',trim(cifrom),'>',trim(cito)
+            write (ctemp,'(a,1x,3a)') 'Vent',trim(cifrom),'>',trim(cito)
             headertext(2,position) = ctemp
             headertext(3,position) = labelunits(4)
             position = position + 1
             headertext(1,position) = labels(4)
-            write (ctemp,'(a,1x,3a)') 'Vent #',trim(cito),'>',trim(cifrom)
+            write (ctemp,'(a,1x,3a)') 'Vent',trim(cito),'>',trim(cifrom)
             headertext(2,position) = cTemp
             headertext(3,position) = LabelUnits(4)
         endif

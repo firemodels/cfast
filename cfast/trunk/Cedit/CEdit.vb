@@ -4459,7 +4459,7 @@ Public Class CeditMain
             myCompartments.Add(New Compartment)
             myCompartments.Copy(CurrentCompartment, myCompartments.Count - 1)
             CurrentCompartment = myCompartments.Count - 1
-            myCompartments(myCompartments.Count - 1).Name = "Compartment " + myCompartments.Count.ToString
+            myCompartments(myCompartments.Count - 1).Name = "Comp " + myCompartments.Count.ToString
             UpdateGUI.Geometry(CurrentCompartment)
         ElseIf CurrentCompartment + 1 >= Compartment.MaximumCompartments Then
             MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)

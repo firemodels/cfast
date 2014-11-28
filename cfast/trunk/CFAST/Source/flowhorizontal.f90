@@ -340,61 +340,27 @@
 
 ! --------------------------- entrfl -------------------------------------------
 
-    subroutine entrfl(tu,tl,fmd,z,fmz)
+    subroutine entrfl(tu,tl,fmd,zz,fm_entrained)
 
-    !     for the reference for this correlation, see the comments
-    !     in the routine "firplm."  the offset for the formulation of
-    !     an equivalent door jet is provided by requiring the plume
-    !     be long enough to be the appropriate plume for the fire of size
-    !     qj.  note that mccaffrey's units are kilojoules.  also we assume
-    !     that the plume is round as in mccaffrey's plume.  this should
-    !     be modified to account for the flat plume verus the round
-    !     plume in the theory.
+    !     for the reference for this correlation, see the comments in the routine "firplm."  the offset for the formulation of
+    !     an equivalent door jet is provided by requiring the plume be long enough to be the appropriate plume for the fire of size
+    !     qj.  note that mccaffrey's units are kilojoules.  also we assume that the plume is round as in mccaffrey's plume.  this should
+    !     be modified to account for the flat plume verus the round plume in the theory.
 
     use precision_parameters
     use cfast_main
     implicit none
     
-    real(eb), intent(in) :: tu, tl, fmd, z
-    real(eb), intent(out) :: fmz
+    real(eb), intent(in) :: tu, tl, fmd, zz
+    real(eb), intent(out) :: fm_entrained
     
-    logical firstc
-    real(eb) :: fm1, fm2, fm3, t1, t2, a1, a2, a3, e1, e2, e3, f1, f2, xqj, qj, fmdqj, z0dq, zdq, zq
-    save firstc, a1, a2, a3, e1, e2, e3, f1, f2
-    data firstc /.true./
-
-    ! define assignment statement subroutines to compute three parts of correlation
-    fm1(zq) = zq**0.566_eb
-    fm2(zq) = zq**0.909_eb
-    fm3(zq) = zq**1.895_eb
-
-    ! first time in firplm calculate coeff's to insure that mccaffrey correlation is continuous. that is, for a1 = .011, compute a2, a3 such that
-
-    ! a1*zq**.566 = a2*zq**.909  for zq = .08
-    ! a2*zq**.909 = a3*zq**1.895 for zq = .2
-    if (firstc) then
-
-        ! reset flag so this code doesn't get executed next time in this routine
-        firstc = .false.
-
-        ! breakpoints for "forward" correlation
-        t1 = 0.08_eb
-        t2 = 0.20_eb
-
-        ! coef's for "forward" correlation
-        a1 = 0.011_eb
-        a2 = a1*fm1(t1)/fm2(t1)
-        a3 = a2*fm2(t2)/fm3(t2)
-
-        ! exponents for "inverse" correlation
-        e1 = 1.0_eb/.566_eb
-        e2 = 1.0_eb/.909_eb
-        e3 = 1.0_eb/1.895_eb
-
-        ! breakpoints for "inverse" correlation
-        f1 = a1*fm1(t1)
-        f2 = a2*fm2(t2)
-    endif
+    real(eb) :: xqj, qj, fmdqj, z0dq, z_star
+    
+    ! Ensure that mccaffrey correlation is continuous.  
+    ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
+    !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
+    
+    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb, e1 = 1.0_eb/.566_eb, e2 = 1.0_eb/.909_eb, e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t1**0.909_eb
 
     xqj = cp*(tu-tl)*0.001_eb
     qj = xqj*fmd
@@ -406,17 +372,20 @@
     else
         z0dq = (fmdqj/a3)**e3
     endif
-
-    zdq = z/qj**0.4_eb + z0dq
-    if (zdq>0.2_eb) then
-        fmz = a3*fm3(zdq)*qj
-    else if (zdq>0.08_eb) then
-        fmz = a2*fm2(zdq)*qj
-    else
-        fmz = a1*fm1(zdq)*qj
-    endif
-
-    fmz = max(0.0_eb,fmz-fmd)
+    z_star = zz/qj**0.4_eb + z0dq
+    
+    if (zz>0.0_eb.and.qj>0.0_eb) then
+        z_star = zz/qj**0.4_eb
+        if (z_star>t2) then
+            fm_entrained = a3*z_star**1.895_eb*qj
+        else if (z_star>t1) then
+            fm_entrained = a2*z_star**0.909_eb*qj
+        else
+            fm_entrained = a1*z_star**0.566_eb*qj
+        endif
+    end if
+    
+    fm_entrained = max(0.0_eb,fm_entrained-fmd)
     return
     end subroutine entrfl
 

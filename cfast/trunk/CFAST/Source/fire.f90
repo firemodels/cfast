@@ -580,38 +580,30 @@
     real(eb), intent(in) :: qjl, zz, xemp, xfx, xfy
     real(eb), intent(out) :: xems,  xeme
     
-    real(eb) :: fm1, fm2, fm3, t1, t2, a1, a2, a3, xf, qj, zq, zdq
+    real(eb) :: xf, qj, z_star
     real(eb), parameter :: fire_at_wall = 1.0e-3_eb
 
-    ! define assignment statement subroutines to compute three parts of correlation
-    fm1(zq) = zq**0.566_eb
-    fm2(zq) = zq**0.909_eb
-    fm3(zq) = zq**1.895_eb
-
-    ! first time in firplm calculate coeff's to insure that mccaffrey correlation is continuous.  
-    ! that is, for a1 = 0.011, compute a2, a3 such that
-    ! a1*zq**0.566 = a2*zq**0.909  for zq = 0.08
-    ! a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
-
-    t1 = 0.08_eb
-    t2 = 0.20_eb
-    a1 = 0.011_eb
-    a2 = a1*fm1(t1)/fm2(t1)
-    a3 = a2*fm2(t2)/fm3(t2)
+    ! Ensure that mccaffrey correlation is continuous.  
+    ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
+    !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
+    
+    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb
 
     ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     xf = 1.0_eb
     if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
     if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
+    
     qj = 0.001_eb*qjl
+    
     if (zz>0.0_eb.and.qj>0.0_eb) then
-        zdq = zz/(xf*qj)**0.4_eb
-        if (zdq>t2) then
-            xems = a3*fm3(zdq)*qj
-        else if (zdq>t1) then
-            xems = a2*fm2(zdq)*qj
+        z_star = zz/(xf*qj)**0.4_eb
+        if (z_star>t2) then
+            xems = a3*z_star**1.895_eb*qj
+        else if (z_star>t1) then
+            xems = a2*z_star**0.909_eb*qj
         else
-            xems = a1*fm1(zdq)*qj
+            xems = a1*z_star**0.566_eb*qj
         endif
         xems = max(xemp,xems)
         xeme = max(xems-xemp,0.0_eb)

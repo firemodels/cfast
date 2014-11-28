@@ -324,15 +324,15 @@
 
     ! local variables
     integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
-    character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(7), LabelsShort(7), LabelUnits(7)
+    character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
 
-    data Labels / 'Time', 'HVENT Net Inflow', 'HVENT Net Mixing to Upper Layer', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
+    data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
 
-    data LabelsShort /'Time', 'H_', 'H_MIX_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_' /
+    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_' /
 
-    data LabelUnits / 's', 4*'kg/s', 2*'kg' /
+    data LabelUnits / 's', 3*'kg/s', 2*'kg' /
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -394,25 +394,25 @@
         position = position + 1
         
         if (validate) then
-            write (ctemp,'(5a)') trim(labelsshort(4)),trim(cifrom),'>',trim(cito)
+            write (ctemp,'(5a)') trim(labelsshort(3)),trim(cifrom),'>',trim(cito)
             headertext(1,position) = ctemp
-            headertext(2,position) = labelunits(4)
+            headertext(2,position) = labelunits(3)
             headertext(3,position) = ' '
             position = position + 1
-            write (ctemp,'(5a)') trim(labelsshort(4)),trim(cito),'>',trim(cifrom)
+            write (ctemp,'(5a)') trim(labelsshort(3)),trim(cito),'>',trim(cifrom)
             headertext(1,position) = ctemp
-            headertext(2,position) = labelunits(4)
+            headertext(2,position) = labelunits(3)
             headertext(3,position) = ' '
         else
-            headertext(1,position) = labels(4)
+            headertext(1,position) = labels(3)
             write (ctemp,'(a,1x,3a)') 'Vent',trim(cifrom),'>',trim(cito)
             headertext(2,position) = ctemp
-            headertext(3,position) = labelunits(4)
+            headertext(3,position) = labelunits(3)
             position = position + 1
-            headertext(1,position) = labels(4)
+            headertext(1,position) = labels(3)
             write (ctemp,'(a,1x,3a)') 'Vent',trim(cito),'>',trim(cifrom)
             headertext(2,position) = cTemp
-            headertext(3,position) = LabelUnits(4)
+            headertext(3,position) = LabelUnits(3)
         endif
         
     end do
@@ -430,23 +430,23 @@
                 if (validate) then
                     if (ih==1) then
                         if (ciFrom=='Outside') then
-                            headertext(1,position) = trim(LabelsShort(ih+4)) // trim(ciFrom) // '>N' // trim(ciTo)
+                            headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '>N' // trim(ciTo)
                         else
-                            headertext(1,position) = trim(LabelsShort(ih+4)) //'C' // trim(ciFrom) // '>N' // trim(ciTo)
+                            headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '>N' // trim(ciTo)
                         end if
                     else
-                        headertext(1,position) = trim(LabelsShort(ih+4)) // 'Fan_N' // trim(ciTo)
+                        headertext(1,position) = trim(LabelsShort(ih+3)) // 'Fan_N' // trim(ciTo)
                     endif
-                    headertext(2,position) = LabelUnits(ih+4)
+                    headertext(2,position) = LabelUnits(ih+3)
                     headertext(3,position) = ' '
                 else
-                    headertext(1,position) = Labels(ih+4)
+                    headertext(1,position) = Labels(ih+3)
                     if (ih==1) then
                         headertext(2,position) = 'Vent ' // trim(ciFrom) // '> Node ' // trim(ciTo)
                     else
                         headertext(2,position) = 'Fan at Node ' // trim(ciTo)
                     endif
-                    headertext(3,position) = LabelUnits(ih+4)
+                    headertext(3,position) = LabelUnits(ih+3)
                 endif
             end do
         end do

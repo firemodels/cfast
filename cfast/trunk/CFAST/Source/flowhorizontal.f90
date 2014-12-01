@@ -360,7 +360,8 @@
     ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
     !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
     
-    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb, e1 = 1.0_eb/.566_eb, e2 = 1.0_eb/.909_eb, e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t1**0.909_eb
+    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb, &
+        e1 = 1.0_eb/.566_eb, e2 = 1.0_eb/.909_eb, e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t2**0.909_eb
 
     xqj = cp*(tu-tl)*0.001_eb
     qj = xqj*fmd

@@ -1,13 +1,10 @@
-\chapter{Theoretical Basis for CFAST}
+\chapter{The Basic Transport Equations}
 \label{sec:Theory_Chapter}
 
 The equations used in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the conservation laws of mass and energy (equivalently the first law of thermodynamics) and the ideal gas law. These equations predict as functions of time quantities such as pressure, layer height and temperatures given the gains and losses of mass and energy in the two layers. The assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by an average value. Many formulations based upon these assumptions can be derived. Though equivalent mathematically, these formulations differ in their numerical solution.
 
 The exchange of mass and enthalpy between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and enthalpy between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and enthalpy from the lower to the upper layer, and convection transfers enthalpy from the gas layers to the surrounding walls.
 
-
-
-\section{Derivation of Equations for a Two-Layer Mode}
 
  It is assumed that each compartment is divided into two control volumes, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $c_v$ and $c_p$, the universal gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$.  For ambient air, $c_p \approx 1$~kJ/(kg $\cdot$ K) and $\gamma = 1.4$.
 \begin{figure}[h]
@@ -18,119 +15,51 @@ The exchange of mass and enthalpy between zones is due to physical phenomena suc
  \label{fig:Control_Volumes}
 \end{figure}
 Conservation of mass in each layer, $\dot m_i$, is expressed
-\be 
+\be
    \dbydt{m_i} = \dot m_i  \label{mass_con}
 \ee
 Conservation of energy takes the form of the first law of thermodynamics, which states that the rate of increase of internal energy plus the rate at which the layer does work by expansion is equal to the rate at which enthalpy is added to the gas:
-\be 
-   \dbydt{(c_v m_i T_i)} +  P \dbydt{V_i} =  \dot h_i \label{eq:first_law} 
+\be
+   \dbydt{(c_v m_i T_i)} +  P \dbydt{V_i} =  \dot h_i \label{eq:first_law}
 \ee
 The enthalpy source term, $\dot h_i$, consists of the fire's heat release rate, conduction losses to walls, and radiation exchange. The layer temperature and mass are related to the layer volume and compartment pressure via the ideal gas law:
 \be
   P \, V_i = m_i \, R \, T_i \label{EoS}
 \ee
-A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles: 
+A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles:
 \begin{eqnarray}
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dot h_L + \dot h_U \right)  \\[.1in]
 \dbydt{V_U} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dot h_U - V_U \dbydt{P} \right) \\[.1in]
 \dbydt{T_U} &=& \frac{1}{c_p \, m_U} \left( \dot h_U - c_p \, \dot m_U \, T_U + V_U \dbydt{P} \right) \\[.1in]
-\dbydt{T_L} &=& \frac{1}{c_p \, m_L} \left( \dot h_L - c_p \, \dot m_L \, T_L + V_L \dbydt{P} \right) 
+\dbydt{T_L} &=& \frac{1}{c_p \, m_L} \left( \dot h_L - c_p \, \dot m_L \, T_L + V_L \dbydt{P} \right)
 \end{eqnarray}
 As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff, meaning that the pressure adjusts to changing conditions more quickly than the other variables. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case). Methods that calculate the Jacobian (or at least approximate it) have a much larger stability region for stiff problems and are thus more successful at their solution.
 
-\section{Limitations of the Zone Model Assumptions} \label{sec:ZoneModelAssumptions}
 
-The basic assumption of all zone fire models is that each compartment can be divided into a
-small number of control volumes, each of which is uniform in temperature and composition. In
-CFAST all compartments have two zones except for the fire room which has an additional zone
-for the plume. Since a real upper/lower interface is not as sharp as this, one has a spatial error of
-about 10~\% in determining the height of the layer \cite{Steckler:1982, Quintiere:1984}.
 
-The zone model concept best applies for an enclosure in which the width and length are not too
-different. If the horizontal dimensions of the room differ too much (i.e., the room looks like a
-corridor), the flow pattern in the room may become asymmetrical. If the enclosure is too
-shallow, the temperature may have significant radial differences. The width of the plume may at
-some height become equal to the width of the room and the model assumptions may fail in a tall
-and narrow enclosure. Therefore, the user should recognize approximate limits on the ratio of the
-length ($L$), width ($W$), and height ($H$) of the compartment.
 
-If the aspect ratio (length/width) is over about 10, the corridor flow algorithm should be used.
-This provides the appropriate filling time. Similarly, for tall shafts (elevators and stairways), a
-single zone approximation is more appropriate. It was found experimentally \cite{Klote:1990} that the mixing
-between a plume and lower layer due to the interaction with the walls of the shaft, caused
-complete mixing. The is the flip side of the corridor problem and occurs at a ratio of the height
-to characteristic floor length of about 10. The following quantitative limits are recommended:
 
-\begin{table}[h]
-\begin{center}
-\caption{Recommended compartment dimension limits}
-\label{tab:compartment_limits}
-\vspace{0.1in}
-\begin{tabular}{|c|c|c|c|}
-\hline
-Group & Acceptable & Special consideration & Corridor flow \\
- & & required & algorithm \\ \hline
-$(L/W)_{max}$ & $L/W < 3$ & $3 < L/W < 5$ & $L/W > 5$ \\ \hline
-$(L/H)_{max}$ &  $L/H < 3$ & $3 < L/H < 6$ & $L/H > 6$ \\ \hline
- $(W/H)_{max}$ & $W/H > 0.4$ & $0.2 < L/W < 0.4$ & $L/W < 0.2$ \\ \hline
-\end{tabular}
-\end{center}
-\end{table}
+\chapter{Combustion}
+\label{sec:TheFire}
 
-\section{Source Terms for the Model}
+Fires in CFAST are specified by the user in terms of a time-dependent heat release rate (HRR) and yields of product species. Fires can be specified in multiple compartments and are treated as totally separate entities, with no interaction of the plumes. These fires are generally referred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
 
-The following sections discuss each of the sub-models in CFAST. For each of the phenomena discussed below, the
-physical basis for the model is discussed first, followed by a brief presentation of the
-implementation within CFAST. For all of the phenomena, there are basically two parts to the
-implementation: the physical interface routine (which is the interface between the CFAST
-model and the algorithm) and the actual physical routine(s) which implement the physics. This
-implementation allows the physics to remain independent of the structure of CFAST and allows
-easier insertion of new phenomena.
+CFAST does not include a pyrolysis model to predict fire growth. Rather, pyrolysis rates for each fire are prescribed by the user. While this approach does not directly account for increased pyrolysis due to radiative feedback from the flame or compartment, in theory these effects could be prescribed by the user. In an actual fire, this is an important consideration, and the specification used should consider the experimental conditions as closely as possible.
 
-\section{The Fire}\label{sec:TheFire}
+\section{Combustion Chemistry}
 
-A fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate
-(the pyrolysis rate). Energy is released by the fuel and combustion products are created as it
-burns.
-
-The model can simulate multiple fires in one or more compartments of the building. These fires
-are treated as totally separate entities, with no interaction of the plumes. These fires are generally
-referred to as ``objects'' and can be ignited at a prescribed time, temperature or heat flux.
-
-CFAST does not include a pyrolysis model to predict fire growth. Rather, pyrolysis rates for
-each fire are prescribed by the user. While this approach does not directly account for increased
-pyrolysis due to radiative feedback from the flame or compartment, in theory these effects could
-be prescribed by the user. In an actual fire, this is an important consideration, and the
-specification used should consider the experimental conditions as closely as possible.
-
-A fire releases energy based on the pyrolysis of fuel, but may be constrained by the oxygen
-available for combustion depending on the compartment conditions. Complete burning will take
-place only where there is sufficient oxygen. When insufficient oxygen is entrained into the fire
-plume, unburned fuel will be transported from zone to zone until there is sufficient oxygen and a
-high enough temperature to support combustion. In general, CFAST uses a simple definition of
-a combustion reaction that includes major products of combustion for hydrocarbon fuels:
-
+A fire releases energy based on the pyrolysis of fuel, but may be constrained by the oxygen available for combustion depending on the compartment conditions. Complete burning will take place only where there is sufficient oxygen. When insufficient oxygen is entrained into the fire plume, unburned fuel will be transported from zone to zone until there is sufficient oxygen and a high enough temperature to support combustion. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
 \be  \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} + \nu_\CO \, \mathrm{CO} +
-     \nu_\So \, \mathrm{Soot}  + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} \ee
-assuming that all the nitrogen and chlorine in the fuel are converted to HCN and HCl. The stoichiometric coefficients $\nu_\So$, $\nu_\CO$, etc. represent appropriate molar ratios for a stoichiometric balance of the equation and are defined as
-
-\be
-   \nu_\So = \frac{M_\F}{M_\So} \; y_\So \label{soot_yield}
+     \nu_\So \, \mathrm{Soot}  + \nu_\HCl \mathrm{HCl} + \nu_\HCN \mathrm{HCN} \label{stoich} 
 \ee
-\be
-   \nu_\CO = \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield}
-\ee
-which are defined by user input of the yields as appropriate.  Yields of HCN and HCl are defined by assuming complete conversion to HCN and HCl with the same relationships as soot and CO
-
-\be
-   \nu_\HCN = \frac{M_\F}{M_\HCN} \; y_\HCN \label{HCN_yield}
-\ee
-\be
-   \nu_\HCl = \frac{M_\F}{M_\HCl} \; y_\HCl \label{HCl_yield}
-\ee
-
+The user specifies the composition of the fuel molecule. It is assumed that all the nitrogen and chlorine in the fuel are converted to HCN and HCl. The user also provides the yields of soot and CO, from which the stoichiometric coefficients can be derived:
+\begin{eqnarray}
+   \nu_\So &=& \frac{M_\F}{M_\So} \; y_\So \label{soot_yield} \\
+   \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield} \\
+   \nu_\HCN &=& \frac{M_\F}{M_\HCN} \; y_\HCN \label{HCN_yield} \\
+   \nu_\HCl &=& \frac{M_\F}{M_\HCl} \; y_\HCl \label{HCl_yield} 
+\end{eqnarray}
 The remaining stoichioimetry falls directly from the chemical balance of
-
 \begin{eqnarray}
 \mathrm{n_C} &=& \nu_\COTWO + \nu_\CO + \nu_\So + \nu_\HCN \\
 \mathrm{n_H} &=& 2 \nu_\HTWOO + \nu_\HCl + \nu_\HCN \\
@@ -148,20 +77,20 @@ so that
  &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So}+\frac{\nu_\CO}{2}+\frac{\mathrm{n_\Hy} - \nu_\HCl - \nu_\HCN}{4}-\frac{\mathrm{n_\Oh}}{2} \\
  &=& \frac{4 \mathrm{n_\C+n_\Hy}}{4}-\frac{\mathrm{2 n_\Oh+5 n_\N+n_\Cl}}{4}-\brackets{\nu_\So+\frac{\nu_\CO}{2}} \label{Oxygen_yield_2}
 \end{eqnarray}
-The simpler eq. \ref{Oxygen_yield} is used in the code, but the latter equations allow more direct examination of the impact of individual species on the oxygen consumption and are useful to understand the limits of the individual inputs. Again, it is useful to note that eq. \ref{Oxygen_yield_2} assumes complete conversion of the nitrogen and chlorine in the fuel to HCN and HCl, respectively. For incomplete conversion, an effective chemical formula can be used.
+The simpler Eq.~\ref{Oxygen_yield} is used in the code, but the latter equations allow more direct examination of the impact of individual species on the oxygen consumption and are useful to understand the limits of the individual inputs. Again, it is useful to note that Eq.~\ref{Oxygen_yield_2} assumes complete conversion of the nitrogen and chlorine in the fuel to HCN and HCl, respectively. For incomplete conversion, an effective chemical formula can be used.
 
 For complete combustion of the simplest hydrocarbon fuel, methane reacts with oxygen to form carbon dioxide and water. For incomplete combustion or for fuels that contain oxygen, nitrogen, or chlorine, the reaction becomes more complex. In this case, production yields for the species are prescribed by the user. Stoichiometry is used to insure conservation of mass and elements in the reaction. The species which are calculated are oxygen, carbon dioxide, carbon monoxide, water, and soot. Gaseous nitrogen is included, but only acts as a diluent. Production of hydrogen cyanide and hydrogen chloride are tracked solely based on user prescribed yields. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
-The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support complete combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons, reducing the effective $\dm_f$ for a given fire.
+The heat release rate for a constrained fire may be reduced below its prescribed value based upon the oxygen available for combustion.  When there is not enough oxygen to support combustion, some of the fuel will be transported to the gas layers and through vents as unburned hydrocarbons, reducing the fuel mass loss rate of products.
 
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
-
-\begin{eqnarray} Q_{f,R} &=& \chi_R Q_f \\
-Q_{f,C} &=& \brackets{1-\chi_R} Q_f
+\begin{eqnarray} 
+   \dQ_{\rm r} &=& \chi_{\rm r} \, \dQ \\
+   \dQ_{\rm c} &=& (1-\chi_{\rm r}) \, \dQ
 \end{eqnarray}
-where, $\chi_R$ is the fraction  of the fire's heat release rate given off as radiation.  The convective enthalpy, $Q_{f,C}$ then becomes the driving term in the plume flow.  For a constrained fire there is radiation to both the upper and lower layers, whereas the convective part contributes only to the upper layer.
+where, $\chi_{\rm r}$ is the fraction  of the fire's heat release rate given off as radiation.    For a constrained fire there is radiation to both the upper and lower layers, whereas the convective part contributes only to the upper layer.
 
-\subsection{Limiting Combustion by Available Oxygen \label{sec:Oxygen_Limit}}
+\section{Limiting Combustion by Available Oxygen \label{sec:Oxygen_Limit}}
 
 For any individual fire, the heat release rate is limited by available oxygen in the layer where the fire is located. This limit is applied in three places, which are shown schematically in figure 3. The first is burning in the portion of the plume which (at least initially) is typically in the lower layer of the room of fire origin (region \# 1).  The second is the portion of the plume in the upper layer, also in the room of origin (region \# 2).  The third is in the vent flow which entrains air from a lower layer into an upper layer in an adjacent compartment (region \# 3). The unburned hydrocarbons are tracked in this model.  Further combustion of CO to $\mathrm{CO_2}$ is not included in the model.
 
@@ -200,14 +129,18 @@ A temperature criterion is also imposed so that no burning will take place when 
 
 In summary, it is possible to follow the formation of the major products of combustion (carbon dioxide, carbon monoxide, soot, water, hydrogen cyanide, and hydrogen chloride) using appropriate measured product yields (e.g., \cite{Morehart:1991}) to define product yields for eq (33). Actual combustion chemistry is not considered in CFAST due to the complexities associated with detailed kinetics and transport.
 
-\subsection{Flame Height}
 
-CFAST includes a calculation of average flame height based on the work of Heskestad \cite{Heskestad:2002}. Valid for a wide range of hydrocarbon and gaseous fuels, the correlation is given by
 
-\be H = -1.02 D + 0.235 \brackets{\frac{Q_f}{1000}}^{2/5} \ee
-where $H$ is the average flame height, $D$ the diameter of the fire and $Q_f$ is the fire size. The mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50 \% of the time and below the mean 50 \% of the time.  This average flame height is  included in the printed output from CFAST. Note that $Q_f$ in Eq. (8) in Ref. \cite{Heskestad:2002} is in kW.
+\section{Flame Height}
+\label{sec:firemassbalance}
 
- \subsubsection{Limitation of the Algorithm for Fires and Mass Balance }\label{sec:firemassbalance}
+
+CFAST includes a calculation of average flame height based on the work of Heskestad~\cite{Heskestad:2002}. Valid for a wide range of hydrocarbon and gaseous fuels, the correlation is given by
+\be 
+   H = -1.02 D + 0.235 \brackets{\frac{Q_f}{1000}}^{2/5} 
+\ee
+where $H$ is the average flame height (m), $D$ the diameter of the fire (m), and $\dQ$ is the total heat release rate (kW). The mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50 \% of the time and below the mean 50~\% of the time.  This average flame height is  included in the printed output from CFAST.
+
 
 CFAST depends on pyrolysis data for the source term for a fire. The usual way to obtain this data is a large-scale calorimeter, e.g., reference [\cite{Bryant:2003}. Generally, a product (e.g., chair, table, bookcase) is placed under a large collection hood and ignited by a burner ($\approx 50$ kW simulating a wastebasket) placed adjacent to the item.  The combustion process then proceeds under assumed free-burning conditions, and the heat release rate is measured.  Potential sources of uncertainty include measurement errors related to the instrumentation and the degree to which free-burning conditions are not achieved (e.g., radiation from the gases under the hood or from the hood itself, and restrictions in the air entrained by the object causing locally reduced oxygen concentrations affecting the combustion chemistry).  There are limited experimental data for upholstered furniture which suggest that prior to the onset of flashover in a compartment, the influence of the compartment on the burning behavior of the item is small.  The differences obtained from the use of different types or locations of ignition sources have not been explored. These factors are discussed in reference~\cite{Babrauskas:1982}.
 
@@ -219,9 +152,11 @@ Burning can be constrained by the available oxygen.  However, this constrained f
 
 An oxygen combustion chemistry scheme is employed only in constrained fires.  Here user-constrained hydrocarbon ratios and species yields are used by the model to predict concentrations.  A balance among hydrogen, carbon, and oxygen molecules is maintained.  Under some conditions, low oxygen can change the combustion chemistry, with a resulting increase in the yields of products of incomplete combustion such as carbon monoxide. However, not enough is known about these chemical processes to build this relationship into the model at the present time.  Some data exist in reports of full-scale experiments (e.g., reference \cite{Lee:1982}) which can assist in making such determinations.
 
-\section{Plumes}
 
-A plume is formed above any burning object.  It acts as a pump transferring mass and enthalpy from the lower layer into the upper layer.  A correlation is used to predict the amount of mass and enthalpy that is transferred.  A more complete plume model would predict plume entrainment by creating a separate zone and solving the appropriate equations.
+
+
+\chapter{The Fire Plume}
+
 
 Two sources exist for moving enthalpy and mass between the layers within and between compartments.  Within the compartment, the fire plume provides one source.  The other source of mixing between the layers occurs at vents such as doors or windows.  Here, there is mixing at the boundary of the opposing flows moving into and out of the compartment.  The degree of mixing is based on an empirically-derived mixing relation.  Both the outflow and inflow entrain air from the surrounding layers.  The flow at vents is also modeled as a plume (called the door plume or jet), and uses the same equations as the fire plume, with two differences.  First, an offset is calculated to account for entrainment within the doorway and second, the equations are modified to account for the rectangular geometry of vents compared to the round geometry of fire plumes.  All plumes within the simulation entrain air from their surroundings according to an empirically-derived entrainment relation.  Entrainment of relatively cool, non-smoke laden air adds oxygen to the plume and allows burning of the fuel.  It also causes it to expand as the plume moves upward in the shape of an inverted cone.  The entrainment in a vent is caused by bi-directional flow and results from vortices formed near a shear layer.  This phenomenon is called the Kelvin-Helmholtz instability \cite{Alterman:1961}.  It is not exactly the same as a normal plume, so some error (not measured) arises when this entrainment is approximated by a normal plume entrainment algorithm.
 
@@ -233,27 +168,32 @@ Once the interface reaches the soffit level, a door plume forms and flow from th
 
 Buoyancy generated by the combustion processes in a fire causes the formation of a plume. Such a plume can transport mass and enthalpy from the fire into the lower or upper layer of a compartment.  In the present implementation, we assume that both mass and enthalpy from the fire are deposited only into the upper layer.  In addition the plume entrains mass from the lower layer and transports it into the upper layer.  This yields a net enthalpy transfer between the two layers.
 
-A fire generates energy at a rate $Q_f$.  Some fraction, $\chi_R$, will exit the fire as radiation.  The remainder, $\chi_C$, will then be deposited in the layers as convective energy or heat additional fuel which may then pyrolyze. A buoyant plume carries this energy into the upper layer. Within CFAST, the radiative fraction, $\chi_R$, defaults to 0.30 \cite{Drysdale:1985}; i.e., 30 \% of the fire's energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:1978}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
+A fire generates energy at a rate $\dQ$.  Some fraction, $\chi_{\rm r}$, will exit the fire as radiation.  The remainder will then be deposited in the layers as convective energy or heat additional fuel which may then pyrolyze. A buoyant plume carries this energy into the upper layer. Within CFAST, the radiative fraction, $\chi_{\rm r}$, defaults to 0.30 \cite{Drysdale:1985}; i.e., 30 \% of the fire's energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:1978}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  
 
-\subsection{Plume Entrainment}
+\section{Plume Entrainment}
 
 All plume models used to date are based on the seminal work of Morton et al. \cite{Morton:1956}. For an extended source such as a fire, the prescription needs modification. Several studies have devised such modifications. Two of these are included in CFAST, the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}.
 
-McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as given in eq \ref{eq:McCaffreyPlume}.  This prescription agrees with the work of Cetegen et al. \cite{Cetegen:1982, Cetegen:1984} in the intermittent regions but yields greater entrainment in the other two regions.  This difference is particularly important for the initial fire since the upper layer is far removed from the fire.
+McCaffrey \cite{McCaffrey:1983} estimated the mass entrained by the fire/plume from the lower into the upper layer. This correlation divides the flame/plume into three regions as given in Eq.~\ref{eq:McCaffreyPlume}.  This prescription agrees with the work of Cetegen et al. \cite{Cetegen:1982, Cetegen:1984} in the intermittent regions but yields greater entrainment in the other two regions.  This difference is particularly important for the initial fire since the upper layer is far removed from the fire.
 
 \begin{eqnarray}
-\textnormal{flaming:} & \frac{\dot{m}_e}{Q_f} = 0.011 \brackets{\ZQf}^{0.566} & 0.00 \leq \brackets{\ZQf}<0.08 \nonumber \\
-\textnormal{intermittent:} & \frac{\dot{m}_e}{Q_f} = 0.026 \brackets{\ZQf}^{0.909} & 0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\
-\textnormal{plume} & \frac{\dot{m}_e}{Q_f} = 0.124 \brackets{\ZQf}^{1.895} & 0.20 \leq \brackets{\ZQf} \nonumber
+   \frac{\dm_{\rm e}}{\dQ} &=& 0.011 \brackets{\ZQf}^{0.566} \quad \quad   0.00 \leq \brackets{\ZQf}<0.08 \nonumber \\
+   \frac{\dm_{\rm e}}{\dQ} &=& 0.026 \brackets{\ZQf}^{0.909} \quad \quad   0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\
+   \frac{\dm_{\rm e}}{\dQ} &=& 0.124 \brackets{\ZQf}^{1.895} \quad \quad   0.20 \leq \brackets{\ZQf} \nonumber
 \end{eqnarray}
 McCaffrey's correlation is an extension of the common point source plume model, with a different set of coefficients for each region. These coefficients are based on experimental correlations.
 
 Heskestad  analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation
+\be 
+   \dm_{\rm e} = 0.071 \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \; \brackets{1 + 0.026 \, \dQ_{\rm c}^{2/3} \, \brackets{z-z_0}^{-5/3}} 
+\ee
+where $z_0$ is a virtual origin for the fire plume defined as 
+\be
+  z_0/D = -1.02 + 0.083 \dQ^{2/5} / D
+\ee
+which is based on the total heat release rate of the fire, $\dQ$.  Both correlations provide similar results in CFAST calculations.
 
-\be \dot{m}_e = 0.071 Q_{f,C}^{1/3} \brackets{z - z_0}^{5/3} \brackets{1 + 0.026 Q_{f,C}^{2/3} \brackets{z-z_0}^{-5/3}} \ee
-where $Q_{f,C}$ is the convective heat release rate of the fire and $z_0$ is a virtual origin for the fire plume defined as $z_0/D = -1.02 + 0.083 Q_f^{2/5} / D$, here based on the total heat release rate of the fire.  Both correlations provide similar results in CFAST calculations.
-
-\subsection{Entrainment Limits}
+\section{Entrainment Limits}
 
 In CFAST, there is a constraint on the quantity of gas which can be entrained by a plume arising from a fire.  The constraint arises from the physical fact that a plume can rise only so high for a given size of a heat source.  Early in a fire, when the energy flux is very small, the plume may not have sufficient energy to reach the compartment ceiling. The correct sequence of events is for a small fire to generate a plume which does not reach the ceiling or upper layer initially.  The plume entrains enough cool gas to decrease the buoyancy to the point where it no longer rises. When there is sufficient energy present in the plume, it will penetrate the upper layer.  To this end the following prescription has been incorporated:  for a given size fire, a limit is placed on the amount of mass which can be entrained, such that no more is entrained than would allow the plume to reach the layer interface.  The result is that the interface falls at about the correct rate, although it starts a little too soon, and the upper layer temperature is over predicted, but follows experimental data after the initial phase.
 
@@ -284,7 +224,7 @@ Assuming the temperature of the fire is much larger than the temperature of the 
  \be \dm_e < \frac{Q_{f,C}}{c_p\brackets{T_u - T_l}} \ee
  which is incorporated into the model.  It should be noted that both the plume and layers are assumed to be well mixed with negligible mixing and transport time for the plume and layers.
 
-\subsection{Plume Centerline Temperature}
+\section{Plume Centerline Temperature}
 
 Used to calculate convective heat transfer to targets located directly above a fire source, CFAST includes an empirical calculation of plume centerline gas temperature taken from the work of Davis \cite{Valid:Davis_Plumes} using the work of Baum and McCaffrey \cite{Baum:1989} and Evans \cite{Evans:1984}. Baum and McCaffrey \cite{Baum:1989} provide an experimental correlation for plume centerline temperature consistent with plume theory. The correlation gives the excess temperature as a function of height above a fire as
 
@@ -326,7 +266,7 @@ where $Z_{I,1}$ is the distance from the fire to the interface between the upper
  \label{fig:Plume_Temp_Notation}
 \end{figure}
 
-\subsection{Limitations of the Plume Algorithms} \label{sec:plumelimits}
+\section{Limitations of the Plume Algorithms} \label{sec:plumelimits}
 
 The entrainment coefficients are empirically determined values from the work of McCaffrey \cite{McCaffrey:1983} and Heskestad \cite{Heskestad:1984}. Small errors in these values will have a small effect on the fire plume or the flow in the plume of gases exiting the door of that compartment.  In a multi-compartment model such as CFAST, however, small errors in each door plume are multiplicative as the flow proceeds through many compartments, possibly resulting in a significant error in the furthest compartments.  The data available from validation experiments \cite{Peacock:1988} discussed in the CFAST Validation Guide \cite{CFAST_Valid_Guide_6} indicate that the values for entrainment coefficients currently used in most zone models produce good agreement for a three-compartment configuration.  More data are needed for larger numbers of compartments to study this further.
 
@@ -334,7 +274,10 @@ In real fires, smoke and gases are introduced into the lower layer of each compa
 
 The plume centerline temperature is based on an experimental correlation that has been subjected to considerable validation \cite{Valid:Davis_Plumes}. When the desired location of the plume centerline temperature is within the flaming region of the fire, the temperature is likely to be underestimated.
 
-\section{Vent Flow}
+
+
+
+\chapter{Ventilation}
 
 Flow through vents is a dominant component of any fire model because it is sensitive to small changes in pressure and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course for the fire and plume).  Its sensitivity to environmental changes arises through its dependence on the pressure difference between compartments which can change rapidly.
 
@@ -397,7 +340,7 @@ The approach to calculating the flow field is of some interest.  The flow calcul
  \label{fig:Flow_Notation}
 \end{figure}
 
-Let $b$ and $t$ denote the bottom and top slab elevations and $P_b$ and $P_t$ denote the cross-vent pressures at those elevations.  Because of the way that slabs are defined, the two cross pressures $P_b$ and $P_t$ will have the same sign. The mass flow through the slab can then be computed by integrating equation \ref{eq:vent_massflow} vertically from $b$ to $t$ to obtain 
+Let $b$ and $t$ denote the bottom and top slab elevations and $P_b$ and $P_t$ denote the cross-vent pressures at those elevations.  Because of the way that slabs are defined, the two cross pressures $P_b$ and $P_t$ will have the same sign. The mass flow through the slab can then be computed by integrating equation \ref{eq:vent_massflow} vertically from $b$ to $t$ to obtain
 
 \begin{eqnarray}
 \dm&=&\int_b^t \dmass(h)\\
@@ -576,7 +519,10 @@ The half-distance, $h_{1/2}$, can be approximated by $h_{1/2} = \log{2}/0.018 = 
 
 The numerical experiments with FDS  demonstrated that for the cases simulated, ceiling jet characteristics depend on the relative inlet temperature rise and not the inlet depth.  Flow in long corridors (greater than 10 m) need to be better characterized due to the flow stagnation which may occur because of the ceiling jet's temperature decay.
 
-\section{Heat Transfer}
+
+
+
+\chapter{Heat Transfer}
 
 This section discusses radiation, convection and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls.  This section also discusses heat transfer algorithms for calculating target temperatures.
 
@@ -1112,7 +1058,13 @@ be estimated from $\nu = 0.04128 x 10^7 T_u^{5/2} /\brackets{T_u + 110.4}$. $Q_H
 When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer to the surface
 increases.  Reference \cite{Cooper:1991} provides details of the calculation of wall surface area and convective heat flux for the wall surfaces.
 
-\section{Heat Detection}
+
+
+\chapter{Fire Protection Devices}
+
+
+
+\section{Heat Detectors}
 
 Heat detection is modeled using temperatures obtained from the ceiling jet \cite{Cooper:1991}. Rooms without fires do not have ceiling jets. Sensors in these types of rooms use gas layer temperatures instead of ceiling jet temperatures. The characteristic detector temperature is simply the temperature of the ceiling jet (at the location of the detector). The characteristic heat detector temperature is modeled using the differential equation \cite{Heskestad:1976}
 
@@ -1225,38 +1177,3 @@ Q_L^{new} &=& 0
 
 This is used in situations where the stratification does not occur. Examples are elevators shafts, complex stairwells, natural venting ductwork, and compartments far from the fire.
 
-\section{Review of the Theoretical Development of the Model}
-
-Details of the software quality assurance process for CFAST is included in the Software and Model Evaluation Guide \cite{CFAST_Valid_Guide_6}. This section provides a summary of this process The current version of ASTM E 1355-04 includes provisions to guide in the assessment of the theoretical basis of the model that includes a review of the model ``by one or more recognized experts fully conversant with the chemistry and physics of fire phenomenon, but not involved with the production of the model. Publication of the theoretical basis of the model in a peer-reviewed journal article may be sufficient to fulfill this review� \cite{ASTM:E1355}.
-
-CFAST has been subjected to independent review in two ways, internal and external. First, all documents issued by the National Institute of Standards and Technology receive three levels of internal review by members of the staff not involved in the preparation of the report or underlying research. The theoretical basis of CFAST is presented in this document, and is subject to internal review by staff members who are not active participants in the development of the model, but who are members of the Fire Research Division and are considered experts in the fields of fire and combustion. The same was true of previous versions of the technical reference guide over the last decade \cite{Models:FAST, Jones:2003, Peacock:1993}.  Externally, the theoretical basis for the model has been published in peer reviewed journals \cite{Jones:1993a, Jones:1985, Jones:1984} and conference proceedings \cite{Jones:1991}. In addition, CFAST is used worldwide by fire protection engineering firms who review the technical details of the model related to their particular application. Some of these firms also publish in the open literature reports documenting internal efforts to validate the model for a particular use. Many of these studies are discussed in more detail in the present document.
-
-In addition to the formal review, procedures were in place during the development of CFAST to assure the quality of the model.  These procedures included several components:
-
-\begin{itemize}
-\item Review of proposed changes to the code by at least two others involved in the development process to insure that a proposed change was consistent with the rest of the CFAST code and was implemented correctly. These reviews, while informal in nature, provided a comprehensive review of the changes to the model during its development.  Significant changes were documented in internal memorandums covering such areas as the numerics and structure of the model \cite{Peacock:1992}, improvements in the chemistry \cite{Peacock:1994}, convection \cite{Peacock:1993a}, HCl deposition \cite{Peacock:1993b} algorithms, and output formats for the model \cite{Peacock:1993c}. Comparisons of the impact of the changes on the output results were often described in internal memorandums (see, for example, reference \cite{Peacock:1992}).
-
-\item Internal review of the model prior to public release.  In addition to the normal NIST document review process, the CFAST software was circulated internally to Fire Research Division Staff to allow interested staff members to test the model \cite{Jones:1996b, Jones:1997, Jones:2000}. These memorandums detail changes to the model since the last public release of the model and provide documentation of the history of the model development.
-
-\item For each major release of CFAST, NIST has maintained a history of the source code which goes back to March 1989.  While it is not practical to reconstruct the programs for each release for use with modern software tools and computer operating systems, the source code history allows the developers to examine what changes were made at each release point. This provides detailed documentation of the history of model development and is often useful to understand the impact of changes to submodels over the development of the model.
-
-\item Once a release of CFAST was approved by NIST, it was announced with a letter to model users which provided a summary of model changes and available documentation.  In essence, these were a condensation of the internal memorandums, without details or printout of specific code changes.  These memorandums provide documentation of the history of the model development \cite{Group:1991, Group:1992, Group:1993, Group:1996, Group:1996a}.
-\end{itemize}
-
-Finally, CFAST has been reviewed and included in industry-standard handbooks such as the SFPE Handbook \cite{Walton:2003} and referenced in specific standards, including NFPA 805 \cite{NFPA805:2004} and NFPA 551 \cite{NFPA551:2004}.
-
-\subsection{Assessment of the Completeness of Documentation}
-
-There are three primary documents on CFAST, this Technical Reference Guide, the User�s Guide \cite{CFAST_Users_Guide_6}, and the Software Development and Model Evaluation Guide \cite{CFAST_Valid_Guide_6}.  This document is the Technical Reference Guide and provides documentation of the governing equations, assumptions, and approximations of the various submodels. It also includes a summary description of the model structure, and numerics.  The Model User�s Guide includes a description of the model input data requirements and model results. The Software Development and Model Evaluation Guide describes the software quality assurance process used in the development and maintenance of the model and includes an extensive discussion of the validation of the model.
-
-The extensive formal review process for all NIST publications in part insures the quality of the CFAST Guides. In addition, the model developers routinely receive feedback from users on the completeness of the documentation and add clarifications when needed. It is estimated that there are several thousand users of CFAST. Before new versions of the model are released, there is a ``beta test'' period in which the users test the new version using the updated documentation. This process is similar, although less formal, to that which most computer software programs undergo. Training courses for use of the model in fire hazard analysis have been developed from the model documentation and presented at training courses worldwide \cite{Barnett:1990}.
-
-\subsection{Assessment of Justification of Approaches and Assumptions}
-
-The technical approach and assumptions of the model have been presented in the peer reviewed scientific literature and at technical conferences. Also, all documents released by NIST are required to go through an internal editorial review and approval process. This process is designed to ensure compliance with the technical requirements, policy, and editorial quality required by NIST. The technical review includes a critical evaluation of the technical content and methodology, statistical treatment of data, uncertainty analysis, use of appropriate reference data and units, and bibliographic references. CFAST manuals are always first reviewed by a member of the Fire Research Division, then by the immediate supervisor of the author of the document, then by the chief of the Fire Research Division, and finally by a reader from outside the division. Both the immediate supervisor and the division chief are technical experts in the field. Once the document has been reviewed, it is then brought before the Editorial Review Board (ERB), a body of representatives from all the NIST laboratories. At least one reader is designated by the Board for each document that it accepts for review. This last reader is selected based on technical competence and impartiality. The reader is usually from outside the division producing the document and is responsible for checking that the document conforms with NIST policy on units, uncertainty and scope. This reader does not need to be a technical expert in fire or combustion.
-
-Besides formal internal and peer review, CFAST is subjected to continuous scrutiny because it is available to the general public and is used internationally by those involved in fire safety design and postfire reconstruction. The source code for CFAST is also released publicly, and has been used at various universities worldwide, both in the classroom as a teaching tool as well as for research. As a result, flaws in the theoretical development and the computer program itself have been identified and fixed. The user base continues to serve as a means to evaluate the model, which is as important to its development as the formal internal and external peer review processes.
-
-\subsection{Assessment of Constants and Default Values}
-
-A comprehensive assessment of the numerical parameters (such as default time step or solution convergence criteria) and physical parameters (such as empirical constants for convective heat transfer or plume entrainment) used in CFAST is not available in one document. Instead, specific parameters have been tested in various verification and validation studies performed at NIST and elsewhere. Numerical parameters are described in this Technical Reference Guide and are subject to the internal review process at NIST, but many physical parameters are extracted from the literature and do not undergo a formal review. In addition, default values for the various model inputs have been specifically reviewed by a professional fire protection engineering university professor to insure appropriate default values and suggested limits for the various input values. The model user is expected to assess the appropriateness of default values provided by CFAST and make changes to the default values if need be.

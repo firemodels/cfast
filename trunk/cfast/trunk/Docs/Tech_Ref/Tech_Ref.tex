@@ -50,7 +50,7 @@
 \newcommand{\degf}{$^{\circ}$F }
 \newcommand{\brackets}[1]{ { \left( {#1} \right) } }
 \newcommand{\dbydt}[1]{\frac{d {#1}}{dt}}
-\newcommand{\ZQf}{\frac{Z}{Q_f^{2/5}}}
+\newcommand{\ZQf}{\frac{z}{\dQ^{2/5}}}
 \newcommand{\dprime}{^{\prime \prime}}
 \newcommand{\rH}{{\frac{r}{H}}}
 \newcommand{\Dttwo}{{\frac{\Delta t}{2}}}
@@ -219,7 +219,7 @@ Paul A. Reneke \\
  }
 
  \vspace{.5in}
- 
+
 \flushright{http://dx.doi.org/10.6028/NIST.SP.1026r1}
 
 \vspace{.25in}
@@ -447,7 +447,7 @@ provided to the calculations.
 
 \label{acksection}
 
-Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission Office of Research and the U.S. Department of Energy. The U.S. NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley, David Stroup, and Jason Dreisbach for their efforts and support. Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged.  
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission Office of Research and the U.S. Department of Energy. The U.S. NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley, David Stroup, and Jason Dreisbach for their efforts and support. Support to refine the software development and quality assurance process for CFAST has been provided by the U.S. Department of Energy (DOE). The assistance of Subir Sen and Debra Sparkman in understanding DOE software quality assurance programs and the application of the process to CFAST is gratefully acknowledged.
 
 Doug Carpenter, Combustion Sciences and Engineering, has contributed numerous corrections, clarifications, and updates to the guides and the model through his detailed review of the model and documentation. Allan Coutts, Washington Safety Management Solutions, provided insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
 
@@ -461,7 +461,6 @@ Doug Carpenter, Combustion Sciences and Engineering, has contributed numerous co
 \mainmatter
 
 \include{Overview_Chapter}
-\include{Model_Scenario_Chapter}
 \include{Theory_Chapter}
 \include{Mathematical_Robustness}
 \include{Sensitivity}

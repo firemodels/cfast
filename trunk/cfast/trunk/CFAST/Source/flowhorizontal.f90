@@ -344,7 +344,7 @@
 
     !     for the reference for this correlation, see the comments in the routine "firplm."  the offset for the formulation of
     !     an equivalent door jet is provided by requiring the plume be long enough to be the appropriate plume for the fire of size
-    !     qj.  note that mccaffrey's units are kilojoules.  also we assume that the plume is round as in mccaffrey's plume.  this should
+    !     qj.  note that mccaffrey's units are kilojoules.  also we assume that the plume is round as in mccaffrey's plume.  this could
     !     be modified to account for the flat plume verus the round plume in the theory.
 
     use precision_parameters
@@ -361,8 +361,9 @@
     !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
     
     real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb, &
-        e1 = 1.0_eb/.566_eb, e2 = 1.0_eb/.909_eb, e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t2**0.909_eb
+        e1 = 1.0_eb/0.566_eb, e2 = 1.0_eb/0.909_eb, e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t2**0.909_eb
 
+    ! determine virtual origin for the plume
     xqj = cp*(tu-tl)*0.001_eb
     qj = xqj*fmd
     fmdqj = 1.0_eb/xqj
@@ -373,19 +374,17 @@
     else
         z0dq = (fmdqj/a3)**e3
     endif
+
     z_star = zz/qj**0.4_eb + z0dq
     
-    if (zz>0.0_eb.and.qj>0.0_eb) then
-        z_star = zz/qj**0.4_eb
-        if (z_star>t2) then
-            fm_entrained = a3*z_star**1.895_eb*qj
-        else if (z_star>t1) then
-            fm_entrained = a2*z_star**0.909_eb*qj
-        else
-            fm_entrained = a1*z_star**0.566_eb*qj
-        endif
-    end if
-    
+    if (z_star>t2) then
+        fm_entrained = a3*z_star**1.895_eb*qj
+    else if (z_star>t1) then
+        fm_entrained = a2*z_star**0.909_eb*qj
+    else
+        fm_entrained = a1*z_star**0.566_eb*qj
+    endif
+
     fm_entrained = max(0.0_eb,fm_entrained-fmd)
     return
     end subroutine entrfl

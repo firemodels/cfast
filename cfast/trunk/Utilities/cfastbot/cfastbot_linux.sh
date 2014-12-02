@@ -91,13 +91,6 @@ run_auto()
 
    MESSAGE_FILE=$SVN_LOG/message
 
-   cd $SMV_SOURCE
-   svn update &> /dev/null
-   THIS_SMVSVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
-   THIS_SMVAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
-   LAST_SMVSVN=`cat $SVN_SMVFILE`
-   svn log -r $THIS_SMVSVN > $SVN_SMVLOG
-
    cd $CFAST_SOURCE
    svn update &> /dev/null
    THIS_CFASTSOURCESVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
@@ -105,32 +98,15 @@ run_auto()
    LAST_CFASTSOURCESVN=`cat $SVN_CFASTSOURCEFILE`
    svn log -r $THIS_CFASTSOURCESVN > $SVN_CFASTSOURCELOG
   
-   cd $CFAST_DOCS
-   svn update &> /dev/null
-   THIS_CFASTDOCSSVN=`svn info | tail -3 | head -1 | awk '{print $4}'`
-   THIS_CFASTDOCSAUTHOR=`svn info | tail -4 | head -1 | awk '{print $4}'`
-   LAST_CFASTDOCSSVN=`cat $SVN_CFASTDOCSFILE`
-   svn log -r $THIS_CFASTDOCSSVN > $SVN_CFASTDOCSLOG
-  
-   if [[ $THIS_SMVSVN == $LAST_SMVSVN && $THIS_CFASTSOURCESVN == $LAST_CFASTSOURCESVN && $THIS_CFASTDOCSSVN == $LAST_CFASTDOCSSVN ]] ; then
+   if [[ $THIS_CFASTSOURCESVN == $LAST_CFASTSOURCESVN ]] ; then
       exit
    fi
 
    rm -f $MESSAGE_FILE
-   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
-      echo $THIS_SMVSVN>$SVN_SMVFILE
-      echo -e "smokeview source has changed. $LAST_SMVSVN->$THIS_SMVSVN($THIS_SMVAUTHOR)" >> $MESSAGE_FILE
-      cat $SVN_SMVLOG >> $MESSAGE_FILE
-   fi
    if [[ $THIS_CFASTSOURCESVN != $LAST_CFASTSOURCESVN ]] ; then
       echo $THIS_CFASTSOURCESVN>$SVN_CFASTSOURCEFILE
       echo -e "CFAST source directory has changed. $LAST_CFASTSOURCESVN->$THIS_CFASTSOURCE($THIS_CFASTSOURCEAUTHOR)" >> $MESSAGE_FILE
       cat $SVN_CFASTSOURCELOG >> $MESSAGE_FILE
-   fi
-   if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
-      echo $THIS_CFASTDOCSSVN>$SVN_CFASTDOCSFILE
-      echo -e "CFAST Docs directory has changed. $LAST_CFASTDOCSSVN->$THIS_CFASTDOCS($THIS_CFASTDOCSAUTHOR)" >> $MESSAGE_FILE
-      cat $SVN_CFASTDOCSLOG >> $MESSAGE_FILE
    fi
     echo -e "CFASTbot run initiated." >> $MESSAGE_FILE
     cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo > /dev/null
@@ -957,14 +933,8 @@ email_build_status()
    echo "-------------------------------" >> $TIME_LOG
    echo "Nightly Manuals (public): https://drive.google.com/folderview?id=0B_wB1pJL2bFQSkhyNDJ0bEw0cVE#list" >> $TIME_LOG
    echo "-------------------------------" >> $TIME_LOG
-   if [[ $THIS_SMVSVN != $LAST_SMVSVN ]] ; then
-     cat $SVN_SMVLOG >> $TIME_LOG
-   fi
    if [[ $THIS_CFASTSOURCESVN != $LAST_CFASTSOUCESVN ]] ; then
      cat $SVN_CFASTSOURCELOG >> $TIME_LOG
-   fi
-   if [[ $THIS_CFASTDOCSSVN != $LAST_CFASTDOCSSVN ]] ; then
-     cat $SVN_CFASTDOCSLOG >> $TIME_LOG
    fi
    cd $CFASTBOT_DIR
    # Check for warnings and errors

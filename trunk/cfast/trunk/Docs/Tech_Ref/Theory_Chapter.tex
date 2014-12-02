@@ -530,7 +530,7 @@ Gas layers exchange energy with their surroundings via convective and radiative 
 
 Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.  Thus errors in the species concentrations can give rise to errors in the distribution of enthalpy among the layers, which results in errors in temperatures, resulting in errors in the flows.  This illustrates just how tightly coupled the predictions made by CFAST can be.
 
-\subsection{Radiation}
+\section{Radiation}
 \label{sec:Radiation}
 
 Radiation heat transfer forms a significant portion of the energy balance in a zone fire model, especially in the fire room.  Radiative heat transfer is computed from wall and gas temperatures, emisivities and fire heat release rates.  To calculate the radiation absorbed in a zone, a heat balance must be done accounting for all surfaces that radiate to and absorb radiation from a zone.
@@ -631,7 +631,7 @@ An effective path length ( mean beam length, L) treats an emitting volume as if 
 
 For each gas, the log(absorptance) is estimated from the look-up table for that gas  by  interpolating both the log(temperature) and log(concentration) domains. In the event that the required absorptance lies outside the temperature or concentration range of the look-up table, the nearest acceptable value is returned. Error flags are also returned, indicating whether each parameter was in or out of range and, in the latter case, whether it was high or low.  This entire process is carried out for both $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$.
 
-\subsection{Computing Target Heat Flux and Temperature}
+\section{Computing Target Heat Flux and Temperature}
 
 The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor not interacting with the modeled environment.
 
@@ -921,7 +921,7 @@ are given by
 \noindent Equation (\ref{eq:matrix}) is then used to
 advance the cable's temperature profile by $\Delta t$.
 
-\subsection{Convection}
+\section{Convection}
 
 In general, convective heat transfer, $q\dprime$, across a surface of area
 $A_S$, is defined as
@@ -951,7 +951,7 @@ The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal 
 
 \be k = \frac{0.0209 + 2.33 x 10^{-5} T_f}{1 - 0.000267 T_f} \ee
 
- \subsection{Conduction}
+ \section{Conduction}
 
  Procedures for solving 1-d heat conduction problems are well known, (e.g., backward difference (fully implicit), forward difference (fully explicit) or Crank-Nicolson \cite{Golub:1989}).  A finite difference approach  using a non-uniform spatial mesh is used to advance the wall temperature solution.  The heat equation is discretized using a second order central difference for the spatial derivative and a backward differences for the time derivative.  The resulting tri-diagonal system of equations is then solved to advance the temperature solution to time $t+\Delta t$.  This process is repeated , using the work of Moss and Forney \cite{Moss:1992},  until  the heat flux striking the wall (calculated from the convection and radiation algorithms) is consistent with the flux conducted into the wall calculated via Fourier's law
 

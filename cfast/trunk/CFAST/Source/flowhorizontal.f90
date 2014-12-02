@@ -36,7 +36,7 @@
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut, iijk
+    integer :: nirm, ifrom, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut
     real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
     
     type(vent_type), pointer :: ventptr
@@ -115,37 +115,21 @@
                     endif
                 endif
 
-                ! copy flows into the cfast data structure. this data structure is for reporting purposes only;
-
-                iijk = ijk(iroom1,iroom2,ik)
-                ss1(iijk) = vss(1,i)
-                ss2(iijk) = vss(2,i)
-                sa1(iijk) = vsa(1,i)
-                sa2(iijk) = vsa(2,i)
-                as1(iijk) = vas(1,i)
-                as2(iijk) = vas(2,i)
-                aa1(iijk) = vaa(1,i)
-                aa2(iijk) = vaa(2,i)
-
                 call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,ventptr%mflow,uflw2)
 
                 !  calculate entrainment type mixing at the vents
 
                 if (option(fentrain)==on) then
                     call entrain(dirs12,yslab,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxprd,nprod,yvbot,yvtop,uflw3,vsas(1,i),vasa(1,i))
-                    sau1(iijk) = vsas(2,i)
-                    sau2(iijk) = vsas(1,i)
-                    asl1(iijk) = vasa(2,i)
-                    asl2(iijk) = vasa(1,i)
                     do ilay = 1, 2
                         ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
                         ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
                     end do
                 else
-                    sau1(iijk) = 0.0_eb
-                    sau2(iijk) = 0.0_eb
-                    asl1(iijk) = 0.0_eb
-                    asl2(iijk) = 0.0_eb
+                    do ilay = 1, 2
+                        ventptr%mflow_mix(1,ilay) = 0.0_eb
+                        ventptr%mflow_mix(2,ilay) = 0.0_eb
+                    end do
                 end if
                 
                 ! sum flows from both rooms for each layer and type of product
@@ -175,20 +159,6 @@
                         end do
                     endif
                 endif
-            else
-                iijk = ijk(iroom1,iroom2,ik)
-                ss1(iijk) = 0.0_eb
-                ss2(iijk) = 0.0_eb
-                sa1(iijk) = 0.0_eb
-                sa2(iijk) = 0.0_eb
-                as1(iijk) = 0.0_eb
-                as2(iijk) = 0.0_eb
-                aa1(iijk) = 0.0_eb
-                aa2(iijk) = 0.0_eb
-                sau1(iijk) = 0.0_eb
-                sau2(iijk) = 0.0_eb
-                asl1(iijk) = 0.0_eb
-                asl2(iijk) = 0.0_eb
             endif
         end do
     endif

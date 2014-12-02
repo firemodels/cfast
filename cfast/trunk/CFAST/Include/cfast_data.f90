@@ -90,9 +90,7 @@ module cfast_main
         (nequals,nofsets(16)), (noffsm,nofsets(17))
 
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
-        ss1(mxvents), sa1(mxvents), ss2(mxvents), sa2(mxvents), as1(mxvents), aa1(mxvents), as2(mxvents), aa2(mxvents), &
-        sau1(mxvents), asl1(mxvents), sau2(mxvents), asl2(mxvents), heatup(nr), heatlp(nr),  &
-        vvarea(nr,nr), hveflo(2,mext), hveflot(2,mext), &
+        heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mext), hveflot(2,mext), &
         hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
         halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &

@@ -867,21 +867,6 @@
         end do
     end do
 
-    do ivent = 1, mxvents
-        ss1(ivent) = 0.0_eb
-        ss2(ivent) = 0.0_eb
-        sa1(ivent) = 0.0_eb
-        sa2(ivent) = 0.0_eb
-        as1(ivent) = 0.0_eb
-        as2(ivent) = 0.0_eb
-        aa1(ivent) = 0.0_eb
-        aa2(ivent) = 0.0_eb
-        sau1(ivent) = 0.0_eb
-        sau2(ivent) = 0.0_eb
-        asl1(ivent) = 0.0_eb
-        asl2(ivent) = 0.0_eb
-    end do
-
     do i = 1, mext
         hveflot(upper,i) = 0.0_eb
         hveflot(lower,i) = 0.0_eb

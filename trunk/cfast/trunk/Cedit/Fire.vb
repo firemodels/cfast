@@ -103,7 +103,7 @@ Public Class Fire
         aName = "New Fire"
         aChemicalFormula(1) = 1.0 : aChemicalFormula(2) = 4.0 : aChemicalFormula(3) = 0.0 : aChemicalFormula(4) = 0.0 : aChemicalFormula(5) = 0.0
         aHeatofCombustion = 50000000.0
-        aRadiativeFraction = 0.3
+        aRadiativeFraction = 0.35
         aCommentsIndex = -1
         aMaterial = "METHANE"
     End Sub

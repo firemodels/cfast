@@ -86,16 +86,16 @@ where $\Dh$ is the heat of combustion. In the event that the HRR is constrained 
    \dQ = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
 \ee
 where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen in the layer containing the fire, $\DhO$ is the heat of combustion based on oxygen consumption\footnote{The heat of combustion based on oxygen consumption is taken to be 13.1~MJ/kg, representative of typical hydrocarbon fuels~\cite{Huggett:1980}.}, and $C_{\rm LOL}$ is the smoothing function ranging from 0 to 1:
-\be 
-   C_{\rm LOL} = \frac{\tanh \Big( 800 (Y_\OTWO - Y_{\OTWO,{\rm l}}) - 4 \Big) + 1}{2} 
+\be
+   C_{\rm LOL} = \frac{\tanh \Big( 800 (Y_\OTWO - Y_{\OTWO,{\rm l}}) - 4 \Big) + 1}{2}
 \ee
-The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default. 
+The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default.
 
 
 
 \section{Plume Entrainment}
 
-The mass entrainment of air into the plume, $\dme$, is estimated using either McCaffrey's~\cite{McCaffrey:1983} or Heskestad's~\cite{Heskestad:1984} correlation. McCaffrey divides the flame/plume into three regions: 
+The mass entrainment of air into the plume, $\dme$, is estimated using either McCaffrey's~\cite{McCaffrey:1983} or Heskestad's~\cite{Heskestad:1984} correlation. McCaffrey divides the flame/plume into three regions:
 \be
    \frac{\dme}{\dQ} = \left\{ \begin{array}{r@{\quad \quad}l}
    0.011 \brackets{\ZQf}^{0.566} &  0.00 \leq \brackets{\ZQf}<0.08 \\[.1in]
@@ -114,10 +114,10 @@ which is based on the total heat release rate of the fire, $\dQ$.  Both correlat
 
 In CFAST, there is a constraint on the mass entrainment rate because the plume can rise only so high for a given HRR.  Early in a fire, the plume may not have sufficient energy to reach the compartment ceiling. Therefore, a limit is placed on the entrainment rate. For the plume to be able to penetrate the hot upper layer, the density of the gas in the plume must be less than the density of the gas in the upper layer. This implies that the upper layer temperature must be less than the plume temperature:
 \be
-   \Tu < \Tp \approx \frac{ \dQc + \dme \, c_p \, \Tl }{ \dme \, c_p} 
+   \Tu < \Tp \approx \frac{ \dQc + \dme \, c_p \, \Tl }{ \dme \, c_p}
 \ee
 Rearranging terms yields a limit on the mass entrainment:
-\be 
+\be
    \dm_e < \frac{\dQc}{c_p (\Tu - \Tl)}
 \ee
 
@@ -182,88 +182,37 @@ where $H$ is the average flame height (m), $D$ the diameter of the fire (m), and
 
 \chapter{Ventilation}
 
-Flow through vents is a dominant component of any fire model because it is sensitive to small changes in pressure and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course for the fire and plume).  Its sensitivity to environmental changes arises through its dependence on the pressure difference between compartments which can change rapidly.
+CFAST models three types of vent flow: natural flow through vertical vents (such as doors or windows),  natural flow through horizontal vents (such as ceiling holes or hatches), and forced flow via mechanical ventilation. Forced flow can occur through either vertical or horizontal vents. 
 
-Flow through vents can be forced (mechanical) or natural (convective). CFAST models three types of vent flow, natural flow through vertical vents (such as doors or windows),  natural flow through horizontal vents (such as ceiling holes or hatches) and forced flow throught fans.  Horizontal flow is the flow which is normally thought of when discussing fires.  Vertical flow is particularly important in two disparate situations: a ship, and the role of fire fighters doing roof venting.
+Atmospheric pressure is about 100~kPa. Fires produce pressure changes from 1~Pa to 1~kPa and mechanical ventilation systems typically involve pressure differentials of about 1~Pa to 100~Pa.  The pressure variables are solved to a higher accuracy than other solution variables because of the subtraction (with resulting loss of precision) needed to calculate vent flows from pressure differences.
 
-Vent flow is determined using the pressure difference across a vent.  Natural vent flow at a given elevation may be computed using Bernoulli's law by first computing the pressure difference at that elevation.  The pressure on each side of the vent is computed using the pressure at the floor, the height of the floor and the density.  Forced flow can occur through either vertical or horizontal vents. The differences are primarily the selection rules for the source of the gases or whether the resultant plume enters the lower or upper layer of each compartment.
 
-Atmospheric pressure is about 100~000 Pa. Fires produce pressure changes from 1~Pa to 1~000~Pa and mechanical ventilation systems typically involve pressure differentials of about 1~Pa to 100~Pa.  The pressure variables are solved to a higher accuracy than other solution variables because of the subtraction (with resulting loss of precision) needed to calculate vent flows from pressure differences.
+\subsection{Vertically-Oriented Vents (Doors and Windows)}
 
-Mass flow (in the remainder of this section, the term ``flow'' will be used to mean mass flow) is the dominant source term for the predictive equations because it fluctuates most rapidly and transfers the greatest amount of enthalpy on an instantaneous basis of all the source terms (except of course the fire).  Also, it is most sensitive to changes in the environment.  Horizontal flow encompasses flow through doors, windows and so on. Horizontal flow is discussed in section 3.4.3.1. Vertical flow occurs in ceiling vents.  It is important in two separate situations: on a ship with open hatches and in house fires with roof venting.  Vertical flow is discussed in section 3.4.3.2.
+Natural flow through windows and doors is governed by the pressure difference across the opening.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using Bernoulli's equation augmented for restricted openings with an orifice coefficient~\cite{Quintiere:1984, Steckler_Coefficients}.  
 
-There is a special case of horizontal flow for long corridors. A corridor flow algorithm is incorporated to calculate the time delay from when a plume enters a compartment to when the effluent is available for flow into adjacent compartments.
-
-Flow through vents can be modified, that is turned on or off. This applies to the three types of vents discussed below, horizontal flow through vertical vents (HVENT), vertical flow through horizontal vents (VVENT) and forced flow (MVENT). For each key word, there is a an initial opening fraction which is reflected in the first region in Fig.~\ref{fig:Opening_Fraction}. This initial opening fraction can be modified by by the EVENT key word to change the fraction. This change occurs over a transition time which defaults to one second. The final fraction is the third region depicted in Fig.~\ref{fig:Opening_Fraction}. There can be only a single transition per vent.
-
-\begin{figure}[t]
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/Theory/Opening_Fraction}\\
-\end{center}
-\caption{Vent opening size fraction as a function of time.}
- \label{fig:Opening_Fraction}
-\end{figure}
-
-\subsection{Horizontal Flow Through Vertically-Oriented Vents (Doors and Windows)}
-
-Flow through normal vents such as windows and doors is governed by the pressure difference across a vent.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using an integrated form of Euler's equation, namely Bernoulli's solution for the velocity equation.  This solution is augmented for restricted openings by using flow coefficients \cite{Quintiere:1984, Steckler_Coefficients} to allow for constriction from finite size doors.  The flow (or orifice) coefficient is an empirical term which addresses the problem of constriction of velocity streamlines at an orifice.
-
-Bernoulli's equation is the integral of the Euler equation and applies to general initial and final velocities and pressures.  The implication of using this equation for a zone model is that the initial velocity in the doorway is the quantity sought, and the final velocity in the target compartment vanishes.  That is, the flow velocity vanishes where the final pressure is measured.  Thus, the pressure at a stagnation point is used.  This is consistent with the concept of uniform zones which are completely mixed and have no internal flow.
-
-The mass flow through a region is found by first noting that the
-velocity of the flow at an elevation $h$ is given by
-
-\newcommand{\dmass}{d\dot{m}}
-\be
-v(h) = C \sqrt{\frac{2 \Delta P(h)}{\rho}}
-\label{eq:vent_velocity}
-\ee
-
-\noindent where $C$ is the constriction (or flow) coefficient (taken to be 0.7 in CFAST \cite{Steckler_Coefficients}), $\rho$ is the gas density on the source side, and $\Delta P(h)$ is the pressure across the interface
-at elevation $h$.  At present we use a constant value for $C$ for all gas temperatures.
-
-The differential mass flow, $\dmass(h)$, at elevation $h$ through a region of width $w$ and differential height $dh$ is found using equation \ref{eq:vent_velocity} after noting that $\dmass(h)=v(h)\rho wdh$
-to obtain
-
-\be
-\dmass(h)=C \sqrt{2 \rho\Delta P(h)}w dh
-\label{eq:vent_massflow}
-\ee
-
-The total mass flow rate through a slab is found by integrating $\dmass(h)$ vertically over that slab.
-The simplest means to define the limits of integration is with neutral planes, that is the height at which flow reversal occurs, and physical boundaries such as sills and soffits.  The mass flow equation can be integrated piecewise analytically and then summed by breaking the integral into intervals defined by flow reversal, a soffit, a sill, or a zone interface, .
-
-The approach to calculating the flow field is of some interest.  The flow calculations are performed as follows.  The vent opening is partitioned into at most six slabs where each slab is bounded by a layer height, neutral plane, or vent boundary such as a soffit or sill.  The most general case is illustrated in Fig.~\ref{fig:Flow_Notation}.
-
-\begin{figure}[t]
+The mass flow through a vertical opening is calculated by dividing the vertical extent of the opening into discrete sections, each of which is bounded by either the top or bottom of the door or window, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. In this way, the vent opening is partitioned into at most six sections.  The most general case is illustrated in Fig.~\ref{fig:Flow_Notation}.
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[width=6.0in]{FIGURES/Theory/Flow_Notation}\\
 \end{center}
 \caption{Geometry and notation for horizontal flow vents in a two-zone fire model.}
  \label{fig:Flow_Notation}
 \end{figure}
-
-Let $b$ and $t$ denote the bottom and top slab elevations and $P_b$ and $P_t$ denote the cross-vent pressures at those elevations.  Because of the way that slabs are defined, the two cross pressures $P_b$ and $P_t$ will have the same sign. The mass flow through the slab can then be computed by integrating equation \ref{eq:vent_massflow} vertically from $b$ to $t$ to obtain
-
+Let $z=b$ and $z=t$ denote the height of the bottom and top of the section, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at those heights.  Because the section is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the section can then be computed by integrating from $b$ to $t$:
 \begin{eqnarray}
-\dm&=&\int_b^t \dmass(h)\\
-&=&C\sqrt{2\rho}w\int_b^t\sqrt{\frac{|P_b(t-h)+P_t(h-b)|}{t-b}}dh\\
-&=&\frac{2}{3}C\sqrt{2\rho}w(t-b)\frac{|P_t|^{3/2}-|P_b|^{3/2}}{|P_t|-|P_b|}
+\dm &=& \int_b^t C \sqrt{2 \rho \, \Delta P(z)} \, w \, dz  \\[.1in]
+    &=& C\sqrt{2\rho} \, w \int_b^t\sqrt{\frac{|(t-z) \, \Delta P_b + (z-b) \, \Delta P_t|}{t-b}} \; dz \\[.1in]
+    &=& \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
 \label{eq:massflowone}
 \end{eqnarray}
-
-\noindent after noting that
-\begin{eqnarray*}
-\int \sqrt{A+Bh}dh=\frac{2}{3B}(A+Bh)^{3/2}+\mbox{constant}
-\end{eqnarray*}
-
-\noindent where $B=(|P_t|-|P_b|)/(t-b)$, $A+Bt=|P_t|$ and $A+Bb=|P_b|$.
-Equation \ref{eq:massflowone} can be simplified to
-
-\be \dm_{io} = \frac{2}{3} C \sqrt{2 \rho} A_{slab} \brackets{\frac{x^2+xy+y2}{x+y}} \ee
-
-\noindent where $x = \sqrt{|P_t|}$, $y = \sqrt{|P_b|}$, $A_{slab}=w(t-b)$ the cross-sectional area of the slab.  The value of the density, $\rho$, is taken from the source compartment.
-
+Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients}, $\rho$ is the gas density of the upwind compartment, and $\Delta P(z)$ is the pressure across the interface at elevation $z$. Note that the integral is evaluated from
+\begin{eqnarray}
+\int \sqrt{A+Bz} \, dz = \frac{2}{3B}(A+Bz)^{3/2}+\mbox{constant}
+\end{eqnarray}
+where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P_b|)/(t-b)$.
+Equation \ref{eq:massflowone} is sometimes written:
+\be \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} } \ee
 A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in Fig.~\ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an virtual origin.  The estimate for the virtual origin is given by Cetegen et al. \cite{Cetegen:1984}.  This  is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
 
 \begin{figure}[t]

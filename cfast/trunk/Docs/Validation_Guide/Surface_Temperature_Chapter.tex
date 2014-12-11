@@ -4,9 +4,9 @@ Solid surfaces  in CFAST are treated as one-dimensional transient conduction pro
 
 For compartment linings, the ``outside'' surface is, by default, exposed to the exterior ambient temperature with convection and radiation calculated in a similar manner to the inside surface.  The ``outside'' boundary condition can also be specified as a constant temperature (i.e., the outside surface can be at ambient temperature) or can be connected to the ``outside'' surface of part or all of a second compartment.  For targets, the back suface is simply pointed in a direction opposite that of the front surface with convection and radiation calculated in a similar manner to the front surface.
 
-\section{ Compartment Wall, Floor, and Ceiling Temperature}
+\section{ Compartment Ceiling, Wall, and Floor Temperature}
 
-In the NIST/NRC and WTC tests, thermocouples and heat flux gauges were positioned at various locations on all four walls of the test compartments, plus on the ceilings and floors. Comparisons between measured and predicted surface temperatures are shown on the following pages. Over the course of 15 experiments, a number of the thermocouples and gauges failed, but because over half of the measurement points were in roughly the same relative location to the fire, the faulty data was discarded based on examining replicate experiments or locations on the opposite wall. Note that Position~8 for the floor and ceiling is not used, simply because the plotting routine is limited to 7 distinct colors and Position~8 is on the opposite side of the compartment to Position~1. Table~\ref{NIST_NRC_Wall_Coords} lists the locations for each test. For each test, eight locations are used for comparison, two on the long (mainly north) wall, two on the short (east) wall, two on the floor, and two on the ceiling.  Of the two locations for each panel, one is considered in the far-field, relatively remote from the fire; one is in the near-field, relatively close to the fire.  How close or far varies from test to test, depending on the availability of working flux gauges. The two short wall locations are equally remote from the fire; thus, one location is in the lower layer, one in the upper.
+In the NIST/NRC and WTC tests, thermocouples and heat flux gauges were positioned at various locations on all four walls of the test compartments, plus on the ceilings and floors. Over the course of 15 experiments, a number of the thermocouples and gauges failed, but because over half of the measurement points were in roughly the same relative location to the fire, the faulty data was discarded based on examining replicate experiments or locations on the opposite wall. Note that Position~8 for the floor and ceiling is not used, simply because the plotting routine is limited to 7 distinct colors and Position~8 is on the opposite side of the compartment to Position~1. Table~\ref{NIST_NRC_Wall_Coords} lists the locations for each test. For each test, eight locations are used for comparison, two on the long (mainly north) wall, two on the short (east) wall, two on the floor, and two on the ceiling.  Of the two locations for each panel, one is considered in the far-field, relatively remote from the fire; one is in the near-field, relatively close to the fire.  How close or far varies from test to test, depending on the availability of working flux gauges. The two short wall locations are equally remote from the fire; thus, one location is in the lower layer, one in the upper.
 
 \begin{table}[p]
 \caption[Wall measurement positions for the NIST/NRC series]
@@ -62,7 +62,7 @@ TCW4IN              & 0.05      & 0.07      & 3.83      \\ \hline
 \label{WTC_Ceiling_Coords}
 \end{table}
 
-Figure \ref{fig:Surface_Temperature_Scatter} shows a comarison of predicted and measured values for total heat flux. Appendix A provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
+Figure \ref{fig:Surface_Temperature_Scatter} shows a comarison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
 
 \begin{figure}
 \begin{center}
@@ -74,7 +74,7 @@ Figure \ref{fig:Surface_Temperature_Scatter} shows a comarison of predicted and 
 \begin{itemize}
 \item CFAST predicts compartment surface temperature within \Surfacetempavg ~\%.  Still, there is considerable scatter in the data indicating a higher uncertainty in prediction of surfacetemperature  like those observed in heat flux and temperature to targets.
 \item Typically, CFAST over-predicts the far-field fluxes and temperatures and under-predicts the near-field measurements.  This is understandable, given that any two-zone model predicts an average representative value of gas temperature in the upper and lower regions of a compartment.  Thus, the values predicted by CFAST should be an average of values near the fire and those farther away.
-\item However, differences for the ceiling and (particularly) floor temperatures are higher, with a more pronounced difference between the near-field and far-field comparisons.  In addition to the limitations of the two-zone assumption, calculations of the flux to ceiling and floor surfaces are further confounded by the simple point-source calculation of radiation exchange in CFAST for the fire source.  In CFAST, the fire is assumed to be a point source of energy located at the base of the fire rather than a three-dimensional flame surface radiating to surroundings.  With the fire typically at the floor surface, this makes the calculation of flux to the floor surface inherently less accurate than for other surfaces.
+\item However, differences for the ceiling and (particularly) floor temperatures are higher, with a more pronounced difference between the near-field and far-field comparisons.  In addition to the limitations of the two-zone assumption, calculations of the flux to ceiling and floor surfaces are further confounded by the simple point-source calculation of radiation exchange in CFAST for the fire source.  In CFAST, the fire is assumed to be a point source of energy located at  mid-height in the fire rather than a three-dimensional flame surface radiating to surroundings.  With the fire typically at the floor surface, this makes the calculation of flux to the floor surface (and thus floor temperature) inherently less accurate than for other surfaces.
 \item CFAST is capable of predicting the surface temperature of a wall, assuming that its composition is fairly uniform and its thermal properties are well-characterized.  Predictions are typically within 10~\% to 30~\%.  Generally, CFAST over-predicts the far-field temperatures, and under-predicts the near-field measurements.  This is consistent with the single representative layer temperature assumed by zone fire models.
 \item CFAST predictions of floor temperature are more problematic because of the simple point-source calculation of radiative exchange between the fire and compartment surfaces.
 \end{itemize}
@@ -87,7 +87,7 @@ The SP Adiabatic Surface Temperature Experiments included measurements of gas, p
 
 The compartment for the WTC experiments contained a hollow box column roughly 0.5~m from the fire pan, two trusses over the top of the pan, and one or two steel bars resting on the lower truss flanges. In Tests 1, 2 and 3, the steel was bare, and in Tests 4, 5 and 6, the steel was coated with various thicknesses of sprayed fire-resistive materials. The column was instrumented near its base (about 0.5~m from the floor, middle (1.5~m), and upper (2.5~m). Four measurements of steel (and insulation) temperatures were made at each location, for each of its four sides. These elements were modeled using thin sheet obstructions with a resolution of 10~cm. In addition to the steel structural elments, five cylinders (``slugs'') of nickel~200 ($\ge$ 99~\% nickel), 25.4~cm long and 10.2~cm in diameter, were positioned 50~cm north of the centerline in the WTC experiments. Slugs 1 through 5 were 2.92~m, 1.82~m, 0.57~m, 0.05~m, and 1.56~m, respectively, from the longitudinal axis of the fire pan. All the slugs were 50~cm north of the lateral axis. The fire pan measured 2~m by 1~m. Four thermocouples were inserted into each slug at various locations. All four temperatures for each slug were virtually indistinguishable.Targets were modeled with normal thermally-thick targets in CFAST.
 
-Figure \ref{fig:Target_Temperature_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix A provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
+Figure \ref{fig:Target_Temperature_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
 
 \begin{figure}
 \begin{center}
@@ -98,73 +98,8 @@ Figure \ref{fig:Target_Temperature_Scatter} shows a comparison of predicted and 
 
 \begin{itemize}
 \item Overall, the comparisons of target temperature show larger relative differences than other quantities. This is to be expected since the target flux and temperature are inherently local quantities.
-\item The difference between predicted and measured cable surface temperatures in the NIST/NRC experiments is often within experimental uncertainty, with exceptions.  Total target flux and target surface temperature predictions average within \Targfluxavg ~\% of experimental values while predictions of cable temperatures average within 2 \% of experimental values.  However, there is considerable spread in the relative differences.  Accurate prediction of the surface temperature of the cable should indicate that the flux to the target (a combination of radiation from the fire, surrounding surfaces, and the gas layers, along with convection from the surrounding gas) should be correspondingly accurate.  
+\item The difference between predicted and measured cable surface temperatures in the NIST/NRC experiments is often within experimental uncertainty, with exceptions.  Target temperature predictions average within \Targtempavg ~\% of experimental values while predictions of cable temperatures average within 2 \% of experimental values.  However, there is considerable spread in the relative differences.  Accurate prediction of the surface temperature of the cable should indicate that the flux to the target (a combination of radiation from the fire, surrounding surfaces, and the gas layers, along with convection from the surrounding gas) should be correspondingly accurate.  
 \item For both the SP AST and WTC tests, the underlying weakness of a zone model in predicting local temperatures is apparent with clear horizontal banding for both test series.  Since CFAST target temperatures are largely driven by the uniform gas layer temperature predicted by the model, targets at the same height but at different horizontal locations within a compartment will show similar temperatures.  From a validation viewpoint, this increases the uncertainty of the predictions considerably.
 \end{itemize}
 
-\chapter{Heat Flux}
-
-CFAST includes calculation of heat flux via convection, radiation, and conduction to compartment sufaces and targets. Heat transfer to the inside surface of compartment linings and the front and rear faces (as specified by the user) of targets consists of convection (through the use of emperical correlations) and radiation (calculated by the model using view factors for the fire, gas layers, and compartment surfaces). Heat conduction into a solid surface is calculated via a one-dimensional solution of the heat equation in cartesian or cylindrical coordinates.  The latter is paricularly useful for predicting the thermal response of electrical cables.
-
-For compartment linings, the ``outside'' surface is, by default, exposed to the exterior ambient temperature with convection and radiation calculated in a similar manner to the inside surface.  The ``outside'' boundary condition can also be specified as a constant temperature (i.e., the outside surface can be at ambient temperature) or can be connected to the ``outside'' surface of part or all of a second compartment.  For targets, the back suface is simply pointed in a direction opposite that of the front surface with convection and radiation calculated in a similar manner to the front surface. This chapter contains a variety of heat flux measurements, ranging from less than a kW/m$^2$ from very small gas burners  to more than 100~kW/m$^2$ in full-scale compartment fires.
-
-\section{Heat Flux to Wall, Ceiling, and Floor Surfaces}
-
-In the NIST/NRC tests, heat flux gauges and thermocouples were positioned at various locations on the walls, floor, and ceiling of the fire compartments. The locations are given in Table~\ref{NIST_NRC_Wall_Coords}. The heat flux gauges were not water cooled; thus, they measured the {\em net} rather than the {\em gauge} heat flux. However, the net heat flux is a function of the temperature of the heat flux gauge itself, which is not something that is modeled. To better compare model and measurement, the measured net heat flux is converted into a gauge heat flux using the following formula:
-\begin{equation}
-\dot{q}''_{\subscript{gauge}} = \dot{q}''_{\subscript{net}} + \sigma \left( T^4_{\subscript{gauge}} - T^4_\infty \right) + h  \left( T_{\subscript{gauge}}-T_\infty \right) \quad \hbox{kW/m}^2
-\end{equation}
-where $\sigma=5.67 \times 10^{-11}$~kW/m$^2$/K$^4$ and $h=0.005$~kW/m$^2$/K.
-
-Also, over the course of 15 experiments, numerous heat flux gauges failed, most often due to loss of contact with the wall or faulty thermocouples. All of the measurements from Test~13 and 16 were found to be flawed.
-
-In the WTC tests, there were a variety of heat flux gauges installed in the test compartment. Most were within 2~m of the fire. Their locations and orientations are listed in Table~\ref{WTC_Gauges}. This section contains the measurements at the floor and ceiling.
-
-\begin{table}[h!]
-\caption{Heat flux gauge positions relative to the center of the fire pan in the WTC series.}
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|l|}
-\hline
-Name    & $x$ (m)   & $y$ (m) & $z$ (m)   & Orientation  & Location  \\ \hline \hline
-H2FU    & 0.64      & 0.63    & 3.30      &     $+z$     & Truss Support         \\ \hline
-H2RU    & 0.64      & 0.51    & 3.30      &     $+z$     & Truss Support          \\ \hline
-H2FD    & 0.64      & 0.30    & 3.15      &     $-z$     & Truss Support          \\ \hline
-H2RD    & 0.64      & 0.42    & 3.15      &     $-z$     & Truss Support          \\ \hline
-HCoHF   & -0.90     & 0.84    & 3.46      &     $+x$     & Column, facing fire          \\ \hline
-HCoHW   & -0.97     & 0.92    & 3.27      &     $+y$     & Column, facing north          \\ \hline
-HCoLF   & -0.90     & 0.84    & 0.92      &     $+x$     & Column, facing fire          \\ \hline
-HCoLW   & -0.97     & 0.92    & 1.02      &     $+y$     & Column, facing north          \\ \hline
-HF1     & 1.06      & 0.13    & 0.13      &     $+z$     & Floor          \\ \hline
-HF2     & 1.56      & 0.10    & 0.13      &     $+z$     & Floor          \\ \hline
-HCe1    & -0.45     & 0.35    & 3.82      &     $-z$     & Ceiling          \\ \hline
-HCe2    &  0.05     & 0.35    & 3.82      &     $-z$     & Ceiling          \\ \hline
-HCe3    &  0.80     & 0.35    & 3.82      &     $-z$     & Ceiling          \\ \hline
-HCe4    &  2.56     & 0.35    & 3.82      &     $-z$     & Ceiling          \\ \hline
-\end{tabular}
-\end{center}
-\label{WTC_Gauges}
-\end{table}
-
-Figures \ref{fig:Surface_Flux_Scatter} shows a comarison of predicted and measured values for total heat flux. Appendix A provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=4in]{FIGURES/ScatterPlots/Surface_Heat_Flux} 
-\end{center}
-\caption{Comparisons of Measured and Predicted Compartment Surface Temperature} \label{fig:Surface_Flux_Scatter}
-\end{figure}
-
-\section{Heat Flux to Targets}
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=4in]{FIGURES/ScatterPlots/Target_Heat_Flux}
-\end{center}
-\caption{Comparisons of Measured and Predicted Heat Flux to Targets} \label{fig:Target_Flux_Scatter}
-\end{figure}
-
-\begin{itemize}
-\item The higher value for target heat flux is due to the way CFAST calculates flux to targets.  The calculation of heat flux to a target in CFAST is done separately for the front face and rear face of the target.  For target completely within a compartment, these two values are typically similar.  For target on a compartment surface, the rear surface is assumed to radiate to ambient conditions.  Thus, considering only the front face in the comparison should lead to a significant indicated overprediction of the heat flux. The predicted surface temperature is predicted far closer to experimental conditions that the surface heat flux indicating the actual heat flux is likely better than indicated by this front-face only comparison. 
-\item  Prediction of heat flux to targets, like target surface temperature, is largely dependent on local conditions surrounding the target.  Like any two-zone model, CFAST predicts an average representative value of gas temperature in the upper and lower regions of a compartment.  In addition, CFAST does not directly predict plume temperature or its effects on targets that may be within a fire plume.  Thus, CFAST can be expected to under-predict values near a fire source, and over-predict values for targets remote from a fire.
-\end{itemize}
 

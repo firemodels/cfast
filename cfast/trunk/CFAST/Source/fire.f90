@@ -75,7 +75,7 @@
             end do
 
             call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
-            objpos(3,iobj)+ohight,objclen(i),oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
+            objpos(3,iobj)+ohight,oareat,oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
             xtl = zztemp(iroom,lower)
@@ -139,7 +139,7 @@
 
 ! --------------------------- dofire -------------------------------------------
 
-    subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,objectsize,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
+    subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
 
     !     routine: dofire
     !     purpose: do heat release and species from a fire
@@ -157,7 +157,7 @@
     !                 xfx: position of the fire in x direction
     !                 xfy: position of the fire in y direction
     !                 xfz: position of the fire in z direction
-    !                 objectsize: characteristic object diameter for plume models
+    !                 object_area: characteristic object diameter for plume models
     !                 xeme (output): plume entrainment rate (kg/s)
     !                 xems (output): plume flow rate into the upper layer (kg/s)
     !                 xqpyrl (output): actual heat release rate of the fire (w)
@@ -177,7 +177,7 @@
 
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: xemp, xhr, xbr, xdr, hcombt, y_soot, y_co, y_trace, n_C ,n_H, n_O, n_N, n_Cl
-    real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, objectsize
+    real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, object_area
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc(2), xqfr, xqlp, xqup
     
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatu
@@ -237,7 +237,7 @@
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call firplm(fplume(ifire), objectsize, qheatl,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call firplm(fplume(ifire), object_area, qheatl,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
             ! check for an upper only layer fire
             if (xxfirel<=0.0_eb) go to 90
@@ -307,7 +307,7 @@
             qheatu = hcombt*uplmep + qheatl
             height = max (0.0_eb, min(xz,xxfireu))
 
-            call firplm(fplume(ifire), objectsize,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call firplm(fplume(ifire), object_area,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
             source_o2 = zzcspec(iroom,upper,2)
             call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
@@ -536,7 +536,7 @@
 
 ! --------------------------- fireplm -------------------------------------------
 
-    subroutine firplm (plumetype, objectsize, qjl, zz, xemp, xems, xeme, xfx, xfy)
+    subroutine firplm (plumetype, object_area, qjl, z, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
     !     purpose: physical interface between dofire and the plume models
@@ -545,15 +545,15 @@
     implicit none
     
     integer, intent(in) :: plumetype
-    real(eb), intent(in) :: qjl, zz, xemp, xfx, xfy, objectsize
+    real(eb), intent(in) :: qjl, z, xemp, xfx, xfy, object_area
     real(eb), intent(out) :: xeme, xems
 
     select case (plumetype)
     case (1) !    mccaffrey
-        call mccaffrey(qjl,zz,xemp,xems,xeme,xfx,xfy)
+        call mccaffrey(qjl,z,xemp,xems,xeme,xfx,xfy)
         return        
     case (2) !    heskestad
-        call heskestad (qjl,zz,xemp,xems,xeme,objectsize)
+        call heskestad (qjl,z,xemp,xems,xeme,object_area)
         return        
     end select
     stop 'bad case in firplm'
@@ -561,12 +561,12 @@
 
 ! --------------------------- mccaffrey -------------------------------------------
 
-    subroutine mccaffrey (qjl,zz,xemp,xems,xeme,xfx,xfy)
+    subroutine mccaffrey (q,z,xemp,xems,xeme,xfx,xfy)
 
     !     routine: mccaffrey
     !     purpose: calculates plume entrainment for a fire from mccaffrey's correlation
-    !     inputs:    qjl    fire size (w)
-    !                zz      plume height (m)
+    !     inputs:    q     fire size (w)
+    !                z     plume height (m)
     !                xemp  mass loss rate of the fire (kg/s)
     !                xfx   position of the fire in x direction (m)
     !                xfy   position of the fire in y direction (m)
@@ -577,7 +577,7 @@
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: qjl, zz, xemp, xfx, xfy
+    real(eb), intent(in) :: q, z, xemp, xfx, xfy
     real(eb), intent(out) :: xems,  xeme
     
     real(eb) :: xf, qj, z_star
@@ -594,10 +594,10 @@
     if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
     if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
     
-    qj = 0.001_eb*qjl
+    qj = 0.001_eb*q
     
-    if (zz>0.0_eb.and.qj>0.0_eb) then
-        z_star = zz/(xf*qj)**0.4_eb
+    if (z>0.0_eb.and.qj>0.0_eb) then
+        z_star = z/(xf*qj)**0.4_eb
         if (z_star>t2) then
             xems = a3*z_star**1.895_eb*qj
         else if (z_star>t1) then
@@ -616,27 +616,28 @@
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad (q, z, emp, ems, eme, od)
+    subroutine heskestad (q, z, emp, ems, eme, area)
 
     !     routine: mccaffrey
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
     !     inputs:    q    fire size (w)
     !                z      plume height (m)
     !                emp  mass loss rate of the fire (kg/s)
-    !                od is the characteristic size of the object (diameter)
+    !                area is the characteristic size of the object (diameter)
     !     outputs:   ems  total mass transfer rate at height z (kg/s)
     !                eme  net entrainment rate at height z (kg/s)
 
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: q, z, emp, od
+    real(eb), intent(in) :: q, z, emp, area
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: qj, z0, deltaz
+    real(eb) :: d, qj, z0, deltaz
 
     qj = 0.001_eb*q
-    z0 = -1.02_eb*od + 0.083_eb*qj**0.4_eb
+    d = sqrt(area/pio4)
+    z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
     deltaz = max(0.0001_eb, z-z0)
     eme = 0.071_eb*qj**third*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
     ems = emp + eme    

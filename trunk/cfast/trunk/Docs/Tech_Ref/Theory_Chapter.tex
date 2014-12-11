@@ -182,24 +182,18 @@ where $H$ is the average flame height (m), $D$ the diameter of the fire (m), and
 
 \chapter{Ventilation}
 
-CFAST models three types of vent flow: natural flow through vertical vents (such as doors or windows),  natural flow through horizontal vents (such as ceiling holes or hatches), and forced flow via mechanical ventilation. Forced flow can occur through either vertical or horizontal vents. 
+CFAST models three types of vent flow: natural flow through vertical vents (such as doors or windows),  natural flow through horizontal vents (such as ceiling holes or hatches), and forced flow via mechanical ventilation. Forced flow can occur through either vertical or horizontal vents.
 
 Atmospheric pressure is about 100~kPa. Fires produce pressure changes from 1~Pa to 1~kPa and mechanical ventilation systems typically involve pressure differentials of about 1~Pa to 100~Pa.  The pressure variables are solved to a higher accuracy than other solution variables because of the subtraction (with resulting loss of precision) needed to calculate vent flows from pressure differences.
 
 
 \section{Vertically-Oriented Vents (Doors and Windows)}
 
-Natural flow through windows and doors is governed by the pressure difference across the opening.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using Bernoulli's equation augmented for restricted openings with an orifice coefficient~\cite{Quintiere:1984, Steckler_Coefficients}.  
+Natural flow through windows and doors is governed by the pressure difference across the opening.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using Bernoulli's equation augmented for restricted openings with an orifice coefficient~\cite{Quintiere:1984, Steckler_Coefficients}.
 
-The mass flow through a vertical opening is calculated by dividing the vertical extent of the opening into discrete sections, each of which is bounded by either the top or bottom of the door or window, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. In this way, the vent opening is partitioned into at most six sections.  The most general case is illustrated in Fig.~\ref{fig:Flow_Notation}.
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=6.0in]{FIGURES/Theory/Flow_Notation}\\
-\end{center}
-\caption{Geometry and notation for horizontal flow vents in a two-zone fire model.}
- \label{fig:Flow_Notation}
-\end{figure}
-Let $z=b$ and $z=t$ denote the height of the bottom and top of the section, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at those heights.  Because the section is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the section can then be computed by integrating from $b$ to $t$:
+The mass flow through a vertical opening is calculated by dividing the vertical extent of the opening into discrete segments, each of which is bounded by either the top or bottom of the door or window, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. In this way, the vent opening is partitioned into at most six sections. 
+
+Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at those heights.  Because the segment is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the segment can then be computed by integrating from $b$ to $t$:
 \begin{eqnarray}
 \dm &=& \int_b^t C \sqrt{2 \rho \, \Delta P(z)} \, w \, dz  \\[.1in]
     &=& C\sqrt{2\rho} \, w \int_b^t\sqrt{\frac{|(t-z) \, \Delta P_b + (z-b) \, \Delta P_t|}{t-b}} \; dz \\[.1in]
@@ -212,9 +206,11 @@ Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients
 \end{eqnarray}
 where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P_b|)/(t-b)$.
 Equation \ref{eq:massflowone} is sometimes written:
-\be \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} } \ee
-A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  As hot gases from one compartment leave that compartment and flow into an adjacent compartment a door jet can exist which is analogous to a normal plume.  Mixing of this type occurs for $\dm_{13} > 0$ as shown in Fig.~\ref{fig:Flow_Patterns}.  To calculate the entrainment ($\dm_{43}$ in this example), once again we use a plume description consistent with the work of McCaffrey, but with an virtual origin.  The estimate for the virtual origin is given by Cetegen et al. \cite{Cetegen:1984}.  This  is chosen so that the flow at the door opening would correspond to a plume with the heating for a equivalent doorway fire source (with respect to the lower layer) given by
+\be 
+   \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} } 
+\ee
 
+The mass flows through the various vertical segments of the door or window are distributed into the upper and lower layers of the downstream compartment depending on the temperature of the stream. Consider the flow of gas from the upper layer of Compartment~1 entering the lower layer of Compartment~2 (see Fig.~\ref{fig:Flow_Patterns}). 
 \begin{figure}[t]
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/Theory/Flow_Patterns}\\
@@ -222,24 +218,26 @@ A mixing phenomenon occurs at vents which is similar to entrainment in plumes.  
 \caption{Flow patterns and layer number conventions for horizontal flow through a vertical vent.}
  \label{fig:Flow_Patterns}
 \end{figure}
-
-\be Q_{f,eq} = c_p \brackets{T_1-T_4} \dm_{13} \ee
-where $Q_{f,eq}$ is the heat release rate of the doorway fire. The concept of the virtual origin is that the enthalpy flux from the virtual point source should equal the actual enthalpy flux in the door jet at the point of exit from the vent using the same prescription.  Thus the entrainment is calculated the same way as was done for a normal plume.  The reduced height of the plume, $z_p$, (in units of m/kW$^{2/5}$) is
-
-\be z_p = \frac{z_{13}}{Q_{f,eq}^{2/5}}+ v_p \ee
-where $v_p$ the virtual point source, is defined by inverting the entrainment process to yield
-
-\begin{eqnarray}
-v_P = \brackets{\frac{8.10 \dm}{Q_{f,eq}}}^{0.528} &   0 < \brackets{\frac{\dm}{Q_{f,eq}}} < 0.0061 \nonumber \\
-v_P = \brackets{\frac{38.5 \dm}{Q_{f,eq}}}^{1.1001} & 0.0061 < \brackets{\frac{\dm}{Q_{f,eq}}} \leq 0.026 \\
- v_P = \brackets{\frac{90.9 \dm}{Q_{f,eq}}}^{1.76} & \brackets{\frac{\dm}{Q_{f,eq}}} > 0.026  \nonumber   \nopagebreak
-\end{eqnarray}
-
-Although outside of the normal range of validity of the plume model, a level of agreement with experiment is apparent (section 6 includes discussion of validation experiments for the plume model).  Since a door jet forms a flat plume whereas a normal fire plume will be approximately circular, strong agreement is not expected.
+The mass flow rate is denoted $\dm_{14}$, where the subscripts indicate the upstream and downstream layer indices, respectively. The enthalpy flow rate is:
+\be 
+   \doh_{14} = c_p \brackets{T_1-T_4} \dm_{14} 
+\ee
+Assuming that $T_4 < T_1 < T_3$, this energy will be distributed between the compartments two layers. The distribution is based on the relative difference in temperature between the incoming gas stream and the layer temperatures. If $T_1$ is close to $T_3$, most of the energy will go to the upper layer 3 in the form of a virtual plume. The effective heat release rate of this virtual plume is:
+\be 
+   \dQ_{\rm eff} = \frac{T_1-T_4}{T_3-T_4} \; \doh_{14}
+\ee
+The origin of the virtual plume, $z_0$, is deduced from McCaffrey's entrainment correlation, Eq.~\ref{eq:McCaffreyPlume}
+\be
+   z_0 = \bar{z}_{14} - \left\{ \begin{array}{r@{\quad \quad}l}
+   2930 \, \dQ_{\rm eff}^{2/5} \brackets{\dm_{14}/\doh_{14}}^{1.77} &  0 \leq \brackets{\dm_{14}/\doh_{14}}<0.0026 \\[.1in]
+   55   \, \dQ_{\rm eff}^{2/5} \brackets{\dm_{14}/\doh_{14}}^{1.10} &  0.0026 \leq \brackets{\dm_{14}/\doh_{14}}<0.006 \label{eq:McCaffreyPlumeInverse} \\[.1in]
+   3    \, \dQ_{\rm eff}^{2/5} \brackets{\dm_{14}/\doh_{14}}^{0.53} &  0.006 \leq \brackets{\dm_{14}/\doh_{14}} \end{array} \right.
+\ee
+where $\bar{z}_{14}$ is the mid-point gas stream layer.
 
 The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
 
-\section{Vertical Flow Through Horizontally-Oriented Vents (Floor and Ceiling Vents)}
+\section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
 
 Flow through a ceiling or floor vent can be somewhat more complicated than through door or window vents.  The simplest form is uni-directional flow, driven solely by a pressure difference.  This is analogous to flow in the horizontal direction driven by a piston effect of expanding gases.  Once again, it can be calculated based on the Bernoulli equation, and presents little difficulty.  However, in general we must deal with more complex situations that must be modeled in order to have a proper understanding of smoke movement.  The first is an occurrence of puffing.  When a fire exists in a compartment in which there is only one hole in the ceiling, the fire will burn until the oxygen has been depleted, pushing gas out the hole.  Eventually the fire will die down.  At this point ambient air will rush back in, enable combustion to increase, and the process will be repeated.  Combustion is thus tightly coupled to the flow.  The other case is exchange flow which occurs when the fluid configuration across the vent is unstable (such as a hotter gas layer underneath a cooler gas layer).  Both of these pressure regimes require a calculation of the onset of the flow reversal mechanism.
 
@@ -264,7 +262,9 @@ The mass and energy are then deposited into the upper or lower layer of the rece
 
 \section{Forced Flow}
 
-Forced flow in this version of CFAST is a supply (or exhaust) system based on constant flow through a opening/fan/opening triplet . These systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Figure \ref{fig:Fans_and_Ducts}(a) shows smoke management by an exhaust fan at the top of an atrium, and Fig.~\ref{fig:Fans_and_Ducts}(b) illustrates a kitchen exhaust.  Cross ventilation, shown in Fig.~\ref{fig:Fans_and_Ducts}(c), is occasionally used without heating or cooling.  Generally systems that maintain comfort conditions have either one or two fans.
+CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution. 
+
+Figure~\ref{fig:Fans_and_Ducts}(a) depicts smoke exhaust via a fan at the top of an atrium, and Fig.~\ref{fig:Fans_and_Ducts}(b) illustrates a kitchen exhaust fan.  Cross ventilation, shown in Fig.~\ref{fig:Fans_and_Ducts}(c), is occasionally used without heating or cooling.  Generally systems that maintain comfort conditions have either one or two fans. Further information about these systems is presented in Klote and Milke~\cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers (ASHRAE) \cite{ASHRAE:2001}.
 
 \begin{figure}
 \begin{center}
@@ -273,10 +273,6 @@ Forced flow in this version of CFAST is a supply (or exhaust) system based on co
 \caption{Some simple fan-duct systems.}
  \label{fig:Fans_and_Ducts}
 \end{figure}
-
-Further information about these systems is presented in Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers (ASHRAE) \cite{ASHRAE:2001}.
-
-This version of the model does not include duct work or variable fans. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution.
 
 The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks flow of these two species.
 

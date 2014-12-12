@@ -239,19 +239,19 @@ The other type of mixing is much like an inverse plume and causes contamination 
 
 \section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
 
-Flow through a ceiling or floor vent is governed by both pressure and density differences. The simplest form is uni-directional flow driven primarily by a relatively large pressure difference. When the pressure difference is relatively small, the density difference, where hot gas underlies colder gas, can lead to bi-directional flow where the gas in the lower compartment rises into the upper compartment and {\em vice versa}.  This situation might arise in a real fire if the room of origin suddenly has a hole open up in the ceiling. 
+Flow through a ceiling or floor vent is governed by both pressure and density differences. The simplest form is uni-directional flow driven primarily by a relatively large pressure difference. When the pressure difference is relatively small, the density difference, where hot gas underlies colder gas, can lead to bi-directional flow where the gas in the lower compartment rises into the upper compartment and {\em vice versa}.  This situation might arise in a real fire if the room of origin suddenly has a hole open up in the ceiling.
 
 Cooper's algorithm~\cite{Cooper:1989, Cooper:1990, Cooper:1995} is used for computing mass flow through ceiling and floor vents:
-\be 
-   \dm = 0.1 \brackets{\frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}}} \brackets{1 - \frac{2 \, A_{\rm v}^2 \, \Delta P}{S^2 \, g \, \Delta \rho \, D^5}} 
+\be
+   \dm = 0.1 \brackets{\frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}}} \brackets{1 - \frac{2 \, A_{\rm v}^2 \, \Delta P}{S^2 \, g \, \Delta \rho \, D^5}}
 \ee
 where $D = 2 \sqrt{A_{\rm v} / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively. For each layer on either side of the vent, there are two values of the mass flow, $\dm_{\rm in}$ and $\dm_{\rm out}$. These terms are symmetric: the outgoing flow from one compartment is the incoming flow to the other. The corresponding enthalpy flows are determined from the relative size and temperature of the lower and upper layers:
-\begin{eqnarray} 
+\begin{eqnarray}
   \doh_{\rm in} &=& c_p \, \dmu \, \Tu + c_p \, \dml \, \Tl \\[0.1in]
   \dmu &=& \dm_{\rm in} \, \frac{\Vu}{V} \\[0.1in]
-  \dml &=& \dm_{\rm in} \, \frac{\Vl}{V} 
+  \dml &=& \dm_{\rm in} \, \frac{\Vl}{V}
 \end{eqnarray}
-The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow relative to the upper and lower layers of the receiving compartment. If the temperature of the incoming flow is higher than the temperature of the lower layer, then the flow is deposited into the upper layer. This is similar to the idea of using a virtual plume for a doorway flow. 
+The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow relative to the upper and lower layers of the receiving compartment. If the temperature of the incoming flow is higher than the temperature of the lower layer, then the flow is deposited into the upper layer. This is similar to the idea of using a virtual plume for a doorway flow.
 
 
 \section{Forced Flow}
@@ -276,33 +276,19 @@ The flow through mechanical vents can be filtered. Filtering affects particulate
 
 \chapter{Heat Transfer}
 
-This section discusses radiation, convection and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls.  This section also discusses heat transfer algorithms for calculating target temperatures.
-
-Gas layers exchange energy with their surroundings via convective and radiative heat transfer.  Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, CFAST allows each surface to be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant, although we know that they actually vary with temperature. The user should also recognize that the mechanical properties of some materials may change with temperature, but these effects are not modeled.						
-
-Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.  Thus errors in the species concentrations can give rise to errors in the distribution of enthalpy among the layers, which results in errors in temperatures, resulting in errors in the flows.  This illustrates just how tightly coupled the predictions made by CFAST can be.
+This section discusses thermal radiation, convection and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls. Hot gases exchange heat with solid surfaces via convection and radiation. Heat is transferred through solids via conduction. Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, each surface can be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant. Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.  
 
 \section{Radiation}
 \label{sec:Radiation}
 
-Radiation heat transfer forms a significant portion of the energy balance in a zone fire model, especially in the fire room.  Radiative heat transfer is computed from wall and gas temperatures, emisivities and fire heat release rates.  To calculate the radiation absorbed in a zone, a heat balance must be done accounting for all surfaces that radiate to and absorb radiation from a zone.
-
-A radiation heat transfer calculation can easily dominate the computational requirements of any fire model.  Approximations are then required to perform these calculations in a time consistent with other zone fire model sources terms.  For example, it is assumed that all zones and surfaces radiate and absorb like a gray body, that the fires radiate as point sources and that the plume does not radiate at all.  Radiative heat transfer is approximated using a limited number of radiating wall surfaces, four in the fire room and two everywhere else.  The use of these and other approximations allows CFAST to perform the radiation computation in a reasonably efficient manner \cite{Forney_radiation}.
-
-{ \bf Modeling Assumptions:}  The following assumptions are made in order to simplify the radiation heat exchange model used in CFAST and to make its calculation tractable.
-
+Radiation heat transfer is approximated using a limited number of radiating wall surfaces, four in the fire room and two everywhere else~\cite{Forney_radiation}. The following assumptions are:
 \begin{itemize}
-\item Iso-thermal - Each gas layer and each wall segment is assumed to be at a uniform temperature.
-
-\item Equilibrium - The wall segments and gas layers are assumed to be in a quasi-steady state.  In other words, the wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the associated differential equation.
-
-\item Point Source Fires - The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_R$, of the total energy release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
-
-\item Diffuse and gray surfaces - The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength.  These assumptions allow us to infer that the emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$.
-
-\item Geometry - Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
+\item Each gas layer and each wall segment is assumed to be at a uniform temperature.
+\item The wall segments and gas layers are assumed to be in a quasi-steady state.  In other words, the wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the associated differential equation.
+\item The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_{\rm r}$, of the total heat release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
+\item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. The emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$.
+\item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
-
 {\bf 4-Wall and 2-Wall Radiation Exchange:} When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface.  The radiation algorithm then computes a heat flux striking each wall segment using the surface temperature and emissivity.
 
 The four wall algorithm used in CFAST for computing radiative heat exchange is based upon the equations developed in Siegel and Howell \cite{SiegelandHowell:1981} which in turn is based on the work of Hottel \cite{Hottel:1954}. Siegel and Howell model an enclosure with N wall segments and a homogeneous gas. A radiation algorithm for a two layer zone fire model requires treatment of an enclosure with two uniform gases.  Hottel and Cohen \cite{Hottel:1958} developed a method where the enclosure is divided into a number of wall and gas volume elements. An energy balance is written for each element. Each balance includes interactions with all other elements.  Treatment of the fire and the interaction of the fire and gas layers with the walls is based upon the work of Yamada and Cooper \cite{Yamada:1990}.  They model fires as point heat sources radiating uniformly in all directions and use the Lambert-Beer law to model the interaction between heat emitting elements (fires, walls, gas layers) and the gas layers. By implementing a four wall rather than an N wall model, significant algorithmic speed increases are achieved.  This is done by exploiting the simple structure and symmetry of the four wall problem.

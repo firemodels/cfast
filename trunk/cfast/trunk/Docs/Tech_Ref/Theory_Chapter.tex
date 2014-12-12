@@ -191,7 +191,7 @@ Atmospheric pressure is about 100~kPa. Fires produce pressure changes from 1~Pa 
 
 Natural flow through windows and doors is governed by the pressure difference across the opening.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using Bernoulli's equation augmented for restricted openings with an orifice coefficient~\cite{Quintiere:1984, Steckler_Coefficients}.
 
-The mass flow through a vertical opening is calculated by dividing the vertical extent of the opening into discrete segments, each of which is bounded by either the top or bottom of the door or window, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. In this way, the vent opening is partitioned into at most six sections. 
+The mass flow through a vertical opening is calculated by dividing the vertical extent of the opening into discrete segments, each of which is bounded by either the top or bottom of the door or window, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. In this way, the vent opening is partitioned into at most six sections.
 
 Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at those heights.  Because the segment is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the segment can then be computed by integrating from $b$ to $t$:
 \begin{eqnarray}
@@ -206,11 +206,11 @@ Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients
 \end{eqnarray}
 where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P_b|)/(t-b)$.
 Equation \ref{eq:massflowone} is sometimes written:
-\be 
-   \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} } 
+\be
+   \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} }
 \ee
 
-The mass flows through the various vertical segments of the door or window are distributed into the upper and lower layers of the downstream compartment depending on the temperature of the stream. Consider the flow of gas from the upper layer of Compartment~1 entering the lower layer of Compartment~2 (see Fig.~\ref{fig:Flow_Patterns}). 
+The mass flows through the various vertical segments of the door or window are distributed into the upper and lower layers of the downstream compartment depending on the temperature of the stream. Consider the flow of gas from the upper layer of Compartment~1 entering the lower layer of Compartment~2 (see Fig.~\ref{fig:Flow_Patterns}).
 \begin{figure}[t]
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/Theory/Flow_Patterns}\\
@@ -219,11 +219,11 @@ The mass flows through the various vertical segments of the door or window are d
  \label{fig:Flow_Patterns}
 \end{figure}
 The mass flow rate is denoted $\dm_{14}$, where the subscripts indicate the upstream and downstream layer indices, respectively. The enthalpy flow rate is:
-\be 
-   \doh_{14} = c_p \brackets{T_1-T_4} \dm_{14} 
+\be
+   \doh_{14} = c_p \brackets{T_1-T_4} \dm_{14}
 \ee
 Assuming that $T_4 < T_1 < T_3$, this energy will be distributed between the compartments two layers. The distribution is based on the relative difference in temperature between the incoming gas stream and the layer temperatures. If $T_1$ is close to $T_3$, most of the energy will go to the upper layer 3 in the form of a virtual plume. The effective heat release rate of this virtual plume is:
-\be 
+\be
    \dQ_{\rm eff} = \frac{T_1-T_4}{T_3-T_4} \; \doh_{14}
 \ee
 The origin of the virtual plume, $z_0$, is deduced from McCaffrey's entrainment correlation, Eq.~\ref{eq:McCaffreyPlume}
@@ -239,30 +239,24 @@ The other type of mixing is much like an inverse plume and causes contamination 
 
 \section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
 
-Flow through a ceiling or floor vent can be somewhat more complicated than through door or window vents.  The simplest form is uni-directional flow, driven solely by a pressure difference.  This is analogous to flow in the horizontal direction driven by a piston effect of expanding gases.  Once again, it can be calculated based on the Bernoulli equation, and presents little difficulty.  However, in general we must deal with more complex situations that must be modeled in order to have a proper understanding of smoke movement.  The first is an occurrence of puffing.  When a fire exists in a compartment in which there is only one hole in the ceiling, the fire will burn until the oxygen has been depleted, pushing gas out the hole.  Eventually the fire will die down.  At this point ambient air will rush back in, enable combustion to increase, and the process will be repeated.  Combustion is thus tightly coupled to the flow.  The other case is exchange flow which occurs when the fluid configuration across the vent is unstable (such as a hotter gas layer underneath a cooler gas layer).  Both of these pressure regimes require a calculation of the onset of the flow reversal mechanism.
+Flow through a ceiling or floor vent is governed by both pressure and density differences. The simplest form is uni-directional flow driven primarily by a relatively large pressure difference. When the pressure difference is relatively small, the density difference, where hot gas underlies colder gas, can lead to bi-directional flow where the gas in the lower compartment rises into the upper compartment and {\em vice versa}.  This situation might arise in a real fire if the room of origin suddenly has a hole open up in the ceiling. 
 
-Normally a non-zero cross vent pressure difference tends to drive unidirectional flow from the higher to the lower pressure side.  An unstable fluid density configuration occurs when the pressure alone would dictate stable stratification, but the fluid densities are reversed.  That is, the hotter gas is underneath the cooler gas.  Flow induced by such an unstable fluid density configuration tends to lead to bi-directional flow, with the fluid in the lower compartment rising into the upper compartment.  This situation might arise in a real fire if the room of origin suddenly had a hole punched in the ceiling. No pretense is made of being able to do this instability calculation analytically. Cooper's algorithm \cite{Cooper:1989} is used for computing mass flow through ceiling and floor vents. It is based on correlations to model the unsteady component of the flow.  What is surprising is that we can find a correlation at all for such a complex phenomenon. There are two components to the flow.  The first is a net flow dictated by a pressure difference. The second is an exchange flow based on the relative densities of the gases.  The overall flow is given by \cite{Cooper:1989, Cooper:1990, Cooper:1995}
+Cooper's algorithm~\cite{Cooper:1989, Cooper:1990, Cooper:1995} is used for computing mass flow through ceiling and floor vents:
+\be 
+   \dm = 0.1 \brackets{\frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}}} \brackets{1 - \frac{2 \, A_{\rm v}^2 \, \Delta P}{S^2 \, g \, \Delta \rho \, D^5}} 
+\ee
+where $D = 2 \sqrt{A_{\rm v} / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively. For each layer on either side of the vent, there are two values of the mass flow, $\dm_{\rm in}$ and $\dm_{\rm out}$. These terms are symmetric: the outgoing flow from one compartment is the incoming flow to the other. The corresponding enthalpy flows are determined from the relative size and temperature of the lower and upper layers:
+\begin{eqnarray} 
+  \doh_{\rm in} &=& c_p \, \dmu \, \Tu + c_p \, \dml \, \Tl \\[0.1in]
+  \dmu &=& \dm_{\rm in} \, \frac{\Vu}{V} \\[0.1in]
+  \dml &=& \dm_{\rm in} \, \frac{\Vl}{V} 
+\end{eqnarray}
+The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow relative to the upper and lower layers of the receiving compartment. If the temperature of the incoming flow is higher than the temperature of the lower layer, then the flow is deposited into the upper layer. This is similar to the idea of using a virtual plume for a doorway flow. 
 
-\be \dm = C f\brackets{\gamma, \epsilon} \sqrt{\frac{\Delta P}{\overline{\rho}}} A_v \ee
-where $\gamma = c_p/c_v$ is the ratio of specific heats, $C = 0.68 + 0.17 \epsilon$, $\epsilon = \frac{\Delta P}{P}$, and $f$ us a weak function of both $\gamma$ and $\epsilon$ \cite{Cooper:1989}. In the situation where we have an instability, we use Cooper's correlations for the function $f$.  The resulting exchange flow is given by
-
-\be \dm_{ex} = 0.1 \brackets{\frac{g \Delta \rho A_v^{5/2}}{\rho_{av}}} \brackets{1.0 - \frac{2 A_v^2 \Delta P}{S^2 g \Delta \rho D^5}} \ee
-where $D = 2 \sqrt{A_v / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively \cite{Cooper:1989}. Vertical flow through horizontal vents is governed by the VFLOW routines. VENTCF is the module which calculates the mass flow from one compartment to another. The values returned are $\dm_{incoming}$ and $\dm_{outgoing}$ through each vent. These terms are symmetric: the outgoing flow from compartment 1 to 2 is the same as incoming flow from compartment 2 to 1, though source and destination layers may be different.
-
-The energy flux into a compartment is then determined by the relative size and temperature of the layers of the compartment from which the mass is flowing (incoming, u and l):
-
-\be \dq_{incoming} = c_p \dm_u T_u + c_p \dm_l T_l \ee
-
-\be \dm_u = \dm_{incoming} \frac{V_u}{V} \ee
-
-\be \dm_l = \dm_{incoming} \frac{V_l}{V} \ee
-
-
-The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow relative to the upper and lower layers of the receiving compartment. If the temperature of the incoming flow is higher than the temperature of the lower layer, then the flow is deposited into the upper layer. This is similar to the usual plume from a fire or a doorway jet. These rules are implemented in VFLOW.
 
 \section{Forced Flow}
 
-CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution. 
+CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution.
 
 Figure~\ref{fig:Fans_and_Ducts}(a) depicts smoke exhaust via a fan at the top of an atrium, and Fig.~\ref{fig:Fans_and_Ducts}(b) illustrates a kitchen exhaust fan.  Cross ventilation, shown in Fig.~\ref{fig:Fans_and_Ducts}(c), is occasionally used without heating or cooling.  Generally systems that maintain comfort conditions have either one or two fans. Further information about these systems is presented in Klote and Milke~\cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers (ASHRAE) \cite{ASHRAE:2001}.
 

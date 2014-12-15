@@ -95,16 +95,16 @@ The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default.
 
 \section{Plume Entrainment}
 
-The mass entrainment of air into the plume, $\dme$, is estimated using either McCaffrey's~\cite{McCaffrey:1983} or Heskestad's~\cite{Heskestad:1984} correlation. McCaffrey divides the flame/plume into three regions:
+The mass entrainment of air, $\dme(z)$, into the plume at a height $z$ above the base of the fire is estimated using either McCaffrey's~\cite{McCaffrey:1983} or Heskestad's~\cite{Heskestad:1984} correlation. McCaffrey divides the flame/plume into three regions:
 \be
-   \frac{\dme}{\dQ} = \left\{ \begin{array}{r@{\quad \quad}l}
+   \frac{\dme(z)}{\dQ} = \left\{ \begin{array}{r@{\quad \quad}l}
    0.011 \brackets{\ZQf}^{0.566} &  0.00 \leq \brackets{\ZQf}<0.08 \\[.1in]
    0.026 \brackets{\ZQf}^{0.909} &  0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\[.1in]
    0.124 \brackets{\ZQf}^{1.895} &  0.20 \leq \brackets{\ZQf} \end{array} \right.
 \ee
-Heskestad  analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation
+Heskestad analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation
 \be
-   \dm_{\rm e} = 0.071 \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \; \brackets{1 + 0.026 \, \dQ_{\rm c}^{2/3} \, \brackets{z-z_0}^{-5/3}}
+   \dme(z) = 0.071 \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \; \brackets{1 + 0.026 \, \dQ_{\rm c}^{2/3} \, \brackets{z-z_0}^{-5/3}}
 \ee
 where $z_0$ is a virtual origin for the fire plume defined as
 \be
@@ -226,14 +226,11 @@ Assuming that $T_4 < T_1 < T_3$, this energy will be distributed between the com
 \be
    \dQ_{\rm eff} = \frac{T_1-T_4}{T_3-T_4} \; \doh_{14}
 \ee
-The origin of the virtual plume, $z_0$, is deduced from McCaffrey's entrainment correlation, Eq.~\ref{eq:McCaffreyPlume}
-\be
-   z_0 = \bar{z}_{14} - \left\{ \begin{array}{r@{\quad \quad}l}
-   2930 \, \dQ_{\rm eff}^{2/5} \brackets{\dm_{14}/\doh_{14}}^{1.77} &  0 \leq \brackets{\dm_{14}/\doh_{14}}<0.0026 \\[.1in]
-   55   \, \dQ_{\rm eff}^{2/5} \brackets{\dm_{14}/\doh_{14}}^{1.10} &  0.0026 \leq \brackets{\dm_{14}/\doh_{14}}<0.006 \label{eq:McCaffreyPlumeInverse} \\[.1in]
-   3    \, \dQ_{\rm eff}^{2/5} \brackets{\dm_{14}/\doh_{14}}^{0.53} &  0.006 \leq \brackets{\dm_{14}/\doh_{14}} \end{array} \right.
+The mass entrainment rate into this virtual plume at the midpoint of the vertical segment, $\bar{z}$, is:
+\be 
+   \dm_{\rm e,eff}(\bar{z}-z_0) = \frac{T_1-T_4}{T_3-T_4} \; \dm_{14}
 \ee
-where $\bar{z}_{14}$ is the mid-point gas stream layer.
+The origin of the virtual plume, $z_0$, is deduced from McCaffrey's entrainment correlation, Eq.~\ref{eq:McCaffreyPlume}. That is, $\bar{z}-z_0$ is the height above the base of the virtual fire whose HRR is $\dQ_{\rm eff}$ where the mass entrainment rate is $\dm_{\rm e,eff}$.
 
 The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
 
@@ -276,7 +273,7 @@ The flow through mechanical vents can be filtered. Filtering affects particulate
 
 \chapter{Heat Transfer}
 
-This section discusses thermal radiation, convection and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls. Hot gases exchange heat with solid surfaces via convection and radiation. Heat is transferred through solids via conduction. Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, each surface can be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant. Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.  
+This section discusses thermal radiation, convection and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls. Hot gases exchange heat with solid surfaces via convection and radiation. Heat is transferred through solids via conduction. Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, each surface can be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant. Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.
 
 \section{Radiation}
 \label{sec:Radiation}

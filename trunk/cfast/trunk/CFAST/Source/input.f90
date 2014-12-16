@@ -1855,20 +1855,21 @@
             do ii = 1, nret
                 ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the ignition point.
                 ! It only occurs for objects which are on the floor and ignite after t=0
-                oarea(ii,iobj) = max(lrarray(ii),0.09_eb)
+                ! The assumed minimum fire diameter of 0.2 m below is the minimum valid fire diameter for Heskestad's plume correlation (from SFPE Handbook chapter)
+                oarea(ii,iobj) = max(lrarray(ii),pio4*0.2_eb**2)
                 max_area = max(max_area,oarea(ii,iobj))
             end do
 
             ! calculate size of the object based on the maximum area with a thickness assuming it's a cube
             ! as with the flame height calculation, the minimum area is 0.09 m^2 (about 1 ft^2)
-            objxyz(1,iobj) = sqrt(max(max_area,0.09_eb))
+            objxyz(1,iobj) = sqrt(max(max_area,pio4*0.2_eb**2))
             objxyz(2,iobj) = objxyz(1,iobj)
             objxyz(3,iobj) = objxyz(1,iobj)
 
             ! calculate a characteristic length of an object (we assume the diameter). 
             ! This is used for point source radiation fire to target calculation as a minimum effective distance between the fire and the target
             ! which only impact very small fire to target distances
-            objclen(iobj) = 2.0_eb*sqrt(max_area/pi)
+            objclen(iobj) = sqrt(max_area/pio4)
         case ('HEIGH')
             do ii = 1, nret
                 ohigh(ii,iobj) = max(lrarray(ii),0.0_eb)

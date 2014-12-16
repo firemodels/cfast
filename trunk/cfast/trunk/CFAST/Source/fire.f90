@@ -599,11 +599,11 @@
     if (z>0.0_eb.and.qj>0.0_eb) then
         z_star = z/(xf*qj)**0.4_eb
         if (z_star>t2) then
-            xems = a3*z_star**1.895_eb*qj
+            xems = (a3*z_star**1.895_eb*qj)/xf
         else if (z_star>t1) then
-            xems = a2*z_star**0.909_eb*qj
+            xems = (a2*z_star**0.909_eb*qj)/xf
         else
-            xems = a1*z_star**0.566_eb*qj
+            xems = (a1*z_star**0.566_eb*qj)/xf
         endif
         xems = max(xemp,xems)
         xeme = max(xems-xemp,0.0_eb)

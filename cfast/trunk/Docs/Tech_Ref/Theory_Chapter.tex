@@ -286,21 +286,16 @@ Radiation heat transfer is approximated using a limited number of radiating wall
 \item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. The emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$.
 \item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
-{\bf 4-Wall and 2-Wall Radiation Exchange:} When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface.  The radiation algorithm then computes a heat flux striking each wall segment using the surface temperature and emissivity.
-
-The four wall algorithm used in CFAST for computing radiative heat exchange is based upon the equations developed in Siegel and Howell \cite{SiegelandHowell:1981} which in turn is based on the work of Hottel \cite{Hottel:1954}. Siegel and Howell model an enclosure with N wall segments and a homogeneous gas. A radiation algorithm for a two layer zone fire model requires treatment of an enclosure with two uniform gases.  Hottel and Cohen \cite{Hottel:1958} developed a method where the enclosure is divided into a number of wall and gas volume elements. An energy balance is written for each element. Each balance includes interactions with all other elements.  Treatment of the fire and the interaction of the fire and gas layers with the walls is based upon the work of Yamada and Cooper \cite{Yamada:1990}.  They model fires as point heat sources radiating uniformly in all directions and use the Lambert-Beer law to model the interaction between heat emitting elements (fires, walls, gas layers) and the gas layers. By implementing a four wall rather than an N wall model, significant algorithmic speed increases are achieved.  This is done by exploiting the simple structure and symmetry of the four wall problem.
-
-The nomenclature used in this section follows that of Siegel and Howell \cite{SiegelandHowell:1981}.  The radiation exchange at the k'th surface is shown schematically in Fig.~\ref{fig:Rad_Exchange}.  For each wall segment k from 1 to N, a net heat flux, $\Delta \hat{q}_k\dprime$, must be found such that the energy balance,
-
-\be \sigma A_k \epsilon_k T_k^4 + \brackets{1 - \epsilon_k}q_k^{in} = q_k^{in} + A_k \Delta q_k\dprime \ee
-
+When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface.  The radiation algorithm then computes a heat flux striking each wall segment using the surface temperature and emissivity~\cite{SiegelandHowell:1981}. The radiation exchange at each surface is shown schematically in Fig.~\ref{fig:Rad_Exchange}.  For each wall segment k from 1 to N, a net heat flux, $\Delta \hat{q}_k\dprime$, must be found such that the energy balance,
+\be 
+   \sigma A_k \epsilon_k T_k^4 + \brackets{1 - \epsilon_k}q_k^{in} = q_k^{in} + A_k \Delta q_k\dprime 
+\ee
 at each wall segment $k$ is satisfied, where $\sigma$ is the Stefan-Boltzman constant, $A_k$ is the area of the k'th wall segment , $\epsilon_k$ is the emissivity of the k'th wall segment, $T_k$ is the temperature of the k'th wall segment and $q_k^{in}$ is the energy arriving at the k'th wall segment from all other wall segments and heat sources.
 
 Radiation exchange at each wall segment considers the emitted, reflected, incoming and net radiation terms.  The unknown net radiative fluxes, $\Delta q_k\dprime$ , are found by solving the modified net radiation equation
 
 \be \Delta \hat{q}_k\dprime - \displaystyle\sum_{j=1}^N \brackets{1 - \epsilon_j} \Delta \hat{q}_j\dprime F_{k-j} \tau_{j-k} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_k^4 F_{k-j} \tau_{k-j}} - \frac{c_k}{A_k} \ee
 where $\Delta \hat{q}_k\dprime = \Delta q_k / \epsilon$, $F_{k-j}$ is the configuration factor, $\tau$ is the transmittance and other terms are previously defined.
-
 \begin{figure}
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/Theory/Radiation_Exchange}\\
@@ -308,20 +303,8 @@ where $\Delta \hat{q}_k\dprime = \Delta q_k / \epsilon$, $F_{k-j}$ is the config
 \caption{Radiation Exchange in a two-zone fire model.}
  \label{fig:Rad_Exchange}
 \end{figure}
-
-The walls can be modeled using two surfaces or four.  The four wall model is necessary for fire rooms because the temperatures of the ceiling and upper walls differ significantly.  The two wall model is used for compartments that contain no fires.
-
-To simplify the comparison between the two and four wall segment models, assume that the emissivities of all wall segments are one and that the gas absorptivities are zero.  Let the room dimensions be 4 m by 4 m by 4 m, the temperature of the floor and the lower and upper walls be 300 K, and the ceiling temperature vary from 300 K to 600 K. Figure \ref{fig:Rad_2vs4} shows a plot of the heat flux to the ceiling and upper wall as a function of the ceiling temperature \cite{Forney_radiation, Jones:1993}. The two wall model predicts that the extended ceiling (a surface formed by combining the ceiling and upper wall into one wall segment) cools, while the four wall model predicts that the ceiling cools and the upper wall warms.  The four-wall model better accounts for temperature differences that may exist between the ceiling and upper wall (or floor and lower wall) by allowing heat transfer to occur between the ceiling and upper wall. This problem is not as significant in compartments where a fire is not present.
-
 Reference \cite{Forney_radiation} documents how to minimize the work required to compute the 16 configuration factors, $F_{k-j}$, required in a 4 wall model.
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/Radiation_2vs4}\\
-\end{center}
-\caption{An example of the calculated two-wall (RAD2) and four-wall (RAD4) contributions to radiation exchange on a ceiling and wall surface.}
- \label{fig:Rad_2vs4}
-\end{figure}
 
 {\bf Configuration Factors:}  A configuration factor between two finite areas denoted $F_{1-2}$ is the fraction of radiant energy given off by surface 1 that is intercepted by  surface 2 and is given by
 
@@ -370,16 +353,15 @@ For each gas, the log(absorptance) is estimated from the look-up table for that 
 
 \subsection{Walls, Ceilings, and Floors}
 
-In general, convective heat transfer, $q\dprime$, across a surface of area
-$A_S$, is defined as
-
-\be q_c\dprime = h A_S \brackets{T_g - T_s} \ee
-
+In general, convective heat flux to a solid surface is given by:
+\be 
+   \dqc'' = h \, \brackets{\Tg - \Ts}  \label{convective_heat_flux}
+\ee
 The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. In CFAST, simple correlations for natural convection are used since the gas velocity is unknown:
-
-\be h = C {|T_g - T_s|}^{1/3} \ee
-
-where $C$ is an emperical coefficient (1.52 for the horizontal floors and ceilings and 1.31 for the vertical walls) \cite{Holman:1990}, $T_g$ is the gas temperature adjacent to the surface, and $T_s$ is the surface temperature.
+\be 
+   h = C {|\Tg - \Ts|}^{1/3} 
+\ee
+where $C$ is an empirical coefficient (1.52 for the horizontal floors and ceilings and 1.31 for the vertical walls~\cite{Holman:1990}), $\Tg$ is the gas temperature adjacent to the surface, and $\Ts$ is the surface temperature.
 
 \subsection{Ceiling Jet}
 
@@ -469,52 +451,48 @@ When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer 
 
  \section{Conduction}
 
- Procedures for solving 1-d heat conduction problems are well known, (e.g., backward difference (fully implicit), forward difference (fully explicit) or Crank-Nicolson \cite{Golub:1989}).  A finite difference approach  using a non-uniform spatial mesh is used to advance the wall temperature solution.  The heat equation is discretized using a second order central difference for the spatial derivative and a backward differences for the time derivative.  The resulting tri-diagonal system of equations is then solved to advance the temperature solution to time $t+\Delta t$.  This process is repeated , using the work of Moss and Forney \cite{Moss:1992},  until  the heat flux striking the wall (calculated from the convection and radiation algorithms) is consistent with the flux conducted into the wall calculated via Fourier's law
+The heat conduction equation is solved in the direction normal to the solid surface using non-uniformly spaced nodes and a second order accurate central difference scheme for the spatial derivatives and a semi-implicit time marching scheme. At each time step, the internal temperatures are updated in time until net the net convective and radiative heat flux striking the wall is consistent with the heat flux into the surface~\cite{Moss:1992}
+\be 
+   \dq'' = -k \, \frac{dT}{dx} \Big|_{x=0} 
+\ee
+where $k$ is the thermal conductivity of the solid.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved. Conduction is then coupled to the gas phase energy exchange.  
 
- \be q\dprime = -k \frac{dT}{dx} \ee
-where $k$ is the thermal conductivity.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved.  Wall segment temperature profiles, however, still have to be stored so there is no decrease in storage requirements.  Conduction is then coupled to the room conditions by temperatures supplied at the interior boundary by the differential equation solver.  The exterior boundary conditions are modeled as surfaces that exchange heat with an ambient surroundings for both convection and radiation.
+A non-uniform array of internal nodes is used to capture steep gradients in temperature near the surace. Define a penetration depth of
+\be
+   x_p = 2 \sqrt{\alpha \, t_{\rm end}} \; \hbox{erfc}^{-1} \brackets{0.05}
+\ee
+where $\hbox{erfc}^{-1}$ denotes the inverse of the complementary error function. The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{\rm end}$ seconds. Eighty percent of the nodes are placed on the interior side of $x_p$ and the remaining 20~\% are placed on the exterior side.
 
-A non-uniform mesh scheme was chosen to allow grid points in the calculation to cluster near the interior and exterior wall segment surfaces.  This is where the temperature gradients are the steepest.  A breakpoint  $x_b$ was defined by $x_b = MIN(x_p, W/2)$ where $W$ is the wall thickness and $x_p = 2 \sqrt{\alpha t_{final}} erfc^{-1} \brackets{.05}$ and $erfc^{-1}$ denotes the inverse of the complementary error function.  The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{final}$ seconds and is sometimes called the penetration depth.  Eighty percent of the grid points were placed on the interior side of $x_b$ and the remaining 20~\% were placed on the exterior side.
-
-To illustrate the method, consider a one room case with one active wall.  There are four gas equations (pressure, upper layer volume, upper layer temperature, and lower layer temperature) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profile at the previous time, t, and at the next time, $t + \Delta t$.  Given the profile at time t and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time t to time $t + \Delta t$.  The temperature profile gradient at $x = 0$ is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
+To illustrate the method, consider a one room case with one active wall.  There are four gas equations (pressure, upper layer volume, upper layer temperature, and lower layer temperature) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profile at the previous time, t, and at the next time, $t + \Delta t$.  Given the profile at time t and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time t to time $t + \Delta t$.  The temperature gradient at $x = 0$ is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
 
 \subsection{Inter-compartment Heat Transfer}
 
 Heat transfer between vertically connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
 
-For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiative configuration factors.    For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 1/2.   Once these fractions are determined, an average flux, $q_{avg}\dprime$, is calculated using
-
-\be q_{avg}\dprime = \sum_{walls} F_{ij} q_{wall_j}\dprime \ee
-where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $q_{wall_j}\dprime$ is the flux striking wall $j$.
+For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiative configuration factors.    For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 1/2.   Once these fractions are determined, an average flux, $\dq_{\rm avg}''$, is calculated using
+\be 
+   \dq_{\rm avg}'' = \sum_{\rm walls} \, F_{ij} \dq_j'' 
+\ee
+where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $\dq_j''$ is the flux striking wall $j$.
 
 \section{Computing Target Heat Flux and Temperature}
 
-The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor not interacting with the modeled environment.
+The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor that does not interact with the modeled environment. There are four components of heat flux to a target: fires, walls (including the ceiling and floor), gas layer radiation and gas layer convection.
 
-The net flux striking a target can be used as a boundary condition in order to compute the temperature of the target.  If the target is thin, then its temperature quickly rises to a level where the heat flux to and from the target are in equilibrium.
+\subsubsection{Heat Flux from a Fire to a Target} 
 
-There are four components of heat flux to a target: fires, walls (including the ceiling and floor), gas layer radiation and gas layer convection.
+Assuming the fire to be a point source of radiant energy, the heat flux to a target at a distance $R$ whose surface normal forms an angle $\theta$ with the line connecting the fire and target is given by:
+\be 
+   \dqr'' = \frac{\chi_{\rm r} \, \dQ}{4 \pi \, R^2} \, \cos \brackets{\theta} \, \tau_{\rm u} \, \tau_{\rm l}
+\ee
+where the $\tau_{\rm u}$ and $\tau_{\rm l}$ are the transmissivity of the upper and lower layer, respectively.
 
-{\bf Heat Flux from a Fire to a Target:} Figure \ref{fig:Rad_Fire} illustrates terms used to compute heat flux from a fire to a target. Let $n_t$ be a unit vector perpendicular to the target and $\theta_t$ be the angle between the vectors $\overline{L}$ and $n_t$.
+\subsubsection{Radiative Heat Flux from a Wall Segment to a Target} 
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/Theory/Radiation_Fire}\\
-\end{center}
-\caption{Radiative heat transfer from a point source fire to a target.}
- \label{fig:Rad_Fire}
-\end{figure}
-
-Using the definition that $q_{f,r}$ is the radiative portion of the energy release rate of the fire, then the heat flux on a sphere of radius $L$ due to this fire is $q_{f,r} / \brackets{4 \pi L^2}$. Correcting for the orientation of the target and accounting for heat transfer through the gas layers, the heat flux to the target is
-
-\be q_{f,r}\dprime = \frac{q_{f,r}}{4 \pi L^2} \cos \brackets{\theta_t} \tau_U (L_U) \tau_L (L_L) = -q_{f,r} \frac{n_t \overline{L}}{4 \pi L^3} \tau_U (L_U) \tau_L (L_L) \ee
-
-{\bf Radiative Heat Flux from a Wall Segment to a Target:} Figure \ref{fig:Rad_Gases} illustrates terms used to compute heat flux from a wall segment to a target. The flux, $q\dprime_{w,t}$, from a wall segment to a target can then be computed using
-
-\be q_{w,t}\dprime = \frac{A_w q_{w,out}\dprime F_{w-t}}{A_t} \tau_U (L_U) \tau_L (L_L) \label{eq:wall_target_flux} \ee
-where $q_{w,t}\dprime$  is the flux leaving the wall segment, $A_w$, $A_t$ are the areas of the wall segment and target respectively, $F_{w-t}$  is the fraction of radiant energy given off by the wall segment that is
-intercepted by the target (i.e., a configuration factor) and $\tau_U (L_U)$ and $\tau_L (L_L)$ are defined as before. Equation (\ref{eq:wall_target_flux})  can be simplified using the symmetry relation $A_w F_{w-t}  = A_t F_{t-w}$ to obtain
-
+Figure \ref{fig:Rad_Gases} illustrates terms used to compute heat flux from a wall segment to a target. The flux, $q\dprime_{w,t}$, from a wall segment to a target can then be computed using
+\be 
+   \dqr'' = \frac{A_{\rm w} \dq_{\rm w,out}'' \, F_{\rm w-t}}{A_{\rm t}} \, \tau_{\rm u} \, \tau_{\rm l} \label{eq:wall_target_flux} \ee
+where $\dq_{\rm w,out}''$  is the flux leaving the wall segment, $A_{\rm w}$, $A_{\rm t}$ are the areas of the wall segment and target respectively, $F_{\rm w-t}$  is the configuration factor, and $\tau_{\rm u}$ and $\tau_{\rm l}$ are the transmissivity of the upper and lower layer, respectively.
 \begin{figure}
 \begin{center}
 \includegraphics[width=5.0in]{FIGURES/Theory/Radiation_Gases}\\
@@ -523,15 +501,9 @@ intercepted by the target (i.e., a configuration factor) and $\tau_U (L_U)$ and 
  \label{fig:Rad_Gases}
 \end{figure}
 
-\be q_{w,t}\dprime = q_{w,out}\dprime F_{t-w} \tau_U (L_U) \tau_L (L_L) \ee
-where
+\subsubsection{Radiation from the Gas Layer to the Target} 
 
-\be q_{w,out}\dprime = \sigma T_w^4 - \brackets{1 - \epsilon_w} \frac{\Delta q_w\dprime}{\epsilon_w}, \ee
-$T_w$ is the temperature of the wall segment, $\epsilon_w$ is the emissivity of the wall segment and $\Delta q_w\dprime$ is the net flux striking the wall segment.
-
-{\bf Radiation from the Gas Layer to the Target:} Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptances are non-zero.
-
-Let $q_{w,t,gas}\dprime$ denote the flux striking the target due to the gas g in the direction of wall segment w. Then
+Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptance is non-zero. Let $q_{w,t,gas}\dprime$ denote the flux striking the target due to the gas g in the direction of wall segment w. Then
 
 \be q_{w,t,gas}\dprime =
 \left\{

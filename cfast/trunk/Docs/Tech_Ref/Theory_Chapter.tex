@@ -227,7 +227,7 @@ Assuming that $T_4 < T_1 < T_3$, this energy will be distributed between the com
    \dQ_{\rm eff} = \frac{T_1-T_4}{T_3-T_4} \; \doh_{14}
 \ee
 The mass entrainment rate into this virtual plume at the midpoint of the vertical segment, $\bar{z}$, is:
-\be 
+\be
    \dm_{\rm e,eff}(\bar{z}-z_0) = \frac{T_1-T_4}{T_3-T_4} \; \dm_{14}
 \ee
 The origin of the virtual plume, $z_0$, is deduced from McCaffrey's entrainment correlation, Eq.~\ref{eq:McCaffreyPlume}. That is, $\bar{z}-z_0$ is the height above the base of the virtual fire whose HRR is $\dQ_{\rm eff}$ where the mass entrainment rate is $\dm_{\rm e,eff}$.
@@ -779,44 +779,35 @@ advance the cable's temperature profile by $\Delta t$.
 
 
 
+
+
+
 \chapter{Fire Protection Devices}
 
 
 
-\section{Heat Detectors}
+\section{Sprinkler and Heat Detector Activation}
 
-Heat detection is modeled using temperatures obtained from the ceiling jet \cite{Cooper:1991}. Rooms without fires do not have ceiling jets. Sensors in these types of rooms use gas layer temperatures instead of ceiling jet temperatures. The characteristic detector temperature is simply the temperature of the ceiling jet (at the location of the detector). The characteristic heat detector temperature is modeled using the differential equation \cite{Heskestad:1976}
+The link temperature of a sprinkler or heat detector is modeled using the differential equation~\cite{Heskestad:1976}:
+\be
+   \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
+\ee
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the ceiling jet velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the ceiling jet algorithm, Section~\ref{Ceiling_Jet_Algorithm}. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.12~m/s. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
+\be
+   \frac{\TL^{n+1}-\TL^n}{\delta t} = \frac{1}{2} \left( \frac{\sqrt{v^n}}{\rm RTI} \brackets{\Tg^n - \TL^n}  + \frac{\sqrt{v^{n+1}}}{\rm RTI} \brackets{\Tg^{n+1} - \TL^{n+1}}  \right) \label{eq:RTI_rewritten}
+\ee
+where the superscript $n$ denotes the value at the current time, and $\delta t$ is the time step.
 
-\be \frac{dT_L}{dt} = \frac{\sqrt{v(t)}}{RTI} \brackets{T_g(t) - T_L(t)} \; , \; T_L(0) = T_g(0)\label{eq:RTI} \ee
-where $T_L$ and $T_g$ are the link and gas temperatures, $v$ is the gas velocity, and $RTI$ (response time index) is a measure of the sensor's sensitivity to temperature change (thermal inertia).  The heat detector differential eq (\ref{eq:RTI}) may be rewritten to
 
-\be \frac{dT(t)}{dt} = a(t) - b(t)T(t) \; , \; T(t_0) = T_0 \label{eq:RTI_rewritten} \ee
-where $a(t) = \frac{\sqrt{V(t)}T(t)}{RTI}$ and $b(t) = \frac{\sqrt{V(t)}}{RTI}$. Equation (\ref{eq:RTI_rewritten}) may be solved using the trapezoidal rule to obtain
+\section{Fire Suppression} \label{sec:suppression}
 
-\be \frac{T_{i+1} - T_i}{\Delta T} = \frac{1}{2} \brackets{\brackets{a_i - b_iT_i} + \brackets{a_{i+1} - b_{i+1}T_{i+1}}} \label{eq:RTI_trapezoidal} \ee
-where the subscript $i$ denotes time at $t_i$. Equation (\ref{eq:RTI_trapezoidal}) may be simplified to
+Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the heat release rate is assumed to decrease exponentially:
+\be
+   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 u_{\rm w}^{-1.8}
+\ee
+where $u_{\rm w}$ is the water spray density, expressed in units of m/s. The product species mass production rates are reduced by the same amount as the heat release rate.
 
-\be T_{i+1} = A_{i+1} - b_{i+1}T_{i+1} \label{eq:RTI_trapezoidal_simplified} \ee
-where $A_{i+1} = T_i + \Dttwo \brackets{a_i - b_iT_i + a_{i+1}}$ and $B_{i+1} = \Dttwo b_{i+1}$ which has a solution
-
-\be T_{i+1} = \frac{A_{i+1}}{1+B_{i+1}} = \frac{1 - \Dttwo b_i}{1 + \Dttwo b_{i+1}} T_i  + \frac{\Delta T}{1 + \Dttwo b_{i+1}}\brackets{\frac{a_i + a_{i+1}}{2}} \label{eq:RTI_solution1} \ee
-
-Equation (\ref{eq:RTI_solution1}) reduces to the trapezoidal rule for integration when $b(t) = 0$. When $a(t)$ and $b(t)$ are constant (the gas temperature, $T_g$, and gas velocity, $V$ are not changing), eq (\ref{eq:RTI}) has the solution
-
-\be T(t) = \frac{a}{b} + \frac{e^{-b(t-t_0)}\brackets{b T_0 - a}}{b} = T_g + e^{\frac{-\sqrt{V(t)}(t-t_0)}{RTI}}\brackets{T_0 - T_g}
- \ee
-
-\section{Sprinkler Activation and Fire Attenuation} \label{sec:suppression}
-
-For suppression, the sprinkler is modeled using a simple model \cite{Madrzykowski:1992} generalized for varying sprinkler spray densities \cite{Evans:1993}. It is then modeled by attenuating all fires in the room where the sensor activated by a term of the form $e^{-(t-t_{act})/t_{rate}}$ where $t_{act}$ is the time when the sensor activated and $t_{rate}$ is a constant determining how quickly the fire attenuates. The term $t_{rate}$ can be related to spray density of a sprinkler using a correlation developed in \cite{Evans:1993}. The suppression correlation was developed by modifying the heat release rate of a fire. For $t > t_{act}$ the heat release is given by
-
-\be Q_f(t) = e^{-\brackets{t-t_{act}} / \brackets{3 Q_{spray}^{-1.8}}} Q_f(t_{act}) \ee
-where $Q_{spray}$ is the spray density of a sprinkler. Note that decay rate can be formulated in terms of either the attenuation rate or the spray density. $t_{rate}$ can be expressed in terms of $Q_{spray}$ as $t_{rate} = 3Q_{spray}^{-1.8}$. A calculation is done to make sure that the fuel burned is consistent with the available oxygen. Once detection has occurred, then the mass and energy release rates are attenuated by
-
-\be \dot{m}_f(t) = e^{-\brackets{t-t_{act}} / t_{rate}} \dot{m}_f(t_{act}) \ee
-\be Q_f(t) = e^{-\brackets{t-t_{act}} / t_{rate}} Q_f(t_{act}) \ee
-
-There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers are noted but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how this should be handled, i.e.,how two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the worst conditions (usually the closest fire) in order to calculate the fire sensor temperatures.  Finally, the ceiling jet algorithm that we use results in temperature predictions that are warmer (for a given heat release rate) than those used in the correlation developed by Madrzykowski \cite{Madrzykowski:1995}, which will cause activation sooner than expected.
+There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers are noted but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how the two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the highest ceiling jet temperature in order to calculate the sprinkler link temperature.
 
 \section{Species Concentration and Deposition}
 

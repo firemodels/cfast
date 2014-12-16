@@ -20,41 +20,16 @@
     real(eb), intent(in) :: tg, tw
     real(eb), intent(out) :: qdinl
     
-    real(eb) :: nuoverl, k, tdel, tf, t3000, tff, alpha, pr, cup, cdown, c, abstwtg
-
-    tdel = 5.0_eb
-
-    qdinl = 0.0_eb
-    tf = (tw+tg)*0.5_eb
-
-    ! to keep k positive, make sure tf is below 3000.  of course the calculation will have long since lost any semblance to reality.
-    t3000 = 3000.0_eb
-    tff = min(tf,t3000)
-    if (tf<=0.0_eb) return
-    alpha = 1.e-9_eb*tf**(1.75_eb)
-    k = (0.0209_eb+2.33e-5_eb*tff)/(1.0_eb-2.67e-4_eb*tff)
-    pr = 0.72_eb
-
-    ! ceilings and floors
-    ! use the hyperbolic tangent to smooth the coefficient c from cup to cdown over a temperature range of tdel degress. 
-    ! note: tanh(x>>0)=1 and tanh(x<<0)=-1
-    cup = 0.16_eb
-    cdown = 0.13_eb
-    if (iw==1) then
-        c = (cup+cdown+(cup-cdown)*tanh((tg-tw)/tdel))*0.5_eb
-    else if (iw==2) then
-        c = (cup+cdown-(cup-cdown)*tanh((tg-tw)/tdel))*0.5_eb
-
-        ! vertical surfaces
+    real(eb) :: h
+    real(eb), parameter :: onth = 1.0_eb/3.0_eb
+    
+    if (iw<=2) then
+        h = 1.52_eb*abs(tg - tw)**onth
     else
-        c = 0.121_eb
-    endif
-
-    ! prevent the vertical tangent in the calculation of nuoverl by keeping abstwtg from going to zero.  
-    abstwtg = abs(tw-tg)
-    if (abstwtg<tdel) abstwtg = tdel
-    nuoverl = c*(grav_con*abstwtg*pr/(tf*alpha**2))**third
-    qdinl = nuoverl*k*(tg-tw)
+        h = 1.31_eb*abs(tg - tw)**onth
+    end if
+    
+    qdinl = h * (tg - tw)
     return
     end subroutine convec
 

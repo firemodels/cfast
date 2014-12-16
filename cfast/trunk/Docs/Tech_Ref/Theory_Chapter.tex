@@ -366,6 +366,127 @@ An effective path length ( mean beam length, L) treats an emitting volume as if 
 
 For each gas, the log(absorptance) is estimated from the look-up table for that gas  by  interpolating both the log(temperature) and log(concentration) domains. In the event that the required absorptance lies outside the temperature or concentration range of the look-up table, the nearest acceptable value is returned. Error flags are also returned, indicating whether each parameter was in or out of range and, in the latter case, whether it was high or low.  This entire process is carried out for both $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$.
 
+\section{Convection}
+
+\subsection{Walls, Ceilings, and Floors}
+
+In general, convective heat transfer, $q\dprime$, across a surface of area
+$A_S$, is defined as
+
+\be q_c\dprime = h A_S \brackets{T_g - T_s} \ee
+
+The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. In CFAST, simple correlations for natural convection are used since the gas velocity is unknown:
+
+\be h = C {|T_g - T_s|}^{1/3} \ee
+
+where $C$ is an emperical coefficient (1.52 for the horizontal floors and ceilings and 1.31 for the vertical walls) \cite{Holman:1990}, $T_g$ is the gas temperature adjacent to the surface, and $T_s$ is the surface temperature.
+
+\subsection{Ceiling Jet}
+
+Relatively early in the development of a fire, fire-driven ceiling jets and gas-to-ceiling convective heat transfer can play a significant role in room-to-room smoke spread and in the response of near-ceiling mounted detection hardware.  Cooper \cite{Cooper:1991} details a model and computer algorithm to predict the instantaneous rate of convective heat transfer from fire plume gases to the overhead ceiling surface in a room of fire origin.  The room is assumed to be a rectangular parallelepiped and, at times of interest, ceiling temperatures are simulated as being uniform.  Also presented is an estimate of the convective heat transfer due to ceiling-jet driven wall flows.  The effect on the heat transfer of the location of the fire within the room is taken into account.  This algorithm has been incorporated into the CFAST model.  In this section, we provide an overview of the model.  Complete details are available in reference [\cite{Cooper:1991}.
+
+A schematic of a fire, fire plume, and ceiling jet is shown in Fig.~\ref{fig:CeilJet}. The buoyant fire plume rises from the height $Z_{fire}$ toward the ceiling.  When the fire is below the layer interface, its mass and enthalpy flow are assumed to be deposited into the upper layer at height $Z_{layer}$.  Having penetrated the interface, a portion of the plume typically continues to rise toward the ceiling.  As it impinges on the ceiling surface, the plume gases turn and form a relatively high temperature, high velocity, turbulent ceiling jet which flows radially outward along the ceiling and transfers heat to the relatively cool ceiling surface.  The convective heat transfer rate is a strong function of the radial distance from the point of impingement, reducing rapidly with increasing radius.  Eventually, the relatively high temperature ceiling jet is blocked by the relatively cool wall surfaces \cite{Cooper:1990a}.  The ceiling jet then turns downward and outward in a complicated flow along the vertical wall surfaces \cite{Cooper:1988, Jaluria:1989} .  The descent of the wall flows and the heat transfer from them are eventually stopped by upward buoyant forces.  They are then buoyed back upward and mix with the upper layer.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=4.0in]{FIGURES/Theory/CeilJet}\\
+\end{center}
+\caption{Convective heat transfer to ceiling and wall surfaces via the ceiling jet.}
+ \label{fig:CeilJet}
+\end{figure}
+
+The average convective heat transfer from the ceiling jet gases to the ceiling surface, $Q_{ceil}$, can be expressed in integral form as
+
+\be Q_{ceil} = \int_0^{X_{wall}} \int_0^{Y_{wall}} q_{ceil}\dprime (x,y) dx dy \ee
+
+The instantaneous convective heat flux, $q_{ceil}\dprime (x,y)$ can be determined as derived by Cooper \cite{Cooper:1991} as
+
+\be q_{ceil}\dprime (x,y) = h \brackets{T_{ad} - T_{ceil}} \ee
+where $T_{ad}$ is a characteristic ceiling jet temperature that would be measured adjacent to an adiabatic lower ceiling surface, and $h$ is a heat transfer coefficient.  $h$ and $T_{ad}$ are given by
+
+\be \frac{h}{\tilde{h}} =
+\left\{
+\begin{array}{cc}
+8.82 Re_H^{-1/2} Pr^{-2/3} \brackets{1 - \brackets{5 - 0.284 Re_H^{2/5}}\rH} & 0 \le \rH < 0.2 \\
+\\
+0.283 Re_H^{0.3} Pr^{-2/3} \brackets{\rH}^{-1.2} \frac{\rH - 0.0771}{\rH + 0.279} & 0.2 \le \rH
+\end{array}
+\right.
+\ee
+
+\be \frac{T_{ad} - T_u}{T_u {Q_H^*}^{2/3}} =
+\left\{
+\begin{array}{cc}
+10.22 - 14.9 \rH & 0 \le \rH < 0.2 \\
+\\
+8.39 f\brackets{\rH} & 0.2 \le \rH
+\end{array}
+\right.
+\ee
+where
+
+\be f\brackets{\rH} = \frac{1 - 1.10 \brackets{\rH}^{0.8}+ 0.808  \brackets{\rH}^{1.6}}
+{1 - 1.10 \brackets{\rH}^{0.8}+ 2.20  \brackets{\rH}^{1.6} + 0.690 \brackets{\rH}^{2.4}}
+\ee
+
+\be r = \sqrt{\brackets{X-X_{fire}}^2 + \brackets{Y-Y_{fire}}^2} \ee
+\be \tilde{h} = \rho_u c_p g^{1/2} H^{1/2} {Q_H^*}^{1/3} \; , \;
+Re_H = \frac{g^{1/2} H^{3/2} {Q_H^*}^{1/3}}{\nu_u}  \; , \;
+Q_H^* = \frac{Q}{\rho_u c_p T_u g^{1/2} H^{5/2} } \ee
+
+\be Q =
+\left\{
+\begin{array}{cc}
+Q_{f,C} \brackets{\frac{\sigma \dot{M}^*}{1 + \sigma}}& Z_{fire} < Z_{layer} < Z_{ceil} \\
+\\
+Q_{f,C} & {\begin{array}{c}
+Z_{fire} \ge Z_{layer} \\
+Z_{layer} = Z_{ceil}
+\end{array} }
+\end{array}
+\right.
+\; , \;
+ \dot{M}^* =
+\left\{
+\begin{array}{cc}
+0 & -1 < \sigma \le 0 < 0.2 \\
+\\
+\frac{1.04599 \sigma + 0.360391 \sigma^2}{1 + 1.37748 \sigma + 0.360391 \sigma^2} & \sigma > 0
+\end{array}
+\right.
+\ee
+
+\be \sigma = \frac{1 - \frac{T_u}{T_l}+C_T {Q_{EQ}^*}^{2/3}}{\frac{T_u}{t_l}}
+\; , \;
+C_T = 9.115
+\; , \;
+Q_{EQ}^* = \brackets{\frac{0.21 Q_{fc}}{c_p T_l \dot{m}_p}} \ee
+
+In the above, $H$ is the distance from the (presumed) point source fire and the ceiling, $X_{fire}$  and $Y_{fire}$ are the position of the fire in the room, $Pr$ is the Prandtl number (taken to be 0.7) and $\nu$ is the kinematic viscosity of the upper layer gas which is assumed to have the properties of air and can
+be estimated from $\nu = 0.04128 x 10^7 T_u^{5/2} /\brackets{T_u + 110.4}$. $Q_H^*$ and $Q_{EQ}^*$ are dimensionless numbers and are measures of the strength of the plume at the ceiling and the layer interface, respectively.
+
+When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer to the surface increases.  Reference \cite{Cooper:1991} provides details of the calculation of wall surface area and convective heat flux for the wall surfaces.
+
+ \section{Conduction}
+
+ Procedures for solving 1-d heat conduction problems are well known, (e.g., backward difference (fully implicit), forward difference (fully explicit) or Crank-Nicolson \cite{Golub:1989}).  A finite difference approach  using a non-uniform spatial mesh is used to advance the wall temperature solution.  The heat equation is discretized using a second order central difference for the spatial derivative and a backward differences for the time derivative.  The resulting tri-diagonal system of equations is then solved to advance the temperature solution to time $t+\Delta t$.  This process is repeated , using the work of Moss and Forney \cite{Moss:1992},  until  the heat flux striking the wall (calculated from the convection and radiation algorithms) is consistent with the flux conducted into the wall calculated via Fourier's law
+
+ \be q\dprime = -k \frac{dT}{dx} \ee
+where $k$ is the thermal conductivity.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved.  Wall segment temperature profiles, however, still have to be stored so there is no decrease in storage requirements.  Conduction is then coupled to the room conditions by temperatures supplied at the interior boundary by the differential equation solver.  The exterior boundary conditions are modeled as surfaces that exchange heat with an ambient surroundings for both convection and radiation.
+
+A non-uniform mesh scheme was chosen to allow grid points in the calculation to cluster near the interior and exterior wall segment surfaces.  This is where the temperature gradients are the steepest.  A breakpoint  $x_b$ was defined by $x_b = MIN(x_p, W/2)$ where $W$ is the wall thickness and $x_p = 2 \sqrt{\alpha t_{final}} erfc^{-1} \brackets{.05}$ and $erfc^{-1}$ denotes the inverse of the complementary error function.  The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{final}$ seconds and is sometimes called the penetration depth.  Eighty percent of the grid points were placed on the interior side of $x_b$ and the remaining 20~\% were placed on the exterior side.
+
+To illustrate the method, consider a one room case with one active wall.  There are four gas equations (pressure, upper layer volume, upper layer temperature, and lower layer temperature) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profile at the previous time, t, and at the next time, $t + \Delta t$.  Given the profile at time t and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time t to time $t + \Delta t$.  The temperature profile gradient at $x = 0$ is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
+
+\subsection{Inter-compartment Heat Transfer}
+
+Heat transfer between vertically connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
+
+For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiative configuration factors.    For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 1/2.   Once these fractions are determined, an average flux, $q_{avg}\dprime$, is calculated using
+
+\be q_{avg}\dprime = \sum_{walls} F_{ij} q_{wall_j}\dprime \ee
+where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $q_{wall_j}\dprime$ is the flux striking wall $j$.
+
 \section{Computing Target Heat Flux and Temperature}
 
 The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor not interacting with the modeled environment.
@@ -655,143 +776,6 @@ are given by
 
 \noindent Equation (\ref{eq:matrix}) is then used to
 advance the cable's temperature profile by $\Delta t$.
-
-\section{Convection}
-
-In general, convective heat transfer, $q\dprime$, across a surface of area
-$A_S$, is defined as
-
-\be q\dprime = h A_S \brackets{T_g - T_s} \ee
-
-The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. The Nusselt number is defined as $Nu_L = h L / k$, which for natural convection is related to the Rayleigh number, $Ra_L = g \beta \brackets{T_s - T_g}L^3 / \nu \alpha$ where $L$ is a characteristic length of the geometry, $g$ is the gravitational constant (m/s\superscript{2}), $k$ is the thermal conductivity (W/m\superscript{2} K), $\beta$ is a volumetric expansion coefficient (K\superscript{-1}), $T_s$ and $T_g$ are the temperatures of the surface and gas, respectively (K), $\nu$ is the kinematic viscosity (m\superscript{2}/s), and $\alpha$ is the thermal diffusivity (m\superscript{2}/s).  All properties are evaluated at the film temperature, $T_f = \brackets{T_s + T_g}/2$.  The typical correlations applicable to the problem at hand are available in the literature  \cite{Atreya:2003}. The table below gives the correlations used in CFAST.
-
-\begin{table}[h!]
-\begin{center}
-\begin{tabular}{| p{1.5in} | c | c |}
-\hline
-Geometry & Correlation & Restrictions \\
- \hline
- Walls & {$\begin{array}{lll} Nu_L &=& \brackets{0.825 + \frac{0.387 Ra_L^{1/6}}{\brackets{1 + \brackets{0.492/Pr}^{9/16}}^{8/27}}}^2  \\ &=&0.12 \end{array}$}  & none \\
-Ceilings and floors (hot surface up or cold surface down & {$Nu_L = 0.13 Ra_L^{1/3}$} & $2 x 10^8 \le Ra_L \le 10^{11}$ \\
-
- Ceilings and floors (cold surface up or hot surface down & {$Nu_L = 0.16 Ra_L^{1/3}$} & $2 x 10^8 \le Ra_L \le 10^{10}$ \\
- \hline
-\end{tabular}
-\end{center}
-\end{table}
-
-The Prandtl number, Pr, is the ratio of the kinematic viscosity and the thermal diffusivity. The thermal diffusivity, $\alpha$, and thermal conductivity, $k$, of air are defined as a function of the film temperature from data in reference \cite{Atreya:2003} as
-
-\be \alpha = 1.0 x 10^{-9} T_f^{7/4} \ee
-
-\be k = \frac{0.0209 + 2.33 x 10^{-5} T_f}{1 - 0.000267 T_f} \ee
-
- \section{Conduction}
-
- Procedures for solving 1-d heat conduction problems are well known, (e.g., backward difference (fully implicit), forward difference (fully explicit) or Crank-Nicolson \cite{Golub:1989}).  A finite difference approach  using a non-uniform spatial mesh is used to advance the wall temperature solution.  The heat equation is discretized using a second order central difference for the spatial derivative and a backward differences for the time derivative.  The resulting tri-diagonal system of equations is then solved to advance the temperature solution to time $t+\Delta t$.  This process is repeated , using the work of Moss and Forney \cite{Moss:1992},  until  the heat flux striking the wall (calculated from the convection and radiation algorithms) is consistent with the flux conducted into the wall calculated via Fourier's law
-
- \be q\dprime = -k \frac{dT}{dx} \ee
-where $k$ is the thermal conductivity.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved.  Wall segment temperature profiles, however, still have to be stored so there is no decrease in storage requirements.  Conduction is then coupled to the room conditions by temperatures supplied at the interior boundary by the differential equation solver.  The exterior boundary conditions are modeled as surfaces that exchange heat with an ambient surroundings for both convection and radiation.
-
-A non-uniform mesh scheme was chosen to allow grid points in the calculation to cluster near the interior and exterior wall segment surfaces.  This is where the temperature gradients are the steepest.  A breakpoint  $x_b$ was defined by $x_b = MIN(x_p, W/2)$ where $W$ is the wall thickness and $x_p = 2 \sqrt{\alpha t_{final}} erfc^{-1} \brackets{.05}$ and $erfc^{-1}$ denotes the inverse of the complementary error function.  The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{final}$ seconds and is sometimes called the penetration depth.  Eighty percent of the grid points were placed on the interior side of $x_b$ and the remaining 20~\% were placed on the exterior side.
-
-To illustrate the method, consider a one room case with one active wall.  There are four gas equations (pressure, upper layer volume, upper layer temperature, and lower layer temperature) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profile at the previous time, t, and at the next time, $t + \Delta t$.  Given the profile at time t and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time t to time $t + \Delta t$.  The temperature profile gradient at $x = 0$ is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
-
-\subsection{Inter-compartment Heat Transfer}
-
-Heat transfer between vertically connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  A heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall.  As before, temperatures are determined by the DAE solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
-
-For horizontal heat transfer between compartments, the connections may be between partial wall surfaces, expressed as a fraction of the wall surface. CFAST first estimates conduction fractions analogous to radiative configuration factors.    For example, if only one half of the rear wall in one compartment is adjacent to the front wall in a second compartment, the conduction fraction between the two compartments is 1/2.   Once these fractions are determined, an average flux, $q_{avg}\dprime$, is calculated using
-
-\be q_{avg}\dprime = \sum_{walls} F_{ij} q_{wall_j}\dprime \ee
-where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $q_{wall_j}\dprime$ is the flux striking wall $j$.
-
-\subsection{Ceiling Jet}
-
-Relatively early in the development of a fire, fire-driven ceiling jets and gas-to-ceiling convective heat transfer can play a significant role in room-to-room smoke spread and in the response of near-ceiling mounted detection hardware.  Cooper \cite{Cooper:1991} details a model and computer algorithm to predict the instantaneous rate of convective heat transfer from fire plume gases to the overhead ceiling surface in a room of fire origin.  The room is assumed to be a rectangular parallelepiped and, at times of interest, ceiling temperatures are simulated as being uniform.  Also presented is an estimate of the convective heat transfer due to ceiling-jet driven wall flows.  The effect on the heat transfer of the location of the fire within the room is taken into account.  This algorithm has been incorporated into the CFAST model.  In this section, we provide an overview of the model.  Complete details are available in reference [\cite{Cooper:1991}.
-
-A schematic of a fire, fire plume, and ceiling jet is shown in Fig.~\ref{fig:CeilJet}. The buoyant fire plume rises from the height $Z_{fire}$ toward the ceiling.  When the fire is below the layer interface, its mass and enthalpy flow are assumed to be deposited into the upper layer at height $Z_{layer}$.  Having penetrated the interface, a portion of the plume typically continues to rise toward the ceiling.  As it impinges on the ceiling surface, the plume gases turn and form a relatively high temperature, high velocity, turbulent ceiling jet which flows radially outward along the ceiling and transfers heat to the relatively cool ceiling surface.  The convective heat transfer rate is a strong function of the radial distance from the point of impingement, reducing rapidly with increasing radius.  Eventually, the relatively high temperature ceiling jet is blocked by the relatively cool wall surfaces \cite{Cooper:1990a}.  The ceiling jet then turns downward and outward in a complicated flow along the vertical wall surfaces \cite{Cooper:1988, Jaluria:1989} .  The descent of the wall flows and the heat transfer from them are eventually stopped by upward buoyant forces.  They are then buoyed back upward and mix with the upper layer.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/Theory/CeilJet}\\
-\end{center}
-\caption{Convective heat transfer to ceiling and wall surfaces via the ceiling jet.}
- \label{fig:CeilJet}
-\end{figure}
-
-The average convective heat transfer from the ceiling jet gases to the ceiling surface, $Q_{ceil}$, can be expressed in integral form as
-
-\be Q_{ceil} = \int_0^{X_{wall}} \int_0^{Y_{wall}} q_{ceil}\dprime (x,y) dx dy \ee
-
-The instantaneous convective heat flux, $q_{ceil}\dprime (x,y)$ can be determined as derived by Cooper \cite{Cooper:1991} as
-
-\be q_{ceil}\dprime (x,y) = h \brackets{T_{ad} - T_{ceil}} \ee
-where $T_{ad}$ is a characteristic ceiling jet temperature that would be measured adjacent to an adiabatic lower ceiling surface, and $h$ is a heat transfer coefficient.  $h$ and $T_{ad}$ are given by
-
-\be \frac{h}{\tilde{h}} =
-\left\{
-\begin{array}{cc}
-8.82 Re_H^{-1/2} Pr^{-2/3} \brackets{1 - \brackets{5 - 0.284 Re_H^{2/5}}\rH} & 0 \le \rH < 0.2 \\
-\\
-0.283 Re_H^{0.3} Pr^{-2/3} \brackets{\rH}^{-1.2} \frac{\rH - 0.0771}{\rH + 0.279} & 0.2 \le \rH
-\end{array}
-\right.
-\ee
-
-\be \frac{T_{ad} - T_u}{T_u {Q_H^*}^{2/3}} =
-\left\{
-\begin{array}{cc}
-10.22 - 14.9 \rH & 0 \le \rH < 0.2 \\
-\\
-8.39 f\brackets{\rH} & 0.2 \le \rH
-\end{array}
-\right.
-\ee
-where
-
-\be f\brackets{\rH} = \frac{1 - 1.10 \brackets{\rH}^{0.8}+ 0.808  \brackets{\rH}^{1.6}}
-{1 - 1.10 \brackets{\rH}^{0.8}+ 2.20  \brackets{\rH}^{1.6} + 0.690 \brackets{\rH}^{2.4}}
-\ee
-
-\be r = \sqrt{\brackets{X-X_{fire}}^2 + \brackets{Y-Y_{fire}}^2} \ee
-\be \tilde{h} = \rho_u c_p g^{1/2} H^{1/2} {Q_H^*}^{1/3} \; , \;
-Re_H = \frac{g^{1/2} H^{3/2} {Q_H^*}^{1/3}}{\nu_u}  \; , \;
-Q_H^* = \frac{Q}{\rho_u c_p T_u g^{1/2} H^{5/2} } \ee
-
-\be Q =
-\left\{
-\begin{array}{cc}
-Q_{f,C} \brackets{\frac{\sigma \dot{M}^*}{1 + \sigma}}& Z_{fire} < Z_{layer} < Z_{ceil} \\
-\\
-Q_{f,C} & {\begin{array}{c}
-Z_{fire} \ge Z_{layer} \\
-Z_{layer} = Z_{ceil}
-\end{array} }
-\end{array}
-\right.
-\; , \;
- \dot{M}^* =
-\left\{
-\begin{array}{cc}
-0 & -1 < \sigma \le 0 < 0.2 \\
-\\
-\frac{1.04599 \sigma + 0.360391 \sigma^2}{1 + 1.37748 \sigma + 0.360391 \sigma^2} & \sigma > 0
-\end{array}
-\right.
-\ee
-
-\be \sigma = \frac{1 - \frac{T_u}{T_l}+C_T {Q_{EQ}^*}^{2/3}}{\frac{T_u}{t_l}}
-\; , \;
-C_T = 9.115
-\; , \;
-Q_{EQ}^* = \brackets{\frac{0.21 Q_{fc}}{c_p T_l \dot{m}_p}} \ee
-
-In the above, $H$ is the distance from the (presumed) point source fire and the ceiling, $X_{fire}$  and $Y_{fire}$ are the position of the fire in the room, $Pr$ is the Prandtl number (taken to be 0.7) and $\nu$ is the kinematic viscosity of the upper layer gas which is assumed to have the properties of air and can
-be estimated from $\nu = 0.04128 x 10^7 T_u^{5/2} /\brackets{T_u + 110.4}$. $Q_H^*$ and $Q_{EQ}^*$ are dimensionless numbers and are measures of the strength of the plume at the ceiling and the layer interface, respectively.
-
-When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer to the surface
-increases.  Reference \cite{Cooper:1991} provides details of the calculation of wall surface area and convective heat flux for the wall surfaces.
 
 
 

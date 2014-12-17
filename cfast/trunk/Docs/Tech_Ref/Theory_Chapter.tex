@@ -288,17 +288,18 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \end{itemize}
 When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface. Radiation exchange at each wall segment considers the emitted, reflected, incoming and net radiation terms.  The net radiative fluxes, $\dq_k''$, are found by solving the modified net radiation equation~\cite{SiegelandHowell:1981}:
 \be
-   \frac{\dq_k''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \, \dq_j'' \, F_{k-j} \, \tau_{j-k} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_j^4 \, F_{j-k} \tau_{j-k}} - \frac{c_k}{A_k}
+   \frac{\dq_k''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \, \dq_j'' \, F_{k-j} \, \tau_{k-j} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_j^4 \, F_{k-j} \, \tau_{k-j}} - \frac{c_k}{A_k}
 \ee
 where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $k$ that is intercepted by surface $j$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. Reference~\cite{Forney_radiation} describes the solution of this equation.
 
 
-\subsubsection{Configuration Factors}  
+\subsubsection{Configuration Factors}
 
-A configuration factor between two finite areas denoted $F_{1-2}$ is the fraction of radiant energy given off by surface 1 that is intercepted by  surface 2 and is given by
-\be F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \theta_2}{\pi L^2} dA_2 dA_1 \label{eq:config_factor} \ee
-where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  These terms are illustrated in Fig.~\ref{fig:Rad_Config_Factor}.  When the surfaces $A_1$ and $A_2$ are far apart relative to their surface area, eq (\ref{eq:config_factor}) can be approximated by assuming that $\theta_1$, $theta_2$ and $L$ are constant over the region of integration to obtain
-
+The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted by surface 1 that is intercepted by  surface 2, and is calculated:
+\be 
+   F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} \, dA_2 \, dA_1 \label{eq:config_factor} 
+\ee
+where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  These terms are illustrated in Fig.~\ref{fig:Rad_Config_Factor}.  When the surfaces $A_1$ and $A_2$ are far apart relative to their surface area, eq (\ref{eq:config_factor}) can be approximated by assuming that $\theta_1$, $\theta_2$ and $L$ are constant over the region of integration to obtain
 \begin{figure}
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Theory/Radiation_Config_Factor}\\
@@ -306,21 +307,23 @@ where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta
 \caption{Setup for a configuration factor calculation between two arbitrarily oriented finite areas.}
  \label{fig:Rad_Config_Factor}
 \end{figure}
+\be 
+   F_{1-2} = \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} A_2 
+\ee
 
-\be F_{1-2} = \frac{\cos \theta_1 \theta_2}{\pi L^2} A_2 \ee
+\subsubsection{Transmittance and Absorptance} 
 
-{\bf Transmittance and Absorptance:} The transmittance of a gas volume is the fraction of radiant energy that will pass through it unimpeded and is given by
+The transmittance of a gas volume is the fraction of radiant energy that will pass through it unimpeded and is given by
+\be 
+   \tau (L) = {\rm e}^{-\alpha L} 
+\ee
+where $\alpha$ is the absorptance of the gas volume and $L$ is a characteristic path length. The absorptance is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
 
-\be \tau (L) = e^{-\alpha L} \ee
-where $\alpha$ is the absorptance of the gas volume and $L$ is a characteristic path length.
-
-The absorptance, $\alpha$, of a gas volume is the fraction of radiant energy absorbed by that volume.  For a gray gas, $\alpha + \tau = 1$.
-
-{\bf Calculating absorption for broad band gas layer radiation:}  In general, the transmittance and absorptance are a function of wavelength.   This is an important factor to consider for the major gaseous products ($\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$); however soot has a continuous absorption spectrum which allows the transmittance and absorptance to be approximated as ``gray" \cite{SiegelandHowell:1981} across the entire spectrum.
+In general, the transmittance and absorptance are a function of wavelength.   This is an important factor to consider for the major gaseous products ($\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$); however soot has a continuous absorption spectrum which allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum.
 
 The gas absorptance, $\alpha_G$, is due to the combination of the $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$ and is given by
 
-\be \alpha_G = \alpha_{H_2O} + \alpha_{CO} - C\ee
+\be \alpha_G = \alpha_{\rm H_2O} + \alpha_{\rm CO} - C\ee
 where $C$ is a correction for band overlap.  For typical fire conditions, the overlap amounts to about half of the $\textnormal{CO}_2$ absorptance \cite{Tien:2002} so the gas transmittance is approximated by
 
 \be \tau_G = 1 - \alpha_{H_2O} - 0.5 \alpha_{CO_2} \ee

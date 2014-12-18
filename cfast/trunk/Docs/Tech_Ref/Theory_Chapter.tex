@@ -281,23 +281,29 @@ This section discusses thermal radiation, convection and conduction, the three m
 Radiation heat transfer is calculated between the ceiling, floor, wall layers, and fire, with the inclusion of emission and absorption by the hot gas layer~\cite{Forney_radiation}. The following assumptions are made:
 \begin{itemize}
 \item Each gas layer and each wall segment is assumed to be at a uniform temperature.
-\item The wall segments and gas layers are assumed to be in a quasi-steady state.  In other words, the wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the associated differential equation.
-\item The fire is assumed to radiate uniformly in all directions giving off a fraction, $\chi_{\rm r}$, of the total heat release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
-\item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. The emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$.
+\item The wall and gas layer temperatures are assumed to change slowly over the duration of the time step of the governing equations.
+\item The fire is assumed to radiate uniformly in all directions emitting a fraction, $\chi_{\rm r}$, of the total heat release rate.  This radiation is assumed to originate from a single point.  Radiation feedback to the fire and radiation from the plume is not modeled in the radiation exchange algorithm.
+\item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. At a solid surface, the emittance, $\epsilon$, absorptance, $\alpha$ and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$. In the gas phase, the emittance, $\epsilon$, absorptance, $\alpha$ and transmittance, $\tau$, are related via $\epsilon = \alpha = 1 - \tau$.
 \item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
-When computing wall temperatures, CFAST partitions a compartment into four parts; the ceiling, the floor, the wall segments above the layer interface and the wall segments below the layer interface. Radiation exchange at each wall segment considers the emitted, reflected, incoming and net radiation terms.  The net radiative fluxes, $\dq_k''$, are found by solving the modified net radiation equation~\cite{SiegelandHowell:1981}:
+The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The net radiative heat flux at surface~$k$, $\dq_k''$, is found by solving the simplified radiation transport equation~\cite{SiegelandHowell:1981}:
 \be
-   \frac{\dq_k''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \, \dq_j'' \, F_{k-j} \, \tau_{k-j} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_j^4 \, F_{k-j} \, \tau_{k-j}} - \frac{c_k}{A_k}
+   \frac{\dq_k''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \, \dq_j'' \, F_{k-j} \, \tau_{k-j} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_j^4 \, F_{k-j} \, \tau_{k-j}} - c_k \label{RTE}
 \ee
-where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $k$ that is intercepted by surface $j$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. Reference~\cite{Forney_radiation} describes the solution of this equation.
+where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the hot gas layer and the fire is included in the last term:
+\be
+   c_k = \epsilon_{\rm u} \, F_{{\rm u}-k} \, \sigma \, \Tu^4 + \frac{\omega_{{\rm f}-k}}{4 \pi} \frac{\chi_{\rm r} \, \dQ}{A_k}
+\ee
+where $\epsilon_{\rm u}$ is the emittance (absorptance) of the upper layer, $F_{{\rm u}-k}$ is the view factor between the upper layer and solid surface, $\omega_{{\rm f}-k}$ is the solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{{\rm f}-k}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall, the view factor refers to the layer interface. If the solid surface, is the upper wall or ceiling, the view factor is 1.
+
+Reference~\cite{Forney_radiation} describes the solution of Eq.~\ref{RTE}.
 
 
 \subsubsection{Configuration Factors}
 
 The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted by surface 1 that is intercepted by  surface 2, and is calculated:
-\be 
-   F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} \, dA_2 \, dA_1 \label{eq:config_factor} 
+\be
+   F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} \, dA_2 \, dA_1 \label{eq:config_factor}
 \ee
 where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  These terms are illustrated in Fig.~\ref{fig:Rad_Config_Factor}.  When the surfaces $A_1$ and $A_2$ are far apart relative to their surface area, eq (\ref{eq:config_factor}) can be approximated by assuming that $\theta_1$, $\theta_2$ and $L$ are constant over the region of integration to obtain
 \begin{figure}
@@ -307,38 +313,30 @@ where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta
 \caption{Setup for a configuration factor calculation between two arbitrarily oriented finite areas.}
  \label{fig:Rad_Config_Factor}
 \end{figure}
-\be 
-   F_{1-2} = \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} A_2 
+\be
+   F_{1-2} = \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} A_2
 \ee
 
-\subsubsection{Transmittance and Absorptance} 
+\subsubsection{Transmittance and Absorptance}
 
-The transmittance of a gas volume is the fraction of radiant energy that will pass through it unimpeded and is given by
-\be 
-   \tau (L) = {\rm e}^{-\alpha L} 
+The transmittance is the fraction of radiant energy that will pass through a volume filled with an absorbing media. It is usually expressed in the form:
+\be
+   \tau = {\rm e}^{-a L}
 \ee
-where $\alpha$ is the absorptance of the gas volume and $L$ is a characteristic path length. The absorptance is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
+where $a$ is the absorption coefficient and $L$ is the path length. The absorptance is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
 
-In general, the transmittance and absorptance are a function of wavelength.   This is an important factor to consider for the major gaseous products ($\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$); however soot has a continuous absorption spectrum which allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum.
+In general, the transmittance and absorptance are functions of wavelength. This is an important factor to consider for the major gaseous products, $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$. However soot has a continuous absorption spectrum that allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum. The total transmittance over a path length $L$ through a volume of combustion products is taken as the product of the transmittance of the soot and major product gases:
+\be 
+   \tau = e^{-a_{\rm s}L} \brackets{1 - \alpha_{\rm H_2O} - 0.5 \alpha_{\rm CO_2}} 
+\ee
+The factor of 0.5 applied to the absorptance of CO$_2$ accounts for the overlap of the wavelength bands of the two gases. Tien~et~al.~\cite{Tien:2002} suggest that the absorption coefficient for soot may be approximated $a_{\rm s} = k f_v T$ where $k$ is a constant that depends on the optical properties of the soot particles, $f_v$ is the soot volume fraction, and $T$ is the (absolute) temperature. Values of $k$, have been found to be about constant for a wide range of fuels~\cite{Tien:1978}.
 
-The gas absorptance, $\alpha_G$, is due to the combination of the $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$ and is given by
+Absorptance data for $\textnormal{H}_2 \textnormal{O}$ and $\textnormal{CO}_2$ are reported in Ref.~\cite{Edwards:1985}. For each gas, these data are tabulated in a look-up table, implemented as a two-dimensional array based on temperature and gas concentration.  
 
-\be \alpha_G = \alpha_{\rm H_2O} + \alpha_{\rm CO} - C\ee
-where $C$ is a correction for band overlap.  For typical fire conditions, the overlap amounts to about half of the $\textnormal{CO}_2$ absorptance \cite{Tien:2002} so the gas transmittance is approximated by
+The effective path length, $L$, for the upper gas layer is approximated to be 1.8 times its depth~\cite{Tien:2002}.
 
-\be \tau_G = 1 - \alpha_{H_2O} - 0.5 \alpha_{CO_2} \ee
 
-The total transmittance of a gas-soot mixture is the product of the gas and soot transmittances, $\tau_T = \tau_S \tau_G$ so that
 
-\be \tau_T = e^{-al} \brackets{1 - \alpha_{H_2O} - 0.5 \alpha_{CO_2}} \ee
-
-In the optically thin limit the absorption coefficient, a, may be replaced by the Planck mean absorption coefficient and in the optically thick limit, it  may be replaced by the Rosseland mean absorption coefficient. For the entire range of optical thicknesses, Tien et al. \cite{Tien:2002} report that a reasonable approximation is $\alpha = k f_v T$ where $k$ is a constant that depends on the optical properties of the soot particles, $f_v$ is the soot volume fraction and $T$ is the soot temperature in Kelvin. Values of $a$, have been found to be about constant for a wide range of fuels \cite{Tien:1978}.   The soot volume fraction, $f_v$, is calculated from the soot mass, soot density and layer volume.  The soot is assumed to be in thermal equilibrium with the gas layer.
-
-Edwards' absorptance data for $\textnormal{H}_2 \textnormal{O}$ and $\textnormal{CO}_2$ are reported \cite{Edwards:1985} as log(emissivity) versus log(pressure-pathlength), with  log(gas concentration) as a parameter. For each gas, these data were incorporated into a look-up table, implemented as a two-dimensional array of log(emissivity) values, with indices based on temperature and gas concentration.  It is assumed that absorptance and emittance are equivalent for the gaseous species as well as for soot.
-
-An effective path length ( mean beam length, L) treats an emitting volume as if it were a hemisphere of a radius such that the flux impinging on the center of the circular base is equal to the average boundary flux produced by the real volume. The value of this radius is approximated as \cite{Tien:1978, Hottel:1942} $L = c 4 V / A$ where $L$ is the mean beam length in meters, $c$ is a constant (approximately 0.9, for typical geometries), $V$ is the emitting gas volume m$^3$ and $A$ is the surface area (m$^2$) of the gas volume. The volume and surface area are calculated from the dimensions of the layer.
-
-For each gas, the log(absorptance) is estimated from the look-up table for that gas  by  interpolating both the log(temperature) and log(concentration) domains. In the event that the required absorptance lies outside the temperature or concentration range of the look-up table, the nearest acceptable value is returned. Error flags are also returned, indicating whether each parameter was in or out of range and, in the latter case, whether it was high or low.  This entire process is carried out for both $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$.
 
 \section{Convection}
 
@@ -440,19 +438,83 @@ be estimated from $\nu = 0.04128 x 10^7 T_u^{5/2} /\brackets{T_u + 110.4}$. $Q_H
 
 When the ceiling jet is blocked by the wall surfaces, the rate of heat transfer to the surface increases.  Reference \cite{Cooper:1991} provides details of the calculation of wall surface area and convective heat flux for the wall surfaces.
 
- \section{Conduction}
 
-The heat conduction equation is solved in the direction normal to the solid surface using non-uniformly spaced nodes and a second order accurate central difference scheme for the spatial derivatives and a semi-implicit time marching scheme. At each time step, the internal temperatures are updated in time until net the net convective and radiative heat flux striking the wall is consistent with the heat flux into the surface~\cite{Moss:1992}
+\section{Conduction}
+
+The heat conduction equation is solved in the direction normal to solid target or wall surfaces using non-uniformly spaced nodes and a second order accurate central difference scheme for the spatial derivatives and a semi-implicit time marching scheme. At each time step, the internal solid temperatures are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
 \be
    \dq'' = -k \, \frac{dT}{dx} \Big|_{x=0}
 \ee
 where $k$ is the thermal conductivity of the solid.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved. Conduction is then coupled to the gas phase energy exchange.
 
-A non-uniform array of internal nodes is used to capture steep gradients in temperature near the surace. Define a penetration depth of
+A non-uniform array of internal nodes is used to capture steep gradients in temperature near the surface. Define a penetration depth of
 \be
    x_p = 2 \sqrt{\alpha \, t_{\rm end}} \; \hbox{erfc}^{-1} \brackets{0.05}
 \ee
 where $\hbox{erfc}^{-1}$ denotes the inverse of the complementary error function. The value $x_p$ is the location in a semi-infinite wall where the temperature rise is 5~\% after $t_{\rm end}$ seconds. Eighty percent of the nodes are placed on the interior side of $x_p$ and the remaining 20~\% are placed on the exterior side.
+
+The heat conduction equation normal to the solid surface is:
+\be \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2}
+\label{eq:Target_PDE} \ee
+where $k$, $\rho$ and $c$ are the thermal conductivity, density and heat capacity of the target. At the surface, $x=0$, the boundary condition is:
+\be 
+   \dq''=-k\frac{dT}{dx} \label{eq:Target_Fourier}
+\ee
+where $\dq''$ is the net convective and radiative heat flux. 
+
+\newcommand{\Dt}{\Delta t}
+\newcommand{\Dr}{\Delta r}
+\newcommand{\Tipo}{T_{i+1}^{n+1}}
+\newcommand{\Ti}{T_{i}^{n+1}}
+\newcommand{\Timo}{T_{i-1}^{n+1}}
+
+The 1-D heat conduction equation can be solved in either Cartesian or cylindrical coordinates. The solution methodology shall be presented for cylindrical coordinates: 
+\be \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
+\label{eq:Target_PDE} \ee
+Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form:
+\begin{eqnarray}
+\Ti-T_i^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}
+\left[
+\left(\frac{\Tipo-\Ti}{\Dr}\right)
+\frac{r_i}{r_{i-1/2}}-
+\left(\frac{\Ti-\Timo}{\Dr}\right)
+\frac{r_{i-1}}{r_{i-1/2}}
+\right]
+\nonumber\\[0.2in]
+&=&\frac{\Dt \, \alpha}{\Dr^2}
+\left[
+\left(\Tipo-\Ti\right)
+\left(\frac{i}{i-0.5}\right)-
+\left(\Ti-\Timo\right)
+\left(\frac{i-1}{i-0.5}\right)
+\right] 
+\label{eq:cylheat6}
+\end{eqnarray}
+where $\alpha=k/(\rho c)$. Defining $C_i$ and $D_i$ as
+\be
+C_i = \frac{\alpha\Dt}{\Dr^2}\left(\frac{i-1}{i-0.5}\right) \quad ; \quad D_i = \frac{\alpha\Dt}{\Dr^2}\left(\frac{i}{i-0.5}\right)
+\ee
+Eq.~(\ref{eq:cylheat6}) can be written:
+\be
+-C_i \, \Timo + \left( 1+2\frac{\alpha\Dt}{\Dr^2} \right) \, \Ti - D_i \, \Tipo = T_i^n  \quad \quad i=1...N-1
+\label{eq:cylheat8}
+\ee
+The boundary condition is applied at control volume $N$:
+\begin{eqnarray*}
+T_N^{n+1}-T_N^n=\frac{\alpha\Dt}{\Dr^2}
+\left[\frac{\Dr \, \dq''}{k} \frac{N}{N-0.5} -(T_N^{n+1}-T_{N-1}^{n+1}) \frac{N-1}{N-0.5} \right]
+\end{eqnarray*}
+or 
+\be
+-C_N \, T_{N-1}^{n+1}+ \left( 1+C_N \right) T_N^{n+1} = T_N^n+D_N\frac{\Dr}{k} \dq''
+\label{eq:cylheat10}
+\ee
+The internal temperature profile, $T_i$, is then obtained with a tri-diagonal linear solver.
+
+
+
+
+\section{Coupling the Gas and Solid Phase Calculations}
 
 To illustrate the method, consider a one room case with one active wall.  There are four gas equations (pressure, upper layer volume, upper layer temperature, and lower layer temperature) and one wall temperature equation.  Implementation of the gradient matching method requires that storage be allocated for the temperature profile at the previous time, t, and at the next time, $t + \Delta t$.  Given the profile at time t and values for the five unknowns at time $t + \Delta t$ (initial guess by the solver), the temperature profile is advanced from time t to time $t + \Delta t$.  The temperature gradient at $x = 0$ is computed followed by the residuals for the five equations.  The DAE solver adjusts the solution variables and the time step until the residuals for all the equations are below an error tolerance.  Once the solver has completed the step, the array storing the temperature profile for the previous time is updated, and the DAE solver is ready to take its next step.
 
@@ -463,283 +525,6 @@ For horizontal heat transfer between compartments, the connections may be betwee
    \dq_{\rm avg}'' = \sum_{\rm walls} \, F_{ij} \dq_j''
 \ee
 where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j$, $\dq_j''$ is the flux striking wall $j$.
-
-\section{Computing Target Heat Flux and Temperature}
-
-The calculation of the radiative heat flux to a target is similar to the radiative heat transfer calculation discussed previously.  The main difference is that CFAST does not compute feedback from the target to the wall surfaces or gas layers.  The target is simply a probe or sensor that does not interact with the modeled environment. There are four components of heat flux to a target: fires, walls (including the ceiling and floor), gas layer radiation and gas layer convection.
-
-\subsubsection{Heat Flux from a Fire to a Target}
-
-Assuming the fire to be a point source of radiant energy, the heat flux to a target at a distance $R$ whose surface normal forms an angle $\theta$ with the line connecting the fire and target is given by:
-\be
-   \dqr'' = \frac{\chi_{\rm r} \, \dQ}{4 \pi \, R^2} \, \cos \brackets{\theta} \, \tau_{\rm u} \, \tau_{\rm l}
-\ee
-where the $\tau_{\rm u}$ and $\tau_{\rm l}$ are the transmissivity of the upper and lower layer, respectively.
-
-\subsubsection{Radiative Heat Flux from a Wall Segment to a Target}
-
-Figure \ref{fig:Rad_Gases} illustrates terms used to compute heat flux from a wall segment to a target. The flux, $q\dprime_{w,t}$, from a wall segment to a target can then be computed using
-\be
-   \dqr'' = \frac{A_{\rm w} \dq_{\rm w,out}'' \, F_{\rm w-t}}{A_{\rm t}} \, \tau_{\rm u} \, \tau_{\rm l} \label{eq:wall_target_flux} \ee
-where $\dq_{\rm w,out}''$  is the flux leaving the wall segment, $A_{\rm w}$, $A_{\rm t}$ are the areas of the wall segment and target respectively, $F_{\rm w-t}$  is the configuration factor, and $\tau_{\rm u}$ and $\tau_{\rm l}$ are the transmissivity of the upper and lower layer, respectively.
-\begin{figure}
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/Radiation_Gases}\\
-\end{center}
-\caption{Radiative heat transfer from the upper and lower layer gas to a target in the lower layer.}
- \label{fig:Rad_Gases}
-\end{figure}
-
-\subsubsection{Radiation from the Gas Layer to the Target}
-
-Figure \ref{fig:Rad_Gases} illustrates the setup for calculating the heat flux from the gas layers to the target.  The upper and lower gas layers in a room contribute to the heat flux striking the target if the layer absorptance is non-zero. Let $q_{w,t,gas}\dprime$ denote the flux striking the target due to the gas g in the direction of wall segment w. Then
-
-\be q_{w,t,gas}\dprime =
-\left\{
-\begin{array}{ll}
-\sigma F_{t-w} \brackets{T_L^4 \alpha_L \tau_U + T_U^4 \alpha_U} & w \textnormal{ is in the lower layer}\\
-\sigma F_{t-w} \brackets{T_U^4 \alpha_U \tau_L + T_L^4 \alpha_L} & w \textnormal{ is in the upper layer}
-\end{array}
-\right. \label{eq:Rad_Gases} \ee
-
-The total target flux due to the gas (upper or lower layer) is obtained by summing eq (\ref{eq:Rad_Gases} over each wall segment or
-
-\be q_{g,t}\dprime = \sum_w = q_{w,t,gas}\dprime  \ee
-
-{\bf Computing the Steady State Target Temperature:} The steady state target temperature, $T_t$ can be found by solving an energy balance on the target; namely
-
-\be \epsilon_t \sigma T_t^4 = \epsilon_t q_{r,in} + h \brackets{T_g - T_t} \label{eq:Target_Temp} \ee
-Note that the local gas temperature, $T_g$, in the convection calculation, $h \brackets{T_g - T_t}$, is taken to be either the upper layer temperature if the target is located in the upper layer, the lower layer temperature if the target is located in the lower layer, or the plume centerline temperature if the target is located directly above a fire source.
-
-Let $f(T_t)$ be the difference between the left and right hand side of equation (\ref{eq:Target_Temp}).  Then this equation may be solved using the Newton iteration
-
-\be T_{new} = T_{old} - \frac{f(T_{old})}{f^\prime(T_{old})} \label{eq:Target_Newton} \ee
-
-Equation (\ref{eq:Target_Newton}) is iterated until the difference $T_{new} - T_{old}$ is sufficiently small.
-
-{\bf Computing the Transient Rectangular Target Temperature:}
-A transient target temperature may be computed using two different methods
-depending on whether the target is assumed to be thin or thick.  A thin target
-is presumed to have a constant interior temperature profile. A differential equation model may then be used to estimate the
-temperature rise (or fall) based upon the thermal properties of the target and the
-heat flux striking the front and back sides; namely
-
-\be c \rho V \frac{dT}{dt} = A(q''_f+q''_b) \label{eq:Target_ODE} \ee
-
-where $c$, $\rho$ and $V$ are the the specific heat, density and volume of the target, $A$ is the cross-sectional area of the target and the two $q''$ terms are the heat flux (due to all sources) striking the front and back sides of the target.
-
-Equation (\ref{eq:Target_ODE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_ODE}) is added to the equation set solved by DASSL.
-When solved explicitly, equation (\ref{eq:Target_ODE}) is solved as a stand-alone equation advancing the target temperature in time.
-
-
-If the target is thick then it is presumed that the temperature profile within the target varies as a function of depth and therefore a partial differential equation model must be used to estimate the changing profile; namely the heat equation
-
-\be \frac{\partial T}{\partial t} = \frac{k}{\rho C}\frac{\partial^2T}{\partial x^2}
-\label{eq:Target_PDE} \ee
-where $k$, $\rho$ and $C$ are the thermal conductivity, density and heat capasity of the target.  As with the standard heat conduction model discussed later, the target heat conduction model in CFAST couples the solid to the gas phase using the relation
-
-\be q''=-k\frac{dT}{dx} \label{eq:Target_Fourier}\ee
-
-where $q''$ is the heat flux striking the target (again due to all sources).  This equation is the statment that the flux striking the target must be consistent with the temperature gradient at the surface.
-
-Equation (\ref{eq:Target_PDE}) may be solved implicitly or explicitly.  When solved implicitly, the target temperature is added to the set of solution variables and equation (\ref{eq:Target_Fourier}) (not equation (\ref{eq:Target_PDE}) is added to the equation set solved by DASSL.
-When solved explicitly, equation (\ref{eq:Target_PDE}) is solved as a stand-alone equation advancing the temperature profile in time.
-
-{\bf Computing Transient Cable Target Heat Transfer:}
-
-\newcommand{\Dt}{\Delta t}
-\newcommand{\Dr}{\Delta r}
-\newcommand{\Tipo}{T_{i+1}^{n+1}}
-\newcommand{\Ti}{T_{i}^{n+1}}
-\newcommand{\Timo}{T_{i-1}^{n+1}}
-
-This section describes a CFAST implementation of a model for
-predicting electrical cable failure first proposed
-by Andersson and Van Hees Ref.~\cite{Andersson:2005}
-and later implemented by McGrattan
-in FDS~\cite{CAROLFIRE} .  This model uses a simple one-dimensional heat
-transfer calculation, under the assumption that the cable can
-be treated as a homogenous cylinder~\cite{Andersson:2005}.
-
-The heat flux used to generate the heat transfer in the cable is provided
-by CFAST which models the thermal environment of the compartment where
-the cable is located.  In most realistic fire  scenarios, the heat flux
-to the cable is not axially-symmetric.  CFAST therefore uses the maximum
-heat flux value when modeling cable failure.
-
-1D heat transfer may be computed within a cylindrically symmetric target
-by splitting it into $N$ concentric control volumes and performing
-an energy balance on each.  The energy balance for the $i$'th control
-volume for $i=1\cdots N-1$, is
-
-\begin{equation}
-c\rho V_i\Delta T_i=(\dot{q}_i-\dot{q}_{i-1})\Dt
-\label{eq:cylheat1}
-\end{equation}
-
-\noindent where $c\rho V_i\Delta T_i$ represents the change in internal
-energy
-and $(\dot{q}_i-\dot{q}_{i-1})\Dt$ represents the net heat flow across the
-control volume's inner and outer boundary surface over a $\Dt$ time period.
-The energy balance for the outermost or $N$'th control volume is similar
-\begin{equation}
-c\rho V_N\Delta T_N=(\dot{q}_{ext}''A_N-\dot{q}_{N-1})\Dt
-\label{eq:cylheat2}
-\end{equation}
-with $\dot{q}_{ext}''A_N$ used to specify a boundary condition,
-the combined net radiative and convective heat flux incident
-on the the cylindrical target's outer surface.
-
-\begin{figure}[h]
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/cylheat}\\
-\end{center}
-\caption{Schematic of a control volume for heat transfer in a cylindrical object.}
- \label{fig:cylheat}
-\end{figure}
-As illustrated in Figure \ref{fig:cylheat}, the $i$'th control volume has
-volume $V_i$, temperature $T_i$ and heat flow at the inner
-and outer boundaries of $\dot{q}_{i-1}$ and $\dot{q}_i$ respectively.
-The $i$'th control volume has length $L$ and inner and outer radius
-$r_{i-1}$ and $r_i$ where $r_i=i\Dr$ and $\Dr=R/N$.
-The density and specific heat of material in all control volumes is
-$c$ and $\rho$.
-
-The right hand sides of equations \ref{eq:cylheat1} and (\ref{eq:cylheat2}) may be expressed in terms of temperature using
-Fourier's law and noting that $\dot{q}_i=\dot{q}''_iA_i$ to obtain
-\begin{equation}
-c\rho V_i\Delta T_i=(\dot{q}''_iA_i-\dot{q}''_{i-1}A_{i-1})\Dt
-=
-\left[
-k\left(\frac{T_{i+1}-T_i}{\Dr}\right)A_i-k\left(\frac{T_{i}-T_{i-1}}{\Dr}\right)A_{i-1}
-\right]
-\label{eq:cylheat2a}
-\end{equation}
-
-\noindent The volume of the $i$'th control volume is given by
-\begin{eqnarray*}
-V_i&=&\pi(r_i^2-r_{i-1}^2)L
-=\pi\Dr(r_i+r_{i-1})L
-=2\pi\Dr(i-0.5) L
-\label{eq:cylheat3}
-\end{eqnarray*}
-
-\noindent The area, $A_i$, of the outer boundary surface of the $i$'th
-control volume is given by
-\begin{eqnarray*}
-A_i=2\pi r_iL
-=2\pi \Dr iL
-\label{eq:cylheat4}
-\end{eqnarray*}
-
-\noindent Using the ratio $A_i/V_i=i/(\Dr(i-0.5))$
-and $\Delta T_i=\Ti-T_i^n$,
-equation (\ref{eq:cylheat2a}) may be simplified to
-\begin{eqnarray}
-\Ti-T_i^n&=&\frac{\Dt}{\rho c}
-\left[
-\left(\frac{\Tipo-\Ti}{\Dr}\right)
-\frac{A_i}{V_i}-
-\left(\frac{\Ti-\Timo}{\Dr}\right)
-\left(\frac{A_{i-1}}{V_i}\right)
-\right]
-\nonumber\\
-&=&\frac{\Dt}{\Dr^2}\frac{k}{\rho c}
-\left[
-\left(\Tipo-\Ti\right)
-\left(\frac{i}{i-0.5}\right)-
-\left(\Ti-\Timo\right)
-\left(\frac{i-1}{i-0.5}\right)
-\right]\nonumber\\
-&=&\frac{\alpha\Dt}{\Dr^2(i-0.5)}
-\left[
-\left(\Tipo-\Ti\right)
-i-
-\left(\Ti-\Timo\right)
-(i-1)
-\right]
-\label{eq:cylheat6}
-\end{eqnarray}
-
-\noindent where $\alpha-k/(\rho c)$.  Defining $C_i$ and $D_i$ as
-\begin{eqnarray*}
-C_i&=&\frac{\alpha\Dt}{\Dr^2}\left(\frac{i-1}{i-0.5}\right)\\
-D_i&=&\frac{\alpha\Dt}{\Dr^2}\left(\frac{i}{i-0.5}\right),\\
-\end{eqnarray*}
-\noindent noting that $C_i+D_i=2\frac{\alpha\Dt}{\Dr^2}$
-for $i=1\cdots N-1$ and
-substituting into (\ref{eq:cylheat6}) results in
-
-\begin{equation}
--C_i\Timo+(1+2\frac{\alpha\Dt}{\Dr^2})\Ti-D_i\Tipo=T_i^n
-\label{eq:cylheat8}
-\end{equation}
-
-\noindent The energy balance for the $N$'th (outermost) control volume may be obtained by substituting $\Dr q''_{ext}/k$ for $\Tipo-\Ti$ in equation (\ref{eq:cylheat6}) to obtain
-\begin{eqnarray*}
-T_N^{n+1}-T_N^n=\frac{\alpha\Dt}{\Dr^2(N-0.5)}
-\left[\frac{\Dr\dot{q}''_{ext}}{k}N-(T_N^{n+1}-T_{N-1}^{n+1})(N-1)\right]
-\end{eqnarray*}
-
-\noindent then substituting $C_N$ and $D_N$ and simplifying
-to obtain
-
-\begin{equation}
--C_NT_{N-1}^{n+1}+(1+C_N)T_N^{n+1}=T_N^n+D_N\frac{\Dr}{k}q''_{ext}
-\label{eq:cylheat10}
-\end{equation}
-
-Equations (\ref{eq:cylheat8}) and (\ref{eq:cylheat10}) represent a  tri-diagonal linear system of equations which when written in matrix form
-are given by
-\begin{equation}
-\left(
-\begin{array}{ccccccccc}
-  1+D_1 & -D_1 &  &  &  &  &  &  &  \\
-   &  &  &  &  &  &  &  &  \\
-   &  &\ddots  &  &  &  &  &  &  \\
-   &  &  &  &  &  &  &  &  \\
-   &  &  & -C_i &1+2\frac{\alpha\Dt}{\Dr^2}  &D_i  &  &  &  \\
-   &  &  &  &  &  &  &  &  \\
-   &  &  &  &  & \ddots &  &  &  \\
-   &  &  &  &  &  &  &  &  \\
-   &  &  &  &  &  &-C_N  &1+C_N  &
-\end{array}
-\right)
-\left(
-  \begin{array}{c}
-    T_1^{n+1}\\
-    T_2^{n+1}\\
-    \vdots\\
-    T_{i-1}^{n+1} \\
-    T_i^{n+1} \\
-    T_{i+1}^{n+1}\\
-    \vdots\\
-    T_{N-1}^{n+1}\\
-    T_N^{n+1}
-  \end{array}
-\right)
-=
-\left(
-  \begin{array}{c}
-    T_1^{n}\\
-    T_2^{n}\\
-    \vdots\\
-    T_{i-1}^{n} \\
-    T_i^{n} \\
-    T_{i+1}^{n}\\
-    \vdots\\
-    T_{N-1}^{n}\\
-    T_N^{n}+D_N\frac{\Dr}{k}\dot{q}''_{ext}
-  \end{array}
-\right)
-\label{eq:matrix}
-\end{equation}
-
-\noindent Equation (\ref{eq:matrix}) is then used to
-advance the cable's temperature profile by $\Delta t$.
-
-
-
 
 
 

@@ -180,7 +180,7 @@
     real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, object_area
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc(2), xqfr, xqlp, xqup
     
-    real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatu
+    real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl_c, qheatu
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, activated_rate, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
 
@@ -199,7 +199,7 @@
     xxfirel = xhr - xz - xfz
     xxfireu = xhr - xfz
     xntfl = 0.0_eb
-    qheatl = 0.0_eb
+    qheatl_c = 0.0_eb
     qheatu = 0.0_eb
     xqfr = 0.0_eb
     xems = 0.0_eb
@@ -220,7 +220,7 @@
     ! convection drives the plume entrainment
 
     chirad = max(min(radconsplit(ifire),1.0_eb),0.0_eb)
-    qheatl = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
+    qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
     if (lfbt==free) then
         ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
@@ -237,11 +237,11 @@
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call fire_plume(fplume(ifire), object_area, qheatl,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call fire_plume(fplume(ifire), object_area, qheatl_c,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
             ! check for an upper only layer fire
             if (xxfirel<=0.0_eb) go to 90
-            xeme = min(xeme,qheatl/(max((xtu-xtl),1.0_eb)*cp))
+            xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
             xems = xemp + xeme
 
             source_o2 = zzcspec(iroom,lower,2)
@@ -257,9 +257,9 @@
             ! limit the amount entrained to that actually entrained by the fuel burned
             xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
 
-            if (xqpyrl<qheatl) then
-                xeme = xeme*(xqpyrl/qheatl)
-                qheatl = xqpyrl
+            if (xqpyrl<qheatl_c) then
+                xeme = xeme*(xqpyrl/qheatl_c)
+                qheatl_c = xqpyrl
                 ipass = ipass + 1
                 cycle
             endif
@@ -304,7 +304,7 @@
         uplmep = max(0.0_eb,xemp-xntfl)
 
         if (uplmep>0.0_eb) then
-            qheatu = hcombt*uplmep + qheatl
+            qheatu = hcombt*uplmep + qheatl_c
             height = max (0.0_eb, min(xz,xxfireu))
 
             call fire_plume(fplume(ifire), object_area,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))

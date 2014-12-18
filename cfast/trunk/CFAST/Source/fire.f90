@@ -180,7 +180,7 @@
     real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, object_area
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc(2), xqfr, xqlp, xqup
     
-    real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl_c, qheatu
+    real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, activated_rate, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
 
@@ -200,7 +200,7 @@
     xxfireu = xhr - xfz
     xntfl = 0.0_eb
     qheatl_c = 0.0_eb
-    qheatu = 0.0_eb
+    qheatu_c = 0.0_eb
     xqfr = 0.0_eb
     xems = 0.0_eb
 
@@ -237,7 +237,7 @@
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call fire_plume(fplume(ifire), object_area, qheatl_c,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, xemp, xems, xeme, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
             ! check for an upper only layer fire
             if (xxfirel<=0.0_eb) go to 90
@@ -304,10 +304,10 @@
         uplmep = max(0.0_eb,xemp-xntfl)
 
         if (uplmep>0.0_eb) then
-            qheatu = hcombt*uplmep + qheatl_c
+            qheatu_c = hcombt*uplmep + qheatl_c
             height = max (0.0_eb, min(xz,xxfireu))
 
-            call fire_plume(fplume(ifire), object_area,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call fire_plume(fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
             source_o2 = zzcspec(iroom,upper,2)
             call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
@@ -536,7 +536,7 @@
 
 ! --------------------------- fireplm -------------------------------------------
 
-    subroutine fire_plume (plumetype, object_area, qjl, z, xemp, xems, xeme, xfx, xfy)
+    subroutine fire_plume (plumetype, object_area, q_total, qjl, z, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
     !     purpose: physical interface between dofire and the plume models
@@ -545,7 +545,7 @@
     implicit none
     
     integer, intent(in) :: plumetype
-    real(eb), intent(in) :: qjl, z, xemp, xfx, xfy, object_area
+    real(eb), intent(in) :: q_total, qjl, z, xemp, xfx, xfy, object_area
     real(eb), intent(out) :: xeme, xems
 
     select case (plumetype)

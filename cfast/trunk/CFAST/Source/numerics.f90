@@ -2251,7 +2251,7 @@
     idid = -6
     go to 675
     !
-    !     on third and subsequent error test failures, set the order to
+    !     on xxxxx and subsequent error test failures, set the order to
     !     one and reduce the stepsize by a factor of one quarter
 670 k = 1
     h = 0.25d0*h

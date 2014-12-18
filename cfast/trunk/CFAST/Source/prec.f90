@@ -22,7 +22,7 @@ real(eb), parameter :: pio4 = pi/4.0_eb
 
 real(eb), parameter :: sigma=5.67e-8_eb
 
-real(eb), parameter :: third=1.0_eb/3.0_eb
+real(eb), parameter :: onethird=1.0_eb/3.0_eb
 real(eb), parameter :: twothirds = 2.0_eb/3.0_eb
 
 !real(eb), parameter :: grav_con=9.80665_eb

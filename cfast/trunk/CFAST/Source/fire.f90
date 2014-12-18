@@ -227,17 +227,17 @@
         stop 101
     else
 
-        ! note that the combination of firplm and chemie can be called twice
+        ! note that the combination of fire_plume and chemie can be called twice
         ! in a single iteration to make sure that the plume entrainment is
         ! consistent with the actual fire size for oxygen limited fires
-        ! this is done by "re-passing" the actual fire size to firplm in the
+        ! this is done by "re-passing" the actual fire size to fire_plume in the
         ! second pass
         ipass = 1
         do while (ipass<=2)
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call firplm(fplume(ifire), object_area, qheatl,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call fire_plume(fplume(ifire), object_area, qheatl,xxfirel,xemp,xems,xeme,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
             ! check for an upper only layer fire
             if (xxfirel<=0.0_eb) go to 90
@@ -307,7 +307,7 @@
             qheatu = hcombt*uplmep + qheatl
             height = max (0.0_eb, min(xz,xxfireu))
 
-            call firplm(fplume(ifire), object_area,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
+            call fire_plume(fplume(ifire), object_area,qheatu,height,uplmep,uplmes,uplmee,min(xfx,xbr-xfx),min(xfy,xdr-xfy))
 
             source_o2 = zzcspec(iroom,upper,2)
             call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
@@ -536,7 +536,7 @@
 
 ! --------------------------- fireplm -------------------------------------------
 
-    subroutine firplm (plumetype, object_area, qjl, z, xemp, xems, xeme, xfx, xfy)
+    subroutine fire_plume (plumetype, object_area, qjl, z, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
     !     purpose: physical interface between dofire and the plume models
@@ -556,8 +556,8 @@
         call heskestad (qjl,z,xemp,xems,xeme,object_area)
         return        
     end select
-    stop 'bad case in firplm'
-    end subroutine firplm
+    stop 'bad case in fire_plume'
+    end subroutine fire_plume
 
 ! --------------------------- mccaffrey -------------------------------------------
 

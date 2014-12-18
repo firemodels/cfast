@@ -1239,12 +1239,7 @@
     
     vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
-    if(prnslab)then
-        if(absorb==00.1_eb)then
-            write(*,*)'***Fatal error: STOP in absorb ', tg, ah2o, aco2
-            stop
-        end if
-    end if
+
     return
 !1000 format ('error in ',a3,' absorbance: xerror = ',i2,'; yerror = ',i2)
     end function absorb

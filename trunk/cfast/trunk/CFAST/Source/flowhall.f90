@@ -129,7 +129,7 @@
     roomwidth = min(br(ihall),dr(ihall))
     roomlength = max(br(ihall),dr(ihall))
     ventwidth = min(width,roomwidth)
-    fraction = (ventwidth/roomwidth)**third
+    fraction = (ventwidth/roomwidth)**onethird
     halldepth = hdepth*fraction**2
     hallvel = hvel*fraction
 

@@ -266,8 +266,8 @@
 
     ! define transmission factors for surfaces with respect to themselves
 
-    beam(1,1) = (6.0_eb*xroom*yroom*(zroom-hlay)/pi)**third
-    beam(2,2) = (6.0_eb*xroom*yroom*hlay/pi)**third
+    beam(1,1) = (6.0_eb*xroom*yroom*(zroom-hlay)/pi)**onethird
+    beam(2,2) = (6.0_eb*xroom*yroom*hlay/pi)**onethird
     beam(1,2) = zroom
     beam(2,1) = zroom
     fl = hlay/zroom

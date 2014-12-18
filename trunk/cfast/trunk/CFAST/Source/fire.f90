@@ -639,7 +639,7 @@
     d = sqrt(area/pio4)
     z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
     deltaz = max(0.0001_eb, z-z0)
-    eme = 0.071_eb*qj**third*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
+    eme = 0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
     ems = emp + eme    
 
     end subroutine heskestad
@@ -981,7 +981,7 @@
             !           the effective fire source (qi2star) must be a positive number
             if (1.0_eb+C_T*q_i1star**twothirds>xi) then
                 q_i2star = ((1.0_eb+C_T*q_i1star**twothirds)/(xi*C_T)-1.0_eb/C_T)**1.5_eb
-                z_i2 = (xi*q_i1star*C_T/(q_i2star**third*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
+                z_i2 = (xi*q_i1star*C_T/(q_i2star**onethird*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
                 rhoamb = 352.981915_eb/tu
                 cp = 3.019e-7_eb*tu**2 - 1.217e-4_eb*tu + 1.014_eb
                 q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
@@ -1043,12 +1043,12 @@
         zp1 = 1.32_eb*dstar
         tp1 = 2.91_eb*tgas
         zp2 = fheight
-        tp2 = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**third*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
+        tp2 = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**onethird*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
         a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
         b = tp1-a/zp1
         dt = a/(z-z0) + b
     else
-        dt = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**third*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
+        dt = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**onethird*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
     endif
     tplume = tgas + dt
 
@@ -1083,7 +1083,7 @@
         n = 0.0_eb
         b = 3.81_eb
     elseif (zstar>=3.30_eb) then
-        n = -third
+        n = -onethird
         b  = 8.41_eb
     endif
 

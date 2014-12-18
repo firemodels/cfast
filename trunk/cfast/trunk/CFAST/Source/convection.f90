@@ -21,12 +21,11 @@
     real(eb), intent(out) :: qdinl
     
     real(eb) :: h
-    real(eb), parameter :: onth = 1.0_eb/3.0_eb
     
     if (iw<=2) then
-        h = 1.52_eb*abs(tg - tw)**onth
+        h = 1.52_eb*abs(tg - tw)**onethird
     else
-        h = 1.31_eb*abs(tg - tw)**onth
+        h = 1.31_eb*abs(tg - tw)**onethird
     end if
     
     qdinl = h * (tg - tw)
@@ -369,7 +368,7 @@
     h = zc - zs
     sqrtgh = sqrt(grav_con*h)
     qh = qcont/(rhoht*cp*tht*sqrtgh*h**2)
-    qhp = (qh**third)
+    qhp = (qh**onethird)
     htct = rhoht*cp*sqrtgh*qhp
     anu = (0.04128e-7_eb*tht**2.5_eb)/(tht+110.4_eb)
     re = sqrtgh*h*qhp/anu

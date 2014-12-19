@@ -75,46 +75,15 @@ There is more extensive discussion of the output in chapter 6 of this technical 
 
 CFAST has been developed for use in solving practical fire problems in fire protection engineering.  It is intended for use in system modeling of building and building components.  A priori prediction of flame spread or fire growth on objects is not modeled. Rather, the consequences of a specified fire is estimated. It is not intended for detailed study of flow within a compartment, such as is needed for smoke detector siting.  It includes the activation of sprinklers and fire suppression by water droplets.
 
-The most extensive use of the model is in fire and smoke spread in complex buildings.  The efficiency and computational speed are inherent in the few computation cells needed for a zone model implementation.  The use is for design and reconstruction of time-lines for fire and smoke spread in residential, commercial, and industrial fire applications.  Some applications of the model have been for design of smoke control systems.
-
 \begin{itemize}
-\item Compartments:  CFAST is generally limited to situations where the compartment volumes are strongly stratified.  However, in order to facilitate the use of the model for preliminary estimates when a more sophisticated calculation is ultimately needed, there are algorithms for corridor flow, smoke detector activation, and detailed heat conduction through solid boundaries.  This model does provide for non-rectangular compartments, although the application is intended to be limited to relatively simple spaces.  There is no intent to include complex geometries where a complex flow field is a driving force.  For these applications, computational fluid dynamics (CFD) models are appropriate.
-
-\item Gas Layers:  There are also limitations inherent in the assumption of stratification of the gas layers.  The zone model concept, by definition, implies a sharp boundary between the upper and lower layers, whereas in reality, the transition is typically over about 10~\% of the height of the compartment and can be larger in weakly stratified flow.  For example, a burning cigarette in a normal room is not within the purview of a zone model.  While it is possible to make predictions within 5~\% of the actual temperatures of the gas layers, this is not the optimum use of the model.  It is more properly used to make estimates of fire spread (not flame spread), smoke detection and contamination, and life safety calculations.
-
-\item Heat Release Rate:  CFAST does not predict fire growth on burning objects. Heat release rate is specified by the user for one or more fire objects. The model does include the ability to limit the specified burning based on available oxygen. There are also limitations inherent in the assumptions used in application of the empirical models.  As a general guideline, the heat release should not exceed about 1 MW/m$^3$.  This is a limitation on the numerical routines attributable to the coupling between gas flow and heat transfer through boundaries (conduction, convection, and radiation).  The inherent two-layer assumption is likely to break down well before this limit is reached.
-
-\item Radiation:  Because the model includes a sophisticated radiation model and ventilation algorithms, it has further use for studying building contamination through the ventilation system, as well as the stack effect and the effect of wind on air circulation in buildings.  Radiation from fires is modeled with a simple point source approximation.  This limits the accuracy of the model near fire sources. Calculation of radiative exchange between compartments is not modeled.
-
+\item Compartments: CFAST is generally limited to situations where the compartment volumes are strongly stratified.  This model does provide for non-rectangular compartments, although the application is intended to be limited to relatively simple spaces.  There is no intent to include complex geometries where a complex flow field is a driving force.  For these applications, computational fluid dynamics (CFD) models are appropriate.
+\item Gas Layers:  The zone model concept, by definition, implies a sharp boundary between the upper and lower layers, whereas in reality, the transition is typically over about 10~\% of the height of the compartment and can be larger in weakly stratified flow.  For example, a burning cigarette in a normal room is not within the purview of a zone model.  
+\item Heat Release Rate: CFAST does not predict fire growth on burning objects. Heat release rate is specified by the user for one or more fires. The model does include the ability to limit the specified burning based on available oxygen. As a general guideline, the heat release rate should not exceed about 1~MW/m$^3$ of compartment volume.  This is a limitation on the numerical routines attributable to the coupling between gas flow and heat transfer through boundaries (conduction, convection, and radiation).  The inherent two-layer assumption is likely to break down well before this limit is reached.
+\item Radiation from fires is modeled with a simple point source approximation.  This limits the accuracy of the model within a few diameters of the fire. Calculation of radiative exchange between compartments is not modeled.
 \item Ventilation and Leakage:  In a single compartment, the ratio of the volume of the compartment to the area of vents connecting the compartment to another should not exceed roughly 2 m.  This is a limitation on the plug flow assumption for vents.  A more important limitation arises from the uncertainty in the scenario specification.  For example, leakage in buildings is significant, and this affects flow calculations especially when wind is present and for tall buildings.  These effects can overwhelm limitations on accuracy of the implementation of the vent flow model.  The overall accuracy of the model is closely tied to the specificity, care, and completeness with which the data are provided.
-
 \item Thermal Properties:  The accuracy of the model predictions is limited by how well the user can specify the thermophysical properties.  For example, the fraction of fuel which ends up as soot has an important effect on the radiation absorption of the gas layer and, therefore, the relative convective versus radiative heating of the layers and walls, which in turn affects the buoyancy and flow.  There is a higher level of uncertainty of the predictions if the properties of real materials and real fuels are unknown or difficult to obtain, or the physical processes of combustion, radiation, and heat transfer are more complicated than their mathematical representations in CFAST.
 \end{itemize}
 
-User feedback indicates that using CFAST to predict the transport of heat and combustion
-products from a prescribed fire is straightforward, easily and quickly accomplished, and the
-results are within expectations. Any user of a computer based (numerical) model must be aware
-of the assumptions and approximations being employed. Except for those few materials supplied
-in the property databases, the user must supply the thermal properties of the materials, and then
-assess the performance of the model compared with experiments to ensure that the model is valid
-for a specific application. Only then can the model be expected to predict the outcome of fire
-scenarios that are similar to those that have actually been tested.
-
-In addition, there are specific limitations and assumptions made in the development of the algorithms.  These are detailed in the discussion of each of these sub-models:
-
-In addition, there are specific limitations and assumptions made in the development of the
-algorithms. These are detailed in the discussion of each of these sub-models:
-
-\begin{itemize}
-\item section \ref{sec:ZoneModelAssumptions} on zone model assumptions,
-\item section \ref{sec:TheFire} on prescribed fires,
-\item section \ref{sec:firemassbalance} on the relationship between fires and mass balance,
-\item section \ref{sec:plumelimits} on the plume entrainment model,
-\item section \ref{sec:corridorflow} on the assumptions made for corridor flow correlations,
-\item section \ref{sec:Radiation} on the assumptions made for radiation heat transfer,
-\item section \ref{sec:suppression} on the suppression model, and
-\item section \ref{HClDeposition} on HCl deposition.
-\end{itemize}
 
 \section{Scenarios for which the Model is Evaluated in this Document}
 
@@ -143,13 +112,13 @@ appropriate to insure an adequate factor of safety.
 
 \section{Review of the Theoretical Development of the Model}
 
-Details of the software quality assurance process for CFAST is included in the Software and Model Evaluation Guide~\cite{CFAST_Valid_Guide_6}. A brief summary is provided here. 
+Details of the software quality assurance process for CFAST is included in the Software and Model Evaluation Guide~\cite{CFAST_Valid_Guide_6}. A brief summary is provided here.
 
 CFAST has been subjected to independent review in two ways, internal and external. First, all documents issued by the National Institute of Standards and Technology receive three levels of internal review by members of the staff not involved in the preparation of the report or underlying research. The theoretical basis of CFAST is presented in this document, and is subject to internal review by staff members who are not active participants in the development of the model, but who are members of the Fire Research Division and are considered experts in the fields of fire and combustion. Externally, the theoretical basis for the model has been published in peer reviewed journals~\cite{Jones:1993a, Jones:1985, Jones:1984} and conference proceedings~\cite{Jones:1991}. In addition, CFAST is used worldwide by fire protection engineering firms who review the technical details of the model related to their particular application. Some of these firms also publish in the open literature reports documenting internal efforts to validate the model for a particular use. Many of these studies are discussed in more detail in the present document.
 
 In addition to the formal review, procedures were in place during the development of CFAST to assure the quality of the model.  These procedures included several components:
 \begin{itemize}
-\item Review of proposed changes to the code by at least two others involved in the development process to insure that a proposed change was consistent with the rest of the CFAST code and was implemented correctly. These reviews, while informal in nature, provided a comprehensive review of the changes to the model during its development.  
+\item Review of proposed changes to the code by at least two others involved in the development process to insure that a proposed change was consistent with the rest of the CFAST code and was implemented correctly. These reviews, while informal in nature, provided a comprehensive review of the changes to the model during its development.
 \item In addition to the normal NIST document review process, the CFAST software was circulated internally to Fire Research Division Staff to allow interested staff members to test the model.
 \item For each major release of CFAST, NIST has maintained a history of the source code which goes back to March 1989.  While it is not practical to reconstruct the programs for each release for use with modern software tools and computer operating systems, the source code history allows the developers to examine what changes were made at each release point. This provides detailed documentation of the history of model development and is often useful to understand the impact of changes to sub-models over the development of the model.
 \item Once a release of CFAST was approved by NIST, it was announced with a letter to model users which provided a summary of model changes and available documentation.  In essence, these were a condensation of the internal memorandums, without details or printout of specific code changes.  These memorandums provide documentation of the history of the model development.

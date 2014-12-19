@@ -179,7 +179,7 @@
     real(eb), intent(in) :: xemp, xhr, xbr, xdr, hcombt, y_soot, y_co, y_trace, n_C ,n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, object_area
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc(2), xqfr, xqlp, xqup
-    
+
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, activated_rate, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
@@ -220,108 +220,109 @@
     ! convection drives the plume entrainment
 
     chirad = max(min(radconsplit(ifire),1.0_eb),0.0_eb)
+    qheatl = xqpyrl
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
-    if (lfbt==free) then
-        ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
-        stop 101
-    else
+    ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
+    if (lfbt==free) Stop 101
 
-        ! note that the combination of fire_plume and chemie can be called twice
-        ! in a single iteration to make sure that the plume entrainment is
-        ! consistent with the actual fire size for oxygen limited fires
-        ! this is done by "re-passing" the actual fire size to fire_plume in the
-        ! second pass
-        ipass = 1
-        do while (ipass<=2)
 
-            ! calculate the entrainment rate but constrain the actual amount
-            ! of air entrained to that required to produce stable stratification
-            call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, xemp, xems, xeme, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+    ! note that the combination of fire_plume and chemie can be called twice
+    ! in a single iteration to make sure that the plume entrainment is
+    ! consistent with the actual fire size for oxygen limited fires
+    ! this is done by "re-passing" the actual fire size to fire_plume in the
+    ! second pass
+    ipass = 1
+    do while (ipass<=2)
 
-            ! check for an upper only layer fire
-            if (xxfirel<=0.0_eb) go to 90
-            xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
-            xems = xemp + xeme
+        ! calculate the entrainment rate but constrain the actual amount
+        ! of air entrained to that required to produce stable stratification
+        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, xemp, xems, xeme, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
-            source_o2 = zzcspec(iroom,lower,2)
-            if (iquench(iroom)>0) then
-                activated_time = xdtect(iquench(iroom),dtact)
-                activated_rate = xdtect(iquench(iroom),drate)
-            else
-                activated_time = 0
-                activated_rate = 0.0
-            endif
-            call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass) 
-
-            ! limit the amount entrained to that actually entrained by the fuel burned
-            xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
-
-            if (xqpyrl<qheatl_c) then
-                xeme = xeme*(xqpyrl/qheatl_c)
-                qheatl_c = xqpyrl
-                ipass = ipass + 1
-                cycle
-            endif
-            exit
-        end do
-        xqpyrl = xqpyrl/(1.0_eb-chirad)
+        ! check for an upper only layer fire
+        if (xxfirel<=0.0_eb) go to 90
+        xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
         xems = xemp + xeme
 
-        do  i = 1, ns
+        source_o2 = zzcspec(iroom,lower,2)
+        if (iquench(iroom)>0) then
+            activated_time = xdtect(iquench(iroom),dtact)
+            activated_rate = xdtect(iquench(iroom),drate)
+        else
+            activated_time = 0
+            activated_rate = 0.0
+        endif
+        call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
+
+        ! limit the amount entrained to that actually entrained by the fuel burned
+        xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
+
+        if (xqpyrl<qheatl_c) then
+            xeme = xeme*(xqpyrl/qheatl_c)
+            qheatl_c = xqpyrl
+            ipass = ipass + 1
+            cycle
+        endif
+        exit
+    end do
+    xqpyrl = xqpyrl/(1.0_eb-chirad)
+    qheatl = xqpyrl
+    xems = xemp + xeme
+
+    do  i = 1, ns
+        xntms(upper,i) = xmass(i) + xntms(upper,i)
+    end do
+
+    ! add the species flow entrained by the plume to normalize the yields to unity
+    xtemp = 0.0_eb
+    do lsp = 1, 9
+        xtemp = xtemp + stmass(lower,lsp)
+    end do
+    ! including the trace species
+    xtemp = xtemp + stmass(lower,11)
+    if(xtemp==0.0_eb) xtemp = 1.0_eb
+    do lsp = 1, ns
+        if (activs(lsp)) then
+            xnet = xeme*stmass(lower,lsp)/xtemp
+            xntms(upper,lsp) = xntms(upper,lsp) + xnet
+            xntms(lower,lsp) = xntms(lower,lsp) - xnet
+        endif
+    end do
+
+    ! add in the fuel. everything else is done by chemie.
+    xntms(upper,7) = xntms(upper,7) + xemp
+
+    xqfr = xqpyrl*chirad
+    xqfc(upper) = xqpyrl*(1.0_eb-chirad)
+    xqlp = xqpyrl
+    xqf = xqpyrl
+
+    ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
+    ! heat released in the lower layer and what can be released in the upper layer.
+
+    ! start with the fuel removed by lower layer burning, xntfl umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
+90  xqup = 0.0_eb
+    uplmep = max(0.0_eb,xemp-xntfl)
+
+    if (uplmep>0.0_eb) then
+        qheatu_c = hcombt*uplmep + qheatl_c
+        qheatu = qheatu_c/(1.0_eb-chirad)
+        height = max (0.0_eb, min(xz,xxfireu))
+
+        call fire_plume(fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+
+        source_o2 = zzcspec(iroom,upper,2)
+        call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
+
+        xqfr = xqpyrl*chirad + xqfr
+        xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
+        xqup = xqpyrl
+        xqf = xqpyrl + xqf
+        do i = 1, ns
             xntms(upper,i) = xmass(i) + xntms(upper,i)
         end do
-
-        ! add the species flow entrained by the plume to normalize the yields to unity
-        xtemp = 0.0_eb
-        do lsp = 1, 9
-            xtemp = xtemp + stmass(lower,lsp)
-        end do
-        ! including the trace species
-        xtemp = xtemp + stmass(lower,11)
-        if(xtemp==0.0_eb) xtemp = 1.0_eb
-        do lsp = 1, ns
-            if (activs(lsp)) then
-                xnet = xeme*stmass(lower,lsp)/xtemp
-                xntms(upper,lsp) = xntms(upper,lsp) + xnet
-                xntms(lower,lsp) = xntms(lower,lsp) - xnet
-            endif
-        end do
-        
-        ! add in the fuel. everything else is done by chemie.
-        xntms(upper,7) = xntms(upper,7) + xemp
-        
-        xqfr = xqpyrl*chirad
-        xqfc(upper) = xqpyrl*(1.0_eb-chirad)
-        xqlp = xqpyrl
-        xqf = xqpyrl
-
-        ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
-        ! heat released in the lower layer and what can be released in the upper layer.
-
-        ! start with the fuel removed by lower layer burning, xntfl umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
-90      xqup = 0.0_eb
-        uplmep = max(0.0_eb,xemp-xntfl)
-
-        if (uplmep>0.0_eb) then
-            qheatu_c = hcombt*uplmep + qheatl_c
-            height = max (0.0_eb, min(xz,xxfireu))
-
-            call fire_plume(fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
-
-            source_o2 = zzcspec(iroom,upper,2)
-            call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
-
-            xqfr = xqpyrl*chirad + xqfr
-            xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
-            xqup = xqpyrl
-            xqf = xqpyrl + xqf
-            do i = 1, ns
-                xntms(upper,i) = xmass(i) + xntms(upper,i)
-            end do
-        endif
-
     endif
+
     return
     end subroutine dofire
 

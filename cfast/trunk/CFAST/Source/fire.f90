@@ -536,7 +536,7 @@
 
 ! --------------------------- fireplm -------------------------------------------
 
-    subroutine fire_plume (plumetype, object_area, q_total, qjl, z, xemp, xems, xeme, xfx, xfy)
+    subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
     !     purpose: physical interface between dofire and the plume models
@@ -545,15 +545,15 @@
     implicit none
     
     integer, intent(in) :: plumetype
-    real(eb), intent(in) :: q_total, qjl, z, xemp, xfx, xfy, object_area
+    real(eb), intent(in) :: qfire, qfire_c, z, xemp, xfx, xfy, object_area
     real(eb), intent(out) :: xeme, xems
 
     select case (plumetype)
     case (1) !    mccaffrey
-        call mccaffrey(qjl,z,xemp,xems,xeme,xfx,xfy)
+        call mccaffrey(qfire_c,z,xemp,xems,xeme,xfx,xfy)
         return        
     case (2) !    heskestad
-        call heskestad (qjl,z,xemp,xems,xeme,object_area)
+        call heskestad (qfire, qfire_c,z,xemp,xems,xeme,object_area)
         return        
     end select
     stop 'bad case in fire_plume'
@@ -616,7 +616,7 @@
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad (q, z, emp, ems, eme, area)
+    subroutine heskestad (q, q_c, z, emp, ems, eme, area)
 
     !     routine: mccaffrey
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
@@ -630,12 +630,12 @@
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: q, z, emp, area
+    real(eb), intent(in) :: q, q_c, z, emp, area
     real(eb), intent(out) :: ems, eme
     
     real(eb) :: d, qj, z0, deltaz
 
-    qj = 0.001_eb*q
+    qj = 0.001_eb*q_c
     d = sqrt(area/pio4)
     z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
     deltaz = max(0.0001_eb, z-z0)

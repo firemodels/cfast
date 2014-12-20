@@ -433,92 +433,6 @@
         td(id) = max(tcj,td(id))
         vd(id) = max(vcj,vd(id))
     end do
-
-    ! heat transfer between ceiling jet and ceiling is not calculated if the c.j. option is set to 2 in the file solver.ini
-    if (cjetopt==2) return
-
-    ! calculate average heat transfer fluxes to lower and upper walls along the vertical lines passing through the four wall/ceiling-jet stagnation points:
-    do n = 1, 4
-        rdh = rs(n)/h
-        call sqfwst(rdh,h,c4,tht,htct,thtqhp,tw,qfwsl(n),qfwsu(n),zc,zlay)
-    end do
-
-    ! step 2. calculate radii at room corners:
-    rc(1) = sqrt(xf**2+yf**2)
-    rc(2) = sqrt((xw-xf)**2+yf**2)
-    rc(3) = sqrt((xw-xf)**2+(yw-yf)**2)
-    rc(4) = sqrt(xf**2+(yw-yf)**2)
-
-    ! calculate average heat transfer fluxes to lower and upper walls along the vertical lines passing through the four room
-    ! corners by assuming that the heat transfer there is as along a line passing through a point of normal ceiling-jet/wall impingement.
-    do n = 1, 4
-        rdh = rc(n)/h
-        call sqfwst(rdh,h,c4,tht,htct,thtqhp,tw,qfwcl(n),qfwcu(n),zc,zlay)
-    end do
-
-    ! step 3. calculate the average heat transfer fluxes to the lower and upper portions of the eight wall segments bounded by the room
-    ! corners and the the vertical lines passing through the points of normal wall/ceiling-jet impingement.
-    qfwuan(1) = (qfwcu(1)+qfwsu(1))*0.5_eb
-    qfwlan(1) = (qfwcl(1)+qfwsl(1))*0.5_eb
-    qfwuan(2) = (qfwcu(2)+qfwsu(1))*0.5_eb
-    qfwlan(2) = (qfwcl(2)+qfwsl(1))*0.5_eb
-    qfwuan(3) = (qfwcu(2)+qfwsu(2))*0.5_eb
-    qfwlan(3) = (qfwcl(2)+qfwsl(2))*0.5_eb
-    qfwuan(4) = (qfwcu(3)+qfwsu(2))*0.5_eb
-    qfwlan(4) = (qfwcl(3)+qfwsl(2))*0.5_eb
-    qfwuan(5) = (qfwcu(3)+qfwsu(3))*0.5_eb
-    qfwlan(5) = (qfwcl(3)+qfwsl(3))*0.5_eb
-    qfwuan(6) = (qfwcu(4)+qfwsu(3))*0.5_eb
-    qfwlan(6) = (qfwcl(4)+qfwsl(3))*0.5_eb
-    qfwuan(7) = (qfwcu(4)+qfwsu(4))*0.5_eb
-    qfwlan(7) = (qfwcl(4)+qfwsl(4))*0.5_eb
-    qfwuan(8) = (qfwcu(1)+qfwsu(4))*0.5_eb
-    qfwlan(8) = (qfwcl(1)+qfwsl(4))*0.5_eb
-
-    ! step 4. for each of the upper layer segments use the area of the segment and the previously calculated average heat transfer
-    ! flux to calculate the eight contributions to theto the total rate of upper-layer wall heat transfer.  sum these contributions 
-    ! and obtain finally the average rate of heat transfer to the upper-layer portions of the walls.  carry out analogous
-    ! calculations for the lower wall surfaces.  add rates of heat transfer to all 16 wall surface segments and obtain total rate of heat transfer to the wall.
-    awl(1) = xf*zlay
-    awu(1) = xf*(zc-zlay)
-    awl(2) = (xw-xf)*zlay
-    awu(2) = (xw-xf)*(zc-zlay)
-    awl(3) = yf*zlay
-    awu(3) = yf*(zc-zlay)
-    awl(4) = (yw-yf)*zlay
-    awu(4) = (yw-yf)*(zc-zlay)
-    awl(5) = awl(2)
-    awu(5) = awu(2)
-    awl(6) = awl(1)
-    awu(6) = awu(1)
-    awl(7) = awl(4)
-    awu(7) = awu(4)
-    awl(8) = awl(3)
-    awu(8) = awu(3)
-    sumaql = 0.0_eb
-    sumaqu = 0.0_eb
-    sumal = 0.0_eb
-    sumau = 0.0_eb
-    do n = 1, 8
-        sumaql = awl(n)*qfwlan(n) + sumaql
-        sumaqu = awu(n)*qfwuan(n) + sumaqu
-        sumal = awl(n) + sumal
-        sumau = awu(n) + sumau
-    end do
-
-    ! turn off heat transfer to lower wall surfaces
-    sumaql = 0.0_eb
-    if (sumal<=0.0_eb) then
-        qfwla = 0.0_eb
-    else
-        qfwla = sumaql/sumal
-    endif
-    if (sumau<=0.0_eb) then
-        qfwua = 0.0_eb
-    else
-        qfwua = sumaqu/sumau
-    endif
-
     return
     end subroutine ceilht
 
@@ -778,50 +692,7 @@
     qfclg = htcl*(tad-tc)
     return
     end function qfclg
-
-! --------------------------- convec -------------------------------------------
-
-    subroutine sqfwst(rdh,h,c4,tht,htct,thtqhp,tw,qfwlow,qfwup,zc,zlay)
-    !
-    !     routine: sqfwst
-    !   description: calculate average heat transfer fluxes to lower and upper walls along a vertical line passing through a 
-    !                wall/ceiling-jet stagnation point
-
-    use precision_parameters
-    implicit none
-
-    real(eb) :: t1, t2, t3, rdh, f, taddim, htcl, c4, htct, tad, thtqhp, tht, qfwst, tw, h8, h, h16, zc, qfwlow, qfwup, zlay 
-
-    t1 = rdh**(0.8_eb)
-    t2 = t1*t1
-    t3 = t2*t1
-    f = (1.0_eb-1.1_eb*t1+0.808_eb*t2)/(1.0_eb-1.1_eb*t1+2.2_eb*t2+0.69_eb*t3)
-    if (rdh<0.2_eb) then
-        taddim = 10.22_eb - 14.9_eb*rdh
-    else
-        taddim = 8.39_eb*f
-    endif
-    htcl = c4*htct/rdh
-    tad = taddim*thtqhp + tht
-    qfwst = htcl*(tad-tw)
-    h8 = 0.80_eb*h
-    h16 = h8 + h8
-    if (zc<=h8) then
-        qfwlow = qfwst*(h16-(zc-zlay)-zc)/h16
-        qfwup = qfwst*(1.0_eb-(zc-zlay)/h16)
-    else
-        if ((zc-zlay)>h8) then
-            qfwlow = 0.0_eb
-            qfwup = qfwst*(zc-h8)/(2.0_eb*(zc-zlay))
-        else
-            qfwlow = qfwst*(h8-(zc-zlay))/(2.0_eb*zlay)
-            qfwup = qfwst*(1.0_eb-(zc-zlay)/h16)
-        endif
-    endif
-    return
-    end subroutine sqfwst
-
-! --------------------------- convec -------------------------------------------
+! --------------------------- cjet -------------------------------------------
 
     subroutine cjet (flwcjt,flxcjt)
 

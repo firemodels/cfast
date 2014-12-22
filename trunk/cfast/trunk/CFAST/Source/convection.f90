@@ -4,10 +4,7 @@
     subroutine convec (iw,tg,tw,qdinl)
 
     !     routine: convec
-    !     purpose: calculate convective heat transfer for a wall segment. note that we have simplified the convection calculation
-    !              by assuming turbulent flow.  this allows us to remove the dependency on the characterisitic length and avoid a divide
-    !              by zero as the surface vanishes.  if a more general relationship is desired, the code will have to be reworked
-    !              to include the characteristic length in the calculation.
+    !     purpose: calculate convective heat transfer for a wall segment. 
     !     arguments:  iw     wall number, standand cfast numbering convention
     !                 tg     temperature of gas layer adjacent to wall surface
     !                 tw     wall surface temperature
@@ -275,7 +272,6 @@
         end do
         return
     endif
-
     if (first) then
         first = .false.
         ct = 9.115_eb
@@ -385,18 +381,6 @@
     ntab = 20
     call maktabl(rmax,ntab,qfclg)
 
-    ! don't need to compute the following if we aren't computing ceiling jet heat transfer
-    if (cjetopt/=2) then
-        call int2d(xf,yf,xw,yw,rmax,qceil)
-        qfclga = qceil/(xw*yw)
-    endif
-
-    ! now calculate wall heat transfer: ***	step 1. calculate radii at wall stagnation points
-    rs(1) = yf
-    rs(2) = xw - xf
-    rs(3) = yw - yf
-    rs(4) = xf
-
     !calculate velocity and temperatures of the ceiling jet at various locations
     do id = 1, nd
         rd = sqrt((axf-xd(id))**2+(ayf-yd(id))**2)
@@ -435,148 +419,6 @@
     end do
     return
     end subroutine ceilht
-
-! --------------------------- convec -------------------------------------------
-
-    subroutine int2d(xc,yc,xrect,yrect,r,ans)
-    !
-    !--------------------------------- NIST/BFRL ---------------------------------
-    !
-    !     Routine:     INT2D
-    !
-    !     Source File: CEILHT.SOR
-    !
-    !     Functional Class:  
-    !
-    !     Description:  Integrates a function over a region formed by 
-    !         intersecting a rectangle with dimension (xrect,yrect) 
-    !         and a circle with center (xc,yc) and radius r.  
-    !
-    !     Arguments: XC
-    !                YC
-    !                XRECT
-    !                YRECT
-    !                R
-    !                ANS
-
-    use precision_parameters
-    implicit none
-    
-    real(eb) x1, xrect, xc, x2, y1, yrect, yc, y2, r, frint, ans, ans1, ans2, ans3, ans4
-
-    x1 = xrect - xc
-    x2 = xc
-    y1 = yrect - yc
-    y2 = yc
-
-    if (r<min(x1,x2,y1,y2)) then
-        call inttabl(r,frint)
-        ans = 2.0_eb*pi*frint
-    else
-        call intsq(x1,y1,r,ans1)
-        call intsq(x2,y1,r,ans2)
-        call intsq(x1,y2,r,ans3)
-        call intsq(x2,y2,r,ans4)
-        ans = ans1 + ans2 + ans3 + ans4
-    endif
-    return
-    end subroutine int2d
-
-! --------------------------- convec -------------------------------------------
-
-    subroutine intsq (s1,s2,r,ans)
-
-    !     routine:     intsq
-    !
-    !     source file: ceilht.sor
-    !
-    !     functional class:  
-    !
-    !     description:  
-    !
-    !     arguments: s1
-    !                s2
-    !                r
-    !                ans
-
-    use precision_parameters
-    implicit none
-    
-    real(eb) r, s1, s2, frint, ans, ans1, ans2
-
-    if (r<=min(s1,s2)) then
-        call inttabl(r,frint)
-        ans = pi*frint/2.0_eb
-    else
-        call inttri(s1,s2,r,ans1)
-        call inttri(s2,s1,r,ans2)
-        ans = ans1 + ans2
-    endif
-    return
-    end subroutine intsq
-
-! --------------------------- convec -------------------------------------------
-
-    subroutine inttri (x,y,r,ans)
-
-    !--------------------------------- nist/bfrl ---------------------------------
-    !
-    !     routine:     inttri
-    !
-    !     source file: ceilht.sor
-    !
-    !     functional class:  
-    !
-    !     description:  
-    !
-    !     arguments: x
-    !                y
-    !                r
-    !                ans
-    !
-
-    use precision_parameters
-    implicit none
-    
-    integer :: n, j  
-    real(eb) :: x, y, ans, r, frint, frintu, diag, yl, thetal, thetau, xxn, dth, xxjm1, thetaj, rj, arj, theta
-
-
-    if (abs(x)<1.e-5_eb.or.abs(y)<1.e-5_eb) then
-        ans = 0.0_eb
-        return
-    endif
-    theta = atan(y/x)
-    if (r<x) then
-        call inttabl(r,frint)
-        ans = frint*theta
-        return
-    else
-        diag = sqrt(x**2+y**2)
-        if (r>diag) then
-            yl = y
-        else
-            yl = sqrt(r**2-x**2)
-        endif
-        thetal = atan(yl/x)
-        n = 1
-        xxn = n
-        dth = thetal/xxn
-        ans = 0.0_eb
-        do j = 1, n
-            xxjm1 = j - 1
-            thetaj = dth/2.0_eb + xxjm1*dth
-            rj = x/cos(thetaj)
-            call inttabl(rj,arj)
-            ans = ans + arj
-        end do
-        ans = ans*dth
-        thetau = theta - thetal
-        call inttabl(r,frintu)
-        ans = ans + thetau*frintu
-    endif
-    return
-    end subroutine inttri
 
 ! --------------------------- convec -------------------------------------------
 

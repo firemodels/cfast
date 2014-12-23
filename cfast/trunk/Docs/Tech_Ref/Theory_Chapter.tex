@@ -471,12 +471,25 @@ The link temperature of a sprinkler or heat detector is modeled using the differ
 \be
    \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
 \ee
-where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the ceiling jet velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the ceiling jet algorithm, Section~\ref{Ceiling_Jet_Algorithm}. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.12~m/s. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the ceiling jet velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.12~m/s. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
 \be
    \frac{\TL^{n+1}-\TL^n}{\delta t} = \frac{1}{2} \left( \frac{\sqrt{v^n}}{\rm RTI} \brackets{\Tg^n - \TL^n}  + \frac{\sqrt{v^{n+1}}}{\rm RTI} \brackets{\Tg^{n+1} - \TL^{n+1}}  \right) \label{eq:RTI_rewritten}
 \ee
 where the superscript $n$ denotes the value at the current time, and $\delta t$ is the time step.
 
+The local gas velocity and temperature are estimated assuming the ceiling jet is immersed in a hot gas layer. From the work of Cooper \cite{Cooper:1990b}:
+\be
+   \frac{v_{cj}}{v_{max}} = \left\{ \begin{array}{r@{\quad \quad}l}
+  \brackets{\zdel}^{1/7}\brackets{8-\zdel}/7 &  0 \leq \zdel<1 \\[.1in]
+   \cosh{\brackets{c_r \brackets{\zdel-1}}}^2 &  1 \leq \zdel \end{array} \right.
+\ee
+
+\be
+  \Theta = \frac{T_{CJ}-T_U}{T_{max}-T_U}= \left\{ \begin{array}{r@{\quad \quad}l}
+   \Theta_s+ 2 \brackets{1-\Theta_s}\zdel - \brackets{1-\Theta_s}\brackets{\zdel}^2 &  0 \leq \zdel<1 \\[.1in]
+   \frac{v_{cj}}{v_{max}} &  1 \leq \zdel \end{array} \right.
+\ee
+where $v_{max}=0.85\brackets{r/H}^{-1.1}\sqrt{gH}\sqrt[3]{Q_H^*}$, $Q_H^*= \dQ/\brackets{\rho_U c_p T_U \sqrt{gH} H^2}$, $\delta/H=0.1\brackets{r/H}^{0.9}$, $c_r=\frac{0.23}{0.77}\log{\brackets{\sqrt{2}-1}}$, $T_{max}=T_U + 2.6\brackets{1-\lambda_c}\brackets{r/H}^{-4/5}\brackets{Q_H^*}^{2/3}T_U - 0.09 \brackets{T_s-T_U}$, and $\lambda_c$ is the fraction of the fire's heat release transferred by convection to the ceiling from the point of impingement to $r$, evaluated numerically. If the detector or sprinkler is outside the ceiling jet layer or in a compartment without a fire, the appropriate gas layer temperature and a default velocity of 0.1 m/s is used.
 
 \section{Fire Suppression} \label{sec:suppression}
 

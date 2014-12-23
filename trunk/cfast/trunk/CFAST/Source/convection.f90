@@ -154,112 +154,69 @@
 
 ! --------------------------- convec -------------------------------------------
 
-    subroutine ceilht(mplume,qconv,atc,tl,tu,tw,xw,yw,zc,axf,ayf,zf,zlay,rhol,rhou,cjetopt,xd,yd,zd,nd,qceil,qfclga, &
+    subroutine cjet_detectors(mplume,qconv,atc,tl,tu,xw,yw,zc,axf,ayf,zf,zlay,rhol,rhou,xd,yd,zd,nd,qceil,qfclga, &
     qfwla,qfwua,td,vd,tdmax,vdmax,ddmax)
-    !
-    !--------------------------------- nist/bfrl ---------------------------------
-    !
-    !     routine:     ceilht
-    !
-    !     functional class:  
-    !
-    !     description:  
-    !       this subroutine calculates convective heat transfer to
-    !	the uniform temperature ceiling above a fire in a parallel-
-    !	opiped room with a two-layer fire environment.  also calcu-
-    !	lated is the total rate of heat transfer to the walls and
-    !	the average flux to the upper and lower portions of the
-    !	walls.
 
-    !   	input
+    !   this subroutine calculates temperatures and velocities at detector locations in the ceiling jet
+
+    !   inputs:
     !	mplume		mass flow rate in the plume at zlay if zf < zlay [kg/s]
-    !         nd    number of detectors
-    !	 qconv		portion of fire energy release rate convected in plume [w]
-    !	    tc    average temperature of ceiling [k]
-    !	 tl,tu    temperature of lower, upper layer [k]
-    !	    tw    average temperature of wall surfaces [k]
+    !   nd          number of detectors
+    !   qconv		portion of fire energy release rate convected in plume [w]
+    !   atc         average temperature of ceiling [k]
+    !   tl,tu       temperature of lower, upper layer [k]
     !   xd,yd,zd    x, y, and z positions of the detectors
     !   xw,yw,zc    co-ordinates of room corner diagonally opposite to origin 
     !               of axes (origin is at a corner on the floor, with x, y 
     !               axes along wall/floor junction and z axes upward) [m]
     !   xf,yf,zf    co-ordinates of center of base of fire [m]
-    !       zlay    elevation above floor of layer interface [m]
-    !  rhol,rhou    density of lower, upper layer [kg/m**3]
-    !    cjetopt    heat transfer is not calculated if cjetopt=2
+    !   zlay        elevation above floor of layer interface [m]
+    !   rhol,rhou   density of lower, upper layer [kg/m**3]
     !
-    !	output
-    !	-----
-    !
-    !      qceil    rate of heat transfer to ceiling [w]
-    !     qfclga		average flux of heat transfer to ceiling [w/m**2]
-    ! qfwla,qfwua   average flux of heat transfer to lower and
-    !               upper portions of the wall sufaces [w/m**2]
-    !         td    temperature of jet at xd,yd,zd locations
-    !         vd    velocity of jet at xd,yd,zd locations
+    !	outputs
+    !   qceil       rate of heat transfer to ceiling [w]
+    !   qfclga		average flux of heat transfer to ceiling [w/m**2]
+    !   qfwla,qfwua average flux of heat transfer to lower and upper portions of the wall sufaces [w/m**2]
+    !   td          temperature of jet at xd,yd,zd locations
+    !   vd          velocity of jet at xd,yd,zd locations
     !
     !***	some other definitions and fixed input in this subroutine
 
     !      alpha    tu/tl
-    !     awl(n)    area of lower-layer portion of wall segment n
-    !     awu(n)    area of upper-layer portion of wall segment n
     !         cp    specific heat of air at constant pressure [kj/(kg*k)]
     !         ct    9.115, constant in point source plume eqn.
     !          g    9.8, acceleration of gravity [m/s**2]
-    !          h    if layer interface is below ceiling: distance
-    !               of continuation source below ceiling; if layer interface 
-    !               is at ceiling: distance of equivalent source below 
-    !               ceiling [m]
+    !          h    if layer interface is below ceiling: distance of continuation source below ceiling; if layer interface 
+    !               is at ceiling: distance of equivalent source below ceiling [m]
     !      qcont    strength of continuation source [w]
     !        qeq    dimensionless strength of plume at zlay
     !         qh    dimensionless strength of plume at zc
-    !   qfwcl(n)    average heat flux to wall near corner n in the 
-    !               lower layer [w/m**2]
-    !   qfwcu(n)    average heat flux to wall near corner n in
-    !               the upper layer [w/m**2]
-    !  qfwlan(n)    average heat flux to portion of wall segment
-    !               n in the lower layer [w/m**2]
-    !  qfwuan(n)    average heat flux to portion of wall segment
-    !               n in the upper layer [w/m**2]
-    !   qfwsl(n)    average heat flux to portion of wall in the lower layer 
-    !               along the line passing through stagnation point n [w/m**2]
-    !   qfwsu(n)    average heat flux to portion of wall in the upper layer 
-    !               along the line passing through stagnation point n [w/m**2]
-    !      qfwst    heat transfer flux to wall at a wall/ceiling-jet stagnation 
-    !               point [w/m**2]
     !         pr    prandtl number
-    !      rc(n)    distance from plume/ceiling impingement point to corner n [m]
-    !      rs(n)    distance from plume/ceiling impingement point to wall 
-    !               stagnation point n [m]
-    !        tht    temperature of ambient in unconfined ceiling heat transfer 
-    !               problem, either tl or tu [k] 
+    !        tht    temperature of ambient in unconfined ceiling heat transfer problem, either tl or tu [k] 
     !        zeq    elevation above floor of equivalent source in lower layer [m]
     !         zs    elevation above floor of continuation source [m]
     !       tdmax   maximum temperature of the ceiling jet
     !       vdmax   maximum velocity of the ceiling jet
-    !       ddmax   estimate of ceiling jet depth at r/h = .2
-    !               (given by:  ddmax/(.23*delta) = 2)
-
+    !       ddmax   estimate of ceiling jet depth at r/h = 0.2 (given by:  ddmax/(.23*delta) = 2)
 
     use precision_parameters
     implicit none
     
-    ! 
-    !********************************************************************
-    !   	this subroutine and the function qfclg used in its called subroutines use the common blocks aintch
-    !********************************************************************
-    !
+    integer, intent(in) :: nd
+    real(eb), intent(in) :: mplume, qconv, tl, tu, xd(*), yd(*), zd(*), xw, yw, zc, axf, ayf, zf, zlay, rhol, rhou
+    real(eb), intent(out) :: qceil, qfclga, qfwla, qfwua, td(*), vd(*)
+    
+    !   this subroutine and the function qfclg used in its called subroutines use the common blocks aintch
+
     external qfclg
-    integer cjetopt, id, nd, ntab, n
-    real(eb) :: awl(8), awu(8), qfwcl(4), qfwcu(4), qfwlan(8), qfwuan(8), qfwsl(4), qfwsu(4), rc(4), rs(4), xd(*), yd(*), zd(*), td(*), vd(*)
-    real(eb) qceil, qfclga, qfwla, qfwua, mplume, qconv, tu, ct, cp, pr, rk1, xf, axf, ayf, yf, &
-    rfmin, zc, zf, xw, tc, atc, alpha, tl, zlay, qeq, zeq, rhol, alfm1, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, rhou, &
-    h, sqrtgh, qh, qhp, yw, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rmax, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
-    rlamr, tmaxmtu, ths, thta, tcj, tdmax, tw, sumaql, sumaqu, sumal, sumau, qfclg
+    integer :: id
+    real(eb) :: ct, cp, pr, rk1, xf, yf, rfmin, tc, atc, alpha, qeq, zeq, alfm1, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
+        h, sqrtgh, qh, qhp, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
+        rlamr, tmaxmtu, ths, thta, tcj, tdmax, qfclg
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
-    logical first
+    logical :: first = .true.
     save first, ct, cp, pr, rk1
-    data first /.true./
 
     qceil = 0.0_eb
     qfclga = 0.0_eb
@@ -375,13 +332,7 @@
     c3 = 0.283032655_eb/(re**0.3_eb*prp)
     c4 = 0.94_eb/((re**0.42_eb)*pr)
 
-    rmax = sqrt(max(yf,yw-yf)**2+max(xf,xw-xf)**2)
-
-    ! make an integral table of size ntab from zero to rmax.
-    ntab = 20
-    call maktabl(rmax,ntab,qfclg)
-
-    !calculate velocity and temperatures of the ceiling jet at various locations
+    !calculate velocity and temperatures of the ceiling jet at detector locations
     do id = 1, nd
         rd = sqrt((axf-xd(id))**2+(ayf-yd(id))**2)
         rdh = rd/h
@@ -403,7 +354,7 @@
             vcj = vmax/cosh(arg)**2
         endif
 
-        call inttabl(rd,rlamr)
+        rlamr = qfclg(rd)
         rlamr = 2.0_eb*pi*rlamr/qconv
         tmaxmtu = 2.6_eb*(1.0_eb-rlamr)*qh**twothirds*tu/rdh**0.80_eb - 0.90_eb*(tc-tu)
         ths = (tc-tu)/tmaxmtu
@@ -418,88 +369,9 @@
         vd(id) = max(vcj,vd(id))
     end do
     return
-    end subroutine ceilht
+    end subroutine cjet_detectors
 
-! --------------------------- convec -------------------------------------------
-
-    subroutine maktabl (r,n,func)
-
-    !     Routine:     MAKTABL
-    !
-    !     Source File: CEILHT.SOR
-    !
-    !     Functional Class:  
-    !
-    !     Description:  
-    !
-    !     Arguments: R
-    !                N
-    !                FUNC
-
-
-    use precision_parameters
-    implicit none
-
-    external func
-    real(eb) :: tabl(100), fun(100), rmax, r, xxntabm1, dr, dr2, xxim1, func, rr
-    integer :: i, ntab, n
-    common /trptabl/ tabl, rmax, ntab
-    save /trptabl/
-
-    ntab = n
-    rmax = r
-    xxntabm1 = ntab - 1
-    dr = rmax/xxntabm1
-    dr2 = dr/2.0_eb
-    tabl(1) = 0.0_eb
-    fun(1) = 0.0_eb
-    do i = 2, ntab
-        xxim1 = i - 1
-        rr = xxim1*dr
-        fun(i) = rr*func(rr)
-        tabl(i) = tabl(i-1) + (fun(i)+fun(i-1))*dr2
-    end do
-    return
-    end subroutine maktabl
-
-! --------------------------- convec -------------------------------------------
-
-    subroutine inttabl (r,ans)
-
-    !     Routine:     INTTABL
-    !
-    !     Source File: CEILHT.SOR
-    !
-    !     Functional Class:  
-    !
-    !     Description:  
-    !
-    !     Arguments: R
-    !                ANS
-
-    use precision_parameters
-    implicit none
-
-    real(eb) :: tabl(100), xxntabm1, dr, rmax, r, tab1, tab2, xxir, rr1, rr2, ans
-    integer :: ir, ntab
-    common /trptabl/ tabl, rmax, ntab
-    save /trptabl/
-    
-    xxntabm1 = ntab - 1
-    dr = rmax/xxntabm1 
-    ir = 1.0_eb + r/dr
-    if (ir<1) ir = 1
-    if (ir>ntab-1) ir = ntab - 1
-    tab1 = tabl(ir)
-    tab2 = tabl(ir+1)
-    xxir = ir
-    rr1 = (xxir-1.0_eb)*dr
-    rr2 = xxir*dr
-    ans = (tab1*(rr2-r)+tab2*(r-rr1))/dr
-    return
-    end subroutine inttabl
-
-! --------------------------- convec -------------------------------------------
+! --------------------------- qfclg -------------------------------------------
 
     real(eb) function qfclg (r)
 
@@ -540,8 +412,8 @@
 
     !     routine:     cjet
 
-    !     description:  interface between resid and ceilht.  loops over
-    !                 rooms setting up varibles to pass.  calls ceilht
+    !     description:  interface between resid and cjet_detectors.  loops over
+    !                 rooms setting up varibles to pass.  calls cjet_detectors
     !                 only when fires are in a room otherwise sets zeros
     !                 for flxcjt.  then uses flxcjt to figure flwcjt.
     !
@@ -556,7 +428,7 @@
 
     implicit none
 
-    real(eb) :: flwcjt(nr,2), flxcjt(nr,nwal), zloc, tceil, tuwall, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
+    real(eb) :: flwcjt(nr,2), flxcjt(nr,nwal), zloc, tceil, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
     integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
 
     do i = 1, nm1
@@ -595,13 +467,8 @@
                 else
                     tceil = zztemp(i,upper)
                 endif
-                if (switch(3,i)) then
-                    tuwall = twj(1,i,3)
-                else
-                    tuwall = zztemp(i,upper)
-                endif
-                call ceilht(xfire(ifpnt,f_plume_zpos),xfire(ifpnt,f_qfc),tceil,zztemp(i,lower),zztemp(i,upper),tuwall,br(i),dr(i), &
-                hr(i),xfire(ifpnt,f_fire_xpos),xfire(ifpnt,f_fire_ypos),xfire(ifpnt,f_fire_zpos),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper),cjetopt, &
+                call cjet_detectors(xfire(ifpnt,f_plume_zpos),xfire(ifpnt,f_qfc),tceil,zztemp(i,lower),zztemp(i,upper),br(i),dr(i), &
+                hr(i),xfire(ifpnt,f_fire_xpos),xfire(ifpnt,f_fire_ypos),xfire(ifpnt,f_fire_zpos),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper), &
                 xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
                 flxcjt(i,1) = flxcjt(i,1) + qfclga
                 flxcjt(i,3) = flxcjt(i,3) + qfwua

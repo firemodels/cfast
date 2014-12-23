@@ -209,10 +209,10 @@
     !   this subroutine and the function qfclg used in its called subroutines use the common blocks aintch
 
     external qfclg
-    integer :: id
+    integer :: id, ntab
     real(eb) :: ct, cp, pr, rk1, xf, yf, rfmin, tc, atc, alpha, qeq, zeq, alfm1, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
         h, sqrtgh, qh, qhp, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
-        rlamr, tmaxmtu, ths, thta, tcj, tdmax, qfclg
+        rlamr, tmaxmtu, ths, thta, tcj, tdmax, qfclg, rmax
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
     logical :: first = .true.
@@ -332,6 +332,12 @@
     c3 = 0.283032655_eb/(re**0.3_eb*prp)
     c4 = 0.94_eb/((re**0.42_eb)*pr)
 
+    rmax = sqrt(max(yf,yw-yf)**2+max(xf,xw-xf)**2)
+
+    ! make an integral table of size ntab from zero to rmax.
+    ntab = 20
+    call maktabl(rmax,ntab,qfclg)
+
     !calculate velocity and temperatures of the ceiling jet at detector locations
     do id = 1, nd
         rd = sqrt((axf-xd(id))**2+(ayf-yd(id))**2)
@@ -354,7 +360,7 @@
             vcj = vmax/cosh(arg)**2
         endif
 
-        rlamr = qfclg(rd)
+        call inttabl(rd,rlamr)
         rlamr = 2.0_eb*pi*rlamr/qconv
         tmaxmtu = 2.6_eb*(1.0_eb-rlamr)*qh**twothirds*tu/rdh**0.80_eb - 0.90_eb*(tc-tu)
         ths = (tc-tu)/tmaxmtu
@@ -371,7 +377,86 @@
     return
     end subroutine cjet_detectors
 
-! --------------------------- qfclg -------------------------------------------
+! --------------------------- convec -------------------------------------------
+
+    subroutine maktabl (r,n,func)
+
+    !     Routine:     MAKTABL
+    !
+    !     Source File: CEILHT.SOR
+    !
+    !     Functional Class:  
+    !
+    !     Description:  
+    !
+    !     Arguments: R
+    !                N
+    !                FUNC
+
+
+    use precision_parameters
+    implicit none
+
+    external func
+    real(eb) :: tabl(100), fun(100), rmax, r, xxntabm1, dr, dr2, xxim1, func, rr
+    integer :: i, ntab, n
+    common /trptabl/ tabl, rmax, ntab
+    save /trptabl/
+
+    ntab = n
+    rmax = r
+    xxntabm1 = ntab - 1
+    dr = rmax/xxntabm1
+    dr2 = dr/2.0_eb
+    tabl(1) = 0.0_eb
+    fun(1) = 0.0_eb
+    do i = 2, ntab
+        xxim1 = i - 1
+        rr = xxim1*dr
+        fun(i) = rr*func(rr)
+        tabl(i) = tabl(i-1) + (fun(i)+fun(i-1))*dr2
+    end do
+    return
+    end subroutine maktabl
+
+! --------------------------- convec -------------------------------------------
+
+    subroutine inttabl (r,ans)
+
+    !     Routine:     INTTABL
+    !
+    !     Source File: CEILHT.SOR
+    !
+    !     Functional Class:  
+    !
+    !     Description:  
+    !
+    !     Arguments: R
+    !                ANS
+
+    use precision_parameters
+    implicit none
+
+    real(eb) :: tabl(100), xxntabm1, dr, rmax, r, tab1, tab2, xxir, rr1, rr2, ans
+    integer :: ir, ntab
+    common /trptabl/ tabl, rmax, ntab
+    save /trptabl/
+    
+    xxntabm1 = ntab - 1
+    dr = rmax/xxntabm1 
+    ir = 1.0_eb + r/dr
+    if (ir<1) ir = 1
+    if (ir>ntab-1) ir = ntab - 1
+    tab1 = tabl(ir)
+    tab2 = tabl(ir+1)
+    xxir = ir
+    rr1 = (xxir-1.0_eb)*dr
+    rr2 = xxir*dr
+    ans = (tab1*(rr2-r)+tab2*(r-rr1))/dr
+    return
+    end subroutine inttabl
+
+! --------------------------- convec -------------------------------------------
 
     real(eb) function qfclg (r)
 

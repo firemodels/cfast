@@ -5,7 +5,6 @@ VERSN,6,Steckler Compartment Test 810
 TIMES,1800,-50,0,10,10
 EAMB,286.15,101300,0
 TAMB,286.15,101300,0,50
-CJET,WALLS
 WIND,0,10,0.16
 !!
 !!Material Properties

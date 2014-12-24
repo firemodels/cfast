@@ -5,7 +5,6 @@ VERSN,6,ICFMP 3 Test 3 Leakage vents and mechanical ventilation
 TIMES,600,-10,0,10,1
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
-CJET,WALLS
 WIND,0,10,0.16
 !!
 !!Material Properties

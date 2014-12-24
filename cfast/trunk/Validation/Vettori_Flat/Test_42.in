@@ -5,7 +5,6 @@ VERSN,6,Vettori_Flat_Test_42
 TIMES,200,-50,0,10,1
 EAMB,295.55,101300,0
 TAMB,295.55,101300,0,50
-CJET,WALLS
 WIND,0,10,0.16
 !!
 !!Material Properties

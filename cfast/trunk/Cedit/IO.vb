@@ -268,17 +268,6 @@ Module IO
         csv.Num(i, ambNum.refHeight) = myEnvironment.IntAmbElevation
         csv.Num(i, ambNum.relHumidity) = myEnvironment.IntAmbRH
         i += 1
-        'Oxygen limit
-        'csv.str(i, CFASTlnNum.keyWord) = "LIMO2"
-        'csv.Num(i, 2) = myEnvironment.LowerOxygenLimit
-        'i += 1
-        'ceiling jet
-        csv.str(i, CFASTlnNum.keyWord) = "CJET"
-        If myEnvironment.CeilingJet = 0 Then csv.str(i, cjetNum.type) = "OFF"
-        If myEnvironment.CeilingJet = 1 Then csv.str(i, cjetNum.type) = "CEILING"
-        If myEnvironment.CeilingJet = 2 Then csv.str(i, cjetNum.type) = "WALLS"
-        If myEnvironment.CeilingJet = 3 Then csv.str(i, cjetNum.type) = "ALL"
-        i += 1
         'wind
         csv.str(i, CFASTlnNum.keyWord) = "WIND"
         csv.Num(i, windNum.velocity) = myEnvironment.ExtWindSpeed
@@ -825,14 +814,8 @@ Module IO
                             myEnvironment.IgnitionTemp = csv.Num(i, chemieNum.igntemp)
                             myEnvironment.Changed = False
                         End If
-                    Case "CJET"
-                        Dim iCjet As Integer
-                        iCjet = InStr(CJetNames, csv.str(i, cjetNum.type)) / 7
-                        If iCjet >= 0 And iCjet <= 3 Then
-                            If iCjet = 3 Then iCjet = 2
-                            myEnvironment.CeilingJet = iCjet
-                        End If
-                    Case "COMPA"        'Done in first loop
+                    Case "CJET"         ' This is an obsolescent command
+                    Case "COMPA"        ' Done in first loop
                     Case "DETECT"
                         Dim aDetect As New Target
                         aDetect.Type = Target.TypeDetector

@@ -651,7 +651,6 @@ Public Class UpdateGUI
             MainWin.GroupFireObject.Enabled = False
         Else
             Dim aFireObject As New Fire
-            MainWin.FireCeilingJet.SelectedIndex = myEnvironment.CeilingJet
             MainWin.FireLOL.Text = myEnvironment.LowerOxygenLimit.ToString + " %"
             MainWin.FireIgnitionTemperature.Text = myEnvironment.IgnitionTemp.ToString + myUnits.Convert(UnitsNum.Temperature).Units
 

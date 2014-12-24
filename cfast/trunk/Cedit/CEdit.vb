@@ -1,4 +1,5 @@
 Public Class CeditMain
+
     Inherits System.Windows.Forms.Form
     Private UpdateGUI As New UpdateGUI(Me)
     Private UserUnits As New User_Units
@@ -132,7 +133,6 @@ Public Class CeditMain
     Friend WithEvents Label69 As System.Windows.Forms.Label
     Friend WithEvents Label70 As System.Windows.Forms.Label
     Friend WithEvents Label52 As System.Windows.Forms.Label
-    Friend WithEvents Label62 As System.Windows.Forms.Label
     Friend WithEvents Label55 As System.Windows.Forms.Label
     Friend WithEvents Label61 As System.Windows.Forms.Label
     Friend WithEvents Label72 As System.Windows.Forms.Label
@@ -220,7 +220,6 @@ Public Class CeditMain
     Friend WithEvents FireRemove As System.Windows.Forms.Button
     Friend WithEvents FireAdd As System.Windows.Forms.Button
     Friend WithEvents FireDup As System.Windows.Forms.Button
-    Friend WithEvents FireCeilingJet As System.Windows.Forms.ComboBox
     Friend WithEvents FireLOL As System.Windows.Forms.TextBox
     Friend WithEvents DetectorSprayDensity As System.Windows.Forms.TextBox
     Friend WithEvents DetectorRTI As System.Windows.Forms.TextBox
@@ -654,8 +653,6 @@ Public Class CeditMain
         Me.FireYNormal = New System.Windows.Forms.TextBox()
         Me.FireZNormal = New System.Windows.Forms.TextBox()
         Me.Label68 = New System.Windows.Forms.Label()
-        Me.FireCeilingJet = New System.Windows.Forms.ComboBox()
-        Me.Label62 = New System.Windows.Forms.Label()
         Me.FireLOL = New System.Windows.Forms.TextBox()
         Me.Label55 = New System.Windows.Forms.Label()
         Me.GroupFireObject = New System.Windows.Forms.GroupBox()
@@ -2788,8 +2785,6 @@ Public Class CeditMain
         Me.TabFires.Controls.Add(Me.FireAdd)
         Me.TabFires.Controls.Add(Me.FireDup)
         Me.TabFires.Controls.Add(Me.GroupFire)
-        Me.TabFires.Controls.Add(Me.FireCeilingJet)
-        Me.TabFires.Controls.Add(Me.Label62)
         Me.TabFires.Controls.Add(Me.FireLOL)
         Me.TabFires.Controls.Add(Me.Label55)
         Me.TabFires.Controls.Add(Me.GroupFireObject)
@@ -2802,15 +2797,15 @@ Public Class CeditMain
         '
         'FireIgnitionTemperature
         '
-        Me.FireIgnitionTemperature.Location = New System.Drawing.Point(844, 104)
+        Me.FireIgnitionTemperature.Location = New System.Drawing.Point(844, 71)
         Me.FireIgnitionTemperature.Name = "FireIgnitionTemperature"
         Me.FireIgnitionTemperature.Size = New System.Drawing.Size(80, 20)
         Me.FireIgnitionTemperature.TabIndex = 7
-        Me.FireIgnitionTemperature.Text = "20 °C"
+        Me.FireIgnitionTemperature.Text = "120 °C"
         '
         'Label17
         '
-        Me.Label17.Location = New System.Drawing.Point(732, 98)
+        Me.Label17.Location = New System.Drawing.Point(732, 65)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(107, 32)
         Me.Label17.TabIndex = 71
@@ -3094,29 +3089,9 @@ Public Class CeditMain
         Me.Label68.Text = "Normal, X:"
         Me.Label68.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'FireCeilingJet
-        '
-        Me.FireCeilingJet.ItemHeight = 13
-        Me.FireCeilingJet.Items.AddRange(New Object() {"Off", "Ceiling", "Ceiling & Walls"})
-        Me.FireCeilingJet.Location = New System.Drawing.Point(844, 40)
-        Me.FireCeilingJet.Name = "FireCeilingJet"
-        Me.FireCeilingJet.Size = New System.Drawing.Size(96, 21)
-        Me.FireCeilingJet.TabIndex = 5
-        Me.FireCeilingJet.Text = "Off"
-        '
-        'Label62
-        '
-        Me.Label62.AutoSize = True
-        Me.Label62.Location = New System.Drawing.Point(780, 40)
-        Me.Label62.Name = "Label62"
-        Me.Label62.Size = New System.Drawing.Size(58, 13)
-        Me.Label62.TabIndex = 69
-        Me.Label62.Text = "Ceiling Jet:"
-        Me.Label62.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
         'FireLOL
         '
-        Me.FireLOL.Location = New System.Drawing.Point(844, 72)
+        Me.FireLOL.Location = New System.Drawing.Point(844, 39)
         Me.FireLOL.Name = "FireLOL"
         Me.FireLOL.Size = New System.Drawing.Size(80, 20)
         Me.FireLOL.TabIndex = 6
@@ -3125,7 +3100,7 @@ Public Class CeditMain
         'Label55
         '
         Me.Label55.AutoSize = True
-        Me.Label55.Location = New System.Drawing.Point(732, 72)
+        Me.Label55.Location = New System.Drawing.Point(732, 39)
         Me.Label55.Name = "Label55"
         Me.Label55.Size = New System.Drawing.Size(102, 13)
         Me.Label55.TabIndex = 59
@@ -5301,9 +5276,8 @@ Public Class CeditMain
 
         End If
     End Sub
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FirePlumeType.SelectedIndexChanged, FireName.SelectedIndexChanged, FireCeilingJet.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FirePlumeType.SelectedIndexChanged, FireName.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
         Dim aFire As New Fire, aFireObject As New Fire
-        If sender Is Me.FireCeilingJet Then myEnvironment.CeilingJet = Me.FireCeilingJet.SelectedIndex
         If sender Is Me.FireLOL Then myEnvironment.LowerOxygenLimit = Val(Me.FireLOL.Text)
         If sender Is Me.FireIgnitionTemperature Then myEnvironment.IgnitionTemp = Val(Me.FireIgnitionTemperature.Text)
         If CurrentFire >= 0 And myFires.Count > 0 Then

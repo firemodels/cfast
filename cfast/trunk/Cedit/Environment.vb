@@ -19,7 +19,6 @@ Public Class Environment
     Private aExtWindSpeed As Single                 ' Ambient wind speed outside the structure
     Private aExtScaleHeight As Single               ' Height at which wind speed is measured
     Private aExtPowerLawCoefficient As Single       ' Power law coefficient for calculation of wind speed at height, normally 0.16
-    Private aCeilingJet As Integer                  ' Specifies calculation of ceiling jet heat transfer. 0 for off, 1 for ceiling, 2 for ceiling and walls, 3 for all surfaces
     Private aLowerOxygenLimit As Single             ' Oxygen concentration below which burning will not take place.  Default is 10 % by volume
     Private aIgnitionTemp As Single                 ' Gaseous ignition temperature of the fuel, default is ambient + 100 °C
     Private aMaximumTimeStep As Single              ' Maximum time step for model calculations
@@ -44,7 +43,6 @@ Public Class Environment
         aExtWindSpeed = 0.0
         aExtScaleHeight = 10.0
         aExtPowerLawCoefficient = 0.16
-        aCeilingJet = 2
         aLowerOxygenLimit = 10.0
         aIgnitionTemp = aIntAmbTemperature + 100.0
         aMaximumTimeStep = -1.0
@@ -220,17 +218,6 @@ Public Class Environment
             If Value <> aLowerOxygenLimit Then
                 aChanged = True
                 aLowerOxygenLimit = Value
-            End If
-        End Set
-    End Property
-    Friend Property CeilingJet() As Integer
-        Get
-            Return aCeilingJet
-        End Get
-        Set(ByVal Value As Integer)
-            If Value <> aCeilingJet And Value >= 0 And Value <= 2 Then
-                aChanged = True
-                aCeilingJet = Value
             End If
         End Set
     End Property

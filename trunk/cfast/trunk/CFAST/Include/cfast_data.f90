@@ -113,7 +113,7 @@ module cfast_main
     real(eb) :: tgignt
     real(eb) :: tref, windpw, windrf, windv
 
-    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), cjeton(nwal+1), heatfl
+    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), heatfl
 
     character(128) :: title, compartmentnames(nr)
    
@@ -372,7 +372,7 @@ module opt
 
     integer, dimension(mxopt) :: option = &
         ! fire, hflow, entrain, vflow, cjet
-        (/   2,     1,       1,     1,   2,  &
+        (/   2,     1,       1,     1,   1,  &
         ! door-fire, convec, rad, conduct, debug
                   1,      1,   2,       1,     0,  &
         ! exact ode,  hcl, mflow, keyboard, type of initialization

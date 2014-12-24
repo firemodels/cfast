@@ -848,9 +848,6 @@
     hcldep = 0
     smkagl = 0
     n = 0
-    do i = 1, nwal + 1
-        cjeton(i) = .false.
-    end do
 
     ! initialize the flow variables
     do i = 1, nr

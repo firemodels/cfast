@@ -53,7 +53,7 @@
     real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
     real(eb) :: flwcv0(nr,2), flxcv0(nr,nwal)
     
-    integer cjetopt, i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay
+    integer i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay
     logical roomflg(nr), wallflg(4*nr)
     save flwcv0, flxcv0
 
@@ -65,8 +65,6 @@
         end do
     end do
     if (option(fconvec)/=on) return
-
-    cjetopt = option(fcjet)
 
     do i = 1, nm1
         roomflg(i) = .true.
@@ -113,13 +111,7 @@
             else
                 ilay = lower
             endif
-
-            ! ceiling jet heat transfer is not active if cjetopt=2.  use normal (call convec) instead
-            if (cjetopt/=2.and.cjeton(iwall).and.nrmfire/=0) then
-                flxcv(i,iwall) = 0.0_eb
-            else
-                call convec(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
-            endif
+            call convec(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
             flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)
         endif
     end do
@@ -482,17 +474,13 @@
     end function qfclg
 ! --------------------------- cjet -------------------------------------------
 
-    subroutine cjet (flwcjt,flxcjt)
+    subroutine cjet
 
     !     routine:     cjet
 
     !     description:  interface between resid and cjet_detectors.  loops over
     !                 rooms setting up varibles to pass.  calls cjet_detectors
-    !                 only when fires are in a room otherwise sets zeros
-    !                 for flxcjt.  then uses flxcjt to figure flwcjt.
-    !
-    !     arguments: flwcjt  net enthalphy into each layer
-    !                flxcjt  net enthalphy flux onto surface
+    !                 only when fires are in a room
 
     use precision_parameters
     use cenviro
@@ -502,17 +490,9 @@
 
     implicit none
 
-    real(eb) :: flwcjt(nr,2), flxcjt(nr,nwal), zloc, tceil, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
-    integer :: cjetopt, i, id, iroom, nrmfire, nd, ifire, ifpnt, iwall, ilay
+    real(eb) :: zloc, tceil, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
+    integer :: i, id, iroom, nrmfire, nd, ifire, ifpnt
 
-    do i = 1, nm1
-        flxcjt(i,1) = 0.0_eb
-        flxcjt(i,2) = 0.0_eb
-        flxcjt(i,3) = 0.0_eb
-        flxcjt(i,4) = 0.0_eb
-        flwcjt(i,1) = 0.0_eb
-        flwcjt(i,2) = 0.0_eb
-    end do
     do id = 1, ndtect
         iroom = ixdtect(id,droom)
         xdtect(id,dvel) = 0.0_eb
@@ -524,7 +504,6 @@
         endif
     end do
     if (option(fcjet)==off) return
-    cjetopt = option(fcjet)
 
     do i = 1, nm1
         nrmfire = ifrpnt(i,1)
@@ -533,7 +512,7 @@
 
         ! handle ceiling jets that are not in active halls
 
-        if (cjeton(nwal+1).and.nrmfire>0.and.izhall(i,ihmode)/=ihduring) then
+        if (nrmfire>0.and.izhall(i,ihmode)/=ihduring) then
             do ifire = 1, nrmfire
                 ifpnt = ifrpnt(i,2) + ifire - 1
                 if (switch(1,i)) then
@@ -544,29 +523,13 @@
                 call cjet_detectors(xfire(ifpnt,f_plume_zpos),xfire(ifpnt,f_qfc),tceil,zztemp(i,lower),zztemp(i,upper),br(i),dr(i), &
                 hr(i),xfire(ifpnt,f_fire_xpos),xfire(ifpnt,f_fire_ypos),xfire(ifpnt,f_fire_zpos),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper), &
                 xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
-                flxcjt(i,1) = flxcjt(i,1) + qfclga
-                flxcjt(i,3) = flxcjt(i,3) + qfwua
-                flxcjt(i,4) = flxcjt(i,4) + qfwla
+
             end do
         endif
 
         ! handle ceiling jets that are in active halls
         if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)
 
-        do iwall = 1, 4
-            if(mod(iwall,2)==1)then
-                ilay = upper
-            else
-                ilay = lower
-            endif
-
-            ! if (.not.(ceiling jet in fire room)) then flux to iwall = 0.
-
-            if (.not.(switch(iwall,i).and.cjeton(iwall).and.nrmfire>0)) then
-                flxcjt(i,iwall) = 0.0_eb
-            endif
-            flwcjt(i,ilay) = flwcjt(i,ilay) - zzwarea(i,iwall)*flxcjt(i,iwall)
-        end do
     end do
     return
     end subroutine cjet

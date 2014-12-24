@@ -1109,7 +1109,6 @@
     ! data structures for convection, radiation, and ceiling jets
     real(eb) :: flwcv(nr,2), flxcv(nr,nwal)
     real(eb) :: flwrad(nr,2), flxrad(nr,nwal)
-    real(eb) :: flwcjet(nr,2), flxcjet(nr,nwal)
 
     ! data structures for mechanical vents
     real(eb) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
@@ -1180,7 +1179,7 @@
     call djet (flwdjf,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
-    call cjet (flwcjet,flxcjet)
+    call cjet
     call cvheat (flwcv,flxcv)
     call rdheat (flwrad,flxrad,ierror)
     if (ierror/=0) then
@@ -1200,7 +1199,7 @@
         ! add in vent fires to the total.  dofire does the total of
         ! qf for normal fires, but vent fires are done afterwards with djet
         do j = 1, nwal
-            qscnv(j,i) = flxcjet(i,j) + flxcv(i,j)
+            qscnv(j,i) = flxcv(i,j)
         end do
     end do
     if(djetflg)then
@@ -1247,8 +1246,8 @@
             flwtot(iroom,8,uu) = flwtot(iroom,8,uu)+flwhcl(iroom,8,uu)
         endif
 
-        flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll) + flwcjet(iroom,ll)
-        flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu) + flwcjet(iroom,uu)
+        flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll)
+        flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu)
         
 
         ! if this room is a shaft then solve for only one zone.
@@ -1279,14 +1278,14 @@
 
     if (update==all) then
         if (residprn) then
-            call spreadsheetresid(tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet)
+            call spreadsheetresid(tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
         endif
     endif
     ! sum flux for inside rooms
     do iroom = 1, nirm
         do iwall = 1, nwal
             if (switch(iwall,iroom)) then
-                flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall) + flxcjet(iroom,iwall)
+                flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall)
             endif
         end do
     end do

@@ -516,7 +516,7 @@
 
 ! --------------------------- spreadsheetresid -------------------------------------------
 
-    subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad, flwcjet)
+    subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
     
     use precision_parameters
     use debug
@@ -537,10 +537,9 @@
     ! data structures for fires
     real(eb), intent(in) :: flwf(nr,ns+2,2)
 
-    ! data structures for convection, radiation, and ceiling jets
+    ! data structures for convection and radiation
     real(eb), intent(in) :: flwcv(nr,2)
     real(eb), intent(in) :: flwrad(nr,2)
-    real(eb), intent(in) :: flwcjet(nr,2)
 
     ! data structures for mechanical vents
     real(eb), intent(in) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
@@ -583,7 +582,6 @@
             end do
             call SSaddtolist (position,flwcv(i,j),outarray)
             call SSaddtolist (position,flwrad(i,j),outarray)
-            call SSaddtolist (position,flwcjet(i,j),outarray)
         end do
     end do
     ! species mass flow    
@@ -600,7 +598,6 @@
     !        end do
     !        call SSaddtolist (position,flwcv(i,j),outarray)
     !        call SSaddtolist (position,flwrad(i,j),outarray)
-    !        call SSaddtolist (position,flwcjet(i,j),outarray)
     !    end do
     !end do
 

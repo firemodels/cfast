@@ -851,36 +851,15 @@
     use vents
     implicit none
 
-    character chjet(4)*7, cjbuf*51
-    data chjet /'off', 'ceiling', 'wall', 'all'/
-    integer :: jpos
-
     write (iofilo,5000) 
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
     write (iofilo,5020) nsmax, lprint, ldiagp, lcopyss
-    if (cjeton(5)) then
-        if (cjeton(1)) then
-            if (cjeton(3)) then
-                jpos = 3
-            else
-                jpos = 1
-            endif
-        else if (cjeton(3)) then
-            jpos = 2
-        endif
-        write (cjbuf,'(''on for '',a7)') chjet(jpos+1)
-    else
-        write (cjbuf,'(''off for all surfaces.'')')
-    endif
-    write (iofilo,5030) cjbuf
-    return
 
 5000 format (//,' OVERVIEW',/)
 5010 FORMAT ('0Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,'0',i4,12x,i4,10x,i4,17x,i4)
 5020 format ('0Simulation     Output         Smokeview      Spreadsheet',/, &
              ' Time           Interval       Interval       Interval',/, & 
              ' (s)            (s)            (s)            (s)',/,' ',i6,6x,3(i6,9x))
-5030 format ('0Ceiling jet is ',a)
     end subroutine outover
 
 ! --------------------------- outamb -------------------------------------------

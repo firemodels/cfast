@@ -507,7 +507,7 @@
     logical :: lfupdat, countargs, lstat
     integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato, fanfraction, heatfplume, frac, tmpcond, dnrm2
-    character :: cjtype*1,label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
+    character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
     data plumemodel /'McCaffrey', 'Heskestad'/
@@ -1245,33 +1245,6 @@
                 stpmax = 1.0_eb
             endif
         endif
-
-        ! CJET - Ceiling jet for walls, ceiling, all, or off
-    case ('CJET')
-        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
-            ierror = 34
-            return
-        endif
-        DO  I = 1, 5
-            cjeton(i) = .false.
-        end do
-        cjtype = lcarray(1)(1:1)
-        if (cjtype/=' ') then
-            if (cjtype=='C') then
-                cjeton(1) = .true.
-                cjeton(5) = .true.
-            else if (cjtype=='W') then
-                cjeton(1) = .true.
-                cjeton(3) = .true.
-                cjeton(5) = .true.
-            else if (cjtype=='A') then
-                cjeton(1) = .true.
-                cjeton(3) = .true.
-                cjeton(4) = .true.
-                cjeton(5) = .true.
-            endif
-        endif
-        write(logerr,5341) cjeton
 
         ! STPMAX # - set the maximum time step to #
     case ('STPMA')

@@ -593,7 +593,7 @@
 
  subroutine ssHeadersResid
 
-    ! This is the header information for the normal spreadsheet output
+    ! This is the header information for the resid spreadsheet output
 
     use cfast_main
     use objects1
@@ -602,11 +602,11 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    character(35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2)
+    character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2)
     integer position, i, j, k, l, nprod
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow', 'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
-    'Convecxtive Flow', 'Radiative Flow', 'Ceiling Jet Flow'/
+    'Convective Flow', 'Radiative Flow'/
     data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/
 
@@ -651,10 +651,6 @@
             headertext(3,position) = LabelUnits(7)
             position = position + 1
             headertext(1,position) = trim(Labels(14))//trim(Layers(i))
-            headertext(2,position) = compartmentnames(j)
-            headertext(3,position) = LabelUnits(7)
-            position = position + 1
-            headertext(1,position) = trim(Labels(15))//trim(Layers(i))
             headertext(2,position) = compartmentnames(j)
             headertext(3,position) = LabelUnits(7)
         end do

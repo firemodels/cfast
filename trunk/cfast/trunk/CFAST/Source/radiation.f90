@@ -76,16 +76,9 @@
         zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(ar(i) + zzhlay(i, upper)*(dr(i) + br(i)))
     end do
 
-    !defabsup = 0.70_eb
-    !defabsup = 0.65_eb
-    !defabsup = 0.60_eb
-    !defabsup = 0.55_eb
     defabsup = 0.50_eb
-    !defabsup = 0.45_eb
-    !defabsup = 0.40_eb
-    !defabsup = 0.35_eb
-    !defabsup = 0.30_eb
     defabslow = 0.01_eb
+    
     if(lfbo/=0.and.option(frad)/=4.and.lfbt/=1)then
         defabsup = absorb(lfbo,upper)
     endif
@@ -134,9 +127,6 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-                if(prnslab)then
-                    !write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
-                end if 
                 call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
@@ -149,12 +139,8 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-                if(prnslab)then
-                    !write(*,*)'******** absorb ', dbtime, i, zzabsb(upper,i), zzabsb(lower,i), zzhlay(i,lower)
-                end if 
                 call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
-
             endif
             if(ierror/=0) return
             do j = 1, nwal

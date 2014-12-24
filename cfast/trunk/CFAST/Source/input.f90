@@ -1666,7 +1666,8 @@
         heatfplume =  lrarray(5)
 
         ! Outdated keywords
-    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER')
+    case ('CJET')                                   ! Just ignore these inputs ... they shouldn't be fatal
+    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER')  ! these are clearly outdated and should produce errors
         ierror = 5
         return
 

@@ -5,7 +5,6 @@ VERSN,6,"NBS Test MV100Z, Open Corridor Door, Open Target Room"
 TIMES,1500,-10,0,10,1
 EAMB,295.15,101300,0
 TAMB,295.15,101300,0,62
-CJET,WALLS
 WIND,0,10,0.16
 !!
 !!Material Properties

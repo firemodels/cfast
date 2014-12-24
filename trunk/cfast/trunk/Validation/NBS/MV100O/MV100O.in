@@ -5,7 +5,6 @@ VERSN,6,"NBS Test MV100O, Closed Corridor Door, No Target Room"
 TIMES,1500,-10,0,10,1
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,45
-CJET,WALLS
 WIND,0,10,0.16
 !!
 !!Material Properties

@@ -210,13 +210,12 @@
 
     external qfclg
     integer :: id, ntab
-    real(eb) :: ct, cp, pr, rk1, xf, yf, rfmin, tc, atc, alpha, qeq, zeq, alfm1, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
-        h, sqrtgh, qh, qhp, htct, anu, re, thtqhp, prp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
+    real(eb) :: xf, yf, rfmin, tc, atc, alpha, qeq, zeq, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
+        h, qh, htct, anu, re, thtqhp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
         rlamr, tmaxmtu, ths, thta, tcj, tdmax, qfclg, rmax
+    real(eb), parameter :: ct = 9.115_eb, cp = 1012.0_eb, pr = 0.70_eb, rk1 = (0.23_eb/0.77_eb)*log(sqrt(2.0_eb)-1.0_eb)
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
-    logical :: first = .true.
-    save first, ct, cp, pr, rk1
 
     qceil = 0.0_eb
     qfclga = 0.0_eb
@@ -229,13 +228,7 @@
         end do
         return
     endif
-    if (first) then
-        first = .false.
-        ct = 9.115_eb
-        cp = 1012.0_eb
-        pr = 0.70_eb
-        rk1 = (0.23_eb/0.77_eb)*log(sqrt(2.0_eb)-1.0_eb)
-    endif
+   
     xf = axf
     yf = ayf
     rfmin = 0.20_eb*(zc-zf)
@@ -261,9 +254,8 @@
         if (zlay<zc) then
 
             ! layer interface is below ceiling
-            alfm1 = alpha - 1.0_eb
-            if (alfm1/=0.0_eb) then
-                sigma_convection = -1.0_eb + ct*qeq**twothirds/alfm1
+            if ((alpha - 1.0_eb)/=0.0_eb) then
+                sigma_convection = -1.0_eb + ct*qeq**twothirds/(alpha - 1.0_eb)
                 a1 = sigma_convection/(sigma_convection+1.0_eb)
                 if (sigma_convection>0.0_eb) then
                     ssq = sigma_convection**2
@@ -319,17 +311,14 @@
         endif
     endif
     h = zc - zs
-    sqrtgh = sqrt(grav_con*h)
-    qh = qcont/(rhoht*cp*tht*sqrtgh*h**2)
-    qhp = (qh**onethird)
-    htct = rhoht*cp*sqrtgh*qhp
+    qh = qcont/(rhoht*cp*tht*sqrt(grav_con*h)*h**2)
+    htct = rhoht*cp*sqrt(grav_con*h)*qh**onethird
     anu = (0.04128e-7_eb*tht**2.5_eb)/(tht+110.4_eb)
-    re = sqrtgh*h*qhp/anu
-    thtqhp = tht*qhp**2
-    prp = pr**twothirds
-    c1 = 8.82_eb/(sqrt(re)*prp)
+    re = sqrt(grav_con*h)*h*qh**onethird/anu
+    thtqhp = tht*qh**twothirds
+    c1 = 8.82_eb/(sqrt(re)*pr**twothirds)
     c2 = 5.0_eb - 0.284_eb*re**0.2_eb
-    c3 = 0.283032655_eb/(re**0.3_eb*prp)
+    c3 = 0.283032655_eb/(re**0.3_eb*pr**twothirds)
     c4 = 0.94_eb/((re**0.42_eb)*pr)
 
     rmax = sqrt(max(yf,yw-yf)**2+max(xf,xw-xf)**2)
@@ -346,7 +335,7 @@
             rdh = 0.20_eb
             rd = rdh*h
         endif
-        v = sqrtgh*qhp
+        v = sqrt(grav_con*h)*qh**onethird
         vmax = 0.85_eb*v/rdh**1.1_eb
         vdmax = vmax
         delta = 0.1_eb*h*rdh**0.9_eb
@@ -562,7 +551,7 @@
         endif
 
         ! handle ceiling jets that are in active halls
-        if(izhall(i,ihmode)==ihduring)call hallht(i,id,nd)
+        if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)
 
         do iwall = 1, 4
             if(mod(iwall,2)==1)then

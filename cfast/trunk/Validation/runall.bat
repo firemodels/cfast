@@ -526,9 +526,22 @@ if %1==Dunes2000 goto end
 echo NBS Plaza Hotel test 7
 cd Multi
 if NOT %1==ALL call ..\cleancfast.bat
-..\..\bin\cfast.exe Multi /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
 if %1==PLAZA goto end
 :end
+
+echo Waiting for all CFAST runs to finish
+:loop1
+tasklist | find /i /c "CFAST" > temp.out
+set /p numexe=<temp.out
+echo Number of cases running - %numexe%
+if %numexe% == 0 goto finished
+Timeout /t 30 >nul 
+goto loop1
+
+:finished
+echo CFAST cases finished
+
 echo.| time
 echo CFAST simulations complete.

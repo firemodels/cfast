@@ -501,7 +501,7 @@
 
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
-        call target(steady)
+        call target_flux(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
         call remapfires (nfires)
         call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
@@ -585,7 +585,7 @@
             ! if we actually use target temperatures in a calculation then this call will need to be moved to inside resid.
 
             if(.not.ltarg)then
-                call target(steady)
+                call target_flux(steady)
                 ltarg = .true.
             endif
 
@@ -603,7 +603,7 @@
         if (t+0.0001_eb>min(tplot,tstop).and.iplot) then
             itmstp = tplot
             if(.not.ltarg)then
-                call target(steady)
+                call target_flux(steady)
                 ltarg = .true.
             endif
             ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
@@ -627,7 +627,7 @@
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
             itmstp = tspread
             if(.not.ltarg)then
-                call target(steady)
+                call target_flux(steady)
                 ltarg = .true.
             endif
             call spreadsheetnormal (t)
@@ -874,8 +874,8 @@
     end do
 
     ! advance explicit target temperatures and update implicit temperatures
-    call trheat(1,xplicit,dt,pdzero,pdnew)
-    call trheat(1,mplicit,dt,pdzero,pdnew)
+    call target(1,xplicit,dt,pdzero,pdnew)
+    call target(1,mplicit,dt,pdzero,pdnew)
     if (nlspct>0) call resync(p,nodes+1)
 
     do i = 1, nequals
@@ -1160,12 +1160,11 @@
         qf(i) = 0.0_eb
     end do
 
-    ! calculate flow due to unforced vents (hflow for horizontal flow
-    ! through vertical vents and vflow for vertical flow through
-    ! horizontal vents)
-    call hflow (tsec,epsp,nprod,flwnvnt)
-    call vflow (tsec,flwhvnt,vflowflg)
-    call mvent (tsec,x(nofpmv+1),x(noftmv+1),xpsolve(noftmv+1),flwmv,delta(nofpmv+1),&
+    ! calculate flow due to unforced vents (horizontal_flow for doors/windows
+    ! and vertical_flow for ceiling/floor vents
+    call horizontal_flow (tsec,epsp,nprod,flwnvnt)
+    call vertical_flow (tsec,flwhvnt,vflowflg)
+    call mechanical_flow (tsec,x(nofpmv+1),x(noftmv+1),xpsolve(noftmv+1),flwmv,delta(nofpmv+1),&
                 delta(noftmv+1),xprime(nofhvpr+1),nprod,ierror,hvacflg,filtered)
 
     if (ierror/=0) then
@@ -1175,20 +1174,20 @@
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
-    call sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
-    call djet (flwdjf,djetflg)
+    call sort_fire (nfire,ifroom,xfire,ifrpnt,nm1)
+    call door_jet (flwdjf,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
-    call cjet
-    call cvheat (flwcv,flxcv)
-    call rdheat (flwrad,flxrad,ierror)
+    call ceiling_jet
+    call convection (flwcv,flxcv)
+    call radiation (flwrad,flxrad,ierror)
     if (ierror/=0) then
         ires = -2
         return
     endif
 
     ! calculate hcl deposition to walls
-    call hcl (flwhcl, flxhcl,ierror)
+    call hcl_deposition (flwhcl, flxhcl,ierror)
     if (ierror/=0) then
         ires = -2
         return
@@ -1196,8 +1195,8 @@
 
     ! reset parallel data structures
     do i = 1, nm1
-        ! add in vent fires to the total.  dofire does the total of
-        ! qf for normal fires, but vent fires are done afterwards with djet
+        ! add in vent fires to the total.  do_fire does the total of
+        ! qf for normal fires, but vent fires are done afterwards with door_jet
         do j = 1, nwal
             qscnv(j,i) = flxcv(i,j)
         end do
@@ -1272,7 +1271,6 @@
                 zzftemp(iroom,upper) = interior_temperature
             endif
         endif
-
 
     end do
 
@@ -1418,10 +1416,10 @@
     endif
 
     ! conduction residual
-    call cnheat(update,dt,flxtot,delta)
+    call conduction(update,dt,flxtot,delta)
 
     ! target residual
-    call trheat(0,mplicit,dt,xpsolve,delta)
+    call target(0,mplicit,dt,xpsolve,delta)
 
     ! residuals for stuff that is solved in solve itself, and not by dassl
     if (nprod/=0) then

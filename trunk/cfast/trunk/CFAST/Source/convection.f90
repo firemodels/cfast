@@ -31,9 +31,9 @@
 
 ! --------------------------- convec -------------------------------------------
 
-    subroutine cvheat (flwcv,flxcv)
+    subroutine convection (flwcv,flxcv)
 
-    !     routine:    cfcnvc
+    !     routine:    convection
     !     function:   interface between resid and convec.  loops over rooms
     !                 setting up varibles.  passes to convec if ceiling jet for
     !                 a surface is off, otherwise sets flxcv to 0.0 and then
@@ -142,7 +142,7 @@
         endif
     endif      
     return
-    end subroutine cvheat
+    end subroutine convection
 
 ! --------------------------- convec -------------------------------------------
 
@@ -472,11 +472,11 @@
     qfclg = htcl*(tad-tc)
     return
     end function qfclg
-! --------------------------- cjet -------------------------------------------
+! --------------------------- ceiling_jet -------------------------------------------
 
-    subroutine cjet
+    subroutine ceiling_jet
 
-    !     routine:     cjet
+    !     routine:     ceiling_jet
 
     !     description:  interface between resid and cjet_detectors.  loops over
     !                 rooms setting up varibles to pass.  calls cjet_detectors
@@ -532,7 +532,7 @@
 
     end do
     return
-    end subroutine cjet
+    end subroutine ceiling_jet
 
 ! --------------------------- convec -------------------------------------------
 

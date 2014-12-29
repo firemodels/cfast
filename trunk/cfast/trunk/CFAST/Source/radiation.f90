@@ -1,9 +1,9 @@
 
-! --------------------------- rdheat -------------------------------------------
+! --------------------------- radiation -------------------------------------------
 
-    subroutine rdheat(flwrad,flxrad,ierror)
+    subroutine radiation(flwrad,flxrad,ierror)
 
-    !     routine: rdheat
+    !     routine: radiation
     !     purpose: Interface between RESID and RAD2 or RAD4.  Loops over
     !              rooms setting up varibles to pass.  If one or more fires
     !              are in a room calls RAD4 otherwise RAD2.
@@ -180,7 +180,7 @@
         endif
     endif
     return
-    end subroutine rdheat
+    end subroutine radiation
 
 ! --------------------------- rad2 -------------------------------------------
 

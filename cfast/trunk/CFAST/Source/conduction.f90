@@ -1,9 +1,9 @@
 
-! --------------------------- cnheat -------------------------------------------
+! --------------------------- conduction -------------------------------------------
 
-    subroutine cnheat(update,dt,flxtot,delta)
+    subroutine conduction(update,dt,flxtot,delta)
 
-    !     routine: cnheat (main conduction routine)
+    !     routine: conduction (main conduction routine)
     !     purpose: interface between resid and the conduction calculation.
     !              for each active wall surface in each routine this
     !              routine calculates the residual function 
@@ -164,7 +164,7 @@
     endif
 
     return
-    end subroutine cnheat
+    end subroutine conduction
 
 ! --------------------------- ccnduct -------------------------------------------
 

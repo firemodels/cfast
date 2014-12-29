@@ -1,10 +1,10 @@
 
 
-! --------------------------- mvent -------------------------------------------
+! --------------------------- mechanical_flow -------------------------------------------
 
-    subroutine mvent (tsec, hvpsolv, hvtsolv, tprime, flwmv, deltpmv, delttmv, prprime, nprod, ierror, hvacflg, filtered)
+    subroutine mechanical_flow (tsec, hvpsolv, hvtsolv, tprime, flwmv, deltpmv, delttmv, prprime, nprod, ierror, hvacflg, filtered)
 
-    !     routine: mvent
+    !     routine: mechanical_flow
     !     purpose: physical interface routine to calculate flow through all forced vents (mechanical flow).
     !     it returns rates of mass and energy flows into the layers from all mechancial vents in the building.
     !     revision: $revision: 461 $
@@ -164,7 +164,7 @@
     endif
 
     return
-    end subroutine mvent
+    end subroutine mechanical_flow
 
 ! --------------------------- hvmflo -------------------------------------------
 

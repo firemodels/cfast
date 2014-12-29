@@ -66,7 +66,7 @@
         if (objpnt(i)>0) then
             iroom = objrm(i)
             iobj = objpnt(i)
-            call pyrols(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
+            call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
             oplume(1,iobj) = omasst
 
             do lsp = 1, ns
@@ -74,7 +74,7 @@
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
 
-            call dofire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
+            call do_fire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
             objpos(3,iobj)+ohight,oareat,oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
@@ -120,7 +120,7 @@
             froom(nobj) = iroom
             femp(nobj) = oplume(1,iobj)
             fems(nobj) = oplume(3,iobj)
-            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemie and pyrols)
+            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemie and interpolate_pyrolysis)
             femr(nobj) = oplume(1,iobj)*y_trace
             fqf(nobj) = heatlp(iroom) + heatup(iroom)
             fqfc(nobj) = qfc(1,iroom)
@@ -137,11 +137,11 @@
     return
     end
 
-! --------------------------- dofire -------------------------------------------
+! --------------------------- do_fire -------------------------------------------
 
-    subroutine dofire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
+    subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
 
-    !     routine: dofire
+    !     routine: do_fire
     !     purpose: do heat release and species from a fire
     !     arguments:  ifire: fire number (ifire=0 is the main fire)
     !                 iroom: room containing the fire
@@ -324,7 +324,7 @@
     endif
 
     return
-    end subroutine dofire
+    end subroutine do_fire
 
 ! --------------------------- chemie -------------------------------------------
 
@@ -433,11 +433,11 @@
 
     end subroutine chemie 
 
-! --------------------------- pyrols -------------------------------------------
+! --------------------------- interpolate_pyrolysis -------------------------------------------
 
-    subroutine pyrols (objn,time,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
+    subroutine interpolate_pyrolysis (objn,time,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
 
-    !     routine: pyrols
+    !     routine: interpolate_pyrolysis
     !     purpose: returns yields for object fires interpolated from user input 
     !     arguments:  objn: the object pointer number, 
     !                 time: current simulation time (s)
@@ -533,14 +533,14 @@
     endif
 
     return
-    end subroutine pyrols
+    end subroutine interpolate_pyrolysis
 
 ! --------------------------- fireplm -------------------------------------------
 
     subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
-    !     purpose: physical interface between dofire and the plume models
+    !     purpose: physical interface between do_fire and the plume models
 
     use precision_parameters
     implicit none
@@ -699,11 +699,11 @@
     return
     end subroutine integrate_mass
 
-! --------------------------- djet -------------------------------------------
+! --------------------------- door_jet -------------------------------------------
 
-    subroutine djet (flwdjf,djetflg)
+    subroutine door_jet (flwdjf,djetflg)
 
-    !     routine:  djet
+    !     routine:  door_jet
     !     description: physical interface routine to calculate the current
     !                  rates of mass and energy flows into the layers from
     !                  all door jet fires in the building.
@@ -839,7 +839,7 @@
         fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
     end do
     return
-    end subroutine djet
+    end subroutine door_jet
 
 ! --------------------------- djfire -------------------------------------------
 
@@ -1387,11 +1387,11 @@
     return
     end
 
-! --------------------------- hcl -------------------------------------------
+! --------------------------- hcl_deposition -------------------------------------------
 
-    subroutine hcl (flwhcl, flxhcl, ierror)
+    subroutine hcl_deposition (flwhcl, flxhcl, ierror)
 
-    !     routine: hcl
+    !     routine: hcl_deposition
     !     purpose: physical interface routine to do hcl deposition on wall surfaces.
     !     arguments: flwhcl  mass and energy flows into layers due to hcl deposition.
     !                flxhcl  hcl surface concentration flux.
@@ -1451,7 +1451,7 @@
                     hclw = zzwspec(iroom,iwall)
                     flux = qscnv(iwall,iroom)
                     tw = twj(1,iroom,iwall)
-                    call hcltran(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)
+                    call hcl_mass_transfer(iroom,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)
                     if (ierror/=0) return
 
                     ! sum up the flows and fluxes for the source routine
@@ -1464,11 +1464,11 @@
         end do
     endif
     return
-    end
+    end subroutine hcl_deposition
 
-! --------------------------- hcltran -------------------------------------------
+! --------------------------- hcl_mass_transfer -------------------------------------------
 
-    subroutine hcltran(icomp,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)
+    subroutine hcl_mass_transfer(icomp,iwall,arw,hclg,h2o,rho,tg,hclw,flux,tw,hwdot,hnet,ierror)
 
     !     routine: hcl
     !     purpose: routine to calculate the hydrogen chloride balance in the gas and on the wall surface.
@@ -1566,7 +1566,7 @@
     xtemp = -b4/(8.31_eb*tw)
     hwdot = hclcof - b3*exp(xtemp)*hclw
     return
-    end
+    end subroutine hcl_mass_transfer
 
 ! --------------------------- rev_fire -------------------------------------------
 

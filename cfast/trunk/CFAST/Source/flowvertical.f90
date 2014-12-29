@@ -1,9 +1,9 @@
 
-! --------------------------- vflow -------------------------------------------
+! --------------------------- vertical_flow -------------------------------------------
 
-    subroutine vflow (tsec,flwvf,vflowflg)
+    subroutine vertical_flow (tsec,flwvf,vflowflg)
 
-    !     routine: vflow
+    !     routine: vertical_flow
     !     purpose: interface between cfast and the vertical vent physical routines.
     !     arguments: tsec: current simulation time
     !                flwvf: change in mass and energy for each layer of each compartment
@@ -145,7 +145,7 @@
     end do
 
     return
-    end subroutine vflow
+    end subroutine vertical_flow
 
 ! --------------------------- getventfraction-------------------------------------
 

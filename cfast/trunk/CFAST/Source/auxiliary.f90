@@ -1412,8 +1412,7 @@
     subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
 
     !     routine: sortbrm
-    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is based on the
-    !               now obsolete routine sortfr.  this routine is used to sort fire and detector data structures by room number.
+    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to sort fire and detector data structures by room number.
     !     arguments: x       floating point info to be sorted
     !                lx      leading dimension of x 
     !                ix      integer info to be sorted
@@ -1489,9 +1488,9 @@
         return
     end
 
-! --------------------------- sortfr -------------------------------------------
+! --------------------------- sort_fire -------------------------------------------
 
-    subroutine sortfr (nfire,ifroom,xfire,ifrpnt,nm1)
+    subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nm1)
 
     !     routine: sortbrm
     !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used 
@@ -1553,7 +1552,7 @@
         if (ifrpnt(i,2)==0) ifrpnt(i,2) = 1
     end do
     return
-    end subroutine sortfr
+    end subroutine sort_fire
 
 ! --------------------------- sstrng -------------------------------------------
 

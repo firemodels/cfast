@@ -1,9 +1,9 @@
     
-! --------------------------- trheat -------------------------------------------
+! --------------------------- target -------------------------------------------
 
-    subroutine trheat(update,method,dt,xpsolve,delta)
+    subroutine target(update,method,dt,xpsolve,delta)
 
-    !     routine: trheat (main target routine)
+    !     routine: target (main target routine)
     !     purpose: compute dassl residuals associated with targets
     !     arguments: update   variable indicating whether temperature profile should be updated
     !                method   one of steady, mplicit or xplicit (note: these are parameter values, not mis-pelld)
@@ -32,7 +32,7 @@
 
     if(method==steady)return
 
-    ! initialize non-dimensional target node locations the first time trheat is called
+    ! initialize non-dimensional target node locations the first time target is called
     if(first)then
         first = .false.
         nnn = trgtnum - 1
@@ -53,7 +53,7 @@
     endif
 
     ! calculate net flux striking each side of target
-    call target(method)
+    call target_flux(method)
 
     ! for each target calculate ode or pde residual and update target temperature (if update=1 or 1)
     do itarg = 1, ntarg
@@ -114,11 +114,11 @@
         end if
     end do
     return
-    end subroutine trheat
+    end subroutine target
     
 ! --------------------------- target -------------------------------------------
 
-    subroutine target(method)
+    subroutine target_flux(method)
 
     !     routine: target
     !     purpose: routine to calculate total flux striking a target. this flux is used to calculate a target temperature,
@@ -193,7 +193,7 @@
     endif
 
     return
-    end subroutine target
+    end subroutine target_flux
     
 ! --------------------------- targflux -------------------------------------------
 

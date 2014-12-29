@@ -1,9 +1,9 @@
 
-! --------------------------- hflow -------------------------------------------
+! --------------------------- horizontal_flow -------------------------------------------
 
-    subroutine hflow(tsec,epsp,nprod,uflw)
+    subroutine horizontal_flow(tsec,epsp,nprod,uflw)
 
-    !     routine: hflow
+    !     routine: horizontal_flow
     !     purpose: physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
     !     it returns rates of mass and energy flows into the layers from all vents in the building.
     !     revision: $revision: 461 $
@@ -191,7 +191,7 @@
         call SSprintslab
     end if
     return
-    end subroutine hflow
+    end subroutine horizontal_flow
 
 ! --------------------------- entrain -------------------------------------------
 
@@ -937,8 +937,8 @@
     return
     end subroutine delp
 
-    !	The following functions are to implement the open/close function for vents.
-    !	This is done with a really simple, linear interpolation
+    !	The following functions implement the open/close function for vents.
+    !	This is done with a simple, linear interpolation
     !	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mfan),
     !         and qcvi(4,mfan). 
 
@@ -950,7 +950,7 @@
     !		(3,...) Is the time to complete the change, Time+Decay_time, and
     !		(4,...) Is the final fraction
 
-    !	The open/close function is done in the physical/mode interface, HFLOW, VFLOW and HVFAN
+    !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and HVFAN
 
 
 ! --------------------------- qchfraction -------------------------------------------

@@ -1,36 +1,3 @@
-
-! --------------------------- convec -------------------------------------------
-
-    subroutine convec (iw,tg,tw,qdinl)
-
-    !     routine: convec
-    !     purpose: calculate convective heat transfer for a wall segment. 
-    !     arguments:  iw     wall number, standand cfast numbering convention
-    !                 tg     temperature of gas layer adjacent to wall surface
-    !                 tw     wall surface temperature
-    !                 qdinl  convective flux into wall surface iw
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: iw
-    real(eb), intent(in) :: tg, tw
-    real(eb), intent(out) :: qdinl
-    
-    real(eb) :: h
-    
-    if (iw<=2) then
-        h = 1.52_eb*abs(tg - tw)**onethird
-    else
-        h = 1.31_eb*abs(tg - tw)**onethird
-    end if
-    
-    qdinl = h * (tg - tw)
-    return
-    end subroutine convec
-
-! --------------------------- convec -------------------------------------------
-
     subroutine convection (flwcv,flxcv)
 
     !     routine:    convection
@@ -42,6 +9,7 @@
     !                 flxcv       net heat flux onto surface
 
     use precision_parameters
+    use fireptrs
     use wallptrs
     use cparams
     use cenviro
@@ -51,9 +19,9 @@
     implicit none
 
     real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
-    real(eb) :: flwcv0(nr,2), flxcv0(nr,nwal)
+    real(eb) :: flwcv0(nr,2), flxcv0(nr,nwal), qconv, qconv_avg
     
-    integer i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay
+    integer i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay, ifire
     logical roomflg(nr), wallflg(4*nr)
     save flwcv0, flxcv0
 
@@ -101,6 +69,7 @@
         endif
     endif
 
+    ! calculate convection for all surfaces in all rooms
     do iw = 1, nwalls
         if(wallflg(iw)) then
             i = izwall(iw,w_from_room)
@@ -111,7 +80,17 @@
             else
                 ilay = lower
             endif
+            ! assume no fires in this room.  just use regular convection
             call convec(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
+            ! if there's a fire, we may need to modify the convection to account for the ceiling jet
+            if (iwall==1.and.nrmfire>0) then
+                qconv = 0.0_eb
+                do ifire = 1, nrmfire
+                    qconv = max(qconv,xfire(ifrpnt(i,2)+ifire-1,f_qfc))
+                end do
+                qconv_avg = 0.27_eb*qconv/((br(i)*dr(i))**0.68_eb*hr(i)**0.64_eb)
+                if (qconv_avg>flxcv(i,iwall)) flxcv(i,iwall) = qconv_avg
+            end if
             flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)
         endif
     end do
@@ -145,6 +124,98 @@
     end subroutine convection
 
 ! --------------------------- convec -------------------------------------------
+
+    subroutine convec (iw,tg,tw,qdinl)
+
+    !     routine: convec
+    !     purpose: calculate convective heat transfer for a wall segment. 
+    !     arguments:  iw     wall number, standand cfast numbering convention
+    !                 tg     temperature of gas layer adjacent to wall surface
+    !                 tw     wall surface temperature
+    !                 qdinl  convective flux into wall surface iw
+
+    use precision_parameters
+    implicit none
+
+    integer, intent(in) :: iw
+    real(eb), intent(in) :: tg, tw
+    real(eb), intent(out) :: qdinl
+    
+    real(eb) :: h
+    
+    if (iw<=2) then
+        h = 1.52_eb*abs(tg - tw)**onethird
+    else
+        h = 1.31_eb*abs(tg - tw)**onethird
+    end if
+    
+    qdinl = h * (tg - tw)
+    return
+    end subroutine convec
+    
+    ! --------------------------- ceiling_jet -------------------------------------------
+
+    subroutine ceiling_jet
+
+    !     routine:     ceiling_jet
+
+    !     description:  interface between resid and cjet_detectors.  loops over
+    !                 rooms setting up varibles to pass.  calls cjet_detectors
+    !                 only when fires are in a room
+
+    use precision_parameters
+    use cenviro
+    use fireptrs
+    use cfast_main
+    use opt
+
+    implicit none
+
+    real(eb) :: zloc, tceil, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
+    integer :: i, id, iroom, nrmfire, nd, ifire, ifpnt
+
+    do id = 1, ndtect
+        iroom = ixdtect(id,droom)
+        xdtect(id,dvel) = 0.0_eb
+        zloc = xdtect(id,dzloc)
+        if(zloc>zzhlay(iroom,lower))then
+            xdtect(id,dtjet) = zztemp(iroom,upper)
+        else
+            xdtect(id,dtjet) = zztemp(iroom,lower)
+        endif
+    end do
+    if (option(fcjet)==off) return
+
+    do i = 1, nm1
+        nrmfire = ifrpnt(i,1)
+        id = idtpnt(i,2)
+        nd = idtpnt(i,1)
+
+        ! handle ceiling jets that are not in active halls
+
+        if (nrmfire>0.and.izhall(i,ihmode)/=ihduring) then
+            do ifire = 1, nrmfire
+                ifpnt = ifrpnt(i,2) + ifire - 1
+                if (switch(1,i)) then
+                    tceil = twj(1,i,1)
+                else
+                    tceil = zztemp(i,upper)
+                endif
+                call cjet_detectors(xfire(ifpnt,f_plume_zpos),xfire(ifpnt,f_qfc),tceil,zztemp(i,lower),zztemp(i,upper),br(i),dr(i), &
+                hr(i),xfire(ifpnt,f_fire_xpos),xfire(ifpnt,f_fire_ypos),xfire(ifpnt,f_fire_zpos),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper), &
+                xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
+
+            end do
+        endif
+
+        ! handle ceiling jets that are in active halls
+        if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)
+
+    end do
+    return
+    end subroutine ceiling_jet
+
+! --------------------------- cjet_detectors -------------------------------------------
 
     subroutine cjet_detectors(mplume,qconv,atc,tl,tu,xw,yw,zc,axf,ayf,zf,zlay,rhol,rhou,xd,yd,zd,nd,qceil,qfclga, &
     qfwla,qfwua,td,vd,tdmax,vdmax,ddmax)
@@ -358,7 +429,7 @@
     return
     end subroutine cjet_detectors
 
-! --------------------------- convec -------------------------------------------
+! --------------------------- maktabl -------------------------------------------
 
     subroutine maktabl (r,n,func)
 
@@ -400,7 +471,7 @@
     return
     end subroutine maktabl
 
-! --------------------------- convec -------------------------------------------
+! --------------------------- inttabl -------------------------------------------
 
     subroutine inttabl (r,ans)
 
@@ -437,7 +508,7 @@
     return
     end subroutine inttabl
 
-! --------------------------- convec -------------------------------------------
+! --------------------------- qfclg -------------------------------------------
 
     real(eb) function qfclg (r)
 
@@ -472,68 +543,7 @@
     qfclg = htcl*(tad-tc)
     return
     end function qfclg
-! --------------------------- ceiling_jet -------------------------------------------
-
-    subroutine ceiling_jet
-
-    !     routine:     ceiling_jet
-
-    !     description:  interface between resid and cjet_detectors.  loops over
-    !                 rooms setting up varibles to pass.  calls cjet_detectors
-    !                 only when fires are in a room
-
-    use precision_parameters
-    use cenviro
-    use fireptrs
-    use cfast_main
-    use opt
-
-    implicit none
-
-    real(eb) :: zloc, tceil, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
-    integer :: i, id, iroom, nrmfire, nd, ifire, ifpnt
-
-    do id = 1, ndtect
-        iroom = ixdtect(id,droom)
-        xdtect(id,dvel) = 0.0_eb
-        zloc = xdtect(id,dzloc)
-        if(zloc>zzhlay(iroom,lower))then
-            xdtect(id,dtjet) = zztemp(iroom,upper)
-        else
-            xdtect(id,dtjet) = zztemp(iroom,lower)
-        endif
-    end do
-    if (option(fcjet)==off) return
-
-    do i = 1, nm1
-        nrmfire = ifrpnt(i,1)
-        id = idtpnt(i,2)
-        nd = idtpnt(i,1)
-
-        ! handle ceiling jets that are not in active halls
-
-        if (nrmfire>0.and.izhall(i,ihmode)/=ihduring) then
-            do ifire = 1, nrmfire
-                ifpnt = ifrpnt(i,2) + ifire - 1
-                if (switch(1,i)) then
-                    tceil = twj(1,i,1)
-                else
-                    tceil = zztemp(i,upper)
-                endif
-                call cjet_detectors(xfire(ifpnt,f_plume_zpos),xfire(ifpnt,f_qfc),tceil,zztemp(i,lower),zztemp(i,upper),br(i),dr(i), &
-                hr(i),xfire(ifpnt,f_fire_xpos),xfire(ifpnt,f_fire_ypos),xfire(ifpnt,f_fire_zpos),zzhlay(i,lower),zzrho(i,lower),zzrho(i,upper), &
-                xdtect(id,dxloc),xdtect(id,dyloc),xdtect(id,dzloc),nd,qceil,qfclga,qfwla,qfwua,xdtect(id,dtjet),xdtect(id,dvel),ftmax,fvmax,fdmax)
-
-            end do
-        endif
-
-        ! handle ceiling jets that are in active halls
-        if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)
-
-    end do
-    return
-    end subroutine ceiling_jet
-
+    
 ! --------------------------- convec -------------------------------------------
 
     integer function rev_convection ()

@@ -529,6 +529,7 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
 if %1==PLAZA goto end
+
 :end
 
 echo Waiting for all CFAST runs to finish
@@ -541,7 +542,5 @@ Timeout /t 30 >nul
 goto loop1
 
 :finished
-echo CFAST cases finished
-
 echo.| time
 echo CFAST simulations complete.

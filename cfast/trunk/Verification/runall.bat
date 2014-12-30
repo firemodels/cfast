@@ -126,5 +126,16 @@ cd ..\..
 if %1==NRC goto end
 
 :end
+
+echo Waiting for all CFAST runs to finish
+:loop1
+tasklist | find /i /c "CFAST" > temp.out
+set /p numexe=<temp.out
+echo Number of cases running - %numexe%
+if %numexe% == 0 goto finished
+Timeout /t 30 >nul 
+goto loop1
+
+:finished
 echo.| time
 echo CFAST simulations complete.

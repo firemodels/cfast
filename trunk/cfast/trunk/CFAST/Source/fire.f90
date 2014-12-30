@@ -120,7 +120,7 @@
             froom(nobj) = iroom
             femp(nobj) = oplume(1,iobj)
             fems(nobj) = oplume(3,iobj)
-            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemie and interpolate_pyrolysis)
+            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry and interpolate_pyrolysis)
             femr(nobj) = oplume(1,iobj)*y_trace
             fqf(nobj) = heatlp(iroom) + heatup(iroom)
             fqfc(nobj) = qfc(1,iroom)
@@ -227,7 +227,7 @@
     if (lfbt==free) Stop 101
 
 
-    ! note that the combination of fire_plume and chemie can be called twice
+    ! note that the combination of fire_plume and chemistry can be called twice
     ! in a single iteration to make sure that the plume entrainment is
     ! consistent with the actual fire size for oxygen limited fires
     ! this is done by "re-passing" the actual fire size to fire_plume in the
@@ -252,7 +252,7 @@
             activated_time = 0
             activated_rate = 0.0
         endif
-        call chemie(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
+        call chemistry(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
         xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
@@ -289,7 +289,7 @@
         endif
     end do
 
-    ! add in the fuel. everything else is done by chemie.
+    ! add in the fuel. everything else is done by chemistry.
     xntms(upper,7) = xntms(upper,7) + xemp
 
     xqfr = xqpyrl*chirad
@@ -312,7 +312,7 @@
         call fire_plume(fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
-        call chemie(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
+        call chemistry(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
         xqfr = xqpyrl*chirad + xqfr
         xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
@@ -326,12 +326,12 @@
     return
     end subroutine do_fire
 
-! --------------------------- chemie -------------------------------------------
+! --------------------------- chemistry -------------------------------------------
 
-    subroutine chemie (pyrolysis_rate, molar_mass,entrainment_rate, source_room, h_c, y_soot, y_co,n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, &
+    subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, source_room, h_c, y_soot, y_co,n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, &
     activated_room, activated_sprinkler, activated_time, activated_rate, model_time, hrr_at_activation, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
-    !     routine: chemie
+    !     routine: chemistry
     !     purpose: do the combustion chemistry - for plumes in both the upper and lower layers.
     !         note that the kinetics scheme is implemented here.  however, applying it to the
     !         various pieces, namely the lower layer plume, the upper layer plume, and the door jet fires, is 
@@ -431,7 +431,7 @@
     species_rates(9) = net_soot
     species_rates(10) = net_ct
 
-    end subroutine chemie 
+    end subroutine chemistry 
 
 ! --------------------------- interpolate_pyrolysis -------------------------------------------
 
@@ -535,7 +535,7 @@
     return
     end subroutine interpolate_pyrolysis
 
-! --------------------------- fireplm -------------------------------------------
+! --------------------------- fireplume -------------------------------------------
 
     subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, xemp, xems, xeme, xfx, xfy)
 
@@ -624,9 +624,9 @@
     !     inputs:    q    fire size (w)
     !                z      plume height (m)
     !                emp  mass loss rate of the fire (kg/s)
-    !                area is the characteristic size of the object (diameter)
-    !     outputs:   ems  total mass transfer rate at height z (kg/s)
-    !                eme  net entrainment rate at height z (kg/s)
+    !                area is the cross sectional area at the base of the fire
+    !     outputs:   ems  total mass transfer rate up to height z (kg/s)
+    !                eme  net entrainment rate up to height z (kg/s)
 
     use precision_parameters
     implicit none
@@ -634,13 +634,22 @@
     real(eb), intent(in) :: q, q_c, z, emp, area
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: d, qj, z0, deltaz
+    real(eb) :: d, qj, z0, z_l, deltaz
 
-    qj = 0.001_eb*q_c
+    ! virtual original correlation is based on total HRR
+    qj = 0.001_eb*q
     d = sqrt(area/pio4)
     z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
     deltaz = max(0.0001_eb, z-z0)
-    eme = 0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
+    
+    ! entrainment is based on covective HRR
+    qj = 0.001_eb*q_c
+    z_l = z0 + 0.166*qj**0.4_eb
+    if (deltaz>=z_l) then
+        eme = 0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
+    else
+        eme = 0.0054_eb*qj*deltaz/z_l
+    end if
     ems = emp + eme    
 
     end subroutine heskestad
@@ -887,7 +896,7 @@
         source_o2 = zzcspec(ito,lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
-        call chemie(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
+        call chemistry(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
         qpyrol = xqpyrl
 
         do i = 1, ns

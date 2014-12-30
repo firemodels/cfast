@@ -69,6 +69,7 @@ Under the assumption that all of the nitrogen and chlorine in the fuel are conve
 Note that the nitrogen in the air acts only as a diluent. The yields of hydrogen cyanide and hydrogen chloride are based solely on the composition of the fuel molecule. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
 \section{Heat Release Rate}
+\label{section:HRR}
 
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
 \begin{eqnarray}
@@ -95,22 +96,20 @@ The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default.
 
 \section{Plume Entrainment}
 
-The mass entrainment of air, $\dme(z)$, into the plume at a height $z$ above the base of the fire is estimated using either McCaffrey's~\cite{McCaffrey:1983} or Heskestad's~\cite{Heskestad:1984} correlation. McCaffrey divides the flame/plume into three regions:
+The plume mass entrainment, $\dme(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlation~\cite{Heskestad:2002}:
 \be
-   \frac{\dme(z)}{\dQ} = \left\{ \begin{array}{r@{\quad \quad}l}
-   0.011 \brackets{\ZQf}^{0.566} &  0.00 \leq \brackets{\ZQf}<0.08 \\[.1in]
-   0.026 \brackets{\ZQf}^{0.909} &  0.08 \leq \brackets{\ZQf}<0.20 \label{eq:McCaffreyPlume} \\[.1in]
-   0.124 \brackets{\ZQf}^{1.895} &  0.20 \leq \brackets{\ZQf} \end{array} \right.
+   \dme(z) = 0.196 \, \left( \frac{g \, \rho_\infty^2}{c_p \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \; 
+   \left( 1 + \frac{2.9 \, \dQ_{\rm c}^{2/3}}{ \left( \sqrt{g} \, c_p \, \rho_\infty \, T_\infty \right)^{2/3} \, (z-z_0)^{5/3}} \right) \label{mdot_e}
 \ee
-Heskestad analyzed both his own data \cite{Heskestad:1984} and that of Zukoski \cite{Zukoski:1981} to develop the correlation
+where $z_0$ is a virtual origin defined as
 \be
-   \dme(z) = 0.071 \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \; \brackets{1 + 0.026 \, \dQ_{\rm c}^{2/3} \, \brackets{z-z_0}^{-5/3}}
+   \frac{z_0}{D} = -1.02 + 1.4 \, \dQ^{* \, 2/5} \quad ; \quad \dQ^* = \frac{\dQ}{\rho_\infty \, c_p \, T_\infty \, \sqrt{g \, D} \, D^2} \label{virtual_origin}
 \ee
-where $z_0$ is a virtual origin for the fire plume defined as
+Note that the virtual origin is defined in terms of the total heat release rate of the fire, $\dQ$. Equation~(\ref{mdot_e}) is recommended above the mean flame height, $L$. Below the flame height, Heskestad recommends the following:
 \be
-  z_0/D = -1.02 + 0.083 \dQ^{2/5} / D
+  \dme(z) = \dme(L) \, \frac{z}{L} \quad ; \quad \frac{L}{D} = -1.02 + 3.7 \, \dQ^{* \, 2/5}
 \ee
-which is based on the total heat release rate of the fire, $\dQ$.  Both correlations provide similar results in CFAST calculations.
+The mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.  
 
 In CFAST, there is a constraint on the mass entrainment rate because the plume can rise only so high for a given HRR.  Early in a fire, the plume may not have sufficient energy to reach the compartment ceiling. Therefore, a limit is placed on the entrainment rate. For the plume to be able to penetrate the hot upper layer, the density of the gas in the plume must be less than the density of the gas in the upper layer. This implies that the upper layer temperature must be less than the plume temperature:
 \be
@@ -124,59 +123,21 @@ Rearranging terms yields a limit on the mass entrainment:
 
 \section{Plume Centerline Temperature}
 
-CFAST includes an empirical correlation of plume centerline gas temperature based on the work of Baum and McCaffrey~\cite{Baum:1989} with a modification by Evans~\cite{Evans:1984} to account for the presence of a hot gas layer. The correlation gives the excess temperature as a function of height above a fire, $z$, for the flaming, intermittent, and plume regions:
+The centerline plume temperature rise, $\Delta T_0(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlation~\cite{Heskestad:2002}:
 \be
-   \frac{\Delta \Tp}{T_\infty} = \left\{ \begin{array}{l@{\quad \quad}l}
-   2.91                   &  0.00 \leq z/D^* < 1.32  \\[.1in]
-   3.81 \, (z/D^*)^{-1}   &  1.32 \leq z/D^* < 3.30 \\[.1in]
-   8.41 \, (z/D^*)^{-5/3} &  3.30 \leq z/D^* \end{array} \right.
+   \Delta T_0(z) = 9.1 \, \left( \frac{T_\infty}{g \, c_p^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3}  \label{plume_temperature}
 \ee
-where
+where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). Equation~(\ref{plume_temperature}) is valid above the flame height, $L$, and below the hot gas layer interface, $z_{\rm I}$. Below the flame height, the temperature rise is approximated at 900~K. Above the layer interface, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the temperature correlation is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
 \be
-  D^* = \left( \frac{\dQ}{\rho_\infty c_p T_\infty \sqrt{g}} \right)^{2/5}
+   \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, c_p^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
 \ee
-Figure~\ref{fig:Plume_Temp} shows the correlation. When a hot layer forms, the correlation must be modified since the plume now includes added enthalpy due to the entrainment of hot layer gases. Evans~\cite{Evans:1984} defines a virtual source and heat release rate to extend the plume into the upper layer. Evans' method defines the strength and location of the substitute source with respect to the interface between the upper and lower layers by
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/Theory/Plume_Temperature}\\
-\end{center}
-\caption{Excess plume centerline temperature from Baum and McCaffrey correlation.}
- \label{fig:Plume_Temp}
-\end{figure}
-
-\be Q_{I,2}^* = \brackets{\frac{1 + C_T {Q_{I,1}^*}^{2/3}}{\xi C_T} - \frac{1}{C_T}}^{3/2} \ee
-
-\be Z_{I,2} = \brackets{\frac{\xi Q_{I,1}^* C_T}{{Q_{I,2}^*}^{1/3}\brackets{\brackets{\xi - 1}\brackets{\beta^2 + 1}+ \x1 C_T {Q_{I,2}^*}^{2/3}}}}^{2/5} Z_{I,1}  \ee
-
-\be Q_{I,1}^* = \frac{Q_{f,C}}{\rho_\infty c_p T_\infty \sqrt{g} Z_{I,1}^{5/2}}  \ee
-where $Z_{I,1}$ is the distance from the fire to the interface between the upper and lower gas layers, $Z_{I,2}$ is the distance from the virtual source to the layer interface, $\xi$ is the ratio of the upper to lower layer temperature, $\beta$ is an experimentally determined constant \cite{Zukoski:1981} ($\beta^2 = 0.913$), and $C_T = 9.115$.  The effective source strength and distance between the virtual source and target position is given by
-
-\be Q_{f,C,eff} = Q_{I,2}^* \rho_\infty c_{p\infty} T_\infty \sqrt{g} Z_{I,2}^{5/2}  \ee
-
-\be z_{eff} = z - Z_{I,1} + Z_{I,2} \ee
-(see Fig.~\ref{fig:Plume_Temp_Notation}). The new values of the fire source and  target location are then used in the standard plume correlation where the ambient conditions are now those of the upper layer.
-\begin{figure}
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/Theory/Plume_Temp_Notation}\\
-\end{center}
-\caption{Geometry for plume centerline temperature calculation.}
- \label{fig:Plume_Temp_Notation}
-\end{figure}
-
-\section{Flame Height}
-\label{sec:firemassbalance}
-
-
-CFAST includes a calculation of average flame height based on the work of Heskestad~\cite{Heskestad:2002}. Valid for a wide range of hydrocarbon and gaseous fuels, the correlation is given by
+where the modified virtual origin is given by:
 \be
-   H = -1.02 D + 0.235 \brackets{\frac{Q_f}{1000}}^{2/5}
+   z_0' = z_{\rm I} - \left( \frac{\Tu}{\Tl} \right)^{3/5} \, (z_{\rm I}-z_0)  \label{virtual_origin_modified}
 \ee
-where $H$ is the average flame height (m), $D$ the diameter of the fire (m), and $\dQ$ is the total heat release rate (kW). The mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50 \% of the time and below the mean 50~\% of the time.  This average flame height is  included in the printed output from CFAST.
+Equations~(\ref{plume_temperature_upper}) and (\ref{virtual_origin_modified}) are obtained by asserting that $\Delta T_0$ is continuous across the layer interface and that $\Tu \rho_{\rm u} \approx \Tl \rho_{\rm l}$.
 
-
-
-
+The mass entrainment correlation, Eq.~(\ref{mdot_e}), is modified the same way above the layer interface.
 
 
 
@@ -212,25 +173,51 @@ Equation \ref{eq:massflowone} is sometimes written:
 
 The mass flows through the various vertical segments of the door or window are distributed into the upper and lower layers of the downstream compartment depending on the temperature of the stream. Consider the flow of gas from the upper layer of Compartment~1 entering the lower layer of Compartment~2 (see Fig.~\ref{fig:Flow_Patterns}).
 \begin{figure}[t]
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/Flow_Patterns}\\
-\end{center}
+\setlength{\unitlength}{1in}
+\begin{picture}(6.5,4)
+\thicklines
+\put(0,0){\line(1,0){6.5}}
+\put(0,4){\line(1,0){6.5}}
+\put(3.25,4){\line(0,-1){1}}
+\thinlines
+\put(0,1.5){\line(1,0){3.25}}
+\put(3.25,2.5){\line(1,0){3.25}}
+\put(0,2.0){\line(1,0){6.5}}
+\put(3.5,0.75){\vector(-1,0){0.5}}
+\put(3.5,1.75){\vector(-1,0){0.5}}
+\put(3,2.25){\vector(1,0){0.5}}
+\put(3,2.75){\vector(1,0){0.5}}
+
+\put(1.625,3.8){\makebox(0,0){Compartment 1}}
+\put(4.875,3.8){\makebox(0,0){Compartment 2}}
+\put(6,1.8){\makebox(0,0){Neutral Plane}}
+\put(5.95,2.3){\makebox(0,0){Layer Interface}}
+\put(0,1.3){Layer Interface}
+\put(3.75,0.75){\makebox(0,0){$\dm_{\rm l \to l}$}}
+\put(3.75,1.75){\makebox(0,0){$\dm_{\rm l \to u}$}}
+\put(2.75,2.25){\makebox(0,0){$\dm_{\rm u \to l}$}}
+\put(2.75,2.75){\makebox(0,0){$\dm_{\rm u \to u}$}}
+
+\end{picture}
 \caption{Flow patterns and layer number conventions for horizontal flow through a vertical vent.}
- \label{fig:Flow_Patterns}
+\label{fig:Flow_Patterns}
 \end{figure}
-The mass flow rate is denoted $\dm_{14}$, where the subscripts indicate the upstream and downstream layer indices, respectively. The enthalpy flow rate is:
+The mass flow rate is denoted $\dm_{\rm u \to l}$, where the subscripts indicate the upstream and downstream layer indices, respectively. The enthalpy flow rate is:
 \be
-   \doh_{14} = c_p \brackets{T_1-T_4} \dm_{14}
+   \doh_{\rm u \to l} = c_p \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
 \ee
-Assuming that $T_4 < T_1 < T_3$, this energy will be distributed between the compartments two layers. The distribution is based on the relative difference in temperature between the incoming gas stream and the layer temperatures. If $T_1$ is close to $T_3$, most of the energy will go to the upper layer 3 in the form of a virtual plume. The effective heat release rate of this virtual plume is:
+Assuming that $T_{\rm l,2} < T_{\rm u,1} < T_{\rm u,2}$, this energy will be distributed between the compartment's two layers. The distribution is based on the relative difference in temperature between the incoming gas stream and the layer temperatures. Some of the energy stays within the lower layer and some of the energy goes to the upper layer in the form of a virtual plume. The effective heat release rate of this virtual plume is:
 \be
-   \dQ_{\rm eff} = \frac{T_1-T_4}{T_3-T_4} \; \doh_{14}
+   \dQ_{\rm eff} = \frac{T_{\rm u,1}-T_{\rm l,2}}{T_{\rm u,2}-T_{\rm l,2}} \; \doh_{\rm u \to l}
 \ee
-The mass entrainment rate into this virtual plume at the midpoint of the vertical segment, $\bar{z}$, is:
+The mass entrainment rate into this virtual plume at the midpoint of the vertical segment, $\bar{z}$, is assumed to be a fraction of the incoming mass flow rate:
 \be
-   \dm_{\rm e,eff}(\bar{z}-z_0) = \frac{T_1-T_4}{T_3-T_4} \; \dm_{14}
+   \dm_{\rm e,eff} = \frac{T_{\rm u,1}-T_{\rm l,2}}{T_{\rm u,2}-T_{\rm l,2}} \; \dm_{\rm u \to l}
 \ee
-The origin of the virtual plume, $z_0$, is deduced from McCaffrey's entrainment correlation, Eq.~\ref{eq:McCaffreyPlume}. That is, $\bar{z}-z_0$ is the height above the base of the virtual fire whose HRR is $\dQ_{\rm eff}$ where the mass entrainment rate is $\dm_{\rm e,eff}$.
+The origin of the virtual plume, $z_0$, is deduced from the plume mass entrainment correlation, Eq.~\ref{mdot_e}. That is, $z_0$ is the origin of the virtual plume whose convective heat release rate is $\dQ_{\rm eff}$ and whose mass entrainment rate is $\dm_{\rm e,eff}$ at the midpoint of the segment, $\bar{z}$:
+\be
+   z_0 = \bar{z} - \dm_{\rm e,eff}^{3/5} \, \left[ 0.196 \, \left( \frac{g \, \rho_\infty^2}{c_p \, T_\infty} \right)^{1/3} \, \dQ_{\rm eff}^{1/3} \right]^{-3/5}
+\ee
 
 The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{42} > 0$.  The shear flow causes vortex shedding into the lower layer and thus some of the particulates end up in the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, even minute amounts of carbon can change the radiative properties of the gas layer, from negligible to something finite.  It changes the rate of radiation absorption significantly and invalidates the simplification of an ambient temperature lower layer.  This term is predicated on the Kelvin-Helmholz flow instability and requires shear flow between two separate fluids.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al. \cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case \cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above. It is possible that the entrainment is overestimated in this case, since buoyancy, which is the driving force, is not nearly as strong as for the usually upright plume.
 
@@ -357,14 +344,14 @@ where $C$ is an empirical coefficient (1.52 for the floor and ceiling (in the ab
 \subsection{Ceiling}
 
 During the early stage of a fire before a hot gas layer has formed, the convective heat transfer to the ceiling is governed by the temperature and velocity of the ceiling jet. Alpert's chapter in the {\em SFPE Handbook}~\cite{Alpert:SFPE} presents an empirical correlation for the convective heat flux from the ceiling jet to a relatively cool surface:
-\be 
+\be
    \dqc'' = 1.323 \, f \, \frac{\dQ_{\rm c}}{H^2} \, \left( \frac{r}{H} \right)^{-1.36}  \label{eq:cjflux}
 \ee
 where $f$ is a friction factor estimated to be 0.03, $r$ is the radial distance to the plume centerline, $H$ is the ceiling height, and $\dQ_{\rm c}$ is the convective fraction of the heat release rate. The average convective heat flux to the ceiling can be obtained by integrating this expression over the entire ceiling:
-\be 
+\be
    \dq_{\rm c,avg}'' = \frac{1}{LW} \int_0^{2\pi} \int_0^R \dqc'' \, r \, dr \, d\theta = \frac{0.27 \, \dQ_{\rm c}}{(LW)^{0.68} \, H^{0.64}} \label{eq:cjfluxavg}
 \ee
-Note that the integration is carried out over a circle whose area, $\pi R^2$, is equal to the area of the ceiling, $LW$. 
+Note that the integration is carried out over a circle whose area, $\pi R^2$, is equal to the area of the ceiling, $LW$.
 
 Equation~(\ref{eq:cjfluxavg}) applies to the early stage of the fire; thus, a modified heat transfer coefficient is used so that there is a transition from the early to later stages when a layer has formed:
 \be
@@ -507,11 +494,11 @@ CFAST uses a combustion chemistry scheme based on a carbon-hydrogen-oxygen balan
 
 \subsection{Species Transport}
 
-The species transport in CFAST is primarily a matter of bookkeeping to track individual species mass as it is generated by a fire, transported through vents, or mixed between layers in a compartment.  When the layers are initialized at the start of the simulation, they are set to ambient conditions.  These are the initial temperature prescribed by the user, and 23 \% by mass fraction (21 \% by volume fraction) oxygen, 77 \% by mass fraction (79 \% by volume fraction) nitrogen, a mass concentration of water prescribed by the user as a relative humidity, and a zero concentration of all other species.  As fuel is burned, the various species are produced in direct relation to the mass of fuel burned (this relation is the species yields prescribed by the user for the fuel burning).  Since oxygen is consumed rather than produced by the burning, the `yield' of oxygen is negative, and is set internally to correspond to the amount of oxygen used to burn the fuel (within the constraint of available oxygen limits discussed in sec. \ref{sec:Oxygen_Limit}). Two special separate species calculations are included in the model, a time-integrated value for a generic toxic species, Ct, and an arbitrary trace species, TS.  Both are assumed not to be part of the overall mass balance, but are rather generated by a fire and transported through a structure in a manner identical to other species.
+The species transport in CFAST is primarily a matter of bookkeeping to track individual gas species layer to layer and compartment to compartment. When the gas layers are initialized at the start of the simulation, they are set to ambient conditions.  These are the initial temperature prescribed by the user, and 23~\% by mass fraction (21~\% by volume fraction) oxygen, 77~\% by mass fraction (79~\% by volume fraction) nitrogen, a mass concentration of water prescribed by the user as a relative humidity, and a zero concentration of all other species.  As fuel is burned, the various species are produced in direct proportion to the mass of fuel burned (this relation is the species yields prescribed by the user for the fuel burning).  Since oxygen is consumed rather than produced by the burning, the `yield' of oxygen is negative, and is set internally to correspond to the amount of oxygen used to burn the fuel (within the constraint of available oxygen limits discussed in Section~\ref{section:HRR}). Two special separate species calculations are included in the model, a time-integrated value for a generic toxic species, Ct, and an arbitrary trace species, TS.  Both are assumed not to be part of the overall mass balance, but are rather generated by a fire and transported in a manner identical to other species.
 
-Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers.  The model keeps track of the mass of each species in each layer, and knows the volume of each layer as a function of time.  The mass divided by the volume is the mass concentration, which along with the relative molecular mass gives the concentration in volume percent or parts per million as appropriate. Filters can be used in mechanical ventilation systems to remove species. The phenomenon has been implemented in CFAST to remove trace species and soot. It is implemented by modifying the source terms which describe gas flow. Mass that is filtered remains on the filter and is removed from the air stream. Both the resulting species density and total species removed can be analyzed. See reference \cite{Jones:2008} for an example on the use of filtering.
+Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers.  The model keeps track of the mass of each species in each layer, and knows the volume of each layer as a function of time.  The mass divided by the volume is the mass concentration, which along with the relative molecular mass gives the concentration in volume percent or parts per million as appropriate. Filters can be used in mechanical ventilation systems to remove species. The phenomenon has been implemented in CFAST to remove trace species and soot. It is implemented by modifying the source terms which describe gas flow. Mass that is filtered remains on the filter and is removed from the air stream. Both the resulting species density and total species removed can be analyzed. See Ref.~\cite{Jones:2008} for an example on the use of filtering.
 
-The calculation of radiation exchange in CFAST also depends in part on the species concentrations calculated by the model (and thus the user inputs for species yields). There are two separate radiation calculations done by CFAST. The first is for broadband radiation transfer for energy balance. The way this calculation is done is discussed in section \ref{sec:Radiation}. The second is a visible light calculation to answer the question of whether exit signs will be visible. The absorption of broadband radiation depends on the concentration of water, carbon dioxide and soot. The visibility calculation depends solely on the soot concentration For soot, the input for soot yield  assumes all the excess carbon goes to soot). This soot generation is then transported as a species to yield a soot mass concentration to use in the optical density calculation based originally on the work of Seader and Einhorn \cite{Seader:1976}. The most recent work is by Mulholland and Croakin\cite{Mullholland:2000}. Based on their experimental measurements, the soot mass density is multiplied by 3,817 m\superscript{2}/kg (formerly 3,500 m\superscript{2}/kg) to obtain an optical density (in units of m\superscript{-1}) which is the value reported by the model.
+The calculation of radiation exchange in CFAST also depends in part on the species concentrations calculated by the model (and thus the user inputs for species yields). There are two separate radiation calculations done by CFAST. The first is for broadband radiation transfer for energy balance. The way this calculation is done is discussed in Section~\ref{sec:Radiation}. The second is a visible light calculation to answer the question of whether exit signs will be visible. The absorption of broadband radiation depends on the concentration of water, carbon dioxide and soot. The visibility calculation depends solely on the soot concentration For soot, the input for soot yield  assumes all the excess carbon goes to soot). This soot generation is then transported as a species to yield a soot mass concentration to use in the optical density calculation based originally on the work of Seader and Einhorn~\cite{Seader:1976}. The most recent work is by Mulholland and Croakin~\cite{Mullholland:2000}. Based on their experimental measurements, the soot mass density is multiplied by 3,817~m\superscript{2}/kg (formerly 3,500 m\superscript{2}/kg) to obtain an optical density (in units of m\superscript{-1}) which is the value reported by the model.
 
 \subsection{HCl Deposition}\label{HClDeposition}
 
@@ -541,7 +528,7 @@ where the concentration in the boundary layer, $\rho_{bl-HCl}$  is related to th
 
 The only values currently available  for these quantities are shown in table \ref{tab:HCL_Deposition} \cite{Galloway:1990}.  The ``$b$'' coefficients are parameters which are found by fitting experimental data to the above equations. These coefficients reproduce the adsorption and absorption of HCl reasonably well.  Note though that error bars for these coefficients have not been reported in the literature.
 
-\begin{table}
+\begin{table}[t]
 \begin{center}
 \caption{Transfer coefficients for HCl deposition}
 \label{tab:HCL_Deposition}
@@ -564,18 +551,4 @@ b - non-dimensional
 
 The experimental basis for poly(methyl methacrylate) and gypsum cover a sufficiently wide range of conditions that they should be usable in a variety of practical situations.  The parameters for the other surfaces do not have much experimental backing, and so their use should be limited to comparison purposes.
 
-\section{Single Zone Approximation}
-
-A single zone approximation is appropriate for smoke flow far from a fire source where the two-zone layer stratification is less pronounced than in compartments near the fire. In this situation, a single zone approximation may be derived by using the normal two-zone source terms and the substitutions:
-
-\be
-\begin{array}{rcl}
-\dot{m}_U^{new} &=& \dot{m}_L + \dot{m}_U \\
-\dot{m}_L^{new} &=& 0 \\
-Q_U^{new} &=& Q_L + Q_U \\
-Q_L^{new} &=& 0
-\end{array}
-\ee
-
-This is used in situations where the stratification does not occur. Examples are elevators shafts, complex stairwells, natural venting ductwork, and compartments far from the fire.
 

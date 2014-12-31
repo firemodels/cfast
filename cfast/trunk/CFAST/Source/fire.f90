@@ -554,7 +554,7 @@
         call mccaffrey(qfire_c,z,xemp,xems,xeme,xfx,xfy)
         return        
     case (2) !    heskestad
-        call heskestad (qfire, qfire_c,z,xemp,xems,xeme,object_area)
+        call heskestad (qfire, qfire_c,z,xemp,xems,xeme,object_area,xfx,xfy)
         return        
     end select
     stop 'bad case in fire_plume'
@@ -569,21 +569,20 @@
     !     inputs:    q     fire size (w)
     !                z     plume height (m)
     !                xemp  mass loss rate of the fire (kg/s)
-    !                xfx   position of the fire in x direction (m)
-    !                xfy   position of the fire in y direction (m)
+    !                xfx   distance from fire to wall in x direction (m)
+    !                xfy   distance from fire to wall in y direction (m)
     !     outputs:   xems  total mass transfer rate at height z (kg/s)
     !                xeme  net entrainment rate at height z (kg/s)
     !     algorithm: "momentum implications for buoyant diffusion flames", combustion and flame 52, 149 (1983)
 
     use precision_parameters
+    use cparams, only: fire_at_wall
     implicit none
 
     real(eb), intent(in) :: q, z, xemp, xfx, xfy
     real(eb), intent(out) :: xems,  xeme
     
     real(eb) :: xf, qj, z_star
-    real(eb), parameter :: fire_at_wall = 1.0e-3_eb
-
     ! Ensure that mccaffrey correlation is continuous.  
     ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
     !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
@@ -617,38 +616,49 @@
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad (q, q_c, z, emp, ems, eme, area)
+    subroutine heskestad (q, q_c, z, emp, ems, eme, area, xfx, xfy)
 
-    !     routine: mccaffrey
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
     !     inputs:    q    fire size (w)
     !                z      plume height (m)
     !                emp  mass loss rate of the fire (kg/s)
     !                area is the cross sectional area at the base of the fire
+    !                xfx   distance from fire to wall in x direction (m)
+    !                xfy   distance from fire to wall in y direction (m)
     !     outputs:   ems  total mass transfer rate up to height z (kg/s)
     !                eme  net entrainment rate up to height z (kg/s)
 
     use precision_parameters
+    use cparams, only: fire_at_wall
     implicit none
 
-    real(eb), intent(in) :: q, q_c, z, emp, area
+    real(eb), intent(in) :: q, q_c, z, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: d, qj, z0, z_l, deltaz
+    real(eb) :: d, qj, z0, z_l, deltaz, xf, eme_above, eme_below
+    
+    ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
+    xf = 1.0_eb
+    if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
+    if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
 
     ! virtual original correlation is based on total HRR
-    qj = 0.001_eb*q
-    d = sqrt(area/pio4)
+    qj = 0.001_eb*q*xf
+    d = sqrt(area/xf/pio4)
     z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
     deltaz = max(0.0001_eb, z-z0)
     
     ! entrainment is based on covective HRR
-    qj = 0.001_eb*q_c
+    qj = 0.001_eb*q_c*xf
     z_l = z0 + 0.166*qj**0.4_eb
+    !eme_above=(0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)))/xf*(0.5+tanh(400.0_eb*(z-z_l-0.01)-4)/2)
+    !eme_below=(0.0054_eb*qj*z/z_l)/xf*(0.5-tanh(400.0_eb*(z-z_l-0.01)-4)/2)
+    !eme = eme_above + eme_below
     if (deltaz>=z_l) then
-        eme = 0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb))
+        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*z**(-5.0_eb/3.0_eb)))/xf
     else
-        eme = 0.0054_eb*qj*deltaz/z_l
+        continue
+        eme = (0.0054_eb*qj*z/z_l)/xf
     end if
     ems = emp + eme    
 

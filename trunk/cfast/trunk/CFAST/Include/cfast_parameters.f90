@@ -47,6 +47,8 @@ module cparams
     real(eb), parameter :: vfmaxdz=0.01_eb    ! maximum vertical distance between elements before they are considered 
                                               ! separate elements (connected compartments for example)
     
+    real(eb), parameter :: fire_at_wall = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to be on a surface for entrainmnt
+    
     ! target parameters
     integer, parameter :: mxtarg = 10*nr    ! maximum number of targets
     integer, parameter :: trgtempf = 17     ! position of front temperature of target (front surface temperature)

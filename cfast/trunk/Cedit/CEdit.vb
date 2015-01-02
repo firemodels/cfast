@@ -2927,12 +2927,12 @@ Public Class CeditMain
         'FirePlumeType
         '
         Me.FirePlumeType.ItemHeight = 13
-        Me.FirePlumeType.Items.AddRange(New Object() {"McCaffrey", "Heskestad"})
+        Me.FirePlumeType.Items.AddRange(New Object() {"Heskestad", "McCaffrey"})
         Me.FirePlumeType.Location = New System.Drawing.Point(646, 45)
         Me.FirePlumeType.Name = "FirePlumeType"
         Me.FirePlumeType.Size = New System.Drawing.Size(80, 21)
         Me.FirePlumeType.TabIndex = 7
-        Me.FirePlumeType.Text = "McCaffrey"
+        Me.FirePlumeType.Text = "Heskestad"
         '
         'Label95
         '

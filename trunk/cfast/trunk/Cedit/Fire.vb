@@ -61,7 +61,7 @@ Public Class Fire
     Private Const minValueIgnType As Integer = 0
     Private Const maxValueIgnType As Integer = 2
     Private aIgnitionValue As Single                ' Value at ignition for chosen igntion criterion
-    Private aPlumeType As Integer                   ' Plume for this fire, 0 for McCaffrey, 1 for Heskestad
+    Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
     Private aFireObject As Integer                  ' index pointer to the selected fire object for this instance

@@ -550,11 +550,11 @@
     real(eb), intent(out) :: xeme, xems
 
     select case (plumetype)
-    case (1) !    mccaffrey
-        call mccaffrey(qfire_c,z,xemp,xems,xeme,xfx,xfy)
-        return        
-    case (2) !    heskestad
+    case (1) !    heskestad
         call heskestad (qfire, qfire_c,z,xemp,xems,xeme,object_area,xfx,xfy)
+        return        
+    case (2) !    mccaffrey
+        call mccaffrey(qfire_c,z,xemp,xems,xeme,xfx,xfy)
         return        
     end select
     stop 'bad case in fire_plume'
@@ -635,7 +635,7 @@
     real(eb), intent(in) :: q, q_c, z, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: d, qj, z0, z_l, deltaz, xf, eme_above, eme_below
+    real(eb) :: d, qj, z0, z_l, deltaz, xf
     
     ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     xf = 1.0_eb
@@ -646,19 +646,16 @@
     qj = 0.001_eb*q*xf
     d = sqrt(area/xf/pio4)
     z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
-    deltaz = max(0.0001_eb, z-z0)
     
     ! entrainment is based on covective HRR
     qj = 0.001_eb*q_c*xf
-    z_l = z0 + 0.166*qj**0.4_eb
-    !eme_above=(0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)))/xf*(0.5+tanh(400.0_eb*(z-z_l-0.01)-4)/2)
-    !eme_below=(0.0054_eb*qj*z/z_l)/xf*(0.5-tanh(400.0_eb*(z-z_l-0.01)-4)/2)
-    !eme = eme_above + eme_below
-    if (deltaz>=z_l) then
-        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*z**(-5.0_eb/3.0_eb)))/xf
+    z_l = 0.166_eb*qj**0.4_eb
+    if (z>z_l) then
+        deltaz = max(0.0001_eb, z-z0)
+        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)))/xf
     else
-        continue
-        eme = (0.0054_eb*qj*z/z_l)/xf
+        deltaz = max(0.0001_eb, z_l-z0)
+        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * z/z_l)/xf
     end if
     ems = emp + eme    
 

@@ -20,12 +20,12 @@ call cleanall.bat
 echo Running DOE Tests
 cd DOE_Guidance_Report
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
-..\..\bin\cfast DOE201 /V
-..\..\bin\cfast DOE202 /V
-..\..\bin\cfast DOE203 /V
-..\..\bin\cfast DOE204 /V
-..\..\bin\cfast DOE205 /V
-..\..\bin\cfast DOE206 /V
+..\scripts\background -u 98 ..\..\bin\cfast DOE201 /V
+..\scripts\background -u 98 ..\..\bin\cfast DOE202 /V
+..\scripts\background -u 98 ..\..\bin\cfast DOE203 /V
+..\scripts\background -u 98 ..\..\bin\cfast DOE204 /V
+..\scripts\background -u 98 ..\..\bin\cfast DOE205 /V
+..\scripts\background -u 98 ..\..\bin\cfast DOE206 /V
 cd ..
 if %1==DOE goto end
 
@@ -110,18 +110,18 @@ echo Running NRC Tests
 cd NRC_Users_Guide
 if NOT %1==ALL call ..\..\Validation\cleancfast.bat
 cd 1_Cabinet_Fire_in_MCR
-..\..\..\bin\cfast Cabinet_fire_in_MCR /V
-..\..\..\bin\cfast Cabinet_fire_in_MCR_no_ventilation /V
+..\..\scripts\background -u 98 ..\..\..\bin\cfast Cabinet_fire_in_MCR /V
+..\..\scripts\background -u 98 ..\..\..\bin\cfast Cabinet_fire_in_MCR_no_ventilation /V
 cd ..
 cd 2_Cabinet_Fire_in_Switchgear
-..\..\..\bin\cfast Initial_fire_only /V
-..\..\..\bin\cfast Cabinet_fire_in_switchgear /V
+..\..\scripts\background -u 98 ..\..\..\bin\cfast Initial_fire_only /V
+..\..\scripts\background -u 98 ..\..\..\bin\cfast Cabinet_fire_in_switchgear /V
 cd ..
 cd 4_MCC_Fire_in_Switchgear
-..\..\..\bin\cfast MCC_in_switchgear /V
+..\..\scripts\background -u 98 ..\..\..\bin\cfast MCC_in_switchgear /V
 cd ..
 cd 5_Trash_Fire_in_Cable_Spreading_Room
-..\..\..\bin\cfast Trash_fire_in_cable_spreading_room /V
+..\..\scripts\background -u 98 ..\..\..\bin\cfast Trash_fire_in_cable_spreading_room /V
 cd ..\..
 if %1==NRC goto end
 

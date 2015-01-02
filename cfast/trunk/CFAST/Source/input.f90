@@ -510,7 +510,7 @@
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
-    data plumemodel /'McCaffrey', 'Heskestad'/
+    data plumemodel /'Heskestad', 'McCaffrey'/
     type(ramp_type), pointer :: rampptr
 
     !	Start with a clean slate

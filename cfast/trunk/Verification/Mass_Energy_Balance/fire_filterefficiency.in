@@ -18,7 +18,6 @@ COMPA,Compartment 1,5,5,5,0,0,0,GYPSUM,OFF,GYPSUM
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,1,0.0127,0,1,0,0,1,1
 MVENT,1,2,1,V,2.5,1,V,2.5,1,0.1,200,300,1
 MVENT,2,1,2,V,2.5,1,V,2.5,1,0.1,200,300,1
 !!

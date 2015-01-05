@@ -319,8 +319,8 @@
             ! layer interface is below ceiling
             if ((alpha - 1.0_eb)/=0.0_eb) then
                 sigma_convection = -1.0_eb + ct*qeq**twothirds/(alpha - 1.0_eb)
-                a1 = sigma_convection/(sigma_convection+1.0_eb)
                 if (sigma_convection>0.0_eb) then
+                    a1 = sigma_convection/(sigma_convection+1.0_eb)
                     ssq = sigma_convection**2
                     top = 1.04599_eb*sigma_convection + 0.360391_eb*ssq
                     bottom = 1.0_eb + 1.37748_eb*sigma_convection + 0.360391_eb*ssq

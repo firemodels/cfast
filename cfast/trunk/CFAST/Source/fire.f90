@@ -635,9 +635,11 @@
     real(eb), intent(in) :: q, q_c, z, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: d, qj, z0, z_l, deltaz, xf
+    real(eb) :: d, qj, z0, z_l, deltaz, xf, factor
     
-    ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
+    ! determine which entrainment factor to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
+    ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger; 
+    !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
     if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
     if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
@@ -651,12 +653,13 @@
     qj = 0.001_eb*q_c*xf
     z_l = 0.166_eb*qj**0.4_eb
     if (z>z_l) then
+        factor = 1.0_eb
         deltaz = max(0.0001_eb, z-z0)
-        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)))/xf
     else
+        factor = z/z_l
         deltaz = max(0.0001_eb, z_l-z0)
-        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * z/z_l)/xf
     end if
+    eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
     ems = emp + eme    
 
     end subroutine heskestad

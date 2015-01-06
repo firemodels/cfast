@@ -389,8 +389,9 @@ where $\dq''$ is the net convective and radiative heat flux.
 \newcommand{\Timo}{T_{i-1}^{n+1}}
 
 The 1-D heat conduction equation can be solved in either Cartesian or cylindrical coordinates. The solution methodology shall be presented for cylindrical coordinates:
-\be \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
-\label{eq:Target_PDE} \ee
+\be 
+  \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
+\ee
 Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form:
 \begin{eqnarray}
 \Ti-T_i^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}

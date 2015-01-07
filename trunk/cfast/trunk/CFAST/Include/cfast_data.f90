@@ -376,7 +376,7 @@ module opt
         ! door-fire, convec, rad, conduct, debug
                   1,      1,   2,       1,     0,  &
         ! exact ode,  hcl, mflow, keyboard, type of initialization
-                  1,    1,     1,        1,     1,  &
+                  1,    0,     1,        1,     1,  &
         !  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
                       0,       1,           0,                  0,                   0,                    0/)
 !*** in above change default rad option from 2 to 4

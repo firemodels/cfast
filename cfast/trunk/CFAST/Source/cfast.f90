@@ -36,11 +36,11 @@
     use thermp
     implicit none
 
-    integer errorcode, rev_cfast, irev, i
+    integer errorcode, rev_cfast, irev
     real(eb) :: xdelt, tstop, tbeg, tend
 
-    version = 6300           ! Current CFAST version number
-    crdate = (/2014,11,21/)  ! Current CFAST executable creation date
+    version = 7000           ! Current CFAST version number
+    crdate = (/2015,1,7/)  ! Current CFAST executable creation date
 
     errorcode = 0
 
@@ -95,9 +95,6 @@
         lrw(1,maxct) = 800.0_eb
         lflw(1,maxct) = 0.0120_eb
         lepw(maxct) = 0.90_eb
-        do i = 1, 7
-            lhclbf(i,maxct) = 0.00_eb
-        end do
 
         call initwall(tstop,errorcode)
         if (errorcode<=0) then
@@ -315,7 +312,6 @@
     !     NOFTL = lower layer temperature
     !     NOFWT = wall surface temperatures (equivalent to the number of profiles)
     !     NOFPRD = species
-    !     NOFHCL = surface deposition of hydrogen chloride
     !     NOFSMKW = surface deposition of soot
     !     NOFSMK = gas phase agglomeration of soot
     !     NEQUALS = last element in the array.
@@ -1113,15 +1109,12 @@
     ! data structures for mechanical vents
     real(eb) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
 
-    ! data structures for hcl deposition
-    real(eb) :: flwhcl(nr,ns+2,2), flxhcl(nr,4)
-
     ! data structures for door jet fires
     real(eb) :: flwdjf(nr,ns+2,2)
     integer :: update
 
     logical :: vflowflg, hvacflg, djetflg
-    integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl, iwhcl
+    integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
@@ -1186,13 +1179,6 @@
         return
     endif
 
-    ! calculate hcl deposition to walls
-    call hcl_deposition (flwhcl, flxhcl,ierror)
-    if (ierror/=0) then
-        ires = -2
-        return
-    endif
-
     ! reset parallel data structures
     do i = 1, nm1
         ! add in vent fires to the total.  do_fire does the total of
@@ -1236,15 +1222,7 @@
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwdjf(iroom,ip,uu)
             end do
         endif
-
-        ! add in hcl contribution to flwtot
-        if (activs(6)) then
-            flwtot(iroom,1,ll) = flwtot(iroom,1,ll)+flwhcl(iroom,1,ll)
-            flwtot(iroom,1,uu) = flwtot(iroom,1,uu)+flwhcl(iroom,1,uu)
-            flwtot(iroom,8,ll) = flwtot(iroom,8,ll)+flwhcl(iroom,8,ll)
-            flwtot(iroom,8,uu) = flwtot(iroom,8,uu)+flwhcl(iroom,8,uu)
-        endif
-
+        
         flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll)
         flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu)
         
@@ -1378,18 +1356,6 @@
                 endif
             end do
         end do
-
-        ! HCL deposition.  note that these are done only if hcldep is set
-        if (hcldep/=0) then
-            iwhcl = nofhcl
-            do iroom = 1, nm1
-                do iwall = 1, nwal
-                    iwhcl = iwhcl + 1
-                    xprime(iwhcl) = flxhcl(iroom,iwall)
-                end do
-            end do
-        endif
-
         ! smoke deposition and agglomeration.
         ! note that these are done only if smkagl is set
         do i = nofsmkw + 1, nofsmkw + 4*nm1*(smkagl+smkagl)
@@ -1429,8 +1395,8 @@
             delta(i) = xprime(i) - xpsolve(i)
         end do
 
-        ! residuals for hcl deposition, smoke deposition and smoke agglomeration
-        do i = nofhcl+1, nofhcl + 4*nm1*(hcldep+smkagl+smkagl)
+        ! residuals for smoke deposition and smoke agglomeration
+        do i = nofsmkw+1, nofsmkw + 4*nm1*(smkagl+smkagl)
             delta(i) = xprime(i) - xpsolve(i)
         end do
 
@@ -1486,7 +1452,7 @@
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
-        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, ppwgas, pphv, xt, xtemp, xh2o
+        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o
         
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -2022,24 +1988,8 @@
                 endif
             endif
         end do
-
-        ! define hcl absorption
-        if (activs(6)) then
-            isof = nofhcl
-            do iroom = 1, nm1
-                do lsp = 1, nwal
-                    isof = isof + 1
-                    if (iflag==odevarb) then
-                        ppwgas = pold(isof) + dt*pdold(isof)
-                    else
-                        ppwgas = pdif(isof)
-                    endif
-                    zzwspec(iroom,lsp) = ppwgas
-                end do
-            end do
-        endif
-    endif
-
+    end if
+    
     ! copy hvac product values for each hvac system
 
     if (nhvsys/=0.and.ns/=0) then

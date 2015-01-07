@@ -693,3 +693,28 @@ DOE206 & Window failure case. \\ \hline
 \caption{Trace Species for the DOE window failure case.  CFAST verification fileDOE206.in.}
 \label{fig:DOE206_Trace}
 \end{figure}
+
+\section{Sensitivity of the Model}
+
+A sensitivity analysis considers the extent to which uncertainty in model inputs influences model output.  For a sensitivity analysis, this uncertainty includes not only that inherent in the input of data for specific scenarios by the model user, but also uncertainty in empirical data or numerical parameters in the model such as the time step size used by the model to obtain a solution. 
+
+Among the purposes for conducting a sensitivity analysis are to determine 
+\begin{itemize}
+\item the important variables in the models, 
+\item the computationally valid range of values for each input variable, and 
+\item the sensitivity of output variables to variations in input data. 
+\end{itemize}
+
+Conducting a sensitivity analysis of a complex model is not a simple task and it will differ depending on the application. CFAST typically requires the user to provide numerous input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires. 
+
+Iman and Helton \cite{Iman:1988} studied the sensitivity of complex computer models developed to simulate the risk of severe nuclear accidents which may include fire and other risks. Consistent with the work of Iman and Helton \cite{Iman:1988}, ASTM E1355 \cite{ASTM:E1355} provides overall guidance on typical areas of evaluation of the sensitivity of deterministic fire models.  These areas may involve one or more of the following techniques: finite difference or direct analysis methods that provide an explicit solution of the sensitivity equations associated with the governing equations of the model, factorial design or Latin hypercube sampling studies that investigate the effect of varying the input parameters and consequential interactions between parameters that may be deemed important, and global or response surface methods that investigate the overall behavior of model outputs for a desired range of inputs. 
+
+This section provides a review of the sensitivity studies that have been conducted using CFAST 
+with an emphasis on uncertainty in the input. Other sensitivity investigations of CFAST are also 
+available \cite{Peacock:1988a, Beard:1992, Notarianni:2000}. 
+
+Khoudja [\cite{Khoudja:1988} has studied the sensitivity of an early version of the FAST [2] (predecessor to CFAST) model with a fractional factorial design involving two levels of 16 different input parameters. The statistical design, taken from the texts by Box and Hunter \cite{Box:1978}, and Daniel \cite{Daniel:1976} reduced the necessary model runs from more than 65 000 to 256 by studying the interactions of input parameters simultaneously. The choice of values for each input parameter represented a range for each parameter. The analysis of the FAST model showed sensitivity to heat loss to the compartment walls and to the number of compartments in the simulation. Without the inclusion of surface thermophysical properties, this model treats surfaces as adiabatic for conductive heat transfer. Thus, consistent sensitivity should be expected. Sensitivity to changes in thermal properties of the surfaces were not explored. 
+
+Walker \cite{Walker:1997} discussed the uncertainties in components of zone models and showed how uncertainty within user-supplied data affects the results of calculations using CFAST as an example. The study systematically varied inputs related to the fire (heat release rate, heat of combustion, mass loss rate, radiative fraction, and species yields) and compartment geometry (vent size and ceiling height) ranging from  $\pm$ 1 \% to $\pm$ 20 \% of base values for a one-compartment scenario. Heat release rate and ceiling height are seen to be the dominant input variables in the simulations. Upper layer temperature changed $\pm$ 10 \% for a $\pm$ 10 \% change in heat release rate. Typical variation of $\pm$ 10 s in time to untenable conditions for a 20 \% variation in the inputs was noted for the scenarios studied. 
+
+Peacock et al. \cite{Peacock:1988a} studied the sensitivity of CFAST for a range of input parameters. They used simple factorial designs for model inputs deemed important to investigate local behavior of important model outputs along with response surface methods to evaluate overall model behavior. Results of the parametric investigations are discussed below and the application of response surface methods is summarized in section 5.2. Both are discussed in more detail in reference \cite{Peacock:1988a}.

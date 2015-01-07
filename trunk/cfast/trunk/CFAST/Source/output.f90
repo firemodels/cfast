@@ -1085,7 +1085,7 @@
     use thermp
     implicit none
 
-    integer i, j, k
+    integer i, j
 
     ! check to see if any heat transfer is on
     do i = 1, nm1
@@ -1105,7 +1105,7 @@
     !     print out the properties of the materials used
     write (iofilo,5030) thrmfile
     do i = 1, maxct
-        write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i), (lhclbf(k,i),k = 1,5) 
+        write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i) 
         do j = 2, lnslb(i)
             write (iofilo,5050) lfkw(j,i), lcw(j,i), lrw(j,i), lflw(j,i)
         end do
@@ -1116,7 +1116,7 @@
 5000 format (//,' Heat transfer for all surfaces is turned off')
 5010 format (//,' Thermal Properties',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
 5020 format (' ',a13,3(a10,3x))
-5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',3X,'Emissivity',16X,'HCL B''s (1->5)')
+5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',3X,'Emissivity')
 5040 format (' ',a8,5(1pg13.3),5e10.2)
 5050 format (' ',8x,4(1pg13.3))
 5060 format (' ')

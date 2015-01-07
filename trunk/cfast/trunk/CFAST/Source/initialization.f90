@@ -845,7 +845,6 @@
     nlspct = 0
     nrestr = 0
     numthrm = 0
-    hcldep = 0
     smkagl = 0
     n = 0
 
@@ -1324,16 +1323,6 @@
         end do
     endif
 
-    ! add in hydrogen chloride deposition onto the walls if hcl is tracked
-    if (activs(6)) then
-        do i = 1, nm1
-            do k = 1, nwal
-                isof = isof + 1
-                p(isof) = minmas
-            end do
-        end do
-    endif
-
     ! placeholder for smoke agglomeration if smoke is tracked
     if (activs(9)) then
     endif
@@ -1550,9 +1539,6 @@
                         flw(k,i,j) = lflw(k,tp)
                     end do
                     epw(i,j) = lepw(tp)
-                    do k = 1, 7
-                        hclbf(k,i,j) = lhclbf(k,tp)
-                    end do
                 endif
             endif
         end do
@@ -1679,7 +1665,6 @@
     ! noftt = target temperatures
     ! nofwt = wall surface temperatures (equivalent to the number of profiles)
     ! nofprd = species
-    ! nofhcl = surface deposition of hydrogen chloride
     ! nofsmkw = surface deposition of soot
     ! nofsmk = gas phase agglomeration of soot
     ! nequals = last element in the array.
@@ -1787,8 +1772,7 @@
     noftt = nofoxyu + noxygen
     nofwt = noftt + nimtarg
     nofprd = nofwt + nwalls
-    nofhcl = nofprd + 2*nm1*nlspct
-    nofsmkw = nofhcl + 4*nm1*hcldep
+    nofsmkw = nofprd + 2*nm1*nlspct
     nofsmk = nofsmkw + 4*nm1*smkagl
     nofhvpr = nofsmk + 4*nm1*smkagl
 

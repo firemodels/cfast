@@ -73,21 +73,21 @@ module cfast_main
     implicit none
     save
     
-    integer :: hvorien(mext), hvnode(2,mext), crdate(3), mpsdat(3), nwv(nr,nr), na(mbr), nofsets(17), &
+    integer :: hvorien(mext), hvnode(2,mext), crdate(3), mpsdat(3), nwv(nr,nr), na(mbr), nofsets(16), &
         ncnode(mnode), ne(mbr), mvintnode(mnode,mcon), icmv(mnode,mcon), nfc(mfan), nw(nr,nr), nslb(nwal,nr), &
-        nf(mbr), hcldep, smkagl, vshape(nr,nr), objrm(0:mxoin), objign(mxoin), numnode(mxslb+1,4,nr), &
+        nf(mbr), smkagl, vshape(nr,nr), objrm(0:mxoin), objign(mxoin), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixtarg(trgirow,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mdt), nfire, ijk(nr,nr,mxccv), &
         nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr)
     
-    integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofhcl, nofsmkw, nofsmk, &
+    integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, nofsmkw, nofsmk, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbo, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
         nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, ndumpr, nrestr, ndt, next, nnode, nft, nfan, nbr
     
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), &
-        (nofprd,nofsets(11)), (nofhcl,nofsets(12)), (nofsmkw,nofsets(13)), (nofsmk,nofsets(14)), (nofhvpr,nofsets(15)), &
-        (nequals,nofsets(16)), (noffsm,nofsets(17))
+        (nofprd,nofsets(11)), (nofsmkw,nofsets(12)), (nofsmk,nofsets(13)), (nofhvpr,nofsets(14)), &
+        (nequals,nofsets(15)), (noffsm,nofsets(16))
 
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mext), hveflot(2,mext), &
@@ -100,7 +100,7 @@ module cfast_main
         rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nn,nr,nwal), fopos(3,0:mxfire), &
         hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), hlp(mxvents), hvextt(mext,2), &
         arext(mext), hvelxt(mext), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
-        hvp(mnode), hvght(mnode), dpz(mnode,mcon), hvflow(mnode,mcon), hclbf(7,nwal,nr), &
+        hvp(mnode), hvght(mnode), dpz(mnode,mcon), hvflow(mnode,mcon), &
         qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), eff_duct_diameter(mdt), duct_area(mdt), duct_length(mdt), &
         hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcrf(nv), &
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
@@ -479,7 +479,6 @@ module thermp
     
     real(eb), dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
     real(eb), dimension(nthmax) :: lepw
-    real(eb), dimension(7,nthmax) :: lhclbf
 
     logical, dimension(nwal,nr) :: thset
     integer maxct, numthrm

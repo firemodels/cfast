@@ -65,7 +65,7 @@ module cparams
     integer, parameter :: lower = 2         ! index for lower layer
     
     ! parameters for equation solver
-    ! nt = 4*nr(main equ) + 2*nr*ns(species) * 4*nr(hcl) + 4*nr(smoke) + mxhvsys*ns(hvac species)
+    ! nt = 4*nr(main equ) + 2*nr*ns(species) + mxhvsys*ns(hvac species)
     integer, parameter :: nt = 12*nr + 2*nr*ns + mxhvsys*ns ! total number of main equations for dae solver
     integer, parameter :: maxjeq = 6*nr + mnode + mbr
     integer, parameter :: maxeq = maxjeq + nwal*nr

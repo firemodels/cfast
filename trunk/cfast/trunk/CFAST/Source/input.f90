@@ -106,9 +106,6 @@
     interior_density = interior_abs_pressure/interior_temperature/rgas
     exterior_density = exterior_abs_pressure/exterior_temperature/rgas
 
-    ! turn on the subsidiary equations if they are neeeded - this is always true
-    if (activs(6)) hcldep = 1
-
     ! initialize the targets. add targets for each fire
     nm1 = n - 1
     if (numobjl>0) then
@@ -646,19 +643,6 @@
         lrw(1,maxct) = lrarray(4)
         lflw(1,maxct) = lrarray(5)
         lepw(maxct) = lrarray(6)
-        if (index(lcarray(1),'gypsum')/=0.or.index(lcarray(1),'GYPSUM')/=0.or.index(lcarray(7),'gypsum')/=0.or.index(lcarray(7),'GYPSUM')/=0) then
-            lhclbf(1,maxct) = 0.0063_eb
-            lhclbf(2,maxct) = 191.8_eb
-            lhclbf(3,maxct) = 0.0587_eb
-            lhclbf(4,maxct) = 7476.0_eb
-            lhclbf(5,maxct) = 193.0_eb
-            lhclbf(6,maxct) = 1.021_eb
-            lhclbf(7,maxct) = 0.431_eb
-        else
-            do i = 1, 7
-                lhclbf(i,maxct) = 0.0_eb
-            end do
-        endif
 
         ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
     case ('COMPA')

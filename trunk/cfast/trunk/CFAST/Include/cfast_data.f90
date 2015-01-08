@@ -81,7 +81,7 @@ module cfast_main
         nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, &
-        nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbo, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
+        nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
         nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, ndumpr, nrestr, ndt, next, nnode, nft, nfan, nbr
     
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
@@ -371,11 +371,11 @@ module opt
 
     integer, dimension(mxopt) :: option = &
         ! fire, hflow, entrain, vflow, cjet
-        (/   2,     1,       1,     1,   1,  &
+        (/   2,     1,       1,     1,    1,  &
         ! door-fire, convec, rad, conduct, debug
                   1,      1,   2,       1,     0,  &
         ! exact ode,  hcl, mflow, keyboard, type of initialization
-                  1,    0,     1,        1,     1,  &
+                  1,    0,     1,        1,                      0,  &
         !  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
                       0,       1,           0,                  0,                   0,                    0/)
 !*** in above change default rad option from 2 to 4
@@ -404,9 +404,9 @@ module params
 !   these are temporary work arrays
 
 !   ex... are the settings for the external ambient
-!   qfr,... are the heat balance calculations for resid and cnduct. it is now indexed by fire rather than by compartment
+!   qfr,... are the heat balance calculations for calculate_residuals and cnduct. it is now indexed by fire rather than by compartment
 !   the variables ht.. and hf.. are for vertical flow
-!   the volume fractions volfru and volfrl are calculated by resid at the beginning of a time step
+!   the volume fractions volfru and volfrl are calculated by calculate_residuals at the beginning of a time step
 !   hvfrac is the fraction that a mv duct is in the upper or lower layer
 
     logical :: allowed(ns), exset

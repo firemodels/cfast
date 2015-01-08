@@ -1,7 +1,7 @@
     subroutine convection (flwcv,flxcv)
 
     !     routine:    convection
-    !     function:   interface between resid and convec.  loops over rooms
+    !     function:   interface between calculate_residuals and convec.  loops over rooms
     !                 setting up varibles.  passes to convec if ceiling jet for
     !                 a surface is off, otherwise sets flxcv to 0.0 and then
     !                 solves for flwcv
@@ -159,7 +159,7 @@
 
     !     routine:     ceiling_jet
 
-    !     description:  interface between resid and cjet_detectors.  loops over
+    !     description:  interface between calculate_residuals and cjet_detectors.  loops over
     !                 rooms setting up varibles to pass.  calls cjet_detectors
     !                 only when fires are in a room
 

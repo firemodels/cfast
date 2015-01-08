@@ -1,7 +1,7 @@
 
-! --------------------------- readinputfile -------------------------------------------
+! --------------------------- read_input_file -------------------------------------------
 
-    subroutine readinputfile (ierror)
+    subroutine read_input_file (ierror)
 
     !	Read the input file and set up the data for processing
 
@@ -21,7 +21,7 @@
     integer numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
 
-    !	Unit numbers defined in readop, openoutputfiles, readinputfiles
+    !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
     !      3 is for the log file  (LOGERR)
@@ -449,7 +449,7 @@
     end do
 
     if(ifail>0) then
-        call xerror('Input error in readinputfile',0,1,1)
+        call xerror('Input error in read_input_file',0,1,1)
         ierror = ifail
         return
     endif
@@ -471,7 +471,7 @@
 5090 format (' Object no. ',I3,' Y cood. set to ',F12.5)
 5100 format (' Object no. ',I3,' Z cood. set to ',F12.5)
 
-    end subroutine readinputfile
+    end subroutine read_input_file
 
 ! --------------------------- keywordcases -------------------------------------------
 
@@ -818,7 +818,7 @@
                 ierror = 11
                 return
             endif
-            ! Sort these out in datacopy; we duplicate here so that readinputfile does not have to sort these as well
+            ! Sort these out in datacopy; we duplicate here so that read_input_file does not have to sort these as well
             itop = lrarray(2)
             ibot = lrarray(3)
             qcvpp(1,itop,ibot) = lrarray(5)
@@ -891,14 +891,14 @@
         endif
         i = lrarray(1)
         j = lrarray(2)
-        ! check for outside of compartment space; self pointers are covered in readinputfile
+        ! check for outside of compartment space; self pointers are covered in read_input_file
         if (i>nr.or.j>nr) then
             write (logerr,5070) i, j
             ierror = 79
             return
         endif
 
-        ! readinputfile will verify the orientation (i is on top of j)
+        ! read_input_file will verify the orientation (i is on top of j)
         nwv(i,j) = 1
         vvarea(i,j) = lrarray(3)
         ! check the shape parameter. the default (1) is a circle)
@@ -1911,11 +1911,11 @@
     return
     end subroutine initfireobject
 
-! --------------------------- readcfl -------------------------------------------
+! --------------------------- open_files -------------------------------------------
 
-    subroutine readcf1 (errorcode)
+    subroutine open_files (errorcode)
 
-    !     routine: readcf1
+    !     routine: open_files
     !     purpose: get the paths and project base name open the input file for reading (1)
     ! 	         delete the output files
     ! 	         open the log file (3)
@@ -1992,7 +1992,7 @@
     errorcode = ios
 
     return
-    end subroutine readcf1
+    end subroutine open_files
 
 ! --------------------------- setp0 -------------------------------------------
 

@@ -35,7 +35,6 @@
     use objects2
     use opt
     use params
-    use cshell, only : logerr
     implicit none
     
     real(eb), intent(in) :: tsec
@@ -55,11 +54,6 @@
     nfire = 0
 
     if (option(ffire)/=fcfast) return
-
-    ! Check to see if there is a main fire specified. We should not be able to get here
-    if (lfbo>0.and.lfbo<n.and.lfbt>0) then
-        write (logerr,*) 'Stop MAINF keyword is outdated. ','Update input file'
-    endif
 
     nobj = 0
     do i = 1, numobjl
@@ -1216,7 +1210,7 @@
 
     subroutine remapfires (nfires)
 
-    ! this routine is to combine the main fire (in lfbo) and any objects into a single list
+    ! this routine is to combine fire objects into a single list
     ! there does not have to be a main fire nor any objects, so nfires may be zero
 
     use precision_parameters
@@ -1229,19 +1223,7 @@
     real(eb) :: fheight
     integer :: i
 
-    ! first, the mainfire if there is one
-    if (lfbo>0) then
-        nfires = 1
-        flocal(1) = froom(0)
-        fxlocal(1) = fopos(1,0)
-        fylocal(1) = fopos(2,0)
-        fzlocal(1) = fopos(3,0)
-        call flamhgt (fqf(0),farea(0),fheight)
-        fqlocal(1) = fqf(0)
-        fhlocal(1) = fheight
-    else
-        nfires = 0
-    endif
+    nfires = 0
 
     ! now the other objects
     do i = 1, numobjl

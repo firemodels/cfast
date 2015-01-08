@@ -45,16 +45,16 @@
     errorcode = 0
 
     if(command_argument_count().eq.0)then
-        call versionout(0)
+        call output_version(0)
         write (*,*) 'No input file specified'
     endif
 
     !     initialize the basic memory configuration
 
-    call initmm
-    call initob
-    call readop     
-    call readcf1 (errorcode)
+    call initialize_memory
+    call initialize_fire_objects
+    call read_command_options     
+    call open_files (errorcode)
 
     !     initial output
 
@@ -70,16 +70,16 @@
     mpsdat(2) = rundat(2)
     mpsdat(3) = rundat(3)
 
-    call versionout (logerr)
+    call output_version (logerr)
     irev = rev_cfast()
 
-    call initslv
-    call readinputfile (errorcode)
+    call initialize_solver
+    call read_input_file (errorcode)
     if (errorcode<=0) then
 
-        if (header) call disclaim('CFAST')
+        if (header) call output_disclamer('CFAST')
 
-        call initspec
+        call initialize_species
 
         xdelt = nsmax/deltat
         itmmax = xdelt + 1
@@ -96,7 +96,7 @@
         lflw(1,maxct) = 0.0120_eb
         lepw(maxct) = 0.90_eb
 
-        call initwall(tstop,errorcode)
+        call initialize_walls (tstop,errorcode)
         if (errorcode<=0) then
 
             stime = 0.0_eb
@@ -105,10 +105,10 @@
             itmmax = xdelt + 1
             tstop = itmmax - 1
 
-            call outinitial
+            call output_initial_conditions
 
             call cptime(tbeg)
-            call solve(tstop,errorcode)
+            call solve_simulation (tstop,errorcode)
             call cptime(tend)
 
             write (logerr,5003) tend - tbeg
@@ -149,7 +149,7 @@
     use wnodes
     implicit none
 
-    external gres, gres2, gres3, gjac
+    external gres, gres2, gjac
     
     integer, intent(in) :: ipar(*)
     real(eb), intent(in) :: t,pdzero(*), rpar(*)
@@ -159,7 +159,7 @@
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
     real(eb) :: work(lrw)
-    integer :: ires, iopt, nhvalg, nalg0, nalg1, nalg2, nprint, i, ioff0,  info, ii, ieq1, ieq2, nodes
+    integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
     real(eb) :: tol
 
 1   continue
@@ -170,7 +170,7 @@
     ipar2(1) = ipar(1)
     ipar2(2) = ipar(2)
     call setderv(-1)
-    call resid(t,p,pdzero,pdold,ires,rpar2,ipar2)
+    call calculate_residuals(t,p,pdzero,pdold,ires,rpar2,ipar2)
     iopt = 2
     tol = algtol
     nhvalg = nhvpvar + nhvtvar
@@ -198,29 +198,6 @@
     end do
     if (option(fpsteady)==1) then
         call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrw)
-    elseif (option(fpsteady)==2) then
-        ioff0 = nalg1
-
-        ! upper layer temperatures
-        nalg2 = nalg1 + 1
-        hhvp(1+ioff0) = zzftemp(lfbo,upper)
-
-        ! wall temperatures
-        ii = 0
-        ieq1 = izwmap2(1,lfbo)
-        ieq2 = izwmap2(3,lfbo)
-        if(ieq1/=0)then
-            ii = ii + 1
-            nalg2 = nalg2 + 1
-            hhvp(ii+ioff0+1) = p(ieq1)
-        endif
-        if(ieq2/=0)then
-            ii = ii + 1
-            nalg2 = nalg2 + 1
-            hhvp(ii+ioff0+1) = p(ieq2)
-        endif
-
-        call snsqe(gres3,gjac,iopt,nalg2,hhvp,deltamv,tol,nprint,info,work,lrw)
     else
         if (nhvalg>0) then
             call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nm1),deltamv(1+nm1),tol,nprint,info,work,lrw)
@@ -251,19 +228,8 @@
     do i = 1, nhvtvar
         p(i+noftmv) = hhvp(i+nm1+nhvpvar)
     end do
-    if (option(fpsteady)==2) then
-        p(lfbo+noftu) = hhvp(1+ioff0)
-        ii = 0
-        if(ieq1/=0)then
-            ii = ii + 1
-            p(ieq1) = hhvp(ii+ioff0+1)
-        endif
-        if(ieq2/=0)then
-            ii = ii + 1
-            p(ieq2) = hhvp(ii+ioff0+1)
-        endif
-    endif
-    call resid(t,p,pdzero,pdold,ires,rpar,ipar)
+
+    call calculate_residuals(t,p,pdzero,pdold,ires,rpar,ipar)
 
     ! Added to resync the species mass with the total mass of each layer at the new pressure
     nodes = nofprd+1
@@ -280,11 +246,11 @@
     return
     end
 
-! --------------------------- solve -------------------------------------------
+! --------------------------- solve_simulation -------------------------------------------
 
-    subroutine solve(tstop,ierror)
+    subroutine solve_simulation (tstop,ierror)
 
-    !     Routine: solve
+    !     Routine: solve_simulaiton
     !     Purpose: main solution loop for the model
     !     Arguments: TSTOP   The final time to which CFAST should run to
     !                IERROR  Returns error codes
@@ -359,7 +325,7 @@
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
         tplot, tspread, tout,  ostptime, tdtect, tobj
     character(133) :: messg
-    external resid, jac, delfilesqq
+    external calculate_residuals, jac, delfilesqq
     integer :: funit
 
     call cptime(toff)
@@ -576,7 +542,7 @@
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
 
             ! update target temperatures (only need to update just before we print target temperatures).
-            ! if we actually use target temperatures in a calculation then this call will need to be moved to inside resid.
+            ! if we actually use target temperatures in a calculation then this call will need to be moved to inside calculate_residuals.
 
             if(.not.ltarg)then
                 call target_flux(steady)
@@ -668,7 +634,7 @@
         told = t
         call setderv(-1)
         call cptime(ton)
-        call ddassl(resid,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
+        call ddassl(calculate_residuals,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
         ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
         call setderv(-2)
         ieqmax = ipar(3)
@@ -712,7 +678,7 @@
 
         ipar(2) = all
         updatehall = .true.
-        call resid(t,p,pdzero,pdnew,ires,rpar,ipar)
+        call calculate_residuals(t,p,pdzero,pdnew,ires,rpar,ipar)
         updatehall = .false.
         call updrest(nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
 
@@ -738,7 +704,7 @@
             else
                 idsave = ifobj
                 td = tobj
-                call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
+                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
                 idset = 0
             endif
         else
@@ -779,7 +745,7 @@
                 end do
                 info2(2) = 1
                 told = t
-                call ddassl(resid,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
+                call ddassl(calculate_residuals,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then
@@ -794,20 +760,20 @@
                 endif
 
                 ! reset dassl flags to integrate forward from t=td and
-                ! call resid to get product info at sprinkler activation time
+                ! call calculate_residuals to get product info at sprinkler activation time
                 if (ifdtect>0) idset = idsave
                 dt = t - told
                 ipar(2) = all
 
-                ! call resid to get product info at the correct time and
+                ! call calculate_residuals to get product info at the correct time and
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
-                call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
+                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
                 call updrest(nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
                 call setinfo(info,rwork)
             else if (td==t) then
                 call setinfo(info,rwork)
-                call resid (t, p, pdzero, pdnew, ires, rpar, ipar)
+                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
                 ! updtect said that a sprinkler has gone off but the time is wrong!!
                 write(messg,'(a7,f10.5,a13,f10.5,a22,f10.5)') 'Time = ' ,t,' Last time = ',told,' need to back step to ',td
@@ -1027,12 +993,12 @@
     return
     end
 
-! --------------------------- resid -------------------------------------------
+! --------------------------- calculate_residuals -------------------------------------------
 
-    subroutine resid (tsec,x,xpsolve,delta,ires,rpar,ipar)
+    subroutine calculate_residuals (tsec,x,xpsolve,delta,ires,rpar,ipar)
 
 
-    !     Routine: cfast resid
+    !     Routine: cfast calculate_residuals
     !     Purpose: Calculates the residual F(t,y,dy/dt) for CFAST
     !              differential and algebraic equations.  For the gas
     !              differential equations (pressure, layer volume,
@@ -1053,7 +1019,7 @@
     !                        vector (Y' above)
     !                DELTA   Residual or value of F(t,y,dy/dt)
     !                IRES    Outputs:  IRES    Integer flag which is always equal to
-    !                        zero on input. RESID should alter IRES
+    !                        zero on input. calculate_residuals should alter IRES
     !                        only if it encounters an illegal value of Y or
     !                        a stop condition. Set IRES = -1 if an input
     !                        value is illegal, and DDASSL will try to solve
@@ -1062,9 +1028,9 @@
     !                        program with IDID = -11.
     !                RPAR    real parameter arrays
     !                IPAR    integer parameter arrays
-    !                        These are used for communication between SOLVE and
-    !                        RESID via DASSL. They are not altered by DASSL.
-    !                        Currently, only IPAR is used in RESID to pass
+    !                        These are used for communication between solve_simulation and
+    !                        calculate_residuals via DASSL. They are not altered by DASSL.
+    !                        Currently, only IPAR is used in calculate_residuals to pass
     !                        a partial/total flag for solution of the
     !                        species equations.
 
@@ -1127,10 +1093,10 @@
     call datacopy(x,odevara)
     call datacopy(x,odevarb)
 
-    ! If RESID is called by SOLVE then IPAR(2)==ALL all residuals
-    ! are computed.  If RESID is called by DASSL residuals are not
+    ! If calculate_residuals is called by solve_simulation then IPAR(2)==ALL all residuals
+    ! are computed.  If calculate_residuals is called by DASSL residuals are not
     ! computed for species.  Further, temperature profiles are only
-    ! updated when RESID is called by SOLVE.
+    ! updated when calculate_residuals is called by solve_simulation.
 
     if (ipar(2)==some) then
         update = 0
@@ -1380,7 +1346,7 @@
     ! target residual
     call target(0,mplicit,dt,xpsolve,delta)
 
-    ! residuals for stuff that is solved in solve itself, and not by dassl
+    ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then
 
         ! residuals for gas layer species
@@ -1961,7 +1927,7 @@
                 endif
             end do
 
-            ! if oxygen is a dassl variable then use dassl solve array to define
+            ! if oxygen is a dassl variable then use dassl solution array to define
             ! zzgspec and zzcspec values for oxygen.
             ! make sure oxygen never goes negative
             if(option(foxygen)==on)then

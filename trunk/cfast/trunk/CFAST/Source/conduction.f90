@@ -4,7 +4,7 @@
     subroutine conduction(update,dt,flxtot,delta)
 
     !     routine: conduction (main conduction routine)
-    !     purpose: interface between resid and the conduction calculation.
+    !     purpose: interface between calculate_residuals and the conduction calculation.
     !              for each active wall surface in each routine this
     !              routine calculates the residual function 
     !               q'' + k dt/dx, which when zero is simply fourier's
@@ -131,7 +131,7 @@
 
     end do
 
-    ! save wall gradients during base call to resid (cnduct)
+    ! save wall gradients during base call to calculate_residuals (cnduct)
     if(option(fmodjac)==on)then
 
         ! store wall gradient for later use

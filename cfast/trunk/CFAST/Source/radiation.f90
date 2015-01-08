@@ -4,7 +4,7 @@
     subroutine radiation(flwrad,flxrad,ierror)
 
     !     routine: radiation
-    !     purpose: Interface between RESID and RAD2 or RAD4.  Loops over
+    !     purpose: Interface between calculate_residuals and RAD2 or RAD4.  Loops over
     !              rooms setting up varibles to pass.  If one or more fires
     !              are in a room calls RAD4 otherwise RAD2.
     !     Revision: $Revision$
@@ -78,10 +78,6 @@
 
     defabsup = 0.50_eb
     defabslow = 0.01_eb
-    
-    if(lfbo/=0.and.option(frad)/=4.and.lfbt/=1)then
-        defabsup = absorb(lfbo,upper)
-    endif
 
     do i = 1, nm1
         if(roomflg(i))then

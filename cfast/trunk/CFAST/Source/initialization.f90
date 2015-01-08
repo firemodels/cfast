@@ -83,7 +83,7 @@
         end do
     endif
     t = stime
-    call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
+    call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
     do i = 1, nalg
         deltamv(i) = delta(i)
     end do
@@ -161,7 +161,7 @@
         end do
     endif
     t = stime
-    call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
+    call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
     do i = 1, nhvpvar
         deltamv(i) = delta(i+nofpmv)
     end do
@@ -178,145 +178,6 @@
         do i = 1, nhvtvar
             write (iofilo,*) i, deltamv(i+nhvpvar)
         end do
-        write(iofilo,*)' '
-        read(*,*)
-    endif
-    return
-    end
-
-! --------------------------- gres3 -------------------------------------------
-
-    subroutine gres3(nnn,hvpsolv,deltamv,iflag)
-
-    !     routine: gres2
-    !     purpose: calculates residuals for initial solution by snsqe
-    !                 this routine finds initial upper layer temperatures,
-    !                 upper wall and ceiling surface temperatures
-    !                 in addition to room pressures and hvac pressures and
-    !                 temperatures.
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: nnn
-    !                hvpsolv
-    !                deltamv
-    !                iflag
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    use opt
-    use params
-    use solver_parameters
-    implicit none
-
-    integer, intent(in) :: nnn
-    real(eb), intent(in) :: hvpsolv(nnn)
-    integer, intent(out) :: iflag
-    real(eb), intent(out) :: deltamv(*)
-    
-    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
-    integer nalg, i, ii, ieq1, ieq2, ieq3, ires
-    data pdzero /maxteq*0.0_eb/
-    nalg = nm1 + nhvpvar + nhvtvar
-
-    if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
-    do i = 1, nequals
-        p2(i) = pinit(i)
-    end do
-
-    ! copy pressures, hvac pressures and temps
-    do i = 1, nalg
-        p2(i) = hvpsolv(i)
-    end do
-
-    ! copy upper layer temperatures in fire room
-    p2(lfbo + noftu) = hvpsolv(1+nalg)
-
-    ! copy wall temperatures
-    ii = 0
-    ieq1 = izwmap2(1,lfbo)
-    ieq2 = izwmap2(3,lfbo)
-    if(ieq1/=0)then
-        ii = ii + 1
-        p2(ieq1) = hvpsolv(ii+nalg+1)
-    endif
-    if(ieq2/=0)then
-        ii = ii + 1
-        p2(ieq2) = hvpsolv(ii+nalg+1)
-    endif
-
-    if(iprtalg/=0)then
-        write(iofilo,*)' *** guesses ***'
-        write(iofilo,*)'room pressures'
-        do i = 1, nm1
-            write(iofilo,'(1x,i3,1x,e23.16)')i,p2(i)
-        end do
-        write(iofilo,*)'hvac pressure and temperatures'
-        do i = nm1+1,nalg
-            write(iofilo,'(1x,i3,1x,e23.16)')i,p2(i)
-        end do
-        ii = 1
-        write(iofilo,*)'upper layer temperature in fire room'
-        write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(lfbo+noftu)
-        ieq1 = izwmap2(1,lfbo)
-        ieq3 = izwmap2(3,lfbo)
-        if(ieq1/=0.or.ieq3/=0)then
-            write(iofilo,*)'wall temperatures'
-            if(ieq1/=0)then
-                ii = ii + 1
-                write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(ieq1)
-            endif
-            if(ieq3/=0)then
-                ii = ii + 1
-                write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,p2(ieq3)
-            endif
-        endif
-    endif
-    t = stime
-    call resid(t,p2,pdzero,delta,ires,rpar2,ipar2)
-    do i = 1, nalg
-        deltamv(i) = delta(i)
-    end do
-    do i = 1, nm1
-        if(.not.izcon(i))deltamv(i) = 0.0_eb
-    end do
-    deltamv(1+nalg) = delta(lfbo+noftu)
-    ii = 0
-    if(ieq1/=0)then
-        ii = ii + 1
-        deltamv(ii+1+nalg) = delta(ieq1)
-    endif
-    if(ieq2/=0)then
-        ii = ii + 1
-        deltamv(ii+1+nalg) = delta(ieq2)
-    endif
-    if(iprtalg/=0)then
-        write(iofilo,*)' '
-        write(iofilo,*)' *** residuals ***'
-        write(iofilo,*)'room pressure'
-        do i = 1, nm1
-            write(iofilo,'(1x,i3,1x,e23.16)')i,delta(i)
-        end do
-        write(iofilo,*)'hvac pressure and temperatures'
-        do i = nm1+1,nalg
-            write(iofilo,'(1x,i3,1x,e23.16)')i,delta(i)
-        end do
-        write(iofilo,*)'upper layer temperature in fire room'
-        write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(lfbo+noftu)
-        ieq1 = izwmap2(1,lfbo)
-        ieq3 = izwmap2(3,lfbo)
-        if(ieq1/=0.or.ieq3/=0)then
-            write(iofilo,*)'wall temperatures'
-            if(ieq1/=0)then
-                ii = ii + 1
-                write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(ieq1)
-            endif
-            if(ieq3/=0)then
-                ii = ii + 1
-                write(iofilo,'(1x,i3,1x,e23.16)')nalg+ii,delta(ieq3)
-            endif
-        endif
         write(iofilo,*)' '
         read(*,*)
     endif
@@ -537,7 +398,7 @@
         izhvmapi(i) = i
     end do
 
-    ! DASSL only solve interior nodes so zero out exterior nodes
+    ! DASSL only solves interior nodes so zero out exterior nodes
     do ii = 1, next
         i = hvnode(2,ii)
         izhvmapi(i) = 0
@@ -795,11 +656,11 @@
     return
     end
 
-! --------------------------- initmm -------------------------------------------
+! --------------------------- initialize_memory -------------------------------------------
 
-    subroutine initmm
+    subroutine initialize_memory
 
-    !     routine: initmm
+    !     routine: initialize_memory
     !     purpose: This routine initializes the main memory - must be used by 
     !              all modules that will run the model kernel
     !     Arguments: none
@@ -948,7 +809,6 @@
 
     ! a specified fire in the center of the room
     lfbt = 2
-    lfbo = 0
     lfmax = 1
     heatfl = .false.
     heatfp(1) = -1.0_eb
@@ -1124,11 +984,11 @@
     return
     end
 
-! --------------------------- initob -------------------------------------------
+! --------------------------- initialize_fire_objects -------------------------------------------
 
-    subroutine initob
+    subroutine initialize_fire_objects
 
-    !     routine: initob
+    !     routine: initialize_fire_objects
     !     purpose: this routine initializes the fire objects
     !     arguments: none
 
@@ -1159,11 +1019,11 @@
     return
     end
 
-! --------------------------- initslv -------------------------------------------
+! --------------------------- initialize_solver -------------------------------------------
 
-    subroutine initslv
+    subroutine initialize_solver
 
-    !     routine: initslv
+    !     routine: initialize_solver
     !     purpose: this routine initializes the solver variables from solver.ini if it exists
     !     arguments: none
 
@@ -1243,13 +1103,13 @@
     close (iofili)
 
     return
-    end subroutine initslv
+    end subroutine initialize_solver
 
 ! --------------------------- initspecc -------------------------------------------
 
-    subroutine initspec
+    subroutine initialize_species
 
-    !     routine: initspec
+    !     routine: initialize_species
     !     purpose: This routine initializes variables associated with 
     !              species it originally occured in CFAST and INITFS.  It was moved
     !              to one subroutine to make maintenance easier
@@ -1334,7 +1194,7 @@
     end do
 
     return
-    end subroutine initspec
+    end subroutine initialize_species
 
 ! --------------------------- inittarg -------------------------------------------
 
@@ -1472,11 +1332,11 @@
     return
     end
 
-! --------------------------- initwall -------------------------------------------
+! --------------------------- initialize_walls  -------------------------------------------
 
-    subroutine initwall(tstop,ierror)
+    subroutine initialize_walls (tstop,ierror)
 
-    !     routine: initspec
+    !     routine: initialize_species
     !     purpose: This routine initializes data structures associated
     !             with walls and targets
     !     Arguments: TSTOP
@@ -1638,7 +1498,7 @@
 
     subroutine offset (ierror)
 
-    ! routine: initspec
+    ! routine: initialize_species
     ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.  thus, the actual pressure array
     !          goes from nofp+1 to nofp+nm1.  the total number of equations to be considered is nequals, and is the last element in the last vector.
     !          each physical interface routine is responsible for the count of the number of elements in the vector for which it is resonsible.
@@ -1664,7 +1524,7 @@
 
     ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
 
-    ! an important note - solve sets the last variable to be solved to nofprd which is the beginning of the species (-1) and the end of the array which is presently used by dassl
+    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the beginning of the species (-1) and the end of the array which is presently used by dassl
     
     use cfast_main
     use fltarget

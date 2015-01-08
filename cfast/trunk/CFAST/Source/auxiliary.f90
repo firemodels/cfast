@@ -1295,15 +1295,15 @@
     return
     end subroutine readas
 
-! --------------------------- readop -------------------------------------------
+! --------------------------- read_command_options -------------------------------------------
 
-    subroutine readop
+    subroutine read_command_options
 
-    !     routine: readop
+    !     routine: read_command_options
     !     purpose:  retrieve and process command line options and date
     !     arguments: none
 
-    ! unit numbers defined in readop, openoutputfiles, readinputfiles
+    ! unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (iofili)
     !      3 is for the log file  (logerr)
@@ -1372,7 +1372,7 @@
     return
 
 5010 format (i4.4,'/',i2.2,'/',i2.2)
-    end   subroutine readop
+    end   subroutine read_command_options
 
 ! --------------------------- shellsort -------------------------------------------
 

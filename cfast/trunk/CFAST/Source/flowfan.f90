@@ -26,7 +26,7 @@
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0
 
-    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by initslv.  
+    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by initialize_solver.  
     ! chv should eventually be defined elsewhere.
 
     hvacflg = .false.
@@ -534,7 +534,7 @@
             end do
         endif
 
-        ! pack the species change for dassl (actually resid)
+        ! pack the species change for dassl (actually calculate_residuals)
         isof = 0
         do k = 1, min(ns,9)
             if(activs(k))then

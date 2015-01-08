@@ -13,7 +13,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    character(35) :: headertext(3,maxhead), cTemp, cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
+    character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
     integer :: position, i, j
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
@@ -77,22 +77,7 @@
         endif
     end do
 
-    ! Fire variables. Main fire first, then object fires
-    if (lfbo>0) then
-        do i = 1, 9
-            position = position + 1
-            if (validate) then
-                write (cTemp,'(a,i1)') trim(LabelsShort(i+9)), 0
-                headertext(1,position) = cTemp
-                headertext(2,position) = LabelUnits(i+9)
-                headertext(3,1) = ' '
-            else
-                headertext(1,position) = Labels(i+9)
-                headertext(2,position) = 'Mainfire'
-                headertext(3,position) = LabelUnits(i+9)
-            endif  
-        end do
-    endif
+    ! Fire variables.
     do j = 1, numobjl
         do i = 1, 9
             position = position + 1
@@ -475,7 +460,7 @@
     logical, intent(in) :: lmode
 
     integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
-    character(35) :: headertext(2,maxhead), cTemp, cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
     integer position, i, j
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
@@ -501,16 +486,7 @@
         end do
     end do
 
-    ! Fire variables. Main fire first, then object fires
-    if (lfbo>0) then
-        do i = 1, 4
-            position = position + 1
-            write (cTemp,'(a,i1)') trim(LabelsShort(i+7)), 0
-            headertext(1,position) = LabelUnits(i+7)
-            headertext(2,position) = cTemp
-            call smvDeviceTag(headertext(2,position))
-        end do
-    endif
+    ! Fire variables.
     do j = 1, numobjl
         do i = 1, 4
             position = position + 1
@@ -593,7 +569,7 @@
 
  subroutine ssHeadersResid
 
-    ! This is the header information for the resid spreadsheet output
+    ! This is the header information for the calculate_residuals spreadsheet output
 
     use cfast_main
     use objects1

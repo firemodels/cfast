@@ -50,17 +50,6 @@
     do i = 1,n
         call SSaddtolist (position,fqdj(i),outarray)
     end do
-    
-    if (lfmax>0.and.lfbt>0.and.lfbo>0) then
-        call flamhgt (fqf(0),farea(0),fheight)
-        call SSaddtolist (position,fems(0),outarray)
-        call SSaddtolist (position,femp(0),outarray)
-        call SSaddtolist (position,fqf(0),outarray)
-        call SSaddtolist (position,fheight,outarray)
-        call SSaddtolist (position,fqfc(0),outarray)
-        call SSaddtolist (position,objmaspy(0),outarray)
-        call SSaddtolist (position,radio(0),outarray)
-    endif
 
     if (numobjl/=0) then
         do i = 1, numobjl
@@ -456,16 +445,6 @@
     end do
 
     ! fires
-    nfire = 0
-    if (lfmax>0.and.lfbt>0.and.lfbo>0) then
-        nfire = nfire + 1
-        call flamhgt (fqf(0),farea(0),fheight)
-        call SSaddtolist (position,fqf(0)/1000.,outarray)
-        call SSaddtolist (position,fheight,outarray)
-        call SSaddtolist (position,xfire(1,3),outarray)
-        call SSaddtolist (position,farea(0),outarray)
-    endif
-
     if (numobjl/=0) then
         do i = 1, numobjl
             nfire = nfire + 1

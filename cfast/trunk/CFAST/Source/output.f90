@@ -1,7 +1,7 @@
 
-! --------------------------- disclaim -------------------------------------------
+! --------------------------- output_disclamer -------------------------------------------
 
-    subroutine disclaim (name)
+    subroutine output_disclamer (name)
 
     use cshell
     implicit none
@@ -33,11 +33,11 @@
     ' **             Not subject to Copyright           **',/)
 2   format('Run ',I4.4,'/',I2.2,'/',I2.2)
 
-    end subroutine disclaim
+    end subroutine output_disclamer
 
-! --------------------------- versionout -------------------------------------------
+! --------------------------- output_version -------------------------------------------
 
-    subroutine versionout (iunit)
+    subroutine output_version (iunit)
 
     !	a routine to put the header information in the output file. 
     !	we assume the file is open
@@ -70,7 +70,7 @@
 10  format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
 20  format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
 30  format ('CFAST run with validation option = ',i2)    
-    end subroutine versionout
+    end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------
 
@@ -249,10 +249,6 @@
 
     external length
     write (iofilo,5000)
-    if (lfmax>0.and.lfbt>0.and.lfbo>0) then
-        call flamhgt (fqf(0),farea(0),fheight)
-        write (iofilo,5010) 'Main', fems(0), femp(0), fqf(0), fheight, fqfc(0), fqf(0) - fqfc(0)
-    endif
     if (numobjl/=0) then
         do i = 1, numobjl
             call flamhgt (fqf(i),farea(i),fheight)
@@ -798,9 +794,9 @@
     return
     end subroutine rslthall
 
-! --------------------------- outinitial -------------------------------------------
+! --------------------------- output_initial_conditions -------------------------------------------
 
-    subroutine outinitial
+    subroutine output_initial_conditions
 
     !     Description:  Output initial test case description
 
@@ -838,7 +834,7 @@
 5000 format (' Data file is ',a,'    Title is ',a)
 10  format (' CFAST Version ',i1,'.',i1,'.',i2,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
 20  format (' CFAST Version ',i1,'.',i1,'.',i1,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
-    end subroutine outinitial
+    end subroutine output_initial_conditions
 
 ! --------------------------- outover -------------------------------------------
 
@@ -1500,7 +1496,7 @@
 
     subroutine outjcnt (t)
 
-    !     description: print out numerical performance data; resid counts, jac counts, cpu times etc.
+    !     description: print out numerical performance data; calculate_residuals counts, jac counts, cpu times etc.
 
     use precision_parameters
     use opt
@@ -1916,7 +1912,7 @@
     !	Note that the sign of lprint determines whether we write to the console or  file
     !	Unit numbers defined here and readinputfiles
 
-    !	Unit numbers defined in readop, openoutputfiles, readinputfiles
+    !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
     !      3 is for the log file  (LOGERR)

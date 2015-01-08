@@ -845,7 +845,6 @@
     nlspct = 0
     nrestr = 0
     numthrm = 0
-    smkagl = 0
     n = 0
 
     ! initialize the flow variables
@@ -1323,10 +1322,6 @@
         end do
     endif
 
-    ! placeholder for smoke agglomeration if smoke is tracked
-    if (activs(9)) then
-    endif
-
     ! define product map array
     izpmap(1) = 1
     izpmap(2) = 2
@@ -1665,8 +1660,6 @@
     ! noftt = target temperatures
     ! nofwt = wall surface temperatures (equivalent to the number of profiles)
     ! nofprd = species
-    ! nofsmkw = surface deposition of soot
-    ! nofsmk = gas phase agglomeration of soot
     ! nequals = last element in the array.
 
     ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
@@ -1772,9 +1765,7 @@
     noftt = nofoxyu + noxygen
     nofwt = noftt + nimtarg
     nofprd = nofwt + nwalls
-    nofsmkw = nofprd + 2*nm1*nlspct
-    nofsmk = nofsmkw + 4*nm1*smkagl
-    nofhvpr = nofsmk + 4*nm1*smkagl
+    nofhvpr = nofprd + 2*nm1*nlspct
 
     ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.  after nhvsys is defined the following statement can be used to define nequals
     ! nequals = nofhvpr + nhvsys*nlspct

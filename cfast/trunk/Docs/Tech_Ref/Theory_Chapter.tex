@@ -141,7 +141,11 @@ The centerline plume temperature rise, $\Delta T_0(z)$, at a height $z$ above th
 \be
    \Delta T_0(z) = 9.1 \, \left( \frac{T_\infty}{g \, c_p^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3}  \label{plume_temperature}
 \ee
-where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). Equation~(\ref{plume_temperature}) is valid above the flame height, $L$, and below the hot gas layer interface, $z_{\rm I}$. Below the flame height, the temperature rise is approximated at 900~K. Above the layer interface, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the temperature correlation is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
+where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is assumed that the temperature decreases following a Gaussian profile off the centerline:
+\be
+   \Delta T(r,z) = \Delta T_0(z) \, \exp \left[ -\left( \frac{r}{\sigma_{\Delta T}} \right)^2 \right] \quad ; \quad \sigma_{\Delta T} = 0.14 \, \left( \frac{T_0(z)}{T_\infty} \right)^{1/2} \, (z-z_0) \label{plume_temperature2}
+\ee
+Equations~(\ref{plume_temperature}) and (\ref{plume_temperature2}) are valid above the flame height, $L$, and below the hot gas layer interface, $z_{\rm I}$. Below the flame height, the temperature rise is approximated at 900~K. Above the layer interface, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the temperature correlation is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
 \be
    \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, c_p^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
 \ee
@@ -499,16 +503,16 @@ where the superscript $n$ denotes the value at the current time, and $\delta t$ 
 
 The temperature and velocity just below the ceiling is typically greater than that of the upper layer due to the presence of a ceiling jet. From the work of Alpert and Heskestad~\cite{Alpert:SFPE}, the temperature of an unconfined ceiling jet is given by:
 \be
-   T_{\rm cj} = T_\infty + T_\infty \, \dQ^{* \, 2/3}_H \, \left\{ \begin{array}{l@{\quad}l}
+   T_{\rm cj}(r) = T_\infty + T_\infty \, \dQ^{* \, 2/3}_H \, \left\{ \begin{array}{l@{\quad}l}
    6.3 & r/H\le 0.2 \\[0.1in]
-   \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & 0.2 < r/H < 4.0 
+   \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & 0.2 < r/H < 4.0
     \end{array} \right. \label{Tcj}
 \ee
-The radial velocity is given by:   
+The radial velocity is given by:
 \be
-   U_{\rm cj} = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
+   U_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
    3.61 & r/H \le 0.17 \\[0.1in]
-   1.06 \, \left( r/H \right)^{-0.69} & 0.17 < r/H < 4.0 \end{array} \right.
+   1.06 \, \left( r/H \right)^{-0.69} & 0.17 < r/H < 4.0 \end{array} \right. \label{Ucj}
 \ee
 In both correlations, the heat release rate of the fire is contained within the non-dimensional expression:
 \be
@@ -516,13 +520,24 @@ In both correlations, the heat release rate of the fire is contained within the 
 \ee
 To account for the presence of an upper layer, the background temperature, $T_\infty$, in Eq.~(\ref{Tcj}) is replaced with the upper layer temperature, $\Tu$. No adjustment need be made to Eq.~(\ref{QsH}) because $\rho_\infty \, T_\infty$ is assumed constant.
 
-If the detector or sprinkler is outside the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default velocity of 0.1 m/s is used.
+An estimate of the ceiling jet thickness, $\delta$, where the excess temperature drops to 1/e of its maximum value, is given by Motevalli and Marks~\cite{Alpert:SFPE}:
+\be
+   \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad \quad 0.26 \le \frac{r}{H} \le 2.0
+\ee
+If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default velocity of 0.1~m/s is used.
+
+If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
+\begin{eqnarray}
+   \frac{\Delta T_{\rm cj}(x)}{\Delta \Tp} &=& 0.37 \, \left( \frac{H}{W} \right)^{1/3} \, \exp \left[ -0.16 \, \left( \frac{x}{H} \right) \left( \frac{W}{H} \right)^{1/3} \right]  \\[0.1in]
+   U_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
+\end{eqnarray}
+where $\Delta \Tp$ is the excess plume temperature at the ceiling.
 
 \section{Fire Suppression} \label{sec:suppression}
 
 Fire suppression by water is predicted using a simple empirical model developed by Madrzykowski \cite{Madrzykowski:1992} and Evans~\cite{Evans:1993}. After activation of the sprinkler, $t > t_{\rm act}$, the heat release rate is assumed to decrease exponentially:
 \be
-   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 u_{\rm w}^{-1.8}
+   \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
 \ee
 where $u_{\rm w}$ is the water spray density, expressed in units of m/s. The product species mass production rates are reduced by the same amount as the heat release rate.
 

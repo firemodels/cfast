@@ -1,4 +1,4 @@
-VERSN,6,"Test installation, check for most key words"
+VERSN,7,"Test installation, check for most key words"
 ! Every output interval is the same, and we create an output file
 TIMES,360,-120,0,120,120,
 TAMB,300,101300,0,5,

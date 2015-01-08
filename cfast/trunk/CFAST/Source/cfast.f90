@@ -312,8 +312,6 @@
     !     NOFTL = lower layer temperature
     !     NOFWT = wall surface temperatures (equivalent to the number of profiles)
     !     NOFPRD = species
-    !     NOFSMKW = surface deposition of soot
-    !     NOFSMK = gas phase agglomeration of soot
     !     NEQUALS = last element in the array.
 
     !     The arrays which use this structure are VATOL, VRTOL, P, PDOLD, PPRIME and PDZERO
@@ -1356,11 +1354,6 @@
                 endif
             end do
         end do
-        ! smoke deposition and agglomeration.
-        ! note that these are done only if smkagl is set
-        do i = nofsmkw + 1, nofsmkw + 4*nm1*(smkagl+smkagl)
-            xprime(i) = 0.0_eb
-        end do
     endif
 
     ! residuals for pressure
@@ -1392,11 +1385,6 @@
 
         ! residuals for gas layer species
         do i = nofprd + 1, nofprd + 2*nprod*nm1
-            delta(i) = xprime(i) - xpsolve(i)
-        end do
-
-        ! residuals for smoke deposition and smoke agglomeration
-        do i = nofsmkw+1, nofsmkw + 4*nm1*(smkagl+smkagl)
             delta(i) = xprime(i) - xpsolve(i)
         end do
 

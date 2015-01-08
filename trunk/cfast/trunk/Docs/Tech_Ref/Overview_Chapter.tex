@@ -1,5 +1,13 @@
 \chapter{Overview}
 
+The Consolidated Fire and Smoke Transport or CFAST model was developed to simulate the effect of a fire on a building. CFAST is a zone model, meaning that each compartment is divided into one or two control volumes, each of which is internally uniform in temperature and composition. The governing equations are based on the fundamental laws of conservation of mass and energy. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers. 
+
+CFAST has been subjected to extensive evaluation studies by NIST and others. An extensive collection of verification and validation cases have been developed to ensure that changes to the source code do not adversely affect past performance. 
+
+CFAST has proven to be fast, robust and reliable. While the focus of the development of the model has been whole building simulations for assessing the effect of fire on a building environment, principally to calculate threats to life safety of occupants and insults to the building structure, it has been used for a wide variety of building and fire scenarios. The simplest use has been to ascertain the sufficiency of an air handling system to extract smoke. The most complex has been an assessment of fire propagation in a high-rise complex. It is also widely used as the fire model in egress calculations and is described as the basis for hazard estimates.
+
+Because of the speed of the model, it is possible to do real parameter studies of the building environment. It is reasonable to do actual parameter studies including the tens of thousands of variations needed for a proper hazard and risk calculation. Even in those cases where more detailed predictions are needed (e.g., smoke detector and sprinkler siting), CFAST provides the capability to scope the problem, in essence doing parameter studies to determine what specific scenario should be addressed by more detailed calculations.
+
 This chapter provides a general description of the Consolidated Fire and Smoke Transport (CFAST) model following the guidance in ASTM~E1355~\cite{ASTM:E1355}.
 
 \section{Model Documentation}

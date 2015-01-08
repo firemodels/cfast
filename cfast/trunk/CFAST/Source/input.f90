@@ -64,7 +64,7 @@
     ! from the internal version data. these need to be compatible
     aversion = carray(1,1)
     ivers = rarray(1,2)
-    ! new version numbering 600->6000, so current version is 6100
+    ! new version numbering 600->6000, so current version is 6300
     if (version>=1000) then
         iversion = version/1000
     else
@@ -72,6 +72,8 @@
     endif
     if (aversion==heading.and.ivers==iversion) then
         write (logerr,5001) ivers
+    else if (aversion==heading.and.ivers==iversion-1) then
+        write (logerr,5004) ivers, iversion
     else
         write (logerr,5002) aversion,heading,ivers,iversion
         ierror = 206
@@ -457,6 +459,7 @@
 5001 format ('Opening a version ',i2,' file in normal mode')
 5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
 5003 format ('***Error: Too many lines in the main data file')
+5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.')     
 5021 format ('The constant heat source (heatf) is in compartment ',i3,' at ',3f12.5)
 5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
 

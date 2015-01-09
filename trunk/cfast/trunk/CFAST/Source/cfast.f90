@@ -73,7 +73,7 @@
     call output_version (logerr)
     irev = rev_cfast()
 
-    call initialize_solver
+    call read_solver_ini
     call read_input_file (errorcode)
     if (errorcode<=0) then
 

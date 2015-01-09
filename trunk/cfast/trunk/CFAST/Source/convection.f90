@@ -1,8 +1,8 @@
     subroutine convection (flwcv,flxcv)
 
     !     routine:    convection
-    !     function:   interface between calculate_residuals and convec.  loops over rooms
-    !                 setting up varibles.  passes to convec if ceiling jet for
+    !     function:   interface between calculate_residuals and convective_flux.  loops over rooms
+    !                 setting up varibles.  passes to convective_flux if ceiling jet for
     !                 a surface is off, otherwise sets flxcv to 0.0 and then
     !                 solves for flwcv
     !     outputs:    flwcv       net enthalphy into each layer 
@@ -81,7 +81,7 @@
                 ilay = lower
             endif
             ! assume no fires in this room.  just use regular convection
-            call convec(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
+            call convective_flux(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
             ! if there's a fire, we may need to modify the convection to account for the ceiling jet
             if (iwall==1.and.nrmfire>0) then
                 qconv = 0.0_eb
@@ -123,11 +123,11 @@
     return
     end subroutine convection
 
-! --------------------------- convec -------------------------------------------
+! --------------------------- convective_flux -------------------------------------------
 
-    subroutine convec (iw,tg,tw,qdinl)
+    subroutine convective_flux (iw,tg,tw,qdinl)
 
-    !     routine: convec
+    !     routine: convective_flux
     !     purpose: calculate convective heat transfer for a wall segment. 
     !     arguments:  iw     wall number, standand cfast numbering convention
     !                 tg     temperature of gas layer adjacent to wall surface
@@ -151,7 +151,7 @@
     
     qdinl = h * (tg - tw)
     return
-    end subroutine convec
+    end subroutine convective_flux
     
     ! --------------------------- ceiling_jet -------------------------------------------
 
@@ -160,7 +160,7 @@
     !     routine:     ceiling_jet
 
     !     description:  interface between calculate_residuals and cjet_detectors.  loops over
-    !                 rooms setting up varibles to pass.  calls cjet_detectors
+    !                 rooms setting up variables to pass.  calls cjet_detectors
     !                 only when fires are in a room
 
     use precision_parameters
@@ -269,13 +269,13 @@
     real(eb), intent(in) :: mplume, qconv, tl, tu, xd(*), yd(*), zd(*), xw, yw, zc, axf, ayf, zf, zlay, rhol, rhou
     real(eb), intent(out) :: qceil, qfclga, qfwla, qfwua, td(*), vd(*)
     
-    !   this subroutine and the function qfclg used in its called subroutines use the common blocks aintch
+    !   this subroutine and the function ceiling_flux used in its called subroutines use the common blocks aintch
 
-    external qfclg
+    external ceiling_flux
     integer :: id, ntab
     real(eb) :: xf, yf, rfmin, tc, atc, alpha, qeq, zeq, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
         h, qh, htct, anu, re, thtqhp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
-        rlamr, tmaxmtu, ths, thta, tcj, tdmax, qfclg, rmax
+        rlamr, tmaxmtu, ths, thta, tcj, tdmax, ceiling_flux, rmax
     real(eb), parameter :: ct = 9.115_eb, cp = 1012.0_eb, pr = 0.70_eb, rk1 = (0.23_eb/0.77_eb)*log(sqrt(2.0_eb)-1.0_eb)
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
@@ -388,7 +388,7 @@
 
     ! make an integral table of size ntab from zero to rmax.
     ntab = 20
-    call maktabl(rmax,ntab,qfclg)
+    call make_table_ceiling_fluxes(rmax,ntab,ceiling_flux)
 
     !calculate velocity and temperatures of the ceiling jet at detector locations
     do id = 1, nd
@@ -412,7 +412,7 @@
             vcj = vmax/cosh(arg)**2
         endif
 
-        call inttabl(rd,rlamr)
+        call interpolate_ceiling_fluxes(rd,rlamr)
         rlamr = 2.0_eb*pi*rlamr/qconv
         tmaxmtu = 2.6_eb*(1.0_eb-rlamr)*qh**twothirds*tu/rdh**0.80_eb - 0.90_eb*(tc-tu)
         ths = (tc-tu)/tmaxmtu
@@ -429,11 +429,11 @@
     return
     end subroutine cjet_detectors
 
-! --------------------------- maktabl -------------------------------------------
+! --------------------------- make_table_ceiling_fluxes -------------------------------------------
 
-    subroutine maktabl (r,n,func)
+    subroutine make_table_ceiling_fluxes (r,n,func)
 
-    !     Routine:     MAKTABL
+    !     Routine:     make_table_ceiling_fluxes
     !
     !     Source File: CEILHT.SOR
     !
@@ -469,13 +469,13 @@
         tabl(i) = tabl(i-1) + (fun(i)+fun(i-1))*dr2
     end do
     return
-    end subroutine maktabl
+    end subroutine make_table_ceiling_fluxes
 
-! --------------------------- inttabl -------------------------------------------
+! --------------------------- interpolate_ceiling_fluxes -------------------------------------------
 
-    subroutine inttabl (r,ans)
+    subroutine interpolate_ceiling_fluxes (r,ans)
 
-    !     Routine:     INTTABL
+    !     Routine:     interpolate_ceiling_fluxes
     !
     !     Source File: CEILHT.SOR
     !
@@ -506,11 +506,11 @@
     rr2 = xxir*dr
     ans = (tab1*(rr2-r)+tab2*(r-rr1))/dr
     return
-    end subroutine inttabl
+    end subroutine interpolate_ceiling_fluxes
 
-! --------------------------- qfclg -------------------------------------------
+! --------------------------- ceiling_flux -------------------------------------------
 
-    real(eb) function qfclg (r)
+    real(eb) function ceiling_flux (r)
 
     !     Description: This function computes the convective heat transfer 
     !                  flux to the ceiling at location (X,Y)=(Z(1),Z(2)) 
@@ -540,11 +540,11 @@
     endif
     htcl = htcldh*htct
     tad = taddim*thtqhp + tht
-    qfclg = htcl*(tad-tc)
+    ceiling_flux = htcl*(tad-tc)
     return
-    end function qfclg
+    end function ceiling_flux
     
-! --------------------------- convec -------------------------------------------
+! --------------------------- rev_convection -------------------------------------------
 
     integer function rev_convection ()
 

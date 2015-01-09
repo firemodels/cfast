@@ -1,7 +1,7 @@
 
 ! --------------------------- fires -------------------------------------------
 
-    subroutine fire(tsec,flwf)
+    subroutine fire (tsec,flwf)
 
     !     routine: fire
     !     purpose: physical interface routine to calculate the current rates of mass and energy flows into the layers from
@@ -246,7 +246,7 @@
             activated_time = 0
             activated_rate = 0.0
         endif
-        call chemistry(xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
+        call chemistry (xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
         xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
@@ -303,10 +303,10 @@
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume(fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
-        call chemistry(uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
+        call chemistry (uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
         xqfr = xqpyrl*chirad + xqfr
         xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
@@ -545,10 +545,10 @@
 
     select case (plumetype)
     case (1) !    heskestad
-        call heskestad (qfire, qfire_c,z,xemp,xems,xeme,object_area,xfx,xfy)
+        call heskestad_plume (qfire, qfire_c,z,xemp,xems,xeme,object_area,xfx,xfy)
         return        
-    case (2) !    mccaffrey
-        call mccaffrey(qfire_c,z,xemp,xems,xeme,xfx,xfy)
+    case (2) !    mccaffrey plume
+        call mccaffrey_plume (qfire_c,z,xemp,xems,xeme,xfx,xfy)
         return        
     end select
     stop 'bad case in fire_plume'
@@ -556,7 +556,7 @@
 
 ! --------------------------- mccaffrey -------------------------------------------
 
-    subroutine mccaffrey (q,z,xemp,xems,xeme,xfx,xfy)
+    subroutine mccaffrey_plume (q,z,xemp,xems,xeme,xfx,xfy)
 
     !     routine: mccaffrey
     !     purpose: calculates plume entrainment for a fire from mccaffrey's correlation
@@ -606,11 +606,11 @@
         xeme = 0.0_eb
     endif
     return
-    end subroutine mccaffrey
+    end subroutine mccaffrey_plume
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad (q, q_c, z, emp, ems, eme, area, xfx, xfy)
+    subroutine heskestad_plume (q, q_c, z, emp, ems, eme, area, xfx, xfy)
 
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
     !     inputs:    q    fire size (w)
@@ -656,7 +656,7 @@
     eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
     ems = emp + eme    
 
-    end subroutine heskestad
+    end subroutine heskestad_plume
 
 ! --------------------------- integrate_mass -------------------------------------------
 
@@ -803,8 +803,8 @@
                 iroom2 = ventptr%to
                 flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
                 flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
-                call djfire(iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call djfire(iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+                call door_jet_fire (iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                call door_jet_fire (iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if(dj1flag)then
@@ -854,11 +854,11 @@
     return
     end subroutine door_jet
 
-! --------------------------- djfire -------------------------------------------
+! --------------------------- door_jet_fire -------------------------------------------
 
-    subroutine djfire(ito,tjet,xxnetfl,sas,hcombt,qpyrol,xntms,djflowflg)
+    subroutine door_jet_fire (ito,tjet,xxnetfl,sas,hcombt,qpyrol,xntms,djflowflg)
 
-    !     routine: djfire
+    !     routine: door_jet_fire
     !     purpose: calculate heat and combustion chemistry for a door jet fire 
     !     arguments:  ito: room number door jet is flowing into
     !                 tjet: temperature of the door jet gas
@@ -900,7 +900,7 @@
         source_o2 = zzcspec(ito,lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
-        call chemistry(xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
+        call chemistry (xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
         qpyrol = xqpyrl
 
         do i = 1, ns
@@ -909,13 +909,13 @@
         end do
     endif
     return
-    end
+    end subroutine door_jet_fire
 
-! --------------------------- flamhgt -------------------------------------------
+! --------------------------- flame_height -------------------------------------------
 
-    subroutine flamhgt (qdot, area, fheight)
+    subroutine flame_height (qdot, area, fheight)
 
-    !     routine: flamhgt
+    !     routine: flame_height
     !     purpose: Calculates flame height for a given fire size and area 
     !     arguments:  qdot: Fire Size (W)
     !                 area: Area of the base of the fire (m^2)
@@ -939,13 +939,13 @@
     fheight = -1.02_eb*d + 0.235_eb*(qdot/1.0e3_eb)**0.4_eb
     fheight = max (0.0_eb, fheight)
     return
-    end subroutine flamhgt
+    end subroutine flame_height
 
-! --------------------------- PlumeTemp -------------------------------------------
+! --------------------------- get_plume_temperature -------------------------------------------
 
-    subroutine PlumeTemp (qdot, xrad, tu, tl, zfire, zlayer,zin, tplume)
+    subroutine get_plume_temperature (qdot, xrad, tu, tl, zfire, zlayer,zin, tplume)
 
-    !     routine: PlumeTemp
+    !     routine: get_plume_temperature
     !     purpose: Calculates plume centerline temperature at a specified height above the fire.
     !
     !     Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
@@ -1013,7 +1013,7 @@
         endif
     endif  
     return
-    end subroutine PlumeTemp
+    end subroutine get_plume_temperature
 
 ! --------------------------- PlumeTemp_H -------------------------------------------
 
@@ -1037,7 +1037,7 @@
     real(eb) :: cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b
 
     ! plume temperature correlation is only valid above the mean flame height      
-    call flamhgt (qdot,pio4*dfire**2,fheight)
+    call flame_height (qdot,pio4*dfire**2,fheight)
 
     ! z0 = virtual origin, qdot_c = convective HRR
     if (dfire>0.0_eb) then
@@ -1231,7 +1231,7 @@
         fxlocal(nfires) = fopos(1,i)
         fylocal(nfires) = fopos(2,i)
         fzlocal(nfires) = fopos(3,i)
-        call flamhgt (fqf(i),farea(i),fheight)
+        call flame_height (fqf(i),farea(i),fheight)
         fqlocal(nfires) = fqf(i)
         fhlocal(nfires) = fheight
         flocal(nfires) = froom(i)
@@ -1239,9 +1239,9 @@
     return
     end
 
-! --------------------------- sethoc -------------------------------------------
+! --------------------------- set_heat_of_combustion -------------------------------------------
 
-    subroutine sethoc (maxint, mdot, qdot, hdot, hinitial)
+    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
 
     !	Routine to implement the algorithm to set the heat of combustion for all fires
 
@@ -1269,7 +1269,8 @@
     end do
 
     return
-    end subroutine sethoc
+    
+    end subroutine set_heat_of_combustion
 
 ! --------------------------- update_fire_objects -------------------------------------------
 
@@ -1306,7 +1307,7 @@
     tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
-    ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature and flux are stored backupwards - this historical
+    ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature and flux are stored backupwards - this is historical
     ! see corresponding code in keywordcases
     do iobj = 1, numobjl
         if (.not.objon(iobj)) then
@@ -1323,9 +1324,9 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call do_objck(told,dt,xxtarg(trgtempf,iobtarg),objcri(3,iobj),obcond(obotemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,xxtarg(trgtempf,iobtarg),objcri(3,iobj),obcond(obotemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
-                call do_objck(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
             else
                 call xerror('update_fire_objects-incorrectly defined object type',0,1,1)
                 ierror = 20
@@ -1358,9 +1359,9 @@
     return
     end
 
-! --------------------------- do_objck -------------------------------------------
+! --------------------------- check_object_ignition -------------------------------------------
 
-    subroutine do_objck(told, dt, cond, trip, oldcond, iobj,ifobj, tobj, tmpob)
+    subroutine check_object_ignition(told, dt, cond, trip, oldcond, iobj,ifobj, tobj, tmpob)
 
     use precision_parameters
     implicit none
@@ -1386,7 +1387,8 @@
     endif
 
     return
-    end
+
+    end subroutine check_object_ignition
 
 ! --------------------------- rev_fire -------------------------------------------
 

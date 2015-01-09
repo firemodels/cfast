@@ -1842,7 +1842,7 @@
     end do
 
     ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-    call sethoc (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
+    call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
     call positionobject(objpos,1,iobj,objrm(iobj),br,midpoint,minimumheight,errorcode)

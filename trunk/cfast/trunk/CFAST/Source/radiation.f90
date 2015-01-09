@@ -106,7 +106,7 @@
                 xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
                 yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
                 !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
-                call flamhgt (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
+                call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
                 if(fheight+xfire(ifire+j-1,f_fire_zpos)>hr(i))then
                     zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (hr(i)-xfire(ifire+j,f_fire_zpos))/2.0_eb
                 else

@@ -1,7 +1,7 @@
 
-! --------------------------- getcyltemp -------------------------------------------
+! --------------------------- get_cylinder_temperature -------------------------------------------
 
-    subroutine getcyltemp(x,wtemp,nx,rad,tempx)
+    subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
     use precision_parameters
     implicit none
     real(eb), intent(in) :: x, rad
@@ -30,11 +30,11 @@
     factor = (rint-int(rint))
     tempx = factor*wtemp(right) + (1.0_eb-factor)*wtemp(left)
 
-    end subroutine getcyltemp
+    end subroutine get_cylinder_temperature
 
-! --------------------------- cylcnduct -------------------------------------------
+! --------------------------- cylindrical_conductive_flux -------------------------------------------
 
-    subroutine cylcnduct(wtemp,nx,wfluxin,dt,wk,wrho,wspec,diam)
+    subroutine cylindrical_conductive_flux (wtemp,nx,wfluxin,dt,wk,wrho,wspec,diam)
 
     !     arguments: wtemp    wall temperature profile
     !                nx       number of nodes

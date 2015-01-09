@@ -534,7 +534,7 @@
     exterior_abs_pressure = exterior_abs_pressure + xxpmin - pofset
 
     ! copy all of the variables from the initial values into the data arrays
-    call datacopy(dummy,constvar)
+    call update_data (dummy,constvar)
 
     ! define the p array, the solution to the ode
     do i = 1, nm1
@@ -614,7 +614,7 @@
 
     ! p's for pressure, volume and temperature are defined
     ! we can now copy these values to the environment variables
-    call datacopy (p, odevara)
+    call update_data (p, odevara)
 
     ! initialize target temperatures
     do itarg = 1, ntarg
@@ -1634,11 +1634,11 @@
     return
     end subroutine offset
 
-! --------------------------- roomcon -------------------------------------------
+! --------------------------- room_connections -------------------------------------------
 
-    subroutine roomcon(tsec)
+    subroutine room_connections (tsec)
 
-    ! routine: roomcon
+    ! routine: room_connections
     ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms) via horizontal or vertical vents.  if a room is 
     !            isolated from the outside then snsqe has trouble finding an initial pressure solution.
     ! arguments: tsec: current simulation time 
@@ -1715,7 +1715,7 @@
     end do
 
     return
-    end subroutine roomcon
+    end subroutine room_connections
 
 ! --------------------------- wset -------------------------------------------
 

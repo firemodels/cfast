@@ -300,7 +300,7 @@
     subroutine ssHeadersFlow
 
     !	This is the header information for the flow spreadsheet and is called once
-    !	The logic is identical to SpreadSheetFlow so the output should be parallel
+    !	The logic is identical to output_spreadsheet_flow so the output should be parallel
 
     use cfast_main
     use cshell

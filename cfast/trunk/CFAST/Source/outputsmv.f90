@@ -1,7 +1,7 @@
 
-! --------------------------- svout -------------------------------------------
+! --------------------------- output_smokeview -------------------------------------------
 
-subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -112,11 +112,11 @@ subroutine svout(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents
     call ssheaderssmv(.false.)
 
     return
-end subroutine svout
+end subroutine output_smokeview
 
-! --------------------------- svplotdata -------------------------------------------
+! --------------------------- output_smokeview_plot_data -------------------------------------------
 
-subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
+subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
 
 !
 ! this routine records data for the current time step into the smokeview zone fire data file
@@ -161,11 +161,11 @@ subroutine  svplotdata(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
         write(14) xxheight, xxqdot
     end do
 
-end subroutine svplotdata
+end subroutine output_smokeview_plot_data
 
-! --------------------------- svplothdr -------------------------------------------
+! --------------------------- output_smokeview_header -------------------------------------------
 
-subroutine svplothdr (version, nrooms, nfires)
+subroutine output_smokeview_header (version, nrooms, nfires)
 
 !
 ! This routine prints out a header for the smokeview zone fire data file
@@ -186,7 +186,7 @@ subroutine svplothdr (version, nrooms, nfires)
     write(14) nfires
     return
 
-end subroutine svplothdr
+end subroutine output_smokeview_header
 
 ! --------------------------- rev_outputsmv -------------------------------------------
 

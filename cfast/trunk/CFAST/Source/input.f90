@@ -818,7 +818,7 @@
                 ierror = 11
                 return
             endif
-            ! Sort these out in datacopy; we duplicate here so that read_input_file does not have to sort these as well
+            ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
             itop = lrarray(2)
             ibot = lrarray(3)
             qcvpp(1,itop,ibot) = lrarray(5)
@@ -1103,7 +1103,7 @@
 
         ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
         ! The critiria for temperature and flux are stored backupwards - this is historical
-        ! See corresponding code in updobj
+        ! See corresponding code in update_fire_objects
         if (tmpcond>0.0_eb) then
             if (objign(obpnt)==1) then
                 objcri(1,obpnt) = tmpcond
@@ -1203,7 +1203,7 @@
 
         !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
         !!!!! The critiria for temperature and flux are stored backupwards - this is historical
-        !!!!! See corresponding code in updobj
+        !!!!! See corresponding code in update_fire_objects
         if (tmpcond>0.0_eb) then
             if (objign(obpnt)==1) then
                 objcri(1,obpnt) = tmpcond

@@ -521,9 +521,9 @@
     return
     end subroutine getylyu
     
-! --------------------------- updtect -------------------------------------------
+! --------------------------- update_detectors -------------------------------------------
 
-    subroutine updtect(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
 
     !     routine: gettylyu
     !     purpose: this routine updates the temperature of each detector link.  it also determine whether the detector has activated 
@@ -627,7 +627,7 @@
         xdtect(i,dvelo) = vel
     end do
     return
-    end subroutine updtect
+    end subroutine update_detectors
     
 ! --------------------------- rev_target -------------------------------------------
 

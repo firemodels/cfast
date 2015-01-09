@@ -260,42 +260,39 @@ $A_{\rm v}$         & cross-sectional area of a vent, m$^2$ \\
 $a$                 & absorption coefficient, m$^{-1}$ \\
 $C$                 & vent constriction (or flow) coefficient, dimensionless \\
 $C_{\rm LOL}$       & lower oxygen limit coefficient, dimensionless \\
-$C_T$               & constant from plume centerline temperature calculation, 9.115 \\
 $c_p$               & heat capacity of air at constant pressure, kJ/(kg$\cdot$K) \\
 $c_v$               & heat capacity of air at constant volume, kJ/(kg$\cdot$K) \\
 $c$                 & heat capacity of a solid, kJ/(kg$\cdot$K) \\
 $D$                 & fire diameter, m \\
 $D^*$               & characteristic fire diameter, m \\
 $F_{k-j}$           & configuration factor, surface $k$ intercepted by surface $j$, dimensionless \\
+$f_v$               & soot volume fraction, dimensionless \\
 $g$                 & gravitational constant, 9.8 m/s$^2$ \\
-$h$                 & convective heat transfer coefficient (W/(m$\cdot$K) \\
-$\dhl$              & rate of addition of enthalpy into lower layer in a compartment, W \\
-$\dhu$              & rate of addition of enthalpy into upper layer in a compartment, W \\
+$h$                 & convective heat transfer coefficient, (W/(m$\cdot$K) \\
+$\doh_i$            & rate of addition of enthalpy into layer $i$, kW \\
 $H$                 & height of a compartment, m \\
 $k$                 & thermal conductivity of air, W/(m$\cdot$K) \\
-                    & equilibrium coefficient for HCl transport and deposition \\
 $L$                 & length of a compartment, m \\
                     & mean flame height, m \\
                     & characteristic length for radiation calculation, m \\
-$M_\F$              & molar mass of fuel, kg/mol \\
-$M_\OTWO$           & molar mass of oxygen, kg/mol \\
-$m$                 & mass, kg \\
+$M_\alpha$          & molar mass of gas species $\alpha$, kg/mol \\
 $m_i$               & total mass in gas layer $i$, kg \\
-$\dme$              & entrainment rate, kg/s \\
+$\dm_i$             & rate of mass addition, gas layer $i$, kg \\
+$\dme$              & plume mass entrainment rate, kg/s \\
 $\dmf$              & pyrolysis rate, kg/s \\
+n$_\alpha$          & number of atoms of element $\alpha$ \\
 $P$                 & pressure at floor level of a compartment, Pa \\
 $\dQ$               & total heat release rate of the fire, W \\
 $\dQc$              & heat release rate of the fire released as convective energy, W \\
 $\dq''$             & heat flux, kW/m$^2$ \\
-$R$                 & universal gas conference, J/(kg$\cdot$K) \\
+$R$                 & universal gas constant, J/(kg$\cdot$K) \\
 RTI                 & response time index of a sprinkler or heat detector, (m$\cdot$s)$^{1/2}$ \\
 $r$                 & radial distance from the fire, m \\
                     & radial coordinate of cylindrical solid, m \\
 $S$                 & vent coefficient for vertical flow vents, dimensionless \\
 $T_\infty$          & ambient gas temperature, K \\
-$\Tl$               & gas temperature of lower layer in a compartment, K \\
+$T_i$               & gas temperature of layer $i$, K \\
 $\Tp$               & gas temperature in the plume, K \\
-$\Tu$               & gas temperature of upper layer in a compartment, K \\
 $t$                 & time, s \\
 $u_{\rm w}$         & water spray density, m/s \\
 $V$                 & total volume of a compartment, m$^3$ \\
@@ -303,8 +300,11 @@ $\Vl$               & total volume of lower layer in a compartment, m$^3$ \\
 $\Vu$               & total volume of upper layer in a compartment, m$^3$ \\
 $v$                 & gas velocity, m/s \\
 $W$                 & width of a compartment, m; wall thickness, m \\
+$w$                 & door or window width, m \\
+$x$                 & length variable, m \\
 $Y_{\rm LOL}$       & lower oxygen limit, by mass, dimensionless \\
 $Y_\OTWO$           & mass fraction of oxygen in a gas layer, dimensionless \\
+$y_{\CO}$           & carbon monoxide yield, kg/kg \\
 $y_{\rm s}$         & soot yield, kg/kg \\
 $z$                 & height variable, m \\
 $\bar{z}$           & mid-range height of a vertical vent segment, m \\
@@ -321,11 +321,9 @@ $\nu$               & stoichiometric coefficient, dimensionless \\
                     & kinematic viscosity, m$^2$/s \\
 $\rho$              & density, kg/m$^3$ \\
 $\rho_\infty$       & ambient density of air, 1.2 kg/m$^3$ \\
-$\rho_{\rm cj}$     & density of the ceiling jet, kg/m$63$  \\
 $\sigma$            & Stefan-Boltzman constant ($5.67 \times 10^{-8}$ W/(m$^2\cdot$K$^4$) \\
 $\tau$              & transmittance, dimensionless \\
 $\chi_{\rm r}$      & radiative fraction, dimensionless \\
-$\xi$               & ratio of upper to lower layer gas temperature, dimensionless
 \end{longtable}
 
 \end{center}

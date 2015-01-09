@@ -30,12 +30,14 @@ The enthalpy source term, $\dot h_i$, consists of the fire's heat release rate, 
 \ee
 A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles:
 \begin{eqnarray}
-\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dhl + \dhu \right)  \\[.1in]
-\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dhu - \Vu \dbydt{P} \right) \\[.1in]
-\dbydt{\Tu} &=& \frac{1}{c_p \, m_{\rm u}} \left( \dhu - c_p \, \dmau \, \Tu + \Vu \dbydt{P} \right) \\[.1in]
-\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \dhl - c_p \, \dmau \, \Tl + \Vl \dbydt{P} \right)
+\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dhl + \dhu \right)  \label{eq1} \\[.1in]
+\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dhu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
+\dbydt{\Tu} &=& \frac{1}{c_p \, m_{\rm u}} \left( \dhu - c_p \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
+\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \dhl - c_p \, \dmau \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
-As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff, meaning that the pressure adjusts to changing conditions more quickly than the other variables. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case). Methods that calculate the Jacobian (or at least approximate it) have a much larger stability region for stiff problems and are thus more successful at their solution.
+Equation~(\ref{eq1}) is derived by summing Eq.~(\ref{eq:first_law}) for the upper and lower layer, applying the equation of state~(\ref{EoS}), and noting that the time derivative of the total room volume is zero. Equation~(\ref{eq2}) is derived by rearranging Eq.~(\ref{eq:first_law}) applied to the upper layer and applying the equation of state to replace the internal energy term. Equations~(\ref{eq3}) and (\ref{eq4}) are derived from Eq.~(\ref{eq:first_law}) applied to each layer, along with substitutions of the equation of state and mass conservation equation.
+
+As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) through (\ref{eq4}) are stiff, meaning that the pressure adjusts to changing conditions more quickly than the other variables. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case). Methods that calculate the Jacobian (or at least approximate it) have a much larger stability region for stiff problems and are thus more successful at their solution.
 
 \section{Species Transport}
 
@@ -510,7 +512,7 @@ The temperature and velocity just below the ceiling is typically greater than th
 \ee
 The radial velocity is given by:
 \be
-   U_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
+   v_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
    3.61 & r/H \le 0.17 \\[0.1in]
    1.06 \, \left( r/H \right)^{-0.69} & 0.17 < r/H < 4.0 \end{array} \right. \label{Ucj}
 \ee
@@ -529,7 +531,7 @@ If the detector or sprinkler is below the ceiling jet layer or in a compartment 
 If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
 \begin{eqnarray}
    \frac{\Delta T_{\rm cj}(x)}{\Delta \Tp} &=& 0.37 \, \left( \frac{H}{W} \right)^{1/3} \, \exp \left[ -0.16 \, \left( \frac{x}{H} \right) \left( \frac{W}{H} \right)^{1/3} \right]  \\[0.1in]
-   U_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
+   v_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
 \end{eqnarray}
 where $\Delta \Tp$ is the excess plume temperature at the ceiling.
 

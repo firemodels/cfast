@@ -141,9 +141,9 @@
     return
     end subroutine printobjectparameters
 
-! --------------------------- result -------------------------------------------
+! --------------------------- output_results -------------------------------------------
 
-    subroutine result(time,isw)
+    subroutine output_results(time,isw)
 
     !     Description:  Output the results of the simulation at the current time
     !                RSLTLAY is the basic environment
@@ -184,7 +184,7 @@
     endif
 
 5000 format (//,' Time = ',f8.1,' seconds.')
-    end subroutine result
+    end subroutine output_results
 
 ! --------------------------- rsltlay -------------------------------------------
 
@@ -1494,7 +1494,7 @@
 
 ! --------------------------- outjcmt -------------------------------------------
 
-    subroutine outjcnt (t)
+    subroutine output_jacobian (t)
 
     !     description: print out numerical performance data; calculate_residuals counts, jac counts, cpu times etc.
 
@@ -1526,7 +1526,7 @@
     write(iounit,1001)t,numstep,totstep,numjac,totjac,numresd,totresd,numitr,totitr,prttime,tottime,ovtime,tovtime
 1001 format(1x,1pe9.2,4(1x,i4,1x,i6),1x,1pe9.2,1x,1pe9.2,1x,1pe9.2,1x,1pe9.2)
     return
-    end subroutine outjcnt
+    end subroutine output_jacobian
 
 ! --------------------------- opndbg -------------------------------------------
 
@@ -1562,9 +1562,9 @@
     return
     end  subroutine opndbg
 
-! --------------------------- fnd_comp -------------------------------------------
+! --------------------------- find_error_component -------------------------------------------
 
-    subroutine fnd_comp (icomp)
+    subroutine find_error_component (icomp)
 
     use cfast_main
     use wallptrs
@@ -1622,11 +1622,11 @@
     endif
 
     return
-    end subroutine fnd_comp
+    end subroutine find_error_component
 
-! --------------------------- debugpr -------------------------------------------
+! --------------------------- output_debug -------------------------------------------
 
-    subroutine debugpr (ikey,t,dt,ieqmax)
+    subroutine output_debug (ikey,t,dt,ieqmax)
 
     use precision_parameters
     use fireptrs
@@ -1727,7 +1727,7 @@
         write (*,*) ' '
     else if (ikey==3) then
         write (*,5090) t, dt
-        call fnd_comp(ieqmax)
+        call find_error_component (ieqmax)
         write(*,6030)
         do iroom = 1, nm1
             write(*,6000)iroom,zzrelp(iroom),zzhlay(iroom,lower),zztemp(iroom,lower),zztemp(iroom,upper),zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
@@ -1788,7 +1788,7 @@
 6090 format(t2,'Target',t11,'Temp')
 6095 format(1x,i2,4x,e13.6)
 
-    end subroutine debugpr
+    end subroutine output_debug
 
 ! --------------------------- oput -------------------------------------------
 
@@ -1811,7 +1811,7 @@
     return
     end  subroutine oput 
 
-    subroutine statusoutput (T, dT, errorcode)
+    subroutine output_status (T, dT, errorcode)
 
     !  Write the status information to the "statusfile"
 
@@ -1828,7 +1828,7 @@
     return
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
-    end subroutine statusoutput
+    end subroutine output_status
 
 ! --------------------------- writeini -------------------------------------------
 

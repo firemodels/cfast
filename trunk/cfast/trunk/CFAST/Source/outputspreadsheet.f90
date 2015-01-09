@@ -1,7 +1,7 @@
 
-! --------------------------- SpreadSheetNormal -------------------------------------------
+! --------------------------- output_spreadsheet_normal -------------------------------------------
 
-    subroutine SpreadSheetNormal (time)
+    subroutine output_spreadsheet_normal (time)
 
     ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
@@ -69,7 +69,7 @@
     call SSprintresults (21, position, outarray)
 
     return
-    end subroutine spreadsheetnormal
+    end subroutine output_spreadsheet_normal
 
 ! --------------------------- SSaddtolist -------------------------------------------
 
@@ -110,9 +110,9 @@
     return
     end subroutine SSaddtolist
 
-! --------------------------- SpreadSheetFlow -------------------------------------------
+! --------------------------- output_spreadsheet_flow -------------------------------------------
 
-    subroutine SpreadSheetFlow (time)
+    subroutine output_spreadsheet_flow (time)
 
     !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
@@ -203,11 +203,11 @@
     call ssprintresults(22, position, outarray)
     return
 
-    end subroutine SpreadSheetFlow
+    end subroutine output_spreadsheet_flow
 
-! --------------------------- SpreadSheetFlux -------------------------------------------
+! --------------------------- output_spreadsheet_flux -------------------------------------------
 
-    subroutine SpreadSheetFlux (time)
+    subroutine output_spreadsheet_flux (time)
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
@@ -330,11 +330,11 @@
     call ssprintresults (24, position, outarray)
     return
 
-    end subroutine spreadsheetflux
+    end subroutine output_spreadsheet_flux
 
-! --------------------------- SpreadSheetSpecies -------------------------------------------
+! --------------------------- output_spreadsheet_species -------------------------------------------
 
-    subroutine SpreadSheetSpecies (time)
+    subroutine output_spreadsheet_species (time)
 
     !	Write out the species to the spread sheet file
 
@@ -391,11 +391,11 @@
 
     return
 
-    end subroutine SpreadSheetSpecies
+    end subroutine output_spreadsheet_species
 
-! --------------------------- SpreadSheetSMV -------------------------------------------
+! --------------------------- output_smokeview_spreadsheet -------------------------------------------
 
-    subroutine SpreadSheetSMV (time)
+    subroutine output_smokeview_spreadsheet (time)
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
 
@@ -491,11 +491,11 @@
     call ssprintresults (15, position, outarray)
 
     return
-    end subroutine SpreadSheetSMV
+    end subroutine output_smokeview_spreadsheet
 
-! --------------------------- spreadsheetresid -------------------------------------------
+! --------------------------- output_spreadsheet_residuals -------------------------------------------
 
-    subroutine spreadsheetresid(time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
+    subroutine output_spreadsheet_residuals (time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
     
     use precision_parameters
     use debug
@@ -583,7 +583,7 @@
     call SSprintresid (ioresid, position, outarray)
 
     return
-    end subroutine spreadsheetresid
+    end subroutine output_spreadsheet_residuals
 
 ! --------------------------- SpreadSheetFSlabs -------------------------------------------
 

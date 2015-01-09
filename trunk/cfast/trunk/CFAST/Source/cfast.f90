@@ -127,11 +127,11 @@
 5003 format ('Total execution time = ',1pg10.3,' seconds')
     end program cfast
 
-! --------------------------- initsoln -------------------------------------------
+! --------------------------- initial_solution -------------------------------------------
 
-    subroutine initsoln(t,pdold,pdzero,rpar,ipar)
+    subroutine initial_solution(t,pdold,pdzero,rpar,ipar)
 
-    !     Routine: initsoln
+    !     Routine: Initial_solution
     !     Purpose: This routine determines an initial solution to
     !              the zone fire modeling equations.  A non-linear
     !              algebraic solver (SNSQE) is used to calculate initial
@@ -164,7 +164,7 @@
 
 1   continue
 
-    call roomcon(t)
+    call room_connections (t)
 
     rpar2(1) = rpar(1)
     ipar2(1) = ipar(1)
@@ -231,9 +231,9 @@
 
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar,ipar)
 
-    ! Added to resync the species mass with the total mass of each layer at the new pressure
+    ! Added to synchronize_species_mass the species mass with the total mass of each layer at the new pressure
     nodes = nofprd+1
-    call resync(p,nodes)
+    call synchronize_species_mass (p,nodes)
     do i = 1, nhvpvar
         pdold(i+nofpmv) = 0.0_eb
     end do
@@ -244,11 +244,11 @@
         pdold(i+nofwt) = 0.0_eb
     end do
     return
-    end
+    end subroutine initial_solution
 
 ! --------------------------- solve_simulation -------------------------------------------
 
-    subroutine solve_simulation (tstop,ierror)
+    subroutine solve_simulation (tstop, ierror)
 
     !     Routine: solve_simulaiton
     !     Purpose: main solution loop for the model
@@ -378,7 +378,7 @@
         ispread = .true.
     endif
 
-    call setinfo (info, rwork)
+    call set_info_flags (info, rwork)
 
     ! copy error tolerances into arrays. if the location of pressure is
     ! changed in the solver array then the following code has to be changed
@@ -447,7 +447,7 @@
         pdold(i) = 0.0_eb
         pold(i) = p(i)
     end do
-    call initsoln(t,pdold,pdzero,rpar,ipar)
+    call initial_solution(t,pdold,pdzero,rpar,ipar)
     do i = 1, nequals
         pprime(i) = pdold(i)
         pold(i) = p(i)
@@ -455,16 +455,16 @@
 
     ! Calculate the mass of objects that have been pyrolized
     ! at the moment we do only the total and the radiological species
-    ! make sure that the INTEGRATE routine is called before TOXIC
+    ! make sure that the INTEGRATE routine is called before update_species
     call integrate_mass (t, dt)
-    call toxic(0.0_eb)
+    call update_species (0.0_eb)
 
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
         call target_flux(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
-        call remapfires (nfires)
-        call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
+        call remap_fires (nfires)
+        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
@@ -481,12 +481,12 @@
 80  continue
 
     ! DASSL equation with most error
-    IEQMAX = 0
+    ieqmax = 0
 
     ! Check for interactive commands
     ! if a key has been pressed (and we are watching the keyboard) figure out what to do
     ! The escape key returns a code of 1
-    if (.not.nokbd) call ntract(t,icode,tpaws,tout,ieqmax)
+    if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
     inquire (file=stopfile, exist =exists)
     if (exists) then
         icode = 1
@@ -503,7 +503,7 @@
     ! Ignore errors from deleting the file. It may not exist
     inquire (file=queryfile, exist = exists)
     if (exists) then
-        call StatusOutput (T, dT, errorcode)
+        call output_status (T, dT, errorcode)
         filecount = delfilesqq(queryfile)
     endif
     
@@ -550,9 +550,9 @@
             endif
 
             itmstp = tprint
-            call result(t,1)
-            call statusoutput (t, dt, errorcode)
-            call outjcnt(t)
+            call output_results (t,1)
+            call output_status (t, dt, errorcode)
+            call output_jacobian(t)
             tprint = tprint + dprint
             numjac = 0
             numstep = 0
@@ -566,22 +566,22 @@
                 call target_flux(steady)
                 ltarg = .true.
             endif
-            ! note: svout writes the .smv file. we do not close the file but only rewind so that smokeview 
-            ! can have the latest time step information. remapfires just puts all of the information in a single list
-            call remapfires (nfires)
-            call svout(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
-                       hrl, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, & 
-            fylocal,fzlocal,ntarg,t,itmstp)
+            ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview 
+            ! can have the latest time step information. remap_fires just puts all of the information in a single list
+            call remap_fires (nfires)
+            call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
+                hrl, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, & 
+                fylocal,fzlocal,ntarg,t,itmstp)
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
             if (firstpassforsmokeview) then
                 firstpassforsmokeview = .false.
-                call svplothdr (version,nm1,nfires)
+                call output_smokeview_header (version,nm1,nfires)
             endif
-            call svplotdata(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
-            call spreadsheetsmv(t)
+            call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
+            call output_smokeview_spreadsheet(t)
             tplot = tplot + dplot
-            call statusoutput (t, dt, errorcode)
+            call output_status (t, dt, errorcode)
         endif
 
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
@@ -590,22 +590,22 @@
                 call target_flux(steady)
                 ltarg = .true.
             endif
-            call spreadsheetnormal (t)
-            call spreadsheetspecies (t)
-            call spreadsheetflow (t)
-            call spreadsheetflux (t)
+            call output_spreadsheet_normal (t)
+            call output_spreadsheet_species (t)
+            call output_spreadsheet_flow (t)
+            call output_spreadsheet_flux (t)
             if (ierror/=0) return
             tspread =tspread + dspread
-            call statusoutput (t, dt, errorcode)
+            call output_status (t, dt, errorcode)
         endif
 
         ! diagnostics
         if (t+0.0001_eb>tpaws) then
             itmstp = tpaws
-            call result(t,1)
-            call debugpr(1,t,dt,ieqmax)
+            call output_results (t,1)
+            call output_debug (1,t,dt,ieqmax)
             tpaws = tstop + 1.0_eb
-            call statusoutput (t, dt, errorcode)
+            call output_status (t, dt, errorcode)
         endif
 
         ! find the interval next discontinuity is in
@@ -634,11 +634,11 @@
         told = t
         call setderv(-1)
         call cptime(ton)
-        call ddassl(calculate_residuals,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
+        call ddassl (calculate_residuals,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
         ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
         call setderv(-2)
         ieqmax = ipar(3)
-        if (option(fpdassl)==on) call debugpr (3,t,dt,ieqmax)
+        if (option(fpdassl)==on) call output_debug (3,t,dt,ieqmax)
         ostptime = ton - toff
         call cptime(toff)
         stime = t
@@ -651,7 +651,7 @@
         ! make sure dassl is happy
 
         if (idid<0) then
-            call fnd_comp(ieqmax)
+            call find_error_component (ieqmax)
             write (messg,101)idid
 101         format('error, dassl - idid=', i3)
             call xerror(messg,0,1,1)
@@ -665,7 +665,7 @@
                 izdtnum = izdtnum + 1
                 if(izdtnum>izdtmax)then
                     ! model has hung (izdtmax consective time step sizes were below zzdtcrit)
-                    write(messg,103)izdtmax,zzdtcrit,t
+                    write(messg,103) izdtmax, zzdtcrit, t
 103                 format (i3,' consecutive time steps with size below',e11.4,' at t=',e11.4)
                     call xerror(messg,0,1,2)
                     izdtnum = 0
@@ -678,24 +678,24 @@
 
         ipar(2) = all
         updatehall = .true.
-        call calculate_residuals(t,p,pdzero,pdnew,ires,rpar,ipar)
+        call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
         updatehall = .false.
-        call updrest(nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
+        call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
-        call updtect(mdchk,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
-        call updobj(mdchk,told,dt,ifobj,tobj,ierror)
+        call update_detectors (mdchk,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+        call update_fire_objects (mdchk,told,dt,ifobj,tobj,ierror)
         td = min(tdtect,tobj)
 
         ! a detector is the first thing that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
             isroom = ixdtect(isensor,droom)
-            call updtect(mdset,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call update_detectors (mdset,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
             write(lbuf,*) ' '
             call xerror(lbuf,0,1,-3)
-            write(lbuf,76)isensor,tdtect,isroom
+            write(lbuf,76) isensor, tdtect, isroom
 76          format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
             call xerror(lbuf,0,1,-3)
             ! check to see if we are backing up for detectors going off
@@ -708,12 +708,12 @@
                 idset = 0
             endif
         else
-            call updtect(mdupdt,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call update_detectors (mdupdt,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         endif
 
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
-            call updobj(mdset,told,dt,ifobj,tobj,ierror)
+            call update_fire_objects (mdset,told,dt,ifobj,tobj,ierror)
             write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb) ! this prevents printing out a negative activation time
 5003        format(/,' Object #',i3,' (',a,') ignited at ', f10.3,' seconds')
             ! check to see if we are backing up objects igniting
@@ -724,11 +724,11 @@
                 td = tdtect
                 objon(ifobj) = .true.
                 objset(ifobj) = 0
-                call setinfo(info,rwork)
+                call set_info_flags(info,rwork)
                 ifobj = 0
             endif
         else
-            call updobj(mdupdt,told,dt,ifobj,tobj,ierror)
+            call update_fire_objects (mdupdt,told,dt,ifobj,tobj,ierror)
         endif
 
         if (idsave/=0)then
@@ -737,7 +737,7 @@
             ! in time to t=td.  this is better than using simple linear interpolation
             ! because in general dassl could be taking very big time steps
             if(told<=td.and.td<t)then
-                call result(t,1)
+                call output_results (t,1)
                 ipar(2) = some
                 tdout = td
                 do i = 1, 11
@@ -745,11 +745,11 @@
                 end do
                 info2(2) = 1
                 told = t
-                call ddassl(calculate_residuals,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
+                call ddassl (calculate_residuals,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then
-                    call fnd_comp(ipar(3))
+                    call find_error_component (ipar(3))
                     write (messg,101)idid
                     call xerror(messg,0,1,-2)
                     write(messg,'(a13,f10.5,1x,a8,f10.5)')'Backing from ',t,'to time ',tdout
@@ -769,13 +769,13 @@
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call updrest(nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
-                call setinfo(info,rwork)
+                call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
+                call set_info_flags (info,rwork)
             else if (td==t) then
-                call setinfo(info,rwork)
+                call set_info_flags (info,rwork)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
-                ! updtect said that a sprinkler has gone off but the time is wrong!!
+                ! update_detectors said that a sprinkler has gone off but the time is wrong!!
                 write(messg,'(a7,f10.5,a13,f10.5,a22,f10.5)') 'Time = ' ,t,' Last time = ',told,' need to back step to ',td
                 call xerror(messg,0,1,1)
                 call xerror('Back step to large',0,1,1)
@@ -794,9 +794,9 @@
         call integrate_mass (t, dt)
 
         ! calculate gas dosage
-        call toxic(dt)
+        call update_species (dt)
 
-        if (option(fdebug)==on) call debugpr(2,t,dt,ieqmax)
+        if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
         numstep = numstep + 1
         go to 80
     endif
@@ -804,11 +804,11 @@
 
     end
 
-! --------------------------- updrest -------------------------------------------
+! --------------------------- update_solution -------------------------------------------
 
-    subroutine updrest(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold, pdzero)
+    subroutine update_solution(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold, pdzero)
 
-    !     routine: updrest
+    !     routine: update_solution
     !     purpose: update solution returned by dassl
 
     use precision_parameters
@@ -834,22 +834,22 @@
     end do
 
     ! advance explicit target temperatures and update implicit temperatures
-    call target(1,xplicit,dt,pdzero,pdnew)
-    call target(1,mplicit,dt,pdzero,pdnew)
-    if (nlspct>0) call resync(p,nodes+1)
+    call target (1,xplicit,dt,pdzero,pdnew)
+    call target (1,mplicit,dt,pdzero,pdnew)
+    if (nlspct>0) call synchronize_species_mass (p,nodes+1)
 
     do i = 1, nequals
         pold(i) = p(i)
     end do
 
     return
-    end subroutine updrest
+    end subroutine update_solution
 
-! --------------------------- ntract -------------------------------------------
+! --------------------------- keyboard_interaction -------------------------------------------
 
-    subroutine ntract(t,icode,tpaws,tout,ieqmax)
+    subroutine keyboard_interaction (t,icode,tpaws,tout,ieqmax)
 
-    !     routine: ntract
+    !     routine: keyboard_interaction
     !     purpose: keyboard routine for user interaction during simulation
 
     use precision_parameters
@@ -865,7 +865,7 @@
     real(eb), intent(out) :: tpaws
     real(eb), intent(inout) :: tout
 
-    logical :: slvhelp
+    logical :: output_interactive_help
     integer(2) :: ch, hit
     real(eb) :: rcode
 
@@ -879,7 +879,7 @@
             if (option(fkeyeval)==on) then
                 if (ch==59) then
                     write (*,5010) t, dt
-                    if (slvhelp()) icode = 1
+                    if (output_interactive_help ()) icode = 1
                 else if (ch==60) then
                     if (option(fdebug)==on) then
                         option(fdebug) = off
@@ -892,7 +892,7 @@
                     switch(1,nr) = .not. switch(1,nr)
                     write (*,*) 'toggle flow field printing to ',switch(1,nr)
                 else if (ch==62) then
-                    call debugpr(1,t,dt,ieqmax)
+                    call output_debug(1,t,dt,ieqmax)
                 else if (ch==63) then
                     write (*,5010) t, dt
                 else if (ch==64) then
@@ -917,13 +917,13 @@
 
     return
 5010 format (' time = ',1pg12.4,', dt = ',1pg12.4)
-    end subroutine ntract
+    end subroutine keyboard_interaction
 
-! --------------------------- slvhelp -------------------------------------------
+! --------------------------- output_interactive_help -------------------------------------------
 
-    logical function slvhelp()
+    logical function output_interactive_help()
 
-    !     Routine: slvhelp
+    !     Routine: output_interactive_help
     !     Purpose: quick output of keyboard shortcuts available during simulaiton
 
     use cshell
@@ -943,21 +943,21 @@
 10  call grabky(ch,hit)
     if (hit==0) go to 10
     if (ch==27) then
-        slvhelp = .true.
+        output_interactive_help = .true.
         write (iofilo,*) 'Run terminated at user request'
     else
-        slvhelp = .false.
+        output_interactive_help = .false.
         write (iofilo,*) 'continuing'
         write (iofilo,*)
     endif
     return
     end
 
-! --------------------------- setinfo -------------------------------------------
+! --------------------------- set_info_flags -------------------------------------------
 
-    subroutine setinfo(info,rwork)
+    subroutine set_info_flags(info,rwork)
 
-    !     routine: setinfo
+    !     routine: set_info_flags
     !     purpose: update solution flags for dassl solver
 
     use precision_parameters
@@ -1090,8 +1090,8 @@
 
     nirm = nm1
 
-    call datacopy(x,odevara)
-    call datacopy(x,odevarb)
+    call update_data (x,odevara)
+    call update_data (x,odevarb)
 
     ! If calculate_residuals is called by solve_simulation then IPAR(2)==ALL all residuals
     ! are computed.  If calculate_residuals is called by DASSL residuals are not
@@ -1218,7 +1218,7 @@
 
     if (update==all) then
         if (residprn) then
-            call spreadsheetresid(tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
+            call output_spreadsheet_residuals (tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
         endif
     endif
     ! sum flux for inside rooms
@@ -1341,10 +1341,10 @@
     endif
 
     ! conduction residual
-    call conduction(update,dt,flxtot,delta)
+    call conduction (update,dt,flxtot,delta)
 
     ! target residual
-    call target(0,mplicit,dt,xpsolve,delta)
+    call target (0,mplicit,dt,xpsolve,delta)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then
@@ -1367,9 +1367,9 @@
     return
     end
 
-! --------------------------- datacopy -------------------------------------------
+! --------------------------- update_data -------------------------------------------
 
-    subroutine datacopy(pdif,iflag)
+    subroutine update_data (pdif,iflag)
 
     !     routine: cfast (main program)
     !     purpose: calculate environment variables from the solver vector
@@ -1969,15 +1969,15 @@
     return
     end
 
-! --------------------------- resync -------------------------------------------
+! --------------------------- synchronize_species_mass -------------------------------------------
 
-    subroutine resync(pdif,ibeg)
+    subroutine synchronize_species_mass (pdif,ibeg)
 
-    !     routine: resync
+    !     routine: synchronize_species_mass
     !     purpose: resyncronize the total mass of the
     !              species with that of the total mass to insure overall and individual mass balance
 
-    !     arguments: pdif   the p array to resync
+    !     arguments: pdif   the p array to synchronize_species_mass
     !                ibeg   the point at which species are started in p array
 
     use precision_parameters

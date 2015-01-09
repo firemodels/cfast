@@ -1106,11 +1106,11 @@
     return
     end subroutine PlumeTemp_M
 
-! --------------------------- toxic -------------------------------------------
+! --------------------------- update_species -------------------------------------------
 
-    subroutine toxic(deltt)
+    subroutine update_species (deltt)
 
-    !     routine: toxic
+    !     routine: update_species
     !     purpose: calculate species concentrations (ppm), mass density (kg/m^3), opacity (1/m), 
     !              ct (g-min/m^3), heat flux to target on floor (w)
     !     arguments:  deltt  length of the latest time step (s)
@@ -1204,11 +1204,11 @@
         if (ontarget(i)<1.0_eb) ontarget(i) = 0.0_eb
     end do
     return
-    end subroutine toxic
+    end subroutine update_species
 
-! --------------------------- remapfires -------------------------------------------
+! --------------------------- remap_fires -------------------------------------------
 
-    subroutine remapfires (nfires)
+    subroutine remap_fires (nfires)
 
     ! this routine is to combine fire objects into a single list
     ! there does not have to be a main fire nor any objects, so nfires may be zero
@@ -1271,11 +1271,11 @@
     return
     end subroutine sethoc
 
-! --------------------------- updobj -------------------------------------------
+! --------------------------- update_fire_objects -------------------------------------------
 
-    subroutine updobj(iflag, told, dt, ifobj, tobj, ierror)
+    subroutine update_fire_objects(iflag, told, dt, ifobj, tobj, ierror)
 
-    !     routine: updobj
+    !     routine: update_fire_objects
     !     purpose: check for and set object fire ignition
     !     arguments:  iflag   flags if check, set, or update variables
     !                 told    time previous to this time step
@@ -1327,7 +1327,7 @@
             else if (ignflg==3) then
                 call do_objck(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
             else
-                call xerror('updobj-incorrectly defined object type',0,1,1)
+                call xerror('update_fire_objects-incorrectly defined object type',0,1,1)
                 ierror = 20
                 return
             endif

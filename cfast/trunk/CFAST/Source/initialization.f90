@@ -1019,11 +1019,11 @@
     return
     end
 
-! --------------------------- initialize_solver -------------------------------------------
+! --------------------------- read_solver_ini -------------------------------------------
 
-    subroutine initialize_solver
+    subroutine read_solver_ini
 
-    !     routine: initialize_solver
+    !     routine: read_solver_ini
     !     purpose: this routine initializes the solver variables from solver.ini if it exists
     !     arguments: none
 
@@ -1103,7 +1103,7 @@
     close (iofili)
 
     return
-    end subroutine initialize_solver
+    end subroutine read_solver_ini
 
 ! --------------------------- initspecc -------------------------------------------
 
@@ -1854,7 +1854,7 @@
         endif
     endif
 
-    ! finally calculate distances between each point these distances are used by cnduct to setup discretization tri-diagonal matrix
+    ! finally calculate distances between each point these distances are used by conductive_flux to setup discretization tri-diagonal matrix
     do i = 1, nx - 1
         walldx(i) = xwall(i+1) - xwall(i)
     end do

@@ -77,7 +77,7 @@
 
             ! back wall is connected to the outside
 
-            call convec(irevwc(iwall),tgas,twext,wfluxout)
+            call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
             wfluxout = wfluxout + sigma*(tgas**4-twext**4)
             wfluxsave = wfluxout
             if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
@@ -120,7 +120,7 @@
                 end do
             endif
         endif
-        call cnduct(update,twint,twext,dt,fkw(1,iwall,iroom),cw(1,iwall,iroom),rw(1,iwall,iroom), &
+        call conductive_flux (update,twint,twext,dt,fkw(1,iwall,iroom),cw(1,iwall,iroom),rw(1,iwall,iroom), &
         twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode(1,iwall,iroom),nslb(iwall,iroom),wfluxin,wfluxout,iwb,tgrad,tderv)
 
         ! store wall gradient
@@ -131,7 +131,7 @@
 
     end do
 
-    ! save wall gradients during base call to calculate_residuals (cnduct)
+    ! save wall gradients during base call to calculate_residuals
     if(option(fmodjac)==on)then
 
         ! store wall gradient for later use
@@ -166,12 +166,12 @@
     return
     end subroutine conduction
 
-! --------------------------- ccnduct -------------------------------------------
+! --------------------------- conductive_flux -------------------------------------------
 
-    subroutine cnduct(update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,numnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
+    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,numnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
 
 
-    ! routine:  cnduct 
+    ! routine:  conductive_flux 
     ! purpose: handles cfast conduction
     ! arguments: update   we don't keep solution unless update is 1 or 2
     !            tempin   temperature at interior wall
@@ -330,7 +330,7 @@
     tgrad(2) = (tnew(2)-tnew(1))/walldx(1)
     tderv = tderiv(2)
     return
-    end subroutine cnduct
+    end subroutine conductive_flux
 
 ! --------------------------- rev_conduction -------------------------------------------
 

@@ -53,7 +53,7 @@
 
     if (numobjl/=0) then
         do i = 1, numobjl
-            call flamhgt (fqf(i),farea(i),fheight)
+            call flame_height (fqf(i),farea(i),fheight)
             call SSaddtolist (position,fems(i),outarray)
             call SSaddtolist (position,femp(i),outarray)
             call SSaddtolist (position,fqf(i),outarray)
@@ -448,7 +448,7 @@
     if (numobjl/=0) then
         do i = 1, numobjl
             nfire = nfire + 1
-            call flamhgt (fqf(i),farea(i),fheight)
+            call flame_height (fqf(i),farea(i),fheight)
             call SSaddtolist (position,fqf(i)/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)
             call SSaddtolist (position,xfire(nfire,3),outarray)

@@ -26,7 +26,7 @@
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0
 
-    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by initialize_solver.  
+    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.  
     ! chv should eventually be defined elsewhere.
 
     hvacflg = .false.

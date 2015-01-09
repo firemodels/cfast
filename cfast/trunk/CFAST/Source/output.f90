@@ -251,7 +251,7 @@
     write (iofilo,5000)
     if (numobjl/=0) then
         do i = 1, numobjl
-            call flamhgt (fqf(i),farea(i),fheight)
+            call flame_height (fqf(i),farea(i),fheight)
             if (isw/=0) then
                 if (objpnt(i)/=0) then
                     j = objpnt(i)

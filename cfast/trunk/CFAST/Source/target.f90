@@ -83,14 +83,14 @@
                         walldx(i) = xl*tmp(i)
                     end do
 
-                    call cnduct(update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(trgtempf,itarg),walldx,nmnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
+                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(trgtempf,itarg),walldx,nmnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    call cylcnduct(xxtarg(trgtempf,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
+                    call cylindrical_conductive_flux (xxtarg(trgtempf,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
 
                 ! compute the ode residual
@@ -395,8 +395,8 @@
     temis = xxtarg(trgemis,itarg)
 
     ! convection for the front
-    call convec(iw,tg,ttarg(1),q1)
-    call convec(iw,tg,ttarg(1)+dttarg,q2)
+    call convective_flux (iw,tg,ttarg(1),q1)
+    call convective_flux (iw,tg,ttarg(1)+dttarg,q2)
     qtcflux(itarg,1) = q1
     dqdtarg = (q2-q1)/dttarg
 
@@ -416,7 +416,7 @@
     gtflux(itarg,t_gtotal) = gtflux(itarg,t_gtotal) - re_radiation*gtflux(itarg,t_gtotal)/total_radiation
     
     !add in the convection 
-    call convec(iw,tg,interior_temperature,q1g)
+    call convective_flux (iw,tg,interior_temperature,q1g)
     gtflux(itarg,t_ctotal) = q1g
     
     ! and the total is just the sum of these
@@ -424,8 +424,8 @@
 
 
     ! convection for the back
-    call convec(iwb,tgb,ttargb,q1b)
-    call convec(iwb,tgb,ttargb+dttargb,q2b)
+    call convective_flux(iwb,tgb,ttargb,q1b)
+    call convective_flux(iwb,tgb,ttargb+dttargb,q2b)
     qtcflux(itarg,2) = q1b
     dqdtargb = (q2b-q1b)/dttargb
 
@@ -482,7 +482,7 @@
                 zfire = xfire(i,f_fire_zpos)
                 zlayer = zzhlay(irtarg,lower)
                 z = ztarg
-                call plumetemp (qdot, xrad, tu, tl, zfire, zlayer, z, tplume)
+                call get_plume_temperature (qdot, xrad, tu, tl, zfire, zlayer, z, tplume)
                 tg = tplume
             endif
         endif

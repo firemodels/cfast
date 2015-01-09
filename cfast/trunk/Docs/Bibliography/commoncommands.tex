@@ -1,0 +1,173 @@
+\usepackage{mathptm,times,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{units}
+\usepackage{fix-cm}
+\usepackage{makeidx} % Create index at end of document
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography and index in the ToC
+\usepackage{datetime}
+\newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
+
+\renewcommand{\bibname}{References}
+
+% dummy change to force revision update
+
+%\usepackage{eso-pic}
+%\usepackage{graphicx}
+%\usepackage{color}
+%\usepackage{type1cm}
+
+
+%\makeatletter
+%   \AddToShipoutPicture{%
+%     \setlength{\@tempdimb}{.5\paperwidth}%
+%    \setlength{\@tempdimc}{.5\paperheight}%
+%   \setlength{\unitlength}{1pt}%
+%  \put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){%
+%     \makebox(0,0){\rotatebox{45}{\textcolor[gray]{0.75}{\fontsize{8cm}{8cm}\selectfont{DRAFT}}}}}}
+%\makeatother
+
+\definecolor{linknavy}{rgb}{0,0,0.50196}
+\definecolor{linkred}{rgb}{1,0,0}
+\definecolor{linkblue}{rgb}{0,0,1}
+
+\usepackage[pdftex,
+        colorlinks=true,
+        urlcolor=linkblue,     % \href{...}{...} external (URL)
+        citecolor=linkred,     % citation number colors
+        linkcolor=linknavy,    % \ref{...} and \pageref{...}
+        pdfproducer={pdflatex},
+        pagebackref,
+        pdfpagemode=UseNone,
+        bookmarksopen=true,
+        plainpages=false,
+        verbose]{hyperref}
+
+% CFAST Version String
+\newcommand{\cfastversion}{7.0.0}
+
+% commands to use for "official" cover and title pages
+% see smokeview verification guide to see how they are used
+
+\newcommand{\logosigs}{
+\begin{minipage}[b]{6.5in}
+\flushright{\includegraphics[height=1.05in]{FIGURES/nistident}}
+\end{minipage}
+}
+
+\newcommand{\titlesigs}
+{
+\small
+\begin{flushright}
+U.S. Department of Commerce \\
+{\em Penny Pritzker, Secretary} \\
+\hspace{1in} \\
+National Institute of Standards and Technology \\
+{\em Willie May, Under Secretary of Commerce for Standards and Technology and Director}
+\end{flushright}
+}
+
+\newcommand{\headerA}[1]{
+\begin{flushright}
+\fontsize{20}{24}\selectfont
+\bf{NIST Technical Note #1}
+\end{flushright}
+}
+
+
+\newcommand{\headerB}[1]{
+\begin{flushright}
+\fontsize{28}{33.6}\selectfont
+\bf{#1}
+\end{flushright}
+}
+
+\newcommand{\headerC}[1]{
+\vspace{.15in}
+\begin{flushright}
+\fontsize{12}{14}\selectfont
+#1
+\end{flushright}
+}
+
+\newcommand{\headerD}[1]{
+\begin{flushright}
+\fontsize{12}{14}\selectfont
+http://dx.doi.org/10.6028/NIST.TN.#1
+\end{flushright}
+}
+
+
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\topmargin}{0.in}
+\setlength{\headheight}{0.in}
+\setlength{\headsep}{0.in}
+\setlength{\parindent}{0.25in}
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\evensidemargin}{0.0in}
+
+
+\newcommand{\brackets}[1]{ { \left( {#1} \right) } }
+\newcommand{\dbydt}[1]{\frac{d {#1}}{dt}}
+\newcommand{\superscript}[1]{\ensuremath{^{\textnormal{\scriptsize \hbox{#1}}}}}
+\newcommand{\subscript}[1]{\ensuremath{_{\textnormal{\scriptsize \hbox{#1}}}}}
+
+\newcommand{\trho}{\tilde{\rho}}
+\newcommand{\dph}{{\delta\phi}}
+\newcommand{\dth}{{\delta\theta}}
+\newcommand{\tp}{\tilde{p}}
+\newcommand{\dQ}{\dot{Q}}
+\newcommand{\dQc}{\dot{Q}_{\rm c}}
+\newcommand{\dQr}{\dot{Q}_{\rm r}}
+\newcommand{\Dh}{\Delta h}
+\newcommand{\DhO}{\Delta h_\OTWO}
+\newcommand{\Tp}{T_{\rm p}}
+\newcommand{\Tu}{T_{\rm u}}
+\newcommand{\Tl}{T_{\rm l}}
+\newcommand{\Ts}{T_{\rm s}}
+\newcommand{\Tg}{T_{\rm g}}
+\newcommand{\TL}{T_{\rm L}}
+\newcommand{\Vu}{V_{\rm u}}
+\newcommand{\Vl}{V_{\rm l}}
+\newcommand{\doh}{\dot{h}}
+\newcommand{\dhl}{\dot{h}_{\rm l}}
+\newcommand{\dhu}{\dot{h}_{\rm u}}
+\newcommand{\dmal}{\dot{m}_{\rm l}}
+\newcommand{\dmau}{\dot{m}_{\rm u}}
+\newcommand{\dq}{\dot{q}}
+\newcommand{\dqc}{\dot{q}_{\rm c}}
+\newcommand{\dqr}{\dot{q}_{\rm r}}
+\newcommand{\dm}{\dot{m}}
+\newcommand{\dme}{\dot{m}_{\rm e}}
+\newcommand{\dmp}{\dot{m}_{\rm p}}
+\newcommand{\dml}{\dot{m}_{\rm l}}
+\newcommand{\dmu}{\dot{m}_{\rm u}}
+\newcommand{\dmf}{\dot{m}_{\rm f}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\RE}{\hbox{Re}}
+\newcommand{\LE}{\hbox{Le}}
+\newcommand{\PR}{\hbox{Pr}}
+\newcommand{\PE}{\hbox{Pe}}
+\newcommand{\NU}{\hbox{Nu}}
+\newcommand{\SC}{\hbox{Sc}}
+\newcommand{\SH}{\hbox{Sh}}
+\newcommand{\WE}{\hbox{We}}
+\newcommand{\COTWO}{{\tiny \hbox{CO}_2}}
+\newcommand{\OTWO}{{\tiny \hbox{O}_2}}
+\newcommand{\CO}{{\tiny \hbox{CO}}}
+\newcommand{\HTWOO}{{\tiny \hbox{H}_2\hbox{O}}}
+\newcommand{\NTWO}{{\tiny \hbox{N}_2}}
+\newcommand{\F}{{\tiny \hbox{F}}}
+\newcommand{\So}{{\tiny \hbox{S}}}
+\newcommand{\M}{{\tiny \hbox{M}}}
+\newcommand{\HCN}{{\tiny \hbox{HCN}}}
+\newcommand{\HCl}{{\tiny \hbox{HCl}}}
+\newcommand{\Hy}{{\tiny \hbox{H}}}
+\newcommand{\C}{{\tiny \hbox{C}}}
+\newcommand{\N}{{\tiny \hbox{N}}}
+\newcommand{\Oh}{{\tiny \hbox{O}}}
+\newcommand{\Cl}{{\tiny \hbox{Cl}}}

@@ -4,14 +4,42 @@
 \usepackage{rotating}
 \usepackage{longtable}
 \usepackage{amsmath}
+\usepackage{xfrac}
 \usepackage{array}
 \usepackage{units}
 \usepackage{fix-cm}
 \usepackage{makeidx} % Create index at end of document
 \usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography and index in the ToC
 \usepackage{datetime}
-
 \newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
+
+\usepackage{listings}
+\usepackage{textcomp}
+\definecolor{lbcolor}{rgb}{0.96,0.96,0.96}
+\lstset{
+    %backgroundcolor=\color{lbcolor},
+    tabsize=4,
+    rulecolor=,
+    language=Fortran,
+        basicstyle=\footnotesize\ttfamily,
+        upquote=true,
+        aboveskip={\baselineskip},
+        belowskip={\baselineskip},
+        columns=fixed,
+        extendedchars=true,
+        breaklines=true,
+        breakatwhitespace=true,
+        frame=none,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,0},
+        commentstyle=\color[rgb]{0,0,0},
+        stringstyle=\color[rgb]{0,0,0},
+}
+
+\usepackage{wrapfig}
 
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}

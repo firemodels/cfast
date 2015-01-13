@@ -1,121 +1,52 @@
 \documentclass[12pt]{book}
-\usepackage{mathptm,times,color}
-\usepackage[pdftex]{graphicx}
-\usepackage{hyperref}
-\usepackage{multirow}
-\usepackage{rotating}
-\usepackage{longtable}
-\usepackage{amsmath}
-\usepackage{array}
-\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
-
-\usepackage{datetime}
-\newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
-
-\renewcommand{\bibname}{References}
-
-\setlength{\textwidth}{6.5in}
-\setlength{\textheight}{9.0in}
-\setlength{\topmargin}{0.in}
-\setlength{\headheight}{0.in}
-\setlength{\headsep}{0.in}
-\setlength{\parindent}{0.25in}
-\setlength{\oddsidemargin}{0.0in}
-\setlength{\evensidemargin}{0.0in}
+\input{../Bibliography/commoncommands}
 
 \begin{document}
 
 \bibliographystyle{unsrt}
 
 %----------------- These are average biases from the table in the conclusions section for important values used in the text
-\newcommand{\HGLtempavg}{27} 
+\newcommand{\HGLtempavg}{27}
 \newcommand{\HGLhgtavg}{2}
 \newcommand{\Plumeavg}{9}
 \newcommand{\Speciesavg}{8} % an average for both O2 and CO2
-\newcommand{\Targfluxavg}{11} 
+\newcommand{\Targfluxavg}{11}
 \newcommand{\Targtempavg}{46}
 \newcommand{\Surfacefluxavg}{25}
-\newcommand{\Surfacetempavg}{3} 
+\newcommand{\Surfacetempavg}{3}
 %-----------------
 
 
-\newcommand{\asqh}{$A_T/A\sqrt{h}$}
-\newcommand{\degc}{$^{\circ}$C }
-\newcommand{\degf}{$^{\circ}$F }
-
-\newcommand{\brackets}[1]{ { \left( {#1} \right) } }
-
-\newcommand{\superscript}[1]{\ensuremath{^{\textnormal{#1}}}}
-\newcommand{\subscript}[1]{\ensuremath{_{\textnormal{#1}}}}
-
-\newcommand{\dx}{\delta x}
-\newcommand{\dy}{\delta y}
-\newcommand{\dz}{\delta z}
-\newcommand{\dt}{\delta t}
-\newcommand{\dQ}{\dot{Q}}
-\newcommand{\dm}{\dot{m}}
-
-\newcommand{\ha}{\frac{1}{2}}
-\newcommand{\ft}{\frac{4}{3}}
-\newcommand{\ot}{\frac{1}{3}}
-\newcommand{\fofi}{\frac{4}{5}}
-\newcommand{\of}{\frac{1}{4}}
-\newcommand{\twth}{\frac{2}{3}}
-
-\newcommand{\be}{\begin{equation}}
-\newcommand{\ee}{\end{equation}}
-
-\newcommand{\RE}{\hbox{Re}}
-\newcommand{\PR}{\hbox{Pr}}
-\newcommand{\NU}{\hbox{Nu}}
-
-\newcommand{\COTWO}{{\tiny \hbox{CO}_2}}
-\newcommand{\OTWO}{{\tiny \hbox{O}_2}}
-\newcommand{\CO}{{\tiny \hbox{CO}}}
-\newcommand{\F}{{\tiny \hbox{F}}}
-\newcommand{\rb}[1]{\raisebox{1.5ex}[0pt]{#1}}
-
-\newcommand{\erf}{\hbox{erf}}
+\frontmatter
 
 \pagestyle{empty}
 
+
 \begin{minipage}[t][9in][s]{6.5in}
 
-\flushright{
-    \fontsize{20}{24}\selectfont
-    \bf{NIST Technical Note XXXX\\}
-     }
+\headerA{XXXX\\}
 
-\vspace{1in}
+\headerB{
+CFAST -- Consolidated Model of Fire \\
+ Growth and Smoke Transport \\
+ (Version 7) \\
+ Volume 3: Software Development and
+ Model Evaluation Guide \\
+}
 
-\flushright{
-  \fontsize{28}{33.6}\selectfont
-   \bf{CFAST -- Consolidated Model of Fire \\
-   Growth and Smoke Transport \\
- \vspace{.25in}
-   Volume 3: Software Development and \\
-   Model Evaluation Guide \\}
-   }
-   
-\vspace{.5in}
-
-\flushright{
-  \fontsize{14}{16.8}\selectfont
+\headerC{
    Richard D. Peacock \\
    Paul A. Reneke \\
 }
 
-\vspace{.5in}
+\vfill
 
-\normalsize
-\flushright{http://dx.doi.org/10.6028/NIST.TN.xxxxv3}
+\headerD{XXXXv3}
 
 \vfill
 
-\flushright{\includegraphics[height=1.05in]{FIGURES/nistident}}
+\logosigs
 
 \end{minipage}
 
@@ -127,57 +58,36 @@
 
 \begin{minipage}[t][9in][s]{6.5in}
 
-\flushright{
-    \fontsize{20}{24}\selectfont
-    \bf{NIST Technical Note XXXX\\
+\headerA{XXXX\\}
+
+\headerB{
+CFAST -- Consolidated Model of Fire \\
+ Growth and Smoke Transport \\
+ (Version 7) \\
+ Volume 3: Software Development and
+ Model Evaluation Guide \\
 }
-     }
 
-\vspace{1.in}
+\headerC{
+   Richard D. Peacock \\
+   Paul A. Reneke \\
+}
 
-\flushright{
-  \fontsize{28}{33.6}\selectfont
-   \bf{CFAST -- Consolidated Model of Fire \\
-   Growth and Smoke Transport \\
-\vspace{.25in}
-   Volume 3: Software Development and  \\
-   Model Evaluation Guide \\}
-   }
+\headerD{XXXXv3}
 
-\vspace{.5in}
-
-\normalsize
-\flushright{
-Richard D. Peacock \\
-Paul A. Reneke \\
-{\em Fire Research Division} \\
-{\em Engineering Laboratory} 
- }
- 
- \vspace{.5in}
- 
-\flushright{http://dx.doi.org/10.6028/NIST.TN.xxxxv3}
-
-\vspace{.25in}
-
+\headerC{
 \flushright{\mydate\today\\
-$SVN Repository$~$Revision: 1789$}
-
+CFAST Version \cfastversion \\
+\emph{SVN Repository}~$Revision: 1798 $}}
+% dummy comment to force svn change - Mon Jan  5 21:57:14 EST 2015
 
 \vfill
 
-\flushright{\includegraphics[width=1in]{FIGURES/doc} }
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
 
-\small
-\flushright{U.S. Department of Commerce \\
-{\em Rebecca Blank, Acting Secretary} \\
-\hspace{1in} \\
-National Institute of Standards and Technology \\
-{\em Patrick D. Gallagher, Under Secretary of Commerce for Standards and Technology and Director} }
+\titlesigs
 
 \end{minipage}
-
-
 
 
 \newpage
@@ -187,26 +97,27 @@ National Institute of Standards and Technology \\
 \pagestyle{plain}
 \setcounter{page}{3}
 
+
 \chapter{Disclaimer}
 
-The U. S. Department of Commerce makes no warranty, expressed or implied, to users of 
-CFAST and associated computer programs, and accepts no responsibility for its use.  Users of 
-CFAST assume sole responsibility under Federal law for determining the appropriateness of its 
-use in any particular application; for any conclusions drawn from the results of its use; and for 
-any actions taken or not taken as a result of analyses performed using these tools. 
-CFAST is intended for use only by those competent in the field of fire safety and is intended 
-only to supplement the informed judgment of a qualified user. The software package is a 
-computer model which may or may not have predictive value when applied to a specific set of 
-factual circumstances. Lack of accurate predictions by the model could lead to erroneous 
+The U. S. Department of Commerce makes no warranty, expressed or implied, to users of
+CFAST and associated computer programs, and accepts no responsibility for its use.  Users of
+CFAST assume sole responsibility under Federal law for determining the appropriateness of its
+use in any particular application; for any conclusions drawn from the results of its use; and for
+any actions taken or not taken as a result of analyses performed using these tools.
+CFAST is intended for use only by those competent in the field of fire safety and is intended
+only to supplement the informed judgment of a qualified user. The software package is a
+computer model which may or may not have predictive value when applied to a specific set of
+factual circumstances. Lack of accurate predictions by the model could lead to erroneous
 conclusions with regard to fire safety. All results should be evaluated by an informed user.
 
 \chapter{Intent and Use}
 
-The algorithms, procedures, and computer programs described in this report constitute a 
-methodology for predicting some of the consequences resulting from a prescribed fire.  They 
-have been compiled from the best knowledge and understanding currently available, but have 
-important limitations that must be understood and considered by the user.  The program is 
-intended for use by persons competent in the field of fire safety and with some familiarity with 
+The algorithms, procedures, and computer programs described in this report constitute a
+methodology for predicting some of the consequences resulting from a prescribed fire.  They
+have been compiled from the best knowledge and understanding currently available, but have
+important limitations that must be understood and considered by the user.  The program is
+intended for use by persons competent in the field of fire safety and with some familiarity with
 personal computers. It is intended as an aid in the fire safety decision-making process.
 
 \chapter{Abstract}
@@ -221,9 +132,9 @@ Evaluation is critical to establishing both the acceptable uses and limitations 
 
 The following individuals and organizations played a role in the validation process of CFAST.
 \begin{itemize}
-\item Continuing support for CFAST is via internal funding at the National Institute of Standards and Technology (NIST). 
+\item Continuing support for CFAST is via internal funding at the National Institute of Standards and Technology (NIST).
 
-\item In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) Office of Research and the U.S. Department of Energy. 
+\item In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) Office of Research and the U.S. Department of Energy.
 
 The US Nuclear Regulatory Commission Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the development of various sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley, David Stroup, and Jason Dreisbach for their efforts and support.
 
@@ -231,14 +142,14 @@ Support to refine the software development and quality assurance process for CFA
 
 \item Anthony Hamins, currently Chief of the Fire Research Division at NIST directed the NIST/NRC and WTC experiments, and quantified the experimental uncertainty of these and other experiments used in this study. Alex Maranghides was the Director of the Large Fire Laboratory at NIST at the time these tests were conducted, and he helped to design the experiments. Therese McAllister oversaw the instrumentation of the structural steel during the WTC experiments.
 
-\item Anthony Hamins developed the technique of evaluating experimental uncertainty that is used throughout this Guide. 
+\item Anthony Hamins developed the technique of evaluating experimental uncertainty that is used throughout this Guide.
 
 \item Kevin McGrattan and Randy McDermott of the Fire Research Devision at NIST developed the automated process for validation and verification testing of the Fire Dynamics Simulator (FDS) model.  We use this same process for validation and verification testing of CFAST.
 
 \item Kevin McGrattan of the Fire Research Division and Blaza Toman of the Statistical Engineering Division of NIST developed the method of quantifying the model uncertainty.at
-\item For the NIST/NRC tests, Alex Maranghides was in charge of the Large Fire Laboratory at NIST where these tests were conducted, and helped to design the experiments. Thanks also to technicians Laurean Delauter, Jay McElroy, and Jack Lee who constructed and conducted these validation experiments at NIST. 
+\item For the NIST/NRC tests, Alex Maranghides was in charge of the Large Fire Laboratory at NIST where these tests were conducted, and helped to design the experiments. Thanks also to technicians Laurean Delauter, Jay McElroy, and Jack Lee who constructed and conducted these validation experiments at NIST.
 
-\item Steve Nowlen, formerly at Sandia National Laboratories provided data, documentation and further information for the NRC-sponsored experiments referred to in this document and the "FM/SNL Test Series" (Factory Mutual and Sandia National Laboratories conducted these experiments). 
+\item Steve Nowlen, formerly at Sandia National Laboratories provided data, documentation and further information for the NRC-sponsored experiments referred to in this document and the "FM/SNL Test Series" (Factory Mutual and Sandia National Laboratories conducted these experiments).
 
 \item Thanks to VTT, Finland, for their contribution of experimental data, referred to in this document as the ``VTT Large Hall Experiments.''
 
@@ -285,7 +196,6 @@ Support to refine the software development and quality assurance process for CFA
 
 
 \bibliography{../Bibliography/CFAST_refs}
-\addcontentsline{toc}{chapter}{References}
 
 \appendix
 \addcontentsline{toc}{chapter}{Appendices}

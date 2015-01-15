@@ -735,7 +735,7 @@ check_matlab_verification()
 #  = Stage 7b - Matlab plotting (verification) =
 #  =============================================
 
-run_matlab_verification()
+run_matlab_plotting()
 {
    # Run Matlab plotting script
    cd $CFAST_SVNROOT/Utilities/Matlab

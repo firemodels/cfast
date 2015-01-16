@@ -350,6 +350,7 @@ $RUNCFAST ../Verification/Mass_Energy_Balance basic_pressure_wallsoff
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_mechvent_dropoff
 $RUNCFAST ../Verification/Mass_Energy_Balance basic_connection_floorceiling_mechvent
 
+$RUNCFAST ../Verification/Mass_Energy_Balance 100kW_fire
 $RUNCFAST ../Verification/Mass_Energy_Balance fire
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_window
 $RUNCFAST ../Verification/Mass_Energy_Balance fire_window_windowchange

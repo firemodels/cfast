@@ -44,6 +44,7 @@
     !                diam     diameter of cable
 
     use precision_parameters
+    use cparams, only: nnodes_trg
     implicit none
 
     integer, intent(in) :: nx
@@ -53,13 +54,12 @@
 
     ! declare local variables
 
-    integer :: nnodes, i, nr, niter, iter
-    parameter (nnodes = 50)
-    real(eb), dimension(nnodes) :: aim1, ai, aip1, tnew
-    real(eb), dimension(nnodes) :: cc, dd
+    integer :: i, nr, niter, iter
+    real(eb), dimension(nnodes_trg) :: aim1, ai, aip1, tnew
+    real(eb), dimension(nnodes_trg) :: cc, dd
     real(eb) :: alpha, dr, factor, dt_iter
 
-    nr = nnodes
+    nr = nnodes_trg
     dr = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)

@@ -1713,20 +1713,20 @@
     character, intent(in) :: from*(*)
     character, intent(out) :: to*(*)
         
-    integer nfrom, nto, nn, i
+    integer nfrom, nto, nnodes, i
     character :: c
 
     nfrom = len_trim(from)
     nto = len(to)
-    nn = min(nfrom,nto)
-    do i = 1, nn
+    nnodes = min(nfrom,nto)
+    do i = 1, nnodes
         c = from(i:i)
         if(c>='a'.and.c<='z')then
             c = char(ichar(c) + ichar('A')-ichar('a'))
         endif
         to(i:i) = c
     end do
-    if(nto>nn)to(nn+1:nto)=' '
+    if(nto>nnodes)to(nnodes+1:nto)=' '
     return
     end subroutine upperall
 

@@ -5,61 +5,60 @@ module cparams
     use precision_parameters
 
     ! geometry parameters
-    integer, parameter :: nr = 31           ! maximum number of compartments
-    integer, parameter :: nn = 61           ! number of nodes in a material for conduction calculation
-    integer, parameter :: mxslb = 6         ! maximum number of slabs in a surface material (at the moment, the gui only support 1)
-    integer, parameter :: nwal = 4          ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
-    integer, parameter :: mxpts=21          ! maximum number of data points for variable cross-sectional area of a compartment
+    integer, parameter :: nr = 31               ! maximum number of compartments
+    integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material (at the moment, the gui only support 1)
+    integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
+    integer, parameter :: mxcross=21            ! maximum number of data points for variable cross-sectional area of a compartment
+    integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation
     
     ! fire related input parameters    
-    integer, parameter :: nv = 199          ! maximum number of data points in a time-dependent input curve
-    integer, parameter :: ns = 11           ! number of species
-    integer, parameter :: mxoin = nr        ! maximum number of fire objects
-    integer, parameter :: mxfirp = 20       ! number of parameters for each fire object
-    integer, parameter :: mxfire = 2*mxoin  ! maximum number of fires in a single simulation
-    integer, parameter :: obotemp = 1       ! object ignition criteria index for temperature
-    integer, parameter :: oboflux = 2       ! object ignition criteria index for heat flux
+    integer, parameter :: mxpts = 199           ! maximum number of data points in a time-dependent input curve
+    integer, parameter :: ns = 11               ! number of species
+    integer, parameter :: mxfires = nr            ! maximum number of fire objects
+    integer, parameter :: mxfirp = 20           ! number of parameters for each fire object
+    integer, parameter :: mxfire = 2*mxfires      ! maximum number of fires in a single simulation
+    integer, parameter :: igntemp = 1           ! object ignition criteria index for temperature
+    integer, parameter :: ignflux = 2           ! object ignition criteria index for heat flux
     
-    integer, parameter :: nthmax = 125      ! maximum number of thermal properties
+    integer, parameter :: mxthrmp = 125         ! maximum number of thermal properties
  
     ! ventilation parameters
-    integer, parameter :: mxccv = 25        ! maximum number of vent connections between compartment pairs
+    integer, parameter :: mxccv = 25            ! maximum number of vent connections between compartment pairs
     integer, parameter :: mxvents = mxccv*nr    ! maximum number of horizontal flow vents
     integer, parameter :: mxvent = mxvents*2    ! maximum number of connections in horizontal flow vents 
                                                 ! (one for "from" one to "to")
-    integer, parameter :: mxslab = 10       ! number of slabs in a horizontal flow calculation
-    integer, parameter :: mxprd = 11        ! maximum number of products tracked in the horizontal flow calculation 
-                                            ! (should be the same as ns)
+    integer, parameter :: mxfslab = 10          ! number of slabs in a horizontal flow calculation
+    integer, parameter :: mxprd = ns            ! maximum number of products tracked in the horizontal flow calculation 
+                                                ! (should be the same as ns)
     
-    integer, parameter :: mxvv=2*nr         ! maximum number of vertical flow vents
-    integer, parameter :: mxhvsys=60        ! maximum number of mechanical ventilation systems
-    integer, parameter :: mfan = 15         ! maximum number of fans
-    integer, parameter :: mfcoe = 5         ! maximum order of fan curve (here, 5th order polynomial. at the moment, 
-                                            ! the gui limits to constant flow)
-    integer, parameter :: mcon = 3          ! maximum number of connections to a single node in a mechanical ventilation system
-    integer, parameter :: mdt = nr+2        ! maximum number of ducts
-    integer, parameter :: mnode = 2*mdt     ! maximum number of nodes      !
-    integer, parameter :: mext = 2*nr       ! maximum number of external connections
-    integer, parameter :: mbr = mfan+mdt    ! maximum number of branches in a system
+    integer, parameter :: mxvv=2*nr                 ! maximum number of vertical flow vents
+    integer, parameter :: mxhvsys=60                ! maximum number of mechanical ventilation systems
+    integer, parameter :: mxfan = 15                ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxcoeff = 5               ! maximum order of fan curve (here, 5th order polynomial. at the moment, 
+                                                    !   the gui limits to constant flow)
+    integer, parameter :: mxcon = 3                 ! maximum number of connections to a single node in a mechanical ventilation system
+    integer, parameter :: mxduct = nr+2             ! maximum number of ducts in a mechanical ventilation system
+    integer, parameter :: mxnode = 2*mxduct         ! maximum number of nodes in a mechanical ventilation system
+    integer, parameter :: mxext = 2*nr              ! maximum number of external connections in a mechanical ventilation system
+    integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
     
     integer, parameter :: mxramps = 8*mxfire+mxvent+mxvv+mxhvsys ! maximum number of possible time-based ramps
     
-    real(eb), parameter :: vfmaxdz=0.01_eb    ! maximum vertical distance between elements before they are considered 
-                                              ! separate elements (connected compartments for example)
-    
-    real(eb), parameter :: fire_at_wall = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to be on a surface for entrainmnt
+    real(eb), parameter :: mx_vsep=0.01_eb     ! maximum vertical distance between elements before they are considered 
+                                               ! separate elements (connected compartments for example)
+    real(eb), parameter :: mx_hsep = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to be on a surface for entrainmnt
     
     ! target parameters
-    integer, parameter :: mxtarg = 10*nr    ! maximum number of targets
-    integer, parameter :: trgtempf = 17     ! position of front temperature of target (front surface temperature)
-    integer, parameter :: trgtnum = 50      ! number of interior nodes in a target for conduction calculation
-    integer, parameter :: trgtempb = trgtempf+trgtnum-1   ! position of back temperature of target (back surface temperature)
-    integer, parameter :: trgxrow = trgtempb ! upper bound of real target array 
-    integer, parameter :: trgirow = 7       ! upper bound of integer target array
+    integer, parameter :: mxtarg = 10*nr                            ! maximum number of targets
+    integer, parameter :: nnodes_trg = nnodes-1                     ! number of interior nodes in a target for conduction calculation
+    integer, parameter :: idxtempf_trg = 17                         ! position of front temperature of target (front surface temperature)
+    integer, parameter :: idx_tempb_trg = idxtempf_trg+nnodes_trg-1 ! position of back temperature of target (back surface temperature)
+    integer, parameter :: mxr_trg = idx_tempb_trg                   ! upper bound of real target array 
+    integer, parameter :: mxi_trg = 7                               ! upper bound of integer target array
     
-    integer, parameter :: mdchk = 0         ! index to check state of detectors and targets
-    integer, parameter :: mdset = 1         ! index to calculate full state of detectors and targets
-    integer, parameter :: mdupdt = 2        ! index to update state of detectors and targets on successful equation set solution
+    integer, parameter :: check_detector_state = 0      ! index to check state of detectors and targets
+    integer, parameter :: set_detector_state = 1        ! index to calculate full state of detectors and targets
+    integer, parameter :: update_detector_state = 2     ! index to update state of detectors and targets on successful equation set solution
     
     integer, parameter :: upper = 1         ! index for upper layer
     integer, parameter :: lower = 2         ! index for lower layer
@@ -67,7 +66,7 @@ module cparams
     ! parameters for equation solver
     ! nt = 4*nr(main equ) + 2*nr*ns(species) + mxhvsys*ns(hvac species)
     integer, parameter :: nt = 12*nr + 2*nr*ns + mxhvsys*ns ! total number of main equations for dae solver
-    integer, parameter :: maxjeq = 6*nr + mnode + mbr
+    integer, parameter :: maxjeq = 6*nr + mxnode + mxbranch
     integer, parameter :: maxeq = maxjeq + nwal*nr
     integer, parameter :: maxteq = maxeq+2*nr*ns+mxhvsys*ns+4*nr*3
 

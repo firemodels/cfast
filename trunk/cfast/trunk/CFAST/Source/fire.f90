@@ -570,7 +570,7 @@
     !     algorithm: "momentum implications for buoyant diffusion flames", combustion and flame 52, 149 (1983)
 
     use precision_parameters
-    use cparams, only: fire_at_wall
+    use cparams, only: mx_hsep
     implicit none
 
     real(eb), intent(in) :: q, z, xemp, xfx, xfy
@@ -585,8 +585,8 @@
 
     ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     xf = 1.0_eb
-    if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
-    if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
+    if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
+    if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
     
     qj = 0.001_eb*q
     
@@ -623,7 +623,7 @@
     !                eme  net entrainment rate up to height z (kg/s)
 
     use precision_parameters
-    use cparams, only: fire_at_wall
+    use cparams, only: mx_hsep
     implicit none
 
     real(eb), intent(in) :: q, q_c, z, emp, area, xfx, xfy
@@ -635,8 +635,8 @@
     ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger; 
     !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
-    if (xfx<=fire_at_wall.or.xfy<=fire_at_wall) xf = 2.0_eb
-    if (xfx<=fire_at_wall.and.xfy<=fire_at_wall) xf = 4.0_eb
+    if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
+    if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
 
     ! virtual original correlation is based on total HRR
     qj = 0.001_eb*q*xf
@@ -1299,7 +1299,7 @@
     real(eb), intent(in) :: told, dt
     real(eb), intent(out) :: tobj
     
-    real(eb) :: tmpob(2,mxoin), tnobj
+    real(eb) :: tmpob(2,mxfires), tnobj
     
     integer :: iobj, ignflg, iobtarg
 
@@ -1324,9 +1324,9 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call check_object_ignition(told,dt,xxtarg(trgtempf,iobtarg),objcri(3,iobj),obcond(obotemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,xxtarg(idxtempf_trg,iobtarg),objcri(3,iobj),obcond(igntemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
-                call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(oboflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(ignflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
             else
                 call xerror('update_fire_objects-incorrectly defined object type',0,1,1)
                 ierror = 20
@@ -1335,13 +1335,13 @@
         endif
     end do
 
-    if (iflag/=mdchk) then
+    if (iflag/=check_detector_state) then
         do iobj = 1, numobjl
             if (.not.objon(iobj)) then
                 iobtarg = obtarg(iobj)
-                obcond(obotemp,iobj) = xxtarg(trgtempf,iobtarg)
-                obcond(oboflux,iobj) = xxtarg(trgtfluxf,iobtarg)
-                if (iflag==mdset.and.tmpob(1,iobj)>0.0_eb) then
+                obcond(igntemp,iobj) = xxtarg(idxtempf_trg,iobtarg)
+                obcond(ignflux,iobj) = xxtarg(trgtfluxf,iobtarg)
+                if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then
                     if (tmpob(2,iobj)<=tobj) then
                         objon(iobj) = .true.
                         if (option(fbtobj)==on) then

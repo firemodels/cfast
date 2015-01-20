@@ -1,7 +1,7 @@
 module cfast_types
     
     use precision_parameters
-    use cparams, only: nv, ns
+    use cparams, only: mxpts, ns
     
     !  room data structure
     type room_type
@@ -13,7 +13,7 @@ module cfast_types
     type ramp_type
         character :: type
         integer :: from_room, to_room, vent_number, npoints
-        real(eb) :: time(nv), value(nv)
+        real(eb) :: time(mxpts), value(mxpts)
     end type ramp_type
     
     ! fire data structure
@@ -23,7 +23,7 @@ module cfast_types
         ! These are the fire definitions from the input
         integer(eb) :: room, object
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
-        real(eb) :: mdot_i(nv), qdot_i(nv), area_i(nv), height_i(nv), y_soot_i(nv), y_co_i(nv), y_trace_i(nv)
+        real(eb) :: mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), y_co_i(mxpts), y_trace_i(mxpts)
         
         ! These are calculated values for the current time step
         real(eb) :: x_position, y_position, z_position, area

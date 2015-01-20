@@ -256,12 +256,12 @@
                 if (ixtarg(trgroom,itarg)==i) then
                     tgtemp = tgtarg(itarg)
                     if (ixtarg(trgeq,itarg)==cylpde) then
-                        tttemp = xxtarg(trgtempb,itarg)
-                        itctemp = trgtempf+ xxtarg(trginterior,itarg)*(trgtempb-trgtempf)
+                        tttemp = xxtarg(idx_tempb_trg,itarg)
+                        itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
                         tctemp = xxtarg(itctemp,itarg)
                     else
-                        tttemp = xxtarg(trgtempf,itarg)
-                        itctemp = (trgtempf+trgtempb)/2
+                        tttemp = xxtarg(idxtempf_trg,itarg)
+                        itctemp = (idxtempf_trg+idx_tempb_trg)/2
                         tctemp = xxtarg(itctemp,itarg)
                     endif
                     if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
@@ -596,12 +596,12 @@
     use vent_slab
     implicit none
     
-    real(eb), intent(in) :: time, qslab(mxslab)
+    real(eb), intent(in) :: time, qslab(mxfslab)
     integer, intent(in) :: ir1, ir2, iv, nslab
     
     real(eb) :: r1, r2, v, slab
     
-    integer,parameter :: maxhead = 1 + mxvents*(4 + mxslab)
+    integer,parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
     integer :: position, i
     logical :: firstc, nwline
@@ -628,7 +628,7 @@
     call SSaddtolist(position, r2, outarray)
     call SSaddtolist(position, v, outarray)
     call SSaddtolist(position, slab, outarray)
-    do i = 1, mxslab
+    do i = 1, mxfslab
         call SSaddtolist(position, dirs12(i)*qslab(i), outarray)
     end do
     return

@@ -308,7 +308,7 @@
     implicit none
 
     ! local variables
-    integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mfan
+    integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mxfan
     character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
@@ -663,7 +663,7 @@
     implicit none
 
     ! local variables     
-    integer, parameter :: maxhead = 1 + mxvents*(4 + mxslab)
+    integer, parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
     character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
     integer :: position, i, j
 
@@ -684,7 +684,7 @@
             headertext(2,position) = ' '
             headertext(3,position) = ' '
         end do
-        do j = 1, mxslab
+        do j = 1, mxfslab
             position = position + 1
             headertext(1,position) = trim(Labels(6))
             call toIntString(j,headertext(2,position))

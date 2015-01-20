@@ -35,9 +35,9 @@ module cenviro
     real(eb), dimension(nr,4) :: zzwarea
     real(eb), dimension(nr,10) :: zzwarea2
     real(eb), dimension(nr,8) :: zzhall
-    real(eb), dimension(mxpts,nr) :: zzrvol, zzrarea, zzrhgt
+    real(eb), dimension(mxcross,nr) :: zzrvol, zzrarea, zzrhgt
     real(eb), dimension(2,nr) :: zzabsb, zzbeam
-    real(eb), dimension(0:nv+1) :: zzdisc
+    real(eb), dimension(0:mxpts+1) :: zzdisc
     real(eb), dimension(nr,nr) :: zzhtfrac
     real(eb) :: zzdtcrit
 
@@ -73,11 +73,11 @@ module cfast_main
     implicit none
     save
     
-    integer :: hvorien(mext), hvnode(2,mext), crdate(3), mpsdat(3), nwv(nr,nr), na(mbr), nofsets(14), &
-        ncnode(mnode), ne(mbr), mvintnode(mnode,mcon), icmv(mnode,mcon), nfc(mfan), nw(nr,nr), nslb(nwal,nr), &
-        nf(mbr), vshape(nr,nr), objrm(0:mxoin), objign(mxoin), numnode(mxslb+1,4,nr), &
-        froom(0:mxfire), numobjl, ixtarg(trgirow,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
-        ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mdt), nfire, ijk(nr,nr,mxccv), &
+    integer :: hvorien(mxext), hvnode(2,mxext), crdate(3), mpsdat(3), nwv(nr,nr), na(mxbranch), nofsets(14), &
+        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), nw(nr,nr), nslb(nwal,nr), &
+        nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
+        froom(0:mxfire), numobjl, ixtarg(mxi_trg,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
+        ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
         nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, &
@@ -89,30 +89,30 @@ module cfast_main
         (nofprd,nofsets(11)), (nofhvpr,nofsets(12)), (nequals,nofsets(13)), (noffsm,nofsets(14))
 
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
-        heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mext), hveflot(2,mext), &
+        heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), windc(mxvents), &
-        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mfan), oplume(3,mxoin), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
+        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr), hrp(nr), &
         vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
-        xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxoin), radconsplit(0:mxfire),heatfp(3),qcvf(4,mfan)
+        xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
-        rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nn,nr,nwal), fopos(3,0:mxfire), &
-        hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(nv), hlp(mxvents), hvextt(mext,2), &
-        arext(mext), hvelxt(mext), ce(mbr), hvdvol(mbr), tbr(mbr), rohb(mbr), bflo(mbr), &
-        hvp(mnode), hvght(mnode), dpz(mnode,mcon), hvflow(mnode,mcon), &
-        qmax(mfan), hmin(mfan), hmax(mfan), hvbco(mfan,mfcoe), eff_duct_diameter(mdt), duct_area(mdt), duct_length(mdt), &
-        hvconc(mbr,ns),qcvpp(4,nr,nr), hvexcn(mext,ns,2),objpos(3,0:mxoin),fpos(3),hcrf(nv), &
+        rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal), fopos(3,0:mxfire), &
+        hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(mxpts), hlp(mxvents), hvextt(mxext,2), &
+        arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
+        hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
+        qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct), duct_length(mxduct), &
+        hvconc(mxbranch,ns),qcvpp(4,nr,nr), hvexcn(mxext,ns,2),objpos(3,0:mxfires),fpos(3),hcrf(mxpts), &
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
-        farea(0:mxfire),xxtarg(trgxrow,mxtarg),cxabs(nr),cyabs(nr)
+        farea(0:mxfire),xxtarg(mxr_trg,mxtarg),cxabs(nr),cyabs(nr)
 
-    real(eb) :: cp, deltat, tracet(2,mext)
-    real(eb) :: gamma, hcomba, traces(2,mext)
+    real(eb) :: cp, deltat, tracet(2,mxext)
+    real(eb) :: gamma, hcomba, traces(2,mxext)
     real(eb) :: interior_abs_pressure, pofset, pref
     real(eb) :: relhum, rgas, stime, te
     real(eb) :: tgignt
     real(eb) :: tref, windpw, windrf, windv
 
-    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxoin), heatfl
+    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl
 
     character(128) :: title, compartmentnames(nr)
    
@@ -283,10 +283,10 @@ module objects1
     implicit none
     save
 
-    logical, dimension(0:mxoin) :: objld
-    character(64), dimension(0:mxoin) :: odbnam
-    character(256), dimension(0:mxoin) :: objnin
-    integer, dimension(0:mxoin) :: objpnt
+    logical, dimension(0:mxfires) :: objld
+    character(64), dimension(0:mxfires) :: odbnam
+    character(256), dimension(0:mxfires) :: objnin
+    integer, dimension(0:mxfires) :: objpnt
 
 end module objects1
 
@@ -299,18 +299,18 @@ module objects2
     implicit none
     save
 
-    logical, dimension(0:mxoin) :: objdef
-    character(60), dimension(mxoin) :: objnam(mxoin)
-    character(60), dimension(0:mxoin) :: omatl
-    integer, dimension(mxoin) :: objlfm,objtyp,obtarg, objset
+    logical, dimension(0:mxfires) :: objdef
+    character(60), dimension(mxfires) :: objnam(mxfires)
+    character(60), dimension(0:mxfires) :: omatl
+    integer, dimension(mxfires) :: objlfm,objtyp,obtarg, objset
     
-    real(eb), dimension(mxoin) :: obj_c, obj_h, obj_o, obj_n, obj_cl
-    real(eb), dimension(3,0:mxoin) :: objcri, objort
-    real(eb), dimension(0:mxoin) :: objmas, objgmw, objvt, objclen
-    real(eb), dimension(nv,0:mxoin) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
-    real(eb), dimension(nv,ns,mxoin) :: omprodr
-    real(eb), dimension(nv,mxoin) :: otime
-    real(eb), dimension(2,0:mxoin) :: obcond
+    real(eb), dimension(mxfires) :: obj_c, obj_h, obj_o, obj_n, obj_cl
+    real(eb), dimension(3,0:mxfires) :: objcri, objort
+    real(eb), dimension(0:mxfires) :: objmas, objgmw, objvt, objclen
+    real(eb), dimension(mxpts,0:mxfires) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
+    real(eb), dimension(mxpts,ns,mxfires) :: omprodr
+    real(eb), dimension(mxpts,mxfires) :: otime
+    real(eb), dimension(2,0:mxfires) :: obcond
     real(eb) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
 
 end module objects2
@@ -410,11 +410,11 @@ module params
 !   hvfrac is the fraction that a mv duct is in the upper or lower layer
 
     logical :: allowed(ns), exset
-    integer :: izhvmapi(mnode), izhvmape(mnode), izhvie(mnode), izhvsys(mnode), izhvbsys(mbr), nhvpvar, nhvtvar, nhvsys
+    integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
 
     real(eb) :: qfc(2,nr), qscnv(nwal,nr), o2n2(ns), &
-        volfru(nr), volfrl(nr), hvfrac(2,mext), exterior_abs_pressure, &
-        hcratt, chv(mbr), dhvprsys(mnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mbr), ductcv
+        volfru(nr), volfrl(nr), hvfrac(2,mxext), exterior_abs_pressure, &
+        hcratt, chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
 
     !common qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, exterior_abs_pressure, exta, exra, qcvent, o2n2, hwjdot, &
     !    htot, htflow, htfnet, volfru, volfrl, hvfrac, hcratt, ihmlar, hvmfsys,dhvprsys,hvtm,hvdara,hvt,chv,ductcv, &
@@ -476,14 +476,14 @@ module thermp
     implicit none
     save
     
-    real(eb), dimension(mxslb,nthmax) :: lfkw, lcw, lrw, lflw
-    real(eb), dimension(nthmax) :: lepw
+    real(eb), dimension(mxslb,mxthrmp) :: lfkw, lcw, lrw, lflw
+    real(eb), dimension(mxthrmp) :: lepw
 
     logical, dimension(nwal,nr) :: thset
     integer maxct, numthrm
-    integer, dimension(nthmax) :: lnslb
+    integer, dimension(mxthrmp) :: lnslb
     character(8), dimension(nwal,nr) :: cname
-    character(8), dimension(nthmax) :: nlist
+    character(8), dimension(mxthrmp) :: nlist
 
     end module thermp
     
@@ -554,8 +554,8 @@ module wnodes
     
     integer nwalls, nfurn
     real(eb), dimension (nr,4) :: wlength
-    real(eb), dimension (nn,nr,4) :: walldx
-    real(eb), dimension(nv) :: furn_time, furn_temp
+    real(eb), dimension (nnodes,nr,4) :: walldx
+    real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout
       
 end module wnodes

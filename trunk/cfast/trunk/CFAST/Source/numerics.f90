@@ -5016,7 +5016,7 @@
     !***end prologue  dnrm2
     
     implicit none
-    integer :: next, n, nn, incx, i, j
+    integer :: next, n, nnodes, incx, i, j
     real(8) :: dx(*), cutlo, cuthi, hitest, sum, xmax, zero, one
     data   zero, one /0.0d0, 1.0d0/
     !
@@ -5028,7 +5028,7 @@
     !
 10  assign 30 to next
     sum = zero
-    nn = n * incx 
+    nnodes = n * incx 
     !                                                 begin main loop
     i = 1
 20  go to next,(30, 50, 70, 110)
@@ -5082,7 +5082,7 @@
     !
     !                   phase 3.  sum is mid-range.  no scaling.
     !
-    do j =i,nn,incx
+    do j =i,nnodes,incx
         if(abs(dx(j)) >= hitest) go to 100
         sum = sum + dx(j)**2 
     end do
@@ -5091,7 +5091,7 @@
     !
 200 continue
     i = i + incx
-    if ( i <= nn ) go to 20
+    if ( i <= nnodes ) go to 20
     !
     !              end of main loop.
     !

@@ -261,7 +261,7 @@
 
     ! check interior nodes
     do i = 1, nnode
-        if (ncnode(i)<1.or.ncnode(i)>mcon) then
+        if (ncnode(i)<1.or.ncnode(i)>mxcon) then
             call xerror('hvinit - interior node has too many or too few connections',0,1,1)
             ierror = 223
             return
@@ -623,7 +623,7 @@
             ieq = iztarg(itarg)
             p(noftt+ieq) = interior_temperature
         endif  
-        do i=trgtempf,trgtempb
+        do i=idxtempf_trg,idx_tempb_trg
             xxtarg(i,itarg)=interior_temperature
         end do
         tgtarg(itarg) = interior_temperature
@@ -723,7 +723,7 @@
         end do
     end do
 
-    do i = 1, mext
+    do i = 1, mxext
         hveflot(upper,i) = 0.0_eb
         hveflot(lower,i) = 0.0_eb
         tracet(upper,i) = 0.0_eb
@@ -821,7 +821,7 @@
     fpos(3) = -1.0_eb
 
     ! set up default values for the chemistry
-    do i = 1, nv
+    do i = 1, mxpts
 
         ! define the vents as being open
         hcratio(i) = 0.3333333_eb
@@ -844,7 +844,7 @@
 
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
     ! way to have an intial value other than 0 (no filtering).
-    do i = 1, mfan
+    do i = 1, mxfan
         qcvf(1,i) = 0.0_eb
         qcvf(2,i) = 0.0_eb
         qcvf(3,i) = 0.0_eb
@@ -866,7 +866,7 @@
     nbr = 0
     next = 0
     mvcalc = .false.
-    do i = 1, mnode
+    do i = 1, mxnode
         hvght(i) = 0.0_eb
     end do
 
@@ -942,7 +942,7 @@
     ! initialize variable cross sectional area to none
     do i = 1, nr
         izrvol(i) = 0
-        do j = 1, mxpts
+        do j = 1, mxcross
             zzrvol(j,i) = 0.0_eb
             zzrarea(j,i) = 0.0_eb
             zzrhgt(j,i) = 0.0_eb
@@ -1001,7 +1001,7 @@
 
     ! turn off objects
     numobjl = 0
-    do i = 0, mxoin
+    do i = 0, mxfires
         objon(i) = .false.
         objpos(1,i) = -1.0
         objpos(2,i) = -1.0
@@ -1402,7 +1402,7 @@
     ! Initialize the interior temperatures to the interior ambient
     do i = 1, nm1
         do j = 1, nwal
-            do k = 1, nn 
+            do k = 1, nnodes 
                 twj(k,i,j) = interior_temperature
             end do
         end do
@@ -1542,7 +1542,7 @@
     do ib = 2, nbr
         nnode = max(nnode,na(ib),ne(ib))
     end do
-    if (nnode>mnode) then
+    if (nnode>mxnode) then
         call xerror('offset - node range exceeded for hvac',0,1,1)
         ierror = 16
         return

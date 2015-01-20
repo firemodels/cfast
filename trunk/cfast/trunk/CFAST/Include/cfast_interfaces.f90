@@ -18,13 +18,13 @@ module  interfaces
     end interface
     
     interface
-    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,uflw2)
+    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxfslab,uflw2)
     
     use precision_parameters
     
     integer, intent(in) :: dirs12(*)
-    integer, intent(in) :: nprod, nslab, mxprd, mxslab
-    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxslab,*), tu(*), tl(*)
+    integer, intent(in) :: nprod, nslab, mxprd, mxfslab
+    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxfslab,*), tu(*), tl(*)
     real(eb), intent(out) :: uflw2(2,mxprd+2,2)
     
     end subroutine flogo

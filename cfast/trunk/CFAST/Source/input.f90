@@ -17,7 +17,7 @@
 
     integer, intent(out) :: ierror
     
-    real(eb) :: yinter(nr), temparea(mxpts), temphgt(mxpts), deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
+    real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
     integer numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
 
@@ -52,7 +52,7 @@
     endif
 
     ! read in the entire input file as a spreadsheet array of numbers and/or character strings
-    call readcsvformat(iofili,rarray,carray,nrow,ncol,1,numr,numc,ierror)
+    call readcsvformat(iofili, rarray, carray, nrow, ncol, 1, numr, numc, logerr, ierror)
     if (ierror>0) then
         write(logerr,5003)
         return
@@ -172,9 +172,9 @@
                 ! see which room is on top (if any) - this is like a bubble sort
                 deps1 = hrl(itop) - hrp(ibot)
                 deps2 = hrl(ibot) - hrp(itop)
-                if (nwv(itop,ibot)/=1.or.abs(deps1)>=vfmaxdz) then
-                    if (nwv(ibot,itop)/=1.or.abs(deps2)>=vfmaxdz) then
-                        if (nwv(itop,ibot)==1.and.abs(deps2)<vfmaxdz) then
+                if (nwv(itop,ibot)/=1.or.abs(deps1)>=mx_vsep) then
+                    if (nwv(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
+                        if (nwv(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
                             if (nwv(ibot,itop)/=0) then
                                 write (logerr,*) 'Vent ', ibot, itop, ' is being redefined'
                             endif
@@ -184,7 +184,7 @@
                             vshape(ibot,itop) = vshape(itop,ibot)
                             cycle
                         endif
-                        if (nwv(ibot,itop)==1.and.abs(deps1)<vfmaxdz) then
+                        if (nwv(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
                             if (nwv(itop,ibot)/=0) then
                                 write (logerr,*) 'Vent ', itop, ibot, ' is being redefined'
                             endif
@@ -241,8 +241,8 @@
         ! floor of one room must be adjacent to ceiling of the other
         dwall1 = abs(hrl(iroom1) - hrp(iroom2))
         dwall2 = abs(hrl(iroom2) - hrp(iroom1))
-        if(dwall1<vfmaxdz.or.dwall2<=vfmaxdz)then
-            if(dwall1<vfmaxdz)then
+        if(dwall1<mx_vsep.or.dwall2<=mx_vsep)then
+            if(dwall1<mx_vsep)then
                 izswal(ii,w_from_wall) = 2
                 izswal(ii,w_to_wall) = 1
             else
@@ -633,8 +633,8 @@
             return
         endif
         maxct = maxct + 1
-        if (maxct>nthmax) then
-            write (logerr,'(a,i3)') 'Too many thermal properties',' in input data file. Limit is ',nthmax
+        if (maxct>mxthrmp) then
+            write (logerr,'(a,i3)') 'Too many thermal properties',' in input data file. Limit is ',mxthrmp
             ierror = 203
             return
         endif
@@ -958,7 +958,7 @@
         ! first compartment/node opening
         next = next + 1
         nnode = nnode + 1
-        if (next>mext.or.nnode>mnode) then
+        if (next>mxext.or.nnode>mxnode) then
             write (logerr,5192) next,nnode
             ierror = 68
             return
@@ -976,7 +976,7 @@
         ! second compartment/node opening
         next = next + 1
         nnode = nnode + 1
-        if (next>mext.or.nnode>mnode) then
+        if (next>mxext.or.nnode>mxnode) then
             write (logerr,5192) next,nnode
             ierror = 68
             return
@@ -1007,8 +1007,8 @@
         endif
 
         nbr = nbr + 1
-        if (nfan>mfan.or.nbr>mbr) then
-            write (iofilo,5195) mfan
+        if (nfan>mxfan.or.nbr>mxbranch) then
+            write (iofilo,5195) mxfan
             ierror = 70
             return
         endif
@@ -1044,7 +1044,7 @@
             ierror = 32
             return
         endif
-        if (numobjl>=mxoin) then
+        if (numobjl>=mxfires) then
             write(logerr,5300)
             go to 10
         endif
@@ -1145,7 +1145,7 @@
             ierror = 32
             return
         endif
-        if (numobjl>=mxoin) then
+        if (numobjl>=mxfires) then
             write(logerr,5300)
             go to 10
         endif
@@ -1481,7 +1481,7 @@
 
         ! make sure the number of points is valid
         npts = lrarray(2)
-        if(npts>mxpts.or.npts<=0.or.npts/=nret-2) then
+        if(npts>mxcross.or.npts<=0.or.npts/=nret-2) then
             write (logerr,5347) npts
             ierror = 49
             return
@@ -1523,7 +1523,7 @@
 
         ! make sure the number of points is valid
         npts = lrarray(2)
-        if(npts>mxpts.or.npts<0.or.npts/=nret-2)then
+        if(npts>mxcross.or.npts<0.or.npts/=nret-2)then
             write(logerr,5350) npts
             ierror = 53
             return
@@ -2231,7 +2231,7 @@
 
 ! --------------------------- readcsvformat -------------------------------------------
 
-    subroutine readcsvformat (iunit,x,c,numr,numc,nstart,maxr,maxc,ierror)
+    subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, logerr, ierror)
 
     !     routine: readcsvformat
     !     purpose: reads a comma-delimited file as generated by Micorsoft Excel, assuming that all the data is in the form of real numbers
@@ -2241,24 +2241,25 @@
     !                numr   = # of rows of array x
     !                numc   = # of columns of array x
     !                nstart = starting row of spreadsheet to read
-    !                maxr     = actual number of rows read
-    !                maxcc    = actual number of columns read
+    !                maxrow   = actual number of rows read
+    !                maxcol   = actual number of columns read
+    !                logerr   = logical unit number for writing error messages (if any)
+    !                ierror   = returned error code on error exit; otherwise 0
 
     use precision_parameters
-    use cshell
     implicit none
 
-    integer, intent(in) :: iunit, numr, numc, nstart
+    integer, intent(in) :: iunit, numr, numc, nstart, logerr
 
-    integer, intent(out) :: maxr, maxc, ierror
+    integer, intent(out) :: maxrow, maxcol, ierror
     real(eb), intent(out) :: x(numr,numc)
     character, intent(out) :: c(numr,numc)*(*)
 
     character :: in*10000, token*128
     integer :: i, j, nrcurrent, ic, icomma, ios, nc
 
-    maxr = 0
-    maxc = 0
+    maxrow = 0
+    maxcol = 0
     ierror = 0
     do i=1,numr
         do j=1,numc
@@ -2275,7 +2276,7 @@
     endif
 
     ! read the data
-    nrcurrent=0
+    nrcurrent = 0
 20  read (iunit,'(A)',end=100) in
 
     ! Skip comments
@@ -2283,11 +2284,11 @@
         go to 20
     endif
 
-    nrcurrent=nrcurrent+1
-    maxr=max(maxr,nrcurrent)
+    nrcurrent = nrcurrent+1
+    maxrow = max(maxrow,nrcurrent)
 
     ! Cannot exceed work array
-    if(maxr>numr) then
+    if(maxrow>numr) then
         ierror = 207
         return
     endif
@@ -2316,7 +2317,7 @@
         go to 30
     endif
     nc = nc + 1
-    maxc=max(maxc,nc)
+    maxcol=max(maxcol,nc)
     token = in(ic:ic+100)
     c(nrcurrent,nc) = token
     read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)

@@ -31,7 +31,7 @@
     real(eb) :: uflw3(2,mxprd+2,2), uflw2(2,mxprd+2,2)
     real(eb) :: yflor(2), yceil(2), ylay(2), pflor(2)
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
-    real(eb) :: rslab(mxslab), tslab(mxslab), yslab(mxslab),xmslab(mxslab), qslab(mxslab), cslab(mxslab,mxprd),pslab(mxslab,mxprd)
+    real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab), cslab(mxfslab,mxprd),pslab(mxfslab,mxprd)
     real(eb) :: uflw0(nr,ns+2,2)
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
@@ -92,7 +92,7 @@
             ! (note this augmentation will be different for each vent)
             pflor(2) = pflor(2) + ventptr%wind_dp
             if (avent>=1.0e-10_eb) then
-                call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxslab,epsp,cslab,pslab,qslab, &
+                call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxfslab,epsp,cslab,pslab,qslab, &
                 vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
                 
                 if (prnslab) then
@@ -115,7 +115,7 @@
                     endif
                 endif
 
-                call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,ventptr%mflow,uflw2)
+                call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxfslab,ventptr%mflow,uflw2)
 
                 !  calculate entrainment type mixing at the vents
 
@@ -431,7 +431,7 @@
 
 ! --------------------------- vent -------------------------------------------
 
-    subroutine vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxslab,epsp,cslab,pslab,qslab, &
+    subroutine vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxprd,mxfslab,epsp,cslab,pslab,qslab, &
     vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
@@ -453,7 +453,7 @@
     !                conu  - concentration of each product in upper layer [unit of product/(kg layer)]
     !                nprod - number of products in current scenario
     !                mxprd - maximum number of products currently available
-    !                mxslab- maximum number of slabs currently available
+    !                mxfslab- maximum number of slabs currently available
     !                epsp  - error tolerance for pressures at floor
     !                cslab (output) - concentration of other products in each slab [unit product/(kg slab)]
     !                pslab (output) - amount of other products in each slab [unit product/s]
@@ -470,14 +470,14 @@
     use precision_parameters
     implicit none
     
-    integer, intent(in) :: nprod, mxprd, mxslab
+    integer, intent(in) :: nprod, mxprd, mxfslab
     integer, intent(out) :: nneut, nslab, dirs12(*)
     
     real(eb), intent(in) :: yflor(*), ylay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
     real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(mxprd,2), conu(mxprd,2),  epsp
     
     real(eb), intent(out) :: ventvel, yvelev(*), dpv1m2(10)
-    real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxslab,*), pslab(mxslab,*), qslab(*), xmslab(*)
+    real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
     real(eb), intent(out) :: vss(2), vsa(2), vas(2), vaa(2)
     
     integer :: nelev, i, n, jroom, iprod, nvelev
@@ -755,7 +755,7 @@
 
 ! --------------------------- flogo -------------------------------------------
 
-    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxslab,mflows,uflw2)
+    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxprd,nprod,mxfslab,mflows,uflw2)
 
     !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
@@ -771,7 +771,7 @@
     !                pslab  - flow rate of product in each slab [(unit of product/s]
     !                mxprd  - maximum number of products currently available.
     !                nprod  - number of products
-    !                mxslab - maximum number of slabs currently available.
+    !                mxfslab - maximum number of slabs currently available.
     !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
     !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [kg/s]
     !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [w]
@@ -783,8 +783,8 @@
     implicit none
     
     integer, intent(in) :: dirs12(*)
-    integer, intent(in) :: nprod, nslab, mxprd, mxslab
-    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxslab,*), tu(*), tl(*)
+    integer, intent(in) :: nprod, nslab, mxprd, mxfslab
+    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxfslab,*), tu(*), tl(*)
     real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxprd+2,2)
     
     integer :: i, iprod, n, ifrom, ito, ilay
@@ -939,8 +939,8 @@
 
     !	The following functions implement the open/close function for vents.
     !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mfan),
-    !         and qcvi(4,mfan). 
+    !	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mxfan),
+    !         and qcvi(4,mxfan). 
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
 

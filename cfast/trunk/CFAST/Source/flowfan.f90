@@ -21,7 +21,7 @@
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
 
-    real(eb) :: filter, qcifraction, flwmv0(nr,ns+2,2), deltpmv0(mnode), delttmv0(mbr) 
+    real(eb) :: filter, qcifraction, flwmv0(nr,ns+2,2), deltpmv0(mxnode), delttmv0(mxbranch) 
     integer :: i, ii, j, k, ieqtyp, iroom, isys, ierror, nprod
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0

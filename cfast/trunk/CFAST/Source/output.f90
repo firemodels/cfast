@@ -654,9 +654,9 @@
             do itarg = 1, ntarg-nm1
                 if (ixtarg(trgroom,itarg)==i) then
                     tg = tgtarg(itarg)
-                    tttemp = xxtarg(trgtempf,itarg)
-                    itctemp = (trgtempf+trgtempb)/2
-                    if (ixtarg(trgeq,itarg)==cylpde) itctemp = trgtempf+ xxtarg(trginterior,itarg)*(trgtempb-trgtempf)
+                    tttemp = xxtarg(idxtempf_trg,itarg)
+                    itctemp = (idxtempf_trg+idx_tempb_trg)/2
+                    if (ixtarg(trgeq,itarg)==cylpde) itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
                     tctemp = xxtarg(itctemp,itarg)
                     if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
                     if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
@@ -1143,7 +1143,7 @@
     data ftype /'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/
 
     if (numobjl>0) then
-        do io = 1, mxoin
+        do io = 1, mxfires
             if (objpnt(io)/=0) then
                 j = objpnt(io)
                 nnv = objlfm(j)
@@ -1641,7 +1641,7 @@
     real(eb), intent(in) :: t, dt
     
     real(eb) :: xqf, dp
-    integer :: bmap(mbr), i, j, iprod, il, isys, idt, iroom, iobj, itarg
+    integer :: bmap(mxbranch), i, j, iprod, il, isys, idt, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
@@ -1759,7 +1759,7 @@
         if(ntarg>0)then
             write(*,6090)
             do itarg = 1, ntarg
-                write(*,6095)itarg,xxtarg(trgtempf,itarg)
+                write(*,6095)itarg,xxtarg(idxtempf_trg,itarg)
             end do
         endif
     endif

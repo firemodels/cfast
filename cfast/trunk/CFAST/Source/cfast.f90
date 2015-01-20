@@ -155,7 +155,7 @@
     real(eb), intent(in) :: t,pdzero(*), rpar(*)
     real(eb), intent(out) :: pdold(*)
 
-    integer, parameter :: mxalg = 4*nr+mnode+mbr
+    integer, parameter :: mxalg = 4*nr+mxnode+mxbranch
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
     real(eb) :: work(lrw)
@@ -684,15 +684,15 @@
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
-        call update_detectors (mdchk,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
-        call update_fire_objects (mdchk,told,dt,ifobj,tobj,ierror)
+        call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+        call update_fire_objects (check_detector_state,told,dt,ifobj,tobj,ierror)
         td = min(tdtect,tobj)
 
         ! a detector is the first thing that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
             isroom = ixdtect(isensor,droom)
-            call update_detectors (mdset,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call update_detectors (set_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
             write(lbuf,*) ' '
             call xerror(lbuf,0,1,-3)
             write(lbuf,76) isensor, tdtect, isroom
@@ -708,12 +708,12 @@
                 idset = 0
             endif
         else
-            call update_detectors (mdupdt,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+            call update_detectors (update_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         endif
 
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
-            call update_fire_objects (mdset,told,dt,ifobj,tobj,ierror)
+            call update_fire_objects (set_detector_state,told,dt,ifobj,tobj,ierror)
             write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb) ! this prevents printing out a negative activation time
 5003        format(/,' Object #',i3,' (',a,') ignited at ', f10.3,' seconds')
             ! check to see if we are backing up objects igniting
@@ -728,7 +728,7 @@
                 ifobj = 0
             endif
         else
-            call update_fire_objects (mdupdt,told,dt,ifobj,tobj,ierror)
+            call update_fire_objects (update_detector_state,told,dt,ifobj,tobj,ierror)
         endif
 
         if (idsave/=0)then
@@ -783,7 +783,7 @@
                 ierror = idid
                 return
             endif
-            do  i = 1, mxoin
+            do  i = 1, mxfires
                 objset(i) = 0
             end do
         endif
@@ -1838,7 +1838,7 @@
         do itarg = 1, ntarg
             if(ixtarg(trgmeth,itarg)==mplicit) then
                 ieq = iztarg(itarg)
-                xxtarg(trgtempf,itarg) = p(ieq+noftt)
+                xxtarg(idxtempf_trg,itarg) = p(ieq+noftt)
             endif
         end do
 

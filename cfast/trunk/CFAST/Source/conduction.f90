@@ -193,7 +193,7 @@
     use precision_parameters
     implicit none
     
-    integer, parameter :: nn = 60
+    integer, parameter :: nnodes = 60
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
     real(eb), intent(out) :: wtemp(*), tgrad(2) 
@@ -201,7 +201,7 @@
 
     
     integer :: nx, i, ibeg, iend, islab, nintx, ibreak
-    real(eb) :: a(nn), b(nn), c(nn), tnew(nn), tderiv(nn), ddif(3)
+    real(eb) :: a(nnodes), b(nnodes), c(nnodes), tnew(nnodes), tderiv(nnodes), ddif(3)
     real(eb) :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
 
     nx = numnode(1)

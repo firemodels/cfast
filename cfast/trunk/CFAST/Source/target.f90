@@ -25,7 +25,7 @@
     real(eb), intent(out) :: delta(*)
 
     logical :: first=.true.
-    real(eb) :: tmp(trgtnum), walldx(trgtnum), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
+    real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, wfluxavg, xl
     integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
@@ -35,7 +35,7 @@
     ! initialize non-dimensional target node locations the first time target is called
     if(first)then
         first = .false.
-        nnn = trgtnum - 1
+        nnn = nnodes_trg - 1
         tmp(1) = 1.0_eb
         tmp(nnn) = 1.0_eb
         do i = 2, nnn/2 
@@ -70,27 +70,27 @@
             ! compute the pde residual 
             if(iieq==pde.or.iieq==cylpde)then
                 if(iimeth==mplicit)then
-                    tempin = xxtarg(trgtempf,itarg)
+                    tempin = xxtarg(idxtempf_trg,itarg)
                     iwbound = 3
                 else
                     iwbound = 4
                 endif
-                nmnode(1) = trgtnum
-                nmnode(2) = trgtnum - 2
+                nmnode(1) = nnodes_trg
+                nmnode(2) = nnodes_trg - 2
                 nslab = 1
                 if(iieq==pde)then
-                    do i = 1, trgtnum - 1
+                    do i = 1, nnodes_trg - 1
                         walldx(i) = xl*tmp(i)
                     end do
 
-                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(trgtempf,itarg),walldx,nmnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
+                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idxtempf_trg,itarg),walldx,nmnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    call cylindrical_conductive_flux (xxtarg(trgtempf,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
+                    call cylindrical_conductive_flux (xxtarg(idxtempf_trg,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
 
                 ! compute the ode residual
@@ -101,9 +101,9 @@
                     delta(noftt+ieq) = ddtemp - xpsolve(noftt+ieq) 
                 elseif(iimeth==xplicit)then
                     if(update/=0)then
-                        ttold = xxtarg(trgtempf,itarg)
+                        ttold = xxtarg(idxtempf_trg,itarg)
                         ttnew = ttold + dt*ddtemp
-                        xxtarg(trgtempf,itarg) = ttnew
+                        xxtarg(idxtempf_trg,itarg) = ttnew
                     endif
                 endif
 
@@ -147,8 +147,8 @@
                 else
                     niter = 1
                 endif
-                ttarg(1) = xxtarg(trgtempf,itarg)
-                ttarg(2) = xxtarg(trgtempb,itarg)
+                ttarg(1) = xxtarg(idxtempf_trg,itarg)
+                ttarg(2) = xxtarg(idx_tempb_trg,itarg)
                 do iter = 1, niter
                     call targflux(iter,itarg,ttarg,flux,dflux)
                     if(dflux(1)/=0.0_eb.and.methtarg==steady)then
@@ -158,8 +158,8 @@
                     endif
                 end do
                 if(methtarg==steady)then
-                    xxtarg(trgtempf,itarg) = ttarg(1)
-                    xxtarg(trgtempb,itarg) = ttarg(2)
+                    xxtarg(idxtempf_trg,itarg) = ttarg(1)
+                    xxtarg(idx_tempb_trg,itarg) = ttarg(2)
                 endif
                 xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
                 xxtarg(trgtfluxb,itarg) = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
@@ -178,14 +178,14 @@
             ! ambient target
             ttarg(1) = interior_temperature
             ttarg(2) = exterior_temperature
-            xxtarg(trgtempf,itarg) = ttarg(1)
+            xxtarg(idxtempf_trg,itarg) = ttarg(1)
             call targflux(1,itarg,ttarg,flux,dflux)
             xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
             ontarget(iroom) = xxtarg(trgtfluxf,itarg)-sigma*ttarg(1)**4
 
             ! flashover indicator
             ttarg(1) = zzwtemp(iroom,2,1)
-            xxtarg(trgtempf,itarg) = ttarg(1)
+            xxtarg(idxtempf_trg,itarg) = ttarg(1)
             call targflux(1,itarg,ttarg,flux,dflux)
             xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
             xxtarg(trgnfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1) - sigma*ttarg(1)**4

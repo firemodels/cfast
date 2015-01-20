@@ -53,13 +53,13 @@
 
     ! declare local variables
 
-    integer :: nn, i, nr, niter, iter
-    parameter (nn = 50)
-    real(eb), dimension(nn) :: aim1, ai, aip1, tnew
-    real(eb), dimension(nn) :: cc, dd
+    integer :: nnodes, i, nr, niter, iter
+    parameter (nnodes = 50)
+    real(eb), dimension(nnodes) :: aim1, ai, aip1, tnew
+    real(eb), dimension(nnodes) :: cc, dd
     real(eb) :: alpha, dr, factor, dt_iter
 
-    nr = nn
+    nr = nnodes
     dr = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)

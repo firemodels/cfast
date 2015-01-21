@@ -191,9 +191,8 @@
     !            tderv    partial of temperature gradient with respect to wall surface temperature.  this number is used to calculate wall jacobian elements.
 
     use precision_parameters
+    use cparams, only: nnodes
     implicit none
-    
-    integer, parameter :: nnodes = 60
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
     real(eb), intent(out) :: wtemp(*), tgrad(2) 

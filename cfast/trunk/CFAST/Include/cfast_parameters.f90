@@ -14,9 +14,9 @@ module cparams
     ! fire related input parameters    
     integer, parameter :: mxpts = 199           ! maximum number of data points in a time-dependent input curve
     integer, parameter :: ns = 11               ! number of species
-    integer, parameter :: mxfires = nr            ! maximum number of fire objects
+    integer, parameter :: mxfires = 125         ! maximum number of fire objects
     integer, parameter :: mxfirp = 20           ! number of parameters for each fire object
-    integer, parameter :: mxfire = 2*mxfires      ! maximum number of fires in a single simulation
+    integer, parameter :: mxfire = 2*mxfires    ! maximum number of fires in a single simulation
     integer, parameter :: igntemp = 1           ! object ignition criteria index for temperature
     integer, parameter :: ignflux = 2           ! object ignition criteria index for heat flux
     
@@ -26,10 +26,10 @@ module cparams
     integer, parameter :: mxccv = 25            ! maximum number of vent connections between compartment pairs
     integer, parameter :: mxvents = mxccv*nr    ! maximum number of horizontal flow vents
     integer, parameter :: mxvent = mxvents*2    ! maximum number of connections in horizontal flow vents 
-                                                ! (one for "from" one to "to")
+                                                !   (one for "from" one to "to")
     integer, parameter :: mxfslab = 10          ! number of slabs in a horizontal flow calculation
-    integer, parameter :: mxprd = ns            ! maximum number of products tracked in the horizontal flow calculation 
-                                                ! (should be the same as ns)
+    integer, parameter :: mxfprd = ns           ! maximum number of products tracked in the horizontal flow calculation 
+                                                !   (should be the same as ns)
     
     integer, parameter :: mxvv=2*nr                 ! maximum number of vertical flow vents
     integer, parameter :: mxhvsys=60                ! maximum number of mechanical ventilation systems

@@ -1057,10 +1057,10 @@
     real(eb) :: xprime(maxteq)
 
     ! data structure for total flows and fluxes
-    real(eb) :: flwtot(nr,mxprd+2,2), flxtot(nr,nwal)
+    real(eb) :: flwtot(nr,mxfprd+2,2), flxtot(nr,nwal)
 
     ! data structures for flow through vents
-    real(eb) :: flwnvnt(nr,mxprd+2,2)
+    real(eb) :: flwnvnt(nr,mxfprd+2,2)
     real(eb) :: flwhvnt(nr,ns+2,2)
 
     ! data structures for fires

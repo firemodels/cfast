@@ -459,7 +459,7 @@
     
     real(eb), intent(out) :: tg
         
-    real(eb) :: qdot, xrad, dfire, tu, tl, zfire, zlayer, z, tplume
+    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, z, tplume
 
     integer :: i
 
@@ -476,13 +476,13 @@
             if (xtarg==xfire(i,f_fire_xpos).and.ytarg==xfire(i,f_fire_ypos).and. ztarg>xfire(i,f_fire_zpos)) then
                 qdot = fqf(i)
                 xrad = radconsplit(i)
-                dfire = 2.0_eb*sqrt(farea(i)/pi)
+                area = farea(i)
                 tu = zztemp(irtarg,upper)
                 tl = zztemp(irtarg,lower)
                 zfire = xfire(i,f_fire_zpos)
                 zlayer = zzhlay(irtarg,lower)
                 z = ztarg
-                call get_plume_temperature (qdot, xrad, tu, tl, zfire, zlayer, z, tplume)
+                call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, tplume)
                 tg = tplume
             endif
         endif

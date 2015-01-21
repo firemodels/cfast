@@ -943,7 +943,7 @@
 
 ! --------------------------- get_plume_temperature -------------------------------------------
 
-    subroutine get_plume_temperature (qdot, xrad, tu, tl, zfire, zlayer,zin, tplume)
+    subroutine get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zin, tplume)
 
     !     routine: get_plume_temperature
     !     purpose: Calculates plume centerline temperature at a specified height above the fire.
@@ -958,13 +958,13 @@
     !                 tl: lower layer gas temperature (K)
     !                 zfire: height of the base of the fire (m)
     !                 zlayer: height of the hot/cold gas layer interface (m)
-    !                 z: position to calculate plume centerline temperature (m)
+    !                 zin: position to calculate plume centerline temperature (m)
     !                 tplume (output): plume centerline temperature
 
     use precision_parameters
     implicit none
     
-    real(eb), intent(in) :: qdot, xrad, tu, tl, zfire, zlayer, zin
+    real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin
     real(eb), intent(out) :: tplume
     
     real(eb), parameter :: C_T = 9.115_eb, Beta = 0.955_eb
@@ -976,13 +976,13 @@
 
         !       fire and target are both in the lower layer
         if (z<=zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tl, z, tplume)
-            call PlumeTemp_M (qdot, tl, z, tplume)
+            call PlumeTemp_H (qdot, xrad, area, tl, z, tplume)
+            !call PlumeTemp_M (qdot, tl, z, tplume)
 
             !       fire and target are both in the upper layer
         else if (zfire>=zlayer) then
-            !call PlumeTemp_H (qdot, xrad, dfire, tu, z, tplume)
-            call PlumeTemp_M (qdot, tu, z, tplume)
+            call PlumeTemp_H (qdot, xrad, area, tu, z, tplume)
+            !call PlumeTemp_M (qdot, tu, z, tplume)
 
             !       fire is in lower layer and target is in upper layer
         else
@@ -1017,13 +1017,13 @@
 
 ! --------------------------- PlumeTemp_H -------------------------------------------
 
-    subroutine PlumeTemp_H (qdot, xrad, dfire, tgas, z, tplume)
+    subroutine PlumeTemp_H (qdot, xrad, area, tgas, z, tplume)
 
     !     routine: PlumeTemp_H
     !     purpose: Calculates plume centerline temperature at a specified height above the fire using Heskestad's correlation
     !     arguments:  qdot: total heat release rate of the fire (W)
     !                 xrad: fraction of fire HRR released as radiation
-    !                 dfire: fire diamater (m)
+    !                 area: cross sectional area at the base of the fire (m^2)
     !                 tgas: surrounding gas temperature (K)
     !                 z: distance from fire to position to calculate plume centerline temperature (m)
     !                 tplume (output):  plume centerline temperature
@@ -1031,15 +1031,16 @@
     use precision_parameters
     implicit none
     
-    real(eb), intent(in) :: qdot, xrad, dfire, tgas, z
+    real(eb), intent(in) :: qdot, xrad, area, tgas, z
     real(eb), intent(out) :: tplume
     
-    real(eb) :: cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b
+    real(eb) :: cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b, dfire
 
     ! plume temperature correlation is only valid above the mean flame height      
-    call flame_height (qdot,pio4*dfire**2,fheight)
+    call flame_height (qdot,area,fheight)
 
     ! z0 = virtual origin, qdot_c = convective HRR
+    dfire = sqrt(area/pio4)
     if (dfire>0.0_eb) then
         z0 = -1.02_eb*dfire + 0.083_eb*(qdot/1000.0_eb)**0.4_eb
     else

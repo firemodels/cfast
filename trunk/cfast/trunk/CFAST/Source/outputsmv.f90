@@ -45,6 +45,11 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     integer(4) :: length, splitpathqq
     integer :: ifrom, ito, iface
 
+    integer ibar, jbar, kbar
+    real(eb) :: x1, y1, z1
+    integer :: j
+    real(eb) :: xj, yj, zj
+
     ! this code is to trim the file name to the name itself along with the extension
     ! for compatibility with version 4 and later of smokeview
     length = splitpathqq(smvcsv, drive, dir, name, ext)
@@ -68,11 +73,45 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     write(13,"(a)") "AMBIENT"
     write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
+    ! ibar, jbar and kbar are placeholders for now
+    ibar = 10
+    jbar = 10
+    kbar = 10
     do i = 1, nrooms
         write(13,"(a,1x)")"ROOM"
         write(13,10) dx(i), dy(i), dz(i)
         write(13,10) x0(i), y0(i), z0(i)
 10      format(1x,e11.4,1x,e11.4,1x,e11.4)
+
+        write(13,"(a,1x)")"GRID"
+        write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
+        x1 = x0(i) + dx(i)
+        y1 = y0(i) + dy(i)
+        z1 = z0(i) + dz(i)
+        write(13,"(a,1x)")"PDIM"
+        write(13,"(9(f14.5,1x))")x0(i),x1,y0(i),y1,z0(i),z1,0.0_eb,0.0_eb,0.0_eb
+        write(13,"(a,1x)")"TRNX"
+        write(13,"(1x,i1)")0
+        do j = 0, ibar
+           xj = (x0(i)*(ibar-j) + x1*j)/real(ibar,eb)
+           write(13,"(i5,1x,f14.5)")j,xj
+        end do
+        write(13,"(a,1x)")"TRNY"
+        write(13,"(1x,i1)")0
+        do j = 0, jbar
+           yj = (y0(i)*(jbar-j) + y1*j)/real(jbar,eb)
+           write(13,"(i5,1x,f14.5)")j,yj
+        end do
+        write(13,"(a,1x)")"TRNZ"
+        write(13,"(1x,i1)")0
+        do j = 0, kbar
+           zj = (z0(i)*(kbar-j) + z1*j)/real(kbar,eb)
+           write(13,"(i5,1x,F14.5)")j,zj
+        end do
+        write(13,"(a,1x)")"OBST"
+        write(13,"(1x,i1)")0
+        write(13,"(a,1x)")"VENT"
+        write(13,"(1x,i1,1x,i1)")0,0
     end do
 
     do i = 1, n_hvents

@@ -507,10 +507,10 @@
 
     real(eb), intent(in) :: time
     ! data structure for total flows and fluxes
-    real(eb), intent(in) :: flwtot(nr,mxprd+2,2)
+    real(eb), intent(in) :: flwtot(nr,mxfprd+2,2)
 
     ! data structures for flow through vents
-    real(eb), intent(in) :: flwnvnt(nr,mxprd+2,2)
+    real(eb), intent(in) :: flwnvnt(nr,mxfprd+2,2)
     real(eb), intent(in) :: flwhvnt(nr,ns+2,2)
 
     ! data structures for fires

@@ -231,7 +231,7 @@
 
         ! calculate the entrainment rate but constrain the actual amount
         ! of air entrained to that required to produce stable stratification
-        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, xemp, xems, xeme, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, zztemp(iroom,lower), xemp, xems, xeme, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         ! check for an upper only layer fire
         if (xxfirel<=0.0_eb) go to 90
@@ -303,7 +303,7 @@
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, zztemp(iroom,upper), uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
         call chemistry (uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
@@ -531,7 +531,7 @@
 
 ! --------------------------- fireplume -------------------------------------------
 
-    subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, xemp, xems, xeme, xfx, xfy)
+    subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, t_inf, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
     !     purpose: physical interface between do_fire and the plume models
@@ -540,12 +540,12 @@
     implicit none
     
     integer, intent(in) :: plumetype
-    real(eb), intent(in) :: qfire, qfire_c, z, xemp, xfx, xfy, object_area
+    real(eb), intent(in) :: qfire, qfire_c, z, xemp, xfx, xfy, object_area, t_inf
     real(eb), intent(out) :: xeme, xems
 
     select case (plumetype)
     case (1) !    heskestad
-        call heskestad_plume (qfire, qfire_c,z,xemp,xems,xeme,object_area,xfx,xfy)
+        call heskestad_plume (qfire, qfire_c,z,t_inf,xemp,xems,xeme,object_area,xfx,xfy)
         return        
     case (2) !    mccaffrey plume
         call mccaffrey_plume (qfire_c,z,xemp,xems,xeme,xfx,xfy)
@@ -556,7 +556,7 @@
 
 ! --------------------------- mccaffrey -------------------------------------------
 
-    subroutine mccaffrey_plume (q,z,xemp,xems,xeme,xfx,xfy)
+    subroutine mccaffrey_plume (q,z,emp,ems,eme,xfx,xfy)
 
     !     routine: mccaffrey
     !     purpose: calculates plume entrainment for a fire from mccaffrey's correlation
@@ -573,8 +573,8 @@
     use cparams, only: mx_hsep
     implicit none
 
-    real(eb), intent(in) :: q, z, xemp, xfx, xfy
-    real(eb), intent(out) :: xems,  xeme
+    real(eb), intent(in) :: q, z, emp, xfx, xfy
+    real(eb), intent(out) :: ems,  eme
     
     real(eb) :: xf, qj, z_star
     ! Ensure that mccaffrey correlation is continuous.  
@@ -593,43 +593,44 @@
     if (z>0.0_eb.and.qj>0.0_eb) then
         z_star = z/(xf*qj)**0.4_eb
         if (z_star>t2) then
-            xems = (a3*z_star**1.895_eb*qj)/xf
+            ems = (a3*z_star**1.895_eb*qj)/xf
         else if (z_star>t1) then
-            xems = (a2*z_star**0.909_eb*qj)/xf
+            ems = (a2*z_star**0.909_eb*qj)/xf
         else
-            xems = (a1*z_star**0.566_eb*qj)/xf
+            ems = (a1*z_star**0.566_eb*qj)/xf
         endif
-        xems = max(xemp,xems)
-        xeme = max(xems-xemp,0.0_eb)
+        ems = max(emp,ems)
+        eme = max(ems-emp,0.0_eb)
     else
-        xems = xemp
-        xeme = 0.0_eb
+        ems = emp
+        eme = 0.0_eb
     endif
     return
     end subroutine mccaffrey_plume
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad_plume (q, q_c, z, emp, ems, eme, area, xfx, xfy)
+    subroutine heskestad_plume (q, q_c, z, t_inf, emp, ems, eme, area, xfx, xfy)
 
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
-    !     inputs:    q    fire size (w)
-    !                z      plume height (m)
-    !                emp  mass loss rate of the fire (kg/s)
-    !                area is the cross sectional area at the base of the fire
+    !     inputs:    q     fire size (w)
+    !                z     plume height (m)
+    !                t_inf ambient temperature at base of the fire
+    !                emp   mass loss rate of the fire (kg/s)
+    !                area  is the cross sectional area at the base of the fire
     !                xfx   distance from fire to wall in x direction (m)
     !                xfy   distance from fire to wall in y direction (m)
-    !     outputs:   ems  total mass transfer rate up to height z (kg/s)
-    !                eme  net entrainment rate up to height z (kg/s)
+    !     outputs:   ems   total mass transfer rate up to height z (kg/s)
+    !                eme   net entrainment rate up to height z (kg/s)
 
     use precision_parameters
     use cparams, only: mx_hsep
     implicit none
 
-    real(eb), intent(in) :: q, q_c, z, emp, area, xfx, xfy
+    real(eb), intent(in) :: q, q_c, z, t_inf, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: d, qj, z0, z_l, deltaz, xf, factor
+    real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf, cp
     
     ! determine which entrainment factor to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger; 
@@ -640,21 +641,32 @@
 
     ! virtual original correlation is based on total HRR
     qj = 0.001_eb*q*xf
-    d = sqrt(area/xf/pio4)
-    z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
-    
-    ! entrainment is based on covective HRR
-    qj = 0.001_eb*q_c*xf
-    z_l = 0.166_eb*qj**0.4_eb
-    if (z>z_l) then
-        factor = 1.0_eb
-        deltaz = max(0.0001_eb, z-z0)
+    if (z>0.0_eb.and.qj>0.0_eb) then
+        d = sqrt(area/xf/pio4)
+        rho_inf = 352.981915_eb/t_inf
+        cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
+        qstar = qj/(rho_inf*cp*t_inf*gsqrt*d**(2.5_eb))
+        !z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
+        z0 = d*(-1.02_eb + 1.4*qstar**0.4_eb)
+
+        ! entrainment is based on covective HRR
+        qj = 0.001_eb*q_c*xf
+        !z_l = 0.166_eb*qj**0.4_eb
+        z_l = d*(-1.02_eb + 3.7*qstar**0.4_eb)
+        if (z>z_l) then
+            factor = 1.0_eb
+            deltaz = max(0.0001_eb, z-z0)
+        else
+            factor = z/z_l
+            deltaz = max(0.0001_eb, z_l-z0)
+        end if
+        eme = (0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+2.9_eb*qj**twothirds/((gsqrt*cp*rho_inf*t_inf)**(2.0_eb/3.0_eb)*deltaz**(5.0_eb/3.0_eb))) * factor)/xf
+        !eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
+        ems = emp + eme
     else
-        factor = z/z_l
-        deltaz = max(0.0001_eb, z_l-z0)
-    end if
-    eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
-    ems = emp + eme    
+        ems = emp
+        eme = 0.0_eb
+    endif
 
     end subroutine heskestad_plume
 

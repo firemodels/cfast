@@ -263,6 +263,7 @@
     !       ddmax   estimate of ceiling jet depth at r/h = 0.2 (given by:  ddmax/(.23*delta) = 2)
 
     use precision_parameters
+    use cfast_main, only: cp
     implicit none
     
     integer, intent(in) :: nd
@@ -276,7 +277,7 @@
     real(eb) :: xf, yf, rfmin, tc, atc, alpha, qeq, zeq, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
         h, qh, htct, anu, re, thtqhp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
         rlamr, tmaxmtu, ths, thta, tcj, tdmax, ceiling_flux, rmax
-    real(eb), parameter :: ct = 9.115_eb, cp = 1012.0_eb, pr = 0.70_eb, rk1 = (0.23_eb/0.77_eb)*log(sqrt(2.0_eb)-1.0_eb)
+    real(eb), parameter :: ct = 9.115_eb, pr = 0.70_eb, rk1 = (0.23_eb/0.77_eb)*log(sqrt(2.0_eb)-1.0_eb)
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
     save /aintch/
 

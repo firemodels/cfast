@@ -646,13 +646,13 @@
         rho_inf = 352.981915_eb/t_inf
         cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
         qstar = qj/(rho_inf*cp*t_inf*gsqrt*d**(2.5_eb))
-        !z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
-        z0 = d*(-1.02_eb + 1.4*qstar**0.4_eb)
+        z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
+        !z0 = d*(-1.02_eb + 1.4*qstar**0.4_eb)
 
         ! entrainment is based on covective HRR
         qj = 0.001_eb*q_c*xf
-        !z_l = 0.166_eb*qj**0.4_eb
-        z_l = d*(-1.02_eb + 3.7*qstar**0.4_eb)
+        z_l = 0.166_eb*qj**0.4_eb
+        !z_l = d*(-1.02_eb + 3.7*qstar**0.4_eb)
         if (z>z_l) then
             factor = 1.0_eb
             deltaz = max(0.0001_eb, z-z0)
@@ -660,8 +660,8 @@
             factor = z/z_l
             deltaz = max(0.0001_eb, z_l-z0)
         end if
-        eme = (0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+2.9_eb*qj**twothirds/((gsqrt*cp*rho_inf*t_inf)**(2.0_eb/3.0_eb)*deltaz**(5.0_eb/3.0_eb))) * factor)/xf
-        !eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
+        !eme = (0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+2.9_eb*qj**twothirds/((gsqrt*cp*rho_inf*t_inf)**(2.0_eb/3.0_eb)*deltaz**(5.0_eb/3.0_eb))) * factor)/xf
+        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
         ems = emp + eme
     else
         ems = emp
@@ -953,9 +953,62 @@
     return
     end subroutine flame_height
 
+        
+! --------------------------- gettgas -------------------------------------------
+
+    subroutine gettgas(iroom,x,y,z,tg)
+
+    !     routine: gettgas
+    !     purpose: routine to calculate gas temperature nearby a target
+    !     arguments: iroom  compartment number
+    !                x  x position of target in compartmentnumber
+    !                y  y position of target in compartmentnumber
+    !                z  z position of target in compartment
+    !                tg (output)   calculated gas temperature
+
+    use precision_parameters
+    use fireptrs
+    use cfast_main
+    use cenviro
+    use objects2
+    implicit none
+
+    integer, intent(in) :: iroom
+    real(eb), intent(in) :: x, y, z
+    
+    real(eb), intent(out) :: tg
+        
+    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, r, tplume
+
+    integer :: i
+
+    ! default is the appropriate layer temperature
+    if (z>=zzhlay(iroom,lower)) then
+        tg = zztemp(iroom,upper)
+    else
+        tg = zztemp(iroom,lower)
+    endif
+
+    ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
+    do i = 1,nfire
+        if (ifroom(i)==iroom) then
+                qdot = fqf(i)
+                xrad = radconsplit(i)
+                area = farea(i)
+                tu = zztemp(iroom,upper)
+                tl = zztemp(iroom,lower)
+                zfire = xfire(i,f_fire_zpos)
+                zlayer = zzhlay(iroom,lower)
+                r = sqrt((x-xfire(i,f_fire_xpos))**2 + (y-xfire(i,f_fire_ypos))**2)
+                call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
+                tg = max(tg,tplume)
+        endif
+    end do 
+    end subroutine gettgas  
+
 ! --------------------------- get_plume_temperature -------------------------------------------
 
-    subroutine get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zin, tplume)
+    subroutine get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume)
 
     !     routine: get_plume_temperature
     !     purpose: Calculates plume centerline temperature at a specified height above the fire.
@@ -965,58 +1018,55 @@
     !     is in the lower layer and position is in the upper layer
     !     arguments:  qdot: total heat release rate of the fire (W)
     !                 xrad: fraction of fire HRR released as radiation
-    !                 dfire: fire diamater (m)
+    !                 area: fire diamater (m)
     !                 tu: upper layer gas temperature (K)
     !                 tl: lower layer gas temperature (K)
     !                 zfire: height of the base of the fire (m)
     !                 zlayer: height of the hot/cold gas layer interface (m)
     !                 zin: position to calculate plume centerline temperature (m)
+    !                 r: horizontal distance from fire centerline
     !                 tplume (output): plume centerline temperature
 
     use precision_parameters
     implicit none
     
-    real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin
+    real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume
     
     real(eb), parameter :: C_T = 9.115_eb, Beta = 0.955_eb
-    real(eb) :: cp, rhoamb, qdot_c, z_i1, q_i1star, xi, z, q_i2star, z_i2, z_eff, q_eff
+    real(eb) :: t_inf, cp, rho_inf, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
-    z = zin - zfire
-    if (qdot>0.0_eb.and.tu>=tl.and.z>=0.0_eb) then
-
-        !       fire and target are both in the lower layer
-        if (z<=zlayer) then
-            call PlumeTemp_H (qdot, xrad, area, tl, z, tplume)
-            !call PlumeTemp_M (qdot, tl, z, tplume)
-
-            !       fire and target are both in the upper layer
-        else if (zfire>=zlayer) then
-            call PlumeTemp_H (qdot, xrad, area, tu, z, tplume)
-            !call PlumeTemp_M (qdot, tu, z, tplume)
-
-            !       fire is in lower layer and target is in upper layer
-        else
-            qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
-            rhoamb = 352.981915_eb/tl
-            cp = 3.019e-7_eb*tl**2 - 1.217e-4_eb*tl + 1.014_eb
-            z_i1 = zlayer - zfire
-            q_i1star = qdot_c/(rhoamb*cp*tl*sqrt(grav_con)*z_i1**2.5_eb)
-            xi = tu/tl
-            !           the effective fire source (qi2star) must be a positive number
-            if (1.0_eb+C_T*q_i1star**twothirds>xi) then
-                q_i2star = ((1.0_eb+C_T*q_i1star**twothirds)/(xi*C_T)-1.0_eb/C_T)**1.5_eb
-                z_i2 = (xi*q_i1star*C_T/(q_i2star**onethird*((xi-1.0_eb)*(Beta+1.0_eb)+xi*C_T*q_i2star**twothirds)))**0.4_eb*z_i1
-                rhoamb = 352.981915_eb/tu
-                cp = 3.019e-7_eb*tu**2 - 1.217e-4_eb*tu + 1.014_eb
-                q_eff = q_i2star*rhoamb*cp*tu*sqrt(grav_con)*z_i2**2.5_eb/(1.0_eb-xrad)*1000.0_eb
-                z_eff = z-z_i1+z_i2
-                call PlumeTemp_M (q_eff, tu, z_eff, tplume)
-            else
-                tplume = tu
-            endif
+    if (qdot>0.0_eb.and.tu>=tl.and.zin-zfire>=0.0_eb) then
+        qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
+        d = sqrt(area/pio4)
+        
+        if (zfire<=zlayer) then
+            ! fire is in the lower layer
+            t_inf = tl
+            rho_inf = 352.981915_eb/t_inf
+            cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
+            qstar = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*d**2.5_eb)
+            z0 = d*(-1.02+1.4*qstar**0.4_eb)
+            if (zin.gt.zlayer) then
+                z0 = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
+                t_inf = tu
+            end if
+        else if (zin>=zlayer) then 
+            ! fire and target are both in the upper layer
+            t_inf = tu
+            rho_inf = 352.981915_eb/t_inf
+            cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
+            qstar = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*d**2.5_eb)
+            z0 = d*(-1.02+1.4*qstar**0.4_eb)
         endif
+        deltaz = max(0.0001_eb,zin-z0)
+        t_excess = min(900._eb,9.1*(t_inf/(grav_con*cp**2*rho_inf**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+        if(r>0.0_eb) then
+            sigma_deltat = 0.14_eb * sqrt(t_excess/t_inf) * deltaz
+            t_excess = t_excess*exp(-(r/sigma_deltat)**2)
+        end if
+        tplume = t_inf + t_excess
     else
         if (zin<=zlayer) then
             tplume = tl

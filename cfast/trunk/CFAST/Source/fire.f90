@@ -1032,8 +1032,7 @@
     
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume
-    
-    real(eb), parameter :: C_T = 9.115_eb, Beta = 0.955_eb
+
     real(eb) :: t_inf, cp, rho_inf, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      

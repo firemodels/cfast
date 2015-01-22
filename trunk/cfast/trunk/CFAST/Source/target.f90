@@ -435,60 +435,6 @@
     return
     end subroutine targflux
     
-! --------------------------- gettgas -------------------------------------------
-
-    subroutine gettgas(iroom,xtarg,ytarg,ztarg,tg)
-
-    !     routine: gettgas
-    !     purpose: routine to calculate gas temperature nearby a target
-    !     arguments: iroom  compartment number
-    !                xtarg  x position of target in compartmentnumber
-    !                ytarg  y position of target in compartmentnumber
-    !                ztarg  z position of target in compartment
-    !                tgas (output)   calculated gas temperature
-
-    use precision_parameters
-    use fireptrs
-    use cfast_main
-    use cenviro
-    use objects2
-    implicit none
-
-    integer, intent(in) :: iroom
-    real(eb), intent(in) :: xtarg, ytarg, ztarg
-    
-    real(eb), intent(out) :: tg
-        
-    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, z, tplume
-
-    integer :: i
-
-    ! default is the appropriate layer temperature
-    if (ztarg>=zzhlay(iroom,lower)) then
-        tg = zztemp(iroom,upper)
-    else
-        tg = zztemp(iroom,lower)
-    endif
-
-    ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
-    do i = 1,nfire
-        if (ifroom(i)==iroom) then
-            if (xtarg==xfire(i,f_fire_xpos).and.ytarg==xfire(i,f_fire_ypos).and. ztarg>xfire(i,f_fire_zpos)) then
-                qdot = fqf(i)
-                xrad = radconsplit(i)
-                area = farea(i)
-                tu = zztemp(iroom,upper)
-                tl = zztemp(iroom,lower)
-                zfire = xfire(i,f_fire_zpos)
-                zlayer = zzhlay(iroom,lower)
-                z = ztarg
-                call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, tplume)
-                tg = tplume
-            endif
-        endif
-    end do 
-    end subroutine gettgas 
-    
 ! --------------------------- getylyu -------------------------------------------
 
     subroutine getylyu(yo,y,yt,s,yl,yu)

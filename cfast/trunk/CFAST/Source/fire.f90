@@ -630,7 +630,8 @@
     real(eb), intent(in) :: q, q_c, z, t_inf, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
     
-    real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf, cp
+    real(eb), parameter :: cp = 1.012
+    real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf
     
     ! determine which entrainment factor to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger; 
@@ -644,7 +645,6 @@
     if (z>0.0_eb.and.qj>0.0_eb) then
         d = sqrt(area/xf/pio4)
         rho_inf = 352.981915_eb/t_inf
-        cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
         qstar = qj/(rho_inf*cp*t_inf*gsqrt*d**(2.5_eb))
         z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
         !z0 = d*(-1.02_eb + 1.4*qstar**0.4_eb)
@@ -978,7 +978,7 @@
     
     real(eb), intent(out) :: tg
         
-    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, r, tplume
+    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tcj
 
     integer :: i
 
@@ -992,29 +992,89 @@
     ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
-                qdot = fqf(i)
-                xrad = radconsplit(i)
-                area = farea(i)
-                tu = zztemp(iroom,upper)
-                tl = zztemp(iroom,lower)
-                zfire = xfire(i,f_fire_zpos)
-                zlayer = zzhlay(iroom,lower)
-                r = sqrt((x-xfire(i,f_fire_xpos))**2 + (y-xfire(i,f_fire_ypos))**2)
-                call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
-                tg = max(tg,tplume)
+            qdot = fqf(i)
+            xrad = radconsplit(i)
+            area = farea(i)
+            tu = zztemp(iroom,upper)
+            tl = zztemp(iroom,lower)
+            zfire = xfire(i,f_fire_zpos)
+            zlayer = zzhlay(iroom,lower)
+            zceil = hr(iroom)
+            r = sqrt((x-xfire(i,f_fire_xpos))**2 + (y-xfire(i,f_fire_ypos))**2)
+            ! first calculate plume temperature at desired location
+            call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
+            ! include ceiling jet effects if desired location is in the ceiling jet
+            call get_ceilingjet_temperature(qdot, tu, tl, zfire, zlayer, zceil, z, r, tcj)
+            tg = max(tg,tplume,tcj)
         endif
-    end do 
+    end do
     end subroutine gettgas  
+    
+! --------------------------- get_ceilingjet_temperature --------------------------------------
+    
+    subroutine get_ceilingjet_temperature (qdot, tu, tl, zfire, zlayer, zceil, zin, r, tcj)
 
+    !     routine: get_ceilingjet_temperature
+    !     purpose: Calculates ceiling jet temperature at a specified height and distance from the fire.
+    !
+    !     Uses Alpert / Heskestad's correlation to calculate plume  temperature
+    !     arguments:  qdot: total heat release rate of the fire (W)
+    !                 tu: upper layer gas temperature (K)
+    !                 tl: lower layer gas temperature (K)
+    !                 zfire: height of the base of the fire (m)
+    !                 zlayer: height of the hot/cold gas layer interface (m)
+    !                 zceil: height of the compartment ceiling (m)
+    !                 zin: position to calculate plume centerline temperature (m)
+    !                 r: horizontal distance from fire centerline
+    !                 tcj (output): plume centerline temperature
+
+    use precision_parameters
+    implicit none
+
+    real(eb), intent(in) :: qdot, tu, tl, zfire, zlayer, zceil, zin, r
+    real(eb), intent(out) :: tcj
+        
+    real(eb), parameter :: cp = 1.012_eb   
+    real(eb) :: t_inf, rho_inf, qstar_h, h, delta_cj
+
+    !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire     
+    h = zceil - zfire 
+    if (qdot>0.0_eb.and.tu>=tl.and.h>=0.0_eb) then
+        if (zin<=zlayer) then
+            ! desired location is in the lower layer
+            t_inf = tl
+        else
+            t_inf = tu
+        end if
+        tcj = t_inf
+        if (r/h>=0.26_eb) then
+            delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*r/h))
+        else
+            delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*0.26_eb))
+        end if
+        if (zin>=zceil-delta_cj) then
+            rho_inf = 352.981915_eb/t_inf
+            qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
+            if (r/h<0.2_eb) then
+                tcj = t_inf + t_inf*qstar_h**twothirds*6.3
+            else
+                tcj = t_inf + t_inf*qstar_h**twothirds*(0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
+            end if
+        end if
+    end if
+    
+    return
+    end subroutine get_ceilingjet_temperature
+    
 ! --------------------------- get_plume_temperature -------------------------------------------
 
     subroutine get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume)
 
     !     routine: get_plume_temperature
-    !     purpose: Calculates plume centerline temperature at a specified height above the fire.
+    !     purpose: Calculates plume centerline temperature at a specified height and distance from the fire.
     !
-    !     Uses McCaffrey's or Heskestad's correlation to calculate plume centerline temperature
-    !     Uses Evan's method to determine virtual fire size and fire origin when fire
+    !     Uses Heskestad's correlation to calculate plume  temperature
+    !     with Evan's method to determine virtual fire size and fire origin when fire
     !     is in the lower layer and position is in the upper layer
     !     arguments:  qdot: total heat release rate of the fire (W)
     !                 xrad: fraction of fire HRR released as radiation
@@ -1032,8 +1092,9 @@
     
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume
-
-    real(eb) :: t_inf, cp, rho_inf, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
+    
+    real(eb), parameter :: cp = 1.012
+    real(eb) :: t_inf, rho_inf, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
     if (qdot>0.0_eb.and.tu>=tl.and.zin-zfire>=0.0_eb) then
@@ -1044,9 +1105,8 @@
             ! fire is in the lower layer
             t_inf = tl
             rho_inf = 352.981915_eb/t_inf
-            cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
             qstar = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*d**2.5_eb)
-            z0 = d*(-1.02+1.4*qstar**0.4_eb)
+            z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
             if (zin.gt.zlayer) then
                 z0 = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
                 t_inf = tu
@@ -1055,14 +1115,13 @@
             ! fire and target are both in the upper layer
             t_inf = tu
             rho_inf = 352.981915_eb/t_inf
-            cp = 3.019e-7_eb*t_inf**2 - 1.217e-4_eb*t_inf + 1.014_eb
             qstar = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*d**2.5_eb)
-            z0 = d*(-1.02+1.4*qstar**0.4_eb)
+            z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
         endif
         deltaz = max(0.0001_eb,zin-z0)
-        t_excess = min(900._eb,9.1*(t_inf/(grav_con*cp**2*rho_inf**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+        t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho_inf**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         if(r>0.0_eb) then
-            sigma_deltat = 0.14_eb * sqrt(t_excess/t_inf) * deltaz
+            sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)
         end if
         tplume = t_inf + t_excess
@@ -1075,98 +1134,6 @@
     endif  
     return
     end subroutine get_plume_temperature
-
-! --------------------------- PlumeTemp_H -------------------------------------------
-
-    subroutine PlumeTemp_H (qdot, xrad, area, tgas, z, tplume)
-
-    !     routine: PlumeTemp_H
-    !     purpose: Calculates plume centerline temperature at a specified height above the fire using Heskestad's correlation
-    !     arguments:  qdot: total heat release rate of the fire (W)
-    !                 xrad: fraction of fire HRR released as radiation
-    !                 area: cross sectional area at the base of the fire (m^2)
-    !                 tgas: surrounding gas temperature (K)
-    !                 z: distance from fire to position to calculate plume centerline temperature (m)
-    !                 tplume (output):  plume centerline temperature
-
-    use precision_parameters
-    implicit none
-    
-    real(eb), intent(in) :: qdot, xrad, area, tgas, z
-    real(eb), intent(out) :: tplume
-    
-    real(eb) :: cp, fheight, rhoamb, z0, qdot_c, dt, dstar, zp1, zp2, tp1, tp2, a, b, dfire
-
-    ! plume temperature correlation is only valid above the mean flame height      
-    call flame_height (qdot,area,fheight)
-
-    ! z0 = virtual origin, qdot_c = convective HRR
-    dfire = sqrt(area/pio4)
-    if (dfire>0.0_eb) then
-        z0 = -1.02_eb*dfire + 0.083_eb*(qdot/1000.0_eb)**0.4_eb
-    else
-        z0 = 0.0_eb
-    endif
-    qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
-
-    rhoamb = 352.981915_eb/tgas
-    cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
-    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(grav_con)))**0.4_eb
-
-    if ((z-z0)/dstar<1.32) then
-        dt = 2.91_eb*tgas
-    else if ((z-z0)<fheight) then
-        zp1 = 1.32_eb*dstar
-        tp1 = 2.91_eb*tgas
-        zp2 = fheight
-        tp2 = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**onethird*qdot_c**twothirds*(zp2)**(-5.0_eb/3.0_eb)
-        a = ((tp2-tp1)*zp2*zp1)/(zp1-zp2)
-        b = tp1-a/zp1
-        dt = a/(z-z0) + b
-    else
-        dt = 9.1_eb*(tgas/(grav_con*cp**2*rhoamb**2))**onethird*qdot_c**twothirds*(z-z0)**(-5.0_eb/3.0_eb)
-    endif
-    tplume = tgas + dt
-
-    end subroutine PlumeTemp_H
-
-! --------------------------- PlumeTemp_M -------------------------------------------
-
-    subroutine PlumeTemp_M (qdot, tgas, z, tplume)
-
-    !     routine: PlumeTemp_M
-    !     purpose: Calculates plume centerline temperature at a specified height above the fire using McCaffrey's correlation
-    !     arguments:  qdot: total heat release rate of the fire (W)
-    !                 tgas: surrounding gas temperature (K)
-    !                 z: distance from fire to position to calculate plume centerline temperature (m)
-    !                 tplume (output):  plume centerline temperature
-
-    use precision_parameters
-    implicit none
-    real(eb), intent(in) :: qdot, tgas, z
-    real(eb), intent(out) :: tplume
-
-    real(eb) :: cp, rhoamb, dstar, zstar, n, B, theta
-
-    rhoamb = 352.981915_eb/tgas
-    cp = 3.019e-7_eb*tgas**2 - 1.217e-4_eb*tgas + 1.014_eb
-    dstar = (qdot/1000.0_eb/(rhoamb*cp*tgas*sqrt(grav_con)))**(0.4_eb)
-    zstar = z/dstar
-    if (zstar>=0.0_eb .and. zstar<1.32_eb) then
-        n = 0.5_eb
-        b = 2.91_eb
-    else if (zstar>=1.32_eb .and. zstar<3.30_eb) then
-        n = 0.0_eb
-        b = 3.81_eb
-    elseif (zstar>=3.30_eb) then
-        n = -onethird
-        b  = 8.41_eb
-    endif
-
-    theta = b*zstar**(2.0_eb*n-1.0_eb)
-    tplume = tgas*(1.0_eb+theta)
-    return
-    end subroutine PlumeTemp_M
 
 ! --------------------------- update_species -------------------------------------------
 

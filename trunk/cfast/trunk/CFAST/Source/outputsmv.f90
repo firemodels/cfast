@@ -29,6 +29,8 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
 
     use precision_parameters
     use iofiles
+    use cfast_types
+    use cenviro
     implicit none
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
@@ -49,6 +51,8 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     real(eb) :: x1, y1, z1
     integer :: j
     real(eb) :: xj, yj, zj
+    type(room_type), pointer :: rm
+    type(slice_type), pointer :: sf
 
     ! this code is to trim the file name to the name itself along with the extension
     ! for compatibility with version 4 and later of smokeview
@@ -78,6 +82,12 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     jbar = 10
     kbar = 10
     do i = 1, nrooms
+       rm=>roominfo(i)
+       
+       ibar = rm%ibar
+       jbar = rm%jbar
+       kbar = rm%kbar
+        
         write(13,"(a,1x)")"ROOM"
         write(13,10) dx(i), dy(i), dz(i)
         write(13,10) x0(i), y0(i), z0(i)
@@ -112,6 +122,16 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
         write(13,"(1x,i1)")0
         write(13,"(a,1x)")"VENT"
         write(13,"(1x,i1,1x,i1)")0,0
+    end do
+    
+    do i = 1, nsliceinfo
+       sf=>sliceinfo(i)
+       
+       write(13,"(a,1x,i3,'&',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
+       write(13,"(1x,a)")trim(sf%filename)
+       write(13,"(1x,a)")trim(sf%menu_label)
+       write(13,"(1x,a)")trim(sf%colorbar_label)
+       write(13,"(1x,a)")trim(sf%unit_label)
     end do
 
     do i = 1, n_hvents
@@ -201,6 +221,63 @@ subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,hei
     end do
 
 end subroutine output_smokeview_plot_data
+
+! --------------------------- output_slicedata -------------------------------------------
+
+subroutine output_slicedata(time,first_time)
+   use precision_parameters
+   use iofiles
+   use cenviro
+   use cfast_main
+   implicit none
+
+   real(eb), intent(in) :: time
+   integer, intent(in) :: first_time
+   real(fb), allocatable, dimension(:,:,:) :: slicedata
+   integer :: nx, ny, nz
+   type(slice_type), pointer :: sf
+   integer :: i, ii, jj, kk, roomnum
+   real(eb) :: xx, yy, zz, tgas
+   integer :: funit,unit
+   
+   do i = 1, nsliceinfo
+      sf => sliceinfo(i)
+      
+      nx = sf%ijk(2) + 1 - sf%ijk(1)
+      ny = sf%ijk(4) + 1 - sf%ijk(3)
+      nz = sf%ijk(6) + 1 - sf%ijk(5)
+      roomnum = sf%roomnum
+      if(nx.le.0.or.ny.le.0.or.nz.le.0)cycle
+      allocate(slicedata(0:nx-1,0:ny-1,0:nz-1))
+      do ii = 0, nx-1
+         xx = (sf%xb(1)*real(nx-1-ii,eb) + sf%xb(2)*real(ii,eb))/real(nx-1,eb)
+         do jj = 0, ny-1
+            yy = (sf%xb(3)*real(ny-1-jj,eb) + sf%xb(4)*real(jj,eb))/real(ny-1,eb)
+            do kk = 0, nz-1
+               zz = (sf%xb(5)*real(nz-1-kk,eb) + sf%xb(6)*real(kk,eb))/real(nz-1,eb)
+               call gettgas(roomnum,xx,yy,zz,tgas)
+               slicedata(ii,jj,kk) = real(tgas,fb)
+            end do
+         end do
+      end do
+      unit=funit(14)
+      if(first_time.eq.1)then
+         open(unit,file=sf%filename,form='unformatted',status='replace')
+         write(unit) sf%menu_label(1:30)
+         write(unit) sf%colorbar_label(1:30)
+         write(unit) sf%unit_label(1:30)
+         write(unit) (sf%ijk(ii),ii=1,6)
+      else
+         open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+      endif
+      write(unit) real(time,fb)
+      write(unit) (((slicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
+      deallocate(slicedata)
+      close(unit)
+   end do
+   
+
+end subroutine output_slicedata
 
 ! --------------------------- output_smokeview_header -------------------------------------------
 

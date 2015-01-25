@@ -75,6 +75,8 @@
 
     call read_solver_ini
     call read_input_file (errorcode)
+    call setup_sliceinfo
+    
     if (errorcode<=0) then
 
         if (header) call output_disclamer('CFAST')
@@ -327,6 +329,7 @@
     character(133) :: messg
     external calculate_residuals, jac, delfilesqq
     integer :: funit
+    integer :: first_time
 
     call cptime(toff)
     ierror = 0
@@ -348,6 +351,7 @@
     tspread = t
     idid = 1
     firstpassforsmokeview = .true.
+    first_time = 1
 
     ! Output options
     if (dprint<0.0001_eb.or.lprint==0) then
@@ -597,6 +601,9 @@
             if (ierror/=0) return
             tspread =tspread + dspread
             call output_status (t, dt, errorcode)
+            
+            call output_slicedata(t,first_time) !*** is this the best place for this call??
+            first_time = 0
         endif
 
         ! diagnostics
@@ -1428,7 +1435,14 @@
             
             roomptr%yflor = hflr(iroom)
             roomptr%yceil = hrp(iroom)
-
+            
+            roomptr%x0 = cxabs(iroom)  !*** let's make more use of the room structure
+            roomptr%y0 = cyabs(iroom)
+            roomptr%z0 = hrl(iroom)
+            roomptr%dx = br(iroom)
+            roomptr%dy = dr(iroom)
+            roomptr%dz = hr(iroom)
+            
             ! define wall centers
             xx = br(iroom)
             xwall_center = xx/2.0_eb

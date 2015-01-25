@@ -2327,7 +2327,91 @@
 100 continue
 
     return
-    end subroutine readcsvformat
+   end subroutine readcsvformat
+
+! --------------------------- setup_sliceinfo -------------------------------------------
+   
+   subroutine setup_sliceinfo
+    use precision_parameters
+    use iofiles
+    use cenviro
+    use cfast_main
+    implicit none
+   
+   integer :: nrooms
+   
+   integer :: i
+   type(slice_type), pointer :: sf
+   type(room_type), pointer :: rm
+   real(eb) :: xb(6)
+   character(256) :: slicefilename
+   integer :: ibar, jbar, kbar, ijkslice(6)
+   real(eb), parameter :: dxyz=0.1_eb
+   character(60) :: menu_label, colorbar_label, unit_label
+   integer :: ndefinedbyuser=0 !  code to input user slice info will define this variable (and it will be declared somewhere else)
+   
+   nrooms = nm1
+   
+   ! setup resolution for each compartment
+   do i = 1, nrooms
+      rm=>roominfo(i)
+      rm%ibar = int(rm%dx/dxyz)
+      rm%jbar = int(rm%dy/dxyz)
+      rm%kbar = int(rm%dz/dxyz)
+   end do
+
+   ! for each compartment setup up a vertical slice file centered front to back
+
+   nsliceinfo = nrooms + ndefinedbyuser
+   allocate(sliceinfo(nsliceinfo))
+   do i = 1, nrooms
+      sf => sliceinfo(i)
+      rm=>roominfo(i)
+
+      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',i,'.sf'
+      menu_label="Temperature"
+      colorbar_label="TEMP"
+      unit_label="C"
+
+      xb(1) = rm%x0
+      xb(2) = rm%x0 + rm%dx
+      xb(3) = rm%y0 + rm%dy/2.0_eb
+      xb(4) = xb(3)
+      xb(5) = rm%z0
+      xb(6) = rm%z0 + rm%dz
+      ijkslice(1) = 0
+      ijkslice(2) = rm%ibar
+      ijkslice(3) = rm%jbar/2
+      ijkslice(4) = rm%jbar/2
+      ijkslice(5) = 0
+      ijkslice(6) = rm%kbar
+      sf%filename = trim(slicefilename)
+      sf%roomnum = i
+      sf%menu_label = trim(menu_label)
+      sf%colorbar_label = trim(colorbar_label)
+      sf%unit_label = trim(unit_label)
+      sf%xb = xb
+      sf%ijk = ijkslice
+   end do
+
+   !*** the following code needs to be updated based on inputs from the user
+
+   do i = 1, ndefinedbyuser
+      sf => sliceinfo(nrooms+i)
+
+      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',i+nrooms,'.sf'
+      ! need to define each field of sliceinfo      
+      
+      sf%filename = trim(slicefilename)
+!      sf%roomnum =       
+!      sf%menu_label =
+!      sf%colorbar_label =
+!      sf%unit_label =
+!      sf%xb =
+!      sf%ijk =
+   end do
+   
+   end subroutine setup_sliceinfo
 
 ! --------------------------- rev_input -------------------------------------------
 

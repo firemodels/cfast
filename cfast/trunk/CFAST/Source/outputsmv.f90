@@ -236,6 +236,7 @@ subroutine output_slicedata(time,first_time)
    real(fb), allocatable, dimension(:,:,:) :: slicedata
    integer :: nx, ny, nz
    type(slice_type), pointer :: sf
+   type(room_type), pointer :: rm
    integer :: i, ii, jj, kk, roomnum
    real(eb) :: xx, yy, zz, tgas
    integer :: funit,unit
@@ -247,6 +248,7 @@ subroutine output_slicedata(time,first_time)
       ny = sf%ijk(4) + 1 - sf%ijk(3)
       nz = sf%ijk(6) + 1 - sf%ijk(5)
       roomnum = sf%roomnum
+      rm => roominfo(roomnum)
       if(nx.le.0.or.ny.le.0.or.nz.le.0)cycle
       allocate(slicedata(0:nx-1,0:ny-1,0:nz-1))
       do ii = 0, nx-1
@@ -255,20 +257,23 @@ subroutine output_slicedata(time,first_time)
          else
            xx = sf%xb(1)
          endif
+         xx = xx - rm%x0
          do jj = 0, ny-1
             if(ny>1)then
                yy = (sf%xb(3)*real(ny-1-jj,eb) + sf%xb(4)*real(jj,eb))/real(ny-1,eb)
             else
                yy = sf%xb(3)
             endif
+            yy = yy - rm%y0
             do kk = 0, nz-1
                if(nz>1)then
                   zz = (sf%xb(5)*real(nz-1-kk,eb) + sf%xb(6)*real(kk,eb))/real(nz-1,eb)
                else
                   zz = sf%xb(5)
                endif
+               zz = zz - rm%z0
                call gettgas(roomnum,xx,yy,zz,tgas)
-               slicedata(ii,jj,kk) = real(tgas,fb)
+               slicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
             end do
          end do
       end do

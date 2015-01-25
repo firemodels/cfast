@@ -1,7 +1,7 @@
 @echo off
 set size=%1
 
-:: IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
+IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
 
   set SETUP_IFORT_COMPILER_64=1
 

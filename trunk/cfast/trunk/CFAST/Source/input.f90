@@ -2340,7 +2340,7 @@
    
    integer :: nrooms
    
-   integer :: i
+   integer :: i,iroom,islice
    type(slice_type), pointer :: sf
    type(room_type), pointer :: rm
    real(eb) :: xb(6)
@@ -2362,13 +2362,17 @@
 
    ! for each compartment setup up a vertical slice file centered front to back
 
-   nsliceinfo = nrooms + ndefinedbyuser
+   nsliceinfo = 3*nrooms + ndefinedbyuser
    allocate(sliceinfo(nsliceinfo))
-   do i = 1, nrooms
-      sf => sliceinfo(i)
-      rm=>roominfo(i)
+   do iroom = 1, nrooms
 
-      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',i,'.sf'
+   ! vertical slice in XZ plane
+   
+      islice = 3*iroom-2
+      sf => sliceinfo(islice)
+      rm=>roominfo(iroom)
+
+      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
       menu_label="Temperature"
       colorbar_label="TEMP"
       unit_label="C"
@@ -2386,7 +2390,66 @@
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
       sf%filename = trim(slicefilename)
-      sf%roomnum = i
+      sf%roomnum = iroom
+      sf%menu_label = trim(menu_label)
+      sf%colorbar_label = trim(colorbar_label)
+      sf%unit_label = trim(unit_label)
+      sf%xb = xb
+      sf%ijk = ijkslice
+
+   ! vertical slice in YZ plane
+   
+      islice = 3*iroom-1
+      sf => sliceinfo(islice)
+      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+      menu_label="Temperature"
+      colorbar_label="TEMP"
+      unit_label="C"
+
+      xb(1) = rm%x0 + rm%dx/2.0_eb
+      xb(2) = xb(1)
+      xb(3) = rm%y0
+      xb(4) = rm%y0 + rm%dy
+      xb(5) = rm%z0
+      xb(6) = rm%z0 + rm%dz
+      ijkslice(1) = rm%ibar/2
+      ijkslice(2) = rm%ibar/2
+      ijkslice(3) = 0
+      ijkslice(4) = rm%jbar
+      ijkslice(5) = 0
+      ijkslice(6) = rm%kbar
+      sf%filename = trim(slicefilename)
+      sf%roomnum = iroom
+      sf%menu_label = trim(menu_label)
+      sf%colorbar_label = trim(colorbar_label)
+      sf%unit_label = trim(unit_label)
+      sf%xb = xb
+      sf%ijk = ijkslice
+
+   ! horizontal slice in XY plane
+   
+      islice = 3*iroom
+      sf => sliceinfo(islice)
+      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+      menu_label="Temperature"
+      colorbar_label="TEMP"
+      unit_label="C"
+
+      xb(1) = rm%x0
+      xb(2) = rm%x0 + rm%dx
+      xb(3) = rm%y0
+      xb(4) = rm%y0 + rm%dy
+      xb(5) = rm%z0 + rm%dz - 0.2_eb
+      xb(6) = xb(5)
+      ijkslice(1) = 0
+      ijkslice(2) = rm%ibar
+      ijkslice(3) = 0
+      ijkslice(4) = rm%jbar
+      kbar = int((xb(5)-rm%z0)/dxyz)
+      ijkslice(5) = kbar
+      ijkslice(6) = kbar
+      sf%filename = trim(slicefilename)
+      sf%roomnum = iroom
       sf%menu_label = trim(menu_label)
       sf%colorbar_label = trim(colorbar_label)
       sf%unit_label = trim(unit_label)

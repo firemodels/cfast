@@ -691,6 +691,7 @@
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
+        call detector_temp_and_velocity
         call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         call update_fire_objects (check_detector_state,told,dt,ifobj,tobj,ierror)
         td = min(tdtect,tobj)
@@ -1142,7 +1143,6 @@
     call door_jet (flwdjf,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
-    call ceiling_jet
     call convection (flwcv,flxcv)
     call radiation (flwrad,flxrad,ierror)
     if (ierror/=0) then

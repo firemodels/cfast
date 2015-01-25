@@ -7,6 +7,9 @@ module cfast_types
     type room_type
       real(eb) :: yflor, yceil
       real(eb) :: wall_center(10,3)
+      real(eb) :: x0, y0, z0
+      real(eb) :: dx, dy, dz
+      integer :: ibar, jbar, kbar
     end type room_type
     
     ! ramp data structure
@@ -42,5 +45,14 @@ module cfast_types
         integer :: is_from_hall, is_to_hall
         integer :: face
     end type vent_type
+    
+    ! slice file data structure
+
+    type slice_type
+       character(256) :: filename
+       character(64) :: menu_label, colorbar_label, unit_label
+       real(eb) :: xb(6)
+       integer :: ijk(6), roomnum
+    end type slice_type
      
 end module cfast_types

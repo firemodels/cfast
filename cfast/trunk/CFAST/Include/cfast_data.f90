@@ -61,6 +61,9 @@ module cenviro
     integer :: nramps = 0
     type(ramp_type), target :: rampinfo(mxramps)
 
+    type(slice_type), allocatable, dimension(:), target :: sliceinfo  
+    integer :: nsliceinfo
+
 end module cenviro
 
 ! --------------------------- cfast_main -------------------------------------------
@@ -117,7 +120,7 @@ module cfast_main
     character(128) :: title, compartmentnames(nr)
    
      type(fire_type), target :: fireinfo(mxfire)
-
+     
 end module cfast_main
 
 ! --------------------------- cfin -------------------------------------------

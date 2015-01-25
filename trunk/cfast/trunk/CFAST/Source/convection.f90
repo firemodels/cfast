@@ -153,11 +153,11 @@
     return
     end subroutine convective_flux
     
-    ! --------------------------- ceiling_jet -------------------------------------------
+    ! --------------------------- detector_temp_and_velocity -------------------------------------------
 
-    subroutine ceiling_jet
+    subroutine detector_temp_and_velocity
 
-    !     routine:     ceiling_jet
+    !     routine:     detector_temp_and_velocity
 
     !     description:  interface between calculate_residuals and cjet_detectors.  loops over
     !                 rooms setting up variables to pass.  calls cjet_detectors
@@ -213,7 +213,7 @@
 
     end do
     return
-    end subroutine ceiling_jet
+    end subroutine detector_temp_and_velocity
 
 ! --------------------------- cjet_detectors -------------------------------------------
 

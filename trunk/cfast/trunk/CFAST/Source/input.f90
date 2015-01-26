@@ -2329,9 +2329,9 @@
     return
    end subroutine readcsvformat
 
-! --------------------------- setup_sliceinfo -------------------------------------------
+! --------------------------- setup_slice_iso -------------------------------------------
    
-   subroutine setup_sliceinfo
+   subroutine setup_slice_iso
     use precision_parameters
     use iofiles
     use cenviro
@@ -2341,7 +2341,7 @@
    integer :: nrooms
    
    integer :: i,j,k,iroom,islice
-   type(slice_type), pointer :: sf
+   type(slice_type), pointer :: sliceptr
    type(room_type), pointer :: rm
    real(eb) :: xb(6)
    character(256) :: slicefilename
@@ -2349,18 +2349,43 @@
    real(eb), parameter :: dxyz=0.1_eb
    character(60) :: menu_label, colorbar_label, unit_label
    integer :: ndefinedbyuser=0 !  code to input user slice info will define this variable (and it will be declared somewhere else)
+   real(eb) :: imix
+   integer :: i_iso
+   type(iso_type), pointer :: isoptr
+   character(256) :: isofilename
    
    nrooms = nm1
    
-   ! setup resolution for each compartment
+   ! setup grid locations for each compartment
+   
    do iroom = 1, nrooms
       rm=>roominfo(iroom)
       rm%ibar = max(2,int(rm%dx/dxyz))
+      allocate(rm%xplt(0:rm%ibar))
+      allocate(rm%xpltf(0:rm%ibar))
+      do i = 0, rm%ibar
+         rm%xplt(i) = imix(rm%x0,rm%x1,i,rm%ibar)
+         rm%xpltf(i) = real(rm%xplt(i),fb)
+      end do
+      
       rm%jbar = max(2,int(rm%dy/dxyz))
+      allocate(rm%yplt(0:rm%jbar))
+      allocate(rm%ypltf(0:rm%jbar))
+      do j = 0, rm%jbar
+         rm%yplt(j) = imix(rm%y0,rm%y1,j,rm%jbar)
+         rm%ypltf(j) = real(rm%yplt(j),fb)
+      end do
+      
       rm%kbar = max(2,int(rm%dz/dxyz))
+      allocate(rm%zplt(0:rm%kbar))
+      allocate(rm%zpltf(0:rm%kbar))
+      do k = 0, rm%kbar
+         rm%zplt(k) = imix(rm%z0,rm%z1,k,rm%kbar)
+         rm%zpltf(k) = real(rm%zplt(k),fb)
+      end do
    end do
 
-   ! setup slice files for each compartment
+   ! setup slice file data structures
 
    nsliceinfo = 3*nrooms + ndefinedbyuser
    allocate(sliceinfo(nsliceinfo))
@@ -2369,7 +2394,7 @@
    ! vertical slice in XZ plane
    
       islice = 3*iroom-2
-      sf => sliceinfo(islice)
+      sliceptr => sliceinfo(islice)
       rm=>roominfo(iroom)
 
       write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
@@ -2389,18 +2414,18 @@
       ijkslice(4) = rm%jbar/2
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
-      sf%filename = trim(slicefilename)
-      sf%roomnum = iroom
-      sf%menu_label = trim(menu_label)
-      sf%colorbar_label = trim(colorbar_label)
-      sf%unit_label = trim(unit_label)
-      sf%xb = xb
-      sf%ijk = ijkslice
+      sliceptr%filename = trim(slicefilename)
+      sliceptr%roomnum = iroom
+      sliceptr%menu_label = trim(menu_label)
+      sliceptr%colorbar_label = trim(colorbar_label)
+      sliceptr%unit_label = trim(unit_label)
+      sliceptr%xb = xb
+      sliceptr%ijk = ijkslice
 
    ! vertical slice in YZ plane
    
       islice = 3*iroom-1
-      sf => sliceinfo(islice)
+      sliceptr => sliceinfo(islice)
       write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
       menu_label="Temperature"
       colorbar_label="TEMP"
@@ -2418,18 +2443,18 @@
       ijkslice(4) = rm%jbar
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
-      sf%filename = trim(slicefilename)
-      sf%roomnum = iroom
-      sf%menu_label = trim(menu_label)
-      sf%colorbar_label = trim(colorbar_label)
-      sf%unit_label = trim(unit_label)
-      sf%xb = xb
-      sf%ijk = ijkslice
+      sliceptr%filename = trim(slicefilename)
+      sliceptr%roomnum = iroom
+      sliceptr%menu_label = trim(menu_label)
+      sliceptr%colorbar_label = trim(colorbar_label)
+      sliceptr%unit_label = trim(unit_label)
+      sliceptr%xb = xb
+      sliceptr%ijk = ijkslice
 
    ! horizontal slice in XY plane
    
       islice = 3*iroom
-      sf => sliceinfo(islice)
+      sliceptr => sliceinfo(islice)
       write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
       menu_label="Temperature"
       colorbar_label="TEMP"
@@ -2448,35 +2473,57 @@
       kbar = int((xb(5)-rm%z0)/dxyz)
       ijkslice(5) = kbar
       ijkslice(6) = kbar
-      sf%filename = trim(slicefilename)
-      sf%roomnum = iroom
-      sf%menu_label = trim(menu_label)
-      sf%colorbar_label = trim(colorbar_label)
-      sf%unit_label = trim(unit_label)
-      sf%xb = xb
-      sf%ijk = ijkslice
+      sliceptr%filename = trim(slicefilename)
+      sliceptr%roomnum = iroom
+      sliceptr%menu_label = trim(menu_label)
+      sliceptr%colorbar_label = trim(colorbar_label)
+      sliceptr%unit_label = trim(unit_label)
+      sliceptr%xb = xb
+      sliceptr%ijk = ijkslice
    end do
 
    !*** the following code needs to be updated based on additional slice files defined by the user
 
    do i = 1, ndefinedbyuser
-      sf => sliceinfo(nrooms+i)
+      sliceptr => sliceinfo(nrooms+i)
 
       write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',i+nrooms,'.sf'
       ! need to define each field of sliceinfo      
       
-      sf%filename = trim(slicefilename)
-!      sf%roomnum =       
-!      sf%menu_label =
-!      sf%colorbar_label =
-!      sf%unit_label =
-!      sf%xb =
-!      sf%ijk =
+      sliceptr%filename = trim(slicefilename)
+!      sliceptr%roomnum =       
+!      sliceptr%menu_label =
+!      sliceptr%colorbar_label =
+!      sliceptr%unit_label =
+!      sliceptr%xb =
+!      sliceptr%ijk =
    end do
    
-   end subroutine setup_sliceinfo
+   ! setup isosurface data structures
+   
+   nisoinfo = nrooms
+   allocate(isoinfo(nsliceinfo))
+   do iroom = 1, nrooms
 
-! --------------------------- rev_input -------------------------------------------
+      i_iso = iroom
+      isoptr => isoinfo(i_iso)
+      rm=>roominfo(iroom)
+
+      write(isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'
+      menu_label="Temperature"
+      colorbar_label="TEMP"
+      unit_label="C"
+
+      isoptr%filename = trim(isofilename)
+      isoptr%roomnum = iroom
+      isoptr%menu_label = trim(menu_label)
+      isoptr%colorbar_label = trim(colorbar_label)
+      isoptr%unit_label = trim(unit_label)
+   end do
+
+   end subroutine setup_slice_iso
+
+   ! --------------------------- rev_input -------------------------------------------
 
     integer function rev_input ()
 

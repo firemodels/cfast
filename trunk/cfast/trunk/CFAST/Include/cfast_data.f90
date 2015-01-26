@@ -63,6 +63,8 @@ module cenviro
 
     type(slice_type), allocatable, dimension(:), target :: sliceinfo  
     integer :: nsliceinfo
+    type(iso_type), allocatable, dimension(:), target :: isoinfo  
+    integer :: nisoinfo
 
 end module cenviro
 

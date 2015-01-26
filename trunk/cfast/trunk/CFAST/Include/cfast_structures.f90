@@ -9,6 +9,8 @@ module cfast_types
       real(eb) :: wall_center(10,3)
       real(eb) :: x0, y0, z0
       real(eb) :: x1, y1, z1
+      real(eb), allocatable, dimension(:) :: xplt, yplt, zplt
+      real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
       real(eb) :: dx, dy, dz
       integer :: ibar, jbar, kbar
     end type room_type
@@ -56,4 +58,10 @@ module cfast_types
        integer :: ijk(6), roomnum
     end type slice_type
      
-end module cfast_types
+    type iso_type
+       character(256) :: filename
+       character(64) :: menu_label, colorbar_label, unit_label
+       integer :: roomnum
+    end type iso_type
+
+   end module cfast_types

@@ -2354,6 +2354,8 @@
    integer :: i_iso
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
+   real(eb) :: dzz, factor
+   integer :: uniform_z=1
    
    nsliceinfo = 0
    nisoinfo = 0
@@ -2384,8 +2386,23 @@
       rm%kbar = max(2,int(rm%dz/dxyz))
       allocate(rm%zplt(0:rm%kbar))
       allocate(rm%zpltf(0:rm%kbar))
+      if(uniform_z.EQ.1)then
+         do k = 0, rm%kbar
+            rm%zplt(k) = imix(rm%z0,rm%z1,k,rm%kbar)
+         end do
+      else
+         dzz = 1.0_eb
+         rm%zplt(0) = 0.0_eb
+         do k = 1, rm%kbar
+            rm%zplt(k) = rm%zplt(k-1) + dzz
+            dzz = dzz*0.8_eb
+         end do
+         factor = rm%dz/rm%zplt(rm%kbar)
+         do k = 0, rm%kbar
+            rm%zplt(k) = rm%z0 + factor*rm%zplt(k)
+         end do
+      endif
       do k = 0, rm%kbar
-         rm%zplt(k) = imix(rm%z0,rm%z1,k,rm%kbar)
          rm%zpltf(k) = real(rm%zplt(k),fb)
       end do
    end do

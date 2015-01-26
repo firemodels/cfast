@@ -50,7 +50,6 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     integer ibar, jbar, kbar
     real(eb) :: x1, y1, z1
     integer :: j
-    real(eb) :: xj, yj, zj
     type(room_type), pointer :: rm
     type(slice_type), pointer :: sf
     type(iso_type), pointer :: isoptr
@@ -104,20 +103,17 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
         write(13,"(a,1x)")"TRNX"
         write(13,"(1x,i1)")0
         do j = 0, ibar
-           xj = (x0(i)*(ibar-j) + x1*j)/real(ibar,eb)
-           write(13,"(i5,1x,f14.5)")j,xj
+           write(13,"(i5,1x,f14.5)")j,rm%xplt(j)
         end do
         write(13,"(a,1x)")"TRNY"
         write(13,"(1x,i1)")0
         do j = 0, jbar
-           yj = (y0(i)*(jbar-j) + y1*j)/real(jbar,eb)
-           write(13,"(i5,1x,f14.5)")j,yj
+           write(13,"(i5,1x,f14.5)")j,rm%yplt(j)
         end do
         write(13,"(a,1x)")"TRNZ"
         write(13,"(1x,i1)")0
         do j = 0, kbar
-           zj = (z0(i)*(kbar-j) + z1*j)/real(kbar,eb)
-           write(13,"(i5,1x,F14.5)")j,zj
+           write(13,"(i5,1x,f14.5)")j,rm%zplt(j)
         end do
         write(13,"(a,1x)")"OBST"
         write(13,"(1x,i1)")0
@@ -271,6 +267,7 @@ subroutine output_slicedata(time,first_time)
    
    do i = 1, nsliceinfo
       sf => sliceinfo(i)
+      rm => roominfo(sf%roomnum)
       
       nx = sf%ijk(2) + 1 - sf%ijk(1)
       ny = sf%ijk(4) + 1 - sf%ijk(3)
@@ -280,11 +277,11 @@ subroutine output_slicedata(time,first_time)
       if(nx.le.0.or.ny.le.0.or.nz.le.0)cycle
       allocate(slicedata(0:nx-1,0:ny-1,0:nz-1))
       do ii = 0, nx-1
-         xx = imix(sf%xb(1),sf%xb(2),ii,nx-1) - rm%x0
+         xx = rm%xplt(sf%ijk(1)+ii) - rm%x0
          do jj = 0, ny-1
-            yy = imix(sf%xb(3),sf%xb(4),jj,ny-1) - rm%y0
+            yy = rm%yplt(sf%ijk(3)+jj) - rm%y0
             do kk = 0, nz-1
-               zz = imix(sf%xb(5),sf%xb(6),kk,nz-1) - rm%z0
+               zz = rm%zplt(sf%ijk(1)+kk) - rm%z0
                call gettgas(roomnum,xx,yy,zz,tgas)
                slicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
             end do

@@ -2387,13 +2387,13 @@
 
    ! setup slice file data structures
 
-   nsliceinfo = 3*nrooms + ndefinedbyuser
+   nsliceinfo = 4*nrooms + ndefinedbyuser
    allocate(sliceinfo(nsliceinfo))
    do iroom = 1, nrooms
 
    ! vertical slice in XZ plane
    
-      islice = 3*iroom-2
+      islice = 4*iroom-3
       sliceptr => sliceinfo(islice)
       rm=>roominfo(iroom)
 
@@ -2424,7 +2424,7 @@
 
    ! vertical slice in YZ plane
    
-      islice = 3*iroom-1
+      islice = 4*iroom-2
       sliceptr => sliceinfo(islice)
       write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
       menu_label="Temperature"
@@ -2453,7 +2453,7 @@
 
    ! horizontal slice in XY plane
    
-      islice = 3*iroom
+      islice = 4*iroom - 1
       sliceptr => sliceinfo(islice)
       write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
       menu_label="Temperature"
@@ -2480,6 +2480,36 @@
       sliceptr%unit_label = trim(unit_label)
       sliceptr%xb = xb
       sliceptr%ijk = ijkslice
+      
+   ! 3d slice file
+   
+      islice = 4*iroom 
+      sliceptr => sliceinfo(islice)
+      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+      menu_label="Temperature"
+      colorbar_label="TEMP"
+      unit_label="C"
+
+      xb(1) = rm%x0
+      xb(2) = rm%x1
+      xb(3) = rm%y0
+      xb(4) = rm%y1
+      xb(5) = rm%z0
+      xb(6) = rm%z1
+      ijkslice(1) = 0
+      ijkslice(2) = rm%ibar
+      ijkslice(3) = 0
+      ijkslice(4) = rm%jbar
+      ijkslice(5) = 0
+      ijkslice(6) = rm%kbar
+      sliceptr%filename = trim(slicefilename)
+      sliceptr%roomnum = iroom
+      sliceptr%menu_label = trim(menu_label)
+      sliceptr%colorbar_label = trim(colorbar_label)
+      sliceptr%unit_label = trim(unit_label)
+      sliceptr%xb = xb
+      sliceptr%ijk = ijkslice
+      
    end do
 
    !*** the following code needs to be updated based on additional slice files defined by the user

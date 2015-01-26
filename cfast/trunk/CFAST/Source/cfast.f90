@@ -75,7 +75,7 @@
 
     call read_solver_ini
     call read_input_file (errorcode)
-    call setup_sliceinfo
+    call setup_slice_iso
     
     if (errorcode<=0) then
 
@@ -306,6 +306,7 @@
     use solver_parameters
     use vents
     use wnodes
+    use isosurface
     implicit none
     
     integer, intent(out) :: ierror
@@ -603,6 +604,7 @@
             call output_status (t, dt, errorcode)
             
             call output_slicedata(t,first_time) !*** is this the best place for this call??
+            call output_isodata(t,first_time) !*** is this the best place for this call??
             first_time = 0
         endif
 

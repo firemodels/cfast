@@ -2336,6 +2336,7 @@
     use iofiles
     use cenviro
     use cfast_main
+    use cshell
     implicit none
    
    integer :: nrooms
@@ -2353,6 +2354,10 @@
    integer :: i_iso
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
+   
+   nsliceinfo = 0
+   nisoinfo = 0
+   if(validate)return
    
    nrooms = nm1
    

@@ -2340,7 +2340,7 @@
    
    integer :: nrooms
    
-   integer :: i,iroom,islice
+   integer :: i,j,k,iroom,islice
    type(slice_type), pointer :: sf
    type(room_type), pointer :: rm
    real(eb) :: xb(6)
@@ -2353,14 +2353,14 @@
    nrooms = nm1
    
    ! setup resolution for each compartment
-   do i = 1, nrooms
-      rm=>roominfo(i)
-      rm%ibar = int(rm%dx/dxyz)
-      rm%jbar = int(rm%dy/dxyz)
-      rm%kbar = int(rm%dz/dxyz)
+   do iroom = 1, nrooms
+      rm=>roominfo(iroom)
+      rm%ibar = max(2,int(rm%dx/dxyz))
+      rm%jbar = max(2,int(rm%dy/dxyz))
+      rm%kbar = max(2,int(rm%dz/dxyz))
    end do
 
-   ! for each compartment setup up a vertical slice file centered front to back
+   ! setup slice files for each compartment
 
    nsliceinfo = 3*nrooms + ndefinedbyuser
    allocate(sliceinfo(nsliceinfo))
@@ -2378,11 +2378,11 @@
       unit_label="C"
 
       xb(1) = rm%x0
-      xb(2) = rm%x0 + rm%dx
+      xb(2) = rm%x1
       xb(3) = rm%y0 + rm%dy/2.0_eb
-      xb(4) = xb(3)
+      xb(4) = rm%y0 + rm%dy/2.0_eb
       xb(5) = rm%z0
-      xb(6) = rm%z0 + rm%dz
+      xb(6) = rm%z1
       ijkslice(1) = 0
       ijkslice(2) = rm%ibar
       ijkslice(3) = rm%jbar/2
@@ -2407,11 +2407,11 @@
       unit_label="C"
 
       xb(1) = rm%x0 + rm%dx/2.0_eb
-      xb(2) = xb(1)
+      xb(2) = rm%x0 + rm%dx/2.0_eb
       xb(3) = rm%y0
-      xb(4) = rm%y0 + rm%dy
+      xb(4) = rm%y1
       xb(5) = rm%z0
-      xb(6) = rm%z0 + rm%dz
+      xb(6) = rm%z1
       ijkslice(1) = rm%ibar/2
       ijkslice(2) = rm%ibar/2
       ijkslice(3) = 0
@@ -2436,11 +2436,11 @@
       unit_label="C"
 
       xb(1) = rm%x0
-      xb(2) = rm%x0 + rm%dx
+      xb(2) = rm%x1
       xb(3) = rm%y0
-      xb(4) = rm%y0 + rm%dy
+      xb(4) = rm%y1
       xb(5) = rm%z0 + rm%dz - 0.2_eb
-      xb(6) = xb(5)
+      xb(6) = rm%z0 + rm%dz - 0.2_eb
       ijkslice(1) = 0
       ijkslice(2) = rm%ibar
       ijkslice(3) = 0
@@ -2457,7 +2457,7 @@
       sf%ijk = ijkslice
    end do
 
-   !*** the following code needs to be updated based on inputs from the user
+   !*** the following code needs to be updated based on additional slice files defined by the user
 
    do i = 1, ndefinedbyuser
       sf => sliceinfo(nrooms+i)

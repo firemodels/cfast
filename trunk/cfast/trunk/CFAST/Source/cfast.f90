@@ -1436,12 +1436,15 @@
             roomptr%yflor = hflr(iroom)
             roomptr%yceil = hrp(iroom)
             
-            roomptr%x0 = cxabs(iroom)  !*** let's make more use of the room structure
+            roomptr%x0 = cxabs(iroom)
             roomptr%y0 = cyabs(iroom)
             roomptr%z0 = hrl(iroom)
             roomptr%dx = br(iroom)
             roomptr%dy = dr(iroom)
             roomptr%dz = hr(iroom)
+            roomptr%x1 = roomptr%x0 + roomptr%dx
+            roomptr%y1 = roomptr%y0 + roomptr%dy
+            roomptr%z1 = roomptr%z0 + roomptr%dz
             
             ! define wall centers
             xx = br(iroom)

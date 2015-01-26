@@ -1040,7 +1040,7 @@
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire     
     h = zceil - zfire 
     if (qdot>0.0_eb.and.tu>=tl.and.h>=0.0_eb) then
-        if (zin<=zlayer) then
+        if (zfire<=zlayer) then
             ! desired location is in the lower layer
             t_inf = tl
         else
@@ -1092,45 +1092,55 @@
     
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume
-    
-    real(eb), parameter :: cp = 1.012
-    real(eb) :: t_inf, rho_inf, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
 
-    !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire      
+    real(eb), parameter :: cp = 1.012
+    real(eb) :: t_inf, rho, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
+
+
+    ! default is for temperature to be the layer temperature at the desired location
+    if (zin<=zlayer) then
+        tplume = tl
+    else
+        tplume = tu
+    endif
+
+    ! for the algorithm to work, there has to be a fire, two layers, and a target point above the fire
     if (qdot>0.0_eb.and.tu>=tl.and.zin-zfire>=0.0_eb) then
         qdot_c = qdot*(1.0_eb - xrad)/1000.0_eb
         d = sqrt(area/pio4)
-        
+      
         if (zfire<=zlayer) then
             ! fire is in the lower layer
             t_inf = tl
-            rho_inf = 352.981915_eb/t_inf
-            qstar = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*d**2.5_eb)
+            rho = 352.981915_eb/tl
+            qstar = (qdot/1000._eb)/(rho*cp*tl*gsqrt*d**2.5_eb)
             z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
-            if (zin.gt.zlayer) then
+            if (zin.le.zlayer) then
+                ! fire and target point are both in lower layer
+                deltaz = max(0.0001_eb,zin-z0)
+                t_excess = min(900._eb,9.1_eb*(tl/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            else
+                ! fire in lower layer but target point in upper layer
                 z0 = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
-                t_inf = tu
+                rho = 352.981915_eb/tu
+                deltaz = max(0.0001_eb,zin-z0)
+                t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
             end if
         else if (zin>=zlayer) then 
             ! fire and target are both in the upper layer
             t_inf = tu
-            rho_inf = 352.981915_eb/t_inf
-            qstar = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*d**2.5_eb)
+            rho = 352.981915_eb/tu
+            qstar = (qdot/1000._eb)/(rho*cp*tu*gsqrt*d**2.5_eb)
             z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
+            deltaz = max(0.0001_eb,zin-z0)
+            t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         endif
-        deltaz = max(0.0001_eb,zin-z0)
-        t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho_inf**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
-        if(r>0.0_eb) then
+    
+        if(r>0) then
             sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)
         end if
         tplume = t_inf + t_excess
-    else
-        if (zin<=zlayer) then
-            tplume = tl
-        else
-            tplume = tu
-        endif
     endif  
     return
     end subroutine get_plume_temperature

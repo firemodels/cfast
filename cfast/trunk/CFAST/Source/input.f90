@@ -2486,8 +2486,8 @@
       xb(2) = rm%x1
       xb(3) = rm%y0
       xb(4) = rm%y1
-      xb(5) = rm%z0 + rm%dz - 0.2_eb
-      xb(6) = rm%z0 + rm%dz - 0.2_eb
+      xb(5) = rm%z0 + rm%dz * 0.99_eb
+      xb(6) = rm%z0 + rm%dz * 0.99_eb
       ijkslice(1) = 0
       ijkslice(2) = rm%ibar
       ijkslice(3) = 0

@@ -77,48 +77,50 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     write(13,"(a)") "AMBIENT"
     write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
-    ! ibar, jbar and kbar are placeholders for now
-    ibar = 10
-    jbar = 10
-    kbar = 10
     do i = 1, nrooms
        rm=>roominfo(i)
        
-       ibar = rm%ibar
-       jbar = rm%jbar
-       kbar = rm%kbar
-        
-        write(13,"(a,1x)")"ROOM"
-        write(13,10) dx(i), dy(i), dz(i)
-        write(13,10) x0(i), y0(i), z0(i)
-10      format(1x,e11.4,1x,e11.4,1x,e11.4)
+       write(13,"(a,1x)")"ROOM"
+       write(13,10) dx(i), dy(i), dz(i)
+       write(13,10) x0(i), y0(i), z0(i)
+10     format(1x,e11.4,1x,e11.4,1x,e11.4)
 
-        write(13,"(a,1x)")"GRID"
-        write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
-        x1 = x0(i) + dx(i)
-        y1 = y0(i) + dy(i)
-        z1 = z0(i) + dz(i)
-        write(13,"(a,1x)")"PDIM"
-        write(13,"(9(f14.5,1x))")x0(i),x1,y0(i),y1,z0(i),z1,0.0_eb,0.0_eb,0.0_eb
-        write(13,"(a,1x)")"TRNX"
-        write(13,"(1x,i1)")0
-        do j = 0, ibar
-           write(13,"(i5,1x,f14.5)")j,rm%xplt(j)
-        end do
-        write(13,"(a,1x)")"TRNY"
-        write(13,"(1x,i1)")0
-        do j = 0, jbar
-           write(13,"(i5,1x,f14.5)")j,rm%yplt(j)
-        end do
-        write(13,"(a,1x)")"TRNZ"
-        write(13,"(1x,i1)")0
-        do j = 0, kbar
-           write(13,"(i5,1x,f14.5)")j,rm%zplt(j)
-        end do
-        write(13,"(a,1x)")"OBST"
-        write(13,"(1x,i1)")0
-        write(13,"(a,1x)")"VENT"
-        write(13,"(1x,i1,1x,i1)")0,0
+       if(nsliceinfo.gt.0)then
+          ibar = rm%ibar
+          jbar = rm%jbar
+          kbar = rm%kbar
+
+          write(13,"(a,1x)")"GRID"
+          write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
+          x1 = x0(i) + dx(i)
+          y1 = y0(i) + dy(i)
+          z1 = z0(i) + dz(i)
+           
+          write(13,"(a,1x)")"PDIM"
+          write(13,"(9(f14.5,1x))")x0(i),x1,y0(i),y1,z0(i),z1,0.0_eb,0.0_eb,0.0_eb
+          write(13,"(a,1x)")"TRNX"
+          write(13,"(1x,i1)")0
+          do j = 0, ibar
+             write(13,"(i5,1x,f14.5)")j,rm%xplt(j)
+          end do
+           
+          write(13,"(a,1x)")"TRNY"
+          write(13,"(1x,i1)")0
+          do j = 0, jbar
+             write(13,"(i5,1x,f14.5)")j,rm%yplt(j)
+          end do
+           
+          write(13,"(a,1x)")"TRNZ"
+          write(13,"(1x,i1)")0
+          do j = 0, kbar
+             write(13,"(i5,1x,f14.5)")j,rm%zplt(j)
+          end do
+           
+          write(13,"(a,1x)")"OBST"
+          write(13,"(1x,i1)")0
+          write(13,"(a,1x)")"VENT"
+          write(13,"(1x,i1,1x,i1)")0,0
+       endif        
     end do
     
     do i = 1, nsliceinfo

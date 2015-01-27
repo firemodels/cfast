@@ -9,3 +9,6 @@ del *.smv /s/q >nul
 del *.plt /s/q >nul
 del *.status /s/q >nul
 del *.log /s/q >nul
+del *.sf /s/q >nul
+del *_slice.info /s/q >nul
+del *.iso /s/q >nul

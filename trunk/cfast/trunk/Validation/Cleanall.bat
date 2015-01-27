@@ -10,6 +10,9 @@ del *.smv /s/q >nul
 del *.plt /s/q >nul
 del *.status /s/q >nul
 del *.log /s/q >nul
+del *.sf /s/q >nul
+del *_slice.info /s/q >nul
+del *.iso /s/q >nul
 del ..\Docs\Validation_Guide\FIGURES\ATF_Corridors\ATF_Corridors_HGL*kW.pdf
 del ..\Docs\Validation_Guide\FIGURES\ATF_Corridors\ATF_Corridors_Jet*kW.pdf
 del ..\Docs\Validation_Guide\FIGURES\FM_NBS\fm??_*.pdf /q >nul

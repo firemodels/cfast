@@ -2336,7 +2336,7 @@
     use iofiles
     use cenviro
     use cfast_main
-    use cshell
+    use cshell, only: validate
     implicit none
    
    integer :: nrooms

@@ -1035,18 +1035,26 @@
     real(eb), intent(out) :: tcj
         
     real(eb), parameter :: cp = 1.012_eb   
-    real(eb) :: t_inf, rho_inf, qstar_h, h, delta_cj
+    real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire     
     h = zceil - zfire 
     if (qdot>0.0_eb.and.tu>=tl.and.h>=0.0_eb) then
         if (zfire<=zlayer) then
-            ! desired location is in the lower layer
+            ! fire is in the lower layer
             t_inf = tl
         else
             t_inf = tu
         end if
-        tcj = t_inf
+        
+        if (zin<=zlayer) then
+            ! desired point is in the lower layer
+            t_layer = tl
+        else
+            t_layer = tu
+        end if
+        
+        tcj = t_layer
         if (r/h>=0.26_eb) then
             delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*r/h))
         else
@@ -1056,9 +1064,9 @@
             rho_inf = 352.981915_eb/t_inf
             qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
             if (r/h<0.2_eb) then
-                tcj = t_inf + t_inf*qstar_h**twothirds*6.3
+                tcj = t_layer + t_layer*qstar_h**twothirds*6.3
             else
-                tcj = t_inf + t_inf*qstar_h**twothirds*(0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
+                tcj = t_layer + t_layer*qstar_h**twothirds*(0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
             end if
         end if
     end if
@@ -1094,7 +1102,7 @@
     real(eb), intent(out) :: tplume
 
     real(eb), parameter :: cp = 1.012
-    real(eb) :: t_inf, rho, qdot_c, qstar, z0, deltaz, d, t_excess, sigma_deltat
+    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, deltaz, d, t_excess, sigma_deltat
 
 
     ! default is for temperature to be the layer temperature at the desired location
@@ -1110,32 +1118,27 @@
         d = sqrt(area/pio4)
       
         if (zfire<=zlayer) then
-            ! fire is in the lower layer
             t_inf = tl
-            rho = 352.981915_eb/tl
-            qstar = (qdot/1000._eb)/(rho*cp*tl*gsqrt*d**2.5_eb)
-            z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
-            if (zin.le.zlayer) then
-                ! fire and target point are both in lower layer
-                deltaz = max(0.0001_eb,zin-z0)
-                t_excess = min(900._eb,9.1_eb*(tl/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
-            else
-                ! fire in lower layer but target point in upper layer
-                z0 = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
-                rho = 352.981915_eb/tu
-                deltaz = max(0.0001_eb,zin-z0)
-                t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
-            end if
-        else if (zin>=zlayer) then 
-            ! fire and target are both in the upper layer
+        else
             t_inf = tu
+        end if
+        
+        rho = 352.981915_eb/t_inf
+        qstar = (qdot/1000._eb)/(rho*cp*t_inf*gsqrt*d**2.5_eb)
+        z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
+        
+        if (zfire<=zlayer.and.zin>zlayer) then
+            ! fire is in lower and and target point is in upper layer
+            z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
             rho = 352.981915_eb/tu
-            qstar = (qdot/1000._eb)/(rho*cp*tu*gsqrt*d**2.5_eb)
-            z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
-            deltaz = max(0.0001_eb,zin-z0)
+            deltaz = max(0.0001_eb,zin-z0_prime)
             t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
-        endif
-    
+        else
+            ! fire and target point are both in lower layer
+            deltaz = max(0.0001_eb,zin-z0)
+            t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+        end if
+
         if(r>0) then
             sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)

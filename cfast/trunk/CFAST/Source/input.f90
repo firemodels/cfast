@@ -2415,7 +2415,7 @@ end function get_igrid
       rm=>roominfo(iroom)
       rm%ibar = min(max(2,int(rm%dx/dxyz)),50)
 
-      ceiljet_depth = 0.3_eb ! placeholder now, change to a calculation
+      ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
 
       allocate(rm%xplt(0:rm%ibar))
       allocate(rm%xpltf(0:rm%ibar))

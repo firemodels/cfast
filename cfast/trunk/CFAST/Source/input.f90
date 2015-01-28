@@ -2329,6 +2329,30 @@
     return
    end subroutine readcsvformat
 
+! ------------------ FMIX ------------------------
+
+REAL(FB) FUNCTION FMIX(F,A,B)
+  USE PRECISION_PARAMETERS
+  IMPLICIT NONE
+  
+  REAL(FB), INTENT(IN) :: F, A, B
+
+  FMIX = (1.0_FB-F)*A + F*B
+  RETURN
+END FUNCTION FMIX
+
+! ------------------ EMIX ------------------------
+
+REAL(EB) FUNCTION EMIX(F,A,B)
+  USE PRECISION_PARAMETERS
+  IMPLICIT NONE
+
+  REAL(EB), INTENT(IN) :: F, A, B
+
+  EMIX = (1.0_EB-F)*A + F*B
+  RETURN
+END FUNCTION EMIX
+
 ! --------------------------- setup_slice_iso -------------------------------------------
    
    subroutine setup_slice_iso
@@ -2354,8 +2378,7 @@
    integer :: i_iso
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
-   real(eb) :: dzz, factor
-   integer :: uniform_z=1
+   real(eb) :: dzz, factor, ceiljet_depth
    
    nsliceinfo = 0
    nisoinfo = 0
@@ -2367,41 +2390,29 @@
    
    do iroom = 1, nrooms
       rm=>roominfo(iroom)
-      rm%ibar = max(2,int(rm%dx/dxyz))
+      rm%ibar = min(max(2,int(rm%dx/dxyz)),50)
+
+      ceiljet_depth = 0.3_eb ! placeholder now, change to a calculation
+
       allocate(rm%xplt(0:rm%ibar))
       allocate(rm%xpltf(0:rm%ibar))
+      call set_grid(rm%xplt,rm%ibar+1,rm%x0,rm%x1,rm%x1,0)
       do i = 0, rm%ibar
-         rm%xplt(i) = imix(rm%x0,rm%x1,i,rm%ibar)
-         rm%xpltf(i) = real(rm%xplt(i),fb)
+         rm%xpltf(0:i) = real(rm%xplt(i),fb)
       end do
       
-      rm%jbar = max(2,int(rm%dy/dxyz))
+      rm%jbar = min(max(2,int(rm%dy/dxyz)),50)
       allocate(rm%yplt(0:rm%jbar))
       allocate(rm%ypltf(0:rm%jbar))
+      call set_grid(rm%yplt,rm%jbar+1,rm%y0,rm%y1,rm%y1,0)
       do j = 0, rm%jbar
-         rm%yplt(j) = imix(rm%y0,rm%y1,j,rm%jbar)
          rm%ypltf(j) = real(rm%yplt(j),fb)
       end do
       
-      rm%kbar = max(2,int(rm%dz/dxyz))
+      rm%kbar = min(max(2,int(rm%dz/dxyz)),50)
       allocate(rm%zplt(0:rm%kbar))
       allocate(rm%zpltf(0:rm%kbar))
-      if(uniform_z.EQ.1)then
-         do k = 0, rm%kbar
-            rm%zplt(k) = imix(rm%z0,rm%z1,k,rm%kbar)
-         end do
-      else
-         dzz = 1.0_eb
-         rm%zplt(0) = 0.0_eb
-         do k = 1, rm%kbar
-            rm%zplt(k) = rm%zplt(k-1) + dzz
-            dzz = dzz*0.8_eb
-         end do
-         factor = rm%dz/rm%zplt(rm%kbar)
-         do k = 0, rm%kbar
-            rm%zplt(k) = rm%z0 + factor*rm%zplt(k)
-         end do
-      endif
+      call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/2)
       do k = 0, rm%kbar
          rm%zpltf(k) = real(rm%zplt(k),fb)
       end do
@@ -2574,6 +2585,35 @@
    end do
 
    end subroutine setup_slice_iso
+
+   ! --------------------------- set_grid -------------------------------------------
+
+   subroutine set_grid(xgrid,n,xmin,xsplit,xmax,nsplit)
+   use precision_parameters
+   implicit none
+   
+   integer, intent(in) :: n, nsplit
+   real(eb), dimension(n), intent(out) :: xgrid
+   real(eb), intent(in) :: xmin, xsplit, xmax
+
+   real(eb) :: factor
+   integer :: i
+   real(eb) :: emix
+
+!   1            n-nsplit          n    
+!  xmin          xsplit          xmax
+
+   do i = 1, n-nsplit
+      factor = real(i-1,eb)/real(n-nsplit-1,eb)
+      xgrid(i) = emix(factor,xmin,xsplit)
+   end do
+   
+   do i = n-nsplit+1, n
+      factor = real(i-(n-nsplit),eb)/real(nsplit,eb)
+      xgrid(i) = emix(factor,xsplit,xmax)
+   end do
+   
+   end subroutine set_grid
 
    ! --------------------------- rev_input -------------------------------------------
 

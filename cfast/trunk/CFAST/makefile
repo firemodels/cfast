@@ -10,7 +10,6 @@
 # The variable VPATH defines where the source code is relative to the current directory
 
 VPATH = Source
-INCLUDE = ../Include
 
 # Definition of the object variables
 
@@ -77,7 +76,7 @@ intel_win_64_db : setup_win $(objwin)
 # ------------- Linux -------------------
 
 # 32 bit
-intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report:0 -I $(INCLUDE)
+intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report:0
 intel_linux_32 : FCOMPL = ifort
 intel_linux_32 : obj = cfast6_linux_32
 intel_linux_32 : $(objf)
@@ -90,7 +89,7 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O3 -gen-interfaces -warn interfaces -traceback -I $(INCLUDE)
+intel_linux_64 : FFLAGS = -m64 -O3 -gen-interfaces -warn interfaces -traceback
 intel_linux_64 : LFLAGS = -static-intel
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = cfast6_linux_64
@@ -108,7 +107,7 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # 32 bit
-intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report:0 -I $(INCLUDE)
+intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report:0
 intel_osx_32 : FCOMPL = ifort
 intel_osx_32 : obj = cfast6_osx_32
 intel_osx_32 : $(objf)
@@ -121,7 +120,7 @@ intel_osx_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
 # 64 bit
-intel_osx_64 : FFLAGS = -fpp -O3 -save -zero -m64 -heap-arrays -static-intel -I $(INCLUDE)
+intel_osx_64 : FFLAGS = -fpp -O3 -save -zero -m64 -heap-arrays -static-intel
 intel_osx_64 : FCOMPL = ifort
 intel_osx_64 : obj = cfast6_osx_64
 intel_osx_64 : $(objf)

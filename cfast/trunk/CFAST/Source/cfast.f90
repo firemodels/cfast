@@ -587,6 +587,10 @@
             call output_smokeview_spreadsheet(t)
             tplot = tplot + dplot
             call output_status (t, dt, errorcode)
+            
+            call output_slicedata(t,first_time)
+            call output_isodata(t,first_time)
+            first_time = 0
         endif
 
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
@@ -602,10 +606,6 @@
             if (ierror/=0) return
             tspread =tspread + dspread
             call output_status (t, dt, errorcode)
-            
-            call output_slicedata(t,first_time) !*** is this the best place for this call??
-            call output_isodata(t,first_time) !*** is this the best place for this call??
-            first_time = 0
         endif
 
         ! diagnostics

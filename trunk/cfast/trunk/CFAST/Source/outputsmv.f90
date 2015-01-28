@@ -231,22 +231,6 @@ subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,hei
 
    end subroutine output_smokeview_plot_data
 
-! --------------------------- imix -------------------------------------------
-
-real(eb) function imix(fbeg,fend,i,n)
-   use precision_parameters
-   implicit none
-
-   real(eb), intent(in) :: fbeg, fend
-   integer, intent(in) :: i, n
-
-   if(n.le.0)then
-      imix = fbeg
-   else
-      imix = (fbeg*real(n-i,eb) + fend*real(i,eb))/real(n,eb)
-   endif
-end function imix
-
 ! --------------------------- output_slicedata -------------------------------------------
 
 subroutine output_slicedata(time,first_time)
@@ -978,6 +962,7 @@ SUBROUTINE GETISOBOX(X,Y,Z,VALS,LEVEL,XYZV_LOCAL,NXYZV,TRIS,NTRIS)
   INTEGER :: OUTOFBOUNDS, EDGE, V1, V2
   REAL(FB) :: VAL1, VAL2, DENOM, FACTOR
   REAL(FB) :: XX, YY, ZZ
+  REAL(FB) :: FMIX
 
   EDGE2VERTEX=TRANSPOSE(EDGE2VERTEXTT)
   CASES=TRANSPOSE(CASEST)
@@ -1191,15 +1176,6 @@ SUBROUTINE REALLOCATE_F(ROUTINE,VAR,VALS,OLDSIZE,NEWSIZE)
   ENDIF
   RETURN
 END SUBROUTINE REALLOCATE_F
-
-! ------------------ FMIX ------------------------
-
-REAL(FB) FUNCTION FMIX(F,A,B)
-  REAL(FB), INTENT(IN) :: F, A, B
-
-  FMIX = (1.0_FB-F)*A + F*B
-  RETURN
-END FUNCTION FMIX
 
 END MODULE ISOSURFACE            
 

@@ -307,6 +307,8 @@
     use vents
     use wnodes
     use isosurface
+    use convection_routines
+    use target_routines
     implicit none
     
     integer, intent(out) :: ierror
@@ -823,6 +825,7 @@
 
     use precision_parameters
     use fltarget
+    use target_routines
     implicit none
 
     integer, intent(in) :: nodes, nequals, nlspct
@@ -1053,6 +1056,9 @@
     use opt
     use params
     use debug
+    use conduction_routines
+    use convection_routines
+    use target_routines
     implicit none
 
     real(eb), intent(in) :: tsec, x(*), xpsolve(*), rpar(*) 
@@ -2058,15 +2064,19 @@
 ! --------------------------- rev_cfast -------------------------------------------
 
     integer function rev_cfast ()
+    use conduction_routines
+    use convection_routines
+    use target_routines
+    implicit none
 
     !     Routine: rev_cfast
     !     Purpose: return current SVN revision or date
     !     Revision: $Revision$
     !     Revision Date: $Date$
 
-    integer :: MODULE_REV, rev_auxilliary, rev_conduction, rev_convection, rev_fire, rev_flowfan
+    integer :: MODULE_REV, rev_auxilliary, rev_fire, rev_flowfan
     integer :: rev_flowhall, rev_flowhorizontal, rev_flowvertical, rev_initialization, &
-    rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_target, rev_ssHeaders
+    rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_ssHeaders
     character(255) :: MODULE_DATE 
     character(255), parameter :: mainrev='$Revision$'
     character(255), parameter :: maindate='$Date$'

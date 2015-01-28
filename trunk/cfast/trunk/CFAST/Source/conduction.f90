@@ -1,4 +1,21 @@
+module conduction_routines
+    use precision_parameters
+    use wallptrs
+    use cenviro
+    use cfast_main
+    use opt
+    use wnodes
+    use convection_routines
 
+    use cparams, only: nnodes
+    implicit none
+    
+    private
+    
+    public conduction, conductive_flux, rev_conduction
+    
+    contains
+   
 ! --------------------------- conduction -------------------------------------------
 
     subroutine conduction(update,dt,flxtot,delta)
@@ -16,13 +33,6 @@
     !     revision: $revision: 464 $
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
-    use precision_parameters
-    use wallptrs
-    use cenviro
-    use cfast_main
-    use opt
-    use wnodes
-    implicit none
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, flxtot(nr,nwal)
@@ -190,10 +200,6 @@
     !            tgrad    temperature gradient
     !            tderv    partial of temperature gradient with respect to wall surface temperature.  this number is used to calculate wall jacobian elements.
 
-    use precision_parameters
-    use cparams, only: nnodes
-    implicit none
-
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
     real(eb), intent(out) :: wtemp(*), tgrad(2) 
     integer, intent(in) :: update, nslab, iwbound, numnode(*)
@@ -346,3 +352,5 @@
     write(module_date,'(a)') maindate
     return
     end function rev_conduction
+    
+end module conduction_routines

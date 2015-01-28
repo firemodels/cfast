@@ -2329,52 +2329,6 @@
     return
    end subroutine readcsvformat
 
-! ------------------ FMIX ------------------------
-
-REAL(FB) FUNCTION FMIX(F,A,B)
-  USE PRECISION_PARAMETERS
-  IMPLICIT NONE
-  
-  REAL(FB), INTENT(IN) :: F, A, B
-
-  FMIX = (1.0_FB-F)*A + F*B
-  RETURN
-END FUNCTION FMIX
-
-! ------------------ EMIX ------------------------
-
-REAL(EB) FUNCTION EMIX(F,A,B)
-  USE PRECISION_PARAMETERS
-  IMPLICIT NONE
-
-  REAL(EB), INTENT(IN) :: F, A, B
-
-  EMIX = (1.0_EB-F)*A + F*B
-  RETURN
-END FUNCTION EMIX
-
-! ------------------ get_igrid ------------------------
-
-integer function get_igrid(x,xgrid,n)
-  USE PRECISION_PARAMETERS
-  IMPLICIT NONE
-   
-   integer, intent(in) :: n
-   real(eb), intent(in), dimension(0:n) :: xgrid
-   real(eb), intent(in) :: x
-      
-   integer :: i
-   
-   do i = 0, n-1
-      if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
-         get_igrid=i
-         return
-      endif
-   end do
-   get_igrid=n
-   return
-end function get_igrid   
-
 ! --------------------------- setup_slice_iso -------------------------------------------
    
    subroutine setup_slice_iso
@@ -2383,6 +2337,7 @@ end function get_igrid
     use cenviro
     use cfast_main
     use cshell, only: validate
+    use utilities
     implicit none
    
    integer :: nrooms
@@ -2401,7 +2356,6 @@ end function get_igrid
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
    real(eb) :: dzz, factor, ceiljet_depth
-   integer :: get_igrid
    
    nsliceinfo = 0
    nisoinfo = 0
@@ -2612,6 +2566,7 @@ end function get_igrid
 
    subroutine set_grid(xgrid,n,xmin,xsplit,xmax,nsplit)
    use precision_parameters
+   use utilities
    implicit none
    
    integer, intent(in) :: n, nsplit
@@ -2620,7 +2575,6 @@ end function get_igrid
 
    real(eb) :: factor
    integer :: i
-   real(eb) :: emix
 
 !   1            n-nsplit          n    
 !  xmin          xsplit          xmax

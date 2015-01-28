@@ -1,4 +1,26 @@
+module target_routines
+
+    use precision_parameters
+    use cenviro
+    use cfast_main
+    use fltarget
+    use cparams
+    use dsize
+    use conduction_routines
+    use fireptrs
+    use targptrs
+    use objects2
+    use wnodes
+    use convection_routines
+    implicit none
+
     
+private
+
+public target, rev_target, target_flux, update_detectors
+
+contains
+
 ! --------------------------- target -------------------------------------------
 
     subroutine target(update,method,dt,xpsolve,delta)
@@ -13,12 +35,6 @@
     !     revision: $revision: 464 $
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use fltarget
-    implicit none
-    
     integer, intent(in) :: update, method
     real(eb), intent(in) :: dt,  xpsolve(*)
     
@@ -125,11 +141,6 @@
     !              assuming that the sum of incoming and outgoing flux is zero, ie, assuming that the target is at steady state.
     !     arguments: method  
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use fltarget
-    implicit none
 
     integer, intent(in) :: method
     
@@ -206,16 +217,6 @@
     !                ttarg  front and back target input temperature
     !                flux   front and back output flux
     !                dflux  front and back output flux derivative
-
-    use precision_parameters
-    use fireptrs
-    use targptrs
-    use cenviro
-    use cfast_main
-    use fltarget
-    use objects2
-    use wnodes
-    implicit none
 
     integer, intent(in) :: iter, itarg
     real(eb), intent(in) :: ttarg(2)
@@ -442,9 +443,6 @@
     !     routine: gettylyu
     !     purpose: compute portion of path in lower and upper layers
 
-    use precision_parameters
-    implicit none
-    
     real(eb), intent(in) :: yo, y, yt, s
     real(eb), intent(out) :: yl, yu
 
@@ -481,11 +479,6 @@
     !                ixdtect 2-d array containing integer detector data structures
     !                iquench if the j=iquench(i) is non-zero then the j'th sprinkler in the i'th room is quenching the fire
     !                idset   room where activated detector resides
-
-    use precision_parameters
-    use cparams
-    use dsize
-    implicit none
 
     integer, intent(in) :: imode, ndtect
     real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
@@ -590,3 +583,5 @@
     write(module_date,'(a)') maindate
     return
     end function rev_target
+
+end module target_routines    

@@ -1842,7 +1842,59 @@
     endif
     return
 
-    end function lsame
+   end function lsame
+   
+! ****************************** utilties module ******************************
+
+module utilities
+  use precision_parameters
+  implicit none
+   
+   public fmix, emix, get_igrid
+   
+   contains
+   
+! ------------------ fmix ------------------------
+
+real(fb) function fmix(f,a,b)
+  
+  real(fb), intent(in) :: f, a, b
+
+  fmix = (1.0_fb-f)*a + f*b
+  return
+end function fmix
+
+! ------------------ emix ------------------------
+
+real(eb) function emix(f,a,b)
+
+  real(eb), intent(in) :: f, a, b
+
+  emix = (1.0_eb-f)*a + f*b
+  return
+end function emix
+
+! ------------------ get_igrid ------------------------
+
+integer function get_igrid(x,xgrid,n)
+   
+   integer, intent(in) :: n
+   real(eb), intent(in), dimension(0:n) :: xgrid
+   real(eb), intent(in) :: x
+      
+   integer :: i
+   
+   do i = 0, n-1
+      if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
+         get_igrid=i
+         return
+      endif
+   end do
+   get_igrid=n
+   return
+end function get_igrid   
+
+end module utilities
 
 ! --------------------------- rev_auxilliary -------------------------------------------
 

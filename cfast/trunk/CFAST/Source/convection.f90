@@ -1,4 +1,20 @@
-    subroutine convection (flwcv,flxcv)
+ module convection_routines
+    use precision_parameters
+    use fireptrs
+    use wallptrs
+    use cparams
+    use cenviro
+    use cfast_main
+    use opt
+    use wnodes
+    
+    private
+
+   public convection, convective_flux, detector_temp_and_velocity, rev_convection
+
+   contains
+   
+   subroutine convection (flwcv,flxcv)
 
     !     routine:    convection
     !     function:   interface between calculate_residuals and convective_flux.  loops over rooms
@@ -8,15 +24,6 @@
     !     outputs:    flwcv       net enthalphy into each layer 
     !                 flxcv       net heat flux onto surface
 
-    use precision_parameters
-    use fireptrs
-    use wallptrs
-    use cparams
-    use cenviro
-    use cfast_main
-    use opt
-    use wnodes
-    implicit none
 
     real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
     real(eb) :: flwcv0(nr,2), flxcv0(nr,nwal), qconv, qconv_avg
@@ -134,9 +141,6 @@
     !                 tw     wall surface temperature
     !                 qdinl  convective flux into wall surface iw
 
-    use precision_parameters
-    implicit none
-
     integer, intent(in) :: iw
     real(eb), intent(in) :: tg, tw
     real(eb), intent(out) :: qdinl
@@ -162,14 +166,6 @@
     !     description:  interface between calculate_residuals and cjet_detectors.  loops over
     !                 rooms setting up variables to pass.  calls cjet_detectors
     !                 only when fires are in a room
-
-    use precision_parameters
-    use cenviro
-    use fireptrs
-    use cfast_main
-    use opt
-
-    implicit none
 
     real(eb) :: zloc, tceil, qceil, qfclga, qfwla, qfwua, ftmax, fvmax, fdmax
     integer :: i, id, iroom, nrmfire, nd, ifire, ifpnt
@@ -262,17 +258,12 @@
     !       vdmax   maximum velocity of the ceiling jet
     !       ddmax   estimate of ceiling jet depth at r/h = 0.2 (given by:  ddmax/(.23*delta) = 2)
 
-    use precision_parameters
-    use cfast_main, only: cp
-    implicit none
-    
     integer, intent(in) :: nd
     real(eb), intent(in) :: mplume, qconv, tl, tu, xd(*), yd(*), zd(*), xw, yw, zc, axf, ayf, zf, zlay, rhol, rhou
     real(eb), intent(out) :: qceil, qfclga, qfwla, qfwua, td(*), vd(*)
     
     !   this subroutine and the function ceiling_flux used in its called subroutines use the common blocks aintch
 
-    external ceiling_flux
     integer :: id, ntab
     real(eb) :: xf, yf, rfmin, tc, atc, alpha, qeq, zeq, sigma_convection, a1, ssq, top, bottom, mfrac, qcont, zs, tht, rhoht, &
         h, qh, htct, anu, re, thtqhp, c1, c2, c3, c4, rd, rdh, v, vmax, vdmax, delta, dz, zdel, ddmax, vcj, arg, &
@@ -389,7 +380,7 @@
 
     ! make an integral table of size ntab from zero to rmax.
     ntab = 20
-    call make_table_ceiling_fluxes(rmax,ntab,ceiling_flux)
+    call make_table_ceiling_fluxes(rmax,ntab)
 
     !calculate velocity and temperatures of the ceiling jet at detector locations
     do id = 1, nd
@@ -432,7 +423,7 @@
 
 ! --------------------------- make_table_ceiling_fluxes -------------------------------------------
 
-    subroutine make_table_ceiling_fluxes (r,n,func)
+    subroutine make_table_ceiling_fluxes (r,n)
 
     !     Routine:     make_table_ceiling_fluxes
     !
@@ -447,11 +438,7 @@
     !                FUNC
 
 
-    use precision_parameters
-    implicit none
-
-    external func
-    real(eb) :: tabl(100), fun(100), rmax, r, xxntabm1, dr, dr2, xxim1, func, rr
+    real(eb) :: tabl(100), fun(100), rmax, r, xxntabm1, dr, dr2, xxim1, rr
     integer :: i, ntab, n
     common /trptabl/ tabl, rmax, ntab
     save /trptabl/
@@ -466,7 +453,7 @@
     do i = 2, ntab
         xxim1 = i - 1
         rr = xxim1*dr
-        fun(i) = rr*func(rr)
+        fun(i) = rr*ceiling_flux(rr)
         tabl(i) = tabl(i-1) + (fun(i)+fun(i-1))*dr2
     end do
     return
@@ -486,9 +473,6 @@
     !
     !     Arguments: R
     !                ANS
-
-    use precision_parameters
-    implicit none
 
     real(eb) :: tabl(100), xxntabm1, dr, rmax, r, tab1, tab2, xxir, rr1, rr2, ans
     integer :: ir, ntab
@@ -518,9 +502,6 @@
     !
     !     Arguments: R
     !
-
-    use precision_parameters
-    implicit none
 
     real(eb) :: rdh, r, h, t0, t1, t2, t3, ff, htcldh, c1, c2, c3, taddim, htcl, htct, tad, thtqhp, tht, tc, xf, yf
     common /aintch/ h, htct, tht, thtqhp, c1, c2, c3, xf, yf, tc
@@ -560,3 +541,6 @@
     write(module_date,'(a)') maindate
     return
     end function rev_convection
+    
+ end module convection_routines
+    

@@ -978,7 +978,7 @@
     
     real(eb), intent(out) :: tg
         
-    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tcj
+    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tplume_ceiling, tcj
 
     integer :: i
 
@@ -1004,7 +1004,8 @@
             ! first calculate plume temperature at desired location
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
-            call get_ceilingjet_temperature(qdot, tu, tl, zfire, zlayer, zceil, z, r, tcj)
+            call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
+            call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj)
             tg = max(tg,tplume,tcj)
         endif
     end do
@@ -1012,7 +1013,7 @@
     
 ! --------------------------- get_ceilingjet_temperature --------------------------------------
     
-    subroutine get_ceilingjet_temperature (qdot, tu, tl, zfire, zlayer, zceil, zin, r, tcj)
+    subroutine get_ceilingjet_temperature (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj)
 
     !     routine: get_ceilingjet_temperature
     !     purpose: Calculates ceiling jet temperature at a specified height and distance from the fire.
@@ -1021,21 +1022,23 @@
     !     arguments:  qdot: total heat release rate of the fire (W)
     !                 tu: upper layer gas temperature (K)
     !                 tl: lower layer gas temperature (K)
+    !                 tplume: plume temperature at ceiling (K)
     !                 zfire: height of the base of the fire (m)
     !                 zlayer: height of the hot/cold gas layer interface (m)
     !                 zceil: height of the compartment ceiling (m)
     !                 zin: position to calculate plume centerline temperature (m)
     !                 r: horizontal distance from fire centerline
-    !                 tcj (output): plume centerline temperature
+    !                 tcj (output): plume centerline temperature (K)
 
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: qdot, tu, tl, zfire, zlayer, zceil, zin, r
+    real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r
     real(eb), intent(out) :: tcj
         
-    real(eb), parameter :: cp = 1.012_eb   
-    real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj
+    real(eb), parameter :: cp = 1.012_eb
+    real(eb), parameter :: deltaT_0star_at_p2 = (0.225_eb+0.27_eb*0.2_eb)**(-4._eb/3._eb)
+    real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj, correction_factor
 
     !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire     
     h = zceil - zfire 
@@ -1064,9 +1067,10 @@
             rho_inf = 352.981915_eb/t_inf
             qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
             if (r/h<0.2_eb) then
-                tcj = t_layer + t_layer*qstar_h**twothirds*6.3
+                tcj = tplume
             else
-                tcj = t_layer + t_layer*qstar_h**twothirds*(0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
+                correction_factor = (tplume/t_layer-1.0_eb)/(deltaT_0star_at_p2*qstar_h**twothirds)
+                tcj = t_layer + t_layer * correction_factor * qstar_h**twothirds * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
             end if
         end if
     end if
@@ -1131,11 +1135,11 @@
             ! fire is in lower and and target point is in upper layer
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
             rho = 352.981915_eb/tu
-            deltaz = max(0.0001_eb,zin-z0_prime)
+            deltaz = max(0.0001_eb,zin-zfire-z0_prime)
             t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         else
             ! fire and target point are both in lower layer
-            deltaz = max(0.0001_eb,zin-z0)
+            deltaz = max(0.0001_eb,zin-zfire-z0)
             t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
 

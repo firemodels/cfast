@@ -2353,6 +2353,28 @@ REAL(EB) FUNCTION EMIX(F,A,B)
   RETURN
 END FUNCTION EMIX
 
+! ------------------ get_igrid ------------------------
+
+integer function get_igrid(x,xgrid,n)
+  USE PRECISION_PARAMETERS
+  IMPLICIT NONE
+   
+   integer, intent(in) :: n
+   real(eb), intent(in), dimension(0:n) :: xgrid
+   real(eb), intent(in) :: x
+      
+   integer :: i
+   
+   do i = 0, n-1
+      if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
+         get_igrid=i
+         return
+      endif
+   end do
+   get_igrid=n
+   return
+end function get_igrid   
+
 ! --------------------------- setup_slice_iso -------------------------------------------
    
    subroutine setup_slice_iso
@@ -2370,7 +2392,7 @@ END FUNCTION EMIX
    type(room_type), pointer :: rm
    real(eb) :: xb(6)
    character(256) :: slicefilename
-   integer :: ibar, jbar, kbar, ijkslice(6)
+   integer :: ijkslice(6)
    real(eb), parameter :: dxyz=0.1_eb
    character(60) :: menu_label, colorbar_label, unit_label
    integer :: ndefinedbyuser=0 !  code to input user slice info will define this variable (and it will be declared somewhere else)
@@ -2379,6 +2401,7 @@ END FUNCTION EMIX
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
    real(eb) :: dzz, factor, ceiljet_depth
+   integer :: get_igrid
    
    nsliceinfo = 0
    nisoinfo = 0
@@ -2443,8 +2466,8 @@ END FUNCTION EMIX
       xb(6) = rm%z1
       ijkslice(1) = 0
       ijkslice(2) = rm%ibar
-      ijkslice(3) = rm%jbar/2
-      ijkslice(4) = rm%jbar/2
+      ijkslice(3) = get_igrid(xb(3),rm%yplt,rm%jbar)
+      ijkslice(4) = get_igrid(xb(4),rm%yplt,rm%jbar)
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
       sliceptr%filename = trim(slicefilename)
@@ -2470,8 +2493,8 @@ END FUNCTION EMIX
       xb(4) = rm%y1
       xb(5) = rm%z0
       xb(6) = rm%z1
-      ijkslice(1) = rm%ibar/2
-      ijkslice(2) = rm%ibar/2
+      ijkslice(1) = get_igrid(xb(1),rm%xplt,rm%ibar)
+      ijkslice(2) = get_igrid(xb(2),rm%xplt,rm%ibar)
       ijkslice(3) = 0
       ijkslice(4) = rm%jbar
       ijkslice(5) = 0
@@ -2503,9 +2526,8 @@ END FUNCTION EMIX
       ijkslice(2) = rm%ibar
       ijkslice(3) = 0
       ijkslice(4) = rm%jbar
-      kbar = int((xb(5)-rm%z0)/dxyz)
-      ijkslice(5) = kbar
-      ijkslice(6) = kbar
+      ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
+      ijkslice(6) = ijkslice(5)
       sliceptr%filename = trim(slicefilename)
       sliceptr%roomnum = iroom
       sliceptr%menu_label = trim(menu_label)

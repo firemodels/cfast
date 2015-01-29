@@ -333,6 +333,7 @@
     external calculate_residuals, jac, delfilesqq
     integer :: funit
     integer :: first_time
+    integer :: stopunit, stopiter, ios
 
     call cptime(toff)
     ierror = 0
@@ -495,11 +496,17 @@
     ! The escape key returns a code of 1
     if (.not.nokbd) call keyboard_interaction (t,icode,tpaws,tout,ieqmax)
     inquire (file=stopfile, exist =exists)
+    stopiter=-1
     if (exists) then
-        icode = 1
+       stopunit=funit(14)
+       open(unit=stopunit,file=stopfile)
+       read(stopunit,*,iostat=ios)stopiter
+       if(ios.ne.0)stopiter=0
+       close(stopunit)
+       icode = 1
     endif
     ! If the stop file exists or the esc key has been pressed, then quit
-    if (icode==1) then
+    if (icode==1.and.stopiter.eq.0) then
         write (logerr, 5000) t, dt
         return
     endif
@@ -810,6 +817,10 @@
 
         if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
         numstep = numstep + 1
+        if (stopiter.GE.0.and.numstep.gt.stopiter) then
+           write (logerr, 5000) t, dt
+           return
+        endif
         go to 80
     endif
     return

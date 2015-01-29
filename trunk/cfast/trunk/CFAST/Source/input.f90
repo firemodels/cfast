@@ -2375,7 +2375,7 @@
       allocate(rm%xpltf(0:rm%ibar))
       call set_grid(rm%xplt,rm%ibar+1,rm%x0,rm%x1,rm%x1,0)
       do i = 0, rm%ibar
-         rm%xpltf(0:i) = real(rm%xplt(i),fb)
+         rm%xpltf(i) = real(rm%xplt(i),fb)
       end do
       
       rm%jbar = min(max(2,int(rm%dy/dxyz)),50)

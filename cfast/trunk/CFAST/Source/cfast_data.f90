@@ -390,7 +390,7 @@ module opt
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
     
     integer :: iprtalg = 0, jacchk = 0
-    integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0
+    integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0, total_steps = 0
  
     integer(2), dimension(mxdebug,2,nr) :: dbugsw
     

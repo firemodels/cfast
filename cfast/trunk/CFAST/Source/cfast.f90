@@ -34,6 +34,7 @@
     use cshell
     use iofiles
     use thermp
+    use opt, only: total_steps
     implicit none
 
     integer errorcode, rev_cfast, irev
@@ -121,12 +122,14 @@
 
     !     errors
 
+    write (logerr,5004) total_steps
     call cfastexit ('CFAST', errorcode)
 
 5000 format ('Date stamp from CFAST initialization ',a14)
 5001 format ('***Error: Error encountered in opening data files; code = ',i4)
 5002 format ('The project files are based on the root: ',a64)
 5003 format ('Total execution time = ',1pg10.3,' seconds')
+5004 format ('Total time steps = ',i10)     
     end program cfast
 
 ! --------------------------- initial_solution -------------------------------------------
@@ -817,7 +820,8 @@
 
         if (option(fdebug)==on) call output_debug (2,t,dt,ieqmax)
         numstep = numstep + 1
-        if (stopiter.GE.0.and.numstep.gt.stopiter) then
+        total_steps = total_steps + 1
+        if (stopiter>=0.and.total_steps>stopiter) then
            write (logerr, 5000) t, dt
            return
         endif

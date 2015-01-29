@@ -510,6 +510,7 @@
     endif
     ! If the stop file exists or the esc key has been pressed, then quit
     if (icode==1.and.stopiter.eq.0) then
+        call deleteoutputfiles (stopfile)
         write (logerr, 5000) t, dt
         return
     endif

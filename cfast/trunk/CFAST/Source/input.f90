@@ -1978,7 +1978,7 @@
     call deleteoutputfiles (ssspecies)
     call deleteoutputfiles (sswall)
     call deleteoutputfiles (errorlogging)
-    call deleteoutputfiles (stopfile)
+    !call deleteoutputfiles (stopfile)
     call deleteoutputfiles (historyfile)
     call deleteoutputfiles (statusfile)
     call deleteoutputfiles (queryfile)

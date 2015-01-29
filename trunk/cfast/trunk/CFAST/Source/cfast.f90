@@ -823,6 +823,7 @@
         numstep = numstep + 1
         total_steps = total_steps + 1
         if (stopiter>=0.and.total_steps>stopiter) then
+           call deleteoutputfiles (stopfile)
            write (logerr, 5000) t, dt
            return
         endif

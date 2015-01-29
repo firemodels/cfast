@@ -267,61 +267,61 @@ $RUNCFAST High_Bay USN_Iceland_Test_18
 $RUNCFAST High_Bay USN_Iceland_Test_19
 $RUNCFAST High_Bay USN_Iceland_Test_20
 
-$RUNCFAST Steckler_Compartment Steckler_010 /V
-$RUNCFAST Steckler_Compartment Steckler_011 /V
-$RUNCFAST Steckler_Compartment Steckler_012 /V
-$RUNCFAST Steckler_Compartment Steckler_013 /V
-$RUNCFAST Steckler_Compartment Steckler_014 /V
-$RUNCFAST Steckler_Compartment Steckler_016 /V
-$RUNCFAST Steckler_Compartment Steckler_017 /V
-$RUNCFAST Steckler_Compartment Steckler_018 /V
-$RUNCFAST Steckler_Compartment Steckler_019 /V
-$RUNCFAST Steckler_Compartment Steckler_020 /V
-$RUNCFAST Steckler_Compartment Steckler_021 /V
-$RUNCFAST Steckler_Compartment Steckler_022 /V
-$RUNCFAST Steckler_Compartment Steckler_023 /V
-$RUNCFAST Steckler_Compartment Steckler_030 /V
-$RUNCFAST Steckler_Compartment Steckler_041 /V
-$RUNCFAST Steckler_Compartment Steckler_114 /V
-$RUNCFAST Steckler_Compartment Steckler_116 /V
-$RUNCFAST Steckler_Compartment Steckler_122 /V
-$RUNCFAST Steckler_Compartment Steckler_144 /V
-$RUNCFAST Steckler_Compartment Steckler_160 /V
-$RUNCFAST Steckler_Compartment Steckler_161 /V
-$RUNCFAST Steckler_Compartment Steckler_162 /V
-$RUNCFAST Steckler_Compartment Steckler_163 /V
-$RUNCFAST Steckler_Compartment Steckler_164 /V
-$RUNCFAST Steckler_Compartment Steckler_165 /V
-$RUNCFAST Steckler_Compartment Steckler_166 /V
-$RUNCFAST Steckler_Compartment Steckler_167 /V
-$RUNCFAST Steckler_Compartment Steckler_210 /V
-$RUNCFAST Steckler_Compartment Steckler_212 /V
-$RUNCFAST Steckler_Compartment Steckler_220 /V
-$RUNCFAST Steckler_Compartment Steckler_221 /V
-$RUNCFAST Steckler_Compartment Steckler_224 /V
-$RUNCFAST Steckler_Compartment Steckler_240 /V
-$RUNCFAST Steckler_Compartment Steckler_242 /V
-$RUNCFAST Steckler_Compartment Steckler_310 /V
-$RUNCFAST Steckler_Compartment Steckler_324 /V
-$RUNCFAST Steckler_Compartment Steckler_410 /V
-$RUNCFAST Steckler_Compartment Steckler_510 /V
-$RUNCFAST Steckler_Compartment Steckler_512 /V
-$RUNCFAST Steckler_Compartment Steckler_513 /V
-$RUNCFAST Steckler_Compartment Steckler_514 /V
-$RUNCFAST Steckler_Compartment Steckler_517 /V
-$RUNCFAST Steckler_Compartment Steckler_520 /V
-$RUNCFAST Steckler_Compartment Steckler_521 /V
-$RUNCFAST Steckler_Compartment Steckler_522 /V
-$RUNCFAST Steckler_Compartment Steckler_524 /V
-$RUNCFAST Steckler_Compartment Steckler_540 /V
-$RUNCFAST Steckler_Compartment Steckler_541 /V
-$RUNCFAST Steckler_Compartment Steckler_542 /V
-$RUNCFAST Steckler_Compartment Steckler_544 /V
-$RUNCFAST Steckler_Compartment Steckler_610 /V
-$RUNCFAST Steckler_Compartment Steckler_612 /V
-$RUNCFAST Steckler_Compartment Steckler_622 /V
-$RUNCFAST Steckler_Compartment Steckler_710 /V
-$RUNCFAST Steckler_Compartment Steckler_810 /V
+$RUNCFAST Steckler_Compartment Steckler_010
+$RUNCFAST Steckler_Compartment Steckler_011
+$RUNCFAST Steckler_Compartment Steckler_012
+$RUNCFAST Steckler_Compartment Steckler_013
+$RUNCFAST Steckler_Compartment Steckler_014
+$RUNCFAST Steckler_Compartment Steckler_016
+$RUNCFAST Steckler_Compartment Steckler_017
+$RUNCFAST Steckler_Compartment Steckler_018
+$RUNCFAST Steckler_Compartment Steckler_019
+$RUNCFAST Steckler_Compartment Steckler_020
+$RUNCFAST Steckler_Compartment Steckler_021
+$RUNCFAST Steckler_Compartment Steckler_022
+$RUNCFAST Steckler_Compartment Steckler_023
+$RUNCFAST Steckler_Compartment Steckler_030
+$RUNCFAST Steckler_Compartment Steckler_041
+$RUNCFAST Steckler_Compartment Steckler_114
+$RUNCFAST Steckler_Compartment Steckler_116
+$RUNCFAST Steckler_Compartment Steckler_122
+$RUNCFAST Steckler_Compartment Steckler_144
+$RUNCFAST Steckler_Compartment Steckler_160
+$RUNCFAST Steckler_Compartment Steckler_161
+$RUNCFAST Steckler_Compartment Steckler_162
+$RUNCFAST Steckler_Compartment Steckler_163
+$RUNCFAST Steckler_Compartment Steckler_164
+$RUNCFAST Steckler_Compartment Steckler_165
+$RUNCFAST Steckler_Compartment Steckler_166
+$RUNCFAST Steckler_Compartment Steckler_167
+$RUNCFAST Steckler_Compartment Steckler_210
+$RUNCFAST Steckler_Compartment Steckler_212
+$RUNCFAST Steckler_Compartment Steckler_220
+$RUNCFAST Steckler_Compartment Steckler_221
+$RUNCFAST Steckler_Compartment Steckler_224
+$RUNCFAST Steckler_Compartment Steckler_240
+$RUNCFAST Steckler_Compartment Steckler_242
+$RUNCFAST Steckler_Compartment Steckler_310
+$RUNCFAST Steckler_Compartment Steckler_324
+$RUNCFAST Steckler_Compartment Steckler_410
+$RUNCFAST Steckler_Compartment Steckler_510
+$RUNCFAST Steckler_Compartment Steckler_512
+$RUNCFAST Steckler_Compartment Steckler_513
+$RUNCFAST Steckler_Compartment Steckler_514
+$RUNCFAST Steckler_Compartment Steckler_517
+$RUNCFAST Steckler_Compartment Steckler_520
+$RUNCFAST Steckler_Compartment Steckler_521
+$RUNCFAST Steckler_Compartment Steckler_522
+$RUNCFAST Steckler_Compartment Steckler_524
+$RUNCFAST Steckler_Compartment Steckler_540
+$RUNCFAST Steckler_Compartment Steckler_541
+$RUNCFAST Steckler_Compartment Steckler_542
+$RUNCFAST Steckler_Compartment Steckler_544
+$RUNCFAST Steckler_Compartment Steckler_610
+$RUNCFAST Steckler_Compartment Steckler_612
+$RUNCFAST Steckler_Compartment Steckler_622
+$RUNCFAST Steckler_Compartment Steckler_710
+$RUNCFAST Steckler_Compartment Steckler_810
 
 $RUNCFAST ../Verification/Miscellaneous cfast_test
 

@@ -1147,7 +1147,7 @@
         ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
         if (r<d*(1.0_eb-(zin-zfire)/z_flame)/2.0_eb) then
             t_excess = 900._eb
-        else
+        else if (r>0.0_eb) then
             sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)
         end if

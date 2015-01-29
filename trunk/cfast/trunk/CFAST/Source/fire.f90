@@ -1106,7 +1106,7 @@
     real(eb), intent(out) :: tplume
 
     real(eb), parameter :: cp = 1.012
-    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, deltaz, d, t_excess, sigma_deltat
+    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat
 
 
     ! default is for temperature to be the layer temperature at the desired location
@@ -1130,6 +1130,7 @@
         rho = 352.981915_eb/t_inf
         qstar = (qdot/1000._eb)/(rho*cp*t_inf*gsqrt*d**2.5_eb)
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
+        z_flame = d*(-1.02_eb+3.7_eb*qstar**0.4_eb)
         
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
@@ -1143,7 +1144,10 @@
             t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
 
-        if(r>0) then
+        ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
+        if (r<d*(1.0_eb-(zin-zfire)/z_flame)/2.0_eb) then
+            t_excess = 900._eb
+        else
             sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)
         end if

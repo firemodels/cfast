@@ -447,11 +447,10 @@
     ! fires
     if (numobjl/=0) then
         do i = 1, numobjl
-            nfire = nfire + 1
             call flame_height (fqf(i),farea(i),fheight)
             call SSaddtolist (position,fqf(i)/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)
-            call SSaddtolist (position,xfire(nfire,3),outarray)
+            call SSaddtolist (position,xfire(i,3),outarray)
             call SSaddtolist (position,farea(i),outarray)          
         end do
     endif

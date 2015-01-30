@@ -2348,7 +2348,7 @@
    real(eb) :: xb(6)
    character(256) :: slicefilename
    integer :: ijkslice(6)
-   real(eb), parameter :: dxyz=0.1_eb
+   real(eb), parameter :: dxyz=0.01_eb
    character(60) :: menu_label, colorbar_label, unit_label
    integer :: ndefinedbyuser=0 !  code to input user slice info will define this variable (and it will be declared somewhere else)
    real(eb) :: imix
@@ -2389,7 +2389,7 @@
       rm%kbar = min(max(2,int(rm%dz/dxyz)),50)
       allocate(rm%zplt(0:rm%kbar))
       allocate(rm%zpltf(0:rm%kbar))
-      call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/2)
+      call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/3)
       do k = 0, rm%kbar
          rm%zpltf(k) = real(rm%zplt(k),fb)
       end do

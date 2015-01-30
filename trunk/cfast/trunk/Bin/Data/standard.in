@@ -1,4 +1,4 @@
-VERSN,7,Cable tray fire -- base case
+VERSN,6,Cable tray fire -- base case
 !!
 !!Scenario Configuration Keywords
 !!
@@ -36,7 +36,7 @@ TRACE,0,0,0,0,0,0,0,0,0,0,0
 AREA,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
 HEIGH,0,0,0,0,0,0,0,0,0,0,0
 !!Wood_Wall
-FIRE,1,4.55,2.5,0,1,1,0,0,0,1,Wood_Wall
+FIRE,1,9.1,2.5,0,1,1,0,0,0,1,Wood_Wall
 CHEMI,6,10,5,0,0,0.33,1.81E+07,HARDWOOD
 TIME,0,8000
 HRR,0,1000000

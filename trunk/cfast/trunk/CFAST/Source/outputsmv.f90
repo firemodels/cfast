@@ -247,7 +247,7 @@ subroutine output_slicedata(time,first_time)
    type(slice_type), pointer :: sf
    type(room_type), pointer :: rm
    integer :: i, ii, jj, kk, roomnum
-   real(eb) :: xx, yy, zz, tgas
+   real(eb) :: xx, yy, zz, tgas, vgas
    integer :: funit,unit
    real(eb) :: imix
    
@@ -268,7 +268,7 @@ subroutine output_slicedata(time,first_time)
             yy = rm%yplt(sf%ijk(3)+jj) - rm%y0
             do kk = 0, nz-1
                zz = rm%zplt(sf%ijk(5)+kk) - rm%z0
-               call gettgas(roomnum,xx,yy,zz,tgas)
+               call gettgas(roomnum,xx,yy,zz,tgas, vgas)
                slicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
             end do
          end do
@@ -342,7 +342,7 @@ subroutine output_isodata(time,first_time)
    type(iso_type), pointer :: isoptr
    type(room_type), pointer :: rm
    integer :: i, ii, jj, kk, roomnum
-   real(eb) :: xx, yy, zz, tgas
+   real(eb) :: xx, yy, zz, tgas, vgas
    integer :: funit,unit
    real(eb) :: imix
    real(fb) :: levelsf(1)
@@ -368,7 +368,7 @@ subroutine output_isodata(time,first_time)
             yy = rm%yplt(jj) - rm%y0
             do kk = 0, kbar
                zz = rm%zplt(kk) - rm%z0
-               call gettgas(roomnum,xx,yy,zz,tgas)
+               call gettgas(roomnum,xx,yy,zz,tgas,vgas)
                isodataf(ii+1,jj+1,kk+1) = real(tgas-273.15_eb,fb)
             end do
          end do

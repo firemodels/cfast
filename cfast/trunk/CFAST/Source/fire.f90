@@ -956,7 +956,7 @@
         
 ! --------------------------- gettgas -------------------------------------------
 
-    subroutine gettgas(iroom,x,y,z,tg)
+    subroutine gettgas(iroom,x,y,z,tg,vg)
 
     !     routine: gettgas
     !     purpose: routine to calculate gas temperature nearby a target
@@ -976,20 +976,21 @@
     integer, intent(in) :: iroom
     real(eb), intent(in) :: x, y, z
     
-    real(eb), intent(out) :: tg
+    real(eb), intent(out) :: tg, vg
         
-    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tplume_ceiling, tcj
+    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tplume_ceiling, tcj, vcj
 
     integer :: i
 
-    ! default is the appropriate layer temperature
+    ! default is the appropriate layer temperature and a velocity of 0.1 m/s
     if (z>=zzhlay(iroom,lower)) then
         tg = zztemp(iroom,upper)
     else
         tg = zztemp(iroom,lower)
     endif
+    vg = 0.01_eb
 
-    ! if there is a fire in the room and the target is DIRECTLY above the fire, use plume temperature
+    ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
             qdot = fqf(i)
@@ -1005,15 +1006,16 @@
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
-            call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj)
+            call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
             tg = max(tg,tplume,tcj)
+            vg = max(vg, vcj)
         endif
     end do
     end subroutine gettgas  
     
 ! --------------------------- get_ceilingjet_temperature --------------------------------------
     
-    subroutine get_ceilingjet_temperature (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj)
+    subroutine get_ceilingjet_temperature (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj, vcj)
 
     !     routine: get_ceilingjet_temperature
     !     purpose: Calculates ceiling jet temperature at a specified height and distance from the fire.
@@ -1034,14 +1036,25 @@
     implicit none
 
     real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r
-    real(eb), intent(out) :: tcj
+    real(eb), intent(out) :: tcj, vcj
         
     real(eb), parameter :: cp = 1.012_eb
     real(eb), parameter :: deltaT_0star_at_p2 = (0.225_eb+0.27_eb*0.2_eb)**(-4._eb/3._eb)
     real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj, correction_factor
-
-    !     for the algorithm to work, there has to be a fire, two layers, and a target point about the fire     
+ 
+    ! Set default values
+    if (zin<=zlayer) then
+        ! desired point is in the lower layer
+        t_layer = tl
+    else
+        t_layer = tu
+    end if
+    tcj = t_layer
+    vcj = 0.01_eb
+     
     h = zceil - zfire 
+        
+    ! for the temperature algorithm to work, there has to be a fire, two layers, and a target point above the fire
     if (qdot>0.0_eb.and.tu>=tl.and.h>=0.0_eb) then
         if (zfire<=zlayer) then
             ! fire is in the lower layer
@@ -1049,28 +1062,29 @@
         else
             t_inf = tu
         end if
+        rho_inf = 352.981915_eb/t_inf
+        qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
         
-        if (zin<=zlayer) then
-            ! desired point is in the lower layer
-            t_layer = tl
-        else
-            t_layer = tu
-        end if
-        
-        tcj = t_layer
+        !ceiling jet thickness
         if (r/h>=0.26_eb) then
             delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*r/h))
         else
             delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*0.26_eb))
         end if
+        
         if (zin>=zceil-delta_cj) then
-            rho_inf = 352.981915_eb/t_inf
-            qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
-            if (r/h<0.2_eb) then
+            ! ceiling jet temperature
+            if (r/h<=0.2_eb) then
                 tcj = tplume
             else
                 correction_factor = (tplume/t_layer-1.0_eb)/(deltaT_0star_at_p2*qstar_h**twothirds)
                 tcj = t_layer + t_layer * correction_factor * qstar_h**twothirds * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
+            end if
+            ! ceiling jet velocity
+            if (r/h<=0.17_eb) then
+                vcj = gsqrt*sqrt(h)*qstar_h**onethird*3.61_eb
+            else
+                vcj = gsqrt*sqrt(h)*qstar_h**onethird*1.06_eb*(r/h)**(-0.69_eb)
             end if
         end if
     end if

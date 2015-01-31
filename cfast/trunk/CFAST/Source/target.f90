@@ -7,17 +7,18 @@ module target_routines
     use cparams
     use dsize
     use conduction_routines
+    use convection_routines
     use fireptrs
     use targptrs
     use objects2
     use wnodes
-    use convection_routines
+    use opt
     implicit none
 
     
 private
 
-public target, rev_target, target_flux, update_detectors
+public target, rev_target, target_flux, update_detectors, detector_temp_and_velocity
 
 contains
 
@@ -224,7 +225,7 @@ contains
     real(eb) :: flux(2), dflux(2)
     
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
-        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, &
+        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, vg, &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
@@ -382,7 +383,7 @@ contains
     xtarg = xxtarg(trgcenx,itarg)
     ytarg = xxtarg(trgceny,itarg)
     ztarg = xxtarg(trgcenz,itarg)
-    call gettgas(irtarg,xtarg,ytarg,ztarg,tg)
+    call gettgas(irtarg,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
     if(ixtarg(trgback,itarg)==interior)then
         tgb = tg
@@ -567,7 +568,59 @@ contains
     end do
     return
     end subroutine update_detectors
+      
+    ! --------------------------- detector_temp_and_velocity -------------------------------------------
+
+    subroutine detector_temp_and_velocity
+
+    !     routine:     detector_temp_and_velocity
+
+    !     description:  calculates near-detector gas temperature and velocity
+
+    real(eb) :: xloc, yloc, zloc, tg, vg
+    integer :: i, id, iroom, nrmfire, nd, ifire, ifpnt
+
+    do id = 1, ndtect
+        iroom = ixdtect(id,droom)
+        xdtect(id,dvel) = 0.1_eb
+        zloc = xdtect(id,dzloc)
+        if(zloc>zzhlay(iroom,lower))then
+            xdtect(id,dtjet) = zztemp(iroom,upper)
+        else
+            xdtect(id,dtjet) = zztemp(iroom,lower)
+        endif
+    end do
+    if (option(fcjet)==off) return
+
+    ! handle detectors that are not in active halls
+    do id = 1, ndtect
+        iroom = ixdtect(id,droom)
+        nrmfire = ifrpnt(iroom,1)
+        xloc = xdtect(id,dxloc)
+        yloc = xdtect(id,dyloc)
+        zloc = xdtect(id,dzloc)
+        if (nrmfire>0.and.izhall(iroom,ihmode)/=ihduring) then
+            do ifire = 1, nrmfire
+                ifpnt = ifrpnt(iroom,2) + ifire - 1
+                call gettgas(iroom,xloc,yloc,zloc,tg,vg)
+                xdtect(id,dtjet) = max(tg,xdtect(id,dtjet))
+                xdtect(id,dvel) = max(vg,xdtect(id,dvel))
+            end do
+        endif
+    end do
+
+    ! handle detectors that are in active halls
+    do i = 1, nm1
+        nrmfire = ifrpnt(i,1)
+        id = idtpnt(i,2)
+        nd = idtpnt(i,1)  
+        if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)
+    end do
     
+    return
+    
+    end subroutine detector_temp_and_velocity
+
 ! --------------------------- rev_target -------------------------------------------
 
     integer function rev_target ()

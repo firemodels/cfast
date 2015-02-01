@@ -2397,21 +2397,14 @@
 
    ! setup slice file data structures
 
-   nsliceinfo = 4*nrooms + ndefinedbyuser
+   nsliceinfo = 20*nrooms + ndefinedbyuser
+   islice = 1
    allocate(sliceinfo(nsliceinfo))
-   do iroom = 1, nrooms
-
-   ! vertical slice in XZ plane
    
-      islice = 4*iroom-3
-      sliceptr => sliceinfo(islice)
+   ! vertical temperature slices in XZ plane
+
+   do iroom = 1, nrooms
       rm=>roominfo(iroom)
-
-      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
-      menu_label="Temperature"
-      colorbar_label="TEMP"
-      unit_label="C"
-
       xb(1) = rm%x0
       xb(2) = rm%x1
       xb(3) = rm%y0 + rm%dy/2.0_eb
@@ -2424,23 +2417,47 @@
       ijkslice(4) = get_igrid(xb(4),rm%yplt,rm%jbar)
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
-      sliceptr%filename = trim(slicefilename)
-      sliceptr%roomnum = iroom
-      sliceptr%menu_label = trim(menu_label)
-      sliceptr%colorbar_label = trim(colorbar_label)
-      sliceptr%unit_label = trim(unit_label)
-      sliceptr%xb = xb
-      sliceptr%ijk = ijkslice
+      do j = 1, 5
+         sliceptr => sliceinfo(islice)
 
-   ! vertical slice in YZ plane
+         write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+         if(j.eq.1)then
+            menu_label="Temperature"
+            colorbar_label="TEMP"
+            unit_label="C"
+         else if(j.eq.2)then
+            menu_label="U-VELOCITY"
+            colorbar_label="U-VEL"
+            unit_label="m/s"
+         else if(j.eq.3)then
+            menu_label="V-VELOCITY"
+            colorbar_label="V-VEL"
+            unit_label="m/s"
+         else if(j.eq.4)then
+            menu_label="W-VELOCITY"
+            colorbar_label="W-VEL"
+            unit_label="m/s"
+         else
+            menu_label="Speed"
+            colorbar_label="Speed"
+            unit_label="m/s"
+         endif
+
+         sliceptr%filename = trim(slicefilename)
+         sliceptr%roomnum = iroom
+         sliceptr%menu_label = trim(menu_label)
+         sliceptr%colorbar_label = trim(colorbar_label)
+         sliceptr%unit_label = trim(unit_label)
+         sliceptr%xb = xb
+         sliceptr%ijk = ijkslice
+         islice = islice + 1
+      end do
+   end do
+
+   ! vertical temperature slices in YZ plane
    
-      islice = 4*iroom-2
-      sliceptr => sliceinfo(islice)
-      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
-      menu_label="Temperature"
-      colorbar_label="TEMP"
-      unit_label="C"
-
+   do iroom = 1, nrooms
+      rm=>roominfo(iroom)
       xb(1) = rm%x0 + rm%dx/2.0_eb
       xb(2) = rm%x0 + rm%dx/2.0_eb
       xb(3) = rm%y0
@@ -2453,23 +2470,47 @@
       ijkslice(4) = rm%jbar
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
-      sliceptr%filename = trim(slicefilename)
-      sliceptr%roomnum = iroom
-      sliceptr%menu_label = trim(menu_label)
-      sliceptr%colorbar_label = trim(colorbar_label)
-      sliceptr%unit_label = trim(unit_label)
-      sliceptr%xb = xb
-      sliceptr%ijk = ijkslice
+      do j = 1, 5
+         sliceptr => sliceinfo(islice)
 
-   ! horizontal slice in XY plane
+         write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+         if(j.eq.1)then
+            menu_label="Temperature"
+            colorbar_label="TEMP"
+            unit_label="C"
+         else if(j.eq.2)then
+            menu_label="U-VELOCITY"
+            colorbar_label="U-VEL"
+            unit_label="m/s"
+         else if(j.eq.3)then
+            menu_label="V-VELOCITY"
+            colorbar_label="V-VEL"
+            unit_label="m/s"
+         else if(j.eq.4)then
+            menu_label="W-VELOCITY"
+            colorbar_label="W-VEL"
+            unit_label="m/s"
+         else
+            menu_label="Speed"
+            colorbar_label="Speed"
+            unit_label="m/s"
+         endif
+
+         sliceptr%filename = trim(slicefilename)
+         sliceptr%roomnum = iroom
+         sliceptr%menu_label = trim(menu_label)
+         sliceptr%colorbar_label = trim(colorbar_label)
+         sliceptr%unit_label = trim(unit_label)
+         sliceptr%xb = xb
+         sliceptr%ijk = ijkslice
+         islice = islice + 1
+      end do
+   end do
+
+   ! horizontal slices in XY plane
    
-      islice = 4*iroom - 1
-      sliceptr => sliceinfo(islice)
-      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
-      menu_label="Temperature"
-      colorbar_label="TEMP"
-      unit_label="C"
-
+   do iroom = 1, nrooms
+      rm=>roominfo(iroom)
       xb(1) = rm%x0
       xb(2) = rm%x1
       xb(3) = rm%y0
@@ -2482,23 +2523,47 @@
       ijkslice(4) = rm%jbar
       ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
       ijkslice(6) = ijkslice(5)
-      sliceptr%filename = trim(slicefilename)
-      sliceptr%roomnum = iroom
-      sliceptr%menu_label = trim(menu_label)
-      sliceptr%colorbar_label = trim(colorbar_label)
-      sliceptr%unit_label = trim(unit_label)
-      sliceptr%xb = xb
-      sliceptr%ijk = ijkslice
-      
-   ! 3d slice file
-   
-      islice = 4*iroom 
-      sliceptr => sliceinfo(islice)
-      write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
-      menu_label="Temperature"
-      colorbar_label="TEMP"
-      unit_label="C"
+      do j = 1, 5
+         sliceptr => sliceinfo(islice)
 
+         write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+         if(j.eq.1)then
+            menu_label="Temperature"
+            colorbar_label="TEMP"
+            unit_label="C"
+         else if(j.eq.2)then
+            menu_label="U-VELOCITY"
+            colorbar_label="U-VEL"
+            unit_label="m/s"
+         else if(j.eq.3)then
+            menu_label="V-VELOCITY"
+            colorbar_label="V-VEL"
+            unit_label="m/s"
+         else if(j.eq.4)then
+            menu_label="W-VELOCITY"
+            colorbar_label="W-VEL"
+            unit_label="m/s"
+         else
+            menu_label="Speed"
+            colorbar_label="Speed"
+            unit_label="m/s"
+         endif
+
+         sliceptr%filename = trim(slicefilename)
+         sliceptr%roomnum = iroom
+         sliceptr%menu_label = trim(menu_label)
+         sliceptr%colorbar_label = trim(colorbar_label)
+         sliceptr%unit_label = trim(unit_label)
+         sliceptr%xb = xb
+         sliceptr%ijk = ijkslice
+         islice = islice + 1
+      end do
+   end do
+      
+   ! 3d temperature slice files
+   
+   do iroom = 1, nrooms
+      rm=>roominfo(iroom)
       xb(1) = rm%x0
       xb(2) = rm%x1
       xb(3) = rm%y0
@@ -2511,14 +2576,40 @@
       ijkslice(4) = rm%jbar
       ijkslice(5) = 0
       ijkslice(6) = rm%kbar
-      sliceptr%filename = trim(slicefilename)
-      sliceptr%roomnum = iroom
-      sliceptr%menu_label = trim(menu_label)
-      sliceptr%colorbar_label = trim(colorbar_label)
-      sliceptr%unit_label = trim(unit_label)
-      sliceptr%xb = xb
-      sliceptr%ijk = ijkslice
-      
+      do j = 1, 5
+         sliceptr => sliceinfo(islice)
+
+         write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+         if(j.eq.1)then
+            menu_label="Temperature"
+            colorbar_label="TEMP"
+            unit_label="C"
+         else if(j.eq.2)then
+            menu_label="U-VELOCITY"
+            colorbar_label="U-VEL"
+            unit_label="m/s"
+         else if(j.eq.3)then
+            menu_label="V-VELOCITY"
+            colorbar_label="V-VEL"
+            unit_label="m/s"
+         else if(j.eq.4)then
+            menu_label="W-VELOCITY"
+            colorbar_label="W-VEL"
+            unit_label="m/s"
+         else
+            menu_label="Speed"
+            colorbar_label="Speed"
+            unit_label="m/s"
+         endif
+         sliceptr%filename = trim(slicefilename)
+         sliceptr%roomnum = iroom
+         sliceptr%menu_label = trim(menu_label)
+         sliceptr%colorbar_label = trim(colorbar_label)
+         sliceptr%unit_label = trim(unit_label)
+         sliceptr%xb = xb
+         sliceptr%ijk = ijkslice
+         islice = islice + 1
+      end do
    end do
 
    !*** the following code needs to be updated based on additional slice files defined by the user
@@ -2536,15 +2627,15 @@
 !      sliceptr%unit_label =
 !      sliceptr%xb =
 !      sliceptr%ijk =
+      islice = islice + 1
    end do
    
    ! setup isosurface data structures
    
    nisoinfo = nrooms
    allocate(isoinfo(nsliceinfo))
+   i_iso = 1
    do iroom = 1, nrooms
-
-      i_iso = iroom
       isoptr => isoinfo(i_iso)
       rm=>roominfo(iroom)
 
@@ -2558,6 +2649,7 @@
       isoptr%menu_label = trim(menu_label)
       isoptr%colorbar_label = trim(colorbar_label)
       isoptr%unit_label = trim(unit_label)
+      i_iso = i_iso + 1
    end do
 
    end subroutine setup_slice_iso

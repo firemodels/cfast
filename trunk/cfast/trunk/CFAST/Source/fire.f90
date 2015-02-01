@@ -976,9 +976,10 @@
     integer, intent(in) :: iroom
     real(eb), intent(in) :: x, y, z
     
-    real(eb), intent(out) :: tg, vg
+    real(eb), intent(out) :: tg, vg(4)
         
     real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tplume_ceiling, tcj, vcj
+    real(eb) :: xxfire, yyfire
 
     integer :: i
 
@@ -988,8 +989,10 @@
     else
         tg = zztemp(iroom,lower)
     endif
-    vg = 0.01_eb
-
+    vg(4) = 0.01_eb
+    vg(1) = 0.01_eb
+    vg(2) = 0.0_eb
+    vg(3) = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
@@ -999,16 +1002,23 @@
             tu = zztemp(iroom,upper)
             tl = zztemp(iroom,lower)
             zfire = xfire(i,f_fire_zpos)
+            xxfire = xfire(i,f_fire_xpos)
+            yyfire = xfire(i,f_fire_ypos)
             zlayer = zzhlay(iroom,lower)
             zceil = hr(iroom)
-            r = sqrt((x-xfire(i,f_fire_xpos))**2 + (y-xfire(i,f_fire_ypos))**2)
+            r = sqrt((x-xxfire)**2 + (y-yyfire)**2)
             ! first calculate plume temperature at desired location
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
             call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
             tg = max(tg,tplume,tcj)
-            vg = max(vg, vcj)
+            if(vg(4).lt.vcj)then
+               vg(4) = vcj
+               vg(1) = vg(4)*(x-xxfire)/r
+               vg(2) = vg(4)*(y-yyfire)/r
+               vg(3) = 0.0_eb
+            endif
         endif
     end do
     end subroutine gettgas  

@@ -1010,9 +1010,9 @@
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
             call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
             tg = max(tg,tplume,tcj)
-               vg(1) = vg(1) + vcj*(x-xxfire)/r
-               vg(2) = vg(2) + vcj*(y-yyfire)/r
-               vg(3) = 0.0_eb
+            vg(1) = vg(1) + vcj*(x-xxfire)/r
+            vg(2) = vg(2) + vcj*(y-yyfire)/r
+            vg(3) = 0.0_eb
         endif
     end do
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
@@ -1023,7 +1023,7 @@
     subroutine get_ceilingjet_temperature (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj, vcj)
 
     !     routine: get_ceilingjet_temperature
-    !     purpose: Calculates ceiling jet temperature at a specified height and distance from the fire.
+    !     purpose: Calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
     !
     !     Uses Alpert / Heskestad's correlation to calculate plume  temperature
     !     arguments:  qdot: total heat release rate of the fire (W)
@@ -1055,7 +1055,7 @@
         t_layer = tu
     end if
     tcj = t_layer
-    vcj = 0.01_eb
+    vcj = 0.0
      
     h = zceil - zfire 
         

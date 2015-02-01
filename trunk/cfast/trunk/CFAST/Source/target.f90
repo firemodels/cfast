@@ -578,7 +578,7 @@ contains
     !     description:  calculates near-detector gas temperature and velocity
 
     real(eb) :: xloc, yloc, zloc, tg, vg(4)
-    integer :: i, id, iroom, nrmfire, nd
+    integer :: i, id, iroom, nd
 
     do id = 1, ndtect
         iroom = ixdtect(id,droom)
@@ -595,20 +595,18 @@ contains
     ! handle detectors that are not in active halls
     do id = 1, ndtect
         iroom = ixdtect(id,droom)
-        nrmfire = ifrpnt(iroom,1)
         xloc = xdtect(id,dxloc)
         yloc = xdtect(id,dyloc)
         zloc = xdtect(id,dzloc)
-        if (nrmfire>0.and.izhall(iroom,ihmode)/=ihduring) then
+        if (izhall(iroom,ihmode)/=ihduring) then
             call gettgas(iroom,xloc,yloc,zloc,tg,vg)
-            xdtect(id,dtjet) = max(tg,xdtect(id,dtjet))
-            xdtect(id,dvel) = max(max(vg(4),0.1_eb),xdtect(id,dvel))
+            xdtect(id,dtjet) = tg
+            xdtect(id,dvel) = vg(4)
         endif
     end do
 
     ! handle detectors that are in active halls
     do i = 1, nm1
-        nrmfire = ifrpnt(i,1)
         id = idtpnt(i,2)
         nd = idtpnt(i,1)  
         if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)

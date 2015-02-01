@@ -242,16 +242,16 @@ subroutine output_slicedata(time,first_time)
 
    real(eb), intent(in) :: time
    integer, intent(in) :: first_time
-   real(fb), allocatable, dimension(:,:,:) :: slicedata
+   real(fb), allocatable, dimension(:,:,:) :: tslicedata, uslicedata, vslicedata, wslicedata, sslicedata
    integer :: nx, ny, nz
    type(slice_type), pointer :: sf
    type(room_type), pointer :: rm
    integer :: i, ii, jj, kk, roomnum
-   real(eb) :: xx, yy, zz, tgas, vgas
+   real(eb) :: xx, yy, zz, tgas, vgas(4)
    integer :: funit,unit
    real(eb) :: imix
    
-   do i = 1, nsliceinfo
+   do i = 1, nsliceinfo, 5
       sf => sliceinfo(i)
       rm => roominfo(sf%roomnum)
       
@@ -261,7 +261,11 @@ subroutine output_slicedata(time,first_time)
       roomnum = sf%roomnum
       rm => roominfo(roomnum)
       if(nx.le.0.or.ny.le.0.or.nz.le.0)cycle
-      allocate(slicedata(0:nx-1,0:ny-1,0:nz-1))
+      allocate(tslicedata(0:nx-1,0:ny-1,0:nz-1))
+      allocate(uslicedata(0:nx-1,0:ny-1,0:nz-1))
+      allocate(vslicedata(0:nx-1,0:ny-1,0:nz-1))
+      allocate(wslicedata(0:nx-1,0:ny-1,0:nz-1))
+      allocate(sslicedata(0:nx-1,0:ny-1,0:nz-1))
       do ii = 0, nx-1
          xx = rm%xplt(sf%ijk(1)+ii) - rm%x0
          do jj = 0, ny-1
@@ -269,7 +273,11 @@ subroutine output_slicedata(time,first_time)
             do kk = 0, nz-1
                zz = rm%zplt(sf%ijk(5)+kk) - rm%z0
                call gettgas(roomnum,xx,yy,zz,tgas, vgas)
-               slicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
+               tslicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
+               uslicedata(ii,jj,kk) = real(vgas(1),fb)
+               vslicedata(ii,jj,kk) = real(vgas(2),fb)
+               wslicedata(ii,jj,kk) = real(vgas(3),fb)
+               sslicedata(ii,jj,kk) = real(vgas(4),fb)
             end do
          end do
       end do
@@ -284,8 +292,72 @@ subroutine output_slicedata(time,first_time)
          open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
       endif
       write(unit) real(time,fb)
-      write(unit) (((slicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
-      deallocate(slicedata)
+      write(unit) (((tslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
+      deallocate(tslicedata)
+      close(unit)
+      
+      unit=funit(14)
+      sf => sliceinfo(i+1)
+      if(first_time.eq.1)then
+         open(unit,file=sf%filename,form='unformatted',status='replace')
+         write(unit) sf%menu_label(1:30)
+         write(unit) sf%colorbar_label(1:30)
+         write(unit) sf%unit_label(1:30)
+         write(unit) (sf%ijk(ii),ii=1,6)
+      else
+         open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+      endif
+      write(unit) real(time,fb)
+      write(unit) (((uslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
+      deallocate(uslicedata)
+      close(unit)
+      
+      unit=funit(14)
+      sf => sliceinfo(i+2)
+      if(first_time.eq.1)then
+         open(unit,file=sf%filename,form='unformatted',status='replace')
+         write(unit) sf%menu_label(1:30)
+         write(unit) sf%colorbar_label(1:30)
+         write(unit) sf%unit_label(1:30)
+         write(unit) (sf%ijk(ii),ii=1,6)
+      else
+         open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+      endif
+      write(unit) real(time,fb)
+      write(unit) (((vslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
+      deallocate(vslicedata)
+      close(unit)
+      
+      unit=funit(14)
+      sf => sliceinfo(i+3)
+      if(first_time.eq.1)then
+         open(unit,file=sf%filename,form='unformatted',status='replace')
+         write(unit) sf%menu_label(1:30)
+         write(unit) sf%colorbar_label(1:30)
+         write(unit) sf%unit_label(1:30)
+         write(unit) (sf%ijk(ii),ii=1,6)
+      else
+         open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+      endif
+      write(unit) real(time,fb)
+      write(unit) (((wslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
+      deallocate(wslicedata)
+
+      close(unit)
+      unit=funit(14)
+      sf => sliceinfo(i+4)
+      if(first_time.eq.1)then
+         open(unit,file=sf%filename,form='unformatted',status='replace')
+         write(unit) sf%menu_label(1:30)
+         write(unit) sf%colorbar_label(1:30)
+         write(unit) sf%unit_label(1:30)
+         write(unit) (sf%ijk(ii),ii=1,6)
+      else
+         open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+      endif
+      write(unit) real(time,fb)
+      write(unit) (((sslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
+      deallocate(sslicedata)
       close(unit)
    end do
    
@@ -342,7 +414,7 @@ subroutine output_isodata(time,first_time)
    type(iso_type), pointer :: isoptr
    type(room_type), pointer :: rm
    integer :: i, ii, jj, kk, roomnum
-   real(eb) :: xx, yy, zz, tgas, vgas
+   real(eb) :: xx, yy, zz, tgas, vgas(4)
    integer :: funit,unit
    real(eb) :: imix
    real(fb) :: levelsf(1)

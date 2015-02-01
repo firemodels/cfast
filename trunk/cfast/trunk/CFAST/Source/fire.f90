@@ -989,10 +989,7 @@
     else
         tg = zztemp(iroom,lower)
     endif
-    vg(4) = 0.01_eb
-    vg(1) = 0.01_eb
-    vg(2) = 0.0_eb
-    vg(3) = 0.0_eb
+    vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
@@ -1013,14 +1010,12 @@
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
             call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
             tg = max(tg,tplume,tcj)
-            if(vg(4).lt.vcj)then
-               vg(4) = vcj
-               vg(1) = vg(4)*(x-xxfire)/r
-               vg(2) = vg(4)*(y-yyfire)/r
+               vg(1) = vg(1) + vcj*(x-xxfire)/r
+               vg(2) = vg(2) + vcj*(y-yyfire)/r
                vg(3) = 0.0_eb
-            endif
         endif
     end do
+    vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
     end subroutine gettgas  
     
 ! --------------------------- get_ceilingjet_temperature --------------------------------------

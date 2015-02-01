@@ -225,7 +225,7 @@ contains
     real(eb) :: flux(2), dflux(2)
     
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
-        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, vg, &
+        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
@@ -577,8 +577,8 @@ contains
 
     !     description:  calculates near-detector gas temperature and velocity
 
-    real(eb) :: xloc, yloc, zloc, tg, vg
-    integer :: i, id, iroom, nrmfire, nd, ifire, ifpnt
+    real(eb) :: xloc, yloc, zloc, tg, vg(4)
+    integer :: i, id, iroom, nrmfire, nd
 
     do id = 1, ndtect
         iroom = ixdtect(id,droom)
@@ -600,12 +600,9 @@ contains
         yloc = xdtect(id,dyloc)
         zloc = xdtect(id,dzloc)
         if (nrmfire>0.and.izhall(iroom,ihmode)/=ihduring) then
-            do ifire = 1, nrmfire
-                ifpnt = ifrpnt(iroom,2) + ifire - 1
-                call gettgas(iroom,xloc,yloc,zloc,tg,vg)
-                xdtect(id,dtjet) = max(tg,xdtect(id,dtjet))
-                xdtect(id,dvel) = max(vg,xdtect(id,dvel))
-            end do
+            call gettgas(iroom,xloc,yloc,zloc,tg,vg)
+            xdtect(id,dtjet) = max(tg,xdtect(id,dtjet))
+            xdtect(id,dvel) = max(max(vg(4),0.1_eb),xdtect(id,dvel))
         endif
     end do
 

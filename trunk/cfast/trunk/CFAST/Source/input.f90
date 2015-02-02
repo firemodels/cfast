@@ -1741,6 +1741,7 @@
 
     use precision_parameters
     use cfast_main
+    use cparams, only: mx_hsep
     use iofiles
     use objects2
     implicit none
@@ -1753,7 +1754,7 @@
     character(128) :: lcarray(ncol)
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, errorcode, ir, i, ii, nret
-    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, minimumheight = 1.e-3_eb, area, d, flamelength
+    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, d, flamelength
 
     ! there are eight required inputs for each fire
     do ir = 1, 8
@@ -1856,11 +1857,11 @@
     call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    call positionobject(objpos,1,iobj,objrm(iobj),br,midpoint,minimumheight,errorcode)
+    call positionobject(objpos,1,iobj,objrm(iobj),br,midpoint,mx_hsep,errorcode)
     if (errorcode/=0) return
-    call positionobject(objpos,2,iobj,objrm(iobj),dr,midpoint,minimumheight,errorcode)
+    call positionobject(objpos,2,iobj,objrm(iobj),dr,midpoint,mx_hsep,errorcode)
     if (errorcode/=0) return
-    call positionobject(objpos,3,iobj,objrm(iobj),hr,base,minimumheight,errorcode)
+    call positionobject(objpos,3,iobj,objrm(iobj),hr,base,mx_hsep,errorcode)
     if (errorcode/=0) return
 
     ! diagnostic - check for the maximum heat release per unit volume.

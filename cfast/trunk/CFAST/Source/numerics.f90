@@ -705,16 +705,19 @@
     character :: msg*80, mesg*128
     
     real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, abs, tstop, h, tnext, r
-    integer :: i, neq, mxord, lenpd, lenrw, jacdim, jacd, mband, msave, leniw, lrw, liw, idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
+    integer :: i, neq, mxord, lenpd, lenrw, jacdim, jacd, mband, msave, leniw, lrw, liw
+    integer :: idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
     !     set pointers into iwork
-    integer, parameter :: lml=1, lmu=2, lmxord=3, lmtype=4, lnst=11, lnre=12, lnje=13, letf=14, lctf=15, lnpd=16, lipvt=21, ljcalc=5, lphase=6, lk=7, lkold=8, lns=9, lnstl=10, liwm=1
+    integer, parameter :: lml=1, lmu=2, lmxord=3, lmtype=4, lnst=11, lnre=12, lnje=13, letf=14, lctf=15, lnpd=16
+    integer, parameter :: lipvt=21, ljcalc=5, lphase=6, lk=7, lkold=8, lns=9, lnstl=10, liwm=1
     !
     !     set relative offset into rwork
     integer, parameter :: npd=1
     !
     !     set pointers into rwork
-    integer, parameter :: ltstop=1, lhmax=2, lh=3, ltn=4, lcj=5, lcjold=6, lhold=7, ls=8, lround=9, lalpha=11, lbeta=17, lgamma=23, lpsi=29, lsigma=35, ldelta=41
+    integer, parameter :: ltstop=1, lhmax=2, lh=3, ltn=4, lcj=5, lcjold=6, lhold=7, ls=8, lround=9, lalpha=11
+    integer, parameter :: lbeta=17, lgamma=23, lpsi=29, lsigma=35, ldelta=41
     !
     !*** added by gpf 11/21/91 in case the "no remember"
     !
@@ -913,7 +916,8 @@
     !
     !     compute initial derivative, updating tn and y, if applicable
 340 if (info(11) == 0) go to 350
-    call ddaini(tn,y,yprime,neq,res,jac,ho,rwork(lwt),idid,rpar,ipar,rwork(lphi),rwork(ldelta),rwork(le),rwork(lwm),iwork(liwm),hmin,rwork(lround),info(10),ntemp)
+    call ddaini(tn,y,yprime,neq,res,jac,ho,rwork(lwt),idid,rpar,ipar,rwork(lphi),rwork(ldelta),rwork(le),&
+       rwork(lwm),iwork(liwm),hmin,rwork(lround),info(10),ntemp)
     if (idid < 0) go to 390
     !
     !     load h with ho.  store h in rwork(lh)
@@ -1055,9 +1059,10 @@
     !     compute minimum stepsize
     hmin=4.0d0*uround*dmax1(abs(tn),abs(tout))
     !
-    call ddastp(tn,y,yprime,neq,res,jac,h,rwork(lwt),info(1),idid,rpar,ipar,rwork(lphi),rwork(ldelta),rwork(le),rwork(lwm),iwork(liwm), &
-    rwork(lalpha),rwork(lbeta),rwork(lgamma),rwork(lpsi),rwork(lsigma),rwork(lcj),rwork(lcjold),rwork(lhold),rwork(ls),hmin,rwork(lround), &
-    iwork(lphase),iwork(ljcalc),iwork(lk),iwork(lkold),iwork(lns),info(10),ntemp)
+    call ddastp(tn,y,yprime,neq,res,jac,h,rwork(lwt),info(1),idid,rpar,ipar,rwork(lphi),rwork(ldelta),&
+       rwork(le),rwork(lwm),iwork(liwm),rwork(lalpha),rwork(lbeta),rwork(lgamma),rwork(lpsi),rwork(lsigma),&
+       rwork(lcj),rwork(lcjold),rwork(lhold),rwork(ls),hmin,rwork(lround),iwork(lphase),iwork(ljcalc),iwork(lk),&
+       iwork(lkold),iwork(lns),info(10),ntemp)
 527 if(idid<0)go to 600
     !
     !--------------------------------------------------------
@@ -1131,7 +1136,8 @@
     go to 690
 
     !     too much accuracy for machine precision
-620 mesg = '***Error: at t (=r1) too much accuracy requested for precision of machine. rtol and atol'// ' were increased to appropriate values'
+620 mesg = '***Error: at t (=r1) too much accuracy requested for precision of machine. rtol and atol'// &
+        ' were increased to appropriate values'
     call xerrmod(mesg,620,1,tn,0.0d0)
     go to 690
 
@@ -1155,7 +1161,8 @@
     go to 690
 
     !     corrector failure preceeded by error test failures.
-670 mesg = '***Error: at t (=r1) and stepsize h (=r2) the corrector could not converge.  also, the'// ' error test failed repeatedly.'
+670 mesg = '***Error: at t (=r1) and stepsize h (=r2) the corrector could not converge.  also, the'// &
+        ' error test failed repeatedly.'
     call xerrmod(mesg,670,2,tn,h)
     go to 690
 
@@ -1386,7 +1393,8 @@
     
     logical :: convgd
     integer :: iwm(*), ipar(*), maxit, mjac, idid, nef, ncf, nsf, i, jcalc, m, ires, ier, ntemp, nonneg, neq
-    real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, ddanrm, cj, h, uround, s, delnrm, oldnrm, rate, err, hmin, r, dmin1
+    real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, ddanrm, cj, h, uround,&
+       s, delnrm, oldnrm, rate, err, hmin, r, dmin1
     external res,jac
     !
     integer, parameter :: lnre=12
@@ -1660,7 +1668,8 @@
 
 ! --------------------------- ddastp -------------------------------------------
 
-    subroutine ddastp(x,y,yprime,neq,res,jac,h,wt,jstart,idid,rpar,ipar,phi,delta,e,wm,iwm,alpha,beta,gamma,psi,sigma,cj,cjold,hold,s,hmin,uround,iphase,jcalc,k,kold,ns,nonneg,ntemp)
+    subroutine ddastp(x,y,yprime,neq,res,jac,h,wt,jstart,idid,rpar,ipar,phi,delta,e,wm,iwm,alpha,beta,gamma,&
+       psi,sigma,cj,cjold,hold,s,hmin,uround,iphase,jcalc,k,kold,ns,nonneg,ntemp)
     !
     !***begin prologue  ddastp
     !***refer to  ddassl
@@ -1748,10 +1757,11 @@
     !
     implicit none
     logical convgd
-    integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
-    real(8) :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, &
-        temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, uround, oldnrm, rate, enorm, erk, terk, est, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, &
-        hmin, hnew, r
+    integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, &
+       k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
+    real(8) :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), &
+       rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, &
+       uround, oldnrm, rate, enorm, erk, terk, est, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, hmin, hnew, r
     external res,jac
     !
     integer, parameter :: lmxord=3, lnst=11, lnre=12, lnje=13, letf=14, lctf=15
@@ -2324,7 +2334,8 @@
     implicit none
     external res,jac
     real(8) :: y(*), yprime(*), delta(*), wt(*), e(*), wm(*), rpar(*), x, cj, squr, uround, del, h, ysave, ypsave, delinv
-    integer :: iwm(*), ipar(*),  ier, npdm1, mtype, lenpd, neq, i, ires, nrow, l, meband, mband, mba, meb1, msave, isave, ntemp, ipsave, j, n, k, i1, i2, ii
+    integer :: iwm(*), ipar(*),  ier, npdm1, mtype, lenpd, neq, i, ires, nrow, l, meband, mband, mba, meb1, &
+       msave, isave, ntemp, ipsave, j, n, k, i1, i2, ii
     !
     integer, parameter :: npd=1, lml=1, lmu=2, lmtype=4, lipvt=21
     !
@@ -2952,7 +2963,8 @@
     
     implicit none
     integer :: n, lr, i, j, jj, jp1, k, l
-    real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, d1mach, sum, temp, qnorm, enorm, delta, gnorm, sgnorm, alpha, bnorm
+    real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, d1mach, sum, temp, qnorm, &
+       enorm, delta, gnorm, sgnorm, alpha, bnorm
 
     data one,zero /1.0d0,0.0d0/
     
@@ -3904,7 +3916,8 @@
 
 ! --------------------------- snsq -------------------------------------------
 
-    subroutine snsq(fcn,jac,iopt,n,x,fvec,fjac,ldfjac,xtol,maxfev,ml,mu,epsfcn,diag,mode,factor,nprint,info,nfev,njev,r,lr,qtf,wa1,wa2,wa3,wa4)
+    subroutine snsq(fcn,jac,iopt,n,x,fvec,fjac,ldfjac,xtol,maxfev,ml,mu,epsfcn,diag,mode,factor,nprint,&
+       info,nfev,njev,r,lr,qtf,wa1,wa2,wa3,wa4)
     !***begin prologue  snsq
     !***date written   800301   (yymmdd)
     !***revision date  840405   (yymmdd)
@@ -4318,7 +4331,8 @@
     
     implicit none
     integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
-    real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, p001, p0001, zero, epsmch, d1mach, &
+    real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, &
+       p001, p0001, zero, epsmch, d1mach, &
         xtol, factor, fnorm, enorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
     external fcn
     logical :: jeval,sing
@@ -4334,7 +4348,8 @@
     !
     !     check the input parameters for errors.
     !
-    if (iopt < 1 .or. iopt > 2 .or. n <= 0 .or. xtol < zero .or. maxfev <= 0 .or. ml < 0 .or. mu < 0 .or. factor <= zero .or. ldfjac < n .or. lr < (n*(n + 1))/2) go to 300
+    if (iopt < 1 .or. iopt > 2 .or. n <= 0 .or. xtol < zero .or. maxfev <= 0 .or. ml < 0 .or. mu < 0 .or. &
+       factor <= zero .or. ldfjac < n .or. lr < (n*(n + 1))/2) go to 300
     if (mode /= 2) go to 20
     do j = 1, n
         if (diag(j) <= zero) go to 300

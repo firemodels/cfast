@@ -106,7 +106,8 @@
                 xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
                 yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
                 !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
-                call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
+                ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
+                call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
                 if(fheight+xfire(ifire+j-1,f_fire_zpos)>hr(i))then
                     zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (hr(i)-xfire(ifire+j,f_fire_zpos))/2.0_eb
                 else
@@ -123,7 +124,8 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad4(twall,tg,emis,zzabsb(1,i),i,br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
+                   xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             else
                 if(.not.black)then
@@ -135,7 +137,8 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-                call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                call rad2(twall,tg,emis,zzabsb(1,i),br(i),dr(i),hr(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
+                   xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
             endif
             if(ierror/=0) return
@@ -180,7 +183,8 @@
 
 ! --------------------------- rad2 -------------------------------------------
 
-    subroutine rad2(twall,tlay,emis,absorb,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
+    subroutine rad2(twall,tlay,emis,absorb,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,&
+       mxfire,taufl,taufu,firang,qout,black,ierror)
 
     !     routine: rad2
     !     purpose: This routine computes the radiative heat flux to 
@@ -201,9 +205,11 @@
     !                xfire: x coordinate of fire location [m]
     !                yfire: y coordinate of fire location [m]
     !                zfire: z coordinate of fire location [m]
-    !      output arguments qflux (ouptut): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
-    !                                the lower wall and the floor respectively.  note that qflux(1)=qflux(2) and qflux(3)=qflux(4)
-    !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the upper, lower layers respectively
+    !      output arguments qflux (ouptut): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 
+    !                                denotes the ceiling, the upper wall, the lower wall and the floor respectively.  
+    !                                note that qflux(1)=qflux(2) and qflux(3)=qflux(4)
+    !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the 
+    !                               upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
     !                ierror (output): returns error codes
 
@@ -383,7 +389,8 @@
 
 ! --------------------------- rad4 -------------------------------------------
 
-    subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
+    subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,&
+       qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
 
     !     routine: rad4
     !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to 
@@ -402,9 +409,11 @@
     !                xfire: x coordinate of fire location [m]
     !                yfire: y coordinate of fire location [m]
     !                zfire: z coordinate of fire location [m]
-    !      output arguments: qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 denotes the ceiling, the upper wall,
+    !      output arguments: qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces 
+    !                                where i=1,2,3,4 denotes the ceiling, the upper wall,
     !                                the lower wall and the floor respectively
-    !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the upper, lower layers respectively
+    !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the 
+    !                               upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
     !                ierror - returns error codes
 
@@ -559,8 +568,9 @@
         call dgesl(a,4,4,ipvt,rhs,0)
     endif
 
-    ! note: each row k of the a matrix, as defined by seigal and howell was divided by emis(k) (in order to insure that this new 'a' was
-    ! diagonally dominant.  now we have to multiply the solution to the modified problem by emis(i) to get the answer to the original problem
+    ! note: each row k of the a matrix, as defined by seigal and howell was divided by emis(k) (in order to insure
+    !       that this new 'a' was diagonally dominant.  now we have to multiply the solution to the modified problem 
+    !       by emis(i) to get the answer to the original problem
     do k = 1, 4
         dqde(k) = rhs(k)
         qout(k) = e(k) - (1.0_eb - emis(k))*dqde(k)
@@ -691,8 +701,9 @@
     subroutine rabs(nzone,nup,e,dqde,emis2,area,figs,tauu,taul,qllay,qulay)
 
     !     routine: rabs
-    !     purpose: This routine computes the energy absorbed by the upper and lower layer due to radiation given off by heat emiiting rectangles
-    !              forming the enclosure.  Coming into this routine, qllay and qulay were previously defined to be the heat absorbed by the lower and
+    !     purpose: This routine computes the energy absorbed by the upper and lower layer due to radiation 
+    !              given off by heat emiiting rectangles forming the enclosure.  Coming into this routine, 
+    !              qllay and qulay were previously defined to be the heat absorbed by the lower and
     !              upper layers due to gas emissions and fires.  this routine just adds onto these values.
 
     use precision_parameters
@@ -1073,15 +1084,18 @@
 
     !  function calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
 
-    !  absorbances are assumed to be equal to emissivities. per spfe handbook (1988 ed., pages 1-99 - 1-101), gas absorbance iscalculated as
+    !  absorbances are assumed to be equal to emissivities. per spfe handbook (1988 ed., pages 1-99 - 1-101), 
+    !  gas absorbance iscalculated as
 
     !  ag = ch2o*eh2o + cco2*eco2 - deltae ~ eh2o + 0.5*eco2;
 
     !  where ch2o and cco2 are concentrations and deltae is a correction
     !  for overlap of the absorbance bands.
 
-    !  eco2 and eh2o are interpolated from spfe handbook graphs which show e = f(t,pl), where t is the gas temperature (kelvins) and pl is the
-    !  partial pressure-path length product (atm-m). temperature and gas partial pressures are based on data calculated elsewhere and stored in
+    !  eco2 and eh2o are interpolated from spfe handbook graphs which show e = f(t,pl), where t is the gas 
+    !  temperature (kelvins) and pl is the
+    !  partial pressure-path length product (atm-m). temperature and gas partial pressures are based on 
+    !  data calculated elsewhere and stored in
     !  common blocks. using handbook formulae, path length is estimated as
 
     !  l = c*4*v/a; where c ~ 0.9 for typical geometries, v is the gas volume and a is the surface area of the gas volume.
@@ -1090,8 +1104,10 @@
 
     !  at = as + ag*trans = (1 - exp(-as)) + ag*exp(-as);
 
-    !  where as is soot absorpion, ag is gas absorption, trans is soot transmission, a is the effective absorbance coefficient for soot and
-    !  s is the physical pathlength. s is apprxominated by l, the mean beam length, and a ~ k*vfs*tg, where vfs is the soot volume fraction, tg the
+    !  where as is soot absorpion, ag is gas absorption, trans is soot transmission, a is the effective 
+    !  absorbance coefficient for soot and
+    !  s is the physical pathlength. s is apprxominated by l, the mean beam length, and a ~ k*vfs*tg, where 
+    !  vfs is the soot volume fraction, tg the
     !  gas temperature and k is a constant. for typical fuels, k ~ 1195.5.
 
     !  version 1.0.3
@@ -1126,7 +1142,8 @@
     !    rg = ideal gas constant (atm-m^3/mol-k)
 
     integer :: xco2, yco2, xh2o, yh2o
-    real(eb) :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize), eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
+    real(eb) :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize),&
+       eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
     real(eb) :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
 
     ! declare module data
@@ -1137,49 +1154,77 @@
 
     ! log(t) data for co2 [t in k]
     
-    data tco2  /2.3010_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, 2.9031_eb, 2.9542_eb,3.0000_eb, 3.3010_eb, 3.4771_eb        /
+    data tco2  /2.3010_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, 2.9031_eb, &
+       2.9542_eb,3.0000_eb, 3.3010_eb, 3.4771_eb        /
 
     ! log(pl) data for co2 [pl in atm-m]
     
-    data plco2 /-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, -1.0000_eb, -0.6990_eb, -0.3979_eb,  0.0000_eb,  0.3010_eb,  0.6021_eb/
+    data plco2 /-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, -1.0000_eb, -0.6990_eb, &
+       -0.3979_eb,  0.0000_eb,  0.3010_eb,  0.6021_eb/
 
     ! log(emiss) data for co2 [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
     
-    data eco2  /-1.8508_eb, -1.8416_eb, -1.8508_eb, -1.7799_eb, -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6990_eb, -1.7399_eb, -2.3706_eb, -2.8996_eb, &
-    -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6308_eb, -1.5498_eb, -1.5302_eb, -1.5302_eb, -1.5498_eb, -1.5800_eb, -2.1002_eb, -2.6108_eb, &
-    -1.5406_eb, -1.5200_eb, -1.5498_eb, -1.4895_eb, -1.4401_eb, -1.3904_eb, -1.3904_eb, -1.4101_eb, -1.4202_eb, -1.8894_eb, -2.3002_eb, &
-    -1.3799_eb, -1.3298_eb, -1.3497_eb, -1.3298_eb, -1.2700_eb, -1.2403_eb, -1.2403_eb, -1.2503_eb, -1.2700_eb, -1.6596_eb, -2.0400_eb, &
-    -1.2403_eb, -1.2000_eb, -1.2403_eb, -1.2104_eb, -1.1599_eb, -1.1403_eb, -1.1302_eb, -1.1403_eb, -1.1500_eb, -1.5200_eb, -1.8894_eb, &
-    -1.1403_eb, -1.1002_eb, -1.1403_eb, -1.1203_eb, -1.0799_eb, -1.0400_eb, -1.0301_eb, -1.0301_eb, -1.0600_eb, -1.3799_eb, -1.7305_eb, &
-    -1.0400_eb, -0.9914_eb, -1.0200_eb, -1.0200_eb, -0.9706_eb, -0.9547_eb, -0.9431_eb, -0.9355_eb, -0.9431_eb, -1.1599_eb, -1.4802_eb, &
-    -0.9914_eb, -0.9431_eb, -0.9547_eb, -0.9508_eb, -0.9136_eb, -0.8827_eb, -0.8666_eb, -0.8539_eb, -0.8601_eb, -1.1002_eb, -1.3706_eb, &
-    -0.9355_eb, -0.8697_eb, -0.8928_eb, -0.8827_eb, -0.8477_eb, -0.8097_eb, -0.7932_eb, -0.7852_eb, -0.7932_eb, -1.0000_eb, -1.2700_eb, &
-    -0.8762_eb, -0.8013_eb, -0.8097_eb, -0.8013_eb, -0.7645_eb, -0.7352_eb, -0.7100_eb, -0.6990_eb, -0.6990_eb, -0.8962_eb, -1.1331_eb, &
-    -0.8297_eb, -0.7496_eb, -0.7645_eb, -0.7472_eb, -0.7055_eb, -0.6696_eb, -0.6421_eb, -0.6326_eb, -0.6402_eb, -0.8097_eb, -1.0301_eb, &
-    -0.8013_eb, -0.7144_eb, -0.7144_eb, -0.6840_eb, -0.6478_eb, -0.6108_eb, -0.5884_eb, -0.5817_eb, -0.5817_eb, -0.7352_eb, -0.9431_eb  /
+    data eco2  /-1.8508_eb, -1.8416_eb, -1.8508_eb, -1.7799_eb, -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6990_eb, -1.7399_eb,&
+       -2.3706_eb, -2.8996_eb, &
+    -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6308_eb, -1.5498_eb, -1.5302_eb, -1.5302_eb, -1.5498_eb, -1.5800_eb, -2.1002_eb,&
+       -2.6108_eb, &
+    -1.5406_eb, -1.5200_eb, -1.5498_eb, -1.4895_eb, -1.4401_eb, -1.3904_eb, -1.3904_eb, -1.4101_eb, -1.4202_eb, -1.8894_eb, &
+       -2.3002_eb, &
+    -1.3799_eb, -1.3298_eb, -1.3497_eb, -1.3298_eb, -1.2700_eb, -1.2403_eb, -1.2403_eb, -1.2503_eb, -1.2700_eb, -1.6596_eb,&
+       -2.0400_eb, &
+    -1.2403_eb, -1.2000_eb, -1.2403_eb, -1.2104_eb, -1.1599_eb, -1.1403_eb, -1.1302_eb, -1.1403_eb, -1.1500_eb, -1.5200_eb,&
+       -1.8894_eb, &
+    -1.1403_eb, -1.1002_eb, -1.1403_eb, -1.1203_eb, -1.0799_eb, -1.0400_eb, -1.0301_eb, -1.0301_eb, -1.0600_eb, -1.3799_eb,&
+       -1.7305_eb, &
+    -1.0400_eb, -0.9914_eb, -1.0200_eb, -1.0200_eb, -0.9706_eb, -0.9547_eb, -0.9431_eb, -0.9355_eb, -0.9431_eb, -1.1599_eb,&
+       -1.4802_eb, &
+    -0.9914_eb, -0.9431_eb, -0.9547_eb, -0.9508_eb, -0.9136_eb, -0.8827_eb, -0.8666_eb, -0.8539_eb, -0.8601_eb, -1.1002_eb,&
+       -1.3706_eb, &
+    -0.9355_eb, -0.8697_eb, -0.8928_eb, -0.8827_eb, -0.8477_eb, -0.8097_eb, -0.7932_eb, -0.7852_eb, -0.7932_eb, -1.0000_eb,&
+       -1.2700_eb, &
+    -0.8762_eb, -0.8013_eb, -0.8097_eb, -0.8013_eb, -0.7645_eb, -0.7352_eb, -0.7100_eb, -0.6990_eb, -0.6990_eb, -0.8962_eb&
+       , -1.1331_eb, &
+    -0.8297_eb, -0.7496_eb, -0.7645_eb, -0.7472_eb, -0.7055_eb, -0.6696_eb, -0.6421_eb, -0.6326_eb, -0.6402_eb, -0.8097_eb,&
+       -1.0301_eb, &
+    -0.8013_eb, -0.7144_eb, -0.7144_eb, -0.6840_eb, -0.6478_eb, -0.6108_eb, -0.5884_eb, -0.5817_eb, -0.5817_eb, -0.7352_eb,&
+       -0.9431_eb  /
 
     !log(t) data for h2o [t in k]
     
-    data th2o  /2.3201_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, 2.9031_eb, 2.9542_eb,3.0000_eb, 3.3010_eb, 3.4771_eb/
+    data th2o  /2.3201_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, 2.9031_eb, 2.9542_eb,3.0000_eb, &
+       3.3010_eb, 3.4771_eb/
 
     ! log(pl) data for h2o [pl in atm-m]
     
-    data plh2o /-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, -1.0000_eb, -0.6990_eb,-0.3979_eb,  0.0000_eb,  0.3010_eb,  0.6021_eb/
+    data plh2o /-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, -1.0000_eb, -0.6990_eb,-0.3979_eb, &
+       0.0000_eb,  0.3010_eb,  0.6021_eb/
 
     ! log(emiss) data for h2o [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
     
-    data eh2o  /-1.1500_eb, -1.5200_eb, -1.7496_eb, -1.8996_eb, -2.0000_eb, -2.1002_eb, -2.1898_eb, -2.2798_eb, -2.3706_eb, -3.0555_eb, -3.4437_eb, &
-    -1.0200_eb, -1.3298_eb, -1.5302_eb, -1.6596_eb, -1.7595_eb, -1.8416_eb, -1.9208_eb, -2.0000_eb, -2.0799_eb, -2.7496_eb, -3.1871_eb, &
-    -0.8962_eb, -1.1701_eb, -1.3242_eb, -1.4597_eb, -1.5406_eb, -1.6003_eb, -1.6596_eb, -1.7305_eb, -1.7905_eb, -2.4202_eb, -2.8794_eb, &
-    -0.7696_eb, -1.0000_eb, -1.1302_eb, -1.2204_eb, -1.3002_eb, -1.3497_eb, -1.4001_eb, -1.4401_eb, -1.4802_eb, -1.9914_eb, -2.5200_eb, &
-    -0.6402_eb, -0.8729_eb, -0.9957_eb, -1.0799_eb, -1.1302_eb, -1.1701_eb, -1.2104_eb, -1.2503_eb, -1.2899_eb, -1.6904_eb, -2.1500_eb, &
-    -0.5884_eb, -0.7645_eb, -0.8729_eb, -0.9355_eb, -0.9788_eb, -1.0200_eb, -1.0400_eb, -1.0701_eb, -1.1002_eb, -1.4101_eb, -1.8210_eb, &
-    -0.5003_eb, -0.6556_eb, -0.7258_eb, -0.7545_eb, -0.7932_eb, -0.8153_eb, -0.8447_eb, -0.8665_eb, -0.8894_eb, -1.0799_eb, -1.4401_eb, &
-    -0.4437_eb, -0.5670_eb, -0.6271_eb, -0.6402_eb, -0.6517_eb, -0.6696_eb, -0.6861_eb, -0.6990_eb, -0.7190_eb, -0.8729_eb, -1.1403_eb, &
-    -0.3936_eb, -0.5086_eb, -0.5302_eb, -0.5376_eb, -0.5482_eb, -0.5528_eb, -0.5670_eb, -0.5719_eb, -0.5817_eb, -0.7122_eb, -0.9431_eb, &
-    -0.3458_eb, -0.4295_eb, -0.4401_eb, -0.4365_eb, -0.4401_eb, -0.4413_eb, -0.4510_eb, -0.4535_eb, -0.4584_eb, -0.5376_eb, -0.7144_eb, &
-    -0.2958_eb, -0.3686_eb, -0.3686_eb, -0.3645_eb, -0.3645_eb, -0.3686_eb, -0.3706_eb, -0.3757_eb, -0.3757_eb, -0.4510_eb, -0.5952_eb, &
-    -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, -0.3605_eb, -0.5086_eb /
+    data eh2o  /-1.1500_eb, -1.5200_eb, -1.7496_eb, -1.8996_eb, -2.0000_eb, -2.1002_eb, -2.1898_eb, -2.2798_eb, -2.3706_eb, &
+       -3.0555_eb, -3.4437_eb, &
+    -1.0200_eb, -1.3298_eb, -1.5302_eb, -1.6596_eb, -1.7595_eb, -1.8416_eb, -1.9208_eb, -2.0000_eb, -2.0799_eb, -2.7496_eb,&
+       -3.1871_eb, &
+    -0.8962_eb, -1.1701_eb, -1.3242_eb, -1.4597_eb, -1.5406_eb, -1.6003_eb, -1.6596_eb, -1.7305_eb, -1.7905_eb, -2.4202_eb,&
+       -2.8794_eb, &
+    -0.7696_eb, -1.0000_eb, -1.1302_eb, -1.2204_eb, -1.3002_eb, -1.3497_eb, -1.4001_eb, -1.4401_eb, -1.4802_eb, -1.9914_eb,&
+       -2.5200_eb, &
+    -0.6402_eb, -0.8729_eb, -0.9957_eb, -1.0799_eb, -1.1302_eb, -1.1701_eb, -1.2104_eb, -1.2503_eb, -1.2899_eb, -1.6904_eb,&
+       -2.1500_eb, &
+    -0.5884_eb, -0.7645_eb, -0.8729_eb, -0.9355_eb, -0.9788_eb, -1.0200_eb, -1.0400_eb, -1.0701_eb, -1.1002_eb, -1.4101_eb,&
+       -1.8210_eb, &
+    -0.5003_eb, -0.6556_eb, -0.7258_eb, -0.7545_eb, -0.7932_eb, -0.8153_eb, -0.8447_eb, -0.8665_eb, -0.8894_eb, -1.0799_eb,&
+       -1.4401_eb, &
+    -0.4437_eb, -0.5670_eb, -0.6271_eb, -0.6402_eb, -0.6517_eb, -0.6696_eb, -0.6861_eb, -0.6990_eb, -0.7190_eb, -0.8729_eb,&
+       -1.1403_eb, &
+    -0.3936_eb, -0.5086_eb, -0.5302_eb, -0.5376_eb, -0.5482_eb, -0.5528_eb, -0.5670_eb, -0.5719_eb, -0.5817_eb, -0.7122_eb,&
+       -0.9431_eb, &
+    -0.3458_eb, -0.4295_eb, -0.4401_eb, -0.4365_eb, -0.4401_eb, -0.4413_eb, -0.4510_eb, -0.4535_eb, -0.4584_eb, -0.5376_eb,&
+       -0.7144_eb, &
+    -0.2958_eb, -0.3686_eb, -0.3686_eb, -0.3645_eb, -0.3645_eb, -0.3686_eb, -0.3706_eb, -0.3757_eb, -0.3757_eb, -0.4510_eb,&
+       -0.5952_eb, &
+    -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, -0.3605_eb,&
+    -0.5086_eb /
 
     ! calculate layer-specific factors
     
@@ -1231,9 +1276,10 @@
     subroutine linterp (xdim, ydim, x, y, z, xval, yval, zval, xerr, yerr)
 
     !     routine: linterp
-    !     purpose: subroutine calculates a 2-d linear interpolation of f(x,y); where known f(x,y) values are in z, allowed x and y values are in x and y, the point
-    !              to be interpolated is (xval,yval) and the interpolated result is returned as zval. array dimensions are specified by xdim and ydim, xerr and yerr
-    !              are error values returned to the calling function.
+    !     purpose: subroutine calculates a 2-d linear interpolation of f(x,y); where known f(x,y) values are in z, allowed 
+    !              x and y values are in x and y, the point
+    !              to be interpolated is (xval,yval) and the interpolated result is returned as zval. array dimensions are specified
+    !              by xdim and ydim, xerr and yerr are error values returned to the calling function.
 
     !  the equation implimented by this function is:
 
@@ -1253,7 +1299,8 @@
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
     integer :: count, i, j
 
-    ! find the value of i such that x(1) <= xval <= x(xdim). if xval is outside that range, set it to the closest legal value and set the error value, as appropriate.
+    ! find the value of i such that x(1) <= xval <= x(xdim). if xval is outside that range, set it to the closest legal 
+    ! value and set the error value, as appropriate.
 
     ! check the special case of xval < x(1)
     

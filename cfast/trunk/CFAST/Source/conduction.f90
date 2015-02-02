@@ -136,8 +136,9 @@ module conduction_routines
         ! store wall gradient
         vtgrad(iw) = tgrad(2)
 
-        ! compute partial of wall temperature equation with respect to the wall temperature.  we assume that the partials of convective heat flux and radiative heat
-        ! flux with respect to wall temperature have already been computed.  (if they were not then we wouldn't know heat flux striking the wall!  
+        ! compute partial of wall temperature equation with respect to the wall temperature.  we assume that the 
+        ! partials of convective heat flux and radiative heat flux with respect to wall temperature have already 
+        ! been computed.  (if they were not then we wouldn't know heat flux striking the wall!  
 
     end do
 
@@ -178,7 +179,8 @@ module conduction_routines
 
 ! --------------------------- conductive_flux -------------------------------------------
 
-    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,numnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
+    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,numnode,nslab,wfluxin,wfluxout,iwbound,&
+       tgrad,tderv)
 
 
     ! routine:  conductive_flux 
@@ -196,9 +198,11 @@ module conduction_routines
     !            nslab    number of slabs
     !            wfluxin  flux striking interior wall
     !            wfluxout flux striking exterior wall
-    !            iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
+    !            iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based 
+    !                     on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
     !            tgrad    temperature gradient
-    !            tderv    partial of temperature gradient with respect to wall surface temperature.  this number is used to calculate wall jacobian elements.
+    !            tderv    partial of temperature gradient with respect to wall surface temperature.  
+    !                     this number is used to calculate wall jacobian elements.
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
     real(eb), intent(out) :: wtemp(*), tgrad(2) 
@@ -211,7 +215,8 @@ module conduction_routines
 
     nx = numnode(1)
 
-    ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break points are defined farther down.
+    ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break 
+    ! points are defined farther down.
     do i = 2, nx - 1
         tnew(i) = wtemp(i)
     end do
@@ -262,7 +267,8 @@ module conduction_routines
     ! setup last row, note: last row depends on form of boundary condition
     if (iwbound==1) then
 
-        ! constant temperature boundary condition (if we ever solve for both interior and exterior wall temperatures then use change tnew(nx) = tamb to tnew(nx) = tempout)
+        ! constant temperature boundary condition (if we ever solve for both interior and exterior wall temperatures 
+        ! then use change tnew(nx) = tamb to tnew(nx) = tempout)
         a(nx) = 1.0_eb
         b(nx) = 0.0_eb
         c(nx) = 0.0_eb

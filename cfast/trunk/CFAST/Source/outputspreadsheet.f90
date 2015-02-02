@@ -222,7 +222,8 @@
     integer, parameter :: maxoutput=4*nr+9*mxtarg
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal, ctotal, tttemp, tctemp, tlay, tgtemp,total,cjetmin
+    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal
+    real(eb) :: ctotal, tttemp, tctemp, tlay, tgtemp,total,cjetmin
     integer :: iwptr(4), position,i,iw,itarg,itctemp,iroom
     external length
     data iwptr /1, 3, 4, 2/

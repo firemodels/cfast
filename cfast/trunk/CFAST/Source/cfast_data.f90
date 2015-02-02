@@ -409,7 +409,8 @@ module params
 !   these are temporary work arrays
 
 !   ex... are the settings for the external ambient
-!   qfr,... are the heat balance calculations for calculate_residuals and conductive_flux. it is now indexed by fire rather than by compartment
+!   qfr,... are the heat balance calculations for calculate_residuals and conductive_flux. it is now indexed by
+!    fire rather than by compartment
 !   the variables ht.. and hf.. are for vertical flow
 !   the volume fractions volfru and volfrl are calculated by calculate_residuals at the beginning of a time step
 !   hvfrac is the fraction that a mv duct is in the upper or lower layer

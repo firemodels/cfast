@@ -17,8 +17,10 @@
 
     integer, intent(out) :: ierror
     
-    real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti, xloc, yloc, zloc, darea, dheight, xx, sum
-    integer numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2, iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
+    real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
+    real(eb) :: xloc, yloc, zloc, darea, dheight, xx, sum
+    integer :: numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
+    integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
@@ -505,8 +507,10 @@
     integer, intent(out) :: ierror
     
     logical :: lfupdat, countargs, lstat
-    integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
-    real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato, fanfraction, heatfplume, frac, tmpcond, dnrm2
+    integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k
+    integer :: iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
+    real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
+    real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     character(10) :: plumemodel(2)
@@ -534,7 +538,8 @@
     !	If we reach the end of the file, then we are done
     if (lrowcount>xnumr) return
 
-    !	Copy a single row into local arrays for processing in readin; start with column two, assuming that the key word is the first entry!
+    !	Copy a single row into local arrays for processing in readin; start with column two, 
+    ! assuming that the key word is the first entry!
 
     label = carray(lrowcount,1)
     if (label==' ') go to 40
@@ -626,7 +631,8 @@
         endif
 
         ! MATL short_name conductivity specific_heat density thickness emissivity long_name
-        ! HCl deposition constants are only available for gypsum so we just add the automatically if the name of the material contains gypsum
+        ! HCl deposition constants are only available for gypsum so we just add the automatically 
+        ! if the name of the material contains gypsum
     case ('MATL')
         if(.not.countargs(7,lcarray,xnumc-1,nret)) then
             ierror = 6
@@ -705,7 +711,8 @@
         n = compartment+1
         nx = compartment
 
-        write (logerr,5063) compartment, compartmentnames(nx), br(nx),dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),(switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
+        write (logerr,5063) compartment, compartmentnames(nx), br(nx),dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),&
+           (switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
         !		    BW = width, HH = soffit, HL = sill, 
@@ -1579,7 +1586,8 @@
 
         ! There are two forms of the command
         !   The first (single entry of the room number) - all connections based on horizontal flow
-        !   The second is the compartment number followed by N pairs of compartments to which the heat will flow and the fraction of the vertical surface of the compartment that loses heat
+        !   The second is the compartment number followed by N pairs of compartments to which the heat 
+        !   will flow and the fraction of the vertical surface of the compartment that loses heat
     case ('HHEAT')
         if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 58
@@ -1759,7 +1767,8 @@
 
         select case (label)
 
-            ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula, radiative fraction, heat of combustion, and material
+            ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula, 
+           !  radiative fraction, heat of combustion, and material
         case ('CHEMI')
             if (.not.countargs(8,lcarray,xnumc-1,nret)) then
                 ierror = 4
@@ -1772,7 +1781,8 @@
             obj_o(iobj) = lrarray(3)
             obj_n(iobj) = lrarray(4)
             obj_cl(iobj) = lrarray(5)
-            objgmw(iobj) = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + 14.01*obj_n(iobj) + 35.45*obj_cl(iobj))/1000.0
+            objgmw(iobj) = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + &
+               14.01*obj_n(iobj) + 35.45*obj_cl(iobj))/1000.0
             objvt(iobj) = te
 
             radconsplit(iobj) = lrarray(6)
@@ -1814,9 +1824,10 @@
         case ('AREA')
             max_area = 0.0_eb
             do ii = 1, nret
-                ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the ignition point.
-                ! It only occurs for objects which are on the floor and ignite after t=0
-                ! The assumed minimum fire diameter of 0.2 m below is the minimum valid fire diameter for Heskestad's plume correlation (from SFPE Handbook chapter)
+                ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the 
+                ! ignition point. It only occurs for objects which are on the floor and ignite after t=0 The assumed minimum fire 
+                ! diameter of 0.2 m below is the minimum valid fire diameter for Heskestad's plume correlation
+                ! (from SFPE Handbook chapter)
                 oarea(ii,iobj) = max(lrarray(ii),pio4*0.2_eb**2)
                 max_area = max(max_area,oarea(ii,iobj))
             end do
@@ -1884,7 +1895,8 @@
     subroutine initfireobject (iobj, ierror)
 
     !     routine: initfireobject
-    !     purpose: This routine sets default values for new fire object targets created to monitor temperature and flux of the object prior to ignition
+    !     purpose: This routine sets default values for new fire object targets created to monitor 
+    !              temperature and flux of the object prior to ignition
     !     Arguments: iobj: fire object number
     !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
 
@@ -2234,7 +2246,8 @@
     subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, logerr, ierror)
 
     !     routine: readcsvformat
-    !     purpose: reads a comma-delimited file as generated by Micorsoft Excel, assuming that all the data is in the form of real numbers
+    !     purpose: reads a comma-delimited file as generated by Micorsoft Excel, assuming that all 
+    !              the data is in the form of real numbers
     !     arguments: iunit  = logical unit, already open to .csv file
     !                x      = array of dimension (numr,numc) for values in spreadsheet
     !                c      = character array of same dimenaion as x for character values in spreadsheet
@@ -2356,6 +2369,7 @@
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
    real(eb) :: dzz, factor, ceiljet_depth
+   integer :: skip3d
    
    nsliceinfo = 0
    nisoinfo = 0
@@ -2397,7 +2411,10 @@
 
    ! setup slice file data structures
 
+   skip3d = 0
+   
    nsliceinfo = 20*nrooms + ndefinedbyuser
+   if(skip3d.EQ.1)nsliceinfo = nsliceinfo - 5*nrooms
    islice = 1
    allocate(sliceinfo(nsliceinfo))
    
@@ -2563,6 +2580,7 @@
    ! 3d temperature slice files
    
    do iroom = 1, nrooms
+      if(skip3d.EQ.1)cycle
       rm=>roominfo(iroom)
       xb(1) = rm%x0
       xb(2) = rm%x1

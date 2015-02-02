@@ -1,33 +1,11 @@
 \chapter{CFAST Keywords}
 
-All key words are case sensitive and all parameters are required. There are no defaults. If a parameter is missing, the model will terminate with an appropriate stop code. 
-
-\section{CJET}
-
-\begin{lstlisting}
-CJET, CEILING_JET_FLAG
-\end{lstlisting}
-
-This directive tells the model to calculate the effects of a ceiling jet in all compartments containing a fire. The possible flags are OFF, CEILING, WALL, or ALL.
-
-OFF - not calculate ceiling jets effect
-
-CEILING - include calculations for ceiling surfaces only
-
-WALL - to include calculations for wall surfaces only (not recommended)
-
-ALL - to include calculations for both ceiling and wall surfaces
-
-Example:
-
-\begin{lstlisting}
-CJET,CEILING
-\end{lstlisting}
+All key words are case sensitive and all parameters are required. There are no defaults. If a parameter is missing, the model will terminate with an appropriate stop code.
 
 \section{COMPA}
 
 \begin{lstlisting}
-COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIA_NAME, WALL_MATERIAL_NAME
+COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIAL_NAME, WALL_MATERIAL_NAME
 \end{lstlisting}
 
 The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands.
@@ -54,7 +32,7 @@ DETEC, TYPE, COMPARTMEN,T ACTIVATION_TEMPERATUR,E DEPTH, WIDTH, HEIGHT, RTI, SUP
 
 The DETEC keyword is used for both detectors and sprinklers. Sprinklers and detectors are both considered detection devices and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
 
-For the type of detector, use 1 for smoke detector and 2 for heat detector or sprinklers. If suppression is set to a value of 1, a sprinkler will quench the fire with the specified spray density of water. If turned off (a value of 0), the device is handled as a heat or smoke detector only - values entered for activation temperature, RTI, and spray density are ignored. 
+For the type of detector, use 1 for smoke detector and 2 for heat detector or sprinklers. If suppression is set to a value of 1, a sprinkler will quench the fire with the specified spray density of water. If turned off (a value of 0), the device is handled as a heat or smoke detector only - values entered for activation temperature, RTI, and spray density are ignored.
 
 The spray density is the amount of water dispersed by a water sprinkler.  The units for spray density are length/time.  These units are derived by dividing the volumetric rate of water flow by the area protected by the water spray. The suppression calculation is based upon an experimental correlation by Evans, and depends upon the RTI, activation temperature, and spray density to determine the behavior of the sprinkler.
 
@@ -126,7 +104,7 @@ The form for EVENT is
 EVENT, H, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, TIME, FINAL_FRACTION, DECAY_TIME
 EVENT, V, FIRST_COMPARTMENT, SECOND_COMPARTMENT, V_ID, TIME, FINAL_FRACTION, DECAY_TIME
 EVENT, M, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME
-EVENT, F, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME   
+EVENT, F, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME
 \end{lstlisting}
 
 Decay time is the duration of the event and the units are seconds.
@@ -137,7 +115,7 @@ Example:
 EVENT,H,1,2,1,10.,0.3,1
 \end{lstlisting}
 
-The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filtering applies only to trace species and particulate (soot) and only to mechanical ventilation vents. For filtering, 0 indicates no filtering and 1 indicates that all soot and trace species flowing through the fan is removed. 
+The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filtering applies only to trace species and particulate (soot) and only to mechanical ventilation vents. For filtering, 0 indicates no filtering and 1 indicates that all soot and trace species flowing through the fan is removed.
 
 \section{FIRE}
 
@@ -256,7 +234,7 @@ For each of the Velocity, Depth and Decay, using a value of (-1) will bypass thi
 HHEAT, FIRST_COMPARTMENT, NUMBER_OF_PARTS, N PAIRS OF {SECOND_COMPARTMENT, FRACTION}
 \end{lstlisting}
 
-Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first uses only a compartment number. In this case, the conduction connection 
+Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first uses only a compartment number. In this case, the conduction connection
 
 The first form is to use only a compartment number. In this case, CFAST will calculate the conductive heat transfer to all compartments connected to this compartment by horizontal convective flow. The second form specifies the compartments to be connected and what fraction of the compartment is connected to an adjacent compartment. This latter is particularly useful for rooms which are connected to adjacent rooms as well as hallways. The user of the model is responsible for the consistency of these pairings.  The model does not check to insure that the specified compartment pairs are located next to one another.
 
@@ -290,11 +268,26 @@ INTER INITIAL_INTERFACE_HEIGHT_1 INITIAL_INTERFACE_HEIGHT_2 ... INITIAL_INTERFAC
 
 This is used to set the initial interface height below the top of the compartment. A great deal of care is needed to use this, as the model has only rudimentary checks for the limits imposed (for example, the initial value must specify a height not greater than the compartment height. This does change the nature of a zone in the context of a zone model.
 
-Example: 
+Example:
 
 \begin{lstlisting}
 INTER 2   1.2     3   2.0
 \end{lstlisting}
+
+\section{ISOF}
+
+\begin{lstlisting}
+ISOF, VALUE, COMPARTMENT(S)
+\end{lstlisting}
+
+The ISOF command creates 3-dimensional animated contours of gas temperature in one or more compartments.  For example, a 300 \degc temperature isosurface is a 3-D surface on which the gas temperature is 300 \degc. The output frequency of the slice files is controlled by the SMOKEVIEW\_OUTPUT\_INTERVAL input on the TIMES input line. Note that 3-D isosurface files can be quite large if the output interval is small. Computational time can also increase significantly with specification of isosurface files.
+
+\begin{lstlisting}
+ISOF, 300, 1, 2
+ISOF, 600
+\end{lstlisting}
+
+The first example specifies a 300 \degc temperature isosurface in compartments 1 and 2.  The last example specifies 600 \degc isosurfaces in all compartments.
 
 \section{LIMO2}
 
@@ -363,6 +356,25 @@ ROOMH 1    3     0.0   1.0  2.0
 \end{lstlisting}
 
 specifies that compartment 1 has a cross-sectional area of 10 m2, 5 m2 and 3 m2 at elevations 0.0 m, 1.0 m and 2.0 m respectively.
+
+\section{SLCF}
+
+\begin{lstlisting}
+SLCF, DOMAIN, LOCATION, COMPARTMENT(S)
+\end{lstlisting}
+
+With Smokeview, CFAST can display animations of various gas phase quantities in a plane or volume in one or more compartments, depending on the inputs. For 2-D slices, the DOMAIN input is 2-D, followed by the selected plane (either X, Y, or Z), and a position within the compartment along the respective axis. For 3-D slices, the DOMAIN input 3-D is selected. One, several, or all compartments can be specified. As many SLCF commands as needed can be used in a CFAST input file.  The output frequency of the slice files is controlled by the SMOKEVIEW\_OUTPUT\_INTERVAL input on the TIMES input line. Note that 3-D slice files can be quite large if the output interval is small. Computational time can also increase significantly with specification of 3-D slice files.
+
+Example:
+
+\begin{lstlisting}
+SLCF, 3-D, 1, 2, 3
+SLCF, 2-D, X, 2.5, 3, 5
+SLCF, 3-D
+SLCF, 2-D
+\\end{lstlisting}
+
+The first SLCF example specifies a 3-D slice file output for compartments 1, 2, and 3.  The second SLCF example specifies a 2-d slice file output parallel to the X (depth) axis, 2.5 m from the axis origin in compartments 3 and 5. The last two examples specify default 3-D and 2-D slice file output for all compartments.
 
 \section{STPMAX}
 
@@ -476,4 +488,4 @@ Example:
 
 \begin{lstlisting}
 WIND,3.,10.,0.16
-\end{lstlisting}
+\end{lstlisting} 

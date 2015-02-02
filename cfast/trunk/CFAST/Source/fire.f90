@@ -1002,7 +1002,7 @@
     real(eb), intent(out) :: tg, vg(4)
         
     real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tplume_ceiling, tcj, vcj
-    real(eb) :: xxfire, yyfire
+    real(eb) :: xdistance, ydistance
 
     integer :: i
 
@@ -1022,21 +1022,25 @@
             tu = zztemp(iroom,upper)
             tl = zztemp(iroom,lower)
             zfire = xfire(i,f_fire_zpos)
-            xxfire = xfire(i,f_fire_xpos)
-            yyfire = xfire(i,f_fire_ypos)
+            xdistance = x - xfire(i,f_fire_xpos)
+            if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb
+            ydistance = y - xfire(i,f_fire_ypos)
+            if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = zzhlay(iroom,lower)
             zceil = hr(iroom)
-            r = sqrt((x-xxfire)**2 + (y-yyfire)**2)
+            r = sqrt(xdistance**2 + ydistance**2)
             ! first calculate plume temperature at desired location
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
             call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
             call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
             tg = max(tg,tplume,tcj)
-            vg(1) = vg(1) + vcj*(x-xxfire)/r
-            vg(2) = vg(2) + vcj*(y-yyfire)/r
+            if (r/=0.0_eb) then
+                vg(1) = vg(1) + vcj*xdistance/r
+                vg(2) = vg(2) + vcj*ydistance/r
+            end if
             vg(3) = 0.0_eb
-        endif
+        end if
     end do
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
     end subroutine gettgas  

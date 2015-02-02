@@ -22,11 +22,13 @@
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
     
-    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup, fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
+    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup
+    real(eb) :: fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
     real(eb) :: area, vvfraction
 
-    ! the selection rules are now implemented here.  the crossover is the relative fraction of the volume cloesest to the hole from which the mass will come
+    ! the selection rules are now implemented here.  the crossover is the relative fraction of the 
+    ! volume cloesest to the hole from which the mass will come
     vflowflg = .false.
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
@@ -171,7 +173,8 @@
     if (nramps>0) then
         do iramp = 1, nramps
             rampptr=>rampinfo(iramp)
-            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.rampptr%vent_number==vent_number) then
+            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.&
+               rampptr%vent_number==vent_number) then
                 if (time<=rampptr%time(1)) then
                     fraction = rampptr%value(1)
                 else if (time>=rampptr%time(rampptr%npoints)) then
@@ -204,7 +207,8 @@
 
     !     routine: ventcf
     !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining 
-    !     an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of inside rooms and the uniform environment in outside spaces.
+    !     an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of 
+    !     inside rooms and the uniform environment in outside spaces.
     !     arguments: itop: top room number (physically with respect to the second compartment)
     !                ibot: bottom room number
     !                avent: area of the vent [m**2]                
@@ -233,7 +237,8 @@
     
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
-    real(eb) :: gamcut, zzz, gammax, delp, delden, rho, eps, x, coef, epscut, srdelp, fnoise, w, gg, ff, rho2, v, cshape, d, delpfd, dpddpf, vexmax, vex
+    real(eb) :: gamcut, zzz, gammax, delp, delden, rho, eps, x, coef, epscut, srdelp, fnoise, w
+    real(eb) :: gg, ff, rho2, v, cshape, d, delpfd, dpddpf, vexmax, vex
     integer :: i
     logical firstc
 

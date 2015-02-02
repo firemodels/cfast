@@ -16,9 +16,12 @@
     character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
     integer :: position, i, j
 
-    data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', 'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
-    'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'ATARG_', 'FTARG_', 'DJET_', 'PLUM_', 'PYROL_', 'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
+    data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
+       'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
+    'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
+       'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'ATARG_', 'FTARG_', 'DJET_', 'PLUM_', 'PYROL_', &
+       'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W/m^2', 'W/m^2', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
@@ -120,10 +123,16 @@
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     integer position, i, j, lsp
 
-    data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', 'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', 'C-T Product Upper Layer', 'Trace Species Upper Layer',&
-    'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', 'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer', 'C-T Product Lower Layer', 'Trace Species Lower Layer' / 
-    data LabelsShort / 'Time', 'ULN2', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_', 'ULCT_', 'ULTS_', 'LLN2', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
-    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', 'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
+    data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
+       'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
+       'C-T Product Upper Layer', 'Trace Species Upper Layer',&
+    'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
+       'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
+       'C-T Product Lower Layer', 'Trace Species Lower Layer' / 
+    data LabelsShort / 'Time', 'ULN2', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_',&
+       'ULCT_', 'ULTS_', 'LLN2', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
+    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', &
+       'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -177,8 +186,8 @@
 
     ! Format
 
-    !blank     c1     c1      c1    c1      c1   c1    c1      c1   c1         c2     c2      c2    c2       c2   c2   c2     c2   c2       ....
-    !time   ceiling	u-wall  l-wall floor  flux  fire surface gas convect   ceiling u-wall  l-wall floor  flux  fire surface gas convect    ....
+!blank     c1     c1      c1    c1      c1   c1    c1      c1   c1         c2     c2      c2    c2       c2   c2   c2     c2   c2    ....
+!time   ceiling	u-wall  l-wall floor  flux  fire surface gas convect   ceiling u-wall  l-wall floor  flux  fire surface gas convect ....
 
 
     !.....  target number
@@ -199,10 +208,14 @@
     character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18)
     integer position, i, j, itarg, itype
 
-    data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', 'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', 'Target Total Flux', 'Target Convective Flux', &
-    'Target Radiative Flux', 'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', 'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
+    data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
+       'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
+       'Target Total Flux', 'Target Convective Flux', &
+    'Target Radiative Flux', 'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
+       'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
 
-    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', 'TARGGAST_', 'TARGSURT_', 'TARGCENT_', 'TARGFLUXT_', 'TARGFLUXC_', 'TARGFLUXR_','TARGFLUXF_', 'TARGFLUXS_', 'TARGFLUXG_',  'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
+    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', 'TARGGAST_', 'TARGSURT_', 'TARGCENT_', 'TARGFLUXT_',&
+       'TARGFLUXC_', 'TARGFLUXR_','TARGFLUXF_', 'TARGFLUXS_', 'TARGFLUXG_',  'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
     data LabelUnits / 's', 7*'C', 6*'W/m^2', 'C', '1=yes', 'C', 'm/s' /
 
@@ -313,7 +326,8 @@
     integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
 
-    data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', 'MVENT Trace Species Filtered' /
+    data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
+       'MVENT Trace Species Filtered' /
 
     data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_' /
 
@@ -463,7 +477,8 @@
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
     integer position, i, j
 
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_',&
+       'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2', 'kg/s', 'kg/s' /
 
     !  spreadsheet header.  Add time first
@@ -581,7 +596,8 @@
     character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2)
     integer position, i, j, k, l, nprod
 
-    data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow', 'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
+    data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
+       'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
     'Convective Flow', 'Radiative Flow'/
     data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/

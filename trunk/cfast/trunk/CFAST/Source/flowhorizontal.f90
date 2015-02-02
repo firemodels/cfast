@@ -31,7 +31,8 @@
     real(eb) :: uflw3(2,mxfprd+2,2), uflw2(2,mxfprd+2,2)
     real(eb) :: yflor(2), yceil(2), ylay(2), pflor(2)
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
-    real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab), cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
+    real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
+    real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
     real(eb) :: uflw0(nr,ns+2,2)
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
@@ -92,8 +93,9 @@
             ! (note this augmentation will be different for each vent)
             pflor(2) = pflor(2) + ventptr%wind_dp
             if (avent>=1.0e-10_eb) then
-                call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
-                vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
+                call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
+                   epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
+                   yvelev,xmslab,nslab,nneut,ventvel)
                 
                 if (prnslab) then
                     call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab)
@@ -120,7 +122,8 @@
                 !  calculate entrainment type mixing at the vents
 
                 if (option(fentrain)==on) then
-                    call entrain(dirs12,yslab,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas(1,i),vasa(1,i))
+                    call entrain(dirs12,yslab,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
+                       uflw3,vsas(1,i),vasa(1,i))
                     do ilay = 1, 2
                         ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
                         ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
@@ -206,9 +209,12 @@
     !                tu     - upper layer temperature in each room [k]
     !                tl     - lower layer temperature in each room [k]
     !                ylay   - height of layer in each room above absolute reference elevation [m]
-    !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer of room i due to entrainment
-    !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) layer of room i entrainment
-    !                uflw3(i,2+k,j), i=1 or 2, k=1 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2) or lower (j=1) layer of room i due entrainment
+    !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or 
+    !                         lower (j=1) layer of room i due to entrainment
+    !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or 
+    !                   lower (j=1) layer of room i entrainment
+    !                uflw3(i,2+k,j), i=1 or 2, k=1 to nprod, j=1 or 2 (output) - product k flow rate
+    !                      to upper (j=2) or lower (j=1) layer of room i due entrainment
 
     use precision_parameters
     use flwptrs
@@ -233,7 +239,8 @@
 
     do n = 1, nslab
 
-        ! eliminate cases where entrainment does not occur, i.e. a slab which is adjacent to the upper layer on both sides or a slab which is adjacent to the lower layer on both sides
+        ! eliminate cases where entrainment does not occur, i.e. a slab which is adjacent to the upper layer on 
+        !    both sides or a slab which is adjacent to the lower layer on both sides
         if (yslab(n)<ylay(1).or.yslab(n)<ylay(2)) then
             if (yslab(n)>=ylay(1).or.yslab(n)>=ylay(2)) then
 
@@ -285,7 +292,8 @@
                             zd = min(yvtop,ylay(ifrom)) - max(ylay(ito),yvbot)
                             call entrfl(tu(ito),tl(ifrom),xmslab(n),zd,uflw3(ito,m,l))
 
-                            ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment to try to approximate the reduced kelvin-helmholz type mixing.
+                            ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment 
+                            !    to try to approximate the reduced kelvin-helmholz type mixing.
 
                             uflw3(ito,m,l) = uflw3(ito,m,l)*0.25_eb
                             vasa(ito) = uflw3(ito,m,l)
@@ -330,8 +338,9 @@
     ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
     !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
     
-    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb, &
-        e1 = 1.0_eb/0.566_eb, e2 = 1.0_eb/0.909_eb, e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t2**0.909_eb
+    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb
+    real(eb), parameter :: a3 = a2*t2**0.909_eb/t2**1.895_eb, e1 = 1.0_eb/0.566_eb, e2 = 1.0_eb/0.909_eb
+    real(eb), parameter :: e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t2**0.909_eb
 
     ! determine virtual origin for the plume
     xqj = cp*(tu-tl)*0.001_eb
@@ -380,7 +389,8 @@
         ventflg(i) = .true.
     end do
 
-    ! if the 2nd modified jacobian option is on and a jacobian is being computed (jaccol>0) then compute vent flows only for vents that that are connected
+    ! if the 2nd modified jacobian option is on and a jacobian is being computed (jaccol>0) then compute 
+    !  vent flows only for vents that that are connected
     ! to rooms whose pressure, layer height, layer temperature,  or oxygen level is being perturbed.
 
     if(option(fmodjac)==on)then
@@ -759,8 +769,10 @@
 
     !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
-    !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. (if inflow is hot, it goes to upper layer, etc.)
-    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each slab, 1 = 1--> 2, -1 = 2 --> 1, 0 = no flow
+    !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. 
+    !              (if inflow is hot, it goes to upper layer, etc.)
+    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each 
+    !                  slab, 1 = 1--> 2, -1 = 2 --> 1, 0 = no flow
     !                yslab - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                xmslab - mass flow rate in slabs [kg/s]
     !                tslab  - temperature of slabs [K]
@@ -772,11 +784,16 @@
     !                mxfprd  - maximum number of products currently available.
     !                nprod  - number of products
     !                mxfslab - maximum number of slabs currently available.
-    !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
-    !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [kg/s]
-    !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [w]
-    !                uflw2(i,3,j), i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [(kg oxygen)/s]
-    !                uflw2(i,3+k,j), i=1 or 2, k=2 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2) or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
+    !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination 
+    !                             identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
+    !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer 
+    !                             of room i due to all slab flows of vent [kg/s]
+    !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) 
+    !                             layer of room i due to all slab flows of vent [w]
+    !                uflw2(i,3,j), i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer 
+    !                             of room i due to all slab flows of vent [(kg oxygen)/s]
+    !                uflw2(i,3+k,j), i=1 or 2, k=2 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2) 
+    !                             or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
 
     use precision_parameters
     use flwptrs

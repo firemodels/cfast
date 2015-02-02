@@ -214,13 +214,15 @@
             zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         else
             write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zztemp(i,lower)-kelvin_c_offset, &
-            zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+            zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), &
+               zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
         endif
     end do
     return
 
 5000 format (' ')
-5010 format (' Compartment',T16,'Upper',T26,'Lower',T36,'Inter.',T46,'Upper',T62,'Upper',T73,'Lower',T83,'Pressure',T95,'Ambient',T106,'Floor')
+5010 format (' Compartment',T16,'Upper',T26,'Lower',T36,'Inter.',T46,'Upper',T62,'Upper',T73,'Lower',&
+          T83,'Pressure',T95,'Ambient',T106,'Floor')
 5020 format (T16,'Temp.',T26,'Temp.',T36,'Height',T46,'Vol.',T62,'Absorb',T73,'Absorb',T95,'Target',T106,'Target')
 5030 FORMAT (T17,'(C)',T26,'(C)',T36,'(m)',T46,'(m^3)',T62,'(m^-1)',T73,'(m^-1)',T85,'(Pa)',T95,'(W/m^2)',T106,'(W/m^2)')
 5040 format (' ',113('-'))
@@ -255,7 +257,8 @@
             if (isw/=0) then
                 if (objpnt(i)/=0) then
                     j = objpnt(i)
-                    write (iofilo,5010) objnin(j)(1:len_trim(objnin(j))), fems(i), femp(i), fqf(i), fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
+                    write (iofilo,5010) objnin(j)(1:len_trim(objnin(j))), fems(i), femp(i), fqf(i), &
+                       fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
                 endif
             else
                 write (iofilo,5020) i, fems(i), femp(i), fqf(i), fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
@@ -279,11 +282,12 @@
             endif
         end do
         xqf = xqf + fqdj(ir)
-        if (xems+xemp+xqf+xqupr+xqlow+fqdj(ir)/=0.0_eb) write (iofilo,5030) compartmentnames(ir), xems, xemp, xqf, xqupr, xqlow, fqdj(ir)
+        if (xems+xemp+xqf+xqupr+xqlow+fqdj(ir)/=0.0_eb) write (iofilo,5030) compartmentnames(ir), &
+           xems, xemp, xqf, xqupr, xqlow, fqdj(ir)
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
-5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace',/, &
+    5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace',/, &
     '                          Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
     '                          (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)' ,/,' ',138('-'))
 5010 format (' ',14x,a8,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
@@ -412,7 +416,8 @@
         write (cito,'(a12)') compartmentnames(ito)
         if (ito==n) cito = 'Outside'
         
-        call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),ventptr%mflow(2,1,1),ventptr%mflow(2,1,2),ventptr%mflow(2,2,1),ventptr%mflow(2,2,2))
+        call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),&
+           ventptr%mflow(2,1,1),ventptr%mflow(2,1,2),ventptr%mflow(2,2,1),ventptr%mflow(2,2,2))
         write (iofilo,5020) 'H', i, cifrom, cito, outbuf
     end do
 
@@ -581,9 +586,11 @@
         end do
         xqf = xqf + fqdj(ir)
         if (izshaft(ir)==1) then
-            write (iounit,5031) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir), ontarget(ir)
+            write (iounit,5031) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
+               zzrelp(ir) - interior_rel_pressure(ir), ontarget(ir)
         else
-            write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir),ontarget(ir)
+            write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
+               zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir),ontarget(ir)
         endif
     end do
     write (iounit,5020) fqdj(n)
@@ -870,7 +877,8 @@
     use params
     implicit none
 
-    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pofset, exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset, windv, windrf, windpw
+    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pofset, &
+       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset, windv, windrf, windpw
     return
 
 5000 format (//,' AMBIENT CONDITIONS',//, &
@@ -1148,7 +1156,8 @@
                 j = objpnt(io)
                 nnv = objlfm(j)
                 write (iofilo,5020) objnin(j)(1:length(objnin(j))), j
-                write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), objpos(3,j), relhum*100., limo2*100.,radconsplit(j)
+                write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), &
+                   objpos(3,j), relhum*100., limo2*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)
@@ -1218,7 +1227,8 @@
         endif
 5004    format ('Floor, compartment ',I2)
 5005    format (A8,'  Floor, compartment ',I2)
-        write(iofilo,5010) itarg,compartmentnames(ixtarg(trgroom,itarg)),(xxtarg(trgcenx+j,itarg),j=0,2),(xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
+        write(iofilo,5010) itarg,compartmentnames(ixtarg(trgroom,itarg)),(xxtarg(trgcenx+j,itarg),j=0,2),&
+           (xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
 5010    format(' ',i5,t11,a14,t21,6(f7.2,2x),t76,a8)
     end do
     return
@@ -1329,8 +1339,8 @@
     character dbugfil*8
 
     character keyword*7, dbugky(mxdebug)*7, dummy*1, ly*2
-    data dbugky/'MASSFLW','HVACFLW','HORZFLW','VERTFLW','MVNTFLW','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX', &
-    'ERRVCTR','PRNTJAC','PRNDPDT','XXXXXXX'/
+    data dbugky/'MASSFLW','HVACFLW','HORZFLW','VERTFLW','MVNTFLW','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX',&
+       'XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','ERRVCTR','PRNTJAC','PRNDPDT','XXXXXXX'/
 
     close (iofili)
     open (unit=iofili,file=lbuf)
@@ -1515,8 +1525,8 @@
         firstc = .false.
         iounit = dbugsw(d_jac,d_cnt,1)
         write(iounit,1002)
-1002    FORMAT(15x,'STEPS',4x,'JACOBIANS',5x,'RESIDS',4x,'NEWT ITERS',9x,'CPU',14x,'OVER HEAD',/,4x,'TIME',4x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM', &
-            1x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM',4x,'CUR',8x,'CUM',6x,'CUR',7x,'CUM')
+1002    FORMAT(15x,'STEPS',4x,'JACOBIANS',5x,'RESIDS',4x,'NEWT ITERS',9x,'CPU',14x,'OVER HEAD',/,4x,'TIME',4x,'CUR',4x,&
+                'CUM',2x,'CUR',4x,'CUM', 1x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM',4x,'CUR',8x,'CUM',6x,'CUR',7x,'CUM')
     endif
     totjac = totjac + numjac
     totstep = totstep + numstep
@@ -1643,7 +1653,8 @@
     real(eb) :: xqf, dp
     integer :: bmap(mxbranch), i, j, iprod, il, isys, idt, iroom, iobj, itarg
     integer(2) :: ch, hit
-    character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%', '   OD', '   CT', '   TS'/), ccc*3
+    character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
+       '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
     save bmap
 
@@ -1730,7 +1741,8 @@
         call find_error_component (ieqmax)
         write(*,6030)
         do iroom = 1, nm1
-            write(*,6000)iroom,zzrelp(iroom),zzhlay(iroom,lower),zztemp(iroom,lower),zztemp(iroom,upper),zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
+            write(*,6000)iroom,zzrelp(iroom),zzhlay(iroom,lower),zztemp(iroom,lower),zztemp(iroom,upper),&
+               zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)

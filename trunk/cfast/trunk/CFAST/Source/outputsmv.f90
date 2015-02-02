@@ -1,7 +1,8 @@
 
 ! --------------------------- output_smokeview -------------------------------------------
 
-subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents, nfires,froom_number,fx0,fy0,fz0, ntarg, stime, nscount)
+subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents, nfires,froom_number,&
+   fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -126,7 +127,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     do i = 1, nsliceinfo
        sf=>sliceinfo(i)
        
-       write(13,"(a,1x,i3,'&',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
+       write(13,"(a,1x,i3,' &',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
        write(13,"(1x,a)")trim(sf%filename)
        write(13,"(1x,a)")trim(sf%menu_label)
        write(13,"(1x,a)")trim(sf%colorbar_label)
@@ -136,7 +137,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     do i = 1, nisoinfo
        isoptr=>isoinfo(i)
        
-       write(13,"(a,1x,i3,'&',6(i4,1x))")"ISOG",isoptr%roomnum
+       write(13,"(a,1x,i3,' &',6(i4,1x))")"ISOG",isoptr%roomnum
        write(13,"(1x,a)")trim(isoptr%filename)
        write(13,"(1x,a)")trim(isoptr%menu_label)
        write(13,"(1x,a)")trim(isoptr%colorbar_label)
@@ -259,7 +260,6 @@ subroutine output_slicedata(time,first_time)
       ny = sf%ijk(4) + 1 - sf%ijk(3)
       nz = sf%ijk(6) + 1 - sf%ijk(5)
       roomnum = sf%roomnum
-      rm => roominfo(roomnum)
       if(nx.le.0.or.ny.le.0.or.nz.le.0)cycle
       allocate(tslicedata(0:nx-1,0:ny-1,0:nz-1))
       allocate(uslicedata(0:nx-1,0:ny-1,0:nz-1))
@@ -281,6 +281,7 @@ subroutine output_slicedata(time,first_time)
             end do
          end do
       end do
+
       unit=funit(14)
       if(first_time.eq.1)then
          open(unit,file=sf%filename,form='unformatted',status='replace')
@@ -342,8 +343,8 @@ subroutine output_slicedata(time,first_time)
       write(unit) real(time,fb)
       write(unit) (((wslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
       deallocate(wslicedata)
-
       close(unit)
+
       unit=funit(14)
       sf => sliceinfo(i+4)
       if(first_time.eq.1)then

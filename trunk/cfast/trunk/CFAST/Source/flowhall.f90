@@ -63,7 +63,8 @@
             hhalf = zzhall(iroom,ihhalf)
             dt0 = zzhall(iroom,ihtemp)
 
-            ! check to see if the user specified a hhalf value on the command line. if not (ie if ihalf==0) then calculate it using the correlations.
+            ! check to see if the user specified a hhalf value on the command line. 
+            ! if not (ie if ihalf==0) then calculate it using the correlations.
             if(ihalf==0)then
                 ! hhalf = -log10(2)/.018
                 hhalf = 16.70_eb
@@ -115,7 +116,8 @@
 
     real(eb), intent(in) :: tsec, width, htemp, hvel, hdepth
     
-    real(eb) :: hhtemp, roomwidth, roomlength, ventwidth, fraction, halldepth, hallvel, ventdist, ventdist0, ventdistmin, ventdistmax, thall0, f1, f2, cjetdist
+    real(eb) :: hhtemp, roomwidth, roomlength, ventwidth, fraction, halldepth, hallvel, ventdist, ventdist0, ventdistmin, &
+       ventdistmax, thall0, f1, f2, cjetdist
     integer :: ihall, inum, i, itype
     type(vent_type), pointer :: ventptr
     
@@ -123,7 +125,8 @@
     
     hhtemp = htemp - zztemp(ihall,lower)
 
-    ! this routine is only executed if 1) hall flow has not started yet or 2)  hall flow has started and it is coming from the ivent'th vent
+    ! this routine is only executed if 1) hall flow has not started yet or 2)  
+    ! hall flow has started and it is coming from the ivent'th vent
 
     if(izhall(ihall,ihventnum)/=0.and.izhall(ihall,ihventnum)/=inum)return
     roomwidth = min(br(ihall),dr(ihall))
@@ -159,7 +162,8 @@
                 endif
             endif
 
-            ! corridor flow coming from the main fire. this is a restriction, but lets get it right for the main fire before we worry about objects
+            ! corridor flow coming from the main fire. this is a restriction, 
+            ! but lets get it right for the main fire before we worry about objects
             if(itype==2)then
                 if(izhall(ihall,ihxy)==1)then
                     ventdist0 = xfire(1,f_fire_xpos)

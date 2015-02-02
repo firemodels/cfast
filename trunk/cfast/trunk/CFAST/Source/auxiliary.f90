@@ -1412,7 +1412,8 @@
     subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
 
     !     routine: sortbrm
-    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to sort fire and detector data structures by room number.
+    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to 
+    !               sort fire and detector data structures by room number.
     !     arguments: x       floating point info to be sorted
     !                lx      leading dimension of x 
     !                ix      integer info to be sorted

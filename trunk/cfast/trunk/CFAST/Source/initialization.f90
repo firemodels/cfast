@@ -815,7 +815,8 @@
     heatfp(2) = -1.0_eb
     heatfp(3) = -1.0_eb
 
-    ! set to -1 as a flag for nputp initialization - any value not set will be set to the default which is the center of the respective wall
+    ! set to -1 as a flag for nputp initialization - any value not set will be set to the 
+    ! default which is the center of the respective wall
     fpos(1) = -1.0_eb
     fpos(2) = -1.0_eb
     fpos(3) = -1.0_eb
@@ -842,7 +843,8 @@
         qcvv(4,i) = 1.0_eb
     end do
 
-    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
+    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since 
+    ! there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
     ! way to have an intial value other than 0 (no filtering).
     do i = 1, mxfan
         qcvf(1,i) = 0.0_eb
@@ -1412,7 +1414,8 @@
     do i = 1, nm1
         do j = 1, nwal
             if (switch(j,i)) then
-                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
+                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
+                   wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
             endif
         end do
     end do
@@ -1499,9 +1502,10 @@
     subroutine offset (ierror)
 
     ! routine: initialize_species
-    ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.  thus, the actual pressure array
-    !          goes from nofp+1 to nofp+nm1.  the total number of equations to be considered is nequals, and is the last element in the last vector.
-    !          each physical interface routine is responsible for the count of the number of elements in the vector for which it is resonsible.
+    ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.  
+    !          thus, the actual pressure array goes from nofp+1 to nofp+nm1.  the total number of equations to be considered
+    !          is nequals, and is the last element in the last vector. each physical interface routine is responsible for 
+    !          the count of the number of elements in the vector for which it is resonsible.
     ! arguments:  ierror  returns error codes
 
     ! this set of parameters is set by nputp and is kept in the environment module cenviro.  to index a variable, the list is something
@@ -1524,7 +1528,8 @@
 
     ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
 
-    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the beginning of the species (-1) and the end of the array which is presently used by dassl
+    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the 
+    ! beginning of the species (-1) and the end of the array which is presently used by dassl
     
     use cfast_main
     use fltarget
@@ -1627,7 +1632,8 @@
     nofprd = nofwt + nwalls
     nofhvpr = nofprd + 2*nm1*nlspct
 
-    ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.  after nhvsys is defined the following statement can be used to define nequals
+    ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.  
+    ! after nhvsys is defined the following statement can be used to define nequals
     ! nequals = nofhvpr + nhvsys*nlspct
     nequals = nofhvpr
 
@@ -1639,8 +1645,9 @@
     subroutine room_connections (tsec)
 
     ! routine: room_connections
-    ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms) via horizontal or vertical vents.  if a room is 
-    !            isolated from the outside then snsqe has trouble finding an initial pressure solution.
+    ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms) 
+    !           via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an 
+    !           initial pressure solution.
     ! arguments: tsec: current simulation time 
 
     use precision_parameters
@@ -1695,10 +1702,12 @@
     end do
 
     ! construct roomc**matiter where matiter > n
-    ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection between room and room j.  similarly, roomc(i,j) is one if there
-    !        is a connection between these two rooms.  roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.  since there are only n rooms,
-    !        roomc**n tells us whether any given room is connected to any other room in n steps.  the entries roomc**n(i,n) then indicates whether a room is connected to the outside (perhaps
-    !        through several other intermediate rooms).
+    ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection 
+    !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.  
+    !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.  
+    !        since there are only n rooms, roomc**n tells us whether any given room is connected to any other room in n steps.  
+    !        the entries roomc**n(i,n) then indicates whether a room is connected to the outside (perhaps through several other 
+    !        intermediate rooms).
     matiter = 1
     do i = 1, n
         if(n<=matiter) exit
@@ -1790,7 +1799,8 @@
         numnode(1+nslab) = nintx
     else
 
-        ! set up wall node locations for multi-slab case, bunch points at interior boundary of first slab, exterior boundary of last slab and uniformly in middle slabs
+        ! set up wall node locations for multi-slab case, bunch points at interior boundary of first slab, exterior 
+        ! boundary of last slab and uniformly in middle slabs
 
         ! calculate number of points interior to each slab
         xxnintx = nintx
@@ -1854,12 +1864,14 @@
         endif
     endif
 
-    ! finally calculate distances between each point these distances are used by conductive_flux to setup discretization tri-diagonal matrix
+    ! finally calculate distances between each point these distances are used by conductive_flux to setup 
+    ! discretization tri-diagonal matrix
     do i = 1, nx - 1
         walldx(i) = xwall(i+1) - xwall(i)
     end do
 
-    ! initialize temperature profile.  note, wtemp(1)=wtemp(2) and wtemp(nx)=wtemp(nx-1) so dassl will think that no heat transfer needs to occur to the wall (since dt/dx=0 here)
+    ! initialize temperature profile.  note, wtemp(1)=wtemp(2) and wtemp(nx)=wtemp(nx-1) so dassl will think that no heat 
+    ! transfer needs to occur to the wall (since dt/dx=0 here)
     wtemp(1) = tamb
     wtemp(nx) = text
     dtdw = (text-tamb)/(xwall(nx-1)-xwall(2))

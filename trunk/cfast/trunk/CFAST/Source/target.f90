@@ -100,14 +100,16 @@ contains
                         walldx(i) = xl*tmp(i)
                     end do
 
-                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idxtempf_trg,itarg),walldx,nmnode,nslab,wfluxin,wfluxout,iwbound,tgrad,tderv)
+                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idxtempf_trg,itarg),walldx,nmnode,nslab,&
+                       wfluxin,wfluxout,iwbound,tgrad,tderv)
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    call cylindrical_conductive_flux (xxtarg(idxtempf_trg,itarg),nmnode(1),wfluxavg,dt,wk(1),wrho(1),wspec(1),xl)          
+                    call cylindrical_conductive_flux (xxtarg(idxtempf_trg,itarg),nmnode(1),wfluxavg,&
+                       dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
 
                 ! compute the ode residual
@@ -225,7 +227,8 @@ contains
     real(eb) :: flux(2), dflux(2)
     
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
-        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau, awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
+        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau,&
+       awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
@@ -286,7 +289,8 @@ contains
                 qft = 0.0_eb
             endif
 
-            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution if the target is interior to the room
+            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution  
+            ! if the target is interior to the room
             if(cosang>=0.0_eb)then
                 qtfflux(itarg,1) = qtfflux(itarg,1) + qft
             else
@@ -472,7 +476,8 @@ contains
 
     !     routine: gettylyu
     !     purpose: this routine updates the temperature of each detector link.  it also determine whether the detector has activated 
-    !              in the time interval (tcur,tcur+dstep).  if this has occured then a quenching algorithm will be invoked if the appropriate option has been set.
+    !              in the time interval (tcur,tcur+dstep).  if this has occured then a quenching algorithm will be invoked 
+    !              if the appropriate option has been set.
     !     arguments: tcur    current time
     !                dstep   time step size (to next time)
     !                ndtect  number of detectors
@@ -487,7 +492,8 @@ contains
     integer, intent(out) :: idset, ifdtect, ixdtect(mxdtect,*), iquench(*)
     real(eb), intent(out) :: xdtect(mxdtect,*), tdtect
     
-    real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, bnp1, denom, fact1, fact2, delta, tmp
+    real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
+       bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
 
     idset = 0
@@ -556,7 +562,8 @@ contains
                     endif
                 endif
 
-                ! if this detector has activated before all others in this room and the quenching flag was turned on then let the sprinkler quench the fire
+                ! if this detector has activated before all others in this room and the quenching flag was turned on 
+                !  then let the sprinkler quench the fire
                 if(iqu/=0.and.ixdtect(i,dquench)==1)then
                     iquench(iroom)=iqu
                     idset = iroom

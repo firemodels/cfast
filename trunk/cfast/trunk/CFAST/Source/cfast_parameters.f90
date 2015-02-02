@@ -6,7 +6,7 @@ module cparams
 
     ! geometry parameters
     integer, parameter :: nr = 31               ! maximum number of compartments
-    integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material (at the moment, the gui only support 1)
+    integer, parameter :: mxslb = 6        ! maximum number of slabs in a surface material (at the moment, the gui only support 1)
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
     integer, parameter :: mxcross=21            ! maximum number of data points for variable cross-sectional area of a compartment
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation
@@ -36,7 +36,7 @@ module cparams
     integer, parameter :: mxfan = 15                ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 5               ! maximum order of fan curve (here, 5th order polynomial. at the moment, 
                                                     !   the gui limits to constant flow)
-    integer, parameter :: mxcon = 3                 ! maximum number of connections to a single node in a mechanical ventilation system
+    integer, parameter :: mxcon = 3        ! maximum number of connections to a single node in a mechanical ventilation system
     integer, parameter :: mxduct = nr+2             ! maximum number of ducts in a mechanical ventilation system
     integer, parameter :: mxnode = 2*mxduct         ! maximum number of nodes in a mechanical ventilation system
     integer, parameter :: mxext = 2*nr              ! maximum number of external connections in a mechanical ventilation system
@@ -46,19 +46,22 @@ module cparams
     
     real(eb), parameter :: mx_vsep=0.01_eb     ! maximum vertical distance between elements before they are considered 
                                                ! separate elements (connected compartments for example)
-    real(eb), parameter :: mx_hsep = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to be on a surface for entrainmnt
+    real(eb), parameter :: mx_hsep = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to 
+                                               ! be on a surface for entrainmnt
     
     ! target parameters
     integer, parameter :: mxtarg = 10*nr                            ! maximum number of targets
-    integer, parameter :: nnodes_trg = nnodes-1                     ! number of interior nodes in a target for conduction calculation
-    integer, parameter :: idxtempf_trg = 17                         ! position of front temperature of target (front surface temperature)
-    integer, parameter :: idx_tempb_trg = idxtempf_trg+nnodes_trg-1 ! position of back temperature of target (back surface temperature)
+    integer, parameter :: nnodes_trg = nnodes-1             ! number of interior nodes in a target for conduction calculation
+    integer, parameter :: idxtempf_trg = 17                 ! position of front temperature of target (front surface temperature)
+    integer, parameter :: idx_tempb_trg = idxtempf_trg+nnodes_trg-1 ! position of back temperature of target 
+                                                                    ! (back surface temperature)
     integer, parameter :: mxr_trg = idx_tempb_trg                   ! upper bound of real target array 
     integer, parameter :: mxi_trg = 7                               ! upper bound of integer target array
     
     integer, parameter :: check_detector_state = 0      ! index to check state of detectors and targets
     integer, parameter :: set_detector_state = 1        ! index to calculate full state of detectors and targets
-    integer, parameter :: update_detector_state = 2     ! index to update state of detectors and targets on successful equation set solution
+    integer, parameter :: update_detector_state = 2     ! index to update state of detectors and targets on 
+                                                        ! successful equation set solution
     
     integer, parameter :: upper = 1         ! index for upper layer
     integer, parameter :: lower = 2         ! index for lower layer

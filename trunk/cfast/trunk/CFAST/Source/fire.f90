@@ -68,8 +68,9 @@
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
 
-            call do_fire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj), &
-            objpos(3,iobj)+ohight,oareat,oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
+            call do_fire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,&
+               objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat,oplume(2,iobj),oplume(3,iobj),oqdott,&
+               xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
             xtl = zztemp(iroom,lower)
@@ -133,7 +134,8 @@
 
 ! --------------------------- do_fire -------------------------------------------
 
-    subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
+    subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,&
+       object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
 
     !     routine: do_fire
     !     purpose: do heat release and species from a fire
@@ -144,8 +146,10 @@
     !                 xbr: breadth of the room (m)
     !                 xdr: Depth of the room (m)
     !                 hcombt: current heat of combustion (j/kg)
-    !                 y_soot, y_co, y_trace: species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
-    !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
+    !                 y_soot, y_co, y_trace: species yields for soot, CO, and trace species; others are calculated 
+    !                       from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
+    !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields 
+    !                 of O2, HCl, and HCN are determined from this
     !                 molar_mass: molar mass of the fuel (kg/mol)
     !                 stmass: mass of a species in a layer in the room (kg)
     !                 xfx: position of the fire in x direction
@@ -204,8 +208,9 @@
         xmass(lsp) = 0.0_eb
     end do
 
-    ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of whether the fuel actually combusts here.
-    ! this is consistent with the earlier chemistry routine. release it here and deposit it in the upper layer
+    ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of 
+    ! whether the fuel actually combusts here. this is consistent with the earlier chemistry routine. 
+    ! release it here and deposit it in the upper layer
     xntms(upper,11) = xemp*y_trace
 
     ! now do the kinetics scheme
@@ -231,7 +236,8 @@
 
         ! calculate the entrainment rate but constrain the actual amount
         ! of air entrained to that required to produce stable stratification
-        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, zztemp(iroom,lower), xemp, xems, xeme, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, zztemp(iroom,lower), xemp, xems, xeme, &
+           min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         ! check for an upper only layer fire
         if (xxfirel<=0.0_eb) go to 90
@@ -246,7 +252,8 @@
             activated_time = 0
             activated_rate = 0.0
         endif
-        call chemistry (xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
+        call chemistry (xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),&
+           activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
         xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
@@ -303,10 +310,12 @@
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, zztemp(iroom,upper), uplmep, uplmes, uplmee, min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, zztemp(iroom,upper), uplmep, uplmes, uplmee, &
+           min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
-        call chemistry (uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
+        call chemistry (uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),&
+           activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
         xqfr = xqpyrl*chirad + xqfr
         xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
@@ -322,8 +331,9 @@
 
 ! --------------------------- chemistry -------------------------------------------
 
-    subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, source_room, h_c, y_soot, y_co,n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, &
-    activated_room, activated_sprinkler, activated_time, activated_rate, model_time, hrr_at_activation, hrr_constrained, pyrolysis_rate_constrained, species_rates)
+    subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, source_room, h_c, y_soot, y_co,n_C, n_H, n_O, n_N, n_Cl, &
+       source_o2, lower_o2_limit, activated_room, activated_sprinkler, activated_time, activated_rate, model_time,& 
+       hrr_at_activation, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
     !     routine: chemistry
     !     purpose: do the combustion chemistry - for plumes in both the upper and lower layers.
@@ -336,10 +346,14 @@
     !                 entrainment_rate: calculated entrainment rate (kg/s)
     !                 source_room: compartment that contains this fire
     !                 h_c: heat of combustion of the fuel (W/kg)
-    !                 y_soot, y_co: species yields for soot and CO; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
-    !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
-    !                 source_o2, lower_o2_limit: oxygen concentration in the source layer of the compartment; lower oxygen limit for combustion (as a fraction)
-    !                 activated_room: if zero, a sprinkler has gone off in this compartment.  If equal to the source room, HRR is saved for future quenching
+    !                 y_soot, y_co: species yields for soot and CO; others are calculated from the molecular formula of the 
+    !                 fuel (kg species produced/kg fuel pyrolyzed)
+    !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; 
+    !                 yields of O2, HCl, and HCN are determined from this
+    !                 source_o2, lower_o2_limit: oxygen concentration in the source layer of the compartment; 
+    !                 lower oxygen limit for combustion (as a fraction)
+    !                 activated_room: if zero, a sprinkler has gone off in this compartment.  
+    !                                 If equal to the source room, HRR is saved for future quenching
     !                 activated_sprinkler: sprinkler that has activated
     !                 activated_time: time of sprinkler activaiton (s)
     !                 activated_rate: sprinkler suppression rate
@@ -347,14 +361,17 @@
 
     !                 hrr_at_activation (output): saved hrr in case of future activation (W)
     !                 hrr_constrained (output): actual HRR of the fire constrained by available oxygen (W)
-    !                 pyrolysis_rate_constrained (output): actual pyrolysis rate of the fuel constrained by available oxygen (kg/s)
-    !                 species_rates (output): production rates of species based on calculated yields and constrained pyrolysis rate (kg/s); fuel and oxygen are naturally negative
+    !                                           pyrolysis_rate_constrained (output): actual pyrolysis rate of the fuel 
+    !                                           constrained by available oxygen (kg/s)
+    !                 species_rates (output): production rates of species based on calculated yields and constrained 
+    !                                         pyrolysis rate (kg/s); fuel and oxygen are naturally negative
 
     use precision_parameters
     implicit none
     
     integer, intent(in) :: source_room, activated_room, activated_sprinkler
-    real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit
+    real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl
+    real(eb), intent(in) :: source_o2, lower_o2_limit
     real(eb), intent(in) :: activated_time, activated_rate, model_time
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
     real(eb), intent(inout) :: hrr_at_activation
@@ -403,7 +420,8 @@
     nu_co2 = n_C  - nu_co - nu_hcn - nu_soot
     nu_o2 = nu_co2 + (nu_h2o + nu_co - n_O)/2.0_eb
 
-    ! chemistry balance is molar-based so convert back to mass rates. fuel and o2 are consumed, so negative. Others are produced, so positive
+    ! chemistry balance is molar-based so convert back to mass rates. fuel and o2 are consumed, 
+    ! so negative. Others are produced, so positive
     net_fuel = -pyrolysis_rate_constrained
     net_o2 = -pyrolysis_rate_constrained*nu_o2*0.032_eb/molar_mass
     net_co2 = pyrolysis_rate_constrained*nu_co2*0.04401_eb/molar_mass
@@ -441,8 +459,10 @@
     !                 ohight (output): height of fire (returned)
     !                 oqdott (output): heat release rate of object
     !                 objhct (output): object heat of combustion
-    !                 n_C, n_H, n_O, n_N, n_Cl (output): molecular formula for the fuel; these can be fractional; yields of O2, HCl, and HCN are determined from this
-    !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
+    !                 n_C, n_H, n_O, n_N, n_Cl (output): molecular formula for the fuel; these can be fractional; 
+    !                 yields of O2, HCl, and HCN are determined from this
+    !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; 
+    !                 others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
 
     use precision_parameters
     use cfast_main
@@ -581,7 +601,8 @@
     ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
     !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
     
-    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb
+    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb
+    real(eb), parameter :: a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb
 
     ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     xf = 1.0_eb
@@ -660,7 +681,8 @@
             factor = z/z_l
             deltaz = max(0.0001_eb, z_l-z0)
         end if
-        !eme = (0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+2.9_eb*qj**twothirds/((gsqrt*cp*rho_inf*t_inf)**(2.0_eb/3.0_eb)*deltaz**(5.0_eb/3.0_eb))) * factor)/xf
+        !eme = (0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird*qj**onethird*deltaz**(5.0_eb/3.0_eb)*
+        !(1.0_eb+2.9_eb*qj**twothirds/((gsqrt*cp*rho_inf*t_inf)**(2.0_eb/3.0_eb)*deltaz**(5.0_eb/3.0_eb))) * factor)/xf
         eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
         ems = emp + eme
     else
@@ -912,7 +934,8 @@
         source_o2 = zzcspec(ito,lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
-        call chemistry (xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
+        call chemistry (xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,&
+           0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
         qpyrol = xqpyrl
 
         do i = 1, ns
@@ -1374,7 +1397,8 @@
     tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
-    ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature and flux are stored backupwards - this is historical
+    ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature 
+    ! and flux are stored backupwards - this is historical
     ! see corresponding code in keywordcases
     do iobj = 1, numobjl
         if (.not.objon(iobj)) then
@@ -1391,9 +1415,11 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call check_object_ignition(told,dt,xxtarg(idxtempf_trg,iobtarg),objcri(3,iobj),obcond(igntemp,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,xxtarg(idxtempf_trg,iobtarg),objcri(3,iobj),obcond(igntemp,iobj),&
+                   iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
-                call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(ignflux,iobj),iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(ignflux,iobj),&
+                   iobj,ifobj,tobj,tmpob(1,iobj))
             else
                 call xerror('update_fire_objects-incorrectly defined object type',0,1,1)
                 ierror = 20

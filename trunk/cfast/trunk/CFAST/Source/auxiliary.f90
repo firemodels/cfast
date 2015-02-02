@@ -364,7 +364,6 @@
     !     purpose: get command line as a single string
     !     arguments: cmdlin - command line
 
-    use ifport
     use cfin
 
     character, intent(out) :: cmdlin*127
@@ -583,7 +582,6 @@
     !     arguments: cputim (output) - elapsed cpu time 
 
     use precision_parameters
-    use ifport
     
     implicit none
     
@@ -709,8 +707,8 @@
     character(*), intent(out) :: exepath, datapath, project
     integer, intent(out) :: errorcode
     
-    integer :: i
-    integer(2) :: n, status, loop, ld(2), li(2), ln(2), le(2), lb
+    integer :: i, loop
+    integer(2) :: n, status, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
     character (64) :: name(2)
     logical :: doesthefileexist
@@ -800,8 +798,6 @@
 
     subroutine grabky (ich,it)
 
-    use ifport
-    
     implicit none
     
     integer(2), intent(out) :: ich, it
@@ -1324,7 +1320,6 @@
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
     !     n to output just target fluxes relative to ambient (smoke still in od)
 
-    use ifport
     use cparams
     use cshell
     

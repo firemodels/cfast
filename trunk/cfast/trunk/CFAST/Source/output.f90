@@ -287,9 +287,11 @@
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
-    5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace',/, &
+    5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent',&
+         '      Convec.   Radiat.   Pyrolysate  Trace',/, &
     '                          Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
-    '                          (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)         (W)       (W)       (kg)      (kg)' ,/,' ',138('-'))
+    '                          (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)',&
+    '         (W)       (W)       (kg)      (kg)' ,/,' ',138('-'))
 5010 format (' ',14x,a8,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5020 format (' ',13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5030 format (' ',a14,10x,3(1pg10.3),10x,3(1pg10.3))
@@ -480,8 +482,10 @@
 
     5000 format (//,' Flow Through Vents (kg/s)',/, &
     '0                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
-    '                                        Upper Layer               Lower Layer               Upper Layer               Lower Layer',/, &
-    ' Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow       Outflow      Inflow       Outflow',/,134('-'))
+    '                                        Upper Layer               Lower Layer               Upper Layer',&
+    '               Lower Layer',/, &
+    ' Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
+    '       Outflow      Inflow       Outflow',/,134('-'))
 5010 format (' ')
 5020 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
 5030 format (' ',a1,i3,3x,a12,3x,a,3x,a12,3x,a)
@@ -696,10 +700,13 @@
         endif
     end do
     return
-5000 format (//,' Surfaces and Targets',/, &
-    '0Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To      Fire         Surface      Gas',/, &
-    '                Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
-    '                (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,1x,144('-'))
+    5000 format (//,' Surfaces and Targets',/, &
+    '0Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To',&
+    '      Fire         Surface      Gas',/, &
+    '                Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.',&
+    '         Rad.         Rad.         Convect.',/, &
+    '                (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (W/m^2)',&
+    '      (W/m^2)      (W/m^2)      (W/m^2)      ',/,1x,144('-'))
 5010 format (1x,a14,4(1pg10.3),1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
 5030 format (55x,i4,4x,3(1pg10.3),1x,5(1pg10.3,3x))
     end subroutine rslttar
@@ -1035,13 +1042,15 @@
     ' ',41X,5('(m)         '),/,' ',100('-'))
 5020 format (' ',a14,1X,A14,I3,5X,5(F9.2,3X))
 5030 format (//,' There are no vertical natural flow connections')
-5040 format (//,' Vertical Natural Flow Connections (Ceiling, ...)',//,' Top            Bottom         Shape     Area      ','Relative  Absolute',/,' ', &
+     5040 format (//,' Vertical Natural Flow Connections (Ceiling, ...)',//,' Top            Bottom         Shape',&
+          '     Area      ','Relative  Absolute',/,' ', &
     'Compartment    Compartment                        Height    Height',/,' ',40X,'(m^2)     ',2('(m)       '),/,' ',70('-'))
 5050 format (' ',a8,7x,a8,7x,a6,2x,3(f7.2,3x))
 5060 formaT (//,' There are no mechanical flow connections')
 5100 format (' ',i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
 5110 format (' ',10x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
-5120 format (//,' Fans',//,' System    From           From      To             To        Fan       Minimum   Maximum    Fan Curve',/, &
+     5120 format (//,' Fans',//,' System    From           From      To             To        Fan',&
+          '       Minimum   Maximum    Fan Curve',/, &
     ' ','                         Elev.                    Elev.','     Number',/,' ',25x, &
     '(m)                      (m)             ','    (Pa)      (Pa)',/,' ',100('-'))
 5130 format (' ',i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
@@ -1120,7 +1129,8 @@
 5000 format (//,' Heat transfer for all surfaces is turned off')
 5010 format (//,' Thermal Properties',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
 5020 format (' ',a13,3(a10,3x))
-5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,'Density',5X,'Thickness',3X,'Emissivity')
+5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,&
+          'Density',5X,'Thickness',3X,'Emissivity')
 5040 format (' ',a8,5(1pg13.3),5e10.2)
 5050 format (' ',8x,4(1pg13.3))
 5060 format (' ')
@@ -1178,7 +1188,8 @@
     return
 5000 format ('   (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (' ',255a1)
-5020 format (//,' Name: ',A,'   Referenced as object #',i3,//,' Compartment    Fire Type    ','   Position (x,y,z)     Relative    Lower O2    Radiative',/,' ',52x,'Humidity    Limit       Fraction')
+5020 format (//,' Name: ',A,'   Referenced as object #',i3,//,' Compartment    Fire Type    ',&
+          '   Position (x,y,z)     Relative    Lower O2    Radiative',/,' ',52x,'Humidity    Limit       Fraction')
 5030 format (1x,a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.2//)
 5031 format (' Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/,1x,5(f7.3,3x),//)
 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
@@ -1215,7 +1226,8 @@
     character cbuf*255
 
     if(ntarg/=0) write(iofilo,5000)
-5000 format(//,' TARGETS',//,' Target',T9,'Compartment',T24,'Position (x, y, z)',T51,'Direction (x, y, z)',T76,'Material',/,1X,82('-'))
+5000 format(//,' TARGETS',//,' Target',T9,'Compartment',T24,'Position (x, y, z)',T51,&
+         'Direction (x, y, z)',T76,'Material',/,1X,82('-'))
 
     do itarg = 1, ntarg
         if (itarg<ntarg-nm1+1) then
@@ -2020,17 +2032,17 @@
 
     subroutine deleteoutputfiles (outputfile)
 
-    use ifport
     implicit none
 
     character(*), intent(in) :: outputfile
+    integer funit,fileunit,stat
     
     logical :: doesthefileexist
-    integer(2) :: filecount
 
     if (doesthefileexist(outputfile)) then
-        filecount = delfilesqq(outputfile)
-        if (filecount<1) stop 104
+        fileunit=funit(14)
+        open(unit=fileunit, iostat=stat, file=outputfile, status='old')
+        if (stat.eq.0) close(fileunit, status='delete')
     endif
 
     return

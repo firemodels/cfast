@@ -508,7 +508,7 @@
     
     logical :: lfupdat, countargs, lstat
     integer :: obpnt, compartment, lrowcount, nx, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k
-    integer :: iijk, jik, koffst, iflgsetp, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
+    integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
@@ -520,8 +520,6 @@
     !	Start with a clean slate
 
     lfupdat=.false.
-    iflgsetp = 0
-    setpfile = ' '
     do i = 1, nr
         do j = 1, 4
             cname(j,i) = 'OFF'
@@ -557,21 +555,19 @@
         if (countargs(5,lcarray, xnumc-1, nret)) then
             nsmax =  lrarray(1)
             lprint = lrarray(2)
-            ldiago = lrarray(3)
-            if (ldiago>0) ndumpr = 1
-            ldiagp = lrarray(4)
+            lsmv = lrarray(4)
             lcopyss =  lrarray(5)
         else if (countargs(4,lcarray, xnumc-1, nret)) then
             nsmax =  lrarray(1)
             lprint = lrarray(2)
-            ldiagp = lrarray(3)
+            lsmv = lrarray(3)
             lcopyss =  lrarray(4)
         else 
             ierror = 1
             return
         endif
 
-        ! TAMB REFERENCE AMBIENT TEMPERATURE (C), REFERENCE AMBIENT PRESSURE, REFERENCE PRESSURE, relative humidity
+        ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
     case ("TAMB")
         if (.not.countargs(4,lcarray, xnumc-1, nret)) then
             ierror = 2
@@ -586,7 +582,7 @@
             exterior_density = interior_density
         endif
 
-        ! EAMB REFERENCE EXTERNAL AMBIENT TEMPERATURE (C), REFERENCE EXTERNAL AMBIENT PRESSURE
+        ! EAMB reference external ambient temperature (c), reference external ambient pressure
     case ("EAMB")
         if (.not.countargs(3,lcarray, xnumc-1, nret)) then
             ierror = 3
@@ -604,7 +600,7 @@
         endif
         limo2 = lrarray(1)*0.01_eb 
 
-        ! Rename the THERMAL DATA FILE
+        ! Rename the thermal data file
     case ("THRMF")
         if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 6
@@ -1565,23 +1561,6 @@
         ! a negative turns off the check
         if(lrarray(2)<=0)izdtflag = .false.
 
-        ! SETP file_name
-    case ('SETP')
-        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
-            ierror = 56
-            return
-        endif
-
-        if (iflgsetp>0) then
-            ierror = 57
-            write (logerr,5353) setpfile
-            return
-        else
-            iflgsetp = 1
-            setpfile = lcarray(1)
-            write (logerr,5340) setpfile
-        endif
-
         ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
 
         ! There are two forms of the command
@@ -1662,7 +1641,7 @@
 
         ! Outdated keywords
     case ('CJET')                                   ! Just ignore these inputs ... they shouldn't be fatal
-    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER')  ! these are clearly outdated and should produce errors
+    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
         ierror = 5
         return
 
@@ -1991,7 +1970,6 @@
     call deleteoutputfiles (ssspecies)
     call deleteoutputfiles (sswall)
     call deleteoutputfiles (errorlogging)
-    !call deleteoutputfiles (stopfile)
     call deleteoutputfiles (historyfile)
     call deleteoutputfiles (statusfile)
     call deleteoutputfiles (queryfile)
@@ -2006,170 +1984,6 @@
 
     return
     end subroutine open_files
-
-! --------------------------- setp0 -------------------------------------------
-
-    subroutine setp0 (p0, ip0, pmxmn, ipmxmn, iounit, ierror)
-
-    !     routine: setp0
-    !     purpose: 
-    !     arguments: p0      array containing new set values for p vector
-    !                ip0     array of flags for variables that have changes in p0
-    !                ierror  error flag
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use iofiles
-    use opt
-    implicit none
-
-    integer, intent(in) :: iounit
-    real(eb), intent(out) :: pmxmn(maxteq,2)
-    
-    real(eb), intent(out) :: p0(*)
-    integer, intent(out) :: ipmxmn(0:maxteq,2), ip0(0:*), ierror
-    
-    real(eb) :: local(2), x
-
-    integer :: ilocal(2), i, io, nret, iroom
-    character :: label*5, testfile*128, place*1, mxmn*1, toupper*1, testpath*256
-    logical exists, doesthefileexist, eof
-
-    ip0(0) = off
-    ierror = 0
-    do i = 1, maxteq
-        p0(i) = 0.0_eb
-        ip0(i) = off
-    end do
-
-    if (setpfile=='   ') return
-
-    ! first we try the local directory
-    testpath = trim (datapath) // trim(setpfile)
-    exists = doesthefileexist(testpath)
-
-    ! then we try the executable root directory
-    if (.not.exists) then
-        testpath = trim (exepath) // trim(setpfile)
-        exists = doesthefileexist(testpath)
-
-        ! all is lost
-        if (.not.exists) then
-            write (logerr, 5000) trim(setpfile)
-            ierror = 217
-            return
-        endif
-    endif
-
-    ! all is not lost
-    write (logerr, 5001) testpath
-
-    close (iounit)
-    open (unit=iounit,file=testpath,form='formatted')
-
-    call readbf(io, label, eof)
-    do i = 1, 5
-        label(i:i) = toupper(label(i:i))
-    end do
-    if (label(1:4)/='file') then
-        ierror = 75
-        close(io)
-        return
-    endif
-    call readfl(testfile)
-    if (testfile/=nnfile) then
-        ierror = 50
-        close(io)
-        return
-    endif
-
-20  continue
-
-    call readbf(io, label, eof)
-    do i = 1, 5
-        label(i:i) = toupper(label(i:i))
-    end do
-
-    call readin(2,nret,ilocal,local)
-    iroom = ilocal(1)
-    x = local(2)
-    call readfl(place)
-    place = toupper(place)
-    call readfl(mxmn)
-    mxmn = toupper(mxmn)
-
-    if (label(1:4)=='TEMP') then
-        if (PLACE=='U') then
-            call dop0(noftu,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
-        else if (place=='L') then
-            call dop0(noftl,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
-        else
-            write(logerr,*) '***Error: parameter not supported by setp'
-            ierror = 77
-            close(io)
-            return
-        endif
-    else if (labeL=='PRESS') then
-        mxmn = place
-        call dop0(nofp,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
-    else if (label=='INTER') then
-        mxmn = place
-        x = (hr(iroom) - x)*ar(iroom)
-        call dop0(nofvu,iroom,mxmn,x,p0,ip0,pmxmn,ipmxmn)
-    else
-        close(io)
-        return
-    endif
-
-    goto 20
-
-5000 format ('***Error: Cannot find the object fire file in either the executable path or the local directory ',/,a)
-5001 format ('Open the SETPARAMETER file ',a)
-
-    end subroutine setp0
-
-! --------------------------- dop0 -------------------------------------------
-
-    subroutine dop0(noflg, iroom, mxmn, x, p0, ip0, pmxmn, ipmxmn)
-
-    !     routine: dop0
-    !     purpose: 
-    !     arguments: noflg   index into the p vector
-    !                iroom   index of room
-    !                mxmn    character flag of max or min of value
-    !                p0      array containing new set values for p vector
-    !                ip0     array of flags for variables that have changes in p0
-    !                pmxmn   array containing new limits of values for p vector
-    !                ipmxmn  array of flags for limits that have been set in pmxmn
-
-    use precision_parameters
-    use opt
-    implicit none
-
-    integer, intent(in) :: noflg, iroom
-    real(eb), intent(in) ::  x
-    character, intent(in) :: mxmn*1
-
-    integer, intent(out) :: ipmxmn(0:maxteq,2), ip0(0:*)
-    real(eb), intent(out) :: pmxmn(maxteq,2), p0(*)
-
-    if (mxmn=='X') then
-        ipmxmn(0,1) = on
-        pmxmn(noflg+iroom,1) = x
-        ipmxmn(noflg+iroom,1) = on
-    else if (mxmn=='M') then
-        ipmxmn(0,2) = on
-        pmxmn(noflg+iroom,2) = x
-        ipmxmn(noflg+iroom,2) = on
-    else
-        ip0(0) = on
-        p0(noflg+iroom) = x
-        ip0(noflg+iroom) = on
-    endif
-
-    return
-    end subroutine dop0
 
 ! --------------------------- positionobject -------------------------------------------
 

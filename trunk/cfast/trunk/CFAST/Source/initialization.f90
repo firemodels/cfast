@@ -702,7 +702,6 @@
         cname(1,i) = 'DEFAULT'
     end do
     nconfg = 0
-    ndumpr = 0
     nlspct = 0
     nrestr = 0
     numthrm = 0

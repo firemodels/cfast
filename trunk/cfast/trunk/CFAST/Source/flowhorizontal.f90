@@ -39,10 +39,13 @@
     real(eb) :: factor2, qchfraction, height, width
     integer :: nirm, ifrom, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut
     real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
+    integer,parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
+    real(eb) :: outarray(maxhead)
+    integer :: position
     
     type(vent_type), pointer :: ventptr
 
-    ! temporary declaration
+    position = 0
     nirm = nm1
 
     do ifrom = 1, nirm
@@ -98,7 +101,7 @@
                    yvelev,xmslab,nslab,nneut,ventvel)
                 
                 if (prnslab) then
-                    call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab)
+                    call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
                 endif
 
                 ! update hall info for vents connected from fire room to hall
@@ -191,7 +194,7 @@
     endif
     
     if (prnslab) then
-        call SSprintslab
+        call SSprintslab (outarray, position)
     end if
     return
     end subroutine horizontal_flow

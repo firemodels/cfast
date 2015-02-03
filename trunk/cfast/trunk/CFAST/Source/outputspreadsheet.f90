@@ -615,7 +615,8 @@
     use vent_slab
     implicit none
     
-    real(eb), intent(in) :: time, qslab(mxfslab), outarray(*)
+    real(eb), intent(in) :: time, qslab(mxfslab)
+    real(eb), intent(inout) :: outarray(*)
     integer, intent(in) :: ir1, ir2, iv, nslab
     integer, intent(inout) :: position
     

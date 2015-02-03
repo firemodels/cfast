@@ -707,8 +707,8 @@
     character(*), intent(out) :: exepath, datapath, project
     integer, intent(out) :: errorcode
     
-    integer :: i, loop
-    integer(2) :: n, status, ld(2), li(2), ln(2), le(2), lb
+    integer :: i, loop, status
+    integer(2) :: n, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
     character (64) :: name(2)
     logical :: doesthefileexist

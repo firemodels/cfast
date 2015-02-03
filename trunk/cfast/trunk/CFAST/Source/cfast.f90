@@ -329,11 +329,10 @@
     real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
     integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
-    integer(2) :: filecount, delfilesqq
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
         tplot, tspread, tout,  ostptime, tdtect, tobj
     character(133) :: messg
-    external calculate_residuals, jac, delfilesqq
+    external calculate_residuals, jac
     integer :: funit
     integer :: first_time
     integer :: stopunit, stopiter, ios
@@ -522,7 +521,7 @@
     inquire (file=queryfile, exist = exists)
     if (exists) then
         call output_status (T, dT, errorcode)
-        filecount = delfilesqq(queryfile)
+        call deleteoutputfiles(queryfile)
     endif
     
     !Check to see if diagnostic files .resid and .jac exist. If they do exist

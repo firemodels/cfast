@@ -29,61 +29,58 @@
     endif
 
     position = 0
-    call SSaddtolist (position,time,outarray)
+    call ssaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nm1
         itarg = ntarg - nm1 + i
         izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
-        call SSaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
+        call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (izshaft(i)==0) then
-            call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
-            call SSaddtolist (position,zzhlay(i,lower),outarray)
+            call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
+            call ssaddtolist (position,zzhlay(i,lower),outarray)
         endif
-        call SSaddtolist (position,zzvol(i,upper),outarray)
-        call SSaddtolist (position,zzrelp(i) - interior_rel_pressure(i),outarray)
-        call SSaddtolist (position,ontarget(i),outarray)
-        call SSaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
+        call ssaddtolist (position,zzvol(i,upper),outarray)
+        call ssaddtolist (position,zzrelp(i) - interior_rel_pressure(i),outarray)
+        call ssaddtolist (position,ontarget(i),outarray)
+        call ssaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
     end do
 
     ! Fires
     do i = 1,n
-        call SSaddtolist (position,fqdj(i),outarray)
+        call ssaddtolist (position,fqdj(i),outarray)
     end do
 
     if (numobjl/=0) then
         do i = 1, numobjl
             call flame_height (fqf(i),farea(i),fheight)
-            call SSaddtolist (position,fems(i),outarray)
-            call SSaddtolist (position,femp(i),outarray)
-            call SSaddtolist (position,fqf(i),outarray)
-            call SSaddtolist (position,fqlow(i),outarray)
-            call SSaddtolist (position,fqupr(i),outarray)
-            call SSaddtolist (position,fheight,outarray)
-            call SSaddtolist (position,fqfc(i),outarray)
-            call SSaddtolist (position,objmaspy(i),outarray)
-            call SSaddtolist (position,radio(i),outarray)
+            call ssaddtolist (position,fems(i),outarray)
+            call ssaddtolist (position,femp(i),outarray)
+            call ssaddtolist (position,fqf(i),outarray)
+            call ssaddtolist (position,fqlow(i),outarray)
+            call ssaddtolist (position,fqupr(i),outarray)
+            call ssaddtolist (position,fheight,outarray)
+            call ssaddtolist (position,fqfc(i),outarray)
+            call ssaddtolist (position,objmaspy(i),outarray)
+            call ssaddtolist (position,radio(i),outarray)
         end do
     endif
 
-    call SSprintresults (21, position, outarray)
+    call ssprintresults (21, position, outarray)
 
     return
     end subroutine output_spreadsheet_normal
 
 ! --------------------------- SSaddtolist -------------------------------------------
 
-    subroutine SSaddtolist (ic, valu, array)
+    subroutine ssaddtolist (ic, valu, array)
 
     use precision_parameters
-    use cshell, only: validate
     implicit none
     
     real(eb), intent(in) :: valu
     real(eb), intent(out) :: array(*)
     integer, intent(inout) :: ic
-    
-    integer iounit,i
 
     ic = ic + 1
     ! We are imposing an arbitrary limit of 32000 columns
@@ -94,9 +91,20 @@
         array(ic) = valu
     end if
     return
+    
+    end subroutine ssaddtolist
 
-    entry SSprintresults (iounit,ic,array)
-
+    subroutine ssprintresults (iounit,ic,array)
+    
+    use precision_parameters
+    use cshell, only: validate
+    implicit none
+    
+    real(eb), intent(in) :: array(*)
+    integer, intent(in) :: iounit, ic
+    
+    integer i
+    
     if (validate) then
         write (iounit,"(1024(e19.12,','))" ) (array(i),i=1,ic)
     else
@@ -104,11 +112,22 @@
     end if
     return
     
-    entry SSprintresid (iounit,ic,array)
-
+    end subroutine ssprintresults
+    
+    subroutine ssprintresid (iounit,ic,array)
+    
+    use precision_parameters
+    implicit none
+    
+    real(eb), intent(in) :: array(*)
+    integer, intent(in) :: iounit, ic
+    
+    integer i
+  
     write (iounit,"(1024(e20.13,','))" ) (array(i),i=1,ic)
     return
-    end subroutine SSaddtolist
+    
+    end subroutine ssprintresid
 
 ! --------------------------- output_spreadsheet_flow -------------------------------------------
 
@@ -580,14 +599,14 @@
     !    end do
     !end do
 
-    call SSprintresid (ioresid, position, outarray)
+    call ssprintresid (ioresid, position, outarray)
 
     return
     end subroutine output_spreadsheet_residuals
 
 ! --------------------------- SpreadSheetFSlabs -------------------------------------------
 
-    subroutine SpreadSheetFSlabs (time, ir1, ir2, iv, nslab, qslab)
+    subroutine spreadsheetfslabs (time, ir1, ir2, iv, nslab, qslab, outarray, position)
     
     use precision_parameters
     use cparams
@@ -596,18 +615,14 @@
     use vent_slab
     implicit none
     
-    real(eb), intent(in) :: time, qslab(mxfslab)
+    real(eb), intent(in) :: time, qslab(mxfslab), outarray(*)
     integer, intent(in) :: ir1, ir2, iv, nslab
+    integer, intent(inout) :: position
     
     real(eb) :: r1, r2, v, slab
     
-    integer,parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
-    real(eb) :: outarray(maxhead)
-    integer :: position, i
-    logical :: firstc, nwline
-    data firstc /.true./
-    data nwline /.true./
-    save firstc, outarray, position
+    integer :: i
+    logical :: firstc=.true.
     
     if (firstc) then 
         call SSHeadersFSlabs
@@ -624,22 +639,31 @@
     r2 = ir2
     v = iv
     slab = nslab
-    call SSaddtolist(position, r1, outarray)
-    call SSaddtolist(position, r2, outarray)
-    call SSaddtolist(position, v, outarray)
-    call SSaddtolist(position, slab, outarray)
+    call ssaddtolist(position, r1, outarray)
+    call ssaddtolist(position, r2, outarray)
+    call ssaddtolist(position, v, outarray)
+    call ssaddtolist(position, slab, outarray)
     do i = 1, mxfslab
         call SSaddtolist(position, dirs12(i)*qslab(i), outarray)
     end do
     return
     
-    entry SSprintslab
+    end subroutine spreadsheetfslabs
     
-        call SSprintresid(ioslab, position, outarray)
-        nwline = .true.
-    
+    subroutine ssprintslab (position, outarray)
+
+    use precision_parameters
+    use debug
+
+    real(eb), intent(in) :: outarray(*)
+    integer, intent(in) :: position
+
+    call ssprintresid(ioslab, position, outarray)
+    nwline = .true.
+
     return
-    end subroutine SpreadSheetFSlabs
+
+    end subroutine ssprintslab
 
 ! --------------------------- rev_outputspreadsheet -------------------------------------------
 

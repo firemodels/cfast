@@ -863,7 +863,7 @@
 
     write (iofilo,5000) 
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
-    write (iofilo,5020) nsmax, lprint, ldiagp, lcopyss
+    write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
 
 5000 format (//,' OVERVIEW',/)
 5010 FORMAT ('0Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,'0',i4,12x,i4,10x,i4,17x,i4)
@@ -1975,18 +1975,12 @@
         write (logerr,5004)
         if (outputformat==0) outputformat = 1
     endif
-
-    ! next the history file
-    if (ldiago>0) then
-        write(logerr,5001) trim(historyfile)
-        open (unit=11,file=historyfile,err=10,iostat=ios,form='unformatted',access='sequential')
-    endif 
-
+    
     ! next create the status file
     open (12,file=statusfile,access='append',err=81,iostat=ios)
 
     ! now the smokeview files
-    if (ldiagp>0) then
+    if (lsmv>0) then
         write(logerr,5003) trim(smvhead),trim(smvdata)
         open (unit=13,file=smvhead,form='formatted',err=11,iostat=ios)
         open (unit=14,file=smvdata,form="unformatted",err=11,iostat=ios)
@@ -2024,7 +2018,7 @@
 5001 format ('Open the history file ',a)
 5002 format ('Open the output file ',a)
 5003 format ('Open the smokeview files - ',a,2x,a)
-5004 format ('Send output to the consol')
+5004 format ('Send output to the console')
 5005 format ('Open the spreadsheet files - ',4(a,2x))
 5030 FORMAT ('***Error ',i4,' while accessing history, file = ',A)
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)

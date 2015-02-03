@@ -86,8 +86,8 @@ module cfast_main
         nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, &
-        nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, ldiagp, ldiago, itmmax, idiag, &
-        nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, ndumpr, nrestr, ndt, next, nnode, nft, nfan, nbr
+        nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, lsmv, itmmax, idiag, &
+        nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, nrestr, ndt, next, nnode, nft, nfan, nbr
     
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), &
@@ -165,8 +165,8 @@ module cshell
     logical :: debugging=.false., trace=.false., validate=.false., netheatflux=.false.
     integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
     integer, dimension(3) :: rundat
-    character(128) :: thrmfile="thermal", setpfile
-    character(60) :: nnfile=" ", dumpf=" ", datafile
+    character(128) :: thrmfile="thermal"
+    character(60) :: nnfile=" ", datafile
     character(32) :: mpsdatc
     
 end module cshell
@@ -273,6 +273,7 @@ module  debug
     logical :: residprn, jacprn
     logical :: residfirst = .true.
     logical :: jacfirst = .true.
+    logical :: nwline=.true.
     logical :: prnslab
     integer :: ioresid, iojac, ioslab
     real(eb) ::   dbtime

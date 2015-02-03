@@ -214,6 +214,7 @@
     !                errorcode - numeric code indicating reason for an error exit.  0 for a normal exit
 
     use cshell
+    use iofiles, only: stopfile
 
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
@@ -223,6 +224,9 @@
     else
         write(logerr,'(''***Error exit from '',a,'' code = '',i5)') trim(name), errorcode
     endif
+    
+    close (unit=4, status='delete')
+    call deleteoutputfiles (stopfile)
 
     stop
 
@@ -1103,10 +1107,10 @@
     integer, intent(out) :: nret
     real(eb), intent(out) :: flting(*)
     
-    integer :: input = 0, lstart = 0, i, j, llast, i0, iu, lenofch
+    integer :: input = 0, lstart = 0, i, j, llast, i0, iu
     real(fb) :: x0, xxbig
     logical :: multi, eof
-    character :: label*5, lable*5, slash*1 = '/', file*(*)
+    character :: label*5, lable*5, slash*1 = '/'
     save input, lstart
 
     nret = 0
@@ -1156,7 +1160,7 @@
     return
 
     ! read in a buffer
-    entry readbf(iu,lable, eof)
+    !entry readbf(iu,lable, eof)
 
     ! check to see if the buffer is current and full
 
@@ -1189,14 +1193,26 @@
     return
 
     ! entry to force a context switch
-    entry readrs
+    !entry readrs
 
     ! set start to its initial value
     start = 257
     return
+    end subroutine readin
 
     ! read in a file name
-    entry readfl (file)
+    subroutine readfl (file)    
+    
+    use precision_parameters
+    use cfio
+    use cparams
+    use cshell
+    
+    implicit none
+    
+    integer :: llast, lenofch
+
+    character :: file*(*)
 
     call sstrng (inbuf, count, start, first, last, valid)
     if (.not.valid) then
@@ -1210,7 +1226,7 @@
     count = count - (last-start+1)
     start = last + 1
     return
-    end  subroutine readin
+    end  subroutine readfl
 
 ! --------------------------- readas -------------------------------------------
 
@@ -1306,7 +1322,7 @@
     implicit none
 
     integer(2) :: year, month, day
-    character :: strs(8)*60, ic
+    character :: strs(8)*60
     character(60) :: solveini
     integer :: iarg(8), iopt(26), cmdflag, nargs
     integer :: values(8)
@@ -1656,29 +1672,38 @@
     character function toupper(ch)
 
     !     routine: toupper / tolower
-    !     purpose: convert a single ascii character to upper or lower case
+    !     purpose: convert a single ascii character to upper case
     !     arguments: ch - character to be converted
 
     implicit none
     
     character, intent(in) :: ch
-    
     integer :: ich
-    character :: tolower
 
-    ! convert to upper case
     ich = ichar(ch)
     if (ich>96.and.ich<123) ich = ich - 32
     toupper = char(ich)
     return
+    end function toupper
+    
+! --------------------------- tolower -------------------------------------------
 
-    ! covert to lower case
-    entry tolower(ch)
+    character function tolower(ch)
+
+    !     routine: tolower
+    !     purpose: convert a single ascii character to lower case
+    !     arguments: ch - character to be converted
+
+    implicit none
+    
+    character, intent(in) :: ch
+    integer :: ich
+    
     ich = ichar(ch)
     if (ich>64.and.ich<91) ich = ich + 32
     tolower = char(ich)
     return
-    end function toupper
+    end function tolower
 
 ! --------------------------- upperall -------------------------------------------
 

@@ -324,13 +324,13 @@
 
     real(eb) :: rwork(lrw), rpar(1)
     integer :: iwork(liw), info(15), ipar(3), info2(15)
-    integer :: izp0(0:maxteq), izpmxmn(0:maxteq,2)
-    real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), pmxmn(maxteq,2), vatol(maxeq), vrtol(maxeq)
+    integer :: izp0(0:maxteq)
+    real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
-    logical :: iprint, idump, iplot, ltarg, exists, ispread,firstpassforsmokeview
+    logical :: iprint, ismv, ltarg, exists, ispread,firstpassforsmokeview
     integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
-    real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, ddump, dspread, t, tprint, tdump, td, &
-        tplot, tspread, tout,  ostptime, tdtect, tobj
+    real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
+        ostptime, tdtect, tobj
     character(133) :: messg
     external calculate_residuals, jac
     integer :: funit
@@ -344,16 +344,14 @@
     told = tstart
     dt = tstop - tstart
     dprint = abs(lprint)
-    dplot = abs(ldiagp)
-    ddump = abs(ldiago)
+    dplot = abs(lsmv)
     dspread = abs(lcopyss)
     rpar(1) = rptol
 
-    ! initialize print, dump, plot times
+    ! initialize print and output times
     t = tstart
     tprint = t
-    tdump = t
-    tplot = t
+    tsmv = t
     tspread = t
     idid = 1
     firstpassforsmokeview = .true.
@@ -367,18 +365,11 @@
         iprint = .true.
     endif
 
-    if (dplot<0.0001_eb.or.ldiagp<=0) then
-        iplot = .false.
-        tplot = tstop + 1.0_eb
+    if (lsmv<=0) then
+        ismv = .false.
+        tsmv = tstop + 1.0_eb
     else
-        iplot = .true.
-    endif
-
-    if (ddump<0.0001_eb.or.ldiago<=0) then
-        idump = .false.
-        tdump = tstop + 1.0_eb
-    else
-        idump = .true.
+        ismv = .true.
     endif
 
     if (dspread<0.0001_eb.or.lcopyss<=0) then
@@ -436,21 +427,8 @@
     idset = 0
 
     ! Setting initial vector
-    call setp0(p0, izp0, pmxmn, izpmxmn, iofili, ierror)
-    if (ierror>0) then
-        return
-    endif
-    if (izp0(0)==on) then
-        do i = 1, nodes
-            if (izp0(i)==on) p(i) = p0(i)
-        end do
-
-        ! if we set pressures with setp0 then over-ride steady state pressure
-        ! initialization
-        do i = 1, nm1
-            if(izp0(i+nofp)==on)option(fpsteady) = off
-        end do
-    endif
+    p0 = 0.0_eb
+    izp0 = off
 
     ! construct initial solution
     do i = 1, nequals
@@ -503,8 +481,8 @@
        stopunit=funit(14)
        open(unit=stopunit,file=stopfile)
        read(stopunit,*,iostat=ios)stopiter
-       if(ios.ne.0)stopiter=0
-       close(stopunit)
+       if(ios.ne.0) stopiter=0
+       close(unit=stopunit)
        icode = 1
     endif
     ! If the stop file exists or the esc key has been pressed, then quit
@@ -577,8 +555,8 @@
             prttime = 0.0_eb
         endif
 
-        if (t+0.0001_eb>min(tplot,tstop).and.iplot) then
-            itmstp = tplot
+        if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
+            itmstp = tsmv
             if(.not.ltarg)then
                 call target_flux(steady)
                 ltarg = .true.
@@ -597,7 +575,7 @@
             endif
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call output_smokeview_spreadsheet(t)
-            tplot = tplot + dplot
+            tsmv = tsmv + dplot
             call output_status (t, dt, errorcode)
             
             call output_slicedata(t,first_time)
@@ -637,7 +615,7 @@
                 exit
             endif
         end do
-        tout = min(tprint,tplot,tdump,tspread,tpaws,tstop)
+        tout = min(tprint, tsmv, tspread, tpaws, tstop)
 
         ! if there is a discontinuity then tell DASSL
         if(idisc/=0)then

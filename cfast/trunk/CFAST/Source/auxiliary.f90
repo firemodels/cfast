@@ -587,10 +587,7 @@
     
     real(eb), intent(out) :: cputim
     
-    integer(2) :: hrs, mins, secs, hsecs
-
-    call gettim(hrs,mins,secs,hsecs)
-    cputim = real(hrs,eb)*3600.0_eb + real(mins,eb)*60.0_eb + real(secs,eb) + real(hsecs,eb)/100.0_eb
+    call CPU_TIME(cputim)
     return
     end subroutine cptime
 
@@ -1341,9 +1338,15 @@
     character :: strs(8)*60, ic
     character(60) :: solveini
     integer :: iarg(8), iopt(26), cmdflag, nargs
+    integer :: values(8)
+    character(10) :: big_ben(3)
 
     ! current date
-    call getdat(year,month,day)
+    !call getdat(year,month,day)
+    call DATE_AND_TIME(big_ben(1),big_ben(2),big_ben(3),values)
+    year=values(1)
+    month=values(2)
+    day = values(3)
     rundat(3) = day
     rundat(2) = month
     rundat(1) = year

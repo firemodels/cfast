@@ -96,10 +96,10 @@ intel_linux_32_db : setup $(obj)
 
 # gnu linux
 gnu_linux : FFLAGS = -O2
-gnu_linux : : FCOMPL = gfortrtan
-gnu_linux : : LFLAGS = 
-gnu_linux : : obj = cfast6_gnu_linux
-gnu_linux : : $(objf)
+gnu_linux : FCOMPL = gfortran
+gnu_linux : LFLAGS = 
+gnu_linux : obj = cfast6_gnu_linux
+gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit

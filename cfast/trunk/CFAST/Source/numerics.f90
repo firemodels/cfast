@@ -1127,7 +1127,35 @@
 
 600 continue
     itemp= iabs(idid)
-    go to (610,620,630,690,690,640,650,660,670,675,680,685), itemp
+    !go to (610,620,630,690,690,640,650,660,670,675,680,685), itemp
+    if(itemp.eq.1)then
+       goto 610
+    else if(itemp.eq.2)then
+       goto 620
+    else if(itemp.eq.3)then
+       goto 630
+    else if(itemp.eq.4)then
+       goto 690
+    else if(itemp.eq.5)then
+       goto 690
+    else if(itemp.eq.6)then
+       goto 640
+    else if(itemp.eq.7)then
+       goto 650
+    else if(itemp.eq.8)then
+       goto 660
+    else if(itemp.eq.9)then
+       goto 670
+    else if(itemp.eq.10)then
+       goto 675
+    else if(itemp.eq.11)then
+       goto 680
+    else if(itemp.eq.12)then
+       goto 685
+    else
+      ! code should never reach here
+    endif
+    
 
     !     the maximum number of steps was taken before reaching tout
 
@@ -2350,7 +2378,23 @@
     !
     !     modified by par 01/08/93 to allow custom solution for cfast
     !
-    go to (100,200,300,400,500,600),mtype
+    !go to (100,200,300,400,500,600),mtype
+    if(mtype==1)then
+       go to 100
+    else if(mtype==2)then
+       go to 200
+    else if(mtype==3)then
+       go to 300
+    else if(mtype==4)then
+       go to 400
+    else if(mtype==5)then
+       go to 500
+    else if(mtype==6)then
+       go to 600
+    else
+       ! should never get here
+    endif
+    
     !
     !
     !     dense user-supplied matrix
@@ -2506,7 +2550,22 @@
     !
     !     modified by par 01/08/93 for custom solution for cfast
     !
-    go to(100,100,300,400,400,600),mtype
+    !go to(100,100,300,400,400,600),mtype
+    if(mtype==1)then
+       go to 100
+    else if(mtype==2)then
+       go to 100
+    else if(mtype==3)then
+       go to 300
+    else if(mtype==4)then
+       go to 400
+    else if(mtype==5)then
+       go to 400
+    else if(mtype==6)then
+       go to 600
+    else
+       ! should never get here
+    endif
     !
     !     dense matrix
 100 call dgesl(wm(npd),neq,neq,iwm(lipvt),delta,0)
@@ -4822,7 +4881,16 @@
     
     !***first executable statement  daxpy
     if(n<=0.or.da==0.d0) return
-    if(incx==incy) if(incx-1) 5,20,60
+    if(incx==incy) then
+       !if(incx-1) 5,20,60
+       if(incx-1.LT.0)then
+          goto 5
+       else if(incx.eq.0)then
+          goto 20
+       else
+          goto 60
+       endif
+    endif
 5   continue
     !
     !        code for nonequal or nonpositive increments.
@@ -4916,7 +4984,16 @@
     !***first executable statement  ddot
     ddot = 0.d0
     if(n<=0)return
-    if(incx==incy) if(incx-1) 5,20,60
+    if(incx==incy) then
+      ! if(incx-1) 5,20,60
+       if(incx-1.lt.0)then
+          goto 5
+       else if(incx-1.eq.0)then
+          goto 20
+       else
+          go to 60
+       endif
+    endif
 5   continue
     !
     !         code for unequal or nonpositive increments.
@@ -4961,162 +5038,73 @@
 
 ! --------------------------- dnrm2 -------------------------------------------
 
-    real(8) function dnrm2(n,dx,incx)
-    !***begin prologue  dnrm2
-    !***date written   791001   (yymmdd)
-    !***revision date  820801   (yymmdd)
-    !***category no.  d1a3b
-    !***keywords  blas,real(8),euclidean,l2,length,linear algebra,
-    !             norm,vector
-    !***author  lawson, c. l., (jpl)
-    !           hanson, r. j., (snla)
-    !           kincaid, d. r., (u. of texas)
-    !           krogh, f. t., (jpl)
-    !***purpose  euclidean length (l2 norm) of d.p. vector
-    !***description
-    !
-    !                b l a s  subprogram
-    !    description of parameters
-    !
-    !     --input--
-    !        n  number of elements in input vector(s) 
-    !       dx  real(8) vector with n elements
-    !     incx  storage spacing between elements of dx
-    !
-    !     --output--
-    !    dnrm2  real(8) result (zero if n <= 0)
-    !
-    !     euclidean norm of the n-vector stored in dx() with storage
-    !     increment incx .
-    !     if    n <= 0 return with result = 0.
-    !     if n >= 1 then incx must be >= 1
-    !
-    !           c.l. lawson, 1978 jan 08
-    !
-    !     four phase method     using two built-in constants that are
-    !     hopefully applicable to all machines.
-    !         cutlo = maximum of  sqrt(u/eps)  over all known machines.
-    !         cuthi = minimum of  sqrt(v)      over all known machines.
-    !     where
-    !         eps = smallest no. such that eps + 1. > 1.
-    !         u   = smallest positive no.   (underflow limit)
-    !         v   = largest  no.            (overflow  limit)
-    !
-    !     brief outline of algorithm..
-    !
-    !     phase 1    scans zero components. 
-    !     move to phase 2 when a component is nonzero and <= cutlo
-    !     move to phase 3 when a component is > cutlo
-    !     move to phase 4 when a component is >= cuthi/m
-    !     where m = n for x() real and m = 2*n for complex.
-    !
-    !     values for cutlo and cuthi..
-    !     from the environmental parameters listed in the imsl converter
-    !     document the limiting values are as follows..
-    !     cutlo, s.p.   u/eps = 2**(-102) for  honeywell.  close seconds are
-    !                   univac and dec at 2**(-103)
-    !                   thus cutlo = 2**(-51) = 4.44089e-16
-    !     cuthi, s.p.   v = 2**127 for univac, honeywell, and dec.
-    !                   thus cuthi = 2**(63.5) = 1.30438e19
-    !     cutlo, d.p.   u/eps = 2**(-67) for honeywell and dec. 
-    !                   thus cutlo = 2**(-33.5) = 8.23181d-11
-    !     cuthi, d.p.   same as s.p.  cuthi = 1.30438d19
-    !     data cutlo, cuthi / 8.232d-11,  1.304d19 /
-    !     data cutlo, cuthi / 4.441e-16,  1.304e19 /
-    !***references  lawson c.l., hanson r.j., kincaid d.r., krogh f.t.,
-    !                 *basic linear algebra subprograms for fortran usage*,
-    !                 algorithm no. 539, transactions on mathematical
-    !                 software, volume 5, number 3, september 1979, 308-323
-    !***routines called  (none)
-    !***end prologue  dnrm2
-    
-    implicit none
-    integer :: next, n, nnodes, incx, i, j
-    real(8) :: dx(*), cutlo, cuthi, hitest, sum, xmax, zero, one
-    data   zero, one /0.0d0, 1.0d0/
-    !
-    data cutlo, cuthi / 8.232d-11,  1.304d19 /
-    !***first executable statement  dnrm2
-    if(n > 0) go to 10
-    dnrm2  = zero
-    go to 300
-    !
-10  assign 30 to next
-    sum = zero
-    nnodes = n * incx 
-    !                                                 begin main loop
-    i = 1
-20  go to next,(30, 50, 70, 110)
-30  if( abs(dx(i)) > cutlo) go to 85
-    assign 50 to next
-    xmax = zero
-    !
-    !                        phase 1.  sum is zero
-    !
-50  if( dx(i) == zero) go to 200
-    if( abs(dx(i)) > cutlo) go to 85
-    !
-    !                                prepare for phase 2.
-    assign 70 to next
-    go to 105
-    !
-    !                                prepare for phase 4.
-    !
-100 i = j
-    assign 110 to next
-    sum = (sum / dx(i)) / dx(i)
-105 xmax = abs(dx(i))
-    go to 115
-    !
-    !                   phase 2.  sum is small.
-    !                             scale to avoid destructive underflow.
-    !
-70  if( abs(dx(i)) > cutlo ) go to 75
-    !
-    !                     common code for phases 2 and 4.
-    !                     in phase 4 sum is large.  scale to avoid overflow.
-    !
-110 if( abs(dx(i)) <= xmax ) go to 115
-    sum = one + sum * (xmax / dx(i))**2
-    xmax = abs(dx(i))
-    go to 200
-    !
-115 sum = sum + (dx(i)/xmax)**2
-    go to 200
-    !
-    !
-    !                  prepare for phase 3. 
-    !
-75  sum = (sum * xmax) * xmax
-    !
-    !
-    !     for real or d.p. set hitest = cuthi/n
-    !     for complex      set hitest = cuthi/(2*n)
-    !
-85  hitest = cuthi/dble( n )
-    !
-    !                   phase 3.  sum is mid-range.  no scaling.
-    !
-    do j =i,nnodes,incx
-        if(abs(dx(j)) >= hitest) go to 100
-        sum = sum + dx(j)**2 
-    end do
-    dnrm2 = sqrt( sum )
-    go to 300
-    !
-200 continue
-    i = i + incx
-    if ( i <= nnodes ) go to 20
-    !
-    !              end of main loop.
-    !
-    !              compute square root and adjust for scaling.
-    !
-    dnrm2 = xmax * sqrt(sum)
-300 continue
-    return
-    end 
-
+      REAL(8) FUNCTION DNRM2(N,X,INCX)
+!     .. Scalar Arguments ..
+      INTEGER INCX,N
+!     ..
+!     .. Array Arguments ..
+      REAL(8) X(*)
+!     ..
+!
+!  Purpose
+!  =======
+!
+!  DNRM2 returns the euclidean norm of a vector via the function
+!  name, so that
+!
+!     DNRM2 := sqrt( x'*x )
+!
+!  Further Details
+!  ===============
+!
+!  -- This version written on 25-October-1982.
+!     Modified on 14-October-1993 to inline the call to DLASSQ.
+!     Sven Hammarling, Nag Ltd.
+!
+!  =====================================================================
+!
+!     .. Parameters ..
+      REAL(8) ONE,ZERO
+      PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
+!     ..
+!     .. Local Scalars ..
+      REAL(8) ABSXI,NORM,SCALE,SSQ
+      INTEGER IX
+!     ..
+!     .. Intrinsic Functions ..
+      INTRINSIC ABS,SQRT
+!     ..
+      IF (N.LT.1 .OR. INCX.LT.1) THEN
+          NORM = ZERO
+      ELSE IF (N.EQ.1) THEN
+          NORM = ABS(X(1))
+      ELSE
+          SCALE = ZERO
+          SSQ = ONE
+!        The following loop is equivalent to this call to the LAPACK
+!        auxiliary routine:
+!        CALL DLASSQ( N, X, INCX, SCALE, SSQ )
+!
+          DO 10 IX = 1,1 + (N-1)*INCX,INCX
+              IF (X(IX).NE.ZERO) THEN
+                  ABSXI = ABS(X(IX))
+                  IF (SCALE.LT.ABSXI) THEN
+                      SSQ = ONE + SSQ* (SCALE/ABSXI)**2
+                      SCALE = ABSXI
+                  ELSE
+                      SSQ = SSQ + (ABSXI/SCALE)**2
+                  END IF
+              END IF
+   10     CONTINUE
+          NORM = SCALE*SQRT(SSQ)
+      END IF
+!
+      DNRM2 = NORM
+      RETURN
+!
+!     End of DNRM2.
+!
+      END
 ! --------------------------- dscal -------------------------------------------
 
     subroutine dscal(n,da,dx,incx)

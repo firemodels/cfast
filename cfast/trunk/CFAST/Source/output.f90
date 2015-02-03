@@ -69,7 +69,7 @@
 
 10  format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
 20  format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
-30  format ('CFAST run with validation option = ',i2)    
+30  format ('CFAST run with validation option = ',L1)    
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------

@@ -194,7 +194,7 @@
     endif
     
     if (prnslab) then
-        call SSprintslab (outarray, position)
+        call SSprintslab (position, outarray)
     end if
     return
     end subroutine horizontal_flow

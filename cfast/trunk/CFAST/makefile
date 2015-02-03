@@ -13,12 +13,18 @@ VPATH = Source
 
 # Definition of the object variables
 
-objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o initialization.o input.o numerics.o \
+objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_int.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               convection.o conduction.o cyl_conduct.o radiation.o target.o \
               fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o cfast.o 
 
 objwin = $(objf:.o=.obj)
+
+objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_gnu.o initialization.o input.o numerics.o \
+              output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
+              convection.o conduction.o cyl_conduct.o radiation.o target.o \
+              fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o cfast.o 
+
 
 # General Purpose Rules
 
@@ -87,6 +93,14 @@ intel_linux_32_db : FCOMPL = ifort
 intel_linux_32_db : obj = cfast6_linux_32_db
 intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
+
+# gnu linux
+gnu_linux : FFLAGS = -O2
+gnu_linux : : FCOMPL = gfortrtan
+gnu_linux : : LFLAGS = 
+gnu_linux : : obj = cfast6_gnu_linux
+gnu_linux : : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
 intel_linux_64 : FFLAGS = -m64 -O3 -gen-interfaces -warn interfaces -traceback

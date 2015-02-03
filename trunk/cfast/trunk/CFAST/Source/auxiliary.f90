@@ -1289,7 +1289,19 @@
     start = 1
     write(logerr,*) 'end of file for unit ',infile
     return
-    end subroutine readas
+   end subroutine readas
+
+! --------------------------- cmdflag -------------------------------------------
+
+   integer function cmdflag(ic,iopt)
+    
+      implicit none
+
+      character(1), intent(in) :: ic
+      integer, intent(in) :: iopt(26)
+      
+      cmdflag = iopt(ichar(ic)-ichar('A')+1)
+   end function
 
 ! --------------------------- read_command_options -------------------------------------------
 
@@ -1329,7 +1341,6 @@
     character :: strs(8)*60, ic
     character(60) :: solveini
     integer :: iarg(8), iopt(26), cmdflag, nargs
-    cmdflag(ic) = iopt(ichar(ic)-ichar('A')+1)
 
     ! current date
     call getdat(year,month,day)
@@ -1342,22 +1353,22 @@
     nargs = 8
     call cmdline(nargs,strs,iarg,iopt)
 
-    if (cmdflag('H')/=0) header = .true.
-    if (cmdflag('K')/=0) nokbd = .true.
-    if (cmdflag('I')/=0) initializeonly = .true.
-    if (cmdflag('D')/=0) debugging = .true.
-    if (cmdflag('T')/=0) trace = .true.
-    if (cmdflag('V')/=0) validate = .true.
-    if (cmdflag('N')/=0) netheatflux = .true.
+    if (cmdflag('H',iopt)/=0) header = .true.
+    if (cmdflag('K',iopt)/=0) nokbd = .true.
+    if (cmdflag('I',iopt)/=0) initializeonly = .true.
+    if (cmdflag('D',iopt)/=0) debugging = .true.
+    if (cmdflag('T',iopt)/=0) trace = .true.
+    if (cmdflag('V',iopt)/=0) validate = .true.
+    if (cmdflag('N',iopt)/=0) netheatflux = .true.
     logerr = 3
 
-    if (cmdflag('F')/=0.and.cmdflag('C')/=0) stop 107
-    if (cmdflag('C')/=0) outputformat = 1
-    if (cmdflag('F')/=0) outputformat = 2
+    if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) stop 107
+    if (cmdflag('C',iopt)/=0) outputformat = 1
+    if (cmdflag('F',iopt)/=0) outputformat = 2
 
-    if (cmdflag('S')/=0) then
-        if (strs(cmdflag('S'))/=' ') then
-            solveini = strs(cmdflag('S'))
+    if (cmdflag('S',iopt)/=0) then
+        if (strs(cmdflag('S',iopt))/=' ') then
+            solveini = strs(cmdflag('S',iopt))
         else
             solveini = 'SOLVE.INI'
         endif

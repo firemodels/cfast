@@ -1964,12 +1964,14 @@
 
     ! first the file for "printed" output
     if (lprint<0) then
-        open (unit=iofilo,file=outputfile,status='new',carriagecontrol='fortran')
+!        open (unit=iofilo,file=outputfile,status='new',carriagecontrol='fortran')
+        open (unit=iofilo,file=outputfile,status='new')
         lprint = abs(lprint)
         write (logerr,5002) trim(outputfile)
         if (outputformat==0) outputformat = 2
     else
-        open (unit=iofilo,file='con',carriagecontrol='fortran')
+!        open (unit=iofilo,file='con',carriagecontrol='fortran')
+        open (unit=iofilo,file='con')
         write (logerr,5004)
         if (outputformat==0) outputformat = 1
     endif
@@ -2002,7 +2004,8 @@
 
     ! and finally we create a file to indicate that the model is running.
 
-    open (unit=4, file=kernelisrunning, dispose='delete')
+    !open (unit=4, file=kernelisrunning, dispose='delete')
+    open (unit=4, file=kernelisrunning)
 
     return
 

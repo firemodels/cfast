@@ -181,7 +181,8 @@
             end do
         elseif(jaccol>0)then
 
-            ! we are computing a jacobian, so get previously saved solution for rooms that are not affected by perturbed solution variable
+            ! we are computing a jacobian, so get previously saved solution for rooms that are not affected 
+            ! by perturbed solution variable
             do iroom = 1, nm1
                 if(.not.roomflg(iroom))then
                     do iprod = 1, nprod + 2
@@ -291,7 +292,8 @@
                         if (tl(ifrom)<tu(ito).and.xmslab(n)/=0.0_eb) then
                             ! zd = max(0.0_eb,ylay(ifrom)-max(yvbot,ylay(ito)))
 
-                            ! need to re-work distance zd for both into upper and into upper case.  the above doesn't work for all cases
+                            ! need to re-work distance zd for both into upper and into upper case.  
+                            ! the above doesn't work for all cases
                             zd = min(yvtop,ylay(ifrom)) - max(ylay(ito),yvbot)
                             call entrfl(tu(ito),tl(ifrom),xmslab(n),zd,uflw3(ito,m,l))
 
@@ -323,10 +325,10 @@
 
     subroutine entrfl(tu,tl,fmd,zz,fm_entrained)
 
-    !     for the reference for this correlation, see the comments in the routine "firplm."  the offset for the formulation of
-    !     an equivalent door jet is provided by requiring the plume be long enough to be the appropriate plume for the fire of size
-    !     qj.  note that mccaffrey's units are kilojoules.  also we assume that the plume is round as in mccaffrey's plume.  this could
-    !     be modified to account for the flat plume verus the round plume in the theory.
+    !     for the reference for this correlation, see the comments in the routine "firplm."  the offset for the formulation
+    !     of an equivalent door jet is provided by requiring the plume be long enough to be the appropriate plume for the
+    !     fire of size qj.  note that mccaffrey's units are kilojoules.  also we assume that the plume is round as in 
+    !     mccaffrey's plume.  this could be modified to account for the flat plume verus the round plume in the theory.
 
     use precision_parameters
     use cfast_main
@@ -448,8 +450,8 @@
     vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
-    !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing the two-layer
-    !              environment in each of the two rooms and other input data calculated in subroutine comwl1.
+    !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing 
+    !              the two-layer environment in each of the two rooms and other input data calculated in subroutine comwl1.
     !     arguments: yflor - height of floor above absolute reference elevation [m]
     !                ylay  - height of layer above absolute reference elevation [m]
     !                tu    - upper layer temperature [k]
@@ -474,7 +476,8 @@
     !                dirs12 (output) - a measure of the direction of the room 1 to room 2 flow in each slab
     !                rslab (output) - density of the flow in each slab [kg/m**3]
     !                tslab (output) - absolute temperature of the flow in each slab [k]
-    !                yslab (output) - elevations above the absolute reference elevation of the centroids of momentum of each slab [m]
+    !                yslab (output) - elevations above the absolute reference elevation of the centroids of 
+    !                                 momentum of each slab [m]
     !                yvelev - elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
     !                nvelev - number of unique elevations delineating slabs
@@ -847,7 +850,8 @@
             ! if it's really cold, it goes to the lower layer
             fupper = 0.0_eb
         else
-            ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in between then mix the flow
+            ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in 
+            ! between then mix the flow
             fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
         endif
         
@@ -895,8 +899,8 @@
 
     !     routine: delp
     !     purpose: calculation of the absolute hydrostatic pressures at a specified elevation in each of two adjacent
-    !              rooms and the pressure difference.  the basic calculation involves a determination and differencing of hydrostatic
-    !              pressures above a specified absolute reference pressure.
+    !              rooms and the pressure difference.  the basic calculation involves a determination and differencing of 
+    !              hydrostatic pressures above a specified absolute reference pressure.
     !     arguments: y     - vector of heights above absolute reference elevation where pressure difference is to be calculated [m]
     !                nelev - number of heights to be calculated
     !                yflor - height of floor in each room above absolute reference elevation [m]

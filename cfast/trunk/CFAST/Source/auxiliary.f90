@@ -19,8 +19,8 @@
     !                       = 1 means this is a recoverable error.  (I.e., it is non-fatal if XSETF has been appropriately called.)
     !                       = 0 means this is a warning message only.
     !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times 
-    !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then a stop. 
-    !                          LEVEL=-1,0,1 causes a message to  be printed and then a return.
+    !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then 
+    !                          a stop. LEVEL=-1,0,1 causes a message to  be printed and then a return.
 
     use precision_parameters
     implicit none
@@ -1810,7 +1810,8 @@
     !     routine: xerbla
     !     purpose: opens a file using the extension to distinguish previous open files
     !     arguments: srname - specifies the name of the routine which called xerbla
-    !                info - on entry, info specifies the position of the invalid parameter in the parameter-list of the calling routine.
+    !                info - on entry, info specifies the position of the invalid parameter in the
+    !                       parameter-list of the calling routine.
 
     implicit none
     

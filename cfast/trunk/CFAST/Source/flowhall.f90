@@ -181,7 +181,8 @@
                 ventptr=>ventinfo(i)
                 if(ventptr%from==ihall)then
 
-                    ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" end of the corridor
+                    ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" 
+                    ! end of the corridor
                     if(ventptr%from_hall_offset>0.0_eb.and.ventdist0>=0.0_eb)then
                         ventdist = abs(ventptr%from_hall_offset - ventdist0)
                     else
@@ -190,7 +191,8 @@
                     zzventdist(ihall,i) = ventdist
                 elseif(ventptr%to==ihall)then
 
-                    ! if distances are not defined for the origin or destination vent then assume that the vent at the "far" end of the corridor
+                    ! if distances are not defined for the origin or destination vent then assume that the vent at 
+                    ! the "far" end of the corridor
                     if(ventptr%to_hall_offset>0.0_eb.and.ventdist0>=0.0_eb)then
                         ventdist = abs(ventptr%to_hall_offset - ventdist0)
                     else

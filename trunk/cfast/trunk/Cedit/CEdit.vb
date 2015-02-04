@@ -5580,17 +5580,20 @@ Public Class CeditMain
     Private Sub RunSMVGeometry()
         Dim CommandString As String, found As Integer, ProcessID As Integer
         If myEnvironment.FileChanged Then SaveDataFile(True)
-        found = myEnvironment.InputFileName.IndexOf(" ", 0)
-        If found <= 0 Then
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + "/i"
-        Else
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """" + "/i"
-        End If
-        If MenuShowCFAST.Checked Then
-            ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True)
-        Else
-            ProcessID = Shell(CommandString, AppWinStyle.Hide, True)
-        End If
+        Try
+            found = myEnvironment.InputFileName.IndexOf(" ", 0)
+            If found <= 0 Then
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + " /I"
+            Else
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """" + " /I"
+            End If
+            If MenuShowCFAST.Checked Then
+                ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True, 5000)
+            Else
+                ProcessID = Shell(CommandString, AppWinStyle.Hide, True, 5000)
+            End If
+        Catch ex As Exception
+        End Try
     End Sub
     Private Sub MenuSMVSimulation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVSimulation.Click
         RunSmokeView()

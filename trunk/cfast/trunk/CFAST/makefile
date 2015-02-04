@@ -67,13 +67,13 @@ intel_win_32 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS)  /F100000000 $(objwin)
 
 # 64 bit
-intel_win_64 : FFLAGS = -O2 /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /traceback
+intel_win_64 : FFLAGS = -O2 /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /traceback /stand:f08 
 intel_win_64 : FCOMPL = ifort
 intel_win_64 : obj = cfast6_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
+intel_win_64_db : FFLAGS = /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
 intel_win_64_db : FCOMPL = ifort
 intel_win_64_db : obj = cfast6_win_64_db
 intel_win_64_db : setup_win $(objwin)

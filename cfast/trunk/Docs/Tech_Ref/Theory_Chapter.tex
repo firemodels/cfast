@@ -170,27 +170,8 @@ Atmospheric pressure is about 100~kPa. Fires produce pressure changes from 1~Pa 
 
 \section{Vertically-Oriented Vents (Doors and Windows)}
 
-Natural flow through windows and doors is governed by the pressure difference across the opening.  A momentum equation for the zone boundaries is not solved directly.  Instead momentum transfer at the zone boundaries is included by using Bernoulli's equation augmented for restricted openings with an orifice coefficient~\cite{Quintiere:1984, Steckler_Coefficients}.
+Natural flow through windows and doors is governed by the vertical stratification of the pressure difference across the opening~\cite{Emmons:SFPE}. The mass flow is calculated by dividing the opening into discrete horizontal segments, each of which is bounded by either the top or bottom of the opening, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. This is shown schematically in Fig.~\ref{fig:Flow_Patterns}. 
 
-The mass flow through a vertical opening is calculated by dividing the vertical extent of the opening into discrete segments, each of which is bounded by either the top or bottom of the door or window, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. In this way, the vent opening is partitioned into at most six sections.
-
-Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at those heights.  Because the segment is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the segment can then be computed by integrating from $b$ to $t$:
-\begin{eqnarray}
-\dm &=& \int_b^t C \sqrt{2 \rho \, \Delta P(z)} \, w \, dz  \\[.1in]
-    &=& C\sqrt{2\rho} \, w \int_b^t\sqrt{\frac{|(t-z) \, \Delta P_b + (z-b) \, \Delta P_t|}{t-b}} \; dz \\[.1in]
-    &=& \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
-\label{eq:massflowone}
-\end{eqnarray}
-Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients}, $\rho$ is the gas density of the upwind compartment, and $\Delta P(z)$ is the pressure across the interface at elevation $z$. Note that the integral is evaluated from
-\begin{eqnarray}
-\int \sqrt{A+Bz} \, dz = \frac{2}{3B}(A+Bz)^{3/2}+\mbox{constant}
-\end{eqnarray}
-where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P_b|)/(t-b)$.
-Equation \ref{eq:massflowone} is sometimes written:
-\be
-   \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} }
-\ee
-The mass flows through the various vertical segments of the door or window are distributed into the upper and lower layers of the downstream compartment depending on the temperature of the stream. Consider the flow of gas from the upper layer of Compartment~1 entering the lower layer of Compartment~2 (see Fig.~\ref{fig:Flow_Patterns}).
 \begin{figure}[t]
 \setlength{\unitlength}{1in}
 \begin{picture}(6.5,4)
@@ -204,7 +185,9 @@ The mass flows through the various vertical segments of the door or window are d
 \put(0,2.0){\line(1,0){6.5}}
 \put(3.5,0.75){\vector(-1,0){0.5}}
 \put(3.5,1.75){\vector(-1,0){0.5}}
+\put(3.35,1.75){\vector(-1,-1){0.35}}
 \put(3,2.25){\vector(1,0){0.5}}
+\put(3.15,2.25){\vector(1,1){0.35}}
 \put(3,2.75){\vector(1,0){0.5}}
 
 \put(1.625,3.8){\makebox(0,0){Compartment 1}}
@@ -221,11 +204,29 @@ The mass flows through the various vertical segments of the door or window are d
 \caption{Flow patterns for horizontal flow through a vertical vent.}
 \label{fig:Flow_Patterns}
 \end{figure}
-The mass flow rate is denoted $\dm_{\rm u \to l}$, where the subscripts indicate the upstream and downstream layer indices, respectively. The enthalpy flow rate is:
+
+Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and $\Delta P_b$ and $\Delta P_t$ denote the pressure differences at these heights.  Because a given segment is either completely above or completely below the neutral plane, the two pressure differences will have the same sign. The mass flow through the segment can then be computed by integrating Bernoulli's equation from $b$ to $t$:
+\begin{eqnarray}
+\dm &=& \int_b^t C \sqrt{2 \rho \, \Delta P(z)} \, w \, dz  \\[.1in]
+    &=& C\sqrt{2\rho} \, w \int_b^t\sqrt{\frac{|(t-z) \, \Delta P_b + (z-b) \, \Delta P_t|}{t-b}} \; dz \\[.1in]
+    &=& \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
+\label{eq:massflowone}
+\end{eqnarray}
+Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients}, $\rho$ is the gas density of the upwind compartment, and $\Delta P(z)$ is the pressure across the interface at elevation $z$. Note the use of the integral formula:
+\begin{eqnarray}
+\int \sqrt{A+Bz} \, dz = \frac{2}{3B}(A+Bz)^{3/2}+\mbox{constant}
+\end{eqnarray}
+where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P_b|)/(t-b)$. Equation \ref{eq:massflowone} can be written:
+\be
+   \dm = \frac{2}{3} C \sqrt{2 \rho} \, w \, (t-b)  \frac{|\Delta P_t|+\sqrt{|\Delta P_t \,\Delta P_b|}+|\Delta P_b|}{\sqrt{|\Delta P_t|}+\sqrt{|\Delta P_b|} }
+\ee
+This is the way it is written in Ref.~\cite{Emmons:SFPE}.
+
+The mass flows through the horizontal segments of the opening are distributed into the upper and lower layers of the downstream compartment. For the jet originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$; or the jet from lower layer to lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the given layer. However, consider the flow from the upper layer to the lower layer, $\dm_{\rm u \to l}$. The enthalpy flow rate is:
 \be
    \doh_{\rm u \to l} = c_p \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
 \ee
-Assuming that $T_{\rm l,2} < T_{\rm u,1} < T_{\rm u,2}$, this energy will be distributed between the compartment's two layers. The distribution is based on the relative difference in temperature between the incoming gas stream and the layer temperatures. Some of the energy stays within the lower layer and some of the energy goes to the upper layer in the form of a virtual plume. The effective heat release rate of this virtual plume is:
+Assuming that $T_{\rm l,2} < T_{\rm u,1} < T_{\rm u,2}$, this energy will be distributed between the compartment's two layers. The distribution is based on the relative difference between the incoming jet temperature and the layer temperatures. Some of the energy stays within the lower layer and some of the energy rises into the upper layer in the form of a virtual plume. The effective heat release rate of this virtual plume is:
 \be
    \dQ_{\rm eff} = \frac{T_{\rm u,1}-T_{\rm l,2}}{T_{\rm u,2}-T_{\rm l,2}} \; \doh_{\rm u \to l}
 \ee
@@ -237,7 +238,7 @@ The origin of the virtual plume, $z_0$, is deduced from the plume mass entrainme
 \be
    z_0 = \bar{z} - \dm_{\rm e,eff}^{3/5} \, \left[ 0.196 \, \left( \frac{g \, \rho_\infty^2}{c_p \, T_\infty} \right)^{1/3} \, \dQ_{\rm eff}^{1/3} \right]^{-3/5}
 \ee
-The other type of mixing is much like an inverse plume and causes contamination of the lower layer.  It occurs when there is flow of the type $\dm_{\rm u \to l} > 0$.  The shear flow causes vortex shedding into the lower layer.  The actual amount of mass or energy transferred is usually not large, but its effect can be large.  For example, small amounts of smoke can change the radiative properties of the gas layer.  The mixing is enhanced for greater density differences between the two layers. However, the amount of mixing has never been well characterized. Quintiere et al.~\cite{Quintiere:1984} discuss this phenomena for the case of crib fires in a single room, but their correlation does not yield good agreement with experimental data in the general case~\cite{Quintiere:1981}.  In the CFAST model, it is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; thus we have a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above. 
+For the mass flow leaving the lower layer of the upstream compartment and entering the upper layer of the downstream compartment, $\dm_{\rm l \to u}$, the shear flow causes vortex shedding that entrains upper layer gas and deposits it in the lower layer. It is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; forming a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above.
 
 \section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
 

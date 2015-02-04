@@ -115,7 +115,8 @@
             froom(nobj) = iroom
             femp(nobj) = oplume(1,iobj)
             fems(nobj) = oplume(3,iobj)
-            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry and interpolate_pyrolysis)
+            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry 
+            ! and interpolate_pyrolysis)
             femr(nobj) = oplume(1,iobj)*y_trace
             fqf(nobj) = heatlp(iroom) + heatup(iroom)
             fqfc(nobj) = qfc(1,iroom)

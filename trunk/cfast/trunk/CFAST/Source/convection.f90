@@ -115,7 +115,8 @@
             end do
         elseif (jaccol>0) then
 
-            ! we are computing the jaccol'th column of the jacobian.  if the solution hasn't changed then get it from the vectors saved above.
+            ! we are computing the jaccol'th column of the jacobian.  if the solution hasn't 
+            ! changed then get it from the vectors saved above.
             do iroom = 1, nm1
                 if(.not.roomflg(iroom)) then
                     flwcv(iroom,1) = flwcv0(iroom,1)

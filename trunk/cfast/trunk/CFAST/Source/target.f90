@@ -351,7 +351,8 @@ contains
                 jj = 2
             endif
 
-            ! calculate flux on the target front.  calculate flux on the target back only if the rear of the target is interior to the room.
+            ! calculate flux on the target front.  calculate flux on the target back only if the rear of 
+            ! the target is interior to the room.
             if(jj==1.or.ixtarg(trgback,itarg)==interior)then
                 qwtsum(jj) = qwtsum(jj) + qwt*awall
                 qgassum(jj) = qgassum(jj) + qgt*awall
@@ -475,9 +476,9 @@ contains
     subroutine update_detectors(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
 
     !     routine: gettylyu
-    !     purpose: this routine updates the temperature of each detector link.  it also determine whether the detector has activated 
-    !              in the time interval (tcur,tcur+dstep).  if this has occured then a quenching algorithm will be invoked 
-    !              if the appropriate option has been set.
+    !     purpose: this routine updates the temperature of each detector link.  it also determine whether the 
+    !              detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a 
+    !              quenching algorithm will be invoked if the appropriate option has been set.
     !     arguments: tcur    current time
     !                dstep   time step size (to next time)
     !                ndtect  number of detectors
@@ -557,7 +558,8 @@ contains
                 else
                     if(xdtect(i,dtact)<xdtect(idold,dtact))then
 
-                        ! this can only happen if two detectors have activated in the same room in the same (possibly very short) time interval
+                        ! this can only happen if two detectors have activated in the same room in the same 
+                        ! (possibly very short) time interval
                         iqu = i
                     endif
                 endif

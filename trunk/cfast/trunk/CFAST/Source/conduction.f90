@@ -26,7 +26,8 @@ module conduction_routines
     !              routine calculates the residual function 
     !               q'' + k dt/dx, which when zero is simply fourier's
     !              law of heat conduction.
-    !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then we don't calculate delta or use flxtot
+    !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then 
+    !                we don't calculate delta or use flxtot
     !                dt time step interval from last valid solution point
     !                flxtot  total flux striking walls
     !                delta   the residual of q'' + k dt/dx
@@ -92,8 +93,9 @@ module conduction_routines
             wfluxsave = wfluxout
             if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
-                ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.  if izheat(iroom) is not zero then
-                ! nwroom better not be zero!  nwroom should always be zero for iwall=3 and iwall=4
+                ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.  
+                !  if izheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero 
+                ! for iwall=3 and iwall=4
                 wfluxout = 0.0_eb
                 nwroom = izhtfrac(iroom,0)
                 do jj = 1, nwroom
@@ -289,7 +291,8 @@ module conduction_routines
         tnew(nx) = walldx(nx-1)*wfluxout/wk(nslab)
     endif
 
-    ! now perform an l-u factorization of this matrix (see atkinson p.455) note: matrix is diagonally dominant so we don't have to pivot
+    ! now perform an l-u factorization of this matrix (see atkinson p.455) note: matrix is 
+    ! diagonally dominant so we don't have to pivot
 
     ! note we do the following in case a(1) is not 1
     c(1) = c(1)/a(1)
@@ -327,8 +330,8 @@ module conduction_routines
 
     endif
 
-    ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that interpolates first three data points in 
-    ! the temperature profile.  we will use divided differences.
+    ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that
+    ! interpolates first three data points in the temperature profile.  we will use divided differences.
 
     ! first divided difference
     ddif(1) = (tnew(2)-tnew(1))/walldx(1)

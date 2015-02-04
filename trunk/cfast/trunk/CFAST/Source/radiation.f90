@@ -356,8 +356,9 @@
         return
     endif
 
-    ! note: each row k of the a matrix as defined by seigal and howell was divided by emis2(k) (in order to insure that this new 'a' was
-    ! diagonally dominant.  now we have to multiply the solution to the modified problem by emis2(i) to get the original answers
+    ! note: each row k of the a matrix as defined by seigal and howell was divided by emis2(k) (in order to insure 
+    !       that this new 'a' was diagonally dominant.  now we have to multiply the solution to the modified problem 
+    !       by emis2(i) to get the original answers
 
     do k = 1, 2
         dqde(k) = rhs(k)
@@ -394,8 +395,8 @@
 
     !     routine: rad4
     !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to 
-    !              a point source fire, emitting absorbing gas layers (upper and lower) and heat emitting wall segments. this routine 
-    !              also computes the heat absorbed by the lower and upper layers.
+    !              a point source fire, emitting absorbing gas layers (upper and lower) and heat emitting wall segments. 
+    !              this routine also computes the heat absorbed by the lower and upper layers.
     !     intput arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
     !                          i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively
     !                tlay: tlay(i) is the temperature of the i'th layer [k] where i=1,2 denotes the upper, lower layers respectively

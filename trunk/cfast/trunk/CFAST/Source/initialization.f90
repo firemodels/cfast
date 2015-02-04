@@ -1354,8 +1354,9 @@
     !        thset is a switch for a properly transferred data set
     !        maxct is a count of the number of tpp data sets in the database
     !        switch is set if calculation is called for
-    !        thset is set if a name in the list of requested data sets matches one of the names in the list of data set names (nlist).
-    !        the data from the data base is stored in the local variables lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
+    !        thset is set if a name in the list of requested data sets matches one of the names in the 
+    !              list of data set names (nlist). the data from the data base is stored in the local variables 
+    !              lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
     use precision_parameters
     use wallptrs
@@ -1507,8 +1508,8 @@
     !          the count of the number of elements in the vector for which it is resonsible.
     ! arguments:  ierror  returns error codes
 
-    ! this set of parameters is set by nputp and is kept in the environment module cenviro.  to index a variable, the list is something
-    ! like (for temperature in this case)
+    ! this set of parameters is set by nputp and is kept in the environment module cenviro.  
+    ! to index a variable, the list is something like (for temperature in this case)
 
     ! noftu+1, noftu+nm1
 

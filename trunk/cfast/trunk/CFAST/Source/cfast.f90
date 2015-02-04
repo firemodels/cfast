@@ -450,7 +450,8 @@
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
         call target_flux(steady)
-        ! normally, this only needs to be done while running. however, if we are doing an initialonly run then we need the output now
+        ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
+        ! then we need the output now
         call remap_fires (nfires)
         call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, &
@@ -537,7 +538,8 @@
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
 
             ! update target temperatures (only need to update just before we print target temperatures).
-            ! if we actually use target temperatures in a calculation then this call will need to be moved to inside calculate_residuals.
+            ! if we actually use target temperatures in a calculation then this call will need to be moved to 
+            ! inside calculate_residuals.
 
             if(.not.ltarg)then
                 call target_flux(steady)

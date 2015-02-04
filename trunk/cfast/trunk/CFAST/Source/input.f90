@@ -616,7 +616,8 @@
         endif
         tgignt = lrarray(2)
 
-        ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. With more, it's part of a fire definition
+        ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. 
+        !With more, it's part of a fire definition
     case ('GLOBA')
         if (countargs(2,lcarray,xnumc-1, nret)) then
             limo2 = lrarray(1)*0.01_eb
@@ -649,7 +650,8 @@
         lflw(1,maxct) = lrarray(5)
         lepw(maxct) = lrarray(6)
 
-        ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), floor_material(c), wall_material (c) 
+        ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), 
+        ! floor_material(c), wall_material (c) 
     case ('COMPA')
         if (.not.countargs(10,lcarray,xnumc-1,nret)) then
             ierror = 8
@@ -712,7 +714,8 @@
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
         !		    BW = width, HH = soffit, HL = sill, 
-        !		    HHP = ABSOLUTE HEIGHT OF THE soffit,HLP = ABSOLUTE HEIGHT OF THE sill, HFLR = ABSOLUTE HEIGHT OF THE FLOOR (not set here)
+        !		    HHP = ABSOLUTE HEIGHT OF THE soffit,HLP = ABSOLUTE HEIGHT OF THE sill, 
+        !          HFLR = ABSOLUTE HEIGHT OF THE FLOOR (not set here)
         !		    WINDC = a wind coefficient which varies from -1 to +1 and is dimensionless
         !		    Compartment offset for the HALL command (2 of these)
         !		    VFACE = THE RELATIVE FACE OF THE VENT: 1-4 FOR X PLANE (-), Y PLANE (+), X PLANE (+), Y PLANE (-)
@@ -1025,11 +1028,13 @@
         hmax(nfan) = maxpres
         hvbco(nfan,1) = lrarray(10)
 
-        ! add a simple duct to connect the two nodes/fan - this is artificial since we do not worry about the species within the system
+        ! add a simple duct to connect the two nodes/fan - this is artificial since we do not 
+        ! worry about the species within the system
         ndt = ndt + 1
 
         ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
-        ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation for flow through the external nodes
+        ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation 
+        ! for flow through the external nodes
         duct_length(ndt) = 1.0_eb
         eff_duct_diameter(ndt) = lrarray(6)
         ibrd(ndt) = nbr
@@ -1039,7 +1044,8 @@
         qcvm(4,mid) = lrarray(13)
 
         ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
-        ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more consistent with other keywords
+        ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more 
+        ! consistent with other keywords
         ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
         ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
     case ('FIRE')
@@ -1819,8 +1825,8 @@
             objxyz(3,iobj) = objxyz(1,iobj)
 
             ! calculate a characteristic length of an object (we assume the diameter). 
-            ! This is used for point source radiation fire to target calculation as a minimum effective distance between the fire and the target
-            ! which only impact very small fire to target distances
+            ! This is used for point source radiation fire to target calculation as a minimum effective 
+            ! distance between the fire and the target which only impact very small fire to target distances
             objclen(iobj) = sqrt(max_area/pio4)
         case ('HEIGH')
             do ii = 1, nret

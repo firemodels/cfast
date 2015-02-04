@@ -400,7 +400,8 @@
         z = zzhlay(i,lower)
         if (hvorien(ii)==1) then
 
-            ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate the scaling length of the duct
+            ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate 
+            ! the scaling length of the duct
             xxlower = sqrt(arext(ii))
         else
             xxlower = sqrt(arext(ii))/10.0_eb
@@ -577,7 +578,8 @@
                     if (zzhvm(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
-                        ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass) - see keywordcases to change this
+                        ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass) 
+                        !         - see keywordcases to change this
                     elseif(hvmfsys(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)

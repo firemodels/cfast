@@ -250,7 +250,6 @@ subroutine output_slicedata(time,first_time)
    integer :: i, ii, jj, kk, roomnum
    real(eb) :: xx, yy, zz, tgas, vgas(4)
    integer :: funit,unit
-   real(eb) :: imix
    
    do i = 1, nsliceinfo, 5
       sf => sliceinfo(i)
@@ -417,7 +416,6 @@ subroutine output_isodata(time,first_time)
    integer :: i, ii, jj, kk, roomnum
    real(eb) :: xx, yy, zz, tgas, vgas(4)
    integer :: funit,unit
-   real(eb) :: imix
    real(fb) :: levelsf(1)
    integer :: nlevels
    real(fb) :: timef

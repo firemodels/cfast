@@ -2179,11 +2179,10 @@
    real(eb), parameter :: dxyz=0.01_eb
    character(60) :: menu_label, colorbar_label, unit_label
    integer :: ndefinedbyuser=0 !  code to input user slice info will define this variable (and it will be declared somewhere else)
-   real(eb) :: imix
    integer :: i_iso
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
-   real(eb) :: dzz, factor, ceiljet_depth
+   real(eb) :: ceiljet_depth
    integer :: skip3d
    
    nsliceinfo = 0

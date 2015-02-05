@@ -16,11 +16,12 @@ It is assumed that each compartment is divided into two control volumes, a relat
 \caption{Schematic of control volumes in a two-layer zone model.}
  \label{fig:Control_Volumes}
 \end{figure}
-Conservation of mass in each layer, $\dot m_i$, is expressed
+
+The fundamental equations start with the conservation of mass. The change of mass in each layer is expressed:
 \be
    \dbydt{m_i} = \dot m_i  \label{mass_con}
 \ee
-Conservation of energy takes the form of the first law of thermodynamics, which states that the rate of increase of internal energy plus the rate at which the layer does work by expansion is equal to the rate at which enthalpy is added to the gas:
+where $\dm_i$ represents the sum of all mass source terms, such as plume mass entrainment and ventilation. Conservation of energy takes the form of the first law of thermodynamics, which states that the rate of increase of internal energy plus the rate at which the layer does work by expansion is equal to the rate at which enthalpy is added to the gas:
 \be
    \dbydt{(c_v m_i T_i)} +  P \dbydt{V_i} =  \dot h_i \label{eq:first_law}
 \ee
@@ -45,8 +46,7 @@ The equation of state, (\ref{EoS}), assumes that the molecular weight of the gas
 
 Each unit mass of a species produced by a fire is carried in the flow to the various rooms and accumulates in the layers. The species mass divided by the layer volume is the mass concentration. Filters can be used in mechanical ventilation systems to remove species. The phenomenon has been implemented in CFAST to remove trace species and soot. It is implemented by modifying the source terms which describe gas flow. See Ref.~\cite{Jones:2008} for an example on the use of filtering.
 
-The calculation of radiation exchange in CFAST also depends in part on the species concentrations calculated by the model (and thus the user inputs for species yields). There are two separate radiation calculations done by CFAST. The first is for broadband radiation transfer for energy balance. The way this calculation is done is discussed in Section~\ref{sec:Radiation}. The second is a visible light extinction calculation to determine visibility. The absorption of thermal radiation depends on the concentration of water, carbon dioxide and soot. The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation based originally on the work of Seader and Einhorn~\cite{Seader:1976}. The most recent work is by Mulholland and Croakin~\cite{Mullholland:2000}. Based on their experimental measurements, the soot mass density is multiplied by 3,817~m\superscript{2}/kg (formerly 3,500~m\superscript{2}/kg) to obtain an optical density (in units of m\superscript{-1}) which is the value reported by the model.
-
+The calculation of radiation exchange in CFAST also depends in part on the species concentrations calculated by the model (and thus the user inputs for species yields). There are two separate radiation calculations performed by CFAST. The first is for thermal radiation as part of the overall heat transfer calculation, discussed in Section~\ref{sec:Radiation}. The second is for visible light extinction to determine visibility, discussed in Section~\ref{Visibility}.
 
 
 
@@ -92,7 +92,7 @@ As fuel and oxygen are consumed, heat is released and various products of combus
    \dQr &=& \chi_{\rm r} \, \dQ \\[.1in]
    \dQc &=& (1-\chi_{\rm r}) \, \dQ
 \end{eqnarray}
-where, $\chi_{\rm r}$ is the fraction  of the fire's heat release rate given off as radiation. The default value is taken to be 0.35~\cite{Drysdale:1985}.
+where, $\chi_{\rm r}$ is the fraction  of the fire's heat release rate given off as radiation. The user specifies the total heat release rate as a function of time, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The user also specifies $\chi_{\rm r}$ whose default value is taken to be 0.35~\cite{Drysdale:1985}.
 
 While it is convenient for the user to directly specify the heat release rate of the fire, it is actually the pyrolysis rate of fuel, $\dmf$, that is specified:
 \be
@@ -170,7 +170,7 @@ Atmospheric pressure is about 100~kPa. Fires produce pressure changes from 1~Pa 
 
 \section{Vertically-Oriented Vents (Doors and Windows)}
 
-Natural flow through windows and doors is governed by the vertical stratification of the pressure difference across the opening~\cite{Emmons:SFPE}. The mass flow is calculated by dividing the opening into discrete horizontal segments, each of which is bounded by either the top or bottom of the opening, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. This is shown schematically in Fig.~\ref{fig:Flow_Patterns}. 
+Natural flow through windows and doors is governed by the vertical stratification of the pressure difference across the opening~\cite{Emmons:SFPE}. The mass flow is calculated by dividing the opening into discrete horizontal segments, each of which is bounded by either the top or bottom of the opening, the zone interface of either compartment, or the neutral plane, which is where the velocity changes direction. This is shown schematically in Fig.~\ref{fig:Flow_Patterns}.
 
 \begin{figure}[t]
 \setlength{\unitlength}{1in}
@@ -261,17 +261,7 @@ The mass and energy are then deposited into the upper or lower layer of the rece
 
 CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution.
 
-Figure~\ref{fig:Fans_and_Ducts}(a) depicts smoke exhaust via a fan at the top of an atrium, and Fig.~\ref{fig:Fans_and_Ducts}(b) illustrates a kitchen exhaust fan.  Cross ventilation, shown in Fig.~\ref{fig:Fans_and_Ducts}(c), is occasionally used without heating or cooling.  Generally systems that maintain comfort conditions have either one or two fans. Further information about these systems is presented in Klote and Milke~\cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers (ASHRAE) \cite{ASHRAE:2001}.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/Theory/HVAC_Fans_and_Ducts}\\
-\end{center}
-\caption{Some simple fan-duct systems.}
- \label{fig:Fans_and_Ducts}
-\end{figure}
-
-The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks flow of these two species.
+The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks the flow of these two species. 
 
 
 
@@ -397,7 +387,7 @@ Equation~(\ref{eq:cjfluxavg}) applies to the early stage of the fire; thus, a mo
 \ee
 Here, $\Tu$ is the average temperature of the upper layer and $\Ts$ is the ceiling surface temperature. Notice that the rightmost term is simply the correlation used for the walls and floor.
 
-\section{Conduction}
+\section{Heat Conduction within Solid Walls or Targets}
 
 The heat conduction equation is solved in the direction normal to solid target or wall surfaces using non-uniformly spaced nodes and a second order accurate central difference scheme for the spatial derivatives and a semi-implicit time marching scheme. At each time step, the internal solid temperatures are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
 \be
@@ -493,11 +483,11 @@ where $F_{ij}$ is the fraction of flux from wall $i$ that contributes to wall $j
 
 \section{Sprinkler and Heat Detector Activation}
 
-The link temperature of a sprinkler or heat detector is modeled using the differential equation~\cite{Heskestad:1976}:
+The link temperature of a sprinkler or heat detector is modeled using the differential equation~\cite{Schifiliti:2002}:
 \be
    \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
 \ee
-where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the ceiling jet velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.12~m/s. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the ceiling jet velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.1~m/s {\bf REFERENCE?}. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
 \be
    \frac{\TL^{n+1}-\TL^n}{\delta t} = \frac{1}{2} \left( \frac{\sqrt{v^n}}{\rm RTI} \brackets{\Tg^n - \TL^n}  + \frac{\sqrt{v^{n+1}}}{\rm RTI} \brackets{\Tg^{n+1} - \TL^{n+1}}  \right) \label{eq:RTI_rewritten}
 \ee
@@ -526,7 +516,7 @@ An estimate of the ceiling jet thickness, $\delta$, where the excess temperature
 \be
    \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad \quad 0.26 \le \frac{r}{H} \le 2.0
 \ee
-If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default velocity of 0.1~m/s is used.
+If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default velocity of 0.1~m/s is used {\bf REFERENCE?}.
 
 If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
 \begin{eqnarray}
@@ -534,6 +524,21 @@ If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{
    v_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
 \end{eqnarray}
 where $\Delta \Tp$ is the excess plume temperature at the ceiling.
+
+
+\section{Visibility}
+\label{Visibility}
+
+The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density is given by the expression:
+\be
+   D = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
+\ee 
+where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. 
+
+\section{Smoke Detection}
+
+CFAST treats a smoke detector as a very sensitive heat detector and an activation temperature of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. {\bf REFERENCE?}
+
 
 \section{Fire Suppression} \label{sec:suppression}
 

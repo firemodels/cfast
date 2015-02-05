@@ -6,7 +6,7 @@ Public Class UpdateGUI
     Private AreaPoints() As Single, HeightPoints() As Single, OpeningTimes() As Single, OpeningFractions() As Single
     Private NumPoints As Integer, i As Integer, j As Integer, NumberofCompartments As Integer
     Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer, _
-    numTargets As Integer, numDetectors As Integer, numHeats As Integer, numFires As Integer
+    numTargets As Integer, numDetectors As Integer, numHeats As Integer, numFires As Integer, numVisuals As Integer
     Public Sub New(ByVal ParentWindow As Object)
         MainWin = ParentWindow
     End Sub
@@ -71,12 +71,70 @@ Public Class UpdateGUI
         MainWin.EnvExtAmbTemp.Text = myEnvironment.ExtAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         MainWin.EnvExtAmbPress.Text = myEnvironment.ExtAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvExtAmbElevation.Text = myEnvironment.ExtAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
+
+        Dim value As Single
+        value = Val(MainWin.EnvTimeStep.Text)
+        If value > 0 Then
+            MainWin.EnvTimeStep.Text = value.ToString + myUnits.Convert(UnitsNum.Time).Units
+        Else
+            MainWin.EnvTimeStep.Text = "Default"
+        End If
+
         MainWin.EnvErrors.Text = ""
         If myErrors.Count > 0 Then
             Dim myEnumerator As System.Collections.IEnumerator = myErrors.Queue.GetEnumerator()
             While myEnumerator.MoveNext()
                 MainWin.EnvErrors.Text = myEnumerator.Current + ControlChars.CrLf + MainWin.EnvErrors.Text
             End While
+        End If
+    End Sub
+    Public Sub Visuals(ByVal index As Integer)
+        Dim aVisual As Visual
+        Me.General()
+        If index < 0 Or myVisuals.Count = 0 Then
+            ClearGrid(MainWin.VisualSummary)
+        Else
+            ' fill the visualization widgets from the supplied visualization data
+            aVisual = myVisuals.Item(index)
+            If aVisual.Compartment <= myCompartments.Count - 1 Then
+                MainWin.VisualizationComp.SelectedIndex = aVisual.Compartment + 1
+            End If
+            MainWin.VisualizationType.SelectedIndex = aVisual.Type
+            If aVisual.Type = Visual.IsoSurface Then
+                MainWin.VisualizationValue.Text = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Temperature).Units
+            Else
+                MainWin.VisualizationValue.Text = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Length).Units
+            End If
+            MainWin.VisualizationAxis.SelectedIndex = aVisual.Axis
+        End If
+        numVisuals = myVisuals.Count
+        ClearGrid(MainWin.VisualSummary)
+        If numVisuals > 0 Then
+            For i = 1 To numVisuals
+                aVisual = myVisuals.Item(i - 1)
+                MainWin.VisualSummary(i, 0) = i.ToString
+                MainWin.VisualSummary(i, 1) = VisualTypeNames.Substring((aVisual.Type) * 10, 10)
+                If aVisual.Compartment >= 0 And aVisual.Compartment <= myCompartments.Count - 1 Then
+                    MainWin.VisualSummary(i, 2) = myCompartments(aVisual.Compartment).Name
+                ElseIf aVisual.Compartment = -1 Then
+                    MainWin.VisualSummary(i, 2) = "All"
+                Else
+                    MainWin.VisualSummary(i, 2) = "Not defined"
+                End If
+                If aVisual.Type = Visual.TwoD Then
+                    MainWin.VisualSummary(i, 3) = VisualAxisNames.Substring((aVisual.Axis) * 6, 6)
+                Else
+                    MainWin.VisualSummary(i, 3) = "-"
+                End If
+                If aVisual.Type = Visual.IsoSurface Then
+                    MainWin.VisualSummary(i, 4) = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Temperature).Units
+                ElseIf aVisual.Type = Visual.TwoD Then
+                    MainWin.VisualSummary(i, 4) = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Length).Units
+                Else
+                    MainWin.VisualSummary(i, 4) = "-"
+                End If
+            Next
+            MainWin.VisualSummary.Select(index + 1, 0, index + 1, MainWin.VisualSummary.Cols.Count - 1, True)
         End If
     End Sub
     Public Sub Geometry(ByVal index As Integer)
@@ -244,6 +302,7 @@ Public Class UpdateGUI
                 InitCompartmentList(MainWin.VHeatComp1)
                 InitCompartmentList(MainWin.VHeatComp2)
                 InitCompartmentList(MainWin.FireComp)
+                InitCompartmentList(MainWin.VisualizationComp)
             End If
         End If
     End Sub
@@ -808,7 +867,11 @@ Public Class UpdateGUI
     Public Sub InitCompartmentList(ByVal obj As ComboBox)
         Dim i As Integer
         obj.Items.Clear()
-        obj.Items.Add("Outside")
+        If obj Is MainWin.VisualizationComp Then
+            obj.Items.Add("All")
+        Else
+            obj.Items.Add("Outside")
+        End If
         If myCompartments.Count > 0 Then
             For i = 0 To myCompartments.Count - 1
                 obj.Items.Add(myCompartments.Item(i).Name)
@@ -865,6 +928,23 @@ Public Class UpdateGUI
         If aTarget.ZPosition <> 0 Then MainWin.TargetNormalCalc.Items.Add("Floor")
         If aTarget.Compartment >= 0 Then
             If aTarget.ZPosition <> myCompartments(aTarget.Compartment).RoomHeight Then MainWin.TargetNormalCalc.Items.Add("Ceiling")
+        End If
+    End Sub
+    Public Sub UpdateLogFile(LogTextBox As TextBox)
+        Dim LogFileExists As Boolean, FileName As String, IO As Integer = 1
+        FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
+        LogFileExists = System.IO.File.Exists(FileName)
+        If LogFileExists Then
+            LogTextBox.Text = ""
+            Dim ln As String
+            FileOpen(IO, FileName, OpenMode.Input)
+            Do Until EOF(IO)
+                ln = LineInput(IO)
+                If Not ln.StartsWith("Write to the history") Then myErrors.Add(ln, ErrorMessages.TypeCFastLog)
+            Loop
+            FileClose(IO)
+            Me.Menu()
+            Me.Environment()
         End If
     End Sub
 End Class

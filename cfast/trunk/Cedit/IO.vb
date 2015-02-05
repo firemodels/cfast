@@ -235,7 +235,7 @@ Module IO
 
         ' write header line
         csv.str(i, CFASTlnNum.keyWord) = "VERSN"
-        csv.Num(i, CFASTlnNum.version) = 6
+        csv.Num(i, CFASTlnNum.version) = 7
         csv.str(i, CFASTlnNum.title) = myEnvironment.Title
         i += 1
         For j = 1 To dataFileHeader.Count

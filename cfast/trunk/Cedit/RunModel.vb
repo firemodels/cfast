@@ -6,11 +6,12 @@ Public Class RunModel
     'Public ExitCode As Integer = 0
     Private ProcessID As Integer
     Private localById As Process
-    Private FileName As String, IO As Integer = 1
+    Private FileName As String, IO As Integer = 1, RunhasFinished As Boolean = False
     Friend WithEvents RunOptions As System.Windows.Forms.Label
     Friend WithEvents RunJac As System.Windows.Forms.Button
     Private CurrentTime As Single
     Private DebugOn As Boolean = False
+    Friend WithEvents RunErrors As System.Windows.Forms.TextBox
     Private JacobianOn As Boolean = False
 
 #Region " Windows Form Designer generated code "
@@ -68,6 +69,7 @@ Public Class RunModel
         Me.RunUpdate = New System.Windows.Forms.Button()
         Me.RunOptions = New System.Windows.Forms.Label()
         Me.RunJac = New System.Windows.Forms.Button()
+        Me.RunErrors = New System.Windows.Forms.TextBox()
         CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -79,12 +81,13 @@ Public Class RunModel
         Me.RunSummary.Location = New System.Drawing.Point(24, 80)
         Me.RunSummary.Name = "RunSummary"
         Me.RunSummary.Rows.DefaultSize = 17
-        Me.RunSummary.Size = New System.Drawing.Size(942, 344)
+        Me.RunSummary.Size = New System.Drawing.Size(942, 265)
         Me.RunSummary.TabIndex = 3
+        Me.RunSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'RunOK
         '
-        Me.RunOK.Location = New System.Drawing.Point(212, 445)
+        Me.RunOK.Location = New System.Drawing.Point(212, 520)
         Me.RunOK.Name = "RunOK"
         Me.RunOK.Size = New System.Drawing.Size(100, 23)
         Me.RunOK.TabIndex = 4
@@ -130,7 +133,7 @@ Public Class RunModel
         '
         'RunStop
         '
-        Me.RunStop.Location = New System.Drawing.Point(364, 445)
+        Me.RunStop.Location = New System.Drawing.Point(364, 520)
         Me.RunStop.Name = "RunStop"
         Me.RunStop.Size = New System.Drawing.Size(100, 23)
         Me.RunStop.TabIndex = 5
@@ -155,7 +158,7 @@ Public Class RunModel
         '
         'RunUpdate
         '
-        Me.RunUpdate.Location = New System.Drawing.Point(516, 445)
+        Me.RunUpdate.Location = New System.Drawing.Point(516, 520)
         Me.RunUpdate.Name = "RunUpdate"
         Me.RunUpdate.Size = New System.Drawing.Size(100, 23)
         Me.RunUpdate.TabIndex = 6
@@ -165,34 +168,37 @@ Public Class RunModel
         '
         Me.RunOptions.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.RunOptions.AutoSize = True
-        Me.RunOptions.Location = New System.Drawing.Point(12, 502)
+        Me.RunOptions.Location = New System.Drawing.Point(12, 530)
         Me.RunOptions.Name = "RunOptions"
         Me.RunOptions.Size = New System.Drawing.Size(0, 13)
         Me.RunOptions.TabIndex = 10
         '
-        'RunJacobian
-        '
-        Me.RunJac.Location = New System.Drawing.Point(672, 445)
-        Me.RunJac.Name = "RunJac"
-        Me.RunJac.Size = New System.Drawing.Size(100, 23)
-        Me.RunJac.TabIndex = 11
-        Me.RunJac.Text = "Jacobian Off"
-        Me.RunJac.Visible = False
-        '
         'RunJac
         '
-        Me.RunJac.Location = New System.Drawing.Point(672, 445)
+        Me.RunJac.Location = New System.Drawing.Point(672, 520)
         Me.RunJac.Name = "RunJac"
         Me.RunJac.Size = New System.Drawing.Size(100, 23)
         Me.RunJac.TabIndex = 11
         Me.RunJac.Text = "Jacobian Off"
         Me.RunJac.Visible = False
+        '
+        'RunErrors
+        '
+        Me.RunErrors.Location = New System.Drawing.Point(24, 351)
+        Me.RunErrors.Multiline = True
+        Me.RunErrors.Name = "RunErrors"
+        Me.RunErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.RunErrors.Size = New System.Drawing.Size(942, 149)
+        Me.RunErrors.TabIndex = 20
+        Me.RunErrors.TabStop = False
+        Me.RunErrors.Text = "No Errors"
         '
         'RunModel
         '
         Me.AcceptButton = Me.RunOK
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.ClientSize = New System.Drawing.Size(984, 534)
+        Me.ClientSize = New System.Drawing.Size(984, 562)
+        Me.Controls.Add(Me.RunErrors)
         Me.Controls.Add(Me.RunJac)
         Me.Controls.Add(Me.RunOptions)
         Me.Controls.Add(Me.RunUpdate)
@@ -206,7 +212,7 @@ Public Class RunModel
         Me.Controls.Add(Me.RunSummary)
         Me.Controls.Add(Me.RunOK)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.MaximumSize = New System.Drawing.Size(1000, 600)
+        Me.MaximumSize = New System.Drawing.Size(1000, 800)
         Me.Name = "RunModel"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
@@ -230,20 +236,22 @@ Public Class RunModel
         Me.RunSummary.AutoSizeRow(0)
         Me.DebugOn = False
         Me.JacobianOn = False
+        Me.RunhasFinished = False
+        Me.RunErrors.Enabled = False
         If DebugOutput Then
-            Me.RunOK.Location = New Point(212, 445)
-            Me.RunStop.Location = New Point(364, 445)
-            Me.RunUpdate.Location = New Point(516, 445)
-            Me.RunJac.Location = New Point(672, 445)
+            Me.RunOK.Location = New Point(212, 520)
+            Me.RunStop.Location = New Point(364, 520)
+            Me.RunUpdate.Location = New Point(516, 520)
+            Me.RunJac.Location = New Point(672, 520)
             Me.RunUpdate.Text = "Debug is Off"
             Me.RunJac.Text = "Jacobian is Off"
             Me.RunJac.Visible = True
             Me.RunJac.Enabled = False
         Else
-            Me.RunOK.Location = New Point(290, 445)
-            Me.RunStop.Location = New Point(442, 445)
-            Me.RunUpdate.Location = New Point(594, 445)
-            Me.RunJac.Location = New Point(672, 445)
+            Me.RunOK.Location = New Point(290, 520)
+            Me.RunStop.Location = New Point(442, 520)
+            Me.RunUpdate.Location = New Point(594, 520)
+            Me.RunJac.Location = New Point(672, 520)
             Me.RunUpdate.Text = "Update"
             Me.RunJac.Text = "Jacobian is Off"
             Me.RunJac.Visible = False
@@ -292,12 +300,36 @@ Public Class RunModel
         Dim ir As Integer
         Dim Progress As Integer
         Dim aLine As String
+        Dim LogFileExists As Boolean
         If localById.HasExited Then
             Me.RunTimer.Enabled = False
             Me.RunOK.Enabled = True
             Me.RunStop.Enabled = False
             Me.RunUpdate.Enabled = False
             Me.RunDT.Text = "CFAST finished"
+            If Not RunhasFinished Then
+                RunhasFinished = True
+                Me.RunErrors.Enabled = True
+                myErrors.Queue.Clear()
+                FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
+                LogFileExists = System.IO.File.Exists(FileName)
+                If LogFileExists Then
+                    RunErrors.Text = ""
+                    Dim ln As String
+                    FileOpen(IO, FileName, OpenMode.Input)
+                    Do Until EOF(IO)
+                        ln = LineInput(IO)
+                        If Not ln.StartsWith("Write to the history") Then myErrors.Add(ln, ErrorMessages.TypeCFastLog)
+                    Loop
+                    FileClose(IO)
+                    If myErrors.Count > 0 Then
+                        Dim myEnumerator As System.Collections.IEnumerator = myErrors.Queue.GetEnumerator()
+                        While myEnumerator.MoveNext()
+                            RunErrors.Text = myEnumerator.Current + ControlChars.CrLf + RunErrors.Text
+                        End While
+                    End If
+                End If
+            End If
         End If
         FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".status"
         StatusFileExists = System.IO.File.Exists(FileName)

@@ -408,7 +408,7 @@ End Class
 Public Class CompartmentCollection
     Inherits System.Collections.CollectionBase
     Public ReadOnly Maximum As Integer = Compartment.MaximumCompartments
-    Private i As Integer, j As Integer, VentType As Integer
+    Private i As Integer, j As Integer
     Private HasErrors As Integer
     Public Sub Add(ByVal aCompartment As Compartment)
         List.Add(aCompartment)
@@ -425,11 +425,10 @@ Public Class CompartmentCollection
                     myHHeats.Renumber(i + 1, i)
                     myVHeats.Renumber(i + 1, i)
                     myFires.Renumber(i + 1, i)
+                    myVisuals.Renumber(i + 1, i)
                 Next
             End If
             List.RemoveAt(index)
-            If index < Count - 1 Then
-            End If
         End If
     End Sub
     Public Sub Copy(ByVal indexFrom As Integer, ByVal indexTo As Integer)
@@ -465,6 +464,7 @@ Public Class CompartmentCollection
             myHHeats.Renumber(index1, Compartment.TempCompartment) : myHHeats.Renumber(index2, index1) : myHHeats.Renumber(Compartment.TempCompartment, index2)
             myVHeats.Renumber(index1, Compartment.TempCompartment) : myVHeats.Renumber(index2, index1) : myVHeats.Renumber(Compartment.TempCompartment, index2)
             myFires.Renumber(index1, Compartment.TempCompartment) : myFires.Renumber(index2, index1) : myFires.Renumber(Compartment.TempCompartment, index2)
+            myVisuals.Renumber(index1, Compartment.TempCompartment) : myVisuals.Renumber(index2, index1) : myVisuals.Renumber(Compartment.TempCompartment, index2)
             Dim temp As New Compartment
             temp = CType(List.Item(index2), Compartment)
             List.Item(index2) = List.Item(index1)

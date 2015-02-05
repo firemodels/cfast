@@ -1,15 +1,14 @@
 Public Class CeditMain
 
     Inherits System.Windows.Forms.Form
-    Private UpdateGUI As New UpdateGUI(Me)
+    Friend UpdateGUI As New UpdateGUI(Me)
     Private UserUnits As New User_Units
-    Private SetTimeStep As New TimeStep
     Private About As New About
     Private ViewFile As New ViewFile
     'Private RunSimulation As New RunModel
     Private CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
-    CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0
+    CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
 
     Private Const OK As Integer = 1, Cancel As Integer = 2
     Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
@@ -54,6 +53,22 @@ Public Class CeditMain
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
     Friend WithEvents MenuDebugOutput As System.Windows.Forms.MenuItem
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents EnvTimeStep As System.Windows.Forms.TextBox
+    Friend WithEvents TabVisuals As System.Windows.Forms.TabPage
+    Friend WithEvents VisualizationValueLabel As System.Windows.Forms.Label
+    Friend WithEvents Label29 As System.Windows.Forms.Label
+    Friend WithEvents VisualSummary As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents Label7 As System.Windows.Forms.Label
+    Friend WithEvents VisualizationRemove As System.Windows.Forms.Button
+    Friend WithEvents VisualizationValue As System.Windows.Forms.TextBox
+    Friend WithEvents VisualizationDefaults As System.Windows.Forms.Button
+    Friend WithEvents VisualizationComp As System.Windows.Forms.ComboBox
+    Friend WithEvents VisualizationDup As System.Windows.Forms.Button
+    Friend WithEvents VisualizationType As System.Windows.Forms.ComboBox
+    Friend WithEvents VisualizationAdd As System.Windows.Forms.Button
+    Friend WithEvents VisualizationAxisLabel As System.Windows.Forms.Label
+    Friend WithEvents VisualizationAxis As System.Windows.Forms.ComboBox
     Friend WithEvents Label54 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
@@ -345,7 +360,6 @@ Public Class CeditMain
     Friend WithEvents Label67 As System.Windows.Forms.Label
     Friend WithEvents Label82 As System.Windows.Forms.Label
     Friend WithEvents HVentFractionTime As System.Windows.Forms.TextBox
-    Friend WithEvents EnvGroupErrors As System.Windows.Forms.GroupBox
     Friend WithEvents Errors As System.Windows.Forms.StatusBarPanel
     Friend WithEvents Message As System.Windows.Forms.StatusBarPanel
     Friend WithEvents HVentFinalFraction As System.Windows.Forms.TextBox
@@ -398,7 +412,6 @@ Public Class CeditMain
     Friend WithEvents FirePeakArea As System.Windows.Forms.Label
     Friend WithEvents FireObjectEdit As System.Windows.Forms.Button
     Friend WithEvents TargetNormalCalc As System.Windows.Forms.ComboBox
-    Friend WithEvents MenuTimeStep As System.Windows.Forms.MenuItem
     Friend WithEvents FireIgnitionTemperature As System.Windows.Forms.TextBox
     Friend WithEvents Label17 As System.Windows.Forms.Label
     Friend WithEvents MainView As System.Windows.Forms.Button
@@ -440,7 +453,6 @@ Public Class CeditMain
         Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
         Me.MenuItem3 = New System.Windows.Forms.MenuItem()
         Me.MenuUnits = New System.Windows.Forms.MenuItem()
-        Me.MenuTimeStep = New System.Windows.Forms.MenuItem()
         Me.MenuView = New System.Windows.Forms.MenuItem()
         Me.MenuViewInput = New System.Windows.Forms.MenuItem()
         Me.MenuViewOutput = New System.Windows.Forms.MenuItem()
@@ -450,6 +462,7 @@ Public Class CeditMain
         Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
         Me.MenuAbout = New System.Windows.Forms.MenuItem()
         Me.TabEnvironment = New System.Windows.Forms.TabPage()
+        Me.EnvErrors = New System.Windows.Forms.TextBox()
         Me.EnvTitle = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
         Me.GroupBox8 = New System.Windows.Forms.GroupBox()
@@ -468,6 +481,8 @@ Public Class CeditMain
         Me.Label5 = New System.Windows.Forms.Label()
         Me.EnvIntAmbTemp = New System.Windows.Forms.TextBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.EnvTimeStep = New System.Windows.Forms.TextBox()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.EnvSmokeviewInterval = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
@@ -476,8 +491,6 @@ Public Class CeditMain
         Me.EnvTextOutInterval = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.EnvSimTime = New System.Windows.Forms.TextBox()
-        Me.EnvGroupErrors = New System.Windows.Forms.GroupBox()
-        Me.EnvErrors = New System.Windows.Forms.TextBox()
         Me.TabHorizontalFlow = New System.Windows.Forms.TabPage()
         Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
@@ -761,6 +774,20 @@ Public Class CeditMain
         Me.HHeatRemove = New System.Windows.Forms.Button()
         Me.HHeatAdd = New System.Windows.Forms.Button()
         Me.TabMain = New System.Windows.Forms.TabControl()
+        Me.TabVisuals = New System.Windows.Forms.TabPage()
+        Me.VisualizationAxisLabel = New System.Windows.Forms.Label()
+        Me.VisualizationAxis = New System.Windows.Forms.ComboBox()
+        Me.VisualizationValueLabel = New System.Windows.Forms.Label()
+        Me.Label29 = New System.Windows.Forms.Label()
+        Me.VisualSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.VisualizationRemove = New System.Windows.Forms.Button()
+        Me.VisualizationValue = New System.Windows.Forms.TextBox()
+        Me.VisualizationDefaults = New System.Windows.Forms.Button()
+        Me.VisualizationComp = New System.Windows.Forms.ComboBox()
+        Me.VisualizationDup = New System.Windows.Forms.Button()
+        Me.VisualizationType = New System.Windows.Forms.ComboBox()
+        Me.VisualizationAdd = New System.Windows.Forms.Button()
         Me.OpenDataFileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.SaveDataFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.HelpProvider = New System.Windows.Forms.HelpProvider()
@@ -777,7 +804,6 @@ Public Class CeditMain
         Me.GroupBox12.SuspendLayout()
         Me.GroupBox11.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
-        Me.EnvGroupErrors.SuspendLayout()
         Me.TabHorizontalFlow.SuspendLayout()
         CType(Me.HVentSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupHVentGeometry.SuspendLayout()
@@ -821,6 +847,8 @@ Public Class CeditMain
         CType(Me.HHeatSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupHHeats.SuspendLayout()
         Me.TabMain.SuspendLayout()
+        Me.TabVisuals.SuspendLayout()
+        CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -990,7 +1018,7 @@ Public Class CeditMain
         'MenuTools
         '
         Me.MenuTools.Index = 2
-        Me.MenuTools.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuThermalProperties, Me.MenuEditFireObjects, Me.MenuItem3, Me.MenuUnits, Me.MenuTimeStep})
+        Me.MenuTools.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuThermalProperties, Me.MenuEditFireObjects, Me.MenuItem3, Me.MenuUnits})
         Me.MenuTools.Text = "Tools"
         '
         'MenuThermalProperties
@@ -1012,11 +1040,6 @@ Public Class CeditMain
         '
         Me.MenuUnits.Index = 3
         Me.MenuUnits.Text = "Select Engineering Units"
-        '
-        'MenuTimeStep
-        '
-        Me.MenuTimeStep.Index = 4
-        Me.MenuTimeStep.Text = "Set Maximum Simulation Time Step"
         '
         'MenuView
         '
@@ -1063,28 +1086,39 @@ Public Class CeditMain
         '
         'TabEnvironment
         '
+        Me.TabEnvironment.Controls.Add(Me.EnvErrors)
         Me.TabEnvironment.Controls.Add(Me.EnvTitle)
         Me.TabEnvironment.Controls.Add(Me.Label28)
         Me.TabEnvironment.Controls.Add(Me.GroupBox8)
         Me.TabEnvironment.Controls.Add(Me.GroupBox7)
-        Me.TabEnvironment.Controls.Add(Me.EnvGroupErrors)
         Me.TabEnvironment.Location = New System.Drawing.Point(4, 22)
         Me.TabEnvironment.Name = "TabEnvironment"
         Me.TabEnvironment.Size = New System.Drawing.Size(976, 558)
         Me.TabEnvironment.TabIndex = 0
         Me.TabEnvironment.Text = "Simulation Environment"
         '
+        'EnvErrors
+        '
+        Me.EnvErrors.Location = New System.Drawing.Point(33, 338)
+        Me.EnvErrors.Multiline = True
+        Me.EnvErrors.Name = "EnvErrors"
+        Me.EnvErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.EnvErrors.Size = New System.Drawing.Size(910, 163)
+        Me.EnvErrors.TabIndex = 19
+        Me.EnvErrors.TabStop = False
+        Me.EnvErrors.Text = "No Errors"
+        '
         'EnvTitle
         '
-        Me.EnvTitle.Location = New System.Drawing.Point(145, 27)
+        Me.EnvTitle.Location = New System.Drawing.Point(272, 14)
         Me.EnvTitle.Name = "EnvTitle"
-        Me.EnvTitle.Size = New System.Drawing.Size(272, 20)
+        Me.EnvTitle.Size = New System.Drawing.Size(472, 20)
         Me.EnvTitle.TabIndex = 1
         Me.EnvTitle.Text = "CFAST simulation"
         '
         'Label28
         '
-        Me.Label28.Location = New System.Drawing.Point(105, 27)
+        Me.Label28.Location = New System.Drawing.Point(232, 14)
         Me.Label28.Name = "Label28"
         Me.Label28.Size = New System.Drawing.Size(32, 23)
         Me.Label28.TabIndex = 101
@@ -1095,7 +1129,7 @@ Public Class CeditMain
         '
         Me.GroupBox8.Controls.Add(Me.GroupBox12)
         Me.GroupBox8.Controls.Add(Me.GroupBox11)
-        Me.GroupBox8.Location = New System.Drawing.Point(481, 27)
+        Me.GroupBox8.Location = New System.Drawing.Point(481, 58)
         Me.GroupBox8.Name = "GroupBox8"
         Me.GroupBox8.Size = New System.Drawing.Size(392, 216)
         Me.GroupBox8.TabIndex = 11
@@ -1236,6 +1270,8 @@ Public Class CeditMain
         '
         'GroupBox7
         '
+        Me.GroupBox7.Controls.Add(Me.Label3)
+        Me.GroupBox7.Controls.Add(Me.EnvTimeStep)
         Me.GroupBox7.Controls.Add(Me.Label25)
         Me.GroupBox7.Controls.Add(Me.EnvSmokeviewInterval)
         Me.GroupBox7.Controls.Add(Me.Label4)
@@ -1244,16 +1280,33 @@ Public Class CeditMain
         Me.GroupBox7.Controls.Add(Me.EnvTextOutInterval)
         Me.GroupBox7.Controls.Add(Me.Label1)
         Me.GroupBox7.Controls.Add(Me.EnvSimTime)
-        Me.GroupBox7.Location = New System.Drawing.Point(113, 87)
+        Me.GroupBox7.Location = New System.Drawing.Point(113, 58)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(304, 156)
+        Me.GroupBox7.Size = New System.Drawing.Size(304, 216)
         Me.GroupBox7.TabIndex = 2
         Me.GroupBox7.TabStop = False
         Me.GroupBox7.Text = "Simulation Times"
         '
+        'Label3
+        '
+        Me.Label3.Location = New System.Drawing.Point(20, 149)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(152, 23)
+        Me.Label3.TabIndex = 123
+        Me.Label3.Text = "Maximum Time Step:"
+        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'EnvTimeStep
+        '
+        Me.EnvTimeStep.Location = New System.Drawing.Point(188, 150)
+        Me.EnvTimeStep.Name = "EnvTimeStep"
+        Me.EnvTimeStep.Size = New System.Drawing.Size(96, 20)
+        Me.EnvTimeStep.TabIndex = 122
+        Me.EnvTimeStep.Text = "Default"
+        '
         'Label25
         '
-        Me.Label25.Location = New System.Drawing.Point(16, 117)
+        Me.Label25.Location = New System.Drawing.Point(20, 123)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(152, 23)
         Me.Label25.TabIndex = 117
@@ -1262,7 +1315,7 @@ Public Class CeditMain
         '
         'EnvSmokeviewInterval
         '
-        Me.EnvSmokeviewInterval.Location = New System.Drawing.Point(184, 117)
+        Me.EnvSmokeviewInterval.Location = New System.Drawing.Point(188, 124)
         Me.EnvSmokeviewInterval.Name = "EnvSmokeviewInterval"
         Me.EnvSmokeviewInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSmokeviewInterval.TabIndex = 7
@@ -1270,7 +1323,7 @@ Public Class CeditMain
         '
         'Label4
         '
-        Me.Label4.Location = New System.Drawing.Point(16, 85)
+        Me.Label4.Location = New System.Drawing.Point(20, 97)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(152, 23)
         Me.Label4.TabIndex = 118
@@ -1279,7 +1332,7 @@ Public Class CeditMain
         '
         'EnvSpreadOutInterval
         '
-        Me.EnvSpreadOutInterval.Location = New System.Drawing.Point(184, 85)
+        Me.EnvSpreadOutInterval.Location = New System.Drawing.Point(188, 98)
         Me.EnvSpreadOutInterval.Name = "EnvSpreadOutInterval"
         Me.EnvSpreadOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSpreadOutInterval.TabIndex = 6
@@ -1287,7 +1340,7 @@ Public Class CeditMain
         '
         'Label2
         '
-        Me.Label2.Location = New System.Drawing.Point(16, 53)
+        Me.Label2.Location = New System.Drawing.Point(20, 71)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(152, 23)
         Me.Label2.TabIndex = 120
@@ -1296,7 +1349,7 @@ Public Class CeditMain
         '
         'EnvTextOutInterval
         '
-        Me.EnvTextOutInterval.Location = New System.Drawing.Point(184, 53)
+        Me.EnvTextOutInterval.Location = New System.Drawing.Point(188, 72)
         Me.EnvTextOutInterval.Name = "EnvTextOutInterval"
         Me.EnvTextOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvTextOutInterval.TabIndex = 4
@@ -1304,7 +1357,7 @@ Public Class CeditMain
         '
         'Label1
         '
-        Me.Label1.Location = New System.Drawing.Point(16, 21)
+        Me.Label1.Location = New System.Drawing.Point(20, 45)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(152, 23)
         Me.Label1.TabIndex = 121
@@ -1313,32 +1366,11 @@ Public Class CeditMain
         '
         'EnvSimTime
         '
-        Me.EnvSimTime.Location = New System.Drawing.Point(184, 21)
+        Me.EnvSimTime.Location = New System.Drawing.Point(188, 46)
         Me.EnvSimTime.Name = "EnvSimTime"
         Me.EnvSimTime.Size = New System.Drawing.Size(96, 20)
         Me.EnvSimTime.TabIndex = 3
         Me.EnvSimTime.Text = "900 s"
-        '
-        'EnvGroupErrors
-        '
-        Me.EnvGroupErrors.Controls.Add(Me.EnvErrors)
-        Me.EnvGroupErrors.Location = New System.Drawing.Point(16, 249)
-        Me.EnvGroupErrors.Name = "EnvGroupErrors"
-        Me.EnvGroupErrors.Size = New System.Drawing.Size(944, 287)
-        Me.EnvGroupErrors.TabIndex = 122
-        Me.EnvGroupErrors.TabStop = False
-        Me.EnvGroupErrors.Text = "Errors"
-        '
-        'EnvErrors
-        '
-        Me.EnvErrors.Location = New System.Drawing.Point(16, 16)
-        Me.EnvErrors.Multiline = True
-        Me.EnvErrors.Name = "EnvErrors"
-        Me.EnvErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.EnvErrors.Size = New System.Drawing.Size(912, 265)
-        Me.EnvErrors.TabIndex = 19
-        Me.EnvErrors.TabStop = False
-        Me.EnvErrors.Text = "No Errors"
         '
         'TabHorizontalFlow
         '
@@ -1374,6 +1406,7 @@ Public Class CeditMain
         Me.HVentSummary.Size = New System.Drawing.Size(782, 192)
         Me.HVentSummary.StyleInfo = resources.GetString("HVentSummary.StyleInfo")
         Me.HVentSummary.TabIndex = 0
+        Me.HVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupHVentGeometry
         '
@@ -1680,6 +1713,7 @@ Public Class CeditMain
         Me.VVentSummary.Size = New System.Drawing.Size(421, 114)
         Me.VVentSummary.StyleInfo = resources.GetString("VVentSummary.StyleInfo")
         Me.VVentSummary.TabIndex = 0
+        Me.VVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'VVentRemove
         '
@@ -1888,6 +1922,7 @@ Public Class CeditMain
         Me.CompSummary.StyleInfo = resources.GetString("CompSummary.StyleInfo")
         Me.CompSummary.TabIndex = 0
         Me.CompSummary.TabStop = False
+        Me.CompSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'CompRemove
         '
@@ -2139,6 +2174,7 @@ Public Class CeditMain
         Me.CompVariableArea.Size = New System.Drawing.Size(190, 111)
         Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
         Me.CompVariableArea.TabIndex = 4
+        Me.CompVariableArea.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'CompFlow
         '
@@ -2424,6 +2460,7 @@ Public Class CeditMain
         Me.MVentSummary.Size = New System.Drawing.Size(862, 120)
         Me.MVentSummary.StyleInfo = resources.GetString("MVentSummary.StyleInfo")
         Me.MVentSummary.TabIndex = 0
+        Me.MVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'MVentRemove
         '
@@ -2828,6 +2865,7 @@ Public Class CeditMain
         Me.FireSummary.Size = New System.Drawing.Size(682, 104)
         Me.FireSummary.StyleInfo = resources.GetString("FireSummary.StyleInfo")
         Me.FireSummary.TabIndex = 1
+        Me.FireSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'FireRemove
         '
@@ -3341,6 +3379,7 @@ Public Class CeditMain
         Me.DetectorSummary.Size = New System.Drawing.Size(742, 136)
         Me.DetectorSummary.StyleInfo = resources.GetString("DetectorSummary.StyleInfo")
         Me.DetectorSummary.TabIndex = 0
+        Me.DetectorSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupDetectors
         '
@@ -3590,6 +3629,7 @@ Public Class CeditMain
         Me.TargetSummary.Size = New System.Drawing.Size(722, 136)
         Me.TargetSummary.StyleInfo = resources.GetString("TargetSummary.StyleInfo")
         Me.TargetSummary.TabIndex = 0
+        Me.TargetSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupTargets
         '
@@ -3986,6 +4026,7 @@ Public Class CeditMain
         Me.VHeatSummary.Size = New System.Drawing.Size(364, 168)
         Me.VHeatSummary.StyleInfo = resources.GetString("VHeatSummary.StyleInfo")
         Me.VHeatSummary.TabIndex = 0
+        Me.VHeatSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupVHeats
         '
@@ -4089,6 +4130,7 @@ Public Class CeditMain
         Me.HHeatSummary.Size = New System.Drawing.Size(423, 168)
         Me.HHeatSummary.StyleInfo = resources.GetString("HHeatSummary.StyleInfo")
         Me.HHeatSummary.TabIndex = 0
+        Me.HHeatSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupHHeats
         '
@@ -4197,12 +4239,163 @@ Public Class CeditMain
         Me.TabMain.Controls.Add(Me.TabDetection)
         Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
+        Me.TabMain.Controls.Add(Me.TabVisuals)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
         Me.TabMain.Location = New System.Drawing.Point(7, 14)
         Me.TabMain.Name = "TabMain"
         Me.TabMain.SelectedIndex = 0
         Me.TabMain.Size = New System.Drawing.Size(984, 584)
         Me.TabMain.TabIndex = 0
+        '
+        'TabVisuals
+        '
+        Me.TabVisuals.Controls.Add(Me.VisualizationAxisLabel)
+        Me.TabVisuals.Controls.Add(Me.VisualizationAxis)
+        Me.TabVisuals.Controls.Add(Me.VisualizationValueLabel)
+        Me.TabVisuals.Controls.Add(Me.Label29)
+        Me.TabVisuals.Controls.Add(Me.VisualSummary)
+        Me.TabVisuals.Controls.Add(Me.Label7)
+        Me.TabVisuals.Controls.Add(Me.VisualizationRemove)
+        Me.TabVisuals.Controls.Add(Me.VisualizationValue)
+        Me.TabVisuals.Controls.Add(Me.VisualizationDefaults)
+        Me.TabVisuals.Controls.Add(Me.VisualizationComp)
+        Me.TabVisuals.Controls.Add(Me.VisualizationDup)
+        Me.TabVisuals.Controls.Add(Me.VisualizationType)
+        Me.TabVisuals.Controls.Add(Me.VisualizationAdd)
+        Me.TabVisuals.Location = New System.Drawing.Point(4, 22)
+        Me.TabVisuals.Name = "TabVisuals"
+        Me.TabVisuals.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabVisuals.Size = New System.Drawing.Size(976, 558)
+        Me.TabVisuals.TabIndex = 8
+        Me.TabVisuals.Text = "Visualization"
+        Me.TabVisuals.UseVisualStyleBackColor = True
+        '
+        'VisualizationAxisLabel
+        '
+        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(376, 485)
+        Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
+        Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
+        Me.VisualizationAxisLabel.TabIndex = 115
+        Me.VisualizationAxisLabel.Text = "Parallel to:"
+        Me.VisualizationAxisLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationAxis
+        '
+        Me.VisualizationAxis.ItemHeight = 13
+        Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Depth)", "Y-axis (Width)", "z-axis (Height)"})
+        Me.VisualizationAxis.Location = New System.Drawing.Point(473, 487)
+        Me.VisualizationAxis.MaxDropDownItems = 3
+        Me.VisualizationAxis.Name = "VisualizationAxis"
+        Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
+        Me.VisualizationAxis.TabIndex = 114
+        '
+        'VisualizationValueLabel
+        '
+        Me.VisualizationValueLabel.Location = New System.Drawing.Point(395, 456)
+        Me.VisualizationValueLabel.Name = "VisualizationValueLabel"
+        Me.VisualizationValueLabel.Size = New System.Drawing.Size(72, 23)
+        Me.VisualizationValueLabel.TabIndex = 113
+        Me.VisualizationValueLabel.Text = "Value:"
+        Me.VisualizationValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'Label29
+        '
+        Me.Label29.Location = New System.Drawing.Point(376, 430)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(91, 23)
+        Me.Label29.TabIndex = 112
+        Me.Label29.Text = "Compartment:"
+        Me.Label29.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualSummary
+        '
+        Me.VisualSummary.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
+        Me.VisualSummary.AllowEditing = False
+        Me.VisualSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.VisualSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.VisualSummary.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.VisualSummary.AutoGenerateColumns = False
+        Me.VisualSummary.ColumnInfo = resources.GetString("VisualSummary.ColumnInfo")
+        Me.VisualSummary.ExtendLastCol = True
+        Me.VisualSummary.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
+        Me.VisualSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.VisualSummary.Location = New System.Drawing.Point(235, 22)
+        Me.VisualSummary.Name = "VisualSummary"
+        Me.VisualSummary.Rows.DefaultSize = 19
+        Me.VisualSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.VisualSummary.Size = New System.Drawing.Size(507, 295)
+        Me.VisualSummary.StyleInfo = resources.GetString("VisualSummary.StyleInfo")
+        Me.VisualSummary.TabIndex = 102
+        Me.VisualSummary.TabStop = False
+        Me.VisualSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
+        '
+        'Label7
+        '
+        Me.Label7.Location = New System.Drawing.Point(363, 401)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(104, 23)
+        Me.Label7.TabIndex = 111
+        Me.Label7.Text = "Visualization Type:"
+        Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationRemove
+        '
+        Me.VisualizationRemove.Location = New System.Drawing.Point(453, 347)
+        Me.VisualizationRemove.Name = "VisualizationRemove"
+        Me.VisualizationRemove.Size = New System.Drawing.Size(75, 23)
+        Me.VisualizationRemove.TabIndex = 105
+        Me.VisualizationRemove.Text = "Remove"
+        '
+        'VisualizationValue
+        '
+        Me.VisualizationValue.Location = New System.Drawing.Point(473, 459)
+        Me.VisualizationValue.Name = "VisualizationValue"
+        Me.VisualizationValue.Size = New System.Drawing.Size(140, 20)
+        Me.VisualizationValue.TabIndex = 109
+        '
+        'VisualizationDefaults
+        '
+        Me.VisualizationDefaults.Location = New System.Drawing.Point(607, 347)
+        Me.VisualizationDefaults.Name = "VisualizationDefaults"
+        Me.VisualizationDefaults.Size = New System.Drawing.Size(109, 23)
+        Me.VisualizationDefaults.TabIndex = 103
+        Me.VisualizationDefaults.Text = "Add Defaults"
+        '
+        'VisualizationComp
+        '
+        Me.VisualizationComp.ItemHeight = 13
+        Me.VisualizationComp.Location = New System.Drawing.Point(473, 430)
+        Me.VisualizationComp.Name = "VisualizationComp"
+        Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
+        Me.VisualizationComp.TabIndex = 108
+        '
+        'VisualizationDup
+        '
+        Me.VisualizationDup.Location = New System.Drawing.Point(357, 347)
+        Me.VisualizationDup.Name = "VisualizationDup"
+        Me.VisualizationDup.Size = New System.Drawing.Size(75, 23)
+        Me.VisualizationDup.TabIndex = 104
+        Me.VisualizationDup.Text = "Duplicate"
+        '
+        'VisualizationType
+        '
+        Me.VisualizationType.ItemHeight = 13
+        Me.VisualizationType.Items.AddRange(New Object() {"2-D", "3-D", "Isosurface"})
+        Me.VisualizationType.Location = New System.Drawing.Point(473, 401)
+        Me.VisualizationType.MaxDropDownItems = 3
+        Me.VisualizationType.Name = "VisualizationType"
+        Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
+        Me.VisualizationType.TabIndex = 107
+        '
+        'VisualizationAdd
+        '
+        Me.VisualizationAdd.Location = New System.Drawing.Point(261, 347)
+        Me.VisualizationAdd.Name = "VisualizationAdd"
+        Me.VisualizationAdd.Size = New System.Drawing.Size(75, 23)
+        Me.VisualizationAdd.TabIndex = 106
+        Me.VisualizationAdd.Text = "Add"
         '
         'OpenDataFileDialog
         '
@@ -4289,8 +4482,6 @@ Public Class CeditMain
         Me.GroupBox11.PerformLayout()
         Me.GroupBox7.ResumeLayout(False)
         Me.GroupBox7.PerformLayout()
-        Me.EnvGroupErrors.ResumeLayout(False)
-        Me.EnvGroupErrors.PerformLayout()
         Me.TabHorizontalFlow.ResumeLayout(False)
         CType(Me.HVentSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupHVentGeometry.ResumeLayout(False)
@@ -4355,6 +4546,9 @@ Public Class CeditMain
         Me.GroupHHeats.ResumeLayout(False)
         Me.GroupHHeats.PerformLayout()
         Me.TabMain.ResumeLayout(False)
+        Me.TabVisuals.ResumeLayout(False)
+        Me.TabVisuals.PerformLayout()
+        CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
@@ -4401,7 +4595,7 @@ Public Class CeditMain
     End Sub
 
     ' This section of code handles events related to the environment tab
-    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave
+    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
         If sender Is Me.EnvSimTime Then myEnvironment.SimulationTime = Val(Me.EnvSimTime.Text)
         If sender Is Me.EnvTextOutInterval Then myEnvironment.OutputInterval = Val(Me.EnvTextOutInterval.Text)
@@ -4413,6 +4607,7 @@ Public Class CeditMain
         If sender Is Me.EnvExtAmbTemp Then myEnvironment.ExtAmbTemperature = Val(Me.EnvExtAmbTemp.Text)
         If sender Is Me.EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(Me.EnvExtAmbElevation.Text)
         If sender Is Me.EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(Me.EnvExtAmbPress.Text)
+        If sender Is Me.EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
         UpdateGUI.Environment()
     End Sub
     ' This section of code handles events related to the compartments tab
@@ -4489,16 +4684,7 @@ Public Class CeditMain
             UpdateGUI.Geometry(CurrentCompartment)
         End If
     End Sub
-    Private Sub CompSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompSummary.Click
-        ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
-        Dim index As Integer
-        index = Me.CompSummary.RowSel - 1
-        If index >= 0 And index <= myCompartments.Count - 1 Then
-            CurrentCompartment = index
-            UpdateGUI.Geometry(CurrentCompartment)
-        End If
-    End Sub
-    Private Sub CompSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles CompSummary.AfterSelChange
+    Private Sub CompSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompSummary.Click, CompSummary.AfterSelChange
         ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
         index = Me.CompSummary.RowSel - 1
@@ -5426,24 +5612,6 @@ Public Class CeditMain
         UserUnits.ShowDialog(Me)
         UpdateAll()
     End Sub
-    Private Sub MenuTimeStep_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTimeStep.Click
-        Dim iReturn As Integer
-        If myEnvironment.MaximumTimeStep > 0 Then
-            SetTimeStep.TimeStepValue.Text = myEnvironment.MaximumTimeStep.ToString + myUnits.Convert(UnitsNum.Time).Units
-        Else
-            SetTimeStep.TimeStepValue.Text = "Default"
-        End If
-        iReturn = SetTimeStep.ShowDialog(Me)
-        If iReturn = Windows.Forms.DialogResult.OK Then
-            If SetTimeStep.TimeStepValue.Text = "Default" Then
-                myEnvironment.MaximumTimeStep = -1
-            ElseIf Val(SetTimeStep.TimeStepValue.Text) > 0 Then
-                myEnvironment.MaximumTimeStep = Val(SetTimeStep.TimeStepValue.Text)
-            Else
-                myEnvironment.MaximumTimeStep = -1
-            End If
-        End If
-    End Sub
     Private Sub MenuNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNew.Click
         InitNew()
         UpdateAll()
@@ -5551,27 +5719,15 @@ Public Class CeditMain
         RunCFAST()
     End Sub
     Private Sub RunCFAST()
-        Dim LogFileExists As Boolean, FileName As String, IO As Integer = 1
         If myEnvironment.FileChanged Then SaveDataFile(True)
         If System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in") Then
             Dim RunSimulation As New RunModel
             CFASTSimulationTime = myEnvironment.SimulationTime
             CFastInputFile = myEnvironment.InputFileName
             RunSimulation.ShowDialog()
-            FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
-            LogFileExists = System.IO.File.Exists(FileName)
-            If LogFileExists Then
-                Me.EnvErrors.Text = ""
-                Dim ln As String
-                FileOpen(IO, FileName, OpenMode.Input)
-                Do Until EOF(IO)
-                    ln = LineInput(IO)
-                    If Not ln.StartsWith("Write to the history") Then myErrors.Add(ln, ErrorMessages.TypeCFastLog)
-                Loop
-                FileClose(IO)
-                UpdateGUI.Menu()
-                UpdateGUI.Environment()
-            End If
+
+            UpdateGUI.Menu()
+            UpdateGUI.Environment()
         End If
     End Sub
     Private Sub MenuSMVGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVGeometry.Click
@@ -5594,6 +5750,7 @@ Public Class CeditMain
             End If
         Catch ex As Exception
         End Try
+        UpdateGUI.UpdateLogFile(Me.EnvErrors)
     End Sub
     Private Sub MenuSMVSimulation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVSimulation.Click
         RunSmokeView()
@@ -5781,7 +5938,6 @@ Public Class CeditMain
         Me.MenuDetailedOutput.Checked = True
         UpdateAll()
     End Sub
-
     Private Sub MenuValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuValidationOutput.Click
         If Me.MenuValidationOutput.Checked Then
             ValidationOutput = False
@@ -5791,7 +5947,6 @@ Public Class CeditMain
         Me.MenuValidationOutput.Checked = ValidationOutput
         SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
     End Sub
-
     Private Sub MenuDebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles MenuDebugOutput.Click
         If Me.MenuDebugOutput.Checked Then
             DebugOutput = False
@@ -5799,5 +5954,70 @@ Public Class CeditMain
             DebugOutput = True
         End If
         Me.MenuDebugOutput.Checked = DebugOutput
+    End Sub
+    Private Sub VisualizationAdd_Click(sender As Object, e As EventArgs) Handles VisualizationAdd.Click
+        ' Add a Visualization to the end of the list of visualizations
+        If myVisuals.Count + 1 <= myVisuals.Maximum Then
+            Dim aVisual As New Visual
+            myVisuals.Add(aVisual)
+            CurrentVisual = myVisuals.Count - 1
+            UpdateGUI.Visuals(CurrentVisual)
+        Else
+            MessageBox.Show("A maximum of " + Visual.MaximumVisuals.ToString + " visulaizations are allowed. New visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub VisualizationChanged(sender As Object, e As EventArgs) Handles VisualizationValue.Leave
+        If CurrentVisual >= 0 And myVisuals.Count > 0 Then
+            Dim aVisual As New Visual
+            aVisual = myVisuals.Item(CurrentVisual)
+            If sender Is VisualizationValue Then aVisual.Value = Val(Me.VisualizationValue.Text)
+            myVisuals.Item(CurrentVisual) = aVisual
+            UpdateGUI.Visuals(CurrentVisual)
+        End If
+    End Sub
+
+    Private Sub Visualization_SelectedIndexChanged(sender As Object, e As EventArgs) Handles VisualizationType.SelectedIndexChanged, VisualizationComp.SelectedIndexChanged, VisualizationAxis.SelectedIndexChanged
+        If CurrentVisual >= 0 And myVisuals.Count > 0 Then
+            Dim aVisual As New Visual
+            aVisual = myVisuals.Item(CurrentVisual)
+            If sender Is VisualizationType Then
+                aVisual.Type = Me.VisualizationType.SelectedIndex
+                If Me.VisualizationType.SelectedIndex = 0 Then
+                    Me.VisualizationValueLabel.Text = "Position:"
+                    Me.VisualizationValueLabel.Visible = True
+                    Me.VisualizationValue.Visible = True
+                    Me.VisualizationAxis.Visible = True
+                    Me.VisualizationAxisLabel.Visible = True
+                    aVisual.Value = 0
+                ElseIf Me.VisualizationType.SelectedIndex = 2 Then
+                    Me.VisualizationValueLabel.Text = "Temperature:"
+                    Me.VisualizationValueLabel.Visible = True
+                    Me.VisualizationValue.Visible = True
+                    Me.VisualizationAxis.Visible = False
+                    Me.VisualizationAxisLabel.Visible = False
+                    aVisual.Value = 100
+                Else
+                    Me.VisualizationValueLabel.Visible = False
+                    Me.VisualizationValue.Visible = False
+                    Me.VisualizationAxis.Visible = False
+                    Me.VisualizationAxisLabel.Visible = False
+                End If
+            ElseIf sender Is VisualizationComp Then
+                aVisual.Compartment = Me.VisualizationComp.SelectedIndex - 1
+            ElseIf sender Is VisualizationAxis Then
+                aVisual.Axis = Me.VisualizationAxis.SelectedIndex
+            End If
+            myVisuals.Item(CurrentVisual) = aVisual
+            UpdateGUI.Visuals(CurrentVisual)
+        End If
+    End Sub
+    Private Sub VisualSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualSummary.Click, VisualSummary.AfterSelChange
+        ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
+        Dim index As Integer
+        index = Me.VisualSummary.RowSel - 1
+        If index >= 0 And index <= myVisuals.Count - 1 Then
+            CurrentVisual = index
+            UpdateGUI.Visuals(CurrentVisual)
+        End If
     End Sub
 End Class

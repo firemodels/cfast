@@ -5,9 +5,13 @@ Friend Module Data
     Friend ExitCode As Integer = 0
 
     Friend myRecentFiles As RecentFiles
-    Friend myErrors As New ErrorMessages
     Friend myEnvironment As New Environment
     Friend Const ErrorNames As String = "WarningError  Fatal  Log           "
+    Friend myErrors As New ErrorMessages
+
+    Friend myVisuals As New VisualCollection
+    Friend Const VisualTypeNames As String = "2-D       3-D       Isosurface"
+    Friend Const VisualAxisNames As String = "X-AxisY-AxisZ-Axis"
 
     Friend myUnits As New EngineeringUnits
 

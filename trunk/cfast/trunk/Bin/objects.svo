@@ -1,5 +1,5 @@
-// $Date: 2013-08-18 23:08:47 -0400 (Sun, 18 Aug 2013) $ 
-// $Revision: 16609 $
+// $Date: 2014-08-10 19:54:59 -0400 (Sun, 10 Aug 2014) $ 
+// $Revision: 20188 $
 // $Author: gforney $
 
 // ************ object file format ********************
@@ -252,6 +252,11 @@ OBJECTDEF
  push 0.0 0.0 0.035052 translate 0.00635 drawsphere pop
  push "BLUE" setcolor 
    0.0 0.0 0.0414 translate 0.012 drawsphere pop
+
+OBJECTDEF
+ arrow
+push 0.0 0.0 1.0 translate 0.4 0.6 drawcone pop
+push 0.1 0.1 1.0 scalexyz 1.0 1.0 drawdisk pop
 
    // ************ object definitions used for FDS-EVAC ********************
 

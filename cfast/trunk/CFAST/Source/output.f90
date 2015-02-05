@@ -64,12 +64,10 @@
             write (iunit,20) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), rev_cfast()
         endif
     endif
-    write (iunit,30) validate
     return
 
 10  format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
 20  format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
-30  format ('CFAST run with validation option = ',L1)    
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------
@@ -1967,12 +1965,10 @@
 !        open (unit=iofilo,file=outputfile,status='new',carriagecontrol='fortran')
         open (unit=iofilo,file=outputfile,status='new')
         lprint = abs(lprint)
-        write (logerr,5002) trim(outputfile)
         if (outputformat==0) outputformat = 2
     else
 !        open (unit=iofilo,file='con',carriagecontrol='fortran')
         open (unit=iofilo,file='con')
-        write (logerr,5004)
         if (outputformat==0) outputformat = 1
     endif
     
@@ -1981,7 +1977,6 @@
 
     ! now the smokeview files
     if (lsmv>0) then
-        write(logerr,5003) trim(smvhead),trim(smvdata)
         open (unit=13,file=smvhead,form='formatted',err=11,iostat=ios)
         open (unit=14,file=smvdata,form="unformatted",err=11,iostat=ios)
         open (unit=15, file=smvcsv,form='formatted')
@@ -1989,7 +1984,6 @@
 
     ! next the spread sheet files
     if (lcopyss>0) then
-        write(logerr,5005) trim(ssnormal),trim(ssflow),trim(ssspecies),trim(sswall)
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')
@@ -2015,11 +2009,6 @@
 81  write(logerr,*) '***Fatal error writing to the status file ',ios
     stop 106
 
-5001 format ('Open the history file ',a)
-5002 format ('Open the output file ',a)
-5003 format ('Open the smokeview files - ',a,2x,a)
-5004 format ('Send output to the console')
-5005 format ('Open the spreadsheet files - ',4(a,2x))
 5030 FORMAT ('***Error ',i4,' while accessing history, file = ',A)
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
 

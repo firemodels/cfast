@@ -72,11 +72,10 @@
     else
         iversion = version/100
     endif
-    if (aversion==heading.and.ivers==iversion) then
-        write (logerr,5001) ivers
-    else if (aversion==heading.and.ivers==iversion-1) then
+    
+    if (aversion==heading.and.ivers==iversion-1) then
         write (logerr,5004) ivers, iversion
-    else
+    elseif (aversion/=heading.or.ivers/=iversion) then
         write (logerr,5002) aversion,heading,ivers,iversion
         ierror = 206
         return
@@ -458,7 +457,6 @@
     close (iofili)
     return
 
-5001 format ('Opening a version ',i2,' file in normal mode')
 5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
 5003 format ('***Error: Too many lines in the main data file')
 5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.')     
@@ -513,8 +511,6 @@
     real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
-    character(10) :: plumemodel(2)
-    data plumemodel /'Heskestad', 'McCaffrey'/
     type(ramp_type), pointer :: rampptr
 
     !	Start with a clean slate
@@ -708,9 +704,6 @@
         ! Reset this each time in case this is the last entry
         n = compartment+1
         nx = compartment
-
-        write (logerr,5063) compartment, compartmentnames(nx), br(nx),dr(nx), hr(nx),cxabs(nx),cyabs(nx),hflr(nx),&
-           (switch(i,nx),i=1,4),(cname(i,nx),i=1,4)
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
         !		    BW = width, HH = soffit, HL = sill, 
@@ -1089,7 +1082,6 @@
             ierror = 78
             return 
         endif
-        write(logerr,5403) plumemodel(fplume(numobjl))
         objign(obpnt) =   lrarray(6)
         tmpcond =         lrarray(7)
         objort(1,obpnt) = lrarray(8)
@@ -1191,7 +1183,6 @@
             ierror = 78
             return 
         endif
-        write(logerr,5403) plumemodel(fplume(numobjl))
         objign(obpnt) =   lrarray(7)
         tmpcond =         lrarray(8)
         objort(1,obpnt) = lrarray(9)
@@ -1664,7 +1655,6 @@
 5003 format ('***Error: The compartment specified by TARGET does not exist',i3)
 5051 format ('***Error: The key word ',a5,' is not recognized')
 5062 format ('***Error: Compartment number outside of allowable range',i5)
-5063 format ('Compartment ',i3,1x,a8,1x,6f6.1,4l1,1x,4a10)
 5070 format ('***Error: VENT parameter(s) outside of allowable range',2I4)
 5080 format ('***Error: Too many pairwise horizontal connections',4I5)
 5081 format ('***Error: Too many horizontal connections ',3i5)
@@ -1705,7 +1695,6 @@
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
 5402 format ('***Error: Plume index out of range ',i3)
-5403 format ('Plume model for this fire: ',a10)
 
     end subroutine keywordcases
 
@@ -1863,13 +1852,10 @@
         return
     else if (hrrpm3>2.0e6_eb) then
         write (logerr,5107)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
-    else 
-        write (logerr,5100)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
     endif
 
     return
 5001 format ('Invalid heat of combustion, must be greater than zero, ',1pg12.3)
-5100 format ('Object ',a,' position set to ',3F7.3, '; Maximum HRR per m^3 is ',1pg10.3)
 5106 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
 5000 format ('The key word ',a5,' is not part of a fire definition')

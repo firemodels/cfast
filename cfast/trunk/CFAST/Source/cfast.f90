@@ -58,13 +58,9 @@
     call open_files (errorcode)
 
     !     initial output
-
-    write (logerr, 5000) mpsdatc
     if (errorcode>0) then
         write (*, 5001) errorcode
         stop 
-    else
-        write (logerr, 5002) project
     endif
 
     mpsdat(1) = rundat(1)
@@ -125,9 +121,7 @@
     write (logerr,5004) total_steps
     call cfastexit ('CFAST', errorcode)
 
-5000 format ('Date stamp from CFAST initialization ',a14)
 5001 format ('***Error: Error encountered in opening data files; code = ',i4)
-5002 format ('The project files are based on the root: ',a64)
 5003 format ('Total execution time = ',1pg10.3,' seconds')
 5004 format ('Total time steps = ',i10)     
     end program cfast

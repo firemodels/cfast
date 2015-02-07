@@ -147,15 +147,12 @@
     do i = 1, numobjl
         if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>br(objrm(i)))) then
             objpos(1,i) = br(objrm(i))/2.0_eb
-            if (logerr>0) write (logerr,5080) i, objpos(1,i)
         endif
         if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>dr(objrm(i)))) then
             objpos(2,i) = dr(objrm(i))/2.0_eb
-            if (logerr>0) write (logerr,5090) i, objpos(2,i)
         endif
         if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>hr(objrm(i)))) then
             objpos(3,i) = 0.0_eb
-            if (logerr>0) write (logerr,5100) i, objpos(3,i)
         endif
     end do
 
@@ -466,11 +463,6 @@
     ! read format list
 5050 format ('***Error: Error opening the input file = ',I6)
 
-    ! output for objects
-5080 format (' Object no. ',I3,' X cood. set to ',F12.5)
-5090 format (' Object no. ',I3,' Y cood. set to ',F12.5)
-5100 format (' Object no. ',I3,' Z cood. set to ',F12.5)
-
     end subroutine read_input_file
 
 ! --------------------------- keywordcases -------------------------------------------
@@ -745,7 +737,6 @@
         iijk = ijk(i,j,k)
         jik = iijk
         koffst = 2**k
-        if (iand(koffst,nw(i,j))/=0) write (iofilo,5090) i, j, k
         nw(i,j) = ior(nw(i,j),koffst)
         bw(iijk) = lrarray(4)
         hh(iijk) = lrarray(5)
@@ -1290,8 +1281,6 @@
             write(logerr,5344) i2
             ierror = 36
             return
-        else
-            write(logerr, 5343) i1,compartmentnames(i2)
         endif
 
         if (debugging) then
@@ -1502,7 +1491,6 @@
         do i = 1, npts
             zzrarea(i,iroom) = lrarray(i+2)
         end do
-        write(logerr,5351) iroom, (zzrarea(i,iroom),i=1,npts)
 
         ! ROOMH Compartment Number_of_Height_Values Height_Values
         ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
@@ -1544,7 +1532,6 @@
         do i = 1, npts
             zzrhgt(i,iroom) = lrarray(i+2)
         end do
-        write(logerr,5352) iroom, (zzrhgt(i,iroom),i=1,npts)
 
         ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
     case ('DTCHE')
@@ -1658,7 +1645,6 @@
 5070 format ('***Error: VENT parameter(s) outside of allowable range',2I4)
 5080 format ('***Error: Too many pairwise horizontal connections',4I5)
 5081 format ('***Error: Too many horizontal connections ',3i5)
-5090 format ('The connection',3I3,' is being redefined')
 5191 format ('***Error: Compartments specified in MVENT have not been defined ',2i3)
 5192 format ('***Error: Exceeded maximum number of nodes/openings in MVENT ',2i3)
 5193 format ('***Error: MVENT(MID) is not consistent ',2i3)
@@ -1673,10 +1659,7 @@
 5323 format ('***Error: Object ',i3,' is outside its compartment')
 5338 format ('***Error: Exceed allowed number of detectors')
 5339 format ('***Error: Detector ',i3,' is outside of compartment ',a)
-5340 format ('Set point file name is - ',A)
-5341 format ('Ceiling jet calculation has been set: ',5l2)
 5342 format ('***Error: Invalid DETECTOR specification - room ',i3)
-5343 format ('A type ',i3,' detector has been placed in ',a128)
 5344 format ('***Error: A referenced compartment is not yet defined ',i3)
 5345 format ('***Error: VHEAT has specified a non-existent compartment')
 5346 format ('***Error: HALL has specified a non-existent compartment',i3)
@@ -1684,9 +1667,6 @@
 5348 format ('***Error: Data on the ROOMA (or H) line must be positive ',1pg12.3)
 5349 format ('***Error: Compartment specified by ROOMH is not defined ',i3)
 5350 format ('***Error: ROOMH error on data line ',i3)
-5351 format ('Compartment',i3,' has been redefined as a variable space' ,'- area: ',20f8.1)
-5352 format ('Compartment',i3,' has been redefined as a variable space' ,'- height: ',20f8.1)
-5353 format ('Trying to reset the point file name is - ',A)
 5354 format ('***Error: HHEAT to compartment out of bounds or not defined - ',i3)
 5355 format ('***Error: HHEAT fraction pairs is not consistent ',2i3)
 5356 format ('***Error: HHEAT specification error in compartment pairs: ',2i3)

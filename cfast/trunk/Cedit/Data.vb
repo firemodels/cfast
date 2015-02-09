@@ -309,4 +309,13 @@ Friend Module Data
         decaytime
         filterEfficiency = 7
     End Enum
+    Friend Enum visualNum
+        sliceType = 2
+        slice2DAxis
+        slice2DPosition
+        slice2DCompartment
+        slice3DCompartment = 3
+        isoValue = 2
+        isoCompartment
+    End Enum
 End Module

@@ -626,6 +626,34 @@ Module IO
             aDetect.Changed = False
             i += 1
         Next
+        'comment header of visualizations
+        If myVisuals.Count > 0 Then
+            AddHeadertoOutput(csv, i, "visualizations")
+            Dim aVisual As Visual
+            For j = 0 To myVisuals.Count - 1
+                aVisual = myVisuals.Item(j)
+
+                Select Case aVisual.Type
+                    Case Visual.TwoD
+                        csv.str(i, CFASTlnNum.keyWord) = "SLCF"
+                        csv.str(i, visualNum.sliceType) = "2-D"
+                        csv.str(i, visualNum.slice2DAxis) = VisualAxisNames.Substring((aVisual.Axis) * 6, 1)
+                        csv.Num(i, visualNum.slice2DPosition) = aVisual.Value
+                        If aVisual.Compartment > -1 Then csv.Num(i, visualNum.slice2DCompartment) = aVisual.Compartment + 1
+                    Case Visual.ThreeD
+                        csv.str(i, CFASTlnNum.keyWord) = "SLCF"
+                        csv.str(i, visualNum.sliceType) = "3-D"
+                        If aVisual.Compartment > -1 Then csv.Num(i, visualNum.slice3DCompartment) = aVisual.Compartment + 1
+                    Case Visual.IsoSurface
+                        csv.str(i, CFASTlnNum.keyWord) = "ISOF"
+                        csv.Num(i, visualNum.isoValue) = aVisual.Value
+                        If aVisual.Compartment > -1 Then csv.Num(i, visualNum.isoCompartment) = aVisual.Compartment + 1
+                End Select
+                aVisual.Changed = False
+                i += 1
+            Next
+        End If
+
         'comment header of misc.
         If myEnvironment.MaximumTimeStep > 0 Or myThermalProperties.FileName <> "thermal" Then _
             AddHeadertoOutput(csv, i, "Misc. stuff")
@@ -636,8 +664,9 @@ Module IO
             i += 1
         End If
         myEnvironment.Changed = False
+
         'comments and dead keywords
-        If dataFileComments.Count > 0 Then AddHeadertoOutput(csv, i, "comments and ignore keywords")
+        If dataFileComments.Count > 0 Then AddHeadertoOutput(csv, i, "comments and ignored keywords")
         'comments
         For j = 1 To dataFileComments.Count
             csv.CSVrow(i) = dataFileComments.Item(j)

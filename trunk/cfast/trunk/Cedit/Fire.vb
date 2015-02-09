@@ -113,10 +113,10 @@ Public Class Fire
         aName = Name
         If UBound(Chemical_Formula) = 5 Then
             aChemicalFormula(1) = Chemical_Formula(1)
-            aChemicalFormula(1) = Chemical_Formula(1)
-            aChemicalFormula(1) = Chemical_Formula(1)
-            aChemicalFormula(1) = Chemical_Formula(1)
-            aChemicalFormula(1) = Chemical_Formula(1)
+            aChemicalFormula(2) = Chemical_Formula(2)
+            aChemicalFormula(3) = Chemical_Formula(3)
+            aChemicalFormula(4) = Chemical_Formula(4)
+            aChemicalFormula(5) = Chemical_Formula(5)
         End If
         aHeatofCombustion = Hoc
         aRadiativeFraction = RadiativeFraction

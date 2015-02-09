@@ -1094,6 +1094,40 @@ Module IO
                         vvent.FinalOpening = csv.Num(i, vventNum.intialfraction)
                         vvent.Changed = False
                         myVVents.Add(vvent)
+                    Case "SLCF"
+                        Dim aVisual As New Visual
+                        If csv.str(i, visualNum.sliceType) = "2-D" Then
+                            aVisual.Type = Visual.TwoD
+                            If csv.str(i, visualNum.slice2DAxis) = "X" Then aVisual.Axis = 0
+                            If csv.str(i, visualNum.slice2DAxis) = "Y" Then aVisual.Axis = 1
+                            If csv.str(i, visualNum.slice2DAxis) = "Z" Then aVisual.Axis = 2
+                            aVisual.Value = csv.Num(i, visualNum.slice2DPosition)
+                            If csv.Num(i, 0) >= visualNum.slice2DCompartment Then
+                                aVisual.Compartment = csv.Num(i, visualNum.slice2DCompartment) - 1
+                            Else
+                                aVisual.Compartment = -1
+                            End If
+                        Else
+                            aVisual.Type = Visual.ThreeD
+                            If csv.Num(i, 0) >= visualNum.slice3DCompartment Then
+                                aVisual.Compartment = csv.Num(i, visualNum.slice3DCompartment) - 1
+                            Else
+                                aVisual.Compartment = -1
+                            End If
+                        End If
+                        aVisual.Changed = False
+                        myVisuals.Add(aVisual)
+                    Case "ISOF"
+                        Dim aVisual As New Visual
+                        aVisual.Type = Visual.IsoSurface
+                        aVisual.Value = csv.Num(i, visualNum.isoValue)
+                        If csv.Num(i, 0) >= visualNum.isoCompartment Then
+                            aVisual.Compartment = csv.Num(i, visualNum.isoCompartment) - 1
+                        Else
+                            aVisual.Compartment = -1
+                        End If
+                        aVisual.Changed = False
+                        myVisuals.Add(aVisual)
                 End Select
             Else
                 If HeaderComment(csv.str(i, 1)) Then

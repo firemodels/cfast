@@ -8,14 +8,14 @@
     Private aType As Integer
     Private aCompartment As Integer
     Private aValue As Single
-    Private aAxis As Single
+    Private aAxis As Integer
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
     Public Sub New()
         Me.aType = 0
         Me.aCompartment = -1
         Me.aValue = 0.0
-        Me.Axis = 0
+        Me.aAxis = 0
     End Sub
     Public Sub New(ByVal Type As Integer, ByVal Axis As Integer, ByVal Value As Single, ByVal Compartment As Integer)
         Me.aType = Type
@@ -86,9 +86,75 @@
             aChanged = Value
         End Set
     End Property
-    Public ReadOnly Property IsValid() As Integer
+    Public ReadOnly Property IsValid(ByVal VisualNumber As Integer) As Integer
         Get
-
+            myUnits.SI = True
+            HasErrors = 0
+            If aType <> Visual.TwoD And aType <> Visual.ThreeD And aType <> Visual.IsoSurface Then
+                myErrors.Add("Visualization " + VisualNumber.ToString + " has an invalid visualization type.  Only 2-D, 3-D, or Isosurface is allowed", ErrorMessages.TypeFatal)
+                HasErrors += 1
+            End If
+            If aType = Visual.TwoD Then
+                If aAxis < 0 Or aAxis > 2 Then
+                    myErrors.Add("Visualization " + VisualNumber.ToString + " has an invalid axis type.  Slices must be parallel to a compartment surface", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                End If
+                If aCompartment < -1 Then
+                    myErrors.Add("Visualization " + VisualNumber.ToString + " has an invalid compartment.  Choose an existing compartment or ALL", ErrorMessages.TypeFatal)
+                ElseIf aCompartment < -1 Or aCompartment > myCompartments.Count - 1 Then
+                    myErrors.Add("Visualization " + VisualNumber.ToString + " has an invalid compartment.  Choose an existing compartment or ALL", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                End If
+                If (aCompartment >= 0 And aCompartment <= myCompartments.Count - 1) Then
+                    Dim aComp As New Compartment
+                    aComp = myCompartments(aCompartment)
+                    If aAxis = 0 And (aValue < 0.0 Or aValue > aComp.RoomDepth) Then
+                        myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment depth.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
+                    If aAxis = 1 And (aValue < 0.0 Or aValue > aComp.RoomWidth) Then
+                        myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment width.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
+                    If aAxis = 2 And (aValue < 0.0 Or aValue > aComp.RoomHeight) Then
+                        myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment height.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
+                ElseIf aCompartment = -1 And myCompartments.Count > 0 Then
+                    Dim i As Integer
+                    Dim aComp As New Compartment
+                    For i = 0 To myCompartments.Count - 1
+                        aComp = myCompartments(i)
+                        If aAxis = 0 And (aValue < 0.0 Or aValue > aComp.RoomDepth) Then
+                            myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment depth.", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
+                        If aAxis = 1 And (aValue < 0.0 Or aValue > aComp.RoomWidth) Then
+                            myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment width.", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
+                        If aAxis = 2 And (aValue < 0.0 Or aValue > aComp.RoomHeight) Then
+                            myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment height.", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
+                    Next
+                End If
+            ElseIf aType = Visual.ThreeD Then
+                If aCompartment < -1 Then
+                    myErrors.Add("Visualization " + VisualNumber.ToString + " has an invalid compartment.  Choose an existing compartment or ALL", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                ElseIf aCompartment < -1 Or aCompartment > myCompartments.Count - 1 Then
+                    myErrors.Add("Visualization " + VisualNumber.ToString + " has an invalid compartment.  Choose an existing compartment or ALL", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                End If
+            ElseIf aType = Visual.IsoSurface Then
+                If aValue < 0 Or aValue > 2000 Then
+                    myErrors.Add("Visualization " + VisualNumber.ToString + " has an isosurface temperature less than zero or greater than 2000 K.  Check temperature", ErrorMessages.TypeWarning)
+                    HasErrors += 1
+                End If
+            End If
+            myUnits.SI = False
+            Return HasErrors
         End Get
     End Property
 
@@ -177,7 +243,9 @@ Public Class VisualCollection
                 Dim aVisual As Visual
                 For i = 0 To Count - 1
                     aVisual = CType(List(i), Visual)
-                    If aVisual.Changed Then Return True
+                    If aVisual.Changed Then
+                        Return True
+                    End If
                 Next
             End If
             Return False
@@ -191,7 +259,7 @@ Public Class VisualCollection
                 Dim aVisual As Visual
                 For i = 0 To Count - 1
                     aVisual = CType(List(i), Visual)
-                    HasErrors += aVisual.IsValid
+                    HasErrors += aVisual.IsValid(i)
                 Next
             End If
             Return HasErrors

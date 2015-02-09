@@ -21,7 +21,7 @@ The fundamental equations start with the conservation of mass. The change of mas
 \be
    \dbydt{m_i} = \dot m_i  \label{mass_con}
 \ee
-where $\dm_i$ represents the sum of all mass source terms, such as plume mass entrainment and ventilation. Conservation of energy takes the form of the first law of thermodynamics, which states that the rate of increase of internal energy plus the rate at which the layer does work by expansion is equal to the rate at which enthalpy is added to the gas:
+where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving the control volume. Conservation of energy takes the form of the first law of thermodynamics, which states that the rate of increase of internal energy plus the rate at which the layer does work by expansion is equal to the rate at which enthalpy is added to the gas:
 \be
    \dbydt{(c_v m_i T_i)} +  P \dbydt{V_i} =  \dot h_i \label{eq:first_law}
 \ee
@@ -222,11 +222,11 @@ where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P
 \ee
 This is the way it is written in Ref.~\cite{Emmons:SFPE}.
 
-The mass flows through the horizontal segments of the opening are distributed into the upper and lower layers of the downstream compartment. For the jet originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$; or the jet from lower layer to lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the given layer. However, consider the flow from the upper layer to the lower layer, $\dm_{\rm u \to l}$. The enthalpy flow rate is:
+The mass flows through the horizontal segments of the opening are distributed into the upper and lower layers of the downstream compartment. For the jet originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$, or the jet from lower layer to lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the downstream layer. However, consider the flow from the upper layer to the lower layer, $\dm_{\rm u \to l}$. Some of the mass is deposited directly in the lower layer, but some is assumed to rise into the upper layer in the form via a plume. The distribution of mass is calculated as follows. The enthalpy flow rate of the original jet is:
 \be
    \doh_{\rm u \to l} = c_p \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
 \ee
-Assuming that $T_{\rm l,2} < T_{\rm u,1} < T_{\rm u,2}$, this energy will be distributed between the compartment's two layers. The distribution is based on the relative difference between the incoming jet temperature and the layer temperatures. Some of the energy stays within the lower layer and some of the energy rises into the upper layer in the form of a virtual plume. The effective heat release rate of this virtual plume is:
+Assuming that $T_{\rm l,2} < T_{\rm u,1} < T_{\rm u,2}$, this energy will be distributed between the compartment's two layers (if not, the mass and energy go completely to the upper or layer layer). The distribution is based on the relative difference between the incoming jet temperature and the layer temperatures. Some of the energy stays within the lower layer and some of the energy rises into the upper layer in the form of a virtual plume. The effective heat release rate of this virtual plume is:
 \be
    \dQ_{\rm eff} = \frac{T_{\rm u,1}-T_{\rm l,2}}{T_{\rm u,2}-T_{\rm l,2}} \; \doh_{\rm u \to l}
 \ee
@@ -261,7 +261,7 @@ The mass and energy are then deposited into the upper or lower layer of the rece
 
 CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves. These equations are high-order, non-linear and in some cases ill-posed, which caused a great deal of difficulty in reaching a numerical solution.
 
-The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks the flow of these two species. 
+The flow through mechanical vents can be filtered. Filtering affects particulates such as smoke and the trace species. Filtering can be turned on at any time. Effectiveness is from 0~\% (no effect) to 100~\% which completely blocks the flow of these two species.
 
 
 
@@ -532,12 +532,14 @@ where $\Delta \Tp$ is the excess plume temperature at the ceiling.
 The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density is given by the expression:
 \be
    D = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
-\ee 
-where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. 
+\ee
+where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}.
 
 \section{Smoke Detection}
 
-CFAST treats a smoke detector as a very sensitive heat detector and an activation temperature of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. {\bf REFERENCE?}
+CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself. Instead, CFAST treats a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
+
+Users are cautioned that this model is very crude and the uncertainty in its predictions are substantial. Consult the CFAST Validation Guide for more details on its validation. 
 
 
 \section{Fire Suppression} \label{sec:suppression}

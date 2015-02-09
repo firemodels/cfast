@@ -4659,10 +4659,10 @@ Public Class CeditMain
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             TotalConnections = myHVents.NumberofConnections(CurrentCompartment) + myVVents.NumberofConnections(CurrentCompartment) + myMVents.NumberofConnections(CurrentCompartment) + _
             myDetectors.NumberofConnections(CurrentCompartment) + myTargets.NumberofConnections(CurrentCompartment) + myHHeats.NumberofConnections(CurrentCompartment) + _
-            myVHeats.NumberofConnections(CurrentCompartment) + myFires.NumberofConnections(CurrentCompartment)
+            myVHeats.NumberofConnections(CurrentCompartment) + myFires.NumberofConnections(CurrentCompartment) + myVisuals.NumberofConnections(CurrentCompartment)
             If TotalConnections > 0 Then
                 ReturnedButton = MessageBox.Show("Compartment " + (CurrentCompartment + 1).ToString + " has " + TotalConnections.ToString + _
-                " flow or heat transfer connection(s) that will be removed.", Me.Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
+                " connection(s) that will be removed.", Me.Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
                 If ReturnedButton = OK Then
                     myHVents.RemoveAll(CurrentCompartment) : CurrentHVent = 0
                     myVVents.RemoveAll(CurrentCompartment) : CurrentVVent = 0
@@ -4672,6 +4672,7 @@ Public Class CeditMain
                     myHHeats.RemoveAll(CurrentCompartment) : CurrentHHeat = 0
                     myHHeats.RemoveAll(CurrentCompartment) : CurrentVHeat = 0
                     myFires.RemoveAll(CurrentCompartment) : CurrentFire = 0
+                    myVisuals.RemoveAll(CurrentCompartment) : CurrentVisual = 0
                     myCompartments.Remove(CurrentCompartment)
                     If CurrentCompartment > 0 Then CurrentCompartment -= 1
                     myEnvironment.Changed = True
@@ -5854,6 +5855,7 @@ Public Class CeditMain
         UpdateGUI.Detectors(CurrentDetector)
         UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
         UpdateGUI.Fires(CurrentFire)
+        UpdateGUI.Visuals(CurrentVisual)
         UpdateGUI.DoErrorCheck = True
     End Sub
     Private Sub InitNew()
@@ -5964,6 +5966,43 @@ Public Class CeditMain
             UpdateGUI.Visuals(CurrentVisual)
         Else
             MessageBox.Show("A maximum of " + Visual.MaximumVisuals.ToString + " visulaizations are allowed. New visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub VisualizationDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualizationDup.Click
+        ' Copy the current visualization, adding it to the end of the list of visualizations
+        If CurrentVisual >= 0 And myVisuals.Count > 0 And CurrentVisual + 1 <= myVisuals.Maximum And myVisuals.Count + 1 <= Visual.MaximumVisuals Then
+            myVisuals.Add(New Visual)
+            myVisuals.Copy(CurrentVisual, myVisuals.Count - 1)
+            CurrentVisual = myVisuals.Count - 1
+            UpdateGUI.Visuals(CurrentVisual)
+        Else
+            MessageBox.Show("A maximum of " + myVisuals.Maximum.ToString + " Visuals are allowed. New Visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub VisualizationRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualizationRemove.Click
+        ' Remove the current vvent from the list of Visuals
+        If CurrentVisual >= 0 And myVisuals.Count > 0 Then
+            myVisuals.Remove(CurrentVisual)
+            If CurrentVisual > 0 Then CurrentVisual -= 1
+            myEnvironment.Changed = True
+            UpdateGUI.Visuals(CurrentVisual)
+        End If
+    End Sub
+    Private Sub VisualizationDefaults_Click(sender As Object, e As EventArgs) Handles VisualizationDefaults.Click
+        ' Add a set of default visualizations to the list of visualizations
+        If myCompartments.Count > 0 Then
+            Dim i As Integer
+            Dim aVisual As Visual
+            Dim aCompartment As New Compartment
+            For i = 0 To myCompartments.Count - 1
+                aCompartment = myCompartments.Item(i)
+                aVisual = New Visual(Visual.TwoD, 0, aCompartment.RoomDepth / 2, i) : myVisuals.Add(aVisual)
+                aVisual = New Visual(Visual.TwoD, 1, aCompartment.RoomWidth / 2, i) : myVisuals.Add(aVisual)
+                aVisual = New Visual(Visual.TwoD, 2, aCompartment.RoomHeight * 0.99, i) : myVisuals.Add(aVisual)
+            Next
+            aVisual = New Visual(Visual.ThreeD, 0, 0.0, -1) : myVisuals.Add(aVisual)
+            CurrentVisual = myVisuals.Count - 1
+            UpdateGUI.Visuals(CurrentVisual)
         End If
     End Sub
     Private Sub VisualizationChanged(sender As Object, e As EventArgs) Handles VisualizationValue.Leave

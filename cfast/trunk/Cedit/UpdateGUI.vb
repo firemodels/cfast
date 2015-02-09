@@ -89,12 +89,15 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Visuals(ByVal index As Integer)
-        Dim aVisual As Visual
         Me.General()
         If index < 0 Or myVisuals.Count = 0 Then
             ClearGrid(MainWin.VisualSummary)
         Else
             ' fill the visualization widgets from the supplied visualization data
+            If myVisuals.Changed Then
+
+            End If
+            Dim aVisual As Visual
             aVisual = myVisuals.Item(index)
             If aVisual.Compartment <= myCompartments.Count - 1 Then
                 MainWin.VisualizationComp.SelectedIndex = aVisual.Compartment + 1
@@ -106,35 +109,35 @@ Public Class UpdateGUI
                 MainWin.VisualizationValue.Text = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Length).Units
             End If
             MainWin.VisualizationAxis.SelectedIndex = aVisual.Axis
-        End If
-        numVisuals = myVisuals.Count
-        ClearGrid(MainWin.VisualSummary)
-        If numVisuals > 0 Then
-            For i = 1 To numVisuals
-                aVisual = myVisuals.Item(i - 1)
-                MainWin.VisualSummary(i, 0) = i.ToString
-                MainWin.VisualSummary(i, 1) = VisualTypeNames.Substring((aVisual.Type) * 10, 10)
-                If aVisual.Compartment >= 0 And aVisual.Compartment <= myCompartments.Count - 1 Then
-                    MainWin.VisualSummary(i, 2) = myCompartments(aVisual.Compartment).Name
-                ElseIf aVisual.Compartment = -1 Then
-                    MainWin.VisualSummary(i, 2) = "All"
-                Else
-                    MainWin.VisualSummary(i, 2) = "Not defined"
-                End If
-                If aVisual.Type = Visual.TwoD Then
-                    MainWin.VisualSummary(i, 3) = VisualAxisNames.Substring((aVisual.Axis) * 6, 6)
-                Else
-                    MainWin.VisualSummary(i, 3) = "-"
-                End If
-                If aVisual.Type = Visual.IsoSurface Then
-                    MainWin.VisualSummary(i, 4) = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Temperature).Units
-                ElseIf aVisual.Type = Visual.TwoD Then
-                    MainWin.VisualSummary(i, 4) = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Length).Units
-                Else
-                    MainWin.VisualSummary(i, 4) = "-"
-                End If
-            Next
-            MainWin.VisualSummary.Select(index + 1, 0, index + 1, MainWin.VisualSummary.Cols.Count - 1, True)
+            numVisuals = myVisuals.Count
+            ClearGrid(MainWin.VisualSummary)
+            If numVisuals > 0 Then
+                For i = 1 To numVisuals
+                    aVisual = myVisuals.Item(i - 1)
+                    MainWin.VisualSummary(i, 0) = i.ToString
+                    MainWin.VisualSummary(i, 1) = VisualTypeNames.Substring((aVisual.Type) * 10, 10)
+                    If aVisual.Compartment >= 0 And aVisual.Compartment <= myCompartments.Count - 1 Then
+                        MainWin.VisualSummary(i, 2) = myCompartments(aVisual.Compartment).Name
+                    ElseIf aVisual.Compartment = -1 Then
+                        MainWin.VisualSummary(i, 2) = "All"
+                    Else
+                        MainWin.VisualSummary(i, 2) = "Not defined"
+                    End If
+                    If aVisual.Type = Visual.TwoD Then
+                        MainWin.VisualSummary(i, 3) = VisualAxisNames.Substring((aVisual.Axis) * 6, 6)
+                    Else
+                        MainWin.VisualSummary(i, 3) = "-"
+                    End If
+                    If aVisual.Type = Visual.IsoSurface Then
+                        MainWin.VisualSummary(i, 4) = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Temperature).Units
+                    ElseIf aVisual.Type = Visual.TwoD Then
+                        MainWin.VisualSummary(i, 4) = aVisual.Value.ToString + myUnits.Convert(UnitsNum.Length).Units
+                    Else
+                        MainWin.VisualSummary(i, 4) = "-"
+                    End If
+                Next
+                MainWin.VisualSummary.Select(index + 1, 0, index + 1, MainWin.VisualSummary.Cols.Count - 1, True)
+            End If
         End If
     End Sub
     Public Sub Geometry(ByVal index As Integer)
@@ -148,6 +151,7 @@ Public Class UpdateGUI
             MainWin.TabDetection.Enabled = False
             MainWin.TabHeatTransfer.Enabled = False
             MainWin.TabFires.Enabled = False
+            MainWin.TabVisuals.Enabled = False
             MainWin.GroupCompartments.Enabled = False
         Else
             Dim aCompartment As New Compartment
@@ -160,6 +164,7 @@ Public Class UpdateGUI
             MainWin.TabDetection.Enabled = True
             MainWin.TabHeatTransfer.Enabled = True
             MainWin.TabFires.Enabled = True
+            MainWin.TabVisuals.Enabled = True
             MainWin.GroupCompartments.Enabled = True
             MainWin.GroupCompartments.Text = "Compartment " + (index + 1).ToString + " (of " + myCompartments.Count.ToString + ")"
             MainWin.CompName.Text = aCompartment.Name

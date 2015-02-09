@@ -6027,14 +6027,12 @@ Public Class CeditMain
                     Me.VisualizationValue.Visible = True
                     Me.VisualizationAxis.Visible = True
                     Me.VisualizationAxisLabel.Visible = True
-                    aVisual.Value = 0
                 ElseIf Me.VisualizationType.SelectedIndex = 2 Then
                     Me.VisualizationValueLabel.Text = "Temperature:"
                     Me.VisualizationValueLabel.Visible = True
                     Me.VisualizationValue.Visible = True
                     Me.VisualizationAxis.Visible = False
                     Me.VisualizationAxisLabel.Visible = False
-                    aVisual.Value = 100
                 Else
                     Me.VisualizationValueLabel.Visible = False
                     Me.VisualizationValue.Visible = False

@@ -1623,7 +1623,8 @@
         heatfp(2) = lrarray(3)
         heatfp(3) = lrarray(4)
         heatfplume =  lrarray(5)
-        
+    
+        ! SLCF 2-D and 3-D slice files
     case ('SLCF')
         if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 67
@@ -1696,6 +1697,28 @@
                 return
             end if
         end if
+        
+        ! ISOF isosurface of specified temperature in one or all compartments
+    case ('ISOF')
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
+            ierror = 68
+            return
+        end if
+        nvisualinfo = nvisualinfo + 1
+        sliceptr => visual_info(nvisualinfo)
+        sliceptr%vtype = 3
+        sliceptr%value = lrarray(1)
+        if (nret>1) then
+            sliceptr%roomnum = lrarray(2)
+        else
+            sliceptr%roomnum = 0
+        end if
+        if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
+            write (logerr, 5404) nvisualinfo
+            ierror = 68
+            return
+        end if
+
         ! Outdated keywords
     case ('CJET')                                   ! Just ignore these inputs ... they shouldn't be fatal
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
@@ -1748,7 +1771,8 @@
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
 5402 format ('***Error: Plume index out of range ',i3)
-5403 format ('***Error: Invalid SLCF specification in visualization input ',i3)     
+5403 format ('***Error: Invalid SLCF specification in visualization input ',i3)  
+5404 format ('***Error: Invalid ISOF specification in visualization input ',i3)    
 
     end subroutine keywordcases
 

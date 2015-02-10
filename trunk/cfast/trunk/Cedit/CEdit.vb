@@ -4282,7 +4282,7 @@ Public Class CeditMain
         'VisualizationAxis
         '
         Me.VisualizationAxis.ItemHeight = 13
-        Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Depth)", "Y-axis (Width)", "z-axis (Height)"})
+        Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"})
         Me.VisualizationAxis.Location = New System.Drawing.Point(473, 487)
         Me.VisualizationAxis.MaxDropDownItems = 3
         Me.VisualizationAxis.Name = "VisualizationAxis"

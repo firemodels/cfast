@@ -1643,6 +1643,7 @@
         end if
         ! 2-D slice file
         if (sliceptr%vtype==1) then
+            ! get position (required) and compartment (optional) first so we can check to make sure desired position is within the compartment(s)
             sliceptr%position = lrarray(3)
             if (nret>3) then
                 sliceptr%roomnum = lrarray(4)
@@ -1682,6 +1683,14 @@
                     end if
                 end if
             else
+                write (logerr, 5403) nvisualinfo
+                ierror = 67
+                return
+            end if
+        ! 3-D slice
+        else if (sliceptr%vtype==2) then
+            sliceptr%roomnum = lrarray(2)
+            if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                 write (logerr, 5403) nvisualinfo
                 ierror = 67
                 return

@@ -60,6 +60,9 @@ module cenviro
     
     integer :: nramps = 0
     type(ramp_type), target :: rampinfo(mxramps)
+    
+    type(visual_type), dimension (mxslice), target :: visual_info
+    integer :: nvisualinfo = 0
 
     type(slice_type), allocatable, dimension(:), target :: sliceinfo  
     integer :: nsliceinfo

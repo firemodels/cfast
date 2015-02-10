@@ -63,5 +63,13 @@ module cfast_types
        character(64) :: menu_label, colorbar_label, unit_label
        integer :: roomnum
     end type iso_type
+    
+    type visual_type
+        integer :: vtype        ! 1 = 2-D slice, 2 = 3-D slice, 3 = isosurface
+        integer :: axis         ! for 2-D slice, axis slice is parallel to, 1 = X, 2 = Y, 3 = Z
+        real(eb) :: position    ! for 2-D slice, distance from axis for slice (m)
+        real(eb) :: value       ! for isosurface, temperature for surface (K)
+        integer :: roomnum      ! compartment
+    end type visual_type
 
    end module cfast_types

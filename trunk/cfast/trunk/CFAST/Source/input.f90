@@ -504,6 +504,7 @@
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     type(ramp_type), pointer :: rampptr
+    type(visual_type), pointer :: sliceptr
 
     !	Start with a clean slate
 
@@ -1622,7 +1623,70 @@
         heatfp(2) = lrarray(3)
         heatfp(3) = lrarray(4)
         heatfplume =  lrarray(5)
-
+        
+    case ('SLCF')
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
+            ierror = 67
+            return
+        end if
+        nvisualinfo = nvisualinfo + 1
+        sliceptr => visual_info(nvisualinfo)
+        
+        if (lcarray(1)=='2-D') then
+            sliceptr%vtype = 1
+        else if (lcarray(1)=='3-D') then
+            sliceptr%vtype = 2
+        else
+            write (logerr, 5403) nvisualinfo
+            ierror = 67
+            return
+        end if
+        ! 2-D slice file
+        if (sliceptr%vtype==1) then
+            sliceptr%position = lrarray(3)
+            if (nret>3) then
+                sliceptr%roomnum = lrarray(4)
+            else
+                sliceptr%roomnum = 0
+            end if
+            if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
+                write (logerr, 5403) nvisualinfo
+                ierror = 67
+                return
+            end if
+            if (lcarray(2) =='X') then
+                sliceptr%axis = 1
+                if (sliceptr%roomnum>0) then
+                    if (sliceptr%position>br(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                        write (logerr, 5403) nvisualinfo
+                        ierror = 67
+                        return
+                    end if
+                end if
+            else if (lcarray(2) =='Y') then
+                sliceptr%axis = 2
+                if (sliceptr%roomnum>0) then
+                    if (sliceptr%position>dr(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                        write (logerr, 5403) nvisualinfo
+                        ierror = 67
+                        return
+                    end if
+                end if
+            else if (lcarray(2) =='Z') then
+                sliceptr%axis = 3
+                if (sliceptr%roomnum>0) then
+                    if (sliceptr%position>hr(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                        write (logerr, 5403) nvisualinfo
+                        ierror = 67
+                        return
+                    end if
+                end if
+            else
+                write (logerr, 5403) nvisualinfo
+                ierror = 67
+                return
+            end if
+        end if
         ! Outdated keywords
     case ('CJET')                                   ! Just ignore these inputs ... they shouldn't be fatal
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
@@ -1675,6 +1739,7 @@
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
 5402 format ('***Error: Plume index out of range ',i3)
+5403 format ('***Error: Invalid SLCF specification in visualization input ',i3)     
 
     end subroutine keywordcases
 

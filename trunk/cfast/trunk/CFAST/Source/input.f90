@@ -1881,6 +1881,11 @@
                 ! ignition point. It only occurs for objects which are on the floor and ignite after t=0 The assumed minimum fire 
                 ! diameter of 0.2 m below is the minimum valid fire diameter for Heskestad's plume correlation
                 ! (from SFPE Handbook chapter)
+                if (lrarray(ii)==0.0_eb) then
+                    write (logerr,5002)
+                    ierror = 32
+                    return
+                end if
                 oarea(ii,iobj) = max(lrarray(ii),pio4*0.2_eb**2)
                 max_area = max(max_area,oarea(ii,iobj))
             end do
@@ -1934,6 +1939,7 @@
 
     return
 5001 format ('Invalid heat of combustion, must be greater than zero, ',1pg12.3)
+5002 format ('Invalid fire area. All input values must be reater than zero')
 5106 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
 5000 format ('The key word ',a5,' is not part of a fire definition')

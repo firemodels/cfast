@@ -184,10 +184,10 @@ Natural flow through windows and doors is governed by the vertical stratificatio
 \put(3.25,2.5){\line(1,0){3.25}}
 \put(0,2.0){\line(1,0){6.5}}
 \put(3.5,0.75){\vector(-1,0){0.5}}
-\put(3.5,1.75){\vector(-1,0){0.5}}
-\put(3.35,1.75){\vector(-1,-1){0.35}}
-\put(3,2.25){\vector(1,0){0.5}}
-\put(3.15,2.25){\vector(1,1){0.35}}
+\qbezier(3.5,1.75)(3.25,1.75)(3.0,1.5)
+\put(3.0,1.5){\vector(-1,-1){0.2}}
+\qbezier(3,2.25)(3.25,2.25)(3.5,2.5)
+\put(3.5,2.5){\vector(1,1){0.2}}
 \put(3,2.75){\vector(1,0){0.5}}
 
 \put(1.625,3.8){\makebox(0,0){Compartment 1}}
@@ -212,7 +212,7 @@ Let $z=b$ and $z=t$ denote the height of the bottom and top of the segment, and 
     &=& \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
 \label{eq:massflowone}
 \end{eqnarray}
-Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients}, $\rho$ is the gas density of the upwind compartment, and $\Delta P(z)$ is the pressure across the interface at elevation $z$. Note the use of the integral formula:
+Here, $C$ is the orifice coefficient taken to be 0.7~\cite{Steckler_Coefficients}, $\rho$ is the gas density of the upwind compartment, $w$ is the width of the opening, and $\Delta P(z)$ is the pressure across the interface at elevation $z$. Note the use of the integral formula:
 \begin{eqnarray}
 \int \sqrt{A+Bz} \, dz = \frac{2}{3B}(A+Bz)^{3/2}+\mbox{constant}
 \end{eqnarray}
@@ -222,22 +222,19 @@ where $A=(|t\,\Delta P_t|-b\,|\Delta P_b|)/(t-b)$ and $B=(|\Delta P_t|-|\Delta P
 \ee
 This is the way it is written in Ref.~\cite{Emmons:SFPE}.
 
-The mass flows through the horizontal segments of the opening are distributed into the upper and lower layers of the downstream compartment. For the jet originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$, or the jet from lower layer to lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the downstream layer. However, consider the flow from the upper layer to the lower layer, $\dm_{\rm u \to l}$. Some of the mass is deposited directly in the lower layer, but some is assumed to rise into the upper layer in the form via a plume. The distribution of mass is calculated as follows. The enthalpy flow rate of the original jet is:
+Figure~\ref{fig:Flow_Patterns} indicates schematically how the various mass flows through the opening are distributed. For the flow originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$, or the flow from the lower layer to the lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the downstream layer.
+
+The mass flow from the upper layer of the upstream compartment to the lower layer of the downstream, $\dm_{\rm u \to l}$, is assumed to rise into the upper layer via a spill plume. The enthalpy flow rate of the plume is:
 \be
    \doh_{\rm u \to l} = c_p \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
 \ee
-Assuming that $T_{\rm l,2} < T_{\rm u,1} < T_{\rm u,2}$, this energy will be distributed between the compartment's two layers (if not, the mass and energy go completely to the upper or layer layer). The distribution is based on the relative difference between the incoming jet temperature and the layer temperatures. Some of the energy stays within the lower layer and some of the energy rises into the upper layer in the form of a virtual plume. The effective heat release rate of this virtual plume is:
+Assuming that $T_{\rm u,1} > T_{\rm l,2}$, the mass entrainment of the spill plume is given by Poreh {\em et al.}~\cite{Poreh:1998}:
 \be
-   \dQ_{\rm eff} = \frac{T_{\rm u,1}-T_{\rm l,2}}{T_{\rm u,2}-T_{\rm l,2}} \; \doh_{\rm u \to l}
+   \dm_{\rm e,p} = \dm_{\rm u \to l} \, + \, C_{\rm m} \, \left( \frac{T_{\rm l,2}}{T_{\rm u,1}} \right)^{2/3} \, \left( \frac{ g \, \rho_{\rm l,2}^2}{c_p \, T_{\rm l,2}} \right)^{1/3} \, \doh_{\rm u \to l}^{1/3} \; w^{2/3} \; 
+   (z_{\rm I}-z_{\rm N})
 \ee
-The mass entrainment rate into this virtual plume at the midpoint of the vertical segment, $\bar{z}$, is assumed to be a fraction of the incoming mass flow rate:
-\be
-   \dm_{\rm e,eff} = \frac{T_{\rm u,1}-T_{\rm l,2}}{T_{\rm u,2}-T_{\rm l,2}} \; \dm_{\rm u \to l}
-\ee
-The origin of the virtual plume, $z_0$, is deduced from the plume mass entrainment correlation, Eq.~\ref{mdot_e}. That is, $z_0$ is the origin of the virtual plume whose convective heat release rate is $\dQ_{\rm eff}$ and whose mass entrainment rate is $\dm_{\rm e,eff}$ at the midpoint of the segment, $\bar{z}$:
-\be
-   z_0 = \bar{z} - \dm_{\rm e,eff}^{3/5} \, \left[ 0.196 \, \left( \frac{g \, \rho_\infty^2}{c_p \, T_\infty} \right)^{1/3} \, \dQ_{\rm eff}^{1/3} \right]^{-3/5}
-\ee
+where $C_{\rm m}$ is an empirical constant equal to 0.44, $w$ is the width of the opening, $z_{\rm I}$ is the height of the layer interface, and $z_{\rm N}$ is the height of the neutral plane. Suggested values for $C_{\rm m}$ vary between 0.44 and 0.66, all of which were determined empirically in a number of different experimental configurations.
+
 For the mass flow leaving the lower layer of the upstream compartment and entering the upper layer of the downstream compartment, $\dm_{\rm l \to u}$, the shear flow causes vortex shedding that entrains upper layer gas and deposits it in the lower layer. It is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; forming a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above.
 
 \section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
@@ -539,7 +536,7 @@ where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specif
 
 CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself. Instead, CFAST treats a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
 
-Users are cautioned that this model is very crude and the uncertainty in its predictions are substantial. Consult the CFAST Validation Guide for more details on its validation. 
+Users are cautioned that this model is very crude and the uncertainty in its predictions are substantial. Consult the CFAST Validation Guide for more details on its validation.
 
 
 \section{Fire Suppression} \label{sec:suppression}

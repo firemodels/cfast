@@ -5872,6 +5872,7 @@ Public Class CeditMain
         myDetectors.Clear()
         myFires.Clear()
         myFireObjects.Clear()
+        myVisuals.Clear()
         myThermalProperties.Clear()
         myErrors.Queue.Clear()
         Do While (dataFileHeader.Count > 0)

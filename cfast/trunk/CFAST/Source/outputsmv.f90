@@ -420,13 +420,13 @@ subroutine output_isodata(time,first_time)
    integer :: nlevels
    real(fb) :: timef
    
-   levelsf(1) = 620.0_fb
    nlevels = 1
    timef = real(time,fb)
    
    do i = 1, nisoinfo
       isoptr => isoinfo(i)
       
+      levelsf(1) = isoptr%value-273.15_eb
       roomnum = isoptr%roomnum
       rm => roominfo(roomnum)
       ibar = rm%ibar

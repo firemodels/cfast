@@ -6,7 +6,8 @@ module cparams
 
     ! geometry parameters
     integer, parameter :: nr = 31               ! maximum number of compartments
-    integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material (at the moment, the gui only support 1)
+    integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material 
+                                                !                        (at the moment, the gui only support 1)
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
     integer, parameter :: mxcross=21            ! maximum number of data points for variable cross-sectional area of a compartment
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation

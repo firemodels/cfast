@@ -271,7 +271,7 @@ subroutine output_slicedata(time,first_time)
             yy = rm%yplt(sf%ijk(3)+jj) - rm%y0
             do kk = 0, nz-1
                zz = rm%zplt(sf%ijk(5)+kk) - rm%z0
-               call gettgas(roomnum,xx,yy,zz,tgas, vgas)
+               call get_gas_temp_velocity(roomnum,xx,yy,zz,tgas, vgas)
                tslicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
                uslicedata(ii,jj,kk) = real(vgas(1),fb)
                vslicedata(ii,jj,kk) = real(vgas(2),fb)
@@ -439,7 +439,7 @@ subroutine output_isodata(time,first_time)
             yy = rm%yplt(jj) - rm%y0
             do kk = 0, kbar
                zz = rm%zplt(kk) - rm%z0
-               call gettgas(roomnum,xx,yy,zz,tgas,vgas)
+               call get_gas_temp_velocity(roomnum,xx,yy,zz,tgas,vgas)
                isodataf(ii+1,jj+1,kk+1) = real(tgas-273.15_eb,fb)
             end do
          end do

@@ -10,6 +10,34 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
 
+#Region " Windows Form Designer generated code "
+
+    Public Sub New()
+        MyBase.New()
+
+        'This call is required by the Windows Form Designer.
+        InitializeComponent()
+
+        'Add any initialization after the InitializeComponent() call
+
+    End Sub
+
+    'Form overrides dispose to clean up the component list.
+    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+        If disposing Then
+            If Not (components Is Nothing) Then
+                components.Dispose()
+            End If
+        End If
+        MyBase.Dispose(disposing)
+    End Sub
+
+    'Required by the Windows Form Designer
+    Private components As System.ComponentModel.IContainer
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.  
+    'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
     Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
     Friend WithEvents Label38 As System.Windows.Forms.Label
@@ -49,7 +77,6 @@ Public Class CeditMain
     Friend WithEvents FireNewt2 As System.Windows.Forms.Button
     Friend WithEvents FireNewObject As System.Windows.Forms.Button
     Friend WithEvents FireType As System.Windows.Forms.Label
-    Friend WithEvents Label53 As System.Windows.Forms.Label
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
     Friend WithEvents MenuDebugOutput As System.Windows.Forms.MenuItem
@@ -70,35 +97,6 @@ Public Class CeditMain
     Friend WithEvents VisualizationAxisLabel As System.Windows.Forms.Label
     Friend WithEvents VisualizationAxis As System.Windows.Forms.ComboBox
     Friend WithEvents Label54 As System.Windows.Forms.Label
-
-#Region " Windows Form Designer generated code "
-
-    Public Sub New()
-        MyBase.New()
-
-        'This call is required by the Windows Form Designer.
-        InitializeComponent()
-
-        'Add any initialization after the InitializeComponent() call
-
-    End Sub
-
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-        If disposing Then
-            If Not (components Is Nothing) Then
-                components.Dispose()
-            End If
-        End If
-        MyBase.Dispose(disposing)
-    End Sub
-
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
-
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
     Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
     Friend WithEvents VHeatSummary As C1.Win.C1FlexGrid.C1FlexGrid
@@ -341,7 +339,6 @@ Public Class CeditMain
     Friend WithEvents FireSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents Label66 As System.Windows.Forms.Label
-    Friend WithEvents FirePlumeType As System.Windows.Forms.ComboBox
     Friend WithEvents FireName As System.Windows.Forms.ComboBox
     Friend WithEvents MenuThermalProperties As System.Windows.Forms.MenuItem
     Friend WithEvents MenuUnits As System.Windows.Forms.MenuItem
@@ -644,11 +641,9 @@ Public Class CeditMain
         Me.FireAdd = New System.Windows.Forms.Button()
         Me.FireDup = New System.Windows.Forms.Button()
         Me.GroupFire = New System.Windows.Forms.GroupBox()
-        Me.Label53 = New System.Windows.Forms.Label()
         Me.FireType = New System.Windows.Forms.Label()
         Me.Label66 = New System.Windows.Forms.Label()
         Me.Label18 = New System.Windows.Forms.Label()
-        Me.FirePlumeType = New System.Windows.Forms.ComboBox()
         Me.Label95 = New System.Windows.Forms.Label()
         Me.Label60 = New System.Windows.Forms.Label()
         Me.FireYPosition = New System.Windows.Forms.TextBox()
@@ -2893,11 +2888,9 @@ Public Class CeditMain
         '
         'GroupFire
         '
-        Me.GroupFire.Controls.Add(Me.Label53)
         Me.GroupFire.Controls.Add(Me.FireType)
         Me.GroupFire.Controls.Add(Me.Label66)
         Me.GroupFire.Controls.Add(Me.Label18)
-        Me.GroupFire.Controls.Add(Me.FirePlumeType)
         Me.GroupFire.Controls.Add(Me.Label95)
         Me.GroupFire.Controls.Add(Me.Label60)
         Me.GroupFire.Controls.Add(Me.FireYPosition)
@@ -2922,20 +2915,10 @@ Public Class CeditMain
         Me.GroupFire.TabStop = False
         Me.GroupFire.Text = "Location, Fire 1"
         '
-        'Label53
-        '
-        Me.Label53.AutoSize = True
-        Me.Label53.Location = New System.Drawing.Point(549, 49)
-        Me.Label53.Name = "Label53"
-        Me.Label53.Size = New System.Drawing.Size(92, 13)
-        Me.Label53.TabIndex = 122
-        Me.Label53.Text = "Plume Correlation:"
-        Me.Label53.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
         'FireType
         '
         Me.FireType.AutoSize = True
-        Me.FireType.Location = New System.Drawing.Point(646, 25)
+        Me.FireType.Location = New System.Drawing.Point(644, 49)
         Me.FireType.Name = "FireType"
         Me.FireType.Size = New System.Drawing.Size(102, 13)
         Me.FireType.TabIndex = 121
@@ -2962,20 +2945,10 @@ Public Class CeditMain
         Me.Label18.Text = "Normal, Y:"
         Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'FirePlumeType
-        '
-        Me.FirePlumeType.ItemHeight = 13
-        Me.FirePlumeType.Items.AddRange(New Object() {"Heskestad", "McCaffrey"})
-        Me.FirePlumeType.Location = New System.Drawing.Point(646, 45)
-        Me.FirePlumeType.Name = "FirePlumeType"
-        Me.FirePlumeType.Size = New System.Drawing.Size(80, 21)
-        Me.FirePlumeType.TabIndex = 7
-        Me.FirePlumeType.Text = "Heskestad"
-        '
         'Label95
         '
         Me.Label95.AutoSize = True
-        Me.Label95.Location = New System.Drawing.Point(575, 25)
+        Me.Label95.Location = New System.Drawing.Point(573, 49)
         Me.Label95.Name = "Label95"
         Me.Label95.Size = New System.Drawing.Size(66, 13)
         Me.Label95.TabIndex = 117
@@ -3040,7 +3013,7 @@ Public Class CeditMain
         '
         Me.FireComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.FireComp.ItemHeight = 13
-        Me.FireComp.Location = New System.Drawing.Point(127, 17)
+        Me.FireComp.Location = New System.Drawing.Point(335, 17)
         Me.FireComp.Name = "FireComp"
         Me.FireComp.Size = New System.Drawing.Size(208, 21)
         Me.FireComp.TabIndex = 0
@@ -3048,7 +3021,7 @@ Public Class CeditMain
         'Label52
         '
         Me.Label52.AutoSize = True
-        Me.Label52.Location = New System.Drawing.Point(47, 19)
+        Me.Label52.Location = New System.Drawing.Point(255, 19)
         Me.Label52.Name = "Label52"
         Me.Label52.Size = New System.Drawing.Size(72, 13)
         Me.Label52.TabIndex = 3
@@ -5463,7 +5436,7 @@ Public Class CeditMain
 
         End If
     End Sub
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FirePlumeType.SelectedIndexChanged, FireName.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireName.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
         Dim aFire As New Fire, aFireObject As New Fire
         If sender Is Me.FireLOL Then myEnvironment.LowerOxygenLimit = Val(Me.FireLOL.Text)
         If sender Is Me.FireIgnitionTemperature Then myEnvironment.IgnitionTemp = Val(Me.FireIgnitionTemperature.Text)
@@ -5482,7 +5455,6 @@ Public Class CeditMain
             If sender Is Me.FireXNormal Then aFire.XNormal = Val(Me.FireXNormal.Text)
             If sender Is Me.FireYNormal Then aFire.YNormal = Val(Me.FireYNormal.Text)
             If sender Is Me.FireZNormal Then aFire.ZNormal = Val(Me.FireZNormal.Text)
-            If sender Is Me.FirePlumeType Then aFire.PlumeType = Me.FirePlumeType.SelectedIndex
             If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
             If sender Is Me.FireName And Me.FireName.SelectedIndex >= 0 Then
                 ' Here they just selected an existing fire object

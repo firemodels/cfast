@@ -743,7 +743,6 @@ Public Class UpdateGUI
             MainWin.FireXNormal.Text = aFire.XNormal.ToString
             MainWin.FireYNormal.Text = aFire.YNormal.ToString
             MainWin.FireZNormal.Text = aFire.ZNormal.ToString
-            MainWin.FirePlumeType.SelectedIndex = aFire.PlumeType
             MainWin.FireIgnitionCriteria.SelectedIndex = aFire.IgnitionType
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then IgnitionTypeLabel = myUnits.Convert(UnitsNum.Time).Units
             If aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then IgnitionTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units

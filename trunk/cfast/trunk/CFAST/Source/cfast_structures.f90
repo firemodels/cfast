@@ -62,6 +62,7 @@ module cfast_types
        character(256) :: filename
        character(64) :: menu_label, colorbar_label, unit_label
        integer :: roomnum
+       real(eb) :: value
     end type iso_type
     
     type visual_type

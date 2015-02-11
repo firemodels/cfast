@@ -978,17 +978,18 @@
     end subroutine flame_height
 
         
-! --------------------------- gettgas -------------------------------------------
+! --------------------------- get_gas_temp_velocity -------------------------------------------
 
-    subroutine gettgas(iroom,x,y,z,tg,vg)
+    subroutine get_gas_temp_velocity(iroom,x,y,z,tg,vg)
 
-    !     routine: gettgas
+    !     routine: get_gas_temp_velocity
     !     purpose: routine to calculate gas temperature nearby a target
     !     arguments: iroom  compartment number
     !                x  x position of target in compartmentnumber
     !                y  y position of target in compartmentnumber
     !                z  z position of target in compartment
     !                tg (output)   calculated gas temperature
+    !                vg (output)   calculated gas velocity
 
     use precision_parameters
     use fireptrs
@@ -1002,7 +1003,7 @@
     
     real(eb), intent(out) :: tg, vg(4)
         
-    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, tplume_ceiling, tcj, vcj
+    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
     real(eb) :: xdistance, ydistance
 
     integer :: i
@@ -1031,26 +1032,26 @@
             zceil = hr(iroom)
             r = sqrt(xdistance**2 + ydistance**2)
             ! first calculate plume temperature at desired location
-            call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume)
+            call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
-            call get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling)
-            call get_ceilingjet_temperature(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
+            call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling, vplume_ceiling)
+            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
             tg = max(tg,tplume,tcj)
             if (r/=0.0_eb) then
                 vg(1) = vg(1) + vcj*xdistance/r
                 vg(2) = vg(2) + vcj*ydistance/r
             end if
-            vg(3) = 0.0_eb
+            vg(3) = vg(3) + vplume
         end if
     end do
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
-    end subroutine gettgas  
+    end subroutine get_gas_temp_velocity  
     
-! --------------------------- get_ceilingjet_temperature --------------------------------------
+! --------------------------- get_ceilingjet_tempandvelocity --------------------------------------
     
-    subroutine get_ceilingjet_temperature (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj, vcj)
+    subroutine get_ceilingjet_tempandvelocity (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj, vcj)
 
-    !     routine: get_ceilingjet_temperature
+    !     routine: get_ceilingjet_tempandvelocity
     !     purpose: Calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
     !
     !     Uses Alpert / Heskestad's correlation to calculate plume  temperature
@@ -1061,9 +1062,10 @@
     !                 zfire: height of the base of the fire (m)
     !                 zlayer: height of the hot/cold gas layer interface (m)
     !                 zceil: height of the compartment ceiling (m)
-    !                 zin: position to calculate plume centerline temperature (m)
-    !                 r: horizontal distance from fire centerline
-    !                 tcj (output): plume centerline temperature (K)
+    !                 zin: position to calculate temperature (m)
+    !                 r: horizontal distance from fire centerline (m)
+    !                 tcj (output): temperature at height zin and radius r (K)
+    !                 vcj (output): velocity at height zin and radius r (m/s)
 
     use precision_parameters
     implicit none
@@ -1123,13 +1125,13 @@
     end if
     
     return
-    end subroutine get_ceilingjet_temperature
+    end subroutine get_ceilingjet_tempandvelocity
     
-! --------------------------- get_plume_temperature -------------------------------------------
+! --------------------------- get_plume_tempandvelocity -------------------------------------------
 
-    subroutine get_plume_temperature (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume)
+    subroutine get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume, vplume)
 
-    !     routine: get_plume_temperature
+    !     routine: get_plume_tempandvelocity
     !     purpose: Calculates plume centerline temperature at a specified height and distance from the fire.
     !
     !     Uses Heskestad's correlation to calculate plume  temperature
@@ -1143,17 +1145,18 @@
     !                 zfire: height of the base of the fire (m)
     !                 zlayer: height of the hot/cold gas layer interface (m)
     !                 zin: position to calculate plume centerline temperature (m)
-    !                 r: horizontal distance from fire centerline
-    !                 tplume (output): plume centerline temperature
+    !                 r: horizontal distance from fire centerline (m)
+    !                 tplume (output): plume temperature at height zin and radius r (K)
+    !                 vplume (output): plume velocity at height zin and radius r (m/s)
 
     use precision_parameters
     implicit none
     
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
-    real(eb), intent(out) :: tplume
+    real(eb), intent(out) :: tplume, vplume
 
     real(eb), parameter :: cp = 1.012
-    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat
+    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u
 
 
     ! default is for temperature to be the layer temperature at the desired location
@@ -1162,6 +1165,7 @@
     else
         tplume = tu
     endif
+    vplume = 0.0_eb
 
     ! for the algorithm to work, there has to be a fire, two layers, and a target point above the fire
     if (qdot>0.0_eb.and.tu>=tl.and.zin-zfire>=0.0_eb) then
@@ -1179,6 +1183,10 @@
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
         z_flame = d*(-1.02_eb+3.7_eb*qstar**0.4_eb)
         
+         ! plume velocity
+        vplume = 3.4_eb*(grav_con/(cp*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird)
+        
+        ! plume temperature
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
@@ -1186,20 +1194,26 @@
             deltaz = max(0.0001_eb,zin-zfire-z0_prime)
             t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         else
-            ! fire and target point are both in lower layer
+            ! fire and target point are both in the same layer
             deltaz = max(0.0001_eb,zin-zfire-z0)
             t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
 
         ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
+        
+        sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
         if (r>d*(1.0_eb-(zin-zfire)/z_flame)/2.0_eb) then
-            sigma_deltat = 0.14_eb * sqrt(1.0_eb + t_excess/t_inf) * deltaz
             t_excess = t_excess*exp(-(r/sigma_deltat)**2)
         end if
         tplume = t_inf + t_excess
+        
+        if (r>0.0_eb) then
+            sigma_u = 1.1_eb*sigma_deltat
+            vplume = vplume*exp(-(r/sigma_u)**2)
+        end if
     endif  
     return
-    end subroutine get_plume_temperature
+    end subroutine get_plume_tempandvelocity
 
 ! --------------------------- update_species -------------------------------------------
 

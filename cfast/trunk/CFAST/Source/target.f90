@@ -388,7 +388,7 @@ contains
     xtarg = xxtarg(trgcenx,itarg)
     ytarg = xxtarg(trgceny,itarg)
     ztarg = xxtarg(trgcenz,itarg)
-    call gettgas(irtarg,xtarg,ytarg,ztarg,tg,vg)
+    call get_gas_temp_velocity(irtarg,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
     if(ixtarg(trgback,itarg)==interior)then
         tgb = tg
@@ -608,7 +608,7 @@ contains
         yloc = xdtect(id,dyloc)
         zloc = xdtect(id,dzloc)
         if (izhall(iroom,ihmode)/=ihduring) then
-            call gettgas(iroom,xloc,yloc,zloc,tg,vg)
+            call get_gas_temp_velocity(iroom,xloc,yloc,zloc,tg,vg)
             xdtect(id,dtjet) = tg
             xdtect(id,dvel) = vg(4)
         endif

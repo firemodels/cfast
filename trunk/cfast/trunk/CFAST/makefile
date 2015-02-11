@@ -94,6 +94,14 @@ intel_linux_32_db : obj = cfast6_linux_32_db
 intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
+# gnu osx
+gnu_osx : FFLAGS = -O2
+gnu_osx : FCOMPL = gfortran
+gnu_osx : LFLAGS = 
+gnu_osx : obj = cfast6_gnu_osx
+gnu_osx : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+
 # gnu linux
 gnu_linux : FFLAGS = -O2
 gnu_linux : FCOMPL = gfortran

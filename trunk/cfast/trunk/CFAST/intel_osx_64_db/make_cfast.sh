@@ -2,7 +2,8 @@
 platform=intel64
 dir=`pwd`
 target=${dir##*/}
-
+echo target=$target
+exit
 source $IFORT_COMPILER/bin/compilervars.sh $platform
 
 echo Building $target

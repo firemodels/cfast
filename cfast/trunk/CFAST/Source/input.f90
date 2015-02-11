@@ -2241,7 +2241,6 @@
     use iofiles
     use cenviro
     use cfast_main
-    use cshell, only: validate
     use utilities
     implicit none
    
@@ -2255,7 +2254,6 @@
    integer :: ijkslice(6)
    real(eb), parameter :: dxyz=0.01_eb
    character(60) :: menu_label, colorbar_label, unit_label
-   integer :: ndefinedbyuser=0 !  code to input user slice info will define this variable (and it will be declared somewhere else)
    integer :: i_iso
    type(iso_type), pointer :: isoptr
    character(256) :: isofilename
@@ -2266,7 +2264,6 @@
    
    nsliceinfo = 0
    nisoinfo = 0
-   if(validate)return
    if(nvisualinfo.eq.0)return 
    
    nrooms = nm1
@@ -2423,7 +2420,6 @@
       endif
       do iroom=ibeg,iend
          rm=>roominfo(iroom)
-
          isoptr => isoinfo(i_iso)
 
          write(isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'

@@ -138,6 +138,7 @@ Rearranging terms yields a limit on the mass entrainment:
 
 
 \section{Plume Temperature and Velocity}
+\label{sec:Plume_Temp_Velocity}
 
 The centerline plume temperature rise, $\Delta T_0(z)$, and velocity, $u_0(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlations~\cite{Heskestad:2002}:
 \be
@@ -490,26 +491,36 @@ The link temperature of a sprinkler or heat detector is modeled using the differ
 \be
    \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
 \ee
-where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the ceiling jet velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.1~m/s {\bf REFERENCE?}. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the plume algorithm (section \ref{sec:Plume_Temp_Velocity}) and the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.1~m/s {\bf REFERENCE?}. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
 \be
    \frac{\TL^{n+1}-\TL^n}{\delta t} = \frac{1}{2} \left( \frac{\sqrt{v^n}}{\rm RTI} \brackets{\Tg^n - \TL^n}  + \frac{\sqrt{v^{n+1}}}{\rm RTI} \brackets{\Tg^{n+1} - \TL^{n+1}}  \right) \label{eq:RTI_rewritten}
 \ee
 where the superscript $n$ denotes the value at the current time, and $\delta t$ is the time step.
 
 The temperature and velocity just below the ceiling is typically greater than that of the upper layer due to the presence of a ceiling jet. From the work of Alpert and Heskestad~\cite{Alpert:SFPE}, the temperature of an unconfined ceiling jet is given by:
+
 \be
    T_{\rm cj}(r) = T_\infty + T_\infty \, \dQ^{* \, 2/3}_H \, \left\{ \begin{array}{l@{\quad}l}
    6.3 & r/H\le 0.2 \\[0.1in]
    \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & 0.2 < r/H < 4.0
     \end{array} \right. \label{Tcj}
 \ee
+To be consistent with the calculated plume temperature, this is adjusted so that the calculated plume and ceiling temperatures are the same for $r/H \le 0.2$ as follows
+\be
+   T_{\rm cj}(r) - T_\infty = \left\{ \begin{array}{l@{\quad}l}
+   \Delta T_0(H)  & r/H\le 0.2 \\[0.1in]
+   \Delta T_0(H) \, \left( \frac{0.225 + 0.27 \, r/H}{0.225 + 0.27 \cdot 0.2} \right)^{-4/3} & 0.2 < r/H < 4.0
+    \end{array} \right. \label{Tcj}
+\ee
+where $\Delta T_0(H)$ is the calculated plume temperature at the compartment ceiling.
+ 
 The radial velocity is given by:
 \be
    v_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
    3.61 & r/H \le 0.17 \\[0.1in]
    1.06 \, \left( r/H \right)^{-0.69} & 0.17 < r/H < 4.0 \end{array} \right. \label{Ucj}
 \ee
-In both correlations, the heat release rate of the fire is contained within the non-dimensional expression:
+where the heat release rate of the fire is contained within the non-dimensional expression:
 \be
 \dQ^*_H = \frac{\dQ}{\rho_\infty \, c_p \, T_\infty \, \sqrt{g} \, H^{5/2}}  \label{QsH}
 \ee

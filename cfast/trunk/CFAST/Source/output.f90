@@ -1305,6 +1305,34 @@
 5050 format (2x,e11.4)
     end subroutine flwout
 
+    ! --------------------------- getabsdetector -------------------------------------------
+
+    subroutine getabsdetector(detectornumber, positionvector)
+
+    !	Routine to get the absolute position of a target in the computational space
+
+    !	This is the protocol between cfast and smokeview
+
+    use precision_parameters
+    use cfast_main
+    use fltarget
+    implicit none
+
+    integer, intent(in) :: detectornumber
+    real(eb), intent(out) :: positionvector(*)
+    integer :: i
+
+    positionvector(1) = xdtect(detectornumber,dxloc) + cxabs(ixdtect(detectornumber,droom))
+    positionvector(2) = xdtect(detectornumber,dyloc) + cyabs(ixdtect(detectornumber,droom))
+    positionvector(3) = xdtect(detectornumber,dzloc) + hrl(ixdtect(detectornumber,droom))
+    positionvector(4) = 0.0_eb
+    positionvector(5) = 0.0_eb
+    positionvector(6) = -1.0_eb
+
+    return
+
+    end subroutine getabsdetector
+    
 ! --------------------------- getabstarget -------------------------------------------
 
     subroutine getabstarget(targetnumber, positionvector)
@@ -1323,7 +1351,7 @@
     integer :: i
 
     do i = 1, 6
-        positionvector (i) = xxtarg(i,targetnumber)
+        positionvector(i) = xxtarg(i,targetnumber)
     end do
 
     positionvector(1) = positionvector(1) + cxabs(ixtarg(trgroom,targetnumber))

@@ -32,6 +32,8 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     use iofiles
     use cfast_types
     use cenviro
+    use cfast_main, only: ndtect, ixdtect
+    use dsize
     implicit none
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
@@ -163,14 +165,31 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
         write(13,35) itop,ibot,hface,harea,hshape
 35      format(1x,3i3,1x,e11.4,1x,i3)
     end do
+    
+    ! detection devices (smoke detectors, heat detectors, sprinklers). these must be first since activation assumes device number is detector number
+    if (ndtect>0) then
+        do i = 1, ndtect
+            write (13,"(a)") "DEVICE"
+            if(ixdtect(i,dtype)==smoked)then
+                write (13,"(a)") "SMOKE_DETECTOR"
+            else if (ixdtect(i,dquench)/=0) then
+                write (13,"(a)") "SPRINKLER_PENDENT"
+            else
+                write (13,"(a)") "HEAT_DETECTOR"
+            end if
+            call getabsdetector(i,targetvector)
+            write(13,36) targetvector,0,0
+        end do
+    end if
 
+    ! target devices
     if (ntarg>nrooms) then
-        write(13,"(a)") "THCP"
-        write(13,"(1x,i3)") ntarg-nrooms
         do i = 1, ntarg-nrooms
+            write(13,"(a)") "DEVICE"
+            write(13,"(a)") "TARGET"
             call getabstarget(i,targetvector)
-            write(13,36) targetvector
-36          format(1x,6f10.2)
+            write(13,36) targetvector,0,0
+36          format(1x,6f10.2,2i6)
         end do
     endif
 
@@ -178,10 +197,33 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     write(13,40) nscount, stime
 40  format(1x,i6,1x,f11.0)
 
+    ! Zone model devices
     call ssheaderssmv(.false.)
 
     return
-end subroutine output_smokeview
+    end subroutine output_smokeview
+
+! --------------------------- smv_device_activated -------------------------------------------    
+    subroutine smv_device_activated (idtect, tdtect, istate)
+    
+!
+! this routines records a device activation in the smv file
+!
+!   idtect: detector number that activated
+!   tdtect: activation time
+!   istate: activation state: 0 for not activated, 1 for activated
+    
+    use precision_parameters
+    implicit none
+    
+    integer, intent(in) :: idtect, istate
+    real(eb), intent(in) :: tdtect
+    
+    write (13, "(a)") "DEVICE_ACT"
+    write (13, "(i6,f10.2,i6)") idtect, tdtect, istate
+    return
+    
+    end subroutine smv_device_activated
 
 ! --------------------------- output_smokeview_plot_data -------------------------------------------
 
@@ -190,7 +232,6 @@ subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,hei
 !
 ! this routine records data for the current time step into the smokeview zone fire data file
 !
-!            be visualized by smokeview
 !     time - current time
 !   nrooms   number of rooms
 !       pr - real array of size nrooms of room pressures

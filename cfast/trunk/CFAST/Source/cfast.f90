@@ -557,16 +557,17 @@
                 call target_flux(steady)
                 ltarg = .true.
             endif
-            ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview 
-            ! can have the latest time step information. remap_fires just puts all of the information in a single list
-            call remap_fires (nfires)
-            call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
-                hrl, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, & 
-                fylocal,fzlocal,ntarg,t,itmstp)
+
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
             if (firstpassforsmokeview) then
-                firstpassforsmokeview = .false.
+                firstpassforsmokeview = .false.            
+                ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
+                ! can have the latest time step information. remap_fires just puts all of the information in a single list
+                call remap_fires (nfires)
+                call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
+                    hrl, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, &
+                    fylocal,fzlocal,ntarg,t,itmstp)
                 call output_smokeview_header (version,nm1,nfires)
             endif
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
@@ -694,6 +695,7 @@
             write(lbuf,76) isensor, tdtect, isroom
 76          format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
             call xerror(lbuf,0,1,-3)
+            call smv_device_activated (isensor, tdtect, 1)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset

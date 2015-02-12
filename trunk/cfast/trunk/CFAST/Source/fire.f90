@@ -1183,9 +1183,6 @@
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
         z_flame = d*(-1.02_eb+3.7_eb*qstar**0.4_eb)
         
-         ! plume velocity
-        vplume = 3.4_eb*(grav_con/(cp*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird)
-        
         ! plume temperature
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
@@ -1198,6 +1195,9 @@
             deltaz = max(0.0001_eb,zin-zfire-z0)
             t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
+        
+         ! plume velocity
+        vplume = 3.4_eb*(grav_con/(cp*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird)
 
         ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
         

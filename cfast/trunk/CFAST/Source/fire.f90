@@ -1075,7 +1075,7 @@
         
     real(eb), parameter :: cp = 1.012_eb
     real(eb), parameter :: deltaT_0star_at_p2 = (0.225_eb+0.27_eb*0.2_eb)**(-4._eb/3._eb)
-    real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj, correction_factor
+    real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj
  
     ! Set default values
     if (zin<=zlayer) then
@@ -1112,9 +1112,9 @@
             if (r/h<=0.2_eb) then
                 tcj = tplume
             else
-                correction_factor = (tplume/t_layer-1.0_eb)/(deltaT_0star_at_p2*qstar_h**twothirds)
-                tcj = t_layer + t_layer * correction_factor * qstar_h**twothirds * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
+                tcj = t_layer + (tplume-t_layer)/deltaT_0star_at_p2 * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
             end if
+            
             ! ceiling jet velocity
             if (r/h<=0.17_eb) then
                 vcj = gsqrt*sqrt(h)*qstar_h**onethird*3.61_eb

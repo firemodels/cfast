@@ -509,10 +509,10 @@ To be consistent with the calculated plume temperature, this is adjusted so that
 \be
    T_{\rm cj}(r) - T_\infty = \left\{ \begin{array}{l@{\quad}l}
    \Delta T_0(H)  & r/H\le 0.2 \\[0.1in]
-   \Delta T_0(H) \, \left( \frac{0.225 + 0.27 \, r/H}{0.225 + 0.27 \cdot 0.2} \right)^{-4/3} & 0.2 < r/H < 4.0
+   0.182 \, \Delta T_0(H) \, \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & 0.2 < r/H < 4.0
     \end{array} \right. \label{Tcj}
 \ee
-where $\Delta T_0(H)$ is the calculated plume centerline temperature at the compartment ceiling from  eq. \ref{plume_temperature}.
+where $\Delta T_0(H)$ is the calculated centerline plume temperature rise at the compartment ceiling from  eq. \ref{plume_temperature} and the constant 0.182 is $\left({0.225 + 0.27 \cdot 0.2} \right)^{4/3}$.
 
 The radial velocity is given by:
 \be

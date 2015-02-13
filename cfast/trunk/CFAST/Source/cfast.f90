@@ -685,17 +685,11 @@
         call update_fire_objects (check_detector_state,told,dt,ifobj,tobj,ierror)
         td = min(tdtect,tobj)
 
-        ! a detector is the first thing that went off
+        ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
             isroom = ixdtect(isensor,droom)
             call update_detectors (set_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
-            write(lbuf,*) ' '
-            call xerror(lbuf,0,1,-3)
-            write(lbuf,76) isensor, tdtect, isroom
-76          format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
-            call xerror(lbuf,0,1,-3)
-            call smv_device_activated (isensor, tdtect, 1)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset

@@ -166,7 +166,8 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
 35      format(1x,3i3,1x,e11.4,1x,i3)
     end do
     
-    ! detection devices (smoke detectors, heat detectors, sprinklers). these must be first since activation assumes device number is detector number
+    ! detection devices (smoke detectors, heat detectors, sprinklers). 
+    !these must be first since activation assumes device number is detector number
     if (ndtect>0) then
         do i = 1, ndtect
             write (13,"(a)") "DEVICE"

@@ -886,6 +886,7 @@
         ixdtect(i,droom) = 1
         ixdtect(i,dquench) = 0
         ixdtect(i,dact) = 0
+        ixdtect(i,dactreported) = 0
     end do
     ndtect = 0
     do i = 1, nr

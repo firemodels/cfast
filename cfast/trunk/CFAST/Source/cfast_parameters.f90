@@ -85,7 +85,7 @@ module dsize
 
     integer, parameter :: mxdtect=100   ! maximum number of detectors
     integer, parameter :: dtxcol=15     ! number of floating point columns in detector data structure
-    integer, parameter :: dticol=4      ! number of integer columns in detector data structure
+    integer, parameter :: dticol=5      ! number of integer columns in detector data structure
     
     ! detector types
     integer, parameter :: smoked = 1    ! smoke detector
@@ -113,6 +113,7 @@ module dsize
     integer, parameter :: dtype=2
     integer, parameter :: dquench=3
     integer, parameter :: dact=4
+    integer, parameter :: dactreported = 5
 
 end module dsize
 

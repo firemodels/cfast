@@ -496,6 +496,7 @@ contains
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
        bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
+    character(133) :: messg
 
     idset = 0
     ifdtect = 0
@@ -549,6 +550,14 @@ contains
             if (imode>0) then
                 xdtect(i,dtact)= tcur+dstep*delta
                 ixdtect(i,dact) = 1
+                ! tell the world about the activation
+                if (ixdtect(i,dactreported)==0) then
+                    ixdtect(i,dactreported) = 1
+                    call smv_device_activated (i, tdtect, 1)
+                    write(messg,76) i, tdtect, ixdtect(i,droom)
+76                  format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
+                    call xerror(messg,0,1,-3)
+                end if
 
                 ! determine if this is the first detector to have activated in this room
                 idold = iquench(iroom)

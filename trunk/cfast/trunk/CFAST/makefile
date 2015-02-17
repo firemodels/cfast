@@ -53,6 +53,14 @@ setup_win:
 
 # ------------- Windows -------------------
 
+# gnu windows
+gnu_win_64 : FFLAGS = -O2
+gnu_win_64 : FCOMPL = gfortran
+gnu_win_64 : LFLAGS = 
+gnu_win_64 : obj = cfast6_gnu_win
+gnu_win_64 : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+
 # 32 bit
 intel_win_32_db : FFLAGS = /Qopt-report:0 /Qopt-report-phase:vec  /Qsave /Qinit:zero /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f95
 intel_win_32_db : FCOMPL = ifort

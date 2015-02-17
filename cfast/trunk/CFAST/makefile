@@ -57,7 +57,7 @@ setup_win:
 gnu_win_64 : FFLAGS = -O2
 gnu_win_64 : FCOMPL = gfortran
 gnu_win_64 : LFLAGS = 
-gnu_win_64 : obj = cfast6_gnu_win
+gnu_win_64 : obj = cfast6_win_64
 gnu_win_64 : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 

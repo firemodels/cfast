@@ -4439,7 +4439,7 @@ Public Class CeditMain
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximumSize = New System.Drawing.Size(1280, 1024)
         Me.Menu = Me.MainMenu
-        Me.MinimumSize = New System.Drawing.Size(1020, 715)
+        Me.MinimumSize = New System.Drawing.Size(1020, 744)
         Me.Name = "CeditMain"
         Me.HelpProvider.SetShowHelp(Me, True)
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

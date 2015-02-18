@@ -6,7 +6,7 @@ HGL Temperature: No Ventilation,3,24,0.07,0.1,0.98
 HGL Depth,10,172,0.05,0.38,1
 HGL Depth: Open Compartments,8,108,0.05,0.2,0.9
 HGL Depth: Closed Compartments,4,34,0.05,0.24,1.45
-Flat Ceiling Jet Temperature,9,382,0.07,0.43,1.09
+Flat Ceiling Jet Temperature,9,382,0.07,0.43,1.08
 Plume Temperature,5,63,0.07,0.28,1.1
 Oxygen Concentration,4,38,0.08,0.24,1
 Carbon Dioxide Concentration,4,30,0.08,0.27,0.84

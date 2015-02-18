@@ -1320,7 +1320,6 @@
 
     integer, intent(in) :: detectornumber
     real(eb), intent(out) :: positionvector(*)
-    integer :: i
 
     positionvector(1) = xdtect(detectornumber,dxloc) + cxabs(ixdtect(detectornumber,droom))
     positionvector(2) = xdtect(detectornumber,dyloc) + cyabs(ixdtect(detectornumber,droom))

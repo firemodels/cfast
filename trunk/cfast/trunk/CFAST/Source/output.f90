@@ -328,7 +328,7 @@
 
         do layer = upper, lower
             write (iofilo,5050) lnames(layer)
-            ciout = 'compartment'
+            ciout = 'Compartment'
             cjout = ' '
             ic = 16
             do lsp = 1, ns
@@ -478,8 +478,8 @@
         end do
     endif
 
-    5000 format (//,' Flow Through Vents (kg/s)',/, &
-    '0                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
+    5000 format (//,' Flow Through Vents (kg/s)',//, &
+    '                                        Flow relative to ''From''                             Flow Relative to ''To''',/ &
     '                                        Upper Layer               Lower Layer               Upper Layer',&
     '               Lower Layer',/, &
     ' Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
@@ -551,8 +551,8 @@
         endif
     end do
 
-5000 format (//,' Total mass flow through vents (kg)',/, &
-    '0To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
+5000 format (//,' Total mass flow through vents (kg)',//, &
+    ' To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
     ' Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/,' ', 104('-'))
 5010 format (' ')
 5020 format (' ',a14,1x,a12,1x,a)
@@ -698,8 +698,8 @@
         endif
     end do
     return
-    5000 format (//,' Surfaces and Targets',/, &
-    '0Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To',&
+    5000 format (//,' Surfaces and Targets',//, &
+    ' Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To',&
     '      Fire         Surface      Gas',/, &
     '                Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.',&
     '         Rad.         Rad.         Convect.',/, &
@@ -730,7 +730,7 @@
     if(ndtect==0)return
     write(iofilo,5000)
 5000 format(//' Sensors',/, &
-    '0                             Sensor                           Smoke',/, &
+    '                              Sensor                           Smoke',//, &
     ' Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
     ' ----------------------------------------------------------------------------')
     cjetmin = 0.10_eb
@@ -864,8 +864,8 @@
     write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
 
 5000 format (//,' OVERVIEW',/)
-5010 FORMAT ('0Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,'0',i4,12x,i4,10x,i4,17x,i4)
-5020 format ('0Simulation     Output         Smokeview      Spreadsheet',/, &
+5010 FORMAT (/,' Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,'0',i4,12x,i4,10x,i4,17x,i4)
+5020 format (/,' Simulation     Output         Smokeview      Spreadsheet',/, &
              ' Time           Interval       Interval       Interval',/, & 
              ' (s)            (s)            (s)            (s)',/,' ',i6,6x,3(i6,9x))
     end subroutine outover

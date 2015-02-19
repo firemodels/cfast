@@ -526,7 +526,7 @@ if %1==Dunes2000 goto end
 echo NBS Plaza Hotel test 7
 cd Multi
 if NOT %1==ALL call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
+rem ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
 if %1==PLAZA goto end
 

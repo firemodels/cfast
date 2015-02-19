@@ -284,15 +284,11 @@ Public Class CeditMain
     Friend WithEvents HVentInitialFraction As System.Windows.Forms.TextBox
     Friend WithEvents Label36 As System.Windows.Forms.Label
     Friend WithEvents GroupBox14 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label31 As System.Windows.Forms.Label
-    Friend WithEvents HVentOffset2 As System.Windows.Forms.TextBox
     Friend WithEvents HVentComp2 As System.Windows.Forms.ComboBox
     Friend WithEvents GroupBox13 As System.Windows.Forms.GroupBox
     Friend WithEvents Label19 As System.Windows.Forms.Label
     Friend WithEvents HVentOffset1 As System.Windows.Forms.TextBox
     Friend WithEvents HVentComp1 As System.Windows.Forms.ComboBox
-    Friend WithEvents HVentWindAngle As System.Windows.Forms.TextBox
-    Friend WithEvents Label35 As System.Windows.Forms.Label
     Friend WithEvents HVentSoffit As System.Windows.Forms.TextBox
     Friend WithEvents Label34 As System.Windows.Forms.Label
     Friend WithEvents HVentSill As System.Windows.Forms.TextBox
@@ -500,15 +496,11 @@ Public Class CeditMain
         Me.HVentInitialFraction = New System.Windows.Forms.TextBox()
         Me.Label36 = New System.Windows.Forms.Label()
         Me.GroupBox14 = New System.Windows.Forms.GroupBox()
-        Me.Label31 = New System.Windows.Forms.Label()
-        Me.HVentOffset2 = New System.Windows.Forms.TextBox()
         Me.HVentComp2 = New System.Windows.Forms.ComboBox()
         Me.GroupBox13 = New System.Windows.Forms.GroupBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.HVentOffset1 = New System.Windows.Forms.TextBox()
         Me.HVentComp1 = New System.Windows.Forms.ComboBox()
-        Me.HVentWindAngle = New System.Windows.Forms.TextBox()
-        Me.Label35 = New System.Windows.Forms.Label()
         Me.HVentSoffit = New System.Windows.Forms.TextBox()
         Me.Label34 = New System.Windows.Forms.Label()
         Me.HVentSill = New System.Windows.Forms.TextBox()
@@ -850,7 +842,7 @@ Public Class CeditMain
         '
         'StatusBar
         '
-        Me.StatusBar.Location = New System.Drawing.Point(0, 663)
+        Me.StatusBar.Location = New System.Drawing.Point(0, 684)
         Me.StatusBar.Name = "StatusBar"
         Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.Errors, Me.Message})
         Me.StatusBar.ShowPanels = True
@@ -1405,7 +1397,9 @@ Public Class CeditMain
         '
         'GroupHVentGeometry
         '
+        Me.GroupHVentGeometry.Controls.Add(Me.Label19)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentFractionTime)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentOffset1)
         Me.GroupHVentGeometry.Controls.Add(Me.Label82)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentFinalFraction)
         Me.GroupHVentGeometry.Controls.Add(Me.Label67)
@@ -1415,8 +1409,6 @@ Public Class CeditMain
         Me.GroupHVentGeometry.Controls.Add(Me.Label36)
         Me.GroupHVentGeometry.Controls.Add(Me.GroupBox14)
         Me.GroupHVentGeometry.Controls.Add(Me.GroupBox13)
-        Me.GroupHVentGeometry.Controls.Add(Me.HVentWindAngle)
-        Me.GroupHVentGeometry.Controls.Add(Me.Label35)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentSoffit)
         Me.GroupHVentGeometry.Controls.Add(Me.Label34)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentSill)
@@ -1467,7 +1459,7 @@ Public Class CeditMain
         '
         Me.HVentFace.ItemHeight = 13
         Me.HVentFace.Items.AddRange(New Object() {"Front", "Right", "Rear", "Left"})
-        Me.HVentFace.Location = New System.Drawing.Point(650, 160)
+        Me.HVentFace.Location = New System.Drawing.Point(652, 146)
         Me.HVentFace.Name = "HVentFace"
         Me.HVentFace.Size = New System.Drawing.Size(96, 21)
         Me.HVentFace.TabIndex = 7
@@ -1475,7 +1467,7 @@ Public Class CeditMain
         '
         'Label37
         '
-        Me.Label37.Location = New System.Drawing.Point(602, 160)
+        Me.Label37.Location = New System.Drawing.Point(604, 143)
         Me.Label37.Name = "Label37"
         Me.Label37.Size = New System.Drawing.Size(40, 23)
         Me.Label37.TabIndex = 30
@@ -1501,32 +1493,13 @@ Public Class CeditMain
         '
         'GroupBox14
         '
-        Me.GroupBox14.Controls.Add(Me.Label31)
-        Me.GroupBox14.Controls.Add(Me.HVentOffset2)
         Me.GroupBox14.Controls.Add(Me.HVentComp2)
         Me.GroupBox14.Location = New System.Drawing.Point(448, 24)
         Me.GroupBox14.Name = "GroupBox14"
-        Me.GroupBox14.Size = New System.Drawing.Size(344, 80)
+        Me.GroupBox14.Size = New System.Drawing.Size(344, 54)
         Me.GroupBox14.TabIndex = 11
         Me.GroupBox14.TabStop = False
         Me.GroupBox14.Text = "Second Compartment"
-        '
-        'Label31
-        '
-        Me.Label31.Location = New System.Drawing.Point(72, 48)
-        Me.Label31.Name = "Label31"
-        Me.Label31.Size = New System.Drawing.Size(72, 23)
-        Me.Label31.TabIndex = 20
-        Me.Label31.Text = "Vent Offset:"
-        Me.Label31.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'HVentOffset2
-        '
-        Me.HVentOffset2.Location = New System.Drawing.Point(152, 48)
-        Me.HVentOffset2.Name = "HVentOffset2"
-        Me.HVentOffset2.Size = New System.Drawing.Size(96, 20)
-        Me.HVentOffset2.TabIndex = 1
-        Me.HVentOffset2.Text = "0 m"
         '
         'HVentComp2
         '
@@ -1539,19 +1512,17 @@ Public Class CeditMain
         '
         'GroupBox13
         '
-        Me.GroupBox13.Controls.Add(Me.Label19)
-        Me.GroupBox13.Controls.Add(Me.HVentOffset1)
         Me.GroupBox13.Controls.Add(Me.HVentComp1)
         Me.GroupBox13.Location = New System.Drawing.Point(88, 24)
         Me.GroupBox13.Name = "GroupBox13"
-        Me.GroupBox13.Size = New System.Drawing.Size(344, 80)
+        Me.GroupBox13.Size = New System.Drawing.Size(344, 54)
         Me.GroupBox13.TabIndex = 8
         Me.GroupBox13.TabStop = False
         Me.GroupBox13.Text = "First Compartment"
         '
         'Label19
         '
-        Me.Label19.Location = New System.Drawing.Point(72, 48)
+        Me.Label19.Location = New System.Drawing.Point(572, 114)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(72, 23)
         Me.Label19.TabIndex = 20
@@ -1560,7 +1531,7 @@ Public Class CeditMain
         '
         'HVentOffset1
         '
-        Me.HVentOffset1.Location = New System.Drawing.Point(152, 48)
+        Me.HVentOffset1.Location = New System.Drawing.Point(652, 114)
         Me.HVentOffset1.Name = "HVentOffset1"
         Me.HVentOffset1.Size = New System.Drawing.Size(96, 20)
         Me.HVentOffset1.TabIndex = 1
@@ -1574,23 +1545,6 @@ Public Class CeditMain
         Me.HVentComp1.Name = "HVentComp1"
         Me.HVentComp1.Size = New System.Drawing.Size(328, 21)
         Me.HVentComp1.TabIndex = 0
-        '
-        'HVentWindAngle
-        '
-        Me.HVentWindAngle.Location = New System.Drawing.Point(650, 128)
-        Me.HVentWindAngle.Name = "HVentWindAngle"
-        Me.HVentWindAngle.Size = New System.Drawing.Size(96, 20)
-        Me.HVentWindAngle.TabIndex = 6
-        Me.HVentWindAngle.Text = "0 °"
-        '
-        'Label35
-        '
-        Me.Label35.Location = New System.Drawing.Point(570, 128)
-        Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(72, 24)
-        Me.Label35.TabIndex = 21
-        Me.Label35.Text = "Wind Angle:"
-        Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'HVentSoffit
         '
@@ -4427,7 +4381,7 @@ Public Class CeditMain
         Me.C1SizerLight1.SetAutoResize(Me, True)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(1004, 685)
+        Me.ClientSize = New System.Drawing.Size(1004, 706)
         Me.Controls.Add(Me.MainOpen)
         Me.Controls.Add(Me.MainView)
         Me.Controls.Add(Me.MainGeometry)
@@ -4460,9 +4414,7 @@ Public Class CeditMain
         Me.GroupHVentGeometry.ResumeLayout(False)
         Me.GroupHVentGeometry.PerformLayout()
         Me.GroupBox14.ResumeLayout(False)
-        Me.GroupBox14.PerformLayout()
         Me.GroupBox13.ResumeLayout(False)
-        Me.GroupBox13.PerformLayout()
         Me.TabVerticalFlow.ResumeLayout(False)
         CType(Me.VVentSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupVVents.ResumeLayout(False)
@@ -4825,16 +4777,14 @@ Public Class CeditMain
             UpdateGUI.HVents(CurrentHVent)
         End If
     End Sub
-    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset1.Leave, HVentOffset2.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentWindAngle.Leave, HVentInitialFraction.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentFinalFraction.Leave, HVentFractionTime.Leave
+    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset1.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentInitialFraction.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentFinalFraction.Leave, HVentFractionTime.Leave
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
             If sender Is Me.HVentOffset1 Then aVent.FirstOffset = Val(Me.HVentOffset1.Text)
-            If sender Is Me.HVentOffset2 Then aVent.SecondOffset = Val(Me.HVentOffset2.Text)
             If sender Is Me.HVentSill Then aVent.Sill = Val(Me.HVentSill.Text)
             If sender Is Me.HVentSoffit Then aVent.Soffit = Val(Me.HVentSoffit.Text)
             If sender Is Me.HVentWidth Then aVent.Width = Val(Me.HVentWidth.Text)
-            If sender Is Me.HVentWindAngle Then aVent.WindAngle = Val(Me.HVentWindAngle.Text)
             If sender Is Me.HVentInitialFraction Then aVent.InitialOpening = Val(Me.HVentInitialFraction.Text)
             If sender Is Me.HVentFractionTime Then aVent.FinalOpeningTime = Val(Me.HVentFractionTime.Text)
             If sender Is Me.HVentFinalFraction Then aVent.FinalOpening = Val(Me.HVentFinalFraction.Text)

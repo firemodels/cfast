@@ -118,9 +118,7 @@ Friend Module Data
         width
         soffit
         sill
-        wind
         hall1
-        hall2
         face
         initialfraction
     End Enum

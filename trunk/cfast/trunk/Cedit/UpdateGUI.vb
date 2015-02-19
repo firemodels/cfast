@@ -328,11 +328,9 @@ Public Class UpdateGUI
                 MainWin.HVentComp2.SelectedIndex = aVent.SecondCompartment + 1
             End If
             MainWin.HVentOffset1.Text = aVent.FirstOffset.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.HVentOffset2.Text = aVent.SecondOffset.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentSill.Text = aVent.Sill.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentSoffit.Text = aVent.Soffit.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentWidth.Text = aVent.Width.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.HVentWindAngle.Text = aVent.WindAngle.ToString + " °"
             MainWin.HVentInitialFraction.Text = aVent.InitialOpening.ToString
             MainWin.HVentFinalFraction.Text = aVent.FinalOpening.ToString
             MainWin.HVentFractionTime.Text = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
@@ -362,9 +360,9 @@ Public Class UpdateGUI
                     MainWin.HVentSummary(i, 5) = aVent.Sill.ToString
                     MainWin.HVentSummary(i, 6) = aVent.Soffit.ToString
                     MainWin.HVentSummary(i, 7) = aVent.Width.ToString
-                    MainWin.HVentSummary(i, 8) = aVent.WindAngle.ToString
-                    MainWin.HVentSummary(i, 9) = aVent.InitialOpening.ToString
-                    MainWin.HVentSummary(i, 10) = FaceNames.Substring((aVent.Face - 1) * 5, 5)
+                    MainWin.HVentSummary(i, 8) = aVent.InitialOpening.ToString
+                    MainWin.HVentSummary(i, 9) = FaceNames.Substring((aVent.Face - 1) * 5, 5)
+                    MainWin.HVentSummary(i, 10) = aVent.FirstOffset.ToString
                 Next
                 MainWin.HVentSummary.Select(index + 1, 0, index + 1, MainWin.HVentSummary.Cols.Count - 1, True)
             End If

@@ -699,15 +699,15 @@
         nx = compartment
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
-        !		    BW = width, HH = soffit, HL = sill, 
-        !		    HHP = ABSOLUTE HEIGHT OF THE soffit,HLP = ABSOLUTE HEIGHT OF THE sill, 
-        !          HFLR = ABSOLUTE HEIGHT OF THE FLOOR (not set here)
-        !		    WINDC = a wind coefficient which varies from -1 to +1 and is dimensionless
-        !		    Compartment offset for the HALL command (2 of these)
-        !		    VFACE = THE RELATIVE FACE OF THE VENT: 1-4 FOR X PLANE (-), Y PLANE (+), X PLANE (+), Y PLANE (-)
-        !		    Initial open fraction
+        !		    bw = width, hh = soffit, hl = sill, 
+        !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
+        !           hflr = absolute height of the floor (not set here)
+        !		    windc = a wind coefficient which varies from -1 to +1 and is dimensionless
+        !		    compartment offset for the hall command (2 of these)
+        !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
+        !		    initial open fraction
     case ('HVENT')
-        if (.not.countargs(11,lcarray,xnumc-1,nret)) then
+        if (.not.countargs(7,lcarray,xnumc-1,nret)) then
             ierror = 10
             return
         endif
@@ -742,11 +742,22 @@
         bw(iijk) = lrarray(4)
         hh(iijk) = lrarray(5)
         hl(iijk) = lrarray(6)
-        windc(iijk) = lrarray(7)
-        halldist(iijk,1) = lrarray(8)
-        halldist(iijk,2) = lrarray(9)
-        vface(iijk) = lrarray(10)
-        initialopening = lrarray(11)
+        if (countargs(11,lcarray,xnumc-1,nret)) then
+            windc(iijk) = lrarray(7)
+            halldist(iijk,1) = lrarray(8)
+            halldist(iijk,2) = lrarray(9)
+            vface(iijk) = lrarray(10)
+            initialopening = lrarray(11)
+        else if (countargs(9,lcarray,xnumc-1,nret)) then
+            windc(iijk) = 0.0_eb
+            halldist(iijk,1) = lrarray(7)
+            halldist(iijk,2) = 0.0_eb
+            vface(iijk) = lrarray(8)
+            initialopening = lrarray(9)
+        else
+            ierror = 10
+            return
+        end if
 
         qcvh(2,iijk) = initialopening
         qcvh(4,iijk) = initialopening

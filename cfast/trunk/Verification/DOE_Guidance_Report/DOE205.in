@@ -5,7 +5,6 @@ VERSN,7,DOE205 750kW Simulation
 TIMES,2710,-5,5,5
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

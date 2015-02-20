@@ -1406,7 +1406,7 @@
 
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
-    real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, wcos, havg, windvnew, winddp, xdelt, tstop, zzu, zzl, &
+    real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, xdelt, tstop, zzu, zzl, &
         ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o
         
     type(vent_type), pointer :: ventptr
@@ -1560,25 +1560,6 @@
 
                             ! add face (vface) to the data structure
                             ventptr%face = vface(iijk)
-
-                            ! compute pressure rise due to wind.  this value is only defined for outside rooms
-                            wcos = windc(iijk)
-                            if(j==n.and.wcos/=0.0_eb)then
-
-                                ! compute wind velocity and pressure rise at the average vent height
-                                havg = (ventptr%sill + ventptr%soffit)/2.0_eb 
-                                havg = havg + roomptr%yflor
-                                if(windrf/=0.0_eb)then
-                                    windvnew = windv*(havg/windrf)**windpw
-                                else
-                                    windvnew = windv
-                                endif
-                                winddp = wcos*exterior_density*windvnew**2/2.0_eb
-                                ventptr%wind_dp = winddp
-                            else
-                                ventptr%wind_dp = 0.0_eb
-                            endif
-
                         endif
                     end do
                 endif

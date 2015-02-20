@@ -792,9 +792,6 @@
     tgignt = te + 200.0_eb
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
-    windv = 0.0_eb
-    windrf = 10.0_eb
-    windpw = 0.16_eb
     do i = 0, mxfire
         objmaspy(i) = 0.0_eb
         radio(i) = 0.0_eb

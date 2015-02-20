@@ -487,7 +487,9 @@ Public Class CeditMain
         Me.TabHorizontalFlow = New System.Windows.Forms.TabPage()
         Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
+        Me.Label19 = New System.Windows.Forms.Label()
         Me.HVentFractionTime = New System.Windows.Forms.TextBox()
+        Me.HVentOffset1 = New System.Windows.Forms.TextBox()
         Me.Label82 = New System.Windows.Forms.Label()
         Me.HVentFinalFraction = New System.Windows.Forms.TextBox()
         Me.Label67 = New System.Windows.Forms.Label()
@@ -498,8 +500,6 @@ Public Class CeditMain
         Me.GroupBox14 = New System.Windows.Forms.GroupBox()
         Me.HVentComp2 = New System.Windows.Forms.ComboBox()
         Me.GroupBox13 = New System.Windows.Forms.GroupBox()
-        Me.Label19 = New System.Windows.Forms.Label()
-        Me.HVentOffset1 = New System.Windows.Forms.TextBox()
         Me.HVentComp1 = New System.Windows.Forms.ComboBox()
         Me.HVentSoffit = New System.Windows.Forms.TextBox()
         Me.Label34 = New System.Windows.Forms.Label()
@@ -1422,12 +1422,29 @@ Public Class CeditMain
         Me.GroupHVentGeometry.TabStop = False
         Me.GroupHVentGeometry.Text = "Vent 1 Geometry"
         '
+        'Label19
+        '
+        Me.Label19.Location = New System.Drawing.Point(572, 114)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(72, 23)
+        Me.Label19.TabIndex = 20
+        Me.Label19.Text = "Vent Offset:"
+        Me.Label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'HVentFractionTime
         '
         Me.HVentFractionTime.Location = New System.Drawing.Point(418, 144)
         Me.HVentFractionTime.Name = "HVentFractionTime"
         Me.HVentFractionTime.Size = New System.Drawing.Size(96, 20)
         Me.HVentFractionTime.TabIndex = 4
+        '
+        'HVentOffset1
+        '
+        Me.HVentOffset1.Location = New System.Drawing.Point(652, 114)
+        Me.HVentOffset1.Name = "HVentOffset1"
+        Me.HVentOffset1.Size = New System.Drawing.Size(96, 20)
+        Me.HVentOffset1.TabIndex = 1
+        Me.HVentOffset1.Text = "0 m"
         '
         'Label82
         '
@@ -1519,23 +1536,6 @@ Public Class CeditMain
         Me.GroupBox13.TabIndex = 8
         Me.GroupBox13.TabStop = False
         Me.GroupBox13.Text = "First Compartment"
-        '
-        'Label19
-        '
-        Me.Label19.Location = New System.Drawing.Point(572, 114)
-        Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(72, 23)
-        Me.Label19.TabIndex = 20
-        Me.Label19.Text = "Vent Offset:"
-        Me.Label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'HVentOffset1
-        '
-        Me.HVentOffset1.Location = New System.Drawing.Point(652, 114)
-        Me.HVentOffset1.Name = "HVentOffset1"
-        Me.HVentOffset1.Size = New System.Drawing.Size(96, 20)
-        Me.HVentOffset1.TabIndex = 1
-        Me.HVentOffset1.Text = "0 m"
         '
         'HVentComp1
         '
@@ -4203,7 +4203,7 @@ Public Class CeditMain
         Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
         Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
         Me.VisualizationAxisLabel.TabIndex = 115
-        Me.VisualizationAxisLabel.Text = "Parallel to:"
+        Me.VisualizationAxisLabel.Text = "Axis:"
         Me.VisualizationAxisLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'VisualizationAxis
@@ -5919,11 +5919,15 @@ Public Class CeditMain
             Dim aCompartment As New Compartment
             For i = 0 To myCompartments.Count - 1
                 aCompartment = myCompartments.Item(i)
-                aVisual = New Visual(Visual.TwoD, 0, aCompartment.RoomDepth / 2, i) : myVisuals.Add(aVisual)
-                aVisual = New Visual(Visual.TwoD, 1, aCompartment.RoomWidth / 2, i) : myVisuals.Add(aVisual)
+                aVisual = New Visual(Visual.TwoD, 0, aCompartment.RoomWidth / 2, i) : myVisuals.Add(aVisual)
+                aVisual.Changed = True
+                aVisual = New Visual(Visual.TwoD, 1, aCompartment.RoomDepth / 2, i) : myVisuals.Add(aVisual)
+                aVisual.Changed = True
                 aVisual = New Visual(Visual.TwoD, 2, aCompartment.RoomHeight * 0.99, i) : myVisuals.Add(aVisual)
+                aVisual.Changed = True
             Next
             aVisual = New Visual(Visual.ThreeD, 0, 0.0, -1) : myVisuals.Add(aVisual)
+            aVisual.Changed = True
             CurrentVisual = myVisuals.Count - 1
             UpdateGUI.Visuals(CurrentVisual)
         End If

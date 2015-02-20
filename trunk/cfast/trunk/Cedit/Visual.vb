@@ -108,11 +108,11 @@
                 If (aCompartment >= 0 And aCompartment <= myCompartments.Count - 1) Then
                     Dim aComp As New Compartment
                     aComp = myCompartments(aCompartment)
-                    If aAxis = 0 And (aValue < 0.0 Or aValue > aComp.RoomDepth) Then
+                    If aAxis = 0 And (aValue < 0.0 Or aValue > aComp.RoomWidth) Then
                         myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment depth.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
-                    If aAxis = 1 And (aValue < 0.0 Or aValue > aComp.RoomWidth) Then
+                    If aAxis = 1 And (aValue < 0.0 Or aValue > aComp.RoomDepth) Then
                         myErrors.Add("Visualization " + VisualNumber.ToString + " width position is less than 0 m or greater than compartment width.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If

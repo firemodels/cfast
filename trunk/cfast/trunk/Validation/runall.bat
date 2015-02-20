@@ -24,7 +24,7 @@ if %1==UL_NIST_Vents goto UL_NIST_Vents
 :Help
 echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
 echo        NBS, NBS_1Room, NIST_NRC, Steckler_Compartment, UL_NFPRF, UL_NIST_Vents, 
-echo        Vettori_Flat, VTT, or WTC
+echo        Vettori_Flat, VTT, PLAZA, or WTC
 goto end
 :ALL
 call cleanall.bat
@@ -32,7 +32,7 @@ call cleanall.bat
 :UL_NIST_Vents
 echo Running UL_NIST_Vents
 cd UL_NIST_Vents
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_3 /V
@@ -43,7 +43,7 @@ if %1==UL_NIST_Vents goto end
 :UL_NFPRF
 echo Running UL_NFPRF Series I
 cd UL_NFPRF
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_01 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_02 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_03 /V
@@ -86,7 +86,7 @@ if %1==UL_NFPRF goto end
 :SP_AST
 echo Running SP_AST Tests
 cd SP_AST
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_3 /V
@@ -99,7 +99,7 @@ if %1==SP_AST goto end
 :ATF
 echo Running ATF Corridor Tests
 cd ATF_Corridors
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe ATF_Corridors_050_kW /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe ATF_Corridors_100_kW /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe ATF_Corridors_240_kW /V
@@ -108,10 +108,11 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe ATF_Corridors_Mix_kW /V
 cd ..
 if %1==ATF goto end
+
 :WTC
 echo Running WTC Spray Burner Tests
 cd WTC
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_01 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_02 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_03 /V
@@ -120,10 +121,11 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_06 /V
 cd ..
 if %1==WTC goto end
+
 :Vettori_Flat
 echo Running Vettori Flat Simulations
 cd Vettori_Flat
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Test_1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Test_2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Test_3 /V
@@ -171,10 +173,11 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Test_45 /V
 cd ..
 if %1==Vettori_Flat goto end
+
 :LLNL_Enclosure
 echo LLNL Tests
 cd LLNL_Enclosure
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe LLNL_01 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe LLNL_02 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe LLNL_03 /V
@@ -241,16 +244,17 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe LLNL_64 /V
 cd ..\
 if %1==LLNL_Enclosure goto end
+
 :NBS_1Room
 echo NBS 1 room furniture tests 1, 6
 cd 1rfurn
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe 1rfurn1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe 1rfurn6 /V
 cd ..\
 echo NBS 1 room wall burning test 1, 2
 cd 1rwall
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe 1rwall1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe 1rwall2 /V
 cd ..\
@@ -258,15 +262,16 @@ if %1==NBS_1Room goto end
 :FM_NBS
 echo FM NBS 4 room tests 19, 21
 cd fm_nbs
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe fm19 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe fm21 /V
 cd ..\
 if %1==FM_NBS goto end
+
 :VTT
 cd VTT
 echo VTT Cases 1, 2, 3
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 cd Case_1
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C1 /V
 cd ..\
@@ -277,9 +282,10 @@ cd Case_3
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C3 /V
 cd ..\..
 if %1==VTT goto end
+
 :NIST_NRC
 cd NIST_NRC
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 echo NIST_NRC tests 1-5, 7-10, 13-18
 cd Test_1\
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T1 /V
@@ -327,22 +333,24 @@ cd Test_18\
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T18 /V
 cd ..\..
 if %1==NIST_NRC goto end
+
 :iBMB
 echo iBMB_4 Test 1
 cd iBMB_4\
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe iBMB_4_T1 /V
 cd ..\
 echo iBMB_5 Test 4
 cd iBMB_5\
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe iBMB_5_T4 /V
 cd ..\
 if %1==iBMB goto end
+
 :FM_SNL
 echo FM SNL Tests
 cd FM_SNL
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 cd Test_1
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_1 /V
 cd ..\
@@ -401,10 +409,11 @@ cd Test_22
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_22 /V
 cd ..\..\
 if %1==FM_SNL goto end
+
 :NBS
 echo NBS Tests MV100A, MV100O, MV100Z
 cd NBS
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 cd MV100A
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100A /V
 cd ..\
@@ -415,10 +424,11 @@ cd MV100Z
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100Z /V
 cd ..\..\
 if %1==NBS goto end
+
 :High_Bay
 echo High Bay Tests
 cd High_Bay
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_01 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_02 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_03 /V
@@ -447,10 +457,11 @@ if NOT %1==ALL call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_20 /V
 cd ..\
 if %1==High_Bay goto end
+
 :Steckler
 echo Steckler Compartment Tests
 cd Steckler_Compartment
-if NOT %1==ALL call ..\CleanCFAST
+call ..\CleanCFAST
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Steckler_010 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Steckler_011 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Steckler_012 /V
@@ -508,10 +519,11 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\scripts\background -u 98 ..\..\bin\cfast.exe Steckler_166 /V
 cd ..\
 if %1==Steckler_Compartment goto end
+
 :Dunes2000
 echo NIST Dunes 2000 tests
 cd NIST_Dunes_2000
-if NOT %1==ALL call ..\CleanCFAST
+call ..\CleanCFAST
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC02 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC05 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC07 /V
@@ -522,10 +534,13 @@ if NOT %1==ALL call ..\CleanCFAST
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC39 /V
 cd ..\
 if %1==Dunes2000 goto end
+
+if %1==ALL echo NBS Plaza Hotel Test must be run separately
+if %1==ALL goto end
 :PLAZA
 echo NBS Plaza Hotel test 7
 cd Multi
-if NOT %1==ALL call ..\cleancfast.bat
+call ..\cleancfast.bat
 rem ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
 if %1==PLAZA goto end

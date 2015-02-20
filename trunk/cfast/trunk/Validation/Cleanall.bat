@@ -1,20 +1,7 @@
 echo off
-echo Removing old and temporary files.  Messages can be ignored here.
-del *_n.csv /s/q >nul
-del *_s.csv /s/q >nul
-del *_f.csv /s/q >nul
-del *_w.csv /s/q >nul
-del *_zone.csv /s/q >nul
-del *.out /s/q >nul
-del *.smv /s/q >nul
-del *.plt /s/q >nul
-del *.status /s/q >nul
-del *.log /s/q >nul
-del *.sf /s/q >nul
-del *_slice.info /s/q >nul
-del *.iso /s/q >nul
-del ..\Docs\Validation_Guide\FIGURES\ATF_Corridors\ATF_Corridors_HGL*kW.pdf
-del ..\Docs\Validation_Guide\FIGURES\ATF_Corridors\ATF_Corridors_Jet*kW.pdf
+echo Removing old graphics files.  Messages can be ignored here.
+del ..\Docs\Validation_Guide\FIGURES\ATF_Corridors\ATF_Corridors_HGL*kW.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\ATF_Corridors\ATF_Corridors_Jet*kW.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\FM_NBS\fm??_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\FM_SNL\FM_SNL_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\High_Bay\USN_Hawaii_Test_??*.pdf /q >nul
@@ -27,8 +14,15 @@ del ..\Docs\Validation_Guide\FIGURES\NBS\NBS_100*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\NIST_Dunes_2000\NIST_Dunes_2000_SD*.pdf
 del ..\Docs\Validation_Guide\FIGURES\NIST_NRC\NIST_NRC_??_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\NIST_PLAZA\Room*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\SP_AST\SP_AST_Diesel*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\SP_AST\SP_AST_Heptane*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\SP_AST\SP_AST_Test_*.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\Steckler_Compartment\Steckler_???*.pdf /q >nul
-del ..\Docs\Validation_Guide\FIGURES\Vettori_Flat\Activation_Test_??.pdf
-del ..\Docs\Validation_Guide\FIGURES\Vettori_Flat\Test_??.pdf
+del ..\Docs\Validation_Guide\FIGURES\UL_NFPRF\UL_NFPRF_?_??_j*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\UL_NFPRF\UL_NFPRF_?_??_Sp*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\UL_NIST_Vents\UL_NIST_Vents_Test*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\Vettori_Flat\Activation_Test_??.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\Vettori_Flat\Test_??.pdf /q >nul
 del ..\Docs\Validation_Guide\FIGURES\VTT\VTT_??_*.pdf /q >nul
+del ..\Docs\Validation_Guide\FIGURES\WTC\WTC_??_*.pdf /q >nul
 echo Done removing old and temporary files.

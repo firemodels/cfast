@@ -5,7 +5,6 @@ VERSN,7,Vettori_Flat_Test_22
 TIMES,125,-50,10,1
 EAMB,294.85,101300,0
 TAMB,294.85,101300,0,50
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

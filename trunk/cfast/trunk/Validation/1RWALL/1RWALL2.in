@@ -5,7 +5,6 @@ VERSN,7,Single room with wall burn (Test 2)
 TIMES,600,-50,0,10,10
 EAMB,295.15,101300,0
 TAMB,295.15,101300,0,50
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

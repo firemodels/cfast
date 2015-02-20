@@ -5,7 +5,6 @@ VERSN,7,"BE 14, Test 3, XPE Cable, Heptane, Door Open, MV Off"
 TIMES,1800,-10,0,10,1
 EAMB,301.15,101300,0
 TAMB,301.15,101300,0,61
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

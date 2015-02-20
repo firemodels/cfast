@@ -6,7 +6,6 @@ TIMES,1800,-60,0,60,60
 EAMB,300,101300,0
 TAMB,300,101300,0,50
 LIMO2,10
-WIND,0,10,0.16
 !!
 !!Compartment keywords
 !!

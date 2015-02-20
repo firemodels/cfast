@@ -5,7 +5,6 @@ VERSN,7,Keflavik Test 4
 TIMES,600,-50,0,10,10
 EAMB,287.15,101300,0
 TAMB,287.15,101300,0,50
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

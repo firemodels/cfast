@@ -5,7 +5,6 @@ VERSN,7,ICFMP 2 Test 2 Leakage vents only
 TIMES,600,-10,0,10,1
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

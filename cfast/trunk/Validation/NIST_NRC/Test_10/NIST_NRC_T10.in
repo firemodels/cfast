@@ -5,7 +5,6 @@ VERSN,7,"BE 3, Test 10, PVC Cable, Heptane, Door Closed, MV On"
 TIMES,1800,-10,10,1
 EAMB,300.15,101300,0
 TAMB,300.15,101300,0,63
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

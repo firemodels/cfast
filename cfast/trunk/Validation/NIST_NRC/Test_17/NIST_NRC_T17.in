@@ -5,7 +5,6 @@ VERSN,7,"BE 3, Test 17, PVC Cable, Toluene, Door Closed, MV Off"
 TIMES,1800,-10,10,1
 EAMB,300.15,101300,0
 TAMB,300.15,101300,0,40
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!

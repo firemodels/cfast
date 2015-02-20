@@ -92,9 +92,6 @@
             width = ventptr%width
             avent = factor2*height*width
 
-            ! augment floor pressure in the second room by the pressure induced by wind.
-            ! (note this augmentation will be different for each vent)
-            pflor(2) = pflor(2) + ventptr%wind_dp
             if (avent>=1.0e-10_eb) then
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
                    epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&

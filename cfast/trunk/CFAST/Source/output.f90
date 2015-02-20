@@ -883,14 +883,14 @@
     implicit none
 
     write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pofset, &
-       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset, windv, windrf, windpw
+       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset
     return
 
 5000 format (//,' AMBIENT CONDITIONS',//, &
-    ' Interior       Interior       Exterior       Exterior       Wind           Wind           Wind           ',/, &
-    ' Temperature    Pressure       Temperature    Pressure       Speed          Ref. Height    Power',/,' ', &
-    '  (C)            (Pa)           (C)            (Pa)          (m/s)          (m)', &
-    //,' ',2(f7.0,8x,f9.0,6x),2(f7.1,8x),f7.2)
+    ' Interior       Interior       Exterior       Exterior',/, &
+    ' Temperature    Pressure       Temperature    Pressure',/,' ', &
+    '  (C)            (Pa)           (C)            (Pa)', &
+    //,' ',2(f7.0,8x,f9.0,6x))
      
     end subroutine outamb
 

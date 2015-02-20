@@ -702,7 +702,6 @@
         !		    bw = width, hh = soffit, hl = sill, 
         !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
         !           hflr = absolute height of the floor (not set here)
-        !		    windc = a wind coefficient which varies from -1 to +1 and is dimensionless
         !		    compartment offset for the hall command (2 of these)
         !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
         !		    initial open fraction
@@ -743,13 +742,11 @@
         hh(iijk) = lrarray(5)
         hl(iijk) = lrarray(6)
         if (countargs(11,lcarray,xnumc-1,nret)) then
-            windc(iijk) = lrarray(7)
             halldist(iijk,1) = lrarray(8)
             halldist(iijk,2) = lrarray(9)
             vface(iijk) = lrarray(10)
             initialopening = lrarray(11)
         else if (countargs(9,lcarray,xnumc-1,nret)) then
-            windc(iijk) = 0.0_eb
             halldist(iijk,1) = lrarray(7)
             halldist(iijk,2) = 0.0_eb
             vface(iijk) = lrarray(8)
@@ -913,16 +910,6 @@
         qcvpp(2,j,i) = lrarray(5)
         qcvpp(4,i,j) = lrarray(5)
         qcvpp(4,j,i) = lrarray(5)
-
-        ! WIND - VELOCITY AT REFERENCE HEIGHT and EXPONENTIAL LAPSE RATE
-    case ('WIND')
-        if (.not.countargs(3,lcarray, xnumc-1, nret)) then
-            ierror = 24
-            return
-        endif
-        windv = lrarray(1)
-        windrf = lrarray(2)
-        windpw = lrarray(3)
 
         ! MVENT - simplified mechanical ventilation
 
@@ -1732,8 +1719,10 @@
         end if
 
         ! Outdated keywords
-    case ('CJET')                                   ! Just ignore these inputs ... they shouldn't be fatal
+    case ('CJET','WIND')                                   ! Just ignore these inputs ... they shouldn't be fatal
+        write (logerr,5405) label
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
+        write (logerr,5405) label
         ierror = 5
         return
 
@@ -1785,6 +1774,7 @@
 5402 format ('***Error: Plume index out of range ',i3)
 5403 format ('***Error: Invalid SLCF specification in visualization input ',i3)  
 5404 format ('***Error: Invalid ISOF specification in visualization input ',i3)    
+5405 format ('***Error: Invalid keyword in CFAST input file ',a)     
 
     end subroutine keywordcases
 

@@ -218,49 +218,11 @@ Public Class UpdateGUI
                 MainWin.CompThicknessFloor.Text = "Thickness: "
             End If
             If aCompartment.Shaft = True Then
-                MainWin.CompFlow.SelectedIndex = Compartment.TypeShaft
-                MainWin.CompDecayVelocity.Text = " "
-                MainWin.CompDecayDepth.Text = " "
-                MainWin.CompDecayDistance.Text = " "
-                MainWin.CompDecayVelocity.Visible = False
-                MainWin.CompDecayDepth.Visible = False
-                MainWin.CompDecayDistance.Visible = False
-                MainWin.CompVelocityLabel.Visible = False
-                MainWin.CompDepthLabel.Visible = False
-                MainWin.CompDistanceLabel.Visible = False
-            End If
-            If aCompartment.Hall = True Then
-                MainWin.CompFlow.SelectedIndex = Compartment.TypeCorridor
-                If aCompartment.HallVelocity <= 0 Then
-                    MainWin.CompDecayVelocity.Text = "Default"
-                Else
-                    MainWin.CompDecayVelocity.Text = aCompartment.HallVelocity.ToString + myUnits.Convert(UnitsNum.Velocity).Units
-                End If
-                If aCompartment.HallDecayDistance <= 0 Then
-                    MainWin.CompDecayDistance.Text = "Default"
-                Else
-                    MainWin.CompDecayDistance.Text = aCompartment.HallDecayDistance.ToString + myUnits.Convert(UnitsNum.Length).Units
-                End If
-                If aCompartment.HallDepth <= 0 Then
-                    MainWin.CompDecayDepth.Text = "Default"
-                Else
-                    MainWin.CompDecayDepth.Text = aCompartment.HallDepth.ToString + myUnits.Convert(UnitsNum.Length).Units
-                End If
-                MainWin.CompDecayVelocity.Visible = True
-                MainWin.CompDecayDepth.Visible = True
-                MainWin.CompDecayDistance.Visible = True
-                MainWin.CompVelocityLabel.Visible = True
-                MainWin.CompDepthLabel.Visible = True
-                MainWin.CompDistanceLabel.Visible = True
-            End If
-            If aCompartment.Shaft = False And aCompartment.Hall = False Then
-                MainWin.CompFlow.SelectedIndex = Compartment.TypeNormal
-                MainWin.CompDecayVelocity.Visible = False
-                MainWin.CompDecayDepth.Visible = False
-                MainWin.CompDecayDistance.Visible = False
-                MainWin.CompVelocityLabel.Visible = False
-                MainWin.CompDepthLabel.Visible = False
-                MainWin.CompDistanceLabel.Visible = False
+                MainWin.CompShaft.Checked = True
+            ElseIf aCompartment.Hall = True Then
+                MainWin.CompCorridor.Checked = True
+            Else
+                MainWin.CompNormal.Checked = True
             End If
             aCompartment.GetVariableArea(AreaPoints, HeightPoints, NumPoints)
             ClearGrid(MainWin.CompVariableArea)

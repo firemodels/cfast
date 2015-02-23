@@ -312,14 +312,11 @@ Module IO
             i += 1
         Next
         'hall
-        Dim hall As Boolean
         For j = 0 To myCompartments.Count - 1
             aCompartment = myCompartments.Item(j)
             If aCompartment.Hall Then
                 csv.str(i, CFASTlnNum.keyWord) = "HALL"
                 csv.Num(i, hallNum.compartment) = j + 1
-                aCompartment.GetFlowType(hall, csv.Num(i, hallNum.vel), csv.Num(i, hallNum.depth), _
-                    csv.Num(i, hallNum.DecayDist))
                 i += 1
             End If
         Next
@@ -879,8 +876,7 @@ Module IO
                             If myCompartments(j).Shaft Then
                                 myErrors.Add("Keyword HALL compartment  " + csv.str(i, hallNum.compartment) + " is already declared an one zone compartment and will be changed to a hall ", ErrorMessages.TypeError)
                             End If
-                            myCompartments(j).setflowtype(True, csv.Num(i, hallNum.vel), csv.Num(i, hallNum.depth), _
-                                csv.Num(i, hallNum.DecayDist))
+                            If csv.Num(i, 0) > 2 Then myErrors.Add("Keyword HALL is an outdated format " + csv.strrow(i) + " hallway flow inputs will be ignored", ErrorMessages.TypeWarning)
                             myCompartments(j).Changed = False
                         End If
                     Case "HHEAT"

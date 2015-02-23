@@ -25,9 +25,6 @@ Public Class Compartment
     Private aFloorMaterial As String        ' Named material for floor from Thermal.df
     Private aShaft As Boolean               ' True if compartment is a aShaft
     Private aHall As Boolean                ' True if compartment is a aHallway
-    Private aHallVelocity As Single         ' Ceiling jet velocity at point where temperature falls off by 50 %
-    Private aHallDepth As Single            ' Ceiling jet depth at point where temperature falls off by 50 %
-    Private aHallDecayDistance As Single    ' Distance at point where temperature falls off by 50 %
     Private aAreaPoints(0) As Single        ' Vector of room areas as a function of height
     Private aHeightPoints(0) As Single      ' Vector of room heights corresponding to room areas
     Private aChanged As Boolean = False     ' True once compartment information has changed
@@ -48,9 +45,6 @@ Public Class Compartment
         Me.aHeightPoints(0) = Me.aRoomHeight
         Me.aShaft = False
         Me.aHall = False
-        Me.aHallVelocity = -1.0
-        Me.aHallDepth = -1.0
-        Me.aHallDecayDistance = -1.0
     End Sub
     Public Property Name() As String
         Get
@@ -186,51 +180,6 @@ Public Class Compartment
             End If
         End Set
     End Property
-    Public Property HallVelocity() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Velocity).FromSI(aHallVelocity)
-        End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Velocity).ToSI(Value) <> aHallVelocity Then
-                aChanged = True
-                If Value > 0.0 Then
-                    aHallVelocity = myUnits.Convert(UnitsNum.Velocity).ToSI(Value)
-                Else
-                    aHallVelocity = -1
-                End If
-            End If
-        End Set
-    End Property
-    Public Property HallDepth() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aHallDepth)
-        End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aHallDepth Then
-                aChanged = True
-                If Value > 0.0 Then
-                    aHallDepth = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                Else
-                    aHallDepth = -1
-                End If
-            End If
-        End Set
-    End Property
-    Public Property HallDecayDistance() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aHallDecayDistance)
-        End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aHallDecayDistance Then
-                aChanged = True
-                If Value > 0.0 Then
-                    aHallDecayDistance = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                Else
-                    aHallDecayDistance = -1
-                End If
-            End If
-        End Set
-    End Property
     Public Property Changed() As Boolean
         Get
             Return aChanged
@@ -271,22 +220,6 @@ Public Class Compartment
         Me.WallMaterial = aWallMaterial
         Me.FloorMaterial = aFloorMaterial
         aChanged = True
-    End Sub
-    Public Sub setflowtype(ByVal aShaft As Boolean)
-        Me.Shaft = aShaft
-        aChanged = True
-    End Sub
-    Public Sub GetFlowType(ByRef aHall As Boolean, ByRef aHallVelocity As Single, ByRef aHallDepth As Single, ByRef aHallDecayDistance As Single)
-        aHall = Me.Hall
-        aHallVelocity = Me.HallVelocity
-        aHallDepth = Me.HallDepth
-        aHallDecayDistance = Me.HallDecayDistance
-    End Sub
-    Public Sub SetFlowType(ByVal aHall As Boolean, ByVal aHallVelocity As Single, ByVal aHallDepth As Single, ByVal aHallDecayDistance As Single)
-        Me.Hall = aHall
-        Me.HallVelocity = aHallVelocity
-        Me.HallDepth = aHallDepth
-        Me.HallDecayDistance = aHallDecayDistance
     End Sub
     Public Sub GetVariableArea(ByRef AreaPoints() As Single, ByRef HeightPoints() As Single, ByRef NumAreaPoints As Integer)
         Dim i As Integer
@@ -374,28 +307,6 @@ Public Class Compartment
                     End If
                 Next
             End If
-            ' Decay distance is limited to the compartment size
-            If aHallDecayDistance <= 0.0 Or aHallDecayDistance > MaxSize Then
-                If aHallDecayDistance <> -1 Then ' -1 is indicator for default condition to allow cfast to calculate appropriate value
-                    myErrors.Add(aName + " has a hallway flow decay distance that is in error.  Value should be greater than " + MinSize.ToString + " m and less than " + MaxSize.ToString + " m", ErrorMessages.TypeWarning)
-                    HasErrors += 1
-                End If
-            End If
-            ' Decay depth is limited to comparment height
-            If aHallDepth <= 0.0 Or aHallDepth > aRoomHeight Then
-                If aHallDepth <> -1 Then ' -1 is indicator for default condition to allow cfast to calculate appropriate value
-                    myErrors.Add(aName + " has a hallway flow decay depth that is in error. Value should be greater than 0 m and less than the compartment height", ErrorMessages.TypeWarning)
-                    HasErrors += 1
-                End If
-            End If
-            ' Decay velocity must be greater than zero
-            If aHallVelocity <= 0.0 Then
-                If aHallVelocity <> -1 Then ' -1 is indicator for default condition to allow cfast to calculate appropriate value
-                    myErrors.Add(aName + " has a hallway flow velocity that is in error. Value should be greater than 0 m/s", ErrorMessages.TypeWarning)
-                    HasErrors += 1
-                End If
-            End If
-
             ' Thermal properties have to exist
             If myThermalProperties.GetIndex(aCeilingMaterial) < -1 Or myThermalProperties.GetIndex(aWallMaterial) < -1 Or myThermalProperties.GetIndex(aFloorMaterial) < -1 Then
                 myErrors.Add(aName + " has an unknown surface material.", ErrorMessages.TypeWarning)
@@ -449,9 +360,6 @@ Public Class CompartmentCollection
         ToCompartment.SetVariableArea(Vector1, Vector2)
         ToCompartment.Shaft = FromCompartment.Shaft
         ToCompartment.Hall = FromCompartment.Hall
-        ToCompartment.HallVelocity = FromCompartment.HallVelocity
-        ToCompartment.HallDepth = FromCompartment.HallDepth
-        ToCompartment.HallDecayDistance = FromCompartment.HallDecayDistance
         List.Item(indexTo) = ToCompartment
     End Sub
     Public Sub Swap(ByVal index1 As Integer, ByVal index2 As Integer)

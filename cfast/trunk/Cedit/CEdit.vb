@@ -39,6 +39,9 @@ Public Class CeditMain
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents CompCorridor As System.Windows.Forms.RadioButton
+    Friend WithEvents CompShaft As System.Windows.Forms.RadioButton
+    Friend WithEvents CompNormal As System.Windows.Forms.RadioButton
     Friend WithEvents MVentFilterTime As System.Windows.Forms.TextBox
     Friend WithEvents Label38 As System.Windows.Forms.Label
     Friend WithEvents MVentFilterEfficiency As System.Windows.Forms.TextBox
@@ -296,13 +299,6 @@ Public Class CeditMain
     Friend WithEvents HVentWidth As System.Windows.Forms.TextBox
     Friend WithEvents Label23 As System.Windows.Forms.Label
     Friend WithEvents GroupFlowCharacteristics As System.Windows.Forms.GroupBox
-    Friend WithEvents CompDecayDepth As System.Windows.Forms.TextBox
-    Friend WithEvents CompDecayVelocity As System.Windows.Forms.TextBox
-    Friend WithEvents CompDecayDistance As System.Windows.Forms.TextBox
-    Friend WithEvents CompFlow As System.Windows.Forms.ComboBox
-    Friend WithEvents CompVelocityLabel As System.Windows.Forms.Label
-    Friend WithEvents CompDepthLabel As System.Windows.Forms.Label
-    Friend WithEvents CompDistanceLabel As System.Windows.Forms.Label
     Friend WithEvents CompSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents CompVariableArea As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents CompFloor As System.Windows.Forms.ComboBox
@@ -559,13 +555,6 @@ Public Class CeditMain
         Me.Label65 = New System.Windows.Forms.Label()
         Me.Label64 = New System.Windows.Forms.Label()
         Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid()
-        Me.CompFlow = New System.Windows.Forms.ComboBox()
-        Me.CompDecayDepth = New System.Windows.Forms.TextBox()
-        Me.CompDepthLabel = New System.Windows.Forms.Label()
-        Me.CompDecayVelocity = New System.Windows.Forms.TextBox()
-        Me.CompVelocityLabel = New System.Windows.Forms.Label()
-        Me.CompDecayDistance = New System.Windows.Forms.TextBox()
-        Me.CompDistanceLabel = New System.Windows.Forms.Label()
         Me.GroupBox34 = New System.Windows.Forms.GroupBox()
         Me.CompSpecHeatFloor = New System.Windows.Forms.Label()
         Me.CompDensityFloor = New System.Windows.Forms.Label()
@@ -784,6 +773,9 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.CompShaft = New System.Windows.Forms.RadioButton()
+        Me.CompCorridor = New System.Windows.Forms.RadioButton()
+        Me.CompNormal = New System.Windows.Forms.RadioButton()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -2073,16 +2065,12 @@ Public Class CeditMain
         '
         'GroupFlowCharacteristics
         '
+        Me.GroupFlowCharacteristics.Controls.Add(Me.CompNormal)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.CompCorridor)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.CompShaft)
         Me.GroupFlowCharacteristics.Controls.Add(Me.Label65)
         Me.GroupFlowCharacteristics.Controls.Add(Me.Label64)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompVariableArea)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompFlow)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompDecayDepth)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompDepthLabel)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompDecayVelocity)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompVelocityLabel)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompDecayDistance)
-        Me.GroupFlowCharacteristics.Controls.Add(Me.CompDistanceLabel)
         Me.GroupFlowCharacteristics.Location = New System.Drawing.Point(480, 48)
         Me.GroupFlowCharacteristics.Name = "GroupFlowCharacteristics"
         Me.GroupFlowCharacteristics.Size = New System.Drawing.Size(432, 166)
@@ -2124,65 +2112,6 @@ Public Class CeditMain
         Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
         Me.CompVariableArea.TabIndex = 4
         Me.CompVariableArea.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
-        '
-        'CompFlow
-        '
-        Me.CompFlow.Items.AddRange(New Object() {"Normal (Standard two-zone model)", "Shaft (Single zone model)", "Corridor (Two-zone with delayed flow)"})
-        Me.CompFlow.Location = New System.Drawing.Point(13, 35)
-        Me.CompFlow.MaxDropDownItems = 3
-        Me.CompFlow.Name = "CompFlow"
-        Me.CompFlow.Size = New System.Drawing.Size(209, 21)
-        Me.CompFlow.TabIndex = 0
-        Me.CompFlow.Text = "Normal two-zone model"
-        '
-        'CompDecayDepth
-        '
-        Me.CompDecayDepth.Location = New System.Drawing.Point(126, 108)
-        Me.CompDecayDepth.Name = "CompDecayDepth"
-        Me.CompDecayDepth.Size = New System.Drawing.Size(96, 20)
-        Me.CompDecayDepth.TabIndex = 2
-        '
-        'CompDepthLabel
-        '
-        Me.CompDepthLabel.Location = New System.Drawing.Point(32, 106)
-        Me.CompDepthLabel.Name = "CompDepthLabel"
-        Me.CompDepthLabel.Size = New System.Drawing.Size(88, 23)
-        Me.CompDepthLabel.TabIndex = 43
-        Me.CompDepthLabel.Text = "Depth:"
-        Me.CompDepthLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'CompDecayVelocity
-        '
-        Me.CompDecayVelocity.Location = New System.Drawing.Point(126, 76)
-        Me.CompDecayVelocity.Name = "CompDecayVelocity"
-        Me.CompDecayVelocity.Size = New System.Drawing.Size(96, 20)
-        Me.CompDecayVelocity.TabIndex = 1
-        '
-        'CompVelocityLabel
-        '
-        Me.CompVelocityLabel.AutoSize = True
-        Me.CompVelocityLabel.Location = New System.Drawing.Point(10, 79)
-        Me.CompVelocityLabel.Name = "CompVelocityLabel"
-        Me.CompVelocityLabel.Size = New System.Drawing.Size(110, 13)
-        Me.CompVelocityLabel.TabIndex = 41
-        Me.CompVelocityLabel.Text = "50 % Decay, Velocity:"
-        Me.CompVelocityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'CompDecayDistance
-        '
-        Me.CompDecayDistance.Location = New System.Drawing.Point(126, 140)
-        Me.CompDecayDistance.Name = "CompDecayDistance"
-        Me.CompDecayDistance.Size = New System.Drawing.Size(96, 20)
-        Me.CompDecayDistance.TabIndex = 3
-        '
-        'CompDistanceLabel
-        '
-        Me.CompDistanceLabel.Location = New System.Drawing.Point(32, 138)
-        Me.CompDistanceLabel.Name = "CompDistanceLabel"
-        Me.CompDistanceLabel.Size = New System.Drawing.Size(88, 23)
-        Me.CompDistanceLabel.TabIndex = 45
-        Me.CompDistanceLabel.Text = "Distance:"
-        Me.CompDistanceLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox34
         '
@@ -4376,6 +4305,38 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
         '
+        'CompShaft
+        '
+        Me.CompShaft.AutoSize = True
+        Me.CompShaft.Location = New System.Drawing.Point(37, 81)
+        Me.CompShaft.Name = "CompShaft"
+        Me.CompShaft.Size = New System.Drawing.Size(145, 17)
+        Me.CompShaft.TabIndex = 48
+        Me.CompShaft.Text = "Shaft (Single-zone model)"
+        Me.CompShaft.UseVisualStyleBackColor = True
+        '
+        'CompCorridor
+        '
+        Me.CompCorridor.AutoSize = True
+        Me.CompCorridor.Location = New System.Drawing.Point(37, 104)
+        Me.CompCorridor.Name = "CompCorridor"
+        Me.CompCorridor.Size = New System.Drawing.Size(156, 17)
+        Me.CompCorridor.TabIndex = 49
+        Me.CompCorridor.Text = "Corridor (Revised ceiling jet)"
+        Me.CompCorridor.UseVisualStyleBackColor = True
+        '
+        'CompNormal
+        '
+        Me.CompNormal.AutoSize = True
+        Me.CompNormal.Checked = True
+        Me.CompNormal.Location = New System.Drawing.Point(37, 58)
+        Me.CompNormal.Name = "CompNormal"
+        Me.CompNormal.Size = New System.Drawing.Size(145, 17)
+        Me.CompNormal.TabIndex = 50
+        Me.CompNormal.TabStop = True
+        Me.CompNormal.Text = "Normal (Two-zone model)"
+        Me.CompNormal.UseVisualStyleBackColor = True
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -4619,7 +4580,7 @@ Public Class CeditMain
             UpdateGUI.Geometry(CurrentCompartment)
         End If
     End Sub
-    Private Sub Comp_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompName.Leave, CompWidth.Leave, CompDepth.Leave, CompHeight.Leave, CompXPosition.Leave, CompYPosition.Leave, CompZPosition.Leave, CompDecayVelocity.Leave, CompDecayDepth.Leave, CompDecayDistance.Leave
+    Private Sub Comp_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompName.Leave, CompWidth.Leave, CompDepth.Leave, CompHeight.Leave, CompXPosition.Leave, CompYPosition.Leave, CompZPosition.Leave
         ' Update stored data and summary spreadsheet with newly typed info
         Dim aCompartment As New Compartment
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
@@ -4631,34 +4592,37 @@ Public Class CeditMain
             If sender Is Me.CompXPosition Then aCompartment.RoomOriginX = Val(Me.CompXPosition.Text)
             If sender Is Me.CompYPosition Then aCompartment.RoomOriginY = Val(Me.CompYPosition.Text)
             If sender Is Me.CompZPosition Then aCompartment.RoomOriginZ = Val(Me.CompZPosition.Text)
-            If sender Is Me.CompDecayVelocity Then aCompartment.HallVelocity = Val(Me.CompDecayVelocity.Text)
-            If sender Is Me.CompDecayDepth Then aCompartment.HallDepth = Val(Me.CompDecayDepth.Text)
-            If sender Is Me.CompDecayDistance Then aCompartment.HallDecayDistance = Val(Me.CompDecayDistance.Text)
             myCompartments.Item(CurrentCompartment) = aCompartment
             UpdateGUI.Geometry(CurrentCompartment)
         End If
     End Sub
-    Private Sub Comp_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompFlow.SelectedIndexChanged, CompFlow.TextChanged, CompCeiling.SelectedIndexChanged, CompWalls.SelectedIndexChanged, CompFloor.SelectedIndexChanged
+    Private Sub Comp_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompCeiling.SelectedIndexChanged, CompWalls.SelectedIndexChanged, CompFloor.SelectedIndexChanged
         Dim aCompartment As New Compartment
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             aCompartment = myCompartments.Item(CurrentCompartment)
-            If sender Is Me.CompFlow Then
-                If Microsoft.VisualBasic.Left(CompFlow.Text, 5) = "Shaft" Then
-                    aCompartment.Shaft = True
-                    aCompartment.Hall = False
-                ElseIf Microsoft.VisualBasic.Left(CompFlow.Text, 8) = "Corridor" Then
-                    aCompartment.Hall = True
-                    aCompartment.Shaft = False
-                Else
-                    aCompartment.Hall = False
-                    aCompartment.Shaft = False
-                End If
-            ElseIf sender Is Me.CompCeiling Then
+            If sender Is Me.CompCeiling Then
                 aCompartment.CeilingMaterial = myThermalProperties.GetShortName(sender.text)
             ElseIf sender Is Me.CompWalls Then
                 aCompartment.WallMaterial = myThermalProperties.GetShortName(sender.text)
             ElseIf sender Is Me.CompFloor Then
                 aCompartment.FloorMaterial = myThermalProperties.GetShortName(sender.text)
+            End If
+                myCompartments.Item(CurrentCompartment) = aCompartment
+                UpdateGUI.Geometry(CurrentCompartment)
+            End If
+    End Sub
+    Private Sub CompNormal_CheckedChanged(sender As Object, e As EventArgs) Handles CompNormal.CheckedChanged, CompShaft.CheckedChanged, CompCorridor.CheckedChanged
+        If CurrentCompartment >= 0 And CurrentCompartment < myCompartments.Count - 1 Then
+            Dim aCompartment As New Compartment
+            If sender Is Me.CompShaft Then
+                aCompartment.Shaft = True
+                aCompartment.Hall = False
+            ElseIf sender Is CompCorridor Then
+                aCompartment.Hall = True
+                aCompartment.Shaft = False
+            Else
+                aCompartment.Hall = False
+                aCompartment.Shaft = False
             End If
             myCompartments.Item(CurrentCompartment) = aCompartment
             UpdateGUI.Geometry(CurrentCompartment)

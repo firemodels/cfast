@@ -742,13 +742,13 @@
         hh(iijk) = lrarray(5)
         hl(iijk) = lrarray(6)
         if (countargs(11,lcarray,xnumc-1,nret)) then
-            halldist(iijk,1) = lrarray(8)
-            halldist(iijk,2) = lrarray(9)
+            ventoffset(iijk,1) = lrarray(8)
+            ventoffset(iijk,2) = lrarray(9)
             vface(iijk) = lrarray(10)
             initialopening = lrarray(11)
         else if (countargs(9,lcarray,xnumc-1,nret)) then
-            halldist(iijk,1) = lrarray(7)
-            halldist(iijk,2) = 0.0_eb
+            ventoffset(iijk,1) = lrarray(7)
+            ventoffset(iijk,2) = 0.0_eb
             vface(iijk) = lrarray(8)
             initialopening = lrarray(9)
         else

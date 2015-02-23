@@ -15,13 +15,7 @@ module cenviro
     integer, parameter :: eqp = 1, eqpmv = 2, eqtmv = 3, eqtu = 4, eqvu = 5, eqtl = 6, eqoxyl = 7, eqoxyu = 8, eqtt = 9, eqwt = 10
 
     ! index into izhall
-    integer, parameter :: ihroom = 1, ihvelflag = 2, ihdepthflag = 3, ihventnum = 4, ihhalfflag = 5, ihmode = 6, ihxy = 7
-
-    ! index into zzhall
-    integer, parameter :: ihtime0 = 1, ihvel = 2, ihdepth = 3, ihmaxlen = 4, ihhalf = 5, ihtemp = 6, ihorg = 7, ihdist = 8
-
-    ! index for hall models
-    integer, parameter :: ihbefore = 1, ihduring = 2, ihafter = 3
+    integer, parameter :: ihroom = 1, ihxy = 2
     
     logical izdtflag, izcon(nr), izhvac(nr)
     
@@ -34,7 +28,6 @@ module cenviro
     real(eb), dimension(mxhvsys) :: zzhvm
     real(eb), dimension(nr,4) :: zzwarea
     real(eb), dimension(nr,10) :: zzwarea2
-    real(eb), dimension(nr,8) :: zzhall
     real(eb), dimension(mxcross,nr) :: zzrvol, zzrarea, zzrhgt
     real(eb), dimension(2,nr) :: zzabsb, zzbeam
     real(eb), dimension(0:mxpts+1) :: zzdisc
@@ -51,7 +44,7 @@ module cenviro
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
     integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
-    integer, dimension(nr,7) :: izhall
+    integer, dimension(nr,2) :: izhall
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
@@ -99,7 +92,7 @@ module cfast_main
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), &
-        halldist(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr),&
+        ventoffset(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr),&
         hrp(nr), vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
         xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 

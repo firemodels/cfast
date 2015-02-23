@@ -315,18 +315,6 @@
         endif
     end do
 
-    !     Hallways
-
-    !      DO 40 I = 1, NM1
-    !        IF(IZHALL(I,IHROOM)==0)GO TO 40
-    !        TSTART = ZZHALL(I,IHtime0)
-    !        VEL = ZZHALL(I,IHVEL)
-    !        DEPTH = ZZHALL(I,IHDEPTH)
-    !        DIST = ZZHALL(I,IHDIST)
-    !        IF(DIST>ZZHALL(I,IHMAXLEN))DIST = ZZHALL(I,IHMAXLEN)
-    !        WRITE(IOFILO,5050)I,TSTART,VEL,DEPTH,DIST
-    !   40 CONTINUE
-
     ! detectors (including sprinklers)
     cjetmin = 0.10_eb
     do i = 1, ndtect

@@ -661,8 +661,7 @@
     subroutine initialize_memory
 
     !     routine: initialize_memory
-    !     purpose: This routine initializes the main memory - must be used by 
-    !              all modules that will run the model kernel
+    !     purpose: This routine initializes the main memory
     !     Arguments: none
 
     use precision_parameters
@@ -696,6 +695,7 @@
     end do
     do i = 1, nr
         deadroom(i) = 0
+        izhall(i,ihroom) = 0
     end do
     do i = 1, nr
         switch(1,i) = .true.

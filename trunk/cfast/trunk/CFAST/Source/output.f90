@@ -169,7 +169,6 @@
         call rsltfir(isw)
         call rslttar(1)
         call rsltsprink
-        call rslthall()
         call rsltsp
         if(trace) then
             call rsltflwt ()
@@ -763,48 +762,6 @@
     end do
     return
     end subroutine rsltsprink
-
-! --------------------------- rslthall -------------------------------------------
-
-    subroutine rslthall ()
-
-    !     Description:  Output the conditions for each hall
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    implicit none
-
-    integer :: nhalls, i
-    real(eb) :: tstart, vel, depth, dist
-
-
-    nhalls = 0
-    do i = 1, nm1
-        if(izhall(i,ihroom)==1)nhalls = nhalls + 1
-    end do
-    if(nhalls==0)return
-    write(iofilo,5000)
-5000 format (//,' Hall Flow',// &
-    ' Compartment  Start Time     Velocity       Depth        Distance',/, &
-    '                 (s)          (m/s)          (m)            (m)'/ &
-    '-----------------------------------------------------------------')
-
-    do i = 1, nm1
-        if(izhall(i,ihroom)/=0) then
-            tstart = zzhall(i,ihtime0)
-            vel = zzhall(i,ihvel)
-            depth = zzhall(i,ihdepth)
-            dist = zzhall(i,ihdist)
-            if(dist>zzhall(i,ihmaxlen))dist = zzhall(i,ihmaxlen)
-            write(iofilo,30)i,tstart,vel,depth,dist
-30          format(4x,i2,7x,1pg10.3,5x,1pg10.3,3x,1pg10.3,5x,1pg10.3)
-        end if
-    end do
-
-    return
-    end subroutine rslthall
 
 ! --------------------------- output_initial_conditions -------------------------------------------
 

@@ -1408,12 +1408,12 @@
         endif
         ! HALL Compartment Velocity Depth Decay_Distance
     case ('HALL')
-        if (.not.countargs(4,lcarray, xnumc-1, nret)) then
+        if (.not.countargs(1,lcarray, xnumc-1, nret)) then
             ierror = 46
             return
         endif
 
-        IROOM = lrarray(1)
+        iroom = lrarray(1)
 
         ! check that specified room is valid
         if(iroom<0.or.iroom>n)then
@@ -1423,32 +1423,8 @@
         endif
 
         izhall(iroom,ihroom) = 1
-        izhall(iroom,ihvelflag) = 0
-        izhall(iroom,ihdepthflag) = 0
-        izhall(iroom,ihventnum) = 0
-        zzhall(iroom,ihtime0) = -1.0_eb
-        zzhall(iroom,ihvel) = 0.0_eb
-        zzhall(iroom,ihdepth) = -1.0_eb
-        zzhall(iroom,ihhalf) = -1.0_eb
-
-        ! HALL velocity; not set if negative
-        if(lrarray(2)>=0) then
-            zzhall(iroom,ihvel) = lrarray(2)
-            izhall(iroom,ihvelflag) = 1
-        endif
-
-        ! HALL layer depth; not set if negative
-        if (lrarray(3)>=0) then
-            zzhall(iroom,ihdepth) = lrarray(3)
-            izhall(iroom,ihdepthflag) = 1
-        endif
-
-        ! HALL temperature decay distance (temperature decays by 0.50); if negative, not set
-        if (lrarray(4)>=0) then
-            zzhall(iroom,ihhalf) = lrarray(4)
-            izhall(iroom,ihhalfflag) = 1
-            izhall(iroom,ihmode) = ihbefore
-        endif
+        
+        if (nret>1) write (logerr,5406) iroom
 
         ! ROOMA Compartment Number_of_Area_Values Area_Values
         ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
@@ -1774,7 +1750,8 @@
 5402 format ('***Error: Plume index out of range ',i3)
 5403 format ('***Error: Invalid SLCF specification in visualization input ',i3)  
 5404 format ('***Error: Invalid ISOF specification in visualization input ',i3)    
-5405 format ('***Error: Invalid keyword in CFAST input file ',a)     
+5405 format ('***Error: Invalid keyword in CFAST input file ',a) 
+5406 format ('***Error: Outdated HALL command for compartment ',i3,' Flow inputs are no longer used')  
 
     end subroutine keywordcases
 

@@ -38,8 +38,8 @@
     logical :: ventflg(mxvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
     integer :: nirm, ifrom, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut
-    real(eb) :: yvbot, yvtop, avent, ventvel, ventheight, vlayerdepth
-    integer,parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
+    real(eb) :: yvbot, yvtop, avent, ventvel
+    integer, parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
     integer :: position
     
@@ -76,7 +76,7 @@
             end do
 
             ! setup data structures for from and to room
-            call getvars(i,iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+            call getvars(iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
             
             ! convert vent dimensions to absolute dimensions
             yvbot = ventptr%sill + yflor(1)
@@ -97,25 +97,7 @@
                    epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                    yvelev,xmslab,nslab,nneut,ventvel)
                 
-                if (prnslab) then
-                    call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
-                endif
-
-                ! update hall info for vents connected from fire room to hall
-
-                if(updatehall)then
-                    ventheight = yvtop - yvbot
-                    if(ventptr%is_from_hall==1)then
-                        vlayerdepth = yvtop - ylay(2)
-                        if(vlayerdepth>ventheight)vlayerdepth = ventheight
-                        call sethall(1,i,iroom1,tsec,width,tslab(nslab),-ventvel,vlayerdepth)
-                    endif
-                    if(ventptr%is_to_hall==1)then
-                        vlayerdepth = yvtop - ylay(1)
-                        if(vlayerdepth>ventheight)vlayerdepth = ventheight
-                        call sethall(1,i,iroom2,tsec,width,tslab(nslab),ventvel,vlayerdepth)
-                    endif
-                endif
+                if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 
                 call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
 
@@ -681,7 +663,7 @@
 
 ! --------------------------- getvars -------------------------------------------
 
-    subroutine getvars(ivent,from_room,to_room,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+    subroutine getvars(from_room,to_room,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
 
     !     routine: getvar
     !     purpose: routine to interface between global data structures and natural vent data structures.
@@ -704,66 +686,39 @@
     use vents
     implicit none
 
-    integer, intent(in) :: ivent, from_room, to_room, nprod
+    integer, intent(in) :: from_room, to_room, nprod
     real(eb), intent(out) :: conl(mxfprd,2), conu(mxfprd,2)
     real(eb), intent(out) :: yflor(2), yceil(2), ylay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
     
     integer :: up, iprod, ip, room_index(2), iroom, i
-    real(eb) :: ventdist, time0, vel, cjetdist, zloc, rhou(2), hallvel
     
     logical :: hallflag
     type(room_type), pointer :: roomptr
-
-
-    ! for rooms that are halls only use upper layer properties if the ceiling jet is beyond the vent
     
     room_index(1)=from_room
     room_index(2)=to_room
 
     do i = 1, 2
-       hallflag = .false.
-       up = upper
-       iroom = room_index(i)
-       roomptr=>roominfo(iroom)
-        
+        hallflag = .false.
+        up = upper
+        iroom = room_index(i)
+        roomptr=>roominfo(iroom)
         yflor(i) = roomptr%yflor
         yceil(i) = roomptr%yceil
         pflor(i) = zzrelp(iroom)
         ylay(i) = zzhlay(iroom,lower)
-
-        ! this is a hall, the vent number is defined and flow is occuring
-        if(izhall(iroom,ihroom)==1.and.ivent/=0.and.izhall(iroom,ihmode)==ihduring)then
-            ventdist = zzventdist(iroom,ivent)
-            if(ventdist>0.0_eb)then
-                time0 = zzhall(iroom,ihtime0)
-                vel = zzhall(iroom,ihvel)
-                cjetdist = vel*(stime-time0)
-                if(cjetdist<ventdist)then
-                    up = lower
-                else
-                    up = upper
-                    hallflag = .true.
-                endif
-            else
-                up = lower
-            endif
-        endif
-
-        denu(i) = zzrho(iroom,up)
+        denu(i) = zzrho(iroom,upper)
         denl(i) = zzrho(iroom,lower)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
             conl(iprod,i) = zzcspec(iroom,lower,ip)
-            conu(iprod,i) = zzcspec(iroom,up,ip)
+            conu(iprod,i) = zzcspec(iroom,upper,ip)
         end do
-        tu(i) = zztemp(iroom,up)
+        tu(i) = zztemp(iroom,upper)
         tl(i) = zztemp(iroom,lower)
-        if(hallflag)then
-            zloc = hr(iroom) - zzhall(iroom,ihdepth)/2.0_eb
-            call halltrv(iroom,cjetdist,zloc,tu(i),rhou(i),hallvel)
-        endif
     end do
     return
+    
     end subroutine getvars
 
 ! --------------------------- flogo -------------------------------------------

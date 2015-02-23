@@ -16,14 +16,14 @@ VPATH = Source
 objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_int.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               convection.o conduction.o cyl_conduct.o radiation.o target.o \
-              fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o cfast.o 
+              fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
 
 objwin = $(objf:.o=.obj)
 
 objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_gnu.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               convection.o conduction.o cyl_conduct.o radiation.o target.o \
-              fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o cfast.o 
+              fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
 
 
 # General Purpose Rules
@@ -170,13 +170,13 @@ intel_osx_64_db : setup $(obj)
 cfast.o : auxiliary.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               conduction.o cyl_conduct.o convection.o radiation.o target.o \
-              fire.o flowfan.o flowhall.o flowhorizontal.o flowvertical.o
+              fire.o flowfan.o flowhorizontal.o flowvertical.o
 
 
 cfast.obj : auxiliary.obj initialization.obj input.obj numerics.obj \
               output.obj outputsmv.obj outputspreadsheet.obj ssHeaders.obj \
               conduction.obj cyl_conduct.obj convection.obj radiation.obj target.obj \
-              fire.obj flowfan.obj flowhall.obj flowhorizontal.obj flowvertical.obj
+              fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj
 
 #*** Clean Target to remove Object and Module files ***
 

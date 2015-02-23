@@ -907,28 +907,6 @@
     jaccol = -2
     neqoff = 10
 
-    ! initialize hall start time
-    do i = 1, nr
-        zzhall(i,ihtime0) = -1.0_eb
-        zzhall(i,ihvel) = -1.0_eb
-        zzhall(i,ihdepth) = -1.0_eb
-        zzhall(i,ihmaxlen) = -1.0_eb
-        zzhall(i,ihhalf) = -1.0_eb
-        zzhall(i,ihtemp) = 0.0_eb
-        zzhall(i,ihorg) = -1.0_eb
-        izhall(i,ihdepthflag) = 0
-        izhall(i,ihhalfflag) = 0
-        izhall(i,ihmode) = ihafter
-        izhall(i,ihroom) = 0
-        izhall(i,ihvelflag) = 0
-        izhall(i,ihventnum) = 0
-        izhall(i,ihxy) = 0
-        do ivent = 1, mxvent
-            zzventdist(i,ivent) = -1.
-        end do
-    end do
-    updatehall = .false.
-
     do i = 1, nr
         do j = 1, nr
             do k = 1, 4

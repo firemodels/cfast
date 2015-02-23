@@ -673,9 +673,7 @@
         endif
 
         ipar(2) = all
-        updatehall = .true.
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        updatehall = .false.
         call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
 
         ! advance the detector temperature solutions and check for object ignition
@@ -2041,8 +2039,8 @@
     !     Revision: $Revision$
     !     Revision Date: $Date$
 
-    integer :: MODULE_REV, rev_auxilliary, rev_fire, rev_flowfan
-    integer :: rev_flowhall, rev_flowhorizontal, rev_flowvertical, rev_initialization, &
+    integer :: module_rev, rev_auxilliary, rev_fire, rev_flowfan
+    integer :: rev_flowhorizontal, rev_flowvertical, rev_initialization, &
     rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_ssHeaders
     character(255) :: MODULE_DATE 
     character(255), parameter :: mainrev='$Revision$'
@@ -2050,10 +2048,10 @@
 
     write(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
     read (MODULE_DATE,'(I5)') MODULE_REV
-    rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),rev_convection(),rev_fire(),&
-                     rev_flowfan(),rev_flowhall(),rev_flowhorizontal(), &
-    rev_flowvertical(),rev_initialization(),rev_input(),rev_numerics(),rev_output(),rev_outputsmv(),rev_outputspreadsheet(),&
-    rev_radiation(),rev_target(),rev_ssHeaders())
+    rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),rev_convection(),rev_fire(), &
+        rev_flowfan(),rev_flowhorizontal(), rev_flowvertical(),rev_initialization(),rev_input(), &
+        rev_numerics(),rev_output(),rev_outputsmv(),rev_outputspreadsheet(),&
+        rev_radiation(),rev_target(),rev_ssHeaders())
     write(MODULE_DATE,'(A)') maindate
     return
     end function rev_cfast

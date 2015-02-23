@@ -23,7 +23,7 @@ module cenviro
     ! index for hall models
     integer, parameter :: ihbefore = 1, ihduring = 2, ihafter = 3
     
-    logical updatehall, izdtflag, izcon(nr), izhvac(nr)
+    logical izdtflag, izcon(nr), izhvac(nr)
     
     real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs
     real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp

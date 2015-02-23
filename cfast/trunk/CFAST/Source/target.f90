@@ -596,40 +596,30 @@ contains
     !     description:  calculates near-detector gas temperature and velocity
 
     real(eb) :: xloc, yloc, zloc, tg, vg(4)
-    integer :: i, id, iroom, nd
+    integer :: id, iroom
 
-    do id = 1, ndtect
-        iroom = ixdtect(id,droom)
-        xdtect(id,dvel) = 0.1_eb
-        zloc = xdtect(id,dzloc)
-        if(zloc>zzhlay(iroom,lower))then
-            xdtect(id,dtjet) = zztemp(iroom,upper)
-        else
-            xdtect(id,dtjet) = zztemp(iroom,lower)
-        endif
-    end do
-    if (option(fcjet)==off) return
-
-    ! handle detectors that are not in active halls
+    ! If ceiling jet option is turned off, conditions default to the appropriate layer temperature
     do id = 1, ndtect
         iroom = ixdtect(id,droom)
         xloc = xdtect(id,dxloc)
         yloc = xdtect(id,dyloc)
         zloc = xdtect(id,dzloc)
-        if (izhall(iroom,ihmode)/=ihduring) then
+        if (option(fcjet)==off) then
+            ! if ceiling jet option is off, things default to appropriate layer temperature
+            if(zloc>zzhlay(iroom,lower))then
+                xdtect(id,dtjet) = zztemp(iroom,upper)
+            else
+                xdtect(id,dtjet) = zztemp(iroom,lower)
+            endif
+            xdtect(id,dvel) = 0.1_eb
+        else
+            ! if ceiling jet option is on, temeperature is determined by plume and ceiling jet algorithms
             call get_gas_temp_velocity(iroom,xloc,yloc,zloc,tg,vg)
             xdtect(id,dtjet) = tg
             xdtect(id,dvel) = vg(4)
-        endif
+        end if
     end do
 
-    ! handle detectors that are in active halls
-    do i = 1, nm1
-        id = idtpnt(i,2)
-        nd = idtpnt(i,1)  
-        if(izhall(i,ihmode)==ihduring) call hallht(i,id,nd)
-    end do
-    
     return
     
     end subroutine detector_temp_and_velocity

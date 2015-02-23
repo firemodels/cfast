@@ -1536,26 +1536,11 @@
                             ventptr%soffit = hh(iijk)
                             ventptr%width = bw(iijk)
                             
-                            ventptr%from_hall_offset = halldist(iijk,1)
-                            ventptr%to_hall_offset = halldist(iijk,2)
+                            ventptr%from_hall_offset = ventoffset(iijk,1)
+                            ventptr%to_hall_offset = ventoffset(iijk,2)
                             ventptr%from=i
                             ventptr%to=j
                             ventptr%counter=k
-
-                            ! is "from" room a hall?
-                            if(izhall(i,ihroom)==1)then
-                                ventptr%is_from_hall=1
-                            else
-                                ventptr%is_from_hall=0
-                            endif
-
-                            ! is "to" room a hall?
-                            if(izhall(j,ihroom)==1)then
-                                ventptr%is_to_hall=1
-                            else
-                                ventptr%is_to_hall=0
-                            endif
-
                             ! add face (vface) to the data structure
                             ventptr%face = vface(iijk)
                         endif

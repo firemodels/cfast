@@ -44,7 +44,6 @@ module cfast_types
         real(eb) :: from_hall_offset, to_hall_offset
         real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
         integer :: from, to, counter
-        integer :: is_from_hall, is_to_hall
         integer :: face
     end type vent_type
     

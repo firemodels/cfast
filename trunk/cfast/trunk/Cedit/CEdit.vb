@@ -552,6 +552,9 @@ Public Class CeditMain
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.GroupFlowCharacteristics = New System.Windows.Forms.GroupBox()
+        Me.CompNormal = New System.Windows.Forms.RadioButton()
+        Me.CompCorridor = New System.Windows.Forms.RadioButton()
+        Me.CompShaft = New System.Windows.Forms.RadioButton()
         Me.Label65 = New System.Windows.Forms.Label()
         Me.Label64 = New System.Windows.Forms.Label()
         Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid()
@@ -773,9 +776,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.CompShaft = New System.Windows.Forms.RadioButton()
-        Me.CompCorridor = New System.Windows.Forms.RadioButton()
-        Me.CompNormal = New System.Windows.Forms.RadioButton()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -2077,6 +2077,38 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.TabIndex = 20
         Me.GroupFlowCharacteristics.TabStop = False
         Me.GroupFlowCharacteristics.Text = "Advanced"
+        '
+        'CompNormal
+        '
+        Me.CompNormal.AutoSize = True
+        Me.CompNormal.Checked = True
+        Me.CompNormal.Location = New System.Drawing.Point(37, 58)
+        Me.CompNormal.Name = "CompNormal"
+        Me.CompNormal.Size = New System.Drawing.Size(145, 17)
+        Me.CompNormal.TabIndex = 50
+        Me.CompNormal.TabStop = True
+        Me.CompNormal.Text = "Normal (Two-zone model)"
+        Me.CompNormal.UseVisualStyleBackColor = True
+        '
+        'CompCorridor
+        '
+        Me.CompCorridor.AutoSize = True
+        Me.CompCorridor.Location = New System.Drawing.Point(37, 104)
+        Me.CompCorridor.Name = "CompCorridor"
+        Me.CompCorridor.Size = New System.Drawing.Size(156, 17)
+        Me.CompCorridor.TabIndex = 49
+        Me.CompCorridor.Text = "Corridor (Revised ceiling jet)"
+        Me.CompCorridor.UseVisualStyleBackColor = True
+        '
+        'CompShaft
+        '
+        Me.CompShaft.AutoSize = True
+        Me.CompShaft.Location = New System.Drawing.Point(37, 81)
+        Me.CompShaft.Name = "CompShaft"
+        Me.CompShaft.Size = New System.Drawing.Size(145, 17)
+        Me.CompShaft.TabIndex = 48
+        Me.CompShaft.Text = "Shaft (Single-zone model)"
+        Me.CompShaft.UseVisualStyleBackColor = True
         '
         'Label65
         '
@@ -4305,38 +4337,6 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
         '
-        'CompShaft
-        '
-        Me.CompShaft.AutoSize = True
-        Me.CompShaft.Location = New System.Drawing.Point(37, 81)
-        Me.CompShaft.Name = "CompShaft"
-        Me.CompShaft.Size = New System.Drawing.Size(145, 17)
-        Me.CompShaft.TabIndex = 48
-        Me.CompShaft.Text = "Shaft (Single-zone model)"
-        Me.CompShaft.UseVisualStyleBackColor = True
-        '
-        'CompCorridor
-        '
-        Me.CompCorridor.AutoSize = True
-        Me.CompCorridor.Location = New System.Drawing.Point(37, 104)
-        Me.CompCorridor.Name = "CompCorridor"
-        Me.CompCorridor.Size = New System.Drawing.Size(156, 17)
-        Me.CompCorridor.TabIndex = 49
-        Me.CompCorridor.Text = "Corridor (Revised ceiling jet)"
-        Me.CompCorridor.UseVisualStyleBackColor = True
-        '
-        'CompNormal
-        '
-        Me.CompNormal.AutoSize = True
-        Me.CompNormal.Checked = True
-        Me.CompNormal.Location = New System.Drawing.Point(37, 58)
-        Me.CompNormal.Name = "CompNormal"
-        Me.CompNormal.Size = New System.Drawing.Size(145, 17)
-        Me.CompNormal.TabIndex = 50
-        Me.CompNormal.TabStop = True
-        Me.CompNormal.Text = "Normal (Two-zone model)"
-        Me.CompNormal.UseVisualStyleBackColor = True
-        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -4612,20 +4612,22 @@ Public Class CeditMain
             End If
     End Sub
     Private Sub CompNormal_CheckedChanged(sender As Object, e As EventArgs) Handles CompNormal.CheckedChanged, CompShaft.CheckedChanged, CompCorridor.CheckedChanged
-        If CurrentCompartment >= 0 And CurrentCompartment < myCompartments.Count - 1 Then
+        If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then
             Dim aCompartment As New Compartment
-            If sender Is Me.CompShaft Then
+            aCompartment = myCompartments.Item(CurrentCompartment)
+            If sender Is Me.CompShaft And Me.CompShaft.Checked = True Then
                 aCompartment.Shaft = True
                 aCompartment.Hall = False
-            ElseIf sender Is CompCorridor Then
+                myCompartments.Item(CurrentCompartment) = aCompartment
+            ElseIf sender Is Me.CompCorridor And Me.CompCorridor.Checked = True Then
                 aCompartment.Hall = True
                 aCompartment.Shaft = False
-            Else
+                myCompartments.Item(CurrentCompartment) = aCompartment
+            ElseIf sender Is Me.CompNormal And Me.CompNormal.Checked = True Then
                 aCompartment.Hall = False
                 aCompartment.Shaft = False
+                myCompartments.Item(CurrentCompartment) = aCompartment
             End If
-            myCompartments.Item(CurrentCompartment) = aCompartment
-            UpdateGUI.Geometry(CurrentCompartment)
         End If
     End Sub
     Private Sub CompVariableArea_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles CompVariableArea.BeforeRowColChange

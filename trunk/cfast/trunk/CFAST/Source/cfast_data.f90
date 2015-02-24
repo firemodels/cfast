@@ -15,7 +15,8 @@ module cenviro
     integer, parameter :: eqp = 1, eqpmv = 2, eqtmv = 3, eqtu = 4, eqvu = 5, eqtl = 6, eqoxyl = 7, eqoxyu = 8, eqtt = 9, eqwt = 10
 
     ! index into izhall
-    integer, parameter :: ihroom = 1, ihxy = 2
+    integer, parameter :: ihroom = 1, & ! 1 if compartment is a hall
+                          ihxy = 2      ! longest dimension, 1=x 2=y
     
     logical izdtflag, izcon(nr), izhvac(nr)
     

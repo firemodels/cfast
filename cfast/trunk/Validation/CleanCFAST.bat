@@ -1,14 +1,14 @@
 echo off
-del *_n.csv /s/q >nul
-del *_s.csv /s/q >nul
-del *_f.csv /s/q >nul
-del *_w.csv /s/q >nul
-del *_zone.csv /s/q >nul
-del *.out /s/q >nul
-del *.smv /s/q >nul
-del *.plt /s/q >nul
-del *.status /s/q >nul
-del *.log /s/q >nul
-del *.sf /s/q >nul
-del *_slice.info /s/q >nul
-del *.iso /s/q >nul
+del *_n.csv /s/q >nul 2>&1
+del *_s.csv /s/q >nul 2>&1
+del *_f.csv /s/q >nul 2>&1
+del *_w.csv /s/q >nul 2>&1
+del *_zone.csv /s/q >nul 2>&1
+del *.out /s/q >nul 2>&1
+del *.smv /s/q >nul 2>&1
+del *.plt /s/q >nul 2>&1
+del *.status /s/q >nul 2>&1
+del *.log /s/q >nul 2>&1
+del *.sf /s/q >nul 2>&1
+del *_slice.info /s/q >nul 2>&1
+del *.iso /s/q >nul 2>&1

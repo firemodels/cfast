@@ -237,7 +237,7 @@
 
         ! calculate the entrainment rate but constrain the actual amount
         ! of air entrained to that required to produce stable stratification
-        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, zztemp(iroom,lower), xemp, xems, xeme, &
+        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, interior_temperature, xemp, xems, xeme, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         ! check for an upper only layer fire
@@ -311,7 +311,7 @@
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, zztemp(iroom,upper), uplmep, uplmes, uplmee, &
+        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
@@ -652,8 +652,9 @@
     real(eb), intent(in) :: q, q_c, z, t_inf, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
     
-    real(eb), parameter :: cp = 1.012
+    real(eb), parameter :: cp = 1.012_eb
     real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf
+    real(eb) :: c1, c2
     
     ! determine which entrainment factor to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
     ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger; 
@@ -662,19 +663,17 @@
     if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
     if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
 
-    ! virtual original correlation is based on total HRR
+    ! qstar and virtual origin correlation are based on total HRR
     qj = 0.001_eb*q*xf
     if (z>0.0_eb.and.qj>0.0_eb) then
         d = sqrt(area/xf/pio4)
         rho_inf = 352.981915_eb/t_inf
         qstar = qj/(rho_inf*cp*t_inf*gsqrt*d**(2.5_eb))
-        z0 = -1.02_eb*d + 0.083_eb*qj**0.4_eb
-        !z0 = d*(-1.02_eb + 1.4*qstar**0.4_eb)
+        z0 = d*(-1.02_eb + 1.4_eb*qstar**0.4_eb)
 
-        ! entrainment is based on covective HRR
+        ! entrainment is based on convective HRR and the mean flame height
         qj = 0.001_eb*q_c*xf
-        z_l = 0.166_eb*qj**0.4_eb
-        !z_l = d*(-1.02_eb + 3.7*qstar**0.4_eb)
+        z_l = max(0.0001_eb,d*(-1.02_eb + 3.7*qstar**0.4_eb))
         if (z>z_l) then
             factor = 1.0_eb
             deltaz = max(0.0001_eb, z-z0)
@@ -682,9 +681,9 @@
             factor = z/z_l
             deltaz = max(0.0001_eb, z_l-z0)
         end if
-        !eme = (0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird*qj**onethird*deltaz**(5.0_eb/3.0_eb)*
-        !(1.0_eb+2.9_eb*qj**twothirds/((gsqrt*cp*rho_inf*t_inf)**(2.0_eb/3.0_eb)*deltaz**(5.0_eb/3.0_eb))) * factor)/xf
-        eme = (0.071_eb*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+0.026_eb*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
+        c1 = 0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird  ! under normal conditions, 0.071_eb
+        c2 = 2.9_eb/((gsqrt*cp*rho_inf*t_inf)**twothirds)      ! under normal conditions, 0.026_eb
+        eme = (c1*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+c2*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
         ems = emp + eme
     else
         ems = emp
@@ -1155,7 +1154,7 @@
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume, vplume
 
-    real(eb), parameter :: cp = 1.012
+    real(eb), parameter :: cp = 1.012_eb
     real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u
 
 

@@ -877,6 +877,7 @@ Module IO
                                 myErrors.Add("Keyword HALL compartment  " + csv.str(i, hallNum.compartment) + " is already declared an one zone compartment and will be changed to a hall ", ErrorMessages.TypeError)
                             End If
                             If csv.Num(i, 0) > 2 Then myErrors.Add("Keyword HALL is an outdated format " + csv.strrow(i) + " hallway flow inputs will be ignored", ErrorMessages.TypeWarning)
+                            myCompartments(j).Hall = True
                             myCompartments(j).Changed = False
                         End If
                     Case "HHEAT"

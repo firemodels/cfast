@@ -217,6 +217,7 @@ Public Class UpdateGUI
                 MainWin.CompDensityFloor.Text = "Density: "
                 MainWin.CompThicknessFloor.Text = "Thickness: "
             End If
+
             If aCompartment.Shaft = True Then
                 MainWin.CompShaft.Checked = True
             ElseIf aCompartment.Hall = True Then
@@ -224,6 +225,7 @@ Public Class UpdateGUI
             Else
                 MainWin.CompNormal.Checked = True
             End If
+
             aCompartment.GetVariableArea(AreaPoints, HeightPoints, NumPoints)
             ClearGrid(MainWin.CompVariableArea)
             If NumPoints > 0 Then

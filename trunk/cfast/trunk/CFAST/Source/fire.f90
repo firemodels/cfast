@@ -1003,7 +1003,7 @@
     real(eb), intent(out) :: tg, vg(4)
         
     real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
-    real(eb) :: xdistance, ydistance
+    real(eb) :: xdistance, ydistance, hall_width
 
     integer :: i
 
@@ -1029,12 +1029,23 @@
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = zzhlay(iroom,lower)
             zceil = hr(iroom)
-            r = sqrt(xdistance**2 + ydistance**2)
+            if (izhall(iroom,ishall)==1) then
+                if (izhall(iroom,ihxy)==1) then
+                    r = ydistance
+                    hall_width = br(iroom)
+                else
+                    r = xdistance
+                    hall_width = dr(iroom)
+                end if
+            else
+                r = sqrt(xdistance**2 + ydistance**2)
+                hall_width = 0.0_eb
+            end if
             ! first calculate plume temperature at desired location
             call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
             call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling, vplume_ceiling)
-            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, tcj, vcj)
+            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, hall_width, tcj, vcj)
             tg = max(tg,tplume,tcj)
             if (r/=0.0_eb) then
                 vg(1) = vg(1) + vcj*xdistance/r
@@ -1044,11 +1055,13 @@
         end if
     end do
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
+    return
+    
     end subroutine get_gas_temp_velocity  
     
 ! --------------------------- get_ceilingjet_tempandvelocity --------------------------------------
     
-    subroutine get_ceilingjet_tempandvelocity (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, tcj, vcj)
+    subroutine get_ceilingjet_tempandvelocity (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, w, tcj, vcj)
 
     !     routine: get_ceilingjet_tempandvelocity
     !     purpose: Calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
@@ -1063,13 +1076,14 @@
     !                 zceil: height of the compartment ceiling (m)
     !                 zin: position to calculate temperature (m)
     !                 r: horizontal distance from fire centerline (m)
+    !                 w: width of hallway is compartment is designated as a hallway, zero otherwisw
     !                 tcj (output): temperature at height zin and radius r (K)
     !                 vcj (output): velocity at height zin and radius r (m/s)
 
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r
+    real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, w
     real(eb), intent(out) :: tcj, vcj
         
     real(eb), parameter :: cp = 1.012_eb
@@ -1087,7 +1101,7 @@
     vcj = 0.0
      
     h = zceil - zfire 
-        
+
     ! for the temperature algorithm to work, there has to be a fire, two layers, and a target point above the fire
     if (qdot>0.0_eb.and.tu>=tl.and.h>=0.0_eb) then
         if (zfire<=zlayer) then
@@ -1097,32 +1111,42 @@
             t_inf = tu
         end if
         rho_inf = 352.981915_eb/t_inf
-        qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
-        
+
         !ceiling jet thickness
         if (r/h>=0.26_eb) then
             delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*r/h))
         else
             delta_cj = h * 0.112_eb*(1.0_eb-exp(-2.24_eb*0.26_eb))
         end if
-        
+
         if (zin>=zceil-delta_cj) then
-            ! ceiling jet temperature
+            ! if compartment is not a hallway or distance is smaller than 1/2 hallway width, use alpert and heskestad
+
+            !ceiling jet temperature
             if (r/h<=0.2_eb) then
                 tcj = tplume
             else
                 tcj = t_layer + (tplume-t_layer)/deltaT_0star_at_p2 * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
             end if
-            
+            if (w>0.0_eb.and.r>w/2) then
+                !compartment is a hallway and we've hit the walls, use delichastsios
+                tcj = max(tcj,t_layer + (tplume-t_layer)*0.37_eb*(h/w)**onethird*exp(-0.16_eb*r/h*(w/h)**onethird))
+            end if
+
             ! ceiling jet velocity
+            qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
             if (r/h<=0.17_eb) then
                 vcj = gsqrt*sqrt(h)*qstar_h**onethird*3.61_eb
             else
                 vcj = gsqrt*sqrt(h)*qstar_h**onethird*1.06_eb*(r/h)**(-0.69_eb)
             end if
+            if (w>0.0_eb.and.r>w/2) then
+                !compartment is a hallway and we've hit the walls, use delichastsios
+                vcj = max(vcj,0.114*sqrt(h*(tcj-t_layer))*(h/w)**(1.0_eb/6.0_eb))
+            end if
         end if
     end if
-    
+
     return
     end subroutine get_ceilingjet_tempandvelocity
     

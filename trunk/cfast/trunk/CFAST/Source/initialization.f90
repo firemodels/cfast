@@ -644,7 +644,7 @@
 
     ! define ihxy in izhall (dimension that is longest)
     do i = 1, nm1
-        if(izhall(i,ihroom)==1)then
+        if(izhall(i,ishall)==1)then
             if(dr(i)>br(i))then
                 izhall(i,ihxy) = 1
             else
@@ -695,7 +695,7 @@
     end do
     do i = 1, nr
         deadroom(i) = 0
-        izhall(i,ihroom) = 0
+        izhall(i,ishall) = 0
     end do
     do i = 1, nr
         switch(1,i) = .true.

@@ -1422,7 +1422,7 @@
             return
         endif
 
-        izhall(iroom,ihroom) = 1
+        izhall(iroom,ishall) = 1
         
         if (nret>1) write (logerr,5406) iroom
 

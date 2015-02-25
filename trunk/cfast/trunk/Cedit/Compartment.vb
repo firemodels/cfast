@@ -27,6 +27,7 @@ Public Class Compartment
     Private aHall As Boolean                ' True if compartment is a aHallway
     Private aAreaPoints(0) As Single        ' Vector of room areas as a function of height
     Private aHeightPoints(0) As Single      ' Vector of room heights corresponding to room areas
+    Private aGridCells(3) As Integer        ' Number of grid cells for visualization in x, y, z directions
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
     Private i As Integer
@@ -45,6 +46,7 @@ Public Class Compartment
         Me.aHeightPoints(0) = Me.aRoomHeight
         Me.aShaft = False
         Me.aHall = False
+        Me.aGridCells = {50, 50, 50, 50}
     End Sub
     Public Property Name() As String
         Get
@@ -180,6 +182,49 @@ Public Class Compartment
             End If
         End Set
     End Property
+    Public Property xGrid() As Integer
+        Get
+            Return aGridCells(1)
+        End Get
+        Set(value As Integer)
+            If value <> aGridCells(1) Then
+                aChanged = True
+                aGridCells(1) = value
+            End If
+        End Set
+    End Property
+    Public Property yGrid() As Integer
+        Get
+            Return aGridCells(2)
+        End Get
+        Set(value As Integer)
+            If value <> aGridCells(2) Then
+                aChanged = True
+                aGridCells(2) = value
+            End If
+        End Set
+    End Property
+    Public Property zGrid() As Integer
+        Get
+            Return aGridCells(3)
+        End Get
+        Set(value As Integer)
+            If value <> aGridCells(3) Then
+                aChanged = True
+                aGridCells(3) = value
+            End If
+        End Set
+    End Property
+    Public Sub GetGrid(ByRef axGrid As Integer, ByRef ayGrid As Integer, ByRef azGrid As Integer)
+        axGrid = Me.xGrid
+        ayGrid = Me.yGrid
+        azGrid = Me.zGrid
+    End Sub
+    Public Sub SetGrid(ByVal axGrid As Integer, ByVal ayGrid As Integer, ByVal azGrid As Integer)
+        Me.xGrid = axGrid
+        Me.yGrid = ayGrid
+        Me.zGrid = azGrid
+    End Sub
     Public Property Changed() As Boolean
         Get
             Return aChanged

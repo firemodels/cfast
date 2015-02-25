@@ -9,6 +9,15 @@ Public Class CeditMain
     Private CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
+    Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+    Friend WithEvents C1FlexGrid1 As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents Label31 As System.Windows.Forms.Label
+    Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
+    Friend WithEvents Label35 As System.Windows.Forms.Label
+    Friend WithEvents TextBox3 As System.Windows.Forms.TextBox
+    Friend WithEvents Label32 As System.Windows.Forms.Label
+    Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
+    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
 
 #Region " Windows Form Designer generated code "
 
@@ -758,19 +767,24 @@ Public Class CeditMain
         Me.HHeatAdd = New System.Windows.Forms.Button()
         Me.TabMain = New System.Windows.Forms.TabControl()
         Me.TabVisuals = New System.Windows.Forms.TabPage()
-        Me.VisualizationAxisLabel = New System.Windows.Forms.Label()
-        Me.VisualizationAxis = New System.Windows.Forms.ComboBox()
-        Me.VisualizationValueLabel = New System.Windows.Forms.Label()
-        Me.Label29 = New System.Windows.Forms.Label()
+        Me.GroupBox6 = New System.Windows.Forms.GroupBox()
+        Me.Label31 = New System.Windows.Forms.Label()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.C1FlexGrid1 = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.VisualSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.VisualizationRemove = New System.Windows.Forms.Button()
-        Me.VisualizationValue = New System.Windows.Forms.TextBox()
-        Me.VisualizationDefaults = New System.Windows.Forms.Button()
-        Me.VisualizationComp = New System.Windows.Forms.ComboBox()
-        Me.VisualizationDup = New System.Windows.Forms.Button()
-        Me.VisualizationType = New System.Windows.Forms.ComboBox()
+        Me.VisualizationAxisLabel = New System.Windows.Forms.Label()
         Me.VisualizationAdd = New System.Windows.Forms.Button()
+        Me.VisualizationAxis = New System.Windows.Forms.ComboBox()
+        Me.VisualizationType = New System.Windows.Forms.ComboBox()
+        Me.VisualizationValueLabel = New System.Windows.Forms.Label()
+        Me.VisualizationDup = New System.Windows.Forms.Button()
+        Me.Label29 = New System.Windows.Forms.Label()
+        Me.VisualizationComp = New System.Windows.Forms.ComboBox()
+        Me.VisualizationDefaults = New System.Windows.Forms.Button()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.VisualizationValue = New System.Windows.Forms.TextBox()
+        Me.VisualizationRemove = New System.Windows.Forms.Button()
         Me.OpenDataFileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.SaveDataFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.HelpProvider = New System.Windows.Forms.HelpProvider()
@@ -780,6 +794,10 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.Label32 = New System.Windows.Forms.Label()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        Me.Label35 = New System.Windows.Forms.Label()
+        Me.TextBox3 = New System.Windows.Forms.TextBox()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -831,6 +849,9 @@ Public Class CeditMain
         Me.GroupHHeats.SuspendLayout()
         Me.TabMain.SuspendLayout()
         Me.TabVisuals.SuspendLayout()
+        Me.GroupBox6.SuspendLayout()
+        CType(Me.C1FlexGrid1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox4.SuspendLayout()
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -4160,19 +4181,8 @@ Public Class CeditMain
         '
         'TabVisuals
         '
-        Me.TabVisuals.Controls.Add(Me.VisualizationAxisLabel)
-        Me.TabVisuals.Controls.Add(Me.VisualizationAxis)
-        Me.TabVisuals.Controls.Add(Me.VisualizationValueLabel)
-        Me.TabVisuals.Controls.Add(Me.Label29)
-        Me.TabVisuals.Controls.Add(Me.VisualSummary)
-        Me.TabVisuals.Controls.Add(Me.Label7)
-        Me.TabVisuals.Controls.Add(Me.VisualizationRemove)
-        Me.TabVisuals.Controls.Add(Me.VisualizationValue)
-        Me.TabVisuals.Controls.Add(Me.VisualizationDefaults)
-        Me.TabVisuals.Controls.Add(Me.VisualizationComp)
-        Me.TabVisuals.Controls.Add(Me.VisualizationDup)
-        Me.TabVisuals.Controls.Add(Me.VisualizationType)
-        Me.TabVisuals.Controls.Add(Me.VisualizationAdd)
+        Me.TabVisuals.Controls.Add(Me.GroupBox6)
+        Me.TabVisuals.Controls.Add(Me.GroupBox4)
         Me.TabVisuals.Location = New System.Drawing.Point(4, 22)
         Me.TabVisuals.Name = "TabVisuals"
         Me.TabVisuals.Padding = New System.Windows.Forms.Padding(3)
@@ -4181,42 +4191,83 @@ Public Class CeditMain
         Me.TabVisuals.Text = "Visualization"
         Me.TabVisuals.UseVisualStyleBackColor = True
         '
-        'VisualizationAxisLabel
+        'GroupBox6
         '
-        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(376, 485)
-        Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
-        Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
-        Me.VisualizationAxisLabel.TabIndex = 115
-        Me.VisualizationAxisLabel.Text = "Axis:"
-        Me.VisualizationAxisLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.GroupBox6.Controls.Add(Me.Label35)
+        Me.GroupBox6.Controls.Add(Me.TextBox3)
+        Me.GroupBox6.Controls.Add(Me.Label32)
+        Me.GroupBox6.Controls.Add(Me.TextBox2)
+        Me.GroupBox6.Controls.Add(Me.Label31)
+        Me.GroupBox6.Controls.Add(Me.TextBox1)
+        Me.GroupBox6.Controls.Add(Me.C1FlexGrid1)
+        Me.GroupBox6.Location = New System.Drawing.Point(510, 15)
+        Me.GroupBox6.Name = "GroupBox6"
+        Me.GroupBox6.Size = New System.Drawing.Size(408, 505)
+        Me.GroupBox6.TabIndex = 117
+        Me.GroupBox6.TabStop = False
+        Me.GroupBox6.Text = "Resolution"
         '
-        'VisualizationAxis
+        'Label31
         '
-        Me.VisualizationAxis.ItemHeight = 13
-        Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"})
-        Me.VisualizationAxis.Location = New System.Drawing.Point(473, 487)
-        Me.VisualizationAxis.MaxDropDownItems = 3
-        Me.VisualizationAxis.Name = "VisualizationAxis"
-        Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
-        Me.VisualizationAxis.TabIndex = 114
+        Me.Label31.Location = New System.Drawing.Point(74, 241)
+        Me.Label31.Name = "Label31"
+        Me.Label31.Size = New System.Drawing.Size(93, 23)
+        Me.Label31.TabIndex = 115
+        Me.Label31.Text = "Width (X) Grid:"
+        Me.Label31.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'VisualizationValueLabel
+        'TextBox1
         '
-        Me.VisualizationValueLabel.Location = New System.Drawing.Point(395, 456)
-        Me.VisualizationValueLabel.Name = "VisualizationValueLabel"
-        Me.VisualizationValueLabel.Size = New System.Drawing.Size(72, 23)
-        Me.VisualizationValueLabel.TabIndex = 113
-        Me.VisualizationValueLabel.Text = "Value:"
-        Me.VisualizationValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.TextBox1.Location = New System.Drawing.Point(173, 244)
+        Me.TextBox1.Name = "TextBox1"
+        Me.TextBox1.Size = New System.Drawing.Size(140, 20)
+        Me.TextBox1.TabIndex = 114
         '
-        'Label29
+        'C1FlexGrid1
         '
-        Me.Label29.Location = New System.Drawing.Point(376, 430)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(91, 23)
-        Me.Label29.TabIndex = 112
-        Me.Label29.Text = "Compartment:"
-        Me.Label29.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.C1FlexGrid1.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
+        Me.C1FlexGrid1.AllowEditing = False
+        Me.C1FlexGrid1.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.C1FlexGrid1.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.C1FlexGrid1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.C1FlexGrid1.AutoGenerateColumns = False
+        Me.C1FlexGrid1.ColumnInfo = resources.GetString("C1FlexGrid1.ColumnInfo")
+        Me.C1FlexGrid1.ExtendLastCol = True
+        Me.C1FlexGrid1.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
+        Me.C1FlexGrid1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.C1FlexGrid1.Location = New System.Drawing.Point(24, 19)
+        Me.C1FlexGrid1.Name = "C1FlexGrid1"
+        Me.C1FlexGrid1.Rows.DefaultSize = 19
+        Me.C1FlexGrid1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.C1FlexGrid1.Size = New System.Drawing.Size(360, 195)
+        Me.C1FlexGrid1.StyleInfo = resources.GetString("C1FlexGrid1.StyleInfo")
+        Me.C1FlexGrid1.TabIndex = 1
+        Me.C1FlexGrid1.TabStop = False
+        Me.C1FlexGrid1.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
+        '
+        'GroupBox4
+        '
+        Me.GroupBox4.Controls.Add(Me.VisualSummary)
+        Me.GroupBox4.Controls.Add(Me.VisualizationAxisLabel)
+        Me.GroupBox4.Controls.Add(Me.VisualizationAdd)
+        Me.GroupBox4.Controls.Add(Me.VisualizationAxis)
+        Me.GroupBox4.Controls.Add(Me.VisualizationType)
+        Me.GroupBox4.Controls.Add(Me.VisualizationValueLabel)
+        Me.GroupBox4.Controls.Add(Me.VisualizationDup)
+        Me.GroupBox4.Controls.Add(Me.Label29)
+        Me.GroupBox4.Controls.Add(Me.VisualizationComp)
+        Me.GroupBox4.Controls.Add(Me.VisualizationDefaults)
+        Me.GroupBox4.Controls.Add(Me.Label7)
+        Me.GroupBox4.Controls.Add(Me.VisualizationValue)
+        Me.GroupBox4.Controls.Add(Me.VisualizationRemove)
+        Me.GroupBox4.Location = New System.Drawing.Point(25, 15)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(450, 505)
+        Me.GroupBox4.TabIndex = 116
+        Me.GroupBox4.TabStop = False
+        Me.GroupBox4.Text = "Visualizations"
         '
         'VisualSummary
         '
@@ -4232,81 +4283,118 @@ Public Class CeditMain
         Me.VisualSummary.ExtendLastCol = True
         Me.VisualSummary.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
         Me.VisualSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.VisualSummary.Location = New System.Drawing.Point(235, 22)
+        Me.VisualSummary.Location = New System.Drawing.Point(34, 19)
         Me.VisualSummary.Name = "VisualSummary"
         Me.VisualSummary.Rows.DefaultSize = 19
         Me.VisualSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.VisualSummary.Size = New System.Drawing.Size(507, 295)
+        Me.VisualSummary.Size = New System.Drawing.Size(383, 311)
         Me.VisualSummary.StyleInfo = resources.GetString("VisualSummary.StyleInfo")
         Me.VisualSummary.TabIndex = 102
         Me.VisualSummary.TabStop = False
         Me.VisualSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
+        'VisualizationAxisLabel
+        '
+        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(113, 473)
+        Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
+        Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
+        Me.VisualizationAxisLabel.TabIndex = 115
+        Me.VisualizationAxisLabel.Text = "Axis:"
+        Me.VisualizationAxisLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationAdd
+        '
+        Me.VisualizationAdd.Location = New System.Drawing.Point(27, 335)
+        Me.VisualizationAdd.Name = "VisualizationAdd"
+        Me.VisualizationAdd.Size = New System.Drawing.Size(75, 23)
+        Me.VisualizationAdd.TabIndex = 106
+        Me.VisualizationAdd.Text = "Add"
+        '
+        'VisualizationAxis
+        '
+        Me.VisualizationAxis.ItemHeight = 13
+        Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"})
+        Me.VisualizationAxis.Location = New System.Drawing.Point(210, 475)
+        Me.VisualizationAxis.MaxDropDownItems = 3
+        Me.VisualizationAxis.Name = "VisualizationAxis"
+        Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
+        Me.VisualizationAxis.TabIndex = 114
+        '
+        'VisualizationType
+        '
+        Me.VisualizationType.ItemHeight = 13
+        Me.VisualizationType.Items.AddRange(New Object() {"2-D", "3-D", "Isosurface"})
+        Me.VisualizationType.Location = New System.Drawing.Point(210, 389)
+        Me.VisualizationType.MaxDropDownItems = 3
+        Me.VisualizationType.Name = "VisualizationType"
+        Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
+        Me.VisualizationType.TabIndex = 107
+        '
+        'VisualizationValueLabel
+        '
+        Me.VisualizationValueLabel.Location = New System.Drawing.Point(132, 444)
+        Me.VisualizationValueLabel.Name = "VisualizationValueLabel"
+        Me.VisualizationValueLabel.Size = New System.Drawing.Size(72, 23)
+        Me.VisualizationValueLabel.TabIndex = 113
+        Me.VisualizationValueLabel.Text = "Value:"
+        Me.VisualizationValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationDup
+        '
+        Me.VisualizationDup.Location = New System.Drawing.Point(123, 335)
+        Me.VisualizationDup.Name = "VisualizationDup"
+        Me.VisualizationDup.Size = New System.Drawing.Size(75, 23)
+        Me.VisualizationDup.TabIndex = 104
+        Me.VisualizationDup.Text = "Duplicate"
+        '
+        'Label29
+        '
+        Me.Label29.Location = New System.Drawing.Point(113, 418)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(91, 23)
+        Me.Label29.TabIndex = 112
+        Me.Label29.Text = "Compartment:"
+        Me.Label29.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationComp
+        '
+        Me.VisualizationComp.ItemHeight = 13
+        Me.VisualizationComp.Location = New System.Drawing.Point(210, 418)
+        Me.VisualizationComp.Name = "VisualizationComp"
+        Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
+        Me.VisualizationComp.TabIndex = 108
+        '
+        'VisualizationDefaults
+        '
+        Me.VisualizationDefaults.Location = New System.Drawing.Point(314, 335)
+        Me.VisualizationDefaults.Name = "VisualizationDefaults"
+        Me.VisualizationDefaults.Size = New System.Drawing.Size(109, 23)
+        Me.VisualizationDefaults.TabIndex = 103
+        Me.VisualizationDefaults.Text = "Add Defaults"
+        '
         'Label7
         '
-        Me.Label7.Location = New System.Drawing.Point(363, 401)
+        Me.Label7.Location = New System.Drawing.Point(100, 389)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(104, 23)
         Me.Label7.TabIndex = 111
         Me.Label7.Text = "Visualization Type:"
         Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'VisualizationRemove
-        '
-        Me.VisualizationRemove.Location = New System.Drawing.Point(453, 347)
-        Me.VisualizationRemove.Name = "VisualizationRemove"
-        Me.VisualizationRemove.Size = New System.Drawing.Size(75, 23)
-        Me.VisualizationRemove.TabIndex = 105
-        Me.VisualizationRemove.Text = "Remove"
-        '
         'VisualizationValue
         '
-        Me.VisualizationValue.Location = New System.Drawing.Point(473, 459)
+        Me.VisualizationValue.Location = New System.Drawing.Point(210, 447)
         Me.VisualizationValue.Name = "VisualizationValue"
         Me.VisualizationValue.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationValue.TabIndex = 109
         '
-        'VisualizationDefaults
+        'VisualizationRemove
         '
-        Me.VisualizationDefaults.Location = New System.Drawing.Point(607, 347)
-        Me.VisualizationDefaults.Name = "VisualizationDefaults"
-        Me.VisualizationDefaults.Size = New System.Drawing.Size(109, 23)
-        Me.VisualizationDefaults.TabIndex = 103
-        Me.VisualizationDefaults.Text = "Add Defaults"
-        '
-        'VisualizationComp
-        '
-        Me.VisualizationComp.ItemHeight = 13
-        Me.VisualizationComp.Location = New System.Drawing.Point(473, 430)
-        Me.VisualizationComp.Name = "VisualizationComp"
-        Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
-        Me.VisualizationComp.TabIndex = 108
-        '
-        'VisualizationDup
-        '
-        Me.VisualizationDup.Location = New System.Drawing.Point(357, 347)
-        Me.VisualizationDup.Name = "VisualizationDup"
-        Me.VisualizationDup.Size = New System.Drawing.Size(75, 23)
-        Me.VisualizationDup.TabIndex = 104
-        Me.VisualizationDup.Text = "Duplicate"
-        '
-        'VisualizationType
-        '
-        Me.VisualizationType.ItemHeight = 13
-        Me.VisualizationType.Items.AddRange(New Object() {"2-D", "3-D", "Isosurface"})
-        Me.VisualizationType.Location = New System.Drawing.Point(473, 401)
-        Me.VisualizationType.MaxDropDownItems = 3
-        Me.VisualizationType.Name = "VisualizationType"
-        Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
-        Me.VisualizationType.TabIndex = 107
-        '
-        'VisualizationAdd
-        '
-        Me.VisualizationAdd.Location = New System.Drawing.Point(261, 347)
-        Me.VisualizationAdd.Name = "VisualizationAdd"
-        Me.VisualizationAdd.Size = New System.Drawing.Size(75, 23)
-        Me.VisualizationAdd.TabIndex = 106
-        Me.VisualizationAdd.Text = "Add"
+        Me.VisualizationRemove.Location = New System.Drawing.Point(219, 335)
+        Me.VisualizationRemove.Name = "VisualizationRemove"
+        Me.VisualizationRemove.Size = New System.Drawing.Size(75, 23)
+        Me.VisualizationRemove.TabIndex = 105
+        Me.VisualizationRemove.Text = "Remove"
         '
         'OpenDataFileDialog
         '
@@ -4359,6 +4447,38 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
+        '
+        'Label32
+        '
+        Me.Label32.Location = New System.Drawing.Point(77, 267)
+        Me.Label32.Name = "Label32"
+        Me.Label32.Size = New System.Drawing.Size(90, 23)
+        Me.Label32.TabIndex = 117
+        Me.Label32.Text = "Depth (Y) Grid:"
+        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'TextBox2
+        '
+        Me.TextBox2.Location = New System.Drawing.Point(173, 270)
+        Me.TextBox2.Name = "TextBox2"
+        Me.TextBox2.Size = New System.Drawing.Size(140, 20)
+        Me.TextBox2.TabIndex = 116
+        '
+        'Label35
+        '
+        Me.Label35.Location = New System.Drawing.Point(77, 293)
+        Me.Label35.Name = "Label35"
+        Me.Label35.Size = New System.Drawing.Size(90, 23)
+        Me.Label35.TabIndex = 119
+        Me.Label35.Text = "Height (Z) Grid:"
+        Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'TextBox3
+        '
+        Me.TextBox3.Location = New System.Drawing.Point(173, 296)
+        Me.TextBox3.Name = "TextBox3"
+        Me.TextBox3.Size = New System.Drawing.Size(140, 20)
+        Me.TextBox3.TabIndex = 118
         '
         'CeditMain
         '
@@ -4456,7 +4576,11 @@ Public Class CeditMain
         Me.GroupHHeats.PerformLayout()
         Me.TabMain.ResumeLayout(False)
         Me.TabVisuals.ResumeLayout(False)
-        Me.TabVisuals.PerformLayout()
+        Me.GroupBox6.ResumeLayout(False)
+        Me.GroupBox6.PerformLayout()
+        CType(Me.C1FlexGrid1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox4.ResumeLayout(False)
+        Me.GroupBox4.PerformLayout()
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -5973,5 +6097,9 @@ Public Class CeditMain
             CurrentVisual = index
             UpdateGUI.Visuals(CurrentVisual)
         End If
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
     End Sub
 End Class

@@ -37,7 +37,7 @@
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, ilay, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut
+    integer :: nirm, ifrom, ilay, islab, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut
     real(eb) :: yvbot, yvtop, avent, ventvel
     integer, parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
@@ -74,6 +74,12 @@
                 ventptr%mflow_mix(1,ilay) = 0.0_eb
                 ventptr%mflow_mix(2,ilay) = 0.0_eb
             end do
+            
+            do islab = 1, mxfslab
+                ventptr%temp_slab(islab) = 0.0_eb
+                ventptr%flow_slab(islab) = 0.0_eb
+                ventptr%ybot_slab(islab) = 0.0_eb
+            end do
 
             ! setup data structures for from and to room
             call getvars(iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
@@ -96,6 +102,14 @@
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
                    epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                    yvelev,xmslab,nslab,nneut,ventvel)
+                
+                ventptr%n_slabs = nslab
+                do islab = 1,nslab
+                    ventptr%temp_slab(islab) = tslab(islab)
+                    ventptr%flow_slab(islab) = xmslab(islab)/rslab(islab)*dirs12(islab)
+                    ventptr%ybot_slab(islab) = yvelev(islab)
+                    ventptr%ytop_slab(islab) = yvelev(islab+1)
+                end do
                 
                 if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 

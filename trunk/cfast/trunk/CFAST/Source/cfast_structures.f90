@@ -1,7 +1,7 @@
 module cfast_types
     
     use precision_parameters
-    use cparams, only: mxpts, ns
+    use cparams, only: mxpts, ns, mxfslab
     
     !  room data structure
     type room_type
@@ -43,6 +43,8 @@ module cfast_types
         real(eb) :: sill, soffit, width
         real(eb) :: from_hall_offset, to_hall_offset
         real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
+        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
+        integer :: n_slabs
         integer :: from, to, counter
         integer :: face
     end type vent_type

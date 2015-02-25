@@ -104,7 +104,7 @@
 
     end subroutine ssHeadersNormal
 
-! --------------------------- ssHeadersSpeccies -------------------------------------------
+! --------------------------- ssHeadersSpecies -------------------------------------------
 
     subroutine ssHeadersSpecies
 
@@ -470,18 +470,20 @@
 
     use cenviro
     use cfast_main
+    use cparams, only: mxfslab
     use vents
     implicit none
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+6*nr+5+2*mxfire
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, LabelsShort(15), LabelUnits(15)
+    integer, parameter :: maxhead = 1+6*nr+4*mxfire+2*mxvents+3*mxfslab*mxvents+2*mxvv+2*mxhvsys
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(20), LabelUnits(20)
     integer position, i, j
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_',&
-       'FAREA_', 'HVENT_', 'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', 'm^2', 'kg/s', 'kg/s' /
+       'FAREA_', 'HVENT_','NSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_',  'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
+    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', ' ', 'C', 'm^3/s', &
+        'm', 'm^2', 'm3/s', 'm3/s' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)
@@ -514,20 +516,45 @@
         end do
     end do
 
-    ! Vent variables
-    do i = 1, n_hvents
+    ! Wall vent variables
+    do j = 1, n_hvents
         position = position + 1
-        call toIntString(i,cVent)
-        headertext(1,position) = LabelUnits(12)
+        call toIntString(j,cVent)
+        headertext(1,position) = LabelUnits(12) ! Vent area
         headertext(2,position) = trim(LabelsShort(12))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
+        position = position + 1
+        headertext(1,position) = LabelUnits(13) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(13))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+        do i = 1,mxfslab
+            call toIntString(i,cSlab)
+            position = position + 1
+            headertext(1,position) = LabelUnits(14) ! slab temperature
+            headertext(2,position) = trim(LabelsShort(14))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(15) ! slab flow
+            headertext(2,position) = trim(LabelsShort(15))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(16) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(16))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(17) ! slab top
+            headertext(2,position) = trim(LabelsShort(17))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+        end do
     end do
+    
+    ! Ceiling / floor vent variables
     do i = 1, n_vvents
         do j = 1,3
             position = position + 1
             call toIntString(i,cVent)
-            headertext(1,position) = LabelUnits(13+j-1)
-            headertext(2,position) = trim(LabelsShort(13+j-1))//trim(cVent)
+            headertext(1,position) = LabelUnits(18+j-1)
+            headertext(2,position) = trim(LabelsShort(17+j-1))//trim(cVent)
             call smvDeviceTag(headertext(2,position))
         end do
     end do

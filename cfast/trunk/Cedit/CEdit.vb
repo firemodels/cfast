@@ -39,6 +39,8 @@ Public Class CeditMain
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents Label30 As System.Windows.Forms.Label
+    Friend WithEvents EnvIntAmbRH As System.Windows.Forms.TextBox
     Friend WithEvents CompCorridor As System.Windows.Forms.RadioButton
     Friend WithEvents CompShaft As System.Windows.Forms.RadioButton
     Friend WithEvents CompNormal As System.Windows.Forms.RadioButton
@@ -463,6 +465,8 @@ Public Class CeditMain
         Me.Label27 = New System.Windows.Forms.Label()
         Me.EnvExtAmbTemp = New System.Windows.Forms.TextBox()
         Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.Label30 = New System.Windows.Forms.Label()
+        Me.EnvIntAmbRH = New System.Windows.Forms.TextBox()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.EnvIntAmbElevation = New System.Windows.Forms.TextBox()
         Me.Label6 = New System.Windows.Forms.Label()
@@ -1183,6 +1187,8 @@ Public Class CeditMain
         '
         'GroupBox11
         '
+        Me.GroupBox11.Controls.Add(Me.Label30)
+        Me.GroupBox11.Controls.Add(Me.EnvIntAmbRH)
         Me.GroupBox11.Controls.Add(Me.Label8)
         Me.GroupBox11.Controls.Add(Me.EnvIntAmbElevation)
         Me.GroupBox11.Controls.Add(Me.Label6)
@@ -1195,6 +1201,23 @@ Public Class CeditMain
         Me.GroupBox11.TabIndex = 12
         Me.GroupBox11.TabStop = False
         Me.GroupBox11.Text = "Interior"
+        '
+        'Label30
+        '
+        Me.Label30.Location = New System.Drawing.Point(200, 48)
+        Me.Label30.Name = "Label30"
+        Me.Label30.Size = New System.Drawing.Size(56, 23)
+        Me.Label30.TabIndex = 117
+        Me.Label30.Text = "Humidity"
+        Me.Label30.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'EnvIntAmbRH
+        '
+        Me.EnvIntAmbRH.Location = New System.Drawing.Point(264, 48)
+        Me.EnvIntAmbRH.Name = "EnvIntAmbRH"
+        Me.EnvIntAmbRH.Size = New System.Drawing.Size(96, 20)
+        Me.EnvIntAmbRH.TabIndex = 116
+        Me.EnvIntAmbRH.Text = "50 %"
         '
         'Label8
         '
@@ -4490,6 +4513,7 @@ Public Class CeditMain
         If sender Is Me.EnvIntAmbTemp Then myEnvironment.IntAmbTemperature = Val(Me.EnvIntAmbTemp.Text)
         If sender Is Me.EnvIntAmbElevation Then myEnvironment.IntAmbElevation = Val(Me.EnvIntAmbElevation.Text)
         If sender Is Me.EnvIntAmbPress Then myEnvironment.IntAmbPressure = Val(Me.EnvIntAmbPress.Text)
+        If sender Is Me.EnvIntAmbRH Then myEnvironment.IntAmbRH = Val(Me.EnvIntAmbRH.Text)
         If sender Is Me.EnvExtAmbTemp Then myEnvironment.ExtAmbTemperature = Val(Me.EnvExtAmbTemp.Text)
         If sender Is Me.EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(Me.EnvExtAmbElevation.Text)
         If sender Is Me.EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(Me.EnvExtAmbPress.Text)
@@ -4607,9 +4631,9 @@ Public Class CeditMain
             ElseIf sender Is Me.CompFloor Then
                 aCompartment.FloorMaterial = myThermalProperties.GetShortName(sender.text)
             End If
-                myCompartments.Item(CurrentCompartment) = aCompartment
-                UpdateGUI.Geometry(CurrentCompartment)
-            End If
+            myCompartments.Item(CurrentCompartment) = aCompartment
+            UpdateGUI.Geometry(CurrentCompartment)
+        End If
     End Sub
     Private Sub CompNormal_CheckedChanged(sender As Object, e As EventArgs) Handles CompNormal.CheckedChanged, CompShaft.CheckedChanged, CompCorridor.CheckedChanged
         If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then

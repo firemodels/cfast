@@ -483,7 +483,7 @@
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_',&
        'FAREA_', 'HVENT_','NSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_',  'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', ' ', 'C', 'm^3/s', &
-        'm', 'm^2', 'm3/s', 'm3/s' /
+        'm', 'm', 'm^2', 'm3/s', 'm3/s' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)

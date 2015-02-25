@@ -416,10 +416,10 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, flow(4), sumin, sumout
+    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, flow(4), sumin, sumout, slabs
     logical :: firstc
     integer :: position
-    integer :: toprm, botrm, i, itarg, izzvol, iroom1, iroom2, ik, im, ix
+    integer :: toprm, botrm, i, j, itarg, izzvol, iroom1, iroom2, ik, im, ix
     integer :: itop, ibot
     
     type(vent_type), pointer :: ventptr
@@ -476,7 +476,17 @@
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = factor2*height*width
-        call SSaddtolist (position,avent,outarray)       
+        ! first column is just vent area ... it's for backwards compatibility with old vent flow visualization
+        call SSaddtolist (position,avent,outarray)
+        ! flow slabs for the vent
+        slabs = ventptr%n_slabs
+        call SSaddtolist (position,slabs,outarray)
+        do j = 1, mxfslab
+            call ssaddtolist(position,ventptr%temp_slab(j),outarray)
+            call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+            call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
+            call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
+        end do
     end do
 
     do i = 1, n_vvents

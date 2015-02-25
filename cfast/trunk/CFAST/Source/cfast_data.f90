@@ -522,11 +522,12 @@ end module vents
 module vent_slab
     
     use precision_parameters
+    use cparams, only: mxfslab
     implicit none
     save
     
-    real(eb), dimension(10) :: yvelev, dpv1m2
-    integer, dimension(10) ::  dirs12
+    real(eb), dimension(mxfslab) :: yvelev, dpv1m2
+    integer, dimension(mxfslab) ::  dirs12
     integer :: nvelev, ioutf
       
 end module vent_slab

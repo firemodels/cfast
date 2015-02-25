@@ -162,6 +162,10 @@
 
     integer, intent(in) :: isw
     real(eb), intent(in) :: time
+    
+    if (time>100.) then
+        continue
+    end if
 
     if (outputformat>1) then
         write (iofilo,5000) time

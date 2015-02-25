@@ -268,12 +268,6 @@ Module IO
         csv.Num(i, ambNum.refHeight) = myEnvironment.IntAmbElevation
         csv.Num(i, ambNum.relHumidity) = myEnvironment.IntAmbRH
         i += 1
-        'wind
-        csv.str(i, CFASTlnNum.keyWord) = "WIND"
-        csv.Num(i, windNum.velocity) = myEnvironment.ExtWindSpeed
-        csv.Num(i, windNum.refHeight) = myEnvironment.ExtScaleHeight
-        csv.Num(i, windNum.expLapseRate) = myEnvironment.ExtPowerLawCoefficient
-        i += 1
         'comment header of material properties section
         If myThermalProperties.Count > 0 Then AddHeadertoOutput(csv, i, "Material Properties")
         Dim aThermalProperty As ThermalProperty

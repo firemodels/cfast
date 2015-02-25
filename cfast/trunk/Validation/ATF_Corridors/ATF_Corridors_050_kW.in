@@ -17,6 +17,8 @@ MATL,STEELSHT,48,559,7854,0.0015,0.9,"Steel, Plain Carbon (1/16 in)"
 COMPA,Lower Corridor,17,1.8,2.5,0,0,0,GYPSUM,OFF,GYPSUM
 COMPA,Stairwell,2.6,3.2,5,0,1.8,0,GYPSUM,OFF,GYPSUM
 COMPA,Upper Corridor,17,1.8,2.5,0,0,2.5,GYPSUM,OFF,GYPSUM
+HALL,1
+HALL,3
 !!
 !!Vent keywords
 !!

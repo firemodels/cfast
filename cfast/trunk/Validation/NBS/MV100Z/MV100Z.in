@@ -22,6 +22,7 @@ COMPA,Entry to Fire Room,1.03,1.02,2,11.16,2.34,0,MariniteNBS,GypsumNBS,Marinite
 COMPA,Corridor,12.19,2.44,2.44,0,3.36,0,MariniteNBS,GypsumNBS,MariniteNBS
 COMPA,Target Room,2.22,2.24,2.43,2.07,0.33,0,GypsumNBS,ConcreteNBS,GypsumNBS
 COMPA,Entry to Target Room,0.94,0.79,2.04,2.07,2.57,0,GypsumNBS,ConcreteNBS,GypsumNBS
+HALL,3
 !!
 !!Vent keywords
 !!

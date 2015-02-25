@@ -1003,7 +1003,7 @@
     real(eb), intent(out) :: tg, vg(4)
         
     real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
-    real(eb) :: xdistance, ydistance, hall_width
+    real(eb) :: xdistance, ydistance, distance, hall_width
 
     integer :: i
 
@@ -1029,23 +1029,23 @@
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = zzhlay(iroom,lower)
             zceil = hr(iroom)
+            r = sqrt(xdistance**2 + ydistance**2)
             if (izhall(iroom,ishall)==1) then
                 if (izhall(iroom,ihxy)==1) then
-                    r = ydistance
+                    distance = ydistance
                     hall_width = br(iroom)
                 else
-                    r = xdistance
+                    distance = xdistance
                     hall_width = dr(iroom)
                 end if
             else
-                r = sqrt(xdistance**2 + ydistance**2)
                 hall_width = 0.0_eb
             end if
             ! first calculate plume temperature at desired location
             call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
             call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling, vplume_ceiling)
-            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, r, hall_width, tcj, vcj)
+            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, hall_width, tcj, vcj)
             tg = max(tg,tplume,tcj)
             if (r/=0.0_eb) then
                 vg(1) = vg(1) + vcj*xdistance/r
@@ -1061,7 +1061,7 @@
     
 ! --------------------------- get_ceilingjet_tempandvelocity --------------------------------------
     
-    subroutine get_ceilingjet_tempandvelocity (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, w, tcj, vcj)
+    subroutine get_ceilingjet_tempandvelocity (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w, tcj, vcj)
 
     !     routine: get_ceilingjet_tempandvelocity
     !     purpose: Calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
@@ -1075,6 +1075,7 @@
     !                 zlayer: height of the hot/cold gas layer interface (m)
     !                 zceil: height of the compartment ceiling (m)
     !                 zin: position to calculate temperature (m)
+    !                 xin: distance to calculate temperature (parallel to long wall ... for hallways) (m)
     !                 r: horizontal distance from fire centerline (m)
     !                 w: width of hallway is compartment is designated as a hallway, zero otherwisw
     !                 tcj (output): temperature at height zin and radius r (K)
@@ -1083,7 +1084,7 @@
     use precision_parameters
     implicit none
 
-    real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, r, w
+    real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w
     real(eb), intent(out) :: tcj, vcj
         
     real(eb), parameter :: cp = 1.012_eb
@@ -1128,9 +1129,9 @@
             else
                 tcj = t_layer + (tplume-t_layer)/deltaT_0star_at_p2 * (0.225_eb+0.27_eb*r/h)**(-4.0_eb/3.0_eb)
             end if
-            if (w>0.0_eb.and.r>w/2) then
+            if (w>0.0_eb.and.xin>w/2) then
                 !compartment is a hallway and we've hit the walls, use delichastsios
-                tcj = max(tcj,t_layer + (tplume-t_layer)*0.37_eb*(h/w)**onethird*exp(-0.16_eb*r/h*(w/h)**onethird))
+                tcj = max(tcj,t_layer + (tplume-t_layer)*0.37_eb*(h/w)**onethird*exp(-0.16_eb*xin/h*(w/h)**onethird))
             end if
 
             ! ceiling jet velocity
@@ -1140,7 +1141,7 @@
             else
                 vcj = gsqrt*sqrt(h)*qstar_h**onethird*1.06_eb*(r/h)**(-0.69_eb)
             end if
-            if (w>0.0_eb.and.r>w/2) then
+            if (w>0.0_eb.and.xin>w/2) then
                 !compartment is a hallway and we've hit the walls, use delichastsios
                 vcj = max(vcj,0.114*sqrt(h*(tcj-t_layer))*(h/w)**(1.0_eb/6.0_eb))
             end if

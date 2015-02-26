@@ -287,44 +287,6 @@
         endif
     end do
 
-    ! initialize variables that will change when ambient conditions change
-    call initamb(yinter,1)
-
-    ! initialize the mechanical ventilation
-    call hvinit (ierror)
-    if (ierror/=0) return
-
-    ! check detectors
-    do i = 1, ndtect
-        iroom = ixdtect(i,droom)
-        if(iroom<1.or.iroom>nm1)then
-            write (messg,104)iroom 
-104         format('Invalid DETECTOR specification: room ',i3, ' is not a valid')
-            ifail = 43
-            call xerror(messg,0,1,1)
-        endif
-        rti = xdtect(i,drti)
-        if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
-            write (messg,101)rti 
-101         format('Invalid DETECTOR specification - rti= ',e11.4, ' is not a valid.')
-            ifail = 44
-        endif
-        xloc = xdtect(i,dxloc)
-        yloc = xdtect(i,dyloc)
-        zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>hrp(iroom))then
-            write(messg,102)xloc,yloc,zloc
-102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
-            ifail = 45
-        endif
-        idtype = ixdtect(i,dtype)
-        if(idtype<1.or.idtype>3)then
-            write(messg,103)idtype
-103         format('Invalid DETECTOR specification - type= ',i2,' is not a valid')
-            ifail = 46
-        endif
-    end do
-
     ! check variable cross-sectional area specs and convert to volume
     do i = 1, nm1
         npts = izrvol(i)
@@ -386,6 +348,43 @@
         endif
     end do
 
+    ! initialize variables that will change when ambient conditions change
+    call initamb(yinter,1)
+
+    ! initialize the mechanical ventilation
+    call hvinit (ierror)
+    if (ierror/=0) return
+
+    ! check detectors
+    do i = 1, ndtect
+        iroom = ixdtect(i,droom)
+        if(iroom<1.or.iroom>nm1)then
+            write (messg,104)iroom 
+104         format('Invalid DETECTOR specification: room ',i3, ' is not a valid')
+            ifail = 43
+            call xerror(messg,0,1,1)
+        endif
+        rti = xdtect(i,drti)
+        if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
+            write (messg,101)rti 
+101         format('Invalid DETECTOR specification - rti= ',e11.4, ' is not a valid.')
+            ifail = 44
+        endif
+        xloc = xdtect(i,dxloc)
+        yloc = xdtect(i,dyloc)
+        zloc = xdtect(i,dzloc)
+        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>hrp(iroom))then
+            write(messg,102)xloc,yloc,zloc
+102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
+            ifail = 45
+        endif
+        idtype = ixdtect(i,dtype)
+        if(idtype<1.or.idtype>3)then
+            write(messg,103)idtype
+103         format('Invalid DETECTOR specification - type= ',i2,' is not a valid')
+            ifail = 46
+        endif
+    end do
 
     ! check room to room heat transfer 
 

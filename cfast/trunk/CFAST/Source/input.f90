@@ -692,6 +692,13 @@
             ! keep track of the total number of thermal properties used
             numthrm = numthrm + 1
         endif
+        
+        ! If there are more than 10 arguments, it's the new format that includes grid spacing
+        if (countargs(13,lcarray,xnumc-1,nret)) then
+            cxgrid(compartment) = lrarray(11)
+            cygrid(compartment) = lrarray(12)
+            czgrid(compartment) = lrarray(13)
+        end if
 
         ! Reset this each time in case this is the last entry
         n = compartment+1
@@ -2268,7 +2275,7 @@
    
    do iroom = 1, nrooms
       rm=>roominfo(iroom)
-      rm%ibar = min(max(2,int(rm%dx/dxyz)),50)
+      rm%ibar = min(max(2,int(rm%dx/dxyz)),rm%ibar)
 
       ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
 
@@ -2279,7 +2286,7 @@
          rm%xpltf(i) = real(rm%xplt(i),fb)
       end do
       
-      rm%jbar = min(max(2,int(rm%dy/dxyz)),50)
+      rm%jbar = min(max(2,int(rm%dy/dxyz)),rm%jbar)
       allocate(rm%yplt(0:rm%jbar))
       allocate(rm%ypltf(0:rm%jbar))
       call set_grid(rm%yplt,rm%jbar+1,rm%y0,rm%y1,rm%y1,0)
@@ -2287,7 +2294,7 @@
          rm%ypltf(j) = real(rm%yplt(j),fb)
       end do
       
-      rm%kbar = min(max(2,int(rm%dz/dxyz)),50)
+      rm%kbar = min(max(2,int(rm%dz/dxyz)),rm%kbar)
       allocate(rm%zplt(0:rm%kbar))
       allocate(rm%zpltf(0:rm%kbar))
       call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/3)

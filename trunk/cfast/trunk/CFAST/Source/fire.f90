@@ -1045,7 +1045,8 @@
             call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
             call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling, vplume_ceiling)
-            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, hall_width, tcj, vcj)
+            call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, &
+                hall_width, tcj, vcj)
             tg = max(tg,tplume,tcj)
             if (r/=0.0_eb) then
                 vg(1) = vg(1) + vcj*xdistance/r
@@ -1182,7 +1183,6 @@
     real(eb), parameter :: cp = 1.012_eb
     real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u
 
-
     ! default is for temperature to be the layer temperature at the desired location
     if (zin<=zlayer) then
         tplume = tl
@@ -1205,18 +1205,18 @@
         rho = 352.981915_eb/t_inf
         qstar = (qdot/1000._eb)/(rho*cp*t_inf*gsqrt*d**2.5_eb)
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
-        z_flame = d*(-1.02_eb+3.7_eb*qstar**0.4_eb)
+        z_flame = max(0.1_eb,d*(-1.02_eb+3.7_eb*qstar**0.4_eb))
         
         ! plume temperature
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
             rho = 352.981915_eb/tu
-            deltaz = max(0.0001_eb,zin-zfire-z0_prime)
+            deltaz = max(0.1_eb,zin-zfire-z0_prime)
             t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         else
             ! fire and target point are both in the same layer
-            deltaz = max(0.0001_eb,zin-zfire-z0)
+            deltaz = max(0.1_eb,zin-zfire-z0)
             t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
         
@@ -1235,7 +1235,7 @@
             sigma_u = 1.1_eb*sigma_deltat
             vplume = vplume*exp(-(r/sigma_u)**2)
         end if
-    endif  
+    endif
     return
     end subroutine get_plume_tempandvelocity
 

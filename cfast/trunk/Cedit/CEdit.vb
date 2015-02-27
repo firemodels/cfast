@@ -5755,6 +5755,7 @@ Public Class CeditMain
             Dim RunSimulation As New RunModel
             CFASTSimulationTime = myEnvironment.SimulationTime
             CFastInputFile = myEnvironment.InputFileName
+            RunSimulation.Text = "Run Model (" + System.IO.Path.GetFileName(CFastInputFile) + ")"
             RunSimulation.ShowDialog()
 
             UpdateGUI.Menu()

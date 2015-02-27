@@ -312,7 +312,7 @@ subroutine output_slicedata(time,first_time)
          do jj = 0, ny-1
             yy = rm%yplt(sf%ijk(3)+jj) - rm%y0
             do kk = 0, nz-1
-               zz = rm%zplt(sf%ijk(5)+kk) - rm%z0
+               zz = rm%zplt(sf%ijk(5)+kk) - rm%z0  
                call get_gas_temp_velocity(roomnum,xx,yy,zz,tgas, vgas)
                tslicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
                uslicedata(ii,jj,kk) = real(vgas(1),fb)

@@ -1437,6 +1437,9 @@
             roomptr%x1 = roomptr%x0 + roomptr%dx
             roomptr%y1 = roomptr%y0 + roomptr%dy
             roomptr%z1 = roomptr%z0 + roomptr%dz
+            roomptr%ibar = cxgrid(iroom)
+            roomptr%jbar = cygrid(iroom)
+            roomptr%kbar = czgrid(iroom)
             
             ! define wall centers
             xx = br(iroom)

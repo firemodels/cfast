@@ -750,6 +750,9 @@
         hflr(i) = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
+        cxgrid(i) = 50
+        cygrid(i) = 50
+        czgrid(i) = 50
         ar(i) = br(i)*dr(i)
         vr(i) = hr(i)*ar(i)
         do  j = 1, nwal

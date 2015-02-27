@@ -416,7 +416,8 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, flow(4), sumin, sumout, slabs
+    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, flow(4), &
+        sumin, sumout, slabs
     logical :: firstc
     integer :: position
     integer :: toprm, botrm, i, j, itarg, izzvol, iroom1, iroom2, ik, im, ix

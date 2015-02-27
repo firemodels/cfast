@@ -80,7 +80,8 @@ module cfast_main
         nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixtarg(mxi_trg,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
-        nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr)
+        nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr), &
+        cxgrid(nr), cygrid(nr), czgrid(nr)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, lsmv, itmmax, idiag, &
@@ -93,9 +94,9 @@ module cfast_main
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), &
-        ventoffset(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr),&
-        hrp(nr), vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), radio(0:mxfire), &
-        xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
+        ventoffset(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr), &
+        hrp(nr), vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
+        radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal), fopos(3,0:mxfire), &

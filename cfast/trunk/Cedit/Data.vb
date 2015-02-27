@@ -109,6 +109,9 @@ Friend Module Data
         CeilingMat
         FloorMat
         WallMat
+        xGrid
+        yGrid
+        zGrid
     End Enum
 
     Friend Enum hventNum

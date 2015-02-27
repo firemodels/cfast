@@ -4,7 +4,7 @@ Public Class UpdateGUI
 
     Private MainWin As CeditMain
     Private AreaPoints() As Single, HeightPoints() As Single, OpeningTimes() As Single, OpeningFractions() As Single
-    Private NumPoints As Integer, i As Integer, j As Integer, NumberofCompartments As Integer
+    Private NumPoints As Integer, i As Integer, j As Integer, NumCompartments As Integer
     Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer, _
     numTargets As Integer, numDetectors As Integer, numHeats As Integer, numFires As Integer, numVisuals As Integer
     Public Sub New(ByVal ParentWindow As Object)
@@ -89,17 +89,15 @@ Public Class UpdateGUI
             End While
         End If
     End Sub
-    Public Sub Visuals(ByVal index As Integer)
+    Public Sub Visuals(ByVal indexVisual As Integer, ByVal indexCompartment As Integer)
         Me.General()
-        If index < 0 Or myVisuals.Count = 0 Then
+        If indexVisual < 0 Or myVisuals.Count = 0 Then
             ClearGrid(MainWin.VisualSummary)
+            ClearGrid(MainWin.VisualResolution)
         Else
             ' fill the visualization widgets from the supplied visualization data
-            If myVisuals.Changed Then
-
-            End If
             Dim aVisual As Visual
-            aVisual = myVisuals.Item(index)
+            aVisual = myVisuals.Item(indexVisual)
             If aVisual.Compartment <= myCompartments.Count - 1 Then
                 MainWin.VisualizationComp.SelectedIndex = aVisual.Compartment + 1
             End If
@@ -137,7 +135,25 @@ Public Class UpdateGUI
                         MainWin.VisualSummary(i, 4) = "-"
                     End If
                 Next
-                MainWin.VisualSummary.Select(index + 1, 0, index + 1, MainWin.VisualSummary.Cols.Count - 1, True)
+                MainWin.VisualSummary.Select(indexVisual + 1, 0, indexVisual + 1, MainWin.VisualSummary.Cols.Count - 1, True)
+            End If
+            NumCompartments = myCompartments.Count
+            ClearGrid(MainWin.VisualResolution)
+            Dim aCompartment As New Compartment
+            If numVisuals > 0 And NumCompartments > 0 Then
+                aCompartment = myCompartments.Item(indexCompartment)
+                MainWin.VisualizationX.Text = aCompartment.xGrid.ToString
+                MainWin.VisualizationY.Text = aCompartment.yGrid.ToString
+                MainWin.VisualizationZ.Text = aCompartment.zGrid.ToString
+                For i = 1 To NumCompartments
+                    aCompartment = myCompartments.Item(i - 1)
+                    MainWin.VisualResolution(i, 0) = aCompartment.Name
+                    MainWin.VisualResolution(i, 1) = i.ToString
+                    MainWin.VisualResolution(i, 2) = aCompartment.xGrid.ToString
+                    MainWin.VisualResolution(i, 3) = aCompartment.yGrid.ToString
+                    MainWin.VisualResolution(i, 4) = aCompartment.zGrid.ToString
+                Next
+                MainWin.VisualResolution.Select(indexCompartment + 1, 0, indexCompartment + 1, MainWin.VisualResolution.Cols.Count - 1, True)
             End If
         End If
     End Sub
@@ -235,10 +251,10 @@ Public Class UpdateGUI
                     MainWin.CompVariableArea(i, 1) = AreaPoints(i).ToString + myUnits.Convert(UnitsNum.Area).Units
                 Next
             End If
-            NumberofCompartments = myCompartments.Count
+            NumCompartments = myCompartments.Count
             ClearGrid(MainWin.CompSummary)
-            If NumberofCompartments > 0 Then
-                For i = 1 To NumberofCompartments
+            If NumCompartments > 0 Then
+                For i = 1 To NumCompartments
                     aCompartment = myCompartments.Item(i - 1)
                     MainWin.CompSummary(i, 0) = aCompartment.Name
                     MainWin.CompSummary(i, 1) = i.ToString

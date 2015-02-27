@@ -9,15 +9,6 @@ Public Class CeditMain
     Private CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
-    Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
-    Friend WithEvents C1FlexGrid1 As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents Label31 As System.Windows.Forms.Label
-    Friend WithEvents TextBox1 As System.Windows.Forms.TextBox
-    Friend WithEvents Label35 As System.Windows.Forms.Label
-    Friend WithEvents TextBox3 As System.Windows.Forms.TextBox
-    Friend WithEvents Label32 As System.Windows.Forms.Label
-    Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
-    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
 
 #Region " Windows Form Designer generated code "
 
@@ -48,6 +39,15 @@ Public Class CeditMain
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
+    Friend WithEvents VisualResolution As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents Label31 As System.Windows.Forms.Label
+    Friend WithEvents VisualizationX As System.Windows.Forms.TextBox
+    Friend WithEvents Label35 As System.Windows.Forms.Label
+    Friend WithEvents VisualizationZ As System.Windows.Forms.TextBox
+    Friend WithEvents Label32 As System.Windows.Forms.Label
+    Friend WithEvents VisualizationY As System.Windows.Forms.TextBox
+    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
     Friend WithEvents Label30 As System.Windows.Forms.Label
     Friend WithEvents EnvIntAmbRH As System.Windows.Forms.TextBox
     Friend WithEvents CompCorridor As System.Windows.Forms.RadioButton
@@ -767,10 +767,14 @@ Public Class CeditMain
         Me.HHeatAdd = New System.Windows.Forms.Button()
         Me.TabMain = New System.Windows.Forms.TabControl()
         Me.TabVisuals = New System.Windows.Forms.TabPage()
-        Me.GroupBox6 = New System.Windows.Forms.GroupBox()
+        Me.GroupVisualResolution = New System.Windows.Forms.GroupBox()
+        Me.Label35 = New System.Windows.Forms.Label()
+        Me.VisualizationZ = New System.Windows.Forms.TextBox()
+        Me.Label32 = New System.Windows.Forms.Label()
+        Me.VisualizationY = New System.Windows.Forms.TextBox()
         Me.Label31 = New System.Windows.Forms.Label()
-        Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.C1FlexGrid1 = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.VisualizationX = New System.Windows.Forms.TextBox()
+        Me.VisualResolution = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.VisualSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.VisualizationAxisLabel = New System.Windows.Forms.Label()
@@ -794,10 +798,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.Label32 = New System.Windows.Forms.Label()
-        Me.TextBox2 = New System.Windows.Forms.TextBox()
-        Me.Label35 = New System.Windows.Forms.Label()
-        Me.TextBox3 = New System.Windows.Forms.TextBox()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -849,8 +849,8 @@ Public Class CeditMain
         Me.GroupHHeats.SuspendLayout()
         Me.TabMain.SuspendLayout()
         Me.TabVisuals.SuspendLayout()
-        Me.GroupBox6.SuspendLayout()
-        CType(Me.C1FlexGrid1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupVisualResolution.SuspendLayout()
+        CType(Me.VisualResolution, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox4.SuspendLayout()
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -4181,7 +4181,7 @@ Public Class CeditMain
         '
         'TabVisuals
         '
-        Me.TabVisuals.Controls.Add(Me.GroupBox6)
+        Me.TabVisuals.Controls.Add(Me.GroupVisualResolution)
         Me.TabVisuals.Controls.Add(Me.GroupBox4)
         Me.TabVisuals.Location = New System.Drawing.Point(4, 22)
         Me.TabVisuals.Name = "TabVisuals"
@@ -4191,61 +4191,90 @@ Public Class CeditMain
         Me.TabVisuals.Text = "Visualization"
         Me.TabVisuals.UseVisualStyleBackColor = True
         '
-        'GroupBox6
+        'GroupVisualResolution
         '
-        Me.GroupBox6.Controls.Add(Me.Label35)
-        Me.GroupBox6.Controls.Add(Me.TextBox3)
-        Me.GroupBox6.Controls.Add(Me.Label32)
-        Me.GroupBox6.Controls.Add(Me.TextBox2)
-        Me.GroupBox6.Controls.Add(Me.Label31)
-        Me.GroupBox6.Controls.Add(Me.TextBox1)
-        Me.GroupBox6.Controls.Add(Me.C1FlexGrid1)
-        Me.GroupBox6.Location = New System.Drawing.Point(510, 15)
-        Me.GroupBox6.Name = "GroupBox6"
-        Me.GroupBox6.Size = New System.Drawing.Size(408, 505)
-        Me.GroupBox6.TabIndex = 117
-        Me.GroupBox6.TabStop = False
-        Me.GroupBox6.Text = "Resolution"
+        Me.GroupVisualResolution.Controls.Add(Me.Label35)
+        Me.GroupVisualResolution.Controls.Add(Me.VisualizationZ)
+        Me.GroupVisualResolution.Controls.Add(Me.Label32)
+        Me.GroupVisualResolution.Controls.Add(Me.VisualizationY)
+        Me.GroupVisualResolution.Controls.Add(Me.Label31)
+        Me.GroupVisualResolution.Controls.Add(Me.VisualizationX)
+        Me.GroupVisualResolution.Controls.Add(Me.VisualResolution)
+        Me.GroupVisualResolution.Location = New System.Drawing.Point(25, 315)
+        Me.GroupVisualResolution.Name = "GroupVisualResolution"
+        Me.GroupVisualResolution.Size = New System.Drawing.Size(931, 223)
+        Me.GroupVisualResolution.TabIndex = 117
+        Me.GroupVisualResolution.TabStop = False
+        Me.GroupVisualResolution.Text = "Resolution"
+        '
+        'Label35
+        '
+        Me.Label35.Location = New System.Drawing.Point(533, 126)
+        Me.Label35.Name = "Label35"
+        Me.Label35.Size = New System.Drawing.Size(90, 23)
+        Me.Label35.TabIndex = 119
+        Me.Label35.Text = "Height (Z) Grid:"
+        Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationZ
+        '
+        Me.VisualizationZ.Location = New System.Drawing.Point(629, 129)
+        Me.VisualizationZ.Name = "VisualizationZ"
+        Me.VisualizationZ.Size = New System.Drawing.Size(140, 20)
+        Me.VisualizationZ.TabIndex = 118
+        '
+        'Label32
+        '
+        Me.Label32.Location = New System.Drawing.Point(533, 100)
+        Me.Label32.Name = "Label32"
+        Me.Label32.Size = New System.Drawing.Size(90, 23)
+        Me.Label32.TabIndex = 117
+        Me.Label32.Text = "Depth (Y) Grid:"
+        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'VisualizationY
+        '
+        Me.VisualizationY.Location = New System.Drawing.Point(629, 103)
+        Me.VisualizationY.Name = "VisualizationY"
+        Me.VisualizationY.Size = New System.Drawing.Size(140, 20)
+        Me.VisualizationY.TabIndex = 116
         '
         'Label31
         '
-        Me.Label31.Location = New System.Drawing.Point(74, 241)
+        Me.Label31.Location = New System.Drawing.Point(530, 74)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(93, 23)
         Me.Label31.TabIndex = 115
         Me.Label31.Text = "Width (X) Grid:"
         Me.Label31.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'TextBox1
+        'VisualizationX
         '
-        Me.TextBox1.Location = New System.Drawing.Point(173, 244)
-        Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(140, 20)
-        Me.TextBox1.TabIndex = 114
+        Me.VisualizationX.Location = New System.Drawing.Point(629, 77)
+        Me.VisualizationX.Name = "VisualizationX"
+        Me.VisualizationX.Size = New System.Drawing.Size(140, 20)
+        Me.VisualizationX.TabIndex = 114
         '
-        'C1FlexGrid1
+        'VisualResolution
         '
-        Me.C1FlexGrid1.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
-        Me.C1FlexGrid1.AllowEditing = False
-        Me.C1FlexGrid1.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
-        Me.C1FlexGrid1.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.C1FlexGrid1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.C1FlexGrid1.AutoGenerateColumns = False
-        Me.C1FlexGrid1.ColumnInfo = resources.GetString("C1FlexGrid1.ColumnInfo")
-        Me.C1FlexGrid1.ExtendLastCol = True
-        Me.C1FlexGrid1.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
-        Me.C1FlexGrid1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.C1FlexGrid1.Location = New System.Drawing.Point(24, 19)
-        Me.C1FlexGrid1.Name = "C1FlexGrid1"
-        Me.C1FlexGrid1.Rows.DefaultSize = 19
-        Me.C1FlexGrid1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.C1FlexGrid1.Size = New System.Drawing.Size(360, 195)
-        Me.C1FlexGrid1.StyleInfo = resources.GetString("C1FlexGrid1.StyleInfo")
-        Me.C1FlexGrid1.TabIndex = 1
-        Me.C1FlexGrid1.TabStop = False
-        Me.C1FlexGrid1.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
+        Me.VisualResolution.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
+        Me.VisualResolution.AllowEditing = False
+        Me.VisualResolution.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.VisualResolution.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.VisualResolution.AutoGenerateColumns = False
+        Me.VisualResolution.ColumnInfo = resources.GetString("VisualResolution.ColumnInfo")
+        Me.VisualResolution.ExtendLastCol = True
+        Me.VisualResolution.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
+        Me.VisualResolution.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.VisualResolution.Location = New System.Drawing.Point(24, 18)
+        Me.VisualResolution.Name = "VisualResolution"
+        Me.VisualResolution.Rows.DefaultSize = 19
+        Me.VisualResolution.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.VisualResolution.Size = New System.Drawing.Size(417, 187)
+        Me.VisualResolution.StyleInfo = resources.GetString("VisualResolution.StyleInfo")
+        Me.VisualResolution.TabIndex = 1
+        Me.VisualResolution.TabStop = False
+        Me.VisualResolution.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupBox4
         '
@@ -4264,7 +4293,7 @@ Public Class CeditMain
         Me.GroupBox4.Controls.Add(Me.VisualizationRemove)
         Me.GroupBox4.Location = New System.Drawing.Point(25, 15)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(450, 505)
+        Me.GroupBox4.Size = New System.Drawing.Size(931, 294)
         Me.GroupBox4.TabIndex = 116
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Visualizations"
@@ -4275,19 +4304,16 @@ Public Class CeditMain
         Me.VisualSummary.AllowEditing = False
         Me.VisualSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.VisualSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.VisualSummary.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.VisualSummary.AutoGenerateColumns = False
         Me.VisualSummary.ColumnInfo = resources.GetString("VisualSummary.ColumnInfo")
         Me.VisualSummary.ExtendLastCol = True
         Me.VisualSummary.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
         Me.VisualSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.VisualSummary.Location = New System.Drawing.Point(34, 19)
+        Me.VisualSummary.Location = New System.Drawing.Point(34, 28)
         Me.VisualSummary.Name = "VisualSummary"
         Me.VisualSummary.Rows.DefaultSize = 19
         Me.VisualSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.VisualSummary.Size = New System.Drawing.Size(383, 311)
+        Me.VisualSummary.Size = New System.Drawing.Size(407, 197)
         Me.VisualSummary.StyleInfo = resources.GetString("VisualSummary.StyleInfo")
         Me.VisualSummary.TabIndex = 102
         Me.VisualSummary.TabStop = False
@@ -4295,7 +4321,7 @@ Public Class CeditMain
         '
         'VisualizationAxisLabel
         '
-        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(113, 473)
+        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(532, 178)
         Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
         Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
         Me.VisualizationAxisLabel.TabIndex = 115
@@ -4304,7 +4330,7 @@ Public Class CeditMain
         '
         'VisualizationAdd
         '
-        Me.VisualizationAdd.Location = New System.Drawing.Point(27, 335)
+        Me.VisualizationAdd.Location = New System.Drawing.Point(34, 244)
         Me.VisualizationAdd.Name = "VisualizationAdd"
         Me.VisualizationAdd.Size = New System.Drawing.Size(75, 23)
         Me.VisualizationAdd.TabIndex = 106
@@ -4314,7 +4340,7 @@ Public Class CeditMain
         '
         Me.VisualizationAxis.ItemHeight = 13
         Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"})
-        Me.VisualizationAxis.Location = New System.Drawing.Point(210, 475)
+        Me.VisualizationAxis.Location = New System.Drawing.Point(629, 180)
         Me.VisualizationAxis.MaxDropDownItems = 3
         Me.VisualizationAxis.Name = "VisualizationAxis"
         Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
@@ -4324,7 +4350,7 @@ Public Class CeditMain
         '
         Me.VisualizationType.ItemHeight = 13
         Me.VisualizationType.Items.AddRange(New Object() {"2-D", "3-D", "Isosurface"})
-        Me.VisualizationType.Location = New System.Drawing.Point(210, 389)
+        Me.VisualizationType.Location = New System.Drawing.Point(629, 94)
         Me.VisualizationType.MaxDropDownItems = 3
         Me.VisualizationType.Name = "VisualizationType"
         Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
@@ -4332,7 +4358,7 @@ Public Class CeditMain
         '
         'VisualizationValueLabel
         '
-        Me.VisualizationValueLabel.Location = New System.Drawing.Point(132, 444)
+        Me.VisualizationValueLabel.Location = New System.Drawing.Point(551, 149)
         Me.VisualizationValueLabel.Name = "VisualizationValueLabel"
         Me.VisualizationValueLabel.Size = New System.Drawing.Size(72, 23)
         Me.VisualizationValueLabel.TabIndex = 113
@@ -4341,7 +4367,7 @@ Public Class CeditMain
         '
         'VisualizationDup
         '
-        Me.VisualizationDup.Location = New System.Drawing.Point(123, 335)
+        Me.VisualizationDup.Location = New System.Drawing.Point(130, 244)
         Me.VisualizationDup.Name = "VisualizationDup"
         Me.VisualizationDup.Size = New System.Drawing.Size(75, 23)
         Me.VisualizationDup.TabIndex = 104
@@ -4349,7 +4375,7 @@ Public Class CeditMain
         '
         'Label29
         '
-        Me.Label29.Location = New System.Drawing.Point(113, 418)
+        Me.Label29.Location = New System.Drawing.Point(532, 123)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(91, 23)
         Me.Label29.TabIndex = 112
@@ -4359,14 +4385,14 @@ Public Class CeditMain
         'VisualizationComp
         '
         Me.VisualizationComp.ItemHeight = 13
-        Me.VisualizationComp.Location = New System.Drawing.Point(210, 418)
+        Me.VisualizationComp.Location = New System.Drawing.Point(629, 123)
         Me.VisualizationComp.Name = "VisualizationComp"
         Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
         Me.VisualizationComp.TabIndex = 108
         '
         'VisualizationDefaults
         '
-        Me.VisualizationDefaults.Location = New System.Drawing.Point(314, 335)
+        Me.VisualizationDefaults.Location = New System.Drawing.Point(321, 244)
         Me.VisualizationDefaults.Name = "VisualizationDefaults"
         Me.VisualizationDefaults.Size = New System.Drawing.Size(109, 23)
         Me.VisualizationDefaults.TabIndex = 103
@@ -4374,7 +4400,7 @@ Public Class CeditMain
         '
         'Label7
         '
-        Me.Label7.Location = New System.Drawing.Point(100, 389)
+        Me.Label7.Location = New System.Drawing.Point(519, 94)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(104, 23)
         Me.Label7.TabIndex = 111
@@ -4383,14 +4409,14 @@ Public Class CeditMain
         '
         'VisualizationValue
         '
-        Me.VisualizationValue.Location = New System.Drawing.Point(210, 447)
+        Me.VisualizationValue.Location = New System.Drawing.Point(629, 152)
         Me.VisualizationValue.Name = "VisualizationValue"
         Me.VisualizationValue.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationValue.TabIndex = 109
         '
         'VisualizationRemove
         '
-        Me.VisualizationRemove.Location = New System.Drawing.Point(219, 335)
+        Me.VisualizationRemove.Location = New System.Drawing.Point(226, 244)
         Me.VisualizationRemove.Name = "VisualizationRemove"
         Me.VisualizationRemove.Size = New System.Drawing.Size(75, 23)
         Me.VisualizationRemove.TabIndex = 105
@@ -4447,38 +4473,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
-        '
-        'Label32
-        '
-        Me.Label32.Location = New System.Drawing.Point(77, 267)
-        Me.Label32.Name = "Label32"
-        Me.Label32.Size = New System.Drawing.Size(90, 23)
-        Me.Label32.TabIndex = 117
-        Me.Label32.Text = "Depth (Y) Grid:"
-        Me.Label32.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'TextBox2
-        '
-        Me.TextBox2.Location = New System.Drawing.Point(173, 270)
-        Me.TextBox2.Name = "TextBox2"
-        Me.TextBox2.Size = New System.Drawing.Size(140, 20)
-        Me.TextBox2.TabIndex = 116
-        '
-        'Label35
-        '
-        Me.Label35.Location = New System.Drawing.Point(77, 293)
-        Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(90, 23)
-        Me.Label35.TabIndex = 119
-        Me.Label35.Text = "Height (Z) Grid:"
-        Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'TextBox3
-        '
-        Me.TextBox3.Location = New System.Drawing.Point(173, 296)
-        Me.TextBox3.Name = "TextBox3"
-        Me.TextBox3.Size = New System.Drawing.Size(140, 20)
-        Me.TextBox3.TabIndex = 118
         '
         'CeditMain
         '
@@ -4576,9 +4570,9 @@ Public Class CeditMain
         Me.GroupHHeats.PerformLayout()
         Me.TabMain.ResumeLayout(False)
         Me.TabVisuals.ResumeLayout(False)
-        Me.GroupBox6.ResumeLayout(False)
-        Me.GroupBox6.PerformLayout()
-        CType(Me.C1FlexGrid1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupVisualResolution.ResumeLayout(False)
+        Me.GroupVisualResolution.PerformLayout()
+        CType(Me.VisualResolution, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).EndInit()
@@ -5891,7 +5885,7 @@ Public Class CeditMain
         UpdateGUI.Detectors(CurrentDetector)
         UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
         UpdateGUI.Fires(CurrentFire)
-        UpdateGUI.Visuals(CurrentVisual)
+        UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         UpdateGUI.DoErrorCheck = True
     End Sub
     Private Sub InitNew()
@@ -6000,7 +5994,7 @@ Public Class CeditMain
             Dim aVisual As New Visual
             myVisuals.Add(aVisual)
             CurrentVisual = myVisuals.Count - 1
-            UpdateGUI.Visuals(CurrentVisual)
+            UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         Else
             MessageBox.Show("A maximum of " + Visual.MaximumVisuals.ToString + " visulaizations are allowed. New visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -6011,7 +6005,7 @@ Public Class CeditMain
             myVisuals.Add(New Visual)
             myVisuals.Copy(CurrentVisual, myVisuals.Count - 1)
             CurrentVisual = myVisuals.Count - 1
-            UpdateGUI.Visuals(CurrentVisual)
+            UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         Else
             MessageBox.Show("A maximum of " + myVisuals.Maximum.ToString + " Visuals are allowed. New Visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -6022,7 +6016,7 @@ Public Class CeditMain
             myVisuals.Remove(CurrentVisual)
             If CurrentVisual > 0 Then CurrentVisual -= 1
             myEnvironment.Changed = True
-            UpdateGUI.Visuals(CurrentVisual)
+            UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         End If
     End Sub
     Private Sub VisualizationDefaults_Click(sender As Object, e As EventArgs) Handles VisualizationDefaults.Click
@@ -6043,19 +6037,29 @@ Public Class CeditMain
             aVisual = New Visual(Visual.ThreeD, 0, 0.0, -1) : myVisuals.Add(aVisual)
             aVisual.Changed = True
             CurrentVisual = myVisuals.Count - 1
-            UpdateGUI.Visuals(CurrentVisual)
+            UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         End If
     End Sub
-    Private Sub VisualizationChanged(sender As Object, e As EventArgs) Handles VisualizationValue.Leave
+    Private Sub VisualizationChanged(sender As Object, e As EventArgs) Handles VisualizationValue.Leave, VisualizationX.Leave, VisualizationY.Leave, VisualizationZ.Leave
         If CurrentVisual >= 0 And myVisuals.Count > 0 Then
-            Dim aVisual As New Visual
-            aVisual = myVisuals.Item(CurrentVisual)
-            If sender Is VisualizationValue Then aVisual.Value = Val(Me.VisualizationValue.Text)
-            myVisuals.Item(CurrentVisual) = aVisual
-            UpdateGUI.Visuals(CurrentVisual)
+            If sender Is VisualizationValue Then
+                Dim aVisual As New Visual
+                aVisual = myVisuals.Item(CurrentVisual)
+                aVisual.Value = Val(Me.VisualizationValue.Text)
+                myVisuals.Item(CurrentVisual) = aVisual
+                UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
+            Else
+                Dim aCompartment As New Compartment
+                aCompartment = myCompartments.Item(CurrentCompartment)
+                If sender Is VisualizationX Then aCompartment.xGrid = Val(Me.VisualizationX.Text)
+                If sender Is VisualizationY Then aCompartment.yGrid = Val(Me.VisualizationY.Text)
+                If sender Is VisualizationZ Then aCompartment.zGrid = Val(Me.VisualizationZ.Text)
+                myCompartments.Item(CurrentCompartment) = aCompartment
+                UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
+                UpdateGUI.Geometry(CurrentCompartment)
+            End If
         End If
     End Sub
-
     Private Sub Visualization_SelectedIndexChanged(sender As Object, e As EventArgs) Handles VisualizationType.SelectedIndexChanged, VisualizationComp.SelectedIndexChanged, VisualizationAxis.SelectedIndexChanged
         If CurrentVisual >= 0 And myVisuals.Count > 0 Then
             Dim aVisual As New Visual
@@ -6086,20 +6090,25 @@ Public Class CeditMain
                 aVisual.Axis = Me.VisualizationAxis.SelectedIndex
             End If
             myVisuals.Item(CurrentVisual) = aVisual
-            UpdateGUI.Visuals(CurrentVisual)
+            UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         End If
     End Sub
-    Private Sub VisualSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualSummary.Click, VisualSummary.AfterSelChange
+    Private Sub VisualSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualSummary.Click, VisualSummary.AfterSelChange, VisualResolution.Click, VisualResolution.AfterSelChange
         ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
-        index = Me.VisualSummary.RowSel - 1
-        If index >= 0 And index <= myVisuals.Count - 1 Then
-            CurrentVisual = index
-            UpdateGUI.Visuals(CurrentVisual)
+        If sender Is VisualSummary Then
+            index = Me.VisualSummary.RowSel - 1
+            If index >= 0 And index <= myVisuals.Count - 1 Then
+                CurrentVisual = index
+                UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
+            End If
+        ElseIf sender Is VisualResolution Then
+            index = Me.VisualResolution.RowSel - 1
+            If index >= 0 And index <= myCompartments.Count - 1 Then
+                CurrentCompartment = index
+                UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
+                UpdateGUI.Geometry(CurrentCompartment)
+            End If
         End If
-    End Sub
-
-    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
-
     End Sub
 End Class

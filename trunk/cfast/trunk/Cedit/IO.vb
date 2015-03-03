@@ -149,8 +149,9 @@ Module IO
         ' Write fire object specified by the index
         Dim aFireObject As Fire
         Dim csv As New CSVsheet
-        Dim i, k, l As Integer
+        Dim i, j, k, l As Integer
         Dim firedata(12, 0) As Single, numFireDataPoints As Integer
+        Dim aThermalProperty
 
         i = 1
         aFireObject = myFireObjects.Item(index)
@@ -179,6 +180,18 @@ Module IO
             Next
             i += 1
         Next
+        ' Thermal property for this fire
+        j = myThermalProperties.GetIndex(aFireObject.Material)
+        aThermalProperty = myThermalProperties.Item(j)
+        csv.str(i, CFASTlnNum.keyWord) = "MATL"
+        csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
+        csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
+        csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
+        csv.Num(i, MaterialNum.density) = aThermalProperty.Density
+        csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
+        csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
+        csv.str(i, MaterialNum.longName) = aThermalProperty.Name
+        i += 1
         csv.WrtCSVfile(FileName)
     End Sub
     Public Sub WriteThermalProperties(ByVal FileName As String)
@@ -485,7 +498,7 @@ Module IO
         csv.Num(i, chemieNum.igntemp) = myEnvironment.IgnitionTemp
         i += 1
 
-        Dim aFire As New Fire, aFireObject As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
+        Dim aFire As New Fire, aFireObject As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer, index As Integer
         For j = 0 To myFires.Count - 1
             aFire = myFires.Item(j)
             If myFireObjects.GetFireIndex(aFire.Name) >= 0 Then
@@ -526,6 +539,18 @@ Module IO
                     Next
                     i += 1
                 Next
+                index = myThermalProperties.GetIndex(aFireObject.Material)
+                ' Thermal property for this fire
+                aThermalProperty = myThermalProperties.Item(index)
+                csv.str(i, CFASTlnNum.keyWord) = "MATL"
+                csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
+                csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
+                csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
+                csv.Num(i, MaterialNum.density) = aThermalProperty.Density
+                csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
+                csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
+                csv.str(i, MaterialNum.longName) = aThermalProperty.Name
+                i += 1
                 aFire.Changed = False
             End If
         Next

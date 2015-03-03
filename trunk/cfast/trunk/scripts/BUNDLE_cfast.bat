@@ -1,4 +1,4 @@
-:: @echo off
+@echo off
 Title Bundle cfast for Windows
 
 
@@ -21,6 +21,8 @@ set svn_drive=c:
 set DISTDIR=%svn_root%\scripts\BUNDLEDIR\%installerbase%
 set bundleinfo=%svn_root%\scripts\bundleinfo
 
+call Create_Install_Files.bat
+
 copy "%bundleinfo%\wrapup_cfast_install.bat" "%DISTDIR%\wrapup_cfast_install.bat"
 copy "%bundleinfo%\shortcut.exe" "%DISTDIR%\shortcut.exe"
 copy "%bundleinfo%\set_path.exe" "%DISTDIR%\set_path.exe"
@@ -40,7 +42,7 @@ echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
 wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 6 Setup" -d "c:\Program Files\%distname%" -c wrapup_cfast_install.bat
 
-copy %installerbase%.exe "%userprofile%\google drive\cftest"
+copy %installerbase%.exe "%userprofile%\google drive\cftest.exe"
 
 
 echo.

@@ -427,14 +427,14 @@ Public Class CompartmentCollection
     Default Public Property Item(ByVal index As Integer) As Compartment
         Get
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error. Compartment number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Compartment number not found.")
             Else
                 Return CType(List.Item(index), Compartment)
             End If
         End Get
         Set(ByVal Value As Compartment)
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error. Compartment number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Compartment number not found.")
             Else
                 List.Item(index) = Value
             End If

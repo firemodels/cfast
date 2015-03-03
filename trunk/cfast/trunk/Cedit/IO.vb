@@ -54,7 +54,7 @@ Module IO
 
             i = 1
             Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
-            Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0, iMatl As Integer = 0, iProp As Integer = 0, NumExtras = 3
+            Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0, iMatl As Integer = 0, iProp As Integer = 0, NumExtras As Integer = 3
             Dim fireComplete As Integer = 0
             Do Until i > csv.MaxRow
                 If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then

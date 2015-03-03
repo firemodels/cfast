@@ -4650,6 +4650,13 @@ Public Class CeditMain
         End If
     End Sub
 
+    Private Sub MainExit(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        ' Handle any last minute operations before exiting
+        If myEnvironment.FileChanged Then SaveDataFile(True)
+        myRecentFiles.Save()
+    End Sub
+
+#Region " Environment Tab "
     ' This section of code handles events related to the environment tab
     Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
@@ -4667,6 +4674,9 @@ Public Class CeditMain
         If sender Is Me.EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
         UpdateGUI.Environment()
     End Sub
+#End Region
+
+#Region " Compartments Tab "
     ' This section of code handles events related to the compartments tab
     Private Sub CompAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompAdd.Click
         ' Add a compartment to the end of the list of compartments
@@ -4839,7 +4849,9 @@ Public Class CeditMain
             End If
         End If
     End Sub
+#End Region
 
+#Region " Wall Vents Tab "
     ' This section of code handles the events related to the horizontal flow vents tab
     Private Sub HVentAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentAdd.Click
         If myHVents.Count + 1 <= Vent.MaximumHVents Then
@@ -4934,6 +4946,9 @@ Public Class CeditMain
         End If
     End Sub
 
+#End Region
+
+#Region " Floor/Ceiling Vents Tab "
     ' This section of code handles the events related to the vertical flow vents tab
     Private Sub VVentAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentAdd.Click
         If myVVents.Count + 1 <= Vent.MaximumVVents Then
@@ -4999,6 +5014,9 @@ Public Class CeditMain
             UpdateGUI.VVents(CurrentVVent)
         End If
     End Sub
+#End Region
+
+#Region "Mechanical Vents Tab "
 
     ' This section of code handles the events related to the mechanical flow vents tab
     Private Sub MVentAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentAdd.Click
@@ -5078,7 +5096,141 @@ Public Class CeditMain
             UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
+#End Region
 
+#Region "Fires Tab"
+    ' This section of code handles the events related to the fires tab
+    Private Sub FireAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireAdd.Click
+        If myFires.Count + 1 <= Fire.MaximumFires Then
+            Dim aFire As New Fire
+            aFire.FireType = Fire.TypeConstrained
+            myFires.Add(aFire)
+            CurrentFire = myFires.Count - 1
+            CurrentFireObject = aFire.FireObject
+            UpdateGUI.Fires(CurrentFire)
+        Else
+            MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub FireDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireDup.Click
+        ' Copy the current vent, adding it to the end of the list of vents
+        If CurrentFire >= 0 And myFires.Count > 0 And CurrentFire + 1 <= myFires.Maximum And myFires.Count + 1 <= Fire.MaximumFires Then
+            myFires.Add(New Fire)
+            myFires.Copy(CurrentFire, myFires.Count - 1)
+            CurrentFire = myFires.Count - 1
+            CurrentFireObject = myFires(CurrentFire).FireObject
+            UpdateGUI.Fires(CurrentFire)
+        ElseIf CurrentFire + 1 > myFires.Maximum Then
+            MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub FireRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireRemove.Click
+        ' Remove the current Fire from the list of hvents
+        If CurrentFire >= 0 And myFires.Count > 0 Then
+            myFires.Remove(CurrentFire)
+            If CurrentFire > 0 Then
+                CurrentFire -= 1
+                CurrentFireObject = myFires(CurrentFire).FireObject
+            End If
+            myEnvironment.Changed = True
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
+    Private Sub FireSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireSummary.Click
+        ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with a mouse click
+        Dim index As Integer
+        index = Me.FireSummary.RowSel - 1
+        If index >= 0 And index <= myFires.Count - 1 Then
+            CurrentFire = index
+            CurrentFireObject = myFires(CurrentFire).FireObject
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
+    Private Sub FireSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireSummary.AfterSelChange
+        ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with the keyboard
+        Dim index As Integer
+        index = Me.FireSummary.RowSel - 1
+        If index >= 0 And index <= myFires.Count - 1 Then
+            CurrentFire = index
+            CurrentFireObject = myFires(CurrentFire).FireObject
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
+    Private Sub FireNew_Click(sender As System.Object, e As System.EventArgs) Handles FireNewt2.Click, FireNewObject.Click
+        If myFireObjects.Count + 1 <= Fire.MaximumFireObjects Then
+            Dim aFireObject As New Fire
+            If sender Is FireNewt2 Then
+                Dim t2FireDialog As New t2Fire
+                Dim iReturn As Integer
+                iReturn = t2FireDialog.ShowDialog(Me)
+                If iReturn = Windows.Forms.DialogResult.OK Then
+                    Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
+                    myFireObjects.Add(aFire)
+                    UpdateGUI.InitFireObjectList(Me.FireName)
+                    Me.FireName.SelectedIndex = myFireObjects.Count - 1
+                    CurrentFireObject = Me.FireName.SelectedIndex
+                    aFire.FireObject = CurrentFireObject
+                    aFireObject = myFireObjects(CurrentFireObject)
+                    aFire.Name = aFireObject.Name
+                    UpdateGUI.Fires(CurrentFire)
+                End If
+            ElseIf sender Is FireNewObject Then
+                Dim aFire As New Fire(Fire.TypeFireObject)
+                myFireObjects.Add(aFire)
+                UpdateGUI.InitFireObjectList(Me.FireName)
+                Me.FireName.SelectedIndex = myFireObjects.Count - 1
+                CurrentFireObject = Me.FireName.SelectedIndex
+                aFire.FireObject = CurrentFireObject
+                aFireObject = myFireObjects(CurrentFireObject)
+                aFire.Name = aFireObject.Name
+                UpdateGUI.Fires(CurrentFire)
+            End If
+
+        End If
+    End Sub
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireName.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
+        Dim aFire As New Fire, aFireObject As New Fire
+        If sender Is Me.FireLOL Then myEnvironment.LowerOxygenLimit = Val(Me.FireLOL.Text)
+        If sender Is Me.FireIgnitionTemperature Then myEnvironment.IgnitionTemp = Val(Me.FireIgnitionTemperature.Text)
+        If CurrentFire >= 0 And myFires.Count > 0 Then
+            aFire = myFires(CurrentFire)
+            If sender Is Me.FireComp Then
+                aFire.Compartment = Me.FireComp.SelectedIndex - 1
+                If Val(Me.FireXPosition.Text) = -1 Then aFire.XPosition = Val(Me.FireXPosition.Text)
+                If Val(Me.FireYPosition.Text) = -1 Then aFire.YPosition = Val(Me.FireYPosition.Text)
+                If Val(Me.FireZPosition.Text) = -1 Then aFire.ZPosition = Val(Me.FireZPosition.Text)
+            End If
+            If sender Is Me.FireXPosition Then aFire.XPosition = Val(Me.FireXPosition.Text)
+            If sender Is Me.FireYPosition Then aFire.YPosition = Val(Me.FireYPosition.Text)
+            If sender Is Me.FireZPosition Then aFire.ZPosition = Val(Me.FireZPosition.Text)
+            If sender Is Me.FireIgnitionCriteria Then aFire.IgnitionType = Me.FireIgnitionCriteria.SelectedIndex
+            If sender Is Me.FireXNormal Then aFire.XNormal = Val(Me.FireXNormal.Text)
+            If sender Is Me.FireYNormal Then aFire.YNormal = Val(Me.FireYNormal.Text)
+            If sender Is Me.FireZNormal Then aFire.ZNormal = Val(Me.FireZNormal.Text)
+            If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
+            If sender Is Me.FireName And Me.FireName.SelectedIndex >= 0 Then
+                ' Here they just selected an existing fire object
+                CurrentFireObject = Me.FireName.SelectedIndex
+                aFire.FireObject = CurrentFireObject
+                aFireObject = myFireObjects(CurrentFireObject)
+                aFire.Name = aFireObject.Name
+            ElseIf CurrentFireObject >= 0 And myFireObjects.Count > 0 Then
+                ' Here they have attempted to rename a fire object
+                aFireObject = myFireObjects(CurrentFireObject)
+                If sender Is Me.FireName Then
+                    aFireObject.Name = Me.FireName.Text
+                    myFireObjects(CurrentFireObject) = aFireObject
+                    UpdateGUI.InitFireObjectList(Me.FireName)
+                End If
+            End If
+            If CurrentFireObject >= 0 Then myFireObjects(CurrentFireObject) = aFireObject
+            If CurrentFire >= 0 Then myFires(CurrentFire) = aFire
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
+#End Region
+
+#Region " Targets Tab "
     ' This section of code handles the events related to the targets tab
     Private Sub TargetAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetAdd.Click
         If myTargets.Count + 1 <= Target.MaximumTargets Then
@@ -5213,7 +5365,9 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
+#End Region
 
+#Region "Detectors "
     ' This section of code handles the events related to the detector tab
     Private Sub DetectorAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorAdd.Click
         If myDetectors.Count + 1 <= Target.MaximumTargets Then
@@ -5309,7 +5463,9 @@ Public Class CeditMain
             UpdateGUI.Detectors(CurrentDetector)
         End If
     End Sub
+#End Region
 
+#Region " Surface Connections Tab"
     ' This section of code handles the events related to the surface connections tab
     Private Sub HeatAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HHeatAdd.Click, VHeatAdd.Click
         ' Add a heat transfer connection
@@ -5432,591 +5588,10 @@ Public Class CeditMain
             End If
         End If
     End Sub
+#End Region
 
-    ' This section of code handles the events related to the fires tab
-    Private Sub FireAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireAdd.Click
-        If myFires.Count + 1 <= Fire.MaximumFires Then
-            Dim aFire As New Fire
-            aFire.FireType = Fire.TypeConstrained
-            myFires.Add(aFire)
-            CurrentFire = myFires.Count - 1
-            CurrentFireObject = aFire.FireObject
-            UpdateGUI.Fires(CurrentFire)
-        Else
-            MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        End If
-    End Sub
-    Private Sub FireDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireDup.Click
-        ' Copy the current vent, adding it to the end of the list of vents
-        If CurrentFire >= 0 And myFires.Count > 0 And CurrentFire + 1 <= myFires.Maximum And myFires.Count + 1 <= Fire.MaximumFires Then
-            myFires.Add(New Fire)
-            myFires.Copy(CurrentFire, myFires.Count - 1)
-            CurrentFire = myFires.Count - 1
-            CurrentFireObject = myFires(CurrentFire).FireObject
-            UpdateGUI.Fires(CurrentFire)
-        ElseIf CurrentFire + 1 > myFires.Maximum Then
-            MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        End If
-    End Sub
-    Private Sub FireRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireRemove.Click
-        ' Remove the current Fire from the list of hvents
-        If CurrentFire >= 0 And myFires.Count > 0 Then
-            myFires.Remove(CurrentFire)
-            If CurrentFire > 0 Then
-                CurrentFire -= 1
-                CurrentFireObject = myFires(CurrentFire).FireObject
-            End If
-            myEnvironment.Changed = True
-            UpdateGUI.Fires(CurrentFire)
-        End If
-    End Sub
-    Private Sub FireSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireSummary.Click
-        ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with a mouse click
-        Dim index As Integer
-        index = Me.FireSummary.RowSel - 1
-        If index >= 0 And index <= myFires.Count - 1 Then
-            CurrentFire = index
-            CurrentFireObject = myFires(CurrentFire).FireObject
-            UpdateGUI.Fires(CurrentFire)
-        End If
-    End Sub
-    Private Sub FireSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireSummary.AfterSelChange
-        ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with the keyboard
-        Dim index As Integer
-        index = Me.FireSummary.RowSel - 1
-        If index >= 0 And index <= myFires.Count - 1 Then
-            CurrentFire = index
-            CurrentFireObject = myFires(CurrentFire).FireObject
-            UpdateGUI.Fires(CurrentFire)
-        End If
-    End Sub
-    Private Sub FireNew_Click(sender As System.Object, e As System.EventArgs) Handles FireNewt2.Click, FireNewObject.Click
-        If myFireObjects.Count + 1 <= Fire.MaximumFireObjects Then
-            Dim aFireObject As New Fire
-            If sender Is FireNewt2 Then
-                Dim t2FireDialog As New t2Fire
-                Dim iReturn As Integer
-                iReturn = t2FireDialog.ShowDialog(Me)
-                If iReturn = Windows.Forms.DialogResult.OK Then
-                    Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
-                    myFireObjects.Add(aFire)
-                    UpdateGUI.InitFireObjectList(Me.FireName)
-                    Me.FireName.SelectedIndex = myFireObjects.Count - 1
-                    CurrentFireObject = Me.FireName.SelectedIndex
-                    aFire.FireObject = CurrentFireObject
-                    aFireObject = myFireObjects(CurrentFireObject)
-                    aFire.Name = aFireObject.Name
-                    UpdateGUI.Fires(CurrentFire)
-                End If
-            ElseIf sender Is FireNewObject Then
-                Dim aFire As New Fire(Fire.TypeFireObject)
-                myFireObjects.Add(aFire)
-                UpdateGUI.InitFireObjectList(Me.FireName)
-                Me.FireName.SelectedIndex = myFireObjects.Count - 1
-                CurrentFireObject = Me.FireName.SelectedIndex
-                aFire.FireObject = CurrentFireObject
-                aFireObject = myFireObjects(CurrentFireObject)
-                aFire.Name = aFireObject.Name
-                UpdateGUI.Fires(CurrentFire)
-            End If
-
-        End If
-    End Sub
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireName.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireName.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave
-        Dim aFire As New Fire, aFireObject As New Fire
-        If sender Is Me.FireLOL Then myEnvironment.LowerOxygenLimit = Val(Me.FireLOL.Text)
-        If sender Is Me.FireIgnitionTemperature Then myEnvironment.IgnitionTemp = Val(Me.FireIgnitionTemperature.Text)
-        If CurrentFire >= 0 And myFires.Count > 0 Then
-            aFire = myFires(CurrentFire)
-            If sender Is Me.FireComp Then
-                aFire.Compartment = Me.FireComp.SelectedIndex - 1
-                If Val(Me.FireXPosition.Text) = -1 Then aFire.XPosition = Val(Me.FireXPosition.Text)
-                If Val(Me.FireYPosition.Text) = -1 Then aFire.YPosition = Val(Me.FireYPosition.Text)
-                If Val(Me.FireZPosition.Text) = -1 Then aFire.ZPosition = Val(Me.FireZPosition.Text)
-            End If
-            If sender Is Me.FireXPosition Then aFire.XPosition = Val(Me.FireXPosition.Text)
-            If sender Is Me.FireYPosition Then aFire.YPosition = Val(Me.FireYPosition.Text)
-            If sender Is Me.FireZPosition Then aFire.ZPosition = Val(Me.FireZPosition.Text)
-            If sender Is Me.FireIgnitionCriteria Then aFire.IgnitionType = Me.FireIgnitionCriteria.SelectedIndex
-            If sender Is Me.FireXNormal Then aFire.XNormal = Val(Me.FireXNormal.Text)
-            If sender Is Me.FireYNormal Then aFire.YNormal = Val(Me.FireYNormal.Text)
-            If sender Is Me.FireZNormal Then aFire.ZNormal = Val(Me.FireZNormal.Text)
-            If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
-            If sender Is Me.FireName And Me.FireName.SelectedIndex >= 0 Then
-                ' Here they just selected an existing fire object
-                CurrentFireObject = Me.FireName.SelectedIndex
-                aFire.FireObject = CurrentFireObject
-                aFireObject = myFireObjects(CurrentFireObject)
-                aFire.Name = aFireObject.Name
-            ElseIf CurrentFireObject >= 0 And myFireObjects.Count > 0 Then
-                ' Here they have attempted to rename a fire object
-                aFireObject = myFireObjects(CurrentFireObject)
-                If sender Is Me.FireName Then
-                    aFireObject.Name = Me.FireName.Text
-                    myFireObjects(CurrentFireObject) = aFireObject
-                    UpdateGUI.InitFireObjectList(Me.FireName)
-                End If
-            End If
-            If CurrentFireObject >= 0 Then myFireObjects(CurrentFireObject) = aFireObject
-            If CurrentFire >= 0 Then myFires(CurrentFire) = aFire
-            UpdateGUI.Fires(CurrentFire)
-        End If
-    End Sub
-
-    ' This section handles things related to the buttons, etc. on the main screen
-    Private Sub TabMain_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles TabMain.Click
-        ' Anytime your change tab pages, you need to update everything to make it consistent
-        UpdateGUI.DoErrorCheck = False
-        UpdateAll()
-        UpdateGUI.DoErrorCheck = True
-    End Sub
-    Private Sub MainGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainGeometry.Click
-        MainGeometry.Enabled = False
-        RunSMVGeometry()
-        MainGeometry.Enabled = True
-    End Sub
-    Private Sub MainRun_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainRun.Click
-        RunCFAST()
-    End Sub
-    Private Sub MainView_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainView.Click
-        Dim LastAccessTimeIn As Date, LastAccessTimeSMV As Date, SMVExists As Boolean
-        SMVExists = System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".smv")
-        LastAccessTimeSMV = System.IO.File.GetLastAccessTimeUtc(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".smv")
-        LastAccessTimeIn = System.IO.File.GetLastAccessTimeUtc(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
-        If LastAccessTimeSMV < LastAccessTimeIn Or SMVExists = False Then
-            RunSMVGeometry()
-        End If
-        RunSmokeView()
-    End Sub
-    Private Sub MainOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainOpen.Click
-        Me.OpenDataFileDialog.FilterIndex = 1
-        Me.OpenDataFileDialog.ShowDialog()
-        If OpenDataFileDialog.FileNames.Length > 0 Then
-            Dim FileName As String
-            For Each FileName In OpenDataFileDialog.FileNames
-                OpenDataFile(FileName)
-            Next
-        End If
-        UpdateAll()
-    End Sub
-    Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click
-        SaveDataFile(False)
-    End Sub
-
-    ' This section of code handles the menu items
-    Private Sub MenuThermalProperties_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditThermalProperties.Click
-        If myThermalProperties.Count > 0 Then
-            Dim ThermalWindow As New Thermal_Properties_Edit
-            Dim iReturn As Integer, i As Integer
-            iReturn = ThermalWindow.ShowDialog(Me)
-            If iReturn = Windows.Forms.DialogResult.OK Then
-                If TempThermalProperties.Count > 0 Then
-                    myThermalProperties.Clear()
-                    For i = 0 To TempThermalProperties.Count - 1
-                        myThermalProperties.Add(New ThermalProperty)
-                        PropertyCopy(TempThermalProperties(i), myThermalProperties(myThermalProperties.Count - 1))
-                    Next
-                End If
-                UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-                UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-                UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-                UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
-                UpdateAll()
-            End If
-        End If
-    End Sub
-    Private Sub MenuFireObjects_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditFires.Click
-        EditFireObjects(0)
-    End Sub
-    Private Sub FireObjectEdit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireObjectEdit.Click
-        If CurrentFireObject >= 0 Then
-            EditFireObject(CurrentFireObject)
-        Else
-            EditFireObjects(0)
-        End If
-    End Sub
-    Private Sub EditFireObject(ByVal aCurrentFireObject As Integer)
-        If myFireObjects.Count > 0 Then
-            Dim ObjectWindow As New EditFireObject
-            Dim iReturn As Integer
-            ObjectWindow.CurrentFireObject = aCurrentFireObject
-            iReturn = ObjectWindow.ShowDialog(Me)
-            If iReturn = OK Then
-                FireCopy(ObjectWindow.aFireObject, myFireObjects(aCurrentFireObject))
-                UpdateGUI.InitFireObjectList(Me.FireName)
-                UpdateAll()
-            End If
-        End If
-    End Sub
-    Private Sub EditFireObjects(ByVal aCurrentFireObject As Integer)
-        If myFireObjects.Count > 0 Then
-            Dim ObjectsWindow As New AllFireObjects
-            Dim iReturn As Integer, i As Integer
-            ObjectsWindow.CurrentFireObject = aCurrentFireObject
-            iReturn = ObjectsWindow.ShowDialog(Me)
-            If iReturn = OK Then
-                If TempFireObjects.Count > 0 Then
-                    myFireObjects.Clear()
-                    For i = 0 To TempFireObjects.Count - 1
-                        myFireObjects.Add(New Fire)
-                        FireCopy(TempFireObjects(i), myFireObjects(myFireObjects.Count - 1))
-                    Next
-                End If
-                UpdateGUI.InitFireObjectList(Me.FireName)
-                UpdateAll()
-            End If
-        End If
-    End Sub
-    Private Sub MenuUnits_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuUnits.Click
-        UserUnits.ShowDialog(Me)
-        UpdateAll()
-    End Sub
-    Private Sub MenuNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNew.Click
-        InitNew()
-        UpdateAll()
-    End Sub
-    Private Sub MenuOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuOpen.Click
-        Me.OpenDataFileDialog.FilterIndex = 1
-        Me.OpenDataFileDialog.ShowDialog()
-        If OpenDataFileDialog.FileNames.Length > 0 Then
-            Dim FileName As String
-            For Each FileName In OpenDataFileDialog.FileNames
-                OpenDataFile(FileName)
-            Next
-        End If
-        UpdateAll()
-    End Sub
-    Private Sub OpenDataFile(ByVal FileName As String)
-        Dim PathName As String
-        If My.Computer.FileSystem.FileExists(FileName) Then
-            myUnits.SI = True
-            InitNew()
-            PathName = System.IO.Path.GetDirectoryName(FileName) & "\"
-            ChDir(PathName)
-            ' Initialize thermal properties with ones from the current directory, if they exist
-            IO.ReadThermalProperties(".\" + "thermal.csv")
-            UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-            UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-            UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-            UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
-            ' Initialize fire objects with ones from the current directory, if they exist
-            myFireObjects.Clear()
-            IO.ReadFireObjects(PathName)
-            IO.ReadFireObjects(Application.StartupPath + "\")
-            UpdateGUI.InitFireObjectList(Me.FireName)
-            ' Now we should be ready to read the input file
-            ReadInputFile(FileName)
-            myEnvironment.InputFileName = FileName
-            myEnvironment.InputFilePath = FileName
-            myRecentFiles.Add(FileName)
-            myUnits.SI = False
-            UpdateGUI.InitFireObjectList(Me.FireName)
-        Else
-            MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
-        End If
-    End Sub
-    Private Sub MenuSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSave.Click
-        SaveDataFile(False)
-    End Sub
-    Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
-        Dim FileName As String, PathName As String
-        myUnits.SI = True
-        Me.SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
-        Me.SaveDataFileDialog.Title = "Save As"
-        Me.SaveDataFileDialog.OverwritePrompt = True
-        If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            If Me.SaveDataFileDialog.FileName <> " " Then
-                ' Write out the data file since it has been changed
-                WriteDataFile(Me.SaveDataFileDialog.FileName)
-                myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
-                myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
-                Me.Text = "CEdit (" + System.IO.Path.GetFileName(Me.SaveDataFileDialog.FileName) + ")"
-                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
-            End If
-            WriteFireObjects(".\")
-            FileName = myThermalProperties.FileName + ".csv"
-            WriteThermalProperties(FileName)
-            PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
-            ChDir(PathName)
-        End If
-        myUnits.SI = False
-        UpdateGUI.Menu()
-        UpdateGUI.General()
-    End Sub
-    Private Sub SaveDataFile(ByVal Prompt As Boolean)
-        Dim Filename As String
-        myUnits.SI = True
-        If myEnvironment.FileChanged() Then
-            If Prompt Or myEnvironment.InputFileName = Nothing Or myEnvironment.InputFileName = "" Then
-                Me.SaveDataFileDialog.Title = "Save"
-                Me.SaveDataFileDialog.OverwritePrompt = True
-                If SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-                    If Me.SaveDataFileDialog.FileName <> " " Then
-                        ' Write out the data file since it has been changed
-                        WriteDataFile(Me.SaveDataFileDialog.FileName)
-                        myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
-                        myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
-                        myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
-                        WriteFireObjects(".\")
-                        Filename = myEnvironment.InputFilePath + "\" + myThermalProperties.FileName + ".csv"
-                        WriteThermalProperties(Filename)
-                    End If
-                End If
-            Else
-                WriteDataFile(myEnvironment.InputFileName + ".in")
-                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
-                WriteFireObjects(".\")
-                Filename = myThermalProperties.FileName + ".csv"
-                WriteThermalProperties(Filename)
-            End If
-        End If
-        myUnits.SI = False
-        UpdateGUI.Menu()
-        UpdateGUI.General()
-    End Sub
-    Private Sub MenuRunCFast_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuRunCFast.Click
-        RunCFAST()
-    End Sub
-    Private Sub RunCFAST()
-        If myEnvironment.FileChanged Then SaveDataFile(True)
-        If System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in") Then
-            Dim RunSimulation As New RunModel
-            CFASTSimulationTime = myEnvironment.SimulationTime
-            CFastInputFile = myEnvironment.InputFileName
-            RunSimulation.Text = "Run Model (" + System.IO.Path.GetFileName(CFastInputFile) + ")"
-            RunSimulation.ShowDialog()
-
-            UpdateGUI.Menu()
-            UpdateGUI.Environment()
-        End If
-    End Sub
-    Private Sub MenuSMVGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVGeometry.Click
-        RunSMVGeometry()
-    End Sub
-    Private Sub RunSMVGeometry()
-        Dim CommandString As String, found As Integer, ProcessID As Integer
-        If myEnvironment.FileChanged Then SaveDataFile(True)
-        Try
-            found = myEnvironment.InputFileName.IndexOf(" ", 0)
-            If found <= 0 Then
-                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + " /I"
-            Else
-                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """" + " /I"
-            End If
-            If MenuShowCFAST.Checked Then
-                ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True, 5000)
-            Else
-                ProcessID = Shell(CommandString, AppWinStyle.Hide, True, 5000)
-            End If
-        Catch ex As Exception
-        End Try
-        UpdateGUI.UpdateLogFile(Me.EnvErrors)
-    End Sub
-    Private Sub MenuSMVSimulation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVSimulation.Click
-        RunSmokeView()
-    End Sub
-    Private Sub RunSmokeView()
-        Dim CommandString As String, found As Integer, ProcessID As Integer
-        If myEnvironment.FileChanged Then SaveDataFile(True)
-        Try
-            found = myEnvironment.InputFileName.IndexOf(" ", 0)
-            If found <= 0 Then
-                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
-            Else
-                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
-            End If
-            ProcessID = Shell(CommandString, AppWinStyle.NormalFocus, True)
-        Catch ex As Exception
-        End Try
-    End Sub
-    Private Sub MenuShowCFAST_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowCFAST.Click
-        If Me.MenuShowCFAST.Checked Then
-            Me.MenuShowCFAST.Checked = False
-            CommandWindowVisible = False
-        Else
-            Me.MenuShowCFAST.Checked = True
-            CommandWindowVisible = True
-        End If
-        SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
-    End Sub
-    Private Sub MenuDetailedOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuDetailedOutput.Click
-        If Me.MenuDetailedOutput.Checked Then
-            DetailedCFASTOutput = False
-        Else
-            DetailedCFASTOutput = True
-        End If
-        Me.MenuDetailedOutput.Checked = DetailedCFASTOutput
-        SaveSetting("CFAST", "Options", "DetailedOutput", TotalMassCFASTOutput.ToString)
-    End Sub
-    Private Sub MenuTotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTotalMassOutput.Click
-        If Me.MenuTotalMassOutput.Checked Then
-            TotalMassCFASTOutput = False
-        Else
-            TotalMassCFASTOutput = True
-        End If
-        Me.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
-        SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
-    End Sub
-    Private Sub MenuNetHeatFluxOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNetHeatFluxOutput.Click
-        If Me.MenuNetHeatFluxOutput.Checked Then
-            NetHeatFluxCFASTOutput = False
-        Else
-            NetHeatFluxCFASTOutput = True
-        End If
-        Me.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
-        SaveSetting("CFAST", "Options", "NetHeatFlux", NetHeatFluxCFASTOutput.ToString)
-    End Sub
-    Private Sub MenuExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuExit.Click
-        Application.Exit()
-    End Sub
-    Private Sub MainExit(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-        If myEnvironment.FileChanged Then SaveDataFile(True)
-        myRecentFiles.Save()
-    End Sub
-    Private Sub MenuAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuAbout.Click
-        About.ShowDialog()
-    End Sub
-    Private Sub MenuRecent_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuRecent1.Click, MenuRecent2.Click, MenuRecent3.Click, MenuRecent4.Click
-        Dim i As Integer
-        If sender Is Me.MenuRecent1 Then i = 0
-        If sender Is Me.MenuRecent2 Then i = 1
-        If sender Is Me.MenuRecent3 Then i = 2
-        If sender Is Me.MenuRecent4 Then i = 3
-        OpenDataFile(myRecentFiles.Filenames(i))
-        UpdateAll()
-    End Sub
-    Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
-        Help.ShowHelp(Me, Application.StartupPath + "\" + "CFAST6.chm")
-    End Sub
-    Private Sub MenuCFASTweb_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuCFASTWeb.Click
-        Process.Start("http://cfast.nist.gov")
-    End Sub
-    Private Sub MenuViewOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuViewOutput.Click, MenuViewInput.Click, MenuViewLog.Click
-        If sender Is MenuViewOutput Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".out"
-        If sender Is MenuViewInput Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".in"
-        If sender Is MenuViewLog Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".log"
-        If System.IO.File.Exists(ViewFile.FileName) Then
-            MenuView.Enabled = False
-            ViewFile.ShowDialog()
-            MenuView.Enabled = True
-        End If
-    End Sub
-    Private Sub UpdateAll()
-        UpdateGUI.Menu()
-        UpdateGUI.General()
-        UpdateGUI.DoErrorCheck = False
-        UpdateGUI.Environment()
-        UpdateGUI.Geometry(CurrentCompartment)
-        UpdateGUI.HVents(CurrentHVent)
-        UpdateGUI.VVents(CurrentVVent)
-        UpdateGUI.MVents(CurrentMVent)
-        UpdateGUI.Targets(CurrentTarget)
-        UpdateGUI.Detectors(CurrentDetector)
-        UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
-        UpdateGUI.Fires(CurrentFire)
-        UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
-        UpdateGUI.DoErrorCheck = True
-    End Sub
-    Private Sub InitNew()
-        ' Start with a clean slate and a default set of inputs
-        myEnvironment = New Environment
-        Me.Text = "CEdit"
-        myCompartments.Clear()
-        myHVents.Clear()
-        myVVents.Clear()
-        myMVents.Clear()
-        myHHeats.Clear()
-        myVHeats.Clear()
-        myTargets.Clear()
-        myDetectors.Clear()
-        myFires.Clear()
-        myFireObjects.Clear()
-        myVisuals.Clear()
-        myThermalProperties.Clear()
-        myErrors.Queue.Clear()
-        Do While (dataFileHeader.Count > 0)
-            dataFileHeader.Remove(dataFileHeader.Count)
-        Loop
-        Do While (dataFileComments.Count > 0)
-            dataFileComments.Remove(dataFileComments.Count)
-        Loop
-        Do While (thermalFileComments.Count > 0)
-            thermalFileComments.Remove(thermalFileComments.Count)
-        Loop
-        Do While (fireFilesComments.Count > 0)
-            fireFilesComments.Remove(fireFilesComments.Count)
-        Loop
-        CurrentCompartment = 0
-        CurrentHVent = 0
-        CurrentVVent = 0
-        CurrentMVent = 0
-        CurrentTarget = 0
-        CurrentDetector = 0
-        CurrentHHeat = 0
-        CurrentVHeat = 0
-        CurrentFire = 0
-        CurrentFireObject = 0
-
-        'Initialize thermal properties
-        myUnits.SI = True
-        IO.ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv")
-        IO.ReadThermalProperties(".\" + "thermal.csv")
-        myUnits.SI = False
-        UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-        UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-        UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-        UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
-
-        'Initialize fire objects with data from existing object fires
-        myUnits.SI = True
-        IO.ReadFireObjects(".\")
-        IO.ReadFireObjects(Application.StartupPath & "\")
-        UpdateGUI.InitFireObjectList(Me.FireName)
-        myUnits.SI = False
-
-        ' Initialize spreadsheets for input or no input (summary tables) as appropriate
-        UpdateGUI.InitSummaryGrid(Me.CompSummary)
-        UpdateGUI.InitSummaryGrid(Me.HVentSummary)
-        UpdateGUI.InitSummaryGrid(Me.VVentSummary)
-        UpdateGUI.InitSummaryGrid(Me.MVentSummary)
-        UpdateGUI.InitSummaryGrid(Me.TargetSummary)
-        UpdateGUI.InitSummaryGrid(Me.DetectorSummary)
-        UpdateGUI.InitSummaryGrid(Me.FireSummary)
-
-        UpdateGUI.InitEditGrid(Me.CompVariableArea)
-
-        ' Turn off all input except the simulation environment and compartment add since all others stuff depends on have a compartment
-        Me.TabHorizontalFlow.Enabled = False
-        Me.TabVerticalFlow.Enabled = False
-        Me.TabMechanicalFlow.Enabled = False
-        Me.TabTargets.Enabled = False
-        Me.TabDetection.Enabled = False
-        Me.TabHeatTransfer.Enabled = False
-        Me.TabFires.Enabled = False
-        Me.GroupCompartments.Enabled = False
-        Me.MenuViewInput.Enabled = False
-        Me.MenuViewOutput.Enabled = False
-        Me.MenuViewLog.Enabled = False
-        Me.MenuDetailedOutput.Checked = True
-        UpdateAll()
-    End Sub
-    Private Sub MenuValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuValidationOutput.Click
-        If Me.MenuValidationOutput.Checked Then
-            ValidationOutput = False
-        Else
-            ValidationOutput = True
-        End If
-        Me.MenuValidationOutput.Checked = ValidationOutput
-        SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
-    End Sub
-    Private Sub MenuDebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles MenuDebugOutput.Click
-        If Me.MenuDebugOutput.Checked Then
-            DebugOutput = False
-        Else
-            DebugOutput = True
-        End If
-        Me.MenuDebugOutput.Checked = DebugOutput
-    End Sub
+#Region "Visualization Tab"
+    ' This section handles the visualization tab
     Private Sub VisualizationAdd_Click(sender As Object, e As EventArgs) Handles VisualizationAdd.Click
         ' Add a Visualization to the end of the list of visualizations
         If myVisuals.Count + 1 <= myVisuals.Maximum Then
@@ -6140,4 +5715,462 @@ Public Class CeditMain
             End If
         End If
     End Sub
+#End Region
+
+#Region " Menus and Buttons "
+    ' This section handles things related to the menus, buttons, etc. on the main screen
+    Private Sub TabMain_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles TabMain.Click
+        ' Anytime your change tab pages, you need to update everything to make it consistent
+        UpdateGUI.DoErrorCheck = False
+        UpdateAll()
+        UpdateGUI.DoErrorCheck = True
+    End Sub
+    Private Sub MainGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainGeometry.Click
+        MainGeometry.Enabled = False
+        RunSMVGeometry()
+        MainGeometry.Enabled = True
+    End Sub
+    Private Sub MainRun_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainRun.Click
+        RunCFAST()
+    End Sub
+    Private Sub MainView_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainView.Click
+        Dim LastAccessTimeIn As Date, LastAccessTimeSMV As Date, SMVExists As Boolean
+        SMVExists = System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".smv")
+        LastAccessTimeSMV = System.IO.File.GetLastAccessTimeUtc(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".smv")
+        LastAccessTimeIn = System.IO.File.GetLastAccessTimeUtc(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+        If LastAccessTimeSMV < LastAccessTimeIn Or SMVExists = False Then
+            RunSMVGeometry()
+        End If
+        RunSmokeView()
+    End Sub
+    Private Sub MainOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainOpen.Click
+        Me.OpenDataFileDialog.FilterIndex = 1
+        Me.OpenDataFileDialog.ShowDialog()
+        If OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim FileName As String
+            For Each FileName In OpenDataFileDialog.FileNames
+                OpenDataFile(FileName)
+            Next
+        End If
+        UpdateAll()
+    End Sub
+    Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click
+        SaveDataFile(False)
+    End Sub
+    Private Sub MenuThermalProperties_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditThermalProperties.Click
+        If myThermalProperties.Count > 0 Then
+            Dim ThermalWindow As New Thermal_Properties_Edit
+            Dim iReturn As Integer, i As Integer
+            iReturn = ThermalWindow.ShowDialog(Me)
+            If iReturn = Windows.Forms.DialogResult.OK Then
+                If TempThermalProperties.Count > 0 Then
+                    myThermalProperties.Clear()
+                    For i = 0 To TempThermalProperties.Count - 1
+                        myThermalProperties.Add(New ThermalProperty)
+                        PropertyCopy(TempThermalProperties(i), myThermalProperties(myThermalProperties.Count - 1))
+                    Next
+                End If
+                UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+                UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+                UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+                UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+                UpdateAll()
+            End If
+        End If
+    End Sub
+    Private Sub MenuEditFires_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditFires.Click
+        EditFireObjects(0)
+    End Sub
+    Private Sub MenuUnits_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuUnits.Click
+        UserUnits.ShowDialog(Me)
+        UpdateAll()
+    End Sub
+    Private Sub MenuNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNew.Click
+        InitNew()
+        UpdateAll()
+    End Sub
+    Private Sub MenuOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuOpen.Click
+        Me.OpenDataFileDialog.FilterIndex = 1
+        Me.OpenDataFileDialog.ShowDialog()
+        If OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim FileName As String
+            For Each FileName In OpenDataFileDialog.FileNames
+                InitNew()
+                OpenDataFile(FileName)
+            Next
+        End If
+        UpdateAll()
+    End Sub
+    Private Sub MenuSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSave.Click
+        SaveDataFile(False)
+    End Sub
+    Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
+        Dim FileName As String, PathName As String
+        myUnits.SI = True
+        Me.SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
+        Me.SaveDataFileDialog.Title = "Save As"
+        Me.SaveDataFileDialog.OverwritePrompt = True
+        If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+            If Me.SaveDataFileDialog.FileName <> " " Then
+                ' Write out the data file since it has been changed
+                WriteDataFile(Me.SaveDataFileDialog.FileName)
+                myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
+                myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
+                Me.Text = "CEdit (" + System.IO.Path.GetFileName(Me.SaveDataFileDialog.FileName) + ")"
+                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+            End If
+            WriteFireObjects(".\")
+            FileName = myThermalProperties.FileName + ".csv"
+            WriteThermalProperties(FileName)
+            PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
+            ChDir(PathName)
+        End If
+        myUnits.SI = False
+        UpdateGUI.Menu()
+        UpdateGUI.General()
+    End Sub
+    Private Sub MenuRunCFast_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuRunCFast.Click
+        RunCFAST()
+    End Sub
+    Private Sub MenuSMVGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVGeometry.Click
+        RunSMVGeometry()
+    End Sub
+    Private Sub MenuSMVSimulation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVSimulation.Click
+        RunSmokeView()
+    End Sub
+    Private Sub MenuShowCFAST_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowCFAST.Click
+        If Me.MenuShowCFAST.Checked Then
+            Me.MenuShowCFAST.Checked = False
+            CommandWindowVisible = False
+        Else
+            Me.MenuShowCFAST.Checked = True
+            CommandWindowVisible = True
+        End If
+        SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
+    End Sub
+    Private Sub MenuDetailedOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuDetailedOutput.Click
+        If Me.MenuDetailedOutput.Checked Then
+            DetailedCFASTOutput = False
+        Else
+            DetailedCFASTOutput = True
+        End If
+        Me.MenuDetailedOutput.Checked = DetailedCFASTOutput
+        SaveSetting("CFAST", "Options", "DetailedOutput", TotalMassCFASTOutput.ToString)
+    End Sub
+    Private Sub MenuTotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTotalMassOutput.Click
+        If Me.MenuTotalMassOutput.Checked Then
+            TotalMassCFASTOutput = False
+        Else
+            TotalMassCFASTOutput = True
+        End If
+        Me.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
+        SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
+    End Sub
+    Private Sub MenuNetHeatFluxOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNetHeatFluxOutput.Click
+        If Me.MenuNetHeatFluxOutput.Checked Then
+            NetHeatFluxCFASTOutput = False
+        Else
+            NetHeatFluxCFASTOutput = True
+        End If
+        Me.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
+        SaveSetting("CFAST", "Options", "NetHeatFlux", NetHeatFluxCFASTOutput.ToString)
+    End Sub
+    Private Sub MenuExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuExit.Click
+        Application.Exit()
+    End Sub
+    Private Sub MenuAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuAbout.Click
+        About.ShowDialog()
+    End Sub
+    Private Sub MenuRecent_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuRecent1.Click, MenuRecent2.Click, MenuRecent3.Click, MenuRecent4.Click
+        Dim i As Integer
+        If sender Is Me.MenuRecent1 Then i = 0
+        If sender Is Me.MenuRecent2 Then i = 1
+        If sender Is Me.MenuRecent3 Then i = 2
+        If sender Is Me.MenuRecent4 Then i = 3
+        OpenDataFile(myRecentFiles.Filenames(i))
+        UpdateAll()
+    End Sub
+    Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
+        Help.ShowHelp(Me, Application.StartupPath + "\" + "CFAST6.chm")
+    End Sub
+    Private Sub MenuCFASTweb_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuCFASTWeb.Click
+        Process.Start("http://cfast.nist.gov")
+    End Sub
+    Private Sub MenuViewOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuViewOutput.Click, MenuViewInput.Click, MenuViewLog.Click
+        If sender Is MenuViewOutput Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".out"
+        If sender Is MenuViewInput Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".in"
+        If sender Is MenuViewLog Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".log"
+        If System.IO.File.Exists(ViewFile.FileName) Then
+            MenuView.Enabled = False
+            ViewFile.ShowDialog()
+            MenuView.Enabled = True
+        End If
+    End Sub
+    Private Sub MenuValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuValidationOutput.Click
+        If Me.MenuValidationOutput.Checked Then
+            ValidationOutput = False
+        Else
+            ValidationOutput = True
+        End If
+        Me.MenuValidationOutput.Checked = ValidationOutput
+        SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
+    End Sub
+    Private Sub MenuDebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles MenuDebugOutput.Click
+        If Me.MenuDebugOutput.Checked Then
+            DebugOutput = False
+        Else
+            DebugOutput = True
+        End If
+        Me.MenuDebugOutput.Checked = DebugOutput
+    End Sub
+    Private Sub FireObjectEdit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireObjectEdit.Click
+        If CurrentFireObject >= 0 Then
+            EditFireObject(CurrentFireObject)
+        Else
+            EditFireObjects(0)
+        End If
+    End Sub
+#End Region
+
+#Region " Support Routines "
+
+    Private Sub OpenDataFile(ByVal FileName As String)
+        Dim PathName As String
+        If My.Computer.FileSystem.FileExists(FileName) Then
+            myUnits.SI = True
+            InitNew()
+            PathName = System.IO.Path.GetDirectoryName(FileName) & "\"
+            ChDir(PathName)
+            ' Initialize thermal properties with ones from the current directory, if they exist
+            IO.ReadThermalProperties(".\" + "thermal.csv")
+            UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+            UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+            UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+            UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+            ' Initialize fire objects with ones from the current directory, if they exist
+            myFireObjects.Clear()
+            IO.ReadFireObjects(PathName)
+            IO.ReadFireObjects(Application.StartupPath + "\")
+            UpdateGUI.InitFireObjectList(Me.FireName)
+            ' Now we should be ready to read the input file
+            ReadInputFile(FileName)
+            myEnvironment.InputFileName = FileName
+            myEnvironment.InputFilePath = FileName
+            myRecentFiles.Add(FileName)
+            myUnits.SI = False
+            UpdateGUI.InitFireObjectList(Me.FireName)
+        Else
+            MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
+        End If
+    End Sub
+    Private Sub SaveDataFile(ByVal Prompt As Boolean)
+        Dim Filename As String
+        myUnits.SI = True
+        If myEnvironment.FileChanged() Then
+            If Prompt Or myEnvironment.InputFileName = Nothing Or myEnvironment.InputFileName = "" Then
+                Me.SaveDataFileDialog.Title = "Save"
+                Me.SaveDataFileDialog.OverwritePrompt = True
+                If SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
+                    If Me.SaveDataFileDialog.FileName <> " " Then
+                        ' Write out the data file since it has been changed
+                        WriteDataFile(Me.SaveDataFileDialog.FileName)
+                        myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
+                        myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
+                        myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+                        WriteFireObjects(".\")
+                        Filename = myEnvironment.InputFilePath + "\" + myThermalProperties.FileName + ".csv"
+                        WriteThermalProperties(Filename)
+                    End If
+                End If
+            Else
+                WriteDataFile(myEnvironment.InputFileName + ".in")
+                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+                WriteFireObjects(".\")
+                Filename = myThermalProperties.FileName + ".csv"
+                WriteThermalProperties(Filename)
+            End If
+        End If
+        myUnits.SI = False
+        UpdateGUI.Menu()
+        UpdateGUI.General()
+    End Sub
+    Private Sub EditFireObject(ByVal aCurrentFireObject As Integer)
+        If myFireObjects.Count > 0 Then
+            Dim ObjectWindow As New EditFireObject
+            Dim iReturn As Integer
+            ObjectWindow.CurrentFireObject = aCurrentFireObject
+            iReturn = ObjectWindow.ShowDialog(Me)
+            If iReturn = OK Then
+                FireCopy(ObjectWindow.aFireObject, myFireObjects(aCurrentFireObject))
+                UpdateGUI.InitFireObjectList(Me.FireName)
+                UpdateAll()
+            End If
+        End If
+    End Sub
+    Private Sub EditFireObjects(ByVal aCurrentFireObject As Integer)
+        If myFireObjects.Count > 0 Then
+            Dim ObjectsWindow As New AllFireObjects
+            Dim iReturn As Integer, i As Integer
+            ObjectsWindow.CurrentFireObject = aCurrentFireObject
+            iReturn = ObjectsWindow.ShowDialog(Me)
+            If iReturn = OK Then
+                If TempFireObjects.Count > 0 Then
+                    myFireObjects.Clear()
+                    For i = 0 To TempFireObjects.Count - 1
+                        myFireObjects.Add(New Fire)
+                        FireCopy(TempFireObjects(i), myFireObjects(myFireObjects.Count - 1))
+                    Next
+                End If
+                UpdateGUI.InitFireObjectList(Me.FireName)
+                UpdateAll()
+            End If
+        End If
+    End Sub
+    Private Sub RunCFAST()
+        If myEnvironment.FileChanged Then SaveDataFile(True)
+        If System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in") Then
+            Dim RunSimulation As New RunModel
+            CFASTSimulationTime = myEnvironment.SimulationTime
+            CFastInputFile = myEnvironment.InputFileName
+            RunSimulation.Text = "Run Model (" + System.IO.Path.GetFileName(CFastInputFile) + ")"
+            RunSimulation.ShowDialog()
+
+            UpdateGUI.Menu()
+            UpdateGUI.Environment()
+        End If
+    End Sub
+    Private Sub RunSMVGeometry()
+        Dim CommandString As String, found As Integer, ProcessID As Integer
+        If myEnvironment.FileChanged Then SaveDataFile(True)
+        Try
+            found = myEnvironment.InputFileName.IndexOf(" ", 0)
+            If found <= 0 Then
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + " /I"
+            Else
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """" + " /I"
+            End If
+            If MenuShowCFAST.Checked Then
+                ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True, 5000)
+            Else
+                ProcessID = Shell(CommandString, AppWinStyle.Hide, True, 5000)
+            End If
+        Catch ex As Exception
+        End Try
+        UpdateGUI.UpdateLogFile(Me.EnvErrors)
+    End Sub
+    Private Sub RunSmokeView()
+        Dim CommandString As String, found As Integer, ProcessID As Integer
+        If myEnvironment.FileChanged Then SaveDataFile(True)
+        Try
+            found = myEnvironment.InputFileName.IndexOf(" ", 0)
+            If found <= 0 Then
+                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
+            Else
+                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
+            End If
+            ProcessID = Shell(CommandString, AppWinStyle.NormalFocus, True)
+        Catch ex As Exception
+        End Try
+    End Sub
+    Private Sub UpdateAll()
+        UpdateGUI.Menu()
+        UpdateGUI.General()
+        UpdateGUI.DoErrorCheck = False
+        UpdateGUI.Environment()
+        UpdateGUI.Geometry(CurrentCompartment)
+        UpdateGUI.HVents(CurrentHVent)
+        UpdateGUI.VVents(CurrentVVent)
+        UpdateGUI.MVents(CurrentMVent)
+        UpdateGUI.Targets(CurrentTarget)
+        UpdateGUI.Detectors(CurrentDetector)
+        UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
+        UpdateGUI.Fires(CurrentFire)
+        UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
+        UpdateGUI.DoErrorCheck = True
+    End Sub
+    Private Sub InitNew()
+        ' Start with a clean slate and a default set of inputs
+        myEnvironment = New Environment
+        Me.Text = "CEdit"
+        myCompartments.Clear()
+        myHVents.Clear()
+        myVVents.Clear()
+        myMVents.Clear()
+        myHHeats.Clear()
+        myVHeats.Clear()
+        myTargets.Clear()
+        myDetectors.Clear()
+        myFires.Clear()
+        myFireObjects.Clear()
+        myVisuals.Clear()
+        myThermalProperties.Clear()
+        myErrors.Queue.Clear()
+        Do While (dataFileHeader.Count > 0)
+            dataFileHeader.Remove(dataFileHeader.Count)
+        Loop
+        Do While (dataFileComments.Count > 0)
+            dataFileComments.Remove(dataFileComments.Count)
+        Loop
+        Do While (thermalFileComments.Count > 0)
+            thermalFileComments.Remove(thermalFileComments.Count)
+        Loop
+        Do While (fireFilesComments.Count > 0)
+            fireFilesComments.Remove(fireFilesComments.Count)
+        Loop
+        CurrentCompartment = 0
+        CurrentHVent = 0
+        CurrentVVent = 0
+        CurrentMVent = 0
+        CurrentTarget = 0
+        CurrentDetector = 0
+        CurrentHHeat = 0
+        CurrentVHeat = 0
+        CurrentFire = 0
+        CurrentFireObject = 0
+
+        'Initialize thermal properties
+        myUnits.SI = True
+        IO.ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv")
+        IO.ReadThermalProperties(".\" + "thermal.csv")
+        myUnits.SI = False
+        UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+        UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+        UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+        UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+
+        'Initialize fire objects with data from existing object fires
+        myUnits.SI = True
+        IO.ReadFireObjects(".\")
+        IO.ReadFireObjects(Application.StartupPath & "\")
+        UpdateGUI.InitFireObjectList(Me.FireName)
+        myUnits.SI = False
+
+        ' Initialize spreadsheets for input or no input (summary tables) as appropriate
+        UpdateGUI.InitSummaryGrid(Me.CompSummary)
+        UpdateGUI.InitSummaryGrid(Me.HVentSummary)
+        UpdateGUI.InitSummaryGrid(Me.VVentSummary)
+        UpdateGUI.InitSummaryGrid(Me.MVentSummary)
+        UpdateGUI.InitSummaryGrid(Me.TargetSummary)
+        UpdateGUI.InitSummaryGrid(Me.DetectorSummary)
+        UpdateGUI.InitSummaryGrid(Me.FireSummary)
+
+        UpdateGUI.InitEditGrid(Me.CompVariableArea)
+
+        ' Turn off all input except the simulation environment and compartment add since all others stuff depends on have a compartment
+        Me.TabHorizontalFlow.Enabled = False
+        Me.TabVerticalFlow.Enabled = False
+        Me.TabMechanicalFlow.Enabled = False
+        Me.TabTargets.Enabled = False
+        Me.TabDetection.Enabled = False
+        Me.TabHeatTransfer.Enabled = False
+        Me.TabFires.Enabled = False
+        Me.GroupCompartments.Enabled = False
+        Me.MenuViewInput.Enabled = False
+        Me.MenuViewOutput.Enabled = False
+        Me.MenuViewLog.Enabled = False
+        Me.MenuDetailedOutput.Checked = True
+        UpdateAll()
+    End Sub
+#End Region
+
 End Class

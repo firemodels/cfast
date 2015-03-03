@@ -475,7 +475,7 @@ Public Class TargetCollection
     Public Sub Remove(ByVal index As Integer)
         ' make sure that the Target number is valid
         If index > Count - 1 Or index < 0 Then
-            System.Windows.Forms.MessageBox.Show("Internal Error: Target number not found.")
+            System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Target number not found.")
         Else
             List.RemoveAt(index)
         End If
@@ -509,7 +509,7 @@ Public Class TargetCollection
     Default Public Property Item(ByVal index As Integer) As Target
         Get
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error. Target number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Target number not found.")
             Else
                 Return CType(List.Item(index), Target)
             End If

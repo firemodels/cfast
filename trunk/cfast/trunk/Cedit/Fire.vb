@@ -759,7 +759,7 @@ Public Class FireCollection
     Public Sub Remove(ByVal index As Integer)
         ' make sure that the COmpartment number is valid
         If index > Count - 1 Or index < 0 Then
-            System.Windows.Forms.MessageBox.Show("Internal Error: Target number not found.")
+            System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Target number not found.")
         Else
             List.RemoveAt(index)
         End If
@@ -821,6 +821,8 @@ Public Class FireCollection
         Get
             If index >= 0 And index < Count Then
                 Return CType(List.Item(index), Fire)
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Fire number not found.")
             End If
         End Get
         Set(ByVal Value As Fire)

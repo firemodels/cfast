@@ -37,7 +37,7 @@ Module Copy
         ToMaterial.Density = FromMaterial.Density
         ToMaterial.Thickness = FromMaterial.Thickness
         ToMaterial.Emissivity = FromMaterial.Emissivity
-        Dim Vector1() As Single
+        Dim Vector1() As Single = {0}
         FromMaterial.GetHCl(Vector1)
         ToMaterial.SetHCl(Vector1)
     End Sub

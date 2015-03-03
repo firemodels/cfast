@@ -9,7 +9,6 @@ Public Class CeditMain
     Private CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
-
 #Region " Windows Form Designer generated code "
 
     Public Sub New()
@@ -39,6 +38,10 @@ Public Class CeditMain
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents MenuEditThermalProperties As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuInsertThermalProperty As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuEditFires As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuInsertFire As System.Windows.Forms.MenuItem
     Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
     Friend WithEvents VisualResolution As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents Label31 As System.Windows.Forms.Label
@@ -378,7 +381,7 @@ Public Class CeditMain
     Friend WithEvents MenuViewLog As System.Windows.Forms.MenuItem
     Friend WithEvents MenuFile As System.Windows.Forms.MenuItem
     Friend WithEvents MenuRun As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuTools As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuEdit As System.Windows.Forms.MenuItem
     Friend WithEvents MenuView As System.Windows.Forms.MenuItem
     Friend WithEvents MenuShowHelp As System.Windows.Forms.MenuItem
     Friend WithEvents MenuHelp As System.Windows.Forms.MenuItem
@@ -396,7 +399,7 @@ Public Class CeditMain
     Friend WithEvents Label101 As System.Windows.Forms.Label
     Friend WithEvents MenuSMVSimulation As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuEditFireObjects As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuFireObjects As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
     Friend WithEvents ErrorProvider1 As System.Windows.Forms.ErrorProvider
     Friend WithEvents FireObjectPlot As NPlot.Windows.PlotSurface2D
@@ -435,6 +438,15 @@ Public Class CeditMain
         Me.MenuRecent2 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent3 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
+        Me.MenuEdit = New System.Windows.Forms.MenuItem()
+        Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
+        Me.MenuEditThermalProperties = New System.Windows.Forms.MenuItem()
+        Me.MenuInsertThermalProperty = New System.Windows.Forms.MenuItem()
+        Me.MenuFireObjects = New System.Windows.Forms.MenuItem()
+        Me.MenuEditFires = New System.Windows.Forms.MenuItem()
+        Me.MenuInsertFire = New System.Windows.Forms.MenuItem()
+        Me.MenuItem3 = New System.Windows.Forms.MenuItem()
+        Me.MenuUnits = New System.Windows.Forms.MenuItem()
         Me.MenuRun = New System.Windows.Forms.MenuItem()
         Me.MenuSMVGeometry = New System.Windows.Forms.MenuItem()
         Me.MenuRunCFast = New System.Windows.Forms.MenuItem()
@@ -448,11 +460,6 @@ Public Class CeditMain
         Me.MenuItem4 = New System.Windows.Forms.MenuItem()
         Me.MenuDebugOutput = New System.Windows.Forms.MenuItem()
         Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
-        Me.MenuTools = New System.Windows.Forms.MenuItem()
-        Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
-        Me.MenuEditFireObjects = New System.Windows.Forms.MenuItem()
-        Me.MenuItem3 = New System.Windows.Forms.MenuItem()
-        Me.MenuUnits = New System.Windows.Forms.MenuItem()
         Me.MenuView = New System.Windows.Forms.MenuItem()
         Me.MenuViewInput = New System.Windows.Forms.MenuItem()
         Me.MenuViewOutput = New System.Windows.Forms.MenuItem()
@@ -882,7 +889,7 @@ Public Class CeditMain
         '
         'MainMenu
         '
-        Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuRun, Me.MenuTools, Me.MenuView, Me.MenuHelp})
+        Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuEdit, Me.MenuRun, Me.MenuView, Me.MenuHelp})
         '
         'MenuFile
         '
@@ -948,9 +955,57 @@ Public Class CeditMain
         Me.MenuRecent4.Text = "4 File 4"
         Me.MenuRecent4.Visible = False
         '
+        'MenuEdit
+        '
+        Me.MenuEdit.Index = 1
+        Me.MenuEdit.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuThermalProperties, Me.MenuFireObjects, Me.MenuItem3, Me.MenuUnits})
+        Me.MenuEdit.Text = "Edit"
+        '
+        'MenuThermalProperties
+        '
+        Me.MenuThermalProperties.Index = 0
+        Me.MenuThermalProperties.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuEditThermalProperties, Me.MenuInsertThermalProperty})
+        Me.MenuThermalProperties.Text = "Thermal Properties"
+        '
+        'MenuEditThermalProperties
+        '
+        Me.MenuEditThermalProperties.Index = 0
+        Me.MenuEditThermalProperties.Text = "Edit Thermal Properties"
+        '
+        'MenuInsertThermalProperty
+        '
+        Me.MenuInsertThermalProperty.Index = 1
+        Me.MenuInsertThermalProperty.Text = "Insert Thermal Property"
+        '
+        'MenuFireObjects
+        '
+        Me.MenuFireObjects.Index = 1
+        Me.MenuFireObjects.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuEditFires, Me.MenuInsertFire})
+        Me.MenuFireObjects.Text = "Fires"
+        '
+        'MenuEditFires
+        '
+        Me.MenuEditFires.Index = 0
+        Me.MenuEditFires.Text = "Edit Fires"
+        '
+        'MenuInsertFire
+        '
+        Me.MenuInsertFire.Index = 1
+        Me.MenuInsertFire.Text = "Insert Fire"
+        '
+        'MenuItem3
+        '
+        Me.MenuItem3.Index = 2
+        Me.MenuItem3.Text = "-"
+        '
+        'MenuUnits
+        '
+        Me.MenuUnits.Index = 3
+        Me.MenuUnits.Text = "Select Engineering Units"
+        '
         'MenuRun
         '
-        Me.MenuRun.Index = 1
+        Me.MenuRun.Index = 2
         Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuItem2})
         Me.MenuRun.Text = "Run!"
         '
@@ -1018,32 +1073,6 @@ Public Class CeditMain
         '
         Me.MenuShowCFAST.Index = 6
         Me.MenuShowCFAST.Text = "Show CFAST Window"
-        '
-        'MenuTools
-        '
-        Me.MenuTools.Index = 2
-        Me.MenuTools.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuThermalProperties, Me.MenuEditFireObjects, Me.MenuItem3, Me.MenuUnits})
-        Me.MenuTools.Text = "Tools"
-        '
-        'MenuThermalProperties
-        '
-        Me.MenuThermalProperties.Index = 0
-        Me.MenuThermalProperties.Text = "Edit Thermal Properties"
-        '
-        'MenuEditFireObjects
-        '
-        Me.MenuEditFireObjects.Index = 1
-        Me.MenuEditFireObjects.Text = "Edit Fires"
-        '
-        'MenuItem3
-        '
-        Me.MenuItem3.Index = 2
-        Me.MenuItem3.Text = "-"
-        '
-        'MenuUnits
-        '
-        Me.MenuUnits.Index = 3
-        Me.MenuUnits.Text = "Select Engineering Units"
         '
         'MenuView
         '
@@ -5575,7 +5604,7 @@ Public Class CeditMain
     End Sub
 
     ' This section of code handles the menu items
-    Private Sub MenuThermalProperties_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuThermalProperties.Click
+    Private Sub MenuThermalProperties_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditThermalProperties.Click
         If myThermalProperties.Count > 0 Then
             Dim ThermalWindow As New Thermal_Properties_Edit
             Dim iReturn As Integer, i As Integer
@@ -5596,7 +5625,7 @@ Public Class CeditMain
             End If
         End If
     End Sub
-    Private Sub MenuFireObjects_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditFireObjects.Click
+    Private Sub MenuFireObjects_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditFires.Click
         EditFireObjects(0)
     End Sub
     Private Sub FireObjectEdit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireObjectEdit.Click

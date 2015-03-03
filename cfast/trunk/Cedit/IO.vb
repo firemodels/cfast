@@ -221,7 +221,7 @@ Module IO
             Dim aThermal As ThermalProperty
             Dim i As Integer = 1
             Dim j, k As Integer
-            Dim hcl() As Single
+            Dim hcl() As Single = {0}
             AddThermalHeader(csv, i)
             For j = 0 To myThermalProperties.Count - 1
                 aThermal = myThermalProperties.Item(j)
@@ -359,7 +359,7 @@ Module IO
             End If
         Next
         'RoomA and RoomH
-        Dim x() As Single
+        Dim x() As Single = {0}
         For j = 0 To myCompartments.Count - 1
             aCompartment = myCompartments.Item(j)
             aCompartment.GetVariableAreaPoints(x)

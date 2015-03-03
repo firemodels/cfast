@@ -228,7 +228,7 @@ Public Class User_Units
 #End Region
 
     Private Sub InitUser_Units()
-        Dim i As Integer, j As Integer, Labels() As String, aLabel As String
+        Dim i As Integer, j As Integer, Labels() As String = {" "}, aLabel As String
         ' This is called by the New method for the form, usually hidden in the design-generated code
 
         ' Define an array of the base units

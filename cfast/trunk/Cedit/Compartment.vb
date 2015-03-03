@@ -400,7 +400,7 @@ Public Class CompartmentCollection
         ToCompartment.CeilingMaterial = FromCompartment.CeilingMaterial
         ToCompartment.WallMaterial = FromCompartment.WallMaterial
         ToCompartment.FloorMaterial = FromCompartment.FloorMaterial
-        Dim Vector1() As Single, Vector2() As Single, aNum As Integer
+        Dim Vector1() As Single = {0}, Vector2() As Single = {0}, aNum As Integer
         FromCompartment.GetVariableArea(Vector1, Vector2, aNum)
         ToCompartment.SetVariableArea(Vector1, Vector2)
         ToCompartment.Shaft = FromCompartment.Shaft

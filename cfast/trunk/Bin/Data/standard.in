@@ -1,4 +1,4 @@
-VERSN,7,Cable tray fire -- base case
+VERSN,7,Default example fire for user guide
 !!
 !!Scenario Configuration Keywords
 !!
@@ -22,8 +22,8 @@ HVENT,1,2,1,1,2.4,0,0,1,1
 !!Fire keywords
 !!
 GLOBA,10,393.15
-!!bunsen
-FIRE,1,4.55,2.5,0,1,1,0,0,0,1,bunsen
+!!burner
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,burner
 CHEMI,1,4,0,0,0,0.33,5E+07,METHANE
 TIME,0,60,120,180,240,300,360,420,480,540,1800
 HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000

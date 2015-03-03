@@ -1,4 +1,4 @@
-VERSN,6,Cable tray fire -- base case
+VERSN,7,Cable tray fire -- base case
 !!
 !!Scenario Configuration Keywords
 !!
@@ -10,16 +10,14 @@ TAMB,293.15,101300,0,50
 !!
 MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
 MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
-MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
-MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,1,2.4,0,1,0,0,1,1
+HVENT,1,2,1,1,2.4,0,0,1,1
 !!
 !!Fire keywords
 !!
@@ -32,19 +30,26 @@ HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
 SOOT,0,0,0,0,0,0,0,0,0,0,0
 CO,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221
 TRACE,0,0,0,0,0,0,0,0,0,0,0
-AREA,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
+AREA,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2
 HEIGH,0,0,0,0,0,0,0,0,0,0,0
-!!Wood_Wall
-FIRE,1,9.1,2.5,0,1,1,0,0,0,1,Wood_Wall
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+!!wood_wall
+FIRE,1,9.1,2.5,0,1,1,0,0,0,1,wood_wall
 CHEMI,6,10,5,0,0,0.33,1.81E+07,HARDWOOD
 TIME,0,8000
 HRR,0,1000000
-SOOT,0.02,0.02
-CO,0.02,0.02
+SOOT,0.015,0.015
+CO,0.006171682,0.006171682
 TRACE,0,0
 AREA,0.05,9
 HEIGH,0,3
+MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
 !!Target and detector keywords
 !!
 TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
+!!
+!!visualizations
+!!
+SLCF,2-D,Y,2.5,1
+SLCF,2-D,Z,4.554,1

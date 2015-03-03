@@ -5208,7 +5208,6 @@ Public Class CeditMain
             MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
-
     Private Sub DetectorRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorRemove.Click
         ' Remove the current vvent from the list of Detectors
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then

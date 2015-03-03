@@ -221,7 +221,7 @@ Public Class ThermalPropertiesCollection
     Public Sub Remove(ByVal index As Integer)
         ' make sure that the compartment number is valid
         If index > Count - 1 Or index < 0 Then
-            System.Windows.Forms.MessageBox.Show("Internal Error: Thermal property number not found.")
+            System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Thermal property number not found.")
         Else
             List.RemoveAt(index)
         End If
@@ -244,14 +244,14 @@ Public Class ThermalPropertiesCollection
     Default Public Property Item(ByVal index As Integer) As ThermalProperty
         Get
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error ThermalPropertiesColletion.Item.get. Item number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Thermal property number not found.")
             Else
                 Return CType(List.Item(index), ThermalProperty)
             End If
         End Get
         Set(ByVal Value As ThermalProperty)
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error ThermalPropertiesColletion.Item.get. Item number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Thermal property number not found.")
             Else
                 List.Item(index) = Value
             End If

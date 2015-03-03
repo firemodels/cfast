@@ -210,14 +210,14 @@ Public Class VisualCollection
     Default Public Property Item(ByVal index As Integer) As Visual
         Get
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error. Visualization number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Visualization number not found.")
             Else
                 Return CType(List.Item(index), Visual)
             End If
         End Get
         Set(ByVal Value As Visual)
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error. Visualization number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Visualization number not found.")
             Else
                 List.Item(index) = Value
             End If

@@ -38,21 +38,23 @@ Module IO
         'simple read of a fire object file
         Dim csv As New CSVsheet(filenm)
         Dim fireComments As New Collection
-        Dim i, j, k As Integer
+        Dim i, j, k, iStart As Integer
         Dim rowidx(csv.MaxRow) As Integer
         Dim rdx As Integer = 0
         Dim ChemicalCompound() As Single = {0.0, 1.0, 4.0, 0.0, 0.0, 0.0}
-
-        If csv.str(1, 1) = "FIRE" And csv.str(1, 2) = "OBJECT" Then
+        iStart = 1
+        If csv.str(iStart, 1).Substring(0, 1) = "!" Then iStart = 2
+        If csv.str(iStart, 1) = "FIRE" And csv.str(iStart, 2) = "OBJECT" Then
             ' New format fire object file that mimics the fire inputs in a new format input file
             For i = 0 To myFireObjects.Count - 1
-                If csv.str(1, fireNum.name) = myFireObjects.Item(i).Name Then
+                If csv.str(iStart, fireNum.name) = myFireObjects.Item(i).Name Then
                     Exit Sub
                 End If
             Next
 
             i = 1
-            Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0
+            Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+            Dim iFire As Integer = 0, iChemie As Integer = 0, iTime As Integer = 0, iMatl As Integer = 0, iProp As Integer = 0
             Dim fireComplete As Integer = 0
             Do Until i > csv.MaxRow
                 If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
@@ -68,8 +70,11 @@ Module IO
                             fireComplete += 1
                         Case "HRR", "SOOT", "CO", "TRACE", "AREA", "HEIGH"
                             fireComplete += 1
+                        Case "MATL"
+                            iMatl = i
+                            fireComplete += 1
                     End Select
-                    If fireComplete = NumFireCurves + 2 Then
+                    If fireComplete = NumFireCurves + 3 Then
                         Dim aFireObject As New Fire(Fire.TypeFireObject)
                         aFireObject.Name = csv.str(iFire, fireNum.name)
                         aFireObject.ChemicalFormula(formula.C) = csv.Num(iChemie, chemieNum.C)
@@ -95,10 +100,26 @@ Module IO
                         Next
                         myFireObjects(myFireObjects.Count - 1).SetFireData(firedata)
 
+                        iProp = myThermalProperties.GetIndex(csv.str(iMatl, MaterialNum.shortName))
+                        If iProp > -1 Then
+                            PropertyCopy(New ThermalProperty(csv.str(iMatl, MaterialNum.shortName), _
+                             csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
+                             csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
+                             csv.Num(iMatl, MaterialNum.emissivity)), myThermalProperties(iProp))
+                            myThermalProperties(iProp).Changed = False
+                        Else
+                            myThermalProperties.Add(New ThermalProperty(csv.str(iMatl, MaterialNum.shortName), _
+                                csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
+                                csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
+                                csv.Num(iMatl, MaterialNum.emissivity)))
+                            myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                            If myThermalProperties.Count > 0 Then myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                        End If
+
                         fireComplete = 0
                     End If
-                End If
-                i += 1
+                    End If
+                    i += 1
             Loop
         Else
             ' Old format fire file

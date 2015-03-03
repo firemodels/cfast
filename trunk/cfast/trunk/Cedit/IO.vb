@@ -151,7 +151,7 @@ Module IO
         Dim csv As New CSVsheet
         Dim i, j, k, l As Integer
         Dim firedata(12, 0) As Single, numFireDataPoints As Integer
-        Dim aThermalProperty
+        Dim aThermalProperty As ThermalProperty
 
         i = 1
         aFireObject = myFireObjects.Item(index)

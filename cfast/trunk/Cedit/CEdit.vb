@@ -4454,7 +4454,7 @@ Public Class CeditMain
         'OpenDataFileDialog
         '
         Me.OpenDataFileDialog.DefaultExt = "in"
-        Me.OpenDataFileDialog.Filter = "CFast files|*.in|Spreadsheet files|*.csv|All files|*.*"
+        Me.OpenDataFileDialog.Filter = "CFast files|*.in|Object files|*.o|Spreadsheet files|*.csv|All files|*.*"
         Me.OpenDataFileDialog.Title = "Open"
         '
         'SaveDataFileDialog
@@ -5929,6 +5929,21 @@ Public Class CeditMain
         Else
             EditFireObjects(0)
         End If
+    End Sub
+    Private Sub MenuEditInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuInsertFire.Click, MenuInsertThermalProperty.Click
+        Me.OpenDataFileDialog.FilterIndex = 1
+        Me.OpenDataFileDialog.ShowDialog()
+        If OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim FileName As String, Type As Integer, iReturn As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData
+            If sender Is MenuInsertFire Then Type = InsertDataType.Fire
+            If sender Is MenuInsertThermalProperty Then Type = InsertDataType.ThermalProperty
+            InsertDialog.SetupData(Type)
+            For Each FileName In OpenDataFileDialog.FileNames
+                InsertDialog.ReadSelectedData(Type, FileName)
+            Next
+            iReturn = InsertDialog.ShowDialog()
+        End If
+        UpdateAll()
     End Sub
 #End Region
 

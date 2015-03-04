@@ -319,4 +319,27 @@ Friend Module Data
         isoValue = 2
         isoCompartment
     End Enum
+    Friend Enum InsertFireNum
+        Fire = 1
+        Formula
+        Height
+        Area
+        QDot
+        Soot
+        CO
+        HoC
+        Material
+    End Enum
+    Friend Enum InsertThermalNum
+        Material = 1
+        Conductivity
+        SpecificHeat
+        Density
+        Thickness
+        Emissivity
+    End Enum
+    Friend Enum InsertDataType
+        Fire = 1
+        ThermalProperty
+    End Enum
 End Module

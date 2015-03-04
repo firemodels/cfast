@@ -40,7 +40,7 @@ Partial Class InsertData
         Me.InsertDataSummary.Name = "InsertDataSummary"
         Me.InsertDataSummary.Rows.DefaultSize = 19
         Me.InsertDataSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.InsertDataSummary.Size = New System.Drawing.Size(932, 156)
+        Me.InsertDataSummary.Size = New System.Drawing.Size(984, 156)
         Me.InsertDataSummary.TabIndex = 0
         '
         'InsertDeselect
@@ -81,7 +81,7 @@ Partial Class InsertData
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(956, 241)
+        Me.ClientSize = New System.Drawing.Size(1008, 241)
         Me.Controls.Add(Me.FireObjectsCancel)
         Me.Controls.Add(Me.FireObjectsOK)
         Me.Controls.Add(Me.InsertDeselect)
@@ -89,6 +89,7 @@ Partial Class InsertData
         Me.Controls.Add(Me.InsertDataSummary)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "InsertData"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "InsertData"
         CType(Me.InsertDataSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)

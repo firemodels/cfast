@@ -539,7 +539,12 @@ Module IO
     Public Sub ReadThermalProperties(ByVal FileName As String)
         'Simple read of only thermal properties from a file. 
         Dim csv As New CSVsheet(FileName)
-        Dim i, j As Integer
+        FindThermalProperties(csv, myThermalProperties)
+        myThermalProperties.FileName = FileName
+        myThermalProperties.FileChanged = False
+    End Sub
+    Public Sub FindThermalProperties(ByVal csv As CSVsheet, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+        Dim i As Integer
         ' do material properties so they are defined for compartments, fires, and targets
         Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
         Dim iProp As Integer
@@ -548,25 +553,22 @@ Module IO
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
                 Select Case csv.str(i, CFASTlnNum.keyWord).Trim
                     Case "MATL"
-                        If myThermalProperties.Count > 0 Then
-                            iProp = myThermalProperties.GetIndex(csv.str(i, MaterialNum.shortName))
+                        If SomeThermalProperties.Count > 0 Then
+                            iProp = SomeThermalProperties.GetIndex(csv.str(i, MaterialNum.shortName))
                             If iProp > -1 Then
-                                myThermalProperties.Remove(iProp)
+                                SomeThermalProperties.Remove(iProp)
                             End If
                         End If
-                        myThermalProperties.Add(New ThermalProperty(csv.str(i, MaterialNum.shortName), _
+                        SomeThermalProperties.Add(New ThermalProperty(csv.str(i, MaterialNum.shortName), _
                             csv.str(i, MaterialNum.longName), csv.Num(i, MaterialNum.Conductivity), _
                             csv.Num(i, MaterialNum.specificHeat), csv.Num(i, MaterialNum.density), csv.Num(i, MaterialNum.thickness), _
                             csv.Num(i, MaterialNum.emissivity)))
-                        myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                        myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                        SomeThermalProperties.Item(SomeThermalProperties.Count - 1).SetHCl(hcl)
+                        SomeThermalProperties.Item(SomeThermalProperties.Count - 1).Changed = False
                 End Select
             End If
-        i += 1
+            i += 1
         Loop
-
-        myThermalProperties.FileName = FileName
-        myThermalProperties.FileChanged = False
     End Sub
     Public Sub ReadFireObjects(ByVal pathName As String)
         ' Simple routine that gets all *.o files in PathName and opens them
@@ -644,18 +646,27 @@ Module IO
                         myFireObjects(myFireObjects.Count - 1).SetFireData(firedata)
 
                         If iMatl > 0 Then
-                            iProp = myThermalProperties.GetIndex(csv.str(iMatl, MaterialNum.shortName))
-                            If iProp > -1 Then
-                                PropertyCopy(New ThermalProperty(csv.str(iMatl, MaterialNum.shortName), _
-                                 csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
-                                 csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
-                                 csv.Num(iMatl, MaterialNum.emissivity)), myThermalProperties(iProp))
-                                myThermalProperties(iProp).Changed = False
+                            If myThermalProperties.Count > 0 Then
+                                iProp = myThermalProperties.GetIndex(csv.str(iMatl, MaterialNum.shortName))
+                                If iProp > -1 Then
+                                    PropertyCopy(New ThermalProperty(csv.str(iMatl, MaterialNum.shortName), _
+                                     csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
+                                     csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
+                                     csv.Num(iMatl, MaterialNum.emissivity)), myThermalProperties(iProp))
+                                    myThermalProperties(iProp).Changed = False
+                                Else
+                                    myThermalProperties.Add(New ThermalProperty(csv.str(iMatl, MaterialNum.shortName), _
+                                        csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
+                                        csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
+                                        csv.Num(iMatl, MaterialNum.emissivity)))
+                                    myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                                    If myThermalProperties.Count > 0 Then myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                                End If
                             Else
                                 myThermalProperties.Add(New ThermalProperty(csv.str(iMatl, MaterialNum.shortName), _
-                                    csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
-                                    csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
-                                    csv.Num(iMatl, MaterialNum.emissivity)))
+                                       csv.str(iMatl, MaterialNum.longName), csv.Num(iMatl, MaterialNum.Conductivity), _
+                                       csv.Num(iMatl, MaterialNum.specificHeat), csv.Num(iMatl, MaterialNum.density), csv.Num(iMatl, MaterialNum.thickness), _
+                                       csv.Num(iMatl, MaterialNum.emissivity)))
                                 myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
                                 If myThermalProperties.Count > 0 Then myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                             End If

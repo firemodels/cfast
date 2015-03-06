@@ -533,45 +533,32 @@
 
 ! --------------------------- countargs -------------------------------------------
 
-    logical function countargs (tocount,lcarray,numc,nret)
+    integer function countargs (lcarray)
 
     !     routine: countargs
-    !     purpose: Count the number of non-blank arguments on the input line. Should be tocount. If not, 
-    !              then return an error (logical false). If tocount is zero or less, just count them
-    !     arguments: label - CFAST keyword for this input
-    !                tocount - expected number of arguments for this input
-    !                lcarray - character array of arguments.  There should be tocount non-blank entries
+    !     purpose: Count the number of non-blank arguments on the input line. 
+    !     arguments: lcarray - character array of arguments.  There should be tocount non-blank entries
     !                numc - dimension limit on lcarray
-    !                nret - actual number of arguments
  
+    use iofiles, only: ncol
     implicit none
 
-    integer, intent(in) :: tocount, numc
-    character(128), intent(in) :: lcarray(numc)
-    
-    integer, intent(out) :: nret
-    
-    integer :: i
 
-    countargs = .false.
-    nret = 0.
+    character(128), intent(in) :: lcarray(ncol)
+    
+    integer :: i, nret
+
+    nret = 0
 
     ! check for the expected number of arguments if tocount >=0
-    if (tocount>0) then
-        do i = 1, tocount
-            if (lcarray(i)==' ') then
-                return
-            endif
-            nret = nret + 1
-        end do
-    endif
-
-    ! we have the number expected or tocount <=0, just count them now
-    countargs = .true.
-    do i = tocount+1, numc
-        if (lcarray(i)/=' ') nret = nret + 1
+    do i = 1, ncol
+        if (lcarray(i)==' ') then
+            countargs = nret
+            return
+        endif
+        nret = nret + 1
     end do
-
+    countargs = ncol
     return
 
     end function countargs

@@ -5813,16 +5813,16 @@ Public Class CeditMain
         If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             If Me.SaveDataFileDialog.FileName <> " " Then
                 ' Write out the data file since it has been changed
-                WriteDataFile(Me.SaveDataFileDialog.FileName)
+                WriteInputFile(Me.SaveDataFileDialog.FileName)
                 myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
                 myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
                 Me.Text = "CEdit (" + System.IO.Path.GetFileName(Me.SaveDataFileDialog.FileName) + ")"
                 myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
             End If
-            WriteFireObjects(".\")
-            FileName = myThermalProperties.FileName + ".csv"
-            WriteThermalProperties(FileName)
             PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
+            WriteFireObjects(PathName)
+            FileName = PathName + myThermalProperties.FileName + ".csv"
+            WriteThermalProperties(FileName)
             ChDir(PathName)
         End If
         myUnits.SI = False
@@ -5988,7 +5988,7 @@ Public Class CeditMain
                 If SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     If Me.SaveDataFileDialog.FileName <> " " Then
                         ' Write out the data file since it has been changed
-                        WriteDataFile(Me.SaveDataFileDialog.FileName)
+                        WriteInputFile(Me.SaveDataFileDialog.FileName)
                         myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
                         myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
                         myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
@@ -5998,7 +5998,7 @@ Public Class CeditMain
                     End If
                 End If
             Else
-                WriteDataFile(myEnvironment.InputFileName + ".in")
+                WriteInputFile(myEnvironment.InputFileName + ".in")
                 myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
                 WriteFireObjects(".\")
                 Filename = myThermalProperties.FileName + ".csv"

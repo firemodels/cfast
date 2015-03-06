@@ -5931,10 +5931,11 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub MenuEditInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuInsertFire.Click, MenuInsertThermalProperty.Click
+        Dim iReturn As Integer
         Me.OpenDataFileDialog.FilterIndex = 1
-        Me.OpenDataFileDialog.ShowDialog()
-        If OpenDataFileDialog.FileNames.Length > 0 Then
-            Dim FileName As String, Type As Integer, iReturn As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
+        ireturn = OpenDataFileDialog.ShowDialog()
+        If iReturn = Windows.Forms.DialogResult.OK And OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim FileName As String, Type As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
             If sender Is MenuInsertFire Then Type = InsertDataType.Fire
             If sender Is MenuInsertThermalProperty Then Type = InsertDataType.ThermalProperty
             InsertDialog.SetupData(Type)

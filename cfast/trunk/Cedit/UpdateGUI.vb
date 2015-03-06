@@ -35,6 +35,8 @@ Public Class UpdateGUI
         MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
         MainWin.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
         MainWin.MenuShowCFAST.Checked = CommandWindowVisible
+        If myThermalProperties.Count > 0 Then MainWin.MenuEditThermalProperties.Enabled = True
+        If myFireObjects.Count > 0 Then MainWin.MenuEditFires.Enabled = True
     End Sub
     Public Sub General()
         If myEnvironment.InputFileName = Nothing Then
@@ -815,7 +817,7 @@ Public Class UpdateGUI
         MainWin.FireObjectPlot.Title = aFireObject.Name + " HRR"
         MainWin.FireObjectPlot.Refresh()
     End Sub
-    Private Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)
+    Public Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)
         ' Erase the contents of a grid, leaving only the header row
         For i = 2 To obj.Rows.Count
             obj.Clear(C1.Win.C1FlexGrid.ClearFlags.Content, i - 1, 0, i - 1, obj.Cols.Count - 1)

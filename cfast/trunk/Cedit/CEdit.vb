@@ -5934,14 +5934,23 @@ Public Class CeditMain
         Me.OpenDataFileDialog.FilterIndex = 1
         Me.OpenDataFileDialog.ShowDialog()
         If OpenDataFileDialog.FileNames.Length > 0 Then
-            Dim FileName As String, Type As Integer, iReturn As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData
+            Dim FileName As String, Type As Integer, iReturn As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
             If sender Is MenuInsertFire Then Type = InsertDataType.Fire
             If sender Is MenuInsertThermalProperty Then Type = InsertDataType.ThermalProperty
             InsertDialog.SetupData(Type)
             For Each FileName In OpenDataFileDialog.FileNames
-                InsertDialog.ReadSelectedData(Type, FileName)
+                InsertDialog.AddSelectedData(Type, FileName)
             Next
             iReturn = InsertDialog.ShowDialog()
+            If iReturn = Windows.Forms.DialogResult.OK Then
+                Dim i As Integer, aThermalProperty As New ThermalProperty
+                For i = 1 To InsertDialog.Count
+                    If InsertDialog.Selected(i) Then
+                        aThermalProperty = TempThermalProperties.Item(i - 1)
+                        myThermalProperties.Add(aThermalProperty)
+                    End If
+                Next
+            End If
         End If
         UpdateAll()
     End Sub
@@ -5957,16 +5966,16 @@ Public Class CeditMain
             PathName = System.IO.Path.GetDirectoryName(FileName) & "\"
             ChDir(PathName)
             ' Initialize thermal properties with ones from the current directory, if they exist
-            IO.ReadThermalProperties(".\" + "thermal.csv")
-            UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-            UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-            UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-            UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+            'IO.ReadThermalProperties(".\" + "thermal.csv")
+            'UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+            'UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+            'UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+            'UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
             ' Initialize fire objects with ones from the current directory, if they exist
-            myFireObjects.Clear()
-            IO.ReadFireObjects(PathName)
-            IO.ReadFireObjects(Application.StartupPath + "\")
-            UpdateGUI.InitFireObjectList(Me.FireName)
+            'myFireObjects.Clear()
+            'IO.ReadFireObjects(PathName)
+            'IO.ReadFireObjects(Application.StartupPath + "\")
+            'UpdateGUI.InitFireObjectList(Me.FireName)
             ' Now we should be ready to read the input file
             ReadInputFile(FileName)
             myEnvironment.InputFileName = FileName
@@ -6144,21 +6153,23 @@ Public Class CeditMain
         CurrentFireObject = 0
 
         'Initialize thermal properties
-        myUnits.SI = True
-        IO.ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv")
-        IO.ReadThermalProperties(".\" + "thermal.csv")
-        myUnits.SI = False
+        'myUnits.SI = True
+        'IO.ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv")
+        'IO.ReadThermalProperties(".\" + "thermal.csv")
+        'myUnits.SI = False
+        MenuEditThermalProperties.Enabled = False
         UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
         UpdateGUI.InitThermalPropertyList(Me.CompWalls)
         UpdateGUI.InitThermalPropertyList(Me.CompFloor)
         UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
 
         'Initialize fire objects with data from existing object fires
-        myUnits.SI = True
-        IO.ReadFireObjects(".\")
-        IO.ReadFireObjects(Application.StartupPath & "\")
+        'myUnits.SI = True
+        'IO.ReadFireObjects(".\")
+        'IO.ReadFireObjects(Application.StartupPath & "\")
+        MenuEditFires.Enabled = False
         UpdateGUI.InitFireObjectList(Me.FireName)
-        myUnits.SI = False
+        'myUnits.SI = False
 
         ' Initialize spreadsheets for input or no input (summary tables) as appropriate
         UpdateGUI.InitSummaryGrid(Me.CompSummary)

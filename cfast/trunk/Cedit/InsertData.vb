@@ -46,17 +46,40 @@
                 MainWin.UpdateGUI.ClearGrid(InsertDataSummary)
         End Select
         NumAdded = 0
-        numSelected = 0
     End Sub
     Public Sub AddSelectedData(ByVal Type As Integer, ByVal Filename As String)
         Dim i As Integer
+        Dim csv As New CSVsheet(Filename)
+        NumAdded = 0
         Select Case Type
             Case InsertDataType.Fire
+                Dim aFire As New Fire
+                TempFireObjects.Clear()
+                myUnits.SI = True
+                IO.FindFires(csv, TempFireObjects)
+                myUnits.SI = False
+                If TempFireObjects.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFireObjects.Count + 1
+                If TempFireObjects.Count > 0 Then
+                    For i = 1 To TempFireObjects.Count
+                        aFire = TempFireObjects.Item(i - 1)
+                        Me.InsertDataSummary(i, InsertFireNum.Fire) = aFire.Name
+                        Me.InsertDataSummary(i, InsertFireNum.Formula) = aFire.ChemicalFormula
+                        Me.InsertDataSummary(i, InsertFireNum.Height) = aFire.Peak(Fire.FireHeight).ToString
+                        Me.InsertDataSummary(i, InsertFireNum.Area) = aFire.Peak(Fire.FireArea).ToString
+                        Me.InsertDataSummary(i, InsertFireNum.QDot) = aFire.Peak(Fire.FireHRR).ToString
+                        Me.InsertDataSummary(i, InsertFireNum.Soot) = aFire.Peak(Fire.FireSoot)
+                        Me.InsertDataSummary(i, InsertFireNum.CO) = aFire.Peak(Fire.FireCO).ToString
+                        Me.InsertDataSummary(i, InsertFireNum.HoC) = aFire.HeatofCombustion.ToString
+                        Me.InsertDataSummary(i, InsertFireNum.Material) = myThermalProperties.GetLongName(aFire.Material)
+                    Next
+                    NumAdded = TempFireObjects.Count
+                End If
             Case InsertDataType.ThermalProperty
-                Dim csv As New CSVsheet(Filename), aThermalProperty As New ThermalProperty
+                Dim aThermalProperty As New ThermalProperty
                 TempThermalProperties.Clear()
-                NumAdded = 0
+                myUnits.SI = True
                 IO.FindThermalProperties(csv, TempThermalProperties)
+                myUnits.SI = False
                 If TempThermalProperties.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempThermalProperties.Count + 1
                 If TempThermalProperties.Count > 0 Then
                     For i = 1 To TempThermalProperties.Count

@@ -5944,13 +5944,24 @@ Public Class CeditMain
             Next
             iReturn = InsertDialog.ShowDialog()
             If iReturn = Windows.Forms.DialogResult.OK Then
-                Dim i As Integer, aThermalProperty As New ThermalProperty
-                For i = 1 To InsertDialog.Count
-                    If InsertDialog.Selected(i) Then
-                        aThermalProperty = TempThermalProperties.Item(i - 1)
-                        myThermalProperties.Add(aThermalProperty)
-                    End If
-                Next
+
+                If sender Is MenuInsertThermalProperty Then
+                    Dim i As Integer, aThermalProperty As New ThermalProperty
+                    For i = 1 To InsertDialog.Count
+                        If InsertDialog.Selected(i) Then
+                            aThermalProperty = TempThermalProperties.Item(i - 1)
+                            myThermalProperties.Add(aThermalProperty)
+                        End If
+                    Next
+                ElseIf sender Is MenuInsertFire Then
+                    Dim i As Integer, aFire As New Fire(Fire.TypeFireObject)
+                    For i = 1 To InsertDialog.Count
+                        If InsertDialog.Selected(i) Then
+                            aFire = TempFireObjects.Item(i - 1)
+                            myFireObjects.Add(aFire)
+                        End If
+                    Next
+                End If
             End If
         End If
         UpdateAll()

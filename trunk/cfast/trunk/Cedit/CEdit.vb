@@ -975,7 +975,7 @@ Public Class CeditMain
         'MenuInsertThermalProperty
         '
         Me.MenuInsertThermalProperty.Index = 1
-        Me.MenuInsertThermalProperty.Text = "Insert Thermal Property"
+        Me.MenuInsertThermalProperty.Text = "Insert Thermal Properties"
         '
         'MenuFireObjects
         '
@@ -991,7 +991,7 @@ Public Class CeditMain
         'MenuInsertFire
         '
         Me.MenuInsertFire.Index = 1
-        Me.MenuInsertFire.Text = "Insert Fire"
+        Me.MenuInsertFire.Text = "Insert Fires"
         '
         'MenuItem3
         '
@@ -1045,7 +1045,7 @@ Public Class CeditMain
         'MenuTotalMassOutput
         '
         Me.MenuTotalMassOutput.Index = 1
-        Me.MenuTotalMassOutput.Text = "Total Mass"
+        Me.MenuTotalMassOutput.Text = "Total Mass Output File"
         '
         'MenuNetHeatFluxOutput
         '
@@ -1104,8 +1104,7 @@ Public Class CeditMain
         'MenuShowHelp
         '
         Me.MenuShowHelp.Index = 0
-        Me.MenuShowHelp.Shortcut = System.Windows.Forms.Shortcut.F1
-        Me.MenuShowHelp.Text = "Help Topics"
+        Me.MenuShowHelp.Text = "Documentation"
         '
         'MenuCFASTWeb
         '
@@ -1912,7 +1911,7 @@ Public Class CeditMain
         Me.TabGeometry.Name = "TabGeometry"
         Me.TabGeometry.Size = New System.Drawing.Size(976, 558)
         Me.TabGeometry.TabIndex = 0
-        Me.TabGeometry.Text = "Compartment Geometry"
+        Me.TabGeometry.Text = "Compartments"
         '
         'CompSummary
         '
@@ -4217,7 +4216,7 @@ Public Class CeditMain
         Me.TabVisuals.Padding = New System.Windows.Forms.Padding(3)
         Me.TabVisuals.Size = New System.Drawing.Size(976, 558)
         Me.TabVisuals.TabIndex = 8
-        Me.TabVisuals.Text = "Visualization"
+        Me.TabVisuals.Text = "Visualizations"
         Me.TabVisuals.UseVisualStyleBackColor = True
         '
         'GroupVisualResolution
@@ -5891,7 +5890,7 @@ Public Class CeditMain
         UpdateAll()
     End Sub
     Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
-        Help.ShowHelp(Me, Application.StartupPath + "\" + "CFAST6.chm")
+        System.Windows.Forms.MessageBox.Show("Documentation on the use of CFAST is available in the CFAST User's Guide installed with the software. Go to Start, All Programs, CFAST7, Documents for all of the CFAST documentation", "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
     Private Sub MenuCFASTweb_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuCFASTWeb.Click
         Process.Start("http://cfast.nist.gov")

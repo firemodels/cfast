@@ -5,7 +5,7 @@ Module IO
     Public Sub ReadInputFile(ByVal Filename As String)
         'Read in a *.in file Filename is to include path as well as file name
         Dim csv As New CSVsheet(Filename)
-        Dim i As Integer = 1, j, k As Integer
+        Dim i As Integer = 1, j As Integer
         Dim NewFileFormat As Boolean = False
 
         myErrors.Break()

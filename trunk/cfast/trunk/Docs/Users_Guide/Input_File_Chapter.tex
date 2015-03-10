@@ -5,48 +5,62 @@
 CFAST is a computer program that uses an input file and generates one or more output files. The first step in performing a calculation is to generate a text input file that provides the program with all of the necessary information to describe the scenario under consideration.  The most important inputs determine the geometry of the compartments in the scenario and the connections between these compartments. Next, the fire, detection, and suppression characteristics of the scenario are defined. Finally, there are a number of parameters that customize the output from the model.  Each line of the file contains a keyword label that identifies the input, followed by a number of numerical or text inputs corresponding to the particular input keyword. A simple input file is shown below. This example is used in the discussion of the output in Chapter 5.
 
 \begin{lstlisting}
-VERSN,6,Cable tray fire -- base case
+VERSN,7,Default example fire for user guide
 !!
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-120,10,30
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
-CJET,WALLS
-WIND,0,10,0.16
 !!
 !!Material Properties
 !!
 MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
 MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
-MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
-MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 !!
 !!Vent keywords
 !!
-HVENT,1,2,1,1,2.4,0,1,0,0,1,1
+HVENT,1,2,1,1,2.4,0,0,1,1
 !!
 !!Fire keywords
 !!
 GLOBA,10,393.15
-!!Wood_Wall
-FIRE,1,4.55,2.5,0,1,1,0,0,0,1,Wood_Wall
-CHEMI,1,4,0,0,0,0.33,1.81E+07,HARDWOOD
+!!burner
+FIRE,1,4.55,2.5,0,1,1,0,0,0,1,burner
+CHEMI,1,4,0,0,0,0.33,5E+07,METHANE
+TIME,0,60,120,180,240,300,360,420,480,540,1800
+HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
+SOOT,0,0,0,0,0,0,0,0,0,0,0
+CO,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001
+TRACE,0,0,0,0,0,0,0,0,0,0,0
+AREA,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2
+HEIGH,0,0,0,0,0,0,0,0,0,0,0
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+!!wood_wall
+FIRE,1,9.1,2.5,0,1,1,0,0,0,1,wood_wall
+CHEMI,6,10,5,0,0,0.33,1.81E+07,HARDWOOD
 TIME,0,8000
 HRR,0,1000000
-SOOT,0.02,0.02
-CO,0.02,0.02
+SOOT,0.015,0.015
+CO,0.006171682,0.006171682
 TRACE,0,0
 AREA,0.05,9
 HEIGH,0,3
+MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
 !!Target and detector keywords
 !!
 TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
+!!
+!!visualizations
+!!
+SLCF,2-D,Y,2.5,1
+SLCF,2-D,Z,4.554,1
+
 \end{lstlisting}
 
 All of the inputs to the model are discussed in this chapter.  Following the discussion that details each input, their engineering units and default values, notes are included that provided additional guidance or frequently addressed problems that may be encountered by the user. These notes take the form of a bulleted list such as:
@@ -72,12 +86,13 @@ The installation program creates a shortcut to the input editor on the Windows s
 These tabbed-pages organize the inputs for CFAST simulations into several categories as follows.
 \begin{itemize}
 \item \textbf{Simulation Environment} includes simulation time, specification of model outputs, and ambient conditions. Also included on the page are a constantly updated list of errors, warnings, and messages about the input file specification or model simulation.
-\item \textbf{Compartment Geometry} defines the size, construction characteristics, and position of the compartments in a simulation.
+\item \textbf{Compartments} defines the size, construction characteristics, and position of the compartments in a simulation.
 \item \textbf{Wall Vents, Ceiling/Floor Vents, and Mechanical Flow Vents} allows the user to connect compartments with doors and windows, ceiling and floor vents, or forced air ventilation systems.
 \item \textbf{Fires} include user specification of the initial fire source and any additional burning objects in one or more of the compartments of the simulation.
 \item \textbf{Detection / Suppression}defines any heat alarms and sprinklers in the compartments of the simulation.
 \item \textbf{Targets} provide the ability calculate the temperature and net heat flux to objects placed and oriented arbitrarily in the structure.
 \item \textbf{Surface Connections} allows for more detailed description of the connections between compartments in the simulation to better simulate the transfer of heat from compartment to compartment in the simulation.
+\item \textbf{Visualizations} allows specification of one or more 2-D and 3-D visualizations to be added to the simulation for viewing with Smokeview. Note that these can require significant additional computational time than a basic CFAST simulation without visualizations.
 \end{itemize}
 
 Each of these tabbed-pages is described in more detail below. In addition, a series of menus allow the user to open and save files; run the simulation, or access help and program information.

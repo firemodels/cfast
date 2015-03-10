@@ -497,7 +497,7 @@
     
     logical :: lfupdat
     integer :: obpnt, compartment, lrowcount, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, countargs
-    integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, nret, imin, iroom, iramp
+    integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
@@ -1441,7 +1441,7 @@
             endif
 
             izhall(iroom,ishall) = 1
-            if (nret>1) write (logerr,5406) iroom
+            if (countargs(lcarray)>1) write (logerr,5406) iroom
         else
             ierror = 46
             return
@@ -1642,7 +1642,7 @@
                 ! get position (required) and compartment (optional) first so we can check to make sure
                 !                                           desired position is within the compartment(s)
                 sliceptr%position = lrarray(3)
-                if (nret>3) then
+                if (countargs(lcarray)>3) then
                     sliceptr%roomnum = lrarray(4)
                 else
                     sliceptr%roomnum = 0

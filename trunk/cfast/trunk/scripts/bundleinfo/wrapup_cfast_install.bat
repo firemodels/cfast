@@ -32,7 +32,6 @@ if exist "%cfaststartmenu%" rmdir /q /s "%cfaststartmenu%" >Nul
 mkdir "%cfaststartmenu%"
 
 mkdir "%cfaststartmenu%\Guides"
-:: the following line is a placeholder - need to update with actual documents
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Users Guide.lnk"       /T:"%CD%\Documents\Users_Guide.pdf" /A:C >NUL
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Technical Reference Guide.lnk"       /T:"%CD%\Documents\Tech_Ref.pdf" /A:C >NUL
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Software Development and Model Evaluation Guide.lnk"       /T:"%CD%\Documents\Validation_Guide.pdf" /A:C >NUL

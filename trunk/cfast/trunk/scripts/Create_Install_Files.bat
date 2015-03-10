@@ -17,7 +17,6 @@ echo.
 
 call :COPY  %bindir%\CEdit.exe %DISTDIR%\
 call :COPY  %bindir%\CFAST.exe %DISTDIR%\
-call :COPY  %bindir%\CFAST6.chm %DISTDIR%\
 
 echo.
 echo ***Copying CFAST DLLs

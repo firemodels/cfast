@@ -4,8 +4,8 @@ Title Bundle cfast for Windows
 
 :: installation settings settings
 
-set installerbase=cfast6_installer
-set distname=cfast6
+set installerbase=cfast7_installer
+set distname=cfast7
 
 :: VVVVVVVVVVVVVVVVV shouldn't need to change anything below VVVVVVVVVVVVVVV
 
@@ -37,10 +37,10 @@ echo ***Creating installer
 echo.
 
 cd %DISTDIR%\..
-echo Setup is about to install CFAST 6 > %bundleinfo%\message.txt
+echo Setup is about to install CFAST 7 > %bundleinfo%\message.txt
 echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
-wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 6 Setup" -d "c:\Program Files\%distname%" -c wrapup_cfast_install.bat
+wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\%distname%" -c wrapup_cfast_install.bat
 
 copy %installerbase%.exe "%userprofile%\google drive\cftest.exe"
 

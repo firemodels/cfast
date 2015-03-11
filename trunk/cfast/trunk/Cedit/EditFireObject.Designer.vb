@@ -344,6 +344,7 @@ Partial Class EditFireObject
         Me.Controls.Add(Me.Label9)
         Me.Controls.Add(Me.FireDataSS)
         Me.Controls.Add(Me.GroupFireObject)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "EditFireObject"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Define New Fire"

@@ -6030,9 +6030,10 @@ Public Class CeditMain
         UpdateGUI.General()
     End Sub
     Private Sub EditFireObject(ByVal aCurrentFireObject As Integer)
-        If myFireObjects.Count > 0 Then
+        If myFireObjects.Count > 0 And aCurrentFireObject <= myFireObjects.Count Then
             Dim ObjectWindow As New EditFireObject
             Dim iReturn As Integer
+            ObjectWindow.WindowName = "Edit Fire (" + myFireObjects.Item(aCurrentFireObject).Name + ")"
             ObjectWindow.CurrentFireObject = aCurrentFireObject
             iReturn = ObjectWindow.ShowDialog(Me)
             If iReturn = OK Then

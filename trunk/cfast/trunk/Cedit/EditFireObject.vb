@@ -1,6 +1,7 @@
 ﻿Public Class EditFireObject
     Friend CurrentFireObject As Integer
     Friend aFireObject As New Fire
+    Friend WindowName As String
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireMaterial.SelectedIndexChanged, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireSootYield.Leave, FireCOYield.Leave, FireRadiativeFraction.Leave, FireName.Leave
         Dim numPoints As Integer, ir As Integer
 
@@ -91,9 +92,9 @@
 
         UpdateFirePlot()
         If aFireObject.Changed Then
-            Me.Text = "Add Fire Object *"
+            Me.Text = Me.WindowName + " *"
         Else
-            Me.Text = "Add Fire Object"
+            Me.Text = Me.WindowName
         End If
     End Sub
     Private Sub UpdateFirePlot()

@@ -2194,7 +2194,7 @@ Public Class CeditMain
         'Label64
         '
         Me.Label64.AutoSize = True
-        Me.Label64.Location = New System.Drawing.Point(67, 16)
+        Me.Label64.Location = New System.Drawing.Point(56, 16)
         Me.Label64.Name = "Label64"
         Me.Label64.Size = New System.Drawing.Size(101, 13)
         Me.Label64.TabIndex = 46

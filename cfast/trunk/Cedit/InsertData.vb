@@ -14,6 +14,7 @@
     Public Sub SetupData(ByVal Type As Integer)
         Select Case Type
             Case InsertDataType.Fire
+                Me.Text = "Insert Fires"
                 Me.InsertDataSummary(0, InsertFireNum.Fire) = "Fire"
                 Me.InsertDataSummary(0, InsertFireNum.Formula) = "Formula"
                 Me.InsertDataSummary(0, InsertFireNum.Height) = "Height"
@@ -31,6 +32,7 @@
                 MainWin.UpdateGUI.InitEditGrid(InsertDataSummary)
                 MainWin.UpdateGUI.ClearGrid(InsertDataSummary)
             Case InsertDataType.ThermalProperty
+                Me.Text = "Insert Thermal Properties"
                 Me.InsertDataSummary(0, InsertThermalNum.Material) = "Material"
                 Me.InsertDataSummary(0, InsertThermalNum.Conductivity) = "Conductivity"
                 Me.InsertDataSummary(0, InsertThermalNum.SpecificHeat) = "Specific Heat"

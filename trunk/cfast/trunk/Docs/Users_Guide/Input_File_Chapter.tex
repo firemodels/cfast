@@ -20,7 +20,7 @@ MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
+COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 !!
 !!Vent keywords
 !!
@@ -110,17 +110,17 @@ The Simulation Environment page defines the initial conditions and simulation ti
 
 \subsection{Naming the Calculation, the Title Input}
 
-The first thing to do when setting up an input file is to give the simulation a title.  The first line in the CFAST input data file must be the CFAST version identification along with an optional short title for the simulation.  This is a required input.  The title command is the line that CFAST keys on to determine whether it has a correct data file.
+The first thing to do when setting up an input file is to give the simulation a title.  The first line in the CFAST input data file must be the CFAST version identification along with an optional short title for the simulation.  This is a required input.  The VERSN command is the line that CFAST keys on to determine whether it has a correct data file.
 
 \begin{lstlisting}
-VERSN,6,CFAST Simulation
+VERSN,7,CFAST Simulation
 \end{lstlisting}
 
 \clearpage
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=3.458in]{FIGURES/Input_File/Title}
+\includegraphics[width=5.3in]{FIGURES/Input_File/Title}
 \end{center}
 \end{figure}
 
@@ -140,28 +140,24 @@ TIMES,900,50,10,10
 \end{center}
 \end{figure}
 
-\begin{itemize}
-\item \textbf{Simulation Time} (default units: s, default value, 900 s): The length of time over which the simulation takes place.  This is a required input which should be entered even if all other fields are not included. The maximum value for this input is 86400 s (1 day).
 
-\item \textbf{Text Output Interval} (default units: s, default value, 50 s): The print interval is the time interval between each printing of the output values.  If omitted or less than or equal to zero, no output values will occur.
+\textbf{Simulation Time} (default units: s, default value, 900 s): The length of time over which the simulation takes place.  This is a required input which should be entered even if all other fields are not included. The maximum value for this input is 86400 s (1 day).
 
-\item \textbf{Spreadsheet Output Interval} (default units: s, default value, 10 s): CFAST can output a subset of the results of the model simulation in a comma-delimited alphanumeric format which can be read by most spreadsheet software. This is designed to be imported into a spreadsheet for further analysis or graphing of the results of the simulation.  This input defines the time interval between outputs of the model results in a spreadsheet-compatible format. A value greater than zero must be used if the spreadsheet file is to be used.
+\textbf{Text Output Interval} (default units: s, default value, 50 s): The print interval is the time interval between each printing of the output values.  If omitted or less than or equal to zero, no output values will occur.
 
-\item \textbf{Smokeview Output Interval} (default units: s, default value: 10 s): CFAST can output a subset of the results in a format compatible with the visualization program smokeview. This input defines the time interval between outputs of the model results in a smokeview-compatible format.  A value greater than zero must be used if the spreadsheet output is desired.
-\end{itemize}
+\textbf{Spreadsheet Output Interval} (default units: s, default value, 10 s): CFAST can output a subset of the results of the model simulation in a comma-delimited alphanumeric format which can be read by most spreadsheet software. This is designed to be imported into a spreadsheet for further analysis or graphing of the results of the simulation.  This input defines the time interval between outputs of the model results in a spreadsheet-compatible format. A value greater than zero must be used if the spreadsheet file is to be used.
 
-In addition to the input data file created specifically for a CFAST simulation, there are a number files that CFAST uses to define default values and other input information, and to output the results of the simulation for later analysis.  They include 1) a thermal properties file, 2) files of predefined fire objects, and 4) a spreadsheet-compatible output file.
-
-The thermal properties file contains material properties for compartment surfaces, target objects that may be placed in compartments in the simulation to monitor surface temperature and heat flux to the objects, and fire objects, in addition to the main fire in the simulation that may ignite based on their surface temperature or incident flux onto the surface of the object. The predefined fire objects files contain definitions for a number of reference fires from the literature or developed by the user that may be included in a simulation. The thermal properties and fire objects files may be modified by the user.  Details of the files are included in the appendices.  There are default files included in the CFAST distribution.
+\textbf{Smokeview Output Interval} (default units: s, default value: 10 s): CFAST can output a subset of the results in a format compatible with the visualization program smokeview. This input defines the time interval between outputs of the model results in a smokeview-compatible format.  A value greater than zero must be used if the spreadsheet output is desired.
+    
+\textbf{Maximum Time Step} (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This input places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced which often will allow the simulation to successfully complete.
 
 \subsection{Ambient Conditions}
 
-Ambient conditions define the environment at which the scenario begins. This allows the user to specify the temperature, pressure, and station elevation of the ambient atmosphere, as well as the absolute wind pressure to which the structure is subjected.  Pressure interior to a structure is calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}.  This modification is applied to the vents which connect to the exterior ambient.  The calculated pressure change is modified by the wind coefficient for each vent.  This coefficient, which can vary from -1.0 to +1.0, nominally from -0.8 to +0.8, determines whether the vent is facing away from or into the wind.  The pressure change is multiplied by the vent wind coefficient and added to the external ambient for each vent which is connected to the outside. There is an ambient for the interior and for the exterior of the structure.  Three keywords define the ambient conditions: TAMB for the interior of the structure, EAMB for the exterior of the structure is EAMB, and WIND for the wind information.
+Ambient conditions define the environment at which the scenario begins. This allows the user to specify the temperature, pressure, and a reference elevation, as well as an initial relative humidity.  Initial pressures in a structure are calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}. The relative humidity is used to calculate the initial water content in the air both inside and outside of the structure.  There is an input for the interior and for the exterior of the structure.  Two keywords define the ambient conditions: TAMB for the interior of the structure and EAMB for the exterior of the structure is EAMB.
 
 \begin{lstlisting}
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
-WIND,0,10,0.16
 \end{lstlisting}
 
 \begin{figure}[h!]
@@ -170,39 +166,30 @@ WIND,0,10,0.16
 \end{center}
 \end{figure}
 
-\textbf{Ambient Temperature} (default units: \degc~C, default value: 20 \degc~C): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
+\textbf{Temperature} (default units: \degc~C, default value: 20 \degc~C): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
 
-\textbf{Ambient Pressure} (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside (for TAMB) and outside (for EAMB) the structure at the station elevation. Default value is standard atmospheric pressure at sea level (0 m elevation) of 101.3 kPa. Input units are in Pa. These values define standard conditions as defined in Standard Atmosphere as noted in the Handbook of Chemistry and Physics  . There is a set of numerical approximations in the CFAST code which duplicate the pressure/temperature/altitude relationships in the handbook.
+\textbf{Pressure} (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside (for TAMB) and outside (for EAMB) the structure at the station elevation. Default value is standard atmospheric pressure at sea level (0 m elevation) of 101.3 kPa. Input units are in Pa.
 
 \textbf{Elevation} (defaults units: m, default value: 0 m): The height where the ambient pressure and temperature were specified.  This is the reference datum for calculating the density of the atmosphere as well as the temperature and pressure inside and outside of the structure as a function of height.
 
-\textbf{Relative Humidity} (default units \% RH, default value: 50 \%): The initial relative humidity in the system, only specified for the interior with the TAMB command.  This is converted to kilograms of water per cubic meter.
+\textbf{Humidity} (default units \% RH, default value: 50 \%): The initial relative humidity in the system, only specified for the interior with the TAMB command.  This is converted to kilograms of water per cubic meter as an initial condition for both the interior and exterior of the structure.
 
-The wind speed, scale height, and power law are used to calculate the wind coefficient for each vent connected to the outside.  The wind velocity is specified at some reference height.  The power law then provides a lapse rate for the wind speed.  An assumption is that the wind speed is zero at the surface.  The formula used to calculate the wind speed at the height of any vent is show below.  The wind is applied to each external opening as a change in pressure outside of the vent.
-
-\textbf{Wind Speed} (default units: m/s, default value 0 m/s): Wind speed at the reference elevation.
-
-\textbf{Scale Height} (default units: m, default value: 0 m)): Reference height at which the reference wind speed is measured.
-
-\textbf{Power Law Coefficient} (default units: dimensionless, default value 0.16): The power law used to calculate the wind speed as a function of height. Default value is 0.16. Using the notation that $V_W$, is the wind speed at the reference height $H_W$, and $P_W$ is the power law, the exterior pressure is modified by  $\delta P = {C_W}{V^2}$ and $V = {V_W}{\left( {\frac{{{H_i}}}{{{H_W}}}} \right)^{{P_W}}}$ where $H_i$ is the position of the vent \cite{CFAST_Tech_Guide_6}.
 
 \begin{itemize}
-\item In order to see the effect of wind, the corresponding parameter for the ventilation keyword must be specified. The default for the wind vector is 0, which turns off wind effects. Please see the HVENT command, below.
-
 \item The choice for station elevation, temperature and pressure must be consistent.  Outside of that limitation, the choice is arbitrary.  It is often convenient to choose the base of a structure to be at zero height and then reference the height of the structure with respect to that height.  The temperature and pressure must then be measured at that position.  Another possible choice would be the pressure and temperature at sea level, with the structure elevations then given with respect to mean sea level.  This is also acceptable, but somewhat more tedious in specifying the construction of a structure.  Either of these choices works though, so long as they are consistent. Usually, the station elevation is set to zero and the pressure to ambient. The effect of changing these values is small for small changes. There will be an effect for places at altitude such as Denver, Colorado, but even there the effect is not pronounced. Note that the equations implemented in the model are not designed to handle negative elevations and altitudes. It is suggested that the defaults be used.
 
-\item These three parameters are optional. If they are not included in the input file, default values are used.
+\item These parameters are optional. If they are not included in the input file, default values are used.
 \end{itemize}
 
 \section{Compartment Geometry}
-
-The Compartment Geometry page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the �Add� button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/Input_File/Compartment_Geometry_Tab}
 \end{center}
 \end{figure}
+
+The Compartment Geometry page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
 Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. The buttons included on the compartment geometry page are as follows: \\
 
@@ -240,12 +227,12 @@ At least one compartment must be specified in the input file.  There are no defa
   \includegraphics[width=2.0in]{FIGURES/Input_File/CFAST_Coordinates}
 \end{wrapfigure}
 
-Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for utilizing the corridor flow algorithm with the HALL command and for positioning the compartments for visualization in SMOKEVIEW.
+Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
 
-The relevant CFAST keywords are COMPA to define the compartment size and materials, HALL or ONEZ to define flow characteristics in the compartment, and ROOMA / ROOMH to define a variable cross-sectional area for the compartment. The COMPA command is required for each compartment as a basic definition for the compartment, even if there are subsequent modifications by the HALL, ONEZ, ROOMA, or ROOMH keywords which follow.  Details of the CFAST keywords are included in Appendix A.
+The relevant CFAST keywords are COMPA to define the compartment size and materials, MATL to define the thermophysical properties of the compartment surfaces, HALL or ONEZ to define flow characteristics in the compartment, and ROOMA / ROOMH to define a variable cross-sectional area for the compartment. The COMPA command is required for each compartment as a basic definition for the compartment, even if there are subsequent modifications by the HALL, ONEZ, ROOMA, or ROOMH keywords which follow.  Details of the CFAST keywords are included in Appendix A.
 
 \begin{lstlisting}
-COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 \end{lstlisting}
 
 \begin{figure}[h!]
@@ -280,12 +267,20 @@ COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
 
 \subsection{Thermal Properties of Bounding Surfaces}
 
-To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if calculation of inter-compartment heat transfer is to be calculated.
+To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
 
-The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Currently, thermal properties for materials are read from the CFAST input file with a thermal database file of common materials included in the CFAST distribution.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three).
+The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Thermal properties for materials are read from the CFAST input file.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three).
 
 \begin{lstlisting}
-COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+!!
+!!Material Properties
+!!
+MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
+MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 \end{lstlisting}
 
 \begin{figure}[h!]
@@ -303,20 +298,35 @@ The bounding surfaces are the ceilings, walls and floors that define a compartme
 \begin{itemize}
 \item If the thermophysical properties of the enclosing surfaces are not included, CFAST will treat them as adiabatic (no heat transfer).
 
-\item If a name is used which is not in the database, the model should stop with an error message. The keyword in the data file simply gives a name (such as CONCRETE) which refers to the properties for that material in the thermal data file (see section 4.2.3 and Appendix A for details on the thermophysical database).
+\item If a name is used which is not in the input file, the model should stop with an error message.
 
-\item Since most of the heat conduction is through the ceiling, and since the conduction calculation takes a significant fraction of the computation time, it is recommended that initial calculations be made using the ceiling only.  Adding the walls generally has a small effect on the results, and the floor contribution is usually negligible.  Clearly, there are cases where the above generalization does not hold, but it may prove to be a useful screening technique. A caveat in including floor properties is that the set of equations describing heat transfer becomes difficult to solve once the thermal wave from the compartments reaches the unexposed side of a floor. The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
+\item The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
 \end{itemize}
 
 \subsection{Additional Thermal Properties}
 
-The default CFAST installation includes a set of thermal properties for common building materials taken from textbook references.  While these may be useful for a range of problems, the user can also define additional materials for use with a specific simulation.
+By default, CEdit does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Thermal Properties} Menu item (see page \pageref{Thermal_Properties_Menu}) allows you to add thermal properties from an existing data file to the current simulation. 
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Insert_Thermal_Properties}
+\end{center}
+\end{figure}
+
+To add additional thermal properties to a simulation or to edit existing ones, the \textbf{Edit Thermal Properties} menu item (see page \pageref{Thermal_Properties_Menu}) allows you to edit any of the existing thermal properties. \\~ \\
 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/Input_File/Edit_Thermal_Properties}
 \end{center}
 \end{figure}
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Select_All_Button} 
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Deselect_All_Button}
+\end{wrapfigure}
+
+Use the Select All and Deselect All buttons to make or clear all materials for inclusion in the current simulation.  Individual materials can be included or excluded by checking or clearing the check box for an individual material in the list of materials. \\~ \\
 
 \begin{wrapfigure}{l}{0pt}
   \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
@@ -338,7 +348,7 @@ Use the Remove button to delete the selected thermal property from the list of f
 
 \textbf{Material}: A descriptive name for the material.
 
-\textbf{Short Name}: A one-word identifier for the material.  This identifiershould not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
+\textbf{Short Name}: A one-word (no more than 8 characters) \textbf{unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
 
 \textbf{Thermal Conductivity} (default value: none, default units: kW/m \degc): Thermal conductivity for the material.
 
@@ -350,7 +360,6 @@ Use the Remove button to delete the selected thermal property from the list of f
 
 \textbf{Emissivity} (default value: 0.9, default units: none): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
 
-\textbf{HCl (b1) through HCl (b7)} (default value: 0, default units: none): These constants define HCl deposition on the material.  Data is only available for gypsum wallboard so these entries are typically left at a value of zero.
 
 \section{Compartment Connections}
 

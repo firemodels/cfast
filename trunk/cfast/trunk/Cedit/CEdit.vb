@@ -3618,7 +3618,7 @@ Public Class CeditMain
         Me.GroupBox3.Controls.Add(Me.TargetConduct)
         Me.GroupBox3.Controls.Add(Me.TargetMaterial)
         Me.GroupBox3.Controls.Add(Me.Label78)
-        Me.GroupBox3.Location = New System.Drawing.Point(66, 75)
+        Me.GroupBox3.Location = New System.Drawing.Point(521, 75)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Size = New System.Drawing.Size(267, 175)
         Me.GroupBox3.TabIndex = 56
@@ -3773,7 +3773,7 @@ Public Class CeditMain
         Me.GroupBox28.Controls.Add(Me.TargetXPosition)
         Me.GroupBox28.Controls.Add(Me.Label73)
         Me.GroupBox28.Controls.Add(Me.Label77)
-        Me.GroupBox28.Location = New System.Drawing.Point(410, 75)
+        Me.GroupBox28.Location = New System.Drawing.Point(66, 75)
         Me.GroupBox28.Name = "GroupBox28"
         Me.GroupBox28.Size = New System.Drawing.Size(378, 175)
         Me.GroupBox28.TabIndex = 55

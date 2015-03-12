@@ -746,7 +746,7 @@ Use the Create New button to create a new fire object with default values for al
 \textbf{CO Yield} (default units: kg/kg, default value: determined by correlation): Constant species yield of carbon monoxide expressed as a fraction of the fuel mass converted into carbon monoxide.  By default, the CO yield is related to the soot yield via the correlation developed by K\"oyl\"u and Faeth
 
 \be
-y_{CO} = \frac{12n_C}{M_fv_f}0.0014 + 0.37y_s \label{eq:Koylu} 
+y_{CO} = \frac{12n_C}{M_fv_f}0.0014 + 0.37y_s \label{eq:Koylu}
 \ee
 where $n_C$ is the number of carbon atoms in a fuel molecule, $M_f$ is the molecular weight of the fuel, and $v_f$ is the stoichiometric coefficient of the fuel, assumed to be 1 here \cite{Koylu:1991}. Note that this correlation refers to well-ventilated fires. Yields of CO and soot in underventilated fires is still a subject of active research.
 
@@ -825,7 +825,7 @@ For a wide range of fires, the fire growth can be accurately represented with a 
 
 \subsection{Associating Fire Objects with One or More Instances of the Fire in the Compartments of the Simulation}
 
-Fires  are placed in defined positions within a compartment of a simulation and oriented with a normal vector to the surface of the object.  Ignition of an object may be at a specified time, a specified net incident heat flux on the surface of the object, or at a specified surface temperature of the object. 
+Fires  are placed in defined positions within a compartment of a simulation and oriented with a normal vector to the surface of the object.  Ignition of an object may be at a specified time, a specified net incident heat flux on the surface of the object, or at a specified surface temperature of the object.
 
 \begin{figure}[h!]
 \begin{center}
@@ -963,13 +963,22 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 
 \textbf{Compartment}: The compartment in which the target is located.
 
+\textbf{Target Type}: If the solution method is not STEADY, this parameter further indicates the solutions equations.  Specify Thermally Thick, Thermally Thin, or Cylindrical.  For thermally thin materials, CFAST uses ordinary differential equations; for thermally thick materials, partial differential equations, and for cylindrical targets, cylindrical coordinates.
+
+\textbf{Solution Method}: Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
+
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=3.713in]{FIGURES/Input_File/Target_Geometry}
+\end{wrapfigure}
+
 \textbf{Width (X)} Position (default units: m, default value: none): Position of the target as a distance from the left wall of the target compartment (X direction).
 
 \textbf{Depth (Y)} Position(default units: m, default value: none): Position of the target as a distance from the front wall of the target compartment (Y direction).
 
 \textbf{Height (Z)} Position(default units: m, default value: none): Height of the target above the floor (Z direction).
 
-\begin{wrapfigure}{r}{0pt}
+\begin{wrapfigure}{l}{0pt}
   \includegraphics[width=1.875in]{FIGURES/Input_File/Target_Points_To}
 \end{wrapfigure}
 
@@ -979,11 +988,13 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 
 \textbf{Normal Vector Z} Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Height) component in the direction from the floor of the target compartment. Default value is a horizontal, upward facing target, unit vector = (0,0,1).
 
-\textbf{Material}: Used to specify the wall material of the target.  Any material from the thermal database used to represent wall materials may be used here.  Since the transient heat conduction problem is not solved now for the target this parameter is not used.
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=2.531in]{FIGURES/Input_File/Target_Construction}
+\end{wrapfigure}
 
-\textbf{Target Type}: If the solution method is not STEADY, this parameter further indicates the solutions equations.  Specifiy Thermally Thick, Thermally Thin, or Cylindrical.  For thermally thin materials, CFAST uses ordinary differential equations; for thermally thick materials, partial differential equations, and for cylindrical targets, cylindrical corrdinates.
+\textbf{Material}: Used to specify the wall material of the target.  Any existing material in the list of thermal properties may be used here.
 
-\textbf{Solution Method}: Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
+\textbf{Internal Temperature at} (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
 
 \begin{itemize}
 \item The TARGE keyword performs a heat transfer calculation between the compartment and the target. The steady state option assumes that the target material reacts instantly to changing conditions and computes the target temperature that would result in a balance of incoming and outgoing heat (i.e., a steady state). If a transient target temperature is modeled, then one can either assume that there is a temperature variation within the target or assume that the target is “thin” and can be modeled using only one temperature. If the target is assumed to be thin then the ODE option should be used set since this is how the equations are solved. If the target is assumed to be thick then the PDE option should set. Finally, if one of the two transient options are set (ODE or PDE), the numerical solution can be solved using an explicit or an implicit method.  Typically, the implicit method will work in all cases.  The explicit method is recommended only when the implicit method fails to come to a solution.
@@ -992,27 +1003,22 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 
 \subsection{Modeling a Compartment as a Tall Shaft or Long Corridor}
 
-For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire. This is used in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, and compartments far from the fire.
+For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire or in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, or compartments far from the fire.
 
-For long hallways or corridors, there can be a significant delay time for the initial hot gas layer to travel along the ceiling to the far end of the compartment. By estimating the time required for a ceiling jet to travel in a corridor and the temperature distribution along the corridor, CFAST can delay flow into compartments connected to corridors until the ceiling jet has passed the connections to these compartments.
+By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinkler, and targets near the ceiling in corridors.
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=4.5in]{FIGURES/Input_File/Corridor_Flow}
+\includegraphics[width=4.25in]{FIGURES/Input_File/Corridor_Flow}
 \end{center}
 \end{figure}
 
-\textbf{50 \% Decay Velocity} (default units: m/s, default value: calculated by software): ceiling jet velocity at the distance from the reference point where the temperature falls off by 50 \%. Default velocity and depth are calculated by the program based on the vent size, flow and layer thickness in the horizontal vent from which flow first enters the hallway, and on the width of the hallway1.
+\textbf{Normal (Two-zone model)}: Conditions in the compartment are calculated with the normal two-zone approach.
 
-\textbf{50 \% Decay Depth} (default units: m, default value: calculated by software): ceiling jet depth at the distance from the reference point where the temperature falls off by 50 \%.
+\textbf{Shaft (Single-zone model}: Conditions in the compartment are calculated as single well-mixed zone.
 
-\textbf{50 \% Decay Distance} (default units: m, default value: calculated by software): distance from the reference point where the temperature falls off by 50 \%.
+\textbf{Corridor (Revised ceiling jet}: Conditions in the compartment are calculated with the normal two-zone approach. Ceiling jet temperatures in the compartment are calculated with a revised empirical correlation specific to corridors.
 
-\begin{itemize}
-\item  Since the algorithm depends on the flow into the hallway to determine default ceiling jet velocity and depth, the main fire compartment should not be specified as a hallway. In the main fire compartment, a stable layer will build before flow into the compartment through horizontal vents.
-\item The zone model concept best applies for an enclosure in which the width and length are not too different.  If the horizontal dimensions of the room differ too much (i.e., the room looks like a corridor), the flow pattern in the room may become asymmetrical. If the enclosure is too shallow, the temperature may have significant radial differences. The width of the plume may at some height become equal to the width of the room and the model assumptions may fail in a tall and narrow enclosure. Therefore, the user should recognize approximate limits on the ratio of the length (L), width (W), and height (H) of the compartment.
-\item If the aspect ratio (the maximum of length/width or width/length) is greater than about 5, the corridor flow algorithm can be used to provide the appropriate filling time. By contrast, a single zone approximation is more appropriate for tall shafts (elevators and stairways).  This is due to interaction of the plume, lower layer, and shaft walls that leads to complete mixing.  This is the inverse of the corridor problem, and occurs at an aspect ratio (the maximum of height/width or height/length) of about 5. Recommended guidance is as follows:  If the width to length aspect ratio (the maximum of length/width or width/length) is greater than 5, use of the corridor flow algorithm is appropriate. If the width to length aspect ratio is greater than 3 but less than 5, the corridor flow algorithm may or may not be appropriate; consider the results from a simulation with and without the algorithm to assess its appropriateness. If the room is not a corridor and the height aspect ratio (the maximum height/width or height/length) is greater than 5, the single zone approximation is appropriate.
-\end{itemize}
 
 \subsection{Defining Compartment Area}
 
@@ -1028,7 +1034,7 @@ ROOMH,1,6,0,1.799,1.8,2.199,2.2,2.399
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=4.5in]{FIGURES/Input_File/Variable_Area}
+\includegraphics[width=4.25in]{FIGURES/Input_File/Variable_Area}
 \end{center}
 \end{figure}
 

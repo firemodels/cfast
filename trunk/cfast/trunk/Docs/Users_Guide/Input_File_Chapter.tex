@@ -248,6 +248,7 @@ COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 \end{center}
 \end{figure}
 
+\label{Compartment_Inputs}
 \textbf{Width:} specifies the width of the compartment as measured on the X axis from the origin (0,0,0) of the compartment.
 
 \textbf{Depth:} specifies the depth of the compartment as measured on the Y axis from the origin (0,0,0) of the compartment.
@@ -1041,6 +1042,16 @@ ROOMH,1,6,0,1.799,1.8,2.199,2.2,2.399
 \textbf{Height Value(s)} (default units: m, default values: none): Values of height for the corresponding cross-sectional area values measured from the floor of the compartment. The values for the compartment correspond to cross-sectional area values included for the same compartment on the ROOMA command.
 
 \textbf{Area Value(s)} (default units m$^2$, default values: none): Values of cross-sectional area of the compartment as a function of height measured from the floor of the compartment. The values for the compartment correspond to height values included for the same compartment on the ROOMH command.
+
+\begin{itemize}
+\item Cross-sectional area values may vary larger or smaller with height as appropriate. 
+\item Overall compartment size (input with the COMPA command (see page \pageref{Compartment_Inputs}) must define a volume at least as large as the total volume of the compartment. Typically, the COMPA input can correspond to the largest area in the list of cross-sectional area values. 
+\item Once the total compartment volume is determined from the set of cross-sectional area and height inputs, an effective width and depth are calculated (maintaining the original user input for compartment height) so the compartment volume matches to actual total volume of the compartment. The aspect ratio (width/depth)is maintained.
+\item Cross-sectional area values should be input in order by ascending height. If the first height value is not zero (i.e., at floor level), the cross-sectional area is assumed constant from the floor to the height specified in the first cross-sectional area value. 
+\item Similarly, if the last height value is not at the ceiling height, the cross-sectional area is assumed constant from the height specified in the last cross-sectional area value to the ceiling.
+\item Between any two adjacent cross-sectional area data values in the input list, the area is assumed to be a pyramidal section (which by definition maintains the same width to depth aspect ratio for the compartment from floor to ceiling).
+\item CFAST uses the variable cross-sectional area inputs to determine the layer height. The equations solved by CFAST determines the volume of the upper layer. For a normal rectangular room, this corresponds directly to a layer height. For a variable cross-sectional area compartment, a simple numerical integration of the area inputs beginning at the ceiling is used to determine the height at which the upper layer occupies the calculation volume of the upper layer.
+\end{itemize}
 
 \subsection{Surface Connections}
 

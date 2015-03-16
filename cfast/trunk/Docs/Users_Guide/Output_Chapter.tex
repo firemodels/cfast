@@ -4,32 +4,28 @@ The output of CFAST are the sensible variables that are needed for assessing the
 
 \section{Compact Output}
 
-The default output to the console is called the compact form, and shows the basic information about a scenario, including layer temperatures and the size of fires. Default text output provides a simple overview for the user to make sure the case runs as expected.  
+The default output to the console is called the compact form, and shows the basic information about a scenario, including layer temperatures and the size of fires. Default text output provides a simple overview for the user to make sure the case runs as expected.
 
 The compact output for each compartment is listed across the screen and the compartments are listed down the screen starting with compartment one and ending with the outside.  The example below shows the initial and final conditions for a calculation:
 
 \begin{lstlisting}[basicstyle=\tiny]
-Time =      0.0 seconds.
+ Time =      0.0 seconds.
 
-Compartment   Upper     Lower     Inter.     Pyrol     Fire
-              Temp.     Temp.     Height     Rate      Size        
-               (C)       (C)       (m)       (kg/s)    (W)
------------------------------------------------------------------
-   1           26.9      26.9     2.3       1.400E-03 2.530E+04
-   2           26.0      26.9     2.3       0.000     0.000    
- Outside                                              0.000    
+ Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure  Ambient
+               Temp.   Temp.   Height  Rate      Size                Target
+               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)
+ -----------------------------------------------------------------------------
+    1           20.0    20.0    4.6      0.00      0.00      0.00      0.00
+  Outside                                          0.00
 
+ Time =   1800.0 seconds.
 
-
-Time =    200.0 seconds.
-
-Compartment   Upper     Lower     Inter.     Pyrol     Fire
-              Temp.     Temp.     Height     Rate      Size        
-               (C)       (C)       (m)       (kg/s)    (W)
------------------------------------------------------------------
-   1          978.9     475.1    0.63       0.278     4.831+06
-   2          555.5      53.3     1.0       0.000     0.000    
- Outside                                              1.609E+03
+ Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure  Ambient
+               Temp.   Temp.   Height  Rate      Size                Target
+               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)
+ -----------------------------------------------------------------------------
+    1          113.4    33.3    1.4     1.393E-02 3.000E+05-0.790      523.
+  Outside                                         0.00
 \end{lstlisting}
 
 The first column contains the compartment number.  On each row with its compartment number from left to right is the upper layer temperature, lower layer temperature, the height of the interface between the two layers, the total pyrolysis rate, and finally the total fire size.  The only value given for the outside is the total heat release rate of fires venting to the outside.
@@ -38,38 +34,35 @@ The first column contains the compartment number.  On each row with its compartm
 
 The following sections describe each of the outputs from the model.  Each section refers to a specific part of the print out and appears in the order the output appears. A description of each option follows.
 
-\subsection{Output for Initialization} 
+\subsection{Output for Initialization}
 
 This option prints the initial conditions to the output before the actual run starts.  This merely mimics the inputs specified by the user in the input data file  The initial conditions brake down into seven sections.  Each is described below with the section name. The following explanation uses the output from the case STANDARD.IN. STANDARD.IN is included in the distribution. Please note, there are no mechanical ventilation, horizontal vents or detectors in this example, so the section discussing these phenomena are from additional data files.
 
 \textbf{Overview}: The overview gives a general description of the case.  The output is fairly self explanatory. ``Doors, ...'' is the total number of horizontal natural flow vent connections in all compartments of the simulation.  ``Ceil. Vents, ...'' gives the total number of vertical natural flow vent connections in all compartments of the simulation.  The last header on the line ``MV Connections'' has the total number mechanical flow connections to all compartments in the simulation. Times in these outputs come from the TIMES input. All times are in s.
 
 \begin{lstlisting}[basicstyle=\tiny]
-OVERVIEW
+ OVERVIEW
 
 
-Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
+ Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
+    1               1             0                    0
 
-   1               1             0                    0
-
-Simulation     Output         Smokeview      Spreadsheet
-Time           Interval       Interval       Interval
-(s)            (s)            (s)            (s)
-  1800         120             10             30
-
-Ceiling jet is on for all      
+ Simulation     Output         Smokeview      Spreadsheet
+ Time           Interval       Interval       Interval
+ (s)            (s)            (s)            (s)
+   1800         120             10             30
 \end{lstlisting}
 
 \textbf{Ambient Conditions}: This section, like the overview section, needs little elaboration.  It gives the starting atmospheric conditions for the simulation both for outside and inside the structure. Data for these outputs come from the TAMB and EAMB inputs. Temperatures are in K, pressure in Pa, elevations in m, and wind speed in m/s. Wind Power is the dimensionless power law coefficient from the WIND input.
 
 \begin{lstlisting}[basicstyle=\tiny]
-AMBIENT CONDITIONS
+ AMBIENT CONDITIONS
 
-Interior       Interior       Exterior       Exterior       Wind           Wind           Wind           
-Temperature    Pressure       Temperature    Pressure       Speed          Ref. Height    Power
-  (C)            (Pa)           (C)            (Pa)          (m/s)          (m)
+ Interior       Interior       Exterior       Exterior
+ Temperature    Pressure       Temperature    Pressure
+   (C)            (Pa)           (C)            (Pa)
 
-    20.          101300.          20.          101300.          0.0           10.0           0.16
+     20.          101300.          20.          101300)
 \end{lstlisting}
 
 \textbf{Compartments}: The compartments section gives a summary of the geometry for the simulation.  A simple table summarizes the geometry with compartments running down the page in numerical order.  The various dimensions for each compartment are on the row with its compartment number.  Two columns need explanation.  The second to last column ``Ceiling Height'' gives the height of the ceiling relative to the station height in the Ambient Conditions section.  Similarly the ``Floor Height'' refers to the height of the floor above the station height.
@@ -77,17 +70,17 @@ Temperature    Pressure       Temperature    Pressure       Speed          Ref. 
 \begin{lstlisting}[basicstyle=\tiny]
 COMPARTMENTS
 
-Compartment  Name                Width        Depth        Height       Ceiling      Floor     
-                                                                        Height       Height    
+Compartment  Name                Width        Depth        Height       Ceiling      Floor
+                                                                        Height       Height
                                  (m)          (m)          (m)          (m)          (m)
 ------------------------------------------------------------------------------------------------
     1        Compartment 1        9.10         5.00         4.60         4.60         0.00
 \end{lstlisting}
 
 \begin{itemize}
-\item Values for width, depth, height, and floor height come directly from the COMPA specifications in the input data file. 
-\item Area is calculated as width x depth in m$^2$. 
-\item Volume is calculated as width x depth x height in m3. 
+\item Values for width, depth, height, and floor height come directly from the COMPA specifications in the input data file.
+\item Area is calculated as width x depth in m$^2$.
+\item Volume is calculated as width x depth x height in m3.
 \item Ceiling height is the absolute elevation of the ceiling of the compartment and is just station elevation (from the ambient conditions section) in m plus the compartment height in m.
 \end{itemize}
 
@@ -100,9 +93,9 @@ VENT CONNECTIONS
 
 Horizontal Natural Flow Connections (Doors, Windows, ...)
 
-From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      
+From           To             Vent       Width       Sill        Soffit      Abs.        Abs.
 Compartment    Compartment    Number                 Height      Height      Sill        Soffit
-                                         (m)         (m)         (m)         (m)         (m)         
+                                         (m)         (m)         (m)         (m)         (m)
 ----------------------------------------------------------------------------------------------------
 Compartment 1   Outside        1          1.00        0.00        2.40        0.00        2.40
 \end{lstlisting}
@@ -119,11 +112,11 @@ Vertical Natural Flow Connections (Ceiling, ...)
 
 Top            Bottom         Shape     Area      Relative  Absolute
 Compartment    Compartment                        Height    Height
-                                        (m^2)     (m)       (m)       
+                                        (m^2)     (m)       (m)
 ----------------------------------------------------------------------
  Outside           1          Round      1.00      4.60      4.60
  \end{lstlisting}
- 
+
 \begin{itemize}
 \item Top compartment, bottom compartment, shape, and area come from the VVENT specifications in the input data file.
 \item Relative height is the height of the vent above the floor of the bottom compartment and absolute height is the height of the vent above the station elevation.
@@ -132,7 +125,7 @@ Compartment    Compartment                        Height    Height
 \textbf{Mechanical Flow Connections} lists all connections to compartments and fans that connect between compartments. The first five columns in the fan table appear almost the same as the connections and ducts table.  The table lists, in order, the number of the system the fan is a part, the ``from'' node and its height, the ``to'' node and its height.  A fan actually draws air from the first or ``from'' node and pushes it to the second or ``to'' node.  In the second table, the headers give the direction of the flow of air.  The sixth column is the fan number as defined in CEdit.  The next two columns are the minimum and maximum pressures at which the fan curve is defined.  The rest of the row is made up of the two to five fan curve coefficients in the input file.
 
 \begin{lstlisting}[basicstyle=\tiny]
-Fans
+FANS
 
 System    From           From      To             To        Fan       Minimum   Maximum    Fan Curve
                          Elev.                    Elev.     Number
@@ -146,21 +139,21 @@ System    From           From      To             To        Fan       Minimum   
 \textbf{Thermal Properties} The thermal properties section brakes into two parts.  The first part is a table that lists the material for each surface of each compartment.  The compartments appear as rows down the page in numerical order.  From left to right next to the compartment number comes the material for the ceiling, wall and floor.  The second part lists the entries in the thermal data base.  The first line gives the database file used.  Next comes a listing of each material used. In addition to materials for compartment surfaces, any materials specified for targets are also listed.  For each listing of a material, the name is followed by the conductivity, specific heat, density, thickness and emissivity.  Additionally, the HCl constants used to calculate the HCl deposition for the surface are displayed.
 
 \begin{lstlisting}[basicstyle=\tiny]
-THERMAL PROPERTIES
+ THERMAL PROPERTIES
 
-Compartment    Ceiling      Wall         Floor
-----------------------------------------------------------------------
-Compartment 1  GLASSFB3     CONCRETE     CONCRETE
+ Compartment    Ceiling      Wall         Floor
+ ----------------------------------------------------------------------
+ Compartment 1  GLASSFB3     CONCRETE     CONCRETE
 
 
-Thermal data base used: thermal             
+ Thermal data base used: thermal
 
-Name    Conductivity Specific heat     Density     Thickness   Emissivity                HCL B's (1->5)
-CONCRETE     1.75        1.000E+03    2.200E+03    0.150        0.940      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
-GLASSFB3    3.600E-02     795.         105.        1.300E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
-METHANE     7.000E-02    1.090E+03     930.        1.270E-02    4.000E-02  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
-HARDWOOD    0.160        1.255E+03     720.        1.900E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
-DEFAULT     0.120         900.         800.        1.200E-02    0.900      0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ Name    Conductivity Specific heat     Density     Thickness   Emissivity
+ CONCRETE     1.75        1.000E+03    2.200E+03    0.150        0.940
+ GLASSFB3    3.600E-02     795.         105.        1.300E-02    0.900
+ METHANE     7.000E-02    1.090E+03     930.        1.270E-02    4.000E-02
+ HARDWOOD    0.160        1.255E+03     720.        1.900E-02    0.900
+ DEFAULT     0.120         900.         800.        1.200E-02    0.900
 \end{lstlisting}
 
 \begin{itemize}
@@ -177,7 +170,7 @@ TARGETS
 Target Compartment    Position (x, y, z)         Direction (x, y, z)      Material
 ----------------------------------------------------------------------------------
     1    Compartmen   2.20     1.88     2.34     0.00     0.00     1.00   CONCRETE
-    2    Compartmen   4.55     2.50     0.00     0.00     0.00     1.00   METHANE 
+    2    Compartmen   4.55     2.50     0.00     0.00     0.00     1.00   METHANE
     3    Compartmen   4.55     2.50     0.00     0.00     0.00     1.00   HARDWOOD
     4    Compartmen   4.55     2.50     0.00     0.00     0.00     1.00   CONCRETE
 \end{lstlisting}
@@ -251,28 +244,28 @@ Chemical formula of the fuel
 An expanded version of the compact default output called the normal print out can be obtained using the /f option.  When requested, the normal print out is the first information printed at each interval.  The first part of the print out looks similar to the default print out.  It is laid out along the same lines, with the calculated values for each compartment listed left to right and compartments listed down.  The left most column has the compartment.  The next three columns also give the same values as the default output.  They are upper layer temperature, lower layer temperature and interface height.  The output changes at this point. The fifth column gives the upper layer volume.  In the sixth, in parenthesis, is the percent of the total compartment volume the upper layer takes up.  The pressure difference from ambient follows in the seventh column.  The rest of the columns are the temperature of the bounding surfaces in Celsius.
 
 \begin{lstlisting}[basicstyle=\tiny]
-Time =   1800.0 seconds.
+ Time =   1800.0 seconds.
 
-Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
-              Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
-               (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
------------------------------------------------------------------------------------------------------------------
-Compartment 1  117.2      29.40      1.386      1.46E+02( 70%)  0.500      1.000E-02 -0.672       526.       303.
+ Compartment   Upper     Lower     Inter.    Upper           Upper      Lower     Pressure    Ambient    Floor
+               Temp.     Temp.     Height    Vol.            Absorb     Absorb                Target     Target
+                (C)      (C)       (m)       (m^3)           (m^-1)     (m^-1)      (Pa)      (W/m^2)    (W/m^2)
+ -----------------------------------------------------------------------------------------------------------------
+ Compartment 1  113.4    33.30     1.410     1.45E+02( 69%)  0.124      8.817E-02  -0.790       523.       360.   
 \end{lstlisting}
 
 The second table of the normal print out has information about the fires.  In essence it is two tables joined.  The first part lists information by fire.  It starts with the main fire, if there is one, and then the object fires down the page.  The fires are listed in the second column followed by the plume flow rate, the pyrolysis rate and the fire size.  The next three columns are then skipped.  The next column with information is the amount of heat given off by each fire convectively, followed by the amount of heat given off radiantly.  The second part starts after all the fires have been individually listed.  It gives the totals for all fires in each compartment.  The first column has the compartment number.  The compartments start at one and are listed down the page in order.  The third to fifth columns are the same as the first part except the values are totals for the compartment and not just for one fire.  The sixth column has the total heat release rate that occurs in the upper layer.  The next column has the same total in the lower layer.  The eighth column has the total size of vent fires in the compartment.  Two columns of the table gives the convective and radiative parts of the fire heat release. The last two columns give the total mass pyrolized and the amount of trace species produced.
 
 \begin{lstlisting}[basicstyle=\tiny]
-Fires
+ FIRES
 
-Compartment   Fire     Plume     Pyrol     Fire     Flame     Fire in   Fire in   Vent      Convec.   Radiat.   Pyrolysate  Trace
-                       Flow      Rate      Size     Height    Upper     Lower     Fire
-                       (kg/s)    (kg/s)    (W)      (m)       (W)       (W)       (W)         (W)       (W)      (kg)       (kg)
----------------------------------------------------------------------------------------------------------------------------------------
-                bunsen  0.567    1.500E-03 7.498E+04 0.957                                   5.024E+04 2.474E+04  3.13        0.00    
-              Wood_Wal  0.466    1.243E-02 2.248E+05 0.384                                   1.506E+05 7.419E+04  11.2        0.00    
+ Compartment   Fire      Plume    Pyrol     Fire      Flame    Fire in  Fire in   Vent    Convec.   Radiat.   Pyrolysate  Trace
+                         Flow     Rate      Size      Height   Upper    Lower     Fire
+                         (kg/s)   (kg/s)    (W)       (m)      (W)      (W)       (W)       (W)       (W)       (kg)      (kg)
+ -------------------------------------------------------------------------------------------------------------------------------
+                burner   0.585    1.500E-03 7.500E+04 0.807                               5.025E+04 2.475E+04  3.13        0.00
+              wood_wal   0.437    1.243E-02 2.250E+05 0.397                               1.507E+05 7.425E+04  11.2        0.00
 
-Compartment 1            1.03    1.393E-02 2.998E+05          0.00     2.998E+05  0.00
+ Compartment 1            1.02    1.393E-02 3.000E+05           0.00    3.000E+05  0.00    
 \end{lstlisting}
 
 \begin{itemize}
@@ -284,21 +277,21 @@ Compartment 1            1.03    1.393E-02 2.998E+05          0.00     2.998E+05
 The /f option provides two tables displaying information about wall surface or target temperatures and fluxes, and heat detectors or sprinklers. The left most column specifies the compart¬ment number; followed by four columns providing the temperatures of the bounding surfaces of the compartment in contact with the ceiling, upper wall surface (in contact with the upper layer gases), lower wall surface (in contact with the lower layer gases), and floor, in that order. Next comes information about targets in the compartment, with each target listed on a separate line.  Information in the columns includes the surface temperature of the target, net heat flux to the target, and the percentage of that net flux that is due to radiation from the fire, radiation from compartment surfaces, radiation from the gas layers, and convection from the gas surrounding the target.  CFAST includes one target in the center of the floor for all compartments. Information on additional targets specified by the user in the input data file are also included, in the order specified in the input file.
 
 \begin{lstlisting}[basicstyle=\tiny]
-Surfaces and Targets
+SURFACES AND TARGETS
 
 
 Compartment  Ceiling Up wall Low wall Floor Target Gas   Surface Center Flux To Fire      Surface Gas
              Temp.   Temp.   Temp.    Temp.        Temp. Temp.   Temp.  Target  Rad.      Rad.    Rad.    Convect.
-             (C)     (C)     (C)      (C)          (C)   (C)     (C)    (W/m^2) (W/m^2)   (W/m^2) (W/m^2) (W/m^2)      
+             (C)     (C)     (C)      (C)          (C)   (C)     (C)    (W/m^2) (W/m^2)   (W/m^2) (W/m^2) (W/m^2)
 ------------------------------------------------------------------------------------------------------------------
-Compartment 1 23.0    22.5    21.6     22.6  Floor       22.6            17.8   2.817E-02  13.3    1.25    3.23    
-                                             1     23.7  21.7    20.9    23.2   0.00       12.0    1.54    9.67    
-                                             2     21.2  21.7    21.7    16.6   1.341E-04  12.0    1.46    3.23    
-                                             3     21.2  25.0    25.0    16.6   1.341E-04  12.0    1.46    3.23    
+Compartment 1 23.0    22.5    21.6     22.6  Floor       22.6            17.8   2.817E-02  13.3    1.25    3.23
+                                             1     23.7  21.7    20.9    23.2   0.00       12.0    1.54    9.67
+                                             2     21.2  21.7    21.7    16.6   1.341E-04  12.0    1.46    3.23
+                                             3     21.2  25.0    25.0    16.6   1.341E-04  12.0    1.46    3.23
 \end{lstlisting}
 \newpage
 \begin{lstlisting}[basicstyle=\tiny]
-Sensors
+SENSORS
 
                              Sensor                           Smoke
 Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (m/s)
@@ -317,7 +310,7 @@ Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (m/s)
 The /f option has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume fractions for the upper layers of all the compart¬ments and the second reports the same for the lower layers of all the compartments.  Again the compart¬ments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked.  However, several are not obvious.  ``TUHC'' is the total unburned hydrocar¬bons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the obscuration density, which is a measure of the amount of smoke.  The last four columns, ``HCl c'', ``HCl f'', ``HCl uw'' and ``HCl lw'', are the amount of HCl deposi¬tion on the ceiling, floor, upper wall and lower wall respectively. ``TS'' is trace species.
 
 \begin{lstlisting}[basicstyle=\tiny]
-Upper Layer Species
+UPPER LAYER SPECIES
 
 compartment   N2    O2     CO2       CO    HCN   HCL   TUHC H2O   OD        CT         TS    HCl c    HCl f    HCl uw   HCl lw
               (%)   (%)    (%)       (ppm) (ppm) (ppm) (%)  (%)   (1/m)     (g-min/m3) kg    (mg/m^2) (mg/m^2) (mg/m^2) (mg/m^2)
@@ -325,7 +318,7 @@ compartment   N2    O2     CO2       CO    HCN   HCL   TUHC H2O   OD        CT  
 Compartment 1 79.2  20.5  9.055E-02  2.98  0.00  0.00  0.00 0.180 1.086E-02 51.8       0.00  0.00     0.00     0.00     0.00
 
 
-Lower Layer Species
+LOWER LAYER SPECIES
 
 compartment   N2    O2    CO2        CO     HCN   HCL   TUHC H2O   OD        CT         TS   HCl c     HCl f     HCl uw    HCl lw
               (%)   (%)   (%)        (ppm)  (ppm) (ppm) (%)  (%)   (1/m)     (g-min/m3) kg   (mg/m^2)  (mg/m^2)  (mg/m^2)  (mg/m^2)
@@ -339,38 +332,26 @@ Compartment 1 79.3  20.7  6.412E-03  0.211  0.00  0.00  0.00 0.029 7.750E-04 4.0
 
 \subsection{Output for Vent Flows}
 
-Information about hallway and vent flow is obtained by using this option.  It includes two sections, one with information about hallway flow specified with the HALL command, and a larger section detailing mass flow through horizontal, vertical, and mechanical vents.  For hallway flow, the output begins with the compartment specified as a hallway in the input data file, followed by the time at which gas began to flow into the hallway through the vent that connects the hallway to the main fire compartment. Following the start time are the average gas velocity, the layer depth of the initial flow down the corridor, and the distance from the end of the corridor that the hot layer is estimated to have reached.
+Information about vent flow is obtained by using this option.  It includes a section detailing mass flow through horizontal, vertical, and mechanical vents. There are two forms for the vent flow. The first is flow through the vents as mass per second. The alternative, obtained used the / T option, gives the total mass which has flowed through the vent(s) and the relative mass of trace species divided by the total mass of trace species produced up this time.
+
+The section for vent flow is titled ``FLOW THROUGH VENTS (kg/s).''  Because flow is always given in positive values, each vent is listed twice, once for flow going from compartment A to compartment B (labelled as ``Flow relative to `from''') and a second time for flow from B to A (labelled as ``Flow relative to `To'''.  As the example below shows, the first column lists the compartment.  The second column specifies the vent, including the type of vent (an ``H'' in this column stands for horizontal flow, such as through a doorway or window; a ``V'' here would mean vertical flow, such as through an opening in the ceiling, and an ``M'' stands for a mechanical ventilation connection) and the compartment from which the flow comes. Up to six additional columns detail the flow at this vent. Flow into and out of the compartment through the vent in the upper and lower layers are included, along with mixing between layers at the vent into the upper layer and into the lower layer.
 
 \begin{lstlisting}[basicstyle=\tiny]
-Hall Flow
+ FLOW THROUGH VENTS (kg/s)
 
-Compartment  Start Time     Velocity       Depth        Distance
-                (s)          (m/s)          (m)            (m)
-----------------------------------------------------------------
-    2         5.86          0.331        0.284           9.56
- \end{lstlisting}
- 
- There are two forms for the vent flow. The first is flow through the vents as mass per second. The alternative, obtained used the / T option, gives the total mass which has flowed through the vent(s) and the relative mass of trace species divided by the total mass of trace species produced up this time. 
-
-The section for vent flow is titled ``Flow Through Vents (kg/s).''  Because flow is always given in positive values, each vent is listed twice.  Once for flow going from compartment A to compartment B and a second time for flow from B to A.  As the example below shows, the first column lists the compartment.  The second column specifies the vent, including the type of vent (an ``H'' in this column stands for horizontal flow, such as through a doorway or window; a ``V'' here would mean vertical flow, such as through an opening in the ceiling, and an ``M'' stands for a mechanical ventilation connection) and the compartment from which the flow comes. Up to six additional columns detail the flow at this vent. Flow into and out of the compartment through the vent in the upper and lower layers are included, along with mixing between layers at the vent into the upper layer and into the lower layer.
-
-\begin{lstlisting}[basicstyle=\tiny]
-Flow Through Vents (kg/s)
-
-To             Through              Upper Layer               Lower Layer           Mixing       Mixing       Trace Species (kg)
-Compartment    Vent                 Inflow       Outflow      Inflow       Outflow  To Upper     To Lower     Vented     Filtered
--------------------------------------------------------------------------------------------------------------------------------------
-Compart        H Outside #1                      0.999        0.973        5.842E-02                                                      
-
-Outside        H Comp  1 #1         0.999                     0.973
+                                        Flow relative to 'From'                Flow Relative to 'To'
+                                        Upper Layer               Lower Layer  Upper Layer               Lower Layer
+ Vent From/Bottom    To/Top     Inflow  Outflow      Inflow       Outflow      Inflow       Outflow      Inflow       Outflow
+---------------------------------------------------------------------------------------------------------------------------------
+ H  1 Compartment    Outside            1.000        0.974                     1.000                                  0.974   
 \end{lstlisting}
 
 \begin{itemize}
-\item The mass balance is the sum of the flow in minus the flow out. (Note that this is an extended run to achieve results close to steady state.) For any compartment, this is just (Upper Layer Inflow + Lower Layer Inflow + Pyrol Rate) – ((Upper Layer Outflow + Lower Layer Outflow) with the inflow and outflow summed for each vent. Note that the mixing flows are ignored since they are just exchanged between layers in the same compartment. For the above example, the mass balance is:
+\item The mass balance is the sum of the flow in minus the flow out. (Note that this is an extended run to achieve results close to steady state.) For any compartment, this is just (Upper Layer Inflow + Lower Layer Inflow + Pyrol Rate) – ((Upper Layer Outflow + Lower Layer Outflow) with the inflow and outflow summed for each vent. For the above example, the mass balance is:
 
-$(0.0 + 0.973 + 0.01393 )$ kg/s $– (0.999 + 0.05842)$ kg/s$ = -0.07$ kg/s
+$(0.974 + 0.01393)$ kg/s - $(1.000) = -0.012$ kg/s
 
-where the pyrolysis rate (from the``normal'' output) is 0.01393 kg/s. The result is about the right magnitude (about 0.5 \% of the mass flow into or out of the vent) for net mass loss.  The mass loss should still be slightly negative since the compartment continues to heat.
+where the pyrolysis rate (from the``normal'' output) is 0.01393 kg/s. The result is about the right magnitude (about 1 \% of the mass flow into or out of the vent) for net mass loss.  The mass loss should still be slightly negative since the compartment continues to heat.
 \end{itemize}
 
 An alternative printout is provided by use of the ``/t'' option. This shows total (mass) flow through vents. At present this is confined to mechanical ventilation. It applies only to vents which can be filtered, in this case mechanical ventilation. The last column is obtained by summing the outflow/inflow for each vent and then dividing that sum by the total trace species produced by all fires. For details on this value, see the section on output listing for fires.
@@ -381,7 +362,7 @@ Total mass flow through vents (kg)
 To             Through              Upper Layer               Lower Layer           Trace Species
 Compartment    Vent             Inflow       Outflow      Inflow       Outflow      Relative to Total Release
 -----------------------------------------------------------------------------------------------------
-Compart        M Node  1                    63.9                      28.3          0.971                             
+Compart        M Node  1                    63.9                      28.3          0.971
 
 Compart        M Node  2                                 92.2                       0.971
 \end{lstlisting}
@@ -496,7 +477,7 @@ Second is a series of entries for each target included in the simulation.  User-
 \item \textbf{Target Gas Radiative Flux} (units: kW/m$2$):   radiative heat flux from the upper and lower gas layers to the front surface of the current target
 \end{itemize}
 
-Following the compartment and target information is the detector/sprinkler output. 
+Following the compartment and target information is the detector/sprinkler output.
 
 \begin{itemize}
 \item \textbf{Sensor Temperature} (units: \degc): temperature of the current detector / sprinkler

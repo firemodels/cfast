@@ -5,7 +5,7 @@ All key words are case sensitive and all parameters are required. There are no d
 \section{COMPA}
 
 \begin{lstlisting}
-COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIAL_NAME, WALL_MATERIAL_NAME
+COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIAL_NAME, WALL_MATERIAL_NAME, X_GRID_SPACING, Y_GRID_SPACING, Z_GRID_SPACING
 \end{lstlisting}
 
 The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands.
@@ -13,7 +13,7 @@ The compartments are numbered internally as they are read in. The other key word
 Example:
 
 \begin{lstlisting}
-COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE
+COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE,50,50,50
 \end{lstlisting}
 
 \section{DEADROOM}
@@ -475,17 +475,3 @@ Example:
 \begin{lstlisting}
 VVENT,1,2,4.0,2,0.9
 \end{lstlisting}
-
-\section{WIND}
-
-\begin{lstlisting}
-WIND, WIND_SPEED, SCALE_HEIGHT, POWER_LAW_COEFFICIENT
-\end{lstlisting}
-
-The wind speed, scale height, and power law are used to calculate the wind coefficient for each vent connected to the outside.  The wind velocity is specified at some reference height.  The power law then provides a lapse rate for the wind speed.  An assumption is that the wind speed is zero at the surface. This is the same format as in version 5. Please see the technical reference guide on the formula used in this calculation.
-
-Example:
-
-\begin{lstlisting}
-WIND,3.,10.,0.16
-\end{lstlisting} 

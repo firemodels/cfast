@@ -265,7 +265,7 @@ check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
    cd $CFAST_SVNROOT/CFAST/intel_linux_64_db
-   if [ -e "cfast6_linux_64_db" ]
+   if [ -e "cfast7_linux_64_db" ]
    then
       stage2_success=true
    else
@@ -403,7 +403,7 @@ check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
    cd $CFAST_SVNROOT/CFAST/intel_linux_64
-   if [[ -e "cfast6_linux_64" ]]
+   if [[ -e "cfast7_linux_64" ]]
    then
       stage4_success=true
    else

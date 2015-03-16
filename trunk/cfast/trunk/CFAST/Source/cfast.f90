@@ -411,6 +411,7 @@
     end do
 
     ovtime = 0.0_eb
+    tovtime = 0.0_eb
     tottime = 0.0_eb
     prttime = 0.0_eb
 

@@ -177,8 +177,10 @@
                rampptr%vent_number==vent_number) then
                 if (time<=rampptr%time(1)) then
                     fraction = rampptr%value(1)
+                    return
                 else if (time>=rampptr%time(rampptr%npoints)) then
                     fraction = rampptr%value(rampptr%npoints)
+                    return
                 else
                     do i=2,rampptr%npoints
                         if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then

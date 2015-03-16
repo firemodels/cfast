@@ -288,7 +288,7 @@
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
-    5000 format (//,' Fires',/,'0Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent',&
+    5000 format (//,' FIRES',//,' Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent',&
          '      Convec.   Radiat.   Pyrolysate  Trace',/, &
     '                          Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
     '                          (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)',&
@@ -316,7 +316,7 @@
     external length
     integer :: length, i, j, layer, ic, lsp, iw
 
-    data lnames /'Upper', 'Lower'/
+    data lnames /'UPPER', 'LOWER'/
     data iwptr /1, 3, 4, 2/
     data wtype /'HCl c', 'HCl f', 'HCl uw', 'HCl lw'/
     data sunits /'(%)', '(%)', '(%)', '(ppm)', '(ppm)', '(ppm)','(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
@@ -381,7 +381,7 @@
 5020 format (' ',a)
 5030 format (' ',255a1)
 5040 format (1pg10.3)
-5050 format (//,' ',a5,' Layer Species',/)
+5050 format (//,' ',a5,' LAYER SPECIES',/)
 5060 format (a13)
     end subroutine rsltsp
 
@@ -481,7 +481,7 @@
         end do
     endif
 
-    5000 format (//,' Flow Through Vents (kg/s)',//, &
+    5000 format (//,' FLOW THROUGH VENTS (kg/s)',//, &
     '                                        Flow relative to ''From''                             Flow Relative to ''To''',/ &
     '                                        Upper Layer               Lower Layer               Upper Layer',&
     '               Lower Layer',/, &
@@ -554,7 +554,7 @@
         endif
     end do
 
-5000 format (//,' Total mass flow through vents (kg)',//, &
+5000 format (//,' TOTAL MASS FLOW THROUGH VENTS (kg)',//, &
     ' To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
     ' Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/,' ', 104('-'))
 5010 format (' ')
@@ -701,7 +701,7 @@
         endif
     end do
     return
-    5000 format (//,' Surfaces and Targets',//, &
+    5000 format (//,' SURFACES AND TARGETS',//, &
     ' Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To',&
     '      Fire         Surface      Gas',/, &
     '                Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.',&
@@ -732,7 +732,7 @@
 
     if(ndtect==0)return
     write(iofilo,5000)
-5000 format(//' Sensors',/, &
+5000 format(//' SENSORS',/, &
     '                              Sensor                           Smoke',//, &
     ' Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
     ' ----------------------------------------------------------------------------')
@@ -825,7 +825,7 @@
     write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
 
 5000 format (//,' OVERVIEW',/)
-5010 FORMAT (/,' Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,'0',i4,12x,i4,10x,i4,17x,i4)
+5010 FORMAT (/,' Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,/,' ',i4,12x,i4,10x,i4,17x,i4)
 5020 format (/,' Simulation     Output         Smokeview      Spreadsheet',/, &
              ' Time           Interval       Interval       Interval',/, & 
              ' (s)            (s)            (s)            (s)',/,' ',i6,6x,3(i6,9x))
@@ -1008,7 +1008,7 @@
 5060 formaT (//,' There are no mechanical flow connections')
 5100 format (' ',i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
 5110 format (' ',10x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
-     5120 format (//,' Fans',//,' System    From           From      To             To        Fan',&
+     5120 format (//,' FANS',//,' System    From           From      To             To        Fan',&
           '       Minimum   Maximum    Fan Curve',/, &
     ' ','                         Elev.                    Elev.','     Number',/,' ',25x, &
     '(m)                      (m)             ','    (Pa)      (Pa)',/,' ',100('-'))
@@ -1086,7 +1086,7 @@
     return
 
 5000 format (//,' Heat transfer for all surfaces is turned off')
-5010 format (//,' Thermal Properties',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
+5010 format (//,' THERMAL PROPERTIES',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
 5020 format (' ',a13,3(a10,3x))
 5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,&
           'Density',5X,'Thickness',3X,'Emissivity')

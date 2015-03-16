@@ -417,7 +417,7 @@
     real(eb), intent(in) :: time
     
     real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, tsec, qcvfraction, flow(4), &
-        sumin, sumout, slabs
+        sumin, sumout, slabs, vvfraction
     logical :: firstc
     integer :: position
     integer :: toprm, botrm, i, j, itarg, izzvol, iroom1, iroom2, ik, im, ix
@@ -493,7 +493,9 @@
     do i = 1, n_vvents
         itop = ivvent(i,toprm)
         ibot = ivvent(i,botrm)
-        avent = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
+        call getventfraction ('V',itop,ibot,1,i,time,vvfraction)
+        avent = vvfraction * vvarea(itop,ibot)
+        !avent = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
         call SSaddtolist (position,avent,outarray)
         flow = 0
         if (vmflo(itop,ibot,upper)>=0.0_eb) flow(1) = vmflo(itop,ibot,upper)

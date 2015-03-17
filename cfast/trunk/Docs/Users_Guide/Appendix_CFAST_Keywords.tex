@@ -64,7 +64,7 @@ DJIGN,488
 DTCHE, MINIMUM_TIME, COUNT
 \end{lstlisting}
 
-The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as a stalling condition, when it is simply the set of equations has reached a point that requires a very small increment in time for the solver to converge. A negative entry on DTCHECK turns off the time step checking algorithm.
+The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as a stalling condition, when it is simply the set of equations has reached a point that requires a very small increment in time for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm.
 
 Example:
 
@@ -91,7 +91,7 @@ TAMB,300,101300,0,5
 \section{EVENT}
 
 \begin{lstlisting}
-EVENT, TYPE, FIRST_COMPARTMENT, SECOND_COMPARTMEN,T VENT_NUMBER, TIME, FINAL_FRACTION
+EVENT, TYPE, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, TIME, FINAL_FRACTION
 \end{lstlisting}
 
 Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.  Final\_Fraction is the percent of the full opening width expressed as a fraction for vents and fraction of trace species and soot removed for filters.
@@ -123,7 +123,7 @@ The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filt
 FIRE, COMPARTMENT, X_POSITION, Y_POSITION, Z_POSITION, IGNITION_TYPE, IGNITION_CRITERION, X_NORMAL_VECTOR, Y_NORMAL_VECTOR, Z_NORMAL_VECTOR, NAME
 \end{lstlisting}
 
-This key word places a fire  into a compartment. The asociated keywords CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH completely specifiy the fire for the current simulation.
+This key word places a fire  into a compartment. The associated keywords CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH completely specify the fire for the current simulation.
 
 Example:
 
@@ -146,7 +146,7 @@ HEIGH,0,0,0,0,0,0,0,0,0,0,0
 CHEMI, FORMULA_C, FORMULA_H, FORMULA_O, FORMULA_N, FORMULA_Cl,  RADIATIVE_FRACTION, HEAT_OF_COMBUSTION, MATERIAL_ID
 \end{lstlisting}
 
-The CHEMI input defines the chemical formula of the burning material (FORMULA\_C, \_H, \_O, \_N, and \_Cl), its heat of combustion, and fractoin of its head given off by radiation. The last input defines the thermal properties of the material for heat transfer to the material prior to its ignition.
+The CHEMI input defines the chemical formula of the burning material (FORMULA\_C, \_H, \_O, \_N, and \_Cl), its heat of combustion, and fraction of its head given off by radiation. The last input defines the thermal properties of the material for heat transfer to the material prior to its ignition.
 
 \subsection{TIME}
 
@@ -196,7 +196,7 @@ The HEIGH input defines a series of height values which correspond to entries on
 GLOBA, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
 \end{lstlisting}
 
-This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the ignition temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
+This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the ignition temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_7}.
 
 This two-entry key word replaces LIMO2 and DJIGN.
 
@@ -295,7 +295,7 @@ The first example specifies a 300 \degc temperature isosurface in compartments 1
 LIMO2, LOWER_OXYGEN_INDEX
 \end{lstlisting}
 
-This parameter is global and applies to all fires. The single entry sets the lower oxygen limit for combustion.  Please read the technical reference manual for the meaning and implication of modifying these parameters \cite{CFAST_Tech_Guide_6}.
+This parameter is global and applies to all fires. The single entry sets the lower oxygen limit for combustion.  Please read the technical reference manual for the meaning and implication of modifying these parameters \cite{CFAST_Tech_Guide_7}.
 
 This entry is superceded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
 
@@ -474,4 +474,4 @@ Example:
 
 \begin{lstlisting}
 VVENT,1,2,4.0,2,0.9
-\end{lstlisting}
+\end{lstlisting} 

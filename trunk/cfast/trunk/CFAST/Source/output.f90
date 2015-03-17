@@ -26,11 +26,11 @@
     write (iofilo,1) name, majver,minver,aminrev, obuf
     return
 
-1   format (' **   ',A8,'  Version',3X,2(I1,'.'),A2,2X,A14,4X,'**',/, ' ** ',46X,' **',/, &
-    ' **             A contribution of the              **',/, &
-    ' ** National Institute of Standards and Technology **',/, &
-    ' **             Gaithersburg, MD  20899            **',/, &
-    ' **             Not subject to Copyright           **',/)
+1   format ('**   ',A8,'  Version',3X,2(I1,'.'),A2,2X,A14,4X,'**',/, '** ',46X,' **',/, &
+    '**             A contribution of the              **',/, &
+    '** National Institute of Standards and Technology **',/, &
+    '**             Gaithersburg, MD  20899            **',/, &
+    '**             Not subject to Copyright           **',/)
 2   format('Run ',I4.4,'/',I2.2,'/',I2.2)
 
     end subroutine output_disclamer
@@ -212,23 +212,22 @@
         izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
         if (izshaft(i)==1) then
             write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zzvol(i,upper), &
-            zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+            zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i)
         else
             write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zztemp(i,lower)-kelvin_c_offset, &
             zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), &
-               zzrelp(i)-interior_rel_pressure(i),ontarget(i), xxtarg(trgnfluxf,itarg)
+               zzrelp(i)-interior_rel_pressure(i)
         endif
     end do
     return
 
 5000 format (' ')
-5010 format (' Compartment',T16,'Upper',T26,'Lower',T36,'Inter.',T46,'Upper',T62,'Upper',T73,'Lower',&
-          T83,'Pressure',T95,'Ambient',T106,'Floor')
-5020 format (T16,'Temp.',T26,'Temp.',T36,'Height',T46,'Vol.',T62,'Absorb',T73,'Absorb',T95,'Target',T106,'Target')
-5030 FORMAT (T17,'(C)',T26,'(C)',T36,'(m)',T46,'(m^3)',T62,'(m^-1)',T73,'(m^-1)',T85,'(Pa)',T95,'(W/m^2)',T106,'(W/m^2)')
-5040 format (' ',113('-'))
-5070 format (1x,a13,3(1PG11.4),1X,1pg9.2,'(',I3,'%) ',1PG10.3,1X,1PG10.3,1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
-5071 format (1x,A13,1PG11.4,11(' '),11(' '),1X,1pg9.2,7(' '),1PG10.3,1X,10(' '),1x,1PG10.3,1X,1PG10.3,1X,1PG10.3)
+5010 format ('Compartment    Upper     Lower      Inter.      Upper           Upper      Lower       Pressure')
+5020 format ('               Temp.     Temp       Height      Vol             Absor      Absorb')
+5030 FORMAT ('               (C)       (C)        (m)         (m^3)           (m^-1)     (m^-1)      (Pa)')
+5040 format (100('-'))
+5070 format (a13,3(1pg11.4),1x,1pg9.2,'(',i3,'%) ',1pg10.3,1x,1pg10.3,3x,1pg10.3)
+5071 format (a13,1pg11.4,11(' '),11(' '),1x,1pg9.2,7(' '),1pg10.3,1x,10(' '),3x,1pg10.3)
     end subroutine rsltlay
 
 ! --------------------------- rsltfir -------------------------------------------
@@ -288,15 +287,16 @@
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
-    5000 format (//,' FIRES',//,' Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent',&
-         '      Convec.   Radiat.   Pyrolysate  Trace',/, &
-    '                          Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
-    '                          (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)',&
-    '         (W)       (W)       (kg)      (kg)' ,/,' ',138('-'))
-5010 format (' ',14x,a8,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
-5020 format (' ',13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
-5030 format (' ',a14,10x,3(1pg10.3),10x,3(1pg10.3))
-5040 format ('  Outside',76x,1pg10.3)
+    5000 format (//,'FIRES',//,&
+         'Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
+         'Convec.   Radiat.    Pyrolysate  Trace',/, &
+         '                         Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
+         '                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)       ', &
+         '(W)       (W)        (kg)        (kg)' ,/,' ',138('-'))
+5010 format (14x,a8,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
+5020 format (13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
+5030 format (a14,10x,3(1pg10.3),10x,3(1pg10.3))
+5040 format ('Outside',76x,1pg10.3)
     end subroutine rsltfir
 
 ! --------------------------- rsltsp -------------------------------------------
@@ -318,7 +318,6 @@
 
     data lnames /'UPPER', 'LOWER'/
     data iwptr /1, 3, 4, 2/
-    data wtype /'HCl c', 'HCl f', 'HCl uw', 'HCl lw'/
     data sunits /'(%)', '(%)', '(%)', '(ppm)', '(ppm)', '(ppm)','(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
     data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/
     if (nlspct/=0) then
@@ -341,15 +340,6 @@
                     ic = ic + 11
                 endif
             end do
-            if (activs(6)) then
-                do iw = 1, 4
-                    if (swl(iwptr(iw))) then
-                        write (ciout(ic:ic+9),5000) wtype(iw)
-                        write (cjout(ic:ic+9),5000) '(mg/m^2)  '
-                        ic = ic + 10
-                    endif
-                end do
-            endif
             write (iofilo,5020) ciout(1:length(ciout))
             write (iofilo,5020) cjout(1:length(cjout))
             write (iofilo,5030) ('-',i = 1,ic)
@@ -362,14 +352,6 @@
                         write (ciout(ic:ic+9),5040) toxict(i,layer,lsp)
                         ic = ic + 11
                     end do
-                    if (activs(6)) then
-                        do iw = 1, 4
-                            if (swl(iwptr(iw))) then
-                                write (ciout(ic:ic+9),5040) zzwspec(i,iwptr(iw))
-                                ic = ic + 10
-                            endif
-                        end do
-                    endif
                 endif
                 write (iofilo,5020) ciout(1:length(ciout))
             end do
@@ -378,10 +360,10 @@
     return
 5000 format (a10)
 5010 format (' ')
-5020 format (' ',a)
-5030 format (' ',255a1)
+5020 format (a)
+5030 format (255a1)
 5040 format (1pg10.3)
-5050 format (//,' ',a5,' LAYER SPECIES',/)
+5050 format (//,a5,' LAYER SPECIES',/)
 5060 format (a13)
     end subroutine rsltsp
 
@@ -481,16 +463,16 @@
         end do
     endif
 
-    5000 format (//,' FLOW THROUGH VENTS (kg/s)',//, &
-    '                                        Flow relative to ''From''                             Flow Relative to ''To''',/ &
-    '                                        Upper Layer               Lower Layer               Upper Layer',&
+    5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
+    '                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
+    '                                      Upper Layer               Lower Layer               Upper Layer',&
     '               Lower Layer',/, &
-    ' Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
+    'Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
     '       Outflow      Inflow       Outflow',/,134('-'))
 5010 format (' ')
-5020 format (' ',a1,i3,3x,a12,3x,a12,1x,a)
-5030 format (' ',a1,i3,3x,a12,3x,a,3x,a12,3x,a)
-5040 format (' ',22x,a12,1x,a)    
+5020 format (a1,i3,3x,a12,3x,a12,1x,a)
+5030 format (a1,i3,3x,a12,3x,a,3x,a12,3x,a)
+5040 format (22x,a12,1x,a)    
     end subroutine rsltflw
 
 ! --------------------------- rsltflwt -------------------------------------------
@@ -554,11 +536,11 @@
         endif
     end do
 
-5000 format (//,' TOTAL MASS FLOW THROUGH VENTS (kg)',//, &
-    ' To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
-    ' Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/,' ', 104('-'))
+5000 format (//,'TOTAL MASS FLOW THROUGH VENTS (kg)',//, &
+    'To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
+    'Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/, 104('-'))
 5010 format (' ')
-5020 format (' ',a14,1x,a12,1x,a)
+5020 format (a14,1x,a12,1x,a)
     end subroutine rsltflwt
 
 ! --------------------------- rsltcmp -------------------------------------------
@@ -701,15 +683,15 @@
         endif
     end do
     return
-    5000 format (//,' SURFACES AND TARGETS',//, &
-    ' Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       Surface   Center   Flux To',&
-    '      Fire         Surface      Gas',/, &
-    '                Temp.     Temp.     Temp.     Temp.              Temp.     Temp.     Temp.    Target       Rad.',&
-    '         Rad.         Rad.         Convect.',/, &
-    '                (C)       (C)       (C)       (C)                (C)       (C)       (C)      (W/m^2)      (W/m^2)',&
-    '      (W/m^2)      (W/m^2)      (W/m^2)      ',/,1x,144('-'))
-5010 format (1x,a14,4(1pg10.3),1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
-5030 format (55x,i4,4x,3(1pg10.3),1x,5(1pg10.3,3x))
+5000 format (//,'SURFACES AND TARGETS',//, &
+    'Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       ', &
+    'Surface   Center   Flux To      Fire         Surface      Gas',/, &
+    '               Temp.     Temp.     Temp.     Temp.              Temp.     ', &
+    'Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
+    '               (C)       (C)       (C)       (C)                (C)       ', &
+         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,154('-'))
+5010 format (a14,4(1pg10.3),1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
+5030 format (54x,i4,4x,3(1pg10.3),1x,5(1pg10.3,3x))
     end subroutine rslttar
 
 ! --------------------------- rsltsprink -------------------------------------------
@@ -732,10 +714,6 @@
 
     if(ndtect==0)return
     write(iofilo,5000)
-5000 format(//' SENSORS',/, &
-    '                              Sensor                           Smoke',//, &
-    ' Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
-    ' ----------------------------------------------------------------------------')
     cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
@@ -762,6 +740,11 @@
         cact = 'NO'
         if(ixdtect(i,dact)==1) cact = 'YES'
         write(iofilo,5010)i,iroom,ctype,tlink,cact,tjet,vel
+        
+5000 format(//'SENSORS',/, &
+    '                              Sensor                           Smoke',//, &
+    'Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
+    '----------------------------------------------------------------------------')
 5010    format(t2,i2,t10,i3,t24,a5,t31,1pe10.3,t42,a3,t58,1pe10.3,t69,1pe10.3)
     end do
     return
@@ -804,9 +787,9 @@
 
     return
 
-5000 format (' Data file is ',a,'    Title is ',a)
-10  format (' CFAST Version ',i1,'.',i1,'.',i2,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
-20  format (' CFAST Version ',i1,'.',i1,'.',i1,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
+5000 format ('Data file is ',a,'    Title is ',a)
+10  format ('CFAST Version ',i1,'.',i1,'.',i2,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
+20  format ('CFAST Version ',i1,'.',i1,'.',i1,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
     end subroutine output_initial_conditions
 
 ! --------------------------- outover -------------------------------------------
@@ -824,11 +807,11 @@
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
     write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
 
-5000 format (//,' OVERVIEW',/)
-5010 FORMAT (/,' Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,/,' ',i4,12x,i4,10x,i4,17x,i4)
-5020 format (/,' Simulation     Output         Smokeview      Spreadsheet',/, &
-             ' Time           Interval       Interval       Interval',/, & 
-             ' (s)            (s)            (s)            (s)',/,' ',i6,6x,3(i6,9x))
+5000 format (//,'OVERVIEW',/)
+5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,/,i4,12x,i4,10x,i4,17x,i4)
+5020 format (/,'Simulation     Output         Smokeview      Spreadsheet',/, &
+             'Time           Interval       Interval       Interval',/, & 
+             '(s)            (s)            (s)            (s)',/,i6,6x,3(i6,9x))
     end subroutine outover
 
 ! --------------------------- outamb -------------------------------------------
@@ -847,11 +830,11 @@
        exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset
     return
 
-5000 format (//,' AMBIENT CONDITIONS',//, &
-    ' Interior       Interior       Exterior       Exterior',/, &
-    ' Temperature    Pressure       Temperature    Pressure',/,' ', &
+5000 format (//,'AMBIENT CONDITIONS',//, &
+    'Interior       Interior       Exterior       Exterior',/, &
+    'Temperature    Pressure       Temperature    Pressure',/, &
     '  (C)            (Pa)           (C)            (Pa)', &
-    //,' ',2(f7.0,8x,f9.0,6x))
+    //,2(f7.0,8x,f9.0,6x))
      
     end subroutine outamb
 
@@ -872,11 +855,11 @@
         write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), hrp(i), hflr(i)
     end do
     return
-5000 format (//,' COMPARTMENTS',//, &
-    ' Compartment  Name                Width        Depth        Height       Ceiling      Floor     ',/, &
-    '                                                                         Height       Height    ',/, & 
-    ' ',33x,5('(m)',10x),/,' ',96('-'))
-5010 format (' ',i5,8x,a13,5(f12.2,1x))
+5000 format (//,' OMPARTMENTS',//, &
+    'Compartment  Name                Width        Depth        Height       Ceiling      Floor     ',/, &
+    '                                                                       Height       Height    ',/, & 
+    33x,5('(m)',10x),/,' ',96('-'))
+5010 format (i5,8x,a13,5(f12.2,1x))
     end subroutine outcomp
 
 ! --------------------------- outvent -------------------------------------------
@@ -994,26 +977,26 @@
     endif
     return
 
-5000 format (//,' VENT CONNECTIONS',//,' There are no horizontal natural flow connections')
-5010 format (//,' VENT CONNECTIONS',//,' Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
-    ' From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      ',/, & 
-    ' Compartment    Compartment    Number                 Height      Height      Sill        Soffit',/, &
-    ' ',41X,5('(m)         '),/,' ',100('-'))
-5020 format (' ',a14,1X,A14,I3,5X,5(F9.2,3X))
-5030 format (//,' There are no vertical natural flow connections')
-     5040 format (//,' Vertical Natural Flow Connections (Ceiling, ...)',//,' Top            Bottom         Shape',&
-          '     Area      ','Relative  Absolute',/,' ', &
-    'Compartment    Compartment                        Height    Height',/,' ',40X,'(m^2)     ',2('(m)       '),/,' ',70('-'))
-5050 format (' ',a8,7x,a8,7x,a6,2x,3(f7.2,3x))
-5060 formaT (//,' There are no mechanical flow connections')
-5100 format (' ',i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
-5110 format (' ',10x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
-     5120 format (//,' FANS',//,' System    From           From      To             To        Fan',&
+5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
+5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
+    'From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      ',/, & 
+    'Compartment    Compartment    Number                 Height      Height      Sill        Soffit',/, &
+    41X,5('(m)         '),/,100('-'))
+5020 format (a14,1X,A14,I3,5X,5(F9.2,3X))
+5030 format (//,'There are no vertical natural flow connections')
+     5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,' Top            Bottom         Shape',&
+          '     Area      ','Relative  Absolute',/, &
+    'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,70('-'))
+5050 format (a8,7x,a8,7x,a6,2x,3(f7.2,3x))
+5060 formaT (//,'There are no mechanical flow connections')
+5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
+5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
+     5120 format (//,'FANS',//,'System    From           From      To             To        Fan',&
           '       Minimum   Maximum    Fan Curve',/, &
-    ' ','                         Elev.                    Elev.','     Number',/,' ',25x, &
-    '(m)                      (m)             ','    (Pa)      (Pa)',/,' ',100('-'))
-5130 format (' ',i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
-5140 format (' ',10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
+    '                         Elev.                    Elev.','     Number',/,25x, &
+    '(m)                      (m)             ','    (Pa)      (Pa)',/,100('-'))
+5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
+5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
      
     end  subroutine outvent
 
@@ -1085,13 +1068,13 @@
     write (iofilo,5060)
     return
 
-5000 format (//,' Heat transfer for all surfaces is turned off')
-5010 format (//,' THERMAL PROPERTIES',//,' ','Compartment    Ceiling      Wall         Floor',/,' ',70('-'))
-5020 format (' ',a13,3(a10,3x))
-5030 format (//,' Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,&
+5000 format (//,'Heat transfer for all surfaces is turned off')
+5010 format (//,'THERMAL PROPERTIES',//,' ','Compartment    Ceiling      Wall         Floor',/,70('-'))
+5020 format (a13,3(a10,3x))
+5030 format (//,'Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,&
           'Density',5X,'Thickness',3X,'Emissivity')
-5040 format (' ',a8,5(1pg13.3),5e10.2)
-5050 format (' ',8x,4(1pg13.3))
+5040 format (a8,5(1pg13.3),5e10.2)
+5050 format (8x,4(1pg13.3))
 5060 format (' ')
 
     end subroutine outthe
@@ -1139,18 +1122,18 @@
                     y_HCN = obj_n(j)*0.027028_eb/objgmw(j)
                     y_HCl = obj_cl(j)*0.036458_eb/objgmw(j)
                     write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,omprodr(i,10,j),omprodr(i,11,j)
-                    write (iofilo,'(1x,a)') cbuf(1:length(cbuf))
+                    write (iofilo,'(a)') cbuf(1:length(cbuf))
                 end do
             endif
         end do
     endif
     return
-5000 format ('   (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
-5010 format (' ',255a1)
-5020 format (//,' Name: ',A,'   Referenced as object #',i3,//,' Compartment    Fire Type    ',&
-          '   Position (x,y,z)     Relative    Lower O2    Radiative',/,' ',52x,'Humidity    Limit       Fraction')
-5030 format (1x,a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.2//)
-5031 format (' Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/,1x,5(f7.3,3x),//)
+5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
+5010 format (255a1)
+5020 format (//,'Name: ',A,'   Referenced as object #',i3,//,'Compartment    Fire Type    ',&
+          '   Position (x,y,z)     Relative    Lower O2    Radiative',/,52x,'Humidity    Limit       Fraction')
+5030 format (a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.2//)
+5031 format ('Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/5(f7.3,3x),//)
 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
 5050 format ('Soot      CO        HCN       HCl       CT        TS')
 5060 format (F7.0,3X,4(1PG10.2))
@@ -1185,8 +1168,8 @@
     character cbuf*255
 
     if(ntarg/=0) write(iofilo,5000)
-5000 format(//,' TARGETS',//,' Target',T9,'Compartment',T24,'Position (x, y, z)',T51,&
-         'Direction (x, y, z)',T76,'Material',/,1X,82('-'))
+5000 format(//,'TARGETS',//,'Target',T9,'Compartment',T24,'Position (x, y, z)',T51,&
+         'Direction (x, y, z)',T76,'Material',/,82('-'))
 
     do itarg = 1, ntarg
         if (itarg<ntarg-nm1+1) then
@@ -1200,7 +1183,7 @@
 5005    format (A8,'  Floor, compartment ',I2)
         write(iofilo,5010) itarg,compartmentnames(ixtarg(trgroom,itarg)),(xxtarg(trgcenx+j,itarg),j=0,2),&
            (xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
-5010    format(' ',i5,t11,a14,t21,6(f7.2,2x),t76,a8)
+5010    format(i5,t11,a14,t21,6(f7.2,2x),t76,a8)
     end do
     return
     end subroutine outtarg

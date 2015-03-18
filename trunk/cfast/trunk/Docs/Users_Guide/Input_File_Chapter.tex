@@ -226,7 +226,7 @@ At least one compartment must be specified in the input file.  There are no defa
   \includegraphics[width=2.0in]{FIGURES/Input_File/CFAST_Coordinates}
 \end{wrapfigure}
 
-Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
+\label{Compartment_Geometry}Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
 
 The relevant CFAST keywords are COMPA to define the compartment size and materials, MATL to define the thermophysical properties of the compartment surfaces, HALL or ONEZ to define flow characteristics in the compartment, and ROOMA / ROOMH to define a variable cross-sectional area for the compartment. The COMPA command is required for each compartment as a basic definition for the compartment, even if there are subsequent modifications by the HALL, ONEZ, ROOMA, or ROOMH keywords which follow.  Details of the CFAST keywords are included in Appendix A.
 
@@ -1108,3 +1108,101 @@ For mechanical vents, there are two species that can be filtered out of the gas 
 \begin{itemize}
 \item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
 \end{itemize} 
+
+\subsection{Visualization}
+
+Calculated results from a CFAST simulation can be visualized using Smokeview \cite{Smokeview_Users_Guide_6}. This allows the user to see the compartment geometry and connections
+or view the results of the simulation visually. In addition to a simplified view of the layer temperatures and vent flows, more detailed estimates of gas temperature, gas velocity, vent flow velocity, target temperature, and detector status can be visualized. CFAST inputs for visualization are the SLCF and ISOF keywords.
+
+\begin{lstlisting}
+!!
+!!visualizations
+!!
+SLCF,2-D,X,4.55,1
+SLCF,2-D,Y,2.5,1
+SLCF,2-D,Z,4.554,1
+SLCF,3-D
+ISOF,373.15
+\end{lstlisting}
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Visualizations_Tab}
+\end{center}
+\end{figure}
+
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs which detail all of the inputs for the item selected in the summary table. The buttons included on the visualizations page are as follows: \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Add_Button}
+\end{wrapfigure}
+
+Use the Add button to create a new visualization with default values for all entries. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Duplicate_Button}
+\end{wrapfigure}
+
+Use the Duplicate button to create a copy of the visualization currently selected in the summary table at the top of the page. The new visualization is added to the end of the list. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=0.781in]{FIGURES/Input_File/Remove_Button}
+\end{wrapfigure}
+
+Use the Remove button to delete the selected visualization from the list of visualization in the summary table. \\~ \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=1.11in]{FIGURES/Input_File/Add_Defaults_Button}
+\end{wrapfigure}
+
+Use the Add Defaults button to add a default set of visualizations for the current simulation. A slice file entry is created at the center of each compartment in the x (width) and y (depth) directions along with one near the ceiling in the z direction. a 3-D slice file entry is created for each compartment as well. \\
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=2.511in]{FIGURES/Input_File/Visualizations_Type}
+\end{wrapfigure}
+
+\textbf{Visualization Type} (default units: n/a, default value: 2-D): The type of visualization to be included. Choose from 2-D (a single plane slice of temperature at the position and axis specified), 3-D (a set of three animated slices whose position can be moved along its respective axis, or Isosurface (a fixed 3-D surface where the gas temperature is equal to the value specified. See the Smokeview documentation \cite{Smokeview_Users_Guide_6}for details on the use of Smokeview.
+
+\textbf{Compartment} (default units: n/a, default value: All): Visualizations can be placed in a single compartment or at the same position and axis in all compartments.
+
+\textbf{Position} (default units: m, default value: 0m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment. See page \pageref{Compartment_Geometry}).
+
+\textbf{Axis} (default units: n/s, default value: X-axis (Width)): Axis that the specified slice file is located.  The slice is place perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis, and the X-Y plane for the Z-Axis)
+
+\textbf{Temperature} (default units \degc, default value: none): Specified gas temperature for the selected isosurface. 
+
+\begin{wrapfigure}{l}{0pt}
+  \includegraphics[width=2.511in]{FIGURES/Input_File/Visualizations_Resolution}
+\end{wrapfigure}
+
+By default, slice files are generated with a grid of 50 data points in each direction for each compartment specified. If desired, the grid spacing can be adjusted up or down individually by compartment. Specifying a larger number of data points can \textit{dramatically} slow program execution since the gas temperature and velocity is evaluated at each grid location every time a Smokeview output is specified.  The default value should be appropriate for most simulations.
+
+\textbf{Width (X) Grid} (default units: n/a, default value: 50): slices included along the X axis for each compartment are uniformly divided into the specified number of data points.
+
+\textbf{Width (Y) Grid} (default units: n/a, default value: 50): slices included along the Y axis for each compartment are uniformly divided into the specified number of data points.
+
+\textbf{Width (Z) Grid} (default units: n/a, default value: 50): slices included along the Z axis for each compartment are divided into the specified number of data points. 
+
+Sample visualizations are included below.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/SMV_Temperature}
+Smokeview Visualization of Gas Temperature with a Single Fire
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/SMV_Velocity}
+Smokeview Visualization of Gas Velocity with Two Fires
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/SMV_Detectors}
+Smokeview Visualization of Detector Activation in a Corridor
+\end{center}
+\end{figure}

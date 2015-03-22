@@ -19,8 +19,8 @@ set OMP_NUM_THREADS=1
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set fdsbasename=fds
-set cfastbasename=cfast
+set fdsbasename=FDS-SMVclean
+set cfastbasename=cfastclean
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -34,8 +34,8 @@ set OUTDIR=%CURDIR%\output
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
 
-set svnroot=%userprofile%\%cfastbasename%
-set FDSroot=%userprofile%\%fdsbasename%
+set cfastsvnroot=%userprofile%\%cfastbasename%
+set FDSsvnroot=%userprofile%\%fdsbasename%
 
 set errorlog=%OUTDIR%\stage_errors.txt
 set warninglog=%OUTDIR%\stage_warnings.txt
@@ -44,22 +44,22 @@ set infofile=%OUTDIR%\stage_info.txt
 set revisionfile=%OUTDIR%\revision.txt
 set stagestatus=%OUTDIR%\stage_status.log
 
-set fromsummarydir=%svnroot%Docs\CFAST_Summary
+set fromsummarydir=%cfastsvnroot%Docs\CFAST_Summary
 set tosummarydir="%SMOKEBOT_SUMMARY_DIR%"
 
 set haveerrors=0
 set havewarnings=0
 set haveCC=1
 
-set gettimeexe=%FDSroot%\Utilities\get_time\intel_win_64\get_time.exe
-set runbatchexe=%FDSroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
+set gettimeexe=%FDSsvnroot%\Utilities\get_time\intel_win_64\get_time.exe
+set runbatchexe=%FDSsvnroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt
 set /p startdate=<%OUTDIR%\starttime.txt
 time /t > %OUTDIR%\starttime.txt
 set /p starttime=<%OUTDIR%\starttime.txt
 
-call "%FDSroot%\Utilities\Scripts\setup_intel_compilers.bat" 1> Nul 2>&1
+call "%cfastsvnroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
 
 :: -------------------------------------------------------------
 ::                           stage 0
@@ -95,16 +95,50 @@ if %nothaveFORTRAN% == 1 (
 )
 echo             found Fortran
 
+icc 1> %OUTDIR%\stage0a.txt 2>&1
+type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
+set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
+if %nothaveICC% == 1 (
+  echo "***Fatal error: C compiler not present"
+  echo "***Fatal error: C compiler not present" > %errorlog%
+  echo "cfastbot run aborted"
+  call :output_abort_message
+  exit /b 1
+)
+echo             found C
+
 call :is_file_installed pdflatex|| exit /b 1
 echo             found pdflatex
 
 call :is_file_installed grep|| exit /b 1
 echo             found grep
 
+:: revert cfast repository
+
+if "%cfastbasename%" == "cfastclean" (
+   echo             reverting %cfastbasename% repository
+   cd %cfastsvnroot%
+   call :svn_revert 1> Nul 2>&1
+)
+
 :: update cfast repository
 
 echo             updating cfast repository
-cd %svnroot%
+cd %cfastsvnroot%
+svn update  1> %OUTDIR%\stage0.txt 2>&1
+
+:: revert FDS repository
+
+if "%FDSbasename%" == "FDS-SMVclean" (
+   echo             reverting %FDSbasename% repository
+   cd %FDSsvnroot%
+   call :svn_revert 1> Nul 2>&1
+)
+
+:: update FDS repository
+
+echo             updating FDS repository
+cd %FDSsvnroot%
 svn update  1> %OUTDIR%\stage0.txt 2>&1
 
 call :GET_TIME
@@ -123,7 +157,7 @@ if %reduced% == 1 goto skip_cfast_debug
 
 echo             debug
 
-cd %svnroot%\CFAST\intel_win_%size%_db
+cd %cfastsvnroot%\CFAST\intel_win_%size%_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_%size%_db 1>> %OUTDIR%\stage1a.txt 2>&1
 
@@ -136,7 +170,7 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
 echo             release
 
-cd %svnroot%\CFAST\intel_win_%size%
+cd %cfastsvnroot%\CFAST\intel_win_%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
 make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win_%size% 1>> %OUTDIR%\stage1b.txt 2>&1
 
@@ -147,7 +181,7 @@ call :GET_TIME
 set BUILDFDS_end=%current_time%
 call :GET_DURATION BUILDFDS %BUILDFDS_beg% %BUILDFDS_end%
 set DIFF_BUILDFDS=%duration%
-
+exit /b
 
 :: -------------------------------------------------------------
 ::                           stage 2
@@ -172,25 +206,25 @@ if %reduced% == 1 goto skip_cfast_debug_vv
 echo Stage 4 - Running validation cases
 echo             debug mode
 
-cd %svnroot%\Validation\scripts
+cd %cfastsvnroot%\Validation\scripts
 set SCRIPT_DIR=%CD%
 set SH2BAT="%SCRIPT_DIR%\sh2bat.exe"
 
 cd %CD%\..
 set BASEDIR=%CD%
-set BACKGROUNDDIR=%SVNROOT%\Validation\scripts\
+set BACKGROUNDDIR=%cfastsvnroot%\Validation\scripts\
 cd "%BACKGROUNDDIR%"
 set BACKGROUNDEXE="%CD%"\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 1
 
-cd %SVNROOT%\CFAST\intel_win_%size%
+cd %cfastsvnroot%\CFAST\intel_win_%size%
 set CFASTEXE=%CD%\cfast6_win_64_%size%
 
 cd "%SCRIPT_DIR%"
 
 set CFAST=%bg% %CFASTEXE%
-set RUNCFAST=call "%SVNROOT%\Validation\scripts\runcfast_win32.bat"
-set RUNCFAST2=call "%SVNROOT%\Validation\scripts\runcfast2_win32.bat"
+set RUNCFAST=call "%cfastsvnroot%\Validation\scripts\runcfast_win32.bat"
+set RUNCFAST2=call "%cfastsvnroot%\Validation\scripts\runcfast2_win32.bat"
 
 
 echo creating CFAST case list from CFAST_Cases.sh
@@ -216,7 +250,7 @@ call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"
 
 echo             release mode
 
-cd %FDSroot%\Verification\scripts
+cd %FDSsvnroot%\Verification\scripts
 call Run_SMV_cases %size% 0 0 1> %OUTDIR%\stage4b.txt 2>&1
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage4b.txt "Stage 4b_1"
@@ -235,7 +269,7 @@ call :GET_TIME
 set MAKEPICS_beg=%current_time% 
 echo Stage 5 - Making Smokeview pictures
 
-cd %FDSroot%\Verification\scripts
+cd %FDSsvnroot%\Verification\scripts
 call MAKE_SMV_pictures %size% 1> %OUTDIR%\stage5.txt 2>&1
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage5.txt "Stage 5"
@@ -254,16 +288,16 @@ set MAKEGUIDES_beg=%current_time%
 echo Stage 6 - Building Smokeview guides
 
 echo             Technical Reference
-call :build_guide SMV_Technical_Reference_Guide %FDSroot%\Manuals\SMV_Technical_Reference_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide SMV_Technical_Reference_Guide %FDSsvnroot%\Manuals\SMV_Technical_Reference_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             Verification
-call :build_guide SMV_Verification_Guide %FDSroot%\Manuals\SMV_Verification_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide SMV_Verification_Guide %FDSsvnroot%\Manuals\SMV_Verification_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             User
-call :build_guide SMV_User_Guide %FDSroot%\Manuals\SMV_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide SMV_User_Guide %FDSsvnroot%\Manuals\SMV_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             Geom Notes
-call :build_guide geom_notes %FDSroot%\Manuals\FDS_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide geom_notes %FDSsvnroot%\Manuals\FDS_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 call :GET_TIME
 set MAKEGUIDES_end=%current_time%
@@ -437,6 +471,29 @@ if %nwarnings% GTR 0 (
   set havewarnings=1
 )
 exit /b
+
+:: -------------------------------------------------------------
+:svn_revert
+:: -------------------------------------------------------------
+svn cleanup .
+svn revert -R .
+For /f "tokens=1,2" %%A in ('svn status --no-ignore') Do (
+     If [%%A]==[?] ( Call :UniDelete %%B
+     ) Else If [%%A]==[I] Call :UniDelete %%B
+   )
+exit /b
+
+:: -------------------------------------------------------------
+:UniDelete delete file/dir
+:: -------------------------------------------------------------
+if "%1"=="%~nx0" exit /b
+IF EXIST "%1\*" ( 
+    RD /S /Q "%1"
+) Else (
+    If EXIST "%1" DEL /S /F /Q "%1"
+)
+exit /b
+
 
 :: -------------------------------------------------------------
  :build_guide

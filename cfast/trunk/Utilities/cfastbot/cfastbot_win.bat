@@ -95,7 +95,7 @@ if %nothaveFORTRAN% == 1 (
 )
 echo             found Fortran
 
-icc 1> %OUTDIR%\stage0a.txt 2>&1
+icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
 set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
 if %nothaveICC% == 1 (

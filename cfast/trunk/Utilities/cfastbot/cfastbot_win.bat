@@ -229,7 +229,7 @@ set BACKGROUNDEXE="%CD%"\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 1
 
 cd %cfastsvnroot%\CFAST\intel_win_%size%
-set CFASTEXE=%CD%\cfast7_win_64_%size%
+set CFASTEXE=%CD%\cfast7_win_%size%
 
 cd "%SCRIPT_DIR%"
 
@@ -241,7 +241,7 @@ set RUNCFAST2=call "%cfastsvnroot%\Validation\scripts\runcfast2_win32.bat"
 echo creating CFAST case list from CFAST_Cases.sh
 %SH2BAT% CFAST_Cases.sh CFAST_Cases.bat > %OUTDIR%\stage4a.txt 2>&1
 
-call CFAST_Cases.bat
+call CFAST_Cases.bat 1> %OUTDIR%\stage4a.txt 2>&1
 
 echo Waiting for all CFAST runs to finish
 :loop1

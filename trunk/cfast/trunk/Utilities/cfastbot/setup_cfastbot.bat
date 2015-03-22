@@ -1,7 +1,7 @@
 @echo off
 
 set outfile=%temp%\outfile.txt
-set countfile=%temp\countfile.txt
+set countfile=%temp%\countfile.txt
 
 set curdir=%CD%
 cd ..\..
@@ -9,10 +9,10 @@ set svnroot=%CD%
 cd %curdir%
 
 call :is_file_installed svn
-if "%has_svn% == "0" (
+if %has_svn% == 0 (
   echo command line svn is not installed
   echo cfastbot setup aborted
-  exit 1
+  exit /b 1
 )
 
 :: create a clean cfast repository (used only by cfastbot)
@@ -49,7 +49,6 @@ if "%has_icc% == "0" (
   echo Need to install Intel C/C++ before running cfastbot.
 )
 
-echo cfastbot setup complete
 goto :eof
 
 :: -------------------------------------------------------------
@@ -58,12 +57,16 @@ goto :eof
 
   set program=%1
   set arg=has_%program%
-  %program% -help 1> %outfile% 2>&1
+  %program%  1> %outfile% 2>&1
   type %outfile% | find /i /c "not recognized" > %countfile%
   set /p nothave=<%countfile%
-  if %nothave% == 1 (
-    %arg%=1
+  if %nothave% == 0 (
+    set %arg%=1
     exit /b 1
   )
-  %arg%=0
+  set %arg%=0
   exit /b 0
+
+:eof
+echo cfastbot setup complete
+

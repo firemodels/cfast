@@ -1,8 +1,4 @@
 @echo off
-set reduced=%1
-if [%reduced%] == [] (
-  set reduced=0
-)
 
 :: -------------------------------------------------------------
 ::                         set environment
@@ -44,8 +40,8 @@ set infofile=%OUTDIR%\stage_info.txt
 set revisionfile=%OUTDIR%\revision.txt
 set stagestatus=%OUTDIR%\stage_status.log
 
-set fromsummarydir=%cfastsvnroot%Docs\CFAST_Summary
-set tosummarydir="%SMOKEBOT_SUMMARY_DIR%"
+set fromsummarydir="%cfastsvnroot%\Docs\CFAST_Summary"
+set tosummarydir="%cfastsvnroot%\Manuals\SMV_Summary"
 
 set haveerrors=0
 set havewarnings=0
@@ -153,7 +149,6 @@ set DIFF_PRELIM=%duration%
 call :GET_TIME
 set BUILDFDS_beg=%current_time% 
 echo Stage 1 - Building CFAST
-if %reduced% == 1 goto skip_cfast_debug
 
 echo             debug
 
@@ -162,11 +157,9 @@ erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_%size%_db 1>> %OUTDIR%\stage1a.txt 2>&1
 
 
-call :does_file_exist cfast6_win_%size%_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
+call :does_file_exist cfast7_win_%size%_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
 
 call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
-
-:skip_cfast_debug
 
 echo             release
 
@@ -174,23 +167,44 @@ cd %cfastsvnroot%\CFAST\intel_win_%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
 make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win_%size% 1>> %OUTDIR%\stage1b.txt 2>&1
 
-call :does_file_exist cfast6_win_%size%.exe %OUTDIR%\stage1b.txt|| exit /b 1
+call :does_file_exist cfast7_win_%size%.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
 call :GET_TIME
 set BUILDFDS_end=%current_time%
 call :GET_DURATION BUILDFDS %BUILDFDS_beg% %BUILDFDS_end%
 set DIFF_BUILDFDS=%duration%
-exit /b
 
 :: -------------------------------------------------------------
 ::                           stage 2
 :: -------------------------------------------------------------
 
+call :GET_TIME
+set BUILDSMVUTIL_beg=%current_time% 
+echo Stage 2 - Building Smokeview
 
-:: -------------------------------------------------------------
-::                           stage 3
-:: -------------------------------------------------------------
+echo             libs
+
+cd %FDSsvnroot%\SMV\Build\LIBS\lib_win_intel_64
+call makelibs2 1>> %OUTDIR%\stage2a.txt 2>&1
+
+echo             debug
+
+cd %FDSsvnroot%\SMV\Build\intel_win_64
+erase *.obj *.mod *.exe smokeview_win_64_db.exe 1> %OUTDIR%\stage2a.txt 2>&1
+make -f ..\Makefile intel_win_64_db 1>> %OUTDIR%\stage2a.txt 2>&1
+
+call :does_file_exist smokeview_win_64_db.exe %OUTDIR%\stage2a.txt|| exit /b 1
+call :find_smokeview_warnings "warning" %OUTDIR%\stage2a.txt "Stage 2a"
+
+echo             release
+
+cd %FDSsvnroot%\SMV\Build\intel_win_64
+erase *.obj *.mod smokeview_win_64.exe 1> %OUTDIR%\stage2b.txt 2>&1
+make -f ..\Makefile intel_win_64 1>> %OUTDIR%\stage2b.txt 2>&1
+
+call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| aexit /b 1
+call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 
 
 :: -------------------------------------------------------------
@@ -200,11 +214,8 @@ exit /b
 call :GET_TIME
 set RUNVV_beg=%current_time% 
 
-
-if %reduced% == 1 goto skip_cfast_debug_vv
-
 echo Stage 4 - Running validation cases
-echo             debug mode
+echo             debug release
 
 cd %cfastsvnroot%\Validation\scripts
 set SCRIPT_DIR=%CD%
@@ -218,7 +229,7 @@ set BACKGROUNDEXE="%CD%"\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 1
 
 cd %cfastsvnroot%\CFAST\intel_win_%size%
-set CFASTEXE=%CD%\cfast6_win_64_%size%
+set CFASTEXE=%CD%\cfast7_win_64_%size%
 
 cd "%SCRIPT_DIR%"
 
@@ -241,12 +252,10 @@ if %numexe% == 0 goto finished
 Timeout /t 30 >nul 
 goto loop1
 
-pause
+:finished
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage4a.txt "Stage 4a_1"
 call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"
-
-:skip_cfast_debug
 
 echo             release mode
 
@@ -262,17 +271,14 @@ call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
 set DIFF_RUNVV=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 5
+::                           stage 5 - make pictures
 :: -------------------------------------------------------------
 
 call :GET_TIME
 set MAKEPICS_beg=%current_time% 
-echo Stage 5 - Making Smokeview pictures
+echo Stage 5 - Making pictures for cfast cases
 
-cd %FDSsvnroot%\Verification\scripts
-call MAKE_SMV_pictures %size% 1> %OUTDIR%\stage5.txt 2>&1
-
-call :find_smokeview_warnings "error" %OUTDIR%\stage5.txt "Stage 5"
+:: call script to make pictures for cfast cases
 
 call :GET_TIME
 set MAKEPICS_end=%current_time% 
@@ -280,34 +286,19 @@ call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
 set DIFF_MAKEPICS=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 6
+::                           stage 6 - make manuals
 :: -------------------------------------------------------------
 
 call :GET_TIME
 set MAKEGUIDES_beg=%current_time% 
-echo Stage 6 - Building Smokeview guides
+echo Stage 6 - Building CFAST guides
 
-echo             Technical Reference
-call :build_guide SMV_Technical_Reference_Guide %FDSsvnroot%\Manuals\SMV_Technical_Reference_Guide 1>> %OUTDIR%\stage6.txt 2>&1
-
-echo             Verification
-call :build_guide SMV_Verification_Guide %FDSsvnroot%\Manuals\SMV_Verification_Guide 1>> %OUTDIR%\stage6.txt 2>&1
-
-echo             User
-call :build_guide SMV_User_Guide %FDSsvnroot%\Manuals\SMV_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
-
-echo             Geom Notes
-call :build_guide geom_notes %FDSsvnroot%\Manuals\FDS_User_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+:: call scripts to make cfast guides
 
 call :GET_TIME
 set MAKEGUIDES_end=%current_time%
 call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg% %MAKEGUIDES_end%
 set DIFF_MAKEGUIDES=%duration%
-
-call :GET_TIME
-set TIME_end=%current_time% 
-call :GET_DURATION TOTALTIME %TIME_beg% %TIME_end%
-set DIFF_TIME=%duration%
 
 :: -------------------------------------------------------------
 ::                           wrap up

@@ -7,11 +7,7 @@ All key words are case sensitive and all parameters are required. There are no d
 \begin{lstlisting}
 COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIAL_NAME, WALL_MATERIAL_NAME, X_GRID_SPACING, Y_GRID_SPACING, Z_GRID_SPACING
 \end{lstlisting}
-
-The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands.
-
-Example:
-
+The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands. Example:
 \begin{lstlisting}
 COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE,50,50,50
 \end{lstlisting}
@@ -21,7 +17,6 @@ COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE,50,50,50
 \begin{lstlisting}
 DEADROOM, DEAD_ROOM_NUMBER, CONNECTED_ROOM_NUMBER
 \end{lstlisting}
-
 The DEADROOM command specifies a compartment that is only connected to another compartment that in turn is not connected to the outside.  Compartment pressure is not calculated for the ``dead'' room. Pressure for this room is assumed to be the same as that of the connected room.
 
 \section{DETEC}
@@ -29,7 +24,6 @@ The DEADROOM command specifies a compartment that is only connected to another c
 \begin{lstlisting}
 DETEC, TYPE, COMPARTMEN,T ACTIVATION_TEMPERATUR,E DEPTH, WIDTH, HEIGHT, RTI, SUPPRESSION, SPRAY_DENSITY
 \end{lstlisting}
-
 The DETEC keyword is used for both detectors and sprinklers. Sprinklers and detectors are both considered detection devices and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
 
 For the type of detector, use 1 for smoke detector and 2 for heat detector or sprinklers. If suppression is set to a value of 1, a sprinkler will quench the fire with the specified spray density of water. If turned off (a value of 0), the device is handled as a heat or smoke detector only - values entered for activation temperature, RTI, and spray density are ignored.
@@ -47,7 +41,6 @@ DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
 \begin{lstlisting}
 DJIGN, 373.15
 \end{lstlisting}
-
 This entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
 
 This entry is superceded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
@@ -63,7 +56,6 @@ DJIGN,488
 \begin{lstlisting}
 DTCHE, MINIMUM_TIME, COUNT
 \end{lstlisting}
-
 The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as a stalling condition, when it is simply the set of equations has reached a point that requires a very small increment in time for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm.
 
 Example:
@@ -474,4 +466,4 @@ Example:
 
 \begin{lstlisting}
 VVENT,1,2,4.0,2,0.9
-\end{lstlisting} 
+\end{lstlisting}

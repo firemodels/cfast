@@ -550,7 +550,7 @@
     return
     end subroutine interpolate_pyrolysis
 
-! --------------------------- fireplume -------------------------------------------
+! --------------------------- fire_plume -------------------------------------------
 
     subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, t_inf, xemp, xems, xeme, xfx, xfy)
 

@@ -311,13 +311,11 @@
     implicit none
 
     logical :: swl(4)
-    integer :: iwptr(4)
-    character :: stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255,lnames(2)*5, wtype(4)*10
+    character :: stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255, lnames(2)*5
     external length
-    integer :: length, i, j, layer, ic, lsp, iw
+    integer :: length, i, j, layer, ic, lsp
 
     data lnames /'UPPER', 'LOWER'/
-    data iwptr /1, 3, 4, 2/
     data sunits /'(%)', '(%)', '(%)', '(ppm)', '(ppm)', '(ppm)','(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
     data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/
     if (nlspct/=0) then

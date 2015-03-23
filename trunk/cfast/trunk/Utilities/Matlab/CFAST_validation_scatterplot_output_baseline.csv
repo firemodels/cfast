@@ -1,27 +1,27 @@
 Quantity,Number of Datasets,Number of Points,Sigma_Experiment,Sigma_Model,Bias
-HGL Temperature,12,282,0.07,0.32,1.14
-HGL Temperature: Forced Ventilation,7,119,0.07,0.19,1.03
+HGL Temperature,11,279,0.07,0.32,1.14
+HGL Temperature: Forced Ventilation,6,116,0.07,0.19,1.03
 HGL Temperature: Natural Ventilation,9,139,0.07,0.39,1.14
 HGL Temperature: No Ventilation,3,24,0.07,0.1,0.98
-HGL Depth,10,172,0.05,0.37,1.01
-HGL Depth: Open Compartments,8,108,0.05,0.2,0.9
+HGL Depth,10,172,0.05,0.36,1.01
+HGL Depth: Open Compartments,8,108,0.05,0.2,0.91
 HGL Depth: Closed Compartments,4,34,0.05,0.24,1.45
 Flat Ceiling Jet Temperature,9,382,0.07,0.43,1.07
 Plume Temperature,5,63,0.07,0.28,1.1
 Oxygen Concentration,4,38,0.08,0.24,1
-Carbon Dioxide Concentration,4,30,0.08,0.28,0.84
+Carbon Dioxide Concentration,3,29,0.08,0.28,0.84
 Smoke Concentration,1,15,0.19,0.64,3.61
 Compartment Over-Pressure,2,39,0.21,0.93,1.76
 Open Compartment Over-Pressure,3,16,0.21,0.58,1.32
 Target Temperature,3,336,0.07,0.6,1.52
 Surface Temperature,5,320,0.07,0.2,1.02
-Wall Temperature,3,110,0.07,0.16,1.03
+Wall Temperature,3,110,0.07,0.16,1.02
 Ceiling Temperature,2,184,0.07,0.14,0.97
 Floor Temperature,1,26,0.07,0.41,1.38
 Target Heat Flux,2,124,0.11,0.98,1.06
-Surface Heat Flux,6,121,0.11,0.18,0.89
-Wall Heat Flux,2,44,0.11,0.31,1.21
+Surface Heat Flux,6,121,0.11,0.17,0.89
+Wall Heat Flux,2,44,0.11,0.29,1.18
 Ceiling Heat Flux,1,17,0.11,0.22,0.98
 Floor Heat Flux,1,24,0.11,0.61,0.89
-Smoke Detector Activation Time,1,142,0.34,0.71,1.25
+Smoke Detector Activation Time,1,142,0.34,0.49,1.2
 Sprinkler Activation Time,4,101,0.06,0.2,1.01

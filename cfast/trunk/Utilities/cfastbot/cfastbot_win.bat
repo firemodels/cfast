@@ -94,14 +94,13 @@ echo             found Fortran
 icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
 set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
-if %nothaveICC% == 1 (
-  echo "***Fatal error: C compiler not present"
-  echo "***Fatal error: C compiler not present" > %errorlog%
-  echo "cfastbot run aborted"
-  call :output_abort_message
-  exit /b 1
+if %nothaveICC% == 0 (
+  echo             found C
 )
-echo             found C
+if %nothaveICC% == 1 (
+  call :is_file_installed smokeview|| exit /b 1
+  echo             found smokeview
+)
 
 call :is_file_installed pdflatex|| exit /b 1
 echo             found pdflatex
@@ -179,6 +178,9 @@ set DIFF_BUILDFDS=%duration%
 ::                           stage 2
 :: -------------------------------------------------------------
 
+if %nothaveICC% == 1 (
+  goto skip_stage2
+)
 call :GET_TIME
 set BUILDSMVUTIL_beg=%current_time% 
 echo Stage 2 - Building Smokeview
@@ -205,7 +207,7 @@ make -f ..\Makefile intel_win_64 1>> %OUTDIR%\stage2b.txt 2>&1
 
 call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| aexit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
-
+:skip_stage2
 
 :: -------------------------------------------------------------
 ::                           stage 4
@@ -235,8 +237,6 @@ cd "%SCRIPT_DIR%"
 
 set CFAST=%bg% %CFASTEXE%
 set RUNCFAST=call "%cfastsvnroot%\Validation\scripts\runcfast_win32.bat"
-set RUNCFAST2=call "%cfastsvnroot%\Validation\scripts\runcfast2_win32.bat"
-
 
 echo creating CFAST case list from CFAST_Cases.sh
 %SH2BAT% CFAST_Cases.sh CFAST_Cases.bat > %OUTDIR%\stage4a.txt 2>&1
@@ -279,6 +279,7 @@ set MAKEPICS_beg=%current_time%
 echo Stage 5 - Making pictures for cfast cases
 
 :: call script to make pictures for cfast cases
+:: note using installed smokeview if C is not present (since smokeview could not be built)
 
 call :GET_TIME
 set MAKEPICS_end=%current_time% 

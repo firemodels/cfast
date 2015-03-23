@@ -20,13 +20,12 @@ set BACKGROUNDEXE="%CD%"\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 1
 
 cd %SVNROOT%\CFAST\intel_win_64
-set CFASTEXE=%CD%\cfast6_win_64
+set CFASTEXE=%CD%\cfast7_win_64
 
 cd "%SCRIPT_DIR%"
 
 set CFAST=%bg% %CFASTEXE%
 set RUNCFAST=call "%SVNROOT%\Validation\scripts\runcfast_win32.bat"
-set RUNCFAST2=call "%SVNROOT%\Validation\scripts\runcfast2_win32.bat"
 
 echo You are about to run the CFAST Validation Test Suite.
 echo Press any key to proceed, CTRL c to abort

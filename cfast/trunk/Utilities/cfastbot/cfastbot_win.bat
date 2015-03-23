@@ -4,7 +4,6 @@
 ::                         set environment
 :: -------------------------------------------------------------
 
-set size=64
 set compile_platform=intel64
 
 :: set number of OpenMP threads
@@ -95,9 +94,6 @@ icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
 set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
 
-:: for now turn off smokeview build
-set nothaveICC=1
-
 if %nothaveICC% == 0 (
   echo             found C
 )
@@ -155,22 +151,22 @@ echo Stage 1 - Building CFAST
 
 echo             debug
 
-cd %cfastsvnroot%\CFAST\intel_win_%size%_db
+cd %cfastsvnroot%\CFAST\intel_win_64_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
-make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_%size%_db 1>> %OUTDIR%\stage1a.txt 2>&1
+make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64_db 1>> %OUTDIR%\stage1a.txt 2>&1
 
 
-call :does_file_exist cfast7_win_%size%_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
+call :does_file_exist cfast7_win_64_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
 
 call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
 echo             release
 
-cd %cfastsvnroot%\CFAST\intel_win_%size%
+cd %cfastsvnroot%\CFAST\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
-make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win_%size% 1>> %OUTDIR%\stage1b.txt 2>&1
+make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1b.txt 2>&1
 
-call :does_file_exist cfast7_win_%size%.exe %OUTDIR%\stage1b.txt|| exit /b 1
+call :does_file_exist cfast7_win_64.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
 call :GET_TIME
@@ -235,8 +231,8 @@ cd "%BACKGROUNDDIR%"
 set BACKGROUNDEXE=%CD%\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 1
 
-cd %cfastsvnroot%\CFAST\intel_win_%size%
-set CFASTEXE=%CD%\cfast7_win_%size%
+cd %cfastsvnroot%\CFAST\intel_win_64
+set CFASTEXE=%CD%\cfast7_win_64
 
 cd "%SCRIPT_DIR%"
 
@@ -264,7 +260,7 @@ call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"
 echo             release mode
 
 cd %FDSsvnroot%\Verification\scripts
-call Run_SMV_cases %size% 0 0 1> %OUTDIR%\stage4b.txt 2>&1
+call Run_SMV_cases 0 1> %OUTDIR%\stage4b.txt 2>&1
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage4b.txt "Stage 4b_1"
 call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4b.txt "Stage 4b_2"

@@ -221,14 +221,14 @@ echo             debug release
 
 cd %cfastsvnroot%\Validation\scripts
 set SCRIPT_DIR=%CD%
-set GETOPTS="%SCRIPT_DIR%\getopts.bat"
+set GETOPTS=%SCRIPT_DIR%\getopts.bat
 set SH2BAT="%SCRIPT_DIR%\sh2bat.exe"
 
 cd %CD%\..
 set BASEDIR=%CD%
 set BACKGROUNDDIR=%cfastsvnroot%\Validation\scripts\
 cd "%BACKGROUNDDIR%"
-set BACKGROUNDEXE="%CD%"\background.exe
+set BACKGROUNDEXE=%CD%\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 1
 
 cd %cfastsvnroot%\CFAST\intel_win_%size%
@@ -237,7 +237,7 @@ set CFASTEXE=%CD%\cfast7_win_%size%
 cd "%SCRIPT_DIR%"
 
 set CFAST=%bg% %CFASTEXE%
-set RUNCFAST=call "%cfastsvnroot%\Validation\scripts\runcfast_win32.bat"
+set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runcfast_win32.bat
 
 echo creating CFAST case list from CFAST_Cases.sh
 %SH2BAT% CFAST_Cases.sh CFAST_Cases.bat > %OUTDIR%\stage4a.txt 2>&1

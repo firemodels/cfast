@@ -221,6 +221,7 @@ echo             debug release
 
 cd %cfastsvnroot%\Validation\scripts
 set SCRIPT_DIR=%CD%
+set GETOPTS="%SCRIPT_DIR%\getopts.bat"
 set SH2BAT="%SCRIPT_DIR%\sh2bat.exe"
 
 cd %CD%\..

@@ -78,6 +78,7 @@ set TIME_beg=%current_time%
 call :GET_TIME
 set PRELIM_beg=%current_time% 
 
+:: looking for fortran
 
 ifort 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
@@ -91,9 +92,15 @@ if %nothaveFORTRAN% == 1 (
 )
 echo             found Fortran
 
+:: looking for C
+
 icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
 set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
+
+:: for now turn off smokeview build
+set nothaveICC=1
+
 if %nothaveICC% == 0 (
   echo             found C
 )
@@ -118,7 +125,7 @@ if "%cfastbasename%" == "cfastclean" (
 
 :: update cfast repository
 
-echo             updating cfast repository
+echo             updating %cfastbasename% repository
 cd %cfastsvnroot%
 svn update  1> %OUTDIR%\stage0.txt 2>&1
 
@@ -132,7 +139,7 @@ if "%FDSbasename%" == "FDS-SMVclean" (
 
 :: update FDS repository
 
-echo             updating FDS repository
+echo             updating %FDSbasename% repository
 cd %FDSsvnroot%
 svn update  1> %OUTDIR%\stage0.txt 2>&1
 

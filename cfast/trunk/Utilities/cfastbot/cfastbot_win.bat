@@ -1,16 +1,6 @@
 @echo off
 
 :: -------------------------------------------------------------
-::                         set environment
-:: -------------------------------------------------------------
-
-set compile_platform=intel64
-
-:: set number of OpenMP threads
-
-set OMP_NUM_THREADS=1
-
-:: -------------------------------------------------------------
 ::                         set repository names
 :: -------------------------------------------------------------
 
@@ -41,7 +31,6 @@ set stagestatus=%OUTDIR%\stage_status.log
 
 set haveerrors=0
 set havewarnings=0
-set haveCC=1
 
 set gettimeexe=%FDSsvnroot%\Utilities\get_time\intel_win_64\get_time.exe
 set runbatchexe=%FDSsvnroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
@@ -54,16 +43,18 @@ set /p starttime=<%OUTDIR%\starttime.txt
 call "%cfastsvnroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
 
 :: -------------------------------------------------------------
-::                           stage 0
+::                           stage 0 - preliminaries
 :: -------------------------------------------------------------
 
 echo Stage 0 - Preliminaries
 
-:: check if compilers are present
+::*** check if various software is installed
 
 echo. > %errorlog%
 echo. > %warninglog%
 echo. > %stagestatus%
+
+::*** looking for gettime
 
 call :is_file_installed %gettimeexe%|| exit /b 1
 echo             found get_time
@@ -74,7 +65,7 @@ set TIME_beg=%current_time%
 call :GET_TIME
 set PRELIM_beg=%current_time% 
 
-:: looking for fortran
+::*** looking for fortran
 
 ifort 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
@@ -88,7 +79,7 @@ if %nothaveFORTRAN% == 1 (
 )
 echo             found Fortran
 
-:: looking for C
+::*** looking for C
 
 icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
@@ -102,13 +93,17 @@ if %nothaveICC% == 1 (
   echo             found smokeview
 )
 
+::*** looking for pdflatex
+
 call :is_file_installed pdflatex|| exit /b 1
 echo             found pdflatex
 
 call :is_file_installed grep|| exit /b 1
 echo             found grep
 
-:: revert cfast repository
+:: --------------------setting up repositories ------------------------------
+
+::*** revert cfast repository
 
 if "%cfastbasename%" == "cfastclean" (
    echo             reverting %cfastbasename% repository
@@ -116,13 +111,13 @@ if "%cfastbasename%" == "cfastclean" (
    call :svn_revert 1> Nul 2>&1
 )
 
-:: update cfast repository
+::*** update cfast repository
 
 echo             updating %cfastbasename% repository
 cd %cfastsvnroot%
 svn update  1> %OUTDIR%\stage0.txt 2>&1
 
-:: revert FDS repository
+::*** revert FDS repository
 
 if "%FDSbasename%" == "FDS-SMVclean" (
    echo             reverting %FDSbasename% repository
@@ -130,7 +125,7 @@ if "%FDSbasename%" == "FDS-SMVclean" (
    call :svn_revert 1> Nul 2>&1
 )
 
-:: update FDS repository
+::*** update FDS repository
 
 echo             updating %FDSbasename% repository
 cd %FDSsvnroot%
@@ -142,7 +137,7 @@ call :GET_DURATION PRELIM %PRELIM_beg% %PRELIM_end%
 set DIFF_PRELIM=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 1
+::                           stage 1 - build cfast
 :: -------------------------------------------------------------
 
 call :GET_TIME
@@ -175,7 +170,7 @@ call :GET_DURATION BUILDFDS %BUILDFDS_beg% %BUILDFDS_end%
 set DIFF_BUILDFDS=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 2
+::                           stage 2 - build smokeview
 :: -------------------------------------------------------------
 
 if %nothaveICC% == 1 (
@@ -210,7 +205,7 @@ call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 :skip_stage2
 
 :: -------------------------------------------------------------
-::                           stage 4
+::                           stage 4 - run cases
 :: -------------------------------------------------------------
 
 call :GET_TIME
@@ -271,7 +266,7 @@ call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
 set DIFF_RUNVV=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 5 - make pictures
+::                           stage 5 - make pictures (not implemented)
 :: -------------------------------------------------------------
 
 call :GET_TIME
@@ -287,7 +282,7 @@ call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
 set DIFF_MAKEPICS=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 6 - make manuals
+::                           stage 6 - make manuals (not implemented)
 :: -------------------------------------------------------------
 
 call :GET_TIME

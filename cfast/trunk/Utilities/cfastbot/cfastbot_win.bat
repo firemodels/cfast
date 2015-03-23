@@ -40,9 +40,6 @@ set infofile=%OUTDIR%\stage_info.txt
 set revisionfile=%OUTDIR%\revision.txt
 set stagestatus=%OUTDIR%\stage_status.log
 
-set fromsummarydir="%cfastsvnroot%\Docs\CFAST_Summary"
-set tosummarydir="%cfastsvnroot%\Manuals\SMV_Summary"
-
 set haveerrors=0
 set havewarnings=0
 set haveCC=1
@@ -246,7 +243,6 @@ cd "%SCRIPT_DIR%"
 set CFAST=%bg% %CFASTEXE%
 set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runcfast_win32.bat
 
-echo creating CFAST case list from CFAST_Cases.sh
 %SH2BAT% CFAST_Cases.sh CFAST_Cases.bat > %OUTDIR%\stage4a.txt 2>&1
 
 call CFAST_Cases.bat 1> %OUTDIR%\stage4a.txt 2>&1
@@ -328,47 +324,7 @@ echo .make pictures: %DIFF_MAKEPICS% >> %infofile%
 echo .        total: %DIFF_TIME% >> %infofile%
 echo . ----------------------------- >> %infofile%
 
-if NOT exist %tosummarydir% goto skip_copyfiles
-  echo summary   (local): file://%userprofile%/FDS-SMV/Manuals/SMV_Summary/index.html >> %infofile%
-  echo summary (windows): https://googledrive.com/host/0B-W-dkXwdHWNUElBbWpYQTBUejQ/index.html >> %infofile%
-  echo summary   (linux): https://googledrive.com/host/0B-W-dkXwdHWNN3N2eG92X2taRFk/index.html >> %infofile%
-  copy %fromsummarydir%\index*.html %tosummarydir%  1> Nul 2>&1
-  copy %fromsummarydir%\images\*.png %tosummarydir%\images 1> Nul 2>&1
-  copy %fromsummarydir%\images2\*.png %tosummarydir%\images2 1> Nul 2>&1
-:skip_copyfiles
-  
-
 cd %CURDIR%
-
-if exist %emailexe% (
-  if %havewarnings% == 0 (
-    if %haveerrors% == 0 (
-      call %email% %mailToSMV% "smokebot build success on %COMPUTERNAME%! %revision%" %infofile%
-    ) else (
-      echo "start: %startdate% %starttime% " > %infofile%
-      echo " stop: %stopdate% %stoptime% " >> %infofile%
-      echo. >> %infofile%
-      type %errorlog% >> %infofile%
-      call %email% %mailToSMV% "smokebot build failure on %COMPUTERNAME%! %revision%" %infofile%
-    )
-  ) else (
-    if %haveerrors% == 0 (
-      echo "start: %startdate% %starttime% " > %infofile%
-      echo " stop: %stopdate% %stoptime% " >> %infofile%
-      echo. >> %infofile%
-      type %warninglog% >> %infofile%
-      %email% %mailToSMV% "smokebot build success with warnings on %COMPUTERNAME% %revision%" %infofile%
-    ) else (
-      echo "start: %startdate% %starttime% " > %infofile%
-      echo " stop: %stopdate% %stoptime% " >> %infofile%
-      echo. >> %infofile%
-      type %errorlog% >> %infofile%
-      echo. >> %infofile%
-      type %warninglog% >> %infofile%
-      call %email% %mailToSMV% "smokebot build failure on %COMPUTERNAME%! %revision%" %infofile%
-    )
-  )
-)
 
 echo cfastbot_win completed
 cd %CURDIR%
@@ -535,9 +491,6 @@ if %nwarnings% GTR 0 (
   type %OUTDIR%\stage_warning.txt >> %warninglog%
   set havewarnings=1
 )
-
-copy %guide%.pdf %fromsummarydir%\manuals
-copy %guide%.pdf %tosummarydir%\manuals
 
 exit /b
 

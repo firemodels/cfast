@@ -1,6 +1,7 @@
 @echo off
 
-call %SVNROOT%\Validation\scripts\getopts.bat %*
+:: need to define GETOPTS if this script is called outside of cfastbot
+call %GETOPTS% %*
 
 set fulldir=%BASEDIR%/%dir%
 

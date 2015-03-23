@@ -95,8 +95,8 @@
             ix = max(iroom1,iroom2)
             factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
             height = ventptr%soffit - ventptr%sill
-            width = ventptr%width
-            avent = factor2*height*width
+            width = ventptr%width*factor2
+            avent = height*width
 
             if (avent>=1.0e-10_eb) then
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
@@ -118,7 +118,7 @@
                 !  calculate entrainment type mixing at the vents
 
                 if (option(fentrain)==on) then
-                    call entrain(dirs12,yslab,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
+                    call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
                        uflw3,vsas(1,i),vasa(1,i))
                     do ilay = 1, 2
                         ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
@@ -193,14 +193,15 @@
     return
     end subroutine horizontal_flow
 
-! --------------------------- entrain -------------------------------------------
+! --------------------------- spill_plume -------------------------------------------
 
-    subroutine entrain(dirs12,yslab,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas,vasa)
+    subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas,vasa)
 
-    !     routine: entrain
+    !     routine: spill_plume
     !     purpose: 
     !     arguments: dirs12 - a measure of the direction of the room 1 to room flow in each slab
     !                yslab  - slab heights in rooms 1,2 above absolute reference elevation [m]
+    !                width  - slab width [m]
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
     !                nslab  - number of slabs between bottom and top of vent
     !                tu     - upper layer temperature in each room [k]
@@ -218,7 +219,7 @@
     implicit none
     
     integer, intent(in) :: dirs12(10), nprod, nslab, mxfprd
-    real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, ylay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop
+    real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, ylay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
     real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
     
     integer :: i, iprod,n , ifrom, ito
@@ -244,16 +245,15 @@
                 ! slabs with no flow cause no entrainment
                 if (xmslab(n)/=0.0_eb) then
 
-                    ! determine what room flow is coming fro
+                    ! determine what room flow is coming from
                     if (dirs12(n)==1) then
                         ifrom = 1
                         ito = 2
-                    else if (dirs12(n)==0) then
-                        ! no flow in this slab so we can skip it (we should never get here)
-                        go to 60
                     else if (dirs12(n)==-1) then
                         ifrom = 2
                         ito = 1
+                    else
+                        cycle
                     endif
 
                     ! determine temperature and product concentrations of entrained flow
@@ -275,7 +275,7 @@
                         ! into upper
                         if (tu(ifrom)>tl(ito).and.xmslab(n)/=0.0_eb) then
                             zd = max(0.0_eb,ylay(ito)-max(yvbot,ylay(ifrom)))
-                            call entrfl(tu(ifrom),tl(ito),xmslab(n),zd,uflw3(ito,m,u))
+                            call poreh_plume (tu(ifrom),tl(ito),xmslab(n),zd,width,uflw3(ito,m,u))
                             uflw3(ito,m,l) = -uflw3(ito,m,u)
                             vsas(ito) = uflw3(ito,m,u)
                         endif
@@ -288,7 +288,7 @@
                             ! need to re-work distance zd for both into upper and into upper case.  
                             ! the above doesn't work for all cases
                             zd = min(yvtop,ylay(ifrom)) - max(ylay(ito),yvbot)
-                            call entrfl(tu(ito),tl(ifrom),xmslab(n),zd,uflw3(ito,m,l))
+                            call poreh_plume (tu(ito),tl(ifrom),xmslab(n),zd,width,uflw3(ito,m,l))
 
                             ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment 
                             !    to try to approximate the reduced kelvin-helmholz type mixing.
@@ -309,62 +309,38 @@
                 endif
             endif
         endif
-60      continue
     end do
     return
-    end subroutine entrain
+    end subroutine spill_plume
 
-! --------------------------- entrfl -------------------------------------------
+! --------------------------- poreh_plume -------------------------------------------
 
-    subroutine entrfl(tu,tl,fmd,zz,fm_entrained)
+    subroutine poreh_plume(tu,tl,fmd,zz,w,fm_entrained)
 
-    !     for the reference for this correlation, see the comments in the routine "firplm."  the offset for the formulation
-    !     of an equivalent door jet is provided by requiring the plume be long enough to be the appropriate plume for the
-    !     fire of size qj.  note that mccaffrey's units are kilojoules.  also we assume that the plume is round as in 
-    !     mccaffrey's plume.  this could be modified to account for the flat plume verus the round plume in the theory.
+    ! doorway plumes are assumed to be spill plumes from poreh, et. al., Fire Safety Journal, 30:1-19, 1998.
+    ! At the moment, we do this by flow slab consistent with the original method that used mccaffrey's plume
+    
+    !     arguments: tu - upper layer temperature in the from room (input) (K)
+    !                tl - lower layer temperature in the to room (input) (K)
+    !                fmd - mass flow, from room --> to room (input) (kg/s)
+    !                w - vent width (input) (m)
+    !                zz - height over which entrainment takes place (input) (m)
+    !                fm_entrained - mass entrained (output) (kg/s)
 
     use precision_parameters
-    use cfast_main
+    use cfast_main, only : cp
     implicit none
     
-    real(eb), intent(in) :: tu, tl, fmd, zz
+    real(eb), intent(in) :: tu, tl, fmd, zz, w
     real(eb), intent(out) :: fm_entrained
     
-    real(eb) :: xqj, qj, fmdqj, z0dq, z_star
+    real(eb) :: hdot, rhol
     
-    ! Ensure that mccaffrey correlation is continuous.  
-    ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
-    !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
-    
-    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb, a2 = a1*t1**0.566_eb/t1**0.909_eb
-    real(eb), parameter :: a3 = a2*t2**0.909_eb/t2**1.895_eb, e1 = 1.0_eb/0.566_eb, e2 = 1.0_eb/0.909_eb
-    real(eb), parameter :: e3 = 1.0_eb/1.895_eb, f1 = a1*t1**0.566_eb, f2 = a2*t2**0.909_eb
-
-    ! determine virtual origin for the plume
-    xqj = cp*(tu-tl)*0.001_eb
-    qj = xqj*fmd
-    fmdqj = 1.0_eb/xqj
-    if (fmdqj>=0.0_eb.and.fmdqj<=f1) then
-        z0dq = (fmdqj/a1)**e1
-    else if (fmdqj>f1.and.fmdqj<=f2) then
-        z0dq = (fmdqj/a2)**e2
-    else
-        z0dq = (fmdqj/a3)**e3
-    endif
-
-    z_star = zz/qj**0.4_eb + z0dq
-    
-    if (z_star>t2) then
-        fm_entrained = a3*z_star**1.895_eb*qj
-    else if (z_star>t1) then
-        fm_entrained = a2*z_star**0.909_eb*qj
-    else
-        fm_entrained = a1*z_star**0.566_eb*qj
-    endif
-
-    fm_entrained = max(0.0_eb,fm_entrained-fmd)
+    hdot = cp*(tu-tl)*fmd
+    rhol = 352.981915_eb/tl
+    fm_entrained = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * zz
     return
-    end subroutine entrfl
+    end subroutine poreh_plume
 
 ! --------------------------- ventflag -------------------------------------------
 

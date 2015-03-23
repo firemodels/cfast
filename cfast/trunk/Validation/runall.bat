@@ -533,7 +533,7 @@ call ..\CleanCFAST
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC38 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC39 /V
 cd ..\
-if %1==Dunes2000 goto end
+if %1==Dunes_2000 goto end
 
 if %1==ALL echo NBS Plaza Hotel Test must be run separately
 if %1==ALL goto end

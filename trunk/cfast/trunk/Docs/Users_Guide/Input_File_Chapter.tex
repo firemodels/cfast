@@ -165,7 +165,7 @@ TAMB,293.15,101300,0,50
 \end{center}
 \end{figure}
 
-\textbf{Temperature} (default units: \degc~C, default value: 20 \degc~C): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
+\textbf{Temperature} (default units: \degc, default value: 20 \degc): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
 
 \textbf{Pressure} (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside (for TAMB) and outside (for EAMB) the structure at the station elevation. Default value is standard atmospheric pressure at sea level (0 m elevation) of 101.3 kPa. Input units are in Pa.
 
@@ -1107,7 +1107,7 @@ For mechanical vents, there are two species that can be filtered out of the gas 
 
 \begin{itemize}
 \item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
-\end{itemize} 
+\end{itemize}
 
 \subsection{Visualization}
 
@@ -1170,7 +1170,7 @@ Use the Add Defaults button to add a default set of visualizations for the curre
 
 \textbf{Axis} (default units: n/s, default value: X-axis (Width)): Axis that the specified slice file is located.  The slice is place perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis, and the X-Y plane for the Z-Axis)
 
-\textbf{Temperature} (default units \degc, default value: none): Specified gas temperature for the selected isosurface. 
+\textbf{Temperature} (default units \degc, default value: none): Specified gas temperature for the selected isosurface.
 
 \begin{wrapfigure}{l}{0pt}
   \includegraphics[width=2.511in]{FIGURES/Input_File/Visualizations_Resolution}
@@ -1182,7 +1182,7 @@ By default, slice files are generated with a grid of 50 data points in each dire
 
 \textbf{Width (Y) Grid} (default units: n/a, default value: 50): slices included along the Y axis for each compartment are uniformly divided into the specified number of data points.
 
-\textbf{Width (Z) Grid} (default units: n/a, default value: 50): slices included along the Z axis for each compartment are divided into the specified number of data points. 
+\textbf{Width (Z) Grid} (default units: n/a, default value: 50): slices included along the Z axis for each compartment are divided into the specified number of data points.
 
 Sample visualizations are included below.
 

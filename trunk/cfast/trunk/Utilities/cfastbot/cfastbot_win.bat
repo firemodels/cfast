@@ -221,7 +221,7 @@ set SCRIPT_DIR=%CD%
 set GETOPTS=%SCRIPT_DIR%\getopts.bat
 set SH2BAT="%SCRIPT_DIR%\sh2bat.exe"
 
-cd %CD%\..
+cd %cfastsvnroot%\Validation
 set BASEDIR=%CD%
 set BACKGROUNDDIR=%cfastsvnroot%\Validation\scripts\
 cd "%BACKGROUNDDIR%"
@@ -276,12 +276,15 @@ set MAKEPICS_beg=%current_time%
 echo Stage 5 - Making pictures for cfast cases
 
 cd %cfastsvnroot%\Validation\scripts
+set SH2BAT=%cfastsvnroot%\Validation\scripts\sh2bat.exe
 
 %SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage5.txt 2>&1
 set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runsmv.bat
 
-cd %BASEDIR%
-call CFAST_Pictures.bat 1> %OUTDIR%\stage5.txt 2>&1
+cd %cfastsvnroot%\Validation
+set BASEDIR=%CD%
+
+call scripts\CFAST_Pictures.bat 1> %OUTDIR%\stage5.txt 2>&1
 
 call :GET_TIME
 set MAKEPICS_end=%current_time% 

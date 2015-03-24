@@ -268,7 +268,7 @@ call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
 set DIFF_RUNVV=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 5 - make pictures (not implemented)
+::                           stage 5 - make pictures
 :: -------------------------------------------------------------
 
 call :GET_TIME
@@ -278,8 +278,9 @@ echo Stage 5 - Making pictures for cfast cases
 cd %cfastsvnroot%\Validation\scripts
 
 %SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage5a.txt 2>&1
-set RUNCFAST=%cfastsvnroot%\Validation\scripts\runsmv.bat
+set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runsmv.bat
 
+cd %BASEDIR%
 call CFAST_Pictures.bat 1> %OUTDIR%\stage5a.txt 2>&1
 
 

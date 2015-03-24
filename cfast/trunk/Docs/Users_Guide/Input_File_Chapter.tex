@@ -1,7 +1,5 @@
 \chapter{Setting Up the Input File for CFAST}
 
-\section{Overview}
-
 CFAST is a computer program that uses an input file and generates one or more output files. The first step in performing a calculation is to generate a text input file that provides the program with all of the necessary information to describe the scenario under consideration.  The most important inputs determine the geometry of the compartments in the scenario and the connections between these compartments. Next, the fire, detection, and suppression characteristics of the scenario are defined. Finally, there are a number of parameters that customize the output from the model.  Each line of the file contains a keyword label that identifies the input, followed by a number of numerical or text inputs corresponding to the particular input keyword. A simple input file is shown below. This example is used in the discussion of the output in Chapter 5.
 
 \begin{lstlisting}
@@ -97,7 +95,7 @@ These tabbed-pages organize the inputs for CFAST simulations into several catego
 
 Each of these tabbed-pages is described in more detail below. In addition, a series of menus allow the user to open and save files; run the simulation, or access help and program information.
 
-\section{Simulation Environment}
+\chapter{Simulation Environment}
 
 The Simulation Environment page defines the initial conditions and simulation time for the CFAST input file.
 
@@ -107,7 +105,7 @@ The Simulation Environment page defines the initial conditions and simulation ti
 \end{center}
 \end{figure}
 
-\subsection{Naming the Calculation, the Title Input}
+\section{Naming the Calculation, the Title Input}
 
 The first thing to do when setting up an input file is to give the simulation a title.  The first line in the CFAST input data file must be the CFAST version identification along with an optional short title for the simulation.  This is a required input.  The VERSN command is the line that CFAST keys on to determine whether it has a correct data file.
 
@@ -125,7 +123,7 @@ VERSN,7,CFAST Simulation
 
 \textbf{Title:} The title is optional and may consist of letters, numbers, and/or symbols and may be up to 50 characters. It permits the user to label each run.
 
-\subsection{Setting Time Limits and Output Options}
+\section{Setting Time Limits and Output Options}
 
 A TIMES line specifies the length of time over which the simulation takes place and how often output will be generated. This is a required input. There are one to four entries in this line.
 
@@ -150,7 +148,7 @@ TIMES,900,50,10,10
 
 \textbf{Maximum Time Step} (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This input places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced which often will allow the simulation to successfully complete.
 
-\subsection{Ambient Conditions}
+\section{Ambient Conditions}
 
 Ambient conditions define the environment at which the scenario begins. This allows the user to specify the temperature, pressure, and a reference elevation, as well as an initial relative humidity.  Initial pressures in a structure are calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}. The relative humidity is used to calculate the initial water content in the air both inside and outside of the structure.  There is an input for the interior and for the exterior of the structure.  Two keywords define the ambient conditions: TAMB for the interior of the structure and EAMB for the exterior of the structure is EAMB.
 
@@ -180,7 +178,7 @@ TAMB,293.15,101300,0,50
 \item These parameters are optional. If they are not included in the input file, default values are used.
 \end{itemize}
 
-\section{Compartment Geometry}
+\chapter{Compartment Geometry}
 
 \begin{figure}[h!]
 \begin{center}
@@ -216,7 +214,7 @@ Use the Move Up and Move Down buttons to change the order of the list of compart
 
 Use the Remove button to delete the selected compartment from the list of compartments in the summary table.  Other compartments are renumbered once the compartment is deleted.
 
-\subsection{Defining the Compartment}
+\section{Defining the Compartment}
 
 In order to model a fire scenario, the size and elevation of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 6 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
 
@@ -265,7 +263,7 @@ COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
 
 \textbf{Absolute Floor Height:} specifies the height of the floor of each compartment with respect to station elevation specified by the internal ambient conditions reference height parameter.  The reference point must be the same for all elevations in the input data.  For example, the two rooms in the sample to the right would be located at (0,0,0) and (0,2,2.3).
 
-\subsection{Thermal Properties of Bounding Surfaces}
+\section{Thermal Properties of Bounding Surfaces}
 
 To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
 
@@ -303,7 +301,7 @@ The bounding surfaces are the ceilings, walls and floors that define a compartme
 \item The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
 \end{itemize}
 
-\subsection{Additional Thermal Properties}
+\section{Additional Thermal Properties}
 
 By default, CEdit does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Thermal Properties} Menu item (see page \pageref{Thermal_Properties_Menu}) allows you to add thermal properties from an existing data file to the current simulation.
 
@@ -360,8 +358,61 @@ Use the Remove button to delete the selected thermal property from the list of f
 
 \textbf{Emissivity} (default value: 0.9, default units: none): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
 
-\newpage
-\section{Compartment Connections}
+
+\section{Modeling a Compartment as a Tall Shaft or Long Corridor}
+
+For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire or in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, or compartments far from the fire.
+
+By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinkler, and targets near the ceiling in corridors.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.25in]{FIGURES/Input_File/Corridor_Flow}
+\end{center}
+\end{figure}
+
+\textbf{Normal (Two-zone model)}: Conditions in the compartment are calculated with the normal two-zone approach.
+
+\textbf{Shaft (Single-zone model}: Conditions in the compartment are calculated as single well-mixed zone.
+
+\textbf{Corridor (Revised ceiling jet}: Conditions in the compartment are calculated with the normal two-zone approach. Ceiling jet temperatures in the compartment are calculated with a revised empirical correlation specific to corridors.
+
+
+\section{Defining Variable Compartment Area}
+
+The Compartment Geometry page includes two additional entries that may be used for defining compartment properties for spaces which are not rectangular in area.  Values are entered in a spreadsheet. The CFAST keywords ROOMA and ROOMH keywords allow the user to define non-rectangular rooms by specifying cross-sectional area as a function of height. One set of values is included for each compartment that has a variable cross-sectional area.
+
+\begin{lstlisting}
+!!
+!!Compartment keywords
+!!
+ROOMA,1,6,700.04,700.04,571.44,571.44,411.44,411.44
+ROOMH,1,6,0,1.799,1.8,2.199,2.2,2.399
+\end{lstlisting}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=4.25in]{FIGURES/Input_File/Variable_Area}
+\end{center}
+\end{figure}
+
+\textbf{Height Value(s)} (default units: m, default values: none): Values of height for the corresponding cross-sectional area values measured from the floor of the compartment. The values for the compartment correspond to cross-sectional area values included for the same compartment on the ROOMA command.
+
+\textbf{Area Value(s)} (default units m$^2$, default values: none): Values of cross-sectional area of the compartment as a function of height measured from the floor of the compartment. The values for the compartment correspond to height values included for the same compartment on the ROOMH command.
+
+\begin{itemize}
+\item Cross-sectional area values may vary larger or smaller with height as appropriate.
+\item Overall compartment size (input with the COMPA command (see page \pageref{Compartment_Inputs}) must define a volume at least as large as the total volume of the compartment. Typically, the COMPA input can correspond to the largest area in the list of cross-sectional area values.
+\item Once the total compartment volume is determined from the set of cross-sectional area and height inputs, an effective width and depth are calculated (maintaining the original user input for compartment height) so the compartment volume matches to actual total volume of the compartment. The aspect ratio (width/depth)is maintained.
+\item Cross-sectional area values should be input in order by ascending height. If the first height value is not zero (i.e., at floor level), the cross-sectional area is assumed constant from the floor to the height specified in the first cross-sectional area value.
+\item Similarly, if the last height value is not at the ceiling height, the cross-sectional area is assumed constant from the height specified in the last cross-sectional area value to the ceiling.
+\item Between any two adjacent cross-sectional area data values in the input list, the area is assumed to be a pyramidal section (which by definition maintains the same width to depth aspect ratio for the compartment from floor to ceiling).
+\item CFAST uses the variable cross-sectional area inputs to determine the layer height. The equations solved by CFAST determine the volume of the upper layer. For a normal rectangular room, this corresponds directly to a layer height. For a variable cross-sectional area compartment, a  numerical integration of the area inputs beginning at the ceiling is used to determine the height at which the upper layer occupies the calculated volume of the upper layer.
+\end{itemize}
+
+
+
+\chapter{Defining Natural Flow Connections Through Doors and Windows}
 
 Flow through vents can be natural flow through doors, windows, or openings in ceilings and floors; or forced flow in a mechanical ventilation system.  Natural flow comes in two varieties.  The first is referred to as horizontal flow.  It is the flow which is normally thought of in discussing fires.  It encompasses flow through doors, windows and so on.  The other is vertical flow and can occur if there is a hole in the ceiling or floor of a compartment.  This latter phenomena is useful in some scenarios such as in a ship where openings in floors and ceilings through scuttles are common and in buildings with manual or automatic heat and smoke venting.
 
@@ -385,10 +436,6 @@ For all three types of vents the size of the vent opening (expressed as a fracti
 \item the EVENT keyword changes the opening fraction of the specified vent at a chosen time.
 \item the RAMP keyword changes the opening fraction as a function of time by specifying a series of time and fraction pairs
 \end{itemize}
-
-Each of these commands is discussed in the sections that follow.
-
-\subsection{Defining Natural Flow Connections Through Doors and Windows}
 
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Input_File/Natural_Flow_Tab}
@@ -473,7 +520,9 @@ There are also two parameters which are used to locate the vents relative to the
 \item The soffit and sill specifications are with respect to the first compartment specified and is not necessarily symmetric since the elevation of the second compartment may be different than the first.  Reversing the order of the compartment designations can make a difference.
 \end{itemize}
 
-\subsection{Defining Natural Flow Connection Through Ceiling and Floor Openings}
+
+
+\chapter{Defining Natural Flow Connection Through Ceiling and Floor Openings}
 
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Input_File/Vertical_Flow_Tab}
@@ -527,7 +576,9 @@ EVENT,V,1,2,1,120,1,1
 \item Vertical connections can only be created between compartments that could be physically stacked based on specified floor and ceiling elevations for the compartments.  Some overlap between the absolute floor height of one compartment and the absolute ceiling height of another compartment is allowed.  However, whether the compartments are stacked or overlap somewhat, the ceiling/floor absolute elevations must be within 0.01 m of each other. The check is not done when the connection is to the outside.
 \end{itemize}
 
-\subsection{Defining Mechanical Ventilation Connections}
+
+
+\chapter{Defining Mechanical Ventilation Connections}
 
 \begin{figure}[h!]
 \begin{center}
@@ -563,6 +614,8 @@ Use the Remove button to delete the selected mechanical flow vent from the list 
 MVENT,2,3,1,V,0.6,0.4225,V,0.75,0.0731,0.167,2000,3000,1
 \end{lstlisting}
 
+\section{Connections to Compartments}
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4.553in]{FIGURES/Input_File/Mechanical_Vent_From_To}
@@ -585,6 +638,8 @@ MVENT,2,3,1,V,0.6,0.4225,V,0.75,0.0731,0.167,2000,3000,1
 
 \textbf{To Compartment Orientation:} The orientation of the diffuser relative to the floor of the compartment.  A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
 
+\section{Defining Fans}
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4.487in]{FIGURES/Input_File/Mechanical_Vent_Flowrate}
@@ -603,16 +658,32 @@ MVENT,2,3,1,V,0.6,0.4225,V,0.75,0.0731,0.167,2000,3000,1
 
 \textbf{Final Opening Fraction:} for mechanical flow vents, the fraction specifies the fractional fan flow rate for the vent. Fractional values must be between 0 and 1.
 
-\textbf{Filter Efficiency} (default units:~\%, default value: none): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied, that is all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, the user may specify the fraction of the soot and trace species mass to be removed as a percentage.
-
-\textbf{Begin Filtering At Time} (default units: s, default value: none): Time during the simulation at which the mechanical vent filtering begins.
-
 \begin{itemize}
 \item CFAST does not include provisions for reverse flow through a fan. Calibration for backward flow is not provided by fan manufacturers, so the equations incorporated in CFAST do not allow for such flow. The problem is simply that in this flow regime, the fan has stalled, and likely will soon fail.
 \item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
 \end{itemize}
 
-\section{Prescribing Fires}
+\section{Filtering}
+
+For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off. It is turned on with the EVENT key word, defined in the input editor with a Filter Efficiency and Begin Filter At time. The relevant CFAST keyword is EVENT.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Filtering}
+\end{center}
+\end{figure}
+
+\textbf{Filter Efficiency} (default units:~\%, default value: none): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied, that is all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, the user may specify the fraction of the soot and trace species mass to be removed as a percentage.
+
+\textbf{Begin Filtering At Time} (default units: s, default value: none): Time during the simulation at which the mechanical vent filtering begins.
+
+\begin{itemize}
+\item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
+\end{itemize}
+
+
+
+\chapter{Prescribing Fires}
 
 A simulated fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate (the pyrolysis rate). Energy is released by the fuel and combustion products are created as it burns. In the fire, species production is calculated based on production yields prescribed by the user. In addition, the pyrolysis rate and resulting energy and species generation may be limited by the oxygen available for combustion. When sufficient oxygen is available for combustion, the heat release rate for the constrained fire is the same as for the unconstrained fire.
 
@@ -663,7 +734,7 @@ Use the Duplicate button to create a copy of the fire currently selected in the 
 
 Use the Remove button to delete the selected fire from the list of fires in the summary table.  Other fires are renumbered once the fire is deleted. \\~ \\
 
-\subsection{Global Fire Inputs}
+\section{Global Fire Inputs}
 
 Two inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
 
@@ -679,7 +750,7 @@ Two inputs on the Fire Tab are global, that is, they apply to all fires included
 
 \textbf{Gaseous Ignition Temperature} (default units: \degc, default value: ambient temperature plus 100 K): The lower temperature limit on the burning of fuel in a gas layer. Since CFAST does not support a combustion kinetics model, this is the algorithm used for fires out of vents.  Normally, this value would not be changed by the user.
 
-\subsection{Defining Individual Fires}
+\section{Defining Individual Fires}
 
 Fires in CFAST are defined as a series of individual fire objects which are then placed as desired in compartments in a simulation.
 
@@ -786,7 +857,7 @@ For all fires, including t-squared fires, values are calculated for time depende
 \item In the input editor, time-dependent data are entered in a simple spreadsheet. Normal windows copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts are available for data editing. In addition, Alt-Ins will insert a complete row above the currently-selected row in the spreadsheet and Alt-Del will delete the current row in the spreadsheet.
 \end{itemize}
 
-\subsection{Additional Fires}
+\section{Additional Fires}
 
 By default, CEdit does not include predefined fires. Thus, the user needs to define fire objects for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Fires} Menu item (see page \pageref{Fires_Menu}) allows you to add thermal properties from an existing data file to the current simulation.
 
@@ -804,7 +875,7 @@ By default, CEdit does not include predefined fires. Thus, the user needs to def
 Use the Select All and Deselect All buttons to make or clear all fire objects for inclusion in the current simulation.  Individual fires can be included or excluded by checking or clearing the check box for an individual fire in the list of fire objects.
 
 
-\subsection{T-squared Fires}
+\section{T-squared Fires}
 
 For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}.
 
@@ -824,7 +895,7 @@ For a wide range of fires, the fire growth can be accurately represented with a 
 
 \textbf{Decay Period}: (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
 
-\subsection{Associating Fire Objects with One or More Instances of the Fire in the Compartments of the Simulation}
+\section{Associating Fire Objects with One or More Instances of the Fire in the Compartments of the Simulation}
 
 Fires  are placed in defined positions within a compartment of a simulation and oriented with a normal vector to the surface of the object.  Ignition of an object may be at a specified time, a specified net incident heat flux on the surface of the object, or at a specified surface temperature of the object.
 
@@ -852,7 +923,7 @@ Fires  are placed in defined positions within a compartment of a simulation and 
 
 \textbf{Ignition Value}: The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
 
-\subsection{Calculating Normal Vectors}
+\section{Calculating Normal Vectors}
 
 The general equations for determining the normal vectors in the x, y, and z directions are \\~
 
@@ -895,12 +966,9 @@ Since the only side of the target that is combustible is the top surface of the 
 
 In this case, the unit vector in the +Z direction.
 
-\newpage
-\section{Advanced Features}
 
-The following section describe some special features that are only required for more advanced simulations with CFAST.
 
-\subsection{Sprinklers and Detectors}
+\chapter{Sprinklers and Detectors}
 
 Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.  A maximum of 10 sprinklers or detectors can be included in a single compartment in a CFAST input file and model run. The DETEC keyword is used for both detectors and sprinklers. The first three parameters are required. The next three have defaults. The last three must be specified if the input is a heat detector or sprinkler.
 
@@ -938,7 +1006,9 @@ DETECT,2,1,347.04,4.55,2.5,4.554,100,1,7E-05
 \item Several cautions should be observed when using estimates of sprinkler suppression within the model: 1) the first sprinkler activated controls the effect of the sprinkler on the heat release rate of the fire.  Subsequent sprinklers which may activate have no additional effect on the fire simulation. 2) The fire suppression algorithm assumes the effect of the sprinkler is solely to reduce the heat release rate of the fire. Any effects of the sprinkler spray on gas temperatures or mixing within the compartment are ignored. 3) The sprinkler always reduces the heat release rate of the fire. The ability of a fire to overwhelm an under-designed sprinkler is not modeled. 4) Since the dynamics of the sprinkler and direct effects of the spray on gas temperatures and velocities are not modeled, calculated times of activation of secondary sprinklers and / or detectors after the first sprinkler is activated should be not be modeled since the impact of the first sprinkler on the activation of additional sprinklers is not included in the CFAST model.
 \end{itemize}
 
-\subsection{Defining Targets}
+
+
+\chapter{Defining Targets}
 
 CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets.  The relevant keyword used to specify targets is TARGE.
 
@@ -961,13 +1031,11 @@ In addition to any user-defined targets, there are always two targets that are a
 
 For all targets, heat flux is calculated to the surface specified by the user (with the direction determined by the normal vector). Conduction into the target is assumed to occur only from this surface into the target.
 
-
 \textbf{Compartment}: The compartment in which the target is located.
 
 \textbf{Target Type}: If the solution method is not STEADY, this parameter further indicates the solutions equations.  Specify Thermally Thick, Thermally Thin, or Cylindrical.  For thermally thin materials, CFAST uses ordinary differential equations; for thermally thick materials, partial differential equations, and for cylindrical targets, cylindrical coordinates.
 
 \textbf{Solution Method}: Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
-
 
 \begin{wrapfigure}{l}{0pt}
   \includegraphics[width=3.713in]{FIGURES/Input_File/Target_Geometry}
@@ -1002,58 +1070,9 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 
 \end{itemize}
 
-\subsection{Modeling a Compartment as a Tall Shaft or Long Corridor}
-
-For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source, where the two-zone layer stratification is less pronounced than in compartments near the fire or in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, or compartments far from the fire.
-
-By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinkler, and targets near the ceiling in corridors.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.25in]{FIGURES/Input_File/Corridor_Flow}
-\end{center}
-\end{figure}
-
-\textbf{Normal (Two-zone model)}: Conditions in the compartment are calculated with the normal two-zone approach.
-
-\textbf{Shaft (Single-zone model}: Conditions in the compartment are calculated as single well-mixed zone.
-
-\textbf{Corridor (Revised ceiling jet}: Conditions in the compartment are calculated with the normal two-zone approach. Ceiling jet temperatures in the compartment are calculated with a revised empirical correlation specific to corridors.
 
 
-\subsection{Defining Compartment Area}
-
-The Compartment Geometry page includes two additional entries that may be used for defining compartment properties for spaces which are not rectangular in area.  Values are entered in a spreadsheet. The CFAST keywords ROOMA and ROOMH keywords allow the user to define non-rectangular rooms by specifying cross-sectional area as a function of height. One set of values is included for each compartment that has a variable cross-sectional area.
-
-\begin{lstlisting}
-!!
-!!Compartment keywords
-!!
-ROOMA,1,6,700.04,700.04,571.44,571.44,411.44,411.44
-ROOMH,1,6,0,1.799,1.8,2.199,2.2,2.399
-\end{lstlisting}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.25in]{FIGURES/Input_File/Variable_Area}
-\end{center}
-\end{figure}
-
-\textbf{Height Value(s)} (default units: m, default values: none): Values of height for the corresponding cross-sectional area values measured from the floor of the compartment. The values for the compartment correspond to cross-sectional area values included for the same compartment on the ROOMA command.
-
-\textbf{Area Value(s)} (default units m$^2$, default values: none): Values of cross-sectional area of the compartment as a function of height measured from the floor of the compartment. The values for the compartment correspond to height values included for the same compartment on the ROOMH command.
-
-\begin{itemize}
-\item Cross-sectional area values may vary larger or smaller with height as appropriate.
-\item Overall compartment size (input with the COMPA command (see page \pageref{Compartment_Inputs}) must define a volume at least as large as the total volume of the compartment. Typically, the COMPA input can correspond to the largest area in the list of cross-sectional area values.
-\item Once the total compartment volume is determined from the set of cross-sectional area and height inputs, an effective width and depth are calculated (maintaining the original user input for compartment height) so the compartment volume matches to actual total volume of the compartment. The aspect ratio (width/depth)is maintained.
-\item Cross-sectional area values should be input in order by ascending height. If the first height value is not zero (i.e., at floor level), the cross-sectional area is assumed constant from the floor to the height specified in the first cross-sectional area value.
-\item Similarly, if the last height value is not at the ceiling height, the cross-sectional area is assumed constant from the height specified in the last cross-sectional area value to the ceiling.
-\item Between any two adjacent cross-sectional area data values in the input list, the area is assumed to be a pyramidal section (which by definition maintains the same width to depth aspect ratio for the compartment from floor to ceiling).
-\item CFAST uses the variable cross-sectional area inputs to determine the layer height. The equations solved by CFAST determine the volume of the upper layer. For a normal rectangular room, this corresponds directly to a layer height. For a variable cross-sectional area compartment, a  numerical integration of the area inputs beginning at the ceiling is used to determine the height at which the upper layer occupies the calculated volume of the upper layer.
-\end{itemize}
-
-\subsection{Surface Connections}
+\chapter{Surface Connections}
 
 The Surface Connections page allows the user to define heat transfer between compartments in a simulation. Energy can be transferred from compartment to compartment through solid boundaries (walls, ceilings and floors) by means of conduction. The heat transfer between connected compartments is modeled by merging the connected surfaces for the ceiling and floor compartments or for the connected horizontal compartments.  The heat conduction problem is solved for the merged walls using a temperature boundary condition for both the near and far wall. As before, temperatures are determined by the solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.  This option is implemented with the VHEAT (for vertical heat transfer) and the HHEAT (for horizontal heat transfer) keywords.
 
@@ -1091,25 +1110,9 @@ HHEAT,2,1
 
 \textbf{Bottom Compartment}: The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
 
-\subsection{Filtering}
 
-For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off. It is turned on with the EVENT key word, defined in the input editor with a Filter Efficiency and Begin Filter At time. The relevant CFAST keyword is EVENT.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Filtering}
-\end{center}
-\end{figure}
-
-\textbf{Filter Efficiency} (default units:~\%, default value: none): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied, that is all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, the user may specify the fraction of the soot and trace species mass to be removed as a percentage.
-
-\textbf{Begin Filtering At Time} (default units: s, default value: none): Time during the simulation at which the mechanical vent filtering begins.
-
-\begin{itemize}
-\item If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate.  This will allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
-\end{itemize}
-
-\subsection{Visualization}
+\chapter{Visualization}
 
 Calculated results from a CFAST simulation can be visualized using Smokeview \cite{Smokeview_Users_Guide_6}. This allows the user to see the compartment geometry and connections
 or view the results of the simulation visually. In addition to a simplified view of the layer temperatures and vent flows, more detailed estimates of gas temperature, gas velocity, vent flow velocity, target temperature, and detector status can be visualized. CFAST inputs for visualization are the SLCF and ISOF keywords.
@@ -1206,3 +1209,4 @@ Smokeview Visualization of Gas Velocity with Two Fires
 Smokeview Visualization of Detector Activation in a Corridor
 \end{center}
 \end{figure}
+

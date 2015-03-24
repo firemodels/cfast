@@ -95,7 +95,7 @@ These tabbed-pages organize the inputs for CFAST simulations into several catego
 
 Each of these tabbed-pages is described in more detail below. In addition, a series of menus allow the user to open and save files; run the simulation, or access help and program information.
 
-Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table. 
+Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table.
 
 
 
@@ -103,74 +103,49 @@ Most of the tabbed pages in the program are of similar design, with a summary of
 
 The Simulation Environment page defines the initial conditions and simulation time for the CFAST input file.
 
-\begin{figure}[h!]
-\begin{center}
+\begin{figure}[ht]
+\centering
 \includegraphics[width=6.5in]{FIGURES/Input_File/Environment_Tab}
-\end{center}
+\caption[Snapshot of the Simulation Environment page]{Snapshot of the Simulation Environment page}
 \end{figure}
 
-\section{Naming the Calculation, the Title Input}
+\section{Title}
 
-The first thing to do when setting up an input file is to give the simulation a title.  The first line in the CFAST input data file must be the CFAST version identification along with an optional short title for the simulation.  
+The first thing to do when setting up an input file is to give the simulation a title. The title is optional and may consist of letters, numbers, and/or symbols and may be up to 50 characters. All output files will be tagged with this character string.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=5.3in]{FIGURES/Input_File/Title}
-\end{center}
-\end{figure}
+
+\section{Simulation Times}
 
 \begin{description}
-\item[Title] The title is optional and may consist of letters, numbers, and/or symbols and may be up to 50 characters. It permits the user to label each run.
-\end{description}
+\item[Simulation Time] (default units: s, default value, 900 s): The length of time over which the simulation takes place. The maximum value for this input is 86400 s (1 day).
 
-\section{Setting Time Limits and Output Options}
+\item[Text Output Interval] (default units: s, default value, 50 s): The time interval between each printing of the output data.  If omitted or less than or equal to zero, no output values will appear.
 
-A time inputs specify the length of time over which the simulation takes place and how often output will be generated. This is a required input.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=3.167in]{FIGURES/Input_File/Simulation_Times}
-\end{center}
-\end{figure}
-
-
-\begin{description}
-\item[Simulation Time] (default units: s, default value, 900 s): The length of time over which the simulation takes place.  This is a required input which should be entered even if all other fields are not included. The maximum value for this input is 86400 s (1 day).
-
-\item[Text Output Interval] (default units: s, default value, 50 s): The print interval is the time interval between each printing of the output values.  If omitted or less than or equal to zero, no output values will occur.
-
-\item[Spreadsheet Output Interval] (default units: s, default value, 10 s): CFAST can output a subset of the results of the model simulation in a comma-delimited alphanumeric format which can be read by most spreadsheet software. This is designed to be imported into a spreadsheet for further analysis or graphing of the results of the simulation.  This input defines the time interval between outputs of the model results in a spreadsheet-compatible format. A value greater than zero must be used if the spreadsheet file is to be used.
+\item[Spreadsheet Output Interval] (default units: s, default value, 10 s): CFAST can output the results of the simulation in a comma-delimited spreadsheet file. This parameter defines the time interval between these outputs. A value greater than zero must be used if the spreadsheet file is desired.
 
 \item[Smokeview Output Interval] (default units: s, default value: 10 s): CFAST can output a subset of the results in a format compatible with the visualization program Smokeview. This input defines the time interval between outputs of the model results in a Smokeview-compatible format.  A value greater than zero must be used if the spreadsheet output is desired.
 
-\item[Maximum Time Step] (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This input places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced which often will allow the simulation to successfully complete.
+\item[Maximum Time Step] (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This parameter places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced which often will allow the simulation to successfully complete.
 \end{description}
 
 \section{Ambient Conditions}
 
-Ambient conditions define the environment at which the scenario begins. This allows the user to specify the temperature, pressure, and a reference elevation, as well as an initial relative humidity.  Initial pressures in a structure are calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}. The relative humidity is used to calculate the initial water content in the air both inside and outside of the structure.  
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.313in]{FIGURES/Input_File/Ambient_Conditions}
-\end{center}
-\end{figure}
+Ambient conditions define the environment at which the scenario begins. Initial pressures in a structure are calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}. It is convenient to choose the base of a structure to be at zero height and then reference the height of the structure with respect to that height.  The temperature and pressure must then be measured at that position.  Another possible choice would be the pressure and temperature at sea level, with the structure elevations then given with respect to mean sea level.  This is also acceptable, but somewhat more tedious in specifying the construction of a structure.  Either of these choices works though, so long as they are consistent. Usually, the station elevation is set to zero and the pressure to ambient. The effect of changing these values is minor. Note that the equations implemented in the model are not designed to handle negative elevations and altitudes.
 
 \begin{description}
-\item[Temperature] (default units: \degc, default value: 20 \degc): Initial ambient temperature inside (for TAMB) or outside (For EAMB) the structure at the station elevation.
+\item[Temperature] (default units: \degc, default value: 20 \degc): Initial ambient temperature inside or outside the structure at the station elevation.
 
-\item[Pressure] (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside (for TAMB) and outside (for EAMB) the structure at the station elevation. Default value is standard atmospheric pressure at sea level (0 m elevation) of 101.3 kPa. Input units are in Pa.
+\item[Pressure] (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside and outside the structure at the station elevation. The default value is standard atmospheric pressure at sea level.
 
-\item[Elevation] (defaults units: m, default value: 0 m): The height where the ambient pressure and temperature were specified.  This is the reference datum for calculating the density of the atmosphere as well as the temperature and pressure inside and outside of the structure as a function of height.
+\item[Elevation] (defaults units: m, default value: 0 m): The height where the ambient pressure and temperature are specified.  This is the reference height for calculating the density of the atmosphere as well as the temperature and pressure inside and outside of the structure as a function of height.
 
-\item[Humidity] (default units \% RH, default value: 50 \%): The initial relative humidity in the system, only specified for the interior with the TAMB command.  This is converted to kilograms of water per cubic meter as an initial condition for both the interior and exterior of the structure.
+\item[Humidity] (default units \% RH, default value: 50 \%): The initial relative humidity in the system, only specified for the interior.  This is converted to kilograms of water per cubic meter as an initial condition for both the interior and exterior of the structure.
 \end{description}
 
-\graybox{
-The choice for station elevation, temperature and pressure must be consistent.  Outside of that limitation, the choice is arbitrary.  It is often convenient to choose the base of a structure to be at zero height and then reference the height of the structure with respect to that height.  The temperature and pressure must then be measured at that position.  Another possible choice would be the pressure and temperature at sea level, with the structure elevations then given with respect to mean sea level.  This is also acceptable, but somewhat more tedious in specifying the construction of a structure.  Either of these choices works though, so long as they are consistent. Usually, the station elevation is set to zero and the pressure to ambient. The effect of changing these values is small for small changes. There will be an effect for places at altitude, but even there the effect is not pronounced. Note that the equations implemented in the model are not designed to handle negative elevations and altitudes. It is suggested that the defaults be used. \\
 
-These parameters are optional. If they are not included in the input file, default values are used.
-}
+
+
+
 
 \chapter{Compartment Geometry}
 
@@ -249,7 +224,7 @@ The bounding surfaces are the ceilings, walls and floors that define a compartme
 
 \item[Floor Material] (default value: Off): material name from the thermal properties data file used for the floor surface of the compartment.
     \end{description}
-    
+
 \graybox{
 If the thermophysical properties of the enclosing surfaces are not included, CFAST will treat them as adiabatic (no heat transfer). \\
 
@@ -596,7 +571,7 @@ Fires in CFAST are defined as a series of individual fire objects which are then
 \end{center}
 \end{figure}
 
-Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire. 
+Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
 \begin{wrapfigure}{r}{0pt}
   \includegraphics[width=1.948in]{FIGURES/Input_File/Fire_Pulldown}

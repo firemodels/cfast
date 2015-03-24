@@ -46,6 +46,11 @@
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
+\usepackage{framed}
+\newcommand{\graybox}[1]{
+\begin{shaded}#1\end{shaded}
+}
+
 \renewcommand{\bibname}{References}
 
 % dummy change to force revision update
@@ -68,6 +73,7 @@
 \definecolor{linknavy}{rgb}{0,0,0.50196}
 \definecolor{linkred}{rgb}{1,0,0}
 \definecolor{linkblue}{rgb}{0,0,1}
+\definecolor{shadecolor}{rgb}{0.9,0.9,0.9}
 
 \usepackage[pdftex,
         colorlinks=true,

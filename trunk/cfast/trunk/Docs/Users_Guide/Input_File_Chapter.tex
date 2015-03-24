@@ -323,19 +323,14 @@ CFAST uses the variable cross-sectional area inputs to determine the layer heigh
 
 
 
-\chapter{Defining Natural Flow Connections Through Doors and Windows}
+\chapter{Natural Ventilation}
 
-Flow through vents can be natural flow through doors, windows, or openings in ceilings and floors; or forced flow in a mechanical ventilation system.  Natural flow comes in two varieties.  The first is referred to as horizontal flow.  It is the flow which is normally thought of in discussing fires.  It encompasses flow through doors, windows and so on.  The other is vertical flow and can occur if there is a hole in the ceiling or floor of a compartment.  This latter phenomena is useful in some scenarios such as in a ship where openings in floors and ceilings through scuttles are common and in buildings with manual or automatic heat and smoke venting.
+Natural ventilation can occur when two compartments are connected via open doorways or windows (\textbf{Wall Vents}); or when two compartments are connected via \textbf{Floor/Ceiling Vents}. If no vents are specified between two compartments, they are assumed to be isolated.
 
-Natural low through vents is governed by the pressure difference across a vent.  There are two situations which give rise to flow through vents.  The first is flow of air or smoke driven from a compartment by buoyancy.  The second type of flow is due to expansion which is particularly important when conditions in the fire environment are changing rapidly.  Rather than depending entirely on density differences between the two gases, the flow is forced by volumetric expansion.
 
-In addition to natural flow, forced flow from mechanical ventilation can affect a fire as well. More important than affecting the fire, however, is the dispersal of the smoke and toxic gases from the fire to adjacent spaces, if ventilation continues to operate after a fire starts.
+\section{Wall Vents}
 
-Atmospheric pressure is about 100 000 Pa. Fires produce pressure changes from 1 Pa to 1000 Pa and mechanical ventilation systems typically involve pressure differentials of about 1 Pa to 100 Pa.  In order to address pressure-induced flow, pressure differences of about 0.1 Pa out of 100 000 Pa for the overall problem or $10^{-4}$ Pa for adjacent compartments must be tracked.
-
-Horizontal flow connections may include doors between compartments or to the outdoors as well as windows in the compartments.  These specifications do not necessarily correspond to physically connecting the walls between specified compartments.  Rather, lack of an opening simply prevents flow between the compartments.  Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors.
-
-Horizontal connections can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the outdoors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section.  The relevant CFAST keyword is HVENT.  Details of the CFAST keywords are included in the appendix. It is possible to define a total of 25 horizontal flow connections between any pair of compartments. A number from 1 to 25 uniquely identifies the connection. This number is automatically assigned by the input editor based on the order they appear in the summary table on the horizontal flow vents page.
+Wall vents can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the outdoors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section. It is possible to define a total of 25 horizontal flow connections between any pair of compartments. Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors.
 
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Input_File/Compartment_From_To}
@@ -347,41 +342,15 @@ Horizontal connections can only be created between compartments that physically 
 \item[Second Compartment] Second of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 \end{description}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=1.1in]{FIGURES/Input_File/Vent_Size}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[Sill] (default units: m, default value: none): Sill height is the height of the bottom of the opening relative to the floor of the compartment selected as the first compartment.
-
 \item[Soffit] (default units: m, default value: none): Position of the top of the opening relative to the floor of the compartment selected as the first compartment.
-
 \item[Width] (default units: m, default value: none): The width of the opening.
-\end{description}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=3.1in]{FIGURES/Input_File/Vent_Open_Close}
-\end{center}
-\end{figure}
-
-Horizontal flow vents may be opened or closed during the fire. The default is 1.0 which is a fully open vent.  A value of 0.5 would specify a vent which is halfway open.
-
-\begin{description}
 \item[Initial Opening Fraction] (default value: 1): Flow through horizontal vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent width is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
-
 \item[Change Opening Fraction At Time]  (default units: s, default value: 0 s)  Time during the simulation at which to change the opening fraction.
-
 \item[Final Opening Fraction] (default value: 1): for horizontal flow vents, the fraction specifies the fractional width opening of the vent. Fractional values must be between 0 and 1.
-\end{description}
-
-There are also two parameters which are used to locate the vents relative to the compartment walls. These are used to incorporate additional three dimensional information of the relative location of the vents for visualization with Smokeview. These two parameters do not effect the results of a CFAST simulation.
-
-\begin{description}
 \item[Vent Offset] (default units: m, Default value: 0 m): For visualization, the vent offset is the horizontal distance between the near edge of this vent and the origin of the axis defined by the selected face(below) in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). For example, to place the vent at the center of the front wall, specify the front face at an offset of `compartment width/2 - vent width/2'.
-
 \item[Face] For visualization, FACE specifies which wall the vent will be displayed on in Smokeview.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane.
 \end{description}
 
@@ -391,10 +360,11 @@ The soffit and sill specifications are with respect to the first compartment spe
 
 
 
-\chapter{Defining Natural Flow Connection Through Ceiling and Floor Openings}
+\section{Ceiling/Floor Vents}
 
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Input_File/Vertical_Flow_Tab}
+\caption[Snapshot of Ceiling/Floor Vents page]{Snapshot of Ceiling/Floor Vents page}
 \end{figure}
 
 This section of the input data file describes the inputs for natural flow vents in ceilings and floors. Examples of these openings are scuddles in a ship, or a hole in the roof of a residence. Combined buoyancy- and pressure-driven flow through a vertical flow vent is possible when the connected spaces adjacent to the vent are filled with gases of different density in an unstable configuration, with the density of the top space larger than that of the bottom space. With a moderate cross-vent pressure difference, the instability leads to a bi-directional flow between the two spaces. For relatively large cross-vent pressure difference the flow through the vent is unidirectional, from the high- to the low-pressure space.

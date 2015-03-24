@@ -338,7 +338,7 @@ $RUNCFAST -d ../Verification/Analytical basic_tempequilib_wallsoff.in
 $RUNCFAST -d ../Verification/Analytical basic_tempequilib_window.in
 $RUNCFAST -d ../Verification/Analytical basic_tempequilib_window_elevation.in
 $RUNCFAST -d ../Verification/Analytical basic_tempequilib_window_geometry.in
-$RUNCFAST -d ../Verification/Analytical basic_tempequilib_window_wind .in
+$RUNCFAST -d ../Verification/Analytical basic_tempequilib_window_wind.in
 
 $RUNCFAST -d ../Verification/Analytical/Mass basic_mechvent.in
 

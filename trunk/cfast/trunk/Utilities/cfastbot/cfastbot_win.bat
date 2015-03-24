@@ -214,7 +214,7 @@ call :GET_TIME
 set RUNVV_beg=%current_time% 
 
 echo Stage 4 - Running validation cases
-echo             debug release
+echo             release
 
 cd %cfastsvnroot%\Validation\scripts
 set SCRIPT_DIR=%CD%
@@ -240,11 +240,9 @@ set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runcfast_win32.bat
 
 call CFAST_Cases.bat 1> %OUTDIR%\stage4a.txt 2>&1
 
-echo Waiting for all CFAST runs to finish
 :loop1
 tasklist | find /i /c "CFAST" > temp.out
 set /p numexe=<temp.out
-echo Number of cases running - %numexe%
 if %numexe% == 0 goto finished
 Timeout /t 30 >nul 
 goto loop1
@@ -504,5 +502,3 @@ exit /b
 
 :eof
 cd %CURDIR%
-pause
-exit

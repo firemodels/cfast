@@ -91,6 +91,7 @@ if %nothaveICC% == 0 (
 if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
   echo             found smokeview
+  set smokeview=smokeview.exe
 )
 
 ::*** looking for pdflatex
@@ -199,8 +200,9 @@ echo             release
 cd %FDSsvnroot%\SMV\Build\intel_win_64
 erase *.obj *.mod smokeview_win_64.exe 1> %OUTDIR%\stage2b.txt 2>&1
 make -f ..\Makefile intel_win_64 1>> %OUTDIR%\stage2b.txt 2>&1
+set smokeview=%FDSsvnroot%\SMV\Build\intel_win_64\smokeview_win_64.exe
 
-call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| aexit /b 1
+call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 :skip_stage2
 
@@ -273,8 +275,18 @@ call :GET_TIME
 set MAKEPICS_beg=%current_time% 
 echo Stage 5 - Making pictures for cfast cases
 
-:: call script to make pictures for cfast cases
-:: note using installed smokeview if C is not present (since smokeview could not be built)
+cd %cfastsvnroot%\Validation\scripts
+
+%SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage5a.txt 2>&1
+set RUNCFAST=%cfastsvnroot%\Validation\scripts\runsmv.bat
+
+call CFAST_Pictures.bat 1> %OUTDIR%\stage5a.txt 2>&1
+
+
+call :GET_TIME
+set RUNVV_end=%current_time% 
+call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
+set DIFF_RUNVV=%duration%
 
 call :GET_TIME
 set MAKEPICS_end=%current_time% 

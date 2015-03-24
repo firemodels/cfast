@@ -277,17 +277,11 @@ echo Stage 5 - Making pictures for cfast cases
 
 cd %cfastsvnroot%\Validation\scripts
 
-%SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage5a.txt 2>&1
+%SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage5.txt 2>&1
 set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runsmv.bat
 
 cd %BASEDIR%
-call CFAST_Pictures.bat 1> %OUTDIR%\stage5a.txt 2>&1
-
-
-call :GET_TIME
-set RUNVV_end=%current_time% 
-call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
-set DIFF_RUNVV=%duration%
+call CFAST_Pictures.bat 1> %OUTDIR%\stage5.txt 2>&1
 
 call :GET_TIME
 set MAKEPICS_end=%current_time% 
@@ -295,14 +289,21 @@ call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
 set DIFF_MAKEPICS=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 6 - make manuals (not implemented)
+::                           stage 6 - make manuals
 :: -------------------------------------------------------------
 
 call :GET_TIME
 set MAKEGUIDES_beg=%current_time% 
 echo Stage 6 - Building CFAST guides
 
-:: call scripts to make cfast guides
+echo             Users Guide
+call :build_guide Users_Guide %cfastsvnroot%\Docs\Users_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+
+echo             Technical Reference Guide
+call :build_guide Tech_Ref %cfastsvnroot%\Docs\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
+
+echo             Validation Guide
+call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 call :GET_TIME
 set MAKEGUIDES_end=%current_time%

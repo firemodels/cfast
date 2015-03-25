@@ -216,7 +216,7 @@ If a name is used which is not in the input file, the model should stop with an 
 The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
 }
 
-\subsection{Additional Thermal Properties}
+\section{Additional Thermal Properties}
 
 By default, CEdit does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Thermal Properties} Menu item (see page \pageref{Thermal_Properties_Menu}) allows you to add thermal properties from an existing data file to the current simulation.
 
@@ -313,19 +313,19 @@ Wall vents can only be created between compartments that physically overlap in e
 \item[Second Compartment] Second of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
 \item[Sill] (default units: m, default value: none): Sill height is the height of the bottom of the opening relative to the floor of the compartment selected as the first compartment.
-    
+
 \item[Soffit] (default units: m, default value: none): Position of the top of the opening relative to the floor of the compartment selected as the first compartment.
-    
+
 \item[Width] (default units: m, default value: none): The width of the opening.
 
 \item[Initial Opening Fraction] (default value: 1): Flow through horizontal vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent width is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
-    
+
 \item[Change Opening Fraction At Time]  (default units: s, default value: 0 s)  Time during the simulation at which to change the opening fraction.
-    
+
 \item[Final Opening Fraction] (default value: 1): for horizontal flow vents, the fraction specifies the fractional width opening of the vent. Fractional values must be between 0 and 1.
-    
+
 \item[Vent Offset] (default units: m, Default value: 0 m): For visualization, the vent offset is the horizontal distance between the near edge of this vent and the origin of the axis defined by the selected face(below) in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). For example, to place the vent at the center of the front wall, specify the front face at an offset of `compartment width/2 - vent width/2'.
-    
+
 \item[Face] For visualization, FACE specifies which wall the vent will be displayed on in Smokeview.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane.
 \end{description}
 
@@ -460,10 +460,7 @@ assuming that all the nitrogen and chlorine in the fuel are converted to HCN and
 \end{center}
 \end{figure}
 
-\section{Global Fire Inputs}
-
 Two inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
-
 
 \begin{description}
 \item[Lower Oxygen Limit] (default units: \%, default value: 10~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
@@ -549,9 +546,9 @@ The trace species is transported along with fire gases, but is assumed not to ta
 In the input editor, time-dependent data are entered in a simple spreadsheet. Normal windows copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts are available for data editing. In addition, Alt-Ins will insert a complete row above the currently-selected row in the spreadsheet and Alt-Del will delete the current row in the spreadsheet.
 }
 
-\section{Additional Fires}
+\subsection{Adding and Editing Fires}
 
-By default, CEdit does not include predefined fires. Thus, the user needs to define fire objects for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Fires} Menu item (see page \pageref{Fires_Menu}) allows you to add thermal properties from an existing data file to the current simulation.
+By default, CEdit does not include predefined fires. Thus, the user needs to define fire objects for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Fires} Menu item (see page \pageref{Fires_Menu}) allows you to add fires from an existing data file to the current simulation.
 
 \begin{figure}[h!]
 \begin{center}
@@ -559,7 +556,7 @@ By default, CEdit does not include predefined fires. Thus, the user needs to def
 \end{center}
 \end{figure}
 
-\section{T-squared Fires}
+\subsection{T-squared Fires}
 
 Use the Create t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000~BTU/s) in 600~s, 300~s, and 150~s, respectively were proposed for design of fire detection systems .  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054~kW in 75~s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
 
@@ -720,7 +717,7 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 \item[Normal Vector Z] Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Height) component in the direction from the floor of the target compartment. Default value is a horizontal, upward facing target, unit vector = (0,0,1).
 
 \item[Material] Used to specify the wall material of the target.  Any existing material in the list of thermal properties may be used here.
-    
+
 \item[Internal Temperature at] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
 \end{description}
 
@@ -759,6 +756,14 @@ The Surface Connections page allows the user to define heat transfer between com
 Calculated results from a CFAST simulation can be visualized using Smokeview \cite{Smokeview_Users_Guide_6}. This allows the user to see the compartment geometry and connections
 or view the results of the simulation visually. In addition to a simplified view of the layer temperatures and vent flows, more detailed estimates of gas temperature, gas velocity, vent flow velocity, target temperature, and detector status can be visualized.
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Visualizations_Tab}
+\end{center}
+\end{figure}
+
+\section{Adding Visualizations}
+
 \begin{description}
 \item[Visualization Type] (default units: n/a, default value: 2-D): The type of visualization to be included. Choose from 2-D (a single plane slice of temperature at the position and axis specified), 3-D (a set of three animated slices whose position can be moved along its respective axis, or Isosurface (a fixed 3-D surface where the gas temperature is equal to the value specified. See the Smokeview documentation \cite{Smokeview_Users_Guide_6}for details on the use of Smokeview.
 
@@ -771,6 +776,12 @@ or view the results of the simulation visually. In addition to a simplified view
 \item[Temperature] (default units \degc, default value: none): Specified gas temperature for the selected isosurface.
 \end{description}
 
+\graybox{
+Use the Add Defaults button to add a default set of visualizations for the current simulation. A slice file entry is created at the center of each compartment in the x (width) and y (depth) directions along with one near the ceiling in the z direction. a 3-D slice file entry is created for each compartment as well.
+}
+
+\section{Visualization Resolution}
+
 By default, slice files are generated with a grid of 50 data points in each direction for each compartment specified. If desired, the grid spacing can be adjusted up or down individually by compartment. Specifying a larger number of data points can \textit{dramatically} slow program execution since the gas temperature and velocity is evaluated at each grid location every time a Smokeview output is specified.  The default value should be appropriate for most simulations.
 
 \begin{description}
@@ -782,10 +793,6 @@ By default, slice files are generated with a grid of 50 data points in each dire
 \end{description}
 
 Sample visualizations are included below.
-
-\graybox{
-Use the Add Defaults button to add a default set of visualizations for the current simulation. A slice file entry is created at the center of each compartment in the x (width) and y (depth) directions along with one near the ceiling in the z direction. a 3-D slice file entry is created for each compartment as well.
-}
 
 \begin{figure}[h!]
 \begin{center}

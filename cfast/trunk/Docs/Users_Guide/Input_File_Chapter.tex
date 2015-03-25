@@ -85,7 +85,7 @@ These tabbed-pages organize the inputs for CFAST simulations into several catego
 \begin{description}
 \item[Simulation Environment] includes simulation time, specification of model outputs, and ambient conditions. Also included on the page are a constantly updated list of errors, warnings, and messages about the input file specification or model simulation.
 \item[Compartments] defines the size, construction characteristics, and position of the compartments in a simulation.
-\item[Wall Vents, Ceiling/Floor Vents, and Mechanical Flow Vents] allows the user to connect compartments with doors and windows, ceiling and floor vents, or forced air ventilation systems.
+\item[Wall Vents, Ceiling/Floor Vents, and Mechanical Ventilation] allows the user to connect compartments with doors and windows, ceiling and floor vents, or forced air ventilation systems.
 \item[Fires] include user specification of the initial fire source and any additional burning objects in one or more of the compartments of the simulation.
 \item[Detection / Suppression] defines any heat alarms and sprinklers in the compartments of the simulation.
 \item[Targets] provide the ability calculate the temperature and net heat flux to objects placed and oriented arbitrarily in the structure.
@@ -147,7 +147,7 @@ Ambient conditions define the environment at which the scenario begins. Initial 
 
 
 
-\chapter{Compartment Geometry}
+\chapter{Compartments}
 
 \begin{figure}[h!]
 \begin{center}
@@ -155,9 +155,9 @@ Ambient conditions define the environment at which the scenario begins. Initial 
 \end{center}
 \end{figure}
 
-The Compartment Geometry page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
+The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
-\section{Defining the Compartment}
+In order to model a fire scenario, the size and position of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 6 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
 
 \begin{figure}[h!]
 \begin{tabular*}{\textwidth}{c@{\extracolsep{\fill}}c}
@@ -167,28 +167,15 @@ Compartment Size & Compartment Position
 \end{tabular*}
 \end{figure}
 
-In order to model a fire scenario, the size and position of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 6 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
-
 At least one compartment must be specified in the input file.  There are no defaults for compartment size. There are defaults for absolute positioning (0,0,0). The fully mixed (single zone) and corridor models are turned off by default.
 
 \label{Compartment_Geometry}Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/Input_File/Compartment_Name}
-\end{center}
-\end{figure}
-
 \begin{description}
 \item[Compartment Name:] Compartments are identified by a unique alphanumeric name.  This may be a simple as a single character or number, or a description of the compartment.
 \end{description}
-\clearpage
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=3.552in]{FIGURES/Input_File/Compartment_Size}
-\end{center}
-\end{figure}
+\section{Geometry}
 
 \label{Compartment_Inputs}
 \begin{description}
@@ -205,17 +192,13 @@ At least one compartment must be specified in the input file.  There are no defa
 \item[Absolute Floor Height (Position Z)] specifies the height of the floor of each compartment with respect to station elevation specified by the internal ambient conditions reference height parameter.  The reference point must be the same for all elevations in the input data.  For example, the two rooms in the sample to the right would be located at (0,0,0) and (0,2,2.3).
 \end{description}
 
-\section{Thermal Properties of Bounding Surfaces}
+\section{Materials}
 
 To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
 
-The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Thermal properties for materials are read from the CFAST input file.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three).
-
-\begin{figure}[h!]
-\includegraphics[width=6.5in]{FIGURES/Input_File/Compartment_Materials}
-\end{figure}
-
 The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction and radiation as well as defining the compartments, unless these phenomena are explicitly turned off.
+
+The thermophysical properties of the surfaces which define compartments are described by specifying the thermal conductivity, specific heat, emissivity, density, and thickness of the enclosing surfaces for each material and then assigning the material to the ceiling, walls, and floor of a compartment.  Thermal properties for materials are read from the CFAST input file.  The thermophysical properties are specified at one condition of temperature, humidity, etc.  In CFAST version 6, there can only a single layer per boundary (previous versions allowed up to three).
 
 \begin{description}
 \item[Ceiling Material] (default value: Gypsum Board): material name from the thermal properties data file used for the ceiling surface of the compartment.
@@ -233,7 +216,7 @@ If a name is used which is not in the input file, the model should stop with an 
 The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
 }
 
-\section{Additional Thermal Properties}
+\subsection{Additional Thermal Properties}
 
 By default, CEdit does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Insert Thermal Properties} Menu item (see page \pageref{Thermal_Properties_Menu}) allows you to add thermal properties from an existing data file to the current simulation.
 
@@ -274,12 +257,6 @@ For tall compartments or those removed from the room of fire origin, the compart
 
 By specifying the compartment as a corridor, the ceiling jet temperature is calculated with a different empirical correlation that results in a somewhat higher temperature near the ceiling.  This will impact, for example, detectors, sprinkler, and targets near the ceiling in corridors.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.25in]{FIGURES/Input_File/Corridor_Flow}
-\end{center}
-\end{figure}
-
 \begin{description}
 \item[Normal (Two-zone model)] Conditions in the compartment are calculated with the normal two-zone approach.
 
@@ -291,14 +268,7 @@ By specifying the compartment as a corridor, the ceiling jet temperature is calc
 
 \section{Defining Variable Compartment Area}
 
-The Compartment Geometry page includes two additional entries that may be used for defining compartment properties for spaces which are not rectangular in area.  Values are entered in a spreadsheet. The CFAST keywords ROOMA and ROOMH keywords allow the user to define non-rectangular rooms by specifying cross-sectional area as a function of height. One set of values is included for each compartment that has a variable cross-sectional area.
-\clearpage
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.25in]{FIGURES/Input_File/Variable_Area}
-\end{center}
-\end{figure}
+The Compartment Geometry page includes two additional entries that may be used for defining compartment properties for spaces which are not rectangular in area.  Values for a chosen compartment are entered in a spreadsheet.
 
 \begin{description}
 \item[Height Value(s)] (default units: m, default values: none): Values of height for the corresponding cross-sectional area values measured from the floor of the compartment. The values for the compartment correspond to cross-sectional area values included for the same compartment on the ROOMA command.
@@ -327,38 +297,41 @@ CFAST uses the variable cross-sectional area inputs to determine the layer heigh
 
 Natural ventilation can occur when two compartments are connected via open doorways or windows (\textbf{Wall Vents}); or when two compartments are connected via \textbf{Floor/Ceiling Vents}. If no vents are specified between two compartments, they are assumed to be isolated.
 
-
 \section{Wall Vents}
 
-Wall vents can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the outdoors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section. It is possible to define a total of 25 horizontal flow connections between any pair of compartments. Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors.
-
 \begin{figure}[h!]
-\includegraphics[width=6.5in]{FIGURES/Input_File/Compartment_From_To}
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Natural_Flow_Tab}
+\end{center}
 \end{figure}
+
+Wall vents can only be created between compartments that physically overlap in elevation at some point. These may include doors between compartments or windows in the compartments (between compartments or to the outdoors).  Openings to the outside are included as openings to a compartment with a number one greater than the number of compartments described in the geometry section. It is possible to define a total of 25 horizontal flow connections between any pair of compartments. Horizontal flow connections may also be used to account for leakage between compartments or to the outdoors.
 
 \begin{description}
 \item[First Compartment] First of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
 \item[Second Compartment] Second of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
-\end{description}
 
-
-\begin{description}
 \item[Sill] (default units: m, default value: none): Sill height is the height of the bottom of the opening relative to the floor of the compartment selected as the first compartment.
+    
 \item[Soffit] (default units: m, default value: none): Position of the top of the opening relative to the floor of the compartment selected as the first compartment.
+    
 \item[Width] (default units: m, default value: none): The width of the opening.
+
 \item[Initial Opening Fraction] (default value: 1): Flow through horizontal vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent width is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
+    
 \item[Change Opening Fraction At Time]  (default units: s, default value: 0 s)  Time during the simulation at which to change the opening fraction.
+    
 \item[Final Opening Fraction] (default value: 1): for horizontal flow vents, the fraction specifies the fractional width opening of the vent. Fractional values must be between 0 and 1.
+    
 \item[Vent Offset] (default units: m, Default value: 0 m): For visualization, the vent offset is the horizontal distance between the near edge of this vent and the origin of the axis defined by the selected face(below) in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). For example, to place the vent at the center of the front wall, specify the front face at an offset of `compartment width/2 - vent width/2'.
+    
 \item[Face] For visualization, FACE specifies which wall the vent will be displayed on in Smokeview.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane.
 \end{description}
 
 \graybox{
 The soffit and sill specifications are with respect to the first compartment specified and are not necessarily symmetric since the elevation of the second compartment may be different than the first.  Reversing the order of the compartment designations can make a difference.
 }
-
-
 
 \section{Ceiling/Floor Vents}
 
@@ -395,8 +368,7 @@ Vertical connections can only be created between compartments that could be phys
 }
 
 
-
-\chapter{Defining Mechanical Ventilation Connections}
+\chapter{Mechanical Ventilation}
 
 \begin{figure}[h!]
 \begin{center}
@@ -409,12 +381,6 @@ Fan-duct systems are commonly used in buildings for heating, ventilation, air co
 The model for mechanical ventilation used in CFAST is based on the theory of networks and is based on the model developed by Klote \cite{Klote:1988a}.  This is a simplified form of Kirchoff's law which says that flow into a node must be balanced by flow out of the node. The equations used describe the relationship between the pressure drop across a duct, the resistance of a duct, and the mass flow.  The pressure can be changed by conditions in a compartment, or a fan in line in the duct system.  Resistance arises from the finite size of ducts, roughness on duct surfaces, bends and joints. In CFAST, default values are used for the duct properties, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
 
 \section{Connections to Compartments}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.553in]{FIGURES/Input_File/Mechanical_Vent_From_To}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[From Compartment] The first compartment to which the mechanical ventilation system diffuser is connected. Fan flow is from this compartment.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
@@ -435,12 +401,6 @@ The model for mechanical ventilation used in CFAST is based on the theory of net
 \end{description}
 
 \section{Defining Fans}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=4.487in]{FIGURES/Input_File/Mechanical_Vent_Flowrate}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[Flow Rate] (default units: m$^3$/s, default value: none): Constant flow rate of the forced-air flow from the first compartment to the second compartment.
@@ -466,12 +426,6 @@ If the simulation includes mechanical ventilation filtering, care should be take
 
 For mechanical vents, there are two species that can be filtered out of the gas flow: soot and the user-defined trace species. Filters are applied only to fan openings. The fan must have been defined before the filter can be applied. Initially filtering is off. It is turned on with the EVENT key word, defined in the input editor with a Filter Efficiency and Begin Filter At time. The relevant CFAST keyword is EVENT.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Filtering}
-\end{center}
-\end{figure}
-
 \begin{description}
 \item[Filter Efficiency] (default units:~\%, default value: none): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied, that is all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, the user may specify the fraction of the soot and trace species mass to be removed as a percentage.
 
@@ -484,7 +438,7 @@ If the simulation includes mechanical ventilation filtering, care should be take
 
 
 
-\chapter{Prescribing Fires}
+\chapter{Fires}
 
 A simulated fire in CFAST is implemented as a source of fuel mass which is released at a prescribed rate (the pyrolysis rate). Energy is released by the fuel and combustion products are created as it burns. In the fire, species production is calculated based on production yields prescribed by the user. In addition, the pyrolysis rate and resulting energy and species generation may be limited by the oxygen available for combustion. When sufficient oxygen is available for combustion, the heat release rate for the constrained fire is the same as for the unconstrained fire.
 
@@ -510,24 +464,10 @@ assuming that all the nitrogen and chlorine in the fuel are converted to HCN and
 
 Two inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
 
-\begin{figure}[h!]
-\begin{center}
-  \includegraphics[width=2.240in]{FIGURES/Input_File/LOL}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[Lower Oxygen Limit] (default units: \%, default value: 10~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
-\end{description}
-\clearpage
 
-\begin{figure}[h!]
-\begin{center}
-  \includegraphics[width=2.021in]{FIGURES/Input_File/Gaseous_Ignition_Temperature}
-\end{center}
-\end{figure}
-
-\begin{description}
 \item[Gaseous Ignition Temperature] (default units: \degc, default value: ambient temperature plus 100 K): The lower temperature limit on the burning of fuel in a gas layer. Since CFAST does not support a combustion kinetics model, this is the algorithm used for fires out of vents.  Normally, this value would not be changed by the user.
 \end{description}
 
@@ -535,17 +475,7 @@ Two inputs on the Fire Tab are global, that is, they apply to all fires included
 
 Fires in CFAST are defined as a series of individual fire objects which are then placed as desired in compartments in a simulation.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Object_Plot}
-\end{center}
-\end{figure}
-
 Each fire object defines the time dependent variables of the fire are described by the mass loss rate, rate of heat release, fuel height, and fuel area inputs.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
-
-\begin{wrapfigure}{r}{0pt}
-  \includegraphics[width=1.948in]{FIGURES/Input_File/Fire_Pulldown}
-\end{wrapfigure}
 
 Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o'' and is also saved in the CFAST input file for the current simulation. A pull-down allows the user to select one of the predefined fire objects to place in the chosen compartment. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions.
 
@@ -575,12 +505,6 @@ where $n_C$ is the number of carbon atoms in a fuel molecule, $M_f$ is the molec
 
 \item[Radiative Fraction] The fraction of the energy produced in combustion that is radiated from the fire and plume. Within CFAST, the radiative fraction defaults to 0.35 ; i.e., 35 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference.  The typical range for the radiative fraction is from about 0.05 to 0.4.
 \end{description}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.219in]{FIGURES/Input_File/Fire_Spreadsheet}
-\end{center}
-\end{figure}
 
 For all fires, including t-squared fires, values are calculated for time dependent variables, including default values for species generation. For all inputs, these values can be changed. All of the time dependent variables depend on a predefined time line. The time input specifies a sequence of time points that define the timing of the fire.  An entry indicates a point on the time-line when the mass loss rate, fuel height and other time dependent values are specified for the fire.  This time is independent of the simulation time which is specified by the TIMES line. If the simulation time is longer than the total duration of the fire, the final values specified for the fire (mass loss rate, fuel height, fuel area, and species) are continued until the end of the simulation.
 
@@ -657,15 +581,9 @@ Use the Create t$^2$ button to create a new fire object with a heat release rate
 \item[Decay Period] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
 \end{description}
 
-\section{Associating Fire Objects with One or More Instances of the Fire in the Compartments of the Simulation}
+\section{Fire Location}
 
 Fires  are placed in defined positions within a compartment of a simulation and oriented with a normal vector to the surface of the object.  Ignition of an object may be at a specified time, a specified net incident heat flux on the surface of the object, or at a specified surface temperature of the object.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Positioning}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[Compartment] of Fire Origin: specifies the compartment that contains the main fire for the simulation.  Any compartment defined is valid.
@@ -788,15 +706,7 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 \item[Target Type] If the solution method is not STEADY, this parameter further indicates the solutions equations.  Specify Thermally Thick, Thermally Thin, or Cylindrical.  For thermally thin materials, CFAST uses ordinary differential equations; for thermally thick materials, partial differential equations, and for cylindrical targets, cylindrical coordinates.
 
 \item[Solution Method] Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
-\end{description}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=3.713in]{FIGURES/Input_File/Target_Geometry}
-\end{center}
-\end{figure}
-
-\begin{description}
 \item[Width (X)] Position (default units: m, default value: none): Position of the target as a distance from the left wall of the target compartment (X direction).
 
 \item[Depth (Y)] Position(default units: m, default value: none): Position of the target as a distance from the front wall of the target compartment (Y direction).
@@ -808,16 +718,9 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 \item[Normal Vector Y] Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Depth) component in the direction from the front wall of the target compartment. A value of 1 defines a vertical target facing to the right, unit vector = (0,1,0).
 
 \item[Normal Vector Z] Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Height) component in the direction from the floor of the target compartment. Default value is a horizontal, upward facing target, unit vector = (0,0,1).
-\end{description}
 
-\begin{figure}[h!]
-\begin{center}
-  \includegraphics[width=2.531in]{FIGURES/Input_File/Target_Construction}
-\end{center}
-\end{figure}
-
-\begin{description}
 \item[Material] Used to specify the wall material of the target.  Any existing material in the list of thermal properties may be used here.
+    
 \item[Internal Temperature at] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
 \end{description}
 
@@ -855,12 +758,6 @@ The Surface Connections page allows the user to define heat transfer between com
 
 Calculated results from a CFAST simulation can be visualized using Smokeview \cite{Smokeview_Users_Guide_6}. This allows the user to see the compartment geometry and connections
 or view the results of the simulation visually. In addition to a simplified view of the layer temperatures and vent flows, more detailed estimates of gas temperature, gas velocity, vent flow velocity, target temperature, and detector status can be visualized.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Visualizations_Tab}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[Visualization Type] (default units: n/a, default value: 2-D): The type of visualization to be included. Choose from 2-D (a single plane slice of temperature at the position and axis specified), 3-D (a set of three animated slices whose position can be moved along its respective axis, or Isosurface (a fixed 3-D surface where the gas temperature is equal to the value specified. See the Smokeview documentation \cite{Smokeview_Users_Guide_6}for details on the use of Smokeview.

@@ -2425,7 +2425,7 @@ Public Class CeditMain
         Me.TabMechanicalFlow.Name = "TabMechanicalFlow"
         Me.TabMechanicalFlow.Size = New System.Drawing.Size(976, 558)
         Me.TabMechanicalFlow.TabIndex = 6
-        Me.TabMechanicalFlow.Text = "Mechanical Flow Vents"
+        Me.TabMechanicalFlow.Text = "Mechanical Ventilation"
         '
         'MVentSummary
         '

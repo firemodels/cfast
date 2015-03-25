@@ -5,13 +5,13 @@
 :: $Author: gforney $
 
 set curdir=%CD%
-set running=bot.running
+set running=%curdir%\bot.running
 if not exist %running% (
   svn update
   echo 1 > %running%
   call cfastbot_win.bat
-  cd %curdir%
   erase %running%
+  cd %curdir%
 ) else (
   echo A bot is already running.
   echo Erase the file %running% if this is not the case

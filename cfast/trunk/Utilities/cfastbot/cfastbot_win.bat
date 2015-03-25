@@ -90,7 +90,7 @@ if %nothaveICC% == 0 (
 )
 if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
-  echo             found smokeview
+  echo             found smokeview (C/C++ not available)
   set smokeview=smokeview.exe
 )
 
@@ -98,6 +98,8 @@ if %nothaveICC% == 1 (
 
 call :is_file_installed pdflatex|| exit /b 1
 echo             found pdflatex
+
+::*** looking for grep
 
 call :is_file_installed grep|| exit /b 1
 echo             found grep

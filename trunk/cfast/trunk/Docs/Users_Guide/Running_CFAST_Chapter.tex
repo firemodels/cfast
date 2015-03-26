@@ -11,7 +11,7 @@ It is suggested that a new user start with an existing data file, run it as is, 
 
 All of the data to run the model is contained in an input data file. This file contains information about the building geometry (compartment sizes, materials of construction, and material properties), connections between compartments (horizontal flow openings such as doors, windows), vertical flow openings in floors and ceilings, and mechanical ventilation connections), fire properties (fire size and species production rates as a function of time), and specifications for detectors, sprinklers, and targets (position, size, heat transfer characteristics, and flow characteristics for sprinklers). Materials are defined by their thermal conductivity, specific heat, density, thickness, and burning behavior (heat release rate, ignition properties, and species yields).
 
-The input data file provides the program with parameters to describe the scenario under consideration. The parameters are organized into groups of related variables. Each line of the input data file contains inputs related to a single group and begins with a keyword that identifies the input.  For example, compartment geometry is described by a set of lines (keyword COMPA) that define the width, depth, and height of each compartment.  A description of the input parameters can be found in Chapter 4.
+The input data file provides the program with parameters to describe the scenario under consideration. The parameters are organized into groups of related variables. Each line of the input data file contains inputs related to a single group and begins with a keyword that identifies the input.  For example, compartment geometry is described by a set of lines (keyword COMPA) that define the width, depth, height, and construction materials of each compartment.  A description of all the input keywords can be found in Appendix~\ref{sec:CFAST_Keywords}.
 
 Typically, the input data file will be created with the input editor, CEdit, included with the CFAST distribution. A shortcut to the input editor is placed on the start menu during installation.  To run, select Start, Program Files, and CFAST. Details of the program and its inputs are described in chapter 4.
 
@@ -158,21 +158,8 @@ This opens a window that shows the progress of the simulation, with information 
 \end{center}
 \end{figure}
 
-Several buttons are also available as follows:
-
-\begin{wrapfigure}{l}{0pt}
-  \includegraphics[width=0.79in]{FIGURES/Running_CFAST/Close_Button}
-\end{wrapfigure}
-
-The close button is disabled while the model is running.  Once the simulation is complete (stopped by the user with the stop button), the close button closes the window and returns to the main input editor. \\
-
-\begin{wrapfigure}{l}{0pt}
-  \includegraphics[width=0.79in]{FIGURES/Running_CFAST/Stop_Button}
-\end{wrapfigure}
-
- The stop button halts execution of the simulation, but leaves the simulation window on the screen.  The stop button is available only when the simulation is in progress. \\
-
 Normally, model outputs are displayed and updated only at any of the time intervals specified on the environment page. For complex calculations, there may be a significant time period between display updates. The update button allows the user to see the current state of the calculation at any time. The update button is only available when the simulation is in progress.
+
 
 \subsection{Running CFAST from a Command Prompt}
 

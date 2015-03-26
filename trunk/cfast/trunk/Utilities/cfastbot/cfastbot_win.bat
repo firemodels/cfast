@@ -216,6 +216,9 @@ call :GET_TIME
 set RUNVV_beg=%current_time% 
 
 echo Stage 4 - Running validation cases
+:: echo             debug
+:: add debug stage here
+
 echo             release
 
 cd %cfastsvnroot%\Validation\scripts
@@ -238,9 +241,9 @@ cd "%SCRIPT_DIR%"
 set CFAST=%bg% %CFASTEXE%
 set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runcfast_win32.bat
 
-%SH2BAT% CFAST_Cases.sh CFAST_Cases.bat > %OUTDIR%\stage4a.txt 2>&1
+%SH2BAT% CFAST_Cases.sh CFAST_Cases.bat > %OUTDIR%\stage4b.txt 2>&1
 
-call CFAST_Cases.bat 1> %OUTDIR%\stage4a.txt 2>&1
+call CFAST_Cases.bat 1> %OUTDIR%\stage4b.txt 2>&1
 
 :loop1
 tasklist | find /i /c "CFAST" > temp.out
@@ -250,14 +253,6 @@ Timeout /t 30 >nul
 goto loop1
 
 :finished
-
-call :find_smokeview_warnings "error" %OUTDIR%\stage4a.txt "Stage 4a_1"
-call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"
-
-echo             release mode
-
-cd %FDSsvnroot%\Verification\scripts
-call Run_SMV_cases 0 1> %OUTDIR%\stage4b.txt 2>&1
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage4b.txt "Stage 4b_1"
 call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4b.txt "Stage 4b_2"

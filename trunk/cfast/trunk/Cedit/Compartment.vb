@@ -39,8 +39,8 @@ Public Class Compartment
         Me.aRoomOriginX = 0.0
         Me.aRoomOriginY = 0.0
         Me.aRoomOriginZ = 0.0
-        Me.aCeilingMaterial = "GYPSUM"
-        Me.aWallMaterial = "GYPSUM"
+        Me.aCeilingMaterial = "Off"
+        Me.aWallMaterial = "Off"
         Me.aFloorMaterial = "Off"
         Me.aAreaPoints(0) = Me.aRoomDepth * Me.aRoomWidth
         Me.aHeightPoints(0) = Me.aRoomHeight

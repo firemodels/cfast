@@ -268,7 +268,7 @@ Public Class ThermalPropertiesCollection
                 Next
                 Return "Off"
             Else
-                Return ""
+                Return "Off"
             End If
         End Get
     End Property

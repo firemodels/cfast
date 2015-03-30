@@ -1,5 +1,5 @@
 @echo off
-call %SVNROOT%\Validation\scripts\getopts.bat %*
+call %SCRIPT_DIR%\getopts.bat %*
 
 echo creating stop file: %dir%\%infile%.stop
 

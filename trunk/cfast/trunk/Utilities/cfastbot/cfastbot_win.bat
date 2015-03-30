@@ -329,8 +329,8 @@ call :build_guide Users_Guide %cfastsvnroot%\Docs\Users_Guide 1>> %OUTDIR%\stage
 echo             Technical Reference Guide
 call :build_guide Tech_Ref %cfastsvnroot%\Docs\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
 
-echo             Validation Guide
-call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+::echo             Validation Guide
+::call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 call :GET_TIME
 set MAKEGUIDES_end=%current_time%

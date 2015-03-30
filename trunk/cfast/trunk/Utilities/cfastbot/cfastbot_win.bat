@@ -33,7 +33,8 @@ set errorlog=%OUTDIR%\stage_errors.txt
 set warninglog=%OUTDIR%\stage_warnings.txt
 set errorwarninglog=%OUTDIR%\stage_errorswarnings.txt
 set infofile=%OUTDIR%\stage_info.txt
-set revisionfile=%OUTDIR%\revision.txt
+set revisionfilestring=%OUTDIR%\revision.txt
+set revisionfilenum=%OUTDIR%\revision_num.txt
 set stagestatus=%OUTDIR%\stage_status.log
 
 set haveerrors=0

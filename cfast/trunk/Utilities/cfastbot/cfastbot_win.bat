@@ -14,8 +14,12 @@ set cfastbasename=cfastclean
 set CURDIR=%CD%
 
 if not exist output mkdir output
+if not exist history mkdir history
+if not exist timings mkdir timings
 
 set OUTDIR=%CURDIR%\output
+set HISTORYDIR=%CURDIR%\history
+set TIMINGSDIR=%CURDIR%\timings
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
 
@@ -132,6 +136,17 @@ if "%cfastbasename%" == "cfastclean" (
 echo             updating %cfastbasename% repository
 cd %cfastsvnroot%
 svn update  1> %OUTDIR%\stage0.txt 2>&1
+
+svn info | grep Revision > %revisionfilestring%
+set /p revisionstring=<%revisionfilestring%
+
+svn info | grep Revision | cut -d " " -f 2 > %revisionfilenum%
+set /p revisionnum=<%revisionfilenum%
+
+set errorlogpc=%HISTORYDIR%\errors_%revisionnum%.txt
+set warninglogpc=%HISTORYDIR%\warnings_%revisionnum%.txt
+
+set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
@@ -340,29 +355,28 @@ echo .make pictures: %DIFF_MAKEPICS% >> %infofile%
 echo .        total: %DIFF_TIME% >> %infofile%
 echo . ----------------------------- >> %infofile%
 
+copy %infofile% %timingslogfile%
+
 :: email results
+
+sed "s/$/\r/" < %warninglog% > %warninglogpc%
+sed "s/$/\r/" < %errorlog% > %errorlogpc%
 
 if exist %emailexe% (
   if %havewarnings% == 0 (
     if %haveerrors% == 0 (
       call %email% %mailToCFAST% "cfastbot success on %COMPUTERNAME%! %revisionstring%" %infofile%
     ) else (
-      echo "start: %startdate% %starttime% " > %infofile%
-      echo " stop: %stopdate% %stoptime% " >> %infofile%
       echo. >> %infofile%
       type %errorlogpc% >> %infofile%
       call %email% %mailToCFAST% "cfastbot failure on %COMPUTERNAME%! %revisionstring%" %infofile%
     )
   ) else (
     if %haveerrors% == 0 (
-      echo "start: %startdate% %starttime% " > %infofile%
-      echo " stop: %stopdate% %stoptime% " >> %infofile%
       echo. >> %infofile%
       type %warninglogpc% >> %infofile%
       %email% %mailToCFAST% "cfastbot success with warnings on %COMPUTERNAME% %revisionstring%" %infofile%
     ) else (
-      echo "start: %startdate% %starttime% " > %infofile%
-      echo " stop: %stopdate% %stoptime% " >> %infofile%
       echo. >> %infofile%
       type %errorlogpc% >> %infofile%
       echo. >> %infofile%

@@ -22,6 +22,9 @@ erase %OUTDIR%\*.txt 1> Nul 2>&1
 set cfastsvnroot=%userprofile%\%cfastbasename%
 set FDSsvnroot=%userprofile%\%fdsbasename%
 
+set email=%FDSsvnroot%\SMV\scripts\email.bat
+set emailexe=%userprofile%\bin\mailsend.exe
+
 set errorlog=%OUTDIR%\stage_errors.txt
 set warninglog=%OUTDIR%\stage_warnings.txt
 set errorwarninglog=%OUTDIR%\stage_errorswarnings.txt
@@ -92,6 +95,15 @@ if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
   echo             found smokeview (C/C++ not available)
   set smokeview=smokeview.exe
+)
+
+::*** looking for email
+
+if NOT exist %emailexe% (
+  echo ***warning: email client not found.   
+  echo             cfastbot messages will only be sent to the console.
+) else (
+  echo             found mailsend
 )
 
 ::*** looking for pdflatex
@@ -327,6 +339,38 @@ echo .make pictures: %DIFF_MAKEPICS% >> %infofile%
 echo .        total: %DIFF_TIME% >> %infofile%
 echo . ----------------------------- >> %infofile%
 
+:: email results
+
+if exist %emailexe% (
+  if %havewarnings% == 0 (
+    if %haveerrors% == 0 (
+      call %email% %mailToCFAST% "cfastbot success on %COMPUTERNAME%! %revisionstring%" %infofile%
+    ) else (
+      echo "start: %startdate% %starttime% " > %infofile%
+      echo " stop: %stopdate% %stoptime% " >> %infofile%
+      echo. >> %infofile%
+      type %errorlogpc% >> %infofile%
+      call %email% %mailToCFAST% "cfastbot failure on %COMPUTERNAME%! %revisionstring%" %infofile%
+    )
+  ) else (
+    if %haveerrors% == 0 (
+      echo "start: %startdate% %starttime% " > %infofile%
+      echo " stop: %stopdate% %stoptime% " >> %infofile%
+      echo. >> %infofile%
+      type %warninglogpc% >> %infofile%
+      %email% %mailToCFAST% "cfastbot success with warnings on %COMPUTERNAME% %revisionstring%" %infofile%
+    ) else (
+      echo "start: %startdate% %starttime% " > %infofile%
+      echo " stop: %stopdate% %stoptime% " >> %infofile%
+      echo. >> %infofile%
+      type %errorlogpc% >> %infofile%
+      echo. >> %infofile%
+      type %warninglogpc% >> %infofile%
+      call %email% %mailToCFAST% "cfastbot failure on %COMPUTERNAME%! %revisionstring%" %infofile%
+    )
+  )
+)
+
 cd %CURDIR%
 
 echo cfastbot_win completed
@@ -370,7 +414,7 @@ exit /b 0
   if %nothave% == 1 (
     echo "***Fatal error: %program% not present"
     echo "***Fatal error: %program% not present" > %errorlog%
-    echo "smokebot run aborted"
+    echo "cfastbot run aborted"
     call :output_abort_message
     exit /b 1
   )
@@ -384,7 +428,7 @@ set file=%1
 set outputfile=%2
 
 if NOT exist %file% (
-  echo ***fatal error: problem building %file%. Aborting smokebot
+  echo ***fatal error: problem building %file%. Aborting cfastbot
   type %outputfile% >> %errorlog%
   call :output_abort_message
   exit /b 1

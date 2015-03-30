@@ -126,6 +126,11 @@ echo             found pdflatex
 call :is_file_installed grep|| exit /b 1
 echo             found grep
 
+::*** looking for cut
+
+call :is_file_installed cut|| exit /b 1
+echo             found cut
+
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository

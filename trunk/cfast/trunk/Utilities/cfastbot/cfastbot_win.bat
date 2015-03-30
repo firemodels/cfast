@@ -44,6 +44,7 @@ time /t > %OUTDIR%\starttime.txt
 set /p starttime=<%OUTDIR%\starttime.txt
 
 call "%cfastsvnroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
+call "%cfastsvnroot%\Utilities\cfastbot\cfastbot_email_list.bat" 1> Nul 2>&1
 
 :: -------------------------------------------------------------
 ::                           stage 0 - preliminaries

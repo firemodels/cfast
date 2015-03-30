@@ -263,7 +263,7 @@ echo             debug
 
 cd %cfastsvnroot%\Validation\scripts
 
-call Run_CFAST_cases 1> %OUTDIR%\stage4a.txt 2>&1
+call Run_CFAST_cases 1 1> %OUTDIR%\stage4a.txt 2>&1
 
 call :find_smokeview_warnings "error" %OUTDIR%\stage4a.txt "Stage 4a_1"
 call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"

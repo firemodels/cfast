@@ -268,6 +268,12 @@ call Run_CFAST_cases 1 1> %OUTDIR%\stage4a.txt 2>&1
 call :find_smokeview_warnings "error" %OUTDIR%\stage4a.txt "Stage 4a_1"
 call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"
 
+if "%cfastbasename%" == "cfastclean" (
+   echo             removing debug output files
+   cd %cfastsvnroot%\Validation
+   call :svn_revert 1> Nul 2>&1
+)
+
 echo             release
 
 cd %cfastsvnroot%\Validation\scripts

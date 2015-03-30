@@ -131,6 +131,11 @@ echo             found grep
 call :is_file_installed cut|| exit /b 1
 echo             found cut
 
+::*** looking for sed
+
+call :is_file_installed sed|| exit /b 1
+echo             found sed
+
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository

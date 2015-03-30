@@ -1,7 +1,6 @@
 @echo off
 
-:: need to define GETOPTS if this script is called outside of cfastbot
-call %GETOPTS% %*
+call %SVNROOT%\Validation\Scripts\getopts.bat %*
 
 set fulldir=%BASEDIR%/%dir%
 
@@ -10,5 +9,5 @@ set out=%infile%.err
 set stopfile=%infile%.stop
 
 cd %fulldir%
-echo starting %in% in %fulldir%
+echo %in% started
 %CFAST% %in%  

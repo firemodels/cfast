@@ -387,12 +387,7 @@ if exist %emailexe% (
   )
 )
 
-cd %CURDIR%
-
-echo cfastbot_win completed
-cd %CURDIR%
-pause
-exit
+goto eof
 
 :output_abort_message
   echo "***Fatal error: cfastbot build failure on %COMPUTERNAME% %revision%"
@@ -558,4 +553,5 @@ if %nwarnings% GTR 0 (
 exit /b
 
 :eof
+echo cfastbot_win completed
 cd %CURDIR%

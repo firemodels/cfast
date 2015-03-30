@@ -37,6 +37,7 @@ if "%rundebug%" == "1" (
 
 :: create or erase stop files
 
+cd "%BASEDIR%"
 call Scripts\CFAST_Cases.bat
 
 :: run cases

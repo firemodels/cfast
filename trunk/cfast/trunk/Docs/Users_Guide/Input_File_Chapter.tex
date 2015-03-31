@@ -1,104 +1,3 @@
-\chapter{Setting Up the Input File for CFAST}
-
-CFAST is a computer program that uses an input file and generates one or more output files. The first step in performing a calculation is to generate a text input file that provides the program with all of the necessary information to describe the scenario under consideration.  The most important inputs determine the geometry of the compartments in the scenario and the connections between these compartments. Next, the fire, detection, and suppression characteristics of the scenario are defined. Finally, there are a number of parameters that customize the output from the model.  Each line of the file contains a keyword label that identifies the input, followed by a number of numerical or text inputs corresponding to the particular input keyword. A simple input file is shown below. This example is used in the discussion of the output in Chapter 5.
-
-\begin{lstlisting}
-VERSN,7,Default example fire for user guide
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,1800,-120,10,30
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
-!!
-!!Material Properties
-!!
-MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
-MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
-!!
-!!Compartment keywords
-!!
-COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
-!!
-!!Vent keywords
-!!
-HVENT,1,2,1,1,2.4,0,0,1,1
-!!
-!!Fire keywords
-!!
-GLOBA,10,393.15
-!!burner
-FIRE,1,4.55,2.5,0,1,1,0,0,0,1,burner
-CHEMI,1,4,0,0,0,0.33,5E+07,METHANE
-TIME,0,60,120,180,240,300,360,420,480,540,1800
-HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
-SOOT,0,0,0,0,0,0,0,0,0,0,0
-CO,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001
-TRACE,0,0,0,0,0,0,0,0,0,0,0
-AREA,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2
-HEIGH,0,0,0,0,0,0,0,0,0,0,0
-MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
-!!wood_wall
-FIRE,1,9.1,2.5,0,1,1,0,0,0,1,wood_wall
-CHEMI,6,10,5,0,0,0.33,1.81E+07,HARDWOOD
-TIME,0,8000
-HRR,0,1000000
-SOOT,0.015,0.015
-CO,0.006171682,0.006171682
-TRACE,0,0
-AREA,0.05,9
-HEIGH,0,3
-MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
-!!
-!!Target and detector keywords
-!!
-TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
-!!
-!!visualizations
-!!
-SLCF,2-D,Y,2.5,1
-SLCF,2-D,Z,4.554,1
-
-\end{lstlisting}
-
-All of the inputs to the model are discussed in this chapter.  Following the discussion that details each input, their engineering units and default values, notes are included that provided additional guidance or frequently addressed problems that may be encountered by the user. These notes take the form of a highlighted list such as:
-
-\graybox{
-The inputs may be integers (e.g., a simulation time of 1800 s), real numbers (a mass loss rate of 0.0082 kg/s), or text (a floor material of CONCRETE), as appropriate. The input file is a comma-separated ASCII text file and may be edited with a spreadsheet program or any text editor. It is possible to use a word processor but it is important to save the file in ASCII text format and not in a word processing format. Note that some word processors will save punctuation and other characters incorrectly for the simple ASCII text file used by CFAST. It is recommended that the input files be created with the input editor, CEdit, provided as part of the CFAST distribution.  In addition to checking the input data for errors, it includes typical ranges for input values to assist in appropriate use of the model. \\
-
-Numeric format for inputs to CFAST and the input editor CEdit assume a period is used to separate the integer and fractional parts of the number. No separator is used to group digits in the integer part of numbers. \\
-
-Each line of input consists of a label followed by one or more alphanumeric parameters associated with that input label, separated by commas.  The label must always begin in the first space of the line and be in capital letters.  Following the label, the values may start in any column, and all values must be separated by a comma.  Values may contain decimal points if needed or desired.  They are not required. \\
-
-Inputs are in standard SI units.  The maximum line length is 1024 characters, so all data for each keyword must fit in this number of characters.
-}
-
-The installation program creates a shortcut to the input editor on the Windows start menu labeled ``CFAST" that points to the input editor.  Once started, the user is presented with a series of tabbed-pages for the various inputs in a CFAST input data file.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Tabs}
-\end{center}
-\end{figure}
-
-These tabbed-pages organize the inputs for CFAST simulations into several categories as follows.
-\begin{description}
-\item[Simulation Environment] includes simulation time, specification of model outputs, and ambient conditions. Also included on the page are a constantly updated list of errors, warnings, and messages about the input file specification or model simulation.
-\item[Compartments] defines the size, construction characteristics, and position of the compartments in a simulation.
-\item[Wall Vents, Ceiling/Floor Vents, and Mechanical Ventilation] allows the user to connect compartments with doors and windows, ceiling and floor vents, or forced air ventilation systems.
-\item[Fires] include user specification of the initial fire source and any additional burning objects in one or more of the compartments of the simulation.
-\item[Detection / Suppression] defines any heat alarms and sprinklers in the compartments of the simulation.
-\item[Targets] provide the ability calculate the temperature and net heat flux to objects placed and oriented arbitrarily in the structure.
-\item[Surface Connections] allows for more detailed description of the connections between compartments in the simulation to better simulate the transfer of heat from compartment to compartment in the simulation.
-\item[Visualizations] allows specification of one or more 2-D and 3-D visualizations to be added to the simulation for viewing with Smokeview. Note that these can require significant additional computational time than a basic CFAST simulation without visualizations.
-\end{description}
-
-Each of these tabbed-pages is described in more detail below. In addition, a series of menus allow the user to open and save files; run the simulation, or access help and program information.
-
-Most of the tabbed pages in the program are of similar design, with a summary of the defined items in table form at the top of the page, a series of buttons to add, remove, or modify the item highlighted in the summary table, and a number of individual inputs below which details all of the inputs for the item selected in the summary table.
-
-
-
 \chapter{Simulation Environment}
 
 The Environment page defines the initial conditions and simulation time for the CFAST input file.
@@ -668,9 +567,9 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 
 \item[Height (Z)] Position (default units: m, default value: none): position of the object as a distance from the floor of the compartment (Z direction).
 
-\item[RTI] (default units: (m ∙ s)1/2, default value: none): the Response Time Index (RTI) for the sprinkler or detection device.
+\item[RTI] (default units: (m$\cdot$s)$^{1/2}$, default value: none): the Response Time Index (RTI) for the sprinkler or detection device.
 
-\item[Spray Density] (default units: m/s, default value: none): the amount of water dispersed by a water spray-sprinkler.  The units for spray density are length/time.  These units are derived by dividing the volumetric rate of water flow by the area protected by the water spray. The suppression calculation is based upon an experimental correlation by Evans , and depends upon the RTI, activation temperature, and spray density to determine the behavior of the sprinkler.
+\item[Spray Density] (default units: m/s, default value: none): the amount of water dispersed by a sprinkler.  The units for spray density are length/time, derived by dividing the volumetric flow rate by the spray area. The suppression calculation is based upon an experimental correlation by Evans~\cite{Evans:1993}.
 \end{description}
 
 \graybox{

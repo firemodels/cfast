@@ -1,29 +1,34 @@
 
 \chapter{Running CFAST}
 
-Running CFAST is relatively simple. All of the parameters that describe a given fire scenario are entered into a text file that is referred to as the "data" or "input" file. In this document, the data file is designated as filename.in, where "filename" stands for any character string that helps to identify the simulation. All of the output files associated with the calculation would typically have this common prefix. In addition to the input file, there are often several external files containing input parameters for the simulation. These files are referred to as "database" files, which contain parameters describing common materials and fuels.
 
-The CFAST distribution includes a Windows-based input editor called CEdit that allows the user to enter details of a simulation in a standard Windows format, save the data file to disk, and run the simulation with CFAST from within the program.  Typically, all simulations would be developed and run from within CEdit.  For numerous, similar or lengthy simulations, the fire model CFAST can be run from a command prompt window.
+The CFAST distribution includes a Windows-based input editor called CEdit that allows the user to enter details of a simulation in a standard Windows format, save the data file to disk, and run the simulation. It is suggested that a new user start with an existing data file, run it as is, and then make the appropriate changes to the input file for the desired scenario. 
 
-It is suggested that a new user start with an existing data file, run it as is, and then make the appropriate changes to the input file for the desired scenario. By running a sample case, the user becomes familiar with the procedure and ensures that his/her computer is up to the task before embarking on learning how to create new input files.
+A description of all the input keywords can be found in Appendix~\ref{sec:CFAST_Keywords}.
 
-\section{Creating a CFAST Input Data File}
+\section{The Feature Tabs}
 
-All of the data to run the model is contained in an input data file. This file contains information about the building geometry (compartment sizes, materials of construction, and material properties), connections between compartments (horizontal flow openings such as doors, windows), vertical flow openings in floors and ceilings, and mechanical ventilation connections), fire properties (fire size and species production rates as a function of time), and specifications for detectors, sprinklers, and targets (position, size, heat transfer characteristics, and flow characteristics for sprinklers). Materials are defined by their thermal conductivity, specific heat, density, thickness, and burning behavior (heat release rate, ignition properties, and species yields).
-
-The input data file provides the program with parameters to describe the scenario under consideration. The parameters are organized into groups of related variables. Each line of the input data file contains inputs related to a single group and begins with a keyword that identifies the input.  For example, compartment geometry is described by a set of lines (keyword COMPA) that define the width, depth, height, and construction materials of each compartment.  A description of all the input keywords can be found in Appendix~\ref{sec:CFAST_Keywords}.
-
-Typically, the input data file will be created with the input editor, CEdit, included with the CFAST distribution. A shortcut to the input editor is placed on the start menu during installation.  To run, select Start, Program Files, and CFAST. Details of the program and its inputs are described in chapter 4.
+The input parameters are organized via tabs near the top of the CEdit screen, as shown in Fig.~\ref{primary_screen}.
 
 \begin{figure}[h!]
-\begin{center}
 \includegraphics[width=6.5in]{FIGURES/Running_CFAST/Environment_Tab}
-\end{center}
+\caption[The primary CFAST input page]{The primary CFAST input page.}
+\label{primary_screen}
 \end{figure}
 
-\begin{wrapfigure}{l}{3in}
-  \includegraphics[width=3in]{FIGURES/Running_CFAST/Run_Menu}
-\end{wrapfigure}
+\begin{description}
+\item[Simulation Environment] includes simulation time, specification of model outputs, and ambient conditions. Also included on the page are a constantly updated list of errors, warnings, and messages about the input file specification or model simulation.
+\item[Compartments] defines the size, construction characteristics, and position of the compartments in a simulation.
+\item[Wall Vents, Ceiling/Floor Vents, and Mechanical Ventilation] allows the user to connect compartments with doors and windows, ceiling and floor vents, or forced air ventilation systems.
+\item[Fires] include user specification of the initial fire source and any additional burning objects in one or more of the compartments of the simulation.
+\item[Detection / Suppression] defines any heat alarms and sprinklers in the compartments of the simulation.
+\item[Targets] provide the ability calculate the temperature and net heat flux to objects placed and oriented arbitrarily in the structure.
+\item[Surface Connections] allows for more detailed description of the connections between compartments in the simulation to better simulate the transfer of heat from compartment to compartment in the simulation.
+\item[Visualizations] allows specification of one or more 2-D and 3-D visualizations to be added to the simulation for viewing with Smokeview. Note that these can require significant additional computational time than a basic CFAST simulation without visualizations.
+\end{description}
+
+
+\subsection{The Run! Menu}
 
 The program includes a number of menu items for ancillary functions.  In addition to the normal file menu items to open and save input data files or to exit the program, a 'Run!' menu is included to execute or view the current simulation. Menu items include the following:
 
@@ -39,90 +44,53 @@ The program includes a number of menu items for ancillary functions.  In additio
 \end{center}
 \end{figure}
 
-\begin{wrapfigure}{l}{2.6in}
-  \includegraphics[width=2.6in]{FIGURES/Running_CFAST/Output_Options_Menu}
-\end{wrapfigure}
+\subsubsection{Output Options}
 
 Additional menu items can be selected to control details of the model simulation output using CFAST by selecting the Output Options submenu.
-
-\textbf{Detailed Output File:} If checked, this menu item directs the CFAST model to produce a detailed text output file.  Details of the output are included in chapter 5.
-
-\textbf{Total Mass Output File:} If checked, this menu item directs the CFAST model to replace the flow output with total mass flow through (mechanical) vents rather than the default flow rate values.
-
-\textbf{Net Heat Flux:}  If checked, this menu item directs the CFAST model to calculate heat flux to targets as a net heat flux to the target with the target at ambient temperature rather than at the calculated temperature.  This output is particularly useful to compare predictions to heat flux measurement using water cooled heat flux gauges.
-
-\textbf{Show CFAST Window:} If checked, this menu item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
-
-\textbf{CFAST Validation Output:} If checked, this menu item directs the CFAST model to output target fluxes at net heat flux and to output an abbreviated heading for spreadsheet columns that are better for automated processing of the data.
+\begin{description}
+\item[Detailed Output File] If checked, this menu item directs the CFAST model to produce a detailed text output file.  Details of the output are included in chapter 5.
+\item[Total Mass Output File] If checked, this menu item directs the CFAST model to replace the flow output with total mass flow through (mechanical) vents rather than the default flow rate values.
+\item[Net Heat Flux]  If checked, this menu item directs the CFAST model to calculate heat flux to targets as a net heat flux to the target with the target at ambient temperature rather than at the calculated temperature.  This output is particularly useful to compare predictions to heat flux measurement using water cooled heat flux gauges.
+\item[Show CFAST Window] If checked, this menu item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
+\item[CFAST Validation Output]If checked, this menu item directs the CFAST model to output target fluxes at net heat flux and to output an abbreviated heading for spreadsheet columns that are better for automated processing of the data.
+\end{description}
 
 
-\begin{wrapfigure}{l}{2in}
-  \includegraphics[width=2in]{FIGURES/Running_CFAST/Tools_Menu}
-\end{wrapfigure}
+\subsection{The Edit Menu}
+
 
 The 'Edit' menu allows the user to view or change the material thermophysical properties and fire definitions used by the model and to select desired engineering units used in the input editor CEdit. Menu items include the following.
 
-\textbf{Thermal Properties:} Heat transfer through compartment surfaces, to secondary fire objects, or other targets that may be specified depends on user-specified thermal properties for the materials.  These may be viewed, changed, or added to by the user as desired with the \textbf{Edit Thermal Properties} menu item. Materials properties include thermal conductivity, specific heat, density, thickness, and emissivity. Materials included in the database provided with the program are textbook values of common building and furnishing materials.
+\subsubsection{Thermal Properties}
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Running_CFAST/Thermal_Properties_Edit}
-Editing Thermal Properties in Cedit
-\end{center}
-\end{figure}
+Heat transfer through compartment surfaces, to secondary fire objects, or other targets that may be specified depends on user-specified thermal properties for the materials.  These may be viewed, changed, or added to by the user as desired with the \textbf{Edit Thermal Properties} menu item. Materials properties include thermal conductivity, specific heat, density, thickness, and emissivity. Materials included in the database provided with the program are textbook values of common building and furnishing materials.
 
 When CEdit is started, no thermal properties or fires are defined \label{Thermal_Properties_Menu}.  The \textbf{Insert Thermal Properties} menu item allows thermal properties used in a different simulation to be inserted into the data for the current simulation by choosing an existing CFAST input file and selecting one or more of the thermal properties to be included in the current simulation.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Running_CFAST/Thermal_Properties_Insert}
-Inserting Thermal Properties in Cedit
-\end{center}
-\end{figure}
+\subsubsection{Fires}
 
-\newpage
-
-\textbf{Fires:} Fires in CFAST are defined with one or more selected fire objects that define the heat release rate, pyrolysis rate, and species yields as a function of time for each fire.  These may include the default set of fire objects included with the software or additional or modified objects created by the model user. They may be viewed or changed by the user as desired with the \textbf{Edit Fires} menu item \label{Fires_Menu}.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Running_CFAST/Fire_Objects_Edit}
-Editing Fires in CFAST
-\end{center}
-\end{figure}
-\newpage
+Fires in CFAST are defined with one or more selected fire objects that define the heat release rate, pyrolysis rate, and species yields as a function of time for each fire.  These may include the default set of fire objects included with the software or additional or modified objects created by the model user. They may be viewed or changed by the user as desired with the \textbf{Edit Fires} menu.
 
 When CEdit is started, no thermal properties or fires are defined.  The \textbf{Insert Fires} menu item allows fire definitions used in a different simulation to be inserted into the data for the current simulation by choosing an existing CFAST input file and selecting one or more of the fires to be included in the current simulation.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Running_CFAST/Fire_Objects_Insert}
-Inserting Fires in Cedit
-\end{center}
-\end{figure}
 
-Details of fire objects and parameters included on the fire objects window are included in the section on object fires in the next chapter.
 
-\textbf{Select Engineering Units:} The CFAST model uses input values and provides output in S.I. units. Within the input editor, CEdit, the user may select engineering units of choice for input and output.  These values are saved in the windows registry and may be changed at any time. By default, most outputs are in S.I. units, with temperature in Celsius.
 
-\begin{figure}[h!]
-\begin{center}
-  \includegraphics[width=3in]{FIGURES/Running_CFAST/Select_Engineering_Units}
-\end{center}
-\end{figure}
 
-\clearpage
+\subsubsection{Select Engineering Units} 
 
-\begin{wrapfigure}{r}{1.95in}
-  \includegraphics[width=1.95in]{FIGURES/Running_CFAST/View_Menu}
-\end{wrapfigure}
+The CFAST model uses input values and provides output in S.I. units. Within the input editor, CEdit, the user may select engineering units of choice for input and output.  These values are saved in the windows registry and may be changed at any time. By default, most outputs are in S.I. units, with temperature in Celsius.
+
+
+\subsection{View}
 
 The View menu allows the user to view and / or print the input data file, output file (if the simulation has been run and a text output file generated) and the log file of the simulation. If one of the items does not exist on the user's hard disk, the selection is grayed out. \\~ \\
 
-\begin{wrapfigure}{r}{1.88in}
-  \includegraphics[width=1.88in]{FIGURES/Running_CFAST/Help_Menu}
-\end{wrapfigure}
- The Help menu accesses this user's guide, the CFAST web site, or an about dialog box that displays the user license and version of the program. \\~ \\
+\subsection{Help}
+
+The Help menu accesses this user's guide, the CFAST web site, or an about dialog box that displays the user license and version of the program.
+
+
 
 \section{File Naming and Location}
 

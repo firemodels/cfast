@@ -368,29 +368,32 @@ copy %infofile% %timingslogfile%
 sed "s/$/\r/" < %warninglog% > %warninglogpc%
 sed "s/$/\r/" < %errorlog% > %errorlogpc%
 
-if exist %emailexe% (
-  if %havewarnings% == 0 (
-    if %haveerrors% == 0 (
-      call %email% %mailToCFAST% "cfastbot success on %COMPUTERNAME%! %revisionstring%" %infofile%
-    ) else (
-      echo. >> %infofile%
-      type %errorlogpc% >> %infofile%
-      call %email% %mailToCFAST% "cfastbot failure on %COMPUTERNAME%! %revisionstring%" %infofile%
-    )
+if %havewarnings% == 0 (
+  if %haveerrors% == 0 (
+    set message=success
   ) else (
-    if %haveerrors% == 0 (
-      echo. >> %infofile%
-      type %warninglogpc% >> %infofile%
-      %email% %mailToCFAST% "cfastbot success with warnings on %COMPUTERNAME% %revisionstring%" %infofile%
-    ) else (
-      echo. >> %infofile%
-      type %errorlogpc% >> %infofile%
-      echo. >> %infofile%
-      type %warninglogpc% >> %infofile%
-      call %email% %mailToCFAST% "cfastbot failure on %COMPUTERNAME%! %revisionstring%" %infofile%
-    )
+    echo. >> %infofile%
+    type %errorlogpc% >> %infofile%
+    set message=failure
+  )
+) else (
+  if %haveerrors% == 0 (
+    echo. >> %infofile%
+    type %warninglogpc% >> %infofile%
+    set message=success with warnings
+  ) else (
+    echo. >> %infofile%
+    type %errorlogpc% >> %infofile%
+    echo. >> %infofile%
+    type %warninglogpc% >> %infofile%
+    set message=failure
   )
 )
+
+if exist %emailexe% (
+  call %email% %mailToCFAST% "cfastbot %message% on %COMPUTERNAME%! %revisionstring%" %infofile%
+)
+type %infofile%
 
 goto eof
 
@@ -578,5 +581,7 @@ if %nwarnings% GTR 0 (
 exit /b
 
 :eof
+
+type %infofile%
 echo cfastbot_win completed
 cd %CURDIR%

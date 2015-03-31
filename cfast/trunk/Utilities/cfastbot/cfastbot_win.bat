@@ -177,11 +177,6 @@ echo             updating %FDSbasename% repository
 cd %FDSsvnroot%
 svn update  1> %OUTDIR%\stage0.txt 2>&1
 
-call :GET_TIME
-set PRELIM_end=%current_time%
-call :GET_DURATION PRELIM %PRELIM_beg% %PRELIM_end%
-set DIFF_PRELIM=%duration%
-
 :: -------------------------------------------------------------
 ::                           stage 1 - build cfast
 :: -------------------------------------------------------------
@@ -250,6 +245,11 @@ set smokeview=%FDSsvnroot%\SMV\Build\intel_win_64\smokeview_win_64.exe
 call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 :skip_stage2
+
+call :GET_TIME
+set PRELIM_end=%current_time%
+call :GET_DURATION PRELIM %PRELIM_beg% %PRELIM_end%
+set DIFF_PRELIM=%duration%
 
 :: -------------------------------------------------------------
 ::                           stage 4 - run cases
@@ -342,6 +342,11 @@ set MAKEGUIDES_end=%current_time%
 call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg% %MAKEGUIDES_end%
 set DIFF_MAKEGUIDES=%duration%
 
+call :GET_TIME
+set TIME_end=%current_time%
+call :GET_DURATION DIFF_TIME %TIME_beg% %TIME_end%
+set DIFF_TIME=%duration%
+
 :: -------------------------------------------------------------
 ::                           wrap up
 :: -------------------------------------------------------------
@@ -352,14 +357,15 @@ time /t > %OUTDIR%\stoptime.txt
 set /p stoptime=<%OUTDIR%\stoptime.txt
 
 echo. > %infofile%
-echo . ----------------------------- >> %infofile%
+echo .------------------------------ >> %infofile%
 echo .         host: %COMPUTERNAME% >> %infofile%
 echo .        start: %startdate% %starttime% >> %infofile%
 echo .         stop: %stopdate% %stoptime%  >> %infofile%
+echo .        setup: %DIFF_PRELIM% >> %infofile%
 echo .    run cases: %DIFF_RUNVV% >> %infofile%
 echo .make pictures: %DIFF_MAKEPICS% >> %infofile%
 echo .        total: %DIFF_TIME% >> %infofile%
-echo . ----------------------------- >> %infofile%
+echo .------------------------------ >> %infofile%
 
 copy %infofile% %timingslogfile%
 
@@ -582,6 +588,6 @@ exit /b
 
 :eof
 
-type %infofile%
+echo cfastbot %message% on %COMPUTERNAME%! %revisionstring%, runtime: %DIFF_TIME%
 echo cfastbot_win completed
 cd %CURDIR%

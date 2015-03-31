@@ -1442,17 +1442,21 @@
             numnode(j+1,itow,itor) = numnode(jj+1,ifromw,ifromr)
         end do
 
+        do j = 1,nptsf
+            twj(j,ifromr,ifromw) = interior_temperature
+            twj(j,itor,itow) = interior_temperature
+        end do
         jj = nptst 
         do j = nptsf+1,nptsf+nptst - 1
             jj = jj - 1
-            twj(j,ifromr,ifromw) = twj(jj,itor,itow)
+            twj(j,ifromr,ifromw) = interior_temperature
             walldx(j-1,ifromr,ifromw) = walldx(jj,itor,itow)
         end do
 
         jj = nptsf 
         do j = nptst+1,nptst+nptsf - 1
             jj = jj - 1
-            twj(j,itor,itow) = twj(jj,ifromr,ifromw)
+            twj(j,itor,itow) = interior_temperature
             walldx(j-1,itor,itow) = walldx(jj,ifromr,ifromw)
         end do
     end do

@@ -1328,9 +1328,9 @@
 
             nswal = nswal + 1
             izswal(nswal,w_from_room) = i1
-            izswal(nswal,w_from_wall) = 1
+            izswal(nswal,w_from_wall) = 2
             izswal(nswal,w_to_room) = i2
-            izswal(nswal,w_to_wall) = 3
+            izswal(nswal,w_to_wall) = 1
         else
             ierror = 37
             return

@@ -1371,7 +1371,7 @@
 
     subroutine update_data (pdif,iflag)
 
-    !     routine: cfast (main program)
+    !     routine: update_data (datacopy)
     !     purpose: calculate environment variables from the solver vector
 
     !     arguments: pdif   solver vector

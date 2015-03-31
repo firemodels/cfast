@@ -341,5 +341,7 @@ Friend Module Data
     Friend Enum InsertDataType
         Fire = 1
         ThermalProperty
+        EmbeddedFire = 1
+        ObjectFile
     End Enum
 End Module

@@ -58,7 +58,7 @@
                 Dim aFire As New Fire
                 TempFireObjects.Clear()
                 myUnits.SI = True
-                IO.FindFires(csv, TempFireObjects)
+                IO.FindFires(InsertDataType.EmbeddedFire, csv, TempFireObjects)
                 myUnits.SI = False
                 If TempFireObjects.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFireObjects.Count + 1
                 If TempFireObjects.Count > 0 Then

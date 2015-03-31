@@ -50,7 +50,7 @@ Module IO
         Loop
 
         ' add fires now that we have materials and compartments
-        FindFires(csv, myFireObjects)
+        FindFires(InsertDataType.EmbeddedFire, csv, myFireObjects)
         If myFireObjects.Count > 0 Then
             Dim iFire As Integer = 0
             i = 1
@@ -503,14 +503,14 @@ Module IO
         Dim dir As String() = Directory.GetFiles(pathName, "*.o")
         Dim file As String
         For Each file In dir
-            ReadFires(file)
+            readFires(file, InsertDataType.ObjectFile)
         Next
     End Sub
-    Public Sub readFires(ByVal Filename As String)
+    Public Sub readFires(ByVal Filename As String, FileType As Integer)
         Dim csv As New CSVsheet(Filename)
-        FindFires(csv, myFireObjects)
+        FindFires(FileType, csv, myFireObjects)
     End Sub
-    Public Sub FindFires(ByVal csv As CSVsheet, ByRef SomeFireObjects As FireCollection)
+    Public Sub FindFires(ByVal FileType As Integer, ByVal csv As CSVsheet, ByRef SomeFireObjects As FireCollection)
         'simple read of a fire object file
         Dim fireComments As New Collection
         Dim i, j, k, iStart As Integer
@@ -526,7 +526,7 @@ Module IO
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
                 Select Case csv.str(i, CFASTlnNum.keyWord).Trim
                     Case "MATL"
-                        NewFileFormat = True
+                        NewFileformat = True
                     Case "FIRE"
                         NewFileformat = True
                         NewFireFormat = True
@@ -540,7 +540,7 @@ Module IO
             i = 1
             Do Until i > csv.MaxRow
                 If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
-                Select csv.str(i, CFASTlnNum.keyWord).Trim
+                    Select Case csv.str(i, CFASTlnNum.keyWord).Trim
                         Case "FIRE"
                             If csv.str(i, 2) = "OBJECT" Or csv.str(i + 1, 1) = "CHEMI" Then
                                 ' New format fire
@@ -632,7 +632,7 @@ Module IO
                 End If
                 i += 1
             Loop
-        Else
+        ElseIf FileType = InsertDataType.ObjectFile Then
             ' Old format fire object file
             For i = 1 To csv.MaxRow
                 If Not SkipLine(csv.CSVrow(i)) Then
@@ -662,7 +662,7 @@ Module IO
 
         End If
 
-        SomeFireObjects(SomeFireObjects.Count - 1).Changed = False
+        If SomeFireObjects.Count > 0 Then SomeFireObjects(SomeFireObjects.Count - 1).Changed = False
     End Sub
 #End Region
 #Region "Write Routines"

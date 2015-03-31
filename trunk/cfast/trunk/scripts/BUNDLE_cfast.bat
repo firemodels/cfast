@@ -42,7 +42,7 @@ echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
 wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\%distname%" -c wrapup_cfast_install.bat
 
-copy %installerbase%.exe "%userprofile%\google drive\cftest.exe"
+copy %installerbase%.exe %svn_root%\scripts\cftest.exe"
 
 
 echo.

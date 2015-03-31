@@ -489,7 +489,7 @@ set search_dir=%2
 set stage=%3
 
 cd %search_dir%
-grep -RIi -A 5 -B 5 %search_string% --include *.log --include *.out * > %OUTDIR%\stage_warning.txt
+grep -RIi %search_string% --include *.log --include *.out * > %OUTDIR%\stage_warning.txt
 type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
 set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
 if %nwarnings% GTR 0 (

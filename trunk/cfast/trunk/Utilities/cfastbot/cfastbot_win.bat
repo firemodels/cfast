@@ -33,7 +33,7 @@ set emailexe=%userprofile%\bin\mailsend.exe
 set errorlog=%OUTDIR%\stage_errors.txt
 set warninglog=%OUTDIR%\stage_warnings.txt
 set errorwarninglog=%OUTDIR%\stage_errorswarnings.txt
-set infofile=%OUTDIR%\stage_info.txt
+set infofile=%OUTDIR%\summary.txt
 set revisionfilestring=%OUTDIR%\revision.txt
 set revisionfilenum=%OUTDIR%\revision_num.txt
 set stagestatus=%OUTDIR%\stage_status.log
@@ -399,7 +399,6 @@ if %havewarnings% == 0 (
 if exist %emailexe% (
   call %email% %mailToCFAST% "cfastbot %message% on %COMPUTERNAME%! %revisionstring%" %infofile%
 )
-type %infofile%
 
 goto eof
 
@@ -589,5 +588,5 @@ exit /b
 :eof
 
 echo cfastbot %message% on %COMPUTERNAME%! %revisionstring%, runtime: %DIFF_TIME%
-echo cfastbot_win completed
+echo Results summarized in %infofile%.
 cd %CURDIR%

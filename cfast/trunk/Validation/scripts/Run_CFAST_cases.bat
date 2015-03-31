@@ -18,7 +18,7 @@ set SVNROOT=%CD%
 
 set SH2BAT=%SCRIPT_DIR%\sh2bat.exe
 set BACKGROUNDEXE=%SCRIPT_DIR%\\background.exe
-set bg=%BACKGROUNDEXE% -u 85 -d 1
+set bg=%BACKGROUNDEXE% -u 85 -d 0.1
 set CFASTEXE=%SVNROOT%\CFAST\intel_win_64%DEBUG%\cfast7_win_64%DEBUG%
 set CFAST=%bg% %CFASTEXE%
 

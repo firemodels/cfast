@@ -10,4 +10,4 @@ set stopfile=%infile%.stop
 
 cd %fulldir%
 echo %in% started
-%CFAST% %in%  
+%CFAST% %in%  /V

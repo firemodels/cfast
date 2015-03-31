@@ -265,8 +265,9 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage4a.txt 2>&1
 
-call :find_smokeview_warnings "error" %OUTDIR%\stage4a.txt "Stage 4a_1"
-call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4a.txt "Stage 4a_2"
+call :find_smokeview_warnings "error"          %cfastsvnroot%\Validation "Stage 4a_1"
+call :find_smokeview_warnings "forrtl: severe" %cfastsvnroot%\Validation "Stage 4a_2"
+call :find_smokeview_warnings "DASSL"          %cfastsvnroot%\Validation "Stage 4a_3"
 
 if "%cfastbasename%" == "cfastclean" (
    echo             removing debug output files
@@ -280,8 +281,9 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage4b.txt 2>&1
 
-call :find_smokeview_warnings "error" %OUTDIR%\stage4b.txt "Stage 4b_1"
-call :find_smokeview_warnings "forrtl: severe" %OUTDIR%\stage4b.txt "Stage 4b_2"
+call :find_smokeview_warnings "error"          %cfastsvnroot%\Validation "Stage 4b_1"
+call :find_smokeview_warnings "forrtl: severe" %cfastsvnroot%\Validation "Stage 4b_2"
+call :find_smokeview_warnings "DASSL"          %cfastsvnroot%\Validation "Stage 4b_3"
 
 call :GET_TIME
 set RUNVV_end=%current_time% 
@@ -448,11 +450,11 @@ exit /b 0
 :: -------------------------------------------------------------
 
 set search_string=%1
-set search_file=%2
+set search_dir=%2
 set stage=%3
 
-grep -v "commands for target" %search_file% > %OUTDIR%\stage_warning0.txt
-grep -i -A 5 -B 5 %search_string% %OUTDIR%\stage_warning0.txt > %OUTDIR%\stage_warning.txt
+cd %search_dir%
+grep -vRI "commands for target" --include *.log --include *.out * | grep -i -A 5 -B 5 %search_string%  > %OUTDIR%\stage_warning.txt
 type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
 set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
 if %nwarnings% GTR 0 (

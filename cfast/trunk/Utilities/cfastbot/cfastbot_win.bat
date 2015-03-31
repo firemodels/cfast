@@ -265,12 +265,8 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage4a.txt 2>&1
 
-call :find_runcases_warnings "error"          %cfastsvnroot%\Validation   "Stage 4a_1"
-call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Validation   "Stage 4a_2"
-call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Validation   "Stage 4a_3"
-call :find_runcases_warnings "error"          %cfastsvnroot%\Verification "Stage 4a_4"
-call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Verification "Stage 4a_5"
-call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Verification "Stage 4a_6"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 4a-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 4a-Verification"
 
 if "%cfastbasename%" == "cfastclean" (
    echo             removing debug output files
@@ -284,12 +280,8 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage4b.txt 2>&1
 
-call :find_runcases_warnings "error"          %cfastsvnroot%\Validation   "Stage 4b_1"
-call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Validation   "Stage 4b_2"
-call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Validation   "Stage 4b_3"
-call :find_runcases_warnings "error"          %cfastsvnroot%\Verification "Stage 4b_4"
-call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Verification "Stage 4b_5"
-call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Verification "Stage 4b_6"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 4b-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 4b-Verification"
 
 call :GET_TIME
 set RUNVV_end=%current_time% 
@@ -488,7 +480,7 @@ set search_dir=%2
 set stage=%3
 
 cd %search_dir%
-grep -RIi %search_string% --include *.log --include *.out * > %OUTDIR%\stage_warning.txt
+grep -RIiE %search_string% --include *.log --include *.out * > %OUTDIR%\stage_warning.txt
 type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
 set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
 if %nwarnings% GTR 0 (

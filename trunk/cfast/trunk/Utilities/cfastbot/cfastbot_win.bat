@@ -265,9 +265,12 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage4a.txt 2>&1
 
-call :find_smokeview_warnings "error"          %cfastsvnroot%\Validation "Stage 4a_1"
-call :find_smokeview_warnings "forrtl: severe" %cfastsvnroot%\Validation "Stage 4a_2"
-call :find_smokeview_warnings "DASSL"          %cfastsvnroot%\Validation "Stage 4a_3"
+call :find_runcases_warnings "error"          %cfastsvnroot%\Validation   "Stage 4a_1"
+call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Validation   "Stage 4a_2"
+call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Validation   "Stage 4a_3"
+call :find_runcases_warnings "error"          %cfastsvnroot%\Verification "Stage 4a_4"
+call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Verification "Stage 4a_5"
+call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Verification "Stage 4a_6"
 
 if "%cfastbasename%" == "cfastclean" (
    echo             removing debug output files
@@ -281,9 +284,12 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage4b.txt 2>&1
 
-call :find_smokeview_warnings "error"          %cfastsvnroot%\Validation "Stage 4b_1"
-call :find_smokeview_warnings "forrtl: severe" %cfastsvnroot%\Validation "Stage 4b_2"
-call :find_smokeview_warnings "DASSL"          %cfastsvnroot%\Validation "Stage 4b_3"
+call :find_runcases_warnings "error"          %cfastsvnroot%\Validation   "Stage 4b_1"
+call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Validation   "Stage 4b_2"
+call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Validation   "Stage 4b_3"
+call :find_runcases_warnings "error"          %cfastsvnroot%\Verification "Stage 4b_4"
+call :find_runcases_warnings "forrtl: severe" %cfastsvnroot%\Verification "Stage 4b_5"
+call :find_runcases_warnings "DASSL"          %cfastsvnroot%\Verification "Stage 4b_6"
 
 call :GET_TIME
 set RUNVV_end=%current_time% 
@@ -450,11 +456,31 @@ exit /b 0
 :: -------------------------------------------------------------
 
 set search_string=%1
+set search_file=%2
+set stage=%3
+
+grep -v "commands for target" %search_file% > %OUTDIR%\stage_warning0.txt
+grep -i -A 5 -B 5 %search_string% %OUTDIR%\stage_warning0.txt > %OUTDIR%\stage_warning.txt
+type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
+set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
+if %nwarnings% GTR 0 (
+  echo %stage% warnings >> %warninglog%
+  echo. >> %warninglog%
+  type %OUTDIR%\stage_warning.txt >> %warninglog%
+  set havewarnings=1
+)
+exit /b
+
+:: -------------------------------------------------------------
+  :find_runcases_warnings
+:: -------------------------------------------------------------
+
+set search_string=%1
 set search_dir=%2
 set stage=%3
 
 cd %search_dir%
-grep -vRI "commands for target" --include *.log --include *.out * | grep -i -A 5 -B 5 %search_string%  > %OUTDIR%\stage_warning.txt
+grep -RIi -A 5 -B 5 %search_string% --include *.log --include *.out * > %OUTDIR%\stage_warning.txt
 type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
 set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
 if %nwarnings% GTR 0 (

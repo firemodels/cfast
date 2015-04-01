@@ -23,8 +23,5 @@ Compiled\Plotting.exe
 echo Creating Documentation
 cd ..\
 call make_docs.bat
-cdho Creating Installer
-cd ..\scripts
-call BUNDLE_cfast.bat
 echo.| time
 

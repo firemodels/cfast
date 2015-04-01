@@ -5097,7 +5097,7 @@ Public Class CeditMain
     End Sub
 #End Region
 
-#Region "Fires Tab"
+#Region "Fires Tab "
     ' This section of code handles the events related to the fires tab
     Private Sub FireAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireAdd.Click
         If myFires.Count + 1 <= Fire.MaximumFires Then
@@ -5366,7 +5366,7 @@ Public Class CeditMain
     End Sub
 #End Region
 
-#Region "Detectors "
+#Region "Detectors Tab "
     ' This section of code handles the events related to the detector tab
     Private Sub DetectorAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorAdd.Click
         If myDetectors.Count + 1 <= Target.MaximumTargets Then
@@ -5464,7 +5464,7 @@ Public Class CeditMain
     End Sub
 #End Region
 
-#Region " Surface Connections Tab"
+#Region " Surface Connections Tab "
     ' This section of code handles the events related to the surface connections tab
     Private Sub HeatAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HHeatAdd.Click, VHeatAdd.Click
         ' Add a heat transfer connection
@@ -5589,7 +5589,7 @@ Public Class CeditMain
     End Sub
 #End Region
 
-#Region "Visualization Tab"
+#Region "Visualization Tab "
     ' This section handles the visualization tab
     Private Sub VisualizationAdd_Click(sender As Object, e As EventArgs) Handles VisualizationAdd.Click
         ' Add a Visualization to the end of the list of visualizations

@@ -136,6 +136,17 @@ echo             found cut
 call :is_file_installed sed|| exit /b 1
 echo             found sed
 
+::*** looking for Validation
+
+where Validation 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothaveValidation=<%OUTDIR%\stage_count0a.txt
+if %nothaveValidation% == 0 (
+  echo             found Validation plot generator
+)
+if %nothaveValidation% == 1 (
+  echo             Validation plot generator not found (Validation guide will not be built)
+)
+
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository
@@ -252,21 +263,21 @@ call :GET_DURATION PRELIM %PRELIM_beg% %PRELIM_end%
 set DIFF_PRELIM=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 4 - run cases
+::                           stage 3 - run cases
 :: -------------------------------------------------------------
 
 call :GET_TIME
 set RUNVV_beg=%current_time% 
 
-echo Stage 4 - Running validation cases
+echo Stage 3 - Running validation cases
 echo             debug
 
 cd %cfastsvnroot%\Validation\scripts
 
-call Run_CFAST_cases 1 1> %OUTDIR%\stage4a.txt 2>&1
+call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 4a-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 4a-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3a-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3a-Verification"
 
 if "%cfastbasename%" == "cfastclean" (
    echo             removing debug output files
@@ -278,10 +289,10 @@ echo             release
 
 cd %cfastsvnroot%\Validation\scripts
 
-call Run_CFAST_cases 1> %OUTDIR%\stage4b.txt 2>&1
+call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 4b-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 4b-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3b-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3b-Verification"
 
 call :GET_TIME
 set RUNVV_end=%current_time% 
@@ -289,28 +300,48 @@ call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
 set DIFF_RUNVV=%duration%
 
 :: -------------------------------------------------------------
-::                           stage 5 - make pictures
+::                           stage 4 - make pictures
 :: -------------------------------------------------------------
 
 call :GET_TIME
 set MAKEPICS_beg=%current_time% 
-echo Stage 5 - Making pictures for cfast cases
+echo Stage 4 - Making pictures for cfast cases
 
 cd %cfastsvnroot%\Validation\scripts
 set SH2BAT=%cfastsvnroot%\Validation\scripts\sh2bat.exe
 
-%SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage5.txt 2>&1
+%SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage4.txt 2>&1
 set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runsmv.bat
 
 cd %cfastsvnroot%\Validation
 set BASEDIR=%CD%
 
-call scripts\CFAST_Pictures.bat 1> %OUTDIR%\stage5.txt 2>&1
+call scripts\CFAST_Pictures.bat 1> %OUTDIR%\stage4.txt 2>&1
 
 call :GET_TIME
 set MAKEPICS_end=%current_time% 
 call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
 set DIFF_MAKEPICS=%duration%
+
+:: -------------------------------------------------------------
+::                           stage 5 - make validation plots
+:: -------------------------------------------------------------
+
+if %nothaveValidation% == 1 go to skip_stage5
+
+cd %cfastsvnroot%\Utilities\Matlab
+Validation
+
+:loop5
+tasklist | find /i /c "Validation" > temp.out
+set /p numexe=<temp.out
+if %numexe% == 0 goto finished5
+Timeout /t 30 >nul 
+goto loop5
+
+:finished5
+
+:skip_stage5
 
 :: -------------------------------------------------------------
 ::                           stage 6 - make manuals
@@ -326,8 +357,10 @@ call :build_guide Users_Guide %cfastsvnroot%\Docs\Users_Guide 1>> %OUTDIR%\stage
 echo             Technical Reference Guide
 call :build_guide Tech_Ref %cfastsvnroot%\Docs\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
 
-::echo             Validation Guide
-::call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+if %nothaveValidation% == 0 (
+  echo             Validation Guide
+  call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+)
 
 call :GET_TIME
 set MAKEGUIDES_end=%current_time%

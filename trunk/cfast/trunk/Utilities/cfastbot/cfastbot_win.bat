@@ -351,7 +351,7 @@ set DIFF_MAKEPICS=%duration%
 ::                           stage 5 - make validation plots
 :: -------------------------------------------------------------
 
-if %nothaveValidation% == 1 go to skip_stage5
+if %nothaveValidation% == 1 goto skip_stage5
 
 echo Stage 5 - Making matlab plots
 ::*** generating Validation plots

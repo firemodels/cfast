@@ -161,7 +161,7 @@ if %nothaveVerification% == 1 (
 
 ::*** looking for Plotting
 
-where Plotting2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+where Plotting 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
 set /p nothavePlotting=<%OUTDIR%\stage_count0a.txt
 if %nothavePlotting% == 0 (
   echo             found Plotting plot generator

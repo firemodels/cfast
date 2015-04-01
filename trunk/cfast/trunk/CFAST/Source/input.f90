@@ -18,7 +18,7 @@
     integer, intent(out) :: ierror
     
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
-    real(eb) :: xloc, yloc, zloc, darea, dheight, xx, sum
+    real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: messg*133, aversion*5
@@ -125,18 +125,18 @@
 
     ! floor plan dependent parameters
     do i = 1, nm1
-        ceiling_height(i) = hr(i) + floor_height(i)
+        ceiling_height(i) = room_height(i) + floor_height(i)
     end do
 
     ! check and/or set heat source fire position
     if (heatfl) then
-        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>br(heatfr))) then
-            heatfp(1) = br(heatfr)/2.0_eb
+        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>room_width(heatfr))) then
+            heatfp(1) = room_width(heatfr)/2.0_eb
         endif
-        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>dr(heatfr))) then
-            heatfp(2) = dr(heatfr)/2.0_eb
+        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>room_depth(heatfr))) then
+            heatfp(2) = room_depth(heatfr)/2.0_eb
         endif
-        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>hr(heatfr))) then
+        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>room_height(heatfr))) then
             heatfp(3) = 0.0_eb
         endif
         write(logerr,5021) heatfr,heatfp
@@ -144,13 +144,13 @@
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
-        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>br(objrm(i)))) then
-            objpos(1,i) = br(objrm(i))/2.0_eb
+        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>room_width(objrm(i)))) then
+            objpos(1,i) = room_width(objrm(i))/2.0_eb
         endif
-        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>dr(objrm(i)))) then
-            objpos(2,i) = dr(objrm(i))/2.0_eb
+        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>room_depth(objrm(i)))) then
+            objpos(2,i) = room_depth(objrm(i))/2.0_eb
         endif
-        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>hr(objrm(i)))) then
+        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>room_height(objrm(i)))) then
             objpos(3,i) = 0.0_eb
         endif
     end do
@@ -201,8 +201,8 @@
 
     ! Compartment area and volume
     do i = 1, nm1
-        ar(i) = br(i)*dr(i)
-        vr(i) = ar(i)*hr(i)
+        room_area(i) = room_width(i)*room_depth(i)
+        room_volume(i) = room_area(i)*room_height(i)
     end do
 
 
@@ -306,11 +306,11 @@
                 temphgt(j+ioff) = zzrhgt(j,i)
             end do
 
-            ! force last elevation to be at the ceiling (as defined by hr(i)
-            if(hr(i)/=zzrhgt(npts,i))then
+            ! force last elevation to be at the ceiling (as defined by room_height(i)
+            if(room_height(i)/=zzrhgt(npts,i))then
                 ioff2 = 1
                 temparea(npts+ioff+ioff2) = zzrarea(npts,i)
-                temphgt(npts+ioff+ioff2) = hr(i)
+                temphgt(npts+ioff+ioff2) = room_height(i)
             else
                 ioff2 = 0
             endif
@@ -326,24 +326,29 @@
             do j = 2, npts
                 zzrhgt(j,i) = temphgt(j)
                 zzrarea(j,i) = temparea(j)
-                darea = (zzrarea(j,i)+zzrarea(j-1,i))/2.0_eb
                 dheight = zzrhgt(j,i) - zzrhgt(j-1,i)
-                zzrvol(j,i) = zzrvol(j-1,i) + darea*dheight
+                if(zzrarea(j,i)/=zzrarea(j-1,i)) then
+                    ! if the area changes, we assume it's a pyramid
+                    pyramid_height = dheight/(1.0_eb-sqrt(zzrarea(j,i)/zzrarea(j-1,i)))
+                    zzrvol(j,i) = zzrvol(j-1,i) + (zzrarea(j-1,i)*pyramid_height-zzrarea(j,i)*(pyramid_height-dheight))/3.0_eb
+                else
+                    zzrvol(j,i) = zzrvol(j-1,i) + zzrarea(j,i)*dheight
+                end if
             end do
 
             ! re-define volume, area, breadth and depth arrays 
-            ! (vr, ar, br and dr ) according to room area - height
-            ! data read in.  hr remains the same, vr is defined
+            ! (room_volume, room_area, room_width and room_depth ) according to room area - height
+            ! data read in.  room_height remains the same, room_volume is defined
             ! by integrating areas specified on the roomarea command,
-            ! ar is then vr/hr, br and dr are defined so that
-            ! br*dr=ar and br/dr remain the same as entered on
+            ! room_area is then room_volume/room_height, room_width and room_depth are defined so that
+            ! room_width*room_depth=room_area and room_width/room_depth remain the same as entered on
             ! the width and depth  commands.
 
-            vr(i) = zzrvol(npts,i)
-            ar(i) = vr(i)/hr(i)
-            xx = br(i)/dr(i)
-            br(i) = sqrt(ar(i)*xx)
-            dr(i) = sqrt(ar(i)/xx)
+            room_volume(i) = zzrvol(npts,i)
+            room_area(i) = room_volume(i)/room_height(i)
+            xx = room_width(i)/room_depth(i)
+            room_width(i) = sqrt(room_area(i)*xx)
+            room_depth(i) = sqrt(room_area(i)/xx)
         endif
     end do
 
@@ -372,7 +377,8 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>ceiling_height(iroom))then
+        if(xloc<0.0_eb.or.xloc>room_width(iroom).or.yloc<0.0_eb.or.yloc>room_depth(iroom) &
+            .or.zloc<0.0_eb.or.zloc>ceiling_height(iroom))then
             write(messg,102)xloc,yloc,zloc
 102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
             ifail = 45
@@ -661,9 +667,9 @@
             compartmentnames(compartment) = lcarray(1)
 
             ! Size
-            br(compartment) = lrarray(2)
-            dr(compartment) = lrarray(3)
-            hr(compartment) = lrarray(4)
+            room_width(compartment) = lrarray(2)
+            room_depth(compartment) = lrarray(3)
+            room_height(compartment) = lrarray(4)
             cxabs(compartment) = lrarray(5)
             cyabs(compartment) = lrarray(6)
             floor_height(compartment) = lrarray(7)
@@ -778,14 +784,14 @@
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
-        hh(jik) = min(hr(j),max(0.0_eb,hhp(jik)-floor_height(j)))
+        hh(jik) = min(room_height(j),max(0.0_eb,hhp(jik)-floor_height(j)))
         hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-floor_height(j)))
 
         ! assure ourselves that the connections are symmetrical
 
         hhp(jik) = hh(jik) + floor_height(j)
         hlp(jik) = hl(jik) + floor_height(j)
-        hh(iijk) = min(hr(i),max(0.0_eb,hhp(iijk)-floor_height(i)))
+        hh(iijk) = min(room_height(i),max(0.0_eb,hhp(iijk)-floor_height(i)))
         hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-floor_height(i)))
         
        ! DEADROOM dead_room_num connected_room_num
@@ -1077,7 +1083,7 @@
         objpos(1,obpnt) = lrarray(2)
         objpos(2,obpnt) = lrarray(3)
         objpos(3,obpnt) = lrarray(4)
-        if (objpos(1,obpnt)>br(iroom).or.objpos(2,obpnt)>dr(iroom).or.objpos(3,obpnt)>hr(iroom)) then
+        if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
             write(logerr,5323) obpnt
             ierror = 82
             return
@@ -1179,7 +1185,7 @@
         objpos(1,obpnt) = lrarray(3)
         objpos(2,obpnt) = lrarray(4)
         objpos(3,obpnt) = lrarray(5)
-        if (objpos(1,obpnt)>br(iroom).or.objpos(2,obpnt)>dr(iroom).or.objpos(3,obpnt)>hr(iroom)) then
+        if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
             write(logerr,5323) obpnt
             ierror = 82
             return
@@ -1303,7 +1309,8 @@
                 write(*,*)
             endif
 
-            if(xdtect(ndtect,dxloc)>br(i2).or.xdtect(ndtect,dyloc)>dr(i2).or.xdtect(ndtect,dzloc)>hr(i2)) then
+            if(xdtect(ndtect,dxloc)>room_width(i2).or.xdtect(ndtect,dyloc)>room_depth(i2) &
+                .or.xdtect(ndtect,dzloc)>room_height(i2)) then
                 write(logerr,5339) ndtect,compartmentnames(i2)
                 ierror = 80
                 return
@@ -1654,7 +1661,7 @@
                 if (lcarray(2) =='X') then
                     sliceptr%axis = 1
                     if (sliceptr%roomnum>0) then
-                        if (sliceptr%position>br(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                        if (sliceptr%position>room_width(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                             write (logerr, 5403) nvisualinfo
                             ierror = 67
                             return
@@ -1663,7 +1670,7 @@
                 else if (lcarray(2) =='Y') then
                     sliceptr%axis = 2
                     if (sliceptr%roomnum>0) then
-                        if (sliceptr%position>dr(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                        if (sliceptr%position>room_depth(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                             write (logerr, 5403) nvisualinfo
                             ierror = 67
                             return
@@ -1672,7 +1679,7 @@
                 else if (lcarray(2) =='Z') then
                     sliceptr%axis = 3
                     if (sliceptr%roomnum>0) then
-                        if (sliceptr%position>hr(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                        if (sliceptr%position>room_height(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                             write (logerr, 5403) nvisualinfo
                             ierror = 67
                             return
@@ -1918,11 +1925,11 @@
     call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    call positionobject(objpos,1,iobj,objrm(iobj),br,midpoint,mx_hsep,errorcode)
+    call positionobject(objpos,1,iobj,objrm(iobj),room_width,midpoint,mx_hsep,errorcode)
     if (errorcode/=0) return
-    call positionobject(objpos,2,iobj,objrm(iobj),dr,midpoint,mx_hsep,errorcode)
+    call positionobject(objpos,2,iobj,objrm(iobj),room_depth,midpoint,mx_hsep,errorcode)
     if (errorcode/=0) return
-    call positionobject(objpos,3,iobj,objrm(iobj),hr,base,mx_hsep,errorcode)
+    call positionobject(objpos,3,iobj,objrm(iobj),room_height,base,mx_hsep,errorcode)
     if (errorcode/=0) return
 
     ! diagnostic - check for the maximum heat release per unit volume.

@@ -448,7 +448,7 @@
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
         ! then we need the output now
         call remap_fires (nfires)
-        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, hrl, br, dr, hr, &
+        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, floor_height, br, dr, hr, &
                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, &
         ntarg, 0.0_eb, 1)
         icode = 0
@@ -567,7 +567,7 @@
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
                 call remap_fires (nfires)
                 call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
-                    hrl, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, &
+                    floor_height, br, dr, hr, n_hvents, n_vvents, nfires, flocal, fxlocal, &
                     fylocal,fzlocal,ntarg,t,itmstp)
                 call output_smokeview_header (version,nm1,nfires)
             endif
@@ -1426,12 +1426,12 @@
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
             
-            roomptr%yflor = hflr(iroom)
-            roomptr%yceil = hrp(iroom)
+            roomptr%yflor = floor_height(iroom)
+            roomptr%yceil = ceiling_height(iroom)
             
             roomptr%x0 = cxabs(iroom)
             roomptr%y0 = cyabs(iroom)
-            roomptr%z0 = hrl(iroom)
+            roomptr%z0 = floor_height(iroom)
             roomptr%dx = br(iroom)
             roomptr%dy = dr(iroom)
             roomptr%dz = hr(iroom)
@@ -1447,7 +1447,7 @@
             xwall_center = xx/2.0_eb
             yy = dr(iroom)
             ywall_center = yy/2.0_eb
-            zz = hrp(iroom)
+            zz = ceiling_height(iroom)
             roomptr%wall_center(1,1) = xwall_center
             roomptr%wall_center(1,2) = ywall_center
             roomptr%wall_center(1,3) = zz

@@ -277,7 +277,7 @@
             return
         endif
         hvelxt(ii) = min(hr(i),max(0.0_eb,hvelxt(ii)))
-        hvght(j) = hvelxt(ii) + hflr(i)
+        hvght(j) = hvelxt(ii) + floor_height(i)
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
@@ -514,8 +514,8 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        interior_rel_pressure(i) = -interior_density*grav_con*hflr(i)
-        exterior_rel_pressure(i) = -exterior_density*grav_con*hflr(i)
+        interior_rel_pressure(i) = -interior_density*grav_con*floor_height(i)
+        exterior_rel_pressure(i) = -exterior_density*grav_con*floor_height(i)
     end do
     exterior_rel_pressure(n) = 0.0_eb
 
@@ -580,7 +580,7 @@
         if(xdtect(i,dxloc)<0.0_eb)xdtect(i,dxloc)=br(iroom)*.5_eb
         if(xdtect(i,dyloc)<0.0_eb)xdtect(i,dyloc)=dr(iroom)*.5_eb
         if(xdtect(i,dzloc)<0.0_eb)then
-            xdtect(i,dzloc)=hrp(iroom)+xdtect(i,dzloc)
+            xdtect(i,dzloc)=ceiling_height(iroom)+xdtect(i,dzloc)
         endif
         tdspray = xdtect(i,dspray)
 
@@ -745,9 +745,9 @@
         dr(i) = xlrg
         br(i) = xlrg
         hr(i) = xlrg
-        hrp(i) = xlrg
-        hrl(i) = 0.0_eb
-        hflr(i) = 0.0_eb
+        ceiling_height(i) = xlrg
+        floor_height(i) = 0.0_eb
+        floor_height(i) = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
         cxgrid(i) = 50
@@ -1217,7 +1217,7 @@
         zznorm = xxtarg(trgnormz,itarg)
         xsize = br(iroom)
         ysize = dr(iroom)
-        zsize = hrp(iroom)
+        zsize = ceiling_height(iroom)
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5_eb*xsize

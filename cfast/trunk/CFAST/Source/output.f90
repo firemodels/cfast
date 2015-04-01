@@ -850,7 +850,7 @@
 
     write (iofilo,5000)
     do i = 1, nm1
-        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), hrp(i), hflr(i)
+        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), ceiling_height(i), floor_height(i)
     end do
     return
 5000 format (//,' OMPARTMENTS',//, &
@@ -913,10 +913,10 @@
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
                         hrx = hr(j)
-                        hrpx = hrp(j)
+                        hrpx = ceiling_height(j)
                     else
-                        hrx = hrl(i)
-                        hrpx = hrl(i)
+                        hrx = floor_height(i)
+                        hrpx = floor_height(i)
                     endif
                     write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx,hrpx
                 endif
@@ -1265,7 +1265,7 @@
 
     positionvector(1) = xdtect(detectornumber,dxloc) + cxabs(ixdtect(detectornumber,droom))
     positionvector(2) = xdtect(detectornumber,dyloc) + cyabs(ixdtect(detectornumber,droom))
-    positionvector(3) = xdtect(detectornumber,dzloc) + hrl(ixdtect(detectornumber,droom))
+    positionvector(3) = xdtect(detectornumber,dzloc) + floor_height(ixdtect(detectornumber,droom))
     positionvector(4) = 0.0_eb
     positionvector(5) = 0.0_eb
     positionvector(6) = -1.0_eb
@@ -1297,7 +1297,7 @@
 
     positionvector(1) = positionvector(1) + cxabs(ixtarg(trgroom,targetnumber))
     positionvector(2) = positionvector(2) + cyabs(ixtarg(trgroom,targetnumber))
-    positionvector(3) = positionvector(3) + hrl(ixtarg(trgroom,targetnumber))
+    positionvector(3) = positionvector(3) + floor_height(ixtarg(trgroom,targetnumber))
 
     return
 

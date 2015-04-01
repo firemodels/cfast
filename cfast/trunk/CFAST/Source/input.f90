@@ -91,7 +91,7 @@
     ! read in data file
     call keywordcases (numr, numc, ierror)
 
-    !	wait until the input file is parsed before dieing on temperature outside reasonable limits
+    !	wait until the input file is parsed before we die on temperature outside reasonable limits
     if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
         write(logerr,5022) exterior_temperature
         ierror = 218
@@ -125,8 +125,7 @@
 
     ! floor plan dependent parameters
     do i = 1, nm1
-        hrl(i) = hflr(i)
-        hrp(i) = hr(i) + hflr(i)
+        ceiling_height(i) = hr(i) + floor_height(i)
     end do
 
     ! check and/or set heat source fire position
@@ -157,7 +156,7 @@
     end do
 
     ! make sure horizontal vent specifications are correct -  we have to do this
-    ! here rather than right after keywordcases because hrl and hrp were just defined
+    ! here rather than right after keywordcases because floor_height and ceiling_height were just defined
     ! above
     do itop = 1, nm1
         if (nwv(itop,itop)/=0) then
@@ -168,8 +167,8 @@
             if (nwv(itop,ibot)/=0.or.nwv(ibot,itop)/=0) then
 
                 ! see which room is on top (if any) - this is like a bubble sort
-                deps1 = hrl(itop) - hrp(ibot)
-                deps2 = hrl(ibot) - hrp(itop)
+                deps1 = floor_height(itop) - ceiling_height(ibot)
+                deps2 = floor_height(ibot) - ceiling_height(itop)
                 if (nwv(itop,ibot)/=1.or.abs(deps1)>=mx_vsep) then
                     if (nwv(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
                         if (nwv(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
@@ -237,8 +236,8 @@
         endif
 
         ! floor of one room must be adjacent to ceiling of the other
-        dwall1 = abs(hrl(iroom1) - hrp(iroom2))
-        dwall2 = abs(hrl(iroom2) - hrp(iroom1))
+        dwall1 = abs(floor_height(iroom1) - ceiling_height(iroom2))
+        dwall2 = abs(floor_height(iroom2) - ceiling_height(iroom1))
         if(dwall1<mx_vsep.or.dwall2<=mx_vsep)then
             if(dwall1<mx_vsep)then
                 izswal(ii,w_from_wall) = 2
@@ -373,7 +372,7 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>hrp(iroom))then
+        if(xloc<0.0_eb.or.xloc>br(iroom).or.yloc<0.0_eb.or.yloc>dr(iroom).or.zloc<0.0_eb.or.zloc>ceiling_height(iroom))then
             write(messg,102)xloc,yloc,zloc
 102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
             ifail = 45
@@ -667,7 +666,7 @@
             hr(compartment) = lrarray(4)
             cxabs(compartment) = lrarray(5)
             cyabs(compartment) = lrarray(6)
-            hflr(compartment) = lrarray(7)
+            floor_height(compartment) = lrarray(7)
 
             ! Ceiling
             tcname = lcarray(8)
@@ -715,7 +714,7 @@
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
         !		    bw = width, hh = soffit, hl = sill, 
         !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
-        !           hflr = absolute height of the floor (not set here)
+        !           floor_height = absolute height of the floor (not set here)
         !		    compartment offset for the hall command (2 of these)
         !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
         !		    initial open fraction
@@ -773,21 +772,21 @@
         qcvh(2,iijk) = initialopening
         qcvh(4,iijk) = initialopening
 
-        hhp(iijk) = hh(iijk) + hflr(i)
-        hlp(iijk) = hl(iijk) + hflr(i)
+        hhp(iijk) = hh(iijk) + floor_height(i)
+        hlp(iijk) = hl(iijk) + floor_height(i)
 
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
-        hh(jik) = min(hr(j),max(0.0_eb,hhp(jik)-hflr(j)))
-        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-hflr(j)))
+        hh(jik) = min(hr(j),max(0.0_eb,hhp(jik)-floor_height(j)))
+        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-floor_height(j)))
 
         ! assure ourselves that the connections are symmetrical
 
-        hhp(jik) = hh(jik) + hflr(j)
-        hlp(jik) = hl(jik) + hflr(j)
-        hh(iijk) = min(hr(i),max(0.0_eb,hhp(iijk)-hflr(i)))
-        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-hflr(i)))
+        hhp(jik) = hh(jik) + floor_height(j)
+        hlp(jik) = hl(jik) + floor_height(j)
+        hh(iijk) = min(hr(i),max(0.0_eb,hhp(iijk)-floor_height(i)))
+        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-floor_height(i)))
         
        ! DEADROOM dead_room_num connected_room_num
        ! pressure in dead_room_num is not solved.  pressure for this room

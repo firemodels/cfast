@@ -268,7 +268,7 @@
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con*hrp(ibot)*exterior_density
+        dp(1) = -grav_con*ceiling_height(ibot)*exterior_density
         relp(1) = exterior_rel_pressure(ibot)
     endif
     pabs(1) = relp(1) + dp(1) + pofset

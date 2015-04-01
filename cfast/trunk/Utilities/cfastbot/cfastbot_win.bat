@@ -159,15 +159,15 @@ if %nothaveVerification% == 1 (
   set nothaveValidation=1
 )
 
-::*** looking for Pointing
+::*** looking for Plotting
 
-where Pointing 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
-set /p nothavePointing=<%OUTDIR%\stage_count0a.txt
-if %nothavePointing% == 0 (
-  echo             found Pointing plot generator
+where Plotting2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothavePlotting=<%OUTDIR%\stage_count0a.txt
+if %nothavePlotting% == 0 (
+  echo             found Plotting plot generator
 )
-if %nothavePointing% == 1 (
-  echo             Pointing plot generator not found (Validation guide will not be built)
+if %nothavePlotting% == 1 (
+  echo             Plotting plot generator not found (Validation guide will not be built)
   set nothaveValidation=1
 )
 
@@ -365,11 +365,11 @@ cd %cfastsvnroot%\Utilities\Matlab
 Verification
 call :WAIT_RUN Verification
 
-::*** generating Pointing plots
+::*** generating Plotting plots
 
 cd %cfastsvnroot%\Utilities\Matlab
-Pointing
-call :WAIT_RUN Pointing
+Plotting
+call :WAIT_RUN Plotting
 
 :skip_stage5
 

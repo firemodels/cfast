@@ -329,7 +329,7 @@ set DIFF_RUNVV=%duration%
 
 call :GET_TIME
 set MAKEPICS_beg=%current_time% 
-echo Stage 4 - Making pictures for cfast cases
+echo Stage 4 - Making smokeview images
 
 cd %cfastsvnroot%\Validation\scripts
 set SH2BAT=%cfastsvnroot%\Validation\scripts\sh2bat.exe
@@ -353,6 +353,7 @@ set DIFF_MAKEPICS=%duration%
 
 if %nothaveValidation% == 1 go to skip_stage5
 
+echo Stage 5 - Making matlab plots
 ::*** generating Validation plots
 
 cd %cfastsvnroot%\Utilities\Matlab

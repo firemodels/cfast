@@ -34,7 +34,7 @@
     ! compartment information
     do i = 1, nm1
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
+        izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
         call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (izshaft(i)==0) then
             call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
@@ -440,7 +440,7 @@
     ! compartment information
     do i = 1, nm1
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
+        izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
         call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (izshaft(i)==0) then
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)

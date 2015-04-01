@@ -209,7 +209,7 @@
     write (iofilo,5040)
     do i = 1, nm1
         itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/vr(i)*100.0_eb+0.5_eb
+        izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
         if (izshaft(i)==1) then
             write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zzvol(i,upper), &
             zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i)
@@ -850,12 +850,13 @@
 
     write (iofilo,5000)
     do i = 1, nm1
-        write (iofilo,5010) i, trim(compartmentnames(i)), br(i), dr(i), hr(i), ceiling_height(i), floor_height(i)
+        write (iofilo,5010) i, trim(compartmentnames(i)), room_width(i), room_depth(i), room_height(i), &
+            ceiling_height(i), floor_height(i)
     end do
     return
-5000 format (//,' OMPARTMENTS',//, &
+5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Ceiling      Floor     ',/, &
-    '                                                                       Height       Height    ',/, & 
+    '                                                                        Height       Height    ',/, & 
     33x,5('(m)',10x),/,' ',96('-'))
 5010 format (i5,8x,a13,5(f12.2,1x))
     end subroutine outcomp
@@ -912,7 +913,7 @@
                     csout = 'Round'
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
-                        hrx = hr(j)
+                        hrx = room_height(j)
                         hrpx = ceiling_height(j)
                     else
                         hrx = floor_height(i)

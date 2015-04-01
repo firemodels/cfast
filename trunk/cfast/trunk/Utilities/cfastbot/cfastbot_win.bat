@@ -147,6 +147,30 @@ if %nothaveValidation% == 1 (
   echo             Validation plot generator not found (Validation guide will not be built)
 )
 
+::*** looking for Verification
+
+where Verification 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothaveVerification=<%OUTDIR%\stage_count0a.txt
+if %nothaveVerification% == 0 (
+  echo             found Verification plot generator
+)
+if %nothaveVerification% == 1 (
+  echo             Verification plot generator not found (Validation guide will not be built)
+  set nothaveValidation=1
+)
+
+::*** looking for Pointing
+
+where Pointing 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothavePointing=<%OUTDIR%\stage_count0a.txt
+if %nothavePointing% == 0 (
+  echo             found Pointing plot generator
+)
+if %nothavePointing% == 1 (
+  echo             Pointing plot generator not found (Validation guide will not be built)
+  set nothaveValidation=1
+)
+
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository
@@ -329,17 +353,23 @@ set DIFF_MAKEPICS=%duration%
 
 if %nothaveValidation% == 1 go to skip_stage5
 
+::*** generating Validation plots
+
 cd %cfastsvnroot%\Utilities\Matlab
 Validation
+call :WAIT_RUN Validation
 
-:loop5
-tasklist | find /i /c "Validation" > temp.out
-set /p numexe=<temp.out
-if %numexe% == 0 goto finished5
-Timeout /t 30 >nul 
-goto loop5
+::*** generating Verification plots
 
-:finished5
+cd %cfastsvnroot%\Utilities\Matlab
+Verification
+call :WAIT_RUN Verification
+
+::*** generating Pointing plots
+
+cd %cfastsvnroot%\Utilities\Matlab
+Pointing
+call :WAIT_RUN Pointing
 
 :skip_stage5
 
@@ -429,6 +459,21 @@ goto eof
 
 :output_abort_message
   echo "***Fatal error: cfastbot build failure on %COMPUTERNAME% %revision%"
+exit /b
+
+:: -------------------------------------------------------------
+:WAIT_RUN
+:: -------------------------------------------------------------
+
+set prog=%1
+:loop5
+tasklist | find /i /c %prog% > temp.out
+set /p numexe=<temp.out
+if %numexe% == 0 goto finished5
+Timeout /t 30 >nul 
+goto loop5
+
+:finished5
 exit /b
 
 :: -------------------------------------------------------------

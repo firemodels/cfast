@@ -9,20 +9,20 @@
     real(eb), intent(in), dimension(nx) :: wtemp
     real(eb), intent(out) :: tempx
 
-    real(eb) :: dr, r, rint, factor
+    real(eb) :: room_depth, r, rint, factor
     integer :: left, right
 
-    dr = rad/nx
+    room_depth = rad/nx
     r = rad-x
-    if(r<=dr/2.0_eb)then
+    if(r<=room_depth/2.0_eb)then
         tempx = wtemp(1)
         return
     endif
-    if(r>=rad-dr/2.0_eb)then
+    if(r>=rad-room_depth/2.0_eb)then
         tempx = wtemp(nx)
         return
     endif
-    rint = r/dr-0.5_eb
+    rint = r/room_depth-0.5_eb
     left = int(rint)+1
     left=max(min(left,nx),1)
     right = left + 1
@@ -57,15 +57,15 @@
     integer :: i, nr, niter, iter
     real(eb), dimension(nnodes_trg) :: aim1, ai, aip1, tnew
     real(eb), dimension(nnodes_trg) :: cc, dd
-    real(eb) :: alpha, dr, factor, dt_iter
+    real(eb) :: alpha, room_depth, factor, dt_iter
 
     nr = nnodes_trg
-    dr = (diam/2.0_eb)/nr
+    room_depth = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
     niter = dt/dt_iter + 0.5_eb
     dt_iter=dt/niter
-    factor = 2.0_eb*alpha*dt_iter/dr**2
+    factor = 2.0_eb*alpha*dt_iter/room_depth**2
 
     do iter=1,niter     
        do i = 1, nr
@@ -83,12 +83,12 @@
        aim1(nr) = -cc(nr)
        ai(nr) = 1.0_eb + cc(nr)
        aip1(nr) = -dd(nr)
-       tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*dr/wk
+       tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*room_depth/wk
 
        ! aim1(nr) = -1.0
        ! ai(nr) = 1.0_eb
        ! aip1(nr) = 0.0
-       ! tnew(nr) = wfluxin*dr/wk
+       ! tnew(nr) = wfluxin*room_depth/wk
        ! now perform an l-u factorization of this matrix (see atkinson p.455)
        ! note: matrix is diagonally dominant so we don't have to pivot
 

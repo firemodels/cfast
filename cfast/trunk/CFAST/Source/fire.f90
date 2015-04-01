@@ -68,9 +68,9 @@
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
 
-            call do_fire(i,iroom,oplume(1,iobj),hr(iroom),br(iroom),dr(iroom),objhct,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,&
-               objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat,oplume(2,iobj),oplume(3,iobj),oqdott,&
-               xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
+            call do_fire(i,iroom,oplume(1,iobj),room_height(iroom),room_width(iroom),room_depth(iroom),objhct,y_soot,y_co, &
+               y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
+               oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
             xtl = zztemp(iroom,lower)
@@ -1028,15 +1028,15 @@
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = zzhlay(iroom,lower)
-            zceil = hr(iroom)
+            zceil = room_height(iroom)
             r = sqrt(xdistance**2 + ydistance**2)
             if (izhall(iroom,ishall)==1) then
                 if (izhall(iroom,ihxy)==1) then
                     distance = ydistance
-                    hall_width = br(iroom)
+                    hall_width = room_width(iroom)
                 else
                     distance = xdistance
-                    hall_width = dr(iroom)
+                    hall_width = room_depth(iroom)
                 end if
             else
                 hall_width = 0.0_eb

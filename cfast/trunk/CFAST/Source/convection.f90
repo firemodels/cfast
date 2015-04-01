@@ -95,7 +95,7 @@
                 do ifire = 1, nrmfire
                     qconv = max(qconv,xfire(ifrpnt(i,2)+ifire-1,f_qfc))
                 end do
-                qconv_avg = 0.27_eb*qconv/((br(i)*dr(i))**0.68_eb*hr(i)**0.64_eb)
+                qconv_avg = 0.27_eb*qconv/((room_width(i)*room_depth(i))**0.68_eb*room_height(i)**0.64_eb)
                 if (qconv_avg>flxcv(i,iwall)) flxcv(i,iwall) = qconv_avg
             end if
             flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)

@@ -93,9 +93,9 @@ module cfast_main
 
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
-        hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), &
-        ventoffset(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr), &
-        ceiling_height(nr), vr(nr), floor_height(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
+        hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), ventoffset(mxvents,2), oplume(3,mxfires),  &
+        qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), room_width(nr), room_depth(nr), room_height(nr), room_area(nr), &
+        ceiling_height(nr), room_volume(nr), floor_height(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
         radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
@@ -119,7 +119,7 @@ module cfast_main
 
     character(128) :: title, compartmentnames(nr)
    
-     type(fire_type), target :: fireinfo(mxfire)
+    type(fire_type), target :: fireinfo(mxfire)
      
 end module cfast_main
 

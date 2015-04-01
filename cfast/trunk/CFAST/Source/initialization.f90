@@ -276,7 +276,7 @@
             ierror = 223
             return
         endif
-        hvelxt(ii) = min(hr(i),max(0.0_eb,hvelxt(ii)))
+        hvelxt(ii) = min(room_height(i),max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + floor_height(i)
     end do
 
@@ -546,7 +546,7 @@
             if (yinter(i)<0.0_eb) then
                 p(i+nofvu) = zzvmin(i)
             else
-                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*ar(i)))
+                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*room_area(i)))
             endif
             yinter(i) = 0.0_eb
         endif
@@ -577,8 +577,8 @@
     ! establish default values for detector data
     do i = 1, ndtect
         iroom=ixdtect(i,droom)
-        if(xdtect(i,dxloc)<0.0_eb)xdtect(i,dxloc)=br(iroom)*.5_eb
-        if(xdtect(i,dyloc)<0.0_eb)xdtect(i,dyloc)=dr(iroom)*.5_eb
+        if(xdtect(i,dxloc)<0.0_eb)xdtect(i,dxloc)=room_width(iroom)*.5_eb
+        if(xdtect(i,dyloc)<0.0_eb)xdtect(i,dyloc)=room_depth(iroom)*.5_eb
         if(xdtect(i,dzloc)<0.0_eb)then
             xdtect(i,dzloc)=ceiling_height(iroom)+xdtect(i,dzloc)
         endif
@@ -645,7 +645,7 @@
     ! define ihxy in izhall (dimension that is longest)
     do i = 1, nm1
         if(izhall(i,ishall)==1)then
-            if(dr(i)>br(i))then
+            if(room_depth(i)>room_width(i))then
                 izhall(i,ihxy) = 1
             else
                 izhall(i,ihxy) = 2
@@ -742,9 +742,9 @@
     ! define the outside world as infinity
     xlrg = 1.0e+5_eb
     do i = 1, nr
-        dr(i) = xlrg
-        br(i) = xlrg
-        hr(i) = xlrg
+        room_depth(i) = xlrg
+        room_width(i) = xlrg
+        room_height(i) = xlrg
         ceiling_height(i) = xlrg
         floor_height(i) = 0.0_eb
         floor_height(i) = 0.0_eb
@@ -753,8 +753,8 @@
         cxgrid(i) = 50
         cygrid(i) = 50
         czgrid(i) = 50
-        ar(i) = br(i)*dr(i)
-        vr(i) = hr(i)*ar(i)
+        room_area(i) = room_width(i)*room_depth(i)
+        room_volume(i) = room_height(i)*room_area(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qscnv(j,i) = 0.0_eb
@@ -1215,8 +1215,8 @@
         xxnorm = xxtarg(trgnormx,itarg)
         yynorm = xxtarg(trgnormy,itarg)
         zznorm = xxtarg(trgnormz,itarg)
-        xsize = br(iroom)
-        ysize = dr(iroom)
+        xsize = room_width(iroom)
+        ysize = room_depth(iroom)
         zsize = ceiling_height(iroom)
 
         ! if the locator is -1, set to center of room on the floor
@@ -1292,8 +1292,8 @@
         ixtarg(trgmeth,ntarg) = steady
         ixtarg(trgback,ntarg) = exterior
 
-        xx = br(iroom)*0.50_eb
-        yy = dr(iroom)*0.50_eb
+        xx = room_width(iroom)*0.50_eb
+        yy = room_depth(iroom)*0.50_eb
         zz = 0.0_eb
         xxtarg(trgcenx,ntarg) = xx
         xxtarg(trgceny,ntarg) = yy

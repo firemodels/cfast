@@ -95,12 +95,12 @@ module cfast_main
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), &
         ventoffset(mxvents,2),qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), oplume(3,mxfires), br(nr), dr(nr), hr(nr), ar(nr), &
-        hrp(nr), vr(nr), hrl(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
+        ceiling_height(nr), vr(nr), floor_height(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
         radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal), fopos(3,0:mxfire), &
-        hflr(nr),ontarget(nr),toxict(nr,2,ns),femr(0:mxfire), hcratio(mxpts), hlp(mxvents), hvextt(mxext,2), &
+        ontarget(nr), toxict(nr,2,ns), femr(0:mxfire), hcratio(mxpts), hlp(mxvents), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&

@@ -356,18 +356,21 @@ if %nothaveValidation% == 1 goto skip_stage5
 echo Stage 5 - Making matlab plots
 ::*** generating Validation plots
 
+echo             Validation
 cd %cfastsvnroot%\Utilities\Matlab
 Validation
 call :WAIT_RUN Validation
 
 ::*** generating Verification plots
 
+echo             Verification
 cd %cfastsvnroot%\Utilities\Matlab
 Verification
 call :WAIT_RUN Verification
 
 ::*** generating Plotting plots
 
+echo             Plotting
 cd %cfastsvnroot%\Utilities\Matlab
 Plotting
 call :WAIT_RUN Plotting

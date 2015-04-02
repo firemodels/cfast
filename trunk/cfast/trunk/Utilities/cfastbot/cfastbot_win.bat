@@ -342,11 +342,6 @@ set BASEDIR=%CD%
 
 call scripts\CFAST_Pictures.bat 1> %OUTDIR%\stage4.txt 2>&1
 
-call :GET_TIME
-set MAKEPICS_end=%current_time% 
-call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
-set DIFF_MAKEPICS=%duration%
-
 :: -------------------------------------------------------------
 ::                           stage 5 - make validation plots
 :: -------------------------------------------------------------
@@ -376,6 +371,11 @@ Plotting
 call :WAIT_RUN Plotting
 
 :skip_stage5
+
+call :GET_TIME
+set MAKEPICS_end=%current_time% 
+call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
+set DIFF_MAKEPICS=%duration%
 
 :: -------------------------------------------------------------
 ::                           stage 6 - make manuals
@@ -459,9 +459,16 @@ if exist %emailexe% (
   call %email% %mailToCFAST% "cfastbot %message% on %COMPUTERNAME%! %revisionstring%" %infofile%
 )
 
+echo cfastbot %message% on %COMPUTERNAME%! %revisionstring%, runtime: %DIFF_TIME%
+echo Results summarized in %infofile%.
+cd %CURDIR%
 goto eof
 
+::------------ cfastbot "subroutines below ----------------------
+
+:: -------------------------------------------------------------
 :output_abort_message
+:: -------------------------------------------------------------
   echo "***Fatal error: cfastbot build failure on %COMPUTERNAME% %revision%"
 exit /b
 
@@ -471,7 +478,7 @@ exit /b
 
 set prog=%1
 :loop5
-tasklist | find /i /c %prog% > temp.out
+tasklist | grep -ic %prog% > temp.out
 set /p numexe=<temp.out
 if %numexe% == 0 goto finished5
 Timeout /t 30 >nul 
@@ -660,7 +667,3 @@ if %nwarnings% GTR 0 (
 exit /b
 
 :eof
-
-echo cfastbot %message% on %COMPUTERNAME%! %revisionstring%, runtime: %DIFF_TIME%
-echo Results summarized in %infofile%.
-cd %CURDIR%

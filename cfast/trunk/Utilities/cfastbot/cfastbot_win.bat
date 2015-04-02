@@ -159,18 +159,6 @@ if %nothaveVerification% == 1 (
   set nothaveValidation=1
 )
 
-::*** looking for Plotting
-
-where Plotting 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
-set /p nothavePlotting=<%OUTDIR%\stage_count0a.txt
-if %nothavePlotting% == 0 (
-  echo             found Plotting plot generator
-)
-if %nothavePlotting% == 1 (
-  echo             Plotting plot generator not found  - Validation guide will not be built
-  set nothaveValidation=1
-)
-
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository
@@ -364,11 +352,6 @@ Verification
 call :WAIT_RUN Verification
 
 ::*** generating Plotting plots
-
-echo             Plotting
-cd %cfastsvnroot%\Utilities\Matlab
-Plotting
-call :WAIT_RUN Plotting
 
 :skip_stage5
 

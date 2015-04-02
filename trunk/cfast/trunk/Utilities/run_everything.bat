@@ -19,7 +19,6 @@ echo Running matlab plotting analysis
 cd ..\Utilities\matlab
 Compiled\Validation.exe
 Compiled\Verification.exe
-Compiled\Plotting.exe
 echo Creating Documentation
 cd ..\
 call make_docs.bat

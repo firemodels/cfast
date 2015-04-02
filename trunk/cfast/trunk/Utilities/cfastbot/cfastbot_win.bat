@@ -144,7 +144,7 @@ if %nothaveValidation% == 0 (
   echo             found Validation plot generator
 )
 if %nothaveValidation% == 1 (
-  echo             Validation plot generator not found (Validation guide will not be built)
+  echo             Validation plot generator not found - Validation guide will not be built
 )
 
 ::*** looking for Verification
@@ -155,7 +155,7 @@ if %nothaveVerification% == 0 (
   echo             found Verification plot generator
 )
 if %nothaveVerification% == 1 (
-  echo             Verification plot generator not found (Validation guide will not be built)
+  echo             Verification plot generator not found - Validation guide will not be built
   set nothaveValidation=1
 )
 
@@ -167,7 +167,7 @@ if %nothavePlotting% == 0 (
   echo             found Plotting plot generator
 )
 if %nothavePlotting% == 1 (
-  echo             Plotting plot generator not found (Validation guide will not be built)
+  echo             Plotting plot generator not found  - Validation guide will not be built
   set nothaveValidation=1
 )
 

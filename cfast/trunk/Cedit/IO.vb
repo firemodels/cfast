@@ -654,7 +654,7 @@ Module IO
             Loop
         ElseIf FileType = InsertDataType.ObjectFile Then
             Try
-                ' Old format fire object file
+                ' Old format fire object file without much error checking
                 For i = 1 To csv.MaxRow
                     If Not SkipLine(csv.CSVrow(i)) Then
                         rowidx(rdx) = i
@@ -668,8 +668,10 @@ Module IO
                         Exit Sub
                     End If
                 Next
-                ' Chemical compound will need to be properly read in once fire objects write is updated
+                ' Chemical compound is assumed to be methane for these old format files.
                 SomeFireObjects.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
+                ' Check for thermal property of the fire object and find it if necessary
+
                 SomeFireObjects(SomeFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
                 Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
                 For i = 0 To csv.Num(rowidx(1), 1) - 1

@@ -214,7 +214,25 @@ Module IO
                         mvent.Changed = False
                         myMVents.Add(mvent)
                     Case "OBJECT"
-                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
+                        Dim FireFile As String
+                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
+                            FireFile = csv.str(i, objfireNum.name) + ".o"
+                            readFires(FireFile, InsertDataType.ObjectFile)
+                            If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
+                                Dim aFireObject As New Fire
+                                Dim aFire As New Fire
+                                aFire.Name = csv.str(i, objfireNum.name)
+                                aFire.SetPosition(csv.Num(i, objfireNum.compartment) - 1, csv.Num(i, objfireNum.xPosition), _
+                                    csv.Num(i, objfireNum.yPosition), csv.Num(i, objfireNum.zposition), _
+                                    csv.Num(i, objfireNum.xNormal), csv.Num(i, objfireNum.yNormal), csv.Num(i, objfireNum.zNormal))
+                                aFire.PlumeType = csv.Num(i, objfireNum.plumeType) - 1
+                                aFire.IgnitionType = csv.Num(i, objfireNum.ignType) - 1
+                                aFire.IgnitionValue = csv.Num(i, objfireNum.ignCriterion)
+                                aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
+                                aFire.Changed = False
+                                myFires.Add(aFire)
+                            End If
+                        ElseIf myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
                             Dim aFire As New Fire
                             aFire.Name = csv.str(i, objfireNum.name)
                             aFire.SetPosition(csv.Num(i, objfireNum.compartment) - 1, csv.Num(i, objfireNum.xPosition), _
@@ -649,16 +667,16 @@ Module IO
             Next
             ' Chemical compound will need to be properly read in once fire objects write is updated
             SomeFireObjects.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
-            SomeFireObjects(myFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
+            SomeFireObjects(SomeFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
             Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
             For i = 0 To csv.Num(rowidx(1), 1) - 1
                 For j = 0 To 12
                     firedata(j, i) = csv.Num(rowidx(1 + i), firefile(j))
                 Next
             Next
-            SomeFireObjects(myFireObjects.Count - 1).SetFireData(firedata)
+            SomeFireObjects(SomeFireObjects.Count - 1).SetFireData(firedata)
             fireFilesComments.Add(fireComments)
-            SomeFireObjects(myFireObjects.Count - 1).CommentsIndex = fireFilesComments.Count
+            SomeFireObjects(SomeFireObjects.Count - 1).CommentsIndex = fireFilesComments.Count
 
         End If
 

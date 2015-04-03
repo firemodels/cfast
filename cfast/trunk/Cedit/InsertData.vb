@@ -56,9 +56,14 @@
         Select Case Type
             Case InsertDataType.Fire
                 Dim aFire As New Fire
+                Dim FileExt As String = System.IO.Path.GetExtension(Filename)
                 TempFireObjects.Clear()
                 myUnits.SI = True
-                IO.FindFires(InsertDataType.EmbeddedFire, csv, TempFireObjects)
+                If FileExt = ".o" Then
+                    IO.FindFires(InsertDataType.ObjectFile, csv, TempFireObjects)
+                Else
+                    IO.FindFires(InsertDataType.EmbeddedFire, csv, TempFireObjects)
+                End If
                 myUnits.SI = False
                 If TempFireObjects.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFireObjects.Count + 1
                 If TempFireObjects.Count > 0 Then

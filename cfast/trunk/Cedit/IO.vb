@@ -215,24 +215,17 @@ Module IO
                         myMVents.Add(mvent)
                     Case "OBJECT"
                         Dim FireFile As String
+                        ' First look for the fire object in the current folder (which should be where the .in file is located)
                         If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
                             FireFile = csv.str(i, objfireNum.name) + ".o"
                             readFires(FireFile, InsertDataType.ObjectFile)
-                            If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
-                                Dim aFireObject As New Fire
-                                Dim aFire As New Fire
-                                aFire.Name = csv.str(i, objfireNum.name)
-                                aFire.SetPosition(csv.Num(i, objfireNum.compartment) - 1, csv.Num(i, objfireNum.xPosition), _
-                                    csv.Num(i, objfireNum.yPosition), csv.Num(i, objfireNum.zposition), _
-                                    csv.Num(i, objfireNum.xNormal), csv.Num(i, objfireNum.yNormal), csv.Num(i, objfireNum.zNormal))
-                                aFire.PlumeType = csv.Num(i, objfireNum.plumeType) - 1
-                                aFire.IgnitionType = csv.Num(i, objfireNum.ignType) - 1
-                                aFire.IgnitionValue = csv.Num(i, objfireNum.ignCriterion)
-                                aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
-                                aFire.Changed = False
-                                myFires.Add(aFire)
-                            End If
-                        ElseIf myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
+                        End If
+                        ' If we didn't find it there, look in the CFAST bin directory
+                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
+                            FireFile = Application.StartupPath + "\" + csv.str(i, objfireNum.name) + ".o"
+                            readFires(FireFile, InsertDataType.ObjectFile)
+                        End If
+                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
                             Dim aFire As New Fire
                             aFire.Name = csv.str(i, objfireNum.name)
                             aFire.SetPosition(csv.Num(i, objfireNum.compartment) - 1, csv.Num(i, objfireNum.xPosition), _
@@ -526,7 +519,9 @@ Module IO
     End Sub
     Public Sub readFires(ByVal Filename As String, FileType As Integer)
         Dim csv As New CSVsheet(Filename)
-        FindFires(FileType, csv, myFireObjects)
+        If csv.MaxRow > 0 Then
+            FindFires(FileType, csv, myFireObjects)
+        End If
     End Sub
     Public Sub FindFires(ByVal FileType As Integer, ByVal csv As CSVsheet, ByRef SomeFireObjects As FireCollection)
         'simple read of a fire object file
@@ -651,33 +646,36 @@ Module IO
                 i += 1
             Loop
         ElseIf FileType = InsertDataType.ObjectFile Then
-            ' Old format fire object file
-            For i = 1 To csv.MaxRow
-                If Not SkipLine(csv.CSVrow(i)) Then
-                    rowidx(rdx) = i
-                    rdx += 1
-                ElseIf Comment(csv.str(i, CFASTlnNum.keyWord)) Then
-                    fireComments.Add(csv.strrow(i))
-                End If
-            Next
-            For i = 0 To SomeFireObjects.Count - 1
-                If csv.str(rowidx(0), 1) = SomeFireObjects.Item(i).Name Then
-                    Exit Sub
-                End If
-            Next
-            ' Chemical compound will need to be properly read in once fire objects write is updated
-            SomeFireObjects.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
-            SomeFireObjects(SomeFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
-            Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
-            For i = 0 To csv.Num(rowidx(1), 1) - 1
-                For j = 0 To 12
-                    firedata(j, i) = csv.Num(rowidx(1 + i), firefile(j))
+            Try
+                ' Old format fire object file
+                For i = 1 To csv.MaxRow
+                    If Not SkipLine(csv.CSVrow(i)) Then
+                        rowidx(rdx) = i
+                        rdx += 1
+                    ElseIf Comment(csv.str(i, CFASTlnNum.keyWord)) Then
+                        fireComments.Add(csv.strrow(i))
+                    End If
                 Next
-            Next
-            SomeFireObjects(SomeFireObjects.Count - 1).SetFireData(firedata)
-            fireFilesComments.Add(fireComments)
-            SomeFireObjects(SomeFireObjects.Count - 1).CommentsIndex = fireFilesComments.Count
+                For i = 0 To SomeFireObjects.Count - 1
+                    If csv.str(rowidx(0), 1) = SomeFireObjects.Item(i).Name Then
+                        Exit Sub
+                    End If
+                Next
+                ' Chemical compound will need to be properly read in once fire objects write is updated
+                SomeFireObjects.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
+                SomeFireObjects(SomeFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
+                Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
+                For i = 0 To csv.Num(rowidx(1), 1) - 1
+                    For j = 0 To 12
+                        firedata(j, i) = csv.Num(rowidx(1 + i), firefile(j))
+                    Next
+                Next
+                SomeFireObjects(SomeFireObjects.Count - 1).SetFireData(firedata)
+                fireFilesComments.Add(fireComments)
+                SomeFireObjects(SomeFireObjects.Count - 1).CommentsIndex = fireFilesComments.Count
 
+            Catch ex As Exception
+            End Try
         End If
 
         If SomeFireObjects.Count > 0 Then SomeFireObjects(SomeFireObjects.Count - 1).Changed = False

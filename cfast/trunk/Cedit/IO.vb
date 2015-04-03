@@ -81,7 +81,14 @@ Module IO
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
                 Select Case csv.str(i, CFASTlnNum.keyWord).Trim
                     Case "VERSN"
-                        myEnvironment.Title = csv.str(i, CFASTlnNum.title)
+                        Dim aTitle As String
+                        aTitle = csv.str(i, CFASTlnNum.title)
+                        If csv.Num(i, 0) > CFASTlnNum.title Then
+                            For j = CFASTlnNum.title + 1 To csv.Num(i, 0)
+                                aTitle = aTitle + " " + csv.str(i, j)
+                            Next
+                        End If
+                        myEnvironment.Title = aTitle
                         myEnvironment.Changed = False
                     Case "GLOBA"
                         If csv.Num(i, 0) <= 3 Then

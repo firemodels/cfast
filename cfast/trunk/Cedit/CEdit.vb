@@ -5952,6 +5952,10 @@ Public Class CeditMain
                             myThermalProperties.Add(aThermalProperty)
                         End If
                     Next
+                    UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+                    UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+                    UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+                    UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
                 ElseIf sender Is MenuInsertFire Then
                     Dim i As Integer, aFire As New Fire(Fire.TypeFireObject)
                     For i = 1 To InsertDialog.Count
@@ -5960,6 +5964,7 @@ Public Class CeditMain
                             myFireObjects.Add(aFire)
                         End If
                     Next
+                    UpdateGUI.InitFireObjectList(Me.FireName)
                 End If
             End If
         End If

@@ -799,8 +799,8 @@ Public Class FireCollection
                         Exit Property
                     End If
                 Next
-                Return -1
             End If
+            Return -1
         End Get
     End Property
     Public ReadOnly Property Maximum() As Integer

@@ -21,6 +21,8 @@ if not exist timings mkdir timings
 set OUTDIR=%CURDIR%\output
 set HISTORYDIR=%CURDIR%\history
 set TIMINGSDIR=%CURDIR%\timings
+set timefile=%OUTDIR%\time.txt
+
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
 
@@ -470,10 +472,14 @@ exit /b 0
 :GET_TIME
 :: -------------------------------------------------------------
 
+echo 111
 set arg1=%1
+echo 222
 
 %gettimeexe% > %timefile%
+echo 333
 set /p %arg1%=<%timefile%
+echo 444
 exit /b 0
 
 :: -------------------------------------------------------------

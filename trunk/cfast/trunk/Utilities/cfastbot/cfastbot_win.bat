@@ -72,11 +72,8 @@ echo. > %stagestatus%
 call :is_file_installed %gettimeexe%|| exit /b 1
 echo             found get_time
 
-call :GET_TIME
-set TIME_beg=%current_time%
-
-call :GET_TIME
-set PRELIM_beg=%current_time% 
+call :GET_TIME TIME_beg
+call :GET_TIME PRELIM_beg
 
 ::*** looking for fortran
 
@@ -204,8 +201,6 @@ svn update  1> %OUTDIR%\stage0.txt 2>&1
 ::                           stage 1 - build cfast
 :: -------------------------------------------------------------
 
-call :GET_TIME
-set BUILDFDS_beg=%current_time% 
 echo Stage 1 - Building CFAST
 
 echo             debug
@@ -228,11 +223,6 @@ make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win
 call :does_file_exist cfast7_win_64.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
-call :GET_TIME
-set BUILDFDS_end=%current_time%
-call :GET_DURATION BUILDFDS %BUILDFDS_beg% %BUILDFDS_end%
-set DIFF_BUILDFDS=%duration%
-
 :: -------------------------------------------------------------
 ::                           stage 2 - build smokeview
 :: -------------------------------------------------------------
@@ -240,8 +230,7 @@ set DIFF_BUILDFDS=%duration%
 if %nothaveICC% == 1 (
   goto skip_stage2
 )
-call :GET_TIME
-set BUILDSMVUTIL_beg=%current_time% 
+
 echo Stage 2 - Building Smokeview
 
 echo             libs
@@ -269,17 +258,13 @@ call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 :skip_stage2
 
-call :GET_TIME
-set PRELIM_end=%current_time%
-call :GET_DURATION PRELIM %PRELIM_beg% %PRELIM_end%
-set DIFF_PRELIM=%duration%
+call :GET_DURATION PRELIM %PRELIM_beg%
 
 :: -------------------------------------------------------------
 ::                           stage 3 - run cases
 :: -------------------------------------------------------------
 
-call :GET_TIME
-set RUNVV_beg=%current_time% 
+call :GET_TIME RUNVV_beg
 
 echo Stage 3 - Running validation cases
 echo             debug
@@ -306,17 +291,14 @@ call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3b-Validation"
 call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3b-Verification"
 
-call :GET_TIME
-set RUNVV_end=%current_time% 
-call :GET_DURATION RUNVV %RUNVV_beg% %RUNVV_end%
-set DIFF_RUNVV=%duration%
+call :GET_DURATION RUNVV %RUNVV_beg%
 
 :: -------------------------------------------------------------
 ::                           stage 4 - make pictures
 :: -------------------------------------------------------------
 
-call :GET_TIME
-set MAKEPICS_beg=%current_time% 
+call :GET_TIME MAKEPICS_beg
+
 echo Stage 4 - Making smokeview images
 
 cd %cfastsvnroot%\Validation\scripts
@@ -355,17 +337,14 @@ call :WAIT_RUN Verification
 
 :skip_stage5
 
-call :GET_TIME
-set MAKEPICS_end=%current_time% 
-call :GET_DURATION MAKEPICS %MAKEPICS_beg% %MAKEPICS_end%
-set DIFF_MAKEPICS=%duration%
+call :GET_DURATION MAKEPICS %MAKEPICS_beg%
 
 :: -------------------------------------------------------------
 ::                           stage 6 - make manuals
 :: -------------------------------------------------------------
 
-call :GET_TIME
-set MAKEGUIDES_beg=%current_time% 
+call :GET_TIME MAKEGUIDES_beg
+
 echo Stage 6 - Building CFAST guides
 
 echo             Users Guide
@@ -379,15 +358,8 @@ if %nothaveValidation% == 0 (
   call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 )
 
-call :GET_TIME
-set MAKEGUIDES_end=%current_time%
-call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg% %MAKEGUIDES_end%
-set DIFF_MAKEGUIDES=%duration%
-
-call :GET_TIME
-set TIME_end=%current_time%
-call :GET_DURATION DIFF_TIME %TIME_beg% %TIME_end%
-set DIFF_TIME=%duration%
+call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg%
+call :GET_DURATION TOTALTIME %TIME_beg%
 
 :: -------------------------------------------------------------
 ::                           wrap up
@@ -399,15 +371,16 @@ time /t > %OUTDIR%\stoptime.txt
 set /p stoptime=<%OUTDIR%\stoptime.txt
 
 echo. > %infofile%
-echo .------------------------------ >> %infofile%
-echo .         host: %COMPUTERNAME% >> %infofile%
+echo .------------------------------         >> %infofile%
+echo .         host: %COMPUTERNAME%          >> %infofile%
 echo .        start: %startdate% %starttime% >> %infofile%
-echo .         stop: %stopdate% %stoptime%  >> %infofile%
-echo .        setup: %DIFF_PRELIM% >> %infofile%
-echo .    run cases: %DIFF_RUNVV% >> %infofile%
-echo .make pictures: %DIFF_MAKEPICS% >> %infofile%
-echo .        total: %DIFF_TIME% >> %infofile%
-echo .------------------------------ >> %infofile%
+echo .         stop: %stopdate% %stoptime%   >> %infofile%
+echo .        setup: %DIFF_PRELIM%           >> %infofile%
+echo .    run cases: %DIFF_RUNVV%            >> %infofile%
+echo .make pictures: %DIFF_MAKEPICS%         >> %infofile%
+echo .  make guides: %DIFF_MAKEGUIDES%       >> %infofile%
+echo .        total: %DIFF_TOTALTIME%        >> %infofile%
+echo .------------------------------         >> %infofile%
 
 copy %infofile% %timingslogfile%
 
@@ -471,24 +444,36 @@ goto loop5
 exit /b
 
 :: -------------------------------------------------------------
-:GET_TIME
+:GET_DURATION
 :: -------------------------------------------------------------
 
-%gettimeexe% > time.txt
-set /p current_time=<time.txt
+:: compute difftime=time2 - time1
+
+set label=%1
+set time1=%2
+
+set difftime=DIFF_%label%
+call :GET_TIME time2
+
+set /a diff=%time2% - %time1%
+set /a diff_h= %diff%/3600
+set /a diff_m= (%diff% %% 3600 )/60
+set /a diff_s= %diff% %% 60
+if %diff% GEQ 3600 set duration= %diff_h%h %diff_m%m %diff_s%s
+if %diff% LSS 3600 if %diff% GEQ 60 set duration= %diff_m%m %diff_s%s
+if %diff% LSS 3600 if %diff% LSS 60 set duration= %diff_s%s
+echo %label%: %duration% >> %stagestatus%
+set %difftime%=%duration%
 exit /b 0
 
 :: -------------------------------------------------------------
-:GET_DURATION
+:GET_TIME
 :: -------------------------------------------------------------
-set /a difftime=%3 - %2
-set /a diff_h= %difftime%/3600
-set /a diff_m= (%difftime% %% 3600 )/60
-set /a diff_s= %difftime% %% 60
-if %difftime% GEQ 3600 set duration= %diff_h%h %diff_m%m %diff_s%s
-if %difftime% LSS 3600 if %difftime% GEQ 60 set duration= %diff_m%m %diff_s%s
-if %difftime% LSS 3600 if %difftime% LSS 60 set duration= %diff_s%s
-echo %1: %duration% >> %stagestatus%
+
+set arg1=%1
+
+%gettimeexe% > %timefile%
+set /p %arg1%=<%timefile%
 exit /b 0
 
 :: -------------------------------------------------------------

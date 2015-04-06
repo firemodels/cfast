@@ -1,8 +1,8 @@
 \chapter{Surface Heat Flux}
 
-CFAST includes calculation of heat flux via convection, radiation, and conduction to compartment sufaces and targets. Heat transfer to the inside surface of compartment linings and the front and rear faces (as specified by the user) of targets consists of convection (through the use of emperical correlations) and radiation (calculated by the model using view factors for the fire, gas layers, and compartment surfaces). Heat conduction into a solid surface is calculated via a one-dimensional solution of the heat equation in cartesian or cylindrical coordinates.  The latter is paricularly useful for predicting the thermal response of electrical cables.
+CFAST includes calculation of heat flux via convection, radiation, and conduction to compartment surfaces and targets. Heat transfer to the inside surface of compartment linings and the front and rear faces (as specified by the user) of targets consists of convection (through the use of empirical correlations) and radiation (calculated by the model using view factors for the fire, gas layers, and compartment surfaces). Heat conduction into a solid surface is calculated via a one-dimensional solution of the heat equation in cartesian or cylindrical coordinates.  The latter is particularly useful for predicting the thermal response of electrical cables.
 
-For compartment linings, the ``outside'' surface is, by default, exposed to the exterior ambient temperature with convection and radiation calculated in a similar manner to the inside surface.  The ``outside'' boundary condition can also be specified as a constant temperature (i.e., the outside surface can be at ambient temperature) or can be connected to the ``outside'' surface of part or all of a second compartment.  For targets, the back suface is simply pointed in a direction opposite that of the front surface with convection and radiation calculated in a similar manner to the front surface. This chapter contains a variety of heat flux measurements, ranging from less than a kW/m$^2$ from very small gas burners  to more than 100~kW/m$^2$ in full-scale compartment fires.
+For compartment linings, the ``outside'' surface is, by default, exposed to the exterior ambient temperature with convection and radiation calculated in a similar manner to the inside surface.  The ``outside'' boundary condition can also be specified as a constant temperature (i.e., the outside surface can be at ambient temperature) or can be connected to the ``outside'' surface of part or all of a second compartment.  For targets, the back surface is simply pointed in a direction opposite that of the front surface with convection and radiation calculated in a similar manner to the front surface. This chapter contains a variety of heat flux measurements, ranging from less than a kW/m$^2$ from very small gas burners  to more than 100~kW/m$^2$ in full-scale compartment fires.
 
 \section{Heat Flux to  Compartment Ceiling, Wall, and Floor Surfaces}
 
@@ -41,11 +41,11 @@ HCe4    &  2.56     & 0.35    & 3.82      &     $-z$     & Ceiling          \\ \
 \label{WTC_Gauges}
 \end{table}
 
-Figure \ref{fig:Surface_Flux_Scatter} shows a comarison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
+Figure \ref{fig:Surface_Flux_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=4in]{FIGURES/ScatterPlots/Surface_Heat_Flux} 
+\includegraphics[width=4in]{FIGURES/ScatterPlots/Surface_Heat_Flux}
 \end{center}
 \caption{Comparisons of Measured and Predicted Compartment Surface Temperature} \label{fig:Surface_Flux_Scatter}
 \end{figure}
@@ -58,7 +58,7 @@ Figure \ref{fig:Surface_Flux_Scatter} shows a comarison of predicted and measure
 
 \section{Heat Flux to Targets}
 
-In the NIST/NRC tests, cables in various types (power and control), and configurations (horizontal, vertical, in trays or free-hanging), were installed in the test compartment. For each of the four cable targets considered, measurements of the radiative and total heat flux were made with gauges positioned near the cables themselves.  In the WTC tests, There were a variety of heat flux gauges installed in the test compartment. Most were within 2~m of the fire. Their locations and orientations are listed in Table~\ref{WTC_Gauges}. Figure \ref{fig:Target_Flux_Scatter} shows a comarison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
+In the NIST/NRC tests, cables in various types (power and control), and configurations (horizontal, vertical, in trays or free-hanging), were installed in the test compartment. For each of the four cable targets considered, measurements of the radiative and total heat flux were made with gauges positioned near the cables themselves.  In the WTC tests, There were a variety of heat flux gauges installed in the test compartment. Most were within 2~m of the fire. Their locations and orientations are listed in Table~\ref{WTC_Gauges}. Figure \ref{fig:Target_Flux_Scatter} shows a comparison of predicted and measured values for total heat flux. Appendix B provides comparisons of heat flux and surface temperature on cable and surface targets.  The following trends are notable comparing CFAST predictions to experimental measurements.
 
 \begin{figure}
 \begin{center}
@@ -69,6 +69,6 @@ In the NIST/NRC tests, cables in various types (power and control), and configur
 
 \begin{itemize}
 \item Heat flux to targets average within \Targfluxavg ~\% of experimental values. This high value is largely driven by four data points in the NIST/NRC tests that are significantly under-predicted by the model.  Without these data points, the uncertainty is significantly lower.
-\item The higher value for target heat flux is also due to the way CFAST calculates flux to targets.  The calculation of heat flux to a target in CFAST is done separately for the front face and rear face of the target.  For target completely within a compartment, these two values are typically similar.  For target on a compartment surface, the rear surface is assumed to radiate to ambient conditions.  Thus, considering only the front face in the comparison should lead to a significant indicated overprediction of the heat flux. The predicted surface temperature is predicted far closer to experimental conditions that the surface heat flux indicating the actual heat flux is likely better than indicated by this front-face only comparison. 
+\item The higher value for target heat flux is also due to the way CFAST calculates flux to targets.  The calculation of heat flux to a target in CFAST is done separately for the front face and rear face of the target.  For target completely within a compartment, these two values are typically similar.  For target on a compartment surface, the rear surface is assumed to radiate to ambient conditions.  Thus, considering only the front face in the comparison should lead to a significant indicated overprediction of the heat flux. The predicted surface temperature is predicted far closer to experimental conditions that the surface heat flux indicating the actual heat flux is likely better than indicated by this front-face only comparison.
 \item  In addition, prediction of heat flux to targets is even more dependent on local conditions than surface temperature and heat flux.  Like any two-zone model, CFAST predicts an average representative value of gas temperature in the upper and lower regions of a compartment.  In addition, CFAST does not directly predict plume temperature or its effects on targets that may be within a fire plume.  Thus, CFAST can be expected to under-predict values near a fire source, and over-predict values for targets remote from a fire.
 \end{itemize}

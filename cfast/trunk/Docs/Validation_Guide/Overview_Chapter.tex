@@ -33,7 +33,7 @@ decides if the model is adequate for the job at hand. Thus, this Guide provides 
 and cannot be considered comprehensive.
 
 The following sections discuss key issues that you must consider when deciding whether or not CFAST has been validated. It depends on (a) the scenarios
-of interest, (b) the predicted quantities, and (c) the desired level of accuracy. Keep in mind that CFAST can be used to model most any compartment fire scenario and predict 
+of interest, (b) the predicted quantities, and (c) the desired level of accuracy. Keep in mind that CFAST can be used to model most any compartment fire scenario and predict
 quantities of interest, but the prediction may not be accurate because of limitations in the description of the fire physics, and also because of limited
 information about the fuels, geometry, and so on.
 
@@ -122,7 +122,7 @@ case {\em Blind} calculations are of little value.
 
 \section{Software Development and Quality Assurance}
 
-The development and maintenance of CFAST is guided by software quality assurance measures for the planning of modifications to the model that provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and released software is kept available for the life of the code.  
+The development and maintenance of CFAST is guided by software quality assurance measures for the planning of modifications to the model that provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and released software is kept available for the life of the code.
 
 The internal structure of the model also has an impact on the ease of modification and correctness of the model.  The method for incorporating new phenomena and ensuring the correctness of the code was adopted as part of the consolidation of CCFM and FAST and has resulted in a more transparent, transportable and verifiable numerical model. This transparency is crucial to a verifiable and robust numerical implementation of the predictive model as discussed in the sections on code checking and numerical analysis.  More recently, all of the software development and software tracking has been made available on the web to further enhance the software development process.
 
@@ -145,9 +145,9 @@ All of the data required to run the CFAST model reside in a primary data file, w
 \item construction materials of the compartment (e.g., concrete, gypsum)
 \item material properties (e.g., thermal conductivity, specific heat, density, thickness, heat of combustion)
 \item dimensions and positions of horizontal and vertical flow openings such as doors, windows, and vents
-\item mechanical ventilation specifications 
-\item fire properties (e.g., heat release rate, lower oxygen limit, and species production rates as a function of time) 
-\item sprinkler and detector specifications 
+\item mechanical ventilation specifications
+\item fire properties (e.g., heat release rate, lower oxygen limit, and species production rates as a function of time)
+\item sprinkler and detector specifications
 \item positions, sizes, and characteristics of targets
 \end{itemize}
 
@@ -157,7 +157,7 @@ The CFAST User's Guide \cite{CFAST_Users_Guide_6} provides a complete descriptio
 
 Required inputs for CFAST must be provided with a number of material properties related to compartment bounding surfaces, objects (called targets) placed in compartments for calculation of object surface temperature and heat flux to the objects, or fire sources.  For compartment surfaces and targets, CFAST needs the density, thermal conductivity, specific heat, and emissivity.
 
-For fire sources, CFAST needs to know the pyrolysis rate of fuel, the heat of combustion, stochiometric fuel-oxygen ratio, yields of important combustion products in a simplified combustion reaction (carbon monoxide, carbon dioxide, soot, and others), and the fraction of energy released in the form of thermal radiation.
+For fire sources, CFAST needs to know the pyrolysis rate of fuel, the heat of combustion, stoichiometric fuel-oxygen ratio, yields of important combustion products in a simplified combustion reaction (carbon monoxide, carbon dioxide, soot, and others), and the fraction of energy released in the form of thermal radiation.
 
 These properties are commonly available in fire protection engineering and materials handbooks. Experimentally determined property data may also be available for certain scenarios.  However, depending on the application, properties for specific materials may not be readily available.  A small file distributed with the CFAST software contains a database with thermal properties of common materials.  These data are given as examples, and users should verify the accuracy and appropriateness of the data.
 
@@ -207,4 +207,4 @@ The most extensive use of the model is in fire and smoke spread in complex build
 \item Thermal Properties:  The accuracy of the model predictions is limited by how well the user can specify the thermophysical properties.  For example, the fraction of fuel which ends up as soot has an important effect on the radiation absorption of the gas layer and, therefore, the relative convective versus radiative heating of the layers and walls, which in turn affects the buoyancy and flow.  There is a higher level of uncertainty of the predictions if the properties of real materials and real fuels are unknown or difficult to obtain, or the physical processes of combustion, radiation, and heat transfer are more complicated than their mathematical representations in CFAST.
 \end{itemize}
 
-In addition, there are specific limitations and assumptions made in the development of the algorithms.  These are detailed in the discussion of each of these sub-models in the NIST Technical Reference Guide \cite{CFAST_Tech_Guide_6}.
+In addition, there are specific limitations and assumptions made in the development of the algorithms.  These are detailed in the discussion of each of these sub-models in the NIST Technical Reference Guide \cite{CFAST_Tech_Guide_6}. 

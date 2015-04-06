@@ -157,7 +157,7 @@ The same test can be repeated with all surfaces turned off.  With the absence of
 \label{fig:Different_Ambients_Nonconducting}
 \end{figure}
 
-The compartment surfaces are then turned back on, returning to the original base case.  With exterior conditions set to 25 \degc and an open window present, conditions are expected to equilibrate to those of the exterior. For this example, the open window allows the pressure to equlibrate as well. Figure \ref{fig:Temperature_Equilibrium_With_Window} shows the simulated conditions for the test case.
+The compartment surfaces are then turned back on, returning to the original base case.  With exterior conditions set to 25 \degc and an open window present, conditions are expected to equilibrate to those of the exterior. For this example, the open window allows the pressure to equilibrate as well. Figure \ref{fig:Temperature_Equilibrium_With_Window} shows the simulated conditions for the test case.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -187,7 +187,7 @@ or a pressure rise of 1191.3 Pa, matching the calculated CFAST output to within 
 \caption{Ambient conditions for test case with no fire and non-conducting surfaces, with a mechanical ventilation system injecting 0.1~m$^3$/s of air into the compartment for 10 s. CFAST verification file Added\_Mass.in.} \label{fig:Added_Mass_Test}
 \end{figure}
 
-A model examining heat added to a system can be demonstrated with a test case containing a constant 100 kW fire.  With non-conducting surface and no ventilation, the heat and mass released by the fire (and added to the compartment) can be determined.  Here we use a single zone simulation to simplfy the calculations (CFAST simply assumes the entire volume is taken up by the upper layer).  Densities are obtained using the calculated temperature. The energy and mass added to the system can be calculated as
+A model examining heat added to a system can be demonstrated with a test case containing a constant 100 kW fire.  With non-conducting surface and no ventilation, the heat and mass released by the fire (and added to the compartment) can be determined.  Here we use a single zone simulation to simplify the calculations (CFAST simply assumes the entire volume is taken up by the upper layer).  Densities are obtained using the calculated temperature. The energy and mass added to the system can be calculated as
 
 \begin{eqnarray}
 M_0 &=& V \cdot \rho_{ambient} \nonumber \\
@@ -221,7 +221,7 @@ Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calcu
 
 In addition to the comparisons of test cases with analytical solutions discussed in the previous section, we have included a number of simple test cases intended to demonstrate the impact of individual model features.  While these are too complex to provide analytical solutions, many can be estimated with simpler engineering calculations.  Together, these form a set of simulations that can be routinely run to verify continued consistency of the calculation results as the model is further developed to insure unintended side-effects of modifications to the model are prevented.
 
-For completeness, the first examples dupicate the simple examples in the previous section. As in the previous section,  most of the examples presented in this section share the same basic geometry, a single 5 m x 5 m x 5 m compartment. Unless otherwise detailed, the ‘base case’ has a single window centered on the front wall that is 2 m x 1 m and has 5/8 in Gypsum Board walls and ceiling. Depending on the exact simulation, additional details will be added to verify individual model results.
+For completeness, the first examples duplicate the simple examples in the previous section. As in the previous section,  most of the examples presented in this section share the same basic geometry, a single 5 m x 5 m x 5 m compartment. Unless otherwise detailed, the ‘base case’ has a single window centered on the front wall that is 2 m x 1 m and has 5/8 in Gypsum Board walls and ceiling. Depending on the exact simulation, additional details will be added to verify individual model results.
 
 \subsection{Ambient Conditions}
 
@@ -486,7 +486,7 @@ The following plots compare the base case model to an array of test cases that v
 
 \section{Complex Examples}
 
-In addition to the numerous validation experiements included in this guide, organizations have developed a number of detailed example cases with different versions of CFAST.  This section includes a selection of these cases run with the current version of CFAST.
+In addition to the numerous validation experiments included in this guide, organizations have developed a number of detailed example cases with different versions of CFAST.  This section includes a selection of these cases run with the current version of CFAST.
 
 \subsection{NRC Fire Modeling Application Guide Examples}
 
@@ -521,7 +521,7 @@ E & Determination of the potential for a transient trash fire to damage cables i
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cable_A_NRC_Test_2} & \\
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cabinet_A_NRC_Test_2} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cabinet_A_NRC_Test_2}
 \end{tabular*}
-\caption{Test case conditions for the NRC cabinet fire in swithgear room scenario.  CFAST verification file Cabinet\_fire\_in\_switchgear.in.}
+\caption{Test case conditions for the NRC cabinet fire in switchgear room scenario.  CFAST verification file Cabinet\_fire\_in\_switchgear.in.}
 \label{fig:NRC_Scenario_B}
 \end{figure}
 

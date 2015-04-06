@@ -29,7 +29,7 @@ measurement agree so well in all applications that anyone would just accept its 
 inevitably differences between model and experiment, we need to know if these differences are due to limitations or errors in
 the numerical solution, or the physical sub-models, or both.
 
-Whereas model validation consists mainly of comparing predictions with measurements, as documented later in this guide, 
+Whereas model validation consists mainly of comparing predictions with measurements, as documented later in this guide,
 model verification consists of a much broader range of activities, from checking the computer program
 itself to comparing calculations to analytical (exact) solutions to understanding the impact on model outputs from a range of different model inputs.
 
@@ -127,7 +127,7 @@ For most of the examples presented in this chapter, the same basic geometry is u
 \caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial conditions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Test}
 \end{figure}
 
-As a simple test of the energy balance,raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the temperature to equilibrate to the exterior. With conducting compartment surfaecs, the interior compartment temeprature is expected to equilibrate to the exterior. From the ideal gas law, the pressure rise can be calculated as
+As a simple test of the energy balance,raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the temperature to equilibrate to the exterior. With conducting compartment surfaces, the interior compartment temperature is expected to equilibrate to the exterior. From the ideal gas law, the pressure rise can be calculated as
 
 \begin{eqnarray}
    \frac{P_i V_i}{N_i R T_i} &=&  \frac{P_f V_f}{N_f R T_f} \label{eq:Temperature_Equilibrium}  \\
@@ -153,7 +153,7 @@ The same test can be repeated with all surfaces turned off.  With the absence of
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Walls_Off} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Walls_Off}
 \end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_wallsoff.in.} 
+\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_wallsoff.in.}
 \label{fig:Different_Ambients_Nonconducting}
 \end{figure}
 
@@ -164,7 +164,7 @@ The compartment surfaces are then turned back on, returning to the original base
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test_With_Window} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Window}
 \end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_window.in.} 
+\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc.  CFAST verification file basic\_tempequilib\_window.in.}
 \label{fig:Temperature_Equilibrium_With_Window}
 \end{figure}
 
@@ -205,7 +205,7 @@ Finally, the temperature of the compartment can be calculated from the definitio
 
 \begin{equation}
 E = M \cdot c_v \cdot T \text{, or, rearranging, } T = \frac{E}{c_v \cdot M}
-\end{equation} 
+\end{equation}
 
 Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calculated and CFAST results for this test. The average difference between the calculations is approximately 0.01 \%, with the difference due to the way CFAST handles a single layer calculation while maintaining its default equation set that includes both a lower and upper layer.
 
@@ -221,7 +221,7 @@ Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calcu
 
 In addition to the comparisons of test cases with analytical solutions discussed in the previous section, we have included a number of simple test cases intended to demonstrate the impact of individual model features.  While these are too complex to provide analytical solutions, many can be estimated with simpler engineering calculations.  Together, these form a set of simulations that can be routinely run to verify continued consistency of the calculation results as the model is further developed to insure unintended side-effects of modifications to the model are prevented.
 
-For completeness, the first examples dupicate the simple examples in the previous section. As in the previous section,  most of the examples presented in this section share the same basic geometry, a single 5 m x 5 m x 5 m compartment. Unless otherwise detailed, the ‘base case’ has a single window centered on the front wall that is 2 m x 1 m and has 5/8 in Gypsum Board walls and ceiling. Depending on the exact simulation, additional details will be added to verify individual model results. 
+For completeness, the first examples dupicate the simple examples in the previous section. As in the previous section,  most of the examples presented in this section share the same basic geometry, a single 5 m x 5 m x 5 m compartment. Unless otherwise detailed, the ‘base case’ has a single window centered on the front wall that is 2 m x 1 m and has 5/8 in Gypsum Board walls and ceiling. Depending on the exact simulation, additional details will be added to verify individual model results.
 
 \subsection{Ambient Conditions}
 
@@ -235,36 +235,36 @@ To begin, the simplest example is the base case compartment set at uniform ambie
 \caption{Ambient conditions for test case with no fire, no vents, and non-conducting surfaces. Initial conditions set to 20 \degc. CFAST verification file Base.in.} \label{fig:Ambient_Conditions_Reference}
 \end{figure}
 
-With the exterior temperature still set to 25 \degc, the elevation is raised to 1500 m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case.
+With the exterior temperature still set to 25~\degc, the elevation is raised to 1500~m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Elevation_Change} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Elevation}
 \end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc and elevation to 1500 m.  CFAST verification file basic\_tempequilib\_window\_elevation.in.} 
+\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc and elevation to 1500 m.  CFAST verification file basic\_tempequilib\_window\_elevation.in.}
 \label{fig:Temperature_Equilibrium_Elevation}
 \end{figure}
 
-With the exterior temperature still set to 25 \degc, the compartment dimensions are altered to 10 m x 10 m x 5 m.  Conditions are predicted to equilibrate to those of the exterior more slowly than that of the base case model. Figure \ref{fig:Temperature_Equilibrium_Bigger} shows the simulated conditions for the test case.
+With the exterior temperature still set to 25 \degc, the compartment dimensions are altered to 10~m x 10~m x 5~m.  Conditions are predicted to equilibrate to those of the exterior more slowly than that of the base case model. Figure \ref{fig:Temperature_Equilibrium_Bigger} shows the simulated conditions for the test case.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Compartment_Dimension_Change} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Compartment}
 \end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc and compartment dimensions enlarged to 10 m x 10 m x 10 m..  CFAST verification file basic\_tempequilib\_window\_geometry.in.} 
+\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc and compartment dimensions enlarged to 10 m x 10 m x 10 m..  CFAST verification file basic\_tempequilib\_window\_geometry.in.}
 \label{fig:Temperature_Equilibrium_Bigger}
 \end{figure}
 
-With the exterior temperature still set to 25 \degc, the wind is raised to 10 m/s.  Temperature conditions are expected to equilibrate to those of the exterior, while the pressure will remain at a constant pressure greater than zero due to wind pressure.  Figure \ref{fig:Temperature_Equilibrium_Wind_Speed} shows the simulated conditions for the test case.
+With the exterior temperature still set to 25~\degc, the wind is raised to 10~m/s.  Temperature conditions are expected to equilibrate to those of the exterior, while the pressure will remain at a constant pressure greater than zero due to wind pressure.  Figure \ref{fig:Temperature_Equilibrium_Wind_Speed} shows the simulated conditions for the test case.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Wind_Speed_Change} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Wind}
 \end{tabular*}
-\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc and compartment dimensions enlarged to 10 m x 10 m x 10 m..  CFAST verification file basic\_tempequilib\_window\_geometry.in.} 
+\caption{Ambient conditions for test case with no ventilation and non-conducting surfaces.  Exterior conditions set to 25 \degc and compartment dimensions enlarged to 10 m x 10 m x 10 m..  CFAST verification file basic\_tempequilib\_window\_geometry.in.}
 \label{fig:Temperature_Equilibrium_Wind_Speed}
 \end{figure}
 
@@ -275,13 +275,13 @@ Returning to the base case input, the interior pressure is lowered from the defa
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Change_Pressure_Equilibrium_Test_With_Window} &
 \includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Equilibrium_Ventilation}
 \end{tabular*}
-\caption{Ambient conditions for test case with ventilation and conducting surfaces. Interior pressure is initially set to 100000 Pa.  CFAST verification file basic\_pressure\_vent.in.} 
+\caption{Ambient conditions for test case with ventilation and conducting surfaces. Interior pressure is initially set to 100000 Pa.  CFAST verification file basic\_pressure\_vent.in.}
 \label{fig:Pressure_Equilibrium}
 \end{figure}
 
 \subsection{Ventilation}
 
-All ambient conditions are returned to the standard base case.  A mechanical vent is added to the test case with a flow rate of 0.1 m$^3$/s for 10 s. Figure \ref{fig:Mechanical_Vent_Cutoff} shows the pressure building in the compartment for the default fan cutoff pressure of 200 Pa to 300 Pa compared to a raised fan cutoff pressure of 2000 Pa.
+All ambient conditions are returned to the standard base case.  A mechanical vent is added to the test case with a flow rate of 0.1~m$^3$/s for 10~s. Figure \ref{fig:Mechanical_Vent_Cutoff} shows the pressure building in the compartment for the default fan cutoff pressure of 200 Pa to 300 Pa compared to a raised fan cutoff pressure of 2000 Pa.
 
 \begin{figure}
 \begin{center}
@@ -291,7 +291,7 @@ All ambient conditions are returned to the standard base case.  A mechanical ven
 \end{center}
 \end{figure}
 
-Two identical 5 m x 5 m x 5m compartments are stacked on each other.  A 1 m$^2$ mechanical vent is added on the front face of compartment one, the shared ceiling/floor between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1 m$^3$/s or 0.12 kg/s of air.  The mass flow through each of these vents is expected to the same because the flow rate in is constant and there is no change in temperature.   Figure \ref{fig:Mechanical_Flow_Two_Compartments} shows vent flows for all vents in the simulation.
+Two identical 5~m x 5~m x 5~m compartments are stacked on each other.  A 1~m$^2$ mechanical vent is added on the front face of compartment one, the shared ceiling/floor between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1~m$^3$/s or 0.12~kg/s of air.  The mass flow through each of these vents is expected to the same because the flow rate in is constant and there is no change in temperature.   Figure \ref{fig:Mechanical_Flow_Two_Compartments} shows vent flows for all vents in the simulation.
 
 \begin{figure}
 \begin{center}
@@ -303,7 +303,7 @@ Two identical 5 m x 5 m x 5m compartments are stacked on each other.  A 1 m$^2$ 
 
 \subsection{Fire Characteristics}
 
-A fire was added to the base case.  The fire is positioned at X=2.5 m, Y=2.5 m, Z= 0, with a methane fire at a maximum heat release rate of 1054 kW. All other fire inputs remain as the standard setting. Unless otherwise defined, the following reference cases contain this defined fire.
+A fire was added to the base case.  The fire is positioned at X=2.5~m, Y=2.5~m, Z= 0~m, with a methane fire at a maximum heat release rate of 1054~kW. All other fire inputs remain as the standard setting. Unless otherwise defined, the following reference cases contain this defined fire.
 
 \begin{figure}
 \begin{center}
@@ -314,7 +314,7 @@ A fire was added to the base case.  The fire is positioned at X=2.5 m, Y=2.5 m, 
 \end{center}
 \end{figure}
 
-Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and species concentrations for the base case with a 1054 kW fire.
+Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and species concentrations for the base case with a 1054~kW fire.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -324,11 +324,11 @@ Figure \ref{fig:Fire_Base} shows compartment temperatures, layer height, and spe
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Fire_Base}
 \end{center}
-\caption{Test case conditions for the base case model with a 1054 kW fire and no vent.  CFAST verification file fire.in.} 
+\caption{Test case conditions for the base case model with a 1054 kW fire and no vent.  CFAST verification file fire.in.}
 \label{fig:Fire_Base}
 \end{figure}
 
-Returning to the base case with an added fire, the heat release rate curve was then altered to have the same area under the curve but a different shape.  The altered curve had a maximum heat release rate of 1333.3 kW and reached peak heat release rate at 450 s. The altered fire is shown in Figure \ref{fig:Altered_Fire_Configuration}. Figure \ref{fig:Fire_Alternate_HRR} shows the base fire and alternate fire.
+Returning to the base case with an added fire, the heat release rate curve was then altered to have the same area under the curve but a different shape.  The altered curve had a maximum heat release rate of 1333.3~kW and reached peak heat release rate at 450~s. The altered fire is shown in Figure \ref{fig:Altered_Fire_Configuration}. Figure \ref{fig:Fire_Alternate_HRR} shows the base fire and alternate fire.
 
 \begin{figure}
 \begin{center}
@@ -343,9 +343,9 @@ Returning to the base case with an added fire, the heat release rate curve was t
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_HRR_Area_Change} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_HRR_Area_Change} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_HRR_Area_Change} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_HRR_Area_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_HRR_Area_Change}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a trapezoidal 1054 kW fire and a single 1 m x 2 m window (left) and a triangular 1333 kW fire and a single 1 m x 2 m window. The same total heat is released in both fires.  CFAST verification file fire\_HRRarea2.in.} 
+\caption{Test case conditions for the base case model with a trapezoidal 1054~kW fire and a single 1~m x 2~m window (left) and a triangular 1333~kW fire and a single 1~m x 2~m window. The same total heat is released in both fires.  CFAST verification file fire\_HRRarea2.in.}
 \label{fig:Fire_Alternate_HRR}
 \end{figure}
 
@@ -355,13 +355,13 @@ The chemical composition of the fire can also be changed in CFAST.  Figure \ref{
 \begin{center}
 \includegraphics[width=3.0in]{FIGURES/Verification/Upper_Layer_Temperature_Materials} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/Lower_Layer_Temperature_Materials} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Materials} 
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window with several different fuel compositions (methane, hexane, urethane, and wood) for the fire.  CFAST verification file fire\_fuels.in.} 
+\includegraphics[width=3.0in]{FIGURES/Verification/HGT_Materials}
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window with several different fuel compositions (methane, hexane, urethane, and wood) for the fire.  CFAST verification file fire\_fuels.in.}
 \label{fig:fire_fuel_composition}
 \end{center}
 \end{figure}
 
-Returning to the base case with a window vent, the soot yield is changed to 0.5 kg/kg.  Figure \ref{fig:fire_soot_yield} shows the results.
+Returning to the base case with a window vent, the soot yield is changed to 0.5~kg/kg.  Figure \ref{fig:fire_soot_yield} shows the results.
 
 \begin{figure}
 \begin{center}
@@ -369,7 +369,7 @@ Returning to the base case with a window vent, the soot yield is changed to 0.5 
 \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_O2} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_CO2} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_H2O} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Soot_Yield_OD}
 \end{tabular*}
-\caption{Test case conditions with the soot yield raised to 0.500, versus the base case model.  CFAST verification file fire\_sootyield.in.} 
+\caption{Test case conditions with the soot yield raised to 0.500, versus the base case model.  CFAST verification file fire\_sootyield.in.}
 \label{fig:fire_soot_yield}
 \end{center}
 \end{figure}
@@ -382,9 +382,9 @@ Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Ven
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Fire_Base} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and no vent (left) with the same model with a single 1 m x 2 m window (right).  CFAST verification file fire\_window.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and no vent (left) with the same model with a single 1~m x 2~m window (right).  CFAST verification file fire\_window.in.}
 \label{fig:Fire_Window}
 \end{figure}
 
@@ -392,9 +392,9 @@ Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Ven
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Two_Windows} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Two_Windows} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Two_Windows} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Two_Windows}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a two 1 m x 2 m windows (right).  CFAST verification file fire\_window\_windowchange.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window (left) with the same model with a two 1~m x 2~m windows (right).  CFAST verification file fire\_window\_windowchange.in.}
 \label{fig:Fire_Two_Windows}
 \end{figure}
 
@@ -402,9 +402,9 @@ Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Ven
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Ceiling_Vent} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Ceiling_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Ceiling_Vent} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Ceiling_Vent}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with 2 m$^2$ ceiling vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window (left) with the same model with 2~m$^2$ ceiling vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.}
 \label{fig:Fire_Window_Compartment_Vertical_Vent}
 \end{figure}
 
@@ -412,75 +412,75 @@ Figures \ref{fig:Fire_Window} to \ref{fig:Fire_Window_Compartment_Mechanical_Ven
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Mechanical_Only_Vent} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Mechanical_Only_Vent} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Mechanical_Only_Vent} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Mechanical_Only_Vent}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a mechanical vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window (left) with the same model with a mechanical vent replacing the window vent (right).  CFAST verification file fire\_ceiling.in.}
 \label{fig:Fire_Window_Compartment_Mechanical_Vent_Only}
 \end{figure}
 
 \subsection{Compartment Geometry}
 
-Figure \ref{fig:Fire_Window_Compartment_Aspect_Ratio} shows the results of a  simulation where the aspect ratio of the compartment is changed from the base model of 5 m x 5 m to one 10 m x 2.5 m.  Ceiling height and other details are the same as the base case.
+Figure \ref{fig:Fire_Window_Compartment_Aspect_Ratio} shows the results of a  simulation where the aspect ratio of the compartment is changed from the base model of 5~m x 5~m to one 10~m x 2.5~m.  Ceiling height and other details are the same as the base case.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window_Aspect_Ratio} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window_Aspect_Ratio} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window_Aspect_Ratio} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window_Aspect_Ratio}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment aspect ratio changed to 10 m x 2.5 m x 5 m (right).  CFAST verification file fire\_window\_aspect\_ratio.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window (left) with the same model with the compartment aspect ratio changed to 10~m x 2.5~m x 5~m (right).  CFAST verification file fire\_window\_aspect\_ratio.in.}
 \label{fig:Fire_Window_Compartment_Aspect_Ratio}
 \end{figure}
 
-Figure \ref{fig:Fire_Window_Compartment_Geometry_Increase} shows the results of a simulation where the size of the compartment  is increased from the base model of 5 m x 5 m to one 10 m x 10 m.  Ceiling height and other details are the same as the base case.
+Figure \ref{fig:Fire_Window_Compartment_Geometry_Increase} shows the results of a simulation where the size of the compartment  is increased from the base model of 5~m x 5~m to one 10~m x 10~m.  Ceiling height and other details are the same as the base case.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Compartment_Geometry_Increase} \\
 \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Compartment_Geometry_Increase} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Window} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Compartment_Geometry_Increase}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with the compartment size increased to 10 m x 10 m x 5 m (right).  CFAST verification file fire\_window\_windowchange.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window (left) with the same model with the compartment size increased to 10~m x 10~m x 5~m (right).  CFAST verification file fire\_window\_windowchange.in.}
 \label{fig:Fire_Window_Compartment_Geometry_Increase}
 \end{figure}
 
 \subsection{Sprinklers}
 
-The following plots compare the base case model to an array of test cases that vary the sprinkler feature of CFAST.  The following test cases include a graph depicting the sensor activation time.  When these graphs rise from zero to one, this indicates the time that the sprinkler was activated.  The sprinkler was added at X=2.5 m, Y=2.5 m, and Z=4.95 m.  Figure \ref{fig:fire_sprinkler_base} shows the base case fire with a single 1 m by 2 m window with and without a sprinkler.  Sprinkler was defined with an operating temperature of 57 \degc (135 \degf), an RTI of 100~$\sqrt{\text{m~s}}$, and a spray density of 7 x 10$^{-5}$ m/s. Figure \ref{fig:fire_sprinkler_density} shows results with the spray density doubled, Figure \ref{fig:fire_sprinkler_RTI} shows results with the RTI cut in half, and Figure \ref{fig:fire_sprinkler_HRR_doubled} shows results with the peak heat release rate of the fire doubled. 
+The following plots compare the base case model to an array of test cases that vary the sprinkler feature of CFAST.  The following test cases include a graph depicting the sensor activation time.  When these graphs rise from zero to one, this indicates the time that the sprinkler was activated.  The sprinkler was added at X=2.5~m, Y=2.5~m, and Z=4.95~m.  Figure \ref{fig:fire_sprinkler_base} shows the base case fire with a single 1 m by 2 m window with and without a sprinkler.  Sprinkler was defined with an operating temperature of 57~\degc (135~\degf), an RTI of 100~$\sqrt{\text{m~s}}$, and a spray density of 7~x~10$^{-5}$ m/s. Figure \ref{fig:fire_sprinkler_density} shows results with the spray density doubled, Figure \ref{fig:fire_sprinkler_RTI} shows results with the RTI cut in half, and Figure \ref{fig:fire_sprinkler_HRR_doubled} shows results with the peak heat release rate of the fire doubled.
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Sprinkler} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Sprinkler} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire and a single 1 m x 2 m window (left) with the same model with a sprinkler added (right).  CFAST verification file fire\_sprinkler.in.} 
+\caption{Test case conditions for the base case model with a 1054~kW fire and a single 1~m x 2~m window (left) with the same model with a sprinkler added (right).  CFAST verification file fire\_sprinkler.in.}
 \label{fig:fire_sprinkler_base}
 \end{figure}
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Sprinkler_Density_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Sprinkler_Density_Doubled} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler_Density_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler_Density_Doubled} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler_Density_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler_Density_Doubled}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the sprinkler spray density doubled (right).  CFAST verification file fire\_sprinkler\_density.in.}
+\caption{Test case conditions for the base case model with a 1054~kW fire, a single 1~m x 2~m window, and a sprinkler (left), with the same model with the sprinkler spray density doubled (right).  CFAST verification file fire\_sprinkler\_density.in.}
 \label{fig:fire_sprinkler_density}
 \end{figure}
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Half_Sprinkler_RTI} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Half_Sprinkler_RTI} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Half_Sprinkler_RTI} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Half_Sprinkler_RTI} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Half_Sprinkler_RTI} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Half_Sprinkler_RTI}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the sprinkler RTI reduced by 50~\% (right).  CFAST verification file fire\_sprinkler\_RTI.in.}
+\caption{Test case conditions for the base case model with a 1054~kW fire, a single 1~m x 2~m window, and a sprinkler (left), with the same model with the sprinkler RTI reduced by 50~\% (right).  CFAST verification file fire\_sprinkler\_RTI.in.}
 \label{fig:fire_sprinkler_RTI}
 \end{figure}
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Sprinkler_and_HRR_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_Sprinkler_and_HRR_Doubled} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler_and_HRR_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler_and_HRR_Doubled} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Sensor_Activation_Time_Sprinkler_and_HRR_Doubled} & \includegraphics[width=3.0in]{FIGURES/Verification/Species_Production_Sprinkler_and_HRR_Doubled}
 \end{tabular*}
-\caption{Test case conditions for the base case model with a 1054 kW fire, a single 1 m x 2 m window, and a sprinkler (left), with the same model with the peak heat release rate of the fire doubled (right).  CFAST verification file fire\_sprinkler\_HRRdoubled.in.}
+\caption{Test case conditions for the base case model with a 1054~kW fire, a single 1~m x 2~m window, and a sprinkler (left), with the same model with the peak heat release rate of the fire doubled (right).  CFAST verification file fire\_sprinkler\_HRRdoubled.in.}
 \label{fig:fire_sprinkler_HRR_doubled}
 \end{figure}
 
@@ -510,7 +510,7 @@ E & Determination of the potential for a transient trash fire to damage cables i
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/ULT_NRC_Test_1} & \includegraphics[width=3.0in]{FIGURES/Verification/HGT_NRC_Test_1} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_NRC_Test_1} & \includegraphics[width=3.0in]{FIGURES/Verification/OD_NRC_Test_1} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_NRC_Test_1} & \includegraphics[width=3.0in]{FIGURES/Verification/OD_NRC_Test_1}
 \end{tabular*}
 \caption{Test case conditions for the NRC main control room fire scenario.  CFAST verification file Cabinet\_fire\_in\_MCR.in.}
 \label{fig:NRC_Scenario_A}
@@ -519,7 +519,7 @@ E & Determination of the potential for a transient trash fire to damage cables i
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cable_A_NRC_Test_2} & \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cabinet_A_NRC_Test_2} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cabinet_A_NRC_Test_2} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cabinet_A_NRC_Test_2} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cabinet_A_NRC_Test_2}
 \end{tabular*}
 \caption{Test case conditions for the NRC cabinet fire in swithgear room scenario.  CFAST verification file Cabinet\_fire\_in\_switchgear.in.}
 \label{fig:NRC_Scenario_B}
@@ -528,7 +528,7 @@ E & Determination of the potential for a transient trash fire to damage cables i
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cabinet_NRC_Test_4} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cabinet_NRC_Test_4} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cables_NRC_Test_4} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cables_NRC_Test_4} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cables_NRC_Test_4} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cables_NRC_Test_4}
 \end{tabular*}
 \caption{Test case conditions for the NRC motor control center fire in switchgear room scenario.  CFAST verification file MCC\_in\_switchgear.in.}
 \label{fig:NRC_Scenario_D}
@@ -537,7 +537,7 @@ E & Determination of the potential for a transient trash fire to damage cables i
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/ULT_NRC_Test_5} & \includegraphics[width=3.0in]{FIGURES/Verification/Flame_HGT_NRC_Test_5} \\
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cables_NRC_Test_5} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cables_NRC_Test_5} 
+\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Cables_NRC_Test_5} & \includegraphics[width=3.0in]{FIGURES/Verification/Heat_Flux_Cables_NRC_Test_5}
 \end{tabular*}
 \caption{Test case conditions for the NRC transient fire in cable spreading room scenario.  CFAST verification file Trash\_fire\_in\_cable\_spreading\_room.in.}
 \label{fig:NRC_Scenario_E}
@@ -568,7 +568,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}[h!]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE201_MV_Flow} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE201_Pressure} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE201_MV_Flow} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE201_Pressure}
 \end{tabular*}
 \caption{Test case conditions for the DOE No fire case.  CFAST verification fileDOE201.in.}
 \label{fig:DOE201}
@@ -576,7 +576,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_HGT} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_HGT}
 \end{tabular*}
 \caption{Upper layer temperature and layer height for the DOE base fire case.  CFAST verification fileDOE202.in.}
 \label{fig:DOE202_Layers}
@@ -584,7 +584,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Vent_Flow} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Vent_Flow}
 \end{tabular*}
 \caption{Compartment Pressure and vent flows for the DOE base fire case.  CFAST verification fileDOE202.in.}
 \label{fig:DOE202_Flows}
@@ -592,7 +592,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Total_Trace} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Total_Trace}
 \end{tabular*}
 \caption{Trace Species for the DOE base fire case.  CFAST verification fileDOE202.in.}
 \label{fig:DOE202_Trace}
@@ -600,7 +600,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_HGT} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_HGT}
 \end{tabular*}
 \caption{Upper layer temperature and layer height for the DOE no combustion products case.  CFAST verification fileDOE203.in.}
 \label{fig:DOE203_Layers}
@@ -608,7 +608,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Vent_Flow} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Vent_Flow}
 \end{tabular*}
 \caption{Compartment Pressure and vent flows for the DOE no combustion products case.  CFAST verification fileDOE203.in.}
 \label{fig:DOE203_Flows}
@@ -616,7 +616,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Total_Trace} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Total_Trace}
 \end{tabular*}
 \caption{Trace Species for the DOE no combustion products case.  CFAST verification fileDOE203.in.}
 \label{fig:DOE203_Trace}
@@ -624,7 +624,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_HGT} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_HGT}
 \end{tabular*}
 \caption{Upper layer temperature and layer height for the DOE lower peak heat release rate case.  CFAST verification fileDOE204.in.}
 \label{fig:DOE204_Layers}
@@ -632,7 +632,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Vent_Flow} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Vent_Flow}
 \end{tabular*}
 \caption{Compartment Pressure and vent flows for the DOE lower peak heat release rate case.  CFAST verification fileDOE204.in.}
 \label{fig:DOE204_Flows}
@@ -640,7 +640,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Total_Trace} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Total_Trace}
 \end{tabular*}
 \caption{Trace Species for the DOE lower peak heat release rate case.  CFAST verification fileDOE204.in.}
 \label{fig:DOE204_Trace}
@@ -648,7 +648,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_HGT} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_HGT}
 \end{tabular*}
 \caption{Upper layer temperature and layer height for the DOE higher peak heat release rate case.  CFAST verification fileDOE205.in.}
 \label{fig:DOE205_Layers}
@@ -656,7 +656,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Vent_Flow} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Vent_Flow}
 \end{tabular*}
 \caption{Compartment Pressure and vent flows for the DOE higher peak heat release rate case.  CFAST verification fileDOE205.in.}
 \label{fig:DOE205_Flows}
@@ -664,7 +664,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Total_Trace} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Total_Trace}
 \end{tabular*}
 \caption{Trace Species for the DOE higher peak heat release rate case.  CFAST verification fileDOE205.in.}
 \label{fig:DOE205_Trace}
@@ -672,7 +672,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_HGT} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_HGT}
 \end{tabular*}
 \caption{Upper layer temperature and layer height for the DOE window failure case.  CFAST verification fileDOE206.in.}
 \label{fig:DOE206_Layers}
@@ -680,7 +680,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Vent_Flow} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Vent_Flow}
 \end{tabular*}
 \caption{Compartment Pressure and vent flows for the DOE window failure case.  CFAST verification fileDOE206.in.}
 \label{fig:DOE206_Flows}
@@ -688,7 +688,7 @@ DOE206 & Window failure case. \\ \hline
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Total_Trace} 
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Total_Trace}
 \end{tabular*}
 \caption{Trace Species for the DOE window failure case.  CFAST verification fileDOE206.in.}
 \label{fig:DOE206_Trace}
@@ -696,25 +696,25 @@ DOE206 & Window failure case. \\ \hline
 
 \section{Sensitivity of the Model}
 
-A sensitivity analysis considers the extent to which uncertainty in model inputs influences model output.  For a sensitivity analysis, this uncertainty includes not only that inherent in the input of data for specific scenarios by the model user, but also uncertainty in empirical data or numerical parameters in the model such as the time step size used by the model to obtain a solution. 
+A sensitivity analysis considers the extent to which uncertainty in model inputs influences model output.  For a sensitivity analysis, this uncertainty includes not only that inherent in the input of data for specific scenarios by the model user, but also uncertainty in empirical data or numerical parameters in the model such as the time step size used by the model to obtain a solution.
 
-Among the purposes for conducting a sensitivity analysis are to determine 
+Among the purposes for conducting a sensitivity analysis are to determine
 \begin{itemize}
-\item the important variables in the models, 
-\item the computationally valid range of values for each input variable, and 
-\item the sensitivity of output variables to variations in input data. 
+\item the important variables in the models,
+\item the computationally valid range of values for each input variable, and
+\item the sensitivity of output variables to variations in input data.
 \end{itemize}
 
-Conducting a sensitivity analysis of a complex model is not a simple task and it will differ depending on the application. CFAST typically requires the user to provide numerous input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires. 
+Conducting a sensitivity analysis of a complex model is not a simple task and it will differ depending on the application. CFAST typically requires the user to provide numerous input parameters that describe the building geometry, compartment connections, construction materials, and description of one or more fires.
 
-Iman and Helton \cite{Iman:1988} studied the sensitivity of complex computer models developed to simulate the risk of severe nuclear accidents which may include fire and other risks. Consistent with the work of Iman and Helton \cite{Iman:1988}, ASTM E1355 \cite{ASTM:E1355} provides overall guidance on typical areas of evaluation of the sensitivity of deterministic fire models.  These areas may involve one or more of the following techniques: finite difference or direct analysis methods that provide an explicit solution of the sensitivity equations associated with the governing equations of the model, factorial design or Latin hypercube sampling studies that investigate the effect of varying the input parameters and consequential interactions between parameters that may be deemed important, and global or response surface methods that investigate the overall behavior of model outputs for a desired range of inputs. 
+Iman and Helton \cite{Iman:1988} studied the sensitivity of complex computer models developed to simulate the risk of severe nuclear accidents which may include fire and other risks. Consistent with the work of Iman and Helton \cite{Iman:1988}, ASTM E1355 \cite{ASTM:E1355} provides overall guidance on typical areas of evaluation of the sensitivity of deterministic fire models.  These areas may involve one or more of the following techniques: finite difference or direct analysis methods that provide an explicit solution of the sensitivity equations associated with the governing equations of the model, factorial design or Latin hypercube sampling studies that investigate the effect of varying the input parameters and consequential interactions between parameters that may be deemed important, and global or response surface methods that investigate the overall behavior of model outputs for a desired range of inputs.
 
-This section provides a review of the sensitivity studies that have been conducted using CFAST 
-with an emphasis on uncertainty in the input. Other sensitivity investigations of CFAST are also 
-available \cite{Peacock:1988a, Beard:1992, Notarianni:2000}. 
+This section provides a review of the sensitivity studies that have been conducted using CFAST
+with an emphasis on uncertainty in the input. Other sensitivity investigations of CFAST are also
+available \cite{Peacock:1988a, Beard:1992, Notarianni:2000}.
 
-Khoudja [\cite{Khoudja:1988} has studied the sensitivity of an early version of the FAST [2] (predecessor to CFAST) model with a fractional factorial design involving two levels of 16 different input parameters. The statistical design, taken from the texts by Box and Hunter \cite{Box:1978}, and Daniel \cite{Daniel:1976} reduced the necessary model runs from more than 65 000 to 256 by studying the interactions of input parameters simultaneously. The choice of values for each input parameter represented a range for each parameter. The analysis of the FAST model showed sensitivity to heat loss to the compartment walls and to the number of compartments in the simulation. Without the inclusion of surface thermophysical properties, this model treats surfaces as adiabatic for conductive heat transfer. Thus, consistent sensitivity should be expected. Sensitivity to changes in thermal properties of the surfaces were not explored. 
+Khoudja [\cite{Khoudja:1988} has studied the sensitivity of an early version of the FAST [2] (predecessor to CFAST) model with a fractional factorial design involving two levels of 16 different input parameters. The statistical design, taken from the texts by Box and Hunter \cite{Box:1978}, and Daniel \cite{Daniel:1976} reduced the necessary model runs from more than 65 000 to 256 by studying the interactions of input parameters simultaneously. The choice of values for each input parameter represented a range for each parameter. The analysis of the FAST model showed sensitivity to heat loss to the compartment walls and to the number of compartments in the simulation. Without the inclusion of surface thermophysical properties, this model treats surfaces as adiabatic for conductive heat transfer. Thus, consistent sensitivity should be expected. Sensitivity to changes in thermal properties of the surfaces were not explored.
 
-Walker \cite{Walker:1997} discussed the uncertainties in components of zone models and showed how uncertainty within user-supplied data affects the results of calculations using CFAST as an example. The study systematically varied inputs related to the fire (heat release rate, heat of combustion, mass loss rate, radiative fraction, and species yields) and compartment geometry (vent size and ceiling height) ranging from  $\pm$ 1 \% to $\pm$ 20 \% of base values for a one-compartment scenario. Heat release rate and ceiling height are seen to be the dominant input variables in the simulations. Upper layer temperature changed $\pm$ 10 \% for a $\pm$ 10 \% change in heat release rate. Typical variation of $\pm$ 10 s in time to untenable conditions for a 20 \% variation in the inputs was noted for the scenarios studied. 
+Walker \cite{Walker:1997} discussed the uncertainties in components of zone models and showed how uncertainty within user-supplied data affects the results of calculations using CFAST as an example. The study systematically varied inputs related to the fire (heat release rate, heat of combustion, mass loss rate, radiative fraction, and species yields) and compartment geometry (vent size and ceiling height) ranging from  $\pm$ 1 \% to $\pm$ 20 \% of base values for a one-compartment scenario. Heat release rate and ceiling height are seen to be the dominant input variables in the simulations. Upper layer temperature changed $\pm$ 10 \% for a $\pm$ 10 \% change in heat release rate. Typical variation of $\pm$ 10 s in time to untenable conditions for a 20 \% variation in the inputs was noted for the scenarios studied.
 
 Peacock et al. \cite{Peacock:1988a} studied the sensitivity of CFAST for a range of input parameters. They used simple factorial designs for model inputs deemed important to investigate local behavior of important model outputs along with response surface methods to evaluate overall model behavior. Results of the parametric investigations are discussed below and the application of response surface methods is summarized in section 5.2. Both are discussed in more detail in reference \cite{Peacock:1988a}.

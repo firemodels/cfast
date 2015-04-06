@@ -1640,7 +1640,7 @@
                 sliceptr%vtype = 2
             else
                 write (logerr, 5403) nvisualinfo
-                ierror = 67
+                ierror = 83
                 return
             end if
             ! 2-D slice file
@@ -1655,7 +1655,7 @@
                 end if
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                     write (logerr, 5403) nvisualinfo
-                    ierror = 67
+                    ierror = 83
                     return
                 end if
                 if (lcarray(2) =='X') then
@@ -1663,7 +1663,7 @@
                     if (sliceptr%roomnum>0) then
                         if (sliceptr%position>room_width(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                             write (logerr, 5403) nvisualinfo
-                            ierror = 67
+                            ierror = 83
                             return
                         end if
                     end if
@@ -1672,7 +1672,7 @@
                     if (sliceptr%roomnum>0) then
                         if (sliceptr%position>room_depth(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                             write (logerr, 5403) nvisualinfo
-                            ierror = 67
+                            ierror = 83
                             return
                         end if
                     end if
@@ -1681,13 +1681,13 @@
                     if (sliceptr%roomnum>0) then
                         if (sliceptr%position>room_height(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                             write (logerr, 5403) nvisualinfo
-                            ierror = 67
+                            ierror = 83
                             return
                         end if
                     end if
                 else
                     write (logerr, 5403) nvisualinfo
-                    ierror = 67
+                    ierror = 83
                     return
                 end if
                 ! 3-D slice
@@ -1695,12 +1695,12 @@
                 sliceptr%roomnum = lrarray(2)
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                     write (logerr, 5403) nvisualinfo
-                    ierror = 67
+                    ierror = 83
                     return
                 end if
             end if
         else
-            ierror = 67
+            ierror = 83
             return
         end if
         
@@ -1718,11 +1718,11 @@
             end if
             if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                 write (logerr, 5404) nvisualinfo
-                ierror = 68
+                ierror = 84
                 return
             end if
         else
-            ierror = 68
+            ierror = 84
             return
         end if
 
@@ -1950,7 +1950,7 @@
 
     return
 5001 format ('Invalid heat of combustion, must be greater than zero, ',1pg12.3)
-5002 format ('Invalid fire area. All input values must be reater than zero')
+5002 format ('Invalid fire area. All input values must be greater than zero')
 5106 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
 5000 format ('The key word ',a5,' is not part of a fire definition')

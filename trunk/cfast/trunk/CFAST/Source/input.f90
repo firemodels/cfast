@@ -2245,17 +2245,17 @@
    end subroutine readcsvformat
 
 ! --------------------------- setup_slice_iso -------------------------------------------
-   
+
    subroutine setup_slice_iso
-    use precision_parameters
-    use iofiles
-    use cenviro
-    use cfast_main
-    use utilities
-    implicit none
-   
+   use precision_parameters
+   use iofiles
+   use cenviro
+   use cfast_main
+   use utilities
+   implicit none
+
    integer :: nrooms
-   
+
    integer :: i,j,k,iroom,islice
    type(slice_type), pointer :: sliceptr
    type(room_type), pointer :: rm
@@ -2270,181 +2270,186 @@
    real(eb) :: ceiljet_depth
    type(visual_type), pointer :: vptr
    integer :: ntypes, ir, ibeg, iend
-   
-   
+   real(eb) :: position_offset
+
+
    nsliceinfo = 0
    nisoinfo = 0
-   if(nvisualinfo.eq.0)return 
-   
+   if(nvisualinfo.eq.0)return
+
    nrooms = nm1
-   
+
    ! count number of isosurfaces and slices
-   
+
    do i = 1, nvisualinfo
-      vptr=>visual_info(i)
-      if(vptr%roomnum.eq.0)then
-         ntypes=nrooms
-      else
-         ntypes=1
-      endif
-      if(vptr%vtype.eq.1.or.vptr%vtype.eq.2)then
-         nsliceinfo = nsliceinfo + ntypes
-      else
-         nisoinfo = nisoinfo + ntypes
-      endif
+       vptr=>visual_info(i)
+       if(vptr%roomnum.eq.0)then
+           ntypes=nrooms
+       else
+           ntypes=1
+       endif
+       if(vptr%vtype.eq.1.or.vptr%vtype.eq.2)then
+           nsliceinfo = nsliceinfo + ntypes
+       else
+           nisoinfo = nisoinfo + ntypes
+       endif
    end do
    nsliceinfo = 5*nsliceinfo
    allocate(sliceinfo(nsliceinfo))
    allocate(isoinfo(nisoinfo))
-   
+
    ! setup grid locations for each compartment
-   
+
    do iroom = 1, nrooms
-      rm=>roominfo(iroom)
-      rm%ibar = min(max(2,int(rm%dx/dxyz)),rm%ibar)
+       rm=>roominfo(iroom)
+       rm%ibar = min(max(2,int(rm%dx/dxyz)),rm%ibar)
 
-      ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
+       ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
 
-      allocate(rm%xplt(0:rm%ibar))
-      allocate(rm%xpltf(0:rm%ibar))
-      call set_grid(rm%xplt,rm%ibar+1,rm%x0,rm%x1,rm%x1,0)
-      do i = 0, rm%ibar
-         rm%xpltf(i) = real(rm%xplt(i),fb)
-      end do
-      
-      rm%jbar = min(max(2,int(rm%dy/dxyz)),rm%jbar)
-      allocate(rm%yplt(0:rm%jbar))
-      allocate(rm%ypltf(0:rm%jbar))
-      call set_grid(rm%yplt,rm%jbar+1,rm%y0,rm%y1,rm%y1,0)
-      do j = 0, rm%jbar
-         rm%ypltf(j) = real(rm%yplt(j),fb)
-      end do
-      
-      rm%kbar = min(max(2,int(rm%dz/dxyz)),rm%kbar)
-      allocate(rm%zplt(0:rm%kbar))
-      allocate(rm%zpltf(0:rm%kbar))
-      call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/3)
-      do k = 0, rm%kbar
-         rm%zpltf(k) = real(rm%zplt(k),fb)
-      end do
+       allocate(rm%xplt(0:rm%ibar))
+       allocate(rm%xpltf(0:rm%ibar))
+       call set_grid(rm%xplt,rm%ibar+1,rm%x0,rm%x1,rm%x1,0)
+       do i = 0, rm%ibar
+           rm%xpltf(i) = real(rm%xplt(i),fb)
+       end do
+
+       rm%jbar = min(max(2,int(rm%dy/dxyz)),rm%jbar)
+       allocate(rm%yplt(0:rm%jbar))
+       allocate(rm%ypltf(0:rm%jbar))
+       call set_grid(rm%yplt,rm%jbar+1,rm%y0,rm%y1,rm%y1,0)
+       do j = 0, rm%jbar
+           rm%ypltf(j) = real(rm%yplt(j),fb)
+       end do
+
+       rm%kbar = min(max(2,int(rm%dz/dxyz)),rm%kbar)
+       allocate(rm%zplt(0:rm%kbar))
+       allocate(rm%zpltf(0:rm%kbar))
+       call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/3)
+       do k = 0, rm%kbar
+           rm%zpltf(k) = real(rm%zplt(k),fb)
+       end do
    end do
 
    ! setup slice file data structures
 
    islice = 1
-   
+
    do i = 1, nvisualinfo
-      vptr=>visual_info(i)
-      if(vptr%vtype.eq.3)cycle
-      ir = vptr%roomnum
-      if(ir.eq.0)then
-         ibeg=1
-         iend=nrooms
-      else
-         ibeg=ir
-         iend=ir
-      endif
-      do iroom=ibeg,iend
-         rm=>roominfo(iroom)
-         xb(1) = rm%x0
-         xb(2) = rm%x1
-         xb(3) = rm%y0
-         xb(4) = rm%y1
-         xb(5) = rm%z0
-         xb(6) = rm%z1
-         ijkslice(1) = 0
-         ijkslice(2) = rm%ibar
-         ijkslice(3) = 0
-         ijkslice(4) = rm%jbar
-         ijkslice(5) = 0
-         ijkslice(6) = rm%kbar
-         if(vptr%vtype.eq.1)then
-            if(vptr%axis.eq.1)then
-               xb(1) = vptr%position
-               xb(2) = vptr%position
-               ijkslice(1) = get_igrid(xb(1),rm%xplt,rm%ibar)
-               ijkslice(2) = ijkslice(1)
-            else if(vptr%axis.eq.2)then
-               xb(3) = vptr%position
-               xb(4) = vptr%position
-               ijkslice(3) = get_igrid(xb(3),rm%yplt,rm%jbar)
-               ijkslice(4) = ijkslice(3)
-            else if(vptr%axis.eq.3)then
-               xb(5) = vptr%position
-               xb(6) = vptr%position
-               ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
-               ijkslice(6) = ijkslice(5)
-            endif
-         endif
-         do j = 1, 5
-            sliceptr => sliceinfo(islice)
+       vptr=>visual_info(i)
+       if(vptr%vtype.eq.3)cycle
+       ir = vptr%roomnum
+       if(ir.eq.0)then
+           ibeg=1
+           iend=nrooms
+       else
+           ibeg=ir
+           iend=ir
+       endif
+       do iroom=ibeg,iend
+           rm=>roominfo(iroom)
+           xb(1) = rm%x0
+           xb(2) = rm%x1
+           xb(3) = rm%y0
+           xb(4) = rm%y1
+           xb(5) = rm%z0
+           xb(6) = rm%z1
+           ijkslice(1) = 0
+           ijkslice(2) = rm%ibar
+           ijkslice(3) = 0
+           ijkslice(4) = rm%jbar
+           ijkslice(5) = 0
+           ijkslice(6) = rm%kbar
+           if(vptr%vtype.eq.1)then
+               position_offset = 0.0_eb
+               if(vptr%axis.eq.1)then
+                   if(ir/=0) position_offset = rm%x0
+                   xb(1) = vptr%position + position_offset
+                   xb(2) = vptr%position + position_offset
+                   ijkslice(1) = get_igrid(xb(1),rm%xplt,rm%ibar)
+                   ijkslice(2) = ijkslice(1)
+               else if(vptr%axis.eq.2)then
+                   if(ir/=0) position_offset = rm%y0
+                   xb(3) = vptr%position + position_offset
+                   xb(4) = vptr%position + position_offset
+                   ijkslice(3) = get_igrid(xb(3),rm%yplt,rm%jbar)
+                   ijkslice(4) = ijkslice(3)
+               else if(vptr%axis.eq.3)then
+                   if(ir/=0) position_offset = rm%z0
+                   xb(5) = vptr%position + position_offset
+                   xb(6) = vptr%position + position_offset
+                   ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
+                   ijkslice(6) = ijkslice(5)
+               endif
+           endif
+           do j = 1, 5
+               sliceptr => sliceinfo(islice)
 
-            write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
-            if(j.eq.1)then
-               menu_label="Temperature"
-               colorbar_label="TEMP"
-               unit_label="C"
-            else if(j.eq.2)then
-               menu_label="U-VELOCITY"
-               colorbar_label="U-VEL"
-               unit_label="m/s"
-            else if(j.eq.3)then
-               menu_label="V-VELOCITY"
-               colorbar_label="V-VEL"
-               unit_label="m/s"
-            else if(j.eq.4)then
-               menu_label="W-VELOCITY"
-               colorbar_label="W-VEL"
-               unit_label="m/s"
-            else
-               menu_label="Speed"
-               colorbar_label="Speed"
-               unit_label="m/s"
-            endif
+               write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+               if(j.eq.1)then
+                   menu_label="Temperature"
+                   colorbar_label="TEMP"
+                   unit_label="C"
+               else if(j.eq.2)then
+                   menu_label="U-VELOCITY"
+                   colorbar_label="U-VEL"
+                   unit_label="m/s"
+               else if(j.eq.3)then
+                   menu_label="V-VELOCITY"
+                   colorbar_label="V-VEL"
+                   unit_label="m/s"
+               else if(j.eq.4)then
+                   menu_label="W-VELOCITY"
+                   colorbar_label="W-VEL"
+                   unit_label="m/s"
+               else
+                   menu_label="Speed"
+                   colorbar_label="Speed"
+                   unit_label="m/s"
+               endif
 
-            sliceptr%filename = trim(slicefilename)
-            sliceptr%roomnum = iroom
-            sliceptr%menu_label = trim(menu_label)
-            sliceptr%colorbar_label = trim(colorbar_label)
-            sliceptr%unit_label = trim(unit_label)
-            sliceptr%xb = xb
-            sliceptr%ijk = ijkslice
-            islice = islice + 1
-         end do
-      end do
+               sliceptr%filename = trim(slicefilename)
+               sliceptr%roomnum = iroom
+               sliceptr%menu_label = trim(menu_label)
+               sliceptr%colorbar_label = trim(colorbar_label)
+               sliceptr%unit_label = trim(unit_label)
+               sliceptr%xb = xb
+               sliceptr%ijk = ijkslice
+               islice = islice + 1
+           end do
+       end do
    end do
-   
+
    ! setup isosurface data structures
-   
+
    i_iso = 1
    do i = 1, nvisualinfo
-      vptr=>visual_info(i)
-      if(vptr%vtype.ne.3)cycle
-      ir = vptr%roomnum
-      if(ir.eq.0)then
-         ibeg=1
-         iend=nrooms
-      else
-         ibeg=ir
-         iend=ir
-      endif
-      do iroom=ibeg,iend
-         rm=>roominfo(iroom)
-         isoptr => isoinfo(i_iso)
+       vptr=>visual_info(i)
+       if(vptr%vtype.ne.3)cycle
+       ir = vptr%roomnum
+       if(ir.eq.0)then
+           ibeg=1
+           iend=nrooms
+       else
+           ibeg=ir
+           iend=ir
+       endif
+       do iroom=ibeg,iend
+           rm=>roominfo(iroom)
+           isoptr => isoinfo(i_iso)
 
-         write(isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'
-         menu_label="Temperature"
-         colorbar_label="TEMP"
-         unit_label="C"
+           write(isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'
+           menu_label="Temperature"
+           colorbar_label="TEMP"
+           unit_label="C"
 
-         isoptr%filename = trim(isofilename)
-         isoptr%roomnum = iroom
-         isoptr%value = vptr%value
-         isoptr%menu_label = trim(menu_label)
-         isoptr%colorbar_label = trim(colorbar_label)
-         isoptr%unit_label = trim(unit_label)
-         i_iso = i_iso + 1
-      end do
+           isoptr%filename = trim(isofilename)
+           isoptr%roomnum = iroom
+           isoptr%value = vptr%value
+           isoptr%menu_label = trim(menu_label)
+           isoptr%colorbar_label = trim(colorbar_label)
+           isoptr%unit_label = trim(unit_label)
+           i_iso = i_iso + 1
+       end do
    end do
 
    end subroutine setup_slice_iso

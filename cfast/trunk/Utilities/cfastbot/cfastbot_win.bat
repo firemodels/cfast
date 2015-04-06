@@ -417,7 +417,7 @@ if exist %emailexe% (
   call %email% %mailToCFAST% "cfastbot %message% on %COMPUTERNAME%! %revisionstring%" %infofile%
 )
 
-echo cfastbot %message% on %COMPUTERNAME%! %revisionstring%, runtime: %DIFF_TIME%
+echo cfastbot %message% on %COMPUTERNAME%! %revisionstring%, runtime: %DIFF_TOTALTIME%
 echo Results summarized in %infofile%.
 cd %CURDIR%
 goto eof

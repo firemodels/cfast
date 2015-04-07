@@ -41,7 +41,7 @@
     real(eb) :: xdelt, tstop, tbeg, tend
 
     version = 7000           ! Current CFAST version number
-    crdate = (/2015,3,6/)  ! Current CFAST executable creation date
+    crdate = (/2015,4,7/)  ! Current CFAST executable creation date
 
     errorcode = 0
 
@@ -72,7 +72,6 @@
 
     call read_solver_ini
     call read_input_file (errorcode)
-    call setup_slice_iso
     
     if (errorcode<=0) then
 

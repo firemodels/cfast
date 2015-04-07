@@ -66,7 +66,7 @@
     ! from the internal version data. these need to be compatible
     aversion = carray(1,1)
     ivers = rarray(1,2)
-    ! new version numbering 600->6000, so current version is 6300
+    ! new version numbering 600->6000, so current version is 7000
     if (version>=1000) then
         iversion = version/1000
     else
@@ -160,7 +160,7 @@
     ! above
     do itop = 1, nm1
         if (nwv(itop,itop)/=0) then
-            if (logerr>0) write (logerr,*) ' A room can not be connected to itself'
+            if (logerr>0) write (logerr,*) '***Error: A room can not be connected to itself'
             nwv(itop,itop) = 0
         endif
         do ibot = 1, itop - 1
@@ -173,7 +173,7 @@
                     if (nwv(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
                         if (nwv(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
                             if (nwv(ibot,itop)/=0) then
-                                write (logerr,*) 'Vent ', ibot, itop, ' is being redefined'
+                                write (logerr,*) '***Error: Vent ', ibot, itop, ' is being redefined'
                             endif
                             nwv(itop,ibot) = 0
                             nwv(ibot,itop) = 1
@@ -183,7 +183,7 @@
                         endif
                         if (nwv(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
                             if (nwv(itop,ibot)/=0) then
-                                write (logerr,*) 'Vent ', itop, ibot, ' is being redefined'
+                                write (logerr,*) '***Error: Vent ', itop, ibot, ' is being redefined'
                             endif
                             nwv(itop,ibot) = 1
                             nwv(ibot,itop) = 0
@@ -217,7 +217,7 @@
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
             ifail = 39
             write (messg,201)iroom1,iroom2 
-201         format(' Invalid CFCON specification:',' one or both of rooms ',2i3, ' is out of bounds')
+201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',2i3, ' is out of bounds')
             call xerror(messg,0,1,1)
         endif
 
@@ -249,7 +249,7 @@
         else
             ifail = 40
             write (messg,202) iroom1,iroom2 
-202         format(' Invalid CFCON specification:'' ceiling and floor of rooms',2i3, ' are not connectetd')
+202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',2i3, ' are not connectetd')
         endif
 
         ! walls must be turned on, ie switch must be set
@@ -259,11 +259,11 @@
         iwall2 = izswal(ii,w_to_wall)
         if(.not.switch(iwall1,iroom1).or..not.switch(iwall2,iroom2))then
             write (messg,203)
-203         format(' Invalid CFCON specification:')
+203         format('***Error: Invalid CFCON specification:')
             call xerror(messg,0,1,1)
             if(.not.switch(iwall1,iroom1))then
                 write(messg,204) iwall1,iroom1
-204             format(' Wall ',i2,' of room ',i2,' is not turned on')
+204             format('***Error: Wall ',i2,' of room ',i2,' is not turned on')
                 call xerror(messg,0,1,1)
             endif
             if(.not.switch(iwall2,iroom2))then
@@ -278,10 +278,10 @@
     ! check shafts
     do iroom = nm1 + 1, nr
         if(izshaft(iroom)/=0)then
-            call xerror(' invalid SHAFT specification:',0,1,1)
+            call xerror('***Error: Invalid SHAFT specification:',0,1,1)
             ifail = 42
             write (messg,206)iroom,nm1
-206         format(' room ',i3,' must be less than or equal to ',i3)
+206         format('***Error: Room ',i3,' must be less than or equal to ',i3)
             call xerror(messg,0,1,1)
         endif
     end do
@@ -364,14 +364,14 @@
         iroom = ixdtect(i,droom)
         if(iroom<1.or.iroom>nm1)then
             write (messg,104)iroom 
-104         format('Invalid DETECTOR specification: room ',i3, ' is not a valid')
+104         format('***Error: Invalid DETECTOR specification: room ',i3, ' is not a valid')
             ifail = 43
             call xerror(messg,0,1,1)
         endif
         rti = xdtect(i,drti)
         if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
             write (messg,101)rti 
-101         format('Invalid DETECTOR specification - rti= ',e11.4, ' is not a valid.')
+101         format('***Error: Invalid DETECTOR specification - rti= ',e11.4, ' is not a valid.')
             ifail = 44
         endif
         xloc = xdtect(i,dxloc)
@@ -380,13 +380,13 @@
         if(xloc<0.0_eb.or.xloc>room_width(iroom).or.yloc<0.0_eb.or.yloc>room_depth(iroom) &
             .or.zloc<0.0_eb.or.zloc>ceiling_height(iroom))then
             write(messg,102)xloc,yloc,zloc
-102         format('Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
+102         format('***Error: Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
             ifail = 45
         endif
         idtype = ixdtect(i,dtype)
         if(idtype<1.or.idtype>3)then
             write(messg,103)idtype
-103         format('Invalid DETECTOR specification - type= ',i2,' is not a valid')
+103         format('***Error: Invalid DETECTOR specification - type= ',i2,' is not a valid')
             ifail = 46
         endif
     end do
@@ -419,7 +419,7 @@
                 if(nventij/=0)zzhtfrac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if(j<=nm1.and..not.switch(3,j))zzhtfrac(i,j) = 0.0_eb
+                if(j<=nm1.and..not.switch(3,j)) zzhtfrac(i,j) = 0.0_eb
             end do
         endif
 
@@ -449,9 +449,12 @@
             end do
         endif
     end do
+    
+    ! set up any specified slice or iso files
+    call setup_slice_iso
 
     if(ifail>0) then
-        call xerror('Input error in read_input_file',0,1,1)
+        call xerror('***Error: Input error in read_input_file',0,1,1)
         ierror = ifail
         return
     endif
@@ -1630,7 +1633,7 @@
         
         ! SLCF 2-D and 3-D slice files
     case ('SLCF')
-        if (countargs(lcarray)>=2) then
+        if (countargs(lcarray)>=1) then
             nvisualinfo = nvisualinfo + 1
             sliceptr => visual_info(nvisualinfo)
 
@@ -1646,44 +1649,50 @@
             ! 2-D slice file
             if (sliceptr%vtype==1) then
                 ! get position (required) and compartment (optional) first so we can check to make sure
-                !                                           desired position is within the compartment(s)
-                sliceptr%position = lrarray(3)
-                if (countargs(lcarray)>3) then
-                    sliceptr%roomnum = lrarray(4)
-                else
-                    sliceptr%roomnum = 0
-                end if
-                if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
-                    write (logerr, 5403) nvisualinfo
-                    ierror = 83
-                    return
-                end if
-                if (lcarray(2) =='X') then
-                    sliceptr%axis = 1
-                    if (sliceptr%roomnum>0) then
-                        if (sliceptr%position>room_width(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
-                            write (logerr, 5403) nvisualinfo
-                            ierror = 83
-                            return
-                        end if
+                ! desired position is within the compartment(s)
+                if (countargs(lcarray)>2) then
+                    sliceptr%position = lrarray(3)
+                    if (countargs(lcarray)>3) then
+                        sliceptr%roomnum = lrarray(4)
+                    else
+                        sliceptr%roomnum = 0
                     end if
-                else if (lcarray(2) =='Y') then
-                    sliceptr%axis = 2
-                    if (sliceptr%roomnum>0) then
-                        if (sliceptr%position>room_depth(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
-                            write (logerr, 5403) nvisualinfo
-                            ierror = 83
-                            return
-                        end if
+                    if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
+                        write (logerr, 5403) nvisualinfo
+                        ierror = 83
+                        return
                     end if
-                else if (lcarray(2) =='Z') then
-                    sliceptr%axis = 3
-                    if (sliceptr%roomnum>0) then
-                        if (sliceptr%position>room_height(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
-                            write (logerr, 5403) nvisualinfo
-                            ierror = 83
-                            return
+                    if (lcarray(2) =='X') then
+                        sliceptr%axis = 1
+                        if (sliceptr%roomnum>0) then
+                            if (sliceptr%position>room_width(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                                write (logerr, 5403) nvisualinfo
+                                ierror = 83
+                                return
+                            end if
                         end if
+                    else if (lcarray(2) =='Y') then
+                        sliceptr%axis = 2
+                        if (sliceptr%roomnum>0) then
+                            if (sliceptr%position>room_depth(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                                write (logerr, 5403) nvisualinfo
+                                ierror = 83
+                                return
+                            end if
+                        end if
+                    else if (lcarray(2) =='Z') then
+                        sliceptr%axis = 3
+                        if (sliceptr%roomnum>0) then
+                            if (sliceptr%position>room_height(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                                write (logerr, 5403) nvisualinfo
+                                ierror = 83
+                                return
+                            end if
+                        end if
+                    else
+                        write (logerr, 5403) nvisualinfo
+                        ierror = 83
+                        return
                     end if
                 else
                     write (logerr, 5403) nvisualinfo
@@ -1692,7 +1701,11 @@
                 end if
                 ! 3-D slice
             else if (sliceptr%vtype==2) then
-                sliceptr%roomnum = lrarray(2)
+                if (countargs(lcarray)>1) then
+                    sliceptr%roomnum = lrarray(2)
+                else
+                    sliceptr%roomnum = 0
+                end if
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                     write (logerr, 5403) nvisualinfo
                     ierror = 83
@@ -1703,7 +1716,7 @@
             ierror = 83
             return
         end if
-        
+
         ! ISOF isosurface of specified temperature in one or all compartments
     case ('ISOF')
         if (countargs(lcarray)>=1) then

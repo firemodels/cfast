@@ -60,9 +60,9 @@
                 TempFireObjects.Clear()
                 myUnits.SI = True
                 If FileExt = ".o" Then
-                    IO.FindFires(InsertDataType.ObjectFile, csv, TempFireObjects)
+                    IO.FindFires(InsertDataType.ObjectFile, csv)
                 Else
-                    IO.FindFires(InsertDataType.EmbeddedFire, csv, TempFireObjects)
+                    IO.FindFires(InsertDataType.EmbeddedFire, csv)
                 End If
                 myUnits.SI = False
                 If TempFireObjects.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFireObjects.Count + 1

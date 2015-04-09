@@ -37,8 +37,8 @@
     save uflw0
     logical :: ventflg(mxvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, ilay, islab, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab, nneut
-    real(eb) :: yvbot, yvtop, avent, ventvel
+    integer :: nirm, ifrom, ilay, islab, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab
+    real(eb) :: yvbot, yvtop, avent
     integer, parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
     integer :: position
@@ -101,7 +101,7 @@
             if (avent>=1.0e-10_eb) then
                 call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
                    epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
-                   yvelev,xmslab,nslab,nneut,ventvel)
+                   yvelev,xmslab,nslab)
                 
                 ventptr%n_slabs = nslab
                 do islab = 1,nslab
@@ -416,7 +416,7 @@
 ! --------------------------- vent -------------------------------------------
 
     subroutine vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
-    vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab,nneut,ventvel)
+    vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
     !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing 
@@ -456,21 +456,19 @@
     implicit none
     
     integer, intent(in) :: nprod, mxfprd, mxfslab
-    integer, intent(out) :: nneut, nslab, dirs12(*)
+    integer, intent(out) :: nslab, dirs12(*)
     
     real(eb), intent(in) :: yflor(*), ylay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
     real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(mxfprd,2), conu(mxfprd,2),  epsp
     
-    real(eb), intent(out) :: ventvel, yvelev(*), dpv1m2(10)
+    real(eb), intent(out) :: yvelev(*), dpv1m2(10)
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
     real(eb), intent(out) :: vss(2), vsa(2), vas(2), vaa(2)
     
-    integer :: nelev, i, n, jroom, iprod, nvelev
+    integer :: nneut, nelev, i, n, jroom, iprod, nvelev
     
     real(eb) ::  yelev(10), dp1m2(10), yn(10)
     real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys
-
-    ventvel = 0.0_eb
 
     ! create initial elevation height array (ignoring neutral planes)
     call getelev(yvbot,yvtop,ylay,yelev,nelev)
@@ -561,13 +559,6 @@
             area = avent*(y2-y1)/(yvtop-yvbot)
             r1m8 = 8.0_eb*r1
             xmslab(n) = cvent*sqrt(r1m8)*area*(p2+p1rt*p2rt+p1)/(p2rt+p1rt)/3.0_eb
-            ventvel = 0.0_eb
-            if(n==nslab)then
-                if(area/=0.0_eb.and.r1/=0.0_eb)then
-                    ventvel = xmslab(n)/(area*r1)
-                    if(dirs12(n)<0)ventvel = -ventvel
-                endif
-            endif
             qslab(n) = cp*xmslab(n)*tslab(n)
             sum = 0.0_eb
             do iprod = 1, nprod

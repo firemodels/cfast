@@ -1948,8 +1948,7 @@
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
     area = objxyz(1,iobj)*objxyz(2,iobj)
-    d = max(0.33_eb,sqrt(4.0/3.14_eb*area))
-    flamelength = d*(0.235_eb*(max_hrr/1.0e3_eb)**0.4_eb - 1.02_eb)
+    call flame_height(max_hrr, area, flamelength)
     flamelength = max (0.0_eb, flamelength)
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))

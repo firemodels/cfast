@@ -351,63 +351,26 @@ if %1==iBMB goto end
 echo FM SNL Tests
 cd FM_SNL
 call ..\cleancfast.bat
-cd Test_1
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_1 /V
-cd ..\
-cd Test_2
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_2 /V
-cd ..\
-cd Test_3
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_3 /V
-cd ..\
-cd Test_4
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_4 /V
-cd ..\
-cd Test_5
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_5 /V
-cd ..\
-cd Test_6
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_6 /V
-cd ..\
-cd Test_7
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_7 /V
-cd ..\
-cd Test_8
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_8 /V
-cd ..\
-cd Test_9
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_9 /V
-cd ..\
-cd Test_10
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_10 /V
-cd ..\
-cd Test_11
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_11 /V
-cd ..\
-cd Test_12
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_12 /V
-cd ..\
-cd Test_13
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_13 /V
-cd ..\
-cd Test_14
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_14 /V
-cd ..\
-cd Test_15
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_15 /V
-cd ..\
-cd Test_16
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_16 /V
-cd ..\
-cd Test_17
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_17 /V
-cd ..\
-cd Test_21
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_21 /V
-cd ..\
-cd Test_22
 ..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_22 /V
-cd ..\..\
+cd ..\
 if %1==FM_SNL goto end
 
 :NBS

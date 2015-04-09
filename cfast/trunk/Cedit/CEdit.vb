@@ -5819,9 +5819,9 @@ Public Class CeditMain
                 myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
             End If
             PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
-            WriteFireObjects(PathName)
-            FileName = PathName + myThermalProperties.FileName + ".csv"
-            WriteThermalProperties(FileName)
+            'WriteFireObjects(PathName)
+            'FileName = PathName + myThermalProperties.FileName + ".csv"
+            'WriteThermalProperties(FileName)
             ChDir(PathName)
         End If
         myUnits.SI = False
@@ -6017,17 +6017,17 @@ Public Class CeditMain
                         myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
                         myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
                         myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
-                        WriteFireObjects(".\")
-                        Filename = myEnvironment.InputFilePath + "\" + myThermalProperties.FileName + ".csv"
-                        WriteThermalProperties(Filename)
+                        'WriteFireObjects(".\")
+                        'Filename = myEnvironment.InputFilePath + "\" + myThermalProperties.FileName + ".csv"
+                        'WriteThermalProperties(Filename)
                     End If
                 End If
             Else
                 WriteInputFile(myEnvironment.InputFileName + ".in")
                 myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
-                WriteFireObjects(".\")
-                Filename = myThermalProperties.FileName + ".csv"
-                WriteThermalProperties(Filename)
+                'WriteFireObjects(".\")
+                'Filename = myThermalProperties.FileName + ".csv"
+                'WriteThermalProperties(Filename)
             End If
         End If
         myUnits.SI = False

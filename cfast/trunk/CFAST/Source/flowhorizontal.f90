@@ -106,7 +106,7 @@
                 ventptr%n_slabs = nslab
                 do islab = 1,nslab
                     ventptr%temp_slab(islab) = tslab(islab)
-                    ventptr%flow_slab(islab) = xmslab(islab)/rslab(islab)*dirs12(islab)
+                    ventptr%flow_slab(islab) = xmslab(islab)*dirs12(islab)
                     ventptr%ybot_slab(islab) = yvelev(islab)
                     ventptr%ytop_slab(islab) = yvelev(islab+1)
                 end do

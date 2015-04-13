@@ -1829,7 +1829,7 @@
     character(128) :: lcarray(ncol)
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, errorcode, ir, i, ii, nret, countargs
-    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, d, flamelength
+    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, flamelength
 
     ! there are eight required inputs for each fire
     lrarray = 0.0_eb

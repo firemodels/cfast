@@ -24,8 +24,10 @@
     
     real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup
     real(eb) :: fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
-    integer ::  toprm = 1, botrm = 2, ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
+    integer ::  ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
     real(eb) :: area, vvfraction
+
+    type(vent_type), pointer :: ventptr
 
     ! the selection rules are now implemented here.  the crossover is the relative fraction of the 
     ! volume cloesest to the hole from which the mass will come
@@ -48,16 +50,26 @@
     end do
 
     do i = 1, n_vvents
-        itop = ivvent(i,toprm)
-        ibot = ivvent(i,botrm)
+        ventptr => vventinfo(i)
+        itop = ventptr%top
+        ibot = ventptr%bottom
         call getventfraction ('V',itop,ibot,1,i,tsec,vvfraction)
         area = vvfraction * vvarea(itop,ibot)
+        ventptr%area = area
         !area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
         call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay)
+        
+        ventptr%n_slabs = 2
+
         do iflow = 1, 2
-
+            
+            ! flow information for smokeview
+            ventptr%temp_slab(iflow) = tmvent(iflow)
+            ventptr%flow_slab(iflow) = xmvent(iflow)
+            ventptr%ybot_slab(iflow) = max(0.0_eb,(vvarea(itop,ibot) - sqrt(area))/2.0_eb)
+            ventptr%ytop_slab(iflow) = min(vvarea(itop,ibot),(vvarea(itop,ibot) + sqrt(area))/2.0_eb)
+            
             ! determine room where flow comes and goes
-
             if (iflow==1) then
                 ifrm = ibot
                 ito = itop

@@ -765,7 +765,7 @@
     end do
 
     ! initialize all vents to zero size
-    do ivent = 1, mxvents
+    do ivent = 1, mxhvents
         bw(ivent) = 0.0_eb
         hh(ivent) = 0.0_eb
         hl(ivent) = 0.0_eb
@@ -829,7 +829,7 @@
     end do
 
     ! Start with vents open: h for hvent, v for vvent, and m for mvent
-    do i = 1,mxvents
+    do i = 1,mxhvents
         qcvh(1,i) = 0.0_eb
         qcvh(2,i) = 1.0_eb
         qcvh(3,i) = 0.0_eb
@@ -1658,7 +1658,7 @@
 
     ! check horizontal vent flow
     do i = 1, n_hvents
-        ventptr=>ventinfo(i)
+        ventptr=>hventinfo(i)
         
         iroom1 = ventptr%from
         iroom2 = ventptr%to

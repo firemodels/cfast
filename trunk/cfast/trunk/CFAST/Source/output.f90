@@ -390,7 +390,7 @@
     !     horizontal flow natural vents    
     do i = 1, n_hvents
 
-        ventptr=>ventinfo(i)
+        ventptr=>hventinfo(i)
 
         ifrom = ventptr%from
         write (cifrom,'(a12)') compartmentnames(ifrom)

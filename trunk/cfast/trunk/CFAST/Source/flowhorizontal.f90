@@ -35,11 +35,11 @@
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
     real(eb) :: uflw0(nr,ns+2,2)
     save uflw0
-    logical :: ventflg(mxvent), roomflg(nr), anyvents
+    logical :: ventflg(mxhvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
     integer :: nirm, ifrom, ilay, islab, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
-    integer, parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
+    integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
     integer :: position
     
@@ -60,7 +60,7 @@
     if(anyvents)then
         do i = 1, n_hvents
             if(.not.ventflg(i)) cycle
-            ventptr=>ventinfo(i)
+            ventptr=>hventinfo(i)
             
             iroom1 = ventptr%from
             iroom2 = ventptr%to
@@ -352,7 +352,7 @@
     use vents
     implicit none
 
-    logical, intent(out) :: ventflg(mxvent), roomflg(nr), anyvents
+    logical, intent(out) :: ventflg(mxhvent), roomflg(nr), anyvents
     
     integer i, ieqtyp, iroom, iroom1, iroom2
     type(vent_type), pointer :: ventptr
@@ -384,7 +384,7 @@
 
                 ! determine all rooms connected to perturbed rooms
                 do i = 1, n_hvents
-                    ventptr=>ventinfo(i)
+                    ventptr=>hventinfo(i)
                     
                     iroom1 = ventptr%from
                     iroom2 = ventptr%to
@@ -397,7 +397,7 @@
 
                 ! determine all vents connected to the above rooms
                 do i = 1, n_hvents
-                    ventptr=>ventinfo(i)
+                    ventptr=>hventinfo(i)
                     
                     iroom1 = ventptr%from
                     iroom2 = ventptr%to
@@ -896,7 +896,7 @@
 
     !	The following functions implement the open/close function for vents.
     !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxvents), qcvv(4,nr), qcvm(4,mxfan),
+    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,nr), qcvm(4,mxfan),
     !         and qcvi(4,mxfan). 
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
@@ -1045,7 +1045,7 @@
     real(eb), intent(out) :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue 
     type(vent_type), pointer :: ventptr
 
-    ventptr=>ventinfo(i)
+    ventptr=>hventinfo(i)
     
     ifrom =ventptr%from
     ito = ventptr%to

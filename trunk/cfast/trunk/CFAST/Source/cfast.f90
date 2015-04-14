@@ -1532,7 +1532,7 @@
                     do k = 1, mxccv
                         if (iand(frmask(k),nw(i,j))/=0) then
                             n_hvents = n_hvents + 1
-                            ventptr => ventinfo(n_hvents)
+                            ventptr => hventinfo(n_hvents)
                             iijk = ijk(i,j,k)
                             ventptr%sill = hl(iijk)
                             ventptr%soffit = hh(iijk)
@@ -1564,6 +1564,10 @@
                     qcvv(2,n_vvents) = qcvpp(2,i,j)
                     qcvv(3,n_vvents) = qcvpp(3,i,j)
                     qcvv(4,n_vvents) = qcvpp(4,i,j)
+                    
+                    ventptr => vventinfo(n_vvents)
+                    ventptr%top = ivvent(n_vvents,1)
+                    ventptr%bottom = ivvent(n_vvents,2)
                 endif
             end do
         end do

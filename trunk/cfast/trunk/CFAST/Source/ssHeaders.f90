@@ -323,7 +323,7 @@
     implicit none
 
     ! local variables
-    integer, parameter :: maxhead = mxvents+2*mxvv+2*mxhvsys+mxfan
+    integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
     character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
@@ -349,7 +349,7 @@
 
     !	Do the output by compartments
     do i = 1, n_hvents
-        ventptr=>ventinfo(i)
+        ventptr=>hventinfo(i)
 
         ifrom = ventptr%from
         call tointstring(ifrom,cifrom)
@@ -476,14 +476,18 @@
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+6*nr+4*mxfire+2*mxvents+3*mxfslab*mxvents+2*mxvv+2*mxhvsys
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(20), LabelUnits(20)
+    integer, parameter :: maxhead = 1+6*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxhvsys
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(23), LabelUnits(23)
     integer position, i, j
 
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', 'HRR_', 'FLHGT_', 'FBASE_',&
-       'FAREA_', 'HVENT_','NSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_',  'VVENT_', 'VVENTIN_',' VVENT_OUT_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', 'kW', 'm', 'm', 'm^2', 'm^2', ' ', 'C', 'm^3/s', &
-        'm', 'm', 'm^2', 'm3/s', 'm3/s' /
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', &
+        'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
+        'HVENT_','HSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_', &
+        'VVENT_','VSLAB_','VSLABT_','VSLABF_','VSLABYB_','VSLABYT_'  /
+    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', &
+        'kW', 'm', 'm', 'm^2', &
+        'm^2', ' ', 'C', 'kg/s', 'm', 'm', &
+        'm^2', ' ', 'C', 'kg/s', 'm', 'm' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)
@@ -547,14 +551,35 @@
             call smvDeviceTag(headertext(2,position))
         end do
     end do
-    
+
     ! Ceiling / floor vent variables
-    do i = 1, n_vvents
-        do j = 1,3
+    do j = 1, n_vvents
+        position = position + 1
+        call toIntString(j,cVent)
+        headertext(1,position) = LabelUnits(18)
+        headertext(2,position) = trim(LabelsShort(18))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+        position = position + 1
+        headertext(1,position) = LabelUnits(19) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(13))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+        do i = 1,2
+            call toIntString(i,cSlab)
             position = position + 1
-            call toIntString(i,cVent)
-            headertext(1,position) = LabelUnits(18+j-1)
-            headertext(2,position) = trim(LabelsShort(17+j-1))//trim(cVent)
+            headertext(1,position) = LabelUnits(20) ! slab temperature
+            headertext(2,position) = trim(LabelsShort(20))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(21) ! slab flow
+            headertext(2,position) = trim(LabelsShort(21))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(22) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(22))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(23) ! slab top
+            headertext(2,position) = trim(LabelsShort(23))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -708,7 +733,7 @@
     implicit none
 
     ! local variables     
-    integer, parameter :: maxhead = 1 + mxvents*(4 + mxfslab)
+    integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
     integer :: position, i, j
 

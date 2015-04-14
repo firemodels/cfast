@@ -351,25 +351,25 @@ if %1==iBMB goto end
 echo FM SNL Tests
 cd FM_SNL
 call ..\cleancfast.bat
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_1 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_2 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_3 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_4 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_5 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_6 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_7 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_8 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_9 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_10 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_11 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_12 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_13 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_14 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_15 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_16 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_17 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_21 /V
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe FMSNL_22 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_4 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_5 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_6 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_7 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_8 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_9 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_12 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_16 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_21 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_22 /V
 cd ..\
 if %1==FM_SNL goto end
 

@@ -780,7 +780,7 @@
     integer :: i, iroom1, iroom2, ifrom, lsp, iroom
     save flwdjf0
 
-    logical :: dj1flag, dj2flag, ventflg(mxvent), roomflg(nr), anyvents
+    logical :: dj1flag, dj2flag, ventflg(mxhvent), roomflg(nr), anyvents
     type(vent_type), pointer :: ventptr
 
     ! initialize summations and local data
@@ -790,7 +790,7 @@
 
     ! if no vents have a door jet fire then exit
     do i = 1, n_hvents
-        ventptr=>ventinfo(i)
+        ventptr=>hventinfo(i)
 
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
@@ -831,7 +831,7 @@
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
         do i = 1, n_hvents
-            ventptr=>ventinfo(i)
+            ventptr=>hventinfo(i)
             if(ventflg(i))then
                 iroom1 = ventptr%from
                 iroom2 = ventptr%to

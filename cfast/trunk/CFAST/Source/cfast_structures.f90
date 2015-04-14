@@ -40,13 +40,21 @@ module cfast_types
     ! vent data structure
 
     type vent_type
+        ! These define a wall vent
         real(eb) :: sill, soffit, width
         real(eb) :: from_hall_offset, to_hall_offset
         real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
+        integer :: from, to 
+        integer :: face
+        
+        ! These define a ceiling/floor vent
+        real(eb) :: area
+        real(eb) :: top, bottom
+        
+        ! These are common to all vent types
+        integer :: counter
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
         integer :: n_slabs
-        integer :: from, to, counter
-        integer :: face
     end type vent_type
     
     ! slice file data structure

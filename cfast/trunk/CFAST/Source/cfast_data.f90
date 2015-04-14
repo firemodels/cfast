@@ -80,7 +80,7 @@ module cfast_main
         nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixtarg(mxi_trg,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
-        nventijk,nfopt,vface(mxvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr), &
+        nventijk,nfopt,vface(mxhvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr), &
         cxgrid(nr), cygrid(nr), czgrid(nr)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, noftt, notwt, nofprd, &
@@ -93,14 +93,14 @@ module cfast_main
 
     real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
-        hhp(mxvents), bw(mxvents), hh(mxvents), hl(mxvents), ventoffset(mxvents,2), oplume(3,mxfires),  &
-        qcvh(4,mxvents),qcvv(4,mxvv),qcvm(4,mxfan), room_width(nr), room_depth(nr), room_height(nr), room_area(nr), &
+        hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), oplume(3,mxfires),  &
+        qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), room_width(nr), room_depth(nr), room_height(nr), room_area(nr), &
         ceiling_height(nr), room_volume(nr), floor_height(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
         radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal), fopos(3,0:mxfire), &
-        ontarget(nr), toxict(nr,2,ns), femr(0:mxfire), hcratio(mxpts), hlp(mxvents), hvextt(mxext,2), &
+        ontarget(nr), toxict(nr,2,ns), femr(0:mxfire), hcratio(mxpts), hlp(mxhvents), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
@@ -503,18 +503,19 @@ end module fires
 module vents
 
     use precision_parameters
-    use cparams, only: nr, mxvent
+    use cparams, only: nr, mxhvent, mxvvent
     use cfast_types, only: vent_type
     implicit none
     save
     
-    integer, dimension(mxvent,2) :: ivvent
+    integer, dimension(mxhvent,2) :: ivvent
     integer :: n_hvents, n_vvents
     
-    real(eb), dimension(nr,mxvent) :: zzventdist
-    real(eb), dimension(2,mxvent) :: vss, vsa, vas, vaa, vsas, vasa
+    real(eb), dimension(nr,mxhvent) :: zzventdist
+    real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
     
-    type (vent_type), dimension(mxvent), target :: ventinfo
+    type (vent_type), dimension(mxhvent), target :: hventinfo
+    type (vent_type), dimension(mxvvent), target :: vventinfo
     
 end module vents
 

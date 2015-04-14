@@ -140,7 +140,7 @@
     use vents
     implicit none
 
-    integer, parameter :: maxoutput = mxvents*4
+    integer, parameter :: maxoutput = mxhvents*4
     
     real(eb), intent(in) :: time
     
@@ -162,7 +162,7 @@
         
     ! next the horizontal flow through vertical vents
     do i = 1, n_hvents
-        ventptr=>ventinfo(i)
+        ventptr=>hventinfo(i)
 
         ifrom = ventptr%from
         ito = ventptr%to
@@ -416,15 +416,15 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent, flow(4), &
-        sumin, sumout, slabs, vvfraction
+    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent,  &
+        slabs
     logical :: firstc
     integer :: position
-    integer :: toprm, botrm, i, j, itarg, izzvol, iroom1, iroom2, ik, im, ix
-    integer :: itop, ibot
+    integer :: i, j, itarg, izzvol, iroom1, iroom2, ik, im, ix
+
     
     type(vent_type), pointer :: ventptr
-    data toprm /1/, botrm /2/
+
     data firstc/.true./
     save firstc
 
@@ -466,7 +466,7 @@
 
     ! vents
     do i = 1, n_hvents
-        ventptr=>ventinfo(i)
+        ventptr=>hventinfo(i)
         
         iroom1 = ventptr%from
         iroom2 = ventptr%to
@@ -491,21 +491,17 @@
     end do
 
     do i = 1, n_vvents
-        itop = ivvent(i,toprm)
-        ibot = ivvent(i,botrm)
-        call getventfraction ('V',itop,ibot,1,i,time,vvfraction)
-        avent = vvfraction * vvarea(itop,ibot)
-        !avent = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
+        ventptr => vventinfo(i)
         call SSaddtolist (position,avent,outarray)
-        flow = 0
-        if (vmflo(itop,ibot,upper)>=0.0_eb) flow(1) = vmflo(itop,ibot,upper)
-        if (vmflo(itop,ibot,upper)<0.0_eb) flow(2) = -vmflo(itop,ibot,upper)
-        if (vmflo(itop,ibot,lower)>=0.0_eb) flow(3) = vmflo(itop,ibot,lower)
-        if (vmflo(itop,ibot,lower)<0.0_eb) flow(4) = -vmflo(itop,ibot,lower)
-        sumin = flow(1) + flow(3)
-        sumout = flow(2) + flow(4)
-        call SSaddtolist (position,sumin,outarray)
-        call SSaddtolist (position,sumout,outarray)
+        ! flow slabs for the vent
+        slabs = ventptr%n_slabs
+        call SSaddtolist (position,slabs,outarray)
+        do j = 1, 2
+            call ssaddtolist(position,ventptr%temp_slab(j),outarray)
+            call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+            call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
+            call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
+        end do
     end do
 
     call ssprintresults (15, position, outarray)

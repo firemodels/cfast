@@ -748,7 +748,7 @@
                 return
             endif
             nventijk = nventijk + 1
-            if (nventijk>mxvents) then
+            if (nventijk>mxhvents) then
                 write(logerr,5081) i,j,k
                 ierror = 78
                 return

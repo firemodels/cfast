@@ -54,13 +54,13 @@ module cparams
                                                ! be on a surface for entrainmnt
     
     ! target parameters
-    integer, parameter :: mxtarg = 10*nr                            ! maximum number of targets
-    integer, parameter :: nnodes_trg = nnodes-1                     ! number of interior nodes in a target for conduction calculation
-    integer, parameter :: idxtempf_trg = 17                         ! position of front temperature of target (front surface temperature)
+    integer, parameter :: mxtarg = 10*nr                    ! maximum number of targets
+    integer, parameter :: nnodes_trg = nnodes-1             ! number of interior nodes in a target for conduction calculation
+    integer, parameter :: idxtempf_trg = 17                 ! position of front temperature of target (front surface temperature)
     integer, parameter :: idx_tempb_trg = idxtempf_trg+nnodes_trg-1 ! position of back temperature of target 
-                                                                    ! (back surface temperature)
-    integer, parameter :: mxr_trg = idx_tempb_trg                   ! upper bound of real target array 
-    integer, parameter :: mxi_trg = 7                               ! upper bound of integer target array
+                                                            ! (back surface temperature)
+    integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array 
+    integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
     
     integer, parameter :: check_detector_state = 0      ! index to check state of detectors and targets
     integer, parameter :: set_detector_state = 1        ! index to calculate full state of detectors and targets

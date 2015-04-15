@@ -4,10 +4,10 @@ HGL Temperature: Forced Ventilation,6,116,0.07,0.19,1.03
 HGL Temperature: Natural Ventilation,9,139,0.07,0.39,1.14
 HGL Temperature: No Ventilation,3,24,0.07,0.1,0.98
 HGL Depth,10,172,0.05,0.36,1.01
-HGL Depth: Open Compartments,8,108,0.05,0.2,0.91
+HGL Depth: Open Compartments,8,108,0.05,0.19,0.9
 HGL Depth: Closed Compartments,4,34,0.05,0.24,1.45
 Flat Ceiling Jet Temperature,9,382,0.07,0.43,1.07
-Plume Temperature,5,63,0.07,0.28,1.1
+Plume Temperature,5,63,0.07,0.29,1.09
 Oxygen Concentration,4,38,0.08,0.24,1
 Carbon Dioxide Concentration,3,29,0.08,0.28,0.84
 Smoke Concentration,1,15,0.19,0.64,3.61

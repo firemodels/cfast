@@ -1,5 +1,5 @@
 
-! --------------------------- horizontal_flow -------------------------------------------
+    ! --------------------------- horizontal_flow -------------------------------------------
 
     subroutine horizontal_flow(tsec,epsp,nprod,uflw)
 
@@ -22,9 +22,9 @@
     use vent_slab
     use debug
     implicit none
-    
+
     real(eb), intent(in) :: tsec, epsp
-    real(eb), intent(out) :: uflw(nr,mxfprd+2,2) 
+    real(eb), intent(out) :: uflw(nr,mxfprd+2,2)
     integer, intent(in) :: nprod
 
     real(eb) :: conl(mxfprd,2), conu(mxfprd,2), pmix(mxfprd)
@@ -42,7 +42,7 @@
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
     integer :: position
-    
+
     type(vent_type), pointer :: ventptr
 
     position = 0
@@ -59,103 +59,104 @@
     call ventflag(ventflg,roomflg,anyvents)
     if(anyvents)then
         do i = 1, n_hvents
-            if(.not.ventflg(i)) cycle
-            ventptr=>hventinfo(i)
-            
-            iroom1 = ventptr%from
-            iroom2 = ventptr%to
-            ik = ventptr%counter
-            
-            do ilay = 1,2
-                ventptr%mflow(1,ilay,1) = 0.0_eb
-                ventptr%mflow(2,ilay,1) = 0.0_eb
-                ventptr%mflow(1,ilay,2) = 0.0_eb
-                ventptr%mflow(2,ilay,2) = 0.0_eb
-                ventptr%mflow_mix(1,ilay) = 0.0_eb
-                ventptr%mflow_mix(2,ilay) = 0.0_eb
-            end do
-            
-            do islab = 1, mxfslab
-                ventptr%temp_slab(islab) = 0.0_eb
-                ventptr%flow_slab(islab) = 0.0_eb
-                ventptr%ybot_slab(islab) = 0.0_eb
-            end do
+            if(ventflg(i)) then
+                ventptr=>hventinfo(i)
 
-            ! setup data structures for from and to room
-            call getvars(iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
-            
-            ! convert vent dimensions to absolute dimensions
-            yvbot = ventptr%sill + yflor(1)
-            yvtop = ventptr%soffit + yflor(1)
-            ylay(1) = ylay(1) + yflor(1)
-            ylay(2) = ylay(2) + yflor(2)
+                iroom1 = ventptr%from
+                iroom2 = ventptr%to
+                ik = ventptr%counter
 
-            !  use new interpolator to find vent opening fraction
-            im = min(iroom1,iroom2)
-            ix = max(iroom1,iroom2)
-            factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
-            height = ventptr%soffit - ventptr%sill
-            width = ventptr%width*factor2
-            avent = height*width
-
-            if (avent>=1.0e-10_eb) then
-                call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
-                   epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
-                   yvelev,xmslab,nslab)
-                
-                ventptr%n_slabs = nslab
-                do islab = 1,nslab
-                    ventptr%temp_slab(islab) = tslab(islab)
-                    ventptr%flow_slab(islab) = xmslab(islab)*dirs12(islab)
-                    ventptr%ybot_slab(islab) = yvelev(islab)
-                    ventptr%ytop_slab(islab) = yvelev(islab+1)
+                do ilay = 1,2
+                    ventptr%mflow(1,ilay,1) = 0.0_eb
+                    ventptr%mflow(2,ilay,1) = 0.0_eb
+                    ventptr%mflow(1,ilay,2) = 0.0_eb
+                    ventptr%mflow(2,ilay,2) = 0.0_eb
+                    ventptr%mflow_mix(1,ilay) = 0.0_eb
+                    ventptr%mflow_mix(2,ilay) = 0.0_eb
                 end do
-                
-                if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 
-                call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
+                do islab = 1, mxfslab
+                    ventptr%temp_slab(islab) = 0.0_eb
+                    ventptr%flow_slab(islab) = 0.0_eb
+                    ventptr%ybot_slab(islab) = 0.0_eb
+                end do
 
-                !  calculate entrainment type mixing at the vents
+                ! setup data structures for from and to room
+                call getvars(iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
 
-                if (option(fentrain)==on) then
-                    call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
-                       uflw3,vsas(1,i),vasa(1,i))
-                    do ilay = 1, 2
-                        ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
-                        ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
+                ! convert vent dimensions to absolute dimensions
+                yvbot = ventptr%sill + yflor(1)
+                yvtop = ventptr%soffit + yflor(1)
+                ylay(1) = ylay(1) + yflor(1)
+                ylay(2) = ylay(2) + yflor(2)
+
+                !  use new interpolator to find vent opening fraction
+                im = min(iroom1,iroom2)
+                ix = max(iroom1,iroom2)
+                factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
+                height = ventptr%soffit - ventptr%sill
+                width = ventptr%width*factor2
+                avent = height*width
+
+                if (avent>=1.0e-10_eb) then
+                    call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
+                        epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
+                        yvelev,xmslab,nslab)
+
+                    ventptr%n_slabs = nslab
+                    do islab = 1,nslab
+                        ventptr%temp_slab(islab) = tslab(islab)
+                        ventptr%flow_slab(islab) = xmslab(islab)*dirs12(islab)
+                        ventptr%ybot_slab(islab) = yvelev(islab)
+                        ventptr%ytop_slab(islab) = yvelev(islab+1)
                     end do
-                else
-                    do ilay = 1, 2
-                        ventptr%mflow_mix(1,ilay) = 0.0_eb
-                        ventptr%mflow_mix(2,ilay) = 0.0_eb
-                    end do
-                end if
-                
-                ! sum flows from both rooms for each layer and type of product
-                ! (but only if the room is an inside room)
 
-                if (iroom1>=1.and.iroom1<=nirm) then
-                    do iprod = 1, nprod + 2
-                        uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
-                        uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
-                    end do
+                    if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
+
+                    call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
+
+                    !  calculate entrainment type mixing at the vents
+
                     if (option(fentrain)==on) then
-                        do iprod = 1, nprod + 2
-                            uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw3(1,iprod,l)
-                            uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw3(1,iprod,u)
+                        call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
+                            uflw3,vsas(1,i),vasa(1,i))
+                        do ilay = 1, 2
+                            ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
+                            ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
                         end do
+                    else
+                        do ilay = 1, 2
+                            ventptr%mflow_mix(1,ilay) = 0.0_eb
+                            ventptr%mflow_mix(2,ilay) = 0.0_eb
+                        end do
+                    end if
+
+                    ! sum flows from both rooms for each layer and type of product
+                    ! (but only if the room is an inside room)
+
+                    if (iroom1>=1.and.iroom1<=nirm) then
+                        do iprod = 1, nprod + 2
+                            uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
+                            uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
+                        end do
+                        if (option(fentrain)==on) then
+                            do iprod = 1, nprod + 2
+                                uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw3(1,iprod,l)
+                                uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw3(1,iprod,u)
+                            end do
+                        endif
                     endif
-                endif
-                if (iroom2>=1.and.iroom2<=nirm) then
-                    do iprod = 1, nprod + 2
-                        uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
-                        uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)
-                    end do
-                    if (option(fentrain)==on) then
+                    if (iroom2>=1.and.iroom2<=nirm) then
                         do iprod = 1, nprod + 2
-                            uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw3(2,iprod,l)
-                            uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw3(2,iprod,u)
+                            uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
+                            uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)
                         end do
+                        if (option(fentrain)==on) then
+                            do iprod = 1, nprod + 2
+                                uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw3(2,iprod,l)
+                                uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw3(2,iprod,u)
+                            end do
+                        endif
                     endif
                 endif
             endif
@@ -174,7 +175,7 @@
             end do
         elseif(jaccol>0)then
 
-            ! we are computing a jacobian, so get previously saved solution for rooms that are not affected 
+            ! we are computing a jacobian, so get previously saved solution for rooms that are not affected
             ! by perturbed solution variable
             do iroom = 1, nm1
                 if(.not.roomflg(iroom))then
@@ -186,19 +187,19 @@
             end do
         endif
     endif
-    
+
     if (prnslab) then
         call SSprintslab (position, outarray)
     end if
     return
     end subroutine horizontal_flow
 
-! --------------------------- spill_plume -------------------------------------------
+    ! --------------------------- spill_plume -------------------------------------------
 
     subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas,vasa)
 
     !     routine: spill_plume
-    !     purpose: 
+    !     purpose:
     !     arguments: dirs12 - a measure of the direction of the room 1 to room flow in each slab
     !                yslab  - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                width  - slab width [m]
@@ -207,9 +208,9 @@
     !                tu     - upper layer temperature in each room [k]
     !                tl     - lower layer temperature in each room [k]
     !                ylay   - height of layer in each room above absolute reference elevation [m]
-    !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or 
+    !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or
     !                         lower (j=1) layer of room i due to entrainment
-    !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or 
+    !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or
     !                   lower (j=1) layer of room i entrainment
     !                uflw3(i,2+k,j), i=1 or 2, k=1 to nprod, j=1 or 2 (output) - product k flow rate
     !                      to upper (j=2) or lower (j=1) layer of room i due entrainment
@@ -217,11 +218,11 @@
     use precision_parameters
     use flwptrs
     implicit none
-    
+
     integer, intent(in) :: dirs12(10), nprod, nslab, mxfprd
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, ylay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
     real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
-    
+
     integer :: i, iprod,n , ifrom, ito
     real(eb) :: tmix, zd
 
@@ -237,7 +238,7 @@
 
     do n = 1, nslab
 
-        ! eliminate cases where entrainment does not occur, i.e. a slab which is adjacent to the upper layer on 
+        ! eliminate cases where entrainment does not occur, i.e. a slab which is adjacent to the upper layer on
         !    both sides or a slab which is adjacent to the lower layer on both sides
         if (yslab(n)<ylay(1).or.yslab(n)<ylay(2)) then
             if (yslab(n)>=ylay(1).or.yslab(n)>=ylay(2)) then
@@ -285,12 +286,12 @@
                         if (tl(ifrom)<tu(ito).and.xmslab(n)/=0.0_eb) then
                             ! zd = max(0.0_eb,ylay(ifrom)-max(yvbot,ylay(ito)))
 
-                            ! need to re-work distance zd for both into upper and into upper case.  
+                            ! need to re-work distance zd for both into upper and into upper case.
                             ! the above doesn't work for all cases
                             zd = min(yvtop,ylay(ifrom)) - max(ylay(ito),yvbot)
                             call poreh_plume (tu(ito),tl(ifrom),xmslab(n),zd,width,uflw3(ito,m,l))
 
-                            ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment 
+                            ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment
                             !    to try to approximate the reduced kelvin-helmholz type mixing.
 
                             uflw3(ito,m,l) = uflw3(ito,m,l)*0.25_eb
@@ -313,13 +314,13 @@
     return
     end subroutine spill_plume
 
-! --------------------------- poreh_plume -------------------------------------------
+    ! --------------------------- poreh_plume -------------------------------------------
 
     subroutine poreh_plume(tu,tl,fmd,zz,w,fm_entrained)
 
     ! doorway plumes are assumed to be spill plumes from poreh, et. al., Fire Safety Journal, 30:1-19, 1998.
     ! At the moment, we do this by flow slab consistent with the original method that used mccaffrey's plume
-    
+
     !     arguments: tu - upper layer temperature in the from room (input) (K)
     !                tl - lower layer temperature in the to room (input) (K)
     !                fmd - mass flow, from room --> to room (input) (kg/s)
@@ -330,19 +331,19 @@
     use precision_parameters
     use cfast_main, only : cp
     implicit none
-    
+
     real(eb), intent(in) :: tu, tl, fmd, zz, w
     real(eb), intent(out) :: fm_entrained
-    
+
     real(eb) :: hdot, rhol
-    
+
     hdot = cp*(tu-tl)*fmd
     rhol = 352.981915_eb/tl
     fm_entrained = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * zz
     return
     end subroutine poreh_plume
 
-! --------------------------- ventflag -------------------------------------------
+    ! --------------------------- ventflag -------------------------------------------
 
     subroutine ventflag(ventflg,roomflg,anyvents)
 
@@ -353,7 +354,7 @@
     implicit none
 
     logical, intent(out) :: ventflg(mxhvent), roomflg(nr), anyvents
-    
+
     integer i, ieqtyp, iroom, iroom1, iroom2
     type(vent_type), pointer :: ventptr
 
@@ -363,7 +364,7 @@
         ventflg(i) = .true.
     end do
 
-    ! if the 2nd modified jacobian option is on and a jacobian is being computed (jaccol>0) then compute 
+    ! if the 2nd modified jacobian option is on and a jacobian is being computed (jaccol>0) then compute
     !  vent flows only for vents that that are connected
     ! to rooms whose pressure, layer height, layer temperature,  or oxygen level is being perturbed.
 
@@ -385,7 +386,7 @@
                 ! determine all rooms connected to perturbed rooms
                 do i = 1, n_hvents
                     ventptr=>hventinfo(i)
-                    
+
                     iroom1 = ventptr%from
                     iroom2 = ventptr%to
                     if(iroom==iroom1.or.iroom==iroom2)then
@@ -398,7 +399,7 @@
                 ! determine all vents connected to the above rooms
                 do i = 1, n_hvents
                     ventptr=>hventinfo(i)
-                    
+
                     iroom1 = ventptr%from
                     iroom2 = ventptr%to
                     if(roomflg(iroom1).or.roomflg(iroom2))then
@@ -413,13 +414,13 @@
     return
     end subroutine ventflag
 
-! --------------------------- vent -------------------------------------------
+    ! --------------------------- vent -------------------------------------------
 
     subroutine vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
-    vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
+        vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
-    !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing 
+    !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing
     !              the two-layer environment in each of the two rooms and other input data calculated in subroutine comwl1.
     !     arguments: yflor - height of floor above absolute reference elevation [m]
     !                ylay  - height of layer above absolute reference elevation [m]
@@ -445,7 +446,7 @@
     !                dirs12 (output) - a measure of the direction of the room 1 to room 2 flow in each slab
     !                rslab (output) - density of the flow in each slab [kg/m**3]
     !                tslab (output) - absolute temperature of the flow in each slab [k]
-    !                yslab (output) - elevations above the absolute reference elevation of the centroids of 
+    !                yslab (output) - elevations above the absolute reference elevation of the centroids of
     !                                 momentum of each slab [m]
     !                yvelev - elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
@@ -454,19 +455,19 @@
 
     use precision_parameters
     implicit none
-    
+
     integer, intent(in) :: nprod, mxfprd, mxfslab
     integer, intent(out) :: nslab, dirs12(*)
-    
+
     real(eb), intent(in) :: yflor(*), ylay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
     real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(mxfprd,2), conu(mxfprd,2),  epsp
-    
+
     real(eb), intent(out) :: yvelev(*), dpv1m2(10)
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
     real(eb), intent(out) :: vss(2), vsa(2), vas(2), vaa(2)
-    
+
     integer :: nneut, nelev, i, n, jroom, iprod, nvelev
-    
+
     real(eb) ::  yelev(10), dp1m2(10), yn(10)
     real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys
 
@@ -598,16 +599,16 @@
     return
     end subroutine vent
 
-! --------------------------- getelev -------------------------------------------
+    ! --------------------------- getelev -------------------------------------------
 
     subroutine getelev(yvbot,yvtop,ylay,yelev,nelev)
     use precision_parameters
     implicit none
-    
+
     integer, intent(out) :: nelev
     real(eb), intent(in) :: ylay(*), yvbot, yvtop
     real(eb), intent(out) :: yelev(*)
-    
+
     real(eb) :: ymin, ymax
 
     ymin = min(ylay(1),ylay(2))
@@ -642,7 +643,7 @@
     return
     end
 
-! --------------------------- getvars -------------------------------------------
+    ! --------------------------- getvars -------------------------------------------
 
     subroutine getvars(from_room,to_room,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
 
@@ -670,12 +671,12 @@
     integer, intent(in) :: from_room, to_room, nprod
     real(eb), intent(out) :: conl(mxfprd,2), conu(mxfprd,2)
     real(eb), intent(out) :: yflor(2), yceil(2), ylay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
-    
+
     integer :: up, iprod, ip, room_index(2), iroom, i
-    
+
     logical :: hallflag
     type(room_type), pointer :: roomptr
-    
+
     room_index(1)=from_room
     room_index(2)=to_room
 
@@ -699,18 +700,18 @@
         tl(i) = zztemp(iroom,lower)
     end do
     return
-    
+
     end subroutine getvars
 
-! --------------------------- flogo -------------------------------------------
+    ! --------------------------- flogo -------------------------------------------
 
     subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxfprd,nprod,mxfslab,mflows,uflw2)
 
     !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
-    !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion. 
+    !              through a vertical, constant-width vent.  this version implements the ccfm rules for flow depostion.
     !              (if inflow is hot, it goes to upper layer, etc.)
-    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each 
+    !     arguments: dirs12 - a measure of the direction of the room 1 to room 2 flow in each
     !                  slab, 1 = 1--> 2, -1 = 2 --> 1, 0 = no flow
     !                yslab - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                xmslab - mass flow rate in slabs [kg/s]
@@ -723,26 +724,26 @@
     !                mxfprd  - maximum number of products currently available.
     !                nprod  - number of products
     !                mxfslab - maximum number of slabs currently available.
-    !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination 
+    !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination
     !                             identified (from upper (i=2) or lower (i=1) layer, to upper (j=2) or lower (j=1) layer)
-    !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer 
+    !                uflw2(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or lower (j=1) layer
     !                             of room i due to all slab flows of vent [kg/s]
-    !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1) 
+    !                uflw2(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or lower (j=1)
     !                             layer of room i due to all slab flows of vent [w]
-    !                uflw2(i,3,j), i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer 
+    !                uflw2(i,3,j), i=1 or 2, j=1 or 2 (output) - oxygen flow rate to upper (j=2) or lower (j=1) layer
     !                             of room i due to all slab flows of vent [(kg oxygen)/s]
-    !                uflw2(i,3+k,j), i=1 or 2, k=2 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2) 
+    !                uflw2(i,3+k,j), i=1 or 2, k=2 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2)
     !                             or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
 
     use precision_parameters
     use flwptrs
     implicit none
-    
+
     integer, intent(in) :: dirs12(*)
     integer, intent(in) :: nprod, nslab, mxfprd, mxfslab
     real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxfslab,*), tu(*), tl(*)
     real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxfprd+2,2)
-    
+
     integer :: i, iprod, n, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
     real(eb), parameter :: deltatemp_min = 0.01_eb
@@ -775,7 +776,7 @@
         temp_slab = tslab(n)
         temp_upper = tu(ito)
         temp_lower = tl(ito)
-        
+
         if (temp_slab>=temp_upper+deltatemp_min) then
             ! if it's relatively hot, it goes to the upper layer
             fupper = 1.0_eb
@@ -783,18 +784,18 @@
             ! if it's really cold, it goes to the lower layer
             fupper = 0.0_eb
         else
-            ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in 
+            ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in
             ! between then mix the flow
             fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
         endif
-        
+
         flower = 1.0_eb - fupper
         flow_fraction(l) = flower
         flow_fraction(u) = fupper
 
         xmterm = xmslab(n)
         qterm = qslab(n)
-        
+
         ! take it out of the origin room
         if (yslab(n)>=ylay(ifrom)) then
             mflows(ifrom,u,2) = mflows(ifrom,u,2) + xmterm
@@ -812,7 +813,7 @@
             end do
         endif
 
-        ! put flow into destination room        
+        ! put flow into destination room
         do ilay = 1, 2
             mflows(ito,ilay,1) = mflows(ito,ilay,1) + flow_fraction(ilay)*xmterm
             uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + flow_fraction(ilay)*xmterm
@@ -825,14 +826,14 @@
     end do
     return
     end subroutine flogo
- 
-! --------------------------- delp -------------------------------------------
+
+    ! --------------------------- delp -------------------------------------------
 
     subroutine delp(y,nelev,yflor,ylay,denl,denu,pflor,epsp,dp)
 
     !     routine: delp
     !     purpose: calculation of the absolute hydrostatic pressures at a specified elevation in each of two adjacent
-    !              rooms and the pressure difference.  the basic calculation involves a determination and differencing of 
+    !              rooms and the pressure difference.  the basic calculation involves a determination and differencing of
     !              hydrostatic pressures above a specified absolute reference pressure.
     !     arguments: y     - vector of heights above absolute reference elevation where pressure difference is to be calculated [m]
     !                nelev - number of heights to be calculated
@@ -845,11 +846,11 @@
 
     use precision_parameters
     implicit none
-    
+
     integer, intent(in) :: nelev
     real(eb), intent(in) :: y(*),  yflor(*), ylay(*), denl(*), denu(*), pflor(*), epsp
     real(eb), intent(out) :: dp(*)
-    
+
     real(eb) :: proom(2), gdenl(2), gdenu(2), ygden(2)
     integer :: iroom, i
     real(eb) :: dp1, dp2, epscut, dpold, zz
@@ -897,7 +898,7 @@
     !	The following functions implement the open/close function for vents.
     !	This is done with a simple, linear interpolation
     !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,nr), qcvm(4,mxfan),
-    !         and qcvi(4,mxfan). 
+    !         and qcvi(4,mxfan).
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
 
@@ -910,7 +911,7 @@
     !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and HVFAN
 
 
-! --------------------------- qchfraction -------------------------------------------
+    ! --------------------------- qchfraction -------------------------------------------
 
     real(eb) function qchfraction (points, index, time)
 
@@ -918,10 +919,10 @@
 
     use precision_parameters
     implicit none
-    
+
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
-    
+
     real(eb) :: dt, dy, dydt, mintime
     real(eb) :: deltat
     data mintime/1.0e-6/
@@ -940,7 +941,7 @@
     return
     end function qchfraction
 
-! --------------------------- qcvfraction -------------------------------------------
+    ! --------------------------- qcvfraction -------------------------------------------
 
     real(eb) function qcvfraction (points, index, time)
 
@@ -948,10 +949,10 @@
 
     use precision_parameters
     implicit none
-    
+
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
-    
+
     real(eb) :: dt, dy, dydt, mintime
     real(eb) :: deltat
     data mintime/1.0e-6/
@@ -970,7 +971,7 @@
     return
     end function qcvfraction
 
-! --------------------------- qcffraction -------------------------------------------
+    ! --------------------------- qcffraction -------------------------------------------
 
     real(eb) function qcffraction (points, index, time)
 
@@ -981,7 +982,7 @@
 
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
-    
+
     real(eb) :: dt, dy, dydt, mintime
     real(eb) :: deltat
     data mintime/1.0e-6_eb/
@@ -1000,7 +1001,7 @@
     return
     end function qcffraction
 
-! --------------------------- qcifraction -------------------------------------------
+    ! --------------------------- qcifraction -------------------------------------------
 
     real(eb) function qcifraction (points, index, time)
 
@@ -1008,10 +1009,10 @@
 
     use precision_parameters
     implicit none
-    
+
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
-    
+
     real(eb) :: dt, dy, dydt, mintime
     real(eb) :: deltat
     data mintime/1.0e-6_eb/
@@ -1030,7 +1031,7 @@
     return
     end function qcifraction
 
-! --------------------------- getventinfo -------------------------------------------
+    ! --------------------------- getventinfo -------------------------------------------
 
     subroutine getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
 
@@ -1039,14 +1040,14 @@
     use precision_parameters
     use vents
     implicit none
-    
+
     integer, intent(in) :: i
     integer, intent(out) :: ifrom,ito,iface
-    real(eb), intent(out) :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue 
+    real(eb), intent(out) :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue
     type(vent_type), pointer :: ventptr
 
     ventptr=>hventinfo(i)
-    
+
     ifrom =ventptr%from
     ito = ventptr%to
     iface = ventptr%face
@@ -1061,12 +1062,12 @@
     RETURN
     END
 
-! --------------------------- rev_flowhorizontal -------------------------------------------
+    ! --------------------------- rev_flowhorizontal -------------------------------------------
 
     integer function rev_flowhorizontal ()
 
     INTEGER :: MODULE_REV
-    CHARACTER(255) :: MODULE_DATE 
+    CHARACTER(255) :: MODULE_DATE
     CHARACTER(255), PARAMETER :: mainrev='$Revision$'
     CHARACTER(255), PARAMETER :: maindate='$Date$'
 

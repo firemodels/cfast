@@ -23,5 +23,5 @@ Surface Heat Flux,6,121,0.11,0.17,0.89
 Wall Heat Flux,2,44,0.11,0.29,1.18
 Ceiling Heat Flux,1,17,0.11,0.22,0.98
 Floor Heat Flux,1,24,0.11,0.61,0.89
-Smoke Detector Activation Time,1,142,0.34,0.49,1.2
+Smoke Detector Activation Time,1,142,0.34,0.38,1.84
 Sprinkler Activation Time,4,101,0.06,0.2,1.01

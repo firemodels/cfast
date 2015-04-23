@@ -102,7 +102,7 @@ if %nothaveICC% == 0 (
 )
 if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
-  echo             found smokeview (C/C++ not available)
+  echo             found pre-built smokeview (C/C++ not available to build smokeview)
   set smokeview=smokeview.exe
 )
 

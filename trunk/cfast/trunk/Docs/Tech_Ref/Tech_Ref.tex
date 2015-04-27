@@ -352,10 +352,10 @@ Rearranging terms yields a limit on the mass entrainment:
 
 The centerline plume temperature rise, $\Delta T_0(z)$, and velocity, $u_0(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlations~\cite{Heskestad:2002}:
 \be
-   \Delta T_0(z) = 9.1 \, \left( \frac{T_\infty}{g \, c_p^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3}  \label{plume_temperature}
+   \Delta T_0(z) = \min \left[ 900 \; \mathrm{K} \; , \; 9.1 \, \left( \frac{T_\infty}{g \, c_p^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3} \right]  \label{plume_temperature}
 \ee
 \be
-   u_0(z) = 3.4 \, \left( \frac{g}{c_p \, \rho_\infty \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \, (z-z_0)^{-1/3}  \label{plume_velocity}
+   u_0(z) = \min \left[ u_{0,\max} \; , \; 3.4 \, \left( \frac{g}{c_p \, \rho_\infty \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \, (z-z_0)^{-1/3} \right]  \label{plume_velocity}
 \ee
 where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is assumed that the temperature and velocity decrease following a Gaussian profile off the centerline:
 \be
@@ -364,7 +364,13 @@ where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is
 \be
    u(r,z) = u_0(z) \, \exp \left[ -\left( \frac{r}{\sigma_u} \right)^2 \right] \quad ; \quad \sigma_u \approx 1.1 \, \sigma_{\Delta T} \label{plume_velocity2}
 \ee
-The temperature equations~(\ref{plume_temperature}) and (\ref{plume_temperature2}) are valid above the flame height, $L$, and below the hot gas layer interface, $z_{\rm I}$. Below the flame height, the temperature rise is assumed to be $\Delta T(r,L)$. Above the layer interface, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the temperature correlation is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
+Note that the maximum plume temperature of 900~K is suggested by Heskestad~\cite{Heskestad:2002}. It is also suggested that the maximum centerline plume velocity is reached when the plume temperature rise is 650~K, and is a weak function of the convective HRR:
+\be
+   u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (c_p \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5} 
+\ee
+Note that if the velocity is expressed in units of m/s and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
+
+Above the hot gas layer interface, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the plume temperature correlation is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
 \be
    \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, c_p^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
 \ee

@@ -1154,7 +1154,7 @@
     
 ! --------------------------- get_plume_tempandvelocity -------------------------------------------
 
-    subroutine get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume, vplume)
+    subroutine get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume, uplume)
 
     !     routine: get_plume_tempandvelocity
     !     purpose: Calculates plume centerline temperature at a specified height and distance from the fire.
@@ -1172,16 +1172,16 @@
     !                 zin: position to calculate plume centerline temperature (m)
     !                 r: horizontal distance from fire centerline (m)
     !                 tplume (output): plume temperature at height zin and radius r (K)
-    !                 vplume (output): plume velocity at height zin and radius r (m/s)
+    !                 uplume (output): plume velocity at height zin and radius r (m/s)
 
     use precision_parameters
     implicit none
     
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
-    real(eb), intent(out) :: tplume, vplume
+    real(eb), intent(out) :: tplume, uplume
 
     real(eb), parameter :: cp = 1.012_eb
-    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u
+    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u, t_max, u_max
 
     ! default is for temperature to be the layer temperature at the desired location
     if (zin<=zlayer) then
@@ -1189,7 +1189,7 @@
     else
         tplume = tu
     endif
-    vplume = 0.0_eb
+    uplume = 0.0_eb
 
     ! for the algorithm to work, there has to be a fire, two layers, and a target point above the fire
     if (qdot>0.0_eb.and.tu>=tl.and.zin-zfire>=0.0_eb) then
@@ -1206,22 +1206,24 @@
         qstar = (qdot/1000._eb)/(rho*cp*t_inf*gsqrt*d**2.5_eb)
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
         z_flame = max(0.1_eb,d*(-1.02_eb+3.7_eb*qstar**0.4_eb))
-        
-        ! plume temperature
+      
+        ! plume temperature        
+        t_max = 900._eb
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
             rho = 352.981915_eb/tu
             deltaz = max(0.1_eb,zin-zfire-z0_prime)
-            t_excess = min(900._eb,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            t_excess = min(t_max,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         else
             ! fire and target point are both in the same layer
             deltaz = max(0.1_eb,zin-zfire-z0)
-            t_excess = min(900._eb,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            t_excess = min(t_max,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
         
-         ! plume velocity
-        vplume = 3.4_eb*(grav_con/(cp*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird)
+        ! plume velocity
+        u_max = 2.2_eb*(grav_con**0.4_eb/(t_inf**0.4_eb*(cp*rho)**0.2_eb))*(650._eb*qdot_c)**0.2_eb
+        uplume = min(u_max,3.4_eb*(grav_con/(cp*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird))
 
         ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
         
@@ -1233,7 +1235,7 @@
         
         if (r>0.0_eb) then
             sigma_u = 1.1_eb*sigma_deltat
-            vplume = vplume*exp(-(r/sigma_u)**2)
+            uplume = uplume*exp(-(r/sigma_u)**2)
         end if
     endif
     return

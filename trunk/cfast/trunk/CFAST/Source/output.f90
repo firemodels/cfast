@@ -739,7 +739,7 @@
         if(ixdtect(i,dact)==1) cact = 'YES'
         write(iofilo,5010)i,iroom,ctype,tlink,cact,tjet,vel
         
-5000 format(//'SENSORS',/, &
+5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/, &
     '                              Sensor                           Smoke',//, &
     'Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
     '----------------------------------------------------------------------------')

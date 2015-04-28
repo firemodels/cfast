@@ -5,15 +5,13 @@ CFAST is documented by three publications, this user's guide, a technical refere
 
 \section{Installation}
 
-CFAST was designed primarily for a personal computer running Microsoft Windows. However, the source code is written in Fortran and can be run as a stand alone command line application that reads input data from a text file. Details of how one runs CFAST without the Windows-based graphical user interface are found in Appendix~\ref{sec:CFAST_Keywords}. 
-
-All of the files associated with CFAST can be obtained at:
+CFAST was designed primarily for a personal computer running Microsoft Windows. However, the source code is written in Fortran and can be run as a stand alone command line application that reads input data from a text file. Details of how one runs CFAST without the Windows-based graphical user interface are found in Appendix~\ref{sec:CFAST_Keywords}. All of the files associated with CFAST can be obtained at:
 \begin{lstlisting}
 http://cfast.nist.gov
 \end{lstlisting}
-The CFAST distribution consists of a self-extracting set-up program for Windows-based personal computers. After downloading the set-up program, double-clicking on the file's icon walks the user through a series of steps for installation of the program.  The most important part of the installation is the creation of a folder (typically {\ct c:$\backslash$Program Files$\backslash$CFAST} by default) in which the CFAST executable files and supplemental data files are installed.  Sample input files are found in the {\ct Examples} folder.
+The CFAST distribution consists of a self-extracting set-up program for Windows-based personal computers. After downloading the set-up program, double-clicking on the file's icon walks the user through a series of steps for installation of the program.  The most important part of the installation is the creation of a folder (typically {\ct c:$\backslash$Program Files$\backslash$CFAST} by default) in which the CFAST executable files and supplemental data files are installed.  Sample input files are found in the {\ct Examples} folder. 
 
-CFAST input files are created and run using a Windows-based input editor called CEdit. Sample input files are provided with the program for new users who are encouraged to first run the sample calculations before attempting to create an input file. To run the model, browse to the location of the CFAST sample input file (default location is in a folder called {\ct Examples} in the installation folder, copy the file named {\ct standard.in} to a location of your choice and then double click on the copied file. This should open the file in the CFAST input editor, CEdit, as shown in Fig.~\ref{primary_screen}.
+CFAST input files are best created and run using a Windows-based input editor called CEdit. Sample input files are provided with the program for new users who are encouraged to first run the sample calculations before attempting to create an input file. To run the model, browse to the location of the CFAST sample input file (default location is in a folder called {\ct Examples} in the installation folder, copy the file named {\ct standard.in} to a location of your choice and then double click on the copied file. This should open the file in the CFAST input editor, CEdit, as shown in Fig.~\ref{primary_screen}.
 \begin{figure}[h!]
 \includegraphics[width=6.5in]{FIGURES/Running_CFAST/Environment_Tab}
 \caption[The primary CFAST input page]{The primary CFAST input page.}
@@ -44,18 +42,18 @@ The input parameters are organized via tabs near the top of the CEdit screen, as
 
 \section{The Run! Menu}
 
-The program includes a number of menu items for ancillary functions.  In addition to the normal file menu items to open and save input data files or to exit the program, a 'Run!' menu is included to execute or view the current simulation. Menu items include the following:
+The program includes a number of menu items for ancillary functions.  In addition to the normal file menu items to open and save input data files or to exit the program, a `Run!' menu is included to execute or view the current simulation. Menu items include the following:
 \begin{description}
-\item[Create Geometry File] for visualization with the program Smokeview.  The input data file is saved, if necessary, and CFAST is run with an option to only run through initialization. This is particularly useful to review placement of compartments, vents, and fires in a CFAST scenario. The resulting geometry can be viewed with the 'Simulation Visualization, Smokeview' menu item, below.
-\item[Model Simulation, CFAST] runs the case. The input file is saved, if necessary, and CFAST is run to completion. 
-\item[Simulation Visualization, Smokeview] runs the program Smokeview with the currently defined geometry. 
+\item[Create Geometry File] for visualization with the program Smokeview.  The input data file is saved, if necessary, and CFAST is run with an option to only run through initialization. This is particularly useful to review placement of compartments, vents, and fires in a CFAST scenario. The resulting geometry can be viewed with the `Simulation Visualization, Smokeview' menu item, below.
+\item[Model Simulation, CFAST] runs the case. The input file is saved, if necessary, and CFAST is run to completion.
+\item[Simulation Visualization, Smokeview] runs the program Smokeview with the currently defined geometry.
 \item[Output Options] include:
 \begin{description}
 \item[Detailed Output File] If checked, this menu item directs the CFAST model to produce a detailed text output file.  Details of the output files are included in Chapter~\ref{Output_Chapter}.
 \item[Total Mass Output File] If checked, this menu item directs the CFAST model to replace the flow output with total mass flow through (mechanical) vents rather than the default flow rate values.
 \item[Net Heat Flux]  If checked, this menu item directs the CFAST model to calculate heat flux to targets as a net heat flux to the target with the target at ambient temperature rather than at the calculated temperature.  This output is particularly useful to compare predictions to heat flux measurement using water cooled heat flux gauges.
 \item[Show CFAST Window] If checked, this menu item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
-\item[CFAST Validation Output] If checked, this menu item directs the CFAST model to output target fluxes at net heat flux and to output an abbreviated heading for spreadsheet columns that are better for automated processing of the data.
+\item[CFAST Validation Output] If checked, this menu item directs the CFAST model to output an abbreviated heading for spreadsheet columns that are better for automated processing of the data. Heat fluxes are output as net heat flux to and ambient temperature target consistent with measurement with temperature-controlled heat fluxes gauges.
 \end{description}
 \end{description}
 
@@ -63,10 +61,10 @@ The program includes a number of menu items for ancillary functions.  In additio
 \section{The Edit Menu}
 
 
-The 'Edit' menu allows the user to view or change the material thermophysical properties and fire definitions used by the model and to select desired engineering units used in the input editor CEdit. Menu items include the following:
+The `Edit' menu allows the user to view or change the material thermophysical properties and fire definitions used by the model and to select desired engineering units used in the input editor CEdit. Menu items include the following:
 \begin{description}
 \item[Edit Thermal Properties] allows you to define and manage property data used to describe compartment walls and targets.
-\item[Edit Fires] allows you to define the heat release rate, pyrolysis rate, and species yields as a function of time for each fire.  
+\item[Edit Fires] allows you to define the heat release rate, pyrolysis rate, and species yields as a function of time for each fire.
 \item[Select Engineering Units] allows you to select the units for input and output. By default, most outputs are in S.I. units, with temperature in Celsius.
 \end{description}
 

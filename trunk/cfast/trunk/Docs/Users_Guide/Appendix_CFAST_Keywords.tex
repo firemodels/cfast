@@ -121,7 +121,7 @@ DJIGN,488
 \begin{lstlisting}
 DTCHE, MINIMUM_TIME, COUNT
 \end{lstlisting}
-The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as a stalling condition, when it is simply the set of equations has reached a point that requires a very small increment in time for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm.
+The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as though the program has frozen, when it is simply the set of equations has reached a point that requires a very small time steps for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm. A positive value for the minimum time input sets the software for a maximum number of iterations (COUNT) below a minimum time step (MINIMUN\_TIME) before producing an error and stopping.
 
 Example:
 
@@ -136,13 +136,13 @@ TAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, STATION_ELEVATION, RELATIVE_HUMIDIT
 EAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, STATION_ELEVATION, RELATIVE_HUMIDITY
 \end{lstlisting}
 
-This keyword sets ambient conditions, TAMB for the internal and EAMB for outside the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  For the external ambient, it sets the water content for air flowing into compartments through vents connecting to the exterior. Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent.
+This keyword sets ambient conditions, TAMB for the internal and EAMB for outside the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  For the external ambient, it sets the water content for air flowing into compartments through vents connecting to the exterior. Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent. Default values for temperature, pressure, and relative humidity are 20~\degc, 101300~Pa, and 50~\%, respectively.
 
 Example:
 
 \begin{lstlisting}
-EAMB,300,101300,0,
-TAMB,300,101300,0,5
+EAMB,300,101300,0,50
+TAMB,300,101300,0,50
 \end{lstlisting}
 
 \section{EVENT}
@@ -253,7 +253,7 @@ The HEIGH input defines a series of height values which correspond to entries on
 GLOBA, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
 \end{lstlisting}
 
-This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the ignition temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_7}.
+This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the ignition temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning and implication of modifying these two parameters \cite{CFAST_Tech_Guide_7}.
 
 This two-entry key word replaces LIMO2 and DJIGN.
 
@@ -263,27 +263,21 @@ Example:
 GLOBA,10,488
 \end{lstlisting}
 
-With more than two parameters, this command is used as part of a fire definition.  See the FIRE keyword for this format of the command.
-
 This sets the limiting oxygen index to 10 \% and the ignition temperature to 488 K. These are the default values.
 
 \section{HALL}
 
 \begin{lstlisting}
-HALL, COMPARTMENT, VELOCITY, DEPTH, DECAY_DISTANCE
+HALL, COMPARTMENT
 \end{lstlisting}
 
-This command invokes the corridor flow algorithm. For long hallways or corridors, there can be a significant delay time for the initial hot gas layer to travel along the ceiling to the far end of the compartment. By estimating the time required for a ceiling jet to travel in a corridor and the temperature distribution along the corridor, CFAST can delay flow into compartments connected to corridors until the ceiling jet has passed the connections to these compartments.
-
-If the aspect ratio of a compartment (the maximum of length/width or width/length) is greater than about five, this algorithm should be used.
+This command invokes the corridor flow ceiling jet algorithm for the chosen compartment.
 
 Example:
 
 \begin{lstlisting}
-HALL, 3 , 0.15, 0.1, 16.7
+HALL, 3 
 \end{lstlisting}
-
-For each of the Velocity, Depth and Decay, using a value of (-1) will bypass this setting. This is so that, for example, the decay distance can be set while using default values for velocity and depth.
 
 \section{HHEAT}
 
@@ -291,16 +285,13 @@ For each of the Velocity, Depth and Decay, using a value of (-1) will bypass thi
 HHEAT, FIRST_COMPARTMENT, NUMBER_OF_PARTS, N PAIRS OF {SECOND_COMPARTMENT, FRACTION}
 \end{lstlisting}
 
-Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first uses only a compartment number. In this case, the conduction connection
-
-The first form is to use only a compartment number. In this case, CFAST will calculate the conductive heat transfer to all compartments connected to this compartment by horizontal convective flow. The second form specifies the compartments to be connected and what fraction of the compartment is connected to an adjacent compartment. This latter is particularly useful for rooms which are connected to adjacent rooms as well as hallways. The user of the model is responsible for the consistency of these pairings.  The model does not check to insure that the specified compartment pairs are located next to one another.
+Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first form is to use only a compartment number. In this case, CFAST will calculate the conductive heat transfer to all compartments connected to this compartment by horizontal convective flow. The second form specifies the compartments to be connected and what fraction of the compartment is connected to an adjacent compartment. This latter is particularly useful for rooms which are connected to adjacent rooms as well as hallways. The user of the model is responsible for the consistency of these pairings.  The model does not check to insure that the specified compartment pairs are located next to one another.
 
 Example:
 
 \begin{lstlisting}
 HHEAT,1,1,2,0.5
 \end{lstlisting}
-
 specifies that compartment one has one connection to compartment two and the fraction of wall surface through which heat is transferred is ½ of the wall surface of compartment one.
 
 \section{HVENT}
@@ -309,7 +300,7 @@ specifies that compartment one has one connection to compartment two and the fra
 HVENT FIRST_COMPARTMENT SECOND_COMPARTMENT VENT_NUMBER WIDTH SOFFIT SILL WIND_COEFFICIENT FIRST_COMPARTMENT_OFFSET SECOND_COMPARTMENT_OFFSET FACE INITIAL_OPENING_FRACTION
 \end{lstlisting}
 
-Vent which allows horizontal flow of gases, through vents such as doors and windows. Compartment offsets are triplets from the compartment origin.  FACE is an integer from 1 to 4 counterclockwise from the origin defining which wall face to place the vent on when visualizing with Smokeview. It doesn't affect the dynamics of the calculation, just the way it looks. The size of the opening can be modified by EVENT. This changes the Opening\_Fraction from the initial value (set above) to some other value. Typical use is to start with the door open (Initial\_Opening\_Fraction = 1) and use EVENT to close the door (Final\_Fraction = 0).
+Vent which allows horizontal flow of gases through vents such as doors and windows. Compartment offsets are triplets from the compartment origin.  FACE is an integer from 1 to 4 counterclockwise from the origin defining which wall face to place the vent on when visualizing with Smokeview. It doesn't affect the dynamics of the calculation, just the way it looks. The size of the opening can be modified by EVENT. This changes the Opening\_Fraction from the initial value (set above) to some other value. Typical use is to start with the door open (Initial\_Opening\_Fraction~=~1) and use EVENT to close the door (Final\_Fraction~=~0).
 
 Example:
 
@@ -453,7 +444,7 @@ STPMAX,0.2
 TARGE, COMPARTMENT, WIDTH, DEPTH, HEIGHT, NORMAL_DEPTH, NORMAL_BREADTH, NORMAL_HEIGHT, MATERIAL, METHOD, EQUATION_TYPE, INTERNAL_LOCATION
 \end{lstlisting}
 
-CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets. A non-zero normal vector must be specified as must a material from the thermophysical database. Method can be one of STEADY for steady state solution, XPLICIT for explicit solution, and MPLICIT for an implicit solution. Equation\_Type can be one of ODE, PDE, or CYL.
+CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets. A non-zero normal vector must be specified as must a material from the thermophysical database. MWTHOD can be set to STEADY for steady state solution, XPLICIT for explicit solution, and MPLICIT for an implicit solution. Equation\_Type can be one of ODE, PDE, or CYL.
 
 Example:
 
@@ -549,7 +540,7 @@ The project name will have extensions appended as needed (see below). For exampl
 c:\nist\cfast6\cfast c:\data\testfire0   <<< note there is no extension.
 \end{lstlisting}
 
-If the command is entered as $\backslash$bin$\backslash$cfast $\backslash$bin$\backslash$data$\backslash$testfire0.in, then CFAST will try to open testfire0.in.in
+If the command is entered as $\backslash$bin$\backslash$cfast$\backslash$bin$\backslash$data$\backslash$testfire0.in, then CFAST will try to open testfire0.in.in
 
 The database files for thermal properties and fire objects may be located either in the folder with the input data file or in the folder with the CFAST executable. The model checks first in the data file folder and then in the CFAST executable folder.  If the files do not exist in either location, the simulation is not run. By default, names for these files are thermal.csv for the thermal properties file and *.o for the fire object files.
 

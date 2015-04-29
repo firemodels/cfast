@@ -217,7 +217,7 @@ Wall vents can only be created between compartments that physically overlap in e
 \begin{description}
 \item[First Compartment] First of the two compartments to be connected by a horizontal flow vent.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
-\item[Second Compartment] Second of the two compartments to be connected by a horizontal flow vent.  
+\item[Second Compartment] Second of the two compartments to be connected by a horizontal flow vent.
 
 \item[Sill] (default units: m, default value: none): Sill height is the height of the bottom of the opening relative to the floor of the compartment selected as the first compartment.
 
@@ -254,7 +254,7 @@ Connections can exist between compartments or between a compartment and the outd
 \begin{description}
 \item[Top Compartment] The top or first of the two compartments to be connected by a vertical flow vent. The vent is through the floor of this compartment.  Compartments are numbered automatically by the input editor and by the model in the order that they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
-\item[Bottom Compartment] The bottom or second of the two compartments to be connected by a horizontal flow vent. 
+\item[Bottom Compartment] The bottom or second of the two compartments to be connected by a horizontal flow vent.
 
 \item[Cross-sectional Area] (default units: m$^2$, default value: none): specifies the cross-sectional area of the vent connecting the two compartments.
 
@@ -297,15 +297,15 @@ The model for mechanical ventilation used in CFAST is based on the theory of net
 \begin{description}
 \item[From Compartment] The first compartment to which the mechanical ventilation system diffuser is connected. Fan flow is from this compartment.  Compartments are numbered automatically by the input editor and by the model in the order they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
-\item[From Compartment Area] (default units: m$^2$, default value: none): Cross-sectional area of the opening into the compartment. The effective size of the vent is taken to be the square root of the area of the vent for the width and depth (vertically-oriented vents)/height (horizontally-oriented vents). 
+\item[From Compartment Area] (default units: m$^2$, default value: none): Cross-sectional area of the opening into the compartment. The effective size of the vent is taken to be the square root of the area of the vent for the width and depth (vertically-oriented vents)/height (horizontally-oriented vents).
 
 \item[From Compartment Height] (default units: m, default value: none): Height of the duct opening above the floor of the compartment measured from the floor to the midpoint of the diffuser.
 
 \item[From Compartment Orientation] The orientation of the diffuser relative to the floor of the compartment.  A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
 
-\item[To Compartment] The bottom or second of the two compartments to be connected by a horizontal flow vent. The vent is through the ceiling of this compartment. 
+\item[To Compartment] The bottom or second of the two compartments to be connected by a horizontal flow vent. The vent is through the ceiling of this compartment.
 
-\item[To Compartment Area] (default units: m$^2$, default value: none): Cross-sectional area of the opening into the compartment. 
+\item[To Compartment Area] (default units: m$^2$, default value: none): Cross-sectional area of the opening into the compartment.
 
 \item[To Compartment Height] (default units: m, default value: none): Height of the duct opening above the floor of the compartment measured from the midpoint of the diffuser.
 
@@ -383,6 +383,7 @@ Two inputs on the Fire Tab are global, that is, they apply to all fires included
 \end{description}
 
 \section{Defining Individual Fires}
+\label{sec:fire_inputs}
 
 Fires in CFAST are defined as a series of individual fire objects which are then placed as desired in compartments in a simulation.
 
@@ -510,9 +511,9 @@ Fires  are placed in defined positions within a compartment of a simulation and 
 
 \item[Normal  X] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The X component is in the direction from the rear wall of the object compartment. Default value is a horizontal, upward facing object, unit vector = (0,0,1)
 
-\item[Normal  Y] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The Y component is in the direction from the left wall of the object compartment. 
+\item[Normal  Y] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The Y component is in the direction from the left wall of the object compartment.
 
-\item[Normal  Z] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The Z component is in the direction from the floor of the object compartment. 
+\item[Normal  Z] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The Z component is in the direction from the floor of the object compartment.
 
 \item[Ignition Criterion] The type of ignition condition. Acceptable values are 1 for time, 2 for object surface temperature, and 3 for incident flux to object surface.
 
@@ -561,7 +562,7 @@ Since the only side of the target that is combustible is the top surface of the 
  y &= \sfrac{\brackets{y_{end} - y_{start}}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + \brackets{z_{end} - z_{start}}^2}} \\
  &= \sfrac{\brackets{2 - 2}}{\sqrt{\brackets{1.5 - 1.5}^2 + \brackets{2 - 2}^2 + \brackets{5 - 1}^2}} \\
  &= 0 \\
- z &= \sfrac{\brackets{z_{end} - z_{start}}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + \brackets{z_{end} - z_{start}}^2}} \\ 
+ z &= \sfrac{\brackets{z_{end} - z_{start}}}{\sqrt{\brackets{x_{end} - x_{start}}^2 + \brackets{y_{end} - y_{start}}^2 + \brackets{z_{end} - z_{start}}^2}} \\
  &= \sfrac{\brackets{5 - 1}}{\sqrt{\brackets{1.5 - 1.5}^2 + \brackets{2 - 2}^2 + \brackets{5 - 1}^2}} \\
  &= 1\\
   \end{aligned}

@@ -988,14 +988,15 @@
     'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,70('-'))
 5050 format (a8,7x,a8,7x,a6,2x,3(f7.2,3x))
 5060 formaT (//,'There are no mechanical flow connections')
-5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
-5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,13x,f7.2)
-     5120 format (//,'FANS',//,'System    From           From      To             To        Fan',&
-          '       Minimum   Maximum    Fan Curve',/, &
-    '                         Elev.                    Elev.','     Number',/,25x, &
-    '(m)                      (m)             ','    (Pa)      (Pa)',/,100('-'))
-5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
-5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,6x,i3,6x,2(f7.2,3x),5(1pg10.2))
+5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
+5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
+     5120 format (//,'FANS',//,'System    From           From      To             To', &
+            '        Area      Fan       Minimum   Maximum    Flowrate',/, &
+            '                         Elev.                    Elev.               Number',/, &
+            '                         (m)                      (m)',&
+            '       (m^2)               (Pa)      (Pa)       (m^3/s)',/,110('-'))
+5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(f7.2,3x),5(1pg10.2))
+5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(f7.2,3x),5(1pg10.2))
      
     end  subroutine outvent
 
@@ -1057,7 +1058,7 @@
     end do
 
     !     print out the properties of the materials used
-    write (iofilo,5030) thrmfile
+    write (iofilo,5030)
     do i = 1, maxct
         write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i) 
         do j = 2, lnslb(i)
@@ -1068,9 +1069,9 @@
     return
 
 5000 format (//,'Heat transfer for all surfaces is turned off')
-5010 format (//,'THERMAL PROPERTIES',//,' ','Compartment    Ceiling      Wall         Floor',/,70('-'))
+5010 format (//,'THERMAL PROPERTIES',//,'Compartment    Ceiling      Wall         Floor',/,70('-'))
 5020 format (a13,3(a10,3x))
-5030 format (//,'Thermal data base used: ',A20,//,' Name',4X,'Conductivity',1X,'Specific heat',5X,&
+5030 format (//,'Name',4X,'Conductivity',1X,'Specific heat',5X,&
           'Density',5X,'Thickness',3X,'Emissivity')
 5040 format (a8,5(1pg13.3),5e10.2)
 5050 format (8x,4(1pg13.3))

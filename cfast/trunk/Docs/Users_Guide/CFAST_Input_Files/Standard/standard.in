@@ -15,7 +15,7 @@ MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
+COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE
 !!
 !!Vent keywords
 !!

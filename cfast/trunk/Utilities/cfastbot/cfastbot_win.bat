@@ -203,9 +203,8 @@ svn update  1> %OUTDIR%\stage0.txt 2>&1
 ::                           stage 1 - build cfast
 :: -------------------------------------------------------------
 
-echo Stage 1ab - Building CFAST
-
-echo             debug
+echo Stage 1 - Building CFAST and VandV_Calcs
+echo             debug cfast
 
 cd %cfastsvnroot%\CFAST\intel_win_64_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
@@ -216,7 +215,7 @@ call :does_file_exist cfast7_win_64_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
 
 call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
-echo             release
+echo             release cfast
 
 cd %cfastsvnroot%\CFAST\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
@@ -225,8 +224,7 @@ make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win
 call :does_file_exist cfast7_win_64.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
-echo Stage 1c -  Building VandV_Calcs
-echo             release
+echo             release VandV_Calcs
 
 cd %cfastsvnroot%\VandV_Calcs\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1c.txt 2>&1

@@ -17,9 +17,9 @@ While this document and many of our practices make extensive use of ASTM 1355, `
 
 In addition, numerous related documents available at http://cfast.nist.gov provide a wealth of information concerning including earlier versions of the model and its user interface. Software quality assurance (SQA) plan is intended to guide the planning for modifications to the model, provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and ensure released software is kept available for the life of the code.
 
-\section{Model Management}
+\section{Model Identification and Control}
 
-CFAST is developed and maintained by the Building and Fire Research Laboratory (BFRL) at the National Institute of Standards and Technology (NIST). Like all projects at NIST, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST
+CFAST is developed and maintained by the Engineering Laboratory (EL) at the National Institute of Standards and Technology (NIST). Like all projects at NIST, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST
 
 \begin{figure}
 \begin{center}
@@ -33,21 +33,83 @@ Review and approval of software and documentation is part of the standard review
 
 CFAST is distributed exclusively through a NIST website dedicated to the CFAST model (http://cfast.nist.gov).  Content of the website is the responsibility of the CFAST project leader and the NIST webmaster. Additions and changes to the website are made only with the approval of the CFAST project leader after any required NIST reviews.
 
+Document identification and control consists of placing all project files in a central location and maintaining a record of changes to those files. The central location is known as the {\em Repository}.
+
+\subsection{Project Repository}
+
+CFAST and Smokeview make use of Google Code Project Hosting, a free service offered by Google to support software development for open source applications.  Google Code uses the Subversion (SVN) revision management system. Under this system a centralized repository containing all project files resides on a Google Code server. Subversion uses a single integer that identifies the version of the entire repository rather than a specific file (i.e., anytime a change is made to the repository all files are incremented in version number).  A record of version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository.  Only Team Members described in the previous chapter can commit changes to the repository.
+
+The current location of the CFAST repository is \href{http://cfast.googlecode.com/svn/trunk/}{\textct{http://cfast.googlecode.com/svn/trunk/}}. The repository contains the following files:
+\begin{enumerate}
+\item Compiled CFAST and Smokeview executables
+\item CFAST source code files
+\item CFAST documentation
+\item Input files for software testing, verification testing, and validation testing
+\item Experimental data files used for validation testing
+\item Scripts and post-processing utilities used for software testing
+\item Web pages and wikis containing notes and other information
+\end{enumerate}
+In the event of an unexpected change to the Google Code service and/or the CFAST repository, each member of the development team, plus interested third parties, has a copy of the repository on their local computer. At NIST, the staff computers are regularly backed up as well. Thus, there is very little chance that the project repository will be lost. If need be, the files could be moved to another open source software development site, such as SourceForge. It is expected that if Google decides to end its support for Google Code, it will provide its users with the full history of the project.
+
+\subsection{Version Identification}
+
+At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the SVN repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the SVN revision number of the most recently committed source file. This is accomplished by using source file tagging. In each source file, a series of character parameter strings are defined. For example, near the bottom of the source file {\ct cfast.f90} are lines of the form:
+\begin{lstlisting}
+character(255), parameter :: mainrev='$Revision: 2137 $'
+character(255), parameter :: maindate='$Date: 2015-04-14 13:45:07 -0400 (Tue, 14 Apr 2015) $'
+\end{lstlisting}
+The lines contain the name of the source file, the version of the file (this reflects only the source file version and not the overall release version number), the date and time of the file version, and the person who checked the file into the repository. Upon compiling, these strings will be stored in the executable file.  The user can search the executable file for strings beginning with \textct{\$Id:}, which results in a list of all source files compiled and their version. Within the SVN archive, any specific version of a source file can be extracted and differences between versions can be determined.
+
+Within the source code a series of subroutines were created, one per source file, which parses the \textct{\$Id:} in each file and extracts from it the SVN revision number.  Each of these subroutines is called at the start of an CFAST run and the largest (and hence most recent) revision number is determined.  This number is written along with the CFAST version number to the output header information.  A user can now identify specifically the source code used for a particular compilation of CFAST when reporting an error.
+
+
 \section{SQA Documentation}
 
 The released version of CFAST is documented by three primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_6}, the User's Guide \cite{CFAST_Users_Guide_6}, and this Software and Model Evaluation Guide. The documents apply to the newest version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
 
-During development of new or corrected features for the model, the following documents are developed:
+\section{Development Process}
 
-\begin{itemize}
-\item {\em Software Requirements and Design Specifications:}  This is an internal memorandum that documents the intended function of a new or enhanced feature, describes its implementation in sufficient detail to allow an independent review of the feature, and identifies any new or existing testing and validation required prior to acceptance of the feature in a release version of the model.  This document forms the basis for necessary changes to the technical reference guide and user's guide for the model once the new feature is ready for general release. As defined in IEEE 730-2002 \cite{IEEE:730}, this document includes the software requirements specification, software design description, and software verification and validation plan. The level of detail in this document depends on the complexity of the change to the model.
+Changes are made to the CFAST source code daily, and tracked via revision control software. However, these daily changes do not constitute a change to the version number. After the developers determine that enough changes have been made to the source, they release a new minor upgrade, 6.2.1 to 6.2.2, for example. This happens every few weeks. A change from 6.2 to 6.3 might happen only once a year, when significant improvements have been made to the model physics or numerics.
 
-\item {\em Software Validation and Testing Results:}  This is an internal memorandum that demonstrates the use of the new feature through appropriate test cases and describes validation and verification tests performed to ensure the new feature is implemented properly without unexpected changes in other features. This document forms the basis for the model verification and validation documentation included as part of this Software and Experimental Validation guide. As defined in IEEE 730-2002 \cite{IEEE:730}, this document includes the software verification and validation report. The level of detail in this document depends on the complexity of the change to the model.
-\end{itemize}
+There is no formal process by which CFAST is updated. Each developer works on various routines, and makes changes as warranted. Minor bugs are fixed without any communication (the developers are in different locations), but more significant changes are discussed via email or telephone calls. A suite of simple verification calculations (included in this document) are run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations (also included here) are run each night. Significant changes to CFAST are made based on the following criteria, in no particular order:
+\begin{description}
+\item[Better Physics:] The goal of any model is to be {\em predictive}, but it also must be reliable. CFAST is a blend of empirical and deterministic sub-models, chosen based on their robustness, consistency, and reliability. Any new sub-model must demonstrate that it is of comparable or superior accuracy to its empirical counterpart.
+\item[Simpler Algorithm:] If a new algorithm does what the old one did using fewer lines of code, it is almost always accepted, so long as it does not decrease functionality or accuracy.
+\item[Increased or Comparable Accuracy:] The validation experiments that are part of this guide serve as the metric for new routines. It is not enough for a new algorithm to perform well in a few cases. It must show clear improvement across the entire suite of experiments. If the accuracy is only comparable to the previous version, then some other criteria must be satisfied.
+\item[Acceptance by the Fire Protection Community:] Especially in regard to fire-specific devices, like sprinklers and smoke detectors, the algorithms in CFAST often are based on their acceptance among the practicing engineers.
+\end{description}
 
-Both of these documents are reviewed internally to NIST by group staff not directly involved with model development. In addition, the NIST review process documents the review and approval of released versions of the model as described above.
+\subsection{Creating a Change Request}
 
-Source code for released versions of the model is maintained with version control software that allows tracking of specific changes to the model from version to version.   Each version of the model released includes a unique version number that identifies the major and minor version numbers of the release as well as the date of release. Differences with prior versions are documented and provided as part of the release and on the CFAST website so that users can ascertain what effect these changes will have on prior calculations.
+Change requests are submitted using the CFAST Issue Tracker.  The Issue Tracker is an online service provided by Google Code Project Hosting. To submit a new issue to the tracker or to provide follow up comments, the user must sign in using his or her Google account credentials. A change request is initiated by opening a new issue.  The issue report contains the baseline identification (version number, compile date, and SVN revision number), operating system, and a description of the defect or enhancement request.  Input files or other supporting documentation can be attached.
+\begin{figure}[ht!]
+\includegraphics[width=\textwidth]{FIGURES/NewIssue}
+\caption{\bf Screenshot of issue tracker reporting form}
+\label{fig:issueform}
+\end{figure}
+If the issue is opened by a user, it will be given a status of \textct{New} until it is reviewed by a developer. This typically takes a few minutes to a few hours, depending on the time of day the issue is reported. If the issue is opened by a developer, the developer can immediately assign a status and an owner.
+
+\subsection{Processing a Change Request}
+
+A change request may be evaluated by any member of the development team. If the request duplicates an existing request, then the issue status is changed to \textct{Duplicate} and the
+requestor is sent the issue number of the existing request.
+
+If the request is for an enhancement to CFAST, then the issue type is changed to \textct{Type-Enhancement} and the component type is declared. The request is evaluated for suitability.  If it is a valid enhancement request, then the status is changed to \textct{Accepted}.  If the request is not to be addressed under the next baseline, then the status will be changed to \textct{OnHold}.  If the request is denied, then the status is changed to \textct{WontFix}.  An accepted request will be assigned to a developer.
+
+If the request is identifying a defect in CFAST, then the issue type is changed to \textct{Type-Defect} and the component type is declared.  The defect is evaluated for validity.  If insufficient information has been provided in the request, then the status is changed to \textct{MoreInfo} and a description of the additional information required is sent to the requestor.  If the defect is due to user error or is the intended function of CFAST, then the status is changed to \textct{Invalid}.  If the defect is valid, then the request reviewer will change the status to \textct{Accepted} and assign the request to a developer.
+
+Once a change request has be addressed by a developer and changes submitted to the repository, the request status is changed to \textct{Fixed}.  Once either the requestor or another developer has verified that the changes address the original request, then the status is changed to \textct{Verified}.
+
+
+\subsection{Committing Changes}
+
+Once a developer has addressed a change request, the modified files are committed to the SVN repository.  A description of the changes will be added to the SVN change log.  This description first identifies the primary component being changed (for example: CFAST Source or CFAST Documentation).  This component identification will be followed by a brief summary of the changes made.
+
+Changes to the CFAST source code and supporting documentation are reviewed by other members of the team. There is no formal system with which changes are reviewed because the frequency of changes makes it impractical. As a general rule, all team members watch for unintentional commits of copyrighted material or algorithms, and also proprietary data or case studies collected from an end user. CFAST itself does not include copyrighted or proprietary data, but occasionally this kind of information is submitted by an end user who has submitted a bug report.
+
+\subsection{Change Verification}
+
+Once a change has been committed and the issue tracker updated to reflect that the issue has been \textct{Fixed}, the changes will be verified.  Verification can be done by either the requester of the change or by another developer.  Once the changes have been verified to solve the problem reported in the issue, the issue status will be changed to \textct{Verified}.  At this point the issue is closed.
 
 \section{Standards, Practices, Conventions, and Metrics}
 
@@ -79,11 +141,15 @@ NIST has developed an automated reporting and resolution tracking website for us
 
 \section{Tools, Techniques, and Methodologies}
 
-NIST will use an automated comparison tool (under development) to compare CFAST predictions between different versions of the model and with experimental data to simplify testing and validation for the CFAST model.
+The CFAST and Smokeview source codes undergo an automated build, verification, validation, and regression testing process, which is similar to a continuous integration system that automates the build/testing cycle for a project. This automated process is referred to as CFASTbot. The CFASTbot build/test process helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between FDS revisions.
+
+The automated built/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the validation suite set-by-set. For future reference, the results of a build/test process are archived and tagged with the SVN revision number that was used.
+
+Upon completion of the automated build/test process, the results of the build/test process are dispatched to the development team. In the event of a failure, the build/test process continues when possible, and the appropriate error logs are dispatched to the development team.
 
 \section{Media Control}
 
-Release versions of the CFAST model are available exclusively on the CFAST specific website maintained by the Building and Fire Research Laboratory (BFRL) at NIST. This website is included in NIST's automated backup and recovery system for computer systems organization wide.
+Release versions of the CFAST model are available exclusively on the CFAST specific website maintained by EL at NIST. This website is included in NIST's automated backup and recovery system for computer systems organization wide.
 
 Development versions of the model are maintained by the CFAST project leader.  All software and documents are included in NIST's automated backup and recovery system for computer systems organization wide. As part of its model development, NIST maintains a web-based system for version control and history of both the CFAST source code and of pre-release and release executables for the software.
 
@@ -103,7 +169,7 @@ equipment are necessarily the best available for the purpose.}.  Prior to any ch
 
 All software, documentation, and SQA documents are retained by the CFAST project leader, typically in electronic form. Software and documentation is also maintained and archived on the NIST CFAST website as part of the version control software for the model.
 
-BFRL management approval is required prior to destruction of old or out-of-date records. Records are typically maintained for a minimum of 25 years.
+NIST management approval is required prior to destruction of old or out-of-date records. Records are typically maintained for a minimum of 25 years.
 
 \section{Training}
 

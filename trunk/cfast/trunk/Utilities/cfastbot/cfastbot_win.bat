@@ -332,6 +332,16 @@ echo Stage 5 - Making matlab plots
 ::*** generating Validation plots
 
 echo             Validation
+echo               VandV_Calcs
+cd %cfastsvnroot%\Validation
+..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe CFAST_Pressure_Correction_Inputs.csv 1> Nul 2>&1
+copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y 1> Nul 2>&1
+..\VandV_Calcs\\intel_win_64\VandV_Calcs_win_64.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
+copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
+
+
+
+echo               Making plots
 cd %cfastsvnroot%\Utilities\Matlab
 Validation
 call :WAIT_RUN Validation
@@ -339,6 +349,14 @@ call :WAIT_RUN Validation
 ::*** generating Verification plots
 
 echo             Verification
+echo               VandV_Calcs
+cd %cfastsvnroot%\Verification
+..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe CFAST_Summed_flow_inputs.csv  1> Nul 2>&1
+copy summed_flows.csv DOE_Guidance_Report /Y 1> Nul 2>&1
+
+
+
+echo               Making plots
 cd %cfastsvnroot%\Utilities\Matlab
 Verification
 call :WAIT_RUN Verification

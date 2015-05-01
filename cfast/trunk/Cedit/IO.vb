@@ -639,18 +639,8 @@ Module IO
                                         myThermalProperties.Add(aThermalProperty)
                                         aFireObject.Material = csv.str(iChemie, chemieNum.Material)
                                     Else
-                                        Dim TempThermalProperties As New ThermalPropertiesCollection
-                                        ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv", TempThermalProperties)
-                                        ReadThermalProperties(".\" + "thermal.csv", TempThermalProperties)
-                                        If TempThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material)) >= 0 Then
-                                            aThermalProperty = TempThermalProperties.Item(TempThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material)))
-                                            myThermalProperties.Add(aThermalProperty)
-                                            aFireObject.Material = csv.str(iChemie, chemieNum.Material)
-                                        Else
-                                            myErrors.Add("Thermal property " + csv.str(iChemie, chemieNum.Material) + "used in fire " + aFireObject.Name + " does not exist", ErrorMessages.TypeFatal)
-                                        End If
+                                        aFireObject.Material = csv.str(iChemie, chemieNum.Material)
                                     End If
-
                                 End If
                                 aFireObject.RadiativeFraction = csv.Num(iChemie, chemieNum.chiR)
                                 aFireObject.Changed = False

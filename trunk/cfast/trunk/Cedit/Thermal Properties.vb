@@ -207,6 +207,26 @@ Public Class ThermalPropertiesCollection
             Return False
         End Get
     End Property
+    Public ReadOnly Property ValidThermalProperty(ByVal Name As String, ByVal Location As String) As String
+        Get
+            Dim index As Integer, aThermalProperty As New ThermalProperty
+            index = Me.GetIndex(Name)
+            If index <= -1 Then
+                Dim TempThermalProperties As New ThermalPropertiesCollection
+                ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv", TempThermalProperties)
+                ReadThermalProperties(".\" + "thermal.csv", TempThermalProperties)
+                If TempThermalProperties.GetIndex(Name) >= 0 Then
+                    aThermalProperty = TempThermalProperties.Item(TempThermalProperties.GetIndex(Name))
+                    myThermalProperties.Add(aThermalProperty)
+                Else
+                    If Name <> "OFF" And Name <> "Off" Then
+                        myErrors.Add("Thermal property " + Name + " used as a " + Location + " does not exist", ErrorMessages.TypeFatal)
+                    End If
+                End If
+            End If
+            Return Name
+        End Get
+    End Property
     Public Sub Add(ByVal aThermal As ThermalProperty)
         Dim i As Integer
         If Count > 0 Then

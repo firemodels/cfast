@@ -203,7 +203,7 @@ Public Class Target
         End Get
         Set(ByVal Value As String)
             If Value <> aMaterial Then
-                Me.aMaterial = Value
+                Me.aMaterial = myThermalProperties.ValidThermalProperty(Value, "Target")
                 aChanged = True
             End If
         End Set

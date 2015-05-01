@@ -788,9 +788,6 @@ Module IO
                     csv.Num(i, compaNum.FlrHeight))
             aCompartment.GetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat), _
                     csv.str(i, compaNum.FloorMat))
-            If csv.str(i, compaNum.CeilingMat) = "Off" Then csv.str(i, compaNum.CeilingMat) = "OFF"
-            If csv.str(i, compaNum.WallMat) = "Off" Then csv.str(i, compaNum.WallMat) = "OFF"
-            If csv.str(i, compaNum.FloorMat) = "Off" Then csv.str(i, compaNum.FloorMat) = "OFF"
             aCompartment.GetGrid(csv.Num(i, compaNum.xGrid), csv.Num(i, compaNum.yGrid), csv.Num(i, compaNum.zGrid))
             aCompartment.Changed = False
             i += 1

@@ -132,7 +132,7 @@ Public Class Compartment
         Set(ByVal Value As String)
             If Value <> aCeilingMaterial And Value <> " " Then
                 aChanged = True
-                aCeilingMaterial = Value
+                aCeilingMaterial = myThermalProperties.ValidThermalProperty(Value, "Ceiling Material")
             End If
         End Set
     End Property
@@ -143,7 +143,7 @@ Public Class Compartment
         Set(ByVal Value As String)
             If Value <> aWallMaterial And Value <> " " Then
                 aChanged = True
-                aWallMaterial = Value
+                aWallMaterial = myThermalProperties.ValidThermalProperty(Value, "Wall Material")
             End If
         End Set
     End Property
@@ -154,7 +154,7 @@ Public Class Compartment
         Set(ByVal Value As String)
             If Value <> aFloorMaterial And Value <> " " Then
                 aChanged = True
-                aFloorMaterial = Value
+                aFloorMaterial = myThermalProperties.ValidThermalProperty(Value, "Floor Material")
             End If
         End Set
     End Property

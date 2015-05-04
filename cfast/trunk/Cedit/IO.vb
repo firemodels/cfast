@@ -511,6 +511,7 @@ Module IO
                             iProp = SomeThermalProperties.GetIndex(csv.str(i, MaterialNum.shortName))
                             If iProp > -1 Then
                                 SomeThermalProperties.Remove(iProp)
+                                myErrors.Add("Duplicate thermal property read from file for material(shortname): " + csv.str(i, MaterialNum.shortName) + ". Duplicate replaces original material definition.", ErrorMessages.TypeError)
                             End If
                         End If
                         SomeThermalProperties.Add(New ThermalProperty(csv.str(i, MaterialNum.shortName), _

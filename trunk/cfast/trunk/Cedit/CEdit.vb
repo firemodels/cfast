@@ -5984,6 +5984,12 @@ Public Class CeditMain
             myRecentFiles.Add(FileName)
             myUnits.SI = False
             UpdateGUI.InitFireObjectList(Me.FireName)
+            UpdateAll()
+            UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+            UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+            UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+            myCompartments(CurrentCompartment).Changed = False
+            UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
         Else
             MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
         End If

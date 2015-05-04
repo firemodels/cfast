@@ -229,7 +229,7 @@ module fltarget
     integer, parameter :: interior = 1
     integer, parameter :: exterior = 2
 
-    character(8) :: cxtarg(mxtarg)
+    character(mxthrmplen) :: cxtarg(mxtarg)
 
     real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
     real(eb), dimension(mxtarg) :: tgtarg
@@ -487,8 +487,8 @@ module thermp
     logical, dimension(nwal,nr) :: thset
     integer maxct, numthrm
     integer, dimension(mxthrmp) :: lnslb
-    character(8), dimension(nwal,nr) :: cname
-    character(8), dimension(mxthrmp) :: nlist
+    character(mxthrmplen), dimension(nwal,nr) :: cname
+    character(mxthrmplen), dimension(mxthrmp) :: nlist
 
     end module thermp
     

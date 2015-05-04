@@ -23,6 +23,7 @@ module cparams
     integer, parameter :: ignflux = 2           ! object ignition criteria index for heat flux
     
     integer, parameter :: mxthrmp = 125         ! maximum number of thermal properties
+    integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names
  
     ! ventilation parameters
     integer, parameter :: mxccv = 25            ! maximum number of vent connections between compartment pairs

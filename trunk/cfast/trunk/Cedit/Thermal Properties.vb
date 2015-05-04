@@ -315,9 +315,9 @@ Public Class ThermalPropertiesCollection
                         Exit Property
                     End If
                 Next
-                If Shortname.ToUpper = "OFF" Then
-                    Return -1
-                End If
+            End If
+            If Shortname.ToUpper = "OFF" Then
+                Return -1
             End If
             Return -2
         End Get

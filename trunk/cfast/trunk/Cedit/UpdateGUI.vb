@@ -839,13 +839,17 @@ Public Class UpdateGUI
         End Get
     End Property
     Public Sub InitThermalPropertyList(ByVal obj As ComboBox)
-        Dim i As Integer
+        Dim i As Integer, current As String
+        current = obj.Text
         obj.Items.Clear()
         obj.Items.Add("Off")
         obj.SelectedIndex = 0
         If myThermalProperties.Count > 0 Then
             For i = 0 To myThermalProperties.Count - 1
                 obj.Items.Add(myThermalProperties.Item(i).Name)
+                If myThermalProperties.Item(i).Name = current Then
+                    obj.SelectedIndex = i + 1
+                End If
             Next
         End If
     End Sub

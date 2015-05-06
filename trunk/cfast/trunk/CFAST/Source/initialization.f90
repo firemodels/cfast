@@ -14,7 +14,7 @@
     character, intent(in) :: name*(*)
     integer, intent(out) :: errorcode
     
-    character missingtpp*64
+    character missingtpp*mxthrmplen
     integer tp, i
 
     errorcode = 0
@@ -1350,7 +1350,7 @@
     integer, intent(out) :: ierror
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, icode, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
-    character off*8, none*8, tcname*8
+    character off*mxthrmplen, none*mxthrmplen, tcname*mxthrmplen
 
     ! tp is the pointer into the data base for each material
     integer tp

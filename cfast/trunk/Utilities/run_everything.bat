@@ -17,8 +17,8 @@ call runall.bat ALL
 call runadjustments.bat
 echo Running matlab plotting analysis
 cd ..\Utilities\matlab
-Compiled\Validation.exe
-Compiled\Verification.exe
+Validation
+Verification
 echo Creating Documentation
 cd ..\
 call make_docs.bat

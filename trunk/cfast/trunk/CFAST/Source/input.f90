@@ -1091,6 +1091,11 @@
             ierror = 82
             return
         endif
+        obj_fpos(obpnt) = 1
+        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
+            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .and. &
+            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
         fplume(numobjl) = lrarray(5)
         if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
@@ -1193,6 +1198,11 @@
             ierror = 82
             return
         endif
+        obj_fpos(obpnt) = 1
+        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
+            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .and. &
+            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
         fplume(numobjl) = lrarray(6)
         if(fplume(numobjl)<1.or.fplume(numobjl)>2) then

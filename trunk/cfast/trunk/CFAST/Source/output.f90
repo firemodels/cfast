@@ -1098,16 +1098,18 @@
     integer :: io, i, j, nnv, length, is
     real(eb) :: y_hcn, y_hcl
 
-    character cbuf*255, ftype(0:4)*13
+    character cbuf*255, ftype(0:4)*13, fire_geometry(1:3)*6
     external length
     data ftype /'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/
+    data fire_geometry /'Normal', 'Wall', 'Corner'/
+    
 
     if (numobjl>0) then
         do io = 1, mxfires
             if (objpnt(io)/=0) then
                 j = objpnt(io)
                 nnv = objlfm(j)
-                write (iofilo,5020) objnin(j)(1:length(objnin(j))), j
+                write (iofilo,5020) objnin(j)(1:length(objnin(j))), j, fire_geometry(obj_fpos(j))
                 write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), &
                    objpos(3,j), relhum*100., limo2*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
@@ -1130,9 +1132,9 @@
     return
 5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (255a1)
-5020 format (//,'Name: ',A,'   Referenced as object #',i3,//,'Compartment    Fire Type    ',&
+5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
           '   Position (x,y,z)     Relative    Lower O2    Radiative',/,52x,'Humidity    Limit       Fraction')
-5030 format (a14,1x,A13,3(F7.2),F7.1,6X,F7.2,5X,F7.2//)
+5030 format (a14,1x,a13,3(f7.2),f7.1,6x,f7.2,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/5(f7.3,3x),//)
 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
 5050 format ('Soot      CO        HCN       HCl       CT        TS')

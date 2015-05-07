@@ -666,7 +666,7 @@
     ! qstar and virtual origin correlation are based on total HRR
     qj = 0.001_eb*q*xf
     if (z>0.0_eb.and.qj>0.0_eb) then
-        d = sqrt(area/xf/pio4)
+        d = sqrt(area*xf/pio4)
         rho_inf = 352.981915_eb/t_inf
         qstar = qj/(rho_inf*cp*t_inf*gsqrt*d**(2.5_eb))
         z0 = d*(-1.02_eb + 1.4_eb*qstar**0.4_eb)

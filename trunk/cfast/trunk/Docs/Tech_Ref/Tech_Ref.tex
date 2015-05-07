@@ -322,6 +322,10 @@ The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default. This
 
 \section{Plume Entrainment}
 
+A fire pumps mass and energy from the lower layer into the upper layer. The vertical flow of mass through a horizontal plane at height $z$ above the base of the fire is called the mass entrainment rate, $\dme(z)$. The vertical flow of energy through this horizontal plane is given by $\dQ_{\rm c} + \dme(z) \, c_p \, \Tl$. The empirical correlation for the mass entrainment rate depends on whether the plume is unobstructed, against a wall, or in a corner.
+
+\subsection{Unobstructed Plumes}
+
 The plume mass entrainment, $\dme(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlation~\cite{Heskestad:2002}:
 \be
    \dme(z) = 0.196 \, \left( \frac{g \, \rho_\infty^2}{c_p \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \;
@@ -336,6 +340,14 @@ Note that the virtual origin is defined in terms of the total heat release rate 
   \dme(z) = \dme(L) \, \frac{z}{L} \quad ; \quad \frac{L}{D} = -1.02 + 3.7 \, \dQ^{* \, 2/5}
 \ee
 The mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
+
+\subsection{Wall and Corner Plumes}
+
+If the fire is located in a corner or against a wall\footnote{CFAST assumes that the fire is in a corner or against a wall {\em only} when the user specifies the {\em exact} coordinates of the corner or wall.}, the unobstructed plume entrainment correlation, Eq.~(\ref{mdot_e}), is modified. For a corner, it is assumed that the fire is mirrored in each wall face, quadrupling the convective HRR, $\dQ_{\rm c}$, and doubling the base diameter, $D$. The entrainment rate, $\dme(z)$, of this hypothetical larger fire is then divided by a factor of 4. The effective entrainment rate is approximately $4^{1/3}/4 \approx 0.40$ of its unobstructed value. Of course, the virtual origin, $z_0$, in Eq.~(\ref{mdot_e}) is affected by the change in effective diameter as well.
+
+If the fire is against a wall, the convective HRR is doubled, the diameter is multiplied by $\sqrt{2}$, and the result of Eq.~(\ref{mdot_e}) is divided by 2. The effective entrainment rate is $2^{1/3}/2 \approx 0.63$ of its unobstructed value.
+
+\subsection{Weak Plumes}
 
 In CFAST, there is a constraint on the mass entrainment rate because the plume can rise only so high for a given HRR.  Early in a fire, the plume may not have sufficient energy to reach the compartment ceiling. Therefore, a limit is placed on the entrainment rate. For the plume to be able to penetrate the hot upper layer, the density of the gas in the plume must be less than the density of the gas in the upper layer. This implies that the upper layer temperature must be less than the plume temperature:
 \be
@@ -366,7 +378,7 @@ where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is
 \ee
 Note that the maximum plume temperature of 900~K is suggested by Heskestad~\cite{Heskestad:2002}. It is also suggested that the maximum centerline plume velocity is reached when the plume temperature rise is 650~K, and is a weak function of the convective HRR:
 \be
-   u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (c_p \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5} 
+   u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (c_p \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5}
 \ee
 Note that if the velocity is expressed in units of m/s and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
 

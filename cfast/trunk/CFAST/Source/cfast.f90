@@ -40,8 +40,8 @@
     integer errorcode
     real(eb) :: xdelt, tstop, tbeg, tend
 
-    version = 7000         ! Current CFAST version number
-    crdate = (/2015,4,7/)  ! Current CFAST executable creation date
+    version = 7000        ! Current CFAST version number
+    crdate = (/2015,4,7/) ! Current CFAST executable creation date
 
     errorcode = 0
 

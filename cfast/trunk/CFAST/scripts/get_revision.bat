@@ -2,6 +2,8 @@
 set svn_dir=%1
 
 set svn_revision=unknown
+set svn_date=unknown
+set datetime=unknown
 
 set temp1=%temp%\temp.txt
 set temp1c=%temp%\tempc.txt
@@ -51,5 +53,11 @@ set /p svn_revision=<%temp1%
 
 svn info 2>&1 | find /i "Last Changed Date:" | gawk -F" " "{$1=\"\";$2=\"\";$3=\"\";print $0}" > %temp1%
 set /p svn_date=<%temp1%
+
+:: get current date time
+
+echo %time% 2>&1 | gawk -F":" "{print $1\":\"$2}" > %temp1%
+set /p hmtime=<%temp1%
+set datetime=%date% %hmtime%
 
 cd %CURDIR%

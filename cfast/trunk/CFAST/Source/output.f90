@@ -48,26 +48,29 @@
     
     integer, intent(in) :: iunit
     integer rev_cfast, imajor, iminor, iminorrev
+    character(255) :: revision
+    
+    call get_revision(revision)
 
     call splitversion(version,imajor,iminor,iminorrev)
 
     if (iminorrev>=10) then
         if (iunit==0) then
-            write (*,10) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), rev_cfast()
+            write (*,10) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), trim(revision)
         else
-            write (iunit,10) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), rev_cfast()
+            write (iunit,10) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), trim(revision)
         endif
     else
         if (iunit==0) then
-            write (*,20) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), rev_cfast()
+            write (*,20) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), trim(revision)
         else
-            write (iunit,20) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), rev_cfast()
+            write (iunit,20) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), trim(revision)
         endif
     endif
     return
 
-10  format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
-20  format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ',i5)
+10  format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ', a)
+20  format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ', a)
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------

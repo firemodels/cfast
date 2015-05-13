@@ -18,7 +18,7 @@ module target_routines
     
 private
 
-public target, rev_target, target_flux, update_detectors, detector_temp_and_velocity
+public target, target_flux, update_detectors, detector_temp_and_velocity
 
 contains
 
@@ -623,21 +623,5 @@ contains
     return
     
     end subroutine detector_temp_and_velocity
-
-! --------------------------- rev_target -------------------------------------------
-
-    integer function rev_target ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_target = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_target
 
 end module target_routines    

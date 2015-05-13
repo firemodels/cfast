@@ -1373,19 +1373,3 @@
     
     return
     end subroutine linterp
-
-! --------------------------- rev_radiation -------------------------------------------
-
-    integer function rev_radiation ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(A)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_radiation = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_radiation

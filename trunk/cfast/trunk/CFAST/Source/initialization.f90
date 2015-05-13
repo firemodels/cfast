@@ -1864,19 +1864,3 @@
     end do
     return
     end
-
-! --------------------------- rev_initialization -------------------------------------------
-
-    integer function rev_initialization ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_initialization = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_initialization

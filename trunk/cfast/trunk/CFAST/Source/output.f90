@@ -47,8 +47,8 @@
     implicit none
     
     integer, intent(in) :: iunit
-    integer rev_cfast, imajor, iminor, iminorrev
-    character(255) :: revision
+    integer imajor, iminor, iminorrev
+    character(256) :: revision
     
     call get_revision(revision)
 
@@ -2000,19 +2000,3 @@
 
     return
     end subroutine deleteoutputfiles 
-
-! --------------------------- rev_output -------------------------------------------
-
-    integer function rev_output ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_output = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_output

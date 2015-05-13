@@ -12,7 +12,7 @@ module conduction_routines
     
     private
     
-    public conduction, conductive_flux, rev_conduction
+    public conduction, conductive_flux
     
     contains
    
@@ -345,21 +345,5 @@ module conduction_routines
     tderv = tderiv(2)
     return
     end subroutine conductive_flux
-
-! --------------------------- rev_conduction -------------------------------------------
-
-    integer function rev_conduction ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_conduction = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_conduction
     
 end module conduction_routines

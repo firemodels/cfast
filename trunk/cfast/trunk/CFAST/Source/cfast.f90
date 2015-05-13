@@ -37,7 +37,7 @@
     use opt, only: total_steps
     implicit none
 
-    integer errorcode, rev_cfast, irev
+    integer errorcode
     real(eb) :: xdelt, tstop, tbeg, tend
 
     version = 7000         ! Current CFAST version number
@@ -68,7 +68,6 @@
     mpsdat(3) = rundat(3)
 
     call output_version (logerr)
-    irev = rev_cfast()
 
     call read_solver_ini
     call read_input_file (errorcode)
@@ -2016,33 +2015,3 @@
 
     return
     end
-
-! --------------------------- rev_cfast -------------------------------------------
-
-    integer function rev_cfast ()
-    use conduction_routines
-    use convection_routines
-    use target_routines
-    implicit none
-
-    !     Routine: rev_cfast
-    !     Purpose: return current SVN revision or date
-    !     Revision: $Revision$
-    !     Revision Date: $Date$
-
-    integer :: module_rev, rev_auxilliary, rev_fire, rev_flowfan
-    integer :: rev_flowhorizontal, rev_flowvertical, rev_initialization, &
-    rev_input, rev_numerics, rev_output, rev_outputsmv, rev_outputspreadsheet, rev_radiation, rev_ssHeaders
-    character(255) :: MODULE_DATE 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(A)') mainrev(INDEX(mainrev,':')+1:LEN_TRIM(mainrev)-2)
-    read (MODULE_DATE,'(I5)') MODULE_REV
-    rev_cfast = max (module_rev,rev_auxilliary(),rev_conduction(),rev_convection(),rev_fire(), &
-        rev_flowfan(),rev_flowhorizontal(), rev_flowvertical(),rev_initialization(),rev_input(), &
-        rev_numerics(),rev_output(),rev_outputsmv(),rev_outputspreadsheet(),&
-        rev_radiation(),rev_target(),rev_ssHeaders())
-    write(MODULE_DATE,'(A)') maindate
-    return
-    end function rev_cfast

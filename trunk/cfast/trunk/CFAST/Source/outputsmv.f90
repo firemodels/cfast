@@ -1308,20 +1308,3 @@ IF (IZERO==0) RETURN
 WRITE(MESSAGE,'(4A)') 'ERROR: Memory allocation failed for ', TRIM(VarName),' in the routine ',TRIM(CodeSect)
 
 END SUBROUTINE ChkMemErr
-
-! --------------------------- rev_outputsmv -------------------------------------------
-
-integer function rev_outputsmv ()
-          
-      integer :: module_rev
-      character(255) :: module_date 
-      character(255), parameter :: mainrev='$Revision$'
-      Character(255), parameter :: maindate='$Date$'
-      
-      write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-      read (module_date,'(i5)') module_rev
-      rev_outputsmv = module_rev
-      write(module_date,'(a)') maindate
-      return
-      
-end function rev_outputsmv

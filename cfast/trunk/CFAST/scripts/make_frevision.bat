@@ -2,8 +2,6 @@
 set dir=%1
 set file=%2
 
-set CURDIR=%CD%
-
 if NOT exist %dir% (
   exit /b 1
 )
@@ -13,10 +11,11 @@ set fullfilebak=%dir%\%file%bak
 copy %fullfile% %fullfilebak%
 
 
-echo     subroutine get_revision (revision)>%fullfile%
+echo     subroutine get_revision (revision,date)>%fullfile%
 echo     implicit none>>%fullfile%
-echo     character(len=256), intent(out) :: revision>>%fullfile%
-echo     revision = trim("%svn_revision%")>>%fullfile%
+echo     character(len=256), intent(out) :: revision, date>>%fullfile%
+echo     revision = trim(adjustl("%svn_revision%"))>>%fullfile%
+echo     date = trim(adjustl("%svn_date%"))>>%fullfile%
 echo     return>>%fullfile%
 echo     end subroutine get_revision>>%fullfile%
 

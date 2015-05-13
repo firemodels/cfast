@@ -31,7 +31,25 @@ if NOT exist %svn_dir% (
 )
 
 cd %svn_dir%
+
+:: is this a valid svn repository
+
+svn 1> %temp1% 2>&1
+type %temp1% | find /i /c "not a working copy" > %temp1c%
+if %temp1c% == 1 (
+  set svn_revision=invalid
+  cd %CURDIR%
+  exit /b 1
+)
+
+:: get svn revision number
+
 svn info 2>&1 | find /i "Last Changed Rev:" | gawk -F" " "{print $4}" > %temp1%
 set /p svn_revision=<%temp1%
+
+:: get svn date
+
+svn info 2>&1 | find /i "Last Changed Date:" | gawk -F" " "{$1=\"\";$2=\"\";$3=\"\";print $0}" > %temp1%
+set /p svn_date=<%temp1%
 
 cd %CURDIR%

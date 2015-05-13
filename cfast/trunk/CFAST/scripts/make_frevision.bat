@@ -9,6 +9,8 @@ if NOT exist %dir% (
 )
 
 set fullfile=%dir%\%file%
+set fullfilebak=%dir%\%file%bak
+copy %fullfile% %fullfilebak%
 
 
 echo     subroutine get_revision (revision)>%fullfile%

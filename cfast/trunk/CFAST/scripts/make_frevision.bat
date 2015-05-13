@@ -18,7 +18,7 @@ echo     revision = trim(adjustl("%svn_revision%"))>>%fullfile%
 echo     revision_date = trim(adjustl("%svn_date%"))>>%fullfile%
 echo     compile_date = trim(adjustl("%date% %time%"))>>%fullfile%
 echo     return>>%fullfile%
-echo     end subroutine get_revision>>%fullfile%
+echo     end subroutine get_info>>%fullfile%
 
 
 

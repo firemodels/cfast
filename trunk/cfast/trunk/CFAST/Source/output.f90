@@ -48,9 +48,9 @@
     
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
-    character(256) :: revision
+    character(256) :: revision, revision_date
     
-    call get_revision(revision)
+    call get_revision(revision, revision_date)
 
     call splitversion(version,imajor,iminor,iminorrev)
 

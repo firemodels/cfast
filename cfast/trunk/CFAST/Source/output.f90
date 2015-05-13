@@ -69,8 +69,8 @@
     endif
     return
 
-10  format ('Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ', a)
-20  format ('Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ', a)
+10  format ('CFAST Version ',i1,'.',i1,'.',I2,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ', a)
+20  format ('CFAST Version  ',i1,'.',i1,'.',I1,', Created ',I4.4,'/',I2.2,'/',I2.2,', Revision ', a)
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------
@@ -763,18 +763,9 @@
     implicit none
 
     external length
-    integer imajor, iminor, iminorrev, length
-
-    call splitversion(version,imajor,iminor,iminorrev)
-
-    if (.not.header) then
-        if (iminorrev>=10) then
-            write (iofilo,10) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), mpsdat(1), mpsdat(2), mpsdat(3)
-        else
-            write (iofilo,20) imajor, iminor, iminorrev, crdate(1), crdate(2), crdate(3), mpsdat(1), mpsdat(2), mpsdat(3)
-        endif
-    endif
-
+    
+    call output_version (iofilo)
+    
     write (iofilo,5000) trim(inputfile), trim(title)
     if (outputformat>1) then
         call outover

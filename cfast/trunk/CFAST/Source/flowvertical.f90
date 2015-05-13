@@ -437,18 +437,3 @@
     return
     end
 
-! --------------------------- rev_flowvertical -------------------------------------------
-
-    integer function rev_flowvertical ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$revision: 461 $'
-    character(255), parameter :: maindate='$date: 2012-06-28 16:38:31 -0400 (thu, 28 jun 2012) $'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_flowvertical = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_flowvertical

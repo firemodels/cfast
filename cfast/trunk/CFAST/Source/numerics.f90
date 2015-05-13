@@ -6444,19 +6444,3 @@
     numjac = numjac + 1
     return
     end
-
-! --------------------------- rev_numerics -------------------------------------------
-
-    integer function rev_numerics ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_numerics = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_numerics

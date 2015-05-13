@@ -157,22 +157,6 @@
     qdinl = h * (tg - tw)
     return
     end subroutine convective_flux
-
-    ! --------------------------- rev_convection -------------------------------------------
-
-    integer function rev_convection ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_convection = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_convection
     
  end module convection_routines
     

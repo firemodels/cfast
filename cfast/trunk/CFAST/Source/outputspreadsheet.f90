@@ -662,20 +662,3 @@
     return
 
     end subroutine ssprintslab
-
-! --------------------------- rev_outputspreadsheet -------------------------------------------
-
-    integer function rev_outputspreadsheet ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$Revision$'
-    character(255), parameter :: maindate='$Date$'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_outputspreadsheet = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_outputspreadsheet
-    

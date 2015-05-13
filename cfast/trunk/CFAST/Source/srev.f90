@@ -5,4 +5,4 @@
     revision_date = trim(adjustl("unknown"))
     compile_date = trim(adjustl("uknown"))
     return
-    end subroutine get_revision
+    end subroutine get_info

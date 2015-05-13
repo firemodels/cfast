@@ -3,7 +3,7 @@ set svn_dir=%1
 
 set svn_revision=unknown
 
-set temp1=temp.txt
+set temp1=%temp%\temp.txt
 set temp1c=%temp%\tempc.txt
 
 set CURDIR=%CD%

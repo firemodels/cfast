@@ -1,15 +1,10 @@
 @echo off
-set dir=%1
-set file=%2
+set file=%1
 
-if NOT exist %dir% (
+if NOT exist %file% (
   exit /b 1
 )
 
-set fullfile=%dir%\%file%
-set fullfilebak=%dir%\%file%bak
-if exist %fullfilebak% (
-  copy %fullfilebak% %fullfile%
-)
-
-
+call ..\scripts\contract_keyword Revision: %file%
+call ..\scripts\contract_keyword RevisionDate: %file%
+call ..\scripts\contract_keyword CompileDate: %file%

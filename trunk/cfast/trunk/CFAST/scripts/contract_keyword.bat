@@ -7,4 +7,4 @@ if NOT exist %file% (
 )
 
 sed -e "s/$%keyword%.*\$/$%keyword% unknown $/g" %file% | sed "s/$/\r/" > %temp%\temp2.txt
-copy %temp%\temp2.txt %file%
+copy %temp%\temp2.txt %file% 1> Nul 2>&1

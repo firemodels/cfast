@@ -122,8 +122,11 @@ if %validgit% ==1 (
 :: get svn date
 
 if %validsvn% ==1 (
-  svn info 2>&1 | find /i "Last Changed Date:" | gawk -F" " "{$1=\"\";$2=\"\";$3=\"\";print $0}" > %temp1%
-  set /p svn_date=<%temp1%
+  svn info 2>&1 | find /i "Last Changed Date:" | gawk -F" " "{print $4}" > %temp1%
+  set /p svn_ddate=<%temp1%
+  svn info 2>&1 | find /i "Last Changed Date:" | gawk -F" " "{print $5}" |gawk -F":" "{print $1\":\"$2}"  > %temp1%
+  set /p svn_time=<%temp1%
+  set svn_date=%svn_ddate%_%svn_time%
 )
 if %validgit% ==1 (
   git log . 2>&1 | head -2 | tail -1 | gawk -F" " "{print $2}" > %temp1%
@@ -132,8 +135,10 @@ if %validgit% ==1 (
 
 :: get current date time
 
+echo %date% 2>&1 | gawk -F" " "{print $2}" | gawk -F"/" "{print $3\"-\"$1\"-\"$2}" > %temp1% 
+set /p ddate=<%temp1%
 echo %time% 2>&1 | gawk -F":" "{print $1\":\"$2}" > %temp1%
 set /p hmtime=<%temp1%
-set datetime=%date% %hmtime%
+set datetime=%ddate%_%hmtime%
 
 cd %CURDIR%

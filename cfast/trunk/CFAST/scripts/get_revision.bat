@@ -92,7 +92,7 @@ cd %svn_dir%
 
 :: is this a valid svn repository
 
-if %havesvn% == 1 (
+if NOT %havesvn% == 1 goto skiphavesvn
   set validsvn=1
   svn info 1> %temp1% 2>&1
   type %temp1% | grep "not a working copy" | wc -l > %temp1c%
@@ -107,7 +107,7 @@ if %havesvn% == 1 (
       exit /b 1
     )
   )
-)
+:skiphavesvn
 
 :: is this a valid git repository
 

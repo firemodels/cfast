@@ -82,6 +82,7 @@ Public Class About
         Me.AboutVersion.Name = "AboutVersion"
         Me.AboutVersion.Size = New System.Drawing.Size(0, 13)
         Me.AboutVersion.TabIndex = 2
+        Me.AboutVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Label2
         '
@@ -169,7 +170,13 @@ Public Class About
 #End Region
 
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Me.AboutVersion.Text = Application.ProductVersion
+        Dim Revision As String = "$Revision: Unknown $", aRev As String, aVersion As String
+        Dim sLen As Integer
+        sLen = Len(Application.ProductVersion)
+        aVersion = Application.ProductVersion.Substring(0, sLen - 1)
+        sLen = Len(Revision)
+        aRev = Revision.Substring(11, sLen - 13)
+        Me.AboutVersion.Text = aVersion + aRev
     End Sub
 
     Private Sub LinkLabel1_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked

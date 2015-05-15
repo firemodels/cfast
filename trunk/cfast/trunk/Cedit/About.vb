@@ -170,7 +170,7 @@ Public Class About
 #End Region
 
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim Revision As String = "$Revision: Unknown $", aRev As String, aVersion As String
+        Dim Revision As String = "$Revision: unknown $", aRev As String, aVersion As String
         Dim sLen As Integer
         sLen = Len(Application.ProductVersion)
         aVersion = Application.ProductVersion.Substring(0, sLen - 1)

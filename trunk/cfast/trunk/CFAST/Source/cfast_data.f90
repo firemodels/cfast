@@ -75,7 +75,7 @@ module cfast_main
     implicit none
     save
     
-    integer :: hvorien(mxext), hvnode(2,mxext), crdate(3), mpsdat(3), nwv(nr,nr), na(mxbranch), nofsets(14), &
+    integer :: hvorien(mxext), hvnode(2,mxext), mpsdat(3), nwv(nr,nr), na(mxbranch), nofsets(14), &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), nw(nr,nr), nslb(nwal,nr), &
         nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixtarg(mxi_trg,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
@@ -156,10 +156,9 @@ module cshell
     implicit none
     save
 
-    ! rundat is today's date, crdate is the creation date of the module, and is kept in the main cfast data module.  
-    ! rundat is copied to mpsdat as soon as the model kernel is started. done in initfs and cfast body.
+    ! rundat is today's date
     ! trace determines the type of output (print file) for mechanical ventilation - current or total
-    logical :: header=.false., nokbd=.false., initializeonly=.false.
+    logical :: nokbd=.false., initializeonly=.false.
     logical :: debugging=.false., trace=.false., validate=.false., netheatflux=.false.
     integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
     integer, dimension(3) :: rundat

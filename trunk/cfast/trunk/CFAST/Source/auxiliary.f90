@@ -1297,7 +1297,6 @@
     !     f/c = output options
     !     s = output "solver.ini" options into the file solve.ini
     !	  i = do initialization only
-    !     h to include the header in the output file
     !     d to turn on debugging writes
     !     t to output trace species mass
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
@@ -1330,7 +1329,6 @@
     nargs = 8
     call cmdline(nargs,strs,iarg,iopt)
 
-    if (cmdflag('H',iopt)/=0) header = .true.
     if (cmdflag('K',iopt)/=0) nokbd = .true.
     if (cmdflag('I',iopt)/=0) initializeonly = .true.
     if (cmdflag('D',iopt)/=0) debugging = .true.

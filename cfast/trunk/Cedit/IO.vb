@@ -1010,6 +1010,11 @@ Module IO
             End If
         Next
 
+        ' since we've written all the fires out, all the fire objects are saved too
+        For j = 0 To myFireObjects.Count - 1
+            myFireObjects(j).Changed = False
+        Next
+
         'comment header for heat transfer section
         If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
         'HHeat and VHeat

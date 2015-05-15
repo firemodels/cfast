@@ -95,7 +95,7 @@ cd %svn_dir%
 if NOT %havesvn% == 1 goto skiphavesvn
   set validsvn=1
   svn info 1> %temp1% 2>&1
-  type %temp1% | grep "not a working copy" | wc -l > %temp1c%
+  type %temp1% | find /i /c "not a working copy" > %temp1c%
   set glag=
   set /p glag=<%temp1c%
   if %glag% == 1 (

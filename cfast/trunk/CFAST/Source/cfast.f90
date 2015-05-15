@@ -41,7 +41,6 @@
     real(eb) :: xdelt, tstop, tbeg, tend
 
     version = 7000        ! Current CFAST version number
-    crdate = (/2015,4,7/) ! Current CFAST executable creation date
 
     errorcode = 0
 
@@ -73,8 +72,6 @@
     call read_input_file (errorcode)
     
     if (errorcode<=0) then
-
-        if (header) call output_disclamer('CFAST')
 
         call initialize_species
 

@@ -2,12 +2,16 @@
 set svn_dir=%1
 
 set revision=unknown
+
 set revision_date=unknown
-set revision_time=
+set revision_time=unknown
+
 set build_date=unknown
-set build_time=
+set build_time=unknown
+
 set havesvn=1
 set havegit=1
+
 set validsvn=0
 set validgit=0
 
@@ -20,7 +24,9 @@ set CURDIR=%CD%
 
 svn 1> %temp1% 2>&1
 type %temp1% | find /i /c "not recognized" > %temp1c%
-if %temp1c% == 1 (
+set flag=
+set /p flag=<%temp1c%
+if %flag% == 1 (
   set havesvn=0
 )
 
@@ -28,7 +34,9 @@ if %temp1c% == 1 (
 
 git 1> %temp1% 2>&1
 type %temp1% | find /i /c "not recognized" > %temp1c%
-if %temp1c% == 1 (
+set flag=
+set /p flag=<%temp1c%
+if %flag% == 1 (
   set havegit=0
   if %havesvn% == 0 (
     echo *** warning: both svn and git were not found
@@ -36,23 +44,27 @@ if %temp1c% == 1 (
   )
 )
 
-:: looking for head
+:: looking for head (only used with git)
 
 if %havegit% == 1 (
   head -h 1> %temp1% 2>&1
   type %temp1% | find /i /c "not recognized" > %temp1c%
-  if %temp1c% == 1 (
+  set flag=
+  set /p flag=<%temp1c%
+  if %flag% == 1 (
     echo *** warning: head was not found.
     exit /b 1
   )
 )
 
-:: looking for tail
+:: looking for tail (only used with git)
 
 if %havegit% == 1 (
   tail -h 1> %temp1% 2>&1
   type %temp1% | find /i /c "not recognized" > %temp1c%
-  if %temp1c% == 1 (
+  set flag=
+  set /p flag=<%temp1c%
+  if %flag% == 1 (
     echo *** warning: tail was not found.
     exit /b 1
   )
@@ -62,7 +74,9 @@ if %havegit% == 1 (
 
 gawk 1> %temp1% 2>&1
 type %temp1% | find /i /c "not recognized" > %temp1c%
-if %temp1c% == 1 (
+set flag=
+set /p flag=<%temp1c%
+if %flag% == 1 (
   echo *** warning: gawk was not found.
   exit /b 1
 )
@@ -80,14 +94,16 @@ cd %svn_dir%
 
 if %havesvn% == 1 (
   set validsvn=1
-  svn 1> %temp1% 2>&1
-  type %temp1% | find /i /c "not a working copy" > %temp1c%
-  if %temp1c% == 1 (
+  svn info 1> %temp1% 2>&1
+  type %temp1% | grep "not a working copy" | wc -l > %temp1c%
+  set glag=
+  set /p glag=<%temp1c%
+  if %glag% == 1 (
     set svn_revision=invalid
     cd %CURDIR%
     set validsvn=0
     if %havegit% == 0 (
-      echo *** warning: %svn_dir% is not a valid svn repository
+      echo "*** warning: %svn_dir% is not a valid svn repository"
       exit /b 1
     )
   )
@@ -100,7 +116,9 @@ if %havegit% == 1 (
     set validgit=1
     git log . 1> %temp1% 2>&1
     type %temp1% | find /i /c "Not a git repository" > %temp1c%
-    if %temp1c% == 1 (
+    set flag=
+    set /p flag=<%temp1c%
+    if %flag% == 1 (
       set svn_revision=invalid
       cd %CURDIR%
       set validgit=0
@@ -130,8 +148,10 @@ if %validsvn% ==1 (
   set /p revision_time=<%temp1%
 )
 if %validgit% ==1 (
-  git log . 2>&1 | head -2 | tail -1 | gawk -F" " "{print $2}" > %temp1%
+  git log --date=short . 2>&1 | head -3 | tail -1 | gawk -F" " "{print $2}" > %temp1%
   set /p revision_date=<%temp1%
+  git log . 2>&1 | head -3 | tail -1 | gawk -F" " "{print $5}" |gawk -F":" "{print $1\":\"$2}"  > %temp1%
+  set /p revision_time=<%temp1%
 )
 
 :: get current date time

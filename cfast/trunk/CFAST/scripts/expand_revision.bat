@@ -3,7 +3,7 @@
 :: get svn or git revision of directory dir 
 :: then expand keyword Revision in file using this property
 
-set bindir=%p0
+set bindir=%~p0
 set dir=%1
 set file=%2
 

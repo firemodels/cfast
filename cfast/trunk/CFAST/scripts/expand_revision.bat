@@ -13,5 +13,5 @@ if NOT exist %fullfile% (
   exit /b 1
 )
 
-call %bindir%\get_repo_properties %dir%
-call %bindir%\expand_keyword Revision %revision% %fullfile%
+call "%bindir%\get_repo_properties" %dir%
+call "%bindir%\expand_keyword" Revision %revision% %fullfile%

@@ -1,4 +1,8 @@
 @echo off
+
+:: expand keywords Revision, RevisionDate and CompileDate in file
+
+set bindir=%~p0
 set dir=%1
 set file=%2
 
@@ -8,8 +12,8 @@ if NOT exist %fullfile% (
   exit /b 1
 )
 
-call ..\scripts\get_revision %dir%
+call %bindir%\get_repo_properties %dir%
 
-call ..\scripts\expand_keyword Revision: %revision% %fullfile%
-call ..\scripts\expand_keyword2 RevisionDate: %revision_date% %revision_time% %fullfile%
-call ..\scripts\expand_keyword2 CompileDate: %build_date% %build_time% %fullfile%
+call %bindir%\expand_keyword Revision: %revision% %fullfile%
+call %bindir%\expand_keyword RevisionDate: "%revision_date% %revision_time%" %fullfile%
+call %bindir%\expand_keyword CompileDate: "%build_date% %build_time%" %fullfile%

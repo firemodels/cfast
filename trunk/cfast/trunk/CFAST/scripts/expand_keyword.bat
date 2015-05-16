@@ -1,6 +1,10 @@
 @echo off
+
+:: expand keyword found in file using newvalue
+::   (note the ~ in %~2 removes surrounding quotes
+
 set keyword=%1
-set newvalue=%2
+set newvalue=%~2
 set file=%3
 
 if NOT exist %file% (

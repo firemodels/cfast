@@ -20,6 +20,8 @@ set temp1c=%temp%\tempc.txt
 
 set CURDIR=%CD%
 
+:: ----------------- make sure various required software tools are available --------------------------
+
 :: looking for svn
 
 svn 1> %temp1% 2>&1
@@ -128,7 +130,9 @@ if %havegit% == 1 (
   )
 )
 
-:: get svn revision number
+:: ----------------- get properties --------------------------
+
+:: get revision number
 
 if %validsvn% ==1 (
   svn info 2>&1 | find /i "Last Changed Rev:" | gawk -F" " "{print $4}" > %temp1%
@@ -139,7 +143,7 @@ if %validgit% ==1 (
   set /p revision=<%temp1%
 )
 
-:: get svn date
+:: get date and time of latest repository commit
 
 if %validsvn% ==1 (
   svn info 2>&1 | find /i "Last Changed Date:" | gawk -F" " "{print $4}" > %temp1%

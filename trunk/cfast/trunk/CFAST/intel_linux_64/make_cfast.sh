@@ -5,9 +5,9 @@ target=${dir##*/}
 
 source $IFORT_COMPILER/bin/compilervars.sh $platform
 
-source ../scripts/make_frevision.sh ../Source srev.f90
+source ../scripts/expand_file.sh ../scripts ../Source srev.f90
 
 echo Building $target
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ../makefile $target
 
-source ../scripts/restore_frevision.sh ../Source srev.f90
+source ../scripts/contract_file.sh ../scripts ../Source/srev.f90

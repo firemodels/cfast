@@ -1,6 +1,6 @@
 @echo off
 
-:: contract Revision keyword in About.vb
-:: this script is called in directory containing About.vb
+:: contract the keyword Revision in About.vb
+:: this script must be called in the directory containing About.vb
 
 call ..\CFAST\scripts\contract_keyword Revision About.vb

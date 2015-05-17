@@ -1,4 +1,7 @@
 @echo off
+
+:: contract keyword located in file
+
 set keyword=%1
 set file=%2
 

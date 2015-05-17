@@ -1,6 +1,6 @@
 @echo off
 
-:: strip info from keywords Revision, RevisionDate and CompileDate
+:: contract keywords Revision, RevisionDate and CompileDate in file
 
 set bindir=%~p0
 set file=%1

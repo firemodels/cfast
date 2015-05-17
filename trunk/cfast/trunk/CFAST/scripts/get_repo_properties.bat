@@ -1,4 +1,9 @@
 @echo off
+
+:: obtain various properties of the directory svn_dir
+:: These properties are the revision and revision date 
+:: of the directory and the current date.
+
 set svn_dir=%1
 
 set revision=unknown

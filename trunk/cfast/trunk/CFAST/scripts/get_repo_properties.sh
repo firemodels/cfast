@@ -1,9 +1,9 @@
 #!/bin/bash
 svn_dir=$1
 
-export svn_revision=unknown
-export svn_date=unknown
-export datetime=unknown
+export revision=unknown
+export revision_date=unknown
+export build_date=unknown
 
 CURDIR=`pwd`
 
@@ -32,14 +32,17 @@ fi
 
 # get svn revision number
 
-svn_revision=`svn info 2>&1 | grep "Last Changed Rev:" | awk -F' ' '{print $4}'`
+revision=`svn info 2>&1 | grep "Last Changed Rev:" | awk -F' ' '{print $4}'`
 
 # get svn date
 
-svn_date=`svn info 2>&1 | grep "Last Changed Date:" | awk -F" " '{print $4,$5}'`
+revision_date=`svn info 2>&1 | grep "Last Changed Date:" | awk -F" " '{print $4,$5}'`
 
 # get current date time
 
-datetime=`date "+%F %T"`
+build_date=`date "+%F %T"`
 
 cd $CURDIR
+export revision
+export revision_date
+export build_date

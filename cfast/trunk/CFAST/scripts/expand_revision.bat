@@ -1,7 +1,7 @@
 @echo off
 
-:: get svn or git revision of directory dir 
-:: then expand keyword Revision in file using this property
+:: get the svn (or git) revision of directory dir 
+:: then expand the keyword Revision in file using this property
 
 set bindir=%~p0
 set dir=%1

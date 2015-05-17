@@ -1,7 +1,7 @@
 @echo off
 
 :: expand keyword found in file using newvalue
-::   (note the ~ in %~2 removes surrounding quotes
+::   (note that the ~ in %~2 removes surrounding quotes (allowing imbedded blanks in newvalue)
 
 set keyword=%1
 set newvalue=%~2

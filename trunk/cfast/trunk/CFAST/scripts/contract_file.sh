@@ -16,6 +16,6 @@ if ! [ -e $file ] ; then
   exit 
 fi
 
-$bindir/contract_keyword.sh Revision $file
-$bindir/contract_keyword.sh RevisionDate $file
-$bindir/contract_keyword.sh CompileDate $file
+"$bindir/contract_keyword.sh" Revision $file
+"$bindir/contract_keyword.sh" RevisionDate $file
+"$bindir/contract_keyword.sh" CompileDate $file

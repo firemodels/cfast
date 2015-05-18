@@ -20,8 +20,8 @@ if ! [ -e $fullfile ] ; then
   exit 
 fi
 
-source $bindir/get_repo_properties.sh $dir
+source "$bindir/get_repo_properties.sh" $dir
 
-$bindir/expand_keyword.sh Revision $revision $fullfile
-$bindir/expand_keyword.sh RevisionDate "$revision_date" $fullfile
-$bindir/expand_keyword.sh CompileDate "$build_date" $fullfile
+"$bindir/expand_keyword.sh" Revision $revision $fullfile
+"$bindir/expand_keyword.sh" RevisionDate "$revision_date" $fullfile
+"$bindir/expand_keyword.sh" CompileDate "$build_date" $fullfile

@@ -24,7 +24,7 @@ The following sections describe each of the outputs from the model.  Each sectio
 
 \subsection{Output for Initialization}
 
-This option prints the initial conditions to the output before the actual run starts.  This merely mimics the inputs specified by the user in the input data file  The initial conditions brake down into seven sections.  Each is described below with the section name. The following explanation uses the output from the case STANDARD.IN. STANDARD.IN is included in the distribution. Please note, there are no mechanical ventilation, horizontal vents or detectors in this example, so the section discussing these phenomena are from additional data files.
+This option prints the initial conditions to the output before the actual run starts.  This merely mimics the inputs specified by the user in the input data file  The initial conditions break down into seven sections.  Each is described below with the section name. The following explanation uses the output from the case STANDARD.IN. STANDARD.IN is included in the distribution. Please note, there are no mechanical ventilation, horizontal vents or detectors in this example, so the section discussing these phenomena are from additional data files.
 
 \subsubsection{Overview}
 
@@ -33,13 +33,13 @@ The overview gives a general description of the case.  The output is fairly self
  OVERVIEW
 
 
- Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
-    1               1             0                    0
+Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
+   1               1             0                    0
 
- Simulation     Output         Smokeview      Spreadsheet
- Time           Interval       Interval       Interval
- (s)            (s)            (s)            (s)
-   1800         120             10             30
+Simulation     Output         Smokeview      Spreadsheet
+Time           Interval       Interval       Interval
+(s)            (s)            (s)            (s)
+  1800         120             10             30
 \end{lstlisting}
 
 \subsubsection{Ambient Conditions}
@@ -246,7 +246,7 @@ Flame height is calculated from the work of Heskestad~\cite{Heskestad:2002}. The
 
 The printed output provides two tables displaying information about wall surface or target temperatures and fluxes, and heat detectors or sprinklers. The left most column specifies the compartment number; followed by four columns providing the temperatures of the bounding surfaces of the compartment in contact with the ceiling, upper wall surface (in contact with the upper layer gases), lower wall surface (in contact with the lower layer gases), and floor, in that order. Next comes information about targets in the compartment, with each target listed on a separate line.  Information in the columns includes the surface temperature of the target, net heat flux to the target, and the percentage of that net flux that is due to radiation from the fire, radiation from compartment surfaces, radiation from the gas layers, and convection from the gas surrounding the target.  CFAST includes one target in the center of the floor for all compartments. Information on additional targets specified by the user in the input data file are also included, in the order specified in the input file.
 
-For sm=oke detectors, heat detectors, and sprinklers, the temperature of the device, its current state (activated or not), and the nearby gas temperature and velocity are included.
+For smoke detectors, heat detectors, and sprinklers, the temperature of the device, its current state (activated or not), and the nearby gas temperature and velocity are included.
 
 \begin{lstlisting}[basicstyle=\tiny]
 SURFACES AND TARGETS
@@ -275,7 +275,7 @@ In all cases, the flux to/from a target is net radiation or net convection. That
 
 \subsection{Output for Gas Species}
 
-The /f option has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume fractions for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked.  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the obscuration density, which is a measure of the amount of smoke. ``TS'' is trace species.
+The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume fractions for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked.  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
 
 \begin{lstlisting}[basicstyle=\scriptsize]
 UPPER LAYER SPECIES
@@ -311,7 +311,7 @@ The section for vent flow is titled ``FLOW THROUGH VENTS (kg/s).''  Because flow
 ---------------------------------------------------------------------------------------------------------------------------------
  H  1 Compartment    Outside            1.000        0.974                     1.000                                  0.974
 \end{lstlisting}
-The mass balance is the sum of the flow in minus the flow out. (Note that this is an extended run to achieve results close to steady state.) For any compartment, this is just 
+The mass balance is the sum of the flow in minus the flow out. (Note that this is an extended run to achieve results close to steady state.) For any compartment, this is just
 $$
 \brackets{\dm_{u,in} + \dm_{l,in} + \dm_f} - \brackets{\dm_{u,out} + \dm_{l,out}}
 $$
@@ -373,9 +373,9 @@ At present, there are nine outputs in this file: oxygen (O2), carbon dioxide (CO
 \item[Time] (s)
 \item[O2 Upper/Lower Layer] (mol \%): oxygen concentration in the upper (or lower) layer in the current compartment
 \item[CO2 Upper/Lower Layer] (mol \%):  carbon dioxide concentration in the upper (or lower) layer in the current compartment
-\item[CO Upper/Lowerr Layer] (ppm):  carbon monoxide concentration in the upper (or lower) layer in the current compartment
-\item[HCN Upper/Lower Layer] (ppm):  HCN concentration in the upper (or lower) layer in the current compartment
-\item[HCL Upper/Lower Layer] (ppm):  HCl concentration in the upper (or lower) layer in the current compartment
+\item[CO Upper/Lower Layer] (ppm by volume):  carbon monoxide concentration in the upper (or lower) layer in the current compartment
+\item[HCN Upper/Lower Layer] (ppm by volume):  HCN concentration in the upper (or lower) layer in the current compartment
+\item[HCL Upper/Lower Layer] (ppm by volume):  HCl concentration in the upper (or lower) layer in the current compartment
 \item[H2O Upper/Lower Layer] (mol \%):  water vapor concentration in the upper (or lower) layer in the current compartment
 \item[Optical Density Uppe/Lowerr Layer] (m$^{-1}$):  optical density in the upper (or lower) layer in the current compartment
 \item[C-T Product Upper/Lower Layer] (g-min/m$^3$):  integrated concentration-time product in the upper (or lower) layer in the current compartment

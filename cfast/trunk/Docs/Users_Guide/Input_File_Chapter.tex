@@ -129,7 +129,7 @@ By default, CEdit does not include predefined thermal properties for compartment
 \end{center}
 \end{figure}
 
-To add additional thermal properties to a simulation or to edit existing ones, the \textbf{Edit, Thermal Properties, Edit Thermal Properties} menu item allows you to edit any of the existing thermal properties. \\~ \\
+To add additional thermal properties to a simulation or to edit existing ones, the \textbf{Edit, Thermal Properties, Edit Thermal Properties} menu item allows you to edit any of the existing thermal properties.
 
 \begin{figure}[h!]
 \begin{center}
@@ -288,7 +288,7 @@ Vertical connections can only be created between compartments that could be phys
 \end{center}
 \end{figure}
 
-Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers \cite{ASHRAE:2001}.
+Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers Handbook \cite{ASHRAE:2001}.
 
 The model for mechanical ventilation used in CFAST is based on the theory of networks and is based on the model developed by Klote \cite{Klote:1988a}.  This is a simplified form of Kirchoff's law which says that flow into a node must be balanced by flow out of the node. The equations used describe the relationship between the pressure drop across a duct, the resistance of a duct, and the mass flow.  The pressure can be changed by conditions in a compartment, or a fan in line in the duct system.  Resistance arises from the finite size of ducts, roughness on duct surfaces, bends and joints. In CFAST, default values are used for the duct properties, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
 
@@ -389,7 +389,7 @@ Fires in CFAST are defined as a series of individual fire objects which are then
 
 Each fire object defines the time dependent variables of the fire described by the mass loss rate, rate of heat release, fuel height, and fuel area.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product, typically denoted as Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
-Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o'' and is also saved in the CFAST input file for the current simulation. A pull-down allows the user to select one of the predefined fire objects to place in the chosen compartment. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions.
+Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o'' and is also saved in the CFAST input file for the current simulation. A pull-down menu allows the user to select one of the predefined fire objects to place in the chosen compartment. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions.
 
 \begin{figure}[h!]
 \begin{center}
@@ -422,7 +422,7 @@ where $n_C$ is the number of carbon atoms in a fuel molecule, $M_f$ is the molec
 For all fires, including t-squared fires, values are specified for time dependent variables, including default values for species generation. All of the time dependent variables depend on a predefined time line. The time input specifies a sequence of time points that define the timing of the fire.  An entry indicates a point on the time line when the mass loss rate, fuel height and other time dependent values are specified for the fire.  This time is independent of the simulation time which is specified by the TIMES line. Between specified time points, values for all time-dependent quantities are interpolated between adjacent specified values. If the simulation time is longer than the total duration of the fire, the final values specified for the fire (mass loss rate, fuel height, fuel area, and species production rates) are continued until the end of the simulation.
 
 \begin{description}
-\item[Time] (default units: s, default values: none): specify a sequence of time points that define the timing of the main fire.  An entry indicates a point on the time-line when the heat release loss rate, fuel height and other time dependent values are specified for the fire.
+\item[Time] (default units: s, default values: none): specify a sequence of time points that define the timing of the main fire.  An entry indicates a point on the time-line when the heat release rate, fuel height and other time dependent values are specified for the fire.
 
 \item[Heat Release Rate (Qdot)] (default units: kW, default values: none): Heat release rate of the fire as a series of time points consistent with the time specification.
 

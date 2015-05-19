@@ -10,7 +10,7 @@
     
     private
 
-   public convection, convective_flux, rev_convection
+   public convection, convective_flux
 
    contains
    

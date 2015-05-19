@@ -37,6 +37,7 @@ Public Class About
     Friend WithEvents Label4 As System.Windows.Forms.Label
     Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
     Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
+    Friend WithEvents AboutRevision As System.Windows.Forms.Label
     Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(About))
@@ -49,6 +50,7 @@ Public Class About
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.LinkLabel1 = New System.Windows.Forms.LinkLabel()
         Me.TextBox2 = New System.Windows.Forms.TextBox()
+        Me.AboutRevision = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -80,8 +82,9 @@ Public Class About
         Me.AboutVersion.AutoSize = True
         Me.AboutVersion.Location = New System.Drawing.Point(80, 24)
         Me.AboutVersion.Name = "AboutVersion"
-        Me.AboutVersion.Size = New System.Drawing.Size(0, 13)
+        Me.AboutVersion.Size = New System.Drawing.Size(31, 13)
         Me.AboutVersion.TabIndex = 2
+        Me.AboutVersion.Text = "7.0.0"
         Me.AboutVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Label2
@@ -142,10 +145,21 @@ Public Class About
         Me.TextBox2.Text = "CEdit includes software developed as part of the NPlot library project available " & _
     "from: http://netcontrols.org/nplot/wiki/"
         '
+        'AboutRevision
+        '
+        Me.AboutRevision.AutoSize = True
+        Me.AboutRevision.Location = New System.Drawing.Point(132, 24)
+        Me.AboutRevision.Name = "AboutRevision"
+        Me.AboutRevision.Size = New System.Drawing.Size(100, 13)
+        Me.AboutRevision.TabIndex = 9
+        Me.AboutRevision.Text = "Revision: Unknown"
+        Me.AboutRevision.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
         'About
         '
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.ClientSize = New System.Drawing.Size(552, 352)
+        Me.Controls.Add(Me.AboutRevision)
         Me.Controls.Add(Me.TextBox2)
         Me.Controls.Add(Me.LinkLabel1)
         Me.Controls.Add(Me.PictureBox1)
@@ -176,7 +190,7 @@ Public Class About
         aVersion = Application.ProductVersion.Substring(0, sLen - 1)
         sLen = Len(Revision)
         aRev = Revision.Substring(11, sLen - 13)
-        Me.AboutVersion.Text = aVersion + aRev
+        Me.AboutRevision.Text = "Revision: " + aRev
     End Sub
 
     Private Sub LinkLabel1_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked

@@ -914,7 +914,7 @@
     logical, intent(out) :: djflowflg
     real(eb), intent(out) :: qpyrol, xntms(2,ns)
 
-    real(eb) :: xmass(ns), dummy, source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
+    real(eb) :: xmass(ns), source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
     integer :: i
 
     qpyrol = 0.0_eb
@@ -926,7 +926,6 @@
         ! do combustion chemistry assuming complete comversion to co2 & h2o.
         ! although the real chemistry is more complex, for now we don't know
         ! how to handle it.
-        dummy = -1.0_eb
         djflowflg = .true.
         do i = 1, ns
             xmass(i) = 0.0_eb

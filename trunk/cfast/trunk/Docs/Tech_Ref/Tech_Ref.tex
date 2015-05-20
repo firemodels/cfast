@@ -132,7 +132,7 @@ CFAST is a two-zone fire model that predicts the thermal environment caused by a
 
 \section{Model Version}
 
-The first public release of CFAST was version 1.0 in June, 1990. This version was restructured from FAST~\cite{Models:FAST} to incorporate the ``lessons learned'' from the zone model CCFM developed by Cooper and Forney~\cite{Models:CCFM}. Version~2 was released as a component of Hazard~1.2 in 1994~\cite{Models:HAZARDI, Models:HAZARDI_12}. The first of the 3.x series was released in 1995 and included a vertical flame spread algorithm, ceiling jets and non-uniform heat loss to the ceiling, spot targets, and heating and burning of multiple objects (ignition by flux, temperature or time) in addition to multiple prescribed fires. As it evolved over the next five years, version~3 included smoke and heat detectors, suppression through heat release reduction, better characterization of flow through doors and windows, vertical heat conduction through ceiling/floor boundaries, and non-rectangular compartments. In 2000, version~4 was released and included horizontal heat conduction through walls, and horizontal smoke flow in corridors. Version~5 improved the combustion chemistry. Version 6, released in July, 2005, incorporates a more consistent implementation of vents, fire objects, and event processing and includes a graphical user interface which substantially improves its usability.
+The first public release of CFAST was version 1.0 in June, 1990. This version was restructured from FAST~\cite{Models:FAST} to incorporate the ``lessons learned'' from the zone model CCFM developed by Cooper and Forney~\cite{Models:CCFM}. Version~2 was released as a component of Hazard~1.2 in 1994~\cite{Models:HAZARDI, Models:HAZARDI_12}. The first of the 3.x series was released in 1995 and included a vertical flame spread algorithm, ceiling jets and non-uniform heat loss to the ceiling, spot targets, and heating and burning of multiple objects (ignition by heat flux, temperature or time) in addition to multiple prescribed fires. As it evolved over the next five years, version~3 included smoke and heat detectors, suppression through heat release reduction, better characterization of flow through doors and windows, vertical heat conduction through ceiling/floor boundaries, and non-rectangular compartments. In 2000, version~4 was released and included horizontal heat conduction through walls, and horizontal smoke flow in corridors. Version~5 improved the combustion chemistry. Version 6, released in July, 2005, incorporates a more consistent implementation of vents, fire objects, and event processing and includes a graphical user interface which substantially improves its usability.
 
 The current version of CFAST, version 7, was released in 2015.
 
@@ -525,7 +525,7 @@ where $\epsilon_{\rm u}$ is the emittance (absorptance) of the upper layer, $F_{
 Reference~\cite{Forney_radiation} describes the solution of Eq.~\ref{RTE}.
 
 
-\subsubsection{Configuration Factors}
+\subsection{Configuration Factors}
 
 The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted by surface 1 that is intercepted by  surface 2, and is calculated:
 \be
@@ -562,7 +562,7 @@ Suppose now that the radiation of a fire is assumed to emanate from a point a di
    \omega_{\rm f-fl} = \sum_{j=1}^2 \sum_{i=1}^2 \omega(L_i,W_j;r)
 \ee
 
-\subsubsection{Transmittance and Absorptance}
+\subsection{Transmittance and Absorptance}
 
 The transmittance is the fraction of radiant energy that will pass through a volume filled with an absorbing medium. It is usually expressed in the form:
 \be

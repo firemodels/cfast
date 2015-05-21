@@ -7,7 +7,7 @@ set SDIR=..\Source
 
 Title Building cfast for 64 bit Windows
 
-call %KWDIR%/expand_file %KWDIR% %SDIR% %SDIR%/srev.f90
+call %KWDIR%\expand_file %KWDIR% %SDIR% %SDIR%/srev.f90
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64
-call %KWDIR%/contract_file %KWDIR% %SDIR%/srev.f90
+call %KWDIR%\contract_file %KWDIR% %SDIR%/srev.f90
 pause

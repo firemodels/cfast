@@ -318,21 +318,23 @@ As fuel and oxygen are consumed, heat is released and various products of combus
    \dQr &=& \chi_{\rm r} \, \dQ \\[.1in]
    \dQc &=& (1-\chi_{\rm r}) \, \dQ
 \end{eqnarray}
-where, $\chi_{\rm r}$ is the fraction  of the fire's heat release rate given off as radiation. The user specifies the total heat release rate as a function of time, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The user also specifies $\chi_{\rm r}$ whose default value is taken to be 0.35~\cite{Drysdale:1985}.
+where, $\chi_{\rm r}$ is the fraction  of the fire's heat release rate given off as radiation. The user specifies the total heat release rate as a function of time, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, and vitiation are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. It is worthy to note that the overall heat release rate, $\dQ$, includes any inefficiency in the combustion and thus can be considered a net heat release rate accounting for the combustion efficiency.
 
-While it is convenient for the user to directly specify the heat release rate of the fire, it is actually the pyrolysis rate of fuel, $\dmf$, that is specified:
+While it is convenient for the user to directly specify the heat release rate of the fire, it is actually the pyrolysis rate of fuel, $\dmf$, that is used within the model:
 \be
    \dmf = \frac{\dQ}{\Dh}
 \ee
-where $\Dh$ is the user-specified heat of combustion. In the event that the HRR is constrained by the availability of oxygen, the pyrolysis rate does not change, but the HRR becomes:
+where $\Dh$ is the user-specified heat of combustion. In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change. However, only part of the pyrolyzed fuel burns and the HRR becomes:
 \be
    \dQ = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
 \ee
 where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen in the layer containing the fire, $\DhO$ is the heat of combustion based on oxygen consumption\footnote{The heat of combustion based on oxygen consumption is taken to be 13.1~MJ/kg, representative of typical hydrocarbon fuels~\cite{Huggett:1980}.}, and $C_{\rm LOL}$ (Lower Oxygen Limit) is the smoothing function ranging from 0 to 1:
 \be
-   C_{\rm LOL} = \frac{\tanh \Big( 800 (Y_\OTWO - Y_{\OTWO,{\rm l}}) - 4 \Big) + 1}{2}
+   C_{\rm LOL} \approx \frac{\tanh \Big( 800 (Y_\OTWO - Y_{\OTWO,{\rm l}}) - 4 \Big) + 1}{2}
 \ee
 The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default. This value is not a function of temperature.
+
+Any unburned fuel is tracked by the model, and transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Addition fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available.
 
 
 
@@ -351,11 +353,11 @@ where $z_0$ is a virtual origin defined as
 \be
    \frac{z_0}{D} = -1.02 + 1.4 \, \dQ^{* \, 2/5} \quad ; \quad \dQ^* = \frac{\dQ}{\rho_\infty \, c_p \, T_\infty \, \sqrt{g \, D} \, D^2} \label{virtual_origin}
 \ee
-Note that the virtual origin is defined in terms of the total heat release rate of the fire, $\dQ$. Equation~(\ref{mdot_e}) is recommended above the mean flame height, $L$. Below the flame height, Heskestad recommends the following:
+Note that the virtual origin is defined in terms of the total heat release rate of the fire, $\dQ$. Equation~(\ref{mdot_e}) is recommended above the mean flame height, $L$. Below the flame height, Heskestad~\cite{Heskestad:2002} recommends the following:
 \be
   \dme(z) = \dme(L) \, \frac{z}{L} \quad ; \quad \frac{L}{D} = -1.02 + 3.7 \, \dQ^{* \, 2/5}
 \ee
-The mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
+where the mean flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
 
 \subsection{Wall and Corner Plumes}
 
@@ -385,7 +387,7 @@ The centerline plume temperature rise, $\Delta T_0(z)$, and velocity, $u_0(z)$, 
 \be
    u_0(z) = \min \left[ u_{0,\max} \; , \; 3.4 \, \left( \frac{g}{c_p \, \rho_\infty \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \, (z-z_0)^{-1/3} \right]  \label{plume_velocity}
 \ee
-where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is assumed that the temperature and velocity decrease following a Gaussian profile off the centerline:
+where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is assumed that the temperature and velocity decrease following a Gaussian profile about the centerline:
 \be
    \Delta T(r,z) = \Delta T_0(z) \, \exp \left[ -\left( \frac{r}{\sigma_{\Delta T}} \right)^2 \right] \quad ; \quad \sigma_{\Delta T} = 0.14 \, \left( \frac{T_0(z)}{T_\infty} \right)^{1/2} \, (z-z_0) \label{plume_temperature2}
 \ee
@@ -398,7 +400,7 @@ Note that the maximum plume temperature of 900~K is suggested by Heskestad~\cite
 \ee
 Note that if the velocity is expressed in units of m/s and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
 
-Above the hot gas layer interface, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the plume temperature correlation is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
+Above the interface between the hot upper layer and the cooler lower layer, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the plume temperature correlation~\cite{Heskestad:2002} is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
 \be
    \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, c_p^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
 \ee
@@ -500,7 +502,7 @@ where $D = 2 \sqrt{A_{\rm v} / \pi}$ and $S$ is 0.754 for round or 0.942 for squ
   \dmu &=& \dm_{\rm in} \, \frac{\Vu}{V} \\[0.1in]
   \dml &=& \dm_{\rm in} \, \frac{\Vl}{V}
 \end{eqnarray}
-The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow relative to the upper and lower layers of the receiving compartment. If the temperature of the incoming flow is higher than the temperature of the lower layer, then the flow is deposited into the upper layer. This is similar to the idea of using a virtual plume for a doorway flow.
+The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow. If the temperature of the incoming flow is higher than the temperature of the lower layer of the receiving compartment, then the flow is deposited into the upper layer. Otherwise, it is deposited into the lower layer of the receiving compartment. This is similar to the idea of using a virtual plume for a doorway flow.
 
 
 \section{Forced Flow}
@@ -536,7 +538,7 @@ where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted 
 \be
    c_k = \epsilon_{\rm u} \, F_{{\rm u}-k} \, \sigma \, \Tu^4 + \frac{\omega_{{\rm f}-k}}{4 \pi} \frac{\chi_{\rm r} \, \dQ}{A_k}  \label{ckeq}
 \ee
-where $\epsilon_{\rm u}$ is the emittance (absorptance) of the upper layer, $F_{{\rm u}-k}$ is the view factor between the upper layer and solid surface, $\omega_{{\rm f}-k}$ is the solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{{\rm f}-k}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall, the view factor refers to the layer interface. If the solid surface, is the upper wall or ceiling, the view factor is 1.
+where $\epsilon_{\rm u}$ is the emittance (absorptance) of the upper layer, $F_{{\rm u}-k}$ is the view factor between the upper layer and solid surface, $\omega_{{\rm f}-k}$ is the solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{{\rm f}-k}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall, the view factor refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 
 Reference~\cite{Forney_radiation} describes the solution of Eq.~\ref{RTE}.
 
@@ -586,15 +588,15 @@ The transmittance is the fraction of radiant energy that will pass through a vol
 \ee
 where $a$ is the absorption coefficient and $L$ is the path length. The absorptance is the fraction of radiant energy absorbed by that volume. For a gray gas, $\alpha + \tau = 1$.
 
-In general, the transmittance and absorptance are functions of wavelength. This is an important factor to consider for the major gaseous products, $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$. However, soot has a continuous absorption spectrum that allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum. The total transmittance over a path length $L$ through a volume of combustion products is taken as the product of the transmittance of the soot and major product gases:
+In general, the transmittance and absorptance are functions of wavelength. This is an important factor to consider for the major gaseous products, $\textnormal{CO}_2$  and $\textnormal{H}_2 \textnormal{O}$. However, soot has a continuous absorption spectrum that allows the transmittance and absorptance to be approximated as ``gray'' \cite{SiegelandHowell:1981} across the entire spectrum. The total transmittance over a path length $L$ through a volume of combustion products is taken as the product of the transmittance of the soot and major gas phase products:
 \be
    \tau = e^{-a_{\rm s}L} \brackets{1 - \alpha_{\rm H_2O} - 0.5 \, \alpha_{\rm CO_2}}
 \ee
-The factor of 0.5 applied to the absorptance of CO$_2$ accounts for the overlap of the wavelength bands of the two gases. Tien~et~al.~\cite{Tien:2002} suggest that the absorption coefficient for soot may be approximated $a_{\rm s} = k f_v T$ where $k$ is a constant that depends on the optical properties of the soot particles, $f_v$ is the soot volume fraction, and $T$ is the (absolute) temperature. Values of $k$, have been found to be about constant for a wide range of fuels~\cite{Tien:1978}.
+The factor of 0.5 applied to the absorptance of CO$_2$ accounts for the overlap of the wavelength bands of the two gases. Tien~et~al.~\cite{Tien:2002} suggest that the absorption coefficient for soot may be approximated as $a_{\rm s} = k f_v T$ where $k$ is a constant that depends on the optical properties of the soot particles, $f_v$ is the soot volume fraction, and $T$ is the (absolute) temperature. Values of $k$ have been found to be about constant for a wide range of fuels~\cite{Tien:1978}.
 
 Absorptance data for $\textnormal{H}_2 \textnormal{O}$ and $\textnormal{CO}_2$ are reported in Ref.~\cite{Edwards:1985}. For each gas, these data are tabulated and implemented as a two-dimensional array based on temperature and gas concentration.
 
-The effective path length, $L$, for the upper gas layer is approximated to be 1.8 times its depth~\cite{Tien:2002}.
+The effective path length, $L$, is calculated between the center-points of the exchanging surfaces ({\em i.e.}, from the center height of a fire to the center of a wall surface or between the center points of two compartment surfaces). Path lengths are calculated separately for the upper and lower layers in a compartment.
 
 
 
@@ -609,7 +611,7 @@ In general, the convective heat flux to a solid surface is given by:
 \be
    \dqc'' = h \, \brackets{\Tg - \Ts}  \label{convective_heat_flux}
 \ee
-The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. In CFAST, simple correlations for natural convection are used since the gas velocity is unknown:
+The convective heat transfer coefficient, $h$, is a function of the gas properties, temperature, and velocity. In CFAST, simple correlations for natural convection are used, since the gas velocity is unknown:
 \be
    h = C {|\Tg - \Ts|}^{1/3}
 \ee
@@ -625,7 +627,7 @@ where $f$ is a friction factor estimated to be 0.03, $r$ is the radial distance 
 \be
    \dq_{\rm c,avg}'' = \frac{1}{LW} \int_0^{2\pi} \int_0^R \dqc'' \, r \, dr \, d\theta = \frac{0.27 \, \dQ_{\rm c}}{(LW)^{0.68} \, H^{0.64}} \label{eq:cjfluxavg}
 \ee
-Note that the integration is carried out over a circle whose area, $\pi R^2$, is equal to the area of the ceiling, $LW$.
+Note that the integration is carried out over a circle whose area, $\pi R^2$, is taken as equal to the area of the ceiling, $LW$.
 
 Equation~(\ref{eq:cjfluxavg}) applies to the early stage of the fire; thus, a modified heat transfer coefficient is used so that there is a transition from the early to later stages when a layer has formed:
 \be
@@ -735,7 +737,7 @@ The link temperature of a sprinkler or heat detector is modeled using the differ
 \be
    \frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}  \label{eq:RTI}
 \ee
-where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas velocity, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and velocity obtained from the plume algorithm (Section~\ref{sec:Plume_Temp_Velocity}) and the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed velocity of 0.1~m/s. This value is simply an order of magnitude estimate. The link and gas temperatures and the velocity are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. The gas temperature and speed are obtained from the plume algorithm (Section~\ref{sec:Plume_Temp_Velocity}) and the ceiling jet algorithm, described below. Rooms without fires do not have ceiling jets, in which case the upper layer temperature is used, along with a fixed speed of 0.1~m/s. This value is simply an order of magnitude estimate. The link and gas temperatures and the speed are functions of time; the RTI is a constant for a given detector type. The detector equation is solved numerically using the semi-implicit updating scheme:
 \be
    \frac{\TL^{n+1}-\TL^n}{\Delta t} = \frac{1}{2} \left( \frac{\sqrt{v^n}}{\rm RTI} \brackets{\Tg^n - \TL^n}  + \frac{\sqrt{v^{n+1}}}{\rm RTI} \brackets{\Tg^{n+1} - \TL^{n+1}}  \right) \label{eq:RTI_rewritten}
 \ee
@@ -774,7 +776,7 @@ An estimate of the ceiling jet thickness, $\delta$, where the excess temperature
 \be
    \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad ; \quad 0.26 \le \frac{r}{H} \le 2.0
 \ee
-If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default velocity of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
+If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
 
 If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
 \begin{eqnarray}
@@ -893,7 +895,6 @@ $\chi_{\rm r}$      & radiative fraction, dimensionless \\
 \end{longtable}
 
 \end{center}
-
 
 \bibliography{../Bibliography/CFAST_refs}
 

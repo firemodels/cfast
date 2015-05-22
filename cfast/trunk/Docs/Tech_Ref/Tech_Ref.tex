@@ -315,18 +315,21 @@ Note that the nitrogen in the air acts only as a diluent. The yields of hydrogen
 
 As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
 \begin{eqnarray}
-   \dQr &=& \chi_{\rm r} \, \dQ \\[.1in]
-   \dQc &=& (1-\chi_{\rm r}) \, \dQ
+   \dQr &=& \chir \, \dQ \\[.1in]
+   \dQc &=& (1-\chir) \, \dQ \\[.1in]
+   \dQa &=& \dQ \, \chia
 \end{eqnarray}
-where, $\chi_{\rm r}$ is the fraction  of the fire's heat release rate given off as radiation. The user specifies the total heat release rate as a function of time, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, and vitiation are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. It is worthy to note that the overall heat release rate, $\dQ$, includes any inefficiency in the combustion and thus can be considered a net heat release rate accounting for the combustion efficiency.
+where $\dQ$ is the theoretical heat release rate, $dQ_a$ is the actual heat release rate accounting for the combustion efficiency, $\chia$, $\dQr$ and $\dQc$ are the heat released by radiation and convection, respectively, and $\chir$ is the fraction of the fire's heat release rate given off as radiation. 
+
+The user specifies the actual heat release rate, $\dQa$, which accounts for the combustion efficiency, $\chia$, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire's energy is released via radiation.  For specific fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, vitiation, and combustion efficiency are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4.
 
 While it is convenient for the user to directly specify the heat release rate of the fire, it is actually the pyrolysis rate of fuel, $\dmf$, that is used within the model:
 \be
-   \dmf = \frac{\dQ}{\Dh}
+   \dmf = \frac{\dQa}{\Dh}
 \ee
 where $\Dh$ is the user-specified heat of combustion. In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change. However, only part of the pyrolyzed fuel burns and the HRR becomes:
 \be
-   \dQ = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
+   \dQa = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
 \ee
 where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen in the layer containing the fire, $\DhO$ is the heat of combustion based on oxygen consumption\footnote{The heat of combustion based on oxygen consumption is taken to be 13.1~MJ/kg, representative of typical hydrocarbon fuels~\cite{Huggett:1980}.}, and $C_{\rm LOL}$ (Lower Oxygen Limit) is the smoothing function ranging from 0 to 1:
 \be
@@ -334,7 +337,7 @@ where $\dme$ is the entrainment rate, $Y_\OTWO$ is the mass fraction of oxygen i
 \ee
 The limiting oxygen mass fraction, $Y_{\OTWO,{\rm l}}$, is 0.1, by default. This value is not a function of temperature.
 
-Any unburned fuel is tracked by the model, and transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Addition fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available.
+Any unburned fuel is tracked by the model, and transported to the upper layer via entrainment in the fire plume or to other compartments through any user-specified vents. Unburned fuel may burn in the upper layer or at vents if sufficiently hot and if additional oxygen is available.
 
 
 

@@ -64,6 +64,7 @@ echo.
 call :COPY %docdir%\Tech_Ref\Tech_Ref.pdf %DISTDIR%\Documents\
 call :COPY %docdir%\Users_Guide\Users_Guide.pdf %DISTDIR%\Documents\
 call :COPY %docdir%\Validation_Guide\Validation_Guide.pdf %DISTDIR%\Documents\
+call :COPY %docdir%\Configuration_Guide\Configuration_Guide.pdf %DISTDIR%\Documents\
 
 echo.
 echo ***Copying Smokeview files

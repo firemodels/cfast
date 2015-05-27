@@ -35,6 +35,7 @@ mkdir "%cfaststartmenu%\Guides"
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Users Guide.lnk"       /T:"%CD%\Documents\Users_Guide.pdf" /A:C >NUL
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Technical Reference Guide.lnk"       /T:"%CD%\Documents\Tech_Ref.pdf" /A:C >NUL
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Software Development and Model Evaluation Guide.lnk"       /T:"%CD%\Documents\Validation_Guide.pdf" /A:C >NUL
+"%CD%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Configuration Management.lnk"       /T:"%CD%\Documents\Configuration_Guide.pdf" /A:C >NUL
 "%CD%\shortcut.exe" /F:"%cfaststartmenu%\CEdit.lnk"       /T:"%CD%\CEdit.exe" /A:C >NUL
 
 erase "%CD%"\set_path.exe

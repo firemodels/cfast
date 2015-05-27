@@ -386,6 +386,9 @@ if %nothaveValidation% == 0 (
   call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 )
 
+echo             Configuration Management Guide
+call :build_guide Configuration_Guide %cfastsvnroot%\Docs\Configuration_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+
 call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg%
 call :GET_DURATION TOTALTIME %TIME_beg%
 

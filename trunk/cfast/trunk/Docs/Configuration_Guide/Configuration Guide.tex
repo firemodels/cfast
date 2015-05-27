@@ -1,0 +1,137 @@
+\documentclass[12pt]{book}
+
+\input{../Bibliography/commoncommands}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{XXXX\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ and Smoke Transport \\
+ (Version 7) \\
+ Volume 4: COnfiguration Management \\
+}
+
+\headerC{
+   Richard D. Peacock \\
+}
+
+\vfill
+
+\headerD{XXXXv4}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{XXXX\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ And Smoke Transport \\
+ (Version 7) \\
+ Volume 4: Configuration Management \\
+}
+
+\headerC{
+   Richard D. Peacock \\
+}
+
+\headerD{XXXXv4}
+
+\headerC{
+\flushright{\mydate\today\\
+CFAST Version \cfastversion \\
+\emph{SVN Repository}~$Revision$}}
+% dummy comment to force svn change - Mon Jan  5 21:57:14 EST 2015
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+
+\chapter{Preface}
+
+This document provides the theoretical basis for the Consolidated Fire And Smoke Transport (CFAST) model, following the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
+
+\chapter{Disclaimer}
+
+The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using these tools.
+
+Users are warned that CFAST is intended for use only by those competent in the fields of fluid dynamics, thermodynamics, heat transfer, combustion, and fire science, and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model that may or may not have predictive capability when applied to a specific set of factual circumstances. Lack of accurate predictions by the model could lead to erroneous conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+Throughout this document, the mention of computer hardware or commercial software does not constitute endorsement by NIST, nor does it indicate that the products are necessarily those best suited for the intended purpose.
+
+
+
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+CFAST was originally developed by Walter Jones, formerly of NIST.
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
+
+Doug Carpenter, Combustion Sciences and Engineering, has contributed numerous corrections, clarifications, and updates to the guides and the model through his detailed review of the model and documentation. Allan Coutts, Washington Safety Management Solutions, provided insight into the application of fire models to nuclear safety applications and detailed review of the CFAST document updates for DOE.
+
+Colleen Wade of the Building Research Association of New Zealand (BRANZ), Fred Mowrer of the California Polytechnic State University, and David Sheppard of the U.S. Bureau of Alcohol, Tobacco and Firearms (ATF) provided useful comments on the development of CFAST version 7.
+
+
+\tableofcontents
+
+\listoffigures
+
+
+\mainmatter
+
+\chapter{Overview}
+
+CFAST is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure. Each compartment is divided into an upper and lower gas layer. The fire drives combustion products from the lower to the upper layer via the plume. The temperature within each layer is uniform, and its evolution in time is described by a set of ordinary differential equations derived from the fundamental laws of mass and energy conservation. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers.
+
+The manuals for CFAST consist of the Technical Reference Guide~\cite{CFAST_Tech_Guide_7}, User's Guide~\cite{CFAST_Users_Guide_7}, and a Model Validation Guide~\cite{CFAST_Valid_Guide_7}, and this Configuration Management Guide.  The Technical Reference Guide describes the underlying physical principles. The User's Guide describes how to use the model. The Validation Guide documents sensitivity analyses, model verification, model validation, and model limitations consistent with ASTM~E1355~\cite{ASTM:E1355}.
+
+The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Configuration Management Plan}, known through the rest of this document as ``the Plan.'' This document will be updated as the necessity arises and will establish and provide the basis for a uniform and concise standard of practice for CFAST development. It is based in part on IEEE Standard 828~\cite{IEEE-828} and ASTM~E1355~\cite{ASTM:E1355}.
+
+The volumes that make up the CFAST Technical Reference Guide are based in part on ASTM E 1355, {\em Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models}~\cite{ASTM:E1355}. ASTM~E~1355 outlines the process of assessing the accuracy of a fire model. Volumes~1 through 3 are the result of this evaluation process. The main purpose of the present volume is to describe the process by which the model software is developed and maintained. A model such as CFAST cannot remain static. As progress is made in fire science, the model needs to be updated and improved, but still shown to reliably predict the kinds of
+phenomena for which it was originally designed.
+
+This document applies only to the program CFAST. Documentation and configuration management for its companion visualization program Smokeview, is documentation for FDS and Smokeview.
+
+
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\end{document}

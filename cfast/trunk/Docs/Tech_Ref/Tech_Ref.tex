@@ -320,13 +320,14 @@ As fuel and oxygen are consumed, heat is released and various products of combus
 \end{eqnarray}
 where $\dQ$ is the heat released by the fire. The parameters $\dQr$ and $\dQc$ are the heat released by radiation and convection, respectively, and $\chir$ is the fraction of the fire's heat release rate emitted as radiation.
 
-The user specifies the heat release rate, $\dQ$, as the actual heat released, accounting for combustion efficiency, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The combustion efficiency, $\chia$, is the fraction of the theoretical energy released by a specific fuel that is actually released during combustion. $\chia$ is a function of fuel type, scale, and vitiation. For small fires, Tewarson provides measured values for specific fuels \cite{Tewarson:2003}. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire's energy is released via radiation.  For specific fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, vitiation, and combustion efficiency are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. The assumed and constant values for the combustion efficiency and radiative fraction may add uncertainty to the calculated results so the heat release rate and radiative fraction should be chosen carefully to best model the scenario of interest.
+The user specifies the heat release rate, $\dQ$, as the actual heat released, accounting for combustion efficiency, along with a characteristic base diameter, $D$, which is used in the plume temperature and mass entrainment correlations. The combustion efficiency, $\chia$, is the fraction of the theoretical energy that is actually released during combustion \cite{Hamins:1996}. $\chia$ is a function of fuel type, scale, and vitiation. For small fires, Tewarson provides measured values for specific fuels \cite{Tewarson:2003}. Within CFAST, the user also specifies a radiative fraction which takes a default value of 0.35 ; i.e., 35 \% of the fire's energy is released via radiation.  For specific fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, vitiation, and combustion efficiency are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4. The assumed and constant values for the combustion efficiency and radiative fraction may add uncertainty to the calculated results so the heat release rate and radiative fraction should be chosen carefully to best model the scenario of interest.
 
-While it is convenient for the user to directly specify the heat release rate of the fire, it is actually the pyrolysis rate of fuel, $\dmf$, that is used within the model:
+Using the specified heat release rate of the fire, $\dQ$, and a user-specified the heat of combustion, $\Dh$,  the model calculates the pyrolysis rate of fuel, $\dmf$:
 \be
    \dmf = \frac{\dQ}{\Dh}
 \ee
-where $\Dh$ is the user-specified heat of combustion. In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change. However, only part of the pyrolyzed fuel burns and the HRR becomes:
+
+In the event that the HRR is constrained by the availability of oxygen, it is assumed that the pyrolysis rate does not change. However, only part of the pyrolyzed fuel burns and the HRR becomes:
 \be
    \dQ = \min \Big( \dmf \, \Dh \, , \, \dme \, Y_\OTWO \, C_{\rm LOL} \, \DhO \Big)
 \ee
@@ -883,8 +884,8 @@ $z_0$               & height of the virtual origin of fire, m \\
 $\alpha$            & gas absorptance, dimensionless \\
                     & thermal diffusivity in conduction, (m$^2$/s) \\
 $\gamma$            & ratio of specific heats, 1.4, dimensionless \\
-$\DhO$              & energy released per unit mass of oxygen consumed, J/kg \\
 $\Dh$               & heat of combustion of the fuel, J/kg \\
+$\DhO$              & energy released per unit mass of oxygen consumed, J/kg \\
 $\Delta T$          & temperature rise, K \\
 $\epsilon$          & emissivity \\
 $\nu$               & stoichiometric coefficient, dimensionless \\

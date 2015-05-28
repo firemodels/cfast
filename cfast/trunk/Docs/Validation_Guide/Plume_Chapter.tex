@@ -40,7 +40,7 @@ Based on the model physics and comparisons of model predictions with experimenta
 
 \section{Ceiling Jets}
 
-CFAST includes an algorithm to account for the presence of the higher gas temperatures near the ceiling surfaces in compartments involved in a fire.  In the model, this increased temperature has the effect of increasing the convective heat transfer to ceiling surfaces.  The temperature and velocity of the ceiling jet are also available from the model by placing a heat detector at the specified location.  The ceiling jet algorithm is based on the model by Cooper \cite{Cooper:1991}, with details described in the CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_6}.  The algorithm predicts gas temperature and velocity under a flat, unconstrained ceiling above a fire source.  Only two of the six test series (NIST/NRC and FM/SNL) involved relatively large flat ceilings.  
+CFAST includes an algorithm to account for the presence of the higher gas temperatures near the ceiling surfaces in compartments involved in a fire.  In the model, this increased temperature has the effect of increasing the convective heat transfer to ceiling surfaces.  The temperature and velocity of the ceiling jet are also available from the model by placing a heat detector at the specified location.  The ceiling jet algorithm is based on the model Alpert and Heskestad~\cite{Alpert:SFPE}, with details described in the CFAST Technical Reference Guide \cite{CFAST_Tech_Guide_7}.  The algorithm predicts gas temperature and velocity under a flat, unconstrained ceiling above a fire source.  Only two of the six test series (NIST/NRC and FM/SNL) involved relatively large flat ceilings.
 
 Figure \ref{fig:Ceiling_Jet_Scatter} shows a comparison of predicted and measured values for ceiling jet temperature. Appendix B provides individual graphs of model and experimental values. Following is a summary of the accuracy assessment for the ceiling jet predictions.
 
@@ -76,9 +76,9 @@ Figure \ref{fig:Activation_Scatter} shows a comparison of predicted and measured
 \caption{Comparison of Measured and Predicted Ceiling Jet Temperature.} \label{fig:Activation_Scatter}
 \end{figure}
 
-Sprinkler and smoke detector activation are particularly challenging for a zone fire model since activation depends on conditions local to the device.  
+Sprinkler and smoke detector activation are particularly challenging for a zone fire model since activation depends on conditions local to the device.
 \begin{itemize}
-\item With exception, estimates of sprinkler activation time are typically near experimental uncertainty. Tests with obstructions at the ceiling are notably underpredicted since zone models do not account for the more complex geometry of the ceiling surface. 
+\item With exception, estimates of sprinkler activation time are typically near experimental uncertainty. Tests with obstructions at the ceiling are notably underpredicted since zone models do not account for the more complex geometry of the ceiling surface.
 \item Estimates of smoke detector activation show a wide spread outside the experimental uncertainty.  This is likely due both to the simple, temperature-based criteria used by the model to predict activation time and due to the very low temperature rise at device activation.
 \end{itemize}
 

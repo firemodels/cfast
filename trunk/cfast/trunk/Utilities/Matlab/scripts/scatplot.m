@@ -27,14 +27,18 @@ function [] = scatplot(saved_data,drange,varargin)
 % Parse input arguments using ('Key', Value) syntax
 for k=1:2:length(varargin);
     switch (varargin{k})
-    case {'Scatterplot_Inputs_File'}
-        Scatterplot_Inputs_File = varargin{k+1};
     case {'Manuals_Dir'}
         Manuals_Dir = varargin{k+1};
-    case {'Output_File'}
-        Output_File = varargin{k+1};
+    case {'Scatterplot_Inputs_File'}
+        Scatterplot_Inputs_File = varargin{k+1};
     case {'Stats_Output'}
         Stats_Output = varargin{k+1};
+    case {'Output_File'}
+        Output_File = varargin{k+1};
+    case {'Output_File_Baseline'}
+        Output_File_Baseline = varargin{k+1};
+    case {'Validation_Statistics_Log'}
+        Validation_Statistics_Log = varargin{k+1};
     case {'Statistics_Tex_Output'}
         Statistics_Tex_Output = varargin{k+1};
     case {'Histogram_Tex_Output'}
@@ -193,7 +197,7 @@ for j=2:length(Q);
                         within_tolerance = 'Out of Tolerance';
                     end
                     
-                    % Write descriptive statistics to output_stats cell
+                    % Write verification statistics to output_stats cell
                     output_stats{stat_line,1} = i;
                     output_stats{stat_line,2} = Save_Group_Key_Label{i,1};
                     output_stats{stat_line,3} = Save_Dataname{i,1};
@@ -212,7 +216,8 @@ for j=2:length(Q);
         end
     end
     
-    if k > 0
+    % Perform this code block for FDS validation scatterplot output
+    if k > 0 && strcmp(Stats_Output, 'Validation')
         
         Measured_Values = nonzeros(Measured_Metric);
         Predicted_Values = nonzeros(Predicted_Metric);
@@ -264,13 +269,12 @@ for j=2:length(Q);
         
         % Plot diagonal lines
         plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max],'k-')
-        if strcmp(Model_Error,'yes')
-            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max],'k-')
+        if strcmp(Model_Error, 'yes')
             plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*(1+2*Sigma_E)],'k--')
             plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*(1-2*Sigma_E)],'k--')
-            plot([Plot_Min,Plot_Max],[Plot_Min,delta*Plot_Max],'r-')
-            plot([Plot_Min,Plot_Max],[Plot_Min,delta*Plot_Max*(1+2*Sigma_M)],'r--')
-            plot([Plot_Min,Plot_Max],[Plot_Min,delta*Plot_Max*(1-2*Sigma_M)],'r--')
+            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*delta],'r-')
+            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*delta*(1+2*Sigma_M)],'r--')
+            plot([Plot_Min,Plot_Max],[Plot_Min,Plot_Max*delta*(1-2*Sigma_M)],'r--')
         end
         
         % Format the legend and axis labels
@@ -284,31 +288,33 @@ for j=2:length(Q);
         set(gca,'YTick',get(gca,'XTick'))
         set(gca,'Position',[Scat_Plot_X,Scat_Plot_Y,Scat_Plot_Width,Scat_Plot_Height])
         
-        if strcmp(Plot_Type,'linear')
-            text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
-            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
-        elseif strcmp(Plot_Type,'loglog')
-            text(10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min))),10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min))),...
-            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
-        elseif strcmp(Plot_Type,'semilogx')
-            text(10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min))),Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min),...
-            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
-        elseif strcmp(Plot_Type,'semilogy')
-            text(Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min),10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min))),...
-            [Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+        if strcmp(Plot_Type,'linear') | strcmp(Plot_Type,'semilogy')
+            Title_Position_X = Plot_Min+Title_Position(1)*(Plot_Max-Plot_Min);
+        else
+            Title_Position_X = 10^(log10(Plot_Min)+Title_Position(1)*(log10(Plot_Max)-log10(Plot_Min)));
         end
+
+        if strcmp(Plot_Type,'linear') | strcmp(Plot_Type,'semilogx')
+            Title_Position_Y_1 = Plot_Min+Title_Position(2)*(Plot_Max-Plot_Min);
+            Title_Position_Y_2 = Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min);
+            Title_Position_Y_3 = Plot_Min+(Title_Position(2)-0.10)*(Plot_Max-Plot_Min);
+            Title_Position_Y_4 = Plot_Min+(Title_Position(2)-0.15)*(Plot_Max-Plot_Min);
+        else
+            Title_Position_Y_1 = 10^(log10(Plot_Min)+Title_Position(2)*(log10(Plot_Max)-log10(Plot_Min)));
+            Title_Position_Y_2 = 10^(log10(Plot_Min)+(Title_Position(2)-0.05)*(log10(Plot_Max)-log10(Plot_Min)));
+            Title_Position_Y_3 = 10^(log10(Plot_Min)+(Title_Position(2)-0.10)*(log10(Plot_Max)-log10(Plot_Min)));
+            Title_Position_Y_4 = 10^(log10(Plot_Min)+(Title_Position(2)-0.15)*(log10(Plot_Max)-log10(Plot_Min)));
+        end
+
+        text(Title_Position_X,Title_Position_Y_1,[Scatter_Plot_Title, Append_To_Scatterplot_Title],'FontSize',Scat_Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
   
         if Sigma_E > 0.0
-            text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.05)*(Plot_Max-Plot_Min),...
-                 ['Exp. Rel. Std. Dev.: ',num2str(Sigma_E,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+            text(Title_Position_X,Title_Position_Y_2,['Exp. Rel. Std. Dev.: ',num2str(Sigma_E,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
          
         if strcmp(Model_Error,'yes')
-            text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.10)*(Plot_Max-Plot_Min),...
-                ['Model Rel. Std. Dev.: ',num2str(Sigma_M,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
-            
-            text(Plot_Min+(Title_Position(1))*(Plot_Max-Plot_Min),Plot_Min+(Title_Position(2)-0.15)*(Plot_Max-Plot_Min),...
-                ['Model Bias Factor: ',num2str(delta,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+            text(Title_Position_X,Title_Position_Y_3,['Model Rel. Std. Dev.: ',num2str(Sigma_M,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+            text(Title_Position_X,Title_Position_Y_4,['Model Bias Factor: ',num2str(delta,'%4.2f')],'FontSize',12,'FontName',Font_Name,'Interpreter',Font_Interpreter)
         end
         
         C = stripcell(Group_Key_Label);
@@ -344,20 +350,17 @@ for j=2:length(Q);
         % Print histogram of ln(M/E) and normal distribution
         statistics_histogram
         
-        % Perform this code block for FDS validation scatterplot output
-        if strcmp(Stats_Output, 'Validation')
-            % Write descriptive statistics to output_stats cell
-            output_stats{stat_line,1} = Scatter_Plot_Title; % Quantity
-            output_stats{stat_line,2} = size(B, 2); % Number of data sets
-            output_stats{stat_line,3} = size(Predicted_Values, 1); % Number of data points
-            output_stats{stat_line,4} = sprintf('%0.2f', Sigma_E); % Sigma_E
-            output_stats{stat_line,5} = sprintf('%0.2f', Sigma_M); % Sigma_M
-            output_stats{stat_line,6} = sprintf('%0.2f', delta); % Bias
-            stat_line = stat_line + 1;
-        end
+        % Write validation statistics to output_stats cell
+        output_stats{stat_line,1} = Scatter_Plot_Title; % Quantity
+        output_stats{stat_line,2} = size(B, 2); % Number of data sets
+        output_stats{stat_line,3} = size(Predicted_Values, 1); % Number of data points
+        output_stats{stat_line,4} = sprintf('%0.2f', Sigma_E); % Sigma_E
+        output_stats{stat_line,5} = sprintf('%0.2f', Sigma_M); % Sigma_M
+        output_stats{stat_line,6} = sprintf('%0.2f', delta); % Bias
+        stat_line = stat_line + 1;
         
-    else
-        display(['No data for scatter plot ',Scatter_Plot_Title])
+    elseif k == 0 && strcmp(Stats_Output, 'Validation')
+        display(['No data for scatter plot ', Scatter_Plot_Title])
     end
     
     clear Measured_Metric Measured_Values Predicted_Metric Predicted_Values Group_Key_Label K

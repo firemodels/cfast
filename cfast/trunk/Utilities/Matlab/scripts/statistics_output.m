@@ -36,15 +36,15 @@ end
 if strcmp(Stats_Output, 'Verification')
     fid = fopen(Statistics_Tex_Output, 'wt');
     % Generate table header information in .tex file
-    fprintf(fid, '%s\n', '\tiny');
-    fprintf(fid, '%s\n', '\begin{longtable}[c]{|l|c|c|c|c|c|c|}');
+    fprintf(fid, '%s\n', '\scriptsize');
+    fprintf(fid, '%s\n', '\begin{longtable}[c]{@{\extracolsep{\fill}}|l|c|c|c|c|c|c|}');
     fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Case Name & Expected & Predicted & Type of Error & Error & Error     & Within    \\');
-    fprintf(fid, '%s\n', '          & Metric   & Metric    &               &       & Tolerance & Tolerance \\ \hline \hline');
+    fprintf(fid, '%s\n', 'Case Name & Expected & Predicted & Type of & Error & Error     & Within    \\');
+    fprintf(fid, '%s\n', '          & Value    & Value     & Error   &       & Tolerance & Tol.      \\ \hline \hline');
     fprintf(fid, '%s\n', '\endfirsthead');
     fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Case Name & Expected & Predicted & Type of Error & Error & Error     & Within    \\');
-    fprintf(fid, '%s\n', '          & Metric   & Metric    &               &       & Tolerance & Tolerance \\ \hline \hline');
+    fprintf(fid, '%s\n', 'Case Name & Expected & Predicted & Type of & Error & Error     & Within    \\');
+    fprintf(fid, '%s\n', '          & Value    & Value     & Error   &       & Tolerance & Tol.      \\ \hline \hline');
     fprintf(fid, '%s\n', '\endhead');
     fprintf(fid, '%s\n', '\hline');
     fprintf(fid, '%s\n', '\endfoot');
@@ -77,7 +77,7 @@ if strcmp(Stats_Output, 'Verification')
         fprintf(fid, '%s%s\n', within_tolerance, ' \\');
     end
     fprintf(fid,'%s\n','\end{longtable}');
-    fprintf(fid, '%s\n', '\normalsize');
+    fprintf(fid,'%s\n','\normalsize');
 end
 
 % Write statistics information to a LaTeX table for inclusion
@@ -85,20 +85,21 @@ end
 if strcmp(Stats_Output, 'Validation')
     fid = fopen(Statistics_Tex_Output, 'wt');
     % Generate table header information in .tex file
-    fprintf(fid, '%s\n', '\begin{longtable}[c]{|l|c|c|c|c|c|}');
+    fprintf(fid, '%s\n', '\begin{longtable}[c]{|l|c|c|c|c|c|c|}');
     fprintf(fid, '%s\n', '\caption[Summary statistics]{Summary statistics for all quantities of interest}');
     fprintf(fid, '%s\n', '\label{summary_stats}');
     fprintf(fid, '%s\n', '\\ \hline');
-    fprintf(fid, '%s\n', 'Quantity & Datasets  & Points    & $\widetilde{\sigma}_{\rm E}$ & $\widetilde{\sigma}_{\rm M}$ & Bias \\ \hline \hline');
+    fprintf(fid, '%s\n', 'Quantity & Section   & Datasets  & Points    & $\widetilde{\sigma}_{\rm E}$ & $\widetilde{\sigma}_{\rm M}$ & Bias \\ \hline \hline');
     fprintf(fid, '%s\n', '\endfirsthead');
     fprintf(fid, '%s\n', '\hline');
-    fprintf(fid, '%s\n', 'Quantity & Datasets  & Points    & $\widetilde{\sigma}_{\rm E}$ & $\widetilde{\sigma}_{\rm M}$ & Bias \\ \hline \hline');
+    fprintf(fid, '%s\n', 'Quantity & Section   & Datasets  & Points    & $\widetilde{\sigma}_{\rm E}$ & $\widetilde{\sigma}_{\rm M}$ & Bias \\ \hline \hline');
     fprintf(fid, '%s\n', '\endhead');
     [rows, cols] = size(output_stats);
     for i_row = 2:rows
         % Format strings for various columns in table (and add short names)
         m = output_stats;
         quantity = m{i_row, 1};
+        quantity_section = ['\ref{',quantity,'}'];
         number_datasets = m{i_row, 2};
         number_points= m{i_row, 3};
         sigma_e = m{i_row, 4};
@@ -112,6 +113,7 @@ if strcmp(Stats_Output, 'Validation')
         
         % Write out all columns to .tex file
         fprintf(fid, '%s', quantity, ' & ');
+        fprintf(fid, '%s', quantity_section, ' & ');
         fprintf(fid, '%s', num2str(number_datasets), ' & ');
         fprintf(fid, '%s', num2str(number_points), ' & ');
         fprintf(fid, '%s', num2str(sigma_e, '%0.2f'), ' & ');
@@ -140,7 +142,7 @@ if strcmp(Stats_Output, 'Validation') && (exist('Output_Histograms','var') == 1)
             else
                 line_ending = '\\';
             end
-            fprintf(fid, '%s\n', ['\includegraphics[height=2.2in]{FIGURES/ScatterPlots/',Output_Histograms{j},'} ',line_ending]);
+            fprintf(fid, '%s\n', ['\includegraphics[height=2.2in]{SCRIPT_FIGURES/ScatterPlots/',Output_Histograms{j},'} ',line_ending]);
         end
         fprintf(fid, '%s\n', '\end{tabular*}');
         fprintf(fid, '%s\n', ['\label{Histogram_',num2str(i),'}']);

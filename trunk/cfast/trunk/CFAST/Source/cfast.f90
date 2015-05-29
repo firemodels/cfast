@@ -46,7 +46,7 @@
 
     if(command_argument_count().eq.0)then
         call output_version(0)
-        write (*,*) 'CFAST was called with no arguments on the command line.  At lease an input file is required.'
+        write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
     endif
 
     !     initialize the basic memory configuration

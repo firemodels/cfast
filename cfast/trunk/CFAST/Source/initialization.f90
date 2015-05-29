@@ -24,7 +24,7 @@
     end do
     missingtpp = name
     errorcode = 205
-    write(3,'(''Missing tpp = '',a)') missingtpp
+    write(3,'(''A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     return
     end
 
@@ -273,6 +273,7 @@
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (ncnode(j)>1) then
+            call xerror('hvinit - interior node has too many or too few connections',0,1,1)
             ierror = 223
             return
         endif
@@ -1532,7 +1533,7 @@
         nnode = max(nnode,na(ib),ne(ib))
     end do
     if (nnode>mxnode) then
-        call xerror('offset - node range exceeded for hvac',0,1,1)
+        call xerror('offset - node range exceeded for hvac specification',0,1,1)
         ierror = 16
         return
     endif

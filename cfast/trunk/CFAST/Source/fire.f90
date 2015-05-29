@@ -1465,7 +1465,7 @@
                 call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(ignflux,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else
-                call xerror('update_fire_objects-incorrectly defined object type',0,1,1)
+                call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
                 ierror = 20
                 return
             endif

@@ -744,6 +744,7 @@
             pathcount = 5 + ln(i) + li(i) +ld(i) + le(i)
 
             if (pathcount>255.or.ln(i)>64) then
+                write (*,*) 'Total file name length including path is more than 256 characters.'
                 errorcode = 103
                 return
             endif
@@ -757,6 +758,7 @@
             buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
         else
             errorcode = 104
+            write (*,*) ' Input file does not exist: ', trim(buf)
             return
         end if
     else
@@ -777,6 +779,7 @@
     else
         ! Note that we do not yet have the logerr file open, so write to the console
         errorcode = 102
+        write (*,*) ' Input file does not exist: ', trim(buf)
     endif
     return
 

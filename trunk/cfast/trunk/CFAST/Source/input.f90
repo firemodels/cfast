@@ -562,6 +562,7 @@
             lcopyss =  lrarray(4)
         else 
             ierror = 1
+            write (3,*) '***Error: Bad TIMES input. At least 4 arguments required.'
             return
         endif
 
@@ -577,6 +578,7 @@
             relhum = lrarray(3)*0.01_eb
         else
             ierror = 2
+            write (3,*) '***Error: Bad TAMB input. At least 3 arguments required.'
             return
         endif
         if (.not.exset) then
@@ -589,6 +591,7 @@
     case ("EAMB")
         if (countargs(lcarray)/=3) then
             ierror = 3
+            write (3,*) '***Error: Bad EAMB input. 3 arguments required.'
             return
         endif
         exterior_temperature = lrarray(1)
@@ -601,6 +604,7 @@
             limo2 = lrarray(1)*0.01_eb
         else
             ierror = 4
+            write (3,*) '***Error: Bad LIMO2 input. 1 argument required.'
             return
         endif
 
@@ -610,6 +614,7 @@
             thrmfile = lcarray(1)
         else
             ierror = 6
+            write (3,*) '***Error: Bad THRMF input. 1 argument required.'
             return
         endif
 
@@ -619,6 +624,7 @@
             tgignt = lrarray(2)
         else
             ierror = 4
+            write (3,*) '***Error: Bad DJIGN input. 1 argument required.'
             return
         endif
 
@@ -630,6 +636,7 @@
             tgignt = lrarray(2)
         else
             ierror = 4
+            write (3,*) '***Error: Bad GLOBA input. At least 2 arguments required.'
             return
         endif
 
@@ -638,7 +645,8 @@
         if(countargs(lcarray)>=7) then
             maxct = maxct + 1
             if (maxct>mxthrmp) then
-                write (logerr,'(a,i3)') 'Too many thermal properties in input data file. Limit is ', mxthrmp
+                write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
+                    mxthrmp
                 ierror = 203
                 return
             endif
@@ -651,6 +659,7 @@
             lepw(maxct) = lrarray(6)
         else
             ierror = 6
+            write (3,*) '***Error: Bad MATL input. At least 7 arguments required.'
             return
         endif
 
@@ -717,6 +726,7 @@
             n = compartment+1
         else
             ierror = 8
+            write (3,*) '***Error: Bad COMPA input. At least 10 arguments required.'
             return
         endif
 
@@ -730,6 +740,7 @@
     case ('HVENT')
         if (countargs(lcarray)<7) then
             ierror = 10
+            write (3,*) '***Error: Bad HVENT input. At least 7 arguments required.'
             return
         else
             i = lrarray(1)
@@ -828,7 +839,8 @@
                     qcvh(3,iijk) = lrarray(5) + lrarray(7)
                     qcvh(4,iijk) = lrarray(6)
                 else
-                    ierror = 11
+                    ierror = 71
+                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                     return
                 endif
             case ('V')
@@ -843,7 +855,8 @@
                     qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
                     qcvpp(4,ibot,itop) = lrarray(6)
                 else
-                    ierror = 11
+                    ierror = 71
+                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                     return
                 endif
             case ('M')
@@ -853,7 +866,8 @@
                     qcvm(3,fannumber) = lrarray(5) + lrarray(7)
                     qcvm(4,fannumber) = lrarray(6)
                 else
-                    ierror = 11
+                    ierror = 71
+                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                     return
                 endif
             case ('F')
@@ -869,15 +883,18 @@
                     qcvf(3,fannumber) = lrarray(5) + lrarray(7)
                     qcvf(4,fannumber) = lrarray(6)
                 else
-                    ierror = 11
+                    ierror = 71
+                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                     return
                 endif
             case default
                 ierror = 71
+                write (3,*) '***Error: Bad EVENT input. Type must be H, V, M, or F.'
                 return
             end select
         else
             ierror = 11
+            write (3,*) '***Error: Bad EVENT input. Type must be specified.'
             return
         endif
 
@@ -885,12 +902,15 @@
     case ('RAMP')
         if (countargs(lcarray)<9) then
             ierror=11
+            write (3,*) '***Error: Bad RAMP input. At least 9 arguments required.'
             return
         else if (lrarray(5)<=1) then
             ierror=11
+            write (3,*) '***Error: Bad RAMP input. At least 1 time point must be specified.'
             return
         else if (countargs(lcarray)/=5+2*lrarray(5)) then
             ierror=11
+            write (3,*) '***Error: Bad RAMP input. Inputs must be in pairs.'
             return
         end if
         if (nramps<=mxramps) then
@@ -934,6 +954,7 @@
             qcvpp(4,j,i) = lrarray(5)
         else
             ierror = 23
+            write (3,*) '***Error: Bad VVENT input. At least 5 arguments required.'
             return
         endif
 
@@ -947,6 +968,7 @@
     case ('MVENT')
         if (countargs(lcarray)/=13) then 
             ierror = 12
+            write (3,*) '***Error: Bad MVENT input. 13 arguments required.'
             return
         endif
         mid = lrarray(3)
@@ -1060,6 +1082,7 @@
     case ('FIRE')
         if (countargs(lcarray)/=11) then
             ierror = 32
+            write (3,*) '***Error: Bad FIRE input. 11 arguments required.'
             return
         endif
         if (numobjl>=mxfires) then
@@ -1266,6 +1289,7 @@
             stpmax = lrarray(1)
         else
             ierror = 35
+            write (3,*) '***Error: Bad STPMA input. At least 1 argument required.'
             return
         endif
 
@@ -1331,6 +1355,7 @@
 
         else
             ierror = 34
+            write (3,*) '***Error: Bad DETEC input. At least 9 arguments required.'
             return
         endif
 
@@ -1763,50 +1788,50 @@
     end select
     go to 10 
 
-912 format ('***Error: Invalid TARGET METHOD:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
-913 format('***Error: Invalid equation type specified in TARGET:',A3,' Valid choices are:ODE, PDE or CYL')
-5001 format ('***Error: ONEZ requires a defined compartment ',i3)
-5002 format ('***Error: Too many targets are being defined')
-5003 format ('***Error: The compartment specified by TARGET does not exist',i3)
+912 format ('***Error: BAD TARGE input. Invalid method:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
+913 format('***Error: BAD TARGE input. Invalid equation type:',A3,' Valid choices are:ODE, PDE or CYL')
+5001 format ('***Error: Bad ONEZ input. Referenced compartment is not defined',i3)
+5002 format ('***Error: BAD TARGE input. Too many targets are being defined')
+5003 format ('***Error: BAD TARGE input. The compartment specified by TARGET does not exist',i3)
 5051 format ('***Error: The key word ',a5,' is not recognized')
-5062 format ('***Error: Compartment number outside of allowable range',i5)
-5070 format ('***Error: VENT parameter(s) outside of allowable range',2I4)
-5080 format ('***Error: Too many pairwise horizontal connections',4I5)
+5062 format ('***Error: Bad COMPA input. Compartment number outside of allowable range',i5)
+5070 format ('***Error: Bad VENT input. Parameter(s) outside of allowable range',2I4)
+5080 format ('***Error: Bad HVENT input. Too many pairwise horizontal connections',4I5)
 5081 format ('***Error: Too many horizontal connections ',3i5)
-5191 format ('***Error: Compartments specified in MVENT have not been defined ',2i3)
-5192 format ('***Error: Exceeded maximum number of nodes/openings in MVENT ',2i3)
-5193 format ('***Error: MVENT(MID) is not consistent ',2i3)
-5194 format ('***Error: Pressure for zero flow must exceed the lower limit',f10.2)
-5195 format ('***Error: Too many fan systems',i3)
-5196 format ('***Error: Fan (MID) has not been defined for this filter ',i3)
-5300 format ('***Error: Too many objects defined in datafile')
-5310 format ('***Error: Incorrect number of parameters for OBJECT')
-5320 format ('***Error: Object specification error, room ',I4,' out of range')
-5321 format ('***Error: Object specification error, not an allowed fire type',i3)
-5322 format ('***Error: Object normal vector must be non-zero')
-5323 format ('***Error: Object ',i3,' is outside its compartment')
-5338 format ('***Error: Exceed allowed number of detectors')
-5339 format ('***Error: Detector ',i3,' is outside of compartment ',a)
-5342 format ('***Error: Invalid DETECTOR specification - room ',i3)
-5344 format ('***Error: A referenced compartment is not yet defined ',i3)
-5345 format ('***Error: VHEAT has specified a non-existent compartment')
-5346 format ('***Error: HALL has specified a non-existent compartment',i3)
-5347 format ('***Error: Compartment specified by ROOMA does not exist ',i3)
-5348 format ('***Error: Data on the ROOMA (or H) line must be positive ',1pg12.3)
-5349 format ('***Error: Compartment specified by ROOMH is not defined ',i3)
-5350 format ('***Error: ROOMH error on data line ',i3)
-5354 format ('***Error: HHEAT to compartment out of bounds or not defined - ',i3)
-5355 format ('***Error: HHEAT fraction pairs is not consistent ',2i3)
-5356 format ('***Error: HHEAT specification error in compartment pairs: ',2i3)
-5357 format ('***Error: Error in fraction for HHEAT:',2i3,f6.3)
-5358 format ('***Error: Not a valid ignition criterion ',I5)
+5191 format ('***Error: Bad MVENT input. Compartments specified in MVENT have not been defined ',2i3)
+5192 format ('***Error: Bad MVENT input. Exceeded maximum number of nodes/openings in MVENT ',2i3)
+5193 format ('***Error: Bad MVENT input. MVENT(MID) is not consistent and should be a fan ',2i3)
+5194 format ('***Error: Bad MVENT input. Pressure for zero flow must exceed the lower limit',f10.2)
+5195 format ('***Error: Bad MVENT input. Too many fan systems',i3)
+5196 format ('***Error: Bad EVENT input. Fan has not been defined for this filter ',i3)
+5300 format ('***Error: Bad FIRE input. Too many objects defined in datafile')
+5310 format ('***Error: Bad FIRE input. Incorrect number of parameters for OBJECT')
+5320 format ('***Error: Bad FIRE input. Object specification error, room ',I4,' out of range')
+5321 format ('***Error: Bad FIRE input. Object specification error, not an allowed fire type',i3)
+5322 format ('***Error: Bad FIRE input. Object normal vector must be non-zero')
+5323 format ('***Error: Bad FIRE input. Object ',i3,' is outside its compartment')
+5338 format ('***Error: Bad DETEC input. Exceed allowed number of detectors')
+5339 format ('***Error: Bad DETEC input. Detector ',i3,' is outside of compartment ',a)
+5342 format ('***Error: Bad DETEC input. Invalid DETECTOR specification - room ',i3)
+5344 format ('***Error: Bad DETEC input. A referenced compartment is not yet defined ',i3)
+5345 format ('***Error: Bad VHEAT input. A referenced compartment does not exist')
+5346 format ('***Error: Bad HALL input. A referenced compartment does not exist',i3)
+5347 format ('***Error: Bad ROOMA input. Compartment specified by ROOMA does not exist ',i3)
+5348 format ('***Error: Bad ROOMA or ROOMH input. Data on the ROOMA (or H) line must be positive ',1pg12.3)
+5349 format ('***Error: Bad ROOMH input. Compartment specified by ROOMH is not defined ',i3)
+5350 format ('***Error: Bad ROOMH input. ROOMH error on data line ',i3)
+5354 format ('***Error: Bad HHEAT input. HHEAT to compartment out of bounds or not defined - ',i3)
+5355 format ('***Error: Bad HHEAT input. HHEAT fraction pairs are not consistent ',2i3)
+5356 format ('***Error: Bad HHEAT input. HHEAT specification error in compartment pairs: ',2i3)
+5357 format ('***Error: Bad HHEAT input. Error in fraction for HHEAT:',2i3,f6.3)
+5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',I5)
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
-5402 format ('***Error: Plume index out of range ',i3)
-5403 format ('***Error: Invalid SLCF specification in visualization input ',i3)  
-5404 format ('***Error: Invalid ISOF specification in visualization input ',i3)    
+5402 format ('***Error: Bad FIRE input. Plume index out of range ',i3)
+5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i3)  
+5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i3)    
 5405 format ('***Error: Invalid keyword in CFAST input file ',a) 
-5406 format ('***Error: Outdated HALL command for compartment ',i3,' Flow inputs are no longer used')  
+5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i3,' Flow inputs are no longer used')  
 
     end subroutine keywordcases
 
@@ -2124,6 +2149,7 @@
             xyz(index,opoint) = minimumseparation
         case default
             errorcode = 222
+            write (3,*) 'Fire objects positioned specified outside compartment bounds.'
         end select
     else if (xyz(index,opoint)==0.0_eb) then
         xyz(index,opoint) = minimumseparation

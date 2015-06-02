@@ -824,9 +824,7 @@
 
     ! set up default values for the chemistry
     do i = 1, mxpts
-
-        ! define the vents as being open
-        hcratio(i) = 0.3333333_eb
+        hcratio(i) = onethird
     end do
 
     ! Start with vents open: h for hvent, v for vvent, and m for mvent

@@ -1879,7 +1879,7 @@
         end do
 
         ! define species mass fractions: normalize to total product mass 
-        ! rather than total mass (this is equivalent to what was begin done 
+        ! rather than total mass (this is equivalent to what was being done 
         ! in chemistry)
         do iroom = 1, nm1
             totl = 0.0_eb

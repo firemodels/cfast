@@ -119,7 +119,7 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
-    data tooutput /.false.,5*.true.,.false.,4*.true./ 
+    data tooutput /9*.true.,.false.,.true./ 
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     integer position, i, j, lsp
 
@@ -647,7 +647,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2)
+    character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l, nprod
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
@@ -655,6 +655,7 @@
     'Convective Flow', 'Radiative Flow'/
     data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/
+    data Species /'N2','O2','CO2','CO','HCN','HCL','FUEL','H2O','Soot'/
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = Labels(1)
@@ -703,16 +704,16 @@
     end do
         
     ! Species 
-    !do j = 1, nm1
-    !    do i = 1, 2
-    !        do k = 3, nprod+2
-    !            position = position + 1
-    !            headertext(1,position) = trim(Species(k-2))//trim(Layers(i))
-    !            headertext(2,position) = compartmentnames(j)
-    !            headertext(3,position) = LabelUnits(3)
-    !        end do
-    !    end do
-    !end do
+    do j = 1, nm1
+        do i = 1, 2
+            do k = 1, 9
+                position = position + 1
+                headertext(1,position) = trim(Species(k))//trim(Layers(i))
+                headertext(2,position) = compartmentnames(j)
+                headertext(3,position) = LabelUnits(8)
+            end do
+        end do
+    end do
     
     ! write out header
     write(ioresid,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)

@@ -359,7 +359,7 @@
     integer :: position, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
     
-    data tooutput /.false.,5*.true.,.false.,4*.true./
+    data tooutput /9*.true.,.false.,.true./ 
     data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
     data firstc /.true./
 
@@ -386,6 +386,7 @@
                         ssvalue = toxict(i,layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
                         if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see toxict od calculation)
+                        !ssvalue = zzgspec(i,layer,lsp) ! Use this to print out total mass of species in layers
                         call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90
@@ -580,21 +581,21 @@
         end do
     end do
     ! species mass flow    
-    !do i = 1, nm1
-    !    do j = 1, 2
-    !        do k = 3, nprod + 2
-    !            call SSaddtolist (position,flwtot(i,k,j),outarray)
-    !            call SSaddtolist (position,flwnvnt(i,k,j),outarray)
-    !            call SSaddtolist (position,flwf(i,k,j),outarray)
-    !            call SSaddtolist (position,flwhvnt(i,k,j),outarray)
-    !            call SSaddtolist (position,flwmv(i,k,j),outarray)
-    !            call SSaddtolist (position,filtered(i,k,j),outarray)
-    !            call SSaddtolist (position,flwdjf(i,k,j),outarray)
-    !        end do
-    !        call SSaddtolist (position,flwcv(i,j),outarray)
-    !        call SSaddtolist (position,flwrad(i,j),outarray)
-    !    end do
-    !end do
+    do i = 1, nm1
+        do j = 1, 2
+            do k = 1, 9
+                !call SSaddtolist (position,flwtot(i,k,j),outarray)
+                !call SSaddtolist (position,flwnvnt(i,k,j),outarray)
+                call SSaddtolist (position,flwf(i,k+2,j),outarray)
+                !call SSaddtolist (position,flwhvnt(i,k,j),outarray)
+                !call SSaddtolist (position,flwmv(i,k,j),outarray)
+                !call SSaddtolist (position,filtered(i,k,j),outarray)
+                !call SSaddtolist (position,flwdjf(i,k,j),outarray)
+            end do
+            !call SSaddtolist (position,flwcv(i,j),outarray)
+            !call SSaddtolist (position,flwrad(i,j),outarray)
+        end do
+    end do
 
     call ssprintresid (ioresid, position, outarray)
 

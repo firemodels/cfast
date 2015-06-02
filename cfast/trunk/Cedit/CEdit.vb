@@ -6,9 +6,30 @@ Public Class CeditMain
     Private About As New About
     Private ViewFile As New ViewFile
     'Private RunSimulation As New RunModel
-    Private CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
+    Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
+    Friend WithEvents TabMaterials As System.Windows.Forms.TabPage
+    Friend WithEvents ThermalFromFile As System.Windows.Forms.Button
+    Friend WithEvents ThermalRemove As System.Windows.Forms.Button
+    Friend WithEvents ThermalAdd As System.Windows.Forms.Button
+    Friend WithEvents ThermalDup As System.Windows.Forms.Button
+    Friend WithEvents ThermalSummary As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents GroupThermal As System.Windows.Forms.GroupBox
+    Friend WithEvents ThermalThickness As System.Windows.Forms.TextBox
+    Friend WithEvents Label53 As System.Windows.Forms.Label
+    Friend WithEvents ThermalConductivity As System.Windows.Forms.TextBox
+    Friend WithEvents Label62 As System.Windows.Forms.Label
+    Friend WithEvents ThermalSpecificHeat As System.Windows.Forms.TextBox
+    Friend WithEvents Label84 As System.Windows.Forms.Label
+    Friend WithEvents ThermalLongName As System.Windows.Forms.TextBox
+    Friend WithEvents Label94 As System.Windows.Forms.Label
+    Friend WithEvents ThermalDensity As System.Windows.Forms.TextBox
+    Friend WithEvents Label102 As System.Windows.Forms.Label
+    Friend WithEvents Label103 As System.Windows.Forms.Label
+    Friend WithEvents ThermalEmissivity As System.Windows.Forms.TextBox
+    Friend WithEvents Label104 As System.Windows.Forms.Label
+    Friend WithEvents ThermalShortName As System.Windows.Forms.TextBox
 #Region " Windows Form Designer generated code "
 
     Public Sub New()
@@ -38,7 +59,6 @@ Public Class CeditMain
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents MenuEditThermalProperties As System.Windows.Forms.MenuItem
     Friend WithEvents MenuInsertThermalProperty As System.Windows.Forms.MenuItem
     Friend WithEvents MenuEditFires As System.Windows.Forms.MenuItem
     Friend WithEvents MenuInsertFire As System.Windows.Forms.MenuItem
@@ -440,7 +460,6 @@ Public Class CeditMain
         Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
         Me.MenuEdit = New System.Windows.Forms.MenuItem()
         Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
-        Me.MenuEditThermalProperties = New System.Windows.Forms.MenuItem()
         Me.MenuInsertThermalProperty = New System.Windows.Forms.MenuItem()
         Me.MenuFireObjects = New System.Windows.Forms.MenuItem()
         Me.MenuEditFires = New System.Windows.Forms.MenuItem()
@@ -773,6 +792,27 @@ Public Class CeditMain
         Me.HHeatRemove = New System.Windows.Forms.Button()
         Me.HHeatAdd = New System.Windows.Forms.Button()
         Me.TabMain = New System.Windows.Forms.TabControl()
+        Me.TabMaterials = New System.Windows.Forms.TabPage()
+        Me.ThermalFromFile = New System.Windows.Forms.Button()
+        Me.ThermalRemove = New System.Windows.Forms.Button()
+        Me.ThermalAdd = New System.Windows.Forms.Button()
+        Me.ThermalDup = New System.Windows.Forms.Button()
+        Me.ThermalSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.GroupThermal = New System.Windows.Forms.GroupBox()
+        Me.ThermalThickness = New System.Windows.Forms.TextBox()
+        Me.Label53 = New System.Windows.Forms.Label()
+        Me.ThermalConductivity = New System.Windows.Forms.TextBox()
+        Me.Label62 = New System.Windows.Forms.Label()
+        Me.ThermalSpecificHeat = New System.Windows.Forms.TextBox()
+        Me.Label84 = New System.Windows.Forms.Label()
+        Me.ThermalLongName = New System.Windows.Forms.TextBox()
+        Me.Label94 = New System.Windows.Forms.Label()
+        Me.ThermalDensity = New System.Windows.Forms.TextBox()
+        Me.Label102 = New System.Windows.Forms.Label()
+        Me.Label103 = New System.Windows.Forms.Label()
+        Me.ThermalEmissivity = New System.Windows.Forms.TextBox()
+        Me.Label104 = New System.Windows.Forms.Label()
+        Me.ThermalShortName = New System.Windows.Forms.TextBox()
         Me.TabVisuals = New System.Windows.Forms.TabPage()
         Me.GroupVisualResolution = New System.Windows.Forms.GroupBox()
         Me.Label35 = New System.Windows.Forms.Label()
@@ -855,6 +895,9 @@ Public Class CeditMain
         CType(Me.HHeatSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupHHeats.SuspendLayout()
         Me.TabMain.SuspendLayout()
+        Me.TabMaterials.SuspendLayout()
+        CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupThermal.SuspendLayout()
         Me.TabVisuals.SuspendLayout()
         Me.GroupVisualResolution.SuspendLayout()
         CType(Me.VisualResolution, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -964,17 +1007,12 @@ Public Class CeditMain
         'MenuThermalProperties
         '
         Me.MenuThermalProperties.Index = 0
-        Me.MenuThermalProperties.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuEditThermalProperties, Me.MenuInsertThermalProperty})
+        Me.MenuThermalProperties.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuInsertThermalProperty})
         Me.MenuThermalProperties.Text = "Thermal Properties"
-        '
-        'MenuEditThermalProperties
-        '
-        Me.MenuEditThermalProperties.Index = 0
-        Me.MenuEditThermalProperties.Text = "Edit Thermal Properties"
         '
         'MenuInsertThermalProperty
         '
-        Me.MenuInsertThermalProperty.Index = 1
+        Me.MenuInsertThermalProperty.Index = 0
         Me.MenuInsertThermalProperty.Text = "Insert Thermal Properties"
         '
         'MenuFireObjects
@@ -1127,7 +1165,7 @@ Public Class CeditMain
         Me.TabEnvironment.Name = "TabEnvironment"
         Me.TabEnvironment.Size = New System.Drawing.Size(976, 558)
         Me.TabEnvironment.TabIndex = 0
-        Me.TabEnvironment.Text = "Simulation Environment"
+        Me.TabEnvironment.Text = "Simulation"
         '
         'EnvErrors
         '
@@ -4191,13 +4229,14 @@ Public Class CeditMain
         '
         Me.TabMain.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.TabMain.Controls.Add(Me.TabEnvironment)
+        Me.TabMain.Controls.Add(Me.TabMaterials)
         Me.TabMain.Controls.Add(Me.TabGeometry)
         Me.TabMain.Controls.Add(Me.TabHorizontalFlow)
         Me.TabMain.Controls.Add(Me.TabVerticalFlow)
         Me.TabMain.Controls.Add(Me.TabMechanicalFlow)
+        Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabFires)
         Me.TabMain.Controls.Add(Me.TabDetection)
-        Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
         Me.TabMain.Controls.Add(Me.TabVisuals)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
@@ -4206,6 +4245,206 @@ Public Class CeditMain
         Me.TabMain.SelectedIndex = 0
         Me.TabMain.Size = New System.Drawing.Size(984, 584)
         Me.TabMain.TabIndex = 0
+        '
+        'TabMaterials
+        '
+        Me.TabMaterials.Controls.Add(Me.ThermalFromFile)
+        Me.TabMaterials.Controls.Add(Me.ThermalRemove)
+        Me.TabMaterials.Controls.Add(Me.ThermalAdd)
+        Me.TabMaterials.Controls.Add(Me.ThermalDup)
+        Me.TabMaterials.Controls.Add(Me.ThermalSummary)
+        Me.TabMaterials.Controls.Add(Me.GroupThermal)
+        Me.TabMaterials.Location = New System.Drawing.Point(4, 22)
+        Me.TabMaterials.Name = "TabMaterials"
+        Me.TabMaterials.Size = New System.Drawing.Size(976, 558)
+        Me.TabMaterials.TabIndex = 9
+        Me.TabMaterials.Text = "Thermal Properties"
+        Me.TabMaterials.UseVisualStyleBackColor = True
+        '
+        'ThermalFromFile
+        '
+        Me.ThermalFromFile.Location = New System.Drawing.Point(476, 297)
+        Me.ThermalFromFile.Name = "ThermalFromFile"
+        Me.ThermalFromFile.Size = New System.Drawing.Size(75, 23)
+        Me.ThermalFromFile.TabIndex = 39
+        Me.ThermalFromFile.Text = "From File"
+        '
+        'ThermalRemove
+        '
+        Me.ThermalRemove.Location = New System.Drawing.Point(626, 297)
+        Me.ThermalRemove.Name = "ThermalRemove"
+        Me.ThermalRemove.Size = New System.Drawing.Size(75, 23)
+        Me.ThermalRemove.TabIndex = 38
+        Me.ThermalRemove.Text = "Remove"
+        '
+        'ThermalAdd
+        '
+        Me.ThermalAdd.Location = New System.Drawing.Point(276, 297)
+        Me.ThermalAdd.Name = "ThermalAdd"
+        Me.ThermalAdd.Size = New System.Drawing.Size(75, 23)
+        Me.ThermalAdd.TabIndex = 36
+        Me.ThermalAdd.Text = "Add"
+        '
+        'ThermalDup
+        '
+        Me.ThermalDup.Location = New System.Drawing.Point(376, 297)
+        Me.ThermalDup.Name = "ThermalDup"
+        Me.ThermalDup.Size = New System.Drawing.Size(75, 23)
+        Me.ThermalDup.TabIndex = 37
+        Me.ThermalDup.Text = "Duplicate"
+        '
+        'ThermalSummary
+        '
+        Me.ThermalSummary.ColumnInfo = resources.GetString("ThermalSummary.ColumnInfo")
+        Me.ThermalSummary.ExtendLastCol = True
+        Me.ThermalSummary.Location = New System.Drawing.Point(112, 106)
+        Me.ThermalSummary.Name = "ThermalSummary"
+        Me.ThermalSummary.Rows.Count = 126
+        Me.ThermalSummary.Rows.DefaultSize = 17
+        Me.ThermalSummary.Size = New System.Drawing.Size(752, 176)
+        Me.ThermalSummary.TabIndex = 34
+        '
+        'GroupThermal
+        '
+        Me.GroupThermal.Controls.Add(Me.ThermalThickness)
+        Me.GroupThermal.Controls.Add(Me.Label53)
+        Me.GroupThermal.Controls.Add(Me.ThermalConductivity)
+        Me.GroupThermal.Controls.Add(Me.Label62)
+        Me.GroupThermal.Controls.Add(Me.ThermalSpecificHeat)
+        Me.GroupThermal.Controls.Add(Me.Label84)
+        Me.GroupThermal.Controls.Add(Me.ThermalLongName)
+        Me.GroupThermal.Controls.Add(Me.Label94)
+        Me.GroupThermal.Controls.Add(Me.ThermalDensity)
+        Me.GroupThermal.Controls.Add(Me.Label102)
+        Me.GroupThermal.Controls.Add(Me.Label103)
+        Me.GroupThermal.Controls.Add(Me.ThermalEmissivity)
+        Me.GroupThermal.Controls.Add(Me.Label104)
+        Me.GroupThermal.Controls.Add(Me.ThermalShortName)
+        Me.GroupThermal.Location = New System.Drawing.Point(112, 339)
+        Me.GroupThermal.Name = "GroupThermal"
+        Me.GroupThermal.Size = New System.Drawing.Size(752, 113)
+        Me.GroupThermal.TabIndex = 35
+        Me.GroupThermal.TabStop = False
+        Me.GroupThermal.Text = "Property 1 (of 1)"
+        '
+        'ThermalThickness
+        '
+        Me.ThermalThickness.Location = New System.Drawing.Point(392, 79)
+        Me.ThermalThickness.Name = "ThermalThickness"
+        Me.ThermalThickness.Size = New System.Drawing.Size(80, 20)
+        Me.ThermalThickness.TabIndex = 7
+        '
+        'Label53
+        '
+        Me.Label53.AutoSize = True
+        Me.Label53.Location = New System.Drawing.Point(272, 47)
+        Me.Label53.Name = "Label53"
+        Me.Label53.Size = New System.Drawing.Size(109, 13)
+        Me.Label53.TabIndex = 1
+        Me.Label53.Text = "Thermal Conductivity:"
+        Me.Label53.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'ThermalConductivity
+        '
+        Me.ThermalConductivity.Location = New System.Drawing.Point(392, 47)
+        Me.ThermalConductivity.Name = "ThermalConductivity"
+        Me.ThermalConductivity.Size = New System.Drawing.Size(80, 20)
+        Me.ThermalConductivity.TabIndex = 4
+        '
+        'Label62
+        '
+        Me.Label62.AutoSize = True
+        Me.Label62.Location = New System.Drawing.Point(536, 47)
+        Me.Label62.Name = "Label62"
+        Me.Label62.Size = New System.Drawing.Size(74, 13)
+        Me.Label62.TabIndex = 5
+        Me.Label62.Text = "Specific Heat:"
+        Me.Label62.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'ThermalSpecificHeat
+        '
+        Me.ThermalSpecificHeat.Location = New System.Drawing.Point(616, 47)
+        Me.ThermalSpecificHeat.Name = "ThermalSpecificHeat"
+        Me.ThermalSpecificHeat.Size = New System.Drawing.Size(80, 20)
+        Me.ThermalSpecificHeat.TabIndex = 5
+        '
+        'Label84
+        '
+        Me.Label84.AutoSize = True
+        Me.Label84.Location = New System.Drawing.Point(244, 15)
+        Me.Label84.Name = "Label84"
+        Me.Label84.Size = New System.Drawing.Size(47, 13)
+        Me.Label84.TabIndex = 7
+        Me.Label84.Text = "Material:"
+        Me.Label84.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'ThermalLongName
+        '
+        Me.ThermalLongName.Location = New System.Drawing.Point(300, 15)
+        Me.ThermalLongName.Name = "ThermalLongName"
+        Me.ThermalLongName.Size = New System.Drawing.Size(208, 20)
+        Me.ThermalLongName.TabIndex = 2
+        '
+        'Label94
+        '
+        Me.Label94.AutoSize = True
+        Me.Label94.Location = New System.Drawing.Point(79, 79)
+        Me.Label94.Name = "Label94"
+        Me.Label94.Size = New System.Drawing.Size(45, 13)
+        Me.Label94.TabIndex = 9
+        Me.Label94.Text = "Density:"
+        Me.Label94.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'ThermalDensity
+        '
+        Me.ThermalDensity.Location = New System.Drawing.Point(128, 79)
+        Me.ThermalDensity.Name = "ThermalDensity"
+        Me.ThermalDensity.Size = New System.Drawing.Size(80, 20)
+        Me.ThermalDensity.TabIndex = 6
+        '
+        'Label102
+        '
+        Me.Label102.AutoSize = True
+        Me.Label102.Location = New System.Drawing.Point(320, 79)
+        Me.Label102.Name = "Label102"
+        Me.Label102.Size = New System.Drawing.Size(59, 13)
+        Me.Label102.TabIndex = 11
+        Me.Label102.Text = "Thickness:"
+        Me.Label102.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label103
+        '
+        Me.Label103.AutoSize = True
+        Me.Label103.Location = New System.Drawing.Point(552, 79)
+        Me.Label103.Name = "Label103"
+        Me.Label103.Size = New System.Drawing.Size(55, 13)
+        Me.Label103.TabIndex = 13
+        Me.Label103.Text = "Emissivity:"
+        Me.Label103.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'ThermalEmissivity
+        '
+        Me.ThermalEmissivity.Location = New System.Drawing.Point(616, 79)
+        Me.ThermalEmissivity.Name = "ThermalEmissivity"
+        Me.ThermalEmissivity.Size = New System.Drawing.Size(80, 20)
+        Me.ThermalEmissivity.TabIndex = 8
+        '
+        'Label104
+        '
+        Me.Label104.AutoSize = True
+        Me.Label104.Location = New System.Drawing.Point(56, 47)
+        Me.Label104.Name = "Label104"
+        Me.Label104.Size = New System.Drawing.Size(66, 13)
+        Me.Label104.TabIndex = 15
+        Me.Label104.Text = "Short Name:"
+        Me.Label104.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'ThermalShortName
+        '
+        Me.ThermalShortName.Location = New System.Drawing.Point(128, 47)
+        Me.ThermalShortName.Name = "ThermalShortName"
+        Me.ThermalShortName.Size = New System.Drawing.Size(80, 20)
+        Me.ThermalShortName.TabIndex = 3
         '
         'TabVisuals
         '
@@ -4597,6 +4836,10 @@ Public Class CeditMain
         Me.GroupHHeats.ResumeLayout(False)
         Me.GroupHHeats.PerformLayout()
         Me.TabMain.ResumeLayout(False)
+        Me.TabMaterials.ResumeLayout(False)
+        CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupThermal.ResumeLayout(False)
+        Me.GroupThermal.PerformLayout()
         Me.TabVisuals.ResumeLayout(False)
         Me.GroupVisualResolution.ResumeLayout(False)
         Me.GroupVisualResolution.PerformLayout()
@@ -4655,7 +4898,7 @@ Public Class CeditMain
         myRecentFiles.Save()
     End Sub
 
-#Region " Environment Tab "
+#Region " Simulation Tab "
     ' This section of code handles events related to the environment tab
     Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
@@ -4672,6 +4915,91 @@ Public Class CeditMain
         If sender Is Me.EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(Me.EnvExtAmbPress.Text)
         If sender Is Me.EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
         UpdateGUI.Environment()
+    End Sub
+#End Region
+
+#Region " Thermal Properties Tab "
+    ' This section of code handles events related to the environment tab
+
+    Private Sub Thermal_Changed(sender As Object, e As EventArgs) Handles ThermalLongName.Leave, ThermalShortName.Leave, ThermalConductivity.Leave, ThermalSpecificHeat.Leave, ThermalDensity.Leave, ThermalThickness.Leave, ThermalEmissivity.Leave
+        If CurrentThermalProperty >= 0 And CurrentThermalProperty < myThermalProperties.Count Then
+            Dim aProperty As New ThermalProperty
+            aProperty = myThermalProperties(CurrentThermalProperty)
+            If sender Is Me.ThermalLongName Then aProperty.Name = Me.ThermalLongName.Text
+            If sender Is Me.ThermalShortName Then aProperty.ShortName = Me.ThermalShortName.Text
+            If sender Is Me.ThermalConductivity Then aProperty.Conductivity = Val(Me.ThermalConductivity.Text)
+            If sender Is Me.ThermalSpecificHeat Then aProperty.SpecificHeat = Val(Me.ThermalSpecificHeat.Text)
+            If sender Is Me.ThermalDensity Then aProperty.Density = Val(Me.ThermalDensity.Text)
+            If sender Is Me.ThermalThickness Then aProperty.Thickness = Val(Me.ThermalThickness.Text)
+            If sender Is Me.ThermalEmissivity Then aProperty.Emissivity = Val(Me.ThermalEmissivity.Text)
+            UpdateGUI.Thermals(CurrentThermalProperty)
+        End If
+    End Sub
+    Private Sub ThermalSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalSummary.Click
+        ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
+        Dim index As Integer
+        index = Me.ThermalSummary.RowSel - 1
+        If index >= 0 And index <= myThermalProperties.Count - 1 Then
+            CurrentThermalProperty = index
+            UpdateGUI.Thermals(CurrentThermalProperty)
+        End If
+    End Sub
+    Private Sub ThermalSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles ThermalSummary.AfterSelChange
+        ' The currently selected ThermalProperties has been changed by selecting a row of the summary spreadsheet
+        Dim index As Integer
+        index = Me.ThermalSummary.RowSel - 1
+        If index >= 0 And index <= myThermalProperties.Count - 1 Then
+            CurrentThermalProperty = index
+            UpdateGUI.Thermals(CurrentThermalProperty)
+        End If
+    End Sub
+    Private Sub ThermalAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalAdd.Click
+        ' Add a blank material to the end of the thermal property list
+        If myThermalProperties.Count + 1 < myThermalProperties.Maximum Then
+            Dim aProperty As New ThermalProperty
+            aProperty.Name = "New Material " + (myThermalProperties.Count + 1).ToString
+            aProperty.ShortName = "NM " + (myThermalProperties.Count + 1).ToString
+            myThermalProperties.Add(aProperty)
+            CurrentThermalProperty = myThermalProperties.Count - 1
+            UpdateGUI.Thermals(CurrentThermalProperty)
+        Else
+            MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub ThermalDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalDup.Click
+        ' Copy the current thermal property, adding it to the end of the property list
+        If CurrentThermalProperty >= 0 And myThermalProperties.Count > 0 And CurrentThermalProperty + 1 < myThermalProperties.Maximum Then
+            myThermalProperties.Add(New ThermalProperty)
+            myThermalProperties.Copy(CurrentThermalProperty, myThermalProperties.Count - 1)
+            CurrentThermalProperty = myThermalProperties.Count - 1
+            myThermalProperties(myThermalProperties.Count - 1).Name = "New Material " + myThermalProperties.Count.ToString
+            myThermalProperties(myThermalProperties.Count - 1).ShortName = "NM " + (myThermalProperties.Count).ToString
+            UpdateGUI.Thermals(CurrentThermalProperty)
+        ElseIf CurrentThermalProperty + 1 >= myThermalProperties.Maximum Then
+            MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub ThermalRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalRemove.Click
+        Dim ReturnedButton As Integer, TotalConnections As Integer
+        If CurrentThermalProperty > 0 And myThermalProperties.Count > 0 Then
+            Dim aProperty As New ThermalProperty
+            aProperty = myThermalProperties.Item(CurrentThermalProperty)
+            TotalConnections = myThermalProperties.NumberofConnections(aProperty.ShortName)
+            If TotalConnections > 0 Then
+                ReturnedButton = MessageBox.Show(aProperty.Name + " is used " + TotalConnections.ToString + _
+                " times to define materials in the current simulation. These will be changed to Off.", Me.Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
+                If ReturnedButton = OK Then
+                    myThermalProperties.Remove(CurrentThermalProperty)
+                    If CurrentThermalProperty > 0 Then CurrentThermalProperty -= 1
+                    myEnvironment.Changed = True
+                End If
+            Else
+                myThermalProperties.Remove(CurrentThermalProperty)
+                If CurrentThermalProperty > 0 Then CurrentThermalProperty -= 1
+                myEnvironment.Changed = True
+            End If
+            UpdateGUI.Thermals(CurrentThermalProperty)
+        End If
     End Sub
 #End Region
 
@@ -5756,27 +6084,6 @@ Public Class CeditMain
     Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click
         SaveDataFile(False)
     End Sub
-    Private Sub MenuThermalProperties_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditThermalProperties.Click
-        If myThermalProperties.Count > 0 Then
-            Dim ThermalWindow As New Thermal_Properties_Edit
-            Dim iReturn As Integer, i As Integer
-            iReturn = ThermalWindow.ShowDialog(Me)
-            If iReturn = Windows.Forms.DialogResult.OK Then
-                If TempThermalProperties.Count > 0 Then
-                    myThermalProperties.Clear()
-                    For i = 0 To TempThermalProperties.Count - 1
-                        myThermalProperties.Add(New ThermalProperty)
-                        PropertyCopy(TempThermalProperties(i), myThermalProperties(myThermalProperties.Count - 1))
-                    Next
-                End If
-                UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-                UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-                UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-                UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
-                UpdateAll()
-            End If
-        End If
-    End Sub
     Private Sub MenuEditFires_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuEditFires.Click
         EditFireObjects(0)
     End Sub
@@ -5929,7 +6236,7 @@ Public Class CeditMain
     Private Sub MenuEditInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuInsertFire.Click, MenuInsertThermalProperty.Click
         Dim iReturn As Integer
         Me.OpenDataFileDialog.FilterIndex = 1
-        ireturn = OpenDataFileDialog.ShowDialog()
+        iReturn = OpenDataFileDialog.ShowDialog()
         If iReturn = Windows.Forms.DialogResult.OK And OpenDataFileDialog.FileNames.Length > 0 Then
             Dim FileName As String, Type As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
             If sender Is MenuInsertFire Then Type = InsertDataType.Fire
@@ -6102,6 +6409,7 @@ Public Class CeditMain
         UpdateGUI.General()
         UpdateGUI.DoErrorCheck = False
         UpdateGUI.Environment()
+        UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.Geometry(CurrentCompartment)
         UpdateGUI.HVents(CurrentHVent)
         UpdateGUI.VVents(CurrentVVent)
@@ -6155,7 +6463,6 @@ Public Class CeditMain
         CurrentFire = 0
         CurrentFireObject = 0
 
-        MenuEditThermalProperties.Enabled = False
         UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
         UpdateGUI.InitThermalPropertyList(Me.CompWalls)
         UpdateGUI.InitThermalPropertyList(Me.CompFloor)

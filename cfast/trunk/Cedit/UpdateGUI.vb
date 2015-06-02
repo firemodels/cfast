@@ -35,7 +35,6 @@ Public Class UpdateGUI
         MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
         MainWin.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
         MainWin.MenuShowCFAST.Checked = CommandWindowVisible
-        If myThermalProperties.Count > 0 Then MainWin.MenuEditThermalProperties.Enabled = True
         If myFireObjects.Count > 0 Then MainWin.MenuEditFires.Enabled = True
     End Sub
     Public Sub General()
@@ -90,6 +89,38 @@ Public Class UpdateGUI
                 MainWin.EnvErrors.Text = myEnumerator.Current + ControlChars.CrLf + MainWin.EnvErrors.Text
             End While
         End If
+    End Sub
+    Public Sub Thermals(ByVal index As Integer)
+        If index >= 0 And index < myThermalProperties.Count Then
+            MainWin.GroupThermal.Text = "Thermal Property " + index.ToString + " of(" + myThermalProperties.Count.ToString + ")"
+            Dim aThermalProperty As New ThermalProperty
+            Dim i As Integer
+            aThermalProperty = myThermalProperties(index)
+            MainWin.ThermalShortName.Text = aThermalProperty.ShortName
+            MainWin.ThermalLongName.Text = aThermalProperty.Name
+            MainWin.ThermalConductivity.Text = aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
+            MainWin.ThermalSpecificHeat.Text = aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
+            MainWin.ThermalDensity.Text = aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
+            MainWin.ThermalThickness.Text = aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.ThermalEmissivity.Text = aThermalProperty.Emissivity.ToString
+            ClearGrid(MainWin.ThermalSummary)
+            For i = 1 To myThermalProperties.Count
+                aThermalProperty = myThermalProperties(i - 1)
+                MainWin.ThermalSummary(i, 0) = aThermalProperty.Name
+                MainWin.ThermalSummary(i, 1) = aThermalProperty.ShortName
+                MainWin.ThermalSummary(i, 2) = aThermalProperty.Conductivity.ToString
+                MainWin.ThermalSummary(i, 3) = aThermalProperty.SpecificHeat.ToString
+                MainWin.ThermalSummary(i, 4) = aThermalProperty.Density.ToString
+                MainWin.ThermalSummary(i, 5) = aThermalProperty.Thickness.ToString
+                MainWin.ThermalSummary(i, 6) = aThermalProperty.Emissivity.ToString
+            Next
+            MainWin.ThermalSummary.Select(index + 1, 0, index + 1, MainWin.ThermalSummary.Cols.Count - 1, True)
+        End If
+
+        InitThermalPropertyList(MainWin.CompCeiling)
+        InitThermalPropertyList(MainWin.CompWalls)
+        InitThermalPropertyList(MainWin.CompFloor)
+        InitThermalPropertyList(MainWin.TargetMaterial)
     End Sub
     Public Sub Visuals(ByVal indexVisual As Integer, ByVal indexCompartment As Integer)
         Me.General()

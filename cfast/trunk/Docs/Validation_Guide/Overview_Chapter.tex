@@ -28,96 +28,31 @@ information about the fuels, geometry, and so on.
 
 \section{How to Use this Guide}
 
- This guide presents a compilation of past and present validation exercises for the CFAST model are presented.  As CFAST continues to develop, it will expand to include new experimental
-measurements of newly modeled physical phenomena. With each change in,
-the plots and graphs are all be redone to ensure that changes to the model are consistent with any changes in the predictions and the overall accuracy of the model. If you are embarking on a validation study, you might want to consider the following steps:
+This guide presents a compilation of past and present validation exercises for the CFAST model are presented.  As CFAST continues to develop, it will expand to include new experimental measurements of newly modeled physical phenomena. With each change in, the plots and graphs are all be redone to ensure that changes to the model are consistent with any changes in the predictions and the overall accuracy of the model. If you are embarking on a validation study, you might want to consider the following steps:
 \begin{enumerate}
-\item Survey Chapter~\ref{Survey_Chapter} to learn about past efforts by others to validate the model for
-applications similar to yours. Keep in mind that most of the referenced validation exercises have been performed with
-older versions of CFAST, and you may want to obtain the experimental data and the old FDS input files and redo the
-simulations with the version of CFAST that you plan to use.
-\item Identify in Chapter~\ref{Experiment_Chapter} experimental data sets appropriate for your application. In particular,
-the summary of the experiments found in table~\ref{Test_Parameters} contains a table listing various non-dimensional
-quantities that characterize the parameters of the experiments. For example, the equivalence ratio of a compartment fire
-experiment indicates the degree to which the fire was over or under-ventilated.
-To say that the results of a given experiment are relevant to
-your scenario, you need to demonstrate that its parameters ``fit'' within the parameter space outlined in
-Table~\ref{Test_Parameters}.
-\item Search the Table of Contents to find comparisons of CFAST simulations with the relevant experiments.
-For a given experiment, there may be numerous measurements of quantities like the gas temperature,
-heat flux, and so on.
-It is a challenge to sort out all the plots and graphs of all the different quantities and come to some general conclusion.
-For this reason, this Guide is organized by output quantity, not by individual experiment or fire scenario.
-In this way, it is possible to assess, over a range of
-different experiments and scenarios, the performance of the model in predicting a given quantity.
-Overall trends and biases become much more clear when the data is organized this way.
+\item Survey Chapter~\ref{Survey_Chapter} to learn about past efforts by others to validate the model for applications similar to yours. Keep in mind that most of the referenced validation exercises have been performed with older versions of CFAST, and you may want to obtain the experimental data and the old FDS input files and redo the simulations with the version of CFAST that you plan to use.
+\item Identify in Chapter~\ref{Experiment_Chapter} experimental data sets appropriate for your application. In particular, the summary of the experiments found in table~\ref{Test_Parameters} contains a table listing various non-dimensional quantities that characterize the parameters of the experiments. For example, the equivalence ratio of a compartment fire experiment indicates the degree to which the fire was over or under-ventilated. To say that the results of a given experiment are relevant to your scenario, you need to demonstrate that its parameters ``fit'' within the parameter space outlined in Table~\ref{Test_Parameters}.
+\item Search the Table of Contents to find comparisons of CFAST simulations with the relevant experiments. For a given experiment, there may be numerous measurements of quantities like the gas temperature, heat flux, and so on. It is a challenge to sort out all the plots and graphs of all the different quantities and come to some general conclusion. For this reason, this Guide is organized by output quantity, not by individual experiment or fire scenario. In this way, it is possible to assess, over a range of different experiments and scenarios, the performance of the model in predicting a given quantity. Overall trends and biases become much more clear when the data is organized this way.
 \end{enumerate}
-The experimental data sets and CFAST input files described in this Guide are all managed via the on-line project archiving system.
-You might want to re-run examples of interest
-to better understand how the calculations were designed, and how changes in the various parameters might affect the results.
-This is known as a {\em sensitivity study},
-and it is difficult to document all the parameter variations of the calculations described in this report.
-Thus, it is a good idea to determine which of the input parameters are particularly important.
+The experimental data sets and CFAST input files described in this Guide are all managed via the on-line project archiving system. You might want to re-run examples of interest to better understand how the calculations were designed, and how changes in the various parameters might affect the results. This is known as a {\em sensitivity study}, and it is difficult to document all the parameter variations of the calculations described in this report. Thus, it is a good idea to determine which of the input parameters are particularly important.
 
 \section{Blind, Specified, and Open Validation Experiments}
 
 ASTM E 1355~\cite{ASTM:E1355} describes three basic types of validation calculations -- {\em Blind}, {\em Specified}, and
 {\em Open}.
 \begin{description}
-\item [Blind Calculation:] The model user is provided with
-a basic description of the scenario to be modeled. For this
-application, the problem description is not exact; the model
-user is responsible for developing appropriate model inputs
-from the problem description, including additional details of
-the geometry, material properties, and fire description, as
-appropriate. Additional details necessary to simulate the scenario
-with a specific model are left to the judgement of the
-model user. In addition to illustrating the comparability of
-models in actual end-use conditions, this will test the ability of
-those who use the model to develop appropriate input data for
-the models.
-\item [Specified Calculation:] The model user is provided
-with a complete detailed description of model inputs, including
-geometry, material properties, and fire description. As a
-follow-on to the blind calculation, this test provides a more
-careful comparison of the underlying physics in the models
-with a more completely specified scenario.
-\item [Open Calculation:] The model user is provided with
-the most complete information about the scenario, including
-geometry, material properties, fire description, and the results
-of experimental tests or benchmark model runs which were
-used in the evaluation of the blind or specified calculations of
-the scenario. Deficiencies in available input (used for the blind
-calculation) should become most apparent with comparison of
-the open and blind calculation.
+\item [Blind Calculation:] The model user is provided witha basic description of the scenario to be modeled. For this application, the problem description is not exact; the model user is responsible for developing appropriate model inputs from the problem description, including additional details of the geometry, material properties, and fire description, as appropriate. Additional details necessary to simulate the scenario with a specific model are left to the judgement of the model user. In addition to illustrating the comparability of models in actual end-use conditions, this will test the ability of those who use the model to develop appropriate input data for the models.
+\item [Specified Calculation:] The model user is provided with a complete detailed description of model inputs, including geometry, material properties, and fire description. As a follow-on to the blind calculation, this test provides a more careful comparison of the underlying physics in the models with a more completely specified scenario.
+\item [Open Calculation:] The model user is provided with the most complete information about the scenario, including geometry, material properties, fire description, and the results of experimental tests or benchmark model runs which were used in the evaluation of the blind or specified calculations of the scenario. Deficiencies in available input (used for the blind calculation) should become most apparent with comparison of the open and blind calculation.
 \end{description}
-The calculations presented in this Guide all fall into the {\em Open} category. There are several reasons for this, the first
-being the most practical:
+The calculations presented in this Guide all fall into the {\em Open} category. There are several reasons for this, the first being the most practical:
 \begin{itemize}
-\item All of the calculations presented in this Guide are routinely rerun. The
-fact that the experiments have already been performed and the results are known automatically qualify these
-calculations as {\em Open}.
-\item Some of the calculations described in this Guide did originally fall into the {\em Specified} category because they
-were first performed before the experiments were conducted. However, in almost every case, the experiment was not conducted
-exactly as specified, and the calculation results were not particulary useful in determining the accuracy of the model.
-\item None of the calculations were truly {\em Blind}, even those performed prior to the experiments. The purpose of a
-{\em Blind} calculation is to assess the degree to which the choice of input parameters affects the outcome. However,
-in such cases it is impossible to discern the uncertainty associated from the choice of input parameters from that associated
-with the model itself. The primary purpose of this Guide is to quantify the uncertainty of the model itself, in which
-case {\em Blind} calculations are of little value.
+\item All of the calculations presented in this Guide are routinely rerun. The fact that the experiments have already been performed and the results are known automatically qualify these calculations as {\em Open}.
+\item Some of the calculations described in this Guide did originally fall into the {\em Specified} category because they were first performed before the experiments were conducted. However, in almost every case, the experiment was not conducted exactly as specified, and the calculation results were not particulary useful in determining the accuracy of the model. \item None of the calculations were truly {\em Blind}, even those performed prior to the experiments. The purpose of a {\em Blind} calculation is to assess the degree to which the choice of input parameters affects the outcome. However, in such cases it is impossible to discern the uncertainty associated from the choice of input parameters from that associated with the model itself. The primary purpose of this Guide is to quantify the uncertainty of the model itself, in which case {\em Blind} calculations are of little value.
 \end{itemize}
 
 
 
-\section{Model Validation Scenarios}
-
-Key to ensuring the correctness and accuracy of the model are comparisons of the model with both earlier versions of the model and with documented experimental data applicable to the intended range of application of the model. When doing a validation study, the first question to ask is, ``What is the application?'' There are countless fire scenarios to consider, but from the point of view of validation, it is useful to divide them into two classes -- those for which the fire is {\em specified} as an input to the model and those for which the fire must be estimated by use of the model. The former is often the case for a design application, the latter for a forensic reconstruction. Consider each in turn.
-
-Design  applications  typically  involve  an existing  building  or  a building  under  design. A  so-called  ``design  fire'' is  prescribed either by  a regulatory authority  or by the engineers  performing the analysis. Because the  fire's heat release rate is  specified, the role of the model is to predict  the transport of heat and combustion products throughout  the room or  rooms of  interest. Ventilation  equipment is often included  in the simulation, like fans,  blowers, exhaust hoods, ductwork,  smoke management systems,  {\em etc.} Sprinkler  and heat and smoke detector activation are also of interest.  The effect of the sprinkler spray on the fire is usually less of interest since the fire is  prescribed rather  than  predicted. Detailed  descriptions of  the contents of the building are usually not necessary because these items are not assumed to be burning,  and even if they are, the burning rate will be  fixed, not predicted.  Sometimes, it is necessary  to predict the heat  flux from the fire  to a nearby ``target,''  and even though the target  may heat up  to some prescribed ignition  temperature, the subsequent spread  of the  fire usually goes  beyond the scope  of the analysis because of the uncertainty  inherent in object to object fire spread.
-
-Forensic reconstructions require the  model to simulate an actual fire based on  information that is collected  after the event,  such as eye witness accounts, unburned materials,  burn signatures, {\em etc.} The purpose  of  the simulation  is  to  connect  a sequence  of  discrete observations  with  a continuous  description  of  the fire  dynamics. Usually,  reconstructions  involve  more gas/solid  phase  interaction because  virtually  all  objects  in  a  given  room  are  potentially ignitable, especially when flashover  occurs. Thus, there is much more emphasis on  such phenomena as  heat transfer to  surfaces, pyrolysis, flame  spread, and suppression.  In general,  forensic reconstructions are more challenging simulations  to perform because they require more detailed  information  about the  room  geometry and contents,  and  there is  much greater uncertainty in the total heat release rate as the fire spreads from object to object.
-
-CFAST has been applied for both design and reconstruction scenarios. For the former, specified design fires are typically used (e.g., reference \cite{NRCNUREG6850}).  For the latter, iterative simulation with multiple model runs allow the user to develop fire growth inputs consistent with observed post fire conditions.
 
 
 

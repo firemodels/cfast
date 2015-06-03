@@ -5,7 +5,7 @@ CFAST simulated all of the chosen experiments.  Details of the comparisons with 
 \begin{itemize}
 \item hot gas layer (HGL) temperature and height
 \item ceiling jet temperature
-\item plume temperature 
+\item plume temperature
 \item flame height
 \item oxygen and carbon dioxide concentration
 \item smoke concentration
@@ -24,7 +24,17 @@ From a standpoint of hazard, time of descent to a chosen level may be a reasonab
 
 A good prediction of the HGL height is largely a consequence of a good prediction of its temperature because smoke and heat are largely transported together and most numerical models describe the transport of both with the same type of algorithm.  Typically, CFAST slightly over-predicts the HGL temperature, most often within experimental uncertainty.  Hot gas layer height is typically within experimental uncertainty for well-ventilated tests and near floor level for under-ventilated tests where compartments are closed to the outside.  For HGL height, both open- and closed-door tests are included.  For closed-door tests, visual observations typically show that the HGL fills the entire compartment volume from floor to ceiling, inconsistent with the calculated results for the experimental data.  Thus, the comparisons with experimental values of HGL height for closed-door tests are expected to have larger differences that those for open-door tests.
 
-Figures \ref{fig:HGL_Temperature_Scatter} and \ref{fig:HGL_Height_Scatter} shows a comparison of predicted and measured values for HGL temperature and depth. Appendix B provides individual graphs of model and experimental values.  
+Figures \ref{fig:HGL_Temperature_Scatter} and \ref{fig:HGL_Height_Scatter} shows a comparison of predicted and measured values for HGL temperature and depth. Appendix B provides individual graphs of model and experimental values.
+
+
+\section{Summary of Hot Gas Layer Temperature and Height}
+\label{HGL Temperature}
+\label{HGL Temperature: Natural Ventilation}
+\label{HGL Temperature: Forced Ventilation}
+\label{HGL Temperature: No Ventilation}
+\label{HGL Depth}
+\label{HGL Depth: Closed Compartments}
+\label{HGL Depth: Open Compartments}
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -44,10 +54,10 @@ Figures \ref{fig:HGL_Temperature_Scatter} and \ref{fig:HGL_Height_Scatter} shows
 \caption{Overall comparison of Measured and Predicted HGL Height.} \label{fig:HGL_Height_Scatter}
 \end{figure}
 
-The two-zone assumption inherent in CFAST, modeled as a series of ordinary differential equations that describe mass and energy conservation of flows in a multiple-compartment structure typically provide prediction of gas layer temperature and layer height for the applications studied. 
+The two-zone assumption inherent in CFAST, modeled as a series of ordinary differential equations that describe mass and energy conservation of flows in a multiple-compartment structure typically provide prediction of gas layer temperature and layer height for the applications studied.
 
 \begin{itemize}
-\item The CFAST predictions of the HGL temperature and height are, with exceptions, are clustered near experimental uncertainty. On average, predicted HGL temperature is within \HGLtempavg~\% and HGL depth is within \HGLhgtavg~\% of experimental measurements. The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements. These differences are likely attributable to simplifications in the model dealing with mixing between the layers, entrainment in the fire plume, and flow through vents. 
+\item The CFAST predictions of the HGL temperature and height are, with exceptions, are clustered near experimental uncertainty. On average, predicted HGL temperature is within \HGLtempavg~\% and HGL depth is within \HGLhgtavg~\% of experimental measurements. The CFAST predictions are typical of those found in other studies where the HGL temperature is typically somewhat over-predicted and HGL height somewhat lower (HGL depth somewhat thicker) than experimental measurements. These differences are likely attributable to simplifications in the model dealing with mixing between the layers, entrainment in the fire plume, and flow through vents.
 \item Calculation of HGL temperature and height has higher uncertainty in rooms remote from the fire compared to those in the fire compartment.  Most likely, this is due to a combination of the simplified vent flow predictions (based on idealized Bernoulli flow) and the assumption of constant compartment surface thermal properties that are assumed independent of temperature.
 \item It is worth noting that the UL/NIST Vents tests which include large vents in the ceiling of the test compartment show particularly higher HGL temperatures and corresponding smaller upper layer volume compared to experimental values.  Without these tests, the model uncertainties would be significantly lower.  This is likely due to the large size of the vents relative to those included in the original experimental correlations used by CFAST.
 \end{itemize}

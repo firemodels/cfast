@@ -6468,6 +6468,7 @@ Public Class CeditMain
         UpdateGUI.InitFireObjectList(Me.FireName)
 
         ' Initialize spreadsheets for input or no input (summary tables) as appropriate
+        UpdateGUI.InitSummaryGrid(Me.ThermalSummary)
         UpdateGUI.InitSummaryGrid(Me.CompSummary)
         UpdateGUI.InitSummaryGrid(Me.HVentSummary)
         UpdateGUI.InitSummaryGrid(Me.VVentSummary)

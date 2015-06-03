@@ -6256,10 +6256,10 @@ Public Class CeditMain
                             myThermalProperties.Add(aThermalProperty)
                         End If
                     Next
-                    UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-                    UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-                    UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-                    UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+                    'UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
+                    'UpdateGUI.InitThermalPropertyList(Me.CompWalls)
+                    'UpdateGUI.InitThermalPropertyList(Me.CompFloor)
+                    'UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
                 ElseIf sender Is MenuInsertFire Then
                     Dim i As Integer, aFire As New Fire(Fire.TypeFireObject)
                     For i = 1 To InsertDialog.Count
@@ -6292,11 +6292,7 @@ Public Class CeditMain
             myUnits.SI = False
             UpdateGUI.InitFireObjectList(Me.FireName)
             UpdateAll()
-            UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-            UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-            UpdateGUI.InitThermalPropertyList(Me.CompFloor)
             myCompartments(CurrentCompartment).Changed = False
-            UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
         Else
             MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
         End If
@@ -6409,7 +6405,6 @@ Public Class CeditMain
         UpdateGUI.General()
         UpdateGUI.DoErrorCheck = False
         UpdateGUI.Environment()
-        UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.Geometry(CurrentCompartment)
         UpdateGUI.HVents(CurrentHVent)
         UpdateGUI.VVents(CurrentVVent)
@@ -6419,6 +6414,7 @@ Public Class CeditMain
         UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
         UpdateGUI.Fires(CurrentFire)
         UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
+        UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.DoErrorCheck = True
     End Sub
     Private Sub InitNew()

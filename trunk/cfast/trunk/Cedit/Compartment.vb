@@ -131,7 +131,7 @@ Public Class Compartment
         End Get
         Set(ByVal Value As String)
             If Value <> aCeilingMaterial And Value <> " " Then
-                aChanged = True
+                If myCompartments.DoChange Then aChanged = True
                 aCeilingMaterial = myThermalProperties.ValidThermalProperty(Value, "Ceiling Material")
             End If
         End Set
@@ -142,7 +142,7 @@ Public Class Compartment
         End Get
         Set(ByVal Value As String)
             If Value <> aWallMaterial And Value <> " " Then
-                aChanged = True
+                If myCompartments.DoChange Then aChanged = True
                 aWallMaterial = myThermalProperties.ValidThermalProperty(Value, "Wall Material")
             End If
         End Set
@@ -153,7 +153,7 @@ Public Class Compartment
         End Get
         Set(ByVal Value As String)
             If Value <> aFloorMaterial And Value <> " " Then
-                aChanged = True
+                If myCompartments.DoChange Then aChanged = True
                 aFloorMaterial = myThermalProperties.ValidThermalProperty(Value, "Floor Material")
             End If
         End Set
@@ -366,6 +366,8 @@ Public Class CompartmentCollection
     Public ReadOnly Maximum As Integer = Compartment.MaximumCompartments
     Private i As Integer, j As Integer
     Private HasErrors As Integer
+
+    Public DoChange As Boolean = True
     Public Sub Add(ByVal aCompartment As Compartment)
         List.Add(aCompartment)
     End Sub

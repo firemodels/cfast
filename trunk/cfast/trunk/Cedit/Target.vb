@@ -204,7 +204,7 @@ Public Class Target
         Set(ByVal Value As String)
             If Value <> aMaterial Then
                 Me.aMaterial = myThermalProperties.ValidThermalProperty(Value, "Target")
-                aChanged = True
+                If myTargets.DoChange Then aChanged = True
             End If
         End Set
     End Property
@@ -440,6 +440,8 @@ Public Class TargetCollection
     Friend ReadOnly Maximum As Integer = Target.MaximumTargets
     Private i As Integer
     Private Haserror As Integer
+
+    Public DoChange As Boolean = True
     Public Sub Add(ByVal aTarget As Target)
         List.Add(aTarget)
     End Sub

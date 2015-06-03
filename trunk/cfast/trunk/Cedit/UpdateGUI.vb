@@ -91,7 +91,9 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Thermals(ByVal index As Integer)
+        Me.General()
         If myThermalProperties.Count = 0 Then
+            ClearGrid(MainWin.ThermalSummary)
             MainWin.GroupThermal.Enabled = False
         Else
             MainWin.GroupThermal.Enabled = True

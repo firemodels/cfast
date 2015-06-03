@@ -2067,3 +2067,154 @@ The following pages present comparisons of oxygen and carbon dioxide concentrati
 
 \clearpage
 
+\chapter{DOE Example Cases}
+
+The U.S. Department of Energy (DOE) provides a guidance report on the use of CFAST in safety analyses for DOE facilities \cite{DOE_Guidance_Report}.  The report contains a number of compartment example cases with output for CFAST version 6.1. This section presents the outputs (using the current version of CFAST) for these example applications. Table\ref{tab:DOE_Examples} shows the examples included in this section.
+
+\begin{table}[h!]
+\caption[Summary of DOE example scenarios from DOE-EH-4.2.1.3]{Summary of NRC example scenarios from DOE-EH-4.2.1.3  \cite{DOE_Guidance_Report} run using CFAST}
+\begin{center}
+\begin{tabular*}{\textwidth}{|c|@{\extracolsep{\fill}}L{5.0in}|}
+\hline
+Example & Scenario Description \\ \hline \hline
+DOE201 & No fire case. \\ \hline
+DOE202 & Base fire case. \\ \hline
+DOE203 & No partial combustion products case. \\ \hline
+DOE204 & Lower peak heat release rate (400 kW) case. \\ \hline
+DOE205 & Higher peak heat release rate (750 kW) case. \\ \hline
+DOE206 & Window failure case. \\ \hline
+\end{tabular*}
+\end{center}
+\label{tab:DOE_Examples}
+\end{table}
+
+\begin{figure}[h!]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE201_MV_Flow} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE201_Pressure}
+\end{tabular*}
+\caption{Test case conditions for the DOE No fire case.  CFAST verification fileDOE201.in.}
+\label{fig:DOE201}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_HGT}
+\end{tabular*}
+\caption{Upper layer temperature and layer height for the DOE base fire case.  CFAST verification fileDOE202.in.}
+\label{fig:DOE202_Layers}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Vent_Flow}
+\end{tabular*}
+\caption{Compartment Pressure and vent flows for the DOE base fire case.  CFAST verification fileDOE202.in.}
+\label{fig:DOE202_Flows}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE202_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE202_Total_Trace}
+\end{tabular*}
+\caption{Trace Species for the DOE base fire case.  CFAST verification fileDOE202.in.}
+\label{fig:DOE202_Trace}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_HGT}
+\end{tabular*}
+\caption{Upper layer temperature and layer height for the DOE no combustion products case.  CFAST verification fileDOE203.in.}
+\label{fig:DOE203_Layers}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Vent_Flow}
+\end{tabular*}
+\caption{Compartment Pressure and vent flows for the DOE no combustion products case.  CFAST verification fileDOE203.in.}
+\label{fig:DOE203_Flows}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE203_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE203_Total_Trace}
+\end{tabular*}
+\caption{Trace Species for the DOE no combustion products case.  CFAST verification fileDOE203.in.}
+\label{fig:DOE203_Trace}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_HGT}
+\end{tabular*}
+\caption{Upper layer temperature and layer height for the DOE lower peak heat release rate case.  CFAST verification fileDOE204.in.}
+\label{fig:DOE204_Layers}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Vent_Flow}
+\end{tabular*}
+\caption{Compartment Pressure and vent flows for the DOE lower peak heat release rate case.  CFAST verification fileDOE204.in.}
+\label{fig:DOE204_Flows}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE204_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE204_Total_Trace}
+\end{tabular*}
+\caption{Trace Species for the DOE lower peak heat release rate case.  CFAST verification fileDOE204.in.}
+\label{fig:DOE204_Trace}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_HGT}
+\end{tabular*}
+\caption{Upper layer temperature and layer height for the DOE higher peak heat release rate case.  CFAST verification fileDOE205.in.}
+\label{fig:DOE205_Layers}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Vent_Flow}
+\end{tabular*}
+\caption{Compartment Pressure and vent flows for the DOE higher peak heat release rate case.  CFAST verification fileDOE205.in.}
+\label{fig:DOE205_Flows}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE205_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE205_Total_Trace}
+\end{tabular*}
+\caption{Trace Species for the DOE higher peak heat release rate case.  CFAST verification fileDOE205.in.}
+\label{fig:DOE205_Trace}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Temperature} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_HGT}
+\end{tabular*}
+\caption{Upper layer temperature and layer height for the DOE window failure case.  CFAST verification fileDOE206.in.}
+\label{fig:DOE206_Layers}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Pressure} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Vent_Flow}
+\end{tabular*}
+\caption{Compartment Pressure and vent flows for the DOE window failure case.  CFAST verification fileDOE206.in.}
+\label{fig:DOE206_Flows}
+\end{figure}
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/DOE206_UL_Trace} & \includegraphics[width=3.0in]{FIGURES/Verification/DOE206_Total_Trace}
+\end{tabular*}
+\caption{Trace Species for the DOE window failure case.  CFAST verification fileDOE206.in.}
+\label{fig:DOE206_Trace}
+\end{figure}
+
+
+

@@ -59,7 +59,6 @@ Public Class CeditMain
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents MenuInsertThermalProperty As System.Windows.Forms.MenuItem
     Friend WithEvents MenuEditFires As System.Windows.Forms.MenuItem
     Friend WithEvents MenuInsertFire As System.Windows.Forms.MenuItem
     Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
@@ -366,7 +365,6 @@ Public Class CeditMain
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents Label66 As System.Windows.Forms.Label
     Friend WithEvents FireName As System.Windows.Forms.ComboBox
-    Friend WithEvents MenuThermalProperties As System.Windows.Forms.MenuItem
     Friend WithEvents MenuUnits As System.Windows.Forms.MenuItem
     Friend WithEvents MenuSave As System.Windows.Forms.MenuItem
     Friend WithEvents MenuSaveAs As System.Windows.Forms.MenuItem
@@ -459,8 +457,6 @@ Public Class CeditMain
         Me.MenuRecent3 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
         Me.MenuEdit = New System.Windows.Forms.MenuItem()
-        Me.MenuThermalProperties = New System.Windows.Forms.MenuItem()
-        Me.MenuInsertThermalProperty = New System.Windows.Forms.MenuItem()
         Me.MenuFireObjects = New System.Windows.Forms.MenuItem()
         Me.MenuEditFires = New System.Windows.Forms.MenuItem()
         Me.MenuInsertFire = New System.Windows.Forms.MenuItem()
@@ -1001,23 +997,12 @@ Public Class CeditMain
         'MenuEdit
         '
         Me.MenuEdit.Index = 1
-        Me.MenuEdit.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuThermalProperties, Me.MenuFireObjects, Me.MenuItem3, Me.MenuUnits})
+        Me.MenuEdit.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFireObjects, Me.MenuItem3, Me.MenuUnits})
         Me.MenuEdit.Text = "Edit"
-        '
-        'MenuThermalProperties
-        '
-        Me.MenuThermalProperties.Index = 0
-        Me.MenuThermalProperties.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuInsertThermalProperty})
-        Me.MenuThermalProperties.Text = "Thermal Properties"
-        '
-        'MenuInsertThermalProperty
-        '
-        Me.MenuInsertThermalProperty.Index = 0
-        Me.MenuInsertThermalProperty.Text = "Insert Thermal Properties"
         '
         'MenuFireObjects
         '
-        Me.MenuFireObjects.Index = 1
+        Me.MenuFireObjects.Index = 0
         Me.MenuFireObjects.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuEditFires, Me.MenuInsertFire})
         Me.MenuFireObjects.Text = "Fires"
         '
@@ -1033,12 +1018,12 @@ Public Class CeditMain
         '
         'MenuItem3
         '
-        Me.MenuItem3.Index = 2
+        Me.MenuItem3.Index = 1
         Me.MenuItem3.Text = "-"
         '
         'MenuUnits
         '
-        Me.MenuUnits.Index = 3
+        Me.MenuUnits.Index = 2
         Me.MenuUnits.Text = "Select Engineering Units"
         '
         'MenuRun
@@ -6233,14 +6218,14 @@ Public Class CeditMain
             EditFireObjects(0)
         End If
     End Sub
-    Private Sub MenuEditInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuInsertFire.Click, MenuInsertThermalProperty.Click
+    Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuInsertFire.Click, ThermalFromFile.Click
         Dim iReturn As Integer
         Me.OpenDataFileDialog.FilterIndex = 1
         iReturn = OpenDataFileDialog.ShowDialog()
         If iReturn = Windows.Forms.DialogResult.OK And OpenDataFileDialog.FileNames.Length > 0 Then
             Dim FileName As String, Type As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
             If sender Is MenuInsertFire Then Type = InsertDataType.Fire
-            If sender Is MenuInsertThermalProperty Then Type = InsertDataType.ThermalProperty
+            If sender Is ThermalFromFile Then Type = InsertDataType.ThermalProperty
             InsertDialog.SetupData(Type)
             For Each FileName In OpenDataFileDialog.FileNames
                 InsertDialog.AddSelectedData(Type, FileName)
@@ -6248,7 +6233,7 @@ Public Class CeditMain
             iReturn = InsertDialog.ShowDialog()
             If iReturn = Windows.Forms.DialogResult.OK Then
 
-                If sender Is MenuInsertThermalProperty Then
+                If sender Is ThermalFromFile Then
                     Dim i As Integer, aThermalProperty As New ThermalProperty
                     For i = 1 To InsertDialog.Count
                         If InsertDialog.Selected(i) Then
@@ -6256,10 +6241,6 @@ Public Class CeditMain
                             myThermalProperties.Add(aThermalProperty)
                         End If
                     Next
-                    'UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-                    'UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-                    'UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-                    'UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
                 ElseIf sender Is MenuInsertFire Then
                     Dim i As Integer, aFire As New Fire(Fire.TypeFireObject)
                     For i = 1 To InsertDialog.Count

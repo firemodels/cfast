@@ -34,11 +34,11 @@ Public Class Environment
         aSpreadsheetInterval = 10
         aSmokeviewInterval = 10
         aIntAmbTemperature = 293.15
-        aIntAmbPressure = 101300.0
+        aIntAmbPressure = 101325.0
         aIntAmbElevation = 0.0
         aIntAmbRH = 50.0
         aExtAmbTemperature = 293.15
-        aExtAmbPressure = 101300.0
+        aExtAmbPressure = 101325.0
         aExtAmbElevation = 0.0
         aExtWindSpeed = 0.0
         aExtScaleHeight = 10.0

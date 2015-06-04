@@ -1253,7 +1253,7 @@ Public Class CeditMain
         Me.EnvExtAmbPress.Name = "EnvExtAmbPress"
         Me.EnvExtAmbPress.Size = New System.Drawing.Size(96, 20)
         Me.EnvExtAmbPress.TabIndex = 20
-        Me.EnvExtAmbPress.Text = "101300 Pa"
+        Me.EnvExtAmbPress.Text = "101325 Pa"
         '
         'Label27
         '
@@ -1338,7 +1338,7 @@ Public Class CeditMain
         Me.EnvIntAmbPress.Name = "EnvIntAmbPress"
         Me.EnvIntAmbPress.Size = New System.Drawing.Size(96, 20)
         Me.EnvIntAmbPress.TabIndex = 15
-        Me.EnvIntAmbPress.Text = "101300 Pa"
+        Me.EnvIntAmbPress.Text = "101325 Pa"
         '
         'Label5
         '
@@ -6495,5 +6495,4 @@ Public Class CeditMain
         UpdateAll()
     End Sub
 #End Region
-
 End Class

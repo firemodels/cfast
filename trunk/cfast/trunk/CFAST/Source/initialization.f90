@@ -788,7 +788,7 @@
     tref = 293.15_eb
     limo2 = 0.10_eb
     hcomba = 50000000.0_eb
-    pref = 1.013e+5_eb
+    pref = 101325.0_eb
     interior_abs_pressure = pref
     pofset = pref
     te = tref

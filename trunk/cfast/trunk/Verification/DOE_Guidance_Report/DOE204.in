@@ -3,8 +3,8 @@ VERSN,7,DOE204 400kW Simulation
 !!Scenario Configuration Keywords
 !!
 TIMES,2710,-5,5,5
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
 !!
 !!Material Properties
 !!

@@ -3,8 +3,8 @@ VERSN,7,"NBS Test MV100A, Open Corridor Door, No Target Room"
 !!Scenario Configuration Keywords
 !!
 TIMES,1500,-10,0,10,1
-EAMB,296.15,101300,0
-TAMB,296.15,101300,0,45
+EAMB,296.15,101325,0
+TAMB,296.15,101325,0,45
 !!
 !!Material Properties
 !!

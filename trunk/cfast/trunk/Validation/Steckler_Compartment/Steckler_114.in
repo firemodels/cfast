@@ -3,8 +3,8 @@ VERSN,7,Steckler Compartment Test 114
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-50,10,10
-EAMB,305.15,101300,0
-TAMB,305.15,101300,0,50
+EAMB,305.15,101325,0
+TAMB,305.15,101325,0,50
 !!
 !!Material Properties
 !!

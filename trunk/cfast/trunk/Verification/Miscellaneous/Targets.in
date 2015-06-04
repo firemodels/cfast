@@ -3,8 +3,8 @@ VERSN,7,Test targets gauge flux should be zero
 !!Environmental Keywords
 !!
 TIMES,900,-50,0,10,10
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
 CHEMI,10,393.15
 !!
 !!Compartment keywords

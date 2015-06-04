@@ -3,7 +3,7 @@ VERSN,7,CFAST Simulation
 !!Scenario Configuration Keywords
 !!
 TIMES,1000,-50,10,10
-EAMB,293.15,101300,0
+EAMB,293.15,101325,0
 TAMB,293.15,100000,0,50
 !!
 !!Material Properties

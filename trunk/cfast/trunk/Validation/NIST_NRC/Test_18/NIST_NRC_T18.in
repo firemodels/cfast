@@ -3,8 +3,8 @@ VERSN,7,"BE 3, Test 18, XPE Cable, Heptane, Door Open, MV Off"
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-10,0,10,1
-EAMB,300.15,101300,0
-TAMB,300.15,101300,0,40
+EAMB,300.15,101325,0
+TAMB,300.15,101325,0,40
 !!
 !!Material Properties
 !!

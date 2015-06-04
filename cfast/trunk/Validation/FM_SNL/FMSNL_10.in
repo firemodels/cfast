@@ -3,8 +3,8 @@ VERSN,7,FM Test 10
 !!Scenario Configuration Keywords
 !!
 TIMES,960,-10,0,10,10
-EAMB,291.15,101300,0
-TAMB,291.15,101300,0,50
+EAMB,291.15,101325,0
+TAMB,291.15,101325,0,50
 !!
 !!Material Properties
 !!

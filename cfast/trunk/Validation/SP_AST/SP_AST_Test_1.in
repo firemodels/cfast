@@ -3,8 +3,8 @@ VERSN,7,"SP Adiabatic Surface Temperature Validation, Test 1"
 !!Scenario Configuration Keywords
 !!
 TIMES,2400,-50,10,10
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
 !!
 !!Material Properties
 !!

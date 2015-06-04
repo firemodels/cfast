@@ -3,8 +3,8 @@ VERSN,7,HawaiiTest 5
 !!Scenario Configuration Keywords
 !!
 TIMES,700,-50,0,10,10
-EAMB,303.15,101300,0
-TAMB,303.15,101300,0,50
+EAMB,303.15,101325,0
+TAMB,303.15,101325,0,50
 !!
 !!Material Properties
 !!

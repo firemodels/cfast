@@ -3,8 +3,8 @@ VERSN,7,"BE 3, Test 7, PVC Cable, Heptane, Door Closed, MV Off"
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-10,10,1
-EAMB,297.15,101300,0
-TAMB,297.15,101300,0,58
+EAMB,297.15,101325,0
+TAMB,297.15,101325,0,58
 !!
 !!Material Properties
 !!

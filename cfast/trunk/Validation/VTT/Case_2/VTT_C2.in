@@ -3,8 +3,8 @@ VERSN,7,ICFMP 2 Test 2 Leakage vents only
 !!Scenario Configuration Keywords
 !!
 TIMES,600,-10,0,10,1
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
 !!
 !!Material Properties
 !!

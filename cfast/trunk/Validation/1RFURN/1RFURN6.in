@@ -3,8 +3,8 @@ VERSN,7,"Single Room with Furniture (Sect 5, Test 6)"
 !!Scenario Configuration Keywords
 !!
 TIMES,1800,-50,0,10,10
-EAMB,300.15,101300,0
-TAMB,300.15,101300,0,50
+EAMB,300.15,101325,0
+TAMB,300.15,101325,0,50
 !!
 !!Material Properties
 !!

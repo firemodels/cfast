@@ -3,8 +3,8 @@ VERSN,7,Vettori_Flat_Test_19
 !!Scenario Configuration Keywords
 !!
 TIMES,100,-50,0,10,1
-EAMB,293.75,101300,0
-TAMB,293.75,101300,0,50
+EAMB,293.75,101325,0
+TAMB,293.75,101325,0,50
 !!
 !!Material Properties
 !!

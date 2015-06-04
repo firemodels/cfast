@@ -3,8 +3,8 @@ VERSN,7,"Plaza Hotel Smoke Movement Tests (#7, 6 Room Case)"
 !!Scenario Configuration Keywords
 !!
 TIMES,2000,-50,10,10
-EAMB,287.15,101300,0
-TAMB,288.15,101300,0,50
+EAMB,287.15,101325,0
+TAMB,288.15,101325,0,50
 !!
 !!Material Properties
 !!

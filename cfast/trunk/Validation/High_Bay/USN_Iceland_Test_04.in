@@ -3,8 +3,8 @@ VERSN,7,Keflavik Test 4
 !!Scenario Configuration Keywords
 !!
 TIMES,600,-50,0,10,10
-EAMB,287.15,101300,0
-TAMB,287.15,101300,0,50
+EAMB,287.15,101325,0
+TAMB,287.15,101325,0,50
 !!
 !!Material Properties
 !!

@@ -227,14 +227,18 @@ The rest of this document is broken into several chapters as follows:
 \chapter{The Basic Transport Equations}
 \label{sec:Theory_Chapter}
 
-The equations used in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the conservation laws of mass and energy (equivalently the first law of thermodynamics) and the ideal gas law. These equations predict, as functions of time, quantities such as pressure, layer height, and temperatures given the gains and losses of mass and energy in the two layers. The assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by a representative average value. Many formulations based upon these assumptions can be derived \cite{Forney:1994}. Though equivalent mathematically, these formulations differ in their numerical solution.
+The equations used in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the conservation laws of mass and energy (equivalently the first law of thermodynamics) and the ideal gas law. These equations predict the evolution in time of the compartment pressure, layer height, and layer temperatures due to the gains and losses of mass and energy. The assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by a representative average value. Many formulations based upon these assumptions can be derived~\cite{Forney:1994}. Though equivalent mathematically, these formulations differ in their numerical solution.
 
 The exchange of mass and enthalpy between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and enthalpy between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and enthalpy from the lower to the upper layer, and convection transfers enthalpy from the gas layers to the surrounding walls. The momentum equation is explicitly included since conditions within a control volumes are assumed to be uniform. Of course, included plume entrainment, ceiling jet, and vent flow correlations are applications of momentum principles used for specific purposes within the model.
 
-\section{Thermodynamic Variables}
+\section{Equation Derivation}
 
+This section includes the derivation of the governing transport equations. All of the mathematical symbols are defined in Appendix~\ref{nomenclature}.
 
-It is assumed that each compartment is divided into two control volumes, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$ \footnote{All symbols used in this document are defined in the Nomenclature Chapter of this report}. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $c_v$ and $c_p$, the universal gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$.  For ambient air, $c_p \approx 1$~kJ/(kg $\cdot$ K) and $\gamma = 1.4$.
+It is assumed that each compartment is divided into two control volumes, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $c_v$ and $c_p$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$. Regardless of the composition of the gas mixture, $c_p = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
+\be
+   R = \frac{\gamma-1}{\gamma} \, c_p \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
+\ee
 \begin{figure}[h]
 \begin{center}
 \includegraphics[width=\textwidth]{FIGURES/Theory/Control_Volumes}\\
@@ -243,7 +247,7 @@ It is assumed that each compartment is divided into two control volumes, a relat
  \label{fig:Control_Volumes}
 \end{figure}
 
-The fundamental equations start with the conservation of mass. The change of mass in each layer, $i$, is expressed as
+The set of governing equations start with the conservation of mass. The change of mass in each layer, $i$, is expressed as
 \be
    \dbydt{m_i} = \dot m_i  \label{mass_con}
 \ee
@@ -493,19 +497,18 @@ For the mass flow leaving the lower layer of the upstream compartment and enteri
 
 \section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
 
-Flow through a ceiling or floor vent is governed by both pressure and density differences. The simplest form is uni-directional flow driven primarily by a relatively large pressure difference. When the pressure difference is relatively small, the density difference, where hot gas underlies colder gas, can lead to bi-directional flow where the gas in the lower compartment rises into the upper compartment and {\em vice versa}.  This situation might arise in a real fire if the room of origin suddenly has a hole open up in the ceiling.
-
-Cooper's algorithm~\cite{Cooper:1989, Cooper:1990, Cooper:1995} is used for computing mass flow through ceiling and floor vents:
+In scenarios where a compartment with a hot gas layer opens to another compartment overhead via a horizontal (ceiling) vent and the density difference, $\Delta \rho$, between the lower layer of the upper compartment and the upper layer of the lower compartment is greater than zero, the volumetric flow rate, $\dot{V}$, through the vent is given by Cooper~\cite{Cooper:1989}:
 \be
-   \dm = 0.1 \brackets{\frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}}} \brackets{1 - \frac{2 \, A_{\rm v}^2 \, \Delta P}{S^2 \, g \, \Delta \rho \, D^5}}
+   \dot{V} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad 
+   |\Delta P_{\rm \tiny flood}| = \frac{C_{\rm s}^2 \, g \, \Delta \rho \, D^5}{2 \, A_{\rm v}^2 }
 \ee
-where $D = 2 \sqrt{A_{\rm v} / \pi}$ and $S$ is 0.754 for round or 0.942 for square openings, respectively. For each layer on either side of the vent, there are two values of the mass flow, $\dm_{\rm in}$ and $\dm_{\rm out}$. These terms are symmetric: the outgoing flow from one compartment is the incoming flow to the other. The corresponding enthalpy flows are determined from the relative size and temperature of the lower and upper layers:
-\begin{eqnarray}
-  \doh_{\rm in} &=& c_p \, \dmu \, \Tu + c_p \, \dml \, \Tl \\[0.1in]
-  \dmu &=& \dm_{\rm in} \, \frac{\Vu}{V} \\[0.1in]
-  \dml &=& \dm_{\rm in} \, \frac{\Vl}{V}
-\end{eqnarray}
-The mass and energy are then deposited into the upper or lower layer of the receiving compartment based on the effective temperature of the incoming flow. If the temperature of the incoming flow is higher than the temperature of the lower layer of the receiving compartment, then the flow is deposited into the upper layer. Otherwise, it is deposited into the lower layer of the receiving compartment. This is similar to the idea of using a virtual plume for a doorway flow.
+Here $A_{\rm v}$ is the area of the vent, $\rho_{\rm avg}$ is the average of the densities above and below the vent, $|\Delta P|$ is the difference in compartment pressures and is less than the value of $|\Delta P_{\rm \tiny flood}|$, $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor $C_{\rm s}=0.754$ for round or 0.942 for square openings.
+
+Consider the case where there is a vent in the ceiling of the lower compartment with a hot gas layer. If the pressure difference between the lower and upper compartments is relatively small, then $\dm_{\rm v}$ will be positive. If the temperature of the hot gas layer of the lower compartment is greater than the temperature of the lower layer of the upper compartment, then the mass and enthalpy flows are deposited into the upper layer of the upper compartment. Otherwise, the flows are deposited into the lower layer of the upper compartment. The enthalpy flow is assumed to be a weighted average of heat extracted from the lower and upper layers of the lower compartment:
+\be
+  \doh_{\rm v} = \alpha \; c_p \, \dm_{\rm v} \, \Tu + (1-\alpha) \; c_p \, \dm_{\rm v} \, \Tl  \quad ; \quad \alpha = \min \left( \frac{0.5 \, \rho_{\rm u} V_{\rm u}}{\dm_{\rm v} \, \delta t} \; , \; 1 \right)
+\ee
+The weighting factor, $\alpha$, assures that the amount of mass extracted from the upper layer over a specified time interval, $\delta t=1$~s, does not exceed half of its current mass. The factor of one half and the 1~s time interval are somewhat arbitrary, meant to prevent the entire upper layer from being drawn into the upper compartment.
 
 
 \section{Forced Flow}
@@ -821,6 +824,9 @@ There are assumptions and limitations in this approach. Its main deficiency is t
 \backmatter
 
 \chapter{Nomenclature}
+\label{nomenclature}
+
+Note that the units associated with a given symbol are sometimes changed upon input to and output from the program. In particular, temperatures are typically input in degrees Celsius, converted to Kelvin, and then converted back to Celsius on output. Energy units involving Joules or Watts are typically input as kJ or kW, converted to J or W, then converted back to kJ or kW.
 
 \begin{center}
 \begin{longtable}{p{1in}  p{5.5 in}}
@@ -830,8 +836,8 @@ $A_{\rm v}$         & cross-sectional area of a vent, m$^2$ \\
 $a$                 & absorption coefficient, m$^{-1}$ \\
 $C$                 & vent constriction (or flow) coefficient, dimensionless \\
 $C_{\rm LOL}$       & lower oxygen limit coefficient, dimensionless \\
-$c_p$               & heat capacity of air at constant pressure, kJ/(kg$\cdot$K) \\
-$c_v$               & heat capacity of air at constant volume, kJ/(kg$\cdot$K) \\
+$c_p$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
+$c_v$               & heat capacity of air at constant volume, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
 $c$                 & heat capacity of a solid, kJ/(kg$\cdot$K) \\
 $D$                 & fire diameter, m \\
                     & optical density, m$^{-1}$ \\
@@ -839,7 +845,7 @@ $D^*$               & characteristic fire diameter, m \\
 $F_{k-j}$           & configuration factor, surface $k$ intercepted by surface $j$, dimensionless \\
 $f_v$               & soot volume fraction, dimensionless \\
 $g$                 & gravitational constant, 9.8 m/s$^2$ \\
-$h$                 & convective heat transfer coefficient, W/(m$\cdot$K \\
+$h$                 & convective heat transfer coefficient, W/(m$^2\cdot$K) \\
 $\doh_i$            & rate of addition of enthalpy into layer $i$, kW \\
 $H$                 & height of a compartment, m \\
 $k$                 & thermal conductivity of air, W/(m$\cdot$K) \\
@@ -856,7 +862,7 @@ $P$                 & pressure at floor level of a compartment, Pa \\
 $\dQ$               & total heat release rate of the fire, kW \\
 $\dQc$              & heat release rate of the fire released as convective energy, kW \\
 $\dq''$             & heat flux, kW/m$^2$ \\
-$R$                 & universal gas constant, J/(kg$\cdot$K) \\
+$R$                 & specific gas constant, J/(kg$\cdot$K) \\
 RTI                 & response time index of a sprinkler or heat detector, (m$\cdot$s)$^{1/2}$ \\
 $r$                 & radial distance from the fire, m \\
                     & radial coordinate of cylindrical solid, m \\
@@ -884,8 +890,8 @@ $z_0$               & height of the virtual origin of fire, m \\
 $\alpha$            & gas absorptance, dimensionless \\
                     & thermal diffusivity in conduction, (m$^2$/s) \\
 $\gamma$            & ratio of specific heats, 1.4, dimensionless \\
-$\Dh$               & heat of combustion of the fuel, J/kg \\
-$\DhO$              & energy released per unit mass of oxygen consumed, J/kg \\
+$\Dh$               & heat of combustion of the fuel, kJ/kg \\
+$\DhO$              & energy released per unit mass of oxygen consumed, kJ/kg \\
 $\Delta T$          & temperature rise, K \\
 $\epsilon$          & emissivity \\
 $\nu$               & stoichiometric coefficient, dimensionless \\

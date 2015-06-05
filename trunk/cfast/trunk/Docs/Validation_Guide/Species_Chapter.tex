@@ -2,11 +2,13 @@
 
 CFAST simulates a fire as a mass of fuel that burns at a prescribed pyrolysis rate and releases both energy and combustion products.  CFAST calculates species production based on user-defined production yields, and both the pyrolysis rate and the resulting energy and species generation may be limited by the oxygen available for combustion.  When sufficient oxygen is available for combustion, the heat release rate for a constrained fire is the same as for an unconstrained fire.  Mass and species concentrations, assumed to be homogeneous throughout each layer, are tracked by the model as gases flow through openings in a structure to other compartments in the structure or to the outdoors.
 
-The fire chemistry scheme in CFAST is essentially a species balance from user-prescribed species yields and the oxygen available for combustion.  Once generated, it is a matter of bookkeeping to track the mass of species throughout the various control volumes in a simulated building.  It does, however, provide a check of the flow algorithms within the model. Since the major species (CO and CO$_2$) are generated only by the fire, the relative accuracy of the predicted values throughout multiple rooms of a structure should be comparable. 
+The fire chemistry scheme in CFAST is essentially a species balance from user-prescribed species yields and the oxygen available for combustion.  Once generated, it is a matter of bookkeeping to track the mass of species throughout the various control volumes in a simulated building.  It does, however, provide a check of the flow algorithms within the model. Since the major species (CO and CO$_2$) are generated only by the fire, the relative accuracy of the predicted values throughout multiple rooms of a structure should be comparable.
 
 \section{Oxygen and CO$_2$}
 
 Gas sampling data are available from a number of the experimental tests.  Figure \ref{fig:Species_Scatter} shows a comparison of predicted and measured values for oxygen and carbon dioxide concentrations, along with a summary of the relative difference for the tests.
+\label{Oxygen Concentration}
+\label{Carbon Dioxide Concentration}
 
 \begin{figure}
 \begin{center}
@@ -30,6 +32,7 @@ In addition, species concentrations measured for large fires in small spaces can
 \section{NIST/NRC Test Series, Smoke}
 
 CFAST treats smoke like all other combustion products, with an overall mass balance dependent on interrelated user-specified species yields for major combustion species.  To model smoke movement, the user prescribes the smoke yield relative to the yield of carbon monoxide.  A simple combustion chemistry scheme in the model then determines the smoke particulate concentration in the form of an optical density.  Figure \ref{fig:Smoke_Scatter} shows a comparison of predicted and measured values for smoke concentration along with a summary of the relative difference for the tests.
+\label{Smoke Concentration}
 
 \begin{figure}
 \begin{center}
@@ -48,4 +51,4 @@ Use of CFAST calculations of smoke concentration requires care for the following
 \begin{itemize}
 \item CFAST is capable of transporting smoke throughout a compartment, assuming that the production rate is known and its transport properties are comparable to gaseous exhaust products.
 \item CFAST typically over-predicts the smoke concentration in all of the NIST/NRC tests, with the exception of Test 17.  Predicted concentrations for open-door tests are within experimental uncertainties, but those for closed-door tests are far higher.  No firm conclusions can be drawn from this single data set.  The measurements in the closed-door experiments are inconsistent with basic conservation of mass arguments, or there is a fundamental change in the combustion process as the fire becomes oxygen-starved.
-\end{itemize}
+\end{itemize} 

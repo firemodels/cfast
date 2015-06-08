@@ -495,20 +495,28 @@ where $C_{\rm m}$ is an empirical constant equal to 0.44, $w$ is the width of th
 
 For the mass flow leaving the lower layer of the upstream compartment and entering the upper layer of the downstream compartment, $\dm_{\rm l \to u}$, the shear flow causes vortex shedding that entrains upper layer gas and deposits it in the lower layer. It is assumed that the incoming cold plume behaves like the inverse of the usual door jet between adjacent hot layers; forming a descending plume.  The same equations are used to calculate this inverse plume as are used for the upright door mixing, above.
 
-\section{Horizontally-Oriented Vents (Floor and Ceiling Vents)}
+\section{Horizontally-Oriented Vents (Ceiling Vents)}
 
-In scenarios where a compartment with a hot gas layer opens to another compartment overhead via a horizontal (ceiling) vent and the density difference, $\Delta \rho$, between the lower layer of the upper compartment and the upper layer of the lower compartment is greater than zero, the volumetric flow rate, $\dot{V}$, through the vent is given by Cooper~\cite{Cooper:1989}:
+Cooper~\cite{Cooper:1989} developed a semi-empirical correlation for ceiling vents in which the volumetric flow rates upwards and downwards are functions of both pressure and density differences:
+\begin{eqnarray}
+   \dot{V}_{\rm up}   &=&  0.68 \, A_{\rm v} \, \sqrt{ 2 \, |\max(\Delta P,0)|/\rho_{\rm bot} } + \dot{V}_{\rm ex}  \\[.1in]
+   \dot{V}_{\rm down} &=&  0.68 \, A_{\rm v} \, \sqrt{ 2 \, |\min(\Delta P,0)|/\rho_{\rm top} } + \dot{V}_{\rm ex}
+\end{eqnarray}
+Here, $\Delta P$ is the  lower {\em compartment} pressure minus the upper, $A_{\rm v}$ is the area of the vent, and $\rho_{\rm top}$ and $\rho_{\rm bot}$ are the {\em layer} densities adjacent to the vent. The term, $\dot{V}_{\rm ex}$, represents the density-driven {\em exchange} flow; that is, when $\Delta \rho=\rho_{\rm top}-\rho_{\rm bot}>0$ and $|\Delta P|$ is relatively small, there is an exchange of mass and enthalpy at the vent interface where hot gas from below mixes with cooler gases above:
 \be
-   \dot{V} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad 
-   |\Delta P_{\rm \tiny flood}| = \frac{C_{\rm s}^2 \, g \, \Delta \rho \, D^5}{2 \, A_{\rm v}^2 }
+   \dot{V}_{\rm ex} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad 
+   |\Delta P| < |\Delta P_{\rm \tiny flood}| \equiv \frac{C_{\rm s}^2 \, g \, \Delta \rho \, D^5}{2 \, A_{\rm v}^2 }
 \ee
-Here $A_{\rm v}$ is the area of the vent, $\rho_{\rm avg}$ is the average of the densities above and below the vent, $|\Delta P|$ is the difference in compartment pressures and is less than the value of $|\Delta P_{\rm \tiny flood}|$, $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor $C_{\rm s}=0.754$ for round or 0.942 for square openings.
+Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,   $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor, $C_{\rm s}$, is 0.754 for round and 0.942 for square openings.
 
-Consider the case where there is a vent in the ceiling of the lower compartment with a hot gas layer. If the pressure difference between the lower and upper compartments is relatively small, then $\dm_{\rm v}$ will be positive. If the temperature of the hot gas layer of the lower compartment is greater than the temperature of the lower layer of the upper compartment, then the mass and enthalpy flows are deposited into the upper layer of the upper compartment. Otherwise, the flows are deposited into the lower layer of the upper compartment. The enthalpy flow is assumed to be a weighted average of heat extracted from the lower and upper layers of the lower compartment:
-\be
-  \doh_{\rm v} = \alpha \; c_p \, \dm_{\rm v} \, \Tu + (1-\alpha) \; c_p \, \dm_{\rm v} \, \Tl  \quad ; \quad \alpha = \min \left( \frac{0.5 \, \rho_{\rm u} V_{\rm u}}{\dm_{\rm v} \, \delta t} \; , \; 1 \right)
-\ee
-The weighting factor, $\alpha$, assures that the amount of mass extracted from the upper layer over a specified time interval, $\delta t=1$~s, does not exceed half of its current mass. The factor of one half and the 1~s time interval are somewhat arbitrary, meant to prevent the entire upper layer from being drawn into the upper compartment.
+As with doors and windows, mass and enthalpy are exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and enthalpy extracted from the layers of the lower compartment, and then consider where this mass and enthalpy are deposited in the upper compartment. First, the mass and enthalpy are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
+\begin{eqnarray}
+  \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \quad ; \quad \alpha = \min \left( \frac{2 \, V_{\rm u}}{V} \; , \; 1 \right) \\
+  \doh_{\rm up} &=& \alpha \; c_p \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; c_p \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl  
+\end{eqnarray}
+where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment. The weighting factor, $\alpha$, is designed to ensure that more mass and enthalpy are extracted from the lower layer of the lower compartment as the upper layer shrinks. The factor of two is arbitrary.
+
+If the temperature of the hot gas layer of the lower compartment is greater than the temperature of the lower layer of the upper compartment, then the mass and enthalpy flows are deposited into the upper layer of the upper compartment. Otherwise, the flows are deposited into the lower layer of the upper compartment.
 
 
 \section{Forced Flow}

@@ -6387,15 +6387,15 @@ Public Class CeditMain
         UpdateGUI.DoErrorCheck = False
         UpdateGUI.Environment()
         UpdateGUI.Geometry(CurrentCompartment)
+        UpdateGUI.Fires(CurrentFire)
+        UpdateGUI.Targets(CurrentTarget)
+        UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.HVents(CurrentHVent)
         UpdateGUI.VVents(CurrentVVent)
         UpdateGUI.MVents(CurrentMVent)
-        UpdateGUI.Targets(CurrentTarget)
         UpdateGUI.Detectors(CurrentDetector)
         UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
-        UpdateGUI.Fires(CurrentFire)
         UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
-        UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.DoErrorCheck = True
     End Sub
     Private Sub InitNew()

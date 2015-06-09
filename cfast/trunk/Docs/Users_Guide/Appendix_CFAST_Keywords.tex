@@ -106,7 +106,7 @@ DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
 \begin{lstlisting}
 DJIGN, 373.15
 \end{lstlisting}
-This entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning an implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
+This entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning and implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
 
 This entry is superseded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
 
@@ -121,7 +121,7 @@ DJIGN,488
 \begin{lstlisting}
 DTCHE, MINIMUM_TIME, COUNT
 \end{lstlisting}
-The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as though the program has frozen, when it is simply the set of equations has reached a point that requires a very small time steps for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm. A positive value for the minimum time input sets the software for a maximum number of iterations (COUNT) below a minimum time step (MINIMUN\_TIME) before producing an error and stopping.
+The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as though the program has frozen, when it is simply the set of equations has reached a point that requires very small time steps for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm. A positive value for the minimum time input sets the software for a maximum number of iterations (COUNT) below a minimum time step (MINIMUN\_TIME) before producing an error and stopping.
 
 Example:
 
@@ -292,7 +292,7 @@ Example:
 \begin{lstlisting}
 HHEAT,1,1,2,0.5
 \end{lstlisting}
-specifies that compartment one has one connection to compartment two and the fraction of wall surface through which heat is transferred is ½ of the wall surface of compartment one.
+specifies that compartment one has one connection to compartment two and the fraction of wall surface through which heat is transferred is one half of the wall surface of compartment one.
 
 \section{HVENT}
 
@@ -403,7 +403,7 @@ ROOMA 1    3     10.0  5.0  3.0
 ROOMH 1    3     0.0   1.0  2.0
 \end{lstlisting}
 
-specifies that compartment 1 has a cross-sectional area of 10 m2, 5 m2 and 3 m2 at elevations 0.0 m, 1.0 m and 2.0 m respectively.
+The example specifies that compartment 1 has a cross-sectional area of 10 m$^2$, 5 m$^2$ and 3 m$^2$ at elevations 0.0 m, 1.0 m and 2.0 m respectively.
 
 \section{SLCF}
 
@@ -486,7 +486,7 @@ THRMF,NEWTHERMALFILE
 VERSN,version number, Title
 \end{lstlisting}
 
-This input must be the first line in a CFAST input and largely specifies a title for the simulation. The major version number from the file must match the major version number kept internally (6 at the moment).
+This input must be the first line in a CFAST input and largely specifies a title for the simulation. The major version number from the file must match the major version number kept internally (7 at the moment).
 
 Example
 
@@ -516,7 +516,7 @@ The floor properties of the top compartment (1 in this case) and the ceiling pro
 VVENT, FROM_COMPARTMENT, TO_COMPARTMENT, AREA, SHAPE, INITIAL_FRACTION
 \end{lstlisting}
 
-Combined buoyancy and pressure driven (i.e., forced) flow through a horizontal vent (vertical flow) is possible when the connected spaces are filled with gases of different density in an unstable configuration, with the density of the top space larger than that of the bottom space. This type of flow is inherently different from horizontal flow (vertical vent) in that there is not layer to layer mixing from inverted plumes. This key word describes those horizontal openings between the compartments through which this type of flow occurs. Each VVENT line in the input file describes one horizontal vent.  There are four parameters, the connected compartments, the shape of the opening, and the effective area of the vent.
+This key word describes horizontal openings between compartments connected with a vent in the floor/ceiling between the compartments. Each VVENT line in the input file describes one horizontal vent.  There are four parameters, the connected compartments, the shape of the opening, and the effective area of the vent.
 
 Example:
 

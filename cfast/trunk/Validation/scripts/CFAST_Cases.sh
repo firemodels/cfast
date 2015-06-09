@@ -323,64 +323,12 @@ $RUNCFAST -d Steckler_Compartment Steckler_622.in
 $RUNCFAST -d Steckler_Compartment Steckler_710.in
 $RUNCFAST -d Steckler_Compartment Steckler_810.in
 
-$RUNCFAST -d ../Verification/Miscellaneous cfast_test.in
+$RUNCFAST -d ../Verification/Energy_Balance sealed_test.in
 
-$RUNCFAST -d ../Verification/DOE_Guidance_Report DOE201.in
-$RUNCFAST -d ../Verification/DOE_Guidance_Report DOE202.in
-$RUNCFAST -d ../Verification/DOE_Guidance_Report DOE203.in
-$RUNCFAST -d ../Verification/DOE_Guidance_Report DOE204.in
-$RUNCFAST -d ../Verification/DOE_Guidance_Report DOE205.in
-$RUNCFAST -d ../Verification/DOE_Guidance_Report DOE206.in
+$RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib.in
+$RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window.in
+$RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window_elevation.in
 
-$RUNCFAST -d ../Verification/Analytical Base.in
-$RUNCFAST -d ../Verification/Analytical basic_tempequilib.in
-$RUNCFAST -d ../Verification/Analytical basic_tempequilib_wallsoff.in
-$RUNCFAST -d ../Verification/Analytical basic_tempequilib_window.in
-$RUNCFAST -d ../Verification/Analytical basic_tempequilib_window_elevation.in
-$RUNCFAST -d ../Verification/Analytical basic_tempequilib_window_geometry.in
+$RUNCFAST -d ../Verification/Ventilation ceiling_mechvent.in
 
-$RUNCFAST -d ../Verification/Analytical/Mass basic_mechvent.in
-
-$RUNCFAST -d ../Verification/Analytical sealed_test.in
-
-$RUNCFAST -d ../Verification/Mass_Energy_Balance basic_pressure.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance basic_pressure_vent.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance basic_pressure_wallsoff.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance basic_mechvent_dropoff.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance basic_connection_floorceiling_mechvent.in
-
-$RUNCFAST -d ../Verification/Mass_Energy_Balance 100kW_fire.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_window.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_window_windowchange.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_window_geochange.in 
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_window_aspect_ratio.in 
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_ceiling.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_ceiling_ventsize.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_ceiling_geochange.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_mechanical_vent.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_HRRdoubled.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_HRRarea2.in 
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_sprinkler.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_sprinkler_density.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_sprinkler_RTI.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_sprinkler_HRRdoubled.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_hexane.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_urethane.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_hardwood.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_ignitiontemp_120.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_ignitiontemp_700.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_filterefficiency.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_filterefficiency_half.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_CO_yield.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_soot_yield.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_mechanical_vent_only.in
-$RUNCFAST -d ../Verification/Mass_Energy_Balance fire_HRRarea1.in
-
-$RUNCFAST -d ../Verification/NRC_Users_Guide/1_Cabinet_Fire_in_MCR Cabinet_fire_in_MCR.in 
-$RUNCFAST -d ../Verification/NRC_Users_Guide/1_Cabinet_Fire_in_MCR Cabinet_fire_in_MCR_no_ventilation.in
-$RUNCFAST -d ../Verification/NRC_Users_Guide/2_Cabinet_Fire_in_Switchgear Initial_fire_only.in
-$RUNCFAST -d ../Verification/NRC_Users_Guide/2_Cabinet_Fire_in_Switchgear Cabinet_fire_in_switchgear.in 
-$RUNCFAST -d ../Verification/NRC_Users_Guide/4_MCC_Fire_in_Switchgear MCC_in_switchgear.in
-$RUNCFAST -d ../Verification/NRC_Users_Guide/5_Trash_Fire_in_Cable_Spreading_Room Trash_fire_in_cable_spreading_room.in
 

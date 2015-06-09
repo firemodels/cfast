@@ -54,7 +54,7 @@ module conduction_routines
 
     ! solve conduction problem for all walls
 
-    adiabatic_wall=.true.
+    adiabatic_wall=.false.
 
     ibeg = 1
     iend = nwalls

@@ -14,12 +14,7 @@ Simply put, verification is a check of the math; validation is a check of the ph
 Whereas model validation consists mainly of comparing predictions with experimental measurements, as documented later in this guide, model verification consists of a much broader range of activities, from checking the computer program itself to comparing calculations to analytical (exact) solutions to understanding the impact on model outputs from a range of different model inputs.
 
 
-\section{Simple Analytical Comparisons}
-
-Certain CFAST sub-models address phenomena that have analytical solutions, for example, one dimensional heat conduction through a solid or pressure increase in a sealed or slightly leaky compartment as a result of a fire or fan.  The developers of CFAST use analytical solutions to test sub-models to verify the correctness of the coding of the model as part of the development. This section provides an overview of the verification testing conducted with each change of the model to verify the basic underlying principles of the model, the mass and energy balances.
-
-\subsection{Thermal Equlibrium}
-
+\section{Thermal Equlibrium}
 
 For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment. As a simple test of the energy balance, raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the internal temperature to equilibrate to the exterior. From the ideal gas law, the pressure inside the compartment is expected to rise to
 \begin{equation}
@@ -29,8 +24,8 @@ or a pressure rise of 1727.78, matching the output from CFAST.  Figure \ref{fig:
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test}
+\includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_pres}
 \end{tabular*}
 \caption[Results of the test case {\ct basic\_tempequilib.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib.in}.} 
 \label{fig:Temperature_Equilibrium}
@@ -40,8 +35,8 @@ Now an open window is added to the compartment, with an with an exterior tempera
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Test_With_Window} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_With_Window}
+\includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_pres}
 \end{tabular*}
 \caption[Results of the test case {\ct basic\_tempequilib\_window.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib\_window.in}.}
 \label{fig:Temperature_Equilibrium_With_Window}
@@ -51,31 +46,15 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 
 \begin{figure}
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Temperature_Equilibrium_Elevation_Change} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Change_Temperature_Equilibrium_Test_Elevation}
+\includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_elevation_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_elevation_pres}
 \end{tabular*}
 \caption[Results of the test case {\ct basic\_tempequilib\_window\_elevation.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib\_window\_elevation.in}.}
 \label{fig:Temperature_Equilibrium_Elevation}
 \end{figure}
 
-\subsection{Air Injection}
 
-To test both the mass and energy balance, consider the base case with the addition of a fixed amount of ambient air (injected through a mechanical vent.  The vent is set to deliver 0.1 m$^3$/s into the compartment for 10 s. After this, the vent is closed.  Over the 10 s period, an additional 1 m$^3$ of air at ambient temperature is added.  Since CFAST, by default, closes vent over a 1 s time period, an additional 0.05 m$^3$ is also added. With a compartment volume of 125~m$^3$ at 20 \degc, the initial mass of air is 150.5 kg or 5.195 moles. With the added mass, the final mass of air in the compartment is 151.7 kg or 5.239 moles. From the CFAST output, the final temperature of the compartment rises slightly due to the pressure increase to 20.98 \degc. From the ideal gas law, the expected pressure rise can be calculated as
-\begin{equation}
-   P_{\rm final} = P_{\rm initial} \; \frac{m_{\rm final} \, T_{\rm final}}{m_{\rm initial} \, T_{\rm initial}} = 101300 \; {\rm Pa} \times \frac{151.7 \; {\rm kg} \times 294.13 \; {\rm K}}{150.5 \; {\rm kg} \times 293.15 \; {\rm K}} = 102449.1 \; {\rm Pa} \label{eq:Temperature_Equilibrium}
-\end{equation}
-or a pressure rise of 1149.1~Pa. Figure \ref{fig:Added_Mass_Test} shows the simulated conditions for this test.
-
-\begin{figure}[!ht]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Temperature_Added_Mass} &
-\includegraphics[width=3.0in]{FIGURES/Verification/Ambient_Pressure_Added_Mass}
-\end{tabular*}
-\caption[Results of the test case {\ct Added\_Mass.in}]{Compartment temperature and pressure due to a specified injected of air in the case {\ct Added\_Mass.in}.} 
-\label{fig:Added_Mass_Test}
-\end{figure}
-
-\subsection{A Simple Fire}
+\section{Energy Balance}
 
 A model examining heat added to a system can be demonstrated with a test case containing a constant 100 kW fire.  With non-conducting surface and no ventilation, the heat and mass released by the fire (and added to the compartment) can be determined.  Here we use a single zone simulation to simplify the calculations (CFAST simply assumes the entire volume is taken up by the upper layer).  Densities are obtained using the calculated temperature. The energy and mass added to the system can be calculated as
 
@@ -101,7 +80,7 @@ Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calcu
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=3.0in]{FIGURES/Verification/Sealed_Compartment_Temperature}
+\includegraphics[width=3.0in]{FIGURES/Verification/sealed_test}
 \caption{Comparison of CFAST calculations and analytical solution for a 100 kW fire in a closed 5 m x 5 m x 5 m compartment.  CFAST verification file sealed\_test.in.}
 \label{fig:Analytical_Closed_Compartment}
 \end{center}
@@ -109,24 +88,14 @@ Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calcu
 
 
 
-\subsection{Ventilation}
+\section{Ventilation}
 
-All ambient conditions are returned to the standard base case.  A mechanical vent is added to the test case with a flow rate of 0.1~m$^3$/s for 10~s. Figure \ref{fig:Mechanical_Vent_Cutoff} shows the pressure building in the compartment for the default fan cutoff pressure of 200 Pa to 300 Pa compared to a raised fan cutoff pressure of 2000 Pa.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/Verification/Pressure_Dropoff_Test}
-\caption{Model with mechanical vent and non-inhibited drop off pressure of 2000 Pa versus model with mechanical vent and interfering drop off pressure of 200~Pa. CFAST verification files basic\_mechvent\_n.csv and basic\_mechvent\_dropoff\_n.csv.}
-\label{fig:Mechanical_Vent_Cutoff}
-\end{center}
-\end{figure}
-
-Two identical 5~m x 5~m x 5~m compartments are stacked on each other.  A 1~m$^2$ mechanical vent is added on the front face of compartment one, the shared ceiling/floor between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1~m$^3$/s or 0.12~kg/s of air.  The mass flow through each of these vents is expected to the same because the flow rate in is constant and there is no change in temperature.   Figure \ref{fig:Mechanical_Flow_Two_Compartments} shows vent flows for all vents in the simulation.
+Two identical 5~m x 5~m x 5~m compartments are stacked on each other.  A 1~m$^2$ mechanical vent is added on the front face of compartment one, the shared ceiling/floor between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1~m$^3$/s or 0.12~kg/s of air.  The mass flow through each of these vents is expected to the same because the flow rate in is constant and there is no change in temperature.   Figure~\ref{fig:Mechanical_Flow_Two_Compartments} shows vent flows for all vents in the simulation.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=3.0in]{FIGURES/Verification/Mass_Flow_Test_Mechanical_Vent}
-\caption{Side-by-side base case compartments with mechanical vents added from outside to compartment one, compartment one to compartment two, and compartment two to outside.  CFAST verification file basic\_connection\_floorceiling\_mechvent.in.}
+\includegraphics[width=3.0in]{FIGURES/Verification/ceiling_mechvent}
+\caption{Side-by-side base case compartments with mechanical vents added from outside to compartment one, compartment one to compartment two, and compartment two to outside.  CFAST verification file {\ct ceiling\_mechvent.in}.}
 \label{fig:Mechanical_Flow_Two_Compartments}
 \end{center}
 \end{figure}

@@ -504,7 +504,7 @@ Cooper~\cite{Cooper:1989} developed a semi-empirical correlation for ceiling ven
 \end{eqnarray}
 Here, $\Delta P$ is the  lower {\em compartment} pressure minus the upper, $A_{\rm v}$ is the area of the vent, and $\rho_{\rm top}$ and $\rho_{\rm bot}$ are the {\em layer} densities adjacent to the vent. The term, $\dot{V}_{\rm ex}$, represents the density-driven {\em exchange} flow; that is, when $\Delta \rho=\rho_{\rm top}-\rho_{\rm bot}>0$ and $|\Delta P|$ is relatively small, there is an exchange of mass and enthalpy at the vent interface where hot gas from below mixes with cooler gases above:
 \be
-   \dot{V}_{\rm ex} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad 
+   \dot{V}_{\rm ex} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad
    |\Delta P| < |\Delta P_{\rm \tiny flood}| \equiv \frac{C_{\rm s}^2 \, g \, \Delta \rho \, D^5}{2 \, A_{\rm v}^2 }
 \ee
 Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,   $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor, $C_{\rm s}$, is 0.754 for round and 0.942 for square openings.
@@ -512,7 +512,7 @@ Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,
 As with doors and windows, mass and enthalpy are exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and enthalpy extracted from the layers of the lower compartment, and then consider where this mass and enthalpy are deposited in the upper compartment. First, the mass and enthalpy are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
 \begin{eqnarray}
   \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \quad ; \quad \alpha = \min \left( \frac{2 \, V_{\rm u}}{V} \; , \; 1 \right) \\
-  \doh_{\rm up} &=& \alpha \; c_p \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; c_p \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl  
+  \doh_{\rm up} &=& \alpha \; c_p \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; c_p \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl
 \end{eqnarray}
 where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment. The weighting factor, $\alpha$, is designed to ensure that more mass and enthalpy are extracted from the lower layer of the lower compartment as the upper layer shrinks. The factor of two is arbitrary.
 
@@ -790,7 +790,7 @@ An estimate of the ceiling jet thickness, $\delta$, where the excess temperature
 \be
    \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad ; \quad 0.26 \le \frac{r}{H} \le 2.0
 \ee
-If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the upper layer temperature and a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
+If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the gas temperature is taken to be upper layer temperature with a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
 
 If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
 \begin{eqnarray}

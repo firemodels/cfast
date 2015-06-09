@@ -57,7 +57,7 @@ Ambient conditions define the environment at which the scenario begins. Initial 
 
 The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
-In order to model a fire scenario, the size and position of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 6 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
+In order to model a fire scenario, the size and position of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 7 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
 
 \begin{figure}[h!]
 \begin{tabular*}{\textwidth}{c@{\extracolsep{\fill}}c}
@@ -74,7 +74,7 @@ At least one compartment must be specified in the input file.  There are no defa
 \label{Compartment_Geometry}Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
 
 \begin{description}
-\item[Compartment Name:] Compartments are identified by a unique alphanumeric name.  This may be a simple as a single character or number, or a description of the compartment.
+\item[Compartment Name:] Compartments are identified by a unique alphanumeric name.  This may be as simple as a single character or number, or a description of the compartment.
 \end{description}
 
 \section{Geometry}
@@ -455,7 +455,7 @@ By default, the fire is placed in the center of the compartment on the floor.  I
 
 The area of the base of the fire should not be set to a value of zero. Radiation from the fire is determined by a point source calculation from the vertical center of the flame which is in turn determined by Heskestad's flame height correlation \cite{Heskestad:2002}, a function of heat release rate and fire area. \\
 
-Ct represents the time-integrated exposure to the mass oncentration of all the mall of fuel consumed in a structure fire and is thus a concentration-time product (hence the name Ct). For ``normally toxic'' materials, Ct a value of 1 \cite{Levin:1982} has been recommended and is typically changed by an order of magnitude for particularly toxic or non-toxic materials.  It is not part of the mass balance for the fuel and system, but it carried along as a transported species in flow through the structure. Ct is used as a measure of toxicity of a material.  Typically the integrated Ct versus time product is calculated. For normal materials, a concentration-time product of 900 mg min/m$^3$ is an indication of incapacitation \cite{Levin:1982}. \\
+Ct represents the time-integrated exposure to the mass concentration of all the mass of fuel consumed in a structure fire and is thus a concentration-time product (hence the name Ct). For ``normally toxic'' materials, Ct a value of 1 \cite{Levin:1982} has been recommended and is typically changed by an order of magnitude for particularly toxic or non-toxic materials.  It is not part of the mass balance for the fuel and system, but it carried along as a transported species in flow through the structure. Ct is used as a measure of toxicity of a material.  Typically the integrated Ct versus time product is calculated. For normal materials, a concentration-time product of 900 mg min/m$^3$ is an indication of incapacitation \cite{Levin:1982}. \\
 
 The trace species TS is transported along with fire gases, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance calculated by the model. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate. If necessary, the trace species can be scaled to a smaller value (e.g., divided by 1000) for the simulation and converted back for analysis (e.g., multiplied by 1000). \\
 
@@ -703,7 +703,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 
 \item[Compartment] (default units: n/a, default value: All): Visualizations can be placed in a single compartment or at the same position and axis in all compartments.
 
-\item[Position] (default units: m, default value: 0m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment. See page \pageref{Compartment_Geometry}).
+\item[Position] (default units: m, default value: 0 m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment. See page \pageref{Compartment_Geometry}).
 
 \item[Axis] (default units: n/s, default value: X-axis (Width)): Axis perpendicular to the specified slice.  The slice is place perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis, and the X-Y plane for the Z-Axis)
 

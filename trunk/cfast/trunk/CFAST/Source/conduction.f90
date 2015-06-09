@@ -49,7 +49,12 @@ module conduction_routines
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
 
+! adiabatic_wall will be replaced by a global variable
+    logical adibatic_wall
+
     ! solve conduction problem for all walls
+
+    adiabatic_wall=.false.
 
     ibeg = 1
     iend = nwalls
@@ -69,6 +74,11 @@ module conduction_routines
         endif
     endif
 
+    if(adiabatic_wall)then
+    do iw = ibeg, iend
+        vtgrad(iw) = 0.0_eb
+    end do
+    else
     do iw = ibeg, iend
         iroom = izwall(iw,w_from_room)
         iwall = izwall(iw,w_from_wall)
@@ -143,6 +153,7 @@ module conduction_routines
         ! been computed.  (if they were not then we wouldn't know heat flux striking the wall!  
 
     end do
+    endif
 
     ! save wall gradients during base call to calculate_residuals
     if(option(fmodjac)==on)then

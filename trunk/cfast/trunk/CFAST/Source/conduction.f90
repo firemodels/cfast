@@ -49,12 +49,7 @@ module conduction_routines
 
     integer, dimension(nwal) :: irevwc = (/2,1,3,4/)
 
-! adiabatic_wall will be replaced by a global variable
-    logical adiabatic_wall
-
     ! solve conduction problem for all walls
-
-    adiabatic_wall=.false.
 
     ibeg = 1
     iend = nwalls

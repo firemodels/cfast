@@ -115,7 +115,7 @@ module cfast_main
     real(eb) :: tgignt
     real(eb) :: tref
 
-    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl
+    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
     character(128) :: title, compartmentnames(nr)
    

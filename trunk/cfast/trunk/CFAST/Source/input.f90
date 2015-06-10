@@ -1647,6 +1647,10 @@
             furn_time(i)=lrarray(2*i)
             furn_temp(i)=lrarray(2*i+1)
         end do
+        
+        ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
+    case ('ADIAB')
+            adiabatic_wall = .true.
 
         !  HEATF Special fire - heat source only; no mass
     case ('HEATF')

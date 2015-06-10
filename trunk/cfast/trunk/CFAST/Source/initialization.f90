@@ -694,6 +694,7 @@
             switch(j,i) = .false.
         end do
     end do
+    adiabatic_wall = .false.
     do i = 1, nr
         deadroom(i) = 0
         izhall(i,ishall) = 0

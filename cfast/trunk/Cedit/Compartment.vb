@@ -366,7 +366,6 @@ Public Class CompartmentCollection
     Public ReadOnly Maximum As Integer = Compartment.MaximumCompartments
     Private i As Integer, j As Integer
     Private HasErrors As Integer
-
     Public DoChange As Boolean = True
     Public Sub Add(ByVal aCompartment As Compartment)
         List.Add(aCompartment)

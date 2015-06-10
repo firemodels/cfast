@@ -73,6 +73,7 @@ Public Class UpdateGUI
         MainWin.EnvExtAmbTemp.Text = myEnvironment.ExtAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         MainWin.EnvExtAmbPress.Text = myEnvironment.ExtAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvExtAmbElevation.Text = myEnvironment.ExtAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
+        MainWin.EnvAdiabatic.Checked = myEnvironment.AdiabaticWalls
 
         Dim value As Single
         value = Val(MainWin.EnvTimeStep.Text)
@@ -740,15 +741,12 @@ Public Class UpdateGUI
         If index < 0 Or index >= myFires.Count Then
             ClearGrid(MainWin.FireSummary)
             MainWin.GroupFire.Enabled = False
-            MainWin.GroupFireObject.Enabled = False
         Else
-            Dim aFireObject As New Fire
             MainWin.FireLOL.Text = myEnvironment.LowerOxygenLimit.ToString + " %"
             MainWin.FireIgnitionTemperature.Text = myEnvironment.IgnitionTemp.ToString + myUnits.Convert(UnitsNum.Temperature).Units
 
             MainWin.GroupFire.Enabled = True
-            MainWin.GroupFire.Text = "Location, Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
-            MainWin.GroupFireObject.Enabled = True
+            MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
             MainWin.FireType.Text = "Constrained"
             Dim aFire As New Fire
             aFire = myFires(index)
@@ -777,37 +775,10 @@ Public Class UpdateGUI
             If aFire.IgnitionType = Fire.FireIgnitionbyFlux Then IgnitionTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
             MainWin.FireIgnitionValue.Text = " "
             If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
-            MainWin.FireName.SelectedIndex = aFire.FireObject
-            If aFire.FireObject < 0 Or myFireObjects.Count <= aFire.FireObject Then
-                MainWin.FireName.SelectedIndex = -1
-                MainWin.FireMaterial.Text = "Material:"
-                MainWin.FireFormula.Text = "Formula:"
-                MainWin.FireMolarMass.Text = "Molar Mass:"""
-                MainWin.FireHoC.Text = "Heat of Combustion:"
-                MainWin.FirePeakCO.Text = "Peak CO Yield:"
-                MainWin.FirePeakHCN.Text = "Peak HCN Yield:"
-                MainWin.FirePeakHCl.Text = "Peak HCl Yield:"
-                MainWin.FirePeakSoot.Text = "Peak Soot Yield:"
-                MainWin.FirePeakHeight.Text = "Peak Fire Height:"
-                MainWin.FirePeakArea.Text = "Peak Area::"
-                MainWin.FireRadiativeFraction.Text = "Radiative Fraction:"
-                MainWin.FireObjectPlot.Clear()
-                MainWin.FireObjectPlot.Refresh()
-            Else
-                aFireObject = myFireObjects(aFire.FireObject)
-                MainWin.FireMaterial.Text = "Material: " + myThermalProperties.GetLongName(aFireObject.Material)
-                MainWin.FireFormula.Text = "Formula: " + aFireObject.ChemicalFormula()
-                MainWin.FireMolarMass.Text = "Molar Mass: " + aFireObject.MolarMass.ToString + myUnits.Convert(UnitsNum.Mass).Units + "/mol"
-                MainWin.FireHoC.Text = "Heat of Combustion: " + aFireObject.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
-                MainWin.FirePeakCO.Text = "Peak CO Yield: " + aFireObject.Peak(Fire.FireCO).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
-                MainWin.FirePeakHCN.Text = "Peak HCN Yield: " + aFireObject.Peak(Fire.FireHCN).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
-                MainWin.FirePeakHCl.Text = "Peak HCl Yield: " + aFireObject.Peak(Fire.FireHCl).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
-                MainWin.FirePeakSoot.Text = "Peak Soot Yield: " + aFireObject.Peak(Fire.FireSoot).ToString + myUnits.Convert(UnitsNum.Mass).Units + "/" + myUnits.Convert(UnitsNum.Mass).Units
-                MainWin.FirePeakHeight.Text = "Peak Fire Height: " + aFireObject.Peak(Fire.FireHeight).ToString + myUnits.Convert(UnitsNum.Length).Units
-                MainWin.FirePeakArea.Text = "Peak Fire Area: " + aFireObject.Peak(Fire.FireArea).ToString + myUnits.Convert(UnitsNum.Area).Units
-                MainWin.FireRadiativeFraction.Text = "Radiative Fraction: " + aFireObject.RadiativeFraction.ToString
-                UpdateFirePlot(aFire.FireObject)
-            End If
+            MainWin.FireName.Text = aFire.Name
+            MainWin.FirePlot.Clear()
+            MainWin.FirePlot.Refresh()
+
             numFires = myFires.Count
             ClearGrid(MainWin.FireSummary)
             If numFires > 0 Then
@@ -829,19 +800,14 @@ Public Class UpdateGUI
                     MainWin.FireSummary(i, 6) = aFire.XPosition.ToString
                     MainWin.FireSummary(i, 7) = aFire.YPosition.ToString
                     MainWin.FireSummary(i, 8) = aFire.ZPosition.ToString
-                    If aFire.FireObject < 0 Or myFireObjects.Count <= aFire.FireObject Then
-                        MainWin.FireSummary(i, 2) = "Not Defined"
-                        MainWin.FireSummary(i, 9) = " "
-                    Else
-                        aFireObject = myFireObjects(aFire.FireObject)
-                        MainWin.FireSummary(i, 2) = aFireObject.Name
-                        PeakHRR = 0.0
-                        aFireObject.GetFireData(afireTimeSeries, NumPoints)
-                        For j = 0 To NumPoints
-                            If afireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = afireTimeSeries(Fire.FireHRR, j)
-                        Next
-                        MainWin.FireSummary(i, 9) = PeakHRR.ToString
-                    End If
+
+                    MainWin.FireSummary(i, 2) = aFire.Name
+                    PeakHRR = 0.0
+                    aFire.GetFireData(afireTimeSeries, NumPoints)
+                    For j = 0 To NumPoints
+                        If afireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = afireTimeSeries(Fire.FireHRR, j)
+                    Next
+                    MainWin.FireSummary(i, 9) = PeakHRR.ToString
                 Next
                 MainWin.FireSummary.Select(index + 1, 0, index + 1, MainWin.FireSummary.Cols.Count - 1, True)
             End If
@@ -852,7 +818,7 @@ Public Class UpdateGUI
         Dim aFireData(12, 0) As Single, numPoints As Integer
         Dim x() As Single, y() As Single, j As Integer
         aFireObject = myFireObjects(index)
-        MainWin.FireObjectPlot.Clear()
+        MainWin.FirePlot.Clear()
         aFireObject.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
         For j = 0 To numPoints
@@ -860,9 +826,9 @@ Public Class UpdateGUI
             y(j) = aFireData(Fire.FireHRR, j)
         Next
         Dim lp As New NPlot.LinePlot(y, x)
-        MainWin.FireObjectPlot.Add(lp)
-        MainWin.FireObjectPlot.Title = aFireObject.Name + " HRR"
-        MainWin.FireObjectPlot.Refresh()
+        MainWin.FirePlot.Add(lp)
+        MainWin.FirePlot.Title = aFireObject.Name + " HRR"
+        MainWin.FirePlot.Refresh()
     End Sub
     Public Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)
         ' Erase the contents of a grid, leaving only the header row

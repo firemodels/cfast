@@ -55,10 +55,10 @@ Module IO
             For i = 1 To TempFireObjects.Count
                 Dim aFire As New Fire
                 aFire = TempFireObjects.Item(i - 1)
-                myFireObjects.Add(aFire)
+                myFires.Add(aFire)
             Next
         End If
-        If myFireObjects.Count > 0 Then
+        If myFires.Count > 0 Then
             Dim iFire As Integer = 0
             i = 1
             Do Until i > csv.MaxRow
@@ -73,7 +73,6 @@ Module IO
                         aFire.PlumeType = csv.Num(iFire, fireNum.plumeType) - 1
                         aFire.IgnitionType = csv.Num(iFire, fireNum.ignType) - 1
                         aFire.IgnitionValue = csv.Num(iFire, fireNum.ignCriterion)
-                        aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
                         aFire.Changed = False
                         myFires.Add(aFire)
                     End If
@@ -87,23 +86,8 @@ Module IO
         Do Until i > csv.MaxRow
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
                 Select Case csv.str(i, CFASTlnNum.keyWord).Trim
-                    Case "VERSN"
-                        Dim aTitle As String
-                        aTitle = csv.str(i, CFASTlnNum.title)
-                        If csv.Num(i, 0) > CFASTlnNum.title Then
-                            For j = CFASTlnNum.title + 1 To csv.Num(i, 0)
-                                aTitle = aTitle + " " + csv.str(i, j)
-                            Next
-                        End If
-                        myEnvironment.Title = aTitle
-                        myEnvironment.Changed = False
-                    Case "GLOBA"
-                        If csv.Num(i, 0) <= 3 Then
-                            ' only process sshort form here ... sets global parameters
-                            myEnvironment.LowerOxygenLimit = csv.Num(i, chemieNum.limo2)
-                            myEnvironment.IgnitionTemp = csv.Num(i, chemieNum.igntemp)
-                            myEnvironment.Changed = False
-                        End If
+                    Case "ADIAB"
+                        myEnvironment.AdiabaticWalls = True
                     Case "CJET"         ' This is an obsolescent command
                     Case "COMPA"        ' Done in first loop
                     Case "DETECT"
@@ -136,6 +120,13 @@ Module IO
                         myEnvironment.ExtAmbElevation = csv.Num(i, ambNum.refHeight)
                         myEnvironment.Changed = False
                     Case "EVENT"
+                    Case "GLOBA"
+                        If csv.Num(i, 0) <= 3 Then
+                            ' only process sshort form here ... sets global parameters
+                            myEnvironment.LowerOxygenLimit = csv.Num(i, chemieNum.limo2)
+                            myEnvironment.IgnitionTemp = csv.Num(i, chemieNum.igntemp)
+                            myEnvironment.Changed = False
+                        End If
                     Case "HALL"
                         If csv.Num(i, hallNum.compartment) <= myCompartments.Count Then
                             j = csv.Num(i, hallNum.compartment) - 1
@@ -188,6 +179,17 @@ Module IO
                     Case "INTER"        'ignored
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword INTER not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
+                    Case "ISOF"
+                        Dim aVisual As New Visual
+                        aVisual.Type = Visual.IsoSurface
+                        aVisual.Value = csv.Num(i, visualNum.isoValue)
+                        If csv.Num(i, 0) >= visualNum.isoCompartment Then
+                            aVisual.Compartment = csv.Num(i, visualNum.isoCompartment) - 1
+                        Else
+                            aVisual.Compartment = -1
+                        End If
+                        aVisual.Changed = False
+                        myVisuals.Add(aVisual)
                     Case "LFBO"         'ignored
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword LFBO not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
@@ -288,6 +290,29 @@ Module IO
                     Case "SETP"         'ignored
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword SETP not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
+                    Case "SLCF"
+                        Dim aVisual As New Visual
+                        If csv.str(i, visualNum.sliceType) = "2-D" Then
+                            aVisual.Type = Visual.TwoD
+                            If csv.str(i, visualNum.slice2DAxis) = "X" Then aVisual.Axis = 0
+                            If csv.str(i, visualNum.slice2DAxis) = "Y" Then aVisual.Axis = 1
+                            If csv.str(i, visualNum.slice2DAxis) = "Z" Then aVisual.Axis = 2
+                            aVisual.Value = csv.Num(i, visualNum.slice2DPosition)
+                            If csv.Num(i, 0) >= visualNum.slice2DCompartment Then
+                                aVisual.Compartment = csv.Num(i, visualNum.slice2DCompartment) - 1
+                            Else
+                                aVisual.Compartment = -1
+                            End If
+                        Else
+                            aVisual.Type = Visual.ThreeD
+                            If csv.Num(i, 0) >= visualNum.slice3DCompartment Then
+                                aVisual.Compartment = csv.Num(i, visualNum.slice3DCompartment) - 1
+                            Else
+                                aVisual.Compartment = -1
+                            End If
+                        End If
+                        aVisual.Changed = False
+                        myVisuals.Add(aVisual)
                     Case "STPMAX"
                         myEnvironment.MaximumTimeStep = csv.Num(i, 2)
                         myEnvironment.Changed = False
@@ -347,10 +372,15 @@ Module IO
                             myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval + 1)
                         End If
                         myEnvironment.Changed = False
-                    Case "WIND"
-                        myEnvironment.ExtWindSpeed = csv.Num(i, windNum.velocity)
-                        myEnvironment.ExtScaleHeight = csv.Num(i, windNum.refHeight)
-                        myEnvironment.ExtPowerLawCoefficient = csv.Num(i, windNum.expLapseRate)
+                    Case "VERSN"
+                        Dim aTitle As String
+                        aTitle = csv.str(i, CFASTlnNum.title)
+                        If csv.Num(i, 0) > CFASTlnNum.title Then
+                            For j = CFASTlnNum.title + 1 To csv.Num(i, 0)
+                                aTitle = aTitle + " " + csv.str(i, j)
+                            Next
+                        End If
+                        myEnvironment.Title = aTitle
                         myEnvironment.Changed = False
                     Case "VHEAT"
                         Dim vheat As New Vent
@@ -373,40 +403,11 @@ Module IO
                         vvent.FinalOpening = csv.Num(i, vventNum.intialfraction)
                         vvent.Changed = False
                         myVVents.Add(vvent)
-                    Case "SLCF"
-                        Dim aVisual As New Visual
-                        If csv.str(i, visualNum.sliceType) = "2-D" Then
-                            aVisual.Type = Visual.TwoD
-                            If csv.str(i, visualNum.slice2DAxis) = "X" Then aVisual.Axis = 0
-                            If csv.str(i, visualNum.slice2DAxis) = "Y" Then aVisual.Axis = 1
-                            If csv.str(i, visualNum.slice2DAxis) = "Z" Then aVisual.Axis = 2
-                            aVisual.Value = csv.Num(i, visualNum.slice2DPosition)
-                            If csv.Num(i, 0) >= visualNum.slice2DCompartment Then
-                                aVisual.Compartment = csv.Num(i, visualNum.slice2DCompartment) - 1
-                            Else
-                                aVisual.Compartment = -1
-                            End If
-                        Else
-                            aVisual.Type = Visual.ThreeD
-                            If csv.Num(i, 0) >= visualNum.slice3DCompartment Then
-                                aVisual.Compartment = csv.Num(i, visualNum.slice3DCompartment) - 1
-                            Else
-                                aVisual.Compartment = -1
-                            End If
-                        End If
-                        aVisual.Changed = False
-                        myVisuals.Add(aVisual)
-                    Case "ISOF"
-                        Dim aVisual As New Visual
-                        aVisual.Type = Visual.IsoSurface
-                        aVisual.Value = csv.Num(i, visualNum.isoValue)
-                        If csv.Num(i, 0) >= visualNum.isoCompartment Then
-                            aVisual.Compartment = csv.Num(i, visualNum.isoCompartment) - 1
-                        Else
-                            aVisual.Compartment = -1
-                        End If
-                        aVisual.Changed = False
-                        myVisuals.Add(aVisual)
+                    Case "WIND"
+                        myEnvironment.ExtWindSpeed = csv.Num(i, windNum.velocity)
+                        myEnvironment.ExtScaleHeight = csv.Num(i, windNum.refHeight)
+                        myEnvironment.ExtPowerLawCoefficient = csv.Num(i, windNum.expLapseRate)
+                        myEnvironment.Changed = False
                 End Select
             Else
                 If HeaderComment(csv.str(i, 1)) Then
@@ -555,7 +556,7 @@ Module IO
                 For i = 1 To TempFireObjects.Count
                     Dim aFire As New Fire
                     aFire = TempFireObjects.Item(i - 1)
-                    myFireObjects.Add(aFire)
+                    myFires.Add(aFire)
                 Next
             End If
         End If
@@ -748,6 +749,11 @@ Module IO
         csv.Num(i, ambNum.refHeight) = myEnvironment.IntAmbElevation
         csv.Num(i, ambNum.relHumidity) = myEnvironment.IntAmbRH
         i += 1
+        'adiabatic walls
+        If myEnvironment.AdiabaticWalls = True Then
+            csv.str(i, CFASTlnNum.keyWord) = "ADIAB"
+            i += 1
+        End If
         'comment header of material properties section
         If myThermalProperties.Count > 0 Then AddHeadertoOutput(csv, i, "Material Properties")
         Dim aThermalProperty As ThermalProperty

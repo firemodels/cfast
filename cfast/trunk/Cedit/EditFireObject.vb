@@ -2,11 +2,11 @@
     Friend CurrentFireObject As Integer
     Friend aFireObject As New Fire
     Friend WindowName As String
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireMaterial.SelectedIndexChanged, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireSootYield.Leave, FireCOYield.Leave, FireRadiativeFraction.Leave, FireName.Leave
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim numPoints As Integer, ir As Integer
 
-        If sender Is Me.FireName Then aFireObject.Name = Me.FireName.Text
-        If sender Is Me.FireMaterial Then aFireObject.Material = myThermalProperties.GetShortName(sender.text)
+
+
         If sender Is Me.FireC Then
             If Val(Me.FireC.Text) > 0 Then
                 aFireObject.ChemicalFormula(formula.C) = Val(Me.FireC.Text)
@@ -168,7 +168,7 @@
             UpdateFireObject()
         End If
     End Sub
-    Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
+    Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs)
         Dim numPoints As Integer
         numPoints = CountGridPoints(Me.FireDataSS)
         ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
@@ -178,10 +178,10 @@
         CopyFireData(aFireObject)
         UpdateFireObject()
     End Sub
-    Private Sub FireData_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.AfterRowColChange
+    Private Sub FireData_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs)
         UpdateFirePlot()
     End Sub
-    Private Sub FireData_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown
+    Private Sub FireData_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs)
         Dim aChar As String
         aChar = e.KeyCode.ToString
         If e.Control Then

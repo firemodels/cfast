@@ -16,8 +16,8 @@ close all
 clear all
 format long
 
- data_dir = '../../../Verification/Mass_Balance/';
- plot_dir = '../../../Docs/Validation_Guide/FIGURES/Verification/';
+data_dir = '../../../Verification/Mass_Balance/';
+plot_dir = '../../../Docs/Validation_Guide/FIGURES/Verification/';
 
 numC = 1;
 numH = 4;
@@ -49,8 +49,10 @@ StoicH2O = numH/2;
 StoicCO2 = numC;
 %Theoretical Calculations
 %at t = 0, 0 fuel has been consumed so 0 kg of CO2 and H2O will be produced
-t = [0 30 330 360 2000]';
-TotEnergyCons = [0 15 315 330 330]';
+t = [0:30:390];
+t = [t 510 630 750 870]';
+t = t*(1/60);
+TotEnergyCons = [0 15 45 75 105 135 165 195 225 255 285 315 330 330 330 330 330 330]';
 MassFuelCons = zeros(length(t),1);
 MassC = zeros(length(t),1);
 MassH = zeros(length(t),1);
@@ -81,15 +83,15 @@ disp([TotH2Omass,TotCO2mass])
 disp('The percentage errors for the mass of H2O and CO2 found experimentally are:')
 disp([ErrorH2O,ErrorCO2])
 
-plot(Time,mCO2vector,Time,mH2Ovector)
+plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
 hold on
-plot(t,MassCO2Prod,t,MassH2OProd)
+plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
 hold off
-axis([0 3000 0 0.02])
-xlabel('Time (s)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+axis([0 15 0 0.02])
+xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 legend1 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
-set(legend1, 'interpreter',Font_Interpreter, 'fontsize', 6);
+set(legend1, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
 print(gcf,'-dpdf',[plot_dir 'species_mass_1'])
 %% Case 2: Two compartments of sizes 2m*5m*8m are placed side by side, with a door of height 6m and width 1m connecting them. There is a fire in the middle of the first compartment that has the same energy production as the fire in the first case study. The fuel is still methane.
 filename = [data_dir 'species_mass_2'];
@@ -108,15 +110,15 @@ disp([TotH2Omass,TotCO2mass])
 disp('The percentage errors for the mass of H2O and CO2 found experimentally are:')
 disp([ErrorH2O,ErrorCO2])
 
-plot(Time,mCO2vector,Time,mH2Ovector)
+plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
 hold on
-plot(t,MassCO2Prod,t,MassH2OProd)
+plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
 hold off
-axis([0 3000 0 0.02])
-xlabel('Time (s)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+axis([0 15 0 0.02])
+xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-legend2 = legend('CFAST CO2 upper','CFAST CO2 lower','CFAST H2O upper','CFAST H2O lower','Expected CO2','Expected H2O','Location','southeast');
-set(legend2, 'interpreter',Font_Interpreter, 'fontsize', 6);
+legend2 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
+set(legend2, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
 print(gcf,'-dpdf',[plot_dir 'species_mass_2'])
 
 %% Case 3: Two compartments of sizes 9m*5m*4m and 9m*5m*2m are placed directly on top of each other with a 4m^2 ceiling vent in between the two. The same fire that is described in cases 1&2 is placed in the middle of compartment 1. 
@@ -136,14 +138,14 @@ disp([TotH2Omass,TotCO2mass])
 disp('The percentage errors for the mass of H2O and CO2 found experimentally are:')
 disp([ErrorH2O,ErrorCO2])
 
-plot(Time,mCO2vector,Time,mH2Ovector)
+plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
 hold on
-plot(t,MassCO2Prod,t,MassH2OProd)
+plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
 hold off
-axis([0 3000 0 0.02])
-xlabel('Time (s)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+axis([0 15 0 0.02])
+xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-legend3 = legend('CFAST CO2 upper','CFAST CO2 lower','CFAST H2O upper','CFAST H2O lower','Expected CO2','Expected H2O','Location','southeast');
-set(legend3, 'interpreter',Font_Interpreter, 'fontsize', 6);
+legend3 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
+set(legend3, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
 print(gcf,'-dpdf',[plot_dir 'species_mass_3'])
-%% Case 4:
+

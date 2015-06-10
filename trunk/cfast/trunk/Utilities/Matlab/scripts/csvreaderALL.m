@@ -32,7 +32,8 @@ LH = zeros(dim(1),numComp);
 for i = 1:dim(1)
     Time(i) = Q.data(i,colTime);
 end
-    
+Time = Time*(1/60);
+
 for i = 1:numComp
 for j = 1:dim(1)    
 Tu(j,i) = Q.data(j,colTu(i)) + 273.15;%K
@@ -130,8 +131,12 @@ end
 TotH2OmassL = sum(mH2Oexpl(a,:));
 TotCO2massL = sum(mCO2expl(a,:));
 
-mCO2vector = mCO2expl + mCO2expu;
-mH2Ovector = mH2Oexpl + mH2Oexpu;
+mCO2vector = mCO2expl + mCO2expu;%if multiple compartments are present, then this vector has multiple columns
+mH2Ovector = mH2Oexpl + mH2Oexpu;%if multiple compartments are present, then this vector has multiple columns
+if numComp > 1
+mCO2vector = sum(mCO2vector,numComp);
+mH2Ovector = sum(mH2Ovector,numComp);
+end
 TotH2Omass = TotH2OmassL+TotH2OmassU;
 TotCO2mass = TotCO2massL+TotCO2massU;
 

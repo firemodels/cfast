@@ -23,7 +23,8 @@ Public Class Environment
     Private aIgnitionTemp As Single                 ' Gaseous ignition temperature of the fuel, default is ambient + 100 °C
     Private aMaximumTimeStep As Single              ' Maximum time step for model calculations
     Private aInputFileName As String                ' Current input data file name
-    Private AInputFilePath As String                ' Path to current input data file
+    Private aInputFilePath As String                ' Path to current input data file
+    Private aAdiabaticWalls As Boolean               ' True if all walls are adiabatic
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
 
@@ -46,6 +47,7 @@ Public Class Environment
         aLowerOxygenLimit = 10.0
         aIgnitionTemp = aIntAmbTemperature + 100.0
         aMaximumTimeStep = -1.0
+        aAdiabaticWalls = False
     End Sub
     Friend Property Title() As String
         Get
@@ -238,8 +240,19 @@ Public Class Environment
         End Get
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aMaximumTimeStep Then
-                aChanged = True
                 aMaximumTimeStep = myUnits.Convert(UnitsNum.Time).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property AdiabaticWalls() As Boolean
+        Get
+            Return aAdiabaticWalls
+        End Get
+        Set(ByVal Value As Boolean)
+            If aAdiabaticWalls <> Value Then
+                aAdiabaticWalls = Value
+                aChanged = True
             End If
         End Set
     End Property

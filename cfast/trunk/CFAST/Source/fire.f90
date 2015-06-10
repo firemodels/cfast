@@ -76,7 +76,7 @@
             xtl = zztemp(iroom,lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
-            q_firemass = cp*oplume(1,iobj)*xtl
+            q_firemass = cp*oplume(1,iobj)*interior_temperature
             q_entrained = cp*oplume(2,iobj)*xtl
             flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q_firemass + q_entrained
             flwf(iroom,q,lower) = flwf(iroom,q,lower) - q_entrained

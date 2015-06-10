@@ -9,6 +9,13 @@ cd Energy_Balance
 ..\scripts\background -u 98 ..\..\bin\cfast sealed_test /V
 cd ..
 
+echo Running Mass Balance cases
+cd Mass_Balance
+..\scripts\background -u 98 ..\..\bin\cfast species_mass_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast species_mass_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast species_mass_3 /V
+cd ..
+
 echo Running Thermal Equilibrium cases
 cd Thermal_Equilibrium
 ..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib /V

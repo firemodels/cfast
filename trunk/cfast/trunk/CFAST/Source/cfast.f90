@@ -1400,7 +1400,7 @@
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, xdelt, tstop, zzu, zzl, &
-        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o
+        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o, ptemp
         
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -1785,8 +1785,19 @@
                 roomptr%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
+            ! Test code to fix a bug
+
+            if (abs(zzrelp(iroom)).ge.0.2) then
+                ptemp = zzpabs(iroom)
+            elseif (abs(zzrelp(iroom)).le.0.1) then
+                ptemp = pofset
+            else
+                ptemp = abs(zzrelp(iroom))-0.1
+                ! SIGN, rather bizarly, gives the sign of the product of two arguments. Totally weird
+                ptemp = sign(zzrelp(iroom),1.0_eb)*(-30*ptemp**3 + 23*ptemp**2) + pofset
+            endif
             do layer = upper, lower
-                zzrho(iroom,layer) = zzpabs(iroom)/rgas/zztemp(iroom,layer)
+                zzrho(iroom,layer) = ptemp/rgas/zztemp(iroom,layer)
                 zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)
             end do
         end do

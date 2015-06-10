@@ -62,6 +62,56 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \end{figure}
 
 
+\section{Conservation of Mass}
+
+\label{mass_conservation}
+\subsection{Case 1:}
+A natural gas fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
+\begin{equation}
+  \frac{ 330 \; {\rm kJ} }{ 50000 \; {\rm kJ/kg} } = 0.0066 \; {\rm kg}
+\end{equation}
+The combustion chemistry is given by
+\begin{equation}
+   \mathrm{CH_4 + 2 \, O_2 \to CO_2 + 2 \, H_2O}
+\end{equation}
+The molecular weight of CH$_4$ is 16~g/mol and CO$_2$ is 44~g/mol; thus, the mass of CO$_2$ produced by the fire is
+\begin{equation}
+   m_{\rm CO_2} = 0.0066 \; {\rm kg} \times  \frac{ 44 \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01815 \; {\rm kg} 
+\end{equation}
+The molecular weight of H$_2$O is 18~g/mol; thus, the mass of H$_2$O produced by the fire is
+\begin{equation}
+   m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg} 
+\end{equation}
+The experimentally determined mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively. This leaves the mole fraction of N$_2$ to be 0.7927. These mole fractions can be converted to mass fractions by
+\begin{equation}
+Y_k = \frac{X_{k}M_{k}}{\sum_{i=1}^N X_{i}M_{i}}
+\end{equation}
+Given that the temperature of the upper layer is 297~K, the volume of the upper layer is 81~m$^3$ and the pressure in the compartment is 102665~Pa, the mass of the upper layer can be calculated by
+\begin{equation}
+m_{u} = \frac{PV}{T\frac{R}{M_{gas}}}
+\end{equation}
+To find the mass of CO$_2$ and H$_2$O produced in the experiment, the following equation must be applied
+\begin{equation}
+m_{k} = m_{u}Y_{k} 
+\end{equation}
+Figure~\ref{specmass1} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_1}
+\caption[Results of the test case {\ct species\_mass\_1.in}]{Expected and predicted masses of CO$_2$ and H$_2$O for the case {\ct species\_mass\_1.in}.}
+\label{specmass1}
+\end{figure}
+
+
+\subsection{Case 2:}
+The same natural gas fire described in Case 1 burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. 
+When this case is run, CFAST  produces values that result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
+\subsection{Case 3:}
+The same natural gas fire described in Case 1 burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a sqaure ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as Case 2 because the only difference between the two scenarios is the specific alignment of the compartments.
+When this case is run, CFAST produces values that result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
+
+
 \section{Energy Balance}
 
 A model examining heat added to a system can be demonstrated with a test case containing a constant 100 kW fire.  With non-conducting surface and no ventilation, the heat and mass released by the fire (and added to the compartment) can be determined.  Here we use a single zone simulation to simplify the calculations (CFAST simply assumes the entire volume is taken up by the upper layer).  Densities are obtained using the calculated temperature. The energy and mass added to the system can be calculated as

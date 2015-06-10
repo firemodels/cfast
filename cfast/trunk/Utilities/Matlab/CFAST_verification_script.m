@@ -60,7 +60,8 @@ scatplot(saved_data, drange, ...
 
 % Special cases
 
-SpeciesMassTestCases
+
+run('.\scripts\SpeciesMassTestCases.m')
 
  
 display('Verification scripts completed successfully!')

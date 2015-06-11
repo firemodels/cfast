@@ -1,9 +1,12 @@
-#!/bin/bash -f
+#!/bin/bash
 
 queue=batch
-while getopts 'q:' OPTION
+while getopts 'd:q:' OPTION
 do
 case $OPTION in
+  d)
+   dir="$OPTARG"
+   ;;
   q)
    queue="$OPTARG"
    ;;
@@ -12,8 +15,8 @@ esac
 done
 shift $(($OPTIND-1))
 
-dir=$1
-infile=$2
+in=$1
+infile=${in%.*}
 
 fulldir=$BASEDIR/$dir
 stopfile=$infile.stop

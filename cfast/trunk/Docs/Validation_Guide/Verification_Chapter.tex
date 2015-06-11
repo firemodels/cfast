@@ -16,22 +16,22 @@ Whereas model validation consists mainly of comparing predictions with experimen
 
 \section{Thermal Equlibrium}
 
-For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment. 
+For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment.
 
 \subsection{Temperature Equilibrium via Heat Conduction}
 
 As a simple test of the energy balance, raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the internal temperature to equilibrate to the exterior. From the ideal gas law, the pressure inside the compartment is expected to rise to
 \begin{equation}
-   P_{\rm final} = P_{\rm initial} \; \frac{T_{\rm final}}{T_{\rm initial}} = 101300 \; {\rm Pa} \times \frac{298.15 \; {\rm K}}{293.15 \; {\rm K}} = 103027.78 \; {\rm Pa} \label{eq:Temperature_Equilibrium}  
+   P_{\rm final} = P_{\rm initial} \; \frac{T_{\rm final}}{T_{\rm initial}} = 101325 \; {\rm Pa} \times \frac{298.15 \; {\rm K}}{293.15 \; {\rm K}} = 103027.78 \; {\rm Pa} \label{eq:Temperature_Equilibrium}
 \end{equation}
-or a pressure rise of 1727.78, matching the output from CFAST.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test.
+or a pressure rise of 1728.21, matching the output from CFAST.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_temp} &
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_pres}
 \end{tabular*}
-\caption[Results of the test case {\ct basic\_tempequilib.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib.in}.} 
+\caption[Results of the test case {\ct basic\_tempequilib.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib.in}.}
 \label{fig:Temperature_Equilibrium}
 \end{figure}
 
@@ -77,11 +77,11 @@ The combustion chemistry is given by
 \end{equation}
 The molecular weight of CH$_4$ is 16~g/mol and CO$_2$ is 44~g/mol; thus, the mass of CO$_2$ produced by the fire is
 \begin{equation}
-   m_{\rm CO_2} = 0.0066 \; {\rm kg} \times  \frac{ 44 \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01815 \; {\rm kg} 
+   m_{\rm CO_2} = 0.0066 \; {\rm kg} \times  \frac{ 44 \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01815 \; {\rm kg}
 \end{equation}
 The molecular weight of H$_2$O is 18~g/mol; thus, the mass of H$_2$O produced by the fire is
 \begin{equation}
-   m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg} 
+   m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
 The experimentally determined mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively. This leaves the mole fraction of N$_2$ to be 0.7927. These mole fractions can be converted to mass fractions by
 \begin{equation}
@@ -93,7 +93,7 @@ m_{u} = \frac{PV}{T\frac{R}{M_{gas}}}
 \end{equation}
 To find the mass of CO$_2$ and H$_2$O produced in the experiment, the following equation must be applied
 \begin{equation}
-m_{k} = m_{u}Y_{k} 
+m_{k} = m_{u}Y_{k}
 \end{equation}
 Figure~\ref{specmass1} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
 
@@ -107,7 +107,7 @@ Figure~\ref{specmass1} shows the result in calculating the mass of both CO$_2$ a
 
 \subsection{Case 2: Fire Within a Two Compartment System Connected by a Wall Vent}
 \label{sec:spec2}
-The same natural gas fire described in section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. 
+The same natural gas fire described in section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O.
 Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
 \begin{figure}[!ht]
 \centering
@@ -128,34 +128,21 @@ Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ a
 
 \section{Energy Balance}
 
-A model examining heat added to a system can be demonstrated with a test case containing a constant 100 kW fire.  With non-conducting surface and no ventilation, the heat and mass released by the fire (and added to the compartment) can be determined.  Here we use a single zone simulation to simplify the calculations (CFAST simply assumes the entire volume is taken up by the upper layer).  Densities are obtained using the calculated temperature. The energy and mass added to the system can be calculated as
+\subsection{A Fire in a Single, Sealed Compartment with a Single Zone}
 
-\begin{eqnarray}
-M_0 &=& V \cdot \rho_{ambient} \nonumber \\
- &=& 150 \cdot 1.195 \nonumber \\
- &=& 149.39 \text{\ kg} \nonumber \\
-M &=& M_0 + \dm_f \cdot t \\
-E_0 &=& M_0 \cdot c_v \cdot T_{ambient} \nonumber \\
- &=& 149.39 \cdot 1012/1.4 \cdot 293.15 \nonumber \\
- &=& 31.65  \text{\ MJ} \nonumber \\
-E &=& E_0 + Q_f \cdot t + \dm_f \cdot c_v \cdot T
-\end{eqnarray}
-where $M_0$ is the initial mass of air in the compartment, $V$ is the compartment volume, $\rho_{ambient}$ is the air density at ambient conditions, $M$ is the mass of gases in the compartment at time $t$\, $\dm_f$ is the pyrolysis rate of the burning fuel, $E_0$ is the initial internal energy of the system, $c_v$ is the heat capacity of air at constant volume, $T_{ambient}$ is the temperature of the compartment at ambient conditions, $E$ is the internal energy of the system at time $t$, $Q_f$ is the convective heat release rate of the fire, and $T$ is the temperature of the compartment at time $t$.
-
-Finally, the temperature of the compartment can be calculated from the definition of internal energy of the system
-
-\begin{equation}
-E = M \cdot c_v \cdot T \text{, or, rearranging, } T = \frac{E}{c_v \cdot M}
-\end{equation}
-
-Figure \ref{fig:Analytical_Closed_Compartment} shows the comparison of the calculated and CFAST results for this test. The average difference between the calculations is approximately 0.01 \%, with the difference due to the way CFAST handles a single layer calculation while maintaining its default equation set that includes both a lower and upper layer.
+A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  The governing equation for the temperature is
+\be
+   \frac{{\rm d} (c_v \, m \, T)}{{\rm d}t} = \dot{Q}  \quad \Longrightarrow \quad \frac{{\rm d}T}{{\rm d}t} = \frac{ \dot{Q} - c_v \, \dot{m}_{\rm f} \, T }{c_v \, m}
+\ee
+where $\dm_{\rm f}$ is the fuel flow rate and $m$ is the total mass. Figure \ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and a simple second-order accurate ODE solver. The difference is due to the way CFAST handles a single layer calculation while maintaining its default equation set that includes both a lower and upper layer.
 
 \begin{figure}[!ht]
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/Verification/sealed_test}
-\caption[Results of the test case {\ct sealed\_test.in}]{Calculated and analytical solution for a 100 kW fire in a closed 5 m x 5 m x 5 m compartment {\ct sealed\_test.in}.}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_pres}
+\end{tabular*}
+\caption[Results of the test case {\ct sealed\_test.in}]{Calculated and expected temperature and pressure rise for a fire in a closed compartment. The case is called {\ct sealed\_test.in}.}
 \label{fig:Analytical_Closed_Compartment}
-\end{center}
 \end{figure}
 
 

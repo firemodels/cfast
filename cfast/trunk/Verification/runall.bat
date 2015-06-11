@@ -26,6 +26,7 @@ cd ..
 echo Running Ventilation cases
 cd Ventilation
 ..\scripts\background -u 98 ..\..\bin\cfast ceiling_mechvent /V
+..\scripts\background -u 98 ..\..\bin\cfast ventilation_2 /V
 cd ..
 
 echo Waiting for all CFAST runs to finish

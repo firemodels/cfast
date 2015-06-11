@@ -9,9 +9,12 @@ MN2 = 28.02;%g/mol
 MC = 12.01;%g/mol
 MH = 1.008;%g/mol
 MO = 16.00;%g/mol
+gamma = 1.4;
+Cp = 1012;
+
 filenameN = strcat(filename,'_n.csv');
 Q = importdata(filenameN,',',2);
-F = strsplit(Q.textdata{1,1},',');
+F = strsplitter(Q.textdata{1,1},',');
 
 colTu = find(strncmpi(F,'ULT',3));
 colVu = find(strncmpi(F,'VOL',3));
@@ -46,7 +49,7 @@ end
 %Analyzing the S file and extracting the nexessary quantities
 filenameS = strcat(filename,'_s.csv');
 S = importdata(filenameS,',',2);
-W = strsplit(S.textdata{1,1},',');
+W = strsplitter(S.textdata{1,1},',');
 colO2u = find(strncmpi(W,'ULO2',4));
 colCO2u = find(strncmpi(W,'ULCO2',5));
 colH2Ou = find(strncmpi(W,'ULH2O',5));
@@ -97,15 +100,15 @@ YCO2l(j,i) = (mfCO2l(j,i)*MCO2)/MWAvgl(j,i);
 end
 end
 
-MWAvguNew = zeros(a,numComp);
+
 Rspecificu = zeros(a,numComp);
 mGASupper = zeros(a,numComp);
 mCO2expu = zeros(a,numComp);
 mH2Oexpu = zeros(a,numComp);
 for i = 1:numComp
     for j = 1:a;
-MWAvguNew(j,i) = MWAvgu(j,i)/1000;%kg/mol
-Rspecificu(j,i) = R/MWAvguNew(j,i);%This formula calculates for the R value in the appropriate units (J/(kg*K))
+
+Rspecificu(j,i) = Cp*(gamma-1)/(gamma);%This formula calculates for the R value in the appropriate units (J/(kg*K))
 mGASupper(j,i) = P(j,i)*Vu(j,i)/(Rspecificu(j,i)*Tu(j,i));
 mCO2expu(j,i) = mGASupper(j,i) * YCO2u(j,i);
 mH2Oexpu(j,i) = mGASupper(j,i) * YH2Ou(j,i);
@@ -114,15 +117,14 @@ end
 TotH2OmassU = sum(mH2Oexpu(a,:));
 TotCO2massU = sum(mCO2expu(a,:));
 
-MWAvglNew = zeros(a,numComp);
+
 Rspecificl = zeros(a,numComp);
 mGASlower = zeros(a,numComp);
 mCO2expl = zeros(a,numComp);
 mH2Oexpl = zeros(a,numComp);
 for i = 1:numComp
     for j = 1:a;
-MWAvglNew(j,i) = MWAvgl(j,i)/1000;%kg/mol
-Rspecificl(j,i) = R/MWAvglNew(j,i);%This formula calculates for the R value in the appropriate units (J/(kg*K))
+Rspecificl(j,i) = Cp*(gamma-1)/(gamma);%This formula calculates for the R value in the appropriate units (J/(kg*K))
 mGASlower(j,i) = P(j,i)*Vl(j,i)/(Rspecificl(j,i)*Tl(j,i));
 mCO2expl(j,i) = mGASlower(j,i) * YCO2l(j,i);
 mH2Oexpl(j,i) = mGASlower(j,i) * YH2Ol(j,i);

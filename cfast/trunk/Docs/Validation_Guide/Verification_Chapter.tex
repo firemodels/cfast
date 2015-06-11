@@ -65,7 +65,8 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \section{Conservation of Mass}
 
 \label{mass_conservation}
-\subsection{Case 1:}
+\subsection{Case 1: Fire Within a Single Compartment}
+\label{sec:spec1}
 A natural gas fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
 \begin{equation}
   \frac{ 330 \; {\rm kJ} }{ 50000 \; {\rm kJ/kg} } = 0.0066 \; {\rm kg}
@@ -104,13 +105,26 @@ Figure~\ref{specmass1} shows the result in calculating the mass of both CO$_2$ a
 \end{figure}
 
 
-\subsection{Case 2:}
-The same natural gas fire described in Case 1 burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. 
-When this case is run, CFAST  produces values that result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
-\subsection{Case 3:}
-The same natural gas fire described in Case 1 burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a sqaure ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as Case 2 because the only difference between the two scenarios is the specific alignment of the compartments.
-When this case is run, CFAST produces values that result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
+\subsection{Case 2: Fire Within a Two Compartment System Connected by a Wall Vent}
+\label{sec:spec2}
+The same natural gas fire described in section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. 
+Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_2}
+\caption[Results of the test case {\ct species\_mass\_1.in}]{Expected and predicted masses of CO$_2$ and H$_2$O for the case {\ct species\_mass\_2.in}.}
+\label{specmass2}
+\end{figure}
 
+\subsection{Case 3: Fire Within a Two Compartment System Connected by a Ceiling Vent}
+The same natural gas fire described in section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a sqaure ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
+Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.2~\% greater than expected.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_3}
+\caption[Results of the test case {\ct species\_mass\_3.in}]{Expected and predicted masses of CO$_2$ and H$_2$O for the case {\ct species\_mass\_3.in}.}
+\label{specmass3}
+\end{figure}
 
 \section{Energy Balance}
 
@@ -158,7 +172,19 @@ Two identical 5~m x 5~m x 5~m compartments are stacked on each other.  A 1~m$^2$
 \end{center}
 \end{figure}
 
+\subsection{Case 2: Measuring Temperature and Pressure Changes as Air Flows Through a Multi-Compartment System}
+A chamber is made by combining four 4~m by 4~m by 4~m compartments together. The chamber is arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. Air flows into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows how temperature and pressure change as the air flows through the fourth compartment.
 
+
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/ventilation_2_temperature} &
+\includegraphics[width=3.0in]{FIGURES/Verification/ventilation_2_pressure}
+\end{tabular*}
+\caption[Results of the test case {\ct ventilation\_2.in}]{Expected and CFAST calculated values for pressure and temperature of the fourth compartment in the chamber {\ct ventilation\_2.in}.}
+\label{ventilation_2TP}
+\end{figure}
 
 
 

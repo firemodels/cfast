@@ -3440,7 +3440,7 @@ Public Class CeditMain
         Me.TabDetection.Controls.Add(Me.DetectorDup)
         Me.TabDetection.Location = New System.Drawing.Point(4, 22)
         Me.TabDetection.Name = "TabDetection"
-        Me.TabDetection.Size = New System.Drawing.Size(976, 558)
+        Me.TabDetection.Size = New System.Drawing.Size(976, 592)
         Me.TabDetection.TabIndex = 2
         Me.TabDetection.Text = "Detection / Suppression"
         Me.TabDetection.Visible = False
@@ -4078,7 +4078,7 @@ Public Class CeditMain
         Me.TabHeatTransfer.Controls.Add(Me.GroupBox1)
         Me.TabHeatTransfer.Location = New System.Drawing.Point(4, 22)
         Me.TabHeatTransfer.Name = "TabHeatTransfer"
-        Me.TabHeatTransfer.Size = New System.Drawing.Size(976, 558)
+        Me.TabHeatTransfer.Size = New System.Drawing.Size(976, 592)
         Me.TabHeatTransfer.TabIndex = 7
         Me.TabHeatTransfer.Text = "Surface Connections"
         '
@@ -4538,7 +4538,7 @@ Public Class CeditMain
         Me.TabVisuals.Location = New System.Drawing.Point(4, 22)
         Me.TabVisuals.Name = "TabVisuals"
         Me.TabVisuals.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabVisuals.Size = New System.Drawing.Size(976, 558)
+        Me.TabVisuals.Size = New System.Drawing.Size(976, 592)
         Me.TabVisuals.TabIndex = 8
         Me.TabVisuals.Text = "Visualizations"
         Me.TabVisuals.UseVisualStyleBackColor = True
@@ -5525,8 +5525,8 @@ Public Class CeditMain
                     UpdateGUI.Fires(CurrentFire)
                 End If
             ElseIf sender Is FireAdd Then
-                Dim aFire As New Fire(Fire.TypeFireObject)
-                myFireObjects.Add(aFire)
+                Dim aFire As New Fire()
+                myFires.Add(aFire)
                 UpdateGUI.Fires(CurrentFire)
             End If
         End If
@@ -6376,11 +6376,11 @@ Public Class CeditMain
                         End If
                     Next
                 ElseIf sender Is MenuInsertFire Then
-                    Dim i As Integer, aFire As New Fire(Fire.TypeFireObject)
+                    Dim i As Integer, aFire As New Fire()
                     For i = 1 To InsertDialog.Count
                         If InsertDialog.Selected(i) Then
                             aFire = TempFireObjects.Item(i - 1)
-                            myFireObjects.Add(aFire)
+                            myFires.Add(aFire)
                         End If
                     Next
                 End If

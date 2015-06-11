@@ -38,13 +38,8 @@ Public Class Fire
     Private Const MaxCt As Single = 100.0
     Private Const maxLPF As Single = 1.0
 
-    Public Const TypeUnconstrained As Integer = 1
-    Public Const TypeConstrained As Integer = 0
-    Public Const TypeFireObject As Integer = -1
-
-    Private aFireType As Integer                    ' Fire type, -1 for object definition, 0 for unConstrained and 1 for Constrained
     Private aChanged As Boolean = False
-    Private HasErrors As Integer                    ' Temp variable that holds error COunt during error check
+    Private HasErrors As Integer                    ' Temp variable that holds error count during error check
     Private ir As Integer, ic As Integer
     Private aValue, aPeak As Single
     Private aString As String
@@ -82,11 +77,7 @@ Public Class Fire
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
     Public Sub New()
-        Me.New(TypeConstrained)
-    End Sub
-    Public Sub New(ByVal Type As Integer)
-        If Type = TypeUnconstrained Or Type = TypeConstrained Or Type = TypeFireObject Then aFireType = Type
-        ' New definitions for an instance of a fire (that can then be associated with a fire object) or a default object
+        ' New definitions for an instance of a fire 
         aCompartment = -2
         aXPosition = -1.0
         aYPosition = -1.0
@@ -109,7 +100,7 @@ Public Class Fire
     End Sub
     Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Single, ByVal Hoc As Single, ByVal RadiativeFraction As Single)
         ' New to define a fire object with all the details
-        Me.New(TypeFireObject)
+        Me.New()
         aName = Name
         If UBound(Chemical_Formula) = 5 Then
             aChemicalFormula(1) = Chemical_Formula(1)
@@ -124,7 +115,7 @@ Public Class Fire
     End Sub
     Public Sub New(ByVal TimetoPeak As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
         ' New to define a t^2 fire object
-        Me.New(TypeFireObject)
+        Me.New()
         Dim ir As Integer
         Dim FireTimeSeries(12, 22) As Single, AlphaGrowth As Single, AlphaDecay As Single
         Dim aTimetoPeak As Single, aPeakHRR As Single, aSteadyBurningTime As Single, aDecayTime As Single
@@ -197,17 +188,6 @@ Public Class Fire
             End If
             Return aPeak
         End Get
-    End Property
-    Property FireType() As Integer
-        Get
-            Return aFireType
-        End Get
-        Set(ByVal Value As Integer)
-            If aFireType <> Value Then
-                aFireType = Value
-                aChanged = True
-            End If
-        End Set
     End Property
     Property Compartment() As Integer
         Get
@@ -565,171 +545,169 @@ Public Class Fire
         Get
             myUnits.SI = True
             HasErrors = 0
-            Select Case aFireType
-                Case TypeFireObject
-                    If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
-                        myErrors.Add("Fire Object " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
+
+            If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
+                myErrors.Add("Fire Object " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
+                HasErrors += 1
+            End If
+            If aHeatofCombustion < MinHeatofCombustion Or aHeatofCombustion > MaxHeatofCombustion Then
+                myErrors.Add("Fire Object " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
+                    " J/kg or greater than " + MaxHeatofCombustion.ToString + " J/kg.", ErrorMessages.TypeWarning)
+                HasErrors += 1
+            End If
+            If aRadiativeFraction < 0.0 Or aRadiativeFraction > 1.0 Then
+                myErrors.Add("Fire object " + aName + ". Radiative fraction is less than 0 or greater than 1", ErrorMessages.TypeWarning)
+                HasErrors += 1
+            End If
+            If aFireTimeSeries.GetUpperBound(1) > 0 Then
+                Dim FireCurveErrors() As Boolean = {False, False, False, False, False, False, False, False, False, False, False, False, False}
+                For ir = 0 To aFireTimeSeries.GetUpperBound(1)
+                    For ic = 0 To 12
+                        Select Case ic
+                            Case FireTime
+                                If aFireTimeSeries(FireTime, ir) < 0.0 Then
+                                    FireCurveErrors(FireTime) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireHRR
+                                If aFireTimeSeries(FireHRR, ir) < 0.0 Or aFireTimeSeries(FireHRR, ir) > MaxHRR Then
+                                    FireCurveErrors(FireHRR) = True
+                                    HasErrors += 1
+                                End If
+                                'Dim aD As Single, qstar As Single, FlameLength As Single, HRRpm3 As Single
+                                'aD = Math.Max(0.3, aFireTimeSeries(FireArea, ir))
+                                'qstar = aFireTimeSeries(FireHRR, ir) / (1.29 * 1012.0 * 288.0) * Math.Sqrt(9.8 * aD) * aD * aD
+                                'FlameLength = Math.Max(0.0, aD * (3.7 * qstar ^ 0.4 - 1.02))
+                                'HRRpm3 = aFireTimeSeries(FireHRR, ir) / (aFireTimeSeries(FireArea, ir) * FlameLength)
+                                'If HRRpm3 > 4 * 10 ^ 6 Then
+                                'FireCurveErrors(FireHRR) = True
+                                'HasErrors += 1
+                                'End If
+                            Case FireMdot
+                                If aFireTimeSeries(FireMdot, ir) < 0.0 Or aFireTimeSeries(FireMdot, ir) > MaxMdot Then
+                                    FireCurveErrors(FireMdot) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireHeight
+                                If aFireTimeSeries(FireHeight, ir) < 0.0 Or aFireTimeSeries(FireHeight, ir) > CEdit.Compartment.MaxSize Then
+                                    FireCurveErrors(FireHeight) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireArea
+                                If (aFireTimeSeries(FireArea, ir) < 0.0 And aFireTimeSeries(FireHRR, ir) <> 0.0) And aFireTimeSeries(FireArea, ir) < 0.0 Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
+                                    FireCurveErrors(FireArea) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireCO
+                                If aFireTimeSeries(FireCO, ir) < 0.0 Or aFireTimeSeries(FireCO, ir) > MaxCO Then
+                                    FireCurveErrors(FireCO) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireSoot
+                                If aFireTimeSeries(FireSoot, ir) < 0.0 Or aFireTimeSeries(FireSoot, ir) > MaxSoot Then
+                                    FireCurveErrors(FireSoot) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireHC
+                                If aFireTimeSeries(FireHC, ir) < 0.0 Or aFireTimeSeries(FireHC, ir) > MaxHC Then
+                                    FireCurveErrors(FireHC) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireO2
+                                If aFireTimeSeries(FireO2, ir) < 0.0 Or aFireTimeSeries(FireO2, ir) > MaxO2 Then
+                                    FireCurveErrors(FireO2) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireHCN
+                                If aFireTimeSeries(FireHCN, ir) < 0.0 Or aFireTimeSeries(FireHCN, ir) > MaxHCN Then
+                                    FireCurveErrors(FireHCN) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireHCl
+                                If aFireTimeSeries(FireHCl, ir) < 0.0 Or aFireTimeSeries(FireHCl, ir) > MaxHCl Then
+                                    FireCurveErrors(FireHCl) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireCt
+                                If aFireTimeSeries(FireCt, ir) < 0.0 Or aFireTimeSeries(FireCt, ir) > MaxCt Then
+                                    FireCurveErrors(FireCt) = True
+                                    HasErrors += 1
+                                End If
+                            Case FireLPF
+                                If aFireTimeSeries(FireLPF, ir) < 0.0 Or aFireTimeSeries(FireLPF, ir) > maxLPF Then
+                                    FireCurveErrors(FireLPF) = True
+                                    HasErrors += 1
+                                End If
+                        End Select
+                    Next
+                Next
+                If FireCurveErrors(FireTime) Then myErrors.Add("Fire object " + aName + ". One or more time values are less than 0 s.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHRR) Then myErrors.Add("Fire object " + aName + ". One or more heat release rate (Qdot) values are less than 0 W, more than" + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireMdot) Then myErrors.Add("Fire object " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than" + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHeight) Then myErrors.Add("Fire object " + aName + ". One or more fire height values are less than 0 m or greater than" + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireArea) Then myErrors.Add("Fire object " + aName + ". One or more fire area values are less than or equal to 0 m² or greater than" + (CEdit.Compartment.MaxSize ^ 2).ToString + " m².", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireCO) Then myErrors.Add("Fire object " + aName + ". One or more CO/CO2 ratios are less than 0 or greater than" + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireSoot) Then myErrors.Add("Fire object " + aName + ". One or more C/CO2 ratios are less than 0 or greater than" + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHC) Then myErrors.Add("Fire object " + aName + ". One or more H/C ratios are less than 0 or greater than" + MaxHC.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireO2) Then myErrors.Add("Fire object " + aName + ". One or more O/C ratios are less than 0 or greater than" + MaxO2.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHCN) Then myErrors.Add("Fire object " + aName + ". One or more HCN yields are less than 0 or greater than" + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHCl) Then myErrors.Add("Fire object " + aName + ". One or more HCl yields are less than 0 or greater than" + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireCt) Then myErrors.Add("Fire object " + aName + ". One or more Ct values are less than 0 or greater than" + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireLPF) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxLPF.ToString + ".", ErrorMessages.TypeWarning)
+            End If
+            If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
+                myErrors.Add("Lower oxygen limit is less than 0 or greater than 21 %.", ErrorMessages.TypeWarning)
+                HasErrors += 1
+            End If
+            If aFireObject < 0 Or aFireObject > myFireObjects.Count Then
+                myErrors.Add("Fire " + FireNumber.ToString + " does not have a fire object selected. Select a fire object for this fire.", ErrorMessages.TypeFatal)
+            End If
+            If aCompartment < 0 Or aCompartment > myCompartments.Count - 1 Then
+                myErrors.Add("Fire " + FireNumber.ToString + " is not assigned to an existing Compartment. Select Compartment.", ErrorMessages.TypeFatal)
+                HasErrors += 1
+            Else
+                Dim aComp As New Compartment
+                aComp = myCompartments(aCompartment)
+                If aXPosition <> -1.0 Then
+                    If aXPosition < 0.0 Or aXPosition > aComp.RoomWidth Then
+                        myErrors.Add("Target " + FireNumber.ToString + " width position is less than 0 m or greater than Compartment width.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
-                    If aHeatofCombustion < MinHeatofCombustion Or aHeatofCombustion > MaxHeatofCombustion Then
-                        myErrors.Add("Fire Object " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
-                            " J/kg or greater than " + MaxHeatofCombustion.ToString + " J/kg.", ErrorMessages.TypeWarning)
+                End If
+                If aYPosition <> -1.0 Then
+                    If aYPosition < 0.0 Or aYPosition > aComp.RoomDepth Then
+                        myErrors.Add("Fire " + FireNumber.ToString + " depth position is less than 0 m or greater than Compartment depth.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
-                    If aRadiativeFraction < 0.0 Or aRadiativeFraction > 1.0 Then
-                        myErrors.Add("Fire object " + aName + ". Radiative fraction is less than 0 or greater than 1", ErrorMessages.TypeWarning)
+                End If
+                If aZPosition <> -1 Then
+                    If aZPosition < 0.0 Or aZPosition > aComp.RoomHeight Then
+                        myErrors.Add("Fire " + FireNumber.ToString + " initial height is less than 0 m or greater than Compartment height.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
-                    If aFireTimeSeries.GetUpperBound(1) > 0 Then
-                        Dim FireCurveErrors() As Boolean = {False, False, False, False, False, False, False, False, False, False, False, False, False}
-                        For ir = 0 To aFireTimeSeries.GetUpperBound(1)
-                            For ic = 0 To 12
-                                Select Case ic
-                                    Case FireTime
-                                        If aFireTimeSeries(FireTime, ir) < 0.0 Then
-                                            FireCurveErrors(FireTime) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireHRR
-                                        If aFireTimeSeries(FireHRR, ir) < 0.0 Or aFireTimeSeries(FireHRR, ir) > MaxHRR Then
-                                            FireCurveErrors(FireHRR) = True
-                                            HasErrors += 1
-                                        End If
-                                        'Dim aD As Single, qstar As Single, FlameLength As Single, HRRpm3 As Single
-                                        'aD = Math.Max(0.3, aFireTimeSeries(FireArea, ir))
-                                        'qstar = aFireTimeSeries(FireHRR, ir) / (1.29 * 1012.0 * 288.0) * Math.Sqrt(9.8 * aD) * aD * aD
-                                        'FlameLength = Math.Max(0.0, aD * (3.7 * qstar ^ 0.4 - 1.02))
-                                        'HRRpm3 = aFireTimeSeries(FireHRR, ir) / (aFireTimeSeries(FireArea, ir) * FlameLength)
-                                        'If HRRpm3 > 4 * 10 ^ 6 Then
-                                        'FireCurveErrors(FireHRR) = True
-                                        'HasErrors += 1
-                                        'End If
-                                    Case FireMdot
-                                        If aFireTimeSeries(FireMdot, ir) < 0.0 Or aFireTimeSeries(FireMdot, ir) > MaxMdot Then
-                                            FireCurveErrors(FireMdot) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireHeight
-                                        If aFireTimeSeries(FireHeight, ir) < 0.0 Or aFireTimeSeries(FireHeight, ir) > CEdit.Compartment.MaxSize Then
-                                            FireCurveErrors(FireHeight) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireArea
-                                        If (aFireTimeSeries(FireArea, ir) < 0.0 And aFireTimeSeries(FireHRR, ir) <> 0.0) And aFireTimeSeries(FireArea, ir) < 0.0 Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
-                                            FireCurveErrors(FireArea) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireCO
-                                        If aFireTimeSeries(FireCO, ir) < 0.0 Or aFireTimeSeries(FireCO, ir) > MaxCO Then
-                                            FireCurveErrors(FireCO) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireSoot
-                                        If aFireTimeSeries(FireSoot, ir) < 0.0 Or aFireTimeSeries(FireSoot, ir) > MaxSoot Then
-                                            FireCurveErrors(FireSoot) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireHC
-                                        If aFireTimeSeries(FireHC, ir) < 0.0 Or aFireTimeSeries(FireHC, ir) > MaxHC Then
-                                            FireCurveErrors(FireHC) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireO2
-                                        If aFireTimeSeries(FireO2, ir) < 0.0 Or aFireTimeSeries(FireO2, ir) > MaxO2 Then
-                                            FireCurveErrors(FireO2) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireHCN
-                                        If aFireTimeSeries(FireHCN, ir) < 0.0 Or aFireTimeSeries(FireHCN, ir) > MaxHCN Then
-                                            FireCurveErrors(FireHCN) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireHCl
-                                        If aFireTimeSeries(FireHCl, ir) < 0.0 Or aFireTimeSeries(FireHCl, ir) > MaxHCl Then
-                                            FireCurveErrors(FireHCl) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireCt
-                                        If aFireTimeSeries(FireCt, ir) < 0.0 Or aFireTimeSeries(FireCt, ir) > MaxCt Then
-                                            FireCurveErrors(FireCt) = True
-                                            HasErrors += 1
-                                        End If
-                                    Case FireLPF
-                                        If aFireTimeSeries(FireLPF, ir) < 0.0 Or aFireTimeSeries(FireLPF, ir) > maxLPF Then
-                                            FireCurveErrors(FireLPF) = True
-                                            HasErrors += 1
-                                        End If
-                                End Select
-                            Next
-                        Next
-                        If FireCurveErrors(FireTime) Then myErrors.Add("Fire object " + aName + ". One or more time values are less than 0 s.", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireHRR) Then myErrors.Add("Fire object " + aName + ". One or more heat release rate (Qdot) values are less than 0 W, more than" + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireMdot) Then myErrors.Add("Fire object " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than" + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireHeight) Then myErrors.Add("Fire object " + aName + ". One or more fire height values are less than 0 m or greater than" + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireArea) Then myErrors.Add("Fire object " + aName + ". One or more fire area values are less than or equal to 0 m² or greater than" + (CEdit.Compartment.MaxSize ^ 2).ToString + " m².", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireCO) Then myErrors.Add("Fire object " + aName + ". One or more CO/CO2 ratios are less than 0 or greater than" + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireSoot) Then myErrors.Add("Fire object " + aName + ". One or more C/CO2 ratios are less than 0 or greater than" + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireHC) Then myErrors.Add("Fire object " + aName + ". One or more H/C ratios are less than 0 or greater than" + MaxHC.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireO2) Then myErrors.Add("Fire object " + aName + ". One or more O/C ratios are less than 0 or greater than" + MaxO2.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireHCN) Then myErrors.Add("Fire object " + aName + ". One or more HCN yields are less than 0 or greater than" + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireHCl) Then myErrors.Add("Fire object " + aName + ". One or more HCl yields are less than 0 or greater than" + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireCt) Then myErrors.Add("Fire object " + aName + ". One or more Ct values are less than 0 or greater than" + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
-                        If FireCurveErrors(FireLPF) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxLPF.ToString + ".", ErrorMessages.TypeWarning)
-                    End If
-                Case TypeUnconstrained, TypeConstrained
-                    If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
-                        myErrors.Add("Lower oxygen limit is less than 0 or greater than 21 %.", ErrorMessages.TypeWarning)
+                End If
+                If XNormal ^ 2 + YNormal ^ 2 + ZNormal ^ 2 = 0 Then
+                    myErrors.Add("Fire " + FireNumber.ToString + ". Normal vector cannot be of zero length.", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                End If
+                If aIgnitionType = FireIgnitionbyTime Then
+                    If aIgnitionValue < 0.0 Or aIgnitionValue > myEnvironment.SimulationTime Then
+                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 s or greater than simulation time.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
-                    If aFireObject < 0 Or aFireObject > myFireObjects.Count Then
-                        myErrors.Add("Fire " + FireNumber.ToString + " does not have a fire object selected. Select a fire object for this fire.", ErrorMessages.TypeFatal)
-                    End If
-                    If aCompartment < 0 Or aCompartment > myCompartments.Count - 1 Then
-                        myErrors.Add("Fire " + FireNumber.ToString + " is not assigned to an existing Compartment. Select Compartment.", ErrorMessages.TypeFatal)
+                ElseIf aIgnitionType = FireIgnitionbyTemperature Then
+                    If aIgnitionValue < MinTemperature Or aIgnitionValue > MaxTemperature Then
+                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than " + (MinTemperature - 273.15).ToString + " °C or greater than " + (MaxTemperature - 273.15).ToString + " °C.", ErrorMessages.TypeWarning)
                         HasErrors += 1
-                    Else
-                        Dim aComp As New Compartment
-                        aComp = myCompartments(aCompartment)
-                        If aXPosition <> -1.0 Then
-                            If aXPosition < 0.0 Or aXPosition > aComp.RoomWidth Then
-                                myErrors.Add("Target " + FireNumber.ToString + " width position is less than 0 m or greater than Compartment width.", ErrorMessages.TypeFatal)
-                                HasErrors += 1
-                            End If
-                        End If
-                        If aYPosition <> -1.0 Then
-                            If aYPosition < 0.0 Or aYPosition > aComp.RoomDepth Then
-                                myErrors.Add("Fire " + FireNumber.ToString + " depth position is less than 0 m or greater than Compartment depth.", ErrorMessages.TypeFatal)
-                                HasErrors += 1
-                            End If
-                        End If
-                        If aZPosition <> -1 Then
-                            If aZPosition < 0.0 Or aZPosition > aComp.RoomHeight Then
-                                myErrors.Add("Fire " + FireNumber.ToString + " initial height is less than 0 m or greater than Compartment height.", ErrorMessages.TypeFatal)
-                                HasErrors += 1
-                            End If
-                        End If
-                        If XNormal ^ 2 + YNormal ^ 2 + ZNormal ^ 2 = 0 Then
-                            myErrors.Add("Fire " + FireNumber.ToString + ". Normal vector cannot be of zero length.", ErrorMessages.TypeFatal)
-                            HasErrors += 1
-                        End If
-                        If aIgnitionType = FireIgnitionbyTime Then
-                            If aIgnitionValue < 0.0 Or aIgnitionValue > myEnvironment.SimulationTime Then
-                                myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 s or greater than simulation time.", ErrorMessages.TypeWarning)
-                                HasErrors += 1
-                            End If
-                        ElseIf aIgnitionType = FireIgnitionbyTemperature Then
-                            If aIgnitionValue < MinTemperature Or aIgnitionValue > MaxTemperature Then
-                                myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than " + (MinTemperature - 273.15).ToString + " °C or greater than " + (MaxTemperature - 273.15).ToString + " °C.", ErrorMessages.TypeWarning)
-                                HasErrors += 1
-                            End If
-                        ElseIf aIgnitionType = FireIgnitionbyFlux Then
-                            If aIgnitionValue < 0.0 Or aIgnitionValue > MaxFlux Then
-                                myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 kW/m² or greater than " + MaxFlux + " kW/m².", ErrorMessages.TypeWarning)
-                                HasErrors += 1
-                            End If
-                        End If
                     End If
-            End Select
+                ElseIf aIgnitionType = FireIgnitionbyFlux Then
+                    If aIgnitionValue < 0.0 Or aIgnitionValue > MaxFlux Then
+                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 kW/m² or greater than " + MaxFlux + " kW/m².", ErrorMessages.TypeWarning)
+                        HasErrors += 1
+                    End If
+                End If
+            End If
+
             myUnits.SI = False
             Return HasErrors
         End Get
@@ -806,12 +784,7 @@ Public Class FireCollection
     Public ReadOnly Property Maximum() As Integer
         Get
             If Count > 0 Then
-                aFireType = CType(List.Item(0), Fire).FireType
-                If aFireType = Fire.TypeFireObject Then
-                    Return Fire.MaximumFireObjects
-                Else
-                    Return Fire.MaximumFires
-                End If
+                Return Fire.MaximumFires
             Else
                 Return 1
             End If
@@ -864,7 +837,6 @@ Public Class FireCollection
                 For i = 0 To Count - 1
                     aFire1 = CType(List(i), Fire)
                     HasErrors += aFire1.IsValid(i + 1)
-                    If aFire1.FireType = Fire.TypeFireObject Then isFireObject = True
                 Next
                 ' Cannot have duplicate fire object names
                 If Count > 1 And isFireObject Then

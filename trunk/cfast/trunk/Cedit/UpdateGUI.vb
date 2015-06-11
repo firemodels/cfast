@@ -792,7 +792,6 @@ Public Class UpdateGUI
                     Else
                         MainWin.FireSummary(i, 1) = "Not defined"
                     End If
-                    If aFire.FireType >= 0 Then MainWin.FireSummary(i, 3) = FireTypeNames.Substring((aFire.FireType) * 11, 11)
                     If aFire.IgnitionType >= 0 Then
                         MainWin.FireSummary(i, 4) = IgnitionNames.Substring((aFire.IgnitionType) * 11, 11)
                         MainWin.FireSummary(i, 5) = aFire.IgnitionValue

@@ -1793,8 +1793,7 @@
                 ptemp = pofset
             else
                 ptemp = abs(zzrelp(iroom))-0.1
-                ! SIGN, rather bizarly, gives the sign of the product of two arguments. Totally weird
-                ptemp = sign(zzrelp(iroom),1.0_eb)*(-30*ptemp**3 + 23*ptemp**2) + pofset
+                ptemp = sign(-30*ptemp**3 + 23*ptemp**2,zzrelp(iroom)) + pofset
             endif
             do layer = upper, lower
                 zzrho(iroom,layer) = ptemp/rgas/zztemp(iroom,layer)

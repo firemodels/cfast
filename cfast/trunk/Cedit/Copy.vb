@@ -2,7 +2,6 @@ Module Copy
     Public Sub FireCopy(ByVal FromFire As Fire, ByVal ToFire As Fire)
         ' Copies an entire fire record from one structure to another
         Dim NumDataPoints As Integer
-        ToFire.FireType = FromFire.FireType
         ToFire.Compartment = FromFire.Compartment
         ToFire.XPosition = FromFire.XPosition
         ToFire.YPosition = FromFire.YPosition

@@ -56,18 +56,17 @@ OS=`uname`
 if [ "$OS" == "Darwin" ]; then
   PLATFORM=osx$underscore$size
 else
-  PLATFORM=linux$underscore$score$size
+  PLATFORM=linux$underscore$size
 fi
 PLATFORM=$PLATFORM$DEBUG
 
-export CFAST=~/cfast/CFAST/intel_$PLATFORM/cfast6_$PLATFORM
-export QEXE=~/cfast/Validation/scripts/qexe.sh
+export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
+export QEXE="$SVNROOT/Validation/scripts/qexe.sh"
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"
 fi
 export RUNCFAST="$SVNROOT/Validation/scripts/runcfastq.sh $queue"
-export RUNCFAST2="$SVNROOT/Validation/scripts/runcfast2q.sh $queue"
 
 export BASEDIR=`pwd`
 

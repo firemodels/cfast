@@ -334,5 +334,6 @@ $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window.in
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window_elevation.in
 
 $RUNCFAST -d ../Verification/Ventilation ceiling_mechvent.in
+$RUNCFAST -d ../Verification/Ventilation ventilation_2.in
 
 

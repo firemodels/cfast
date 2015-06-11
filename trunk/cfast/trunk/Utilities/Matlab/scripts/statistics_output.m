@@ -142,7 +142,7 @@ if strcmp(Stats_Output, 'Validation') && (exist('Output_Histograms','var') == 1)
             else
                 line_ending = '\\';
             end
-            fprintf(fid, '%s\n', ['\includegraphics[height=2.2in]{SCRIPT_FIGURES/ScatterPlots/',Output_Histograms{j},'} ',line_ending]);
+            fprintf(fid, '%s\n', ['\includegraphics[height=2.2in]{FIGURES/ScatterPlots/',Output_Histograms{j},'} ',line_ending]);
         end
         fprintf(fid, '%s\n', '\end{tabular*}');
         fprintf(fid, '%s\n', ['\label{Histogram_',num2str(i),'}']);

@@ -7,6 +7,7 @@ call cleanall.bat
 echo Running Energy Balance cases
 cd Energy_Balance
 ..\scripts\background -u 98 ..\..\bin\cfast sealed_test /V
+..\scripts\background -u 98 ..\..\bin\cfast sealed_test_2_layers /V
 cd ..
 
 echo Running Mass Balance cases
@@ -25,8 +26,8 @@ cd ..
 
 echo Running Ventilation cases
 cd Ventilation
-..\scripts\background -u 98 ..\..\bin\cfast ceiling_mechvent /V
 ..\scripts\background -u 98 ..\..\bin\cfast ventilation_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast ventilation_3 /V
 cd ..
 
 echo Waiting for all CFAST runs to finish

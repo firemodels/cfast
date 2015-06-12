@@ -18,7 +18,7 @@ Marker_Size = 4;
 Line_Width      = 1.0;
 
 % Plot properties
-Plot_Units      = 'inches';
+Plot_Units      = 'normalized'; %'inches';
 Plot_Width      = 5.0;
 Plot_Height     = 3.4;
 Plot_X          = 1.2;
@@ -47,7 +47,7 @@ SVN_Scale_Y = 1.05;
 
 % Set default figure properties
 set(0,'DefaultAxesUnits',Plot_Units)
-set(0,'DefaultAxesPosition',[Plot_X,Plot_Y,Plot_Width,Plot_Height])
+set(0,'DefaultAxesPosition',[Plot_X/Paper_Width,Plot_Y/Paper_Height,Plot_Width/Paper_Width,Plot_Height/Paper_Height])
 set(0,'DefaultTextInterpreter',Font_Interpreter)
 set(0,'DefaultAxesFontName',Font_Name)
 set(0,'DefaultLineLineWidth',Line_Width)

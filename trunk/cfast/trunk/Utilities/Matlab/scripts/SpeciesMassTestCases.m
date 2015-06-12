@@ -26,9 +26,9 @@ Po = 101300;
 HeatOfComb = 50000;
 
 plot_style
-set(gca,'Units',Plot_Units)
-set(gca,'Position',[Plot_X,Plot_Y,Plot_Width,Plot_Height])
-set(gca,'OuterPosition',[0.4,Plot_Y,Plot_Width,Plot_Height])
+%set(gca,'Units',Plot_Units)
+%set(gca,'Position',[Plot_X,Plot_Y,Plot_Width,Plot_Height])
+%set(gca,'OuterPosition',[0.4,Plot_Y,Plot_Width,Plot_Height])
 set(gcf,'DefaultLineLineWidth',Line_Width)
 set(gca,'FontName',Font_Name)
 
@@ -76,12 +76,6 @@ filename = [data_dir 'species_mass_1'];
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-disp('The theoretical values for mass of H2O and CO2 in kg, respectively, are:')
-disp([TheoreticalMassH2O,TheoreticalMassCO2])
-disp('The experimental values for mass of H2O and CO2 in kg, respectiely, are:')
-disp([TotH2Omass,TotCO2mass])
-disp('The percentage errors for the mass of H2O and CO2 found experimentally are:')
-disp([ErrorH2O,ErrorCO2])
 
 plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
 hold on
@@ -93,6 +87,7 @@ ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 legend1 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
 set(legend1, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
 print(gcf,'-dpdf',[plot_dir 'species_mass_1'])
+
 %% Case 2: Two compartments of sizes 2m*5m*8m are placed side by side, with a door of height 6m and width 1m connecting them. There is a fire in the middle of the first compartment that has the same energy production as the fire in the first case study. The fuel is still methane.
 filename = [data_dir 'species_mass_2'];
 %Theoretical Mass calculations will be exactly the same as above. Same fire
@@ -103,12 +98,6 @@ filename = [data_dir 'species_mass_2'];
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-disp('The theoretical values for mass of H2O and CO2 in kg, respectively, are:')
-disp([TheoreticalMassH2O,TheoreticalMassCO2])
-disp('The experimental values for mass of H2O and CO2 in kg, respectiely, are:')
-disp([TotH2Omass,TotCO2mass])
-disp('The percentage errors for the mass of H2O and CO2 found experimentally are:')
-disp([ErrorH2O,ErrorCO2])
 
 plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
 hold on
@@ -131,12 +120,6 @@ filename = [data_dir 'species_mass_3'];
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-disp('The theoretical values for mass of H2O and CO2 in kg, respectively, are:')
-disp([TheoreticalMassH2O,TheoreticalMassCO2])
-disp('The experimental values for mass of H2O and CO2 in kg, respectiely, are:')
-disp([TotH2Omass,TotCO2mass])
-disp('The percentage errors for the mass of H2O and CO2 found experimentally are:')
-disp([ErrorH2O,ErrorCO2])
 
 plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
 hold on
@@ -147,5 +130,6 @@ xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 legend3 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
 set(legend3, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
+
 print(gcf,'-dpdf',[plot_dir 'species_mass_3'])
 

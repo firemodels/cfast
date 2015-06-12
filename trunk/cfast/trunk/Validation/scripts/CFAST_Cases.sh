@@ -324,6 +324,7 @@ $RUNCFAST -d Steckler_Compartment Steckler_710.in
 $RUNCFAST -d Steckler_Compartment Steckler_810.in
 
 $RUNCFAST -d ../Verification/Energy_Balance sealed_test.in
+$RUNCFAST -d ../Verification/Energy_Balance sealed_test_2_layers.in
 
 $RUNCFAST -d ../Verification/Mass_Balance species_mass_1.in
 $RUNCFAST -d ../Verification/Mass_Balance species_mass_2.in
@@ -333,7 +334,8 @@ $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib.in
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window.in
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window_elevation.in
 
-$RUNCFAST -d ../Verification/Ventilation ceiling_mechvent.in
 $RUNCFAST -d ../Verification/Ventilation ventilation_2.in
+$RUNCFAST -d ../Verification/Ventilation ventilation_3.in
+
 
 

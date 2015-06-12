@@ -776,8 +776,7 @@ Public Class UpdateGUI
             MainWin.FireIgnitionValue.Text = " "
             If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
             MainWin.FireName.Text = aFire.Name
-            MainWin.FirePlot.Clear()
-            MainWin.FirePlot.Refresh()
+            UpdateFirePlot(index)
 
             numFires = myFires.Count
             ClearGrid(MainWin.FireSummary)
@@ -813,12 +812,12 @@ Public Class UpdateGUI
         End If
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)
-        Dim aFireObject As New Fire
+        Dim aFire As New Fire
         Dim aFireData(12, 0) As Single, numPoints As Integer
         Dim x() As Single, y() As Single, j As Integer
-        aFireObject = myFireObjects(index)
+        aFire = myFires(index)
         MainWin.FirePlot.Clear()
-        aFireObject.GetFireData(aFireData, numPoints)
+        aFire.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
         For j = 0 To numPoints
             x(j) = aFireData(Fire.FireTime, j)
@@ -826,7 +825,7 @@ Public Class UpdateGUI
         Next
         Dim lp As New NPlot.LinePlot(y, x)
         MainWin.FirePlot.Add(lp)
-        MainWin.FirePlot.Title = aFireObject.Name + " HRR"
+        MainWin.FirePlot.Title = aFire.Name + " HRR"
         MainWin.FirePlot.Refresh()
     End Sub
     Public Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)

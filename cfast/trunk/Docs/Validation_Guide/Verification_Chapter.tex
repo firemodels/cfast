@@ -62,10 +62,12 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \end{figure}
 
 
-\section{Conservation of Mass}
+\clearpage
+
+\section{Mass Balance}
 
 \label{mass_conservation}
-\subsection{Case 1: Fire Within a Single Compartment}
+\subsection{Case 1: Fire in a Single, Sealed Compartment}
 \label{sec:spec1}
 A natural gas fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
 \begin{equation}
@@ -83,29 +85,19 @@ The molecular weight of H$_2$O is 18~g/mol; thus, the mass of H$_2$O produced by
 \begin{equation}
    m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
-The experimentally determined mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively. This leaves the mole fraction of N$_2$ to be 0.7927. These mole fractions can be converted to mass fractions by
+CFAST predicts that the mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively. The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
 \begin{equation}
 Y_k = \frac{X_{k} M_{k}}{\sum_{i=1}^N X_{i}M_{i}}
 \end{equation}
-Given that the temperature of the upper layer is 297~K, the volume of the upper layer is 81~m$^3$ and the pressure in the compartment is 102665~Pa, the mass of the upper layer can be calculated by
+The mass of the upper layer can be calculated from the equation of state:
 \begin{equation}
-m_{u} = \frac{PV}{RT}
+m_{\rm u} = \frac{P \, V}{R \, T} \quad ; \quad R = \frac{\gamma-1}{\gamma} \, c_p \approx 289.14 \; {\rm  \frac{J}{kg \cdot K}}
 \end{equation}
-Where the value for $R$ can be calculated by
+The mass of CO$_2$ and H$_2$O produced is given by
 \begin{equation}
-C_p = 1012 \; {\rm  \frac{J}{kg \cdot K}}
+m_{k} = m_{\rm u} \, Y_{k}
 \end{equation}
-\begin{equation}
-\gamma = \frac{C_p}{C_v} = 1.4
-\end{equation}
-\begin{equation}
-R = C_p - C_v = C_p - \frac{C_p}{\gamma} = \frac{\gamma-1}{\gamma} \times C_p = 289.14 \; {\rm  \frac{J}{kg \cdot K}}
-\end{equation}
-To find the mass of CO$_2$ and H$_2$O produced in the experiment, the following equation must be applied
-\begin{equation}
-m_{k} = m_{u}Y_{k}
-\end{equation}
-Figure~\ref{specmass1} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.1~\% greater than expected.
+Figure~\ref{specmass1} shows the resulting product masses.
 
 \begin{figure}[!ht]
 \centering
@@ -115,10 +107,10 @@ Figure~\ref{specmass1} shows the result in calculating the mass of both CO$_2$ a
 \end{figure}
 
 
-\subsection{Case 2: Fire Within a Two Compartment System Connected by a Wall Vent}
+\subsection{Case 2: Fire in a Compartment Connected to Another via a Door}
 \label{sec:spec2}
-The same natural gas fire described in section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O.
-Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.1~\% greater than expected.
+
+The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_2}
@@ -126,9 +118,10 @@ Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ a
 \label{specmass2}
 \end{figure}
 
-\subsection{Case 3: Fire Within a Two Compartment System Connected by a Ceiling Vent}
-The same natural gas fire described in section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a sqaure ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
-Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ and H$_2$O to be about 0.1~\% greater than expected.
+\subsection{Case 3: Fire in a Compartment Connected to Another via a Ceiling Vent}
+
+The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
+Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_3}
@@ -136,44 +129,51 @@ Figure~\ref{specmass2} shows the result in calculating the mass of both CO$_2$ a
 \label{specmass3}
 \end{figure}
 
+\clearpage
+
+
 \section{Energy Balance}
 
 \subsection{A Fire in a Single, Sealed Compartment with a Single Zone}
+\label{sealed_test}
 
-A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  The governing equation for the temperature is
-\be
-   \frac{{\rm d} (c_v \, m \, T)}{{\rm d}t} = \dot{Q}  \quad \Longrightarrow \quad \frac{{\rm d}T}{{\rm d}t} = \frac{ \dot{Q} - c_v \, \dot{m}_{\rm f} \, T }{c_v \, m}
-\ee
-where $\dm_{\rm f}$ is the fuel flow rate and $m$ is the total mass. Figure \ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and a simple second-order accurate ODE solver. The difference is due to the way CFAST handles a single layer calculation while maintaining its default equation set that includes both a lower and upper layer.
-
+A 100~kW natural gas (methane) fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  The governing equation for the pressure and temperature of the single zone compartment are:
+\begin{eqnarray}
+   \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{h} \quad ; \quad \dot{h} = \dot{Q} + c_p \, \dot{m}_{\rm f} \, T_\infty \\[0.1in]
+   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{h} - c_p \, \dot{m}_{\rm f} \, T + V \, \frac{{\rm d} P}{{\rm d}t} \right)
+\end{eqnarray}
+where $\dm_{\rm f}$ is the fuel flow rate and $m$ is the total mass. Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and a simple second-order accurate ODE solver of the equations above.
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_temp} &
 \includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_pres}
 \end{tabular*}
-\caption[Results of the test case {\ct sealed\_test.in}]{Calculated and expected temperature and pressure rise for a fire in a closed compartment. The case is called {\ct sealed\_test.in}.}
+\caption[Results of the test case {\ct sealed\_test.in}]{Temperature and pressure rise due to a fire in a closed compartment. The case is called {\ct sealed\_test.in}.}
 \label{fig:Analytical_Closed_Compartment}
 \end{figure}
 
+\subsection{A Fire in a Single, Sealed Compartment with Two Zones}
+
+Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature (Fig.~\ref{fig:Analytical_Closed_Compartment2}).
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_2_layers_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_2_layers_pres}
+\end{tabular*}
+\caption[Results of the test case {\ct sealed\_test\_2\_layers.in}]{Hot gas layer temperature and pressure rise due to a fire in a closed compartment with two zones. The case is called {\ct sealed\_test\_2\_layers.in}.}
+\label{fig:Analytical_Closed_Compartment2}
+\end{figure}
+
+\clearpage
 
 
 \section{Ventilation}
 
-Two identical 5~m x 5~m x 5~m compartments are stacked on each other.  A 1~m$^2$ mechanical vent is added on the front face of compartment one, the shared ceiling/floor between compartment one and two, and the rear wall of compartment two.  The flow rate is set to 0.1~m$^3$/s or 0.12~kg/s of air.  The mass flow through each of these vents is expected to be the same because the flow rate in is constant and there is no change in temperature.   Figure~\ref{fig:Mechanical_Flow_Two_Compartments} shows vent flows for all vents in the simulation.
-
-\begin{figure}[!ht]
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/Verification/ceiling_mechvent}
-\caption[Results of the test case {\ct ceiling\_mechvent.in}]{Mass flow rates of a mechanical ventilation system connecting two compartments {\ct ceiling\_mechvent.in}.}
-\label{fig:Mechanical_Flow_Two_Compartments}
-\end{center}
-\end{figure}
 
 \subsection{Case 2: Temperature and Pressure Changes of Steady-State Air Flow}
 \label{sec:vent2}
-A chamber is made by combining four 4~m by 4~m by 4~m compartments together. The chamber is arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. Air flows into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows how temperature and pressure change as the air flows through the fourth compartment.
 
-
+Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows how temperature and pressure change as the air flows through the fourth compartment.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -186,7 +186,8 @@ A chamber is made by combining four 4~m by 4~m by 4~m compartments together. The
 
 
 \subsection{Case 3: Temperature and Pressure Changes of Non Steady-State Air Flow}
-The same chamber that was constructed in section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~m$^2$. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~m$^3$/s, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment. 
+
+The same chamber that was constructed in Section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~m$^2$. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~m$^3$/s, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}

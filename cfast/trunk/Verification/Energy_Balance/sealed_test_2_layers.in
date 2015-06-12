@@ -1,0 +1,29 @@
+VERSN,7,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,900,-50,10,10
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
+!!
+!!Material Properties
+!!
+MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
+!!
+!!Compartment keywords
+!!
+COMPA,Compartment 1,5,5,5,0,0,0,OFF,OFF,OFF,50,50,50
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!100 kW
+FIRE,1,2.5,2.5,0,1,1,0,0,0,1,100 kW
+CHEMI,1,4,0,0,0,0,5E+07,METHANE
+TIME,0,1800
+HRR,100000,100000
+SOOT,0,0
+CO,0,0
+TRACE,0,0
+AREA,0.3,0.3
+HEIGH,0,0

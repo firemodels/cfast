@@ -70,84 +70,84 @@ module conduction_routines
     endif
 
     if(adiabatic_wall)then
-    do iw = ibeg, iend
-        vtgrad(iw) = 0.0_eb
-    end do
+        do iw = ibeg, iend
+            vtgrad(iw) = 0.0_eb
+        end do
     else
-    do iw = ibeg, iend
-        iroom = izwall(iw,w_from_room)
-        iwall = izwall(iw,w_from_wall)
-        icond = nofwt + iw
+        do iw = ibeg, iend
+            iroom = izwall(iw,w_from_room)
+            iwall = izwall(iw,w_from_wall)
+            icond = nofwt + iw
 
-        roomptr => roominfo(iroom)
+            roomptr => roominfo(iroom)
 
-        ! use exterior wall temperature from last time step to ...
-        twint = zzwtemp(iroom,iwall,1)
-        twext = zzwtemp(iroom,iwall,2)
-        tgas = exterior_temperature
-        iweq = izwmap2(iwall,iroom) - nofwt
-        iwb = izwall(iweq,w_boundary_condition)
+            ! use exterior wall temperature from last time step to ...
+            twint = zzwtemp(iroom,iwall,1)
+            twext = zzwtemp(iroom,iwall,2)
+            tgas = exterior_temperature
+            iweq = izwmap2(iwall,iroom) - nofwt
+            iwb = izwall(iweq,w_boundary_condition)
 
-        ! compute flux seen by exterior of wall
-        if (iwb==3) then
+            ! compute flux seen by exterior of wall
+            if (iwb==3) then
 
-            ! back wall is connected to the outside
+                ! back wall is connected to the outside
 
-            call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
-            wfluxout = wfluxout + sigma*(tgas**4-twext**4)
-            wfluxsave = wfluxout
-            if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
+                call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
+                wfluxout = wfluxout + sigma*(tgas**4-twext**4)
+                wfluxsave = wfluxout
+                if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
-                ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.  
-                !  if izheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero 
-                ! for iwall=3 and iwall=4
-                wfluxout = 0.0_eb
-                nwroom = izhtfrac(iroom,0)
-                do jj = 1, nwroom
-                    j = izhtfrac(iroom,jj)
-                    frac = zzhtfrac(iroom,j)
-                    if(iwall==3)then
-                        yb = zzhlay(iroom,lower)
-                        yt = roomptr%yceil
-                    elseif(iwall==4)then
-                        yb = 0.0_eb
-                        yt = zzhlay(iroom,lower)
-                    endif
-                    dflor = roominfo(j)%yflor - roomptr%yflor
-                    yy = zzhlay(j,lower) + dflor
-                    if(j/=nm1+1)then
-                        if(yy>yt)then
-                            fu = 0.0_eb
-                        elseif(yy<yb)then
-                            fu = 1.0_eb
-                        else
-                            if(yb/=yt)then
-                                fu = (yt-yy)/(yt-yb)
-                            else
-                                fu = 0.0_eb
-                            endif
+                    ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.
+                    !  if izheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero
+                    ! for iwall=3 and iwall=4
+                    wfluxout = 0.0_eb
+                    nwroom = izhtfrac(iroom,0)
+                    do jj = 1, nwroom
+                        j = izhtfrac(iroom,jj)
+                        frac = zzhtfrac(iroom,j)
+                        if(iwall==3)then
+                            yb = zzhlay(iroom,lower)
+                            yt = roomptr%yceil
+                        elseif(iwall==4)then
+                            yb = 0.0_eb
+                            yt = zzhlay(iroom,lower)
                         endif
-                        fluxu = fu*flxtot(j,3)
-                        fluxl = (1.0_eb-fu)*flxtot(j,4)
-                    else
-                        fluxu = wfluxsave
-                        fluxl = 0.0_eb
-                    endif
-                    wfluxout = wfluxout + frac*(fluxu + fluxl)
-                end do
+                        dflor = roominfo(j)%yflor - roomptr%yflor
+                        yy = zzhlay(j,lower) + dflor
+                        if(j/=nm1+1)then
+                            if(yy>yt)then
+                                fu = 0.0_eb
+                            elseif(yy<yb)then
+                                fu = 1.0_eb
+                            else
+                                if(yb/=yt)then
+                                    fu = (yt-yy)/(yt-yb)
+                                else
+                                    fu = 0.0_eb
+                                endif
+                            endif
+                            fluxu = fu*flxtot(j,3)
+                            fluxl = (1.0_eb-fu)*flxtot(j,4)
+                        else
+                            fluxu = wfluxsave
+                            fluxl = 0.0_eb
+                        endif
+                        wfluxout = wfluxout + frac*(fluxu + fluxl)
+                    end do
+                endif
             endif
-        endif
-        call conductive_flux (update,twint,twext,dt,fkw(1,iwall,iroom),cw(1,iwall,iroom),rw(1,iwall,iroom), &
-        twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode(1,iwall,iroom),nslb(iwall,iroom),wfluxin,wfluxout,iwb,tgrad,tderv)
+            call conductive_flux (update,twint,twext,dt,fkw(1,iwall,iroom),cw(1,iwall,iroom),rw(1,iwall,iroom), &
+                twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode(1,iwall,iroom),nslb(iwall,iroom),wfluxin,wfluxout,iwb,tgrad,tderv)
 
-        ! store wall gradient
-        vtgrad(iw) = tgrad(2)
+            ! store wall gradient
+            vtgrad(iw) = tgrad(2)
 
-        ! compute partial of wall temperature equation with respect to the wall temperature.  we assume that the 
-        ! partials of convective heat flux and radiative heat flux with respect to wall temperature have already 
-        ! been computed.  (if they were not then we wouldn't know heat flux striking the wall!  
+            ! compute partial of wall temperature equation with respect to the wall temperature.  we assume that the
+            ! partials of convective heat flux and radiative heat flux with respect to wall temperature have already
+            ! been computed.  (if they were not then we wouldn't know heat flux striking the wall!
 
-    end do
+        end do
     endif
 
     ! save wall gradients during base call to calculate_residuals

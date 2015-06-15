@@ -26,7 +26,7 @@ clear all
 addpath 'scripts'
 
 % Scripts that run prior to dataplot
-
+run('.\scripts\SpeciesMassTestCases.m')
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
@@ -58,10 +58,8 @@ scatplot(saved_data, drange, ...
          'NRC_Options', NRC_Options, ...
          'Append_To_Scatterplot_Title', Append_To_Scatterplot_Title)
 
-% Special cases
+% Special Cases
 
-
-run('.\scripts\SpeciesMassTestCases.m')
 
  
 display('Verification scripts completed successfully!')

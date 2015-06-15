@@ -82,6 +82,7 @@ hold on
 plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
 hold off
 axis([0 15 0 0.02])
+title ('Mass of Products (species\_mass\_1)','Interpreter',Font_Interpreter,'FontSize',Title_Font_Size)
 xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 legend1 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
@@ -104,6 +105,7 @@ hold on
 plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
 hold off
 axis([0 15 0 0.02])
+title ('Mass of Products (species\_mass\_2)','Interpreter',Font_Interpreter,'FontSize',Title_Font_Size)
 xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 legend2 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
@@ -126,6 +128,7 @@ hold on
 plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
 hold off
 axis([0 15 0 0.02])
+title ('Mass of Products (species\_mass\_3)','Interpreter',Font_Interpreter,'FontSize',Title_Font_Size)
 xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
 legend3 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');

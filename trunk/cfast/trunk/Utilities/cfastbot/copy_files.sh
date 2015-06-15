@@ -1,2 +1,3 @@
 #!/bin/bash
-cp ../cfast/Utilities/cfastbot/* ~/cfastbot/.
+dir=$1
+cp $dir/Utilities/cfastbot/* .

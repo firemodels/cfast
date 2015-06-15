@@ -731,35 +731,6 @@ check_matlab_verification()
    fi
 }
 
-#  =============================================
-#  = Stage 7b - Matlab plotting (verification) =
-#  =============================================
-
-run_matlab_plotting()
-{
-   # Run Matlab plotting script
-   cd $CFAST_SVNROOT/Utilities/Matlab
-
-   matlab -r "try, disp('Running Matlab Plotting script'), CFAST_plotting_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7b_verification
-}
-
-check_matlab_plotting()
-{
-   # Scan and report any errors in Matlab scripts
-   cd $CFASTBOT_DIR
-
-   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_verification` == "" ]]
-   then
-      stage7a_success=true
-   else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7b_verification >> $CFASTBOT_DIR/output/stage7b_warnings
-
-      echo "Warnings from Stage 7b - Matlab plotting (verification 2):" >> $WARNING_LOG
-      cat $CFASTBOT_DIR/output/stage7b_warnings >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
-   fi
-}
-
 #  ==========================================================
 #  = Stage 7c - Matlab plotting and statistics (validation) =
 #  ==========================================================
@@ -1046,11 +1017,6 @@ check_compile_smv
 check_matlab_license_server
 run_matlab_verification
 check_matlab_verification
-
-### Stage 7b ###
-check_matlab_license_server
-run_matlab_plotting
-check_matlab_plotting
 
 ### Stage 7c ###
 run_matlab_validation

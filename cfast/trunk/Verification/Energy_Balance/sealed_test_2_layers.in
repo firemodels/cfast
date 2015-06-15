@@ -5,6 +5,7 @@ VERSN,7,CFAST Simulation
 TIMES,900,-50,10,10
 EAMB,293.15,101325,0
 TAMB,293.15,101325,0,50
+ADIAB
 !!
 !!Material Properties
 !!

@@ -681,7 +681,7 @@ Module IO
         If TempFireObjects.Count > 0 Then TempFireObjects(TempFireObjects.Count - 1).Changed = False
         myUnits.SI = False
     End Sub
-    Public Sub ReadEmbeddedFire(ByVal csv As CSVsheet, ByVal iStart As Integer, aFire As Fire)
+    Public Sub ReadEmbeddedFire(ByVal csv As CSVsheet, ByVal iStart As Integer, ByRef aFire As Fire)
         Dim i, j, k, index As Integer
         i = iStart
         Do Until i > csv.MaxRow

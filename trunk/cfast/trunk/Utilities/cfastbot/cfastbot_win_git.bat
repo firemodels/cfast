@@ -5,8 +5,8 @@ set emailto=%1
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set fdsbasename=FDS-SMVclean
-set cfastbasename=cfastclean
+set fdsbasename=FDS-SMVgitclean
+set cfastbasename=cfastgitclean
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -26,10 +26,10 @@ set timefile=%OUTDIR%\time.txt
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
 
-set cfastsvnroot=%userprofile%\%cfastbasename%
-set FDSsvnroot=%userprofile%\%fdsbasename%
+set cfastroot=%userprofile%\%cfastbasename%
+set FDSroot=%userprofile%\%fdsbasename%
 
-set email=%FDSsvnroot%\SMV\scripts\email.bat
+set email=%FDSroot%\SMV\scripts\email.bat
 set emailexe=%userprofile%\bin\mailsend.exe
 
 set errorlog=%OUTDIR%\stage_errors.txt
@@ -43,16 +43,16 @@ set stagestatus=%OUTDIR%\stage_status.log
 set haveerrors=0
 set havewarnings=0
 
-set gettimeexe=%FDSsvnroot%\Utilities\get_time\intel_win_64\get_time.exe
-set runbatchexe=%FDSsvnroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
+set gettimeexe=%FDSroot%\Utilities\get_time\intel_win_64\get_time.exe
+set runbatchexe=%FDSroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt
 set /p startdate=<%OUTDIR%\starttime.txt
 time /t > %OUTDIR%\starttime.txt
 set /p starttime=<%OUTDIR%\starttime.txt
 
-call "%cfastsvnroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
-call "%cfastsvnroot%\Utilities\cfastbot\cfastbot_email_list.bat" 1> Nul 2>&1
+call "%cfastroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
+call "%cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat" 1> Nul 2>&1
 if NOT "%emailto%" == "" (
   set mailToCFAST=%emailto%
 )
@@ -162,22 +162,24 @@ if %nothaveVerification% == 1 (
 
 ::*** revert cfast repository
 
-if "%cfastbasename%" == "cfastclean" (
+if "%cfastbasename%" == "cfastgitclean" (
    echo             reverting %cfastbasename% repository
-   cd %cfastsvnroot%
-   call :svn_revert 1> Nul 2>&1
+   cd %cfastroot%
+   git clean -dxf 1> Nul 2>&1
+   git add . 1> Nul 2>&1
+   git reset --hard HEAD 1> Nul 2>&1
 )
 
 ::*** update cfast repository
 
 echo             updating %cfastbasename% repository
-cd %cfastsvnroot%
-svn update  1> %OUTDIR%\stage0.txt 2>&1
+cd %cfastroot%
+git pull  1> %OUTDIR%\stage0.txt 2>&1
 
-svn info | grep Revision > %revisionfilestring%
+git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
 set /p revisionstring=<%revisionfilestring%
 
-svn info | grep Revision | cut -d " " -f 2 > %revisionfilenum%
+git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilenum%
 set /p revisionnum=<%revisionfilenum%
 
 set errorlogpc=%HISTORYDIR%\errors_%revisionnum%.txt
@@ -187,17 +189,19 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
-if "%FDSbasename%" == "FDS-SMVclean" (
+if "%FDSbasename%" == "FDS-SMVgitclean" (
    echo             reverting %FDSbasename% repository
-   cd %FDSsvnroot%
-   call :svn_revert 1> Nul 2>&1
+   cd %FDSroot%
+   git clean -dxf 1> Nul 2>&1
+   git add . 1> Nul 2>&1
+   git reset --hard HEAD 1> Nul 2>&1
 )
 
 ::*** update FDS repository
 
 echo             updating %FDSbasename% repository
-cd %FDSsvnroot%
-svn update  1> %OUTDIR%\stage0.txt 2>&1
+cd %FDSroot%
+git pull  1> %OUTDIR%\stage0.txt 2>&1
 
 :: -------------------------------------------------------------
 ::                           stage 1 - build cfast
@@ -206,7 +210,7 @@ svn update  1> %OUTDIR%\stage0.txt 2>&1
 echo Stage 1 - Building CFAST and VandV_Calcs
 echo             debug cfast
 
-cd %cfastsvnroot%\CFAST\intel_win_64_db
+cd %cfastroot%\CFAST\intel_win_64_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
 make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64_db 1>> %OUTDIR%\stage1a.txt 2>&1
 
@@ -217,7 +221,7 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
 echo             release cfast
 
-cd %cfastsvnroot%\CFAST\intel_win_64
+cd %cfastroot%\CFAST\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
 make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1b.txt 2>&1
 
@@ -226,7 +230,7 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
 echo             release VandV_Calcs
 
-cd %cfastsvnroot%\VandV_Calcs\intel_win_64
+cd %cfastroot%\VandV_Calcs\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1c.txt 2>&1
 make VPATH=".." -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1c.txt 2>&1
 
@@ -245,12 +249,12 @@ echo Stage 2 - Building Smokeview
 
 echo             libs
 
-cd %FDSsvnroot%\SMV\Build\LIBS\lib_win_intel_64
+cd %FDSroot%\SMV\Build\LIBS\lib_win_intel_64
 call makelibs2 1>> %OUTDIR%\stage2a.txt 2>&1
 
 echo             debug
 
-cd %FDSsvnroot%\SMV\Build\intel_win_64
+cd %FDSroot%\SMV\Build\intel_win_64
 erase *.obj *.mod *.exe smokeview_win_64_db.exe 1> %OUTDIR%\stage2a.txt 2>&1
 make -f ..\Makefile intel_win_64_db 1>> %OUTDIR%\stage2a.txt 2>&1
 
@@ -259,10 +263,10 @@ call :find_smokeview_warnings "warning" %OUTDIR%\stage2a.txt "Stage 2a"
 
 echo             release
 
-cd %FDSsvnroot%\SMV\Build\intel_win_64
+cd %FDSroot%\SMV\Build\intel_win_64
 erase *.obj *.mod smokeview_win_64.exe 1> %OUTDIR%\stage2b.txt 2>&1
 make -f ..\Makefile intel_win_64 1>> %OUTDIR%\stage2b.txt 2>&1
-set smokeview=%FDSsvnroot%\SMV\Build\intel_win_64\smokeview_win_64.exe
+set smokeview=%FDSroot%\SMV\Build\intel_win_64\smokeview_win_64.exe
 
 call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
@@ -279,27 +283,27 @@ call :GET_TIME RUNVV_beg
 echo Stage 3 - Running validation cases
 echo             debug
 
-cd %cfastsvnroot%\Validation\scripts
+cd %cfastroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3a-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3a-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastroot%\Validation   "Stage 3a-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastroot%\Verification "Stage 3a-Verification"
 
-if "%cfastbasename%" == "cfastclean" (
+if "%cfastbasename%" == "cfastgitclean" (
    echo             removing debug output files
-   cd %cfastsvnroot%\Validation
-   call :svn_revert 1> Nul 2>&1
+   cd %cfastroot%\Validation
+   git clean -dxf 1> Nul 2>&1
 )
 
 echo             release
 
-cd %cfastsvnroot%\Validation\scripts
+cd %cfastroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3b-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3b-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastroot%\Validation   "Stage 3b-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastroot%\Verification "Stage 3b-Verification"
 
 call :GET_DURATION RUNVV %RUNVV_beg%
 
@@ -311,13 +315,13 @@ call :GET_TIME MAKEPICS_beg
 
 echo Stage 4 - Making smokeview images
 
-cd %cfastsvnroot%\Validation\scripts
-set SH2BAT=%cfastsvnroot%\Validation\scripts\sh2bat.exe
+cd %cfastroot%\Validation\scripts
+set SH2BAT=%cfastroot%\Validation\scripts\sh2bat.exe
 
 %SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage4.txt 2>&1
-set RUNCFAST=call %cfastsvnroot%\Validation\scripts\runsmv.bat
+set RUNCFAST=call %cfastroot%\Validation\scripts\runsmv.bat
 
-cd %cfastsvnroot%\Validation
+cd %cfastroot%\Validation
 set BASEDIR=%CD%
 
 call scripts\CFAST_Pictures.bat 1> %OUTDIR%\stage4.txt 2>&1
@@ -333,7 +337,7 @@ echo Stage 5 - Making matlab plots
 
 echo             Validation
 echo               VandV_Calcs
-cd %cfastsvnroot%\Validation
+cd %cfastroot%\Validation
 ..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe CFAST_Pressure_Correction_Inputs.csv 1> Nul 2>&1
 copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y 1> Nul 2>&1
 ..\VandV_Calcs\\intel_win_64\VandV_Calcs_win_64.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
@@ -342,7 +346,7 @@ copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
 
 
 echo               Making plots
-cd %cfastsvnroot%\Utilities\Matlab
+cd %cfastroot%\Utilities\Matlab
 Validation
 call :WAIT_RUN Validation
 
@@ -350,14 +354,14 @@ call :WAIT_RUN Validation
 
 echo             Verification
 echo               VandV_Calcs
-cd %cfastsvnroot%\Verification
+cd %cfastroot%\Verification
 ..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe CFAST_Summed_flow_inputs.csv  1> Nul 2>&1
 copy summed_flows.csv DOE_Guidance_Report /Y 1> Nul 2>&1
 
 
 
 echo               Making plots
-cd %cfastsvnroot%\Utilities\Matlab
+cd %cfastroot%\Utilities\Matlab
 Verification
 call :WAIT_RUN Verification
 
@@ -376,18 +380,18 @@ call :GET_TIME MAKEGUIDES_beg
 echo Stage 6 - Building CFAST guides
 
 echo             Users Guide
-call :build_guide Users_Guide %cfastsvnroot%\Docs\Users_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide Users_Guide %cfastroot%\Docs\Users_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             Technical Reference Guide
-call :build_guide Tech_Ref %cfastsvnroot%\Docs\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide Tech_Ref %cfastroot%\Docs\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
 
 if %nothaveValidation% == 0 (
   echo             Validation Guide
-  call :build_guide Validation_Guide %cfastsvnroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+  call :build_guide Validation_Guide %cfastroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 )
 
 echo             Configuration Management Guide
-call :build_guide Configuration_Guide %cfastsvnroot%\Docs\Configuration_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide Configuration_Guide %cfastroot%\Docs\Configuration_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg%
 call :GET_DURATION TOTALTIME %TIME_beg%
@@ -598,29 +602,6 @@ if %nwarnings% GTR 0 (
   set havewarnings=1
 )
 exit /b
-
-:: -------------------------------------------------------------
-:svn_revert
-:: -------------------------------------------------------------
-svn cleanup .
-svn revert -R .
-For /f "tokens=1,2" %%A in ('svn status --no-ignore') Do (
-     If [%%A]==[?] ( Call :UniDelete %%B
-     ) Else If [%%A]==[I] Call :UniDelete %%B
-   )
-exit /b
-
-:: -------------------------------------------------------------
-:UniDelete delete file/dir
-:: -------------------------------------------------------------
-if "%1"=="%~nx0" exit /b
-IF EXIST "%1\*" ( 
-    RD /S /Q "%1"
-) Else (
-    If EXIST "%1" DEL /S /F /Q "%1"
-)
-exit /b
-
 
 :: -------------------------------------------------------------
  :build_guide

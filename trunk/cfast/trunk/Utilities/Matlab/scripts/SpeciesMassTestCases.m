@@ -25,12 +25,6 @@ numO = 0;
 Po = 101300;
 HeatOfComb = 50000;
 
-plot_style
-%set(gca,'Units',Plot_Units)
-%set(gca,'Position',[Plot_X,Plot_Y,Plot_Width,Plot_Height])
-%set(gca,'OuterPosition',[0.4,Plot_Y,Plot_Width,Plot_Height])
-set(gcf,'DefaultLineLineWidth',Line_Width)
-set(gca,'FontName',Font_Name)
 
 %Important Constans
 R = 8.314;%kJ/(mol*K)
@@ -70,69 +64,43 @@ TheoreticalMassH2O = MassH2OProd(length(MassH2OProd));
 TheoreticalMassCO2 = MassCO2Prod(length(MassCO2Prod));
 
 %Experimental Calculations
-filename = [data_dir 'species_mass_1'];
-[Time,mCO2vector,mH2Ovector,TotH2Omass,TotCO2mass] = csvreaderALL(filename);
+findname = [data_dir 'species_mass_1'];
+[Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
 
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-
-plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
-hold on
-plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
-hold off
-axis([0 15 0 0.02])
-title ('Mass of Products (species\_mass\_1)','Interpreter',Font_Interpreter,'FontSize',Title_Font_Size)
-xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-legend1 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
-set(legend1, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
-print(gcf,'-dpdf',[plot_dir 'species_mass_1'])
+A = table(Time , mCO2 , mH2O);
 
 %% Case 2: Two compartments of sizes 2m*5m*8m are placed side by side, with a door of height 6m and width 1m connecting them. There is a fire in the middle of the first compartment that has the same energy production as the fire in the first case study. The fuel is still methane.
-filename = [data_dir 'species_mass_2'];
+findname = [data_dir 'species_mass_2'];
 %Theoretical Mass calculations will be exactly the same as above. Same fire
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
-[Time,mCO2vector,mH2Ovector,TotH2Omass,TotCO2mass] = csvreaderALL(filename);
+[Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
 
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-
-plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
-hold on
-plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
-hold off
-axis([0 15 0 0.02])
-title ('Mass of Products (species\_mass\_2)','Interpreter',Font_Interpreter,'FontSize',Title_Font_Size)
-xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-legend2 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
-set(legend2, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
-print(gcf,'-dpdf',[plot_dir 'species_mass_2'])
-
+B = table(Time , mCO2 , mH2O);
+%
 %% Case 3: Two compartments of sizes 9m*5m*4m and 9m*5m*2m are placed directly on top of each other with a 4m^2 ceiling vent in between the two. The same fire that is described in cases 1&2 is placed in the middle of compartment 1. 
-filename = [data_dir 'species_mass_3'];
+findname = [data_dir 'species_mass_3'];
 %Theoretical Mass calculations will be exactly the same as above. Same fire
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
-[Time,mCO2vector,mH2Ovector,TotH2Omass,TotCO2mass] = csvreaderALL(filename);
-
+[Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
+C = table(Time , mCO2 , mH2O);
 
-plot(Time,mCO2vector,'k',Time,mH2Ovector,'r')
-hold on
-plot(t,MassCO2Prod,'ko',t,MassH2OProd,'ro')
-hold off
-axis([0 15 0 0.02])
-title ('Mass of Products (species\_mass\_3)','Interpreter',Font_Interpreter,'FontSize',Title_Font_Size)
-xlabel('Time (min)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-ylabel('Mass (kg)','Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-legend3 = legend('CFAST CO2','CFAST H2O','Expected CO2','Expected H2O','Location','southeast');
-set(legend3, 'interpreter',Font_Interpreter, 'fontsize', Key_Font_Size);
+%% Creating a CSV file with the appropriate data
+D = table(t , MassCO2Prod , MassH2OProd);
+writetable(A,[data_dir 'species_mass_1.csv'],'Delimiter',',')
+writetable(B,[data_dir 'species_mass_2.csv'],'Delimiter',',')
+writetable(C,[data_dir 'species_mass_3.csv'],'Delimiter',',')
+writetable(D,[data_dir 'species_mass.csv'],'Delimiter',',')
 
-print(gcf,'-dpdf',[plot_dir 'species_mass_3'])
+
 

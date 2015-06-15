@@ -1,3 +1,3 @@
 @echo off
 set repo=%1
-copy %repo%\Utilities\Firebot\*
+copy %repo%\Utilities\cfastbot\*

@@ -81,7 +81,7 @@ intel_win_64 : obj = cfast7_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qopt-report:0 /Qsave /nologo /debug:full /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
+intel_win_64_db : FFLAGS = /Qopt-report:0 /Qsave /nologo /debug:full /Z7 /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
 intel_win_64_db : FCOMPL = ifort
 intel_win_64_db : obj = cfast7_win_64_db
 intel_win_64_db : setup_win $(objwin)

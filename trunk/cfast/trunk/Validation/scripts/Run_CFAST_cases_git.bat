@@ -29,22 +29,19 @@ set RUNCFAST_E=call %SCRIPT_DIR%\erase_stop.bat
 cd "%SCRIPT_DIR%"
 %SH2BAT% CFAST_Cases.sh CFAST_Cases.bat
 
+:: create or erase stop files
+
 if "%rundebug%" == "1" (
   SET RUNCFAST=%RUNCFAST_M%
 ) else (
   SET RUNCFAST=%RUNCFAST_E%
 )
-
-:: create or erase stop files
-
 cd "%BASEDIR%"
 call Scripts\CFAST_Cases.bat
 
 :: run cases
 
 SET RUNCFAST=%RUNCFAST_R%
-
-
 cd "%BASEDIR%"
 call Scripts\CFAST_Cases.bat
 

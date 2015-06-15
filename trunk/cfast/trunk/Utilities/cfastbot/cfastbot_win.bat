@@ -283,8 +283,8 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3a-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3a-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
 
 if "%cfastbasename%" == "cfastclean" (
    echo             removing debug output files
@@ -298,8 +298,8 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Validation   "Stage 3b-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL" %cfastsvnroot%\Verification "Stage 3b-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3b-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3b-Verification"
 
 call :GET_DURATION RUNVV %RUNVV_beg%
 
@@ -568,7 +568,7 @@ set search_dir=%2
 set stage=%3
 
 cd %search_dir%
-grep -RIiE %search_string% --include *.log --include *.out * > %OUTDIR%\stage_warning.txt
+grep -RIiE %search_string% --include *.log --include *.out --include *.err * > %OUTDIR%\stage_warning.txt
 type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
 set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
 if %nwarnings% GTR 0 (

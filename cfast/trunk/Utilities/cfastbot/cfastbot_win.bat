@@ -283,8 +283,8 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastsvnroot%\Validation   "Stage 3a-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastsvnroot%\Verification "Stage 3a-Verification"
 
 if "%cfastbasename%" == "cfastclean" (
    echo             removing debug output files
@@ -298,8 +298,8 @@ cd %cfastsvnroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3b-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3b-Verification"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastsvnroot%\Validation   "Stage 3b-Validation"
+call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastsvnroot%\Verification "Stage 3b-Verification"
 
 call :GET_DURATION RUNVV %RUNVV_beg%
 

@@ -354,7 +354,7 @@ call :WAIT_RUN Validation
 
 echo             Verification
 echo               SpeciesMassTestCases
-cd %cfastsvnroot%\Utilities\Matlab\scripts
+cd %cfastroot%\Utilities\Matlab\scripts
 SpeciesMassTestCases
 
 echo               Making plots

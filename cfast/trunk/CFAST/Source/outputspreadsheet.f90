@@ -493,6 +493,7 @@
 
     do i = 1, n_vvents
         ventptr => vventinfo(i)
+        avent = ventptr%area
         call SSaddtolist (position,avent,outarray)
         ! flow slabs for the vent
         slabs = ventptr%n_slabs

@@ -42,6 +42,7 @@
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr
+    real(eb) :: factor, tfilter_max
     integer lsp, iroom, nobj, iobj, i, j
 
     ! initialize summations and local data
@@ -130,6 +131,16 @@
         endif
     end do
 
+    tfilter_max = 0.1_eb
+    if(tsec<tfilter_max)then
+        factor = tsec/tfilter_max
+        do lsp = 1, ns + 2
+            do iroom = 1, n
+                flwf(iroom,lsp,upper) = factor*flwf(iroom,lsp,upper)
+                flwf(iroom,lsp,lower) = factor*flwf(iroom,lsp,lower)
+            end do
+        end do
+    endif
     return
     end
 

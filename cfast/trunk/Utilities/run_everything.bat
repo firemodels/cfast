@@ -14,9 +14,10 @@ call runadjustments.bat
 echo Running verification cases
 cd ..\Verification
 call runall.bat ALL
-call runadjustments.bat
 echo Running matlab plotting analysis
-cd ..\Utilities\matlab
+cd ..\Utilities\matlab\scripts
+SpeciesMassTestCases
+cd ..\
 Validation
 Verification
 echo Creating Documentation

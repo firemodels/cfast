@@ -353,19 +353,14 @@ call :WAIT_RUN Validation
 ::*** generating Verification plots
 
 echo             Verification
-echo               VandV_Calcs
-cd %cfastroot%\Verification
-..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe CFAST_Summed_flow_inputs.csv  1> Nul 2>&1
-copy summed_flows.csv DOE_Guidance_Report /Y 1> Nul 2>&1
-
-
+echo               SpeciesMassTestCases
+cd %cfastsvnroot%\Utilities\Matlab\scripts
+SpeciesMassTestCases
 
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
 Verification
 call :WAIT_RUN Verification
-
-::*** generating Plotting plots
 
 :skip_stage5
 

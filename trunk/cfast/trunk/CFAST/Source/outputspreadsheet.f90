@@ -232,7 +232,7 @@
 
     use precision_parameters
     use targptrs
-    use cenviro
+    use cenviro, only: zzwtemp, zzhlay, zztemp
     use cfast_main
     use cshell
     use fltarget
@@ -265,7 +265,7 @@
 
     do i=1,nm1
         do iw = 1, 4
-            call SSaddtolist (position,twj(1,i,iwptr(iw))-kelvin_c_offset,outarray)
+            call SSaddtolist (position,zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,outarray)
         end do
     end do
 

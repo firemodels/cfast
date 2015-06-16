@@ -566,6 +566,7 @@
 
     use precision_parameters
     use targptrs
+    use cenviro, only: zzwtemp
     use cfast_main
     use cshell
     use fltarget
@@ -604,10 +605,10 @@
         if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
         if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
         if (total/=0.0_eb) then
-            write (iofilo,5010) compartmentnames(i),((twj(1,i,iwptr(iw))-kelvin_c_offset),iw=1,4),twj(1,i,2)-kelvin_c_offset, &
+            write (iofilo,5010) compartmentnames(i),((zzwtemp(i,iwptr(iw),1)-kelvin_c_offset),iw=1,4),twj(1,i,2)-kelvin_c_offset, &
             total,ftotal,wtotal,gtotal,ctotal
         else
-            write (iofilo,5010) compartmentnames(i),(twj(1,i,iwptr(iw))-kelvin_c_offset,iw=1,4),twj(1,i,2)-kelvin_c_offset
+            write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4),twj(1,i,2)-kelvin_c_offset
         endif
         if (ntarg>nm1) then
             do itarg = 1, ntarg-nm1

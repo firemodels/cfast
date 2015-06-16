@@ -948,13 +948,13 @@
 5060 formaT (//,'There are no mechanical flow connections')
 5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
 5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
-     5120 format (//,'FANS',//,'System    From           From      To             To', &
-            '        Area      Fan       Minimum   Maximum    Flowrate',/, &
-            '                         Elev.                    Elev.               Number',/, &
-            '                         (m)                      (m)',&
-            '       (m^2)               (Pa)      (Pa)       (m^3/s)',/,110('-'))
-5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(f7.2,3x),5(1pg10.2))
-5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(f7.2,3x),5(1pg10.2))
+     5120 format (//,'FANS',//,'System    From           From      To             To        ', &
+          'Area      Fan         Minimum       Maximum    Flowrate',/, &
+          '                         Elev.                    Elev.               Number',/, &
+          '                         (m)                      (m)       ', &
+          '(m^2)                 (Pa)          (Pa)       (m^3/s)',/,115('-'))
+5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
+5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
      
     end  subroutine outvent
 

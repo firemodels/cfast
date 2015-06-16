@@ -131,8 +131,8 @@
         endif
     end do
 
-    tfilter_max = 0.1_eb
-    if(tsec<tfilter_max)then
+    if((adiabatic_wall.and.tsec<tfilter_max)then
+        tfilter_max = 0.1_eb
         factor = tsec/tfilter_max
         do lsp = 1, ns + 2
             do iroom = 1, n

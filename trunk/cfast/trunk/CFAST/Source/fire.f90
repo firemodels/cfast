@@ -42,7 +42,6 @@
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr
-    real(eb) :: factor, tfilter_max
     integer lsp, iroom, nobj, iobj, i, j
 
     ! initialize summations and local data
@@ -131,16 +130,6 @@
         endif
     end do
 
-    if(adiabatic_wall.and.tsec<tfilter_max)then
-        tfilter_max = 0.1_eb
-        factor = tsec/tfilter_max
-        do lsp = 1, ns + 2
-            do iroom = 1, n
-                flwf(iroom,lsp,upper) = factor*flwf(iroom,lsp,upper)
-                flwf(iroom,lsp,lower) = factor*flwf(iroom,lsp,lower)
-            end do
-        end do
-    endif
     return
     end
 
@@ -488,6 +477,8 @@
     real(eb) :: oareat, xxtime, tdrate, xxtimef, qt, qtf, tfact
     integer :: lobjlfm, id, ifact
 
+    real(eb) :: factor, tfilter_max
+
     if (.not.objon(objn).or.objset(objn)>0) then
         omasst = 0.0_eb
         oareat = 0.0_eb
@@ -556,6 +547,13 @@
     if(id/=0.and.ifact==1)then
         omasst = omasst*tfact
         oqdott = oqdott*tfact
+    endif
+    
+    tfilter_max=1.0_eb
+    if(adiabatic_wall.and.time<tfilter_max)then
+        factor = time/tfilter_max
+        omasst = omasst*factor
+        oqdott = oqdott*factor
     endif
 
     return

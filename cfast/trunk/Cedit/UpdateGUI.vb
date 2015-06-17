@@ -738,6 +738,7 @@ Public Class UpdateGUI
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
         Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single
         Dim IgnitionTypeLabel As String = ""
+        Dim ir, ic As Integer
         If index < 0 Or index >= myFires.Count Then
             ClearGrid(MainWin.FireSummary)
             MainWin.GroupFire.Enabled = False
@@ -776,6 +777,33 @@ Public Class UpdateGUI
             MainWin.FireIgnitionValue.Text = " "
             If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
             MainWin.FireName.Text = aFire.Name
+
+            MainWin.FireMaterial.Text = myThermalProperties.GetLongName(aFire.Material)
+            MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
+            MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
+            MainWin.FireO.Text = aFire.ChemicalFormula(formula.O).ToString
+            MainWin.FireN.Text = aFire.ChemicalFormula(formula.N).ToString
+            MainWin.FireCl.Text = aFire.ChemicalFormula(formula.Cl).ToString
+            MainWin.FireHoC.Text = aFire.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
+            MainWin.FireRadiativeFraction.Text = aFire.RadiativeFraction.ToString
+
+            aFire.GetFireData(afireTimeSeries, NumPoints)
+            ClearGrid(MainWin.FireDataSS)
+            MainWin.FireDataSS(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 2) = "Qdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireQdot).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 3) = "Height" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireHeight).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
+            MainWin.FireDataSS.AutoSizeRow(0)
+
+            If NumPoints >= 0 Then
+                For ir = 0 To NumPoints
+                    For ic = 0 To 12
+                        MainWin.FireDataSS(ir + 1, ic) = afireTimeSeries(ic, ir)
+                    Next
+                Next
+            End If
+
             UpdateFirePlot(index)
 
             numFires = myFires.Count
@@ -908,12 +936,11 @@ Public Class UpdateGUI
         MainWin.TargetNormalCalc.Items.Add("User Specified")
         numFires = myFires.Count
         If numFires > 0 Then
-            Dim aFire As Fire, aFireObject As Fire
+            Dim aFire As Fire
             For i = 1 To numFires
                 aFire = myFires(i - 1)
                 If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aFire.ZPosition - aTarget.ZPosition <> 0) Then
-                    aFireObject = myFireObjects(aFire.FireObject)
-                    MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFireObject.Name)
+                    MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If
             Next
         End If

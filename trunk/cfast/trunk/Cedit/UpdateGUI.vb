@@ -841,15 +841,17 @@ Public Class UpdateGUI
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)
         Dim aFire As New Fire
-        Dim aFireData(12, 0) As Single, numPoints As Integer
+        Dim aFireData(12, 0) As Single, numPoints As Integer, iSelectedColumn As Integer
         Dim x() As Single, y() As Single, j As Integer
         aFire = myFires(index)
         MainWin.FirePlot.Clear()
         aFire.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
+        iSelectedColumn = MainWin.FireDataSS.ColSel
+        If iSelectedColumn < 1 Then iSelectedColumn = Fire.FireHRR
         For j = 0 To numPoints
             x(j) = aFireData(Fire.FireTime, j)
-            y(j) = aFireData(Fire.FireHRR, j)
+            y(j) = aFireData(iSelectedColumn, j)
         Next
         Dim lp As New NPlot.LinePlot(y, x)
         MainWin.FirePlot.Add(lp)

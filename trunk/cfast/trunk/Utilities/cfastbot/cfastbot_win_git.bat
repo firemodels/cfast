@@ -40,6 +40,7 @@ set infofile=%OUTDIR%\summary.txt
 set revisionfilestring=%OUTDIR%\revision.txt
 set revisionfilenum=%OUTDIR%\revision_num.txt
 set stagestatus=%OUTDIR%\stage_status.log
+set nothaveValidation=0
 
 set haveerrors=0
 set havewarnings=0
@@ -376,7 +377,7 @@ echo               Making plots
 cd %cfastroot%\Utilities\Matlab
 
 if %usematlab% == 0 goto matlab_else1
-  matlab -automation -wait -noFigureWindows -r "try; run('CFAST_validation_script'); catch; end; quit
+  matlab -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_validation_script'); catch; end; quit
   goto matlab_end1
 :matlab_else1
   Validation
@@ -396,7 +397,7 @@ if %usematlab% == 1 goto matlab_end2
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
 if %usematlab% == 0 goto matlab_else3
-  matlab -automation -wait -noFigureWindows -r "try; run('CFAST_verification_script.m'); catch; end; quit
+  matlab -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_verification_script.m'); catch; end; quit
   goto matlab_end3
 :matlab_else3
   Verification

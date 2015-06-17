@@ -15,6 +15,7 @@ cd Mass_Balance
 ..\scripts\background -u 98 ..\..\bin\cfast species_mass_1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast species_mass_2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast species_mass_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast species_mass_4 /V
 cd ..
 
 echo Running Thermal Equilibrium cases

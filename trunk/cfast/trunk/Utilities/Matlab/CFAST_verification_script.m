@@ -60,6 +60,4 @@ scatplot(saved_data, drange, ...
 
 % Special Cases
 
-
- 
 display('Verification scripts completed successfully!')

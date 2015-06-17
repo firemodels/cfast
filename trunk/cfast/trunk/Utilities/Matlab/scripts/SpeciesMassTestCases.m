@@ -5,13 +5,6 @@
 %the corresponding mole fractions of O2, CO2 and H2O in the upper layer,
 %which are then used to calculate the experimental masses of CO2 and H2O produced.
 
-
-%Case 1: A one compartment room with a fire placed in the center of the room.
-%There are no vents of any kind. The energy produced by the fire ramps up
-%linearly for 30 seconds to 1 kW, then levels off for 5 minutes and finally
-%goes down to zero kW in 30 seconds. The dimensions of the room are
-%5m*6m*3m.
-
 close all
 clear all
 format long
@@ -24,7 +17,6 @@ numH = 4;
 numO = 0;
 Po = 101300;
 HeatOfComb = 50000;
-
 
 %Important Constans
 R = 8.314;%kJ/(mol*K)
@@ -62,11 +54,9 @@ MassCO2Prod(i) = 1/(((numC*MC)/(StoicCO2*MCO2))/MassC(i));%kg
 end
 TheoreticalMassH2O = MassH2OProd(length(MassH2OProd));
 TheoreticalMassCO2 = MassCO2Prod(length(MassCO2Prod));
-
 %Experimental Calculations
 findname = [data_dir 'species_mass_1'];
 [Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
-
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
@@ -78,12 +68,11 @@ findname = [data_dir 'species_mass_2'];
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
 [Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
-
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
 B = table(Time , mCO2 , mH2O);
-%
+
 %% Case 3: Two compartments of sizes 9m*5m*4m and 9m*5m*2m are placed directly on top of each other with a 4m^2 ceiling vent in between the two. The same fire that is described in cases 1&2 is placed in the middle of compartment 1. 
 findname = [data_dir 'species_mass_3'];
 %Theoretical Mass calculations will be exactly the same as above. Same fire
@@ -102,5 +91,11 @@ writetable(B,[data_dir 'species_mass_2.csv'],'Delimiter',',')
 writetable(C,[data_dir 'species_mass_3.csv'],'Delimiter',',')
 writetable(D,[data_dir 'species_mass.csv'],'Delimiter',',')
 
-
+%% Case 4:
+findname = [data_dir 'species_mass_4'];
+[Time,mCO2,mH2O,TotH2Omass,TotCO2mass,mCO2comp,mH2Ocomp] = csvreaderALL(findname);
+MCO2 = mCO2comp(:,1);%we are examining the flow in compartment 1 only
+MH2O = mH2Ocomp(:,1);%we are examining the flow in compartment 1 only
+E = table(Time,MCO2,MH2O);
+writetable(E,[data_dir 'species_mass_4.csv'],'Delimiter',',')
 

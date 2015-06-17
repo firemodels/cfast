@@ -9,6 +9,35 @@ Public Class CeditMain
     Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
+#Region " Windows Form Designer generated code "
+
+    Public Sub New()
+        MyBase.New()
+
+        'This call is required by the Windows Form Designer.
+        InitializeComponent()
+
+        'Add any initialization after the InitializeComponent() call
+
+    End Sub
+
+    'Form overrides dispose to clean up the component list.
+    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+        If disposing Then
+            If Not (components Is Nothing) Then
+                components.Dispose()
+            End If
+        End If
+        MyBase.Dispose(disposing)
+    End Sub
+
+    'Required by the Windows Form Designer
+    Private components As System.ComponentModel.IContainer
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.  
+    'Do not modify it using the code editor.
+    Private Const OK As Integer = 1, Cancel As Integer = 2
     Friend WithEvents TabMaterials As System.Windows.Forms.TabPage
     Friend WithEvents ThermalFromFile As System.Windows.Forms.Button
     Friend WithEvents ThermalRemove As System.Windows.Forms.Button
@@ -56,35 +85,6 @@ Public Class CeditMain
     Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
     Friend WithEvents EnvAdiabatic As System.Windows.Forms.CheckBox
     Friend WithEvents ThermalShortName As System.Windows.Forms.TextBox
-#Region " Windows Form Designer generated code "
-
-    Public Sub New()
-        MyBase.New()
-
-        'This call is required by the Windows Form Designer.
-        InitializeComponent()
-
-        'Add any initialization after the InitializeComponent() call
-
-    End Sub
-
-    'Form overrides dispose to clean up the component list.
-    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-        If disposing Then
-            If Not (components Is Nothing) Then
-                components.Dispose()
-            End If
-        End If
-        MyBase.Dispose(disposing)
-    End Sub
-
-    'Required by the Windows Form Designer
-    Private components As System.ComponentModel.IContainer
-
-    'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
-    'Do not modify it using the code editor.
-    Private Const OK As Integer = 1, Cancel As Integer = 2
     Friend WithEvents MenuEditFires As System.Windows.Forms.MenuItem
     Friend WithEvents MenuInsertFire As System.Windows.Forms.MenuItem
     Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
@@ -5655,6 +5655,76 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
+    Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
+        Dim aFire As New Fire
+        Dim numPoints As Integer
+        If CurrentFire >= 0 And myFires.Count > 0 Then
+            numPoints = CountGridPoints(Me.FireDataSS)
+            ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
+            If Me.FireDataSS.ColSel = Fire.FireHRR Then
+                Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireMdot) = Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
+            End If
+            CopyFireData(aFire)
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
+    Private Sub FireData_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.AfterRowColChange
+        UpdateGUI.Fires(CurrentFire)
+    End Sub
+    Private Sub FireData_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown
+        Dim aChar As String
+        aChar = e.KeyCode.ToString
+        If e.Control Then
+            If aChar = "Delete" Then
+                If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
+                    FireDataSS(FireDataSS.Row, FireDataSS.Col) = " "
+                End If
+            End If
+        End If
+        If e.Alt Then
+            If aChar = "Delete" Then
+                If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
+                    If CurrentFire >= 0 And CurrentFire < myFires.Count Then
+                        Dim numPoints As Integer, i As Integer, j As Integer
+                        numPoints = CountGridPoints(Me.FireDataSS)
+                        If numPoints > FireDataSS.Row Then
+                            For i = FireDataSS.Row To numPoints
+                                For j = 0 To FireDataSS.Cols.Count - 1
+                                    FireDataSS(i, j) = FireDataSS(i + 1, j)
+                                Next
+                            Next
+                        End If
+                        For j = 0 To FireDataSS.Cols.Count - 1
+                            FireDataSS(numPoints, j) = Nothing
+                        Next
+                        Dim aFire As New Fire
+                        aFire = myFires(CurrentFire)
+                        CopyFireData(aFire)
+                        myFires(CurrentFireObject) = aFire
+                        UpdateGUI.Fires(CurrentFire)
+                    End If
+                End If
+            End If
+            If aChar = "Insert" Then
+                If FireDataSS.Row > 0 Then
+                    Dim numPoints As Integer, i As Integer, j As Integer
+                    numPoints = Me.CountGridPoints(Me.FireDataSS)
+                    If numPoints > FireDataSS.Row Then
+                        For i = numPoints To FireDataSS.Row Step -1
+                            For j = 0 To FireDataSS.Cols.Count - 1
+                                FireDataSS(i + 1, j) = FireDataSS(i, j)
+                            Next
+                        Next
+                        For j = 0 To FireDataSS.Cols.Count - 1
+                            FireDataSS(FireDataSS.Row, j) = 0
+                        Next
+                    End If
+
+                End If
+            End If
+        End If
+    End Sub
+
     Private ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
         ' Find the last non-blank row of a grid on the GUI
         Get

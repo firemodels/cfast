@@ -5,12 +5,11 @@
 %the corresponding mole fractions of O2, CO2 and H2O in the upper layer,
 %which are then used to calculate the experimental masses of CO2 and H2O produced.
 
-close all
-clear all
+function [] = SpeciesMassTestCases
 format long
 
-data_dir = '../../../Verification/Mass_Balance/';
-plot_dir = '../../../Docs/Validation_Guide/FIGURES/Verification/';
+data_dir = '../../Verification/Mass_Balance/';
+plot_dir = '../../Docs/Validation_Guide/FIGURES/Verification/';
 
 numC = 1;
 numH = 4;

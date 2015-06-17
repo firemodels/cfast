@@ -1,11 +1,18 @@
 @echo off
-set arg=%1
+set emailto=%1
 
+set gitrepo=%userprofile%\cfastgitclean
 set curdir=%CD%
 set running=%curdir%\bot.running
+
+cd %gitrepo%
+git pull
+copy Utilities\cfastbot\cfastbot_win_git.bat %curdir%
+cd %curdir%
+
 if not exist %running% (
   echo 1 > %running%
-  call cfastbot_win_git.bat  %arg%
+  call cfastbot_win_git.bat  %emailto%
   erase %running%
   cd %curdir%
 ) else (

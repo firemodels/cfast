@@ -12,7 +12,7 @@ cd %curdir%
 
 if not exist %running% (
   echo 1 > %running%
-  call cfastbot_win_git.bat 1 %emailto%
+  call cfastbot_win_git.bat 0  %emailto%
   erase %running%
   cd %curdir%
 ) else (

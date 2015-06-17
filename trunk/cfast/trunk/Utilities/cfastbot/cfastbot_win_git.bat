@@ -1,6 +1,6 @@
 @echo off
-set emailto=%1
-set usematlab=1
+set usematlab=%1
+set emailto=%2
 
 :: -------------------------------------------------------------
 ::                         set repository names
@@ -136,7 +136,7 @@ echo             found cut
 call :is_file_installed sed|| exit /b 1
 echo             found sed
 
-if %usematlab% == 0 (
+if %usematlab% == 1 goto skip_matlabexe
 ::*** looking for Validation
 
 where Validation 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
@@ -171,9 +171,9 @@ if %nothaveVerification% == 1 (
   echo             SpeciesMassTestCases plot generator not found - Validation guide will not be built
   set nothaveValidation=1
 )
-)
+:skip_matlabexe
 
-if %usematlab% == 1 (
+if %usematlab% == 0 goto skip_matlab
 where matlab 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
 set /p nothavematlab=<%OUTDIR%\stage_count0a.txt
 if %nothavematlab% == 0 (
@@ -183,7 +183,8 @@ if %nothavematlab% == 1 (
   echo             matlab not found - Validation guide will not be built
   set nothaveValidation=1
 )
-)
+:skip_matlab
+
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository
@@ -373,29 +374,34 @@ copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
 
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
-if %usematlab% == 1 (
+
+if %usematlab% == 0 goto matlab_else1
   matlab -automation -wait -noFigureWindows -r "try; run('CFAST_validation_script'); catch; end; quit
-) else (
+  goto matlab_end1
+:matlab_else1
   Validation
-)
+:matlab_end1
+
 call :WAIT_RUN Validation
 
 ::*** generating Verification plots
 
-if %usematlab% == 0 (
+if %usematlab% == 1 goto matlab_end2
   echo             Verification
   echo               SpeciesMassTestCases
   cd %cfastroot%\Utilities\Matlab\scripts
   SpeciesMassTestCases
-)
+:matlab_end2
 
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
-if %usematlab% == 1 (
+if %usematlab% == 0 goto matlab_else3
   matlab -automation -wait -noFigureWindows -r "try; run('CFAST_verification_script.m'); catch; end; quit
-) else (
+  goto matlab_end3
+:matlab_else3
   Verification
-)
+:matlab_end3
+
 call :WAIT_RUN Verification
 
 :skip_stage5

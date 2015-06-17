@@ -1,5 +1,6 @@
 @echo off
 set emailto=%1
+set usematlab=1
 
 :: -------------------------------------------------------------
 ::                         set repository names
@@ -135,6 +136,7 @@ echo             found cut
 call :is_file_installed sed|| exit /b 1
 echo             found sed
 
+if %usematlab% == 0 (
 ::*** looking for Validation
 
 where Validation 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
@@ -158,6 +160,30 @@ if %nothaveVerification% == 1 (
   set nothaveValidation=1
 )
 
+::*** looking for SpeciesMassTestCases
+
+where SpeciesMassTestCases 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothaveVerification=<%OUTDIR%\stage_count0a.txt
+if %nothaveVerification% == 0 (
+  echo             found SpeciesMassTestCases plot generator
+)
+if %nothaveVerification% == 1 (
+  echo             SpeciesMassTestCases plot generator not found - Validation guide will not be built
+  set nothaveValidation=1
+)
+)
+
+if %usematlab% == 1 (
+where matlab 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothavematlab=<%OUTDIR%\stage_count0a.txt
+if %nothavematlab% == 0 (
+  echo             found matlab
+)
+if %nothavematlab% == 1 (
+  echo             matlab not found - Validation guide will not be built
+  set nothaveValidation=1
+)
+)
 :: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository
@@ -347,19 +373,29 @@ copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
 
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
-Validation
+if %usematlab% == 1 (
+  matlab -automation -wait -noFigureWindows -r "try; run('CFAST_validation_script'); catch; end; quit
+) else (
+  Validation
+)
 call :WAIT_RUN Validation
 
 ::*** generating Verification plots
 
-echo             Verification
-echo               SpeciesMassTestCases
-cd %cfastroot%\Utilities\Matlab\scripts
-SpeciesMassTestCases
+if %usematlab% == 0 (
+  echo             Verification
+  echo               SpeciesMassTestCases
+  cd %cfastroot%\Utilities\Matlab\scripts
+  SpeciesMassTestCases
+)
 
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
-Verification
+if %usematlab% == 1 (
+  matlab -automation -wait -noFigureWindows -r "try; run('CFAST_verification_script.m'); catch; end; quit
+) else (
+  Verification
+)
 call :WAIT_RUN Verification
 
 :skip_stage5

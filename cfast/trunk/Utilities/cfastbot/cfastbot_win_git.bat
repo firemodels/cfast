@@ -377,13 +377,12 @@ echo               Making plots
 cd %cfastroot%\Utilities\Matlab
 
 if %usematlab% == 0 goto matlab_else1
-  matlab -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_validation_script'); catch; end; quit
+  matlab -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_validation_script.m'); catch; end; quit
   goto matlab_end1
 :matlab_else1
   Validation
+  call :WAIT_RUN Validation
 :matlab_end1
-
-call :WAIT_RUN Validation
 
 ::*** generating Verification plots
 
@@ -392,6 +391,7 @@ if %usematlab% == 1 goto matlab_end2
   echo               SpeciesMassTestCases
   cd %cfastroot%\Utilities\Matlab\scripts
   SpeciesMassTestCases
+  call :WAIT_RUN SpeciesMassTestCases
 :matlab_end2
 
 echo               Making plots
@@ -401,9 +401,8 @@ if %usematlab% == 0 goto matlab_else3
   goto matlab_end3
 :matlab_else3
   Verification
+  call :WAIT_RUN Verification
 :matlab_end3
-
-call :WAIT_RUN Verification
 
 :skip_stage5
 

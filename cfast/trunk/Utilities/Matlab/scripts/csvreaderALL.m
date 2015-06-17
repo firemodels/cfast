@@ -1,4 +1,4 @@
-function [Time,mCO2vector,mH2Ovector,TotH2Omass,TotCO2mass] = csvreaderALL(filename)
+function [Time,mCO2vectorFIN,mH2OvectorFIN,TotH2Omass,TotCO2mass,mCO2vector,mH2Ovector] = csvreaderALL(filename)
 
 Po = 101300;%Pa
 R = 8.314;%kJ/(mol*K)
@@ -32,6 +32,8 @@ Vu = zeros(dim(1),numComp);
 Tl = zeros(dim(1),numComp);
 Vl = zeros(dim(1),numComp);
 LH = zeros(dim(1),numComp);
+indA = isempty(colLH);
+indB = isempty(colTl);
 for i = 1:dim(1)
     Time(i) = Q.data(i,colTime);
 end
@@ -42,9 +44,20 @@ for j = 1:dim(1)
 Tu(j,i) = Q.data(j,colTu(i)) + 273.15;%K
 P(j,i) = Q.data(j,colP(i)) + Po;%Pa
 Vu(j,i) = Q.data(j,colVu(i));%m^3
+end
+end
+
+for i = 1:numComp
+    if indA == 1 && indB == 1
+        break
+    end
+for j = 1:dim(1)
 Vl(j,i) = Vu(j,i)*Q.data(j,colLH(i))/(Q.data(1,colLH(i)) - Q.data(j,colLH(i)));%m^3
 Tl(j,i) = Q.data(j,colTl(i)) + 273.15;%K
 end
+    if indA == 1 && indB == 1
+        break
+    end
 end
 %Analyzing the S file and extracting the nexessary quantities
 filenameS = strcat(filename,'_s.csv');
@@ -65,6 +78,10 @@ mfN2u = zeros(dim(1),numComp);
 MWAvgu = zeros(dim(1),numComp);
 YH2Ou = zeros(dim(1),numComp);
 YCO2u = zeros(dim(1),numComp);
+Rspecificu = zeros(a,numComp);
+mGASupper = zeros(a,numComp);
+mCO2expu = zeros(a,numComp);
+mH2Oexpu = zeros(a,numComp);
 
 mfH2Ol = zeros(dim(1),numComp);
 mfCO2l = zeros(dim(1),numComp);
@@ -73,6 +90,10 @@ mfN2l = zeros(dim(1),numComp);
 MWAvgl = zeros(dim(1),numComp);
 YH2Ol = zeros(dim(1),numComp);
 YCO2l = zeros(dim(1),numComp);
+Rspecificl = zeros(a,numComp);
+mGASlower = zeros(a,numComp);
+mCO2expl = zeros(a,numComp);
+mH2Oexpl = zeros(a,numComp);
 
 %upper layer mass fraction of H2O and CO2 calculations
 for i = 1:numComp
@@ -87,27 +108,8 @@ YCO2u(j,i) = (mfCO2u(j,i)*MCO2)/MWAvgu(j,i);
 end
 end
 
-%lower layer mass fraction of H2O and CO2 calculations
-for i = 1:numComp
-for j = 1:dim(1)
-mfH2Ol(j,i) = S.data(j,colH2Ol(i));
-mfCO2l(j,i) = S.data(j,colCO2l(i));
-mfO2l(j,i) = S.data(j,colO2l(i));
-mfN2l(j,i) = 1 - (mfH2Ol(j,i)+mfCO2l(j,i)+mfO2l(j,i));
-MWAvgl(j,i) = mfH2Ol(j,i)*MH2O + mfCO2l(j,i)*MCO2 + mfO2l(j,i)*MO2 + mfN2l(j,i)*MN2;
-YH2Ol(j,i) = (mfH2Ol(j,i)*MH2O)/MWAvgl(j,i);
-YCO2l(j,i) = (mfCO2l(j,i)*MCO2)/MWAvgl(j,i);
-end
-end
-
-
-Rspecificu = zeros(a,numComp);
-mGASupper = zeros(a,numComp);
-mCO2expu = zeros(a,numComp);
-mH2Oexpu = zeros(a,numComp);
 for i = 1:numComp
     for j = 1:a;
-
 Rspecificu(j,i) = Cp*(gamma-1)/(gamma);%This formula calculates for the R value in the appropriate units (J/(kg*K))
 mGASupper(j,i) = P(j,i)*Vu(j,i)/(Rspecificu(j,i)*Tu(j,i));
 mCO2expu(j,i) = mGASupper(j,i) * YCO2u(j,i);
@@ -117,28 +119,51 @@ end
 TotH2OmassU = sum(mH2Oexpu(a,:));
 TotCO2massU = sum(mCO2expu(a,:));
 
-
-Rspecificl = zeros(a,numComp);
-mGASlower = zeros(a,numComp);
-mCO2expl = zeros(a,numComp);
-mH2Oexpl = zeros(a,numComp);
+%lower layer mass fraction of H2O and CO2 calculations
 for i = 1:numComp
+    if indA == 1 && indB == 1
+        break
+    end
+for j = 1:dim(1)
+mfH2Ol(j,i) = S.data(j,colH2Ol(i));
+mfCO2l(j,i) = S.data(j,colCO2l(i));
+mfO2l(j,i) = S.data(j,colO2l(i));
+mfN2l(j,i) = 1 - (mfH2Ol(j,i)+mfCO2l(j,i)+mfO2l(j,i));
+MWAvgl(j,i) = mfH2Ol(j,i)*MH2O + mfCO2l(j,i)*MCO2 + mfO2l(j,i)*MO2 + mfN2l(j,i)*MN2;
+YH2Ol(j,i) = (mfH2Ol(j,i)*MH2O)/MWAvgl(j,i);
+YCO2l(j,i) = (mfCO2l(j,i)*MCO2)/MWAvgl(j,i);
+end
+    if indA == 1 && indB == 1
+        break
+    end
+end
+
+for i = 1:numComp
+    if indA == 1 && indB == 1
+        break
+    end
     for j = 1:a;
 Rspecificl(j,i) = Cp*(gamma-1)/(gamma);%This formula calculates for the R value in the appropriate units (J/(kg*K))
 mGASlower(j,i) = P(j,i)*Vl(j,i)/(Rspecificl(j,i)*Tl(j,i));
 mCO2expl(j,i) = mGASlower(j,i) * YCO2l(j,i);
 mH2Oexpl(j,i) = mGASlower(j,i) * YH2Ol(j,i);
     end
+   if indA == 1 && indB == 1
+        break
+    end
 end
+
+
 TotH2OmassL = sum(mH2Oexpl(a,:));
 TotCO2massL = sum(mCO2expl(a,:));
 
-mCO2vector = mCO2expl + mCO2expu;%if multiple compartments are present, then this vector has multiple columns
-mH2Ovector = mH2Oexpl + mH2Oexpu;%if multiple compartments are present, then this vector has multiple columns
-if numComp > 1
-mCO2vector = sum(mCO2vector,numComp);
-mH2Ovector = sum(mH2Ovector,numComp);
-end
+
+mCO2vector = mCO2expl + mCO2expu;%if multiple compartments are present, then this vector has multiple columns, total mass of CO2 in each compartment
+mH2Ovector = mH2Oexpl + mH2Oexpu;%if multiple compartments are present, then this vector has multiple columns, total mass of H2O in each compartment
+
+mCO2vectorFIN = sum(mCO2vector,2);%Total mass of CO2 for all compartments present
+mH2OvectorFIN = sum(mH2Ovector,2);%Total mass of H2O for all compartments present
+
 TotH2Omass = TotH2OmassL+TotH2OmassU;
 TotCO2mass = TotCO2massL+TotCO2massU;
 

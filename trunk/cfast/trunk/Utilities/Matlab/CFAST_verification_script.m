@@ -26,7 +26,7 @@ clear all
 addpath 'scripts'
 
 % Scripts that run prior to dataplot
-SpeciesMassTestCases
+run('.\scripts\SpeciesMassTestCases.m')
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 

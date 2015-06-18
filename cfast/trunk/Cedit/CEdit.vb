@@ -461,7 +461,6 @@ Public Class CeditMain
         Me.MenuRecent2 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent3 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
-        Me.MenuUnits = New System.Windows.Forms.MenuItem()
         Me.MenuRun = New System.Windows.Forms.MenuItem()
         Me.MenuSMVGeometry = New System.Windows.Forms.MenuItem()
         Me.MenuRunCFast = New System.Windows.Forms.MenuItem()
@@ -476,6 +475,8 @@ Public Class CeditMain
         Me.MenuDebugOutput = New System.Windows.Forms.MenuItem()
         Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
         Me.MenuView = New System.Windows.Forms.MenuItem()
+        Me.MenuUnits = New System.Windows.Forms.MenuItem()
+        Me.MenuItem5 = New System.Windows.Forms.MenuItem()
         Me.MenuViewInput = New System.Windows.Forms.MenuItem()
         Me.MenuViewOutput = New System.Windows.Forms.MenuItem()
         Me.MenuViewLog = New System.Windows.Forms.MenuItem()
@@ -850,7 +851,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.MenuItem5 = New System.Windows.Forms.MenuItem()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -1004,11 +1004,6 @@ Public Class CeditMain
         Me.MenuRecent4.Text = "4 File 4"
         Me.MenuRecent4.Visible = False
         '
-        'MenuUnits
-        '
-        Me.MenuUnits.Index = 0
-        Me.MenuUnits.Text = "Select Engineering Units"
-        '
         'MenuRun
         '
         Me.MenuRun.Index = 1
@@ -1085,6 +1080,16 @@ Public Class CeditMain
         Me.MenuView.Index = 2
         Me.MenuView.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuUnits, Me.MenuItem5, Me.MenuViewInput, Me.MenuViewOutput, Me.MenuViewLog})
         Me.MenuView.Text = "View"
+        '
+        'MenuUnits
+        '
+        Me.MenuUnits.Index = 0
+        Me.MenuUnits.Text = "Select Engineering Units"
+        '
+        'MenuItem5
+        '
+        Me.MenuItem5.Index = 1
+        Me.MenuItem5.Text = "-"
         '
         'MenuViewInput
         '
@@ -4791,11 +4796,6 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
         '
-        'MenuItem5
-        '
-        Me.MenuItem5.Index = 1
-        Me.MenuItem5.Text = "-"
-        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -5037,7 +5037,7 @@ Public Class CeditMain
     End Sub
     Private Sub ThermalRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalRemove.Click
         Dim ReturnedButton As Integer, TotalConnections As Integer
-        If CurrentThermalProperty > 0 And myThermalProperties.Count > 0 Then
+        If CurrentThermalProperty >= 0 And myThermalProperties.Count > 0 Then
             Dim aProperty As New ThermalProperty
             aProperty = myThermalProperties.Item(CurrentThermalProperty)
             TotalConnections = myThermalProperties.NumberofConnections(aProperty.ShortName)

@@ -189,8 +189,7 @@ if %nothavematlab% == 1 (
 )
 :skip_matlab
 
-
-:: --------------------setting up repositories ------------------------------
+:: --------------------setup repositories ------------------------------
 
 ::*** revert cfast repository
 

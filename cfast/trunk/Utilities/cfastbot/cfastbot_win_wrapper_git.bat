@@ -1,5 +1,6 @@
 @echo off
 set emailto=%1
+set usematlab=1
 
 set gitrepo=%userprofile%\cfastgitclean
 set curdir=%CD%
@@ -12,10 +13,10 @@ cd %curdir%
 
 if not exist %running% (
   echo 1 > %running%
-  call cfastbot_win_git.bat 1 %emailto%
+  call cfastbot_win_git.bat %usematlab% %emailto%
   erase %running%
   cd %curdir%
 ) else (
-  echo A bot is already running.
-  echo Erase the file %running% if this is not the case
+  echo cfastbot is currently running.
+  echo If this is not the case, erase the file %running%
 )

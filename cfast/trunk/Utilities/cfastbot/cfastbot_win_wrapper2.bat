@@ -1,6 +1,6 @@
 @echo off
 set emailto=%1
-set usematlab=1
+set usematlab=0
 
 set curdir=%CD%
 set running=%curdir%\bot.running

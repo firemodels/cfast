@@ -646,10 +646,10 @@ Public Class Fire
                 If FireCurveErrors(FireMdot) Then myErrors.Add("Fire object " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than" + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHeight) Then myErrors.Add("Fire object " + aName + ". One or more fire height values are less than 0 m or greater than" + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireArea) Then myErrors.Add("Fire object " + aName + ". One or more fire area values are less than or equal to 0 m² or greater than" + (CEdit.Compartment.MaxSize ^ 2).ToString + " m².", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireCO) Then myErrors.Add("Fire object " + aName + ". One or more CO/CO2 ratios are less than 0 or greater than" + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireSoot) Then myErrors.Add("Fire object " + aName + ". One or more C/CO2 ratios are less than 0 or greater than" + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireCO) Then myErrors.Add("Fire object " + aName + ". One or more CO yields are less than 0 or greater than" + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireSoot) Then myErrors.Add("Fire object " + aName + ". One or more soot yields are less than 0 or greater than" + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHC) Then myErrors.Add("Fire object " + aName + ". One or more H/C ratios are less than 0 or greater than" + MaxHC.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireO2) Then myErrors.Add("Fire object " + aName + ". One or more O/C ratios are less than 0 or greater than" + MaxO2.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireO2) Then myErrors.Add("Fire object " + aName + ". One or more O2 yields are less than 0 or greater than" + MaxO2.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHCN) Then myErrors.Add("Fire object " + aName + ". One or more HCN yields are less than 0 or greater than" + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHCl) Then myErrors.Add("Fire object " + aName + ". One or more HCl yields are less than 0 or greater than" + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireCt) Then myErrors.Add("Fire object " + aName + ". One or more Ct values are less than 0 or greater than" + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
@@ -658,9 +658,6 @@ Public Class Fire
             If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
                 myErrors.Add("Lower oxygen limit is less than 0 or greater than 21 %.", ErrorMessages.TypeWarning)
                 HasErrors += 1
-            End If
-            If aFireObject < 0 Or aFireObject > myFireObjects.Count Then
-                myErrors.Add("Fire " + FireNumber.ToString + " does not have a fire object selected. Select a fire object for this fire.", ErrorMessages.TypeFatal)
             End If
             If aCompartment < 0 Or aCompartment > myCompartments.Count - 1 Then
                 myErrors.Add("Fire " + FireNumber.ToString + " is not assigned to an existing Compartment. Select Compartment.", ErrorMessages.TypeFatal)

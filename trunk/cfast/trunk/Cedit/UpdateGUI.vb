@@ -35,7 +35,6 @@ Public Class UpdateGUI
         MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
         MainWin.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
         MainWin.MenuShowCFAST.Checked = CommandWindowVisible
-        If myFireObjects.Count > 0 Then MainWin.MenuEditFires.Enabled = True
     End Sub
     Public Sub General()
         If myEnvironment.InputFileName = Nothing Then

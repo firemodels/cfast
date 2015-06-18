@@ -9,6 +9,7 @@ Public Class CeditMain
     Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
+    Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 #Region " Windows Form Designer generated code "
 
     Public Sub New()
@@ -58,7 +59,7 @@ Public Class CeditMain
     Friend WithEvents Label103 As System.Windows.Forms.Label
     Friend WithEvents ThermalEmissivity As System.Windows.Forms.TextBox
     Friend WithEvents Label104 As System.Windows.Forms.Label
-    Friend WithEvents Button1 As System.Windows.Forms.Button
+    Friend WithEvents FireFromFile As System.Windows.Forms.Button
     Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents FireCOYield As System.Windows.Forms.TextBox
     Friend WithEvents Label71 As System.Windows.Forms.Label
@@ -85,8 +86,6 @@ Public Class CeditMain
     Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
     Friend WithEvents EnvAdiabatic As System.Windows.Forms.CheckBox
     Friend WithEvents ThermalShortName As System.Windows.Forms.TextBox
-    Friend WithEvents MenuEditFires As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuInsertFire As System.Windows.Forms.MenuItem
     Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
     Friend WithEvents VisualResolution As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents Label31 As System.Windows.Forms.Label
@@ -420,7 +419,6 @@ Public Class CeditMain
     Friend WithEvents MenuViewLog As System.Windows.Forms.MenuItem
     Friend WithEvents MenuFile As System.Windows.Forms.MenuItem
     Friend WithEvents MenuRun As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuEdit As System.Windows.Forms.MenuItem
     Friend WithEvents MenuView As System.Windows.Forms.MenuItem
     Friend WithEvents MenuShowHelp As System.Windows.Forms.MenuItem
     Friend WithEvents MenuHelp As System.Windows.Forms.MenuItem
@@ -438,8 +436,6 @@ Public Class CeditMain
     Friend WithEvents Label101 As System.Windows.Forms.Label
     Friend WithEvents MenuSMVSimulation As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuFireObjects As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuItem3 As System.Windows.Forms.MenuItem
     Friend WithEvents ErrorProvider1 As System.Windows.Forms.ErrorProvider
     Friend WithEvents TargetNormalCalc As System.Windows.Forms.ComboBox
     Friend WithEvents FireIgnitionTemperature As System.Windows.Forms.TextBox
@@ -465,11 +461,6 @@ Public Class CeditMain
         Me.MenuRecent2 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent3 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
-        Me.MenuEdit = New System.Windows.Forms.MenuItem()
-        Me.MenuFireObjects = New System.Windows.Forms.MenuItem()
-        Me.MenuEditFires = New System.Windows.Forms.MenuItem()
-        Me.MenuInsertFire = New System.Windows.Forms.MenuItem()
-        Me.MenuItem3 = New System.Windows.Forms.MenuItem()
         Me.MenuUnits = New System.Windows.Forms.MenuItem()
         Me.MenuRun = New System.Windows.Forms.MenuItem()
         Me.MenuSMVGeometry = New System.Windows.Forms.MenuItem()
@@ -664,7 +655,7 @@ Public Class CeditMain
         Me.Label47 = New System.Windows.Forms.Label()
         Me.TabFires = New System.Windows.Forms.TabPage()
         Me.FireAdd = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
+        Me.FireFromFile = New System.Windows.Forms.Button()
         Me.FireAddt2 = New System.Windows.Forms.Button()
         Me.FireIgnitionTemperature = New System.Windows.Forms.TextBox()
         Me.Label17 = New System.Windows.Forms.Label()
@@ -859,6 +850,7 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.MenuItem5 = New System.Windows.Forms.MenuItem()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -946,7 +938,7 @@ Public Class CeditMain
         '
         'MainMenu
         '
-        Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuEdit, Me.MenuRun, Me.MenuView, Me.MenuHelp})
+        Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuRun, Me.MenuView, Me.MenuHelp})
         '
         'MenuFile
         '
@@ -1012,41 +1004,14 @@ Public Class CeditMain
         Me.MenuRecent4.Text = "4 File 4"
         Me.MenuRecent4.Visible = False
         '
-        'MenuEdit
-        '
-        Me.MenuEdit.Index = 1
-        Me.MenuEdit.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFireObjects, Me.MenuItem3, Me.MenuUnits})
-        Me.MenuEdit.Text = "Edit"
-        '
-        'MenuFireObjects
-        '
-        Me.MenuFireObjects.Index = 0
-        Me.MenuFireObjects.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuEditFires, Me.MenuInsertFire})
-        Me.MenuFireObjects.Text = "Fires"
-        '
-        'MenuEditFires
-        '
-        Me.MenuEditFires.Index = 0
-        Me.MenuEditFires.Text = "Edit Fires"
-        '
-        'MenuInsertFire
-        '
-        Me.MenuInsertFire.Index = 1
-        Me.MenuInsertFire.Text = "Insert Fires"
-        '
-        'MenuItem3
-        '
-        Me.MenuItem3.Index = 1
-        Me.MenuItem3.Text = "-"
-        '
         'MenuUnits
         '
-        Me.MenuUnits.Index = 2
+        Me.MenuUnits.Index = 0
         Me.MenuUnits.Text = "Select Engineering Units"
         '
         'MenuRun
         '
-        Me.MenuRun.Index = 2
+        Me.MenuRun.Index = 1
         Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuItem2})
         Me.MenuRun.Text = "Run!"
         '
@@ -1117,28 +1082,28 @@ Public Class CeditMain
         '
         'MenuView
         '
-        Me.MenuView.Index = 3
-        Me.MenuView.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuViewInput, Me.MenuViewOutput, Me.MenuViewLog})
+        Me.MenuView.Index = 2
+        Me.MenuView.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuUnits, Me.MenuItem5, Me.MenuViewInput, Me.MenuViewOutput, Me.MenuViewLog})
         Me.MenuView.Text = "View"
         '
         'MenuViewInput
         '
-        Me.MenuViewInput.Index = 0
-        Me.MenuViewInput.Text = "CFAST Input File"
+        Me.MenuViewInput.Index = 2
+        Me.MenuViewInput.Text = "View CFAST Input File"
         '
         'MenuViewOutput
         '
-        Me.MenuViewOutput.Index = 1
-        Me.MenuViewOutput.Text = "CFAST Output File"
+        Me.MenuViewOutput.Index = 3
+        Me.MenuViewOutput.Text = "View CFAST Output File"
         '
         'MenuViewLog
         '
-        Me.MenuViewLog.Index = 2
-        Me.MenuViewLog.Text = "CFAST Log File"
+        Me.MenuViewLog.Index = 4
+        Me.MenuViewLog.Text = "View CFAST Log File"
         '
         'MenuHelp
         '
-        Me.MenuHelp.Index = 4
+        Me.MenuHelp.Index = 3
         Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
         Me.MenuHelp.Text = "Help"
         '
@@ -2850,7 +2815,7 @@ Public Class CeditMain
         'TabFires
         '
         Me.TabFires.Controls.Add(Me.FireAdd)
-        Me.TabFires.Controls.Add(Me.Button1)
+        Me.TabFires.Controls.Add(Me.FireFromFile)
         Me.TabFires.Controls.Add(Me.FireAddt2)
         Me.TabFires.Controls.Add(Me.FireIgnitionTemperature)
         Me.TabFires.Controls.Add(Me.Label17)
@@ -2875,13 +2840,13 @@ Public Class CeditMain
         Me.FireAdd.TabIndex = 3
         Me.FireAdd.Text = "Add New"
         '
-        'Button1
+        'FireFromFile
         '
-        Me.Button1.Location = New System.Drawing.Point(362, 103)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(75, 23)
-        Me.Button1.TabIndex = 72
-        Me.Button1.Text = "From File"
+        Me.FireFromFile.Location = New System.Drawing.Point(362, 103)
+        Me.FireFromFile.Name = "FireFromFile"
+        Me.FireFromFile.Size = New System.Drawing.Size(75, 23)
+        Me.FireFromFile.TabIndex = 72
+        Me.FireFromFile.Text = "From File"
         '
         'FireAddt2
         '
@@ -4826,6 +4791,11 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
         '
+        'MenuItem5
+        '
+        Me.MenuItem5.Index = 1
+        Me.MenuItem5.Text = "-"
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -6422,13 +6392,13 @@ Public Class CeditMain
         End If
         Me.MenuDebugOutput.Checked = DebugOutput
     End Sub
-    Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuInsertFire.Click, ThermalFromFile.Click
+    Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click
         Dim iReturn As Integer
         Me.OpenDataFileDialog.FilterIndex = 1
         iReturn = OpenDataFileDialog.ShowDialog()
         If iReturn = Windows.Forms.DialogResult.OK And OpenDataFileDialog.FileNames.Length > 0 Then
             Dim FileName As String, Type As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
-            If sender Is MenuInsertFire Then Type = InsertDataType.Fire
+            If sender Is FireFromFile Then Type = InsertDataType.Fire
             If sender Is ThermalFromFile Then Type = InsertDataType.ThermalProperty
             InsertDialog.SetupData(Type)
             For Each FileName In OpenDataFileDialog.FileNames
@@ -6445,7 +6415,7 @@ Public Class CeditMain
                             myThermalProperties.Add(aThermalProperty)
                         End If
                     Next
-                ElseIf sender Is MenuInsertFire Then
+                ElseIf sender Is FireFromFile Then
                     Dim i As Integer, aFire As New Fire()
                     For i = 1 To InsertDialog.Count
                         If InsertDialog.Selected(i) Then
@@ -6615,8 +6585,6 @@ Public Class CeditMain
         UpdateGUI.InitThermalPropertyList(Me.CompFloor)
         UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
 
-        MenuEditFires.Enabled = False
-
         ' Initialize spreadsheets for input or no input (summary tables) as appropriate
         UpdateGUI.InitSummaryGrid(Me.ThermalSummary)
         UpdateGUI.InitSummaryGrid(Me.CompSummary)
@@ -6645,4 +6613,5 @@ Public Class CeditMain
         UpdateAll()
     End Sub
 #End Region
+
 End Class

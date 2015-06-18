@@ -170,6 +170,10 @@ Public Class ThermalProperty
         Get
             myUnits.SI = True
             HasErrors = 0
+            If Len(aShortName) < 1 Or Len(ShortName) > 16 Then
+                myErrors.Add("Thermal Property " + aName + ". Short name is blank or more than 16 characters long", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
             If aEmissivity < 0.0 Or aEmissivity > 1.0 Then
                 myErrors.Add("Thermal Property " + aName + ". Emissivity is less than 0 or greater than 1", ErrorMessages.TypeError)
                 HasErrors += 1

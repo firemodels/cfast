@@ -1185,9 +1185,9 @@ Public Class CeditMain
         Me.EnvAdiabatic.AutoSize = True
         Me.EnvAdiabatic.Location = New System.Drawing.Point(27, 204)
         Me.EnvAdiabatic.Name = "EnvAdiabatic"
-        Me.EnvAdiabatic.Size = New System.Drawing.Size(99, 17)
+        Me.EnvAdiabatic.Size = New System.Drawing.Size(180, 17)
         Me.EnvAdiabatic.TabIndex = 18
-        Me.EnvAdiabatic.Text = "Adiabatic Walls"
+        Me.EnvAdiabatic.Text = "Adiabatic Compartment Surfaces"
         Me.EnvAdiabatic.UseVisualStyleBackColor = True
         '
         'GroupBox12
@@ -2430,7 +2430,7 @@ Public Class CeditMain
         '
         'MainView
         '
-        Me.MainView.Location = New System.Drawing.Point(697, 638)
+        Me.MainView.Location = New System.Drawing.Point(714, 638)
         Me.MainView.Name = "MainView"
         Me.MainView.Size = New System.Drawing.Size(75, 23)
         Me.MainView.TabIndex = 4
@@ -4289,13 +4289,13 @@ Public Class CeditMain
         Me.TabMain.Controls.Add(Me.TabHorizontalFlow)
         Me.TabMain.Controls.Add(Me.TabVerticalFlow)
         Me.TabMain.Controls.Add(Me.TabMechanicalFlow)
-        Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabFires)
+        Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabDetection)
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
         Me.TabMain.Controls.Add(Me.TabVisuals)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
-        Me.TabMain.Location = New System.Drawing.Point(7, 14)
+        Me.TabMain.Location = New System.Drawing.Point(10, 2)
         Me.TabMain.Name = "TabMain"
         Me.TabMain.SelectedIndex = 0
         Me.TabMain.Size = New System.Drawing.Size(984, 618)
@@ -4766,7 +4766,7 @@ Public Class CeditMain
         '
         'MainSave
         '
-        Me.MainSave.Location = New System.Drawing.Point(313, 638)
+        Me.MainSave.Location = New System.Drawing.Point(330, 638)
         Me.MainSave.Name = "MainSave"
         Me.MainSave.Size = New System.Drawing.Size(75, 23)
         Me.MainSave.TabIndex = 1
@@ -4774,7 +4774,7 @@ Public Class CeditMain
         '
         'MainRun
         '
-        Me.MainRun.Location = New System.Drawing.Point(543, 638)
+        Me.MainRun.Location = New System.Drawing.Point(560, 638)
         Me.MainRun.Name = "MainRun"
         Me.MainRun.Size = New System.Drawing.Size(75, 23)
         Me.MainRun.TabIndex = 3
@@ -4782,7 +4782,7 @@ Public Class CeditMain
         '
         'MainGeometry
         '
-        Me.MainGeometry.Location = New System.Drawing.Point(462, 638)
+        Me.MainGeometry.Location = New System.Drawing.Point(479, 638)
         Me.MainGeometry.Name = "MainGeometry"
         Me.MainGeometry.Size = New System.Drawing.Size(75, 23)
         Me.MainGeometry.TabIndex = 2
@@ -4790,7 +4790,7 @@ Public Class CeditMain
         '
         'MainOpen
         '
-        Me.MainOpen.Location = New System.Drawing.Point(232, 638)
+        Me.MainOpen.Location = New System.Drawing.Point(249, 638)
         Me.MainOpen.Name = "MainOpen"
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 0

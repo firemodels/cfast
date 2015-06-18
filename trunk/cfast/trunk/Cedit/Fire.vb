@@ -556,7 +556,7 @@ Public Class Fire
                 HasErrors += 1
             End If
             If aRadiativeFraction < 0.0 Or aRadiativeFraction > 1.0 Then
-                myErrors.Add("Fire object " + aName + ". Radiative fraction is less than 0 or greater than 1", ErrorMessages.TypeWarning)
+                myErrors.Add("Fire " + aName + ". Radiative fraction is less than 0 or greater than 1", ErrorMessages.TypeError)
                 HasErrors += 1
             End If
             If aFireTimeSeries.GetUpperBound(1) > 0 Then
@@ -667,7 +667,7 @@ Public Class Fire
                 aComp = myCompartments(aCompartment)
                 If aXPosition <> -1.0 Then
                     If aXPosition < 0.0 Or aXPosition > aComp.RoomWidth Then
-                        myErrors.Add("Target " + FireNumber.ToString + " width position is less than 0 m or greater than Compartment width.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Fire " + FireNumber.ToString + " width position is less than 0 m or greater than Compartment width.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                 End If
@@ -830,19 +830,19 @@ Public Class FireCollection
             HasErrors = 0
             ' Check individual fire objects or instances for errors
             If Count > 0 Then
-                Dim aFire1 As Fire, aFire2 As Fire, isFireObject As Boolean
+                Dim aFire1 As Fire, aFire2 As Fire
                 For i = 0 To Count - 1
                     aFire1 = CType(List(i), Fire)
                     HasErrors += aFire1.IsValid(i + 1)
                 Next
                 ' Cannot have duplicate fire object names
-                If Count > 1 And isFireObject Then
-                    For i = 0 To myFireObjects.Count - 2
-                        aFire1 = myFireObjects(i)
-                        For j = i + 1 To myFireObjects.Count - 1
-                            aFire2 = myFireObjects(j)
+                If Count > 1 Then
+                    For i = 0 To myFires.Count - 2
+                        aFire1 = myFires(i)
+                        For j = i + 1 To myFires.Count - 1
+                            aFire2 = myFires(j)
                             If aFire1.Name = aFire2.Name Then
-                                myErrors.Add(aFire1.Name + " is used more than once as a fire object name. Duplicate names are not allowed.", ErrorMessages.TypeFatal)
+                                myErrors.Add(aFire1.Name + " is used more than once as a fire name. Duplicate names are not allowed.", ErrorMessages.TypeFatal)
                                 HasErrors += 1
                             End If
                         Next

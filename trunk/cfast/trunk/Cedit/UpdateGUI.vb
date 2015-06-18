@@ -47,7 +47,7 @@ Public Class UpdateGUI
     End Sub
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
-        ErrorCount = myEnvironment.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
+        ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
             myTargets.IsValid + myFires.IsValid + myFireObjects.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break()

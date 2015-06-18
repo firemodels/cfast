@@ -30,7 +30,4 @@ HEIGH,0,0,0,0
 !!
 !!visualizations
 !!
-SLCF,2-D,X,1.5,1
-SLCF,3-D,1
-SLCF,2-D,Y,2.5
-SLCF,2-D,X,0
+

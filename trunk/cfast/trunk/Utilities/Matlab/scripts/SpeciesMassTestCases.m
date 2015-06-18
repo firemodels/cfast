@@ -60,7 +60,12 @@ findname = [data_dir 'species_mass_1'];
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-A = table(Time , mCO2 , mH2O);
+header = ['Time , mCO2 , mH2O'];
+data = [Time , mCO2, mH2O];
+outid = fopen([data_dir 'species_mass_1.csv'] , 'w+');
+fprintf(outid,'%s',header);
+fclose(outid);
+dlmwrite ([data_dir 'species_mass_1.csv'],data,'roffset',1,'-append');
 
 %% Case 2: Two compartments of sizes 2m*5m*8m are placed side by side, with a door of height 6m and width 1m connecting them. There is a fire in the middle of the first compartment that has the same energy production as the fire in the first case study. The fuel is still methane.
 findname = [data_dir 'species_mass_2'];
@@ -71,7 +76,12 @@ findname = [data_dir 'species_mass_2'];
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-B = table(Time , mCO2 , mH2O);
+header = ['Time , mCO2 , mH2O'];
+data = [Time , mCO2, mH2O];
+outid = fopen([data_dir 'species_mass_2.csv'] , 'w+');
+fprintf(outid,'%s',header);
+fclose(outid);
+dlmwrite ([data_dir 'species_mass_2.csv'],data,'roffset',1,'-append');
 
 %% Case 3: Two compartments of sizes 9m*5m*4m and 9m*5m*2m are placed directly on top of each other with a 4m^2 ceiling vent in between the two. The same fire that is described in cases 1&2 is placed in the middle of compartment 1. 
 findname = [data_dir 'species_mass_3'];
@@ -82,20 +92,32 @@ findname = [data_dir 'species_mass_3'];
 %Percent Error Calculations
 ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
 ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
-C = table(Time , mCO2 , mH2O);
+header = ['Time , mCO2 , mH2O'];
+data = [Time , mCO2, mH2O];
+outid = fopen([data_dir 'species_mass_3.csv'] , 'w+');
+fprintf(outid,'%s',header);
+fclose(outid);
+dlmwrite ([data_dir 'species_mass_3.csv'],data,'roffset',1,'-append');
 
-%% Creating a CSV file with the appropriate data
-D = table(t , MassCO2Prod , MassH2OProd);
-writetable(A,[data_dir 'species_mass_1.csv'],'Delimiter',',')
-writetable(B,[data_dir 'species_mass_2.csv'],'Delimiter',',')
-writetable(C,[data_dir 'species_mass_3.csv'],'Delimiter',',')
-writetable(D,[data_dir 'species_mass.csv'],'Delimiter',',')
+%%
+header = ['t , MassCO2Prod , MassH2OProd'];
+data = [t , MassCO2Prod , MassH2OProd];
+outid = fopen([data_dir 'species_mass.csv'] , 'w+');
+fprintf(outid,'%s',header);
+fclose(outid);
+dlmwrite ([data_dir 'species_mass.csv'],data,'roffset',1,'-append');
+
 
 %% Case 4:
 findname = [data_dir 'species_mass_4'];
 [Time,mCO2,mH2O,TotH2Omass,TotCO2mass,mCO2comp,mH2Ocomp] = csvreaderALL(findname);
 MCO2 = mCO2comp(:,1);%we are examining the flow in compartment 1 only
 MH2O = mH2Ocomp(:,1);%we are examining the flow in compartment 1 only
-E = table(Time,MCO2,MH2O);
-writetable(E,[data_dir 'species_mass_4.csv'],'Delimiter',',')
+header = ['Time , MCO2 , MH2O'];
+data = [Time , MCO2, MH2O];
+outid = fopen([data_dir 'species_mass_4.csv'] , 'w+');
+fprintf(outid,'%s',header);
+fclose(outid);
+dlmwrite ([data_dir 'species_mass_4.csv'],data,'roffset',1,'-append');
+
 

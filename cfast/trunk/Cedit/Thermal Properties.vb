@@ -1,16 +1,19 @@
 Public Class ThermalProperty
     Friend Const MaximumProperties As Integer = 125
     ' All units within the class are assumed to be consistent and typically SI
-    Private aShortName As String          ' One word name for material
-    Private aName As String               ' Material Name
-    Private aConductivity As Single       ' Thermal conductivity
-    Private aSpecificHeat As Single       ' Specific Heat
-    Private aDensity As Single            ' Density in kg/m^3
-    Private aThickness As Single          ' Material Thickness in m
-    Private aEmissivity As Single         ' Emissivity
+    Private HasErrors As Integer                ' Temp variable that holds error count during error check
+    Private aChanged As Boolean                 ' Indicates if record has been changed
+
+
+    Private aShortName As String                ' One word name for material
+    Private aName As String                     ' Material Name
+    Private aConductivity As Single             ' Thermal conductivity
+    Private aSpecificHeat As Single             ' Specific Heat
+    Private aDensity As Single                  ' Density in kg/m^3
+    Private aThickness As Single                ' Material Thickness in m
+    Private aEmissivity As Single               ' Emissivity
     Private Const HClDim As Integer = 6              '
-    Private aHClDeposition(HClDim) As Single   ' HCl Deposition Coefficients
-    Private aChanged As Boolean           ' Indicates if record has been changed
+    Private aHClDeposition(HClDim) As Single    ' HCl Deposition Coefficients
     Public Sub New()
         aShortName = ""
         aName = ""
@@ -162,17 +165,42 @@ Public Class ThermalProperty
         End If
         aChanged = True
     End Sub
-    Public ReadOnly Property IsValid() As String
-        ' Checks the overall validity of the current compartment specification
+    Public ReadOnly Property IsValid(ByVal ThermalPropertyNumber As Integer) As String
+        ' Checks the overall validity of the current thermal property specification
         Get
-            Return ""
+            myUnits.SI = True
+            HasErrors = 0
+            If aEmissivity < 0.0 Or aEmissivity > 1.0 Then
+                myErrors.Add("Thermal Property " + aName + ". Emissivity is less than 0 or greater than 1", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
+
+            If aConductivity < 0.0 Then
+                myErrors.Add("Thermal Property " + aName + ". Conductivity is less than 0", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
+            If aSpecificHeat < 0.0 Then
+                myErrors.Add("Thermal Property " + aName + ". Specific heat is less than 0", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
+            If aDensity < 0.0 Then
+                myErrors.Add("Thermal Property " + aName + ". Density is less than 0", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
+            If aThickness < 0.0 Then
+                myErrors.Add("Thermal Property " + aName + ". Thickness is less than 0", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
+            myUnits.SI = False
+            Return HasErrors
         End Get
     End Property
 End Class
 Public Class ThermalPropertiesCollection
     Inherits System.Collections.CollectionBase
     Public ReadOnly Maximum As Integer = ThermalProperty.MaximumProperties
-    Private i As Integer, FoundIndex As Integer
+    Private i As Integer, FoundIndex As Integer, j As Integer
+    Private HasErrors As Integer
     Private aFileName As String = "thermal"
     Private aFileChanged As Boolean = False
     Property FileName() As String
@@ -349,6 +377,33 @@ Public Class ThermalPropertiesCollection
                 Next
             End If
             Return numUses
+        End Get
+    End Property
+    Public ReadOnly Property IsValid() As Integer
+        Get
+            HasErrors = 0
+            ' Check individual fire objects or instances for errors
+            If Count > 0 Then
+                Dim aThermal1 As ThermalProperty, aThermal2 As ThermalProperty
+                For i = 0 To Count - 1
+                    aThermal1 = CType(List(i), ThermalProperty)
+                    HasErrors += aThermal1.IsValid(i + 1)
+                Next
+                ' Cannot have duplicate thermal property names
+                If Count > 1 Then
+                    For i = 0 To myThermalProperties.Count - 2
+                        aThermal1 = myThermalProperties(i)
+                        For j = i + 1 To myThermalProperties.Count - 1
+                            aThermal2 = myThermalProperties(j)
+                            If aThermal1.ShortName = aThermal2.ShortName Then
+                                myErrors.Add(aThermal1.ShortName + " is used more than once as a thermal property short name. Duplicate names are not allowed.", ErrorMessages.TypeFatal)
+                                HasErrors += 1
+                            End If
+                        Next
+                    Next
+                End If
+            End If
+            Return HasErrors
         End Get
     End Property
 End Class

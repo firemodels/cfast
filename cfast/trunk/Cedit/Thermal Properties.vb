@@ -338,10 +338,7 @@ Public Class ThermalPropertiesCollection
                 Dim aFire As New Fire, aFireObject As New Fire
                 For i = 0 To myFires.Count - 1
                     aFire = myFires.Item(i)
-                    If myFireObjects.GetFireIndex(aFire.Name) >= 0 Then
-                        aFireObject = myFireObjects.Item(myFireObjects.GetFireIndex(aFire.Name))
-                        If aFireObject.Material = aShortName Then numUses += 1
-                    End If
+                    If aFire.Material = aShortName Then numUses += 1
                 Next
             End If
             If myTargets.Count > 0 Then

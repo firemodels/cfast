@@ -1027,49 +1027,47 @@ Module IO
         csv.Num(i, chemieNum.igntemp) = myEnvironment.IgnitionTemp
         i += 1
 
-        Dim aFire As New Fire, aFireObject As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
+        Dim aFire As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
         For j = 0 To myFires.Count - 1
             aFire = myFires.Item(j)
-            If myFireObjects.GetFireIndex(aFire.Name) >= 0 Then
-                csv.str(i, CFASTlnNum.keyWord) = "!!" + aFire.Name
-                i += 1
-                ' FIRE keyword, geometry information
-                csv.str(i, CFASTlnNum.keyWord) = "FIRE"
-                csv.Num(i, fireNum.compartment) = aFire.Compartment + 1
-                csv.Num(i, fireNum.xPosition) = aFire.XPosition
-                csv.Num(i, fireNum.yPosition) = aFire.YPosition
-                csv.Num(i, fireNum.zposition) = aFire.ZPosition
-                csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
-                csv.Num(i, fireNum.ignType) = aFire.IgnitionType + 1
-                csv.Num(i, fireNum.ignCriterion) = aFire.IgnitionValue
-                csv.Num(i, fireNum.xNormal) = aFire.XNormal
-                csv.Num(i, fireNum.yNormal) = aFire.YNormal
-                csv.Num(i, fireNum.zNormal) = aFire.ZNormal
-                csv.str(i, fireNum.name) = aFire.Name
-                i += 1
-                ' CHEMI keyword, chemistry information
-                aFireObject = myFireObjects.Item(myFireObjects.GetFireIndex(aFire.Name))
-                csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
-                csv.Num(i, chemieNum.C) = aFireObject.ChemicalFormula(formula.C)
-                csv.Num(i, chemieNum.H) = aFireObject.ChemicalFormula(formula.H)
-                csv.Num(i, chemieNum.O) = aFireObject.ChemicalFormula(formula.O)
-                csv.Num(i, chemieNum.N) = aFireObject.ChemicalFormula(formula.N)
-                csv.Num(i, chemieNum.Cl) = aFireObject.ChemicalFormula(formula.Cl)
-                csv.Num(i, chemieNum.chiR) = aFireObject.RadiativeFraction
-                csv.Num(i, chemieNum.HoC) = aFireObject.HeatofCombustion
-                csv.str(i, chemieNum.Material) = aFireObject.Material
-                i += 1
-                ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
-                aFireObject.GetFireData(firedata, numFireDataPoints)
-                For k = 1 To NumFireCurves
-                    csv.str(i, CFASTlnNum.keyWord) = Trim(FireCurveTypes.Substring(5 * (k - 1), 5))
-                    For l = 0 To numFireDataPoints
-                        csv.Num(i, l + 2) = firedata(FireCurveColumns(k), l)
-                    Next
-                    i += 1
+
+            csv.str(i, CFASTlnNum.keyWord) = "!!" + aFire.Name
+            i += 1
+            ' FIRE keyword, geometry information
+            csv.str(i, CFASTlnNum.keyWord) = "FIRE"
+            csv.Num(i, fireNum.compartment) = aFire.Compartment + 1
+            csv.Num(i, fireNum.xPosition) = aFire.XPosition
+            csv.Num(i, fireNum.yPosition) = aFire.YPosition
+            csv.Num(i, fireNum.zposition) = aFire.ZPosition
+            csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
+            csv.Num(i, fireNum.ignType) = aFire.IgnitionType + 1
+            csv.Num(i, fireNum.ignCriterion) = aFire.IgnitionValue
+            csv.Num(i, fireNum.xNormal) = aFire.XNormal
+            csv.Num(i, fireNum.yNormal) = aFire.YNormal
+            csv.Num(i, fireNum.zNormal) = aFire.ZNormal
+            csv.str(i, fireNum.name) = aFire.Name
+            i += 1
+            ' CHEMI keyword, chemistry information
+            csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
+            csv.Num(i, chemieNum.C) = aFire.ChemicalFormula(formula.C)
+            csv.Num(i, chemieNum.H) = aFire.ChemicalFormula(formula.H)
+            csv.Num(i, chemieNum.O) = aFire.ChemicalFormula(formula.O)
+            csv.Num(i, chemieNum.N) = aFire.ChemicalFormula(formula.N)
+            csv.Num(i, chemieNum.Cl) = aFire.ChemicalFormula(formula.Cl)
+            csv.Num(i, chemieNum.chiR) = aFire.RadiativeFraction
+            csv.Num(i, chemieNum.HoC) = aFire.HeatofCombustion
+            csv.str(i, chemieNum.Material) = aFire.Material
+            i += 1
+            ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
+            aFire.GetFireData(firedata, numFireDataPoints)
+            For k = 1 To NumFireCurves
+                csv.str(i, CFASTlnNum.keyWord) = Trim(FireCurveTypes.Substring(5 * (k - 1), 5))
+                For l = 0 To numFireDataPoints
+                    csv.Num(i, l + 2) = firedata(FireCurveColumns(k), l)
                 Next
-                aFire.Changed = False
-            End If
+                i += 1
+            Next
+            aFire.Changed = False
         Next
 
         ' since we've written all the fires out, all the fire objects are saved too

@@ -4973,15 +4973,18 @@ Public Class CeditMain
         If sender Is Me.EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
         If sender Is Me.EnvAdiabatic Then
             myEnvironment.AdiabaticWalls = Me.EnvAdiabatic.Checked
-            Dim ir As Integer, aCompartment As New Compartment
+            Dim ir As Integer, aCompartment As New Compartment, SavedCompartment As Integer
+            SavedCompartment = CurrentCompartment
             For ir = 0 To myCompartments.Count - 1
                 If Me.EnvAdiabatic.Checked Then
+                    CurrentCompartment = ir
                     aCompartment = myCompartments.Item(ir)
                     aCompartment.SetMaterial("OFF", "OFF", "OFF")
                     myCompartments.Item(CurrentCompartment) = aCompartment
                 End If
             Next
             UpdateGUI.Geometry(CurrentCompartment)
+            CurrentCompartment = SavedCompartment
         End If
         UpdateGUI.Environment()
     End Sub

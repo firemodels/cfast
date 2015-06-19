@@ -688,18 +688,24 @@
 
             ! Ceiling
             tcname = lcarray(8)
-            if (tcname/='OFF') then
                 surface_on_switch(1,compartment) = .true.
-                cname(1,compartment) = tcname
+                if (tcname/='OFF') then
+                    cname(1,compartment) = tcname
+                else
+                    cname(1,compartment) = 'DEFAULT'
+                end if
                 ! keep track of the total number of thermal properties used
                 numthrm = numthrm + 1
-            endif
 
             ! floor
             tcname = lcarray(9)
             if (tcname/='OFF') then
                 surface_on_switch(2,compartment) = .true.
-                cname(2,compartment) = tcname
+                if (tcname/='OFF') then
+                    cname(2,compartment) = tcname
+                else
+                    cname(2,compartment) = 'DEFAULT'
+                end if
                 ! keep track of the total number of thermal properties used
                 numthrm = numthrm + 1
             endif
@@ -708,9 +714,17 @@
             tcname = lcarray(10)
             if (tcname/='OFF') then
                 surface_on_switch(3,compartment) = .true.
-                cname(3,compartment) = tcname
+                if (tcname/='OFF') then
+                    cname(3,compartment) = tcname
+                else
+                    cname(3,compartment) = 'DEFAULT'
+                end if
                 surface_on_switch(4,compartment) = .true.
-                cname(4,compartment) = tcname
+                if (tcname/='OFF') then
+                    cname(4,compartment) = tcname
+                else
+                    cname(4,compartment) = 'DEFAULT'
+                end if
                 ! keep track of the total number of thermal properties used
                 numthrm = numthrm + 1
             endif

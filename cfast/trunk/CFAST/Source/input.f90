@@ -37,10 +37,10 @@
     !     17 spreadsheet output (species)
     !     18 spreadsheet output (walls and targets)
     !
-    !     switch (1) = ceiling properties are defined
-    !            (2) = floor properties are defined
-    !            (3) = side wall properties are defined for upper walls
-    !            (4) = side wall properties are defined for lower walls
+    !     surface_on_switch (1) = ceiling properties are defined
+    !                       (2) = floor properties are defined
+    !                       (3) = side wall properties are defined for upper walls
+    !                       (4) = side wall properties are defined for lower walls
 
     ifail = 0
 
@@ -252,21 +252,21 @@
 202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',2i3, ' are not connectetd')
         endif
 
-        ! walls must be turned on, ie switch must be set
+        ! walls must be turned on, ie surface_on_switch must be set
         ! for the ceiling in the lower room and the floor of
         ! the upper room
         iwall1 = izswal(ii,w_from_wall)
         iwall2 = izswal(ii,w_to_wall)
-        if(.not.switch(iwall1,iroom1).or..not.switch(iwall2,iroom2))then
+        if(.not.surface_on_switch(iwall1,iroom1).or..not.surface_on_switch(iwall2,iroom2))then
             write (messg,203)
 203         format('***Error: Invalid CFCON specification:')
             call xerror(messg,0,1,1)
-            if(.not.switch(iwall1,iroom1))then
+            if(.not.surface_on_switch(iwall1,iroom1))then
                 write(messg,204) iwall1,iroom1
 204             format('***Error: Wall ',i2,' of room ',i2,' is not turned on')
                 call xerror(messg,0,1,1)
             endif
-            if(.not.switch(iwall2,iroom2))then
+            if(.not.surface_on_switch(iwall2,iroom2))then
                 write(messg,204)iwall2,iroom2
                 call xerror(messg,0,1,1)
             endif
@@ -419,7 +419,7 @@
                 if(nventij/=0)zzhtfrac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if(j<=nm1.and..not.switch(3,j)) zzhtfrac(i,j) = 0.0_eb
+                if(j<=nm1.and..not.surface_on_switch(3,j)) zzhtfrac(i,j) = 0.0_eb
             end do
         endif
 
@@ -519,7 +519,7 @@
     do i = 1, nr
         do j = 1, 4
             cname(j,i) = 'OFF'
-            switch(j,i) = .false.
+            surface_on_switch(j,i) = .false.
         end do
         compartment = 0
         ierror = 0
@@ -689,7 +689,7 @@
             ! Ceiling
             tcname = lcarray(8)
             if (tcname/='OFF') then
-                switch(1,compartment) = .true.
+                surface_on_switch(1,compartment) = .true.
                 cname(1,compartment) = tcname
                 ! keep track of the total number of thermal properties used
                 numthrm = numthrm + 1
@@ -698,7 +698,7 @@
             ! floor
             tcname = lcarray(9)
             if (tcname/='OFF') then
-                switch(2,compartment) = .true.
+                surface_on_switch(2,compartment) = .true.
                 cname(2,compartment) = tcname
                 ! keep track of the total number of thermal properties used
                 numthrm = numthrm + 1
@@ -707,9 +707,9 @@
             ! walls
             tcname = lcarray(10)
             if (tcname/='OFF') then
-                switch(3,compartment) = .true.
+                surface_on_switch(3,compartment) = .true.
                 cname(3,compartment) = tcname
-                switch(4,compartment) = .true.
+                surface_on_switch(4,compartment) = .true.
                 cname(4,compartment) = tcname
                 ! keep track of the total number of thermal properties used
                 numthrm = numthrm + 1

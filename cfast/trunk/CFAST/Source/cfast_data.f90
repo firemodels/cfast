@@ -115,7 +115,7 @@ module cfast_main
     real(eb) :: tgignt
     real(eb) :: tref
 
-    logical :: activs(ns), switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
+    logical :: activs(ns), surface_on_switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
     character(128) :: title, compartmentnames(nr)
    
@@ -141,7 +141,7 @@ module cfio
     use cfin    
     implicit none
     
-    ! input/output data for readas, readin, ...
+    ! input/output data for readin, ...
       integer :: start, first, last, count, type, ix
       logical :: valid
       character(lbufln) :: inbuf

@@ -165,7 +165,7 @@
         stop
     end select
     return
-    end
+    end function d1mach
 
 ! --------------------------- xerrormod -------------------------------------------
 
@@ -362,7 +362,7 @@
 
 ! --------------------------- getcl -------------------------------------------
 
-    subroutine getcl(cmdlin)
+    subroutine getcl (cmdlin)
 
     !     routine: getcl
     !     purpose: get command line as a single string
@@ -396,140 +396,7 @@
         end do
     endif
     return
-    end
-
-! --------------------------- convrt -------------------------------------------
-
-    subroutine convrt(coord,first,last,type,i0,x0)
-
-    !     routine: convrt
-    !     purpose: convert next entry in string coord to a number of correct type.
-    !     arguments: coord  string to be parsed
-    !                first  beginning position of substring to be parsed
-    !                last   end of substring
-    !                type   type of number (1=integer, 2=real)
-    !                i0     value if integer
-    !                x0     value if real
-
-    use precision_parameters
-    use cfin
-
-    integer, intent(in) :: first, last
-    integer, intent(out) :: type
-    character(*), intent(in) :: coord
-    
-    integer, intent(out) :: i0
-    
-    real(fb), intent(out) :: x0
-    
-    character(20) :: decod
-    integer lfirst,llast
-
-    ! get data type
-    call datype(coord,first,last,type)
-    decod = ' '
-    lfirst = min(first,lbufln)
-    llast = min(last,first+20,lbufln)
-    decod = coord(lfirst:llast)
-
-    ! decode by type
-    if (type==1) then
-        !x0 = rnum(decod)
-        read(decod,*) x0
-    else if (type==2) then
-        !i0 = inum(decod)
-        read(decod,*) i0
-    endif
-    return
-    end subroutine convrt
-
-! --------------------------- inum -------------------------------------------
-
-    integer function inum(strng)
-
-    !     routine: inum
-    !     purpose: convert string into an integer
-    !     arguments: strng - string containing number to be converted.
-
-    character, intent(in) :: strng*(*)
-    
-    integer ival,isgn,i,ic
-    
-    ival = 0
-    isgn = 1
-    do i = 1, len(strng)
-        if (strng(i:i)=='-') isgn = -1
-        ic = ichar(strng(i:i)) - ichar('0')
-        if (ic>=0.and.ic<=9) ival = ival*10 + ic
-    end do
-    inum = isgn*ival
-    return
-    end function inum
-
-! --------------------------- rnum -------------------------------------------
-
-    real function rnum(strng)
-
-    !     routine: rnum
-    !     purpose: convert string into an real number
-    !     arguments: strng - string containing number to be converted.
-
-    use precision_parameters
-    implicit none
-    
-    character, intent(in) :: strng*(*)
-    
-    character :: chr
-    integer isgn,idec,iesgn,iexp,ip,ic
-    real rval,eval
-    
-    rval = 0.0
-    isgn = 0
-    idec = 0
-    iesgn = 0
-    iexp = 0
-    ip = 1
-10  chr = strng(ip:ip)
-
-    ! first comes a sign or mantissa
-    ic = ichar(chr) - ichar('0')
-    if (isgn==0) then
-        isgn = 1
-        if (chr=='-') isgn = -1
-        if (chr=='.') idec = 1
-        if (ic>=0.and.ic<=9) then
-            rval = rval*10.0_eb + ic
-        endif
-
-        ! if we've found the mantissa, check for exponent
-    else if (chr=='E'.or.chr=='e'.or.chr=='D'.or.chr=='d'.or.chr=='+'.or.chr=='-') then
-        iesgn = 1
-        if (chr=='-') iesgn = -1
-        else
-
-        ! if no exponent, keep track of decimal point
-        if (iesgn==0) then
-        if (chr=='.') then
-        idec = 1
-    else if (ic>=0.and.ic<=9) then
-        rval = rval*10.0_eb + ic
-        if (idec/=0) idec = idec + 1
-    endif
-
-    ! if exponent just keep track of it
-    else
-        if (ic>=0.and.ic<=9) iexp = iexp*10 + ic
-    endif
-    endif
-    ip = ip + 1
-    if (ip<len(strng)) go to 10
-    if (idec/=0) idec = idec - 1
-    eval = 10.0_eb**(abs(iesgn*iexp-idec))
-    iesgn = isign(1,iesgn*iexp-idec)
-    if (iesgn==1) rnum = isgn*rval*eval
-    if (iesgn==-1) rnum = isgn*rval/eval
-    return
-    end function rnum
+    end subroutine getcl
 
 ! --------------------------- countargs -------------------------------------------
 
@@ -581,72 +448,6 @@
     call CPU_TIME(cputim)
     return
     end subroutine cptime
-
-! --------------------------- datype -------------------------------------------
-
-    subroutine datype (crd,n1,n2,dtype)
-
-    !     routine: datype
-    !     purpose: this routine determines the data type of a string. the character string is examined 
-    !              between given starting and ending positions to determine if the substring is an integer, 
-    !              a real number, or a non-numeric string.
-    !     arguments: crd    string containing number to be typed
-    !                n1     starting position
-    !                n2     ending position
-    !                dtype (output) - returned type (1=real, 2=integer, 3=non-numeric)
-
-    implicit none
-    
-    character, intent(in) :: crd*(*)
-    integer, intent(in) :: n1, n2
-    
-    integer, intent(out) :: dtype
-    
-    
-    integer :: i, j
-    logical :: period, efmt
-    character :: num(12)*1 = (/'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'/)
-    
-    period = .false.
-    efmt = .false.
-
-    ! determine data type.  assume a numeric entry until a non-numeric character is found.
-    do 20 i = n1, n2
-        if (crd(i:i)=='.') then
-            if (period) then
-
-                ! second period in string - non numeric
-                go to 30
-            else
-                period = .true.
-            endif
-            go to 20
-        endif
-
-        ! check for digits
-        do j = 1, 12
-            if (crd(i:i)==num(j)) go to 20
-        end do
-        if (index('EeDd',crd(i:i))==0.or.efmt) go to 30
-        efmt = .true.
-20  continue
-
-    ! determine type of numeric entry
-    if (period.or.efmt) then
-
-        ! real
-        dtype = 1
-    else
-
-        ! integer
-        dtype = 2
-    endif
-    return
-
-    ! non-numeric
-30  dtype = 3
-    return
-    end subroutine datype
 
 ! --------------------------- doesthefileexist -------------------------------------------
 
@@ -958,313 +759,6 @@
     return
     end function length
 
-! --------------------------- mess -------------------------------------------
-
-    subroutine mess (p,z)
-
-    !     routine: mess
-    !     purpose: write a literal string of characters.  this is a write to stdout with a return/linefeed at the end 
-    !     arguments: phrase - character string to be written
-    !                z - length of the string
-
-    use cshell
-    
-    implicit none
-
-    integer, intent(in) :: z
-    character(len=z), intent(in) :: p
-    
-    integer :: i
-
-    if (z>2048) stop 'error in message handler'
-    write (iofilo,'(1x,2048a1)') (p(i:i),i=1,z)
-    return
-
-    end subroutine mess
-
-! --------------------------- messnrf -------------------------------------------
-
-    subroutine messnrf (string, l)
-
-    !     routine: messnrf
-    !     purpose: write a literal string of characters.  this is a write to stdout with a return/linefeed at the end 
-    !     arguments: phrase - character string to be written
-    !                l - length of the string
-
-    use cshell
-    
-    implicit none
-
-    integer, intent(in) :: l
-    character, intent(in) :: string*(*)
-    
-    character :: formatt*100
-    
-    write (formatt,4000) l
-    write (iofilo,formatt) string(1:l)
-    return
-
-4000 format('(1x,a',i2.2,',$)')
-
-    end subroutine messnrf
-
-! --------------------------- readastu -------------------------------------------
-
-    subroutine readastu (in, count, start, max, valid)
-
-    !     routine: readastu
-    !     purpose: read in a string from the standard input device
-    !              this version of readas(tu) is similar to the one used by everone else (readas) except 
-    !              that this contains automatic conversion to upper case. this is to filter commands from the 
-    !              console so that they are not case sensitive.
-    !     arguments: 
-
-    use cshell
-    
-    implicit none
-
-    integer, intent(in) :: max
-    
-    integer, intent(out) :: count, start
-    logical, intent(out) :: valid
-    character, intent(out) :: in(max)
-    
-    integer :: i, ich, nc
-    character :: ch, inn*256, c
-
-10  inn = ' '
-    read(iofili,'(a256)',end=5) inn
-
-    ! filter comments
-    c = inn(1:1)
-    if (c=='!'.or.c=='#') go to 10
-
-    do i = 255,1,-1
-        count = i
-        if (inn(i:i)/=' ') go to 6
-    end do
-5   count = 0
-    valid = .false.
-    return
-
-    ! check for control characters
-6   nc = 0
-    count = min(max,count)
-    do 1 i = 1,count
-        ich = ichar(inn(i:i))
-        if (ich<32.or.ich>125) go to 3
-        nc = i
-1   continue
-3   count = nc
-
-    ! convert to upper case
-    do i = 1,count
-        ch = inn(i:i)
-        ich = ichar(ch)
-        if (ich>96.and.ich<123) ich = ich - 32
-        in(i) = char(ich)
-    end do
-    start=1
-    if (count>0) then
-        valid = .true.
-    else
-        valid = .false.
-    endif
-    return
-    end subroutine readastu
-
-! --------------------------- readin -------------------------------------------
-
-    subroutine readin (nreq, nret, fixed, flting)
-
-    !     routine: readin
-    !     purpose: read in a string and process it into the integer and floating variables "fixed" and "fltng"
-    !     arguments: nreq - number of values required
-    !                nret - actual number of values
-    !                fixed - integer numbers returned
-    !                flting - floting point numbers returned
-
-    use precision_parameters
-    use cfio
-    use cparams
-    use cshell
-    
-    implicit none
-
-    integer, intent(in) :: nreq
-    integer, intent(out) :: fixed(*)
-    
-    integer, intent(out) :: nret
-    real(eb), intent(out) :: flting(*)
-    
-    integer :: input = 0, lstart = 0, i, j, llast, i0, iu
-    real(fb) :: x0, xxbig
-    logical :: multi, eof
-    character :: label*5, lable*5, slash*1 = '/'
-    save input, lstart
-
-    nret = 0
-    multi = .false.
-    xxbig = 10000000.0_eb
-    do i = 1, nreq
-        call sstrng (inbuf, count, start, first, last, valid)
-        if (.not.valid) then
-            start = 257
-            return
-        endif
-1       do j = first, last
-            if (inbuf(j:j)==slash) then
-                llast = j - 1
-                multi = .true.
-                go to 3
-            endif
-        end do
-        llast = last
-3       call convrt (inbuf, first, llast, type, i0, x0)
-        if (type==1) then
-            flting(nret+1) = x0
-            fixed(nret+1) = ifix (min (x0, xxbig))
-        else if (type==2) then
-            fixed(nret+1) = i0
-            flting(nret+1) = float(i0)
-        else
-            if (logerr>0) then
-                write(logerr,12) first,llast,(inbuf(j:j),j=1,50)
-12              format(' warning!! non-numeric data in ',2i3,50a1)
-            endif
-            nret = nret - 1
-        endif
-        if (multi) then
-
-            ! loop for a continuation
-            first = llast + 2
-            multi = .false.
-            nret = nret + 1
-            go to 1
-        endif
-        count = count - (last-start+1)
-        start = last + 1
-        nret = nret + 1
-    end do
-
-    return
-
-    ! read in a buffer
-    !entry readbf(iu,lable, eof)
-
-    ! check to see if the buffer is current and full
-
-    if (iu==input.and.start==lstart) then
-        lable = label
-        return
-    endif
-    input = iu
-    call readas (iu, inbuf, count, start, valid)
-    if (.not.valid) go to 11
-    call sstrng (inbuf, count, start, first, last, valid)
-    if (.not.valid) go to 11
-    llast = min(last, first+5)
-    label = ' '
-    label = inbuf(first:llast)
-    lable = label
-    count = count - (last-start+1)
-    start = last + 1
-    lstart = start
-    eof = .false.
-    write(logerr,14) label
-14  format ('label = ',a5)
-    return
-
-11  label = '     '
-    lable = label
-    start = 1
-    count = 0
-    eof = .true.
-    return
-
-    ! entry to force a context switch
-    !entry readrs
-
-    ! set start to its initial value
-    start = 257
-    return
-    end subroutine readin
-
-    ! read in a file name
-    subroutine readfl (file)    
-    
-    use precision_parameters
-    use cfio
-    use cparams
-    use cshell
-    
-    implicit none
-    
-    integer :: llast, lenofch
-
-    character :: file*(*)
-
-    call sstrng (inbuf, count, start, first, last, valid)
-    if (.not.valid) then
-        start = 257
-        file = ' '
-        return
-    endif
-    lenofch = len (file)
-    llast = min(last, first+lenofch)
-    file = inbuf(first:llast)
-    count = count - (last-start+1)
-    start = last + 1
-    return
-    end  subroutine readfl
-
-! --------------------------- readas -------------------------------------------
-
-    subroutine readas (infile, inbuf, count, start, valid)
-
-    !     routine: readas
-    !     purpose:  read in a string from the input file, filtering out comments
-
-    use cshell
-    
-    implicit none
-
-    integer, intent(in) :: infile
-    character, intent(out) :: inbuf*(*)
-    logical, intent(out) :: valid
-    
-    integer, intent(out) :: count, start
-    
-    integer :: irec = 0, ls
-    character :: cmt1*1 = '!', cmt2*1 = '#', frmt*30
-    save irec
-
-    ! if we have reached an end of file, return nothing
-10  inbuf = ' '
-    if (irec==0) then
-        read(infile,'(a)',end=2,err=2) inbuf
-    else
-        read(infile,'(a)',rec=irec,err=2) inbuf
-        irec = irec + 1
-    endif
-    ls = len_trim (inbuf)
-    write (frmt, 9) ls
-    write (logerr,frmt) inbuf
-9   format('(''buffer input = '',a',i3,')')
-
-    ! filter comments
-    if (inbuf(1:1)==cmt1.or.inbuf(1:1)==cmt2) go to 10
-    count = len(inbuf)
-    start = 1
-    valid = .true.
-    return
-2   valid = .false.
-    count = 0
-    start = 1
-    write(logerr,*) 'end of file for unit ',infile
-    return
-   end subroutine readas
-
 ! --------------------------- cmdflag -------------------------------------------
 
    integer function cmdflag(ic,iopt)
@@ -1471,7 +965,7 @@
             if (ipoint(i,2)==0) ipoint(i,2) = 1
         end do
         return
-    end
+    end subroutine sortbrm
 
 ! --------------------------- sort_fire -------------------------------------------
 
@@ -1599,99 +1093,6 @@
 40  svalid = .false.
 100 return
     end subroutine sstrng
-
-! --------------------------- sstrngp -------------------------------------------
-
-    subroutine sstrngp (string,wcount,sstart,sfirst,slast,svalid)
-
-    !     routine: sstrngp
-    !     purpose: this routine finds positions of substrings within a character string.  similar to sstrng, 
-    !              except entries can be grouped with parenthesis
-    !     arguments: string - the character string
-    !                wcount - number of characters in the string
-    !                sstart - beginning position in string to look for a substring
-    !                sfirst (output) - beginning position of the substring
-    !                slast - ending position of the substring
-    !                svalid - true if a valid substring is found
-
-    integer, intent(in) :: sstart, wcount
-    character, intent(in) :: string(128)
-    logical, intent(out) :: svalid
-    
-    integer, intent(out) :: sfirst, slast
-    
-    integer :: endstr, i, j
-    character :: space = ' ', comma = ',', rparen = ')', lparen = '('
-    
-    svalid = .true.
-    endstr = sstart + wcount - 1
-
-    ! find position of first element of substring
-    do i = sstart, endstr
-
-        ! move to the beginning of the substring
-        sfirst = i
-        if ((string(i)/=space).and.(string(i)/=comma).and.(string(i)/=rparen).and.(string(i)/=lparen)) go to 60
-    end do
-
-    ! no substring found - only delimiter
-    go to 40
-
-    ! find position of last character of substring
-60  do j = sfirst, endstr
-
-        ! position of last element of substring
-        slast = j-1
-        if ((string(j)==space).or.(string(j)==comma).or.(string(j)==rparen).or.(string(j)==lparen)) go to 100
-    end do
-
-    ! no substring delimiter => last character of substring is the last character of the string
-    slast = endstr
-    return
-
-    ! no substring found
-40  svalid = .false.
-    return
-100 if (slast<sfirst) svalid = .false.
-    end subroutine sstrngp
-
-! --------------------------- toupper -------------------------------------------
-
-    character function toupper(ch)
-
-    !     routine: toupper / tolower
-    !     purpose: convert a single ascii character to upper case
-    !     arguments: ch - character to be converted
-
-    implicit none
-    
-    character, intent(in) :: ch
-    integer :: ich
-
-    ich = ichar(ch)
-    if (ich>96.and.ich<123) ich = ich - 32
-    toupper = char(ich)
-    return
-    end function toupper
-    
-! --------------------------- tolower -------------------------------------------
-
-    character function tolower(ch)
-
-    !     routine: tolower
-    !     purpose: convert a single ascii character to lower case
-    !     arguments: ch - character to be converted
-
-    implicit none
-    
-    character, intent(in) :: ch
-    integer :: ich
-    
-    ich = ichar(ch)
-    if (ich>64.and.ich<91) ich = ich + 32
-    tolower = char(ich)
-    return
-    end function tolower
 
 ! --------------------------- upperall -------------------------------------------
 
@@ -1851,7 +1252,7 @@ module utilities
    
 ! ------------------ fmix ------------------------
 
-real(fb) function fmix(f,a,b)
+real(fb) function fmix (f,a,b)
   
   real(fb), intent(in) :: f, a, b
 
@@ -1861,7 +1262,7 @@ end function fmix
 
 ! ------------------ emix ------------------------
 
-real(eb) function emix(f,a,b)
+real(eb) function emix (f,a,b)
 
   real(eb), intent(in) :: f, a, b
 
@@ -1871,7 +1272,7 @@ end function emix
 
 ! ------------------ get_igrid ------------------------
 
-integer function get_igrid(x,xgrid,n)
+integer function get_igrid (x,xgrid,n)
    
    integer, intent(in) :: n
    real(eb), intent(in), dimension(0:n) :: xgrid
@@ -1890,19 +1291,3 @@ integer function get_igrid(x,xgrid,n)
 end function get_igrid   
 
 end module utilities
-
-! --------------------------- rev_auxilliary -------------------------------------------
-
-    integer function rev_auxilliary ()
-
-    integer :: module_rev
-    character(255) :: module_date 
-    character(255), parameter :: mainrev='$revision: 526 $'
-    character(255), parameter :: maindate='$date: 2012-08-30 12:49:31 -0400 (thu, 30 aug 2012) $'
-
-    write(module_date,'(a)') mainrev(index(mainrev,':')+1:len_trim(mainrev)-2)
-    read (module_date,'(i5)') module_rev
-    rev_auxilliary = module_rev
-    write(module_date,'(a)') maindate
-    return
-    end function rev_auxilliary

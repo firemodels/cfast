@@ -881,8 +881,8 @@
                         option(fdebug) = on
                     endif
                 else if (ch==61) then
-                    switch(1,nr) = .not. switch(1,nr)
-                    write (*,*) 'toggle flow field printing to ',switch(1,nr)
+                    surface_on_switch(1,nr) = .not. surface_on_switch(1,nr)
+                    write (*,*) 'toggle flow field printing to ',surface_on_switch(1,nr)
                 else if (ch==62) then
                     call output_debug(1,t,dt,ieqmax)
                 else if (ch==63) then
@@ -1218,7 +1218,7 @@
     ! sum flux for inside rooms
     do iroom = 1, nirm
         do iwall = 1, nwal
-            if (switch(iwall,iroom)) then
+            if (surface_on_switch(iwall,iroom)) then
                 flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall)
             endif
         end do
@@ -1620,7 +1620,7 @@
             icnt = 0
             iznwall(iroom) = 0
             do iwall = 1, 4
-                if (switch(iwall,iroom)) then
+                if (surface_on_switch(iwall,iroom)) then
                     ieq = ieq + 1
                     izwmap2(iwall,iroom) = ieq
                     icnt = icnt + 1

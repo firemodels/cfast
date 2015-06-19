@@ -568,7 +568,7 @@
     ii =nofwt 
     do i = 1, nm1
         do iwall = 1, nwal
-            if (switch(iwall,i)) then
+            if (surface_on_switch(iwall,i)) then
                 ii = ii + 1
                 p(ii) = interior_temperature
             endif
@@ -691,7 +691,7 @@
     do i = 1, nr
         do j = 1, nwal
             cname(j,i) = 'OFF'
-            switch(j,i) = .false.
+            surface_on_switch(j,i) = .false.
         end do
     end do
     adiabatic_wall = .false.
@@ -700,7 +700,7 @@
         izhall(i,ishall) = 0
     end do
     do i = 1, nr
-        switch(1,i) = .true.
+        surface_on_switch(1,i) = .true.
         cname(1,i) = 'DEFAULT'
     end do
     nconfg = 0
@@ -1054,10 +1054,10 @@
     ! set debug print
     if (option(fdebug)==2) then
         option(fdebug) = off
-        switch(1,nr) = .true.
+        surface_on_switch(1,nr) = .true.
     else if (option(fdebug)>=3) then
         option(fdebug) = on
-        switch(1,nr) = .true.
+        surface_on_switch(1,nr) = .true.
     endif
 
     ! read in wall info
@@ -1270,7 +1270,7 @@
             yloc = yy
             zloc = zz
             iwall2 = map6(iwall)
-            if(switch(iwall2,iroom))then
+            if(surface_on_switch(iwall2,iroom))then
                 cxtarg(itarg) = cname(iwall2,iroom)
             else
                 cxtarg(itarg) = ' '
@@ -1303,7 +1303,7 @@
         xxtarg(trgnormz,ntarg) = 1.0_eb
         xxtarg(trginterior,ntarg) = 0.5
 
-        if(switch(2,iroom))then
+        if(surface_on_switch(2,iroom))then
             cxtarg(ntarg) = cname(2,iroom)
         else
             cxtarg(ntarg) = ' '
@@ -1330,10 +1330,10 @@
     !        epw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
     !        cname contains the name of the thermal data subset in the tpp datafile 
-    !        switch is a logical for thermal calculation on/off
+    !        surface_on_switch is a logical for thermal calculation on/off
     !        thset is a switch for a properly transferred data set
     !        maxct is a count of the number of tpp data sets in the database
-    !        switch is set if calculation is called for
+    !        surface_on_switch is set if calculation is called for
     !        thset is set if a name in the list of requested data sets matches one of the names in the 
     !              list of data set names (nlist). the data from the data base is stored in the local variables 
     !              lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
@@ -1362,9 +1362,9 @@
     do i = 1, nwal
         do j = 1, nm1
             thset(i,j) = .false.
-            if (switch(i,j)) then
+            if (surface_on_switch(i,j)) then
                 if (cname(i,j)==off.or.cname(i,j)==none) then
-                    switch(i,j) = .false.
+                    surface_on_switch(i,j) = .false.
                 else
                     call gettpp(cname(i,j),tp,ierror)
                     if (ierror/=0) return
@@ -1393,7 +1393,7 @@
     ! initialize temperature profile data structures
     do i = 1, nm1
         do j = 1, nwal
-            if (switch(j,i)) then
+            if (surface_on_switch(j,i)) then
                 call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
                    wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
             endif
@@ -1568,7 +1568,7 @@
     nwalls = 0
     do i = 1, nm1
         do j = 1, nwal
-            if (switch(j,i)) then
+            if (surface_on_switch(j,i)) then
                 nwalls = nwalls + 1
             endif
             if (nwpts/=0) numnode(1,j,i) = nwpts

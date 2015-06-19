@@ -289,7 +289,7 @@
         do i = 1, nwal
             swl(i) = .false.
             do j = 1, nm1
-                swl(i) = swl(i) .or. switch(i,j)
+                swl(i) = swl(i) .or. surface_on_switch(i,j)
             end do
         end do
 
@@ -1004,7 +1004,7 @@
     ! check to see if any heat transfer is on
     do i = 1, nm1
         do j = 1, nwal
-            if (switch(j,i).and.cname(j,i)/=' ') go to 30
+            if (surface_on_switch(j,i).and.cname(j,i)/=' ') go to 30
         end do
     end do
     write (iofilo,5000)
@@ -1634,16 +1634,16 @@
                 endif
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
-            if (switch(1,i)) then
+            if (surface_on_switch(1,i)) then
                 write (*,5040) zzwtemp(i,1,1)
             endif
-            if (switch(3,i)) then
+            if (surface_on_switch(3,i)) then
                 write (*,5060) zzwtemp(i,3,1)
             endif
-            if (switch(4,i)) then
+            if (surface_on_switch(4,i)) then
                 write (iofilo,5070) zzwtemp(i,4,1)
             endif
-            if (switch(2,i)) then
+            if (surface_on_switch(2,i)) then
                 write (iofilo,5050) zzwtemp(i,2,1)
             endif
         end do

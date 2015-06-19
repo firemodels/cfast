@@ -69,16 +69,14 @@ module conduction_routines
         endif
     endif
 
-    if(adiabatic_wall)then
-        do iw = ibeg, iend
-            vtgrad(iw) = 0.0_eb
-        end do
-    else
-        do iw = ibeg, iend
-            iroom = izwall(iw,w_from_room)
-            iwall = izwall(iw,w_from_wall)
-            icond = nofwt + iw
+    do iw = ibeg, iend
+        iroom = izwall(iw,w_from_room)
+        iwall = izwall(iw,w_from_wall)
+        icond = nofwt + iw
 
+        if (adiabatic_wall.or..not.surface_on_switch(iwall,iroom)) then
+            vtgrad(iw) = 0.0_eb
+        else
             roomptr => roominfo(iroom)
 
             ! use exterior wall temperature from last time step to ...
@@ -146,9 +144,8 @@ module conduction_routines
             ! compute partial of wall temperature equation with respect to the wall temperature.  we assume that the
             ! partials of convective heat flux and radiative heat flux with respect to wall temperature have already
             ! been computed.  (if they were not then we wouldn't know heat flux striking the wall!
-
-        end do
-    endif
+        end if
+    end do
 
     ! save wall gradients during base call to calculate_residuals
     if(option(fmodjac)==on)then

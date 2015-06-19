@@ -4955,7 +4955,9 @@ Public Class CeditMain
 
 #Region " Simulation Tab "
     ' This section of code handles events related to the environment tab
-    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave
+    Private Sub Env_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, _
+        EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, _
+        EnvAdiabatic.CheckedChanged
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
         If sender Is Me.EnvSimTime Then myEnvironment.SimulationTime = Val(Me.EnvSimTime.Text)
         If sender Is Me.EnvTextOutInterval Then myEnvironment.OutputInterval = Val(Me.EnvTextOutInterval.Text)
@@ -4969,7 +4971,18 @@ Public Class CeditMain
         If sender Is Me.EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(Me.EnvExtAmbElevation.Text)
         If sender Is Me.EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(Me.EnvExtAmbPress.Text)
         If sender Is Me.EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
-        If sender Is Me.EnvAdiabatic Then myEnvironment.AdiabaticWalls = Me.EnvAdiabatic.Checked
+        If sender Is Me.EnvAdiabatic Then
+            myEnvironment.AdiabaticWalls = Me.EnvAdiabatic.Checked
+            Dim ir As Integer, aCompartment As New Compartment
+            For ir = 0 To myCompartments.Count - 1
+                If Me.EnvAdiabatic.Checked Then
+                    aCompartment = myCompartments.Item(ir)
+                    aCompartment.SetMaterial("OFF", "OFF", "OFF")
+                    myCompartments.Item(CurrentCompartment) = aCompartment
+                End If
+            Next
+            UpdateGUI.Geometry(CurrentCompartment)
+        End If
         UpdateGUI.Environment()
     End Sub
 #End Region

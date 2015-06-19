@@ -111,10 +111,16 @@ dlmwrite ([data_dir 'species_mass.csv'],data,'roffset',1,'-append');
 %% Case 4:
 findname = [data_dir 'species_mass_4'];
 [Time,mCO2,mH2O,TotH2Omass,TotCO2mass,mCO2comp,mH2Ocomp] = csvreaderALL(findname);
-MCO2 = mCO2comp(:,1);%we are examining the flow in compartment 1 only
-MH2O = mH2Ocomp(:,1);%we are examining the flow in compartment 1 only
-header = ['Time , MCO2 , MH2O'];
-data = [Time , MCO2, MH2O];
+MCO21 = mCO2comp(:,1);%we are examining the flow in compartment 1 only
+MH2O1 = mH2Ocomp(:,1);%we are examining the flow in compartment 1 only
+MCO22 = mCO2comp(:,2);%we are examining the flow in compartment 2 only
+MH2O2 = mH2Ocomp(:,2);%we are examining the flow in compartment 2 only
+MCO23 = mCO2comp(:,3);%we are examining the flow in compartment 3 only
+MH2O3 = mH2Ocomp(:,3);%we are examining the flow in compartment 3 only
+MCO24 = mCO2comp(:,4);%we are examining the flow in compartment 4 only
+MH2O4 = mH2Ocomp(:,4);%we are examining the flow in compartment 4 only
+header = ['Time , MCO21 , MH2O1 , MCO22 , MH2O2 , MCO23 , MH2O3 , MCO24 , MH2O4'];
+data = [Time , MCO21, MH2O1 , MCO22 , MH2O2 , MCO23 , MH2O3 , MCO24 , MH2O4 ];
 outid = fopen([data_dir 'species_mass_4.csv'] , 'w+');
 fprintf(outid,'%s',header);
 fclose(outid);

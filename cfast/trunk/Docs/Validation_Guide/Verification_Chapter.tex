@@ -67,7 +67,7 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \section{Mass Balance}
 
 \label{mass_conservation}
-\subsection{Case 1: Fire in a Single, Sealed Compartment}
+\subsection{A Fire in a Single, Sealed Compartment}
 \label{sec:spec1}
 A natural gas fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
 \begin{equation}
@@ -107,7 +107,7 @@ Figure~\ref{specmass1} shows the resulting product masses.
 \end{figure}
 
 
-\subsection{Case 2: Fire in a Compartment Connected to Another via a Door}
+\subsection{A Fire in a Compartment Connected to Another via a Door}
 \label{sec:spec2}
 
 The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
@@ -118,7 +118,7 @@ The same natural gas fire described in Section~\ref{sec:spec1} burns in a compar
 \label{specmass2}
 \end{figure}
 
-\subsection{Case 3: Fire in a Compartment Connected to Another via a Ceiling Vent}
+\subsection{A Fire in a Compartment Connected to Another via a Ceiling Vent}
 
 The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
 Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
@@ -127,6 +127,40 @@ Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_3}
 \caption[Results of the test case {\ct species\_mass\_3.in}]{Expected and predicted masses of CO$_2$ and H$_2$O for the case {\ct species\_mass\_3.in}.}
 \label{specmass3}
+\end{figure}
+
+\subsection{A Fire in a Four Compartment Assembly}
+\label{sec:specmass4}
+
+Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time. Figure~\ref{fig:specmass4TP} shows comparisons of the expected temperature and pressure values of compartment one with the values produced by CFAST.
+
+
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_4a} &
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_4b} 
+\end{tabular*}
+\caption[Results of the test case {\ct species\_mass\_4.in}]{Expected and CFAST calculated values for the masses of CO$_2$ and H$_2$O in compartments one and two for case {\ct species\_mass\_4.in}.}
+\label{fig:specmass4ab}
+\end{figure}
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_4c} &
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_4d} 
+\end{tabular*}
+\caption[Results of the test case {\ct species\_mass\_4.in}]{Expected and CFAST calculated values for the masses of CO$_2$ and H$_2$O in compartments three and four for case {\ct species\_mass\_4.in}.}
+\label{fig:specmass4cd}
+\end{figure}
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_4_temperature} &
+\includegraphics[width=3.0in]{FIGURES/Verification/species_mass_4_pressure}
+\end{tabular*}
+\caption[Results of the test case {\ct species\_mass\_4.in}]{Expected and CFAST calculated values for pressure and temperature of the first compartment for the case {\ct species\_mass\_4.in}.}
+\label{fig:specmass4TP}
 \end{figure}
 
 \clearpage
@@ -170,22 +204,22 @@ Consider now the same case as in Section~\ref{sealed_test}, but now with two zon
 \section{Ventilation}
 
 
-\subsection{Case 2: Temperature and Pressure Changes of Steady-State Air Flow}
+\subsection{Temperature and Pressure Changes of Steady-State Air Flow}
 \label{sec:vent2}
 
-Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows how temperature and pressure change as the air flows through the fourth compartment.
+A similar setup to the one used in Section~\ref{sec:specmass4} is employed here. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows how temperature and pressure change as the air flows through the fourth compartment.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/ventilation_2_temperature} &
 \includegraphics[width=3.0in]{FIGURES/Verification/ventilation_2_pressure}
 \end{tabular*}
-\caption[Results of the test case {\ct ventilation\_2.in}]{Expected and CFAST calculated values for pressure and temperature of the fourth compartment in the chamber {\ct ventilation\_2.in}.}
+\caption[Results of the test case {\ct ventilation\_2.in}]{Expected and CFAST calculated values for pressure and temperature of the fourth compartment for the case {\ct ventilation\_2.in}.}
 \label{ventilation_2TP}
 \end{figure}
 
 
-\subsection{Case 3: Temperature and Pressure Changes of Non Steady-State Air Flow}
+\subsection{Temperature and Pressure Changes of Non Steady-State Air Flow}
 
 The same setup that was constructed in Section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~m$^2$. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~m$^3$/s, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment.
 
@@ -194,6 +228,8 @@ The same setup that was constructed in Section~\ref{sec:vent2} is used again in 
 \includegraphics[width=3.0in]{FIGURES/Verification/ventilation_3_temperature} &
 \includegraphics[width=3.0in]{FIGURES/Verification/ventilation_3_pressure}
 \end{tabular*}
-\caption[Results of the test case {\ct ventilation\_3.in}]{Expected and CFAST calculated values for pressure and temperature of the first compartment in the chamber {\ct ventilation\_3.in}.}
+\caption[Results of the test case {\ct ventilation\_3.in}]{Expected and CFAST calculated values for pressure and temperature of the first compartment for the case {\ct ventilation\_3.in}.}
 \label{ventilation_3TP}
 \end{figure}
+
+

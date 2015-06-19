@@ -1002,18 +1002,20 @@
     integer i, j
 
     ! check to see if any heat transfer is on
-    do i = 1, nm1
-        do j = 1, nwal
-            if (surface_on_switch(j,i).and.cname(j,i)/=' ') go to 30
+    if (.not.adiabatic_wall) then
+        do i = 1, nm1
+            do j = 1, nwal
+                if (surface_on_switch(j,i).and.cname(j,i)/=' ') go to 30
+            end do
         end do
-    end do
+    end if
     write (iofilo,5000)
     return
 
     ! some surfaces are on, do the printout of the surfaces
 30  write (iofilo,5010)
     do  i = 1, nm1
-        write (iofilo,5020) compartmentnames(i), cname(1,i), cname(3,i),cname(2,i)
+        write (iofilo,5020) compartmentnames(i), cname(1,i), cname(3,i), cname(2,i)
     end do
 
     !     print out the properties of the materials used

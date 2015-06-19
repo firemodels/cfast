@@ -67,7 +67,7 @@
                 if(ieqtyp==eqwt)iroom = izwall(iroom,w_from_room)
                 do iwall = 1, 4
                     roomflg(iroom) = .true.
-                    if(switch(iwall,iroom))then
+                    if(surface_on_switch(iwall,iroom))then
                         iw = izwmap2(iwall,iroom) - nofwt
                         wallflg(iw) = .true.
                     endif

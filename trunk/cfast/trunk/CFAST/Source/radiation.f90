@@ -92,7 +92,7 @@
                     ilay = lower
                 endif
                 imap = map(iwall)
-                if(switch(iwall,i))then
+                if(surface_on_switch(iwall,i))then
                     twall(imap) = zzwtemp(i,iwall,1)
                     emis(imap) = epw(iwall,i)
                 else

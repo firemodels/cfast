@@ -92,13 +92,8 @@
                     ilay = lower
                 endif
                 imap = map(iwall)
-                if(surface_on_switch(iwall,i))then
-                    twall(imap) = zzwtemp(i,iwall,1)
-                    emis(imap) = epw(iwall,i)
-                else
-                    twall(imap) = zztemp(i,ilay)
-                    emis(imap) = 1.0_eb
-                endif
+                twall(imap) = zzwtemp(i,iwall,1)
+                emis(imap) = epw(iwall,i)
             end do
             ifire = ifrpnt(i,2)
             nrmfire = ifrpnt(i,1)

@@ -132,6 +132,7 @@ Public Class UpdateGUI
             InitThermalPropertyList(MainWin.CompWalls)
             InitThermalPropertyList(MainWin.CompFloor)
             InitThermalPropertyList(MainWin.TargetMaterial)
+            InitThermalPropertyList(MainWin.FireMaterial)
             MainWin.CompCeiling.Text = SaveCompCeiling
             MainWin.TargetMaterial.Text = SaveTargetMaterial
             myCompartments.DoChange = True
@@ -604,7 +605,7 @@ Public Class UpdateGUI
             aDetector = myDetectors(index)
             MainWin.DetectorType.SelectedIndex = aDetector.DetectorType
             If aDetector.Compartment <= myCompartments.Count - 1 Then
-                MainWin.DetectorComp.SelectedIndex = aDetector.Compartment + 1
+                MainWin.DetectorComp.SelectedIndex = aDetector.Compartment
             End If
             MainWin.DetectorActivation.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
             MainWin.DetectorXPosition.Text = aDetector.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
@@ -751,7 +752,7 @@ Public Class UpdateGUI
             Dim aFire As New Fire
             aFire = myFires(index)
             If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
-                MainWin.FireComp.SelectedIndex = aFire.Compartment + 1
+                MainWin.FireComp.SelectedIndex = aFire.Compartment
                 Dim aCompartment As New Compartment
                 aCompartment = myCompartments(aFire.Compartment)
                 xFire = aFire.XPosition
@@ -898,7 +899,7 @@ Public Class UpdateGUI
         obj.Items.Clear()
         If obj Is MainWin.VisualizationComp Then
             obj.Items.Add("All")
-        Else
+        ElseIf obj Is MainWin.HVentComp1 Or obj Is MainWin.HVentComp2 Or obj Is MainWin.VVentCompTop Or obj Is MainWin.VVentCompBottom Or obj Is MainWin.MVentFromComp Or obj Is MainWin.MventToComp Then
             obj.Items.Add("Outside")
         End If
         If myCompartments.Count > 0 Then

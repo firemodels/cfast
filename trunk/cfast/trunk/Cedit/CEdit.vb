@@ -8,7 +8,7 @@ Public Class CeditMain
     'Private RunSimulation As New RunModel
     Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
-    CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentFireObject As Integer = 0, CurrentVisual As Integer = 0
+    CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 #Region " Windows Form Designer generated code "
 
@@ -5523,7 +5523,6 @@ Public Class CeditMain
             myFires.Add(New Fire)
             myFires.Copy(CurrentFire, myFires.Count - 1)
             CurrentFire = myFires.Count - 1
-            CurrentFireObject = myFires(CurrentFire).FireObject
             UpdateGUI.Fires(CurrentFire)
         ElseIf CurrentFire + 1 > myFires.Maximum Then
             MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -5535,7 +5534,6 @@ Public Class CeditMain
             myFires.Remove(CurrentFire)
             If CurrentFire > 0 Then
                 CurrentFire -= 1
-                CurrentFireObject = myFires(CurrentFire).FireObject
             End If
             myEnvironment.Changed = True
             UpdateGUI.Fires(CurrentFire)
@@ -5547,7 +5545,6 @@ Public Class CeditMain
         index = Me.FireSummary.RowSel - 1
         If index >= 0 And index <= myFires.Count - 1 Then
             CurrentFire = index
-            CurrentFireObject = myFires(CurrentFire).FireObject
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
@@ -5569,7 +5566,7 @@ Public Class CeditMain
         If CurrentFire >= 0 And myFires.Count > 0 Then
             aFire = myFires(CurrentFire)
             If sender Is Me.FireComp Then
-                aFire.Compartment = Me.FireComp.SelectedIndex - 1
+                aFire.Compartment = Me.FireComp.SelectedIndex
                 If Val(Me.FireXPosition.Text) = -1 Then aFire.XPosition = Val(Me.FireXPosition.Text)
                 If Val(Me.FireYPosition.Text) = -1 Then aFire.YPosition = Val(Me.FireYPosition.Text)
                 If Val(Me.FireZPosition.Text) = -1 Then aFire.ZPosition = Val(Me.FireZPosition.Text)
@@ -5645,12 +5642,14 @@ Public Class CeditMain
         Dim aFire As New Fire
         Dim numPoints As Integer
         If CurrentFire >= 0 And myFires.Count > 0 Then
+            aFire = myFires(CurrentFire)
             numPoints = CountGridPoints(Me.FireDataSS)
             ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
             If Me.FireDataSS.ColSel = Fire.FireHRR Then
                 Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireMdot) = Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
             End If
             CopyFireData(aFire)
+            myFires(CurrentFire) = aFire
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
@@ -5686,7 +5685,7 @@ Public Class CeditMain
                         Dim aFire As New Fire
                         aFire = myFires(CurrentFire)
                         CopyFireData(aFire)
-                        myFires(CurrentFireObject) = aFire
+                        myFires(CurrentFire) = aFire
                         UpdateGUI.Fires(CurrentFire)
                     End If
                 End If
@@ -5726,7 +5725,7 @@ Public Class CeditMain
             Return LastRow
         End Get
     End Property
-    Private Sub CopyFireData(ByVal aFireObject As Fire)
+    Private Sub CopyFireData(ByVal aFire As Fire)
         ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
         Dim numPoints As Integer, ir As Integer, ic As Integer
         numPoints = CountGridPoints(Me.FireDataSS)
@@ -5737,7 +5736,7 @@ Public Class CeditMain
                     aFireTimeSeries(ic, ir) = Val(Me.FireDataSS(ir + 1, ic))
                 Next
             Next
-            aFireObject.SetFireData(aFireTimeSeries)
+            aFire.SetFireData(aFireTimeSeries)
         End If
     End Sub
 #End Region
@@ -5798,7 +5797,7 @@ Public Class CeditMain
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
             If sender Is Me.TargetComp Then
-                aTarget.Compartment = Me.TargetComp.SelectedIndex - 1
+                aTarget.Compartment = Me.TargetComp.SelectedIndex
                 If Val(Me.TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(Me.TargetXPosition.Text)
                 If Val(Me.TargetYPosition.Text) = -1 Then aTarget.YPosition = Val(Me.TargetYPosition.Text)
                 If Val(Me.TargetZPosition.Text) = -1 Then aTarget.ZPosition = Val(Me.TargetZPosition.Text)
@@ -6594,7 +6593,6 @@ Public Class CeditMain
         CurrentHHeat = 0
         CurrentVHeat = 0
         CurrentFire = 0
-        CurrentFireObject = 0
 
         UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
         UpdateGUI.InitThermalPropertyList(Me.CompWalls)

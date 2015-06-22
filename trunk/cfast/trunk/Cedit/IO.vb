@@ -488,8 +488,8 @@ Module IO
                                 ' We already have a thermal property with this name.  If it's totally identical, then it's already been added.  If not, they are trying to add a second one with the same name.  We'll allow it but error checking with flag it as an issue.
                                 Dim aProperty As New ThermalProperty
                                 aProperty = SomeThermalProperties.Item(iProp)
-                                If aProperty.Name = csv.str(i, MaterialNum.longName) And aProperty.Conductivity = csv.Num(i, MaterialNum.Conductivity) And aProperty.SpecificHeat = csv.Num(i, MaterialNum.specificHeat) And aProperty.Density = csv.Num(i, MaterialNum.density) &
-                                    aProperty.Thickness = csv.Num(i, MaterialNum.thickness) And aProperty.Emissivity = csv.Num(i, MaterialNum.emissivity) Then
+                                If aProperty.Name = csv.str(i, MaterialNum.longName) And aProperty.Conductivity = csv.Num(i, MaterialNum.Conductivity) And aProperty.SpecificHeat = csv.Num(i, MaterialNum.specificHeat) And aProperty.Density = csv.Num(i, MaterialNum.density) _
+                                    And aProperty.Thickness = csv.Num(i, MaterialNum.thickness) And aProperty.Emissivity = csv.Num(i, MaterialNum.emissivity) Then
                                     Exit Select
                                 End If
                             End If

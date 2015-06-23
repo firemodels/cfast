@@ -271,7 +271,7 @@ Public Class CeditMain
     Friend WithEvents CompXPosition As System.Windows.Forms.TextBox
     Friend WithEvents CompHeight As System.Windows.Forms.TextBox
     Friend WithEvents CompDepth As System.Windows.Forms.TextBox
-    Friend WithEvents GroupBox34 As System.Windows.Forms.GroupBox
+    Friend WithEvents GroupCompSurfaces As System.Windows.Forms.GroupBox
     Friend WithEvents MVentRemove As System.Windows.Forms.Button
     Friend WithEvents MVentAdd As System.Windows.Forms.Button
     Friend WithEvents MVentDup As System.Windows.Forms.Button
@@ -595,7 +595,7 @@ Public Class CeditMain
         Me.Label65 = New System.Windows.Forms.Label()
         Me.Label64 = New System.Windows.Forms.Label()
         Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid()
-        Me.GroupBox34 = New System.Windows.Forms.GroupBox()
+        Me.GroupCompSurfaces = New System.Windows.Forms.GroupBox()
         Me.CompSpecHeatFloor = New System.Windows.Forms.Label()
         Me.CompDensityFloor = New System.Windows.Forms.Label()
         Me.CompThicknessFloor = New System.Windows.Forms.Label()
@@ -874,7 +874,7 @@ Public Class CeditMain
         Me.GroupBox5.SuspendLayout()
         Me.GroupFlowCharacteristics.SuspendLayout()
         CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox34.SuspendLayout()
+        Me.GroupCompSurfaces.SuspendLayout()
         Me.TabMechanicalFlow.SuspendLayout()
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupMVents.SuspendLayout()
@@ -2005,7 +2005,7 @@ Public Class CeditMain
         Me.GroupCompartments.Controls.Add(Me.Label9)
         Me.GroupCompartments.Controls.Add(Me.GroupBox5)
         Me.GroupCompartments.Controls.Add(Me.GroupFlowCharacteristics)
-        Me.GroupCompartments.Controls.Add(Me.GroupBox34)
+        Me.GroupCompartments.Controls.Add(Me.GroupCompSurfaces)
         Me.GroupCompartments.Location = New System.Drawing.Point(16, 168)
         Me.GroupCompartments.Name = "GroupCompartments"
         Me.GroupCompartments.Size = New System.Drawing.Size(944, 368)
@@ -2239,32 +2239,32 @@ Public Class CeditMain
         Me.CompVariableArea.TabIndex = 4
         Me.CompVariableArea.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
-        'GroupBox34
+        'GroupCompSurfaces
         '
-        Me.GroupBox34.Controls.Add(Me.CompSpecHeatFloor)
-        Me.GroupBox34.Controls.Add(Me.CompDensityFloor)
-        Me.GroupBox34.Controls.Add(Me.CompThicknessFloor)
-        Me.GroupBox34.Controls.Add(Me.CompConductFloor)
-        Me.GroupBox34.Controls.Add(Me.CompSpecHeatWalls)
-        Me.GroupBox34.Controls.Add(Me.CompDensityWalls)
-        Me.GroupBox34.Controls.Add(Me.CompThicknessWalls)
-        Me.GroupBox34.Controls.Add(Me.CompConductWalls)
-        Me.GroupBox34.Controls.Add(Me.CompSpecHeatCeiling)
-        Me.GroupBox34.Controls.Add(Me.CompDensityCeiling)
-        Me.GroupBox34.Controls.Add(Me.CompThicknessCeiling)
-        Me.GroupBox34.Controls.Add(Me.CompConductCeiling)
-        Me.GroupBox34.Controls.Add(Me.CompFloor)
-        Me.GroupBox34.Controls.Add(Me.CompWalls)
-        Me.GroupBox34.Controls.Add(Me.CompCeiling)
-        Me.GroupBox34.Controls.Add(Me.Label21)
-        Me.GroupBox34.Controls.Add(Me.Label22)
-        Me.GroupBox34.Controls.Add(Me.Label20)
-        Me.GroupBox34.Location = New System.Drawing.Point(32, 220)
-        Me.GroupBox34.Name = "GroupBox34"
-        Me.GroupBox34.Size = New System.Drawing.Size(880, 133)
-        Me.GroupBox34.TabIndex = 16
-        Me.GroupBox34.TabStop = False
-        Me.GroupBox34.Text = "Materials"
+        Me.GroupCompSurfaces.Controls.Add(Me.CompSpecHeatFloor)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompDensityFloor)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompThicknessFloor)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompConductFloor)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompSpecHeatWalls)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompDensityWalls)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompThicknessWalls)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompConductWalls)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompSpecHeatCeiling)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompDensityCeiling)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompThicknessCeiling)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompConductCeiling)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompFloor)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompWalls)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompCeiling)
+        Me.GroupCompSurfaces.Controls.Add(Me.Label21)
+        Me.GroupCompSurfaces.Controls.Add(Me.Label22)
+        Me.GroupCompSurfaces.Controls.Add(Me.Label20)
+        Me.GroupCompSurfaces.Location = New System.Drawing.Point(32, 220)
+        Me.GroupCompSurfaces.Name = "GroupCompSurfaces"
+        Me.GroupCompSurfaces.Size = New System.Drawing.Size(880, 133)
+        Me.GroupCompSurfaces.TabIndex = 16
+        Me.GroupCompSurfaces.TabStop = False
+        Me.GroupCompSurfaces.Text = "Materials"
         '
         'CompSpecHeatFloor
         '
@@ -2430,7 +2430,7 @@ Public Class CeditMain
         '
         'MainView
         '
-        Me.MainView.Location = New System.Drawing.Point(714, 638)
+        Me.MainView.Location = New System.Drawing.Point(697, 638)
         Me.MainView.Name = "MainView"
         Me.MainView.Size = New System.Drawing.Size(75, 23)
         Me.MainView.TabIndex = 4
@@ -4766,7 +4766,7 @@ Public Class CeditMain
         '
         'MainSave
         '
-        Me.MainSave.Location = New System.Drawing.Point(330, 638)
+        Me.MainSave.Location = New System.Drawing.Point(313, 638)
         Me.MainSave.Name = "MainSave"
         Me.MainSave.Size = New System.Drawing.Size(75, 23)
         Me.MainSave.TabIndex = 1
@@ -4774,7 +4774,7 @@ Public Class CeditMain
         '
         'MainRun
         '
-        Me.MainRun.Location = New System.Drawing.Point(560, 638)
+        Me.MainRun.Location = New System.Drawing.Point(543, 638)
         Me.MainRun.Name = "MainRun"
         Me.MainRun.Size = New System.Drawing.Size(75, 23)
         Me.MainRun.TabIndex = 3
@@ -4782,7 +4782,7 @@ Public Class CeditMain
         '
         'MainGeometry
         '
-        Me.MainGeometry.Location = New System.Drawing.Point(479, 638)
+        Me.MainGeometry.Location = New System.Drawing.Point(462, 638)
         Me.MainGeometry.Name = "MainGeometry"
         Me.MainGeometry.Size = New System.Drawing.Size(75, 23)
         Me.MainGeometry.TabIndex = 2
@@ -4790,7 +4790,7 @@ Public Class CeditMain
         '
         'MainOpen
         '
-        Me.MainOpen.Location = New System.Drawing.Point(249, 638)
+        Me.MainOpen.Location = New System.Drawing.Point(232, 638)
         Me.MainOpen.Name = "MainOpen"
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 0
@@ -4851,8 +4851,8 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.ResumeLayout(False)
         Me.GroupFlowCharacteristics.PerformLayout()
         CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox34.ResumeLayout(False)
-        Me.GroupBox34.PerformLayout()
+        Me.GroupCompSurfaces.ResumeLayout(False)
+        Me.GroupCompSurfaces.PerformLayout()
         Me.TabMechanicalFlow.ResumeLayout(False)
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupMVents.ResumeLayout(False)
@@ -4983,8 +4983,8 @@ Public Class CeditMain
                     myCompartments.Item(CurrentCompartment) = aCompartment
                 End If
             Next
-            UpdateGUI.Geometry(CurrentCompartment)
             CurrentCompartment = SavedCompartment
+            UpdateGUI.Geometry(CurrentCompartment)
         End If
         UpdateGUI.Environment()
     End Sub

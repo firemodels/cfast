@@ -43,7 +43,7 @@ Friend Module Data
     Friend firefile() As Integer = {2, 4, 3, 5, 6, 9, 10, 8, 7, 11, 12, 13, 14}
     Friend Const NumFireCurves As Integer = 7
     Friend Const FireCurveTypes As String = "TIME HRR  SOOT CO   TRACEAREA HEIGH"
-    Friend FireCurveColumns() As Integer = {0, Fire.FireTime, Fire.FireHRR, Fire.FireSoot, Fire.FireCO, Fire.FireLPF, Fire.FireArea, Fire.FireHeight}
+    Friend FireCurveColumns() As Integer = {0, Fire.FireTime, Fire.FireHRR, Fire.FireSoot, Fire.FireCO, Fire.FireTS, Fire.FireArea, Fire.FireHeight}
 
     Friend myThermalProperties As New ThermalPropertiesCollection
     Friend TempThermalProperties As New ThermalPropertiesCollection

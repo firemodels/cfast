@@ -9,6 +9,8 @@ Public Class CeditMain
     Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
+    Friend WithEvents FireTSYield As System.Windows.Forms.TextBox
+    Friend WithEvents Label115 As System.Windows.Forms.Label
     Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 #Region " Windows Form Designer generated code "
 
@@ -851,6 +853,8 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.FireTSYield = New System.Windows.Forms.TextBox()
+        Me.Label115 = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -2914,6 +2918,8 @@ Public Class CeditMain
         '
         'GroupFire
         '
+        Me.GroupFire.Controls.Add(Me.FireTSYield)
+        Me.GroupFire.Controls.Add(Me.Label115)
         Me.GroupFire.Controls.Add(Me.FirePlot)
         Me.GroupFire.Controls.Add(Me.FireCOYield)
         Me.GroupFire.Controls.Add(Me.FireHoC)
@@ -2973,11 +2979,11 @@ Public Class CeditMain
         Me.FirePlot.DateTimeToolTip = False
         Me.FirePlot.Legend = Nothing
         Me.FirePlot.LegendZOrder = -1
-        Me.FirePlot.Location = New System.Drawing.Point(618, 183)
+        Me.FirePlot.Location = New System.Drawing.Point(546, 214)
         Me.FirePlot.Name = "FirePlot"
         Me.FirePlot.RightMenu = Nothing
         Me.FirePlot.ShowCoordinates = True
-        Me.FirePlot.Size = New System.Drawing.Size(338, 250)
+        Me.FirePlot.Size = New System.Drawing.Size(410, 223)
         Me.FirePlot.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None
         Me.FirePlot.TabIndex = 157
         Me.FirePlot.TabStop = False
@@ -3098,7 +3104,7 @@ Public Class CeditMain
         Me.FireDataSS.Rows.Count = 101
         Me.FireDataSS.Rows.DefaultSize = 17
         Me.FireDataSS.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.FireDataSS.Size = New System.Drawing.Size(597, 191)
+        Me.FireDataSS.Size = New System.Drawing.Size(525, 223)
         Me.FireDataSS.TabIndex = 152
         '
         'Label105
@@ -3177,7 +3183,7 @@ Public Class CeditMain
         '
         'Label113
         '
-        Me.Label113.Location = New System.Drawing.Point(142, 142)
+        Me.Label113.Location = New System.Drawing.Point(142, 171)
         Me.Label113.Name = "Label113"
         Me.Label113.Size = New System.Drawing.Size(56, 31)
         Me.Label113.TabIndex = 124
@@ -3221,7 +3227,7 @@ Public Class CeditMain
         '
         'FireRadiativeFraction
         '
-        Me.FireRadiativeFraction.Location = New System.Drawing.Point(206, 147)
+        Me.FireRadiativeFraction.Location = New System.Drawing.Point(206, 176)
         Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
         Me.FireRadiativeFraction.Size = New System.Drawing.Size(80, 20)
         Me.FireRadiativeFraction.TabIndex = 17
@@ -4796,6 +4802,23 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 0
         Me.MainOpen.Text = "Open"
         '
+        'FireTSYield
+        '
+        Me.FireTSYield.Location = New System.Drawing.Point(206, 147)
+        Me.FireTSYield.Name = "FireTSYield"
+        Me.FireTSYield.Size = New System.Drawing.Size(80, 20)
+        Me.FireTSYield.TabIndex = 158
+        '
+        'Label115
+        '
+        Me.Label115.AutoSize = True
+        Me.Label115.Location = New System.Drawing.Point(147, 151)
+        Me.Label115.Name = "Label115"
+        Me.Label115.Size = New System.Drawing.Size(50, 13)
+        Me.Label115.TabIndex = 159
+        Me.Label115.Text = "TS Yield:"
+        Me.Label115.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -5557,7 +5580,9 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave, FireName.Leave
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, _
+        FireXNormal.Leave, FireYNormal.Leave, FireZNormal.Leave, FireIgnitionValue.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave, FireName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, _
+        FireSootYield.Leave, FireCOYield.Leave, FireTSYield.Leave, FireMaterial.Leave, FireHoC.Leave, FireRadiativeFraction.Leave
         Dim aFire As New Fire
         Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
         Dim ir As Integer
@@ -5579,6 +5604,7 @@ Public Class CeditMain
             If sender Is Me.FireYNormal Then aFire.YNormal = Val(Me.FireYNormal.Text)
             If sender Is Me.FireZNormal Then aFire.ZNormal = Val(Me.FireZNormal.Text)
             If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
+            If sender Is Me.FireRadiativeFraction Then aFire.RadiativeFraction = Val(Me.FireRadiativeFraction.Text)
             If sender Is Me.FireName Then
                 aFire.Name = Me.FireName.Text
             End If
@@ -5632,7 +5658,13 @@ Public Class CeditMain
                 Next
                 CopyFireData(aFire)
             End If
-            If sender Is Me.FireRadiativeFraction Then aFire.RadiativeFraction = Val(Me.FireRadiativeFraction.Text)
+            If sender Is Me.FireTSYield Then
+                numPoints = CountGridPoints(Me.FireDataSS)
+                For ir = 1 To numPoints
+                    Me.FireDataSS(ir, Fire.FireTS) = Val(Me.FireTSYield.Text)
+                Next
+                CopyFireData(aFire)
+            End If
 
             If CurrentFire >= 0 Then myFires(CurrentFire) = aFire
             UpdateGUI.Fires(CurrentFire)

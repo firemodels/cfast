@@ -4,6 +4,5 @@ set repo=cfastgitclean
 
 cd %userprofile%\%repo%
 git pull
-cd Utilities\cfastbot
-copy *.bat %CURDIR%
 cd %CURDIR%
+copy %userprofile%\%repo%\Utilities\Firebot\*.bat %CURDIR%

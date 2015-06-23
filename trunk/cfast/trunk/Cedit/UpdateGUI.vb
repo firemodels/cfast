@@ -527,9 +527,9 @@ Public Class UpdateGUI
             Dim aTarget As New Target, aCompartment As Compartment
             aTarget = myTargets(index)
             If aTarget.Compartment <= -1 Then
-                MainWin.TargetComp.SelectedIndex = aTarget.Compartment + 1
+                MainWin.TargetComp.SelectedIndex = -1
             ElseIf aTarget.Compartment >= 0 And aTarget.Compartment <= myCompartments.Count - 1 Then
-                MainWin.TargetComp.SelectedIndex = aTarget.Compartment + 1
+                MainWin.TargetComp.SelectedIndex = aTarget.Compartment
                 aCompartment = myCompartments(aTarget.Compartment)
             End If
 
@@ -604,7 +604,9 @@ Public Class UpdateGUI
             Dim aDetector As New Target
             aDetector = myDetectors(index)
             MainWin.DetectorType.SelectedIndex = aDetector.DetectorType
-            If aDetector.Compartment <= myCompartments.Count - 1 Then
+            If aDetector.Compartment <= -1 Then
+                MainWin.DetectorComp.SelectedIndex = -1
+            ElseIf aDetector.Compartment >= 0 And aDetector.Compartment <= myCompartments.Count - 1 Then
                 MainWin.DetectorComp.SelectedIndex = aDetector.Compartment
             End If
             MainWin.DetectorActivation.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
@@ -899,7 +901,8 @@ Public Class UpdateGUI
         obj.Items.Clear()
         If obj Is MainWin.VisualizationComp Then
             obj.Items.Add("All")
-        ElseIf obj Is MainWin.HVentComp1 Or obj Is MainWin.HVentComp2 Or obj Is MainWin.VVentCompTop Or obj Is MainWin.VVentCompBottom Or obj Is MainWin.MVentFromComp Or obj Is MainWin.MventToComp Then
+        ElseIf obj Is MainWin.HVentComp1 Or obj Is MainWin.HVentComp2 Or obj Is MainWin.VVentCompTop Or obj Is MainWin.VVentCompBottom Or obj Is MainWin.MVentFromComp Or obj Is MainWin.MventToComp _
+            Or obj Is MainWin.HHeatComp1 Or obj Is MainWin.HHeatComp2 Or obj Is MainWin.VHeatComp1 Or obj Is MainWin.VHeatComp2 Then
             obj.Items.Add("Outside")
         End If
         If myCompartments.Count > 0 Then

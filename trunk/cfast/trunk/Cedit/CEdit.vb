@@ -5959,7 +5959,7 @@ Public Class CeditMain
             aDetector = myDetectors(CurrentDetector)
             If sender Is Me.DetectorType Then aDetector.DetectorType = Me.DetectorType.SelectedIndex
             If sender Is Me.DetectorComp Then
-                aDetector.Compartment = Me.DetectorComp.SelectedIndex - 1
+                aDetector.Compartment = Me.DetectorComp.SelectedIndex
                 If Val(Me.DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
                 If Val(Me.DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
                 If Val(Me.DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)

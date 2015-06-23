@@ -16,7 +16,7 @@ Public Class Fire
     Friend Const FireHCN As Integer = 9
     Friend Const FireHCl As Integer = 10
     Friend Const FireCt As Integer = 11
-    Friend Const FireLPF As Integer = 12
+    Friend Const FireTS As Integer = 12
     Friend Const MaximumFires As Integer = 100
     Friend Const MaximumFireObjects As Integer = 100
 
@@ -36,7 +36,7 @@ Public Class Fire
     Private Const MaxHCN As Single = 1.0
     Private Const MaxHCl As Single = 1.0
     Private Const MaxCt As Single = 100.0
-    Private Const maxLPF As Single = 1.0
+    Private Const maxTS As Single = 0.001
 
     Private aChanged As Boolean = False
     Private HasErrors As Integer                    ' Temp variable that holds error count during error check
@@ -133,7 +133,7 @@ Public Class Fire
             FireTimeSeries(FireHCN, ir) = 0.0
             FireTimeSeries(FireHCl, ir) = 0.0
             FireTimeSeries(FireCt, ir) = 1.0
-            FireTimeSeries(FireLPF, ir) = 0.0
+            FireTimeSeries(FireTS, ir) = 0.0
         Next
         FireTimeSeries(FireTime, 0) = 0.0
         FireTimeSeries(FireMdot, 0) = 0.0
@@ -633,9 +633,9 @@ Public Class Fire
                                     FireCurveErrors(FireCt) = True
                                     HasErrors += 1
                                 End If
-                            Case FireLPF
-                                If aFireTimeSeries(FireLPF, ir) < 0.0 Or aFireTimeSeries(FireLPF, ir) > maxLPF Then
-                                    FireCurveErrors(FireLPF) = True
+                            Case FireTS
+                                If aFireTimeSeries(FireTS, ir) < 0.0 Or aFireTimeSeries(FireTS, ir) > maxTS Then
+                                    FireCurveErrors(FireTS) = True
                                     HasErrors += 1
                                 End If
                         End Select
@@ -653,7 +653,7 @@ Public Class Fire
                 If FireCurveErrors(FireHCN) Then myErrors.Add("Fire object " + aName + ". One or more HCN yields are less than 0 or greater than" + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHCl) Then myErrors.Add("Fire object " + aName + ". One or more HCl yields are less than 0 or greater than" + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireCt) Then myErrors.Add("Fire object " + aName + ". One or more Ct values are less than 0 or greater than" + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireLPF) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxLPF.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireTS) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxTS.ToString + ".", ErrorMessages.TypeWarning)
             End If
             If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
                 myErrors.Add("Lower oxygen limit is less than 0 or greater than 21 %.", ErrorMessages.TypeWarning)

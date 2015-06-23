@@ -256,6 +256,7 @@ Public Class UpdateGUI
                 MainWin.CompDensityCeiling.Text = "Density: "
                 MainWin.CompThicknessCeiling.Text = "Thickness: "
             End If
+
             MainWin.CompWalls.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial)
             If MainWin.CompWalls.Text <> "Default" And MainWin.CompWalls.Text <> "Off" Then
                 Dim aThermalProperty As New ThermalProperty
@@ -270,6 +271,7 @@ Public Class UpdateGUI
                 MainWin.CompDensityWalls.Text = "Density: "
                 MainWin.CompThicknessWalls.Text = "Thickness: "
             End If
+
             MainWin.CompFloor.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial)
             If MainWin.CompFloor.Text <> "Default" And MainWin.CompFloor.Text <> "Off" Then
                 Dim aThermalProperty As New ThermalProperty
@@ -283,6 +285,12 @@ Public Class UpdateGUI
                 MainWin.CompSpecHeatFloor.Text = "Specific Heat: "
                 MainWin.CompDensityFloor.Text = "Density: "
                 MainWin.CompThicknessFloor.Text = "Thickness: "
+            End If
+
+            If myEnvironment.AdiabaticWalls Then
+                MainWin.GroupCompSurfaces.Enabled = False
+            Else
+                MainWin.GroupCompSurfaces.Enabled = True
             End If
 
             If aCompartment.Shaft = True Then

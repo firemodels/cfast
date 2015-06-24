@@ -48,7 +48,7 @@ Public Class UpdateGUI
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
         ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
-            myTargets.IsValid + myFires.IsValid + myFireObjects.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
+            myTargets.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break()
             MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages"
@@ -916,15 +916,6 @@ Public Class UpdateGUI
         If myCompartments.Count > 0 Then
             For i = 0 To myCompartments.Count - 1
                 obj.Items.Add(myCompartments.Item(i).Name)
-            Next
-        End If
-    End Sub
-    Public Sub InitFireObjectList(ByVal obj As ComboBox)
-        Dim i As Integer
-        obj.Items.Clear()
-        If myFireObjects.Count > 0 Then
-            For i = 0 To myFireObjects.Count - 1
-                obj.Items.Add(myFireObjects.Item(i).Name)
             Next
         End If
     End Sub

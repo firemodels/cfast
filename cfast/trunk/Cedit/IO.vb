@@ -173,15 +173,14 @@ Module IO
                     Case "LIMO2"
                         myEnvironment.LowerOxygenLimit = csv.Num(i, 2)
                         myEnvironment.Changed = False
-                    Case "MAINF"
-                        Dim aFire As New Fire
-                        aFire.Name = "mainfire"
-                        aFire.SetPosition(csv.Num(i, fireNum.compartment) - 1, csv.Num(i, fireNum.xPosition), _
-                            csv.Num(i, fireNum.yPosition), csv.Num(i, fireNum.zposition))
-                        aFire.PlumeType = csv.Num(i, fireNum.plumeType) - 1
-                        aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
-                        aFire.Changed = False
-                        myFires.Add(aFire)
+                        'Case "MAINF"
+                        'Dim aFire As New Fire
+                        'aFire.Name = "mainfire"
+                        'aFire.SetPosition(csv.Num(i, fireNum.compartment) - 1, csv.Num(i, fireNum.xPosition), csv.Num(i, fireNum.yPosition), csv.Num(i, fireNum.zposition))
+                        'aFire.PlumeType = csv.Num(i, fireNum.plumeType) - 1
+                        'aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
+                        'aFire.Changed = False
+                        'myFires.Add(aFire)
                     Case "MVFAN"        'ignored
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword MVFAN not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
@@ -206,16 +205,16 @@ Module IO
                     Case "OBJECT"
                         Dim FireFile As String
                         ' First look for the fire object in the current folder (which should be where the .in file is located)
-                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
+                        If myFires.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
                             FireFile = csv.str(i, objfireNum.name) + ".o"
                             readFires(FireFile, InsertDataType.ObjectFile)
                         End If
                         ' If we didn't find it there, look in the CFAST bin directory
-                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
+                        If myFires.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
                             FireFile = Application.StartupPath + "\" + csv.str(i, objfireNum.name) + ".o"
                             readFires(FireFile, InsertDataType.ObjectFile)
                         End If
-                        If myFireObjects.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
+                        If myFires.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
                             Dim aFire As New Fire
                             aFire.Name = csv.str(i, objfireNum.name)
                             aFire.SetPosition(csv.Num(i, objfireNum.compartment) - 1, csv.Num(i, objfireNum.xPosition), _
@@ -224,7 +223,6 @@ Module IO
                             aFire.PlumeType = csv.Num(i, objfireNum.plumeType) - 1
                             aFire.IgnitionType = csv.Num(i, objfireNum.ignType) - 1
                             aFire.IgnitionValue = csv.Num(i, objfireNum.ignCriterion)
-                            aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
                             aFire.Changed = False
                             myFires.Add(aFire)
                         Else
@@ -531,10 +529,10 @@ Module IO
         Dim csv As New CSVsheet(Filename), i As Integer
         If csv.MaxRow > 0 Then
             FindFires(FileType, csv)
-            If TempFireObjects.Count > 0 Then
-                For i = 1 To TempFireObjects.Count
+            If TempFires.Count > 0 Then
+                For i = 1 To TempFires.Count
                     Dim aFire As New Fire
-                    aFire = TempFireObjects.Item(i - 1)
+                    aFire = TempFires.Item(i - 1)
                     myFires.Add(aFire)
                 Next
             End If
@@ -575,8 +573,8 @@ Module IO
                         Case "FIRE"
                             If csv.str(i, 2) = "OBJECT" Or csv.str(i + 1, 1) = "CHEMI" Then
                                 ' New format fire
-                                For j = 0 To TempFireObjects.Count - 1
-                                    If csv.str(iStart, fireNum.name) = TempFireObjects.Item(j).Name Then
+                                For j = 0 To TempFires.Count - 1
+                                    If csv.str(iStart, fireNum.name) = TempFires.Item(j).Name Then
                                         Exit Sub
                                     End If
                                 Next
@@ -625,7 +623,7 @@ Module IO
                                 End If
                                 aFireObject.RadiativeFraction = csv.Num(iChemie, chemieNum.chiR)
                                 aFireObject.Changed = False
-                                TempFireObjects.Add(aFireObject)
+                                TempFires.Add(aFireObject)
 
                                 Dim firedata(12, CInt(csv.Num(iTime, 0) - 2)) As Single
 
@@ -638,8 +636,8 @@ Module IO
                                     If aFireObject.ChemicalFormula(formula.N) <> 0 Then firedata(Fire.FireHCN, j) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.N)
                                     If aFireObject.ChemicalFormula(formula.Cl) <> 0 Then firedata(Fire.FireHCl, j) = (1.00794 + 35.453) / 1000.0 / aFireObject.MolarMass * aFireObject.ChemicalFormula(formula.Cl)
                                 Next
-                                TempFireObjects(TempFireObjects.Count - 1).SetFireData(firedata)
-                                TempFireObjects(TempFireObjects.Count - 1).Changed = False
+                                TempFires(TempFires.Count - 1).SetFireData(firedata)
+                                TempFires(TempFires.Count - 1).Changed = False
 
                                 fireComplete = 0
                             End If
@@ -658,32 +656,32 @@ Module IO
                         fireComments.Add(csv.strrow(i))
                     End If
                 Next
-                For i = 0 To TempFireObjects.Count - 1
-                    If csv.str(rowidx(0), 1) = TempFireObjects.Item(i).Name Then
+                For i = 0 To TempFires.Count - 1
+                    If csv.str(rowidx(0), 1) = TempFires.Item(i).Name Then
                         myUnits.SI = False
                         Exit Sub
                     End If
                 Next
                 ' Chemical compound is assumed to be methane for these old format files.
-                TempFireObjects.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
+                TempFires.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
                 ' Check for thermal property of the fire object and find it if necessary
 
-                TempFireObjects(TempFireObjects.Count - 1).Material = csv.str(rowidx(12), 1)
+                TempFires(TempFires.Count - 1).Material = csv.str(rowidx(12), 1)
                 Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
                 For i = 0 To csv.Num(rowidx(1), 1) - 1
                     For j = 0 To 12
                         firedata(j, i) = csv.Num(rowidx(1 + i), firefile(j))
                     Next
                 Next
-                TempFireObjects(TempFireObjects.Count - 1).SetFireData(firedata)
+                TempFires(TempFires.Count - 1).SetFireData(firedata)
                 fireFilesComments.Add(fireComments)
-                TempFireObjects(TempFireObjects.Count - 1).CommentsIndex = fireFilesComments.Count
+                TempFires(TempFires.Count - 1).CommentsIndex = fireFilesComments.Count
 
             Catch ex As Exception
             End Try
         End If
 
-        If TempFireObjects.Count > 0 Then TempFireObjects(TempFireObjects.Count - 1).Changed = False
+        If TempFires.Count > 0 Then TempFires(TempFires.Count - 1).Changed = False
         myUnits.SI = False
     End Sub
     Public Sub ReadEmbeddedFire(ByVal csv As CSVsheet, ByVal iStart As Integer, ByRef aFire As Fire)
@@ -832,6 +830,7 @@ Module IO
                 csv.str(i, MaterialNum.longName) = aThermalProperty.Name
                 i += 1
             End If
+            aThermalProperty.Changed = False
         Next
         'comment header of compartment section
         If myCompartments.Count > 0 Then AddHeadertoOutput(csv, i, "Compartment keywords")
@@ -1075,11 +1074,6 @@ Module IO
             aFire.Changed = False
         Next
 
-        ' since we've written all the fires out, all the fire objects are saved too
-        For j = 0 To myFireObjects.Count - 1
-            myFireObjects(j).Changed = False
-        Next
-
         'comment header for heat transfer section
         If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
         'HHeat and VHeat
@@ -1215,69 +1209,6 @@ Module IO
 
         csv.WrtCSVfile(FileName)
 
-    End Sub
-    Public Sub WriteFireObjects(ByVal pathName As String)
-        If myFireObjects.Changed Then
-            Dim i As Integer
-            Dim writeFile As String
-
-            For i = 0 To myFireObjects.Count - 1
-                If myFireObjects(i).Changed Then
-                    writeFile = pathName + myFireObjects(i).Name.Trim + ".o"
-                    WriteFireObject(i, writeFile)
-                    myFireObjects(i).Changed = False
-                End If
-            Next
-        End If
-    End Sub
-    Public Sub WriteFireObject(ByVal index As Integer, ByVal FileName As String)
-        ' Write fire object specified by the index
-        Dim aFireObject As Fire
-        Dim csv As New CSVsheet
-        Dim i, j, k, l As Integer
-        Dim firedata(12, 0) As Single, numFireDataPoints As Integer
-        Dim aThermalProperty As ThermalProperty
-
-        i = 1
-        aFireObject = myFireObjects.Item(index)
-        ' Fire keyword, short form (only name for a fire object
-        csv.str(i, CFASTlnNum.keyWord) = "FIRE"
-        csv.str(i, CFASTlnNum.keyWord + 1) = "OBJECT"
-        csv.str(i, fireNum.name) = aFireObject.Name
-        i += 1
-        ' CHEMI keyword, chemistry information
-        csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
-        csv.Num(i, chemieNum.C) = aFireObject.ChemicalFormula(formula.C)
-        csv.Num(i, chemieNum.H) = aFireObject.ChemicalFormula(formula.H)
-        csv.Num(i, chemieNum.O) = aFireObject.ChemicalFormula(formula.O)
-        csv.Num(i, chemieNum.N) = aFireObject.ChemicalFormula(formula.N)
-        csv.Num(i, chemieNum.Cl) = aFireObject.ChemicalFormula(formula.Cl)
-        csv.Num(i, chemieNum.chiR) = aFireObject.RadiativeFraction
-        csv.Num(i, chemieNum.HoC) = aFireObject.HeatofCombustion
-        csv.str(i, chemieNum.Material) = aFireObject.Material
-        i += 1
-        ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
-        aFireObject.GetFireData(firedata, numFireDataPoints)
-        For k = 1 To NumFireCurves
-            csv.str(i, CFASTlnNum.keyWord) = Trim(FireCurveTypes.Substring(5 * (k - 1), 5))
-            For l = 0 To numFireDataPoints
-                csv.Num(i, l + 2) = firedata(FireCurveColumns(k), l)
-            Next
-            i += 1
-        Next
-        ' Thermal property for this fire
-        j = myThermalProperties.GetIndex(aFireObject.Material)
-        aThermalProperty = myThermalProperties.Item(j)
-        csv.str(i, CFASTlnNum.keyWord) = "MATL"
-        csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
-        csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
-        csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
-        csv.Num(i, MaterialNum.density) = aThermalProperty.Density
-        csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
-        csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
-        csv.str(i, MaterialNum.longName) = aThermalProperty.Name
-        i += 1
-        csv.WrtCSVfile(FileName)
     End Sub
     Public Sub WriteThermalProperties(ByVal FileName As String)
         'If myThermalProperties.Changed Then

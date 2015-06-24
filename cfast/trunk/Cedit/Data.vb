@@ -35,8 +35,7 @@ Friend Module Data
     Friend NormalPointsToData() As Single = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0}
 
     Friend myFires As New FireCollection                            ' Fires defined for this test case
-    Friend myFireObjects As New FireCollection                      ' Currently defined object fires
-    Friend TempFireObjects As New FireCollection
+    Friend TempFires As New FireCollection
     Friend Const IgnitionNames As String = "Time       TemperatureHeat Flux  "
     Friend Const FireTypeNames As String = "ConstrainedHeat Source"
     Friend Const CJetNames As String = "OFF    CEILINGWALLS  ALL    "

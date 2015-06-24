@@ -5885,12 +5885,11 @@ Public Class CeditMain
                 Else
                     numFires = myFires.Count
                     If numFires > 0 Then
-                        Dim aFire As Fire, aFireObject As Fire
+                        Dim aFire As Fire
                         For i = 1 To numFires
                             aFire = myFires(i - 1)
                             If aTarget.Compartment = aFire.Compartment Then
-                                aFireObject = myFireObjects(aFire.FireObject)
-                                If Me.TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFireObject.Name Then
+                                If Me.TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
                                     Dim Hypotenuse As Single
                                     Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (aFire.ZPosition - aTarget.ZPosition) ^ 2)
                                     If Hypotenuse <> 0 Then
@@ -6466,7 +6465,7 @@ Public Class CeditMain
                     Dim i As Integer, aFire As New Fire()
                     For i = 1 To InsertDialog.Count
                         If InsertDialog.Selected(i) Then
-                            aFire = TempFireObjects.Item(i - 1)
+                            aFire = TempFires.Item(i - 1)
                             myFires.Add(aFire)
                         End If
                     Next
@@ -6598,8 +6597,7 @@ Public Class CeditMain
         myTargets.Clear()
         myDetectors.Clear()
         myFires.Clear()
-        myFireObjects.Clear()
-        TempFireObjects.Clear()
+        TempFires.Clear()
         myVisuals.Clear()
         myThermalProperties.Clear()
         TempThermalProperties.Clear()

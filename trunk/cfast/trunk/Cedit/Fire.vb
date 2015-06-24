@@ -408,7 +408,9 @@ Public Class Fire
     End Property
     ReadOnly Property MolarMass() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Mass).FromSI((12.0107 * aChemicalFormula(1) + 1.00794 * aChemicalFormula(2) + 15.9994 * aChemicalFormula(3) + 14.0067 * aChemicalFormula(4) + 35.453 * aChemicalFormula(5)) / 1000.0)
+            Dim MW As Single
+            MW = (12.0107 * aChemicalFormula(1) + 1.00794 * aChemicalFormula(2) + 15.9994 * aChemicalFormula(3) + 14.0067 * aChemicalFormula(4) + 35.453 * aChemicalFormula(5)) / 1000.0
+            Return myUnits.Convert(UnitsNum.Mass).FromSI(MW)
         End Get
     End Property
     Public Property Material() As String
@@ -547,11 +549,11 @@ Public Class Fire
             HasErrors = 0
 
             If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
-                myErrors.Add("Fire Object " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
+                myErrors.Add("Fire " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
             If aHeatofCombustion < MinHeatofCombustion Or aHeatofCombustion > MaxHeatofCombustion Then
-                myErrors.Add("Fire Object " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
+                myErrors.Add("Fire " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
                     " J/kg or greater than " + MaxHeatofCombustion.ToString + " J/kg.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
@@ -641,19 +643,19 @@ Public Class Fire
                         End Select
                     Next
                 Next
-                If FireCurveErrors(FireTime) Then myErrors.Add("Fire object " + aName + ". One or more time values are less than 0 s.", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireHRR) Then myErrors.Add("Fire object " + aName + ". One or more heat release rate (Qdot) values are less than 0 W, more than" + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireMdot) Then myErrors.Add("Fire object " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than" + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireHeight) Then myErrors.Add("Fire object " + aName + ". One or more fire height values are less than 0 m or greater than" + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireArea) Then myErrors.Add("Fire object " + aName + ". One or more fire area values are less than or equal to 0 m² or greater than" + (CEdit.Compartment.MaxSize ^ 2).ToString + " m².", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireCO) Then myErrors.Add("Fire object " + aName + ". One or more CO yields are less than 0 or greater than" + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireSoot) Then myErrors.Add("Fire object " + aName + ". One or more soot yields are less than 0 or greater than" + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireHC) Then myErrors.Add("Fire object " + aName + ". One or more H/C ratios are less than 0 or greater than" + MaxHC.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireO2) Then myErrors.Add("Fire object " + aName + ". One or more O2 yields are less than 0 or greater than" + MaxO2.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireHCN) Then myErrors.Add("Fire object " + aName + ". One or more HCN yields are less than 0 or greater than" + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireHCl) Then myErrors.Add("Fire object " + aName + ". One or more HCl yields are less than 0 or greater than" + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireCt) Then myErrors.Add("Fire object " + aName + ". One or more Ct values are less than 0 or greater than" + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireTS) Then myErrors.Add("Fire object " + aName + ". One or more LPF values are less than 0 or greater than" + maxTS.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireTime) Then myErrors.Add("Fire " + aName + ". One or more time values are less than 0 s.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHRR) Then myErrors.Add("Fire " + aName + ". One or more heat release rate (Qdot) values are less than 0 W, more than " + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireMdot) Then myErrors.Add("Fire " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than " + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHeight) Then myErrors.Add("Fire " + aName + ". One or more fire height values are less than 0 m or greater than " + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireArea) Then myErrors.Add("Fire " + aName + ". One or more fire area values are less than or equal to 0 m² or greater than " + (CEdit.Compartment.MaxSize ^ 2).ToString + " m².", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireCO) Then myErrors.Add("Fire " + aName + ". One or more CO yields are less than 0 or greater than " + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireSoot) Then myErrors.Add("Fire " + aName + ". One or more soot yields are less than 0 or greater than " + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHC) Then myErrors.Add("Fire " + aName + ". One or more H/C ratios are less than 0 or greater than " + MaxHC.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireO2) Then myErrors.Add("Fire " + aName + ". One or more O2 yields are less than 0 or greater than " + MaxO2.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHCN) Then myErrors.Add("Fire " + aName + ". One or more HCN yields are less than 0 or greater than " + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHCl) Then myErrors.Add("Fire " + aName + ". One or more HCl yields are less than 0 or greater than " + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireCt) Then myErrors.Add("Fire " + aName + ". One or more Ct values are less than 0 or greater than " + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireTS) Then myErrors.Add("Fire " + aName + ". One or more trace species (TS) values are less than 0 or greater than " + maxTS.ToString + ".", ErrorMessages.TypeWarning)
             End If
             If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 20.95 Then
                 myErrors.Add("Lower oxygen limit is less than 0 or greater than 21 %.", ErrorMessages.TypeWarning)
@@ -703,6 +705,10 @@ Public Class Fire
                         HasErrors += 1
                     End If
                 End If
+            End If
+            If aMaterial.ToUpper = "OFF" Or myThermalProperties.GetIndex(aMaterial) < 0 Then
+                myErrors.Add("Fire " + FireNumber.ToString + ". Material is not defined.", ErrorMessages.TypeFatal)
+                HasErrors += 1
             End If
 
             myUnits.SI = False

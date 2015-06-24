@@ -57,7 +57,7 @@
             Case InsertDataType.Fire
                 Dim aFire As New Fire
                 Dim FileExt As String = System.IO.Path.GetExtension(Filename)
-                TempFireObjects.Clear()
+                TempFires.Clear()
                 myUnits.SI = True
                 If FileExt = ".o" Then
                     IO.FindFires(InsertDataType.ObjectFile, csv)
@@ -65,10 +65,10 @@
                     IO.FindFires(InsertDataType.EmbeddedFire, csv)
                 End If
                 myUnits.SI = False
-                If TempFireObjects.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFireObjects.Count + 1
-                If TempFireObjects.Count > 0 Then
-                    For i = 1 To TempFireObjects.Count
-                        aFire = TempFireObjects.Item(i - 1)
+                If TempFires.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFires.Count + 1
+                If TempFires.Count > 0 Then
+                    For i = 1 To TempFires.Count
+                        aFire = TempFires.Item(i - 1)
                         Me.InsertDataSummary(i, InsertFireNum.Fire) = aFire.Name
                         Me.InsertDataSummary(i, InsertFireNum.Formula) = aFire.ChemicalFormula
                         Me.InsertDataSummary(i, InsertFireNum.Height) = aFire.Peak(Fire.FireHeight).ToString
@@ -79,7 +79,7 @@
                         Me.InsertDataSummary(i, InsertFireNum.HoC) = aFire.HeatofCombustion.ToString
                         Me.InsertDataSummary(i, InsertFireNum.Material) = myThermalProperties.GetLongName(aFire.Material)
                     Next
-                    NumAdded = TempFireObjects.Count
+                    NumAdded = TempFires.Count
                 End If
             Case InsertDataType.ThermalProperty
                 Dim aThermalProperty As New ThermalProperty

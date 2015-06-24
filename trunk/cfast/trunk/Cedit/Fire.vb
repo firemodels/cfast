@@ -36,7 +36,7 @@ Public Class Fire
     Private Const MaxHCN As Single = 1.0
     Private Const MaxHCl As Single = 1.0
     Private Const MaxCt As Single = 100.0
-    Private Const maxTS As Single = 0.001
+    Private Const MaxTS As Single = 0.001
 
     Private aChanged As Boolean = False
     Private HasErrors As Integer                    ' Temp variable that holds error count during error check
@@ -596,7 +596,7 @@ Public Class Fire
                                     HasErrors += 1
                                 End If
                             Case FireArea
-                                If (aFireTimeSeries(FireArea, ir) < 0.0 And aFireTimeSeries(FireHRR, ir) <> 0.0) And aFireTimeSeries(FireArea, ir) < 0.0 Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
+                                If aFireTimeSeries(FireArea, ir) <= 0.0 Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
                                     FireCurveErrors(FireArea) = True
                                     HasErrors += 1
                                 End If

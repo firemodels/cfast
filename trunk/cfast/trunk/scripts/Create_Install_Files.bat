@@ -38,18 +38,7 @@ echo.
 echo ***Copying CFAST support files
 echo.
 
-call :COPY  %bindir%\3_panel_workstation.o %DISTDIR%\
-call :COPY  %bindir%\bunkbed.o %DISTDIR%\
-call :COPY  %bindir%\burner.o %DISTDIR%\
-call :COPY  %bindir%\curtains.o %DISTDIR%\
-call :COPY  %bindir%\kiosk.o %DISTDIR%\
-call :COPY  %bindir%\mattress_and_boxspring.o %DISTDIR%\
-call :COPY  %bindir%\sofa.o %DISTDIR%\
-call :COPY  %bindir%\tv_set.o %DISTDIR%\
-CALL :COPY  %bindir%\ upholstered_chair.o %DISTDIR%\
-call :COPY  %bindir%\wardrobe.o %DISTDIR%\
-call :COPY  %bindir%\wood_wall.o %DISTDIR%\
-call :COPY  %bindir%\thermal.csv %DISTDIR%\
+call :COPY  %bindir%\AllFires.in %DISTDIR%\
 
 echo.
 echo ***Copying CFAST example files

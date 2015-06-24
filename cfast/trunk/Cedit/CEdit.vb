@@ -666,6 +666,8 @@ Public Class CeditMain
         Me.FireRemove = New System.Windows.Forms.Button()
         Me.FireDup = New System.Windows.Forms.Button()
         Me.GroupFire = New System.Windows.Forms.GroupBox()
+        Me.FireTSYield = New System.Windows.Forms.TextBox()
+        Me.Label115 = New System.Windows.Forms.Label()
         Me.FirePlot = New NPlot.Windows.PlotSurface2D()
         Me.FireCOYield = New System.Windows.Forms.TextBox()
         Me.FireHoC = New System.Windows.Forms.TextBox()
@@ -853,8 +855,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.FireTSYield = New System.Windows.Forms.TextBox()
-        Me.Label115 = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
@@ -1151,7 +1151,7 @@ Public Class CeditMain
         Me.EnvErrors.Name = "EnvErrors"
         Me.EnvErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.EnvErrors.Size = New System.Drawing.Size(910, 163)
-        Me.EnvErrors.TabIndex = 19
+        Me.EnvErrors.TabIndex = 18
         Me.EnvErrors.TabStop = False
         Me.EnvErrors.Text = "No Errors"
         '
@@ -1160,7 +1160,7 @@ Public Class CeditMain
         Me.EnvTitle.Location = New System.Drawing.Point(272, 14)
         Me.EnvTitle.Name = "EnvTitle"
         Me.EnvTitle.Size = New System.Drawing.Size(472, 20)
-        Me.EnvTitle.TabIndex = 1
+        Me.EnvTitle.TabIndex = 101
         Me.EnvTitle.Text = "CFAST simulation"
         '
         'Label28
@@ -1190,7 +1190,7 @@ Public Class CeditMain
         Me.EnvAdiabatic.Location = New System.Drawing.Point(27, 204)
         Me.EnvAdiabatic.Name = "EnvAdiabatic"
         Me.EnvAdiabatic.Size = New System.Drawing.Size(180, 17)
-        Me.EnvAdiabatic.TabIndex = 18
+        Me.EnvAdiabatic.TabIndex = 114
         Me.EnvAdiabatic.Text = "Adiabatic Compartment Surfaces"
         Me.EnvAdiabatic.UseVisualStyleBackColor = True
         '
@@ -1223,7 +1223,7 @@ Public Class CeditMain
         Me.EnvExtAmbElevation.Location = New System.Drawing.Point(264, 16)
         Me.EnvExtAmbElevation.Name = "EnvExtAmbElevation"
         Me.EnvExtAmbElevation.Size = New System.Drawing.Size(96, 20)
-        Me.EnvExtAmbElevation.TabIndex = 19
+        Me.EnvExtAmbElevation.TabIndex = 112
         Me.EnvExtAmbElevation.Text = "0 m"
         '
         'Label26
@@ -1240,7 +1240,7 @@ Public Class CeditMain
         Me.EnvExtAmbPress.Location = New System.Drawing.Point(88, 48)
         Me.EnvExtAmbPress.Name = "EnvExtAmbPress"
         Me.EnvExtAmbPress.Size = New System.Drawing.Size(96, 20)
-        Me.EnvExtAmbPress.TabIndex = 20
+        Me.EnvExtAmbPress.TabIndex = 113
         Me.EnvExtAmbPress.Text = "101325 Pa"
         '
         'Label27
@@ -1257,7 +1257,7 @@ Public Class CeditMain
         Me.EnvExtAmbTemp.Location = New System.Drawing.Point(88, 16)
         Me.EnvExtAmbTemp.Name = "EnvExtAmbTemp"
         Me.EnvExtAmbTemp.Size = New System.Drawing.Size(96, 20)
-        Me.EnvExtAmbTemp.TabIndex = 18
+        Me.EnvExtAmbTemp.TabIndex = 111
         Me.EnvExtAmbTemp.Text = "20 °C"
         '
         'GroupBox11
@@ -1291,7 +1291,7 @@ Public Class CeditMain
         Me.EnvIntAmbRH.Location = New System.Drawing.Point(264, 48)
         Me.EnvIntAmbRH.Name = "EnvIntAmbRH"
         Me.EnvIntAmbRH.Size = New System.Drawing.Size(96, 20)
-        Me.EnvIntAmbRH.TabIndex = 116
+        Me.EnvIntAmbRH.TabIndex = 110
         Me.EnvIntAmbRH.Text = "50 %"
         '
         'Label8
@@ -1308,7 +1308,7 @@ Public Class CeditMain
         Me.EnvIntAmbElevation.Location = New System.Drawing.Point(264, 16)
         Me.EnvIntAmbElevation.Name = "EnvIntAmbElevation"
         Me.EnvIntAmbElevation.Size = New System.Drawing.Size(96, 20)
-        Me.EnvIntAmbElevation.TabIndex = 14
+        Me.EnvIntAmbElevation.TabIndex = 108
         Me.EnvIntAmbElevation.Text = "0 m"
         '
         'Label6
@@ -1325,7 +1325,7 @@ Public Class CeditMain
         Me.EnvIntAmbPress.Location = New System.Drawing.Point(88, 48)
         Me.EnvIntAmbPress.Name = "EnvIntAmbPress"
         Me.EnvIntAmbPress.Size = New System.Drawing.Size(96, 20)
-        Me.EnvIntAmbPress.TabIndex = 15
+        Me.EnvIntAmbPress.TabIndex = 109
         Me.EnvIntAmbPress.Text = "101325 Pa"
         '
         'Label5
@@ -1342,7 +1342,7 @@ Public Class CeditMain
         Me.EnvIntAmbTemp.Location = New System.Drawing.Point(88, 16)
         Me.EnvIntAmbTemp.Name = "EnvIntAmbTemp"
         Me.EnvIntAmbTemp.Size = New System.Drawing.Size(96, 20)
-        Me.EnvIntAmbTemp.TabIndex = 13
+        Me.EnvIntAmbTemp.TabIndex = 107
         Me.EnvIntAmbTemp.Text = "20 °C"
         '
         'GroupBox7
@@ -1378,7 +1378,7 @@ Public Class CeditMain
         Me.EnvTimeStep.Location = New System.Drawing.Point(188, 150)
         Me.EnvTimeStep.Name = "EnvTimeStep"
         Me.EnvTimeStep.Size = New System.Drawing.Size(96, 20)
-        Me.EnvTimeStep.TabIndex = 122
+        Me.EnvTimeStep.TabIndex = 106
         Me.EnvTimeStep.Text = "Default"
         '
         'Label25
@@ -1395,7 +1395,7 @@ Public Class CeditMain
         Me.EnvSmokeviewInterval.Location = New System.Drawing.Point(188, 124)
         Me.EnvSmokeviewInterval.Name = "EnvSmokeviewInterval"
         Me.EnvSmokeviewInterval.Size = New System.Drawing.Size(96, 20)
-        Me.EnvSmokeviewInterval.TabIndex = 7
+        Me.EnvSmokeviewInterval.TabIndex = 105
         Me.EnvSmokeviewInterval.Text = "10 s"
         '
         'Label4
@@ -1412,7 +1412,7 @@ Public Class CeditMain
         Me.EnvSpreadOutInterval.Location = New System.Drawing.Point(188, 98)
         Me.EnvSpreadOutInterval.Name = "EnvSpreadOutInterval"
         Me.EnvSpreadOutInterval.Size = New System.Drawing.Size(96, 20)
-        Me.EnvSpreadOutInterval.TabIndex = 6
+        Me.EnvSpreadOutInterval.TabIndex = 104
         Me.EnvSpreadOutInterval.Text = "10 s"
         '
         'Label2
@@ -1429,7 +1429,7 @@ Public Class CeditMain
         Me.EnvTextOutInterval.Location = New System.Drawing.Point(188, 72)
         Me.EnvTextOutInterval.Name = "EnvTextOutInterval"
         Me.EnvTextOutInterval.Size = New System.Drawing.Size(96, 20)
-        Me.EnvTextOutInterval.TabIndex = 4
+        Me.EnvTextOutInterval.TabIndex = 103
         Me.EnvTextOutInterval.Text = "50 s"
         '
         'Label1
@@ -1446,7 +1446,7 @@ Public Class CeditMain
         Me.EnvSimTime.Location = New System.Drawing.Point(188, 46)
         Me.EnvSimTime.Name = "EnvSimTime"
         Me.EnvSimTime.Size = New System.Drawing.Size(96, 20)
-        Me.EnvSimTime.TabIndex = 3
+        Me.EnvSimTime.TabIndex = 102
         Me.EnvSimTime.Text = "900 s"
         '
         'TabHorizontalFlow
@@ -1482,7 +1482,7 @@ Public Class CeditMain
         Me.HVentSummary.ShowSortPosition = C1.Win.C1FlexGrid.ShowSortPositionEnum.None
         Me.HVentSummary.Size = New System.Drawing.Size(782, 192)
         Me.HVentSummary.StyleInfo = resources.GetString("HVentSummary.StyleInfo")
-        Me.HVentSummary.TabIndex = 0
+        Me.HVentSummary.TabIndex = 401
         Me.HVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupHVentGeometry
@@ -1526,14 +1526,14 @@ Public Class CeditMain
         Me.HVentFractionTime.Location = New System.Drawing.Point(418, 144)
         Me.HVentFractionTime.Name = "HVentFractionTime"
         Me.HVentFractionTime.Size = New System.Drawing.Size(96, 20)
-        Me.HVentFractionTime.TabIndex = 4
+        Me.HVentFractionTime.TabIndex = 413
         '
         'HVentOffset1
         '
         Me.HVentOffset1.Location = New System.Drawing.Point(652, 114)
         Me.HVentOffset1.Name = "HVentOffset1"
         Me.HVentOffset1.Size = New System.Drawing.Size(96, 20)
-        Me.HVentOffset1.TabIndex = 1
+        Me.HVentOffset1.TabIndex = 415
         Me.HVentOffset1.Text = "0 m"
         '
         'Label82
@@ -1551,7 +1551,7 @@ Public Class CeditMain
         Me.HVentFinalFraction.Location = New System.Drawing.Point(418, 176)
         Me.HVentFinalFraction.Name = "HVentFinalFraction"
         Me.HVentFinalFraction.Size = New System.Drawing.Size(96, 20)
-        Me.HVentFinalFraction.TabIndex = 5
+        Me.HVentFinalFraction.TabIndex = 414
         '
         'Label67
         '
@@ -1569,7 +1569,7 @@ Public Class CeditMain
         Me.HVentFace.Location = New System.Drawing.Point(652, 146)
         Me.HVentFace.Name = "HVentFace"
         Me.HVentFace.Size = New System.Drawing.Size(96, 21)
-        Me.HVentFace.TabIndex = 7
+        Me.HVentFace.TabIndex = 416
         Me.HVentFace.Text = "Front"
         '
         'Label37
@@ -1586,7 +1586,7 @@ Public Class CeditMain
         Me.HVentInitialFraction.Location = New System.Drawing.Point(418, 112)
         Me.HVentInitialFraction.Name = "HVentInitialFraction"
         Me.HVentInitialFraction.Size = New System.Drawing.Size(96, 20)
-        Me.HVentInitialFraction.TabIndex = 3
+        Me.HVentInitialFraction.TabIndex = 412
         Me.HVentInitialFraction.Text = "1"
         '
         'Label36
@@ -1615,7 +1615,7 @@ Public Class CeditMain
         Me.HVentComp2.Location = New System.Drawing.Point(8, 16)
         Me.HVentComp2.Name = "HVentComp2"
         Me.HVentComp2.Size = New System.Drawing.Size(328, 21)
-        Me.HVentComp2.TabIndex = 0
+        Me.HVentComp2.TabIndex = 408
         '
         'GroupBox13
         '
@@ -1634,14 +1634,14 @@ Public Class CeditMain
         Me.HVentComp1.Location = New System.Drawing.Point(8, 16)
         Me.HVentComp1.Name = "HVentComp1"
         Me.HVentComp1.Size = New System.Drawing.Size(328, 21)
-        Me.HVentComp1.TabIndex = 0
+        Me.HVentComp1.TabIndex = 407
         '
         'HVentSoffit
         '
         Me.HVentSoffit.Location = New System.Drawing.Point(146, 144)
         Me.HVentSoffit.Name = "HVentSoffit"
         Me.HVentSoffit.Size = New System.Drawing.Size(96, 20)
-        Me.HVentSoffit.TabIndex = 1
+        Me.HVentSoffit.TabIndex = 410
         '
         'Label34
         '
@@ -1657,7 +1657,7 @@ Public Class CeditMain
         Me.HVentSill.Location = New System.Drawing.Point(146, 112)
         Me.HVentSill.Name = "HVentSill"
         Me.HVentSill.Size = New System.Drawing.Size(96, 20)
-        Me.HVentSill.TabIndex = 0
+        Me.HVentSill.TabIndex = 409
         '
         'Label33
         '
@@ -1673,7 +1673,7 @@ Public Class CeditMain
         Me.HVentWidth.Location = New System.Drawing.Point(146, 176)
         Me.HVentWidth.Name = "HVentWidth"
         Me.HVentWidth.Size = New System.Drawing.Size(96, 20)
-        Me.HVentWidth.TabIndex = 2
+        Me.HVentWidth.TabIndex = 411
         '
         'Label23
         '
@@ -1689,7 +1689,7 @@ Public Class CeditMain
         Me.HVentRemove.Location = New System.Drawing.Point(675, 257)
         Me.HVentRemove.Name = "HVentRemove"
         Me.HVentRemove.Size = New System.Drawing.Size(75, 23)
-        Me.HVentRemove.TabIndex = 5
+        Me.HVentRemove.TabIndex = 406
         Me.HVentRemove.Text = "Remove"
         '
         'HVentAdd
@@ -1697,7 +1697,7 @@ Public Class CeditMain
         Me.HVentAdd.Location = New System.Drawing.Point(227, 257)
         Me.HVentAdd.Name = "HVentAdd"
         Me.HVentAdd.Size = New System.Drawing.Size(75, 23)
-        Me.HVentAdd.TabIndex = 1
+        Me.HVentAdd.TabIndex = 402
         Me.HVentAdd.Text = "Add"
         '
         'HVentMoveDown
@@ -1705,7 +1705,7 @@ Public Class CeditMain
         Me.HVentMoveDown.Location = New System.Drawing.Point(515, 257)
         Me.HVentMoveDown.Name = "HVentMoveDown"
         Me.HVentMoveDown.Size = New System.Drawing.Size(75, 23)
-        Me.HVentMoveDown.TabIndex = 4
+        Me.HVentMoveDown.TabIndex = 405
         Me.HVentMoveDown.Text = "Move Down"
         '
         'HVentMoveUp
@@ -1713,7 +1713,7 @@ Public Class CeditMain
         Me.HVentMoveUp.Location = New System.Drawing.Point(419, 257)
         Me.HVentMoveUp.Name = "HVentMoveUp"
         Me.HVentMoveUp.Size = New System.Drawing.Size(75, 23)
-        Me.HVentMoveUp.TabIndex = 3
+        Me.HVentMoveUp.TabIndex = 404
         Me.HVentMoveUp.Text = "Move Up"
         '
         'HVentDup
@@ -1721,7 +1721,7 @@ Public Class CeditMain
         Me.HVentDup.Location = New System.Drawing.Point(323, 257)
         Me.HVentDup.Name = "HVentDup"
         Me.HVentDup.Size = New System.Drawing.Size(75, 23)
-        Me.HVentDup.TabIndex = 2
+        Me.HVentDup.TabIndex = 403
         Me.HVentDup.Text = "Duplicate"
         '
         'TabVerticalFlow
@@ -1751,7 +1751,7 @@ Public Class CeditMain
         Me.VVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VVentSummary.Size = New System.Drawing.Size(421, 114)
         Me.VVentSummary.StyleInfo = resources.GetString("VVentSummary.StyleInfo")
-        Me.VVentSummary.TabIndex = 0
+        Me.VVentSummary.TabIndex = 501
         Me.VVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'VVentRemove
@@ -1759,7 +1759,7 @@ Public Class CeditMain
         Me.VVentRemove.Location = New System.Drawing.Point(575, 224)
         Me.VVentRemove.Name = "VVentRemove"
         Me.VVentRemove.Size = New System.Drawing.Size(75, 23)
-        Me.VVentRemove.TabIndex = 3
+        Me.VVentRemove.TabIndex = 504
         Me.VVentRemove.Text = "Remove"
         '
         'VVentAdd
@@ -1767,7 +1767,7 @@ Public Class CeditMain
         Me.VVentAdd.Location = New System.Drawing.Point(327, 224)
         Me.VVentAdd.Name = "VVentAdd"
         Me.VVentAdd.Size = New System.Drawing.Size(75, 23)
-        Me.VVentAdd.TabIndex = 1
+        Me.VVentAdd.TabIndex = 502
         Me.VVentAdd.Text = "Add"
         '
         'VVentDup
@@ -1775,7 +1775,7 @@ Public Class CeditMain
         Me.VVentDup.Location = New System.Drawing.Point(423, 224)
         Me.VVentDup.Name = "VVentDup"
         Me.VVentDup.Size = New System.Drawing.Size(75, 23)
-        Me.VVentDup.TabIndex = 2
+        Me.VVentDup.TabIndex = 503
         Me.VVentDup.Text = "Duplicate"
         '
         'GroupVVents
@@ -1804,7 +1804,7 @@ Public Class CeditMain
         Me.VVentFractionTime.Location = New System.Drawing.Point(560, 160)
         Me.VVentFractionTime.Name = "VVentFractionTime"
         Me.VVentFractionTime.Size = New System.Drawing.Size(96, 20)
-        Me.VVentFractionTime.TabIndex = 3
+        Me.VVentFractionTime.TabIndex = 510
         '
         'Label96
         '
@@ -1821,7 +1821,7 @@ Public Class CeditMain
         Me.VVentFinalFraction.Location = New System.Drawing.Point(560, 192)
         Me.VVentFinalFraction.Name = "VVentFinalFraction"
         Me.VVentFinalFraction.Size = New System.Drawing.Size(96, 20)
-        Me.VVentFinalFraction.TabIndex = 4
+        Me.VVentFinalFraction.TabIndex = 511
         '
         'Label97
         '
@@ -1837,7 +1837,7 @@ Public Class CeditMain
         Me.VVentInitialFraction.Location = New System.Drawing.Point(560, 128)
         Me.VVentInitialFraction.Name = "VVentInitialFraction"
         Me.VVentInitialFraction.Size = New System.Drawing.Size(96, 20)
-        Me.VVentInitialFraction.TabIndex = 2
+        Me.VVentInitialFraction.TabIndex = 509
         Me.VVentInitialFraction.Text = "1"
         '
         'Label98
@@ -1856,7 +1856,7 @@ Public Class CeditMain
         Me.VVentShape.Location = New System.Drawing.Point(176, 176)
         Me.VVentShape.Name = "VVentShape"
         Me.VVentShape.Size = New System.Drawing.Size(96, 21)
-        Me.VVentShape.TabIndex = 1
+        Me.VVentShape.TabIndex = 508
         Me.VVentShape.Text = "Round"
         '
         'Label40
@@ -1885,7 +1885,7 @@ Public Class CeditMain
         Me.VVentCompBottom.Location = New System.Drawing.Point(8, 16)
         Me.VVentCompBottom.Name = "VVentCompBottom"
         Me.VVentCompBottom.Size = New System.Drawing.Size(328, 21)
-        Me.VVentCompBottom.TabIndex = 0
+        Me.VVentCompBottom.TabIndex = 506
         '
         'GroupBox18
         '
@@ -1904,14 +1904,14 @@ Public Class CeditMain
         Me.VVentCompTop.Location = New System.Drawing.Point(8, 16)
         Me.VVentCompTop.Name = "VVentCompTop"
         Me.VVentCompTop.Size = New System.Drawing.Size(328, 21)
-        Me.VVentCompTop.TabIndex = 0
+        Me.VVentCompTop.TabIndex = 505
         '
         'VVentArea
         '
         Me.VVentArea.Location = New System.Drawing.Point(176, 144)
         Me.VVentArea.Name = "VVentArea"
         Me.VVentArea.Size = New System.Drawing.Size(96, 20)
-        Me.VVentArea.TabIndex = 0
+        Me.VVentArea.TabIndex = 507
         Me.VVentArea.Text = "1 m"
         '
         'Label46
@@ -1959,7 +1959,7 @@ Public Class CeditMain
         Me.CompSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.CompSummary.Size = New System.Drawing.Size(902, 106)
         Me.CompSummary.StyleInfo = resources.GetString("CompSummary.StyleInfo")
-        Me.CompSummary.TabIndex = 0
+        Me.CompSummary.TabIndex = 301
         Me.CompSummary.TabStop = False
         Me.CompSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
@@ -1968,7 +1968,7 @@ Public Class CeditMain
         Me.CompRemove.Location = New System.Drawing.Point(675, 128)
         Me.CompRemove.Name = "CompRemove"
         Me.CompRemove.Size = New System.Drawing.Size(75, 23)
-        Me.CompRemove.TabIndex = 5
+        Me.CompRemove.TabIndex = 306
         Me.CompRemove.Text = "Remove"
         '
         'CompAdd
@@ -1976,7 +1976,7 @@ Public Class CeditMain
         Me.CompAdd.Location = New System.Drawing.Point(227, 128)
         Me.CompAdd.Name = "CompAdd"
         Me.CompAdd.Size = New System.Drawing.Size(75, 23)
-        Me.CompAdd.TabIndex = 1
+        Me.CompAdd.TabIndex = 302
         Me.CompAdd.Text = "Add"
         '
         'CompMoveDown
@@ -1984,7 +1984,7 @@ Public Class CeditMain
         Me.CompMoveDown.Location = New System.Drawing.Point(515, 128)
         Me.CompMoveDown.Name = "CompMoveDown"
         Me.CompMoveDown.Size = New System.Drawing.Size(75, 23)
-        Me.CompMoveDown.TabIndex = 4
+        Me.CompMoveDown.TabIndex = 305
         Me.CompMoveDown.Text = "Move Down"
         '
         'CompMoveUp
@@ -1992,7 +1992,7 @@ Public Class CeditMain
         Me.CompMoveUp.Location = New System.Drawing.Point(419, 128)
         Me.CompMoveUp.Name = "CompMoveUp"
         Me.CompMoveUp.Size = New System.Drawing.Size(75, 23)
-        Me.CompMoveUp.TabIndex = 3
+        Me.CompMoveUp.TabIndex = 304
         Me.CompMoveUp.Text = "Move Up"
         '
         'CompDup
@@ -2000,7 +2000,7 @@ Public Class CeditMain
         Me.CompDup.Location = New System.Drawing.Point(323, 128)
         Me.CompDup.Name = "CompDup"
         Me.CompDup.Size = New System.Drawing.Size(75, 23)
-        Me.CompDup.TabIndex = 2
+        Me.CompDup.TabIndex = 303
         Me.CompDup.Text = "Duplicate"
         '
         'GroupCompartments
@@ -2022,7 +2022,7 @@ Public Class CeditMain
         Me.CompName.Location = New System.Drawing.Point(384, 16)
         Me.CompName.Name = "CompName"
         Me.CompName.Size = New System.Drawing.Size(208, 20)
-        Me.CompName.TabIndex = 0
+        Me.CompName.TabIndex = 307
         Me.CompName.Text = "Compartment 1"
         '
         'Label9
@@ -2061,14 +2061,14 @@ Public Class CeditMain
         Me.CompWidth.Location = New System.Drawing.Point(69, 31)
         Me.CompWidth.Name = "CompWidth"
         Me.CompWidth.Size = New System.Drawing.Size(96, 20)
-        Me.CompWidth.TabIndex = 0
+        Me.CompWidth.TabIndex = 308
         '
         'CompZPosition
         '
         Me.CompZPosition.Location = New System.Drawing.Point(261, 95)
         Me.CompZPosition.Name = "CompZPosition"
         Me.CompZPosition.Size = New System.Drawing.Size(96, 20)
-        Me.CompZPosition.TabIndex = 5
+        Me.CompZPosition.TabIndex = 313
         Me.CompZPosition.Text = "0 m"
         '
         'Label15
@@ -2086,7 +2086,7 @@ Public Class CeditMain
         Me.CompYPosition.Location = New System.Drawing.Point(261, 63)
         Me.CompYPosition.Name = "CompYPosition"
         Me.CompYPosition.Size = New System.Drawing.Size(96, 20)
-        Me.CompYPosition.TabIndex = 4
+        Me.CompYPosition.TabIndex = 312
         Me.CompYPosition.Text = "0 m"
         '
         'Label14
@@ -2104,7 +2104,7 @@ Public Class CeditMain
         Me.CompXPosition.Location = New System.Drawing.Point(261, 31)
         Me.CompXPosition.Name = "CompXPosition"
         Me.CompXPosition.Size = New System.Drawing.Size(96, 20)
-        Me.CompXPosition.TabIndex = 3
+        Me.CompXPosition.TabIndex = 311
         Me.CompXPosition.Text = "0 m"
         '
         'Label13
@@ -2122,7 +2122,7 @@ Public Class CeditMain
         Me.CompHeight.Location = New System.Drawing.Point(69, 95)
         Me.CompHeight.Name = "CompHeight"
         Me.CompHeight.Size = New System.Drawing.Size(96, 20)
-        Me.CompHeight.TabIndex = 2
+        Me.CompHeight.TabIndex = 310
         '
         'Label12
         '
@@ -2139,7 +2139,7 @@ Public Class CeditMain
         Me.CompDepth.Location = New System.Drawing.Point(69, 63)
         Me.CompDepth.Name = "CompDepth"
         Me.CompDepth.Size = New System.Drawing.Size(96, 20)
-        Me.CompDepth.TabIndex = 1
+        Me.CompDepth.TabIndex = 309
         '
         'Label11
         '
@@ -2183,7 +2183,7 @@ Public Class CeditMain
         Me.CompNormal.Location = New System.Drawing.Point(37, 58)
         Me.CompNormal.Name = "CompNormal"
         Me.CompNormal.Size = New System.Drawing.Size(145, 17)
-        Me.CompNormal.TabIndex = 50
+        Me.CompNormal.TabIndex = 314
         Me.CompNormal.TabStop = True
         Me.CompNormal.Text = "Normal (Two-zone model)"
         Me.CompNormal.UseVisualStyleBackColor = True
@@ -2194,7 +2194,7 @@ Public Class CeditMain
         Me.CompCorridor.Location = New System.Drawing.Point(37, 104)
         Me.CompCorridor.Name = "CompCorridor"
         Me.CompCorridor.Size = New System.Drawing.Size(156, 17)
-        Me.CompCorridor.TabIndex = 49
+        Me.CompCorridor.TabIndex = 316
         Me.CompCorridor.Text = "Corridor (Revised ceiling jet)"
         Me.CompCorridor.UseVisualStyleBackColor = True
         '
@@ -2204,7 +2204,7 @@ Public Class CeditMain
         Me.CompShaft.Location = New System.Drawing.Point(37, 81)
         Me.CompShaft.Name = "CompShaft"
         Me.CompShaft.Size = New System.Drawing.Size(145, 17)
-        Me.CompShaft.TabIndex = 48
+        Me.CompShaft.TabIndex = 315
         Me.CompShaft.Text = "Shaft (Single-zone model)"
         Me.CompShaft.UseVisualStyleBackColor = True
         '
@@ -2240,7 +2240,7 @@ Public Class CeditMain
         Me.CompVariableArea.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.CompVariableArea.Size = New System.Drawing.Size(190, 111)
         Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
-        Me.CompVariableArea.TabIndex = 4
+        Me.CompVariableArea.TabIndex = 317
         Me.CompVariableArea.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupCompSurfaces
@@ -2384,7 +2384,7 @@ Public Class CeditMain
         Me.CompFloor.Location = New System.Drawing.Point(645, 21)
         Me.CompFloor.Name = "CompFloor"
         Me.CompFloor.Size = New System.Drawing.Size(192, 21)
-        Me.CompFloor.TabIndex = 2
+        Me.CompFloor.TabIndex = 320
         '
         'CompWalls
         '
@@ -2392,7 +2392,7 @@ Public Class CeditMain
         Me.CompWalls.Location = New System.Drawing.Point(350, 20)
         Me.CompWalls.Name = "CompWalls"
         Me.CompWalls.Size = New System.Drawing.Size(192, 21)
-        Me.CompWalls.TabIndex = 1
+        Me.CompWalls.TabIndex = 319
         '
         'CompCeiling
         '
@@ -2400,7 +2400,7 @@ Public Class CeditMain
         Me.CompCeiling.Location = New System.Drawing.Point(61, 19)
         Me.CompCeiling.Name = "CompCeiling"
         Me.CompCeiling.Size = New System.Drawing.Size(192, 21)
-        Me.CompCeiling.TabIndex = 0
+        Me.CompCeiling.TabIndex = 318
         '
         'Label21
         '
@@ -2437,7 +2437,7 @@ Public Class CeditMain
         Me.MainView.Location = New System.Drawing.Point(697, 638)
         Me.MainView.Name = "MainView"
         Me.MainView.Size = New System.Drawing.Size(75, 23)
-        Me.MainView.TabIndex = 4
+        Me.MainView.TabIndex = 5
         Me.MainView.Text = "View"
         '
         'TabMechanicalFlow
@@ -2467,7 +2467,7 @@ Public Class CeditMain
         Me.MVentSummary.Rows.DefaultSize = 19
         Me.MVentSummary.Size = New System.Drawing.Size(862, 120)
         Me.MVentSummary.StyleInfo = resources.GetString("MVentSummary.StyleInfo")
-        Me.MVentSummary.TabIndex = 0
+        Me.MVentSummary.TabIndex = 601
         Me.MVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'MVentRemove
@@ -2475,7 +2475,7 @@ Public Class CeditMain
         Me.MVentRemove.Location = New System.Drawing.Point(675, 199)
         Me.MVentRemove.Name = "MVentRemove"
         Me.MVentRemove.Size = New System.Drawing.Size(75, 23)
-        Me.MVentRemove.TabIndex = 3
+        Me.MVentRemove.TabIndex = 604
         Me.MVentRemove.Text = "Remove"
         '
         'MVentAdd
@@ -2483,7 +2483,7 @@ Public Class CeditMain
         Me.MVentAdd.Location = New System.Drawing.Point(227, 199)
         Me.MVentAdd.Name = "MVentAdd"
         Me.MVentAdd.Size = New System.Drawing.Size(75, 23)
-        Me.MVentAdd.TabIndex = 1
+        Me.MVentAdd.TabIndex = 602
         Me.MVentAdd.Text = "Add"
         '
         'MVentDup
@@ -2491,7 +2491,7 @@ Public Class CeditMain
         Me.MVentDup.Location = New System.Drawing.Point(323, 199)
         Me.MVentDup.Name = "MVentDup"
         Me.MVentDup.Size = New System.Drawing.Size(75, 23)
-        Me.MVentDup.TabIndex = 2
+        Me.MVentDup.TabIndex = 603
         Me.MVentDup.Text = "Duplicate"
         '
         'GroupMVents
@@ -2527,7 +2527,7 @@ Public Class CeditMain
         Me.MVentFilterTime.Location = New System.Drawing.Point(591, 215)
         Me.MVentFilterTime.Name = "MVentFilterTime"
         Me.MVentFilterTime.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFilterTime.TabIndex = 7
+        Me.MVentFilterTime.TabIndex = 620
         '
         'Label38
         '
@@ -2544,7 +2544,7 @@ Public Class CeditMain
         Me.MVentFilterEfficiency.Location = New System.Drawing.Point(591, 183)
         Me.MVentFilterEfficiency.Name = "MVentFilterEfficiency"
         Me.MVentFilterEfficiency.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFilterEfficiency.TabIndex = 6
+        Me.MVentFilterEfficiency.TabIndex = 619
         Me.MVentFilterEfficiency.Text = "1"
         '
         'Label54
@@ -2562,7 +2562,7 @@ Public Class CeditMain
         Me.MVentFractionTime.Location = New System.Drawing.Point(380, 200)
         Me.MVentFractionTime.Name = "MVentFractionTime"
         Me.MVentFractionTime.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFractionTime.TabIndex = 4
+        Me.MVentFractionTime.TabIndex = 617
         '
         'Label99
         '
@@ -2579,7 +2579,7 @@ Public Class CeditMain
         Me.MVentFinalFraction.Location = New System.Drawing.Point(380, 232)
         Me.MVentFinalFraction.Name = "MVentFinalFraction"
         Me.MVentFinalFraction.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFinalFraction.TabIndex = 5
+        Me.MVentFinalFraction.TabIndex = 618
         '
         'Label100
         '
@@ -2595,7 +2595,7 @@ Public Class CeditMain
         Me.MVentInitialFraction.Location = New System.Drawing.Point(380, 168)
         Me.MVentInitialFraction.Name = "MVentInitialFraction"
         Me.MVentInitialFraction.Size = New System.Drawing.Size(96, 20)
-        Me.MVentInitialFraction.TabIndex = 3
+        Me.MVentInitialFraction.TabIndex = 616
         Me.MVentInitialFraction.Text = "1"
         '
         'Label101
@@ -2612,7 +2612,7 @@ Public Class CeditMain
         Me.MVentZero.Location = New System.Drawing.Point(129, 232)
         Me.MVentZero.Name = "MVentZero"
         Me.MVentZero.Size = New System.Drawing.Size(96, 20)
-        Me.MVentZero.TabIndex = 2
+        Me.MVentZero.TabIndex = 615
         Me.MVentZero.Text = "300 Pa"
         '
         'Label41
@@ -2647,7 +2647,7 @@ Public Class CeditMain
         Me.MVentToOrientation.Location = New System.Drawing.Point(160, 80)
         Me.MVentToOrientation.Name = "MVentToOrientation"
         Me.MVentToOrientation.Size = New System.Drawing.Size(96, 21)
-        Me.MVentToOrientation.TabIndex = 3
+        Me.MVentToOrientation.TabIndex = 612
         Me.MVentToOrientation.Text = "Vertical"
         '
         'Label43
@@ -2664,7 +2664,7 @@ Public Class CeditMain
         Me.MVentToHeight.Location = New System.Drawing.Point(240, 48)
         Me.MVentToHeight.Name = "MVentToHeight"
         Me.MVentToHeight.Size = New System.Drawing.Size(96, 20)
-        Me.MVentToHeight.TabIndex = 2
+        Me.MVentToHeight.TabIndex = 611
         Me.MVentToHeight.Text = "1 m"
         '
         'Label48
@@ -2681,7 +2681,7 @@ Public Class CeditMain
         Me.MVentToArea.Location = New System.Drawing.Point(56, 48)
         Me.MVentToArea.Name = "MVentToArea"
         Me.MVentToArea.Size = New System.Drawing.Size(96, 20)
-        Me.MVentToArea.TabIndex = 1
+        Me.MVentToArea.TabIndex = 610
         Me.MVentToArea.Text = "1 m ²"
         '
         'Label49
@@ -2699,14 +2699,14 @@ Public Class CeditMain
         Me.MventToComp.Location = New System.Drawing.Point(8, 16)
         Me.MventToComp.Name = "MventToComp"
         Me.MventToComp.Size = New System.Drawing.Size(328, 21)
-        Me.MventToComp.TabIndex = 0
+        Me.MventToComp.TabIndex = 609
         '
         'MVentDropoff
         '
         Me.MVentDropoff.Location = New System.Drawing.Point(129, 200)
         Me.MVentDropoff.Name = "MVentDropoff"
         Me.MVentDropoff.Size = New System.Drawing.Size(96, 20)
-        Me.MVentDropoff.TabIndex = 1
+        Me.MVentDropoff.TabIndex = 614
         Me.MVentDropoff.Text = "200 Pa"
         '
         'Label42
@@ -2741,7 +2741,7 @@ Public Class CeditMain
         Me.MVentFromOrientation.Location = New System.Drawing.Point(160, 80)
         Me.MVentFromOrientation.Name = "MVentFromOrientation"
         Me.MVentFromOrientation.Size = New System.Drawing.Size(96, 21)
-        Me.MVentFromOrientation.TabIndex = 3
+        Me.MVentFromOrientation.TabIndex = 608
         Me.MVentFromOrientation.Text = "Vertical"
         '
         'Label44
@@ -2758,7 +2758,7 @@ Public Class CeditMain
         Me.MVentFromHeight.Location = New System.Drawing.Point(240, 48)
         Me.MVentFromHeight.Name = "MVentFromHeight"
         Me.MVentFromHeight.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFromHeight.TabIndex = 2
+        Me.MVentFromHeight.TabIndex = 607
         Me.MVentFromHeight.Text = "1 m"
         '
         'Label50
@@ -2775,7 +2775,7 @@ Public Class CeditMain
         Me.MVentFromArea.Location = New System.Drawing.Point(56, 48)
         Me.MVentFromArea.Name = "MVentFromArea"
         Me.MVentFromArea.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFromArea.TabIndex = 1
+        Me.MVentFromArea.TabIndex = 606
         Me.MVentFromArea.Text = "1 m²"
         '
         'Label51
@@ -2793,14 +2793,14 @@ Public Class CeditMain
         Me.MVentFromComp.Location = New System.Drawing.Point(8, 16)
         Me.MVentFromComp.Name = "MVentFromComp"
         Me.MVentFromComp.Size = New System.Drawing.Size(328, 21)
-        Me.MVentFromComp.TabIndex = 0
+        Me.MVentFromComp.TabIndex = 605
         '
         'MVentFlow
         '
         Me.MVentFlow.Location = New System.Drawing.Point(129, 168)
         Me.MVentFlow.Name = "MVentFlow"
         Me.MVentFlow.Size = New System.Drawing.Size(96, 20)
-        Me.MVentFlow.TabIndex = 0
+        Me.MVentFlow.TabIndex = 613
         Me.MVentFlow.Text = "1 m^3/s"
         '
         'Label45
@@ -2846,7 +2846,7 @@ Public Class CeditMain
         Me.FireAdd.Location = New System.Drawing.Point(81, 103)
         Me.FireAdd.Name = "FireAdd"
         Me.FireAdd.Size = New System.Drawing.Size(75, 23)
-        Me.FireAdd.TabIndex = 3
+        Me.FireAdd.TabIndex = 702
         Me.FireAdd.Text = "Add New"
         '
         'FireFromFile
@@ -2854,7 +2854,7 @@ Public Class CeditMain
         Me.FireFromFile.Location = New System.Drawing.Point(362, 103)
         Me.FireFromFile.Name = "FireFromFile"
         Me.FireFromFile.Size = New System.Drawing.Size(75, 23)
-        Me.FireFromFile.TabIndex = 72
+        Me.FireFromFile.TabIndex = 705
         Me.FireFromFile.Text = "From File"
         '
         'FireAddt2
@@ -2862,7 +2862,7 @@ Public Class CeditMain
         Me.FireAddt2.Location = New System.Drawing.Point(165, 103)
         Me.FireAddt2.Name = "FireAddt2"
         Me.FireAddt2.Size = New System.Drawing.Size(75, 23)
-        Me.FireAddt2.TabIndex = 2
+        Me.FireAddt2.TabIndex = 703
         Me.FireAddt2.Text = "Add t²"
         '
         'FireIgnitionTemperature
@@ -2870,7 +2870,7 @@ Public Class CeditMain
         Me.FireIgnitionTemperature.Location = New System.Drawing.Point(844, 71)
         Me.FireIgnitionTemperature.Name = "FireIgnitionTemperature"
         Me.FireIgnitionTemperature.Size = New System.Drawing.Size(80, 20)
-        Me.FireIgnitionTemperature.TabIndex = 7
+        Me.FireIgnitionTemperature.TabIndex = 730
         Me.FireIgnitionTemperature.Text = "120 °C"
         '
         'Label17
@@ -2897,7 +2897,7 @@ Public Class CeditMain
         Me.FireSummary.Rows.DefaultSize = 19
         Me.FireSummary.Size = New System.Drawing.Size(682, 81)
         Me.FireSummary.StyleInfo = resources.GetString("FireSummary.StyleInfo")
-        Me.FireSummary.TabIndex = 1
+        Me.FireSummary.TabIndex = 701
         Me.FireSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'FireRemove
@@ -2905,7 +2905,7 @@ Public Class CeditMain
         Me.FireRemove.Location = New System.Drawing.Point(538, 103)
         Me.FireRemove.Name = "FireRemove"
         Me.FireRemove.Size = New System.Drawing.Size(75, 23)
-        Me.FireRemove.TabIndex = 4
+        Me.FireRemove.TabIndex = 706
         Me.FireRemove.Text = "Remove"
         '
         'FireDup
@@ -2913,7 +2913,7 @@ Public Class CeditMain
         Me.FireDup.Location = New System.Drawing.Point(266, 103)
         Me.FireDup.Name = "FireDup"
         Me.FireDup.Size = New System.Drawing.Size(75, 23)
-        Me.FireDup.TabIndex = 3
+        Me.FireDup.TabIndex = 704
         Me.FireDup.Text = "Duplicate"
         '
         'GroupFire
@@ -2971,6 +2971,23 @@ Public Class CeditMain
         Me.GroupFire.TabStop = False
         Me.GroupFire.Text = "Fire 1"
         '
+        'FireTSYield
+        '
+        Me.FireTSYield.Location = New System.Drawing.Point(206, 147)
+        Me.FireTSYield.Name = "FireTSYield"
+        Me.FireTSYield.Size = New System.Drawing.Size(80, 20)
+        Me.FireTSYield.TabIndex = 717
+        '
+        'Label115
+        '
+        Me.Label115.AutoSize = True
+        Me.Label115.Location = New System.Drawing.Point(147, 151)
+        Me.Label115.Name = "Label115"
+        Me.Label115.Size = New System.Drawing.Size(50, 13)
+        Me.Label115.TabIndex = 159
+        Me.Label115.Text = "TS Yield:"
+        Me.Label115.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'FirePlot
         '
         Me.FirePlot.AutoScaleAutoGeneratedAxes = True
@@ -2999,14 +3016,14 @@ Public Class CeditMain
         Me.FireCOYield.Location = New System.Drawing.Point(206, 118)
         Me.FireCOYield.Name = "FireCOYield"
         Me.FireCOYield.Size = New System.Drawing.Size(80, 20)
-        Me.FireCOYield.TabIndex = 139
+        Me.FireCOYield.TabIndex = 716
         '
         'FireHoC
         '
         Me.FireHoC.Location = New System.Drawing.Point(206, 55)
         Me.FireHoC.Name = "FireHoC"
         Me.FireHoC.Size = New System.Drawing.Size(80, 20)
-        Me.FireHoC.TabIndex = 13
+        Me.FireHoC.TabIndex = 714
         Me.FireHoC.Text = "50000000 J/kg"
         '
         'FireMaterial
@@ -3015,7 +3032,7 @@ Public Class CeditMain
         Me.FireMaterial.Location = New System.Drawing.Point(396, 147)
         Me.FireMaterial.Name = "FireMaterial"
         Me.FireMaterial.Size = New System.Drawing.Size(98, 21)
-        Me.FireMaterial.TabIndex = 7
+        Me.FireMaterial.TabIndex = 721
         Me.FireMaterial.Text = "GYPSUM"
         '
         'Label107
@@ -3052,14 +3069,14 @@ Public Class CeditMain
         Me.FireCl.Location = New System.Drawing.Point(42, 179)
         Me.FireCl.Name = "FireCl"
         Me.FireCl.Size = New System.Drawing.Size(80, 20)
-        Me.FireCl.TabIndex = 135
+        Me.FireCl.TabIndex = 713
         '
         'FireName
         '
         Me.FireName.Location = New System.Drawing.Point(242, 16)
         Me.FireName.Name = "FireName"
         Me.FireName.Size = New System.Drawing.Size(98, 20)
-        Me.FireName.TabIndex = 155
+        Me.FireName.TabIndex = 707
         Me.FireName.Text = "New Fire"
         '
         'FireSootYield
@@ -3067,7 +3084,7 @@ Public Class CeditMain
         Me.FireSootYield.Location = New System.Drawing.Point(206, 87)
         Me.FireSootYield.Name = "FireSootYield"
         Me.FireSootYield.Size = New System.Drawing.Size(80, 20)
-        Me.FireSootYield.TabIndex = 137
+        Me.FireSootYield.TabIndex = 715
         '
         'Label106
         '
@@ -3105,7 +3122,7 @@ Public Class CeditMain
         Me.FireDataSS.Rows.DefaultSize = 17
         Me.FireDataSS.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.FireDataSS.Size = New System.Drawing.Size(525, 223)
-        Me.FireDataSS.TabIndex = 152
+        Me.FireDataSS.TabIndex = 728
         '
         'Label105
         '
@@ -3152,7 +3169,7 @@ Public Class CeditMain
         Me.FireN.Location = New System.Drawing.Point(42, 147)
         Me.FireN.Name = "FireN"
         Me.FireN.Size = New System.Drawing.Size(80, 20)
-        Me.FireN.TabIndex = 12
+        Me.FireN.TabIndex = 712
         '
         'Label95
         '
@@ -3179,7 +3196,7 @@ Public Class CeditMain
         Me.FireH.Location = New System.Drawing.Point(42, 87)
         Me.FireH.Name = "FireH"
         Me.FireH.Size = New System.Drawing.Size(80, 20)
-        Me.FireH.TabIndex = 9
+        Me.FireH.TabIndex = 710
         '
         'Label113
         '
@@ -3205,7 +3222,7 @@ Public Class CeditMain
         Me.FireYPosition.Location = New System.Drawing.Point(585, 87)
         Me.FireYPosition.Name = "FireYPosition"
         Me.FireYPosition.Size = New System.Drawing.Size(80, 20)
-        Me.FireYPosition.TabIndex = 2
+        Me.FireYPosition.TabIndex = 723
         Me.FireYPosition.Text = "Center"
         '
         'Label69
@@ -3223,14 +3240,14 @@ Public Class CeditMain
         Me.FireC.Location = New System.Drawing.Point(42, 55)
         Me.FireC.Name = "FireC"
         Me.FireC.Size = New System.Drawing.Size(80, 20)
-        Me.FireC.TabIndex = 8
+        Me.FireC.TabIndex = 709
         '
         'FireRadiativeFraction
         '
         Me.FireRadiativeFraction.Location = New System.Drawing.Point(206, 176)
         Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
         Me.FireRadiativeFraction.Size = New System.Drawing.Size(80, 20)
-        Me.FireRadiativeFraction.TabIndex = 17
+        Me.FireRadiativeFraction.TabIndex = 718
         Me.FireRadiativeFraction.Text = "0.3"
         '
         'FireXPosition
@@ -3238,7 +3255,7 @@ Public Class CeditMain
         Me.FireXPosition.Location = New System.Drawing.Point(586, 55)
         Me.FireXPosition.Name = "FireXPosition"
         Me.FireXPosition.Size = New System.Drawing.Size(80, 20)
-        Me.FireXPosition.TabIndex = 1
+        Me.FireXPosition.TabIndex = 722
         Me.FireXPosition.Text = "Center"
         '
         'FireO
@@ -3246,7 +3263,7 @@ Public Class CeditMain
         Me.FireO.Location = New System.Drawing.Point(42, 118)
         Me.FireO.Name = "FireO"
         Me.FireO.Size = New System.Drawing.Size(80, 20)
-        Me.FireO.TabIndex = 10
+        Me.FireO.TabIndex = 711
         '
         'Label70
         '
@@ -3273,7 +3290,7 @@ Public Class CeditMain
         Me.FireZPosition.Location = New System.Drawing.Point(586, 118)
         Me.FireZPosition.Name = "FireZPosition"
         Me.FireZPosition.Size = New System.Drawing.Size(80, 20)
-        Me.FireZPosition.TabIndex = 3
+        Me.FireZPosition.TabIndex = 724
         Me.FireZPosition.Text = "0"
         '
         'FireComp
@@ -3283,7 +3300,7 @@ Public Class CeditMain
         Me.FireComp.Location = New System.Drawing.Point(546, 16)
         Me.FireComp.Name = "FireComp"
         Me.FireComp.Size = New System.Drawing.Size(208, 21)
-        Me.FireComp.TabIndex = 0
+        Me.FireComp.TabIndex = 708
         '
         'Label111
         '
@@ -3322,7 +3339,7 @@ Public Class CeditMain
         Me.FireIgnitionCriteria.Location = New System.Drawing.Point(396, 87)
         Me.FireIgnitionCriteria.Name = "FireIgnitionCriteria"
         Me.FireIgnitionCriteria.Size = New System.Drawing.Size(80, 21)
-        Me.FireIgnitionCriteria.TabIndex = 8
+        Me.FireIgnitionCriteria.TabIndex = 719
         Me.FireIgnitionCriteria.Text = "Time"
         '
         'FireIgnitionValue
@@ -3330,7 +3347,7 @@ Public Class CeditMain
         Me.FireIgnitionValue.Location = New System.Drawing.Point(396, 118)
         Me.FireIgnitionValue.Name = "FireIgnitionValue"
         Me.FireIgnitionValue.Size = New System.Drawing.Size(80, 20)
-        Me.FireIgnitionValue.TabIndex = 9
+        Me.FireIgnitionValue.TabIndex = 720
         Me.FireIgnitionValue.Text = "0 s"
         '
         'Label63
@@ -3358,7 +3375,7 @@ Public Class CeditMain
         Me.FireXNormal.Location = New System.Drawing.Point(743, 55)
         Me.FireXNormal.Name = "FireXNormal"
         Me.FireXNormal.Size = New System.Drawing.Size(80, 20)
-        Me.FireXNormal.TabIndex = 4
+        Me.FireXNormal.TabIndex = 725
         Me.FireXNormal.Text = "0"
         '
         'FireYNormal
@@ -3366,7 +3383,7 @@ Public Class CeditMain
         Me.FireYNormal.Location = New System.Drawing.Point(743, 87)
         Me.FireYNormal.Name = "FireYNormal"
         Me.FireYNormal.Size = New System.Drawing.Size(80, 20)
-        Me.FireYNormal.TabIndex = 5
+        Me.FireYNormal.TabIndex = 726
         Me.FireYNormal.Text = "0"
         '
         'FireZNormal
@@ -3374,7 +3391,7 @@ Public Class CeditMain
         Me.FireZNormal.Location = New System.Drawing.Point(743, 118)
         Me.FireZNormal.Name = "FireZNormal"
         Me.FireZNormal.Size = New System.Drawing.Size(80, 20)
-        Me.FireZNormal.TabIndex = 6
+        Me.FireZNormal.TabIndex = 727
         Me.FireZNormal.Text = "1"
         '
         'Label68
@@ -3392,7 +3409,7 @@ Public Class CeditMain
         Me.FireLOL.Location = New System.Drawing.Point(844, 39)
         Me.FireLOL.Name = "FireLOL"
         Me.FireLOL.Size = New System.Drawing.Size(80, 20)
-        Me.FireLOL.TabIndex = 6
+        Me.FireLOL.TabIndex = 729
         Me.FireLOL.Text = "10 %"
         '
         'Label55
@@ -3437,7 +3454,7 @@ Public Class CeditMain
         Me.DetectorSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.DetectorSummary.Size = New System.Drawing.Size(742, 136)
         Me.DetectorSummary.StyleInfo = resources.GetString("DetectorSummary.StyleInfo")
-        Me.DetectorSummary.TabIndex = 0
+        Me.DetectorSummary.TabIndex = 901
         Me.DetectorSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupDetectors
@@ -3465,7 +3482,7 @@ Public Class CeditMain
         Me.DetectorSprayDensity.Location = New System.Drawing.Point(593, 136)
         Me.DetectorSprayDensity.Name = "DetectorSprayDensity"
         Me.DetectorSprayDensity.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorSprayDensity.TabIndex = 4
+        Me.DetectorSprayDensity.TabIndex = 914
         Me.DetectorSprayDensity.Text = "7.0 E-5 m/s"
         '
         'Label81
@@ -3483,7 +3500,7 @@ Public Class CeditMain
         Me.DetectorRTI.Location = New System.Drawing.Point(593, 104)
         Me.DetectorRTI.Name = "DetectorRTI"
         Me.DetectorRTI.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorRTI.TabIndex = 3
+        Me.DetectorRTI.TabIndex = 913
         Me.DetectorRTI.Text = "5 m^1/2 s^1/2"
         '
         'Label83
@@ -3501,7 +3518,7 @@ Public Class CeditMain
         Me.DetectorActivation.Location = New System.Drawing.Point(697, 24)
         Me.DetectorActivation.Name = "DetectorActivation"
         Me.DetectorActivation.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorActivation.TabIndex = 2
+        Me.DetectorActivation.TabIndex = 909
         Me.DetectorActivation.Text = "30"
         '
         'Label92
@@ -3521,7 +3538,7 @@ Public Class CeditMain
         Me.DetectorType.Location = New System.Drawing.Point(65, 24)
         Me.DetectorType.Name = "DetectorType"
         Me.DetectorType.Size = New System.Drawing.Size(112, 21)
-        Me.DetectorType.TabIndex = 0
+        Me.DetectorType.TabIndex = 907
         Me.DetectorType.Text = "Smoke Alarm"
         '
         'Label91
@@ -3541,7 +3558,7 @@ Public Class CeditMain
         Me.DetectorComp.Location = New System.Drawing.Point(321, 24)
         Me.DetectorComp.Name = "DetectorComp"
         Me.DetectorComp.Size = New System.Drawing.Size(208, 21)
-        Me.DetectorComp.TabIndex = 1
+        Me.DetectorComp.TabIndex = 908
         '
         'Label87
         '
@@ -3573,7 +3590,7 @@ Public Class CeditMain
         Me.DetectorZPosition.Location = New System.Drawing.Point(80, 96)
         Me.DetectorZPosition.Name = "DetectorZPosition"
         Me.DetectorZPosition.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorZPosition.TabIndex = 2
+        Me.DetectorZPosition.TabIndex = 912
         '
         'Label88
         '
@@ -3590,7 +3607,7 @@ Public Class CeditMain
         Me.DetectorYPosition.Location = New System.Drawing.Point(80, 64)
         Me.DetectorYPosition.Name = "DetectorYPosition"
         Me.DetectorYPosition.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorYPosition.TabIndex = 1
+        Me.DetectorYPosition.TabIndex = 911
         '
         'Label89
         '
@@ -3607,7 +3624,7 @@ Public Class CeditMain
         Me.DetectorXPosition.Location = New System.Drawing.Point(80, 32)
         Me.DetectorXPosition.Name = "DetectorXPosition"
         Me.DetectorXPosition.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorXPosition.TabIndex = 0
+        Me.DetectorXPosition.TabIndex = 910
         '
         'Label90
         '
@@ -3624,7 +3641,7 @@ Public Class CeditMain
         Me.DetectorRemove.Location = New System.Drawing.Point(675, 219)
         Me.DetectorRemove.Name = "DetectorRemove"
         Me.DetectorRemove.Size = New System.Drawing.Size(75, 23)
-        Me.DetectorRemove.TabIndex = 5
+        Me.DetectorRemove.TabIndex = 906
         Me.DetectorRemove.Text = "Remove"
         '
         'DetectorAdd
@@ -3632,7 +3649,7 @@ Public Class CeditMain
         Me.DetectorAdd.Location = New System.Drawing.Point(227, 219)
         Me.DetectorAdd.Name = "DetectorAdd"
         Me.DetectorAdd.Size = New System.Drawing.Size(75, 23)
-        Me.DetectorAdd.TabIndex = 1
+        Me.DetectorAdd.TabIndex = 902
         Me.DetectorAdd.Text = "Add"
         '
         'DetectorMoveDown
@@ -3640,7 +3657,7 @@ Public Class CeditMain
         Me.DetectorMoveDown.Location = New System.Drawing.Point(515, 219)
         Me.DetectorMoveDown.Name = "DetectorMoveDown"
         Me.DetectorMoveDown.Size = New System.Drawing.Size(75, 23)
-        Me.DetectorMoveDown.TabIndex = 4
+        Me.DetectorMoveDown.TabIndex = 905
         Me.DetectorMoveDown.Text = "Move Down"
         '
         'DetectorMoveUp
@@ -3648,7 +3665,7 @@ Public Class CeditMain
         Me.DetectorMoveUp.Location = New System.Drawing.Point(419, 219)
         Me.DetectorMoveUp.Name = "DetectorMoveUp"
         Me.DetectorMoveUp.Size = New System.Drawing.Size(75, 23)
-        Me.DetectorMoveUp.TabIndex = 3
+        Me.DetectorMoveUp.TabIndex = 904
         Me.DetectorMoveUp.Text = "Move Up"
         '
         'DetectorDup
@@ -3656,7 +3673,7 @@ Public Class CeditMain
         Me.DetectorDup.Location = New System.Drawing.Point(323, 219)
         Me.DetectorDup.Name = "DetectorDup"
         Me.DetectorDup.Size = New System.Drawing.Size(75, 23)
-        Me.DetectorDup.TabIndex = 2
+        Me.DetectorDup.TabIndex = 903
         Me.DetectorDup.Text = "Duplicate"
         '
         'TabTargets
@@ -3687,7 +3704,7 @@ Public Class CeditMain
         Me.TargetSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.TargetSummary.Size = New System.Drawing.Size(722, 136)
         Me.TargetSummary.StyleInfo = resources.GetString("TargetSummary.StyleInfo")
-        Me.TargetSummary.TabIndex = 0
+        Me.TargetSummary.TabIndex = 801
         Me.TargetSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupTargets
@@ -3729,7 +3746,7 @@ Public Class CeditMain
         Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 140)
         Me.TargetInternalLocation.Name = "TargetInternalLocation"
         Me.TargetInternalLocation.Size = New System.Drawing.Size(96, 20)
-        Me.TargetInternalLocation.TabIndex = 1
+        Me.TargetInternalLocation.TabIndex = 818
         Me.TargetInternalLocation.Text = "0.5"
         '
         'Label59
@@ -3783,7 +3800,7 @@ Public Class CeditMain
         Me.TargetMaterial.Location = New System.Drawing.Point(60, 19)
         Me.TargetMaterial.Name = "TargetMaterial"
         Me.TargetMaterial.Size = New System.Drawing.Size(192, 21)
-        Me.TargetMaterial.TabIndex = 0
+        Me.TargetMaterial.TabIndex = 817
         Me.TargetMaterial.Text = "GYPSUM"
         '
         'Label78
@@ -3823,7 +3840,7 @@ Public Class CeditMain
         Me.TargetSolutionMethod.Location = New System.Drawing.Point(692, 19)
         Me.TargetSolutionMethod.Name = "TargetSolutionMethod"
         Me.TargetSolutionMethod.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionMethod.TabIndex = 2
+        Me.TargetSolutionMethod.TabIndex = 809
         Me.TargetSolutionMethod.Text = "Implicit"
         '
         'TargetSolutionThickness
@@ -3833,7 +3850,7 @@ Public Class CeditMain
         Me.TargetSolutionThickness.Location = New System.Drawing.Point(450, 19)
         Me.TargetSolutionThickness.Name = "TargetSolutionThickness"
         Me.TargetSolutionThickness.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionThickness.TabIndex = 1
+        Me.TargetSolutionThickness.TabIndex = 808
         Me.TargetSolutionThickness.Text = "Thermally Thick"
         '
         'TargetComp
@@ -3843,7 +3860,7 @@ Public Class CeditMain
         Me.TargetComp.Location = New System.Drawing.Point(140, 19)
         Me.TargetComp.Name = "TargetComp"
         Me.TargetComp.Size = New System.Drawing.Size(208, 21)
-        Me.TargetComp.TabIndex = 0
+        Me.TargetComp.TabIndex = 807
         '
         'Label74
         '
@@ -3903,7 +3920,7 @@ Public Class CeditMain
         Me.TargetNormalCalc.Location = New System.Drawing.Point(203, 41)
         Me.TargetNormalCalc.Name = "TargetNormalCalc"
         Me.TargetNormalCalc.Size = New System.Drawing.Size(157, 21)
-        Me.TargetNormalCalc.TabIndex = 3
+        Me.TargetNormalCalc.TabIndex = 813
         Me.TargetNormalCalc.Text = "User Specified"
         '
         'TargetZPosition
@@ -3911,14 +3928,14 @@ Public Class CeditMain
         Me.TargetZPosition.Location = New System.Drawing.Point(75, 141)
         Me.TargetZPosition.Name = "TargetZPosition"
         Me.TargetZPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetZPosition.TabIndex = 2
+        Me.TargetZPosition.TabIndex = 812
         '
         'TargetZNormal
         '
         Me.TargetZNormal.Location = New System.Drawing.Point(264, 141)
         Me.TargetZNormal.Name = "TargetZNormal"
         Me.TargetZNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetZNormal.TabIndex = 6
+        Me.TargetZNormal.TabIndex = 816
         '
         'Label75
         '
@@ -3945,14 +3962,14 @@ Public Class CeditMain
         Me.TargetYPosition.Location = New System.Drawing.Point(75, 108)
         Me.TargetYPosition.Name = "TargetYPosition"
         Me.TargetYPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetYPosition.TabIndex = 1
+        Me.TargetYPosition.TabIndex = 811
         '
         'TargetYNormal
         '
         Me.TargetYNormal.Location = New System.Drawing.Point(264, 109)
         Me.TargetYNormal.Name = "TargetYNormal"
         Me.TargetYNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetYNormal.TabIndex = 5
+        Me.TargetYNormal.TabIndex = 815
         '
         'Label72
         '
@@ -3979,14 +3996,14 @@ Public Class CeditMain
         Me.TargetXNormal.Location = New System.Drawing.Point(264, 77)
         Me.TargetXNormal.Name = "TargetXNormal"
         Me.TargetXNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetXNormal.TabIndex = 4
+        Me.TargetXNormal.TabIndex = 814
         '
         'TargetXPosition
         '
         Me.TargetXPosition.Location = New System.Drawing.Point(75, 75)
         Me.TargetXPosition.Name = "TargetXPosition"
         Me.TargetXPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetXPosition.TabIndex = 0
+        Me.TargetXPosition.TabIndex = 810
         '
         'Label73
         '
@@ -4013,7 +4030,7 @@ Public Class CeditMain
         Me.TargetRemove.Location = New System.Drawing.Point(675, 219)
         Me.TargetRemove.Name = "TargetRemove"
         Me.TargetRemove.Size = New System.Drawing.Size(75, 23)
-        Me.TargetRemove.TabIndex = 5
+        Me.TargetRemove.TabIndex = 806
         Me.TargetRemove.Text = "Remove"
         '
         'TargetMoveDown
@@ -4021,7 +4038,7 @@ Public Class CeditMain
         Me.TargetMoveDown.Location = New System.Drawing.Point(515, 219)
         Me.TargetMoveDown.Name = "TargetMoveDown"
         Me.TargetMoveDown.Size = New System.Drawing.Size(75, 23)
-        Me.TargetMoveDown.TabIndex = 4
+        Me.TargetMoveDown.TabIndex = 805
         Me.TargetMoveDown.Text = "Move Down"
         '
         'TargetAdd
@@ -4029,7 +4046,7 @@ Public Class CeditMain
         Me.TargetAdd.Location = New System.Drawing.Point(227, 219)
         Me.TargetAdd.Name = "TargetAdd"
         Me.TargetAdd.Size = New System.Drawing.Size(75, 23)
-        Me.TargetAdd.TabIndex = 1
+        Me.TargetAdd.TabIndex = 802
         Me.TargetAdd.Text = "Add"
         '
         'TargetMoveUp
@@ -4037,7 +4054,7 @@ Public Class CeditMain
         Me.TargetMoveUp.Location = New System.Drawing.Point(419, 219)
         Me.TargetMoveUp.Name = "TargetMoveUp"
         Me.TargetMoveUp.Size = New System.Drawing.Size(75, 23)
-        Me.TargetMoveUp.TabIndex = 3
+        Me.TargetMoveUp.TabIndex = 804
         Me.TargetMoveUp.Text = "Move Up"
         '
         'TargetDup
@@ -4045,7 +4062,7 @@ Public Class CeditMain
         Me.TargetDup.Location = New System.Drawing.Point(323, 219)
         Me.TargetDup.Name = "TargetDup"
         Me.TargetDup.Size = New System.Drawing.Size(75, 23)
-        Me.TargetDup.TabIndex = 2
+        Me.TargetDup.TabIndex = 803
         Me.TargetDup.Text = "Duplicate"
         '
         'TabHeatTransfer
@@ -4084,7 +4101,7 @@ Public Class CeditMain
         Me.VHeatSummary.Rows.DefaultSize = 19
         Me.VHeatSummary.Size = New System.Drawing.Size(364, 168)
         Me.VHeatSummary.StyleInfo = resources.GetString("VHeatSummary.StyleInfo")
-        Me.VHeatSummary.TabIndex = 0
+        Me.VHeatSummary.TabIndex = 1009
         Me.VHeatSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupVHeats
@@ -4107,7 +4124,7 @@ Public Class CeditMain
         Me.VHeatComp2.Location = New System.Drawing.Point(139, 77)
         Me.VHeatComp2.Name = "VHeatComp2"
         Me.VHeatComp2.Size = New System.Drawing.Size(208, 21)
-        Me.VHeatComp2.TabIndex = 1
+        Me.VHeatComp2.TabIndex = 1014
         '
         'Label16
         '
@@ -4126,7 +4143,7 @@ Public Class CeditMain
         Me.VHeatComp1.Location = New System.Drawing.Point(139, 45)
         Me.VHeatComp1.Name = "VHeatComp1"
         Me.VHeatComp1.Size = New System.Drawing.Size(208, 21)
-        Me.VHeatComp1.TabIndex = 0
+        Me.VHeatComp1.TabIndex = 1013
         '
         'Label39
         '
@@ -4143,7 +4160,7 @@ Public Class CeditMain
         Me.VHeatDup.Location = New System.Drawing.Point(155, 242)
         Me.VHeatDup.Name = "VHeatDup"
         Me.VHeatDup.Size = New System.Drawing.Size(75, 23)
-        Me.VHeatDup.TabIndex = 2
+        Me.VHeatDup.TabIndex = 1011
         Me.VHeatDup.Text = "Duplicate"
         '
         'VHeatRemove
@@ -4151,7 +4168,7 @@ Public Class CeditMain
         Me.VHeatRemove.Location = New System.Drawing.Point(307, 242)
         Me.VHeatRemove.Name = "VHeatRemove"
         Me.VHeatRemove.Size = New System.Drawing.Size(75, 23)
-        Me.VHeatRemove.TabIndex = 3
+        Me.VHeatRemove.TabIndex = 1012
         Me.VHeatRemove.Text = "Remove"
         '
         'VHeatAdd
@@ -4159,7 +4176,7 @@ Public Class CeditMain
         Me.VHeatAdd.Location = New System.Drawing.Point(59, 242)
         Me.VHeatAdd.Name = "VHeatAdd"
         Me.VHeatAdd.Size = New System.Drawing.Size(75, 23)
-        Me.VHeatAdd.TabIndex = 1
+        Me.VHeatAdd.TabIndex = 1010
         Me.VHeatAdd.Text = "Add"
         '
         'GroupBox1
@@ -4188,7 +4205,7 @@ Public Class CeditMain
         Me.HHeatSummary.Rows.DefaultSize = 19
         Me.HHeatSummary.Size = New System.Drawing.Size(423, 168)
         Me.HHeatSummary.StyleInfo = resources.GetString("HHeatSummary.StyleInfo")
-        Me.HHeatSummary.TabIndex = 0
+        Me.HHeatSummary.TabIndex = 1001
         Me.HHeatSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupHHeats
@@ -4213,7 +4230,7 @@ Public Class CeditMain
         Me.HHeatComp2.Location = New System.Drawing.Point(139, 61)
         Me.HHeatComp2.Name = "HHeatComp2"
         Me.HHeatComp2.Size = New System.Drawing.Size(208, 21)
-        Me.HHeatComp2.TabIndex = 1
+        Me.HHeatComp2.TabIndex = 1007
         '
         'Label86
         '
@@ -4230,7 +4247,7 @@ Public Class CeditMain
         Me.HHeatFraction.Location = New System.Drawing.Point(139, 93)
         Me.HHeatFraction.Name = "HHeatFraction"
         Me.HHeatFraction.Size = New System.Drawing.Size(96, 20)
-        Me.HHeatFraction.TabIndex = 2
+        Me.HHeatFraction.TabIndex = 1008
         Me.HHeatFraction.Text = "1"
         '
         'HHeatComp1
@@ -4240,7 +4257,7 @@ Public Class CeditMain
         Me.HHeatComp1.Location = New System.Drawing.Point(139, 29)
         Me.HHeatComp1.Name = "HHeatComp1"
         Me.HHeatComp1.Size = New System.Drawing.Size(208, 21)
-        Me.HHeatComp1.TabIndex = 0
+        Me.HHeatComp1.TabIndex = 1006
         '
         'Label93
         '
@@ -4267,7 +4284,7 @@ Public Class CeditMain
         Me.HHeatDup.Location = New System.Drawing.Point(155, 242)
         Me.HHeatDup.Name = "HHeatDup"
         Me.HHeatDup.Size = New System.Drawing.Size(75, 23)
-        Me.HHeatDup.TabIndex = 2
+        Me.HHeatDup.TabIndex = 1003
         Me.HHeatDup.Text = "Duplicate"
         '
         'HHeatRemove
@@ -4275,7 +4292,7 @@ Public Class CeditMain
         Me.HHeatRemove.Location = New System.Drawing.Point(307, 242)
         Me.HHeatRemove.Name = "HHeatRemove"
         Me.HHeatRemove.Size = New System.Drawing.Size(75, 23)
-        Me.HHeatRemove.TabIndex = 3
+        Me.HHeatRemove.TabIndex = 1004
         Me.HHeatRemove.Text = "Remove"
         '
         'HHeatAdd
@@ -4283,7 +4300,7 @@ Public Class CeditMain
         Me.HHeatAdd.Location = New System.Drawing.Point(59, 242)
         Me.HHeatAdd.Name = "HHeatAdd"
         Me.HHeatAdd.Size = New System.Drawing.Size(75, 23)
-        Me.HHeatAdd.TabIndex = 1
+        Me.HHeatAdd.TabIndex = 1002
         Me.HHeatAdd.Text = "Add"
         '
         'TabMain
@@ -4301,11 +4318,11 @@ Public Class CeditMain
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
         Me.TabMain.Controls.Add(Me.TabVisuals)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
-        Me.TabMain.Location = New System.Drawing.Point(10, 2)
+        Me.TabMain.Location = New System.Drawing.Point(20, 1)
         Me.TabMain.Name = "TabMain"
         Me.TabMain.SelectedIndex = 0
         Me.TabMain.Size = New System.Drawing.Size(984, 618)
-        Me.TabMain.TabIndex = 0
+        Me.TabMain.TabIndex = 9999
         '
         'TabMaterials
         '
@@ -4327,7 +4344,7 @@ Public Class CeditMain
         Me.ThermalFromFile.Location = New System.Drawing.Point(476, 297)
         Me.ThermalFromFile.Name = "ThermalFromFile"
         Me.ThermalFromFile.Size = New System.Drawing.Size(75, 23)
-        Me.ThermalFromFile.TabIndex = 39
+        Me.ThermalFromFile.TabIndex = 204
         Me.ThermalFromFile.Text = "From File"
         '
         'ThermalRemove
@@ -4335,7 +4352,7 @@ Public Class CeditMain
         Me.ThermalRemove.Location = New System.Drawing.Point(626, 297)
         Me.ThermalRemove.Name = "ThermalRemove"
         Me.ThermalRemove.Size = New System.Drawing.Size(75, 23)
-        Me.ThermalRemove.TabIndex = 38
+        Me.ThermalRemove.TabIndex = 205
         Me.ThermalRemove.Text = "Remove"
         '
         'ThermalAdd
@@ -4343,7 +4360,7 @@ Public Class CeditMain
         Me.ThermalAdd.Location = New System.Drawing.Point(276, 297)
         Me.ThermalAdd.Name = "ThermalAdd"
         Me.ThermalAdd.Size = New System.Drawing.Size(75, 23)
-        Me.ThermalAdd.TabIndex = 36
+        Me.ThermalAdd.TabIndex = 202
         Me.ThermalAdd.Text = "Add"
         '
         'ThermalDup
@@ -4351,7 +4368,7 @@ Public Class CeditMain
         Me.ThermalDup.Location = New System.Drawing.Point(376, 297)
         Me.ThermalDup.Name = "ThermalDup"
         Me.ThermalDup.Size = New System.Drawing.Size(75, 23)
-        Me.ThermalDup.TabIndex = 37
+        Me.ThermalDup.TabIndex = 203
         Me.ThermalDup.Text = "Duplicate"
         '
         'ThermalSummary
@@ -4363,7 +4380,7 @@ Public Class CeditMain
         Me.ThermalSummary.Rows.Count = 126
         Me.ThermalSummary.Rows.DefaultSize = 17
         Me.ThermalSummary.Size = New System.Drawing.Size(752, 176)
-        Me.ThermalSummary.TabIndex = 34
+        Me.ThermalSummary.TabIndex = 201
         '
         'GroupThermal
         '
@@ -4393,7 +4410,7 @@ Public Class CeditMain
         Me.ThermalThickness.Location = New System.Drawing.Point(392, 79)
         Me.ThermalThickness.Name = "ThermalThickness"
         Me.ThermalThickness.Size = New System.Drawing.Size(80, 20)
-        Me.ThermalThickness.TabIndex = 7
+        Me.ThermalThickness.TabIndex = 211
         '
         'Label53
         '
@@ -4410,7 +4427,7 @@ Public Class CeditMain
         Me.ThermalConductivity.Location = New System.Drawing.Point(392, 47)
         Me.ThermalConductivity.Name = "ThermalConductivity"
         Me.ThermalConductivity.Size = New System.Drawing.Size(80, 20)
-        Me.ThermalConductivity.TabIndex = 4
+        Me.ThermalConductivity.TabIndex = 208
         '
         'Label62
         '
@@ -4427,7 +4444,7 @@ Public Class CeditMain
         Me.ThermalSpecificHeat.Location = New System.Drawing.Point(616, 47)
         Me.ThermalSpecificHeat.Name = "ThermalSpecificHeat"
         Me.ThermalSpecificHeat.Size = New System.Drawing.Size(80, 20)
-        Me.ThermalSpecificHeat.TabIndex = 5
+        Me.ThermalSpecificHeat.TabIndex = 209
         '
         'Label84
         '
@@ -4444,7 +4461,7 @@ Public Class CeditMain
         Me.ThermalLongName.Location = New System.Drawing.Point(300, 15)
         Me.ThermalLongName.Name = "ThermalLongName"
         Me.ThermalLongName.Size = New System.Drawing.Size(208, 20)
-        Me.ThermalLongName.TabIndex = 2
+        Me.ThermalLongName.TabIndex = 206
         '
         'Label94
         '
@@ -4461,7 +4478,7 @@ Public Class CeditMain
         Me.ThermalDensity.Location = New System.Drawing.Point(128, 79)
         Me.ThermalDensity.Name = "ThermalDensity"
         Me.ThermalDensity.Size = New System.Drawing.Size(80, 20)
-        Me.ThermalDensity.TabIndex = 6
+        Me.ThermalDensity.TabIndex = 210
         '
         'Label102
         '
@@ -4488,7 +4505,7 @@ Public Class CeditMain
         Me.ThermalEmissivity.Location = New System.Drawing.Point(616, 79)
         Me.ThermalEmissivity.Name = "ThermalEmissivity"
         Me.ThermalEmissivity.Size = New System.Drawing.Size(80, 20)
-        Me.ThermalEmissivity.TabIndex = 8
+        Me.ThermalEmissivity.TabIndex = 212
         '
         'Label104
         '
@@ -4505,7 +4522,7 @@ Public Class CeditMain
         Me.ThermalShortName.Location = New System.Drawing.Point(128, 47)
         Me.ThermalShortName.Name = "ThermalShortName"
         Me.ThermalShortName.Size = New System.Drawing.Size(80, 20)
-        Me.ThermalShortName.TabIndex = 3
+        Me.ThermalShortName.TabIndex = 207
         '
         'TabVisuals
         '
@@ -4549,7 +4566,7 @@ Public Class CeditMain
         Me.VisualizationZ.Location = New System.Drawing.Point(629, 129)
         Me.VisualizationZ.Name = "VisualizationZ"
         Me.VisualizationZ.Size = New System.Drawing.Size(140, 20)
-        Me.VisualizationZ.TabIndex = 118
+        Me.VisualizationZ.TabIndex = 1114
         '
         'Label32
         '
@@ -4565,7 +4582,7 @@ Public Class CeditMain
         Me.VisualizationY.Location = New System.Drawing.Point(629, 103)
         Me.VisualizationY.Name = "VisualizationY"
         Me.VisualizationY.Size = New System.Drawing.Size(140, 20)
-        Me.VisualizationY.TabIndex = 116
+        Me.VisualizationY.TabIndex = 1113
         '
         'Label31
         '
@@ -4581,7 +4598,7 @@ Public Class CeditMain
         Me.VisualizationX.Location = New System.Drawing.Point(629, 77)
         Me.VisualizationX.Name = "VisualizationX"
         Me.VisualizationX.Size = New System.Drawing.Size(140, 20)
-        Me.VisualizationX.TabIndex = 114
+        Me.VisualizationX.TabIndex = 1111
         '
         'VisualResolution
         '
@@ -4600,7 +4617,7 @@ Public Class CeditMain
         Me.VisualResolution.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VisualResolution.Size = New System.Drawing.Size(417, 187)
         Me.VisualResolution.StyleInfo = resources.GetString("VisualResolution.StyleInfo")
-        Me.VisualResolution.TabIndex = 1
+        Me.VisualResolution.TabIndex = 1110
         Me.VisualResolution.TabStop = False
         Me.VisualResolution.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
@@ -4643,7 +4660,7 @@ Public Class CeditMain
         Me.VisualSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VisualSummary.Size = New System.Drawing.Size(407, 197)
         Me.VisualSummary.StyleInfo = resources.GetString("VisualSummary.StyleInfo")
-        Me.VisualSummary.TabIndex = 102
+        Me.VisualSummary.TabIndex = 1101
         Me.VisualSummary.TabStop = False
         Me.VisualSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
@@ -4661,7 +4678,7 @@ Public Class CeditMain
         Me.VisualizationAdd.Location = New System.Drawing.Point(34, 244)
         Me.VisualizationAdd.Name = "VisualizationAdd"
         Me.VisualizationAdd.Size = New System.Drawing.Size(75, 23)
-        Me.VisualizationAdd.TabIndex = 106
+        Me.VisualizationAdd.TabIndex = 1102
         Me.VisualizationAdd.Text = "Add"
         '
         'VisualizationAxis
@@ -4672,7 +4689,7 @@ Public Class CeditMain
         Me.VisualizationAxis.MaxDropDownItems = 3
         Me.VisualizationAxis.Name = "VisualizationAxis"
         Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
-        Me.VisualizationAxis.TabIndex = 114
+        Me.VisualizationAxis.TabIndex = 1109
         '
         'VisualizationType
         '
@@ -4682,7 +4699,7 @@ Public Class CeditMain
         Me.VisualizationType.MaxDropDownItems = 3
         Me.VisualizationType.Name = "VisualizationType"
         Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
-        Me.VisualizationType.TabIndex = 107
+        Me.VisualizationType.TabIndex = 1106
         '
         'VisualizationValueLabel
         '
@@ -4698,7 +4715,7 @@ Public Class CeditMain
         Me.VisualizationDup.Location = New System.Drawing.Point(130, 244)
         Me.VisualizationDup.Name = "VisualizationDup"
         Me.VisualizationDup.Size = New System.Drawing.Size(75, 23)
-        Me.VisualizationDup.TabIndex = 104
+        Me.VisualizationDup.TabIndex = 1103
         Me.VisualizationDup.Text = "Duplicate"
         '
         'Label29
@@ -4716,14 +4733,14 @@ Public Class CeditMain
         Me.VisualizationComp.Location = New System.Drawing.Point(629, 123)
         Me.VisualizationComp.Name = "VisualizationComp"
         Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
-        Me.VisualizationComp.TabIndex = 108
+        Me.VisualizationComp.TabIndex = 1107
         '
         'VisualizationDefaults
         '
         Me.VisualizationDefaults.Location = New System.Drawing.Point(321, 244)
         Me.VisualizationDefaults.Name = "VisualizationDefaults"
         Me.VisualizationDefaults.Size = New System.Drawing.Size(109, 23)
-        Me.VisualizationDefaults.TabIndex = 103
+        Me.VisualizationDefaults.TabIndex = 1105
         Me.VisualizationDefaults.Text = "Add Defaults"
         '
         'Label7
@@ -4740,14 +4757,14 @@ Public Class CeditMain
         Me.VisualizationValue.Location = New System.Drawing.Point(629, 152)
         Me.VisualizationValue.Name = "VisualizationValue"
         Me.VisualizationValue.Size = New System.Drawing.Size(140, 20)
-        Me.VisualizationValue.TabIndex = 109
+        Me.VisualizationValue.TabIndex = 1108
         '
         'VisualizationRemove
         '
         Me.VisualizationRemove.Location = New System.Drawing.Point(226, 244)
         Me.VisualizationRemove.Name = "VisualizationRemove"
         Me.VisualizationRemove.Size = New System.Drawing.Size(75, 23)
-        Me.VisualizationRemove.TabIndex = 105
+        Me.VisualizationRemove.TabIndex = 1104
         Me.VisualizationRemove.Text = "Remove"
         '
         'OpenDataFileDialog
@@ -4775,7 +4792,7 @@ Public Class CeditMain
         Me.MainSave.Location = New System.Drawing.Point(313, 638)
         Me.MainSave.Name = "MainSave"
         Me.MainSave.Size = New System.Drawing.Size(75, 23)
-        Me.MainSave.TabIndex = 1
+        Me.MainSave.TabIndex = 2
         Me.MainSave.Text = "Save"
         '
         'MainRun
@@ -4783,7 +4800,7 @@ Public Class CeditMain
         Me.MainRun.Location = New System.Drawing.Point(543, 638)
         Me.MainRun.Name = "MainRun"
         Me.MainRun.Size = New System.Drawing.Size(75, 23)
-        Me.MainRun.TabIndex = 3
+        Me.MainRun.TabIndex = 4
         Me.MainRun.Text = "Run"
         '
         'MainGeometry
@@ -4791,7 +4808,7 @@ Public Class CeditMain
         Me.MainGeometry.Location = New System.Drawing.Point(462, 638)
         Me.MainGeometry.Name = "MainGeometry"
         Me.MainGeometry.Size = New System.Drawing.Size(75, 23)
-        Me.MainGeometry.TabIndex = 2
+        Me.MainGeometry.TabIndex = 3
         Me.MainGeometry.Text = "Geometry"
         '
         'MainOpen
@@ -4799,25 +4816,8 @@ Public Class CeditMain
         Me.MainOpen.Location = New System.Drawing.Point(232, 638)
         Me.MainOpen.Name = "MainOpen"
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
-        Me.MainOpen.TabIndex = 0
+        Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
-        '
-        'FireTSYield
-        '
-        Me.FireTSYield.Location = New System.Drawing.Point(206, 147)
-        Me.FireTSYield.Name = "FireTSYield"
-        Me.FireTSYield.Size = New System.Drawing.Size(80, 20)
-        Me.FireTSYield.TabIndex = 158
-        '
-        'Label115
-        '
-        Me.Label115.AutoSize = True
-        Me.Label115.Location = New System.Drawing.Point(147, 151)
-        Me.Label115.Name = "Label115"
-        Me.Label115.Size = New System.Drawing.Size(50, 13)
-        Me.Label115.TabIndex = 159
-        Me.Label115.Text = "TS Yield:"
-        Me.Label115.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'CeditMain
         '

@@ -54,8 +54,10 @@ Public Class Environment
             Return aTitle
         End Get
         Set(ByVal Value As String)
-            aChanged = True
-            aTitle = Value
+            If Value <> aTitle Then
+                aChanged = True
+                aTitle = Value
+            End If
         End Set
     End Property
     Friend Property SimulationTime() As Integer
@@ -239,9 +241,11 @@ Public Class Environment
             Return myUnits.Convert(UnitsNum.Time).FromSI(aMaximumTimeStep)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aMaximumTimeStep Then
-                aMaximumTimeStep = myUnits.Convert(UnitsNum.Time).ToSI(Value)
-                aChanged = True
+            If Value <> 0 Then
+                If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aMaximumTimeStep Then
+                    aMaximumTimeStep = myUnits.Convert(UnitsNum.Time).ToSI(Value)
+                    aChanged = True
+                End If
             End If
         End Set
     End Property

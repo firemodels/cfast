@@ -1,0 +1,43 @@
+# mac file
+.DS_Store
+._*
+
+# compiler output files
+*.exe
+*.o
+*.mod
+*.obj
+*.pdb
+*.exp
+*.lib
+
+# fds executables
+cfast7_intel_*
+
+# latex output files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.err
+*.lof
+*.log
+*.out
+*.pdfsync
+*.toc
+
+# cfast output files
+*_n.csv 
+*_s.csv 
+*_f.csv 
+*_w.csv 
+*_zone.csv 
+*.out 
+*.smv 
+*.plt 
+*.status 
+*.log 
+*.sf 
+*_slice.info 
+*.iso 
+

@@ -3353,11 +3353,11 @@ Public Class CeditMain
         'Label63
         '
         Me.Label63.AutoSize = True
-        Me.Label63.Location = New System.Drawing.Point(316, 122)
+        Me.Label63.Location = New System.Drawing.Point(337, 122)
         Me.Label63.Name = "Label63"
-        Me.Label63.Size = New System.Drawing.Size(74, 13)
+        Me.Label63.Size = New System.Drawing.Size(53, 13)
         Me.Label63.TabIndex = 82
-        Me.Label63.Text = "Ignition Value:"
+        Me.Label63.Text = "Set Point:"
         Me.Label63.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Label58
@@ -5741,7 +5741,6 @@ Public Class CeditMain
             End If
         End If
     End Sub
-
     Private ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
         ' Find the last non-blank row of a grid on the GUI
         Get

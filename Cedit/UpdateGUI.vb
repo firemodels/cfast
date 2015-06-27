@@ -865,7 +865,7 @@ Public Class UpdateGUI
         Next
         Dim lp As New NPlot.LinePlot(y, x)
         MainWin.FirePlot.Add(lp)
-        MainWin.FirePlot.Title = aFire.Name + " HRR"
+        MainWin.FirePlot.Title = aFire.Name + ": " + MainWin.FireDataSS(0, iSelectedColumn).ToString.Replace(Chr(10), " ")
         MainWin.FirePlot.Refresh()
     End Sub
     Public Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)

@@ -251,21 +251,9 @@
     
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
-    real(eb) :: gamcut, zzz, gammax, delp, delden, rho, eps, x, coef, epscut, srdelp, fnoise, w
-    real(eb) :: gg, ff, rho2, v, cshape, d, delpfd, dpddpf, vexmax, vex
+    real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
+    real(eb) :: v, cshape, d, delpflood, vex
     integer :: i
-    logical firstc
-
-    data firstc /.true./
-    save firstc, gamcut, gammax
-
-    ! initialization code - executed the first time ventcf is called.
-    if (firstc) then
-        firstc = .false.
-        gamcut = (2.0_eb/(gamma+1.0_eb))**(gamma/(gamma-1.0_eb))
-        zzz = gamma*((2.0_eb/(gamma+1.0_eb))**((gamma+1.0_eb)/(gamma-1.0_eb)))
-        gammax = sqrt(zzz)
-    endif
 
     ! calculate the pabs(i), delp, the other properties adjacent to the two sides of the vent, and delden.
     dp(1) = 0.0_eb
@@ -290,7 +278,7 @@
     delp = relp(2) + dp(2) - (relp(1)+dp(1))
 
     ! if the room above or the room below is dead then  there is no pressure difference at vent opening
-    if(deadroom(itop).ne.0.and.deadroom(ibot).ne.0.and.deadroom(itop).eq.ibot.or.deadroom(ibot).eq.itop)delp=0.0_eb
+    if(deadroom(itop).ne.0.and.deadroom(ibot).ne.0.and.deadroom(itop).eq.ibot.or.deadroom(ibot).eq.itop) delp=0.0_eb
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
@@ -318,36 +306,22 @@
     endif
     delden = den(1) - den(2)
 
-    ! calculate vst(i), the "standard" volume rate of flow through the vent into space i
     if (delp>=0.0_eb) then
         rho = den(2)
-        eps = delp/pabs(2)
     else
         rho = den(1)
-        eps = -delp/pabs(1)
     endif
-    x = 1.0_eb - eps
-    coef = 0.68_eb + 0.17_eb*eps
+    
+    ! calculate factor to dampen very small flows to zero to keep dae solver happy
     epscut = epsp*max (1.0_eb, relp(1), relp(2))
     epscut = sqrt(epscut)
     srdelp = sqrt(abs(delp))
     fnoise = 1.0_eb
     if ((srdelp/epscut)<=130.0_eb) fnoise = 1.0_eb - exp(-srdelp/epscut)
-    if (eps<=0.1e-5_eb) then
-        w = 1.0_eb - 0.75_eb*eps/gamma
-    else
-        if (eps<gamcut) then
-            gg = x**(1.0_eb/gamma)
-            ff = sqrt((2.0_eb*gamma/(gamma-1.0_eb))*gg*gg*(1.0_eb-x/gg))
-        else
-            ff = gammax
-        endif
-        w = ff/sqrt(eps+eps)
-    endif
-    rho2 = 2.0_eb/rho
-    v = fnoise*coef*w*sqrt(rho2)*avent*srdelp
+    
+    ! calculate steady flow and its direction (delp > 0, delp < 0 and delp = 0)
+    v = 0.68_eb*avent*sqrt(2.0_eb*abs(delp)/rho)*fnoise
 
-    ! calculate vst for delp > 0, delp < 0 and delp = 0
     if (delp>0.0_eb) then
         vst(1) = v
         vst(2) = 0.0_eb
@@ -370,10 +344,8 @@
             cshape = 0.942_eb
             d = sqrt(avent)
         endif
-        delpfd = cshape**2*grav_con*delden*d**5/(2.0_eb*avent**2)
-        dpddpf = abs(delp/delpfd)
-        vexmax = 0.1_eb*sqrt(2.0_eb*grav_con*delden*sqrt(avent**5)/(den(1)+den(2)))
-        vex = max(vexmax*(1.0_eb-dpddpf),0.0_eb)
+        delpflood = cshape**2*grav_con*delden*d**5/(2.0_eb*avent**2)
+        vex = max(0.1_eb*sqrt(2.0_eb*grav_con*delden*sqrt(avent**5)/(den(1)+den(2)))*(1.0_eb-abs(delp/delpflood)),0.0_eb)
     else
 
         ! stable configuration, set vex = 0

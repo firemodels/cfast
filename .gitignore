@@ -25,6 +25,8 @@ cfast7_intel_*
 *.log
 *.out
 *.pdfsync
+*.sav
+*.synctex
 *.toc
 
 # cfast output files

@@ -534,6 +534,7 @@ Public Class UpdateGUI
             MainWin.GroupTargets.Text = "Target " + (index + 1).ToString + " (of " + myTargets.Count.ToString + ") Geometry"
             Dim aTarget As New Target, aCompartment As Compartment
             aTarget = myTargets(index)
+            MainWin.TargetName.Text = aTarget.Name
             If aTarget.Compartment <= -1 Then
                 MainWin.TargetComp.SelectedIndex = -1
             ElseIf aTarget.Compartment >= 0 And aTarget.Compartment <= myCompartments.Count - 1 Then
@@ -580,22 +581,23 @@ Public Class UpdateGUI
                 For i = 1 To numTargets
                     aTarget = myTargets(i - 1)
                     MainWin.TargetSummary(i, 0) = i.ToString
+                    MainWin.TargetSummary(i, 1) = aTarget.Name
                     If aTarget.Compartment >= 0 And aTarget.Compartment <= myCompartments.Count - 1 Then
-                        MainWin.TargetSummary(i, 1) = myCompartments(aTarget.Compartment).Name
+                        MainWin.TargetSummary(i, 2) = myCompartments(aTarget.Compartment).Name
                     ElseIf aTarget.Compartment = -1 Then
-                        MainWin.TargetSummary(i, 1) = "Outside"
+                        MainWin.TargetSummary(i, 2) = "Outside"
                     Else
-                        MainWin.TargetSummary(i, 1) = "Not defined"
+                        MainWin.TargetSummary(i, 2) = "Not defined"
                     End If
-                    MainWin.TargetSummary(i, 2) = aTarget.XPosition.ToString
-                    MainWin.TargetSummary(i, 3) = aTarget.YPosition.ToString
-                    MainWin.TargetSummary(i, 4) = aTarget.ZPosition.ToString
-                    MainWin.TargetSummary(i, 5) = aTarget.XNormal.ToString
-                    MainWin.TargetSummary(i, 6) = aTarget.YNormal.ToString
-                    MainWin.TargetSummary(i, 7) = aTarget.ZNormal.ToString
-                    MainWin.TargetSummary(i, 8) = aTarget.Material
-                    MainWin.TargetSummary(i, 9) = SolutionMethodNames.Substring((aTarget.SolutionMethod) * 8, 8)
-                    MainWin.TargetSummary(i, 10) = SolutionThicknessNames.Substring((aTarget.SolutionThickness) * 11, 11)
+                    MainWin.TargetSummary(i, 3) = aTarget.XPosition.ToString
+                    MainWin.TargetSummary(i, 4) = aTarget.YPosition.ToString
+                    MainWin.TargetSummary(i, 5) = aTarget.ZPosition.ToString
+                    MainWin.TargetSummary(i, 6) = aTarget.XNormal.ToString
+                    MainWin.TargetSummary(i, 7) = aTarget.YNormal.ToString
+                    MainWin.TargetSummary(i, 8) = aTarget.ZNormal.ToString
+                    MainWin.TargetSummary(i, 9) = aTarget.Material
+                    MainWin.TargetSummary(i, 10) = SolutionMethodNames.Substring((aTarget.SolutionMethod) * 8, 8)
+                    MainWin.TargetSummary(i, 11) = SolutionThicknessNames.Substring((aTarget.SolutionThickness) * 11, 11)
                 Next
                 MainWin.TargetSummary.Select(index + 1, 0, index + 1, MainWin.TargetSummary.Cols.Count - 1, True)
             End If

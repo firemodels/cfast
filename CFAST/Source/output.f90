@@ -568,10 +568,10 @@
                     if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
                     if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
                     if (total/=0.0_eb) then
-                        write(iofilo,5030)itarg,tg-kelvin_c_offset,tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
-                        total,ftotal,wtotal,gtotal,ctotal
+                        write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                        tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
                     else
-                        write(iofilo,5030)itarg,tg-kelvin_c_offset,tttemp-kelvin_c_offset,tctemp-kelvin_c_offset
+                        write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                     endif
                 endif
             end do
@@ -579,14 +579,14 @@
     end do
     return
 5000 format (//,'SURFACES AND TARGETS',//, &
-    'Compartment    Ceiling   Up wall   Low wall  Floor    Target    Gas       ', &
+    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       ', &
     'Surface   Center   Flux To      Fire         Surface      Gas',/, &
-    '               Temp.     Temp.     Temp.     Temp.              Temp.     ', &
+    '               Temp.     Temp.     Temp.     Temp.                  Temp.     ', &
     'Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
-    '               (C)       (C)       (C)       (C)                (C)       ', &
-         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,154('-'))
+    '               (C)       (C)       (C)       (C)                    (C)       ', &
+         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,158('-'))
 5010 format (a14,4(1pg10.3))
-5030 format (54x,i4,4x,3(1pg10.3),1x,5(1pg10.3,3x))
+5030 format (54x,a8,4x,3(1pg10.3),1x,5(1pg10.3,3x))
     end subroutine rslttar
 
 ! --------------------------- rsltsprink -------------------------------------------

@@ -117,7 +117,7 @@ module cfast_main
 
     logical :: activs(ns), surface_on_switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
-    character(128) :: title, compartmentnames(nr)
+    character(128) :: title, compartmentnames(nr), targetnames(mxtarg)
    
     type(fire_type), target :: fireinfo(mxfire)
      
@@ -303,7 +303,6 @@ module objects2
     save
 
     logical, dimension(0:mxfires) :: objdef
-    character(60), dimension(mxfires) :: objnam(mxfires)
     character(60), dimension(0:mxfires) :: omatl
     integer, dimension(mxfires) :: objlfm,objtyp,obtarg, objset
     

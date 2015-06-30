@@ -263,6 +263,7 @@ Friend Module Data
         method
         equationType
         internalLocation
+        name
     End Enum
 
     Friend Enum hheatNum

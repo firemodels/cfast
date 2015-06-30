@@ -21,6 +21,7 @@ Public Class Target
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aType As Integer                    ' 0 for target and 1 for detector
+    Private aName As String                     ' Target name (at the moment, only used for targets, not detectors)
     Private aCompartment As Integer             ' Compartment number where target or detector is located
     Private aXPosition As Single                ' X Position of target or detector
     Private aYPosition As Single                ' Y Position of target or detector
@@ -40,6 +41,7 @@ Public Class Target
     Private HasErrors As Integer                ' Temp variable that holds error count during error check
 
     Public Sub New()
+        aName = ""
         aCompartment = -2
         aXPosition = -1.0
         aYPosition = -1.0
@@ -57,6 +59,17 @@ Public Class Target
         aRTI = 100
         aSprayDensity = 0.00007
     End Sub
+    Public Property Name() As String
+        Get
+            Return aName
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aName Then
+                aChanged = True
+                aName = Value
+            End If
+        End Set
+    End Property
     Public Property Type() As Integer
         Get
             Return aType

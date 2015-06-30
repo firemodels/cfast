@@ -11,6 +11,8 @@ Public Class CeditMain
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Friend WithEvents FireTSYield As System.Windows.Forms.TextBox
     Friend WithEvents Label115 As System.Windows.Forms.Label
+    Friend WithEvents TargetName As System.Windows.Forms.TextBox
+    Friend WithEvents Label116 As System.Windows.Forms.Label
     Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 #Region " Windows Form Designer generated code "
 
@@ -742,6 +744,8 @@ Public Class CeditMain
         Me.TabTargets = New System.Windows.Forms.TabPage()
         Me.TargetSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupTargets = New System.Windows.Forms.GroupBox()
+        Me.TargetName = New System.Windows.Forms.TextBox()
+        Me.Label116 = New System.Windows.Forms.Label()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.TargetInternalLocation = New System.Windows.Forms.TextBox()
         Me.Label59 = New System.Windows.Forms.Label()
@@ -2889,13 +2893,12 @@ Public Class CeditMain
         Me.FireSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.FireSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.FireSummary.ColumnInfo = resources.GetString("FireSummary.ColumnInfo")
-        Me.FireSummary.ExtendLastCol = True
         Me.FireSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.FireSummary.Location = New System.Drawing.Point(16, 16)
+        Me.FireSummary.Location = New System.Drawing.Point(28, 16)
         Me.FireSummary.Name = "FireSummary"
         Me.FireSummary.Rows.Count = 101
         Me.FireSummary.Rows.DefaultSize = 19
-        Me.FireSummary.Size = New System.Drawing.Size(682, 81)
+        Me.FireSummary.Size = New System.Drawing.Size(641, 81)
         Me.FireSummary.StyleInfo = resources.GetString("FireSummary.StyleInfo")
         Me.FireSummary.TabIndex = 701
         Me.FireSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
@@ -3697,18 +3700,20 @@ Public Class CeditMain
         Me.TargetSummary.ColumnInfo = resources.GetString("TargetSummary.ColumnInfo")
         Me.TargetSummary.ExtendLastCol = True
         Me.TargetSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.TargetSummary.Location = New System.Drawing.Point(127, 55)
+        Me.TargetSummary.Location = New System.Drawing.Point(117, 55)
         Me.TargetSummary.Name = "TargetSummary"
         Me.TargetSummary.Rows.Count = 101
         Me.TargetSummary.Rows.DefaultSize = 19
         Me.TargetSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.TargetSummary.Size = New System.Drawing.Size(722, 136)
+        Me.TargetSummary.Size = New System.Drawing.Size(742, 136)
         Me.TargetSummary.StyleInfo = resources.GetString("TargetSummary.StyleInfo")
         Me.TargetSummary.TabIndex = 801
         Me.TargetSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupTargets
         '
+        Me.GroupTargets.Controls.Add(Me.TargetName)
+        Me.GroupTargets.Controls.Add(Me.Label116)
         Me.GroupTargets.Controls.Add(Me.GroupBox3)
         Me.GroupTargets.Controls.Add(Me.Label80)
         Me.GroupTargets.Controls.Add(Me.Label79)
@@ -3723,6 +3728,24 @@ Public Class CeditMain
         Me.GroupTargets.TabIndex = 7
         Me.GroupTargets.TabStop = False
         Me.GroupTargets.Text = "Target 1"
+        '
+        'TargetName
+        '
+        Me.TargetName.Location = New System.Drawing.Point(113, 34)
+        Me.TargetName.Name = "TargetName"
+        Me.TargetName.Size = New System.Drawing.Size(98, 20)
+        Me.TargetName.TabIndex = 811
+        Me.TargetName.Text = "New Target"
+        '
+        'Label116
+        '
+        Me.Label116.AutoSize = True
+        Me.Label116.Location = New System.Drawing.Point(69, 38)
+        Me.Label116.Name = "Label116"
+        Me.Label116.Size = New System.Drawing.Size(38, 13)
+        Me.Label116.TabIndex = 810
+        Me.Label116.Text = "Name:"
+        Me.Label116.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox3
         '
@@ -3816,7 +3839,7 @@ Public Class CeditMain
         'Label80
         '
         Me.Label80.AutoSize = True
-        Me.Label80.Location = New System.Drawing.Point(596, 23)
+        Me.Label80.Location = New System.Drawing.Point(586, 23)
         Me.Label80.Name = "Label80"
         Me.Label80.Size = New System.Drawing.Size(87, 13)
         Me.Label80.TabIndex = 29
@@ -3826,7 +3849,7 @@ Public Class CeditMain
         'Label79
         '
         Me.Label79.AutoSize = True
-        Me.Label79.Location = New System.Drawing.Point(373, 23)
+        Me.Label79.Location = New System.Drawing.Point(605, 52)
         Me.Label79.Name = "Label79"
         Me.Label79.Size = New System.Drawing.Size(68, 13)
         Me.Label79.TabIndex = 40
@@ -3837,7 +3860,7 @@ Public Class CeditMain
         '
         Me.TargetSolutionMethod.ItemHeight = 13
         Me.TargetSolutionMethod.Items.AddRange(New Object() {"Implicit", "Explicit", "Steady"})
-        Me.TargetSolutionMethod.Location = New System.Drawing.Point(692, 19)
+        Me.TargetSolutionMethod.Location = New System.Drawing.Point(682, 19)
         Me.TargetSolutionMethod.Name = "TargetSolutionMethod"
         Me.TargetSolutionMethod.Size = New System.Drawing.Size(104, 21)
         Me.TargetSolutionMethod.TabIndex = 809
@@ -3847,7 +3870,7 @@ Public Class CeditMain
         '
         Me.TargetSolutionThickness.ItemHeight = 13
         Me.TargetSolutionThickness.Items.AddRange(New Object() {"Thermally Thick", "Thermally Thin", "Cylindrical"})
-        Me.TargetSolutionThickness.Location = New System.Drawing.Point(450, 19)
+        Me.TargetSolutionThickness.Location = New System.Drawing.Point(682, 48)
         Me.TargetSolutionThickness.Name = "TargetSolutionThickness"
         Me.TargetSolutionThickness.Size = New System.Drawing.Size(104, 21)
         Me.TargetSolutionThickness.TabIndex = 808
@@ -3857,7 +3880,7 @@ Public Class CeditMain
         '
         Me.TargetComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.TargetComp.ItemHeight = 13
-        Me.TargetComp.Location = New System.Drawing.Point(140, 19)
+        Me.TargetComp.Location = New System.Drawing.Point(343, 33)
         Me.TargetComp.Name = "TargetComp"
         Me.TargetComp.Size = New System.Drawing.Size(208, 21)
         Me.TargetComp.TabIndex = 807
@@ -3865,7 +3888,7 @@ Public Class CeditMain
         'Label74
         '
         Me.Label74.AutoSize = True
-        Me.Label74.Location = New System.Drawing.Point(59, 23)
+        Me.Label74.Location = New System.Drawing.Point(262, 37)
         Me.Label74.Name = "Label74"
         Me.Label74.Size = New System.Drawing.Size(72, 13)
         Me.Label74.TabIndex = 34
@@ -5778,6 +5801,7 @@ Public Class CeditMain
         If myTargets.Count + 1 <= Target.MaximumTargets Then
             Dim aTarget As New Target
             aTarget.Type = Target.TypeTarget
+            aTarget.Name = "Targ " + (myTargets.Count + 1).ToString
             myTargets.Add(aTarget)
             CurrentTarget = myTargets.Count - 1
             UpdateGUI.Targets(CurrentTarget)
@@ -5823,10 +5847,13 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
-    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, TargetSolutionThickness.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave
+    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, _
+        TargetSolutionThickness.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, _
+        TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
         Dim aTarget As New Target, numFires As Integer, i As Integer
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
+            If sender Is Me.TargetName Then aTarget.Name = Me.TargetName.Text
             If sender Is Me.TargetComp Then
                 aTarget.Compartment = Me.TargetComp.SelectedIndex
                 If Val(Me.TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(Me.TargetXPosition.Text)
@@ -6496,6 +6523,7 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub SaveDataFile(ByVal Prompt As Boolean)
+        Dim PathName As String
         myUnits.SI = True
         If myEnvironment.FileChanged() Then
             If Prompt Or myEnvironment.InputFileName = Nothing Or myEnvironment.InputFileName = "" Then
@@ -6503,6 +6531,8 @@ Public Class CeditMain
                 Me.SaveDataFileDialog.OverwritePrompt = True
                 If SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     If Me.SaveDataFileDialog.FileName <> " " Then
+                        PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
+                        ChDir(PathName)
                         ' Write out the data file since it has been changed
                         WriteInputFile(Me.SaveDataFileDialog.FileName)
                         myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName

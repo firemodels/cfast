@@ -1423,7 +1423,14 @@
             else
                 xxtarg(trginterior,ntarg) = 0.5
             endif
-
+            
+            ! target name
+            if (countargs(lcarray)>=12) then
+                targetnames(ntarg) = lcarray(12)
+            else
+                write (targetnames(ntarg),'(a5,i0)') 'Targ ', ntarg
+            end if
+            
             ! material type
             tcname = lcarray(8)
             if(tcname==' ') tcname='DEFAULT'
@@ -2034,6 +2041,7 @@
     endif
     obtarg(iobj) = ntarg
     cxtarg(ntarg) = omatl(iobj)
+    
 
     ! Initialize object target
     call set_target_object (ntarg,iobj)
@@ -2176,6 +2184,7 @@
 
     use cfast_main
     use fltarget
+    use objects1, only: objnin
     use objects2
     implicit none
     
@@ -2183,6 +2192,7 @@
 
     integer :: i
 
+    targetnames(itarg) = objnin(iobj)
     ixtarg(trgroom,itarg) = objrm(iobj)
     do i = 0,2
         xxtarg(trgcenx+i,itarg) = objpos(1+i,iobj)

@@ -322,6 +322,11 @@ Module IO
                         Else
                             aDetect.InternalLocation = 0.5
                         End If
+                        If csv.str(i, targetNum.name).Length > 0 Then
+                            aDetect.Name = csv.str(i, targetNum.name)
+                        Else
+                            aDetect.Name = "Targ " + (myTargets.Count + 1).ToString
+                        End If
                         aDetect.Changed = False
                         myTargets.Add(aDetect)
                     Case "THRMF"
@@ -1074,35 +1079,6 @@ Module IO
             aFire.Changed = False
         Next
 
-        'comment header for heat transfer section
-        If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
-        'HHeat and VHeat
-        For j = 0 To myHHeats.Count - 1
-            aVent = myHHeats.Item(j)
-            csv.str(i, CFASTlnNum.keyWord) = "HHEAT"
-            csv.Num(i, hheatNum.firstCompartment) = aVent.FirstCompartment + 1
-            csv.Num(i, hheatNum.num) = 1
-            If csv.Num(i, hheatNum.secondCompartment) = -1 Then
-                csv.Num(i, hheatNum.secondCompartment) = myCompartments.Count + 1
-            Else
-                csv.Num(i, hheatNum.secondCompartment) = aVent.SecondCompartment + 1
-            End If
-            csv.Num(i, hheatNum.fraction) = aVent.InitialOpening
-            aVent.Changed = False
-            i += 1
-        Next
-        For j = 0 To myVHeats.Count - 1
-            aVent = myVHeats.Item(j)
-            csv.str(i, CFASTlnNum.keyWord) = "VHEAT"
-            csv.Num(i, vheatNum.firstcompartment) = aVent.FirstCompartment + 1
-            csv.Num(i, vheatNum.secondcompartment) = aVent.SecondCompartment + 1
-            If csv.Num(i, vheatNum.firstcompartment) = 0 Then _
-                                            csv.Num(i, vheatNum.firstcompartment) = myCompartments.Count + 1
-            If csv.Num(i, vheatNum.secondcompartment) = 0 Then _
-                csv.Num(i, vheatNum.secondcompartment) = myCompartments.Count + 1
-            aVent.Changed = False
-            i += 1
-        Next
         'comment header of targets and detectors
         If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "Target and detector keywords")
         'detectors
@@ -1157,9 +1133,41 @@ Module IO
             Else
                 csv.str(i, targetNum.method) = "IMPLICIT"
             End If
+            csv.str(i, targetNum.name) = aDetect.Name
             aDetect.Changed = False
             i += 1
         Next
+
+        'comment header for heat transfer section
+        If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
+        'HHeat and VHeat
+        For j = 0 To myHHeats.Count - 1
+            aVent = myHHeats.Item(j)
+            csv.str(i, CFASTlnNum.keyWord) = "HHEAT"
+            csv.Num(i, hheatNum.firstCompartment) = aVent.FirstCompartment + 1
+            csv.Num(i, hheatNum.num) = 1
+            If csv.Num(i, hheatNum.secondCompartment) = -1 Then
+                csv.Num(i, hheatNum.secondCompartment) = myCompartments.Count + 1
+            Else
+                csv.Num(i, hheatNum.secondCompartment) = aVent.SecondCompartment + 1
+            End If
+            csv.Num(i, hheatNum.fraction) = aVent.InitialOpening
+            aVent.Changed = False
+            i += 1
+        Next
+        For j = 0 To myVHeats.Count - 1
+            aVent = myVHeats.Item(j)
+            csv.str(i, CFASTlnNum.keyWord) = "VHEAT"
+            csv.Num(i, vheatNum.firstcompartment) = aVent.FirstCompartment + 1
+            csv.Num(i, vheatNum.secondcompartment) = aVent.SecondCompartment + 1
+            If csv.Num(i, vheatNum.firstcompartment) = 0 Then _
+                                            csv.Num(i, vheatNum.firstcompartment) = myCompartments.Count + 1
+            If csv.Num(i, vheatNum.secondcompartment) = 0 Then _
+                csv.Num(i, vheatNum.secondcompartment) = myCompartments.Count + 1
+            aVent.Changed = False
+            i += 1
+        Next
+
         'comment header of visualizations
         If myVisuals.Count > 0 Then
             AddHeadertoOutput(csv, i, "visualizations")

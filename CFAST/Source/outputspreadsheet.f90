@@ -42,8 +42,6 @@
         endif
         call ssaddtolist (position,zzvol(i,upper),outarray)
         call ssaddtolist (position,zzrelp(i) - interior_rel_pressure(i),outarray)
-        call ssaddtolist (position,ontarget(i),outarray)
-        call ssaddtolist (position,xxtarg(trgnfluxf,itarg),outarray)
     end do
 
     ! Fires
@@ -269,50 +267,44 @@
         end do
     end do
 
-    ! now do the additional targets if defined
-    do i = 1, nm1
-        if (ntarg>nm1) then
-            do itarg = 1, ntarg-nm1
-                if (ixtarg(trgroom,itarg)==i) then
-                    tgtemp = tgtarg(itarg)
-                    if (ixtarg(trgeq,itarg)==cylpde) then
-                        tttemp = xxtarg(idx_tempb_trg,itarg)
-                        itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
-                        tctemp = xxtarg(itctemp,itarg)
-                    else
-                        tttemp = xxtarg(idxtempf_trg,itarg)
-                        itctemp = (idxtempf_trg+idx_tempb_trg)/2
-                        tctemp = xxtarg(itctemp,itarg)
-                    endif
-                    if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
-                    if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
-                    if (validate.or.netheatflux) then
-                        total = gtflux(itarg,t_total) /1000.0_eb
-                        ftotal = gtflux(itarg,t_ftotal) /1000.0_eb
-                        wtotal = gtflux(itarg,t_wtotal) /1000.0_eb
-                        gtotal = gtflux(itarg,t_gtotal) /1000.0_eb
-                        ctotal = gtflux(itarg,t_ctotal) /1000.0_eb
-                        rtotal = total - ctotal
-                    else
-                        total = xxtarg(trgtfluxf,itarg)
-                        ftotal = qtfflux(itarg,1)
-                        wtotal = qtwflux(itarg,1)
-                        gtotal = qtgflux(itarg,1)
-                        ctotal = qtcflux(itarg,1)
-                        rtotal = total - ctotal
-                    endif
-                    call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
-                    call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
-                    call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
-                    call SSaddtolist (position, total, outarray)
-                    call SSaddtolist (position, ctotal, outarray)
-                    call SSaddtolist (position, rtotal, outarray)
-                    call SSaddtolist (position, ftotal, outarray)
-                    call SSaddtolist (position, wtotal, outarray)
-                    call SSaddtolist (position, gtotal, outarray)
-                endif
-            end do
+    ! now do targets if defined
+    do itarg = 1, ntarg
+        tgtemp = tgtarg(itarg)
+        if (ixtarg(trgeq,itarg)==cylpde) then
+            tttemp = xxtarg(idx_tempb_trg,itarg)
+            itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
+            tctemp = xxtarg(itctemp,itarg)
+        else
+            tttemp = xxtarg(idxtempf_trg,itarg)
+            itctemp = (idxtempf_trg+idx_tempb_trg)/2
+            tctemp = xxtarg(itctemp,itarg)
         endif
+        if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
+        if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
+        if (validate.or.netheatflux) then
+            total = gtflux(itarg,t_total) /1000.0_eb
+            ftotal = gtflux(itarg,t_ftotal) /1000.0_eb
+            wtotal = gtflux(itarg,t_wtotal) /1000.0_eb
+            gtotal = gtflux(itarg,t_gtotal) /1000.0_eb
+            ctotal = gtflux(itarg,t_ctotal) /1000.0_eb
+            rtotal = total - ctotal
+        else
+            total = xxtarg(trgtfluxf,itarg)
+            ftotal = qtfflux(itarg,1)
+            wtotal = qtwflux(itarg,1)
+            gtotal = qtgflux(itarg,1)
+            ctotal = qtcflux(itarg,1)
+            rtotal = total - ctotal
+        endif
+        call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
+        call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
+        call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
+        call SSaddtolist (position, total, outarray)
+        call SSaddtolist (position, ctotal, outarray)
+        call SSaddtolist (position, rtotal, outarray)
+        call SSaddtolist (position, ftotal, outarray)
+        call SSaddtolist (position, wtotal, outarray)
+        call SSaddtolist (position, gtotal, outarray)
     end do
 
     ! detectors (including sprinklers)

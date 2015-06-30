@@ -13,16 +13,15 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
+    character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
-       'Ambient Temp Target Flux', 'Floor Temp Target Flux', &
     'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
        'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'ATARG_', 'FTARG_', 'DJET_', 'PLUM_', 'PYROL_', &
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'DJET_', 'PLUM_', 'PYROL_', &
        'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W/m^2', 'W/m^2', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
+    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -38,7 +37,7 @@
 
     ! Compartment variables
     do j = 1, nm1
-        do i = 1, 7
+        do i = 1, 5
             if (i/=2.or.izshaft(j)==0) then
                 if (i/=3.or.izshaft(j)==0) then
                     position = position + 1
@@ -63,20 +62,20 @@
         if (validate) then
             call toIntString(i,cRoom)
             if (i==n) then
-                headertext(1,position) = trim(LabelsShort(9)) // 'Out'
+                headertext(1,position) = trim(LabelsShort(7)) // 'Out'
             else
-                headertext(1,position) = trim(LabelsShort(9)) // trim(cRoom)
+                headertext(1,position) = trim(LabelsShort(7)) // trim(cRoom)
             endif
-            headertext(2,position) = LabelUnits(9)
+            headertext(2,position) = LabelUnits(7)
             headertext(3,position) = ' '
         else
-            headertext(1,position) = Labels(9)
+            headertext(1,position) = Labels(7)
             if (i==n) then
                 headertext(2,position) = 'Outside'
             else
                 headertext(2,position) = compartmentnames(i)
             end if
-            headertext(3,position) = LabelUnits(9)
+            headertext(3,position) = LabelUnits(7)
         endif
     end do
 
@@ -86,13 +85,13 @@
             position = position + 1
             if (validate) then
                 call toIntString(j,cFire)
-                headertext(1,position) = trim(LabelsShort(i+9))//trim(cFire)
-                headertext(2,position) = LabelUnits(i+9)
+                headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)
+                headertext(2,position) = LabelUnits(i+7)
                 headertext(3,1) = ' '
             else
-                headertext(1,position) = Labels(i+9)
+                headertext(1,position) = Labels(i+7)
                 headertext(2,position) = objnin(j)
-                headertext(3,position) = LabelUnits(i+9)
+                headertext(3,position) = LabelUnits(i+7)
             endif
         end do
     end do
@@ -250,33 +249,25 @@
         end do
     end do
 
-    !	All the additional targets
-    do i = 1, nm1
-        if (ntarg>nm1) then
-            do itarg = 1, ntarg-nm1
-                if (ixtarg(trgroom,itarg)==i) then
-                    call toIntString(itarg,cDet)
-                    do j = 1, 9
-                        position = position + 1
-                        if (validate) then
-                            headertext(1,position) = trim(LabelsShort(j+5)) // trim(cDet)
-                            if (LabelUnits(j+5)=='W') LabelUnits(j+5) = 'kW'
-                            headertext(2,position) = LabelUnits(j+5)
-                            headertext(3,position) = ' '
-                        else
-                            headertext(1,position) = Labels(j+5)
-                            headertext(2,position) = 'Target ' // trim(cDet)
-                            headertext(3,position) = LabelUnits(j+5)
-                        endif
-                    end do  
-                endif
-            end do
-        endif
+    ! Targets
+    do itarg = 1, ntarg
+        call toIntString(itarg,cDet)
+        do j = 1, 9
+            position = position + 1
+            if (validate) then
+                headertext(1,position) = trim(LabelsShort(j+5)) // trim(cDet)
+                if (LabelUnits(j+5)=='W') LabelUnits(j+5) = 'kW'
+                headertext(2,position) = LabelUnits(j+5)
+                headertext(3,position) = ' '
+            else
+                headertext(1,position) = Labels(j+5)
+                headertext(2,position) = 'Target ' // trim(cDet)
+                headertext(3,position) = LabelUnits(j+5)
+            endif
+        end do
     end do
 
-    !	Hall flow needs to go here
-
-    !	Detectors
+    ! Detectors
     do i = 1, ndtect
         call toIntString(i,cDet)
         itype = ixdtect(i,dtype)

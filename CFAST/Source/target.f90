@@ -184,28 +184,6 @@ contains
         end do
     endif
 
-    ! calculate flux to floor targets for the pre-existing data structure, ontarget, and a flashover indicator on the floor
-    if(method==steady)then
-        do iroom = 1, nm1
-            itarg = ntarg - nm1 + iroom
-
-            ! ambient target
-            ttarg(1) = interior_temperature
-            ttarg(2) = exterior_temperature
-            xxtarg(idxtempf_trg,itarg) = ttarg(1)
-            call targflux(1,itarg,ttarg,flux,dflux)
-            xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
-            ontarget(iroom) = xxtarg(trgtfluxf,itarg)-sigma*ttarg(1)**4
-
-            ! flashover indicator
-            ttarg(1) = zzwtemp(iroom,2,1)
-            xxtarg(idxtempf_trg,itarg) = ttarg(1)
-            call targflux(1,itarg,ttarg,flux,dflux)
-            xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
-            xxtarg(trgnfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1) - sigma*ttarg(1)**4
-        end do
-    endif
-
     return
     end subroutine target_flux
     

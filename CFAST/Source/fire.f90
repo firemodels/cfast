@@ -1341,11 +1341,6 @@
 
     end do
 
-    ! ontarget is the radiation received on a target on the floor
-    do i = 1, nm1
-        ontarget(i) = sigma*(zztemp(i,upper)**4-interior_temperature**4)
-        if (ontarget(i)<1.0_eb) ontarget(i) = 0.0_eb
-    end do
     return
     end subroutine update_species
 

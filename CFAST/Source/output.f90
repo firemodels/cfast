@@ -58,54 +58,6 @@
     return
     end subroutine splitversion
 
-! --------------------------- printobjectparameters -------------------------------------------
-
-    subroutine printobjectparameters (iobj)
-
-    use cfast_main
-    use fltarget
-    use objects2
-    implicit none
-    
-    integer, intent(in) :: iobj
-    integer :: j,i
-
-    write(*,5) OBJGMW(IOBJ), objvt(iobj),objmas(iobj)
-5   format('gmwf,te,m ',3f8.3)
-    write(*,6) objrm(iobj),objtyp(iobj),iobj
-6   format ('compartment,type,# ',3i3)
-    write(*,7) OBJLFM(IOBJ),(objxyz(j,iobj),j=1,3)
-7   format('int,dimensions ',i3,3f8.2)
-    write(*,11) objlfm(iobj),(objpos(j,iobj),j=1,3)
-11  format('int,position   ',i3,3f8.2)
-    write(*,12) objclen(iobj)
-12  format('Characteristic volume = ',f10.3)
-    write(*,*) 'targ#,targname ',obtarg(iobj),cxtarg(obtarg(iobj))
-    write(*,4) nlspct,activs
-4   format('nlspct,activs ',i3,11l5)
-    write(*,8) (otime(i,iobj),i=1,OBJLFM(IOBJ))
-8   format('time ',11f10.0)
-    write(*,1) (oqdot(i,iobj),i=1,OBJLFM(IOBJ))
-1   format('qdot ',11f10.0)
-    write(*,3) (omass(i,iobj),i=1,OBJLFM(IOBJ))
-3   format('mdot ',11f10.7)
-    write(*,9) 'high ',(ohigh(i,iobj),i=1,OBJLFM(IOBJ))
-9   format(a5,11f10.3)
-    write(*,2) 'area ',(oarea(i,iobj),i=1,OBJLFM(IOBJ))
-2   format(a5,11f10.0)
-    write(*,9) 'ocra ',(ooc(I,iobj),i=1,OBJLFM(IOBJ))
-    write(*,9) 'hcr  ',(ohcr(i,iobj),i=1,OBJLFM(IOBJ))
-    write(*,9) 'coc2 ',(OCO(I,iobj),i=1,OBJLFM(IOBJ))
-    write(*,9) 'hclf ',(omprodr(i,6,iobj),i=1,OBJLFM(IOBJ))
-    write(*,9) 'ct   ',(omprodr(i,10,iobj),i=1,OBJLFM(IOBJ))
-    write(*,9) 'fC   ',(omprodr(i,11,iobj),i=1,OBJLFM(IOBJ))
-    write(*,10) 'hocb ',(objhc(i,iobj),i=1,OBJLFM(IOBJ))
-10  format(a5,11f10.0)
-    write(*,*)
-
-    return
-    end subroutine printobjectparameters
-
 ! --------------------------- output_results -------------------------------------------
 
     subroutine output_results(time,isw)
@@ -539,22 +491,22 @@
         xqf = xqf + fqdj(ir)
         if (izshaft(ir)==1) then
             write (iounit,5031) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
-               zzrelp(ir) - interior_rel_pressure(ir), ontarget(ir)
+               zzrelp(ir) - interior_rel_pressure(ir)
         else
             write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
-               zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir),ontarget(ir)
+               zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir)
         endif
     end do
     write (iounit,5020) fqdj(n)
     return
 
 5000 format (' ')
-5010 format (' Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure  Ambient',/, &
-    '               Temp.   Temp.   Height  Rate      Size                Target',/, &
-    '               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)',/,' ',77('-'))
+5010 format (' Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure',/, &
+    '               Temp.   Temp.   Height  Rate      Size',/, &
+    '               (C)     (C)     (m)     (kg/s)    (W)       (Pa)',/,' ',68('-'))
 5020 format ('  Outside',39x,1pg10.3)
-5030 format (i5,7x,2f8.1,2x,1pg9.2,4(1pg10.3))
-5031 format (i5,7x,f8.1,8(' '),2x,8(' '),4(1pg10.3))
+5030 format (i5,7x,2f8.1,2x,1pg9.2,3(1pg10.3))
+5031 format (i5,7x,f8.1,8(' '),2x,8(' '),3(1pg10.3))
     end subroutine rsltcmp
 
 ! --------------------------- rslttar -------------------------------------------
@@ -585,33 +537,10 @@
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
     write (iofilo,5000)
     do i=1,nm1
-        itarg = ntarg-nm1+i
-        if (validate.or.netheatflux) then
-            total = gtflux(itarg,t_total)
-            ftotal = gtflux(itarg,t_ftotal)
-            wtotal = gtflux(itarg,t_wtotal)
-            gtotal = gtflux(itarg,t_gtotal)
-            ctotal = gtflux(itarg,t_ctotal)
-        else
-            total = xxtarg(trgtfluxf,itarg)
-            ftotal = qtfflux(itarg,1)
-            wtotal = qtwflux(itarg,1)
-            gtotal = qtgflux(itarg,1)
-            ctotal = qtcflux(itarg,1)
-        endif
-        if (total<=1.0e-10_eb) total = 0.0_eb
-        if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
-        if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
-        if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
-        if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
-        if (total/=0.0_eb) then
-            write (iofilo,5010) compartmentnames(i),((zzwtemp(i,iwptr(iw),1)-kelvin_c_offset),iw=1,4),twj(1,i,2)-kelvin_c_offset, &
-            total,ftotal,wtotal,gtotal,ctotal
-        else
-            write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4),twj(1,i,2)-kelvin_c_offset
-        endif
+        write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
+
         if (ntarg>nm1) then
-            do itarg = 1, ntarg-nm1
+            do itarg = 1, ntarg
                 if (ixtarg(trgroom,itarg)==i) then
                     tg = tgtarg(itarg)
                     tttemp = xxtarg(idxtempf_trg,itarg)
@@ -656,7 +585,7 @@
     'Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
     '               (C)       (C)       (C)       (C)                (C)       ', &
          '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,154('-'))
-5010 format (a14,4(1pg10.3),1x,'Floor',12x,1pg10.3,11x,5(1pg10.3,3x))
+5010 format (a14,4(1pg10.3))
 5030 format (54x,i4,4x,3(1pg10.3),1x,5(1pg10.3,3x))
     end subroutine rslttar
 
@@ -1745,27 +1674,6 @@
 6095 format(1x,i2,4x,e13.6)
 
     end subroutine output_debug
-
-! --------------------------- oput -------------------------------------------
-
-    subroutine oput (ic,count,itin,ridx,retbuf)
-
-    implicit none
-    
-    integer, intent(in) :: ic, count, itin
-    integer, intent(inout) :: ridx
-    integer, intent(out) :: retbuf(itin)
-    integer :: mrkr
-    
-    mrkr = 106
-    ridx = ridx + 1
-    retbuf(ridx) = mrkr
-    ridx = ridx + 1
-    retbuf(ridx) = ic
-    ridx = ridx + 1
-    retbuf(ridx) = count
-    return
-    end  subroutine oput 
 
     subroutine output_status (T, dT, errorcode)
 

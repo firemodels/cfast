@@ -1285,31 +1285,6 @@
         endif
     end do
 
-    ! add a target in the center of the floor of each room
-    do iroom = 1, nm1
-        ntarg = ntarg + 1
-        ixtarg(trgroom,ntarg) = iroom
-        ixtarg(trgmeth,ntarg) = steady
-        ixtarg(trgback,ntarg) = exterior
-
-        xx = room_width(iroom)*0.50_eb
-        yy = room_depth(iroom)*0.50_eb
-        zz = 0.0_eb
-        xxtarg(trgcenx,ntarg) = xx
-        xxtarg(trgceny,ntarg) = yy
-        xxtarg(trgcenz,ntarg) = zz
-        xxtarg(trgnormx,ntarg) = 0.0_eb
-        xxtarg(trgnormy,ntarg) = 0.0_eb
-        xxtarg(trgnormz,ntarg) = 1.0_eb
-        xxtarg(trginterior,ntarg) = 0.5
-
-        if(surface_on_switch(2,iroom))then
-            cxtarg(ntarg) = cname(2,iroom)
-        else
-            cxtarg(ntarg) = ' '
-        endif
-    end do
-
     return
     end
 

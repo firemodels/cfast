@@ -253,8 +253,7 @@
         endif
 
         ! walls must be turned on, ie surface_on_switch must be set
-        ! for the ceiling in the lower room and the floor of
-        ! the upper room
+        ! for the ceiling in the lower room and the floor of the upper room
         iwall1 = izswal(ii,w_from_wall)
         iwall2 = izswal(ii,w_to_wall)
         if(.not.surface_on_switch(iwall1,iroom1).or..not.surface_on_switch(iwall2,iroom2))then
@@ -532,7 +531,7 @@
     !	If we reach the end of the file, then we are done
     if (lrowcount>xnumr) return
 
-    !	Copy a single row into local arrays for processing in readin; start with column two, 
+    ! Copy a single row into local arrays for processing in readin; start with column two, 
     ! assuming that the key word is the first entry!
 
     label = carray(lrowcount,1)

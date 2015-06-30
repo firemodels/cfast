@@ -78,10 +78,10 @@ Public Class RunModel
         Me.RunSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.RunSummary.ColumnInfo = resources.GetString("RunSummary.ColumnInfo")
         Me.RunSummary.ExtendLastCol = True
-        Me.RunSummary.Location = New System.Drawing.Point(24, 80)
+        Me.RunSummary.Location = New System.Drawing.Point(82, 80)
         Me.RunSummary.Name = "RunSummary"
         Me.RunSummary.Rows.DefaultSize = 17
-        Me.RunSummary.Size = New System.Drawing.Size(942, 265)
+        Me.RunSummary.Size = New System.Drawing.Size(821, 265)
         Me.RunSummary.TabIndex = 3
         Me.RunSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
@@ -184,11 +184,11 @@ Public Class RunModel
         '
         'RunErrors
         '
-        Me.RunErrors.Location = New System.Drawing.Point(24, 351)
+        Me.RunErrors.Location = New System.Drawing.Point(82, 351)
         Me.RunErrors.Multiline = True
         Me.RunErrors.Name = "RunErrors"
         Me.RunErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.RunErrors.Size = New System.Drawing.Size(942, 149)
+        Me.RunErrors.Size = New System.Drawing.Size(821, 149)
         Me.RunErrors.TabIndex = 20
         Me.RunErrors.TabStop = False
         Me.RunErrors.Text = "No Errors"
@@ -232,7 +232,6 @@ Public Class RunModel
         Me.RunSummary(0, 4) = "Pyrolysis Rate" + Chr(10) + "(" + myUnits.Convert(UnitsNum.MassLoss).Units.Substring(1) + ")"
         Me.RunSummary(0, 5) = "Fire Size" + Chr(10) + "(" + myUnits.Convert(UnitsNum.HRR).Units.Substring(1) + ")"
         Me.RunSummary(0, 6) = "Pressure" + Chr(10) + "(" + myUnits.Convert(UnitsNum.Pressure).Units.Substring(1) + ")"
-        Me.RunSummary(0, 7) = "Ambient Target" + Chr(10) + "Flux" + Chr(10) + "(" + myUnits.Convert(UnitsNum.HeatFlux).Units.Substring(1) + ")"
         Me.RunSummary.AutoSizeRow(0)
         Me.DebugOn = False
         Me.JacobianOn = False
@@ -364,7 +363,6 @@ Public Class RunModel
                             Me.RunSummary(ir, 4) = Math.Round(myUnits.Convert(UnitsNum.MassLoss).FromSI(Val(aLine.Substring(39, 10))), 5).ToString
                             Me.RunSummary(ir, 5) = Math.Round(myUnits.Convert(UnitsNum.HRR).FromSI(Val(aLine.Substring(49, 10))), 2).ToString
                             Me.RunSummary(ir, 6) = Math.Round(myUnits.Convert(UnitsNum.Pressure).FromSI(Val(aLine.Substring(59, 10))), 4).ToString
-                            Me.RunSummary(ir, 7) = Math.Round(myUnits.Convert(UnitsNum.HeatFlux).FromSI(Val(aLine.Substring(69, 10))), 3).ToString
                         Else
                             Me.RunSummary(ir, 0) = "Outside"
                             Me.RunSummary(ir, 5) = Math.Round(myUnits.Convert(UnitsNum.HRR).FromSI(Val(ln.Substring(48, 10))), 2).ToString

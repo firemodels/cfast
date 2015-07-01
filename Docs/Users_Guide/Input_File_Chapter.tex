@@ -27,21 +27,21 @@ The first thing to do when setting up an input file is to give the simulation a 
 \item[Maximum Time Step] (default units: s, default value: 2 s): CFAST will automatically adjust the time interval for the solution of the differential equation set up or down so that the simulation is as efficient as possible within the pre-defined error tolerances. This parameter places a maximum value for the equation solver and can normally be left at the default value. In cases (which are hopefully rare) where the model fails to converge on a solution, this value can be reduced which often will allow the simulation to successfully complete.
 \end{description}
 
-\section{Ambient Conditions}
+\section{Simulation Conditions}
 
 Ambient conditions define the environment at which the scenario begins. Initial pressures in a structure are calculated simply as a lapse rate (related to the height above sea level) based on the NOAA/NASA tables \cite{GPO:Atmosphere}. It is convenient to choose the base of a structure to be at zero height and then reference the height of the structure with respect to that height.  The temperature and pressure must then be measured at that position.  Another possible choice would be the pressure and temperature at sea level, with the structure elevations then given with respect to mean sea level.  This is also acceptable, but somewhat more tedious in specifying the construction of a structure.  Either of these choices works though, so long as they are consistent. Usually, the station elevation is set to zero and the pressure to ambient. The effect of changing these values is minor. Note that the equations implemented in the model are not designed to handle negative elevations and altitudes.
 
 \begin{description}
 \item[Temperature] (default units: \degc, default value: 20 \degc): Initial ambient temperature inside or outside the structure at the station elevation.
 
-\item[Pressure] (default units: Pa, default value: 101300 Pa): Initial values for ambient atmospheric pressure inside and outside the structure at the station elevation. The default value is standard atmospheric pressure at sea level.
+\item[Pressure] (default units: Pa, default value: 101325 Pa): Initial values for ambient atmospheric pressure inside and outside the structure at the station elevation. The default value is standard atmospheric pressure at sea level.
 
 \item[Elevation] (defaults units: m, default value: 0 m): The height where the ambient pressure and temperature are specified.  This is the reference height for calculating the density of the atmosphere as well as the temperature and pressure inside and outside of the structure as a function of height.
 
 \item[Humidity] (default units \% RH, default value: 50 \%): The initial relative humidity in the system, only specified for the interior.  This is converted to kilograms of water per cubic meter as an initial condition for both the interior and exterior of the structure.
+
+\item[Adiabatic Compartment Surfaces] When this box is checked, all of the compartment surfaces are assumed to be perfect insulators and the materials section of the compartments tab becomes grayed out. This feature is useful when designing an experiment in which it is safe to assume that there is no heat transfer to the walls of the compartments.
 \end{description}
-
-
 
 
 
@@ -55,7 +55,7 @@ Ambient conditions define the environment at which the scenario begins. Initial 
 \end{center}
 \end{figure}
 
-The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry page is enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
+The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry and thermal properties pages are enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
 In order to model a fire scenario, the size and position of each compartment in the structure must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 7 is thirty. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
 
@@ -149,7 +149,7 @@ To add additional thermal properties to a simulation or to edit existing ones, t
 
 \item[Density] (default value: none, default units: kg/m$^3$): Density for the material.
 
-\item[Thickness] (default value: none, default units: m): Thickness of the material.  Note that if two materials with identical thermal properties but with different thicknesses as desired, two separate materials must be defined.
+\item[Thickness] (default value: none, default units: m): Thickness of the material.  Note that if two materials with identical thermal properties but with different thicknesses are desired, two separate materials must be defined.
 
 \item[Emissivity] (default value: 0.9, default units: none): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
 \end{description}
@@ -254,11 +254,11 @@ Connections can exist between compartments or between a compartment and the outd
 \begin{description}
 \item[Top Compartment] The top or first of the two compartments to be connected by a vertical flow vent. The vent is through the floor of this compartment.  Compartments are numbered automatically by the input editor and by the model in the order that they are read from the input data file and/or the order they appear in the summary table on the compartment geometry page. Compartment numbers begin with 1, so the first compartment is number 1, the second 2, and so forth.
 
-\item[Bottom Compartment] The bottom or second of the two compartments to be connected by a horizontal flow vent.
+\item[Bottom Compartment] The bottom or second of the two compartments to be connected by a ceiling vent.
 
 \item[Cross-sectional Area] (default units: m$^2$, default value: none): specifies the cross-sectional area of the vent connecting the two compartments.
 
-\item[Shape] The shape factor is 1 for circular openings and 2 for square openings. The shape factor changes the calculation of the effective diameter of the vent and flow coefficients for flow through the vent.
+\item[Shape] The shape factor changes the calculation of the effective diameter of the vent and flow coefficients for flow through the vent.
 
 \item[Initial Opening Fraction] Flow through vertical vents is calculated based on the area of the vent.  Normally, the vent is fully open.  If desired, the user may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.  In the model calculation, the vent area is multiplied by this fraction.  The opening fraction may be changed at any time in the simulation through the use of the EVENT command.
 
@@ -434,8 +434,6 @@ For all fires, including t-squared fires, values are specified for time dependen
 
 \item[Soot Yield] (default units kg/kg, default values: none): yield of soot expressed as a fraction of fuel mass converted into smoke particulate.
 
-\item[Ct] (default units: none, default values: none): relative toxicity of combustion products produced by the fire.
-
 \item[TS] (default units: kg/kg, default values: none): Yield of user-defined trace species per mass of fuel produced in the pyrolysis of the fuel.
 \end{description}
 
@@ -455,7 +453,7 @@ By default, the fire is placed in the center of the compartment on the floor.  I
 
 The area of the base of the fire should not be set to a value of zero. Radiation from the fire is determined by a point source calculation from the vertical center of the flame which is in turn determined by Heskestad's flame height correlation \cite{Heskestad:2002}, a function of heat release rate and fire area. \\
 
-Ct represents the time-integrated exposure to the mass concentration of all the mass of fuel consumed in a structure fire and is thus a concentration-time product (hence the name Ct). For ``normally toxic'' materials, Ct a value of 1 \cite{Levin:1982} has been recommended and is typically changed by an order of magnitude for particularly toxic or non-toxic materials.  It is not part of the mass balance for the fuel and system, but it carried along as a transported species in flow through the structure. Ct is used as a measure of toxicity of a material.  Typically the integrated Ct versus time product is calculated. For normal materials, a concentration-time product of 900 mg min/m$^3$ is an indication of incapacitation \cite{Levin:1982}. \\
+%Ct represents the time-integrated exposure to the mass concentration of all the mass of fuel consumed in a structure fire and is thus a concentration-time product (hence the name Ct). For ``normally toxic'' materials, Ct a value of 1 \cite{Levin:1982} has been recommended and is typically changed by an order of magnitude for particularly toxic or non-toxic materials.  It is not part of the mass balance for the fuel and system, but it carried along as a transported species in flow through the structure. Ct is used as a measure of toxicity of a material.  Typically the integrated Ct versus time product is calculated. For normal materials, a concentration-time product of 900 mg min/m$^3$ is an indication of incapacitation \cite{Levin:1982}. \\
 
 The trace species TS is transported along with fire gases, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance calculated by the model. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate. If necessary, the trace species can be scaled to a smaller value (e.g., divided by 1000) for the simulation and converted back for analysis (e.g., multiplied by 1000). \\
 
@@ -475,7 +473,7 @@ By default, CEdit does not include predefined fires. Thus, the user needs to def
 
 \subsection{T-squared Fires}
 
-Use the Create t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000~BTU/s) in 600~s, 300~s, and 150~s, respectively were proposed for design of fire detection systems .  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054~kW in 75~s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
+Use the Create t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000~BTU/s) in 600~s, 300~s, and 150~s, respectively were proposed for design of fire detection systems.  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054~kW in 75~s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
 
 \begin{figure}[h!]
 \begin{center}
@@ -493,7 +491,7 @@ Use the Create t$^2$ button to create a new fire object with a heat release rate
 
 \item[Steady Burning Period] (default units: s, default value: 300 s): Duration of time that the fire continues burning at the rate specified by the maximum HRR input, above.
 
-\item[Decay Period] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
+\item[Decay Time] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
 \end{description}
 
 \section{Fire Location}
@@ -515,7 +513,7 @@ Fires  are placed in defined positions within a compartment of a simulation and 
 
 \item[Normal  Z] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The Z component is in the direction from the floor of the object compartment.
 
-\item[Ignition Criterion] The type of ignition condition. Acceptable values are 1 for time, 2 for object surface temperature, and 3 for incident flux to object surface.
+\item[Ignition Criterion] The type of ignition condition, which can be time, surface temperature or incident flux to object surface.
 
 \item[Ignition Value] The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
 \end{description}
@@ -633,11 +631,11 @@ For all targets, heat flux is calculated to the surface specified by the user (w
 
 \item[Solution Method] Optional parameter that indicates the solution method. STEADY for steady state solution, EXPLICIT for explicit solution, IMPLICIT for implicit solution.
 
-\item[Width (X)] Position (default units: m, default value: none): Position of the target as a distance from the left wall of the target compartment (X direction).
+\item[Width (X)] (default units: m, default value: none): Distance from the left wall of the target compartment (X direction).
 
-\item[Depth (Y)] Position (default units: m, default value: none): Position of the target as a distance from the front wall of the target compartment (Y direction).
+\item[Depth (Y)] (default units: m, default value: none): Distance from the front wall of the target compartment (Y direction).
 
-\item[Height (Z)] Position (default units: m, default value: none): Height of the target above the floor (Z direction).
+\item[Height (Z)] (default units: m, default value: none): Height of the target above the floor (Z direction).
 
 \item[Normal Vector X] Component: specifies a vector of unit length perpendicular to the exposed surface of the target. (Width) component in the direction from the left wall of the target compartment. A value of 1 defines a vertical target facing into the compartment, unit vector = (1,0,0). The X, Y, and Z component of the normal vector can also be calculated automatically with a pull down menu that allows selection of surfaces and fires in the compartment visible from the target location.
 
@@ -703,7 +701,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 
 \item[Compartment] (default units: n/a, default value: All): Visualizations can be placed in a single compartment or at the same position and axis in all compartments.
 
-\item[Position] (default units: m, default value: 0 m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment. See page \pageref{Compartment_Geometry}).
+\item[Value] (default units: m, default value: 0 m): Position along the specified axes where the slice is placed measured from the compartment origin for the selected axis (0,0,0 is the bottom left corner of the compartment. See page \pageref{Compartment_Geometry}).
 
 \item[Axis] (default units: n/s, default value: X-axis (Width)): Axis perpendicular to the specified slice.  The slice is place perpendicular to the selected axis (the Y-Z plane for the X-Axis; the X-Z plane for the Y-Axis, and the X-Y plane for the Z-Axis)
 

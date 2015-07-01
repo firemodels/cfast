@@ -406,6 +406,7 @@ Each fire object is defined in a separate comma-separated spreadsheet file with 
 
 \item[CO Yield] (default units: kg/kg, default value: determined by correlation): Constant species yield of carbon monoxide expressed as a fraction of the fuel mass converted into carbon monoxide.  By default, the CO yield is related to the soot yield via the correlation developed by K\"oyl\"u and Faeth
 
+\item[TS Yield] (default units: kg/kg, default values: none): Yield of user-defined trace species per mass of fuel produced in the pyrolysis of the fuel.
 \be
 y_{CO} = \frac{12n_C}{M_fv_f}0.0014 + 0.37y_s \label{eq:Koylu}
 \ee
@@ -426,7 +427,7 @@ For all fires, including t-squared fires, values are specified for time dependen
 
 
 \begin{description}
-\item[Time] (default units: s, default values: none): specify a sequence of time points that define the timing of the main fire.  An entry indicates a point on the time-line when the heat release rate, fuel height and other time dependent values are specified for the fire.
+\item[Time] (default units: s, default values: none): Specify a sequence of time points that define the timing of the main fire.  An entry indicates a point on the time-line when the heat release rate, fuel height and other time dependent values are specified for the fire.
 
 \item[Heat Release Rate (Qdot)] (default units: kW, default values: none): Heat release rate of the fire as a series of time points consistent with the time specification.
 
@@ -434,9 +435,9 @@ For all fires, including t-squared fires, values are specified for time dependen
 
 \item[Area] of the Base of the Fire (default units: m$^2$, default values: 0.3 m$^2$): Cross-sectional area of the base of the fire.
 
-\item[CO Yield] (default units: kg/kg, default values: constant value from correlation, in eq. \ref{eq:Koylu}): yield of carbon monoxide expressed as a fraction of the fuel mass converted into carbon monoxide.
+\item[CO Yield] (default units: kg/kg, default values: constant value from correlation, in eq. \ref{eq:Koylu}): Yield of carbon monoxide expressed as a fraction of the fuel mass converted into carbon monoxide.
 
-\item[Soot Yield] (default units kg/kg, default values: none): yield of soot expressed as a fraction of fuel mass converted into smoke particulate.
+\item[Soot Yield] (default units kg/kg, default values: none): Yield of soot expressed as a fraction of fuel mass converted into smoke particulate.
 
 \item[TS Yield] (default units: kg/kg, default values: none): Yield of user-defined trace species per mass of fuel produced in the pyrolysis of the fuel.
 

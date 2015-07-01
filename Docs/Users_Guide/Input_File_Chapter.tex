@@ -43,6 +43,46 @@ Ambient conditions define the environment at which the scenario begins. Initial 
 \item[Adiabatic Compartment Surfaces] When this box is checked, all of the compartment surfaces are assumed to be perfect insulators and the materials section of the compartments tab becomes grayed out. This feature is useful when designing an experiment in which it is safe to assume that there is no heat transfer to the walls of the compartments.
 \end{description}
 
+\chapter{Thermal Properties}
+The Thermal Properties page defines the thermal conductivity, specific heat, density, thickness and emissivity values for all materials and fuel sources that will be used in a simulation.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=6.5in]{FIGURES/Input_File/Thermal_Properties_tab}
+\caption[The CFAST Thermal Properties Tab]{The CFAST Thermal Properties Tab.}
+\end{figure}
+
+\section{Adding Thermal Properties}
+
+By default, CEdit does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be from other simulations or input directly from reference sources or test results. Clicking the `Add' button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a fuel source in a fire. 
+
+\begin{description}
+\item[Material] A descriptive name for the material.
+
+\item[Short Name] A one-word (no more than 8 characters) \textbf{unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
+
+\item[Thermal Conductivity] (default value: none, default units: kW/m \degc): Thermal conductivity for the material.
+
+\item[Specific Heat] (default value: none, default units: kJ/kg \degc): Specific heat for the material.
+
+\item[Density] (default value: none, default units: kg/m$^3$): Density for the material.
+
+\item[Thickness] (default value: none, default units: m): Thickness of the material.  Note that if two materials with identical thermal properties but with different thicknesses are desired, two separate materials must be defined.
+
+\item[Emissivity] (default value: 0.9, default units: none): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
+\end{description}
+
+\section{Editing Thermal Properties}
+
+The `From File' button allows you to insert thermal properties from existing CFAST input files to the current simulation.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Insert_Thermal_Properties}
+\caption[Inserting Thermal Properties in CFAST]{Inserting Thermal Properties in CFAST.}
+\end{center}
+\end{figure}
+
 
 
 
@@ -117,42 +157,6 @@ If a name is used which is not in the input file, the model should stop with an 
 
 The back surfaces of compartments are assumed to be exposed to ambient conditions unless specifically specified (see the section on Surface Connections) to specify heat transfer connections between compartments).
 }
-
-\section{Adding and Editing Thermal Properties}
-
-By default, CEdit does not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Edit, Thermal Properties, Insert Thermal Properties} Menu item allows you to add thermal properties from an existing data file to the current simulation.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Insert_Thermal_Properties}
-\caption[Inserting Thermal Properties in CFAST]{Inserting Thermal Properties in CFAST.}
-\end{center}
-\end{figure}
-
-To add additional thermal properties to a simulation or to edit existing ones, the \textbf{Edit, Thermal Properties, Edit Thermal Properties} menu item allows you to edit any of the existing thermal properties.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Edit_Thermal_Properties}
-\caption[Editing Thermal Properties in CFAST]{Editing Thermal Properties in CFAST.}
-\end{center}
-\end{figure}
-
-\begin{description}
-\item[Material] A descriptive name for the material.
-
-\item[Short Name] A one-word (no more than 8 characters) \textbf{unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
-
-\item[Thermal Conductivity] (default value: none, default units: kW/m \degc): Thermal conductivity for the material.
-
-\item[Specific Heat] (default value: none, default units: kJ/kg \degc): Specific heat for the material.
-
-\item[Density] (default value: none, default units: kg/m$^3$): Density for the material.
-
-\item[Thickness] (default value: none, default units: m): Thickness of the material.  Note that if two materials with identical thermal properties but with different thicknesses are desired, two separate materials must be defined.
-
-\item[Emissivity] (default value: 0.9, default units: none): Emissivity of the material surface.  This is the fraction of radiation that is absorbed by the material.
-\end{description}
 
 
 \section{Modeling a Compartment as a Tall Shaft or Long Corridor}
@@ -387,16 +391,9 @@ Two inputs on the Fire Tab are global, that is, they apply to all fires included
 
 Fires in CFAST are defined as a series of individual fire objects which are then placed as desired in compartments in a simulation.
 
-Each fire object defines the time dependent variables of the fire described by the mass loss rate, rate of heat release, fuel height, and fuel area.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. There is a separate calculation of the concentration-time product, typically denoted as Ct. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
+Each fire object defines the time dependent variables of the fire described by the mass loss rate, rate of heat release, fuel height, and fuel area.  Species production rates are specified in a manner similar to the fire, entering the rates as a series of points with respect to time.  The species which are followed by CFAST are: carbon dioxide, carbon monoxide, hydrogen cyanide, hydrogen chloride, nitrogen, oxygen, soot, total unburned hydrocarbons and water. A user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
 Each fire object is defined in a separate comma-separated spreadsheet file with an extension of ``.o'' and is also saved in the CFAST input file for the current simulation. A pull-down menu allows the user to select one of the predefined fire objects to place in the chosen compartment. As many fire objects as desired may be defined by the user.  At least one fire in the simulation should ignite at a user-specified time.  Other fire objects can ignite based on time, temperature or heat flux conditions.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Fire_Object_Edit}
-\caption[Editing Fire Objects in CFAST]{Editing Fire Objects in CFAST.}
-\end{center}
-\end{figure}
 
 \begin{description}
 \item[Fire Object Name] The name for the desired object.  This also corresponds to the name of the fire object file, without the extension. The selected name must be unique (i.e., not the same as another fire object in the same simulation).
@@ -419,7 +416,10 @@ where $n_C$ is the number of carbon atoms in a fuel molecule, $M_f$ is the molec
 \item[Radiative Fraction] The fraction of the energy produced in combustion that is radiated from the fire and plume. Within CFAST, the radiative fraction defaults to 0.35 ; i.e., 35 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, and vitiation are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4.
 \end{description}
 
-For all fires, including t-squared fires, values are specified for time dependent variables, including default values for species generation. All of the time dependent variables depend on a predefined time line. The time input specifies a sequence of time points that define the timing of the fire.  An entry indicates a point on the time line when the mass loss rate, fuel height and other time dependent values are specified for the fire.  This time is independent of the simulation time which is specified by the TIMES line. Between specified time points, values for all time-dependent quantities are interpolated between adjacent specified values. If the simulation time is longer than the total duration of the fire, the final values specified for the fire (mass loss rate, fuel height, fuel area, and species production rates) are continued until the end of the simulation.
+\subsection{Adding Fires}
+
+For all fires, including t-squared fires, values are specified for time dependent variables, including default values for species generation. All of the time dependent variables depend on a predefined time line. The time input specifies a sequence of time points that define the timing of the fire.  An entry indicates a point on the time line when the mass loss rate, fuel height and other time dependent values are specified for the fire.  This time is independent of the simulation time which is specified by the TIMES line. Between specified time points, values for all time-dependent quantities are interpolated between adjacent specified values. If the simulation time is longer than the total duration of the fire, the final values specified for the fire (mass loss rate, fuel height, fuel area, and species production rates) are continued until the end of the simulation. The following fire properties can be manually filled into the chart that is located at the bottom left corner of the page:
+
 
 \begin{description}
 \item[Time] (default units: s, default values: none): specify a sequence of time points that define the timing of the main fire.  An entry indicates a point on the time-line when the heat release rate, fuel height and other time dependent values are specified for the fire.
@@ -434,7 +434,8 @@ For all fires, including t-squared fires, values are specified for time dependen
 
 \item[Soot Yield] (default units kg/kg, default values: none): yield of soot expressed as a fraction of fuel mass converted into smoke particulate.
 
-\item[TS] (default units: kg/kg, default values: none): Yield of user-defined trace species per mass of fuel produced in the pyrolysis of the fuel.
+\item[TS Yield] (default units: kg/kg, default values: none): Yield of user-defined trace species per mass of fuel produced in the pyrolysis of the fuel.
+
 \end{description}
 
 \graybox{
@@ -460,9 +461,9 @@ The trace species TS is transported along with fire gases, but is assumed not to
 In the input editor, time-dependent data are entered in a simple spreadsheet. Normal windows copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts are available for data editing. In addition, Alt-Ins will insert a complete row above the currently-selected row in the spreadsheet and Alt-Del will delete the current row in the spreadsheet.
 }
 
-\subsection{Adding and Editing Fires}
+\subsection{Editing Fires}
 
-By default, CEdit does not include predefined fires. Thus, the user needs to define fire objects for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The \textbf{Edit, Fires, Insert Fires} Menu item allows you to add fires from an existing data file to the current simulation.
+By default, CEdit does not include predefined fires. Thus, the user needs to define fire objects for use with a specific simulation.  These may be from other simulations or input directly from reference sources or test results. The `From File' button allows you to add fires from an existing data file to the current simulation.
 
 \begin{figure}[h!]
 \begin{center}
@@ -473,7 +474,7 @@ By default, CEdit does not include predefined fires. Thus, the user needs to def
 
 \subsection{T-squared Fires}
 
-Use the Create t$^2$ button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000~BTU/s) in 600~s, 300~s, and 150~s, respectively were proposed for design of fire detection systems.  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054~kW in 75~s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
+Use the `Add t$^2$' button to create a new fire object with a heat release rate specified by the user in the form of a t-squared fire.  For a wide range of fires, the fire growth can be accurately represented with a power law relation of the form $\dQ=\alpha t^2$  where $\dQ$  is the heat release rate of the fire, $\alpha$ is the fire intensity coefficient, and $t$ is time \cite{Schifiliti:2002}. A set of specific t-squared fires labeled slow, medium, and fast, with fire intensity coefficients ($\alpha$) such that the fires reached 1054 kW (1000~BTU/s) in 600~s, 300~s, and 150~s, respectively were proposed for design of fire detection systems.  Later, these specific growth curves and a fourth called "Ultra-fast" which reaches 1054~kW in 75~s, gained favor in general fire protection applications. A separate window allows the user to define the t-squared fire. Details of the inputs for a t-squared fire is included below.
 
 \begin{figure}[h!]
 \begin{center}
@@ -515,7 +516,7 @@ Fires  are placed in defined positions within a compartment of a simulation and 
 
 \item[Ignition Criterion] The type of ignition condition, which can be time, surface temperature or incident flux to object surface.
 
-\item[Ignition Value] The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
+\item[Set Point] The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
 \end{description}
 
 \section{Calculating Normal Vectors}
@@ -569,46 +570,6 @@ Since the only side of the target that is combustible is the top surface of the 
 In this case, the unit vector in the +Z direction.
 
 
-
-
-
-\chapter{Sprinklers and Detectors}
-
-Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same inputs.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=6.5in]{FIGURES/Input_File/Detector_Tab}
-\caption[The CFAST Detection/Suppression Tab]{The CFAST Detection/Suppression Tab.}
-\end{center}
-\end{figure}
-
-\begin{description}
-\item[Type] type of detector, select smoke detector, heat detector, or sprinkler.
-
-\item[Compartment] the compartment in which the detector or sprinkler is located.
-
-\item[Activation Temperature] (default units: \degc, default value: dependent on type): the temperature at or above which the detector link activates.
-
-\item[Width (X)] Position (default units: m, default value: none): position of the object as a distance from the left wall of the compartment (X direction).
-
-\item[Depth (Y)] Position (default units: m, default value: none): position of the detector or sprinkler as a distance from the front wall of the compartment (Y direction).
-
-\item[Height (Z)] Position (default units: m, default value: none): position of the object as a distance from the floor of the compartment (Z direction).
-
-\item[RTI] (default units: (m$\cdot$s)$^{1/2}$, default value: none): the Response Time Index (RTI) for the sprinkler or detection device.
-
-\item[Spray Density] (default units: m/s, default value: none): the amount of water dispersed by a sprinkler.  The units for spray density are length/time, derived by dividing the volumetric flow rate by the spray area. The suppression calculation is based upon an experimental correlation by Evans~\cite{Evans:1993}.
-\end{description}
-
-\graybox{
-Often, the activation of smoke alarms is simulated with a temperature-based criterion, typically in the range of 5~\degc to 10~\degc above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments \cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\degc corresponded to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\degc in NUREG-1805 \cite{NRCNUREG1805}. \\
-
-Several cautions should be observed when using estimates of sprinkler suppression within the model: 1)~The first sprinkler activated controls the effect of the sprinkler on the heat release rate of the fire.  Subsequent sprinklers which may activate have no additional effect on the fire simulation. 2)~The fire suppression algorithm assumes the effect of the sprinkler is solely to reduce the heat release rate of the fire. Any effects of the sprinkler spray on gas temperatures or mixing within the compartment are ignored. 3)~The sprinkler always reduces the heat release rate of the fire. The ability of a fire to overwhelm an under-designed sprinkler is not modeled. 4) Since the dynamics of the sprinkler and direct effects of the spray on gas temperatures and velocities are not modeled, calculated times of activation of secondary sprinklers and / or detectors after the first sprinkler is activated should be not be modeled since the impact of the first sprinkler on the activation of additional sprinklers is not included in the CFAST model.
-}
-
-
-
 \chapter{Defining Targets}
 
 CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets.
@@ -655,6 +616,41 @@ Target inputs in CFAST perform a heat transfer calculation between the compartme
 
 
 
+\chapter{Sprinklers and Detectors}
+
+Sprinklers and detectors are both considered detection devices by the CFAST model and are handled using the same inputs.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=6.5in]{FIGURES/Input_File/Detector_Tab}
+\caption[The CFAST Detection/Suppression Tab]{The CFAST Detection/Suppression Tab.}
+\end{center}
+\end{figure}
+
+\begin{description}
+\item[Type] type of detector, select smoke detector, heat detector, or sprinkler.
+
+\item[Compartment] the compartment in which the detector or sprinkler is located.
+
+\item[Activation Temperature] (default units: \degc, default value: dependent on type): the temperature at or above which the detector link activates.
+
+\item[Width (X)] Position (default units: m, default value: none): position of the object as a distance from the left wall of the compartment (X direction).
+
+\item[Depth (Y)] Position (default units: m, default value: none): position of the detector or sprinkler as a distance from the front wall of the compartment (Y direction).
+
+\item[Height (Z)] Position (default units: m, default value: none): position of the object as a distance from the floor of the compartment (Z direction).
+
+\item[RTI] (default units: (m$\cdot$s)$^{1/2}$, default value: none): the Response Time Index (RTI) for the sprinkler or detection device.
+
+\item[Spray Density] (default units: m/s, default value: none): the amount of water dispersed by a sprinkler.  The units for spray density are length/time, derived by dividing the volumetric flow rate by the spray area. The suppression calculation is based upon an experimental correlation by Evans~\cite{Evans:1993}.
+\end{description}
+
+\graybox{
+Often, the activation of smoke alarms is simulated with a temperature-based criterion, typically in the range of 5~\degc to 10~\degc above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments \cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\degc corresponded to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\degc in NUREG-1805 \cite{NRCNUREG1805}. \\
+
+Several cautions should be observed when using estimates of sprinkler suppression within the model: 1)~The first sprinkler activated controls the effect of the sprinkler on the heat release rate of the fire.  Subsequent sprinklers which may activate have no additional effect on the fire simulation. 2)~The fire suppression algorithm assumes the effect of the sprinkler is solely to reduce the heat release rate of the fire. Any effects of the sprinkler spray on gas temperatures or mixing within the compartment are ignored. 3)~The sprinkler always reduces the heat release rate of the fire. The ability of a fire to overwhelm an under-designed sprinkler is not modeled. 4) Since the dynamics of the sprinkler and direct effects of the spray on gas temperatures and velocities are not modeled, calculated times of activation of secondary sprinklers and / or detectors after the first sprinkler is activated should be not be modeled since the impact of the first sprinkler on the activation of additional sprinklers is not included in the CFAST model.
+}
+
 
 \chapter{Surface Connections}
 
@@ -678,9 +674,6 @@ The Surface Connections page allows the user to define heat transfer between com
 
 \item[Bottom Compartment] The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
 \end{description}
-
-
-
 
 
 \chapter{Visualization}

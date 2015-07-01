@@ -398,8 +398,6 @@ Each fire object is defined in a separate comma-separated spreadsheet file with 
 \begin{description}
 \item[Fire Object Name] The name for the desired object.  This also corresponds to the name of the fire object file, without the extension. The selected name must be unique (i.e., not the same as another fire object in the same simulation).
 
-\item[Material] (default value: none): material name from the list of thermal properties used for the object. The material properties are used to calculate heat transfer into the object from its surroundings.
-
 \item[C, H, O, N, Cl] Molecular formula of the burning fuel. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least Carbon and Hydrogen and optionally Oxygen, Nitrogen, and Chlorine. These five inputs define the stoichiometry of the fuel as it is burned.  Thus, for example, all of the specified Nitrogen and Chlorine is assumed to completely react to form HCN and HCl.  If only partial conversion is desired, a smaller ratio for Nitrogen and/or Chlorine can be specified.
 
 \item[Heat of Combustion] (default units: J/kg, default value: 50 000 000 J/kg): The energy released per kilogram of mass burned.
@@ -414,6 +412,12 @@ y_{CO} = \frac{12n_C}{M_fv_f}0.0014 + 0.37y_s \label{eq:Koylu}
 where $n_C$ is the number of carbon atoms in a fuel molecule, $M_f$ is the molecular weight of the fuel, and $v_f$ is the stoichiometric coefficient of the fuel, assumed to be 1 here \cite{Koylu:1991}. Note that this correlation refers to well-ventilated fires. Yields of CO and soot in under-ventilated fires is still a subject of active research.
 
 \item[Radiative Fraction] The fraction of the energy produced in combustion that is radiated from the fire and plume. Within CFAST, the radiative fraction defaults to 0.35 ; i.e., 35 \% of the fire’s energy is released via radiation.  For other fuels, the work of Tewarson \cite{Tewarson:2003}, McCaffrey \cite{McCaffrey:1982}, or Koseki \cite{Koseki:1989} is available for reference. The effects of scale, fuel type, and vitiation are all important to the radiation released by a fire \cite{Hamins:1991, Hamins:1994}. The typical range for the radiative fraction is from about 0.05 to 0.4.
+
+\item[Ignition Criterion] The type of ignition condition, which can be time, surface temperature or incident flux to object surface.
+
+\item[Set Point] The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
+
+\item[Material] (default value: none): material name from the list of thermal properties used for the object. The material properties are used to calculate heat transfer into the object from its surroundings.
 \end{description}
 
 \subsection{Adding Fires}
@@ -514,9 +518,6 @@ Fires  are placed in defined positions within a compartment of a simulation and 
 
 \item[Normal  Z] Component: specifies a vector of unit length perpendicular to the exposed surface of the object. The Z component is in the direction from the floor of the object compartment.
 
-\item[Ignition Criterion] The type of ignition condition, which can be time, surface temperature or incident flux to object surface.
-
-\item[Set Point] The numerical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
 \end{description}
 
 \section{Calculating Normal Vectors}

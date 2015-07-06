@@ -203,6 +203,16 @@ Consider now the same case as in Section~\ref{sealed_test}, but now with two zon
 
 \section{Ventilation}
 
+\subsection{Pressure Change as Air Flows Through a Single Compartment}
+The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~m$^3$/s. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is:
+\begin{equation}
+\Delta{P} = \frac{1}{2\rho}(\frac{\dot{m}}{CA})^2
+\end{equation}
+where $\rho$ and $\dot{m}$ are given by
+\begin{equation}
+\rho = \frac{P}{RT} \quad ; \quad  \dot{m} = \rho \dot{V}
+\end{equation}
+
 
 \subsection{Temperature and Pressure Changes of Steady-State Air Flow}
 \label{sec:vent2}

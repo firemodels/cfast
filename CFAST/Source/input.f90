@@ -1817,7 +1817,7 @@
         write (logerr,5405) label
         ierror = 5
         return
-
+    case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT','HRR','TIME','CHEMI','FIRE') ! these are already handled above
 
     case default
         write(logerr, 5051) label

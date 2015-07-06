@@ -547,7 +547,7 @@
 
     select case (label)
 
-        ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
+    ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
     case ("TIMES")
         if (countargs(lcarray)>=5) then
             nsmax =  lrarray(1)
@@ -565,7 +565,7 @@
             return
         endif
 
-        ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
+    ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
     case ("TAMB")
         if (countargs(lcarray)>=4) then
             interior_temperature = lrarray(1)
@@ -586,7 +586,7 @@
             exterior_density = interior_density
         endif
 
-        ! EAMB reference external ambient temperature (c), reference external ambient pressure
+    ! EAMB reference external ambient temperature (c), reference external ambient pressure
     case ("EAMB")
         if (countargs(lcarray)/=3) then
             ierror = 3
@@ -597,7 +597,7 @@
         exterior_abs_pressure = lrarray(2)
         exset = .true.
 
-        ! Limiting oxygen index
+    ! Limiting oxygen index
     case ("LIMO2")
         if (countargs(lcarray)>=1) then
             limo2 = lrarray(1)*0.01_eb
@@ -607,7 +607,7 @@
             return
         endif
 
-        ! Rename the thermal data file
+    ! Rename the thermal data file
     case ("THRMF")
         if (countargs(lcarray)>=1) then
             thrmfile = lcarray(1)
@@ -617,7 +617,7 @@
             return
         endif
 
-        ! Set the gaseous ignition temperature - this is a global parameter DJIGN
+    ! Set the gaseous ignition temperature - this is a global parameter DJIGN
     case ('DJIGN')
         if (countargs(lcarray)>=1) then
             tgignt = lrarray(2)
@@ -627,8 +627,8 @@
             return
         endif
 
-        ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. 
-        !With more, it's part of a fire definition
+    ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. 
+    ! With more, it's part of a fire definition
     case ('GLOBA')
         if (countargs(lcarray)>=2) then
             limo2 = lrarray(1)*0.01_eb
@@ -639,7 +639,7 @@
             return
         endif
 
-        ! MATL short_name conductivity specific_heat density thickness emissivity long_name
+    ! MATL short_name conductivity specific_heat density thickness emissivity long_name
     case ('MATL')
         if(countargs(lcarray)>=7) then
             maxct = maxct + 1
@@ -662,8 +662,8 @@
             return
         endif
 
-        ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), 
-        ! floor_material(c), wall_material (c) 
+    ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), 
+    ! floor_material(c), wall_material (c) 
     case ('COMPA')
         if (countargs(lcarray)>=10) then
 
@@ -729,13 +729,13 @@
             return
         endif
 
-        ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
-        !		    bw = width, hh = soffit, hl = sill, 
-        !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
-        !           floor_height = absolute height of the floor (not set here)
-        !		    compartment offset for the hall command (2 of these)
-        !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
-        !		    initial open fraction
+    ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
+    !		    bw = width, hh = soffit, hl = sill, 
+    !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
+    !           floor_height = absolute height of the floor (not set here)
+    !		    compartment offset for the hall command (2 of these)
+    !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
+    !		    initial open fraction
     case ('HVENT')
         if (countargs(lcarray)<7) then
             ierror = 10
@@ -807,10 +807,9 @@
         hh(iijk) = min(room_height(i),max(0.0_eb,hhp(iijk)-floor_height(i)))
         hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-floor_height(i)))
         
-       ! DEADROOM dead_room_num connected_room_num
-       ! pressure in dead_room_num is not solved.  pressure for this room
-       ! is obtained from connected_room_num
-
+    ! DEADROOM dead_room_num connected_room_num
+    ! pressure in dead_room_num is not solved.  pressure for this room
+    ! is obtained from connected_room_num
     case ('DEADR')  
         i = lrarray(1)
         j = lrarray(2)
@@ -818,86 +817,69 @@
            deadroom(i) = j
         endif
 
-        ! EVENT - H First_Compartment     Second_Compartment	 Vent_Number Time Final_Fraction decay_time
-        ! EVENT - V First_Compartment     Second_Compartment	 Not_Used	 Time Final_Fraction decay_time
-        ! EVENT - M Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time
-        ! EVENT - F Not_Used				  Not_used				 M_ID        Time Final_Fraction decay_time    
+    ! EVENT keyword, the four possible formats are:
+    ! EVENT   H     First_Compartment   Second_Compartment	 Vent_Number    Time   Final_Fraction   decay_time
+    ! EVENT   V     First_Compartment   Second_Compartment	 Not_Used	    Time   Final_Fraction   decay_time
+    ! EVENT   M        Not_Used             Not_used            M_ID        Time   Final_Fraction   decay_time
+    ! EVENT   F        Not_Used             Not_used            M_ID        Time   Final_Fraction   decay_time   
     case ('EVENT')
-        if (countargs(lcarray)>=1) then
+        if (countargs(lcarray)>=7) then
             !	        Sort by event type, h, v, m, or f
             venttype = lcarray(1)
+            
+            if(lrarray(6)<0.0_eb.or.lrarray(6)>1.0_eb) then
+                ierror = 11
+                write(3,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
+                return
+            endif
 
             select case (venttype)
             case ('H')
-                if (countargs(lcarray)>=7) then
-                    i = lrarray(2)
-                    j = lrarray(3)
-                    k = lrarray(4)
-                    iijk = ijk(i,j,k)
-                    qcvh(1,iijk) = lrarray(5)
-                    qcvh(3,iijk) = lrarray(5) + lrarray(7)
-                    qcvh(4,iijk) = lrarray(6)
-                else
-                    ierror = 71
-                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
-                    return
-                endif
+                i = lrarray(2)
+                j = lrarray(3)
+                k = lrarray(4)
+                iijk = ijk(i,j,k)
+                qcvh(1,iijk) = lrarray(5)
+                qcvh(3,iijk) = lrarray(5) + lrarray(7)
+                qcvh(4,iijk) = lrarray(6)
             case ('V')
-                if (countargs(lcarray)>=7) then
-                    ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
-                    itop = lrarray(2)
-                    ibot = lrarray(3)
-                    qcvpp(1,itop,ibot) = lrarray(5)
-                    qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
-                    qcvpp(4,itop,ibot) = lrarray(6)
-                    qcvpp(1,ibot,itop) = lrarray(5)
-                    qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
-                    qcvpp(4,ibot,itop) = lrarray(6)
-                else
-                    ierror = 71
-                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
-                    return
-                endif
+                ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
+                itop = lrarray(2)
+                ibot = lrarray(3)
+                qcvpp(1,itop,ibot) = lrarray(5)
+                qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
+                qcvpp(4,itop,ibot) = lrarray(6)
+                qcvpp(1,ibot,itop) = lrarray(5)
+                qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
+                qcvpp(4,ibot,itop) = lrarray(6)
             case ('M')
-                if (countargs(lcarray)>=7) then
-                    fannumber = lrarray(4)
-                    qcvm(1,fannumber) = lrarray(5)
-                    qcvm(3,fannumber) = lrarray(5) + lrarray(7)
-                    qcvm(4,fannumber) = lrarray(6)
-                else
-                    ierror = 71
-                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
-                    return
-                endif
+                fannumber = lrarray(4)
+                qcvm(1,fannumber) = lrarray(5)
+                qcvm(3,fannumber) = lrarray(5) + lrarray(7)
+                qcvm(4,fannumber) = lrarray(6)
             case ('F')
-                if (countargs(lcarray)>=7) then
-                    fannumber = lrarray(4)
-                    if (fannumber>nfan) then
-                        ierror = 82
-                        write(logerr,5196) fannumber
-                        return
-                    endif
-                    nfilter = nfilter + 1
-                    qcvf(1,fannumber) = lrarray(5)
-                    qcvf(3,fannumber) = lrarray(5) + lrarray(7)
-                    qcvf(4,fannumber) = lrarray(6)
-                else
-                    ierror = 71
-                    write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
+                fannumber = lrarray(4)
+                if (fannumber>nfan) then
+                    ierror = 82
+                    write(logerr,5196) fannumber
                     return
                 endif
+                nfilter = nfilter + 1
+                qcvf(1,fannumber) = lrarray(5)
+                qcvf(3,fannumber) = lrarray(5) + lrarray(7)
+                qcvf(4,fannumber) = lrarray(6)
             case default
-                ierror = 71
-                write (3,*) '***Error: Bad EVENT input. Type must be H, V, M, or F.'
+                ierror = 11
+                write (3,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                 return
             end select
         else
-            ierror = 11
-            write (3,*) '***Error: Bad EVENT input. Type must be specified.'
+            ierror = 71
+            write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
             return
         endif
 
-        ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
+    ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
     case ('RAMP')
         if (countargs(lcarray)<9) then
             ierror=11
@@ -926,7 +908,7 @@
             end do
         end if
 
-        ! VVENT - from_compartment to_compartment area shape initial_fraction
+    ! VVENT - from_compartment to_compartment area shape initial_fraction
     case ('VVENT')
         if (countargs(lcarray)>=5) then        
             i = lrarray(1)
@@ -957,13 +939,13 @@
             return
         endif
 
-        ! MVENT - simplified mechanical ventilation
+    ! MVENT - simplified mechanical ventilation
 
-        ! (1) From_Compartment, (2) To_Compartment, (3) ID_Number
-        ! (4-6) From_Opening_Orientation From_Center_Height From_Opening_Area 
-        ! (7-9) To_Opening_Orientation To_Center_Height To_Opening_Area 
-        ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
-        ! (13) Initial fraction of the fan speed
+    ! (1) From_Compartment, (2) To_Compartment, (3) ID_Number
+    ! (4-6) From_Opening_Orientation From_Center_Height From_Opening_Area 
+    ! (7-9) To_Opening_Orientation To_Center_Height To_Opening_Area 
+    ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
+    ! (13) Initial fraction of the fan speed
     case ('MVENT')
         if (countargs(lcarray)/=13) then 
             ierror = 12
@@ -1073,11 +1055,11 @@
         qcvm(2,mid) = lrarray(13)
         qcvm(4,mid) = lrarray(13)
 
-        ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
-        ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more 
-        ! consistent with other keywords
-        ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
-        ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
+    ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
+    ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more 
+    ! consistent with other keywords
+    ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
+    ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
     case ('FIRE')
         if (countargs(lcarray)/=11) then
             ierror = 32
@@ -1181,8 +1163,8 @@
         call inputembeddedfire(objnin(obpnt), lrowcount, xnumc, obpnt, ierror)
         if (ierror/=0) return
 
-        ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
-        ! This is the old format fire object specification
+    ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
+    ! This is the old format fire object specification
     case ('OBJEC')
 
         if (countargs(lcarray)/=11) then
@@ -1282,7 +1264,7 @@
             endif
         endif
 
-        ! STPMAX # - set the maximum time step to #
+    ! STPMAX # - set the maximum time step to #
     case ('STPMA')
         if (countargs(lcarray)>=1) then
             stpmax = lrarray(1)
@@ -1292,7 +1274,7 @@
             return
         endif
 
-        ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
+    ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
     case ('DETEC')
         if (countargs(lcarray)>=9) then
             ndtect = ndtect + 1
@@ -1358,7 +1340,7 @@
             return
         endif
 
-        !     VHEAT top_compartment bottom_compartment
+    !  VHEAT top_compartment bottom_compartment
     case ('VHEAT')
         if (countargs(lcarray)>=2) then
             i1 = lrarray(1)
@@ -1379,7 +1361,7 @@
             return
         endif
 
-        ! ONEZ compartment number - This turns the compartment into a single zone
+    ! ONEZ compartment number - This turns the compartment into a single zone
     case ('ONEZ')
         if (countargs(lcarray)>=1) then
             iroom = lrarray(1)
@@ -1394,7 +1376,7 @@
             return
         endif
  
-        !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
+    !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
     case ('TARGE')
         if (countargs(lcarray)>=10) then
             if(ntarg+1>mxtarg)then
@@ -1478,7 +1460,7 @@
             return
         endif
         
-        ! HALL Compartment Velocity Depth Decay_Distance
+    ! HALL Compartment Velocity Depth Decay_Distance
     case ('HALL')
         if (countargs(lcarray)>=1) then
             iroom = lrarray(1)
@@ -1497,8 +1479,8 @@
             return
         endif
 
-        ! ROOMA Compartment Number_of_Area_Values Area_Values
-        ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
+    ! ROOMA Compartment Number_of_Area_Values Area_Values
+    ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
     case ('ROOMA')
         if (countargs(lcarray)>=2) then
             iroom = lrarray(1)
@@ -1538,8 +1520,8 @@
             return
         endif
 
-        ! ROOMH Compartment Number_of_Height_Values Height_Values
-        ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
+    ! ROOMH Compartment Number_of_Height_Values Height_Values
+    ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
     case ('ROOMH')
         if (countargs(lcarray)>=2) then
             iroom = lrarray(1)
@@ -1580,7 +1562,7 @@
             return
         endif
 
-        ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
+    ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
     case ('DTCHE')
         if (countargs(lcarray)>=2) then
             zzdtcrit = abs(lrarray(1))
@@ -1593,12 +1575,12 @@
             return
         endif
 
-        ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
+    ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
 
-        ! There are two forms of the command
-        !   The first (single entry of the room number) - all connections based on horizontal flow
-        !   The second is the compartment number followed by N pairs of compartments to which the heat 
-        !   will flow and the fraction of the vertical surface of the compartment that loses heat
+    ! There are two forms of the command
+    !   The first (single entry of the room number) - all connections based on horizontal flow
+    !   The second is the compartment number followed by N pairs of compartments to which the heat 
+    !   will flow and the fraction of the vertical surface of the compartment that loses heat
     case ('HHEAT')
         if (countargs(lcarray)>=1) then
             nto = 0
@@ -1646,7 +1628,7 @@
             return
         endif
         
-        ! FURN - no fire, heat walls according to a prescribed time temperature curve
+    ! FURN - no fire, heat walls according to a prescribed time temperature curve
     case ('FURN')
         nfurn=lrarray(1)+0.5
         do i = 1, nfurn
@@ -1654,11 +1636,11 @@
             furn_temp(i)=lrarray(2*i+1)
         end do
         
-        ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
+    ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
     case ('ADIAB')
             adiabatic_wall = .true.
 
-        !  HEATF Special fire - heat source only; no mass
+    !  HEATF Special fire - heat source only; no mass
     case ('HEATF')
         if (countargs(lcarray)>=5) then
             heatfr = lrarray(1)
@@ -1676,7 +1658,7 @@
             return
         endif
         
-        ! SLCF 2-D and 3-D slice files
+    ! SLCF 2-D and 3-D slice files
     case ('SLCF')
         if (countargs(lcarray)>=1) then
             nvisualinfo = nvisualinfo + 1
@@ -1762,7 +1744,7 @@
             return
         end if
 
-        ! ISOF isosurface of specified temperature in one or all compartments
+    ! ISOF isosurface of specified temperature in one or all compartments
     case ('ISOF')
         if (countargs(lcarray)>=1) then
             nvisualinfo = nvisualinfo + 1
@@ -1784,7 +1766,7 @@
             return
         end if
 
-        ! Outdated keywords
+    ! Outdated keywords
     case ('CJET','WIND')                                   ! Just ignore these inputs ... they shouldn't be fatal
         write (logerr,5405) label
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors

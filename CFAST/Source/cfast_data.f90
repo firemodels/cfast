@@ -379,7 +379,7 @@ module opt
         ! exact ode,  hcl, mflow, keyboard, type of initialization
                   1,    0,     1,        1,                      0,  &
         !  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
-                      0,       1,           0,                  0,                   0,                    0/)
+                      0,       0,           0,                  0,                   0,                    0/)
 !*** in above change default rad option from 2 to 4
 !*** this causes absorption coefs to take on constant default values rather than computed from data
     integer, dimension(mxopt) :: d_debug = 0

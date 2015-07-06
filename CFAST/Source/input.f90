@@ -473,12 +473,12 @@
 
 ! --------------------------- keywordcases -------------------------------------------
 
-    subroutine keywordcases(xnumr,xnumc,ierror)
+    subroutine keywordcases(inumr,inumc,ierror)
 
     !     routine:  keywordcases (remaned from NPUTQ)
     !     purpose: Handles CFAST datafile keywords
-    !     Arguments: xnumr    number of rows in input file spreadsheet
-    !                xnumc    number of columns in input file spreadsheet
+    !     Arguments: inumr    number of rows in input file spreadsheet
+    !                inumc    number of columns in input file spreadsheet
     !                ierror  Returns error codes
 
     use precision_parameters
@@ -499,11 +499,11 @@
 
     integer, parameter :: maxin = 37
     
-    integer, intent(in) :: xnumr, xnumc
+    integer, intent(in) :: inumr, inumc
     integer, intent(out) :: ierror
     
     logical :: lfupdat
-    integer :: obpnt, compartment, lrowcount, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, countargs
+    integer :: obpnt, compartment, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir, countargs
     integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
@@ -522,25 +522,351 @@
         end do
         compartment = 0
         ierror = 0
-        lrowcount = 1
     end do
 
-10  CONTINUE
+    ! Read in thermal properties first
+    do ir = 2, inumr
+        label = carray(ir,1)
+        if (label==' ') cycle
+        lrarray = 0.0_eb
+        lcarray = ' '
+        do i = 2, inumc
+            lcarray(i-1) = carray(ir,i)
+            lrarray(i-1) = rarray(ir,i)
+        end do
 
-40  lrowcount = lrowcount + 1
-    !	If we reach the end of the file, then we are done
-    if (lrowcount>xnumr) return
+        if (label=='MATL') then
+            if(countargs(lcarray)>=7) then
+                maxct = maxct + 1
+                if (maxct>mxthrmp) then
+                    write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
+                        mxthrmp
+                    ierror = 203
+                    return
+                endif
+                nlist(maxct) = lcarray(1)
+                lnslb(maxct) = 1
+                lfkw(1,maxct) = lrarray(2)
+                lcw(1,maxct) = lrarray(3)
+                lrw(1,maxct) = lrarray(4)
+                lflw(1,maxct) = lrarray(5)
+                lepw(maxct) = lrarray(6)
+            else
+                ierror = 6
+                write (3,*) '***Error: Bad MATL input. At least 7 arguments required.'
+                return
+            endif
+        endif
+    end do
+    
+    ! Then do compartments
+    do ir = 2, inumr
+        label = carray(ir,1)
+        if (label==' ') cycle
+        lrarray = 0.0_eb
+        lcarray = ' '
+        do i = 2, inumc
+            lcarray(i-1) = carray(ir,i)
+            lrarray(i-1) = rarray(ir,i)
+        end do
 
-    ! Copy a single row into local arrays for processing in readin; start with column two, 
-    ! assuming that the key word is the first entry!
+        ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c),
+        ! floor_material(c), wall_material (c)
+        if (label=='COMPA') then
+            if (countargs(lcarray)>=10) then
 
-    label = carray(lrowcount,1)
-    if (label==' ') go to 40
+                compartment = compartment + 1
+                if (compartment>nr) then
+                    write (logerr, 5062) compartment
+                    ierror = 9
+                    return
+                endif
+
+                ! Name
+                compartmentnames(compartment) = lcarray(1)
+
+                ! Size
+                room_width(compartment) = lrarray(2)
+                room_depth(compartment) = lrarray(3)
+                room_height(compartment) = lrarray(4)
+                cxabs(compartment) = lrarray(5)
+                cyabs(compartment) = lrarray(6)
+                floor_height(compartment) = lrarray(7)
+
+                ! Ceiling
+                tcname = lcarray(8)
+                if (tcname/='OFF') then
+                    surface_on_switch(1,compartment) = .true.
+                    cname(1,compartment) = tcname
+                    ! keep track of the total number of thermal properties used
+                    numthrm = numthrm + 1
+                endif
+
+                ! floor
+                tcname = lcarray(9)
+                if (tcname/='OFF') then
+                    surface_on_switch(2,compartment) = .true.
+                    cname(2,compartment) = tcname
+                    ! keep track of the total number of thermal properties used
+                    numthrm = numthrm + 1
+                endif
+
+                ! walls
+                tcname = lcarray(10)
+                if (tcname/='OFF') then
+                    surface_on_switch(3,compartment) = .true.
+                    cname(3,compartment) = tcname
+                    surface_on_switch(4,compartment) = .true.
+                    cname(4,compartment) = tcname
+                    ! keep track of the total number of thermal properties used
+                    numthrm = numthrm + 1
+                endif
+
+                ! If there are more than 10 arguments, it's the new format that includes grid spacing
+                if (countargs(lcarray)==13) then
+                    cxgrid(compartment) = lrarray(11)
+                    cygrid(compartment) = lrarray(12)
+                    czgrid(compartment) = lrarray(13)
+                end if
+
+                ! Reset this each time in case this is the last entry
+                n = compartment+1
+            else
+                ierror = 8
+                write (3,*) '***Error: Bad COMPA input. At least 10 arguments required.'
+                return
+            endif
+        endif
+    end do
+    
+    ! Then do targets
+    do ir = 2, inumr
+        label = carray(ir,1)
+        if (label==' ') cycle
+        lrarray = 0.0_eb
+        lcarray = ' '
+        do i = 2, inumc
+            lcarray(i-1) = carray(ir,i)
+            lrarray(i-1) = rarray(ir,i)
+        end do
+
+        !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
+        if (label=='TARGE') then
+            if (countargs(lcarray)>=10) then
+                if(ntarg+1>mxtarg)then
+                    write(logerr,5002)
+                    ierror = 42
+                    return
+                endif
+
+                ! The target can exist, now for the compartment
+                ntarg = ntarg + 1
+                iroom = lrarray(1)
+                if(iroom<1.or.iroom>n)then
+                    write(logerr,5003) iroom
+                    ierror = 43
+                    return
+                endif
+
+                ! position and normal vector
+                ixtarg(trgroom,ntarg)=iroom
+                do i = 0, 2
+                    xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
+                    xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
+                end do
+                if (countargs(lcarray)>=11) then
+                    xxtarg(trginterior,ntarg) = lrarray(11)
+                else
+                    xxtarg(trginterior,ntarg) = 0.5
+                endif
+
+                ! target name
+                if (countargs(lcarray)>=12) then
+                    targetnames(ntarg) = lcarray(12)
+                else
+                    write (targetnames(ntarg),'(a5,i0)') 'Targ ', ntarg
+                end if
+
+                ! material type
+                tcname = lcarray(8)
+                if(tcname==' ') tcname='DEFAULT'
+                cxtarg(ntarg) = tcname
+                ixtarg(trgwall,ntarg) = 0
+
+                ! solution method
+                method = ' '
+                method = lcarray(9)
+                call upperall(method,method)
+                if(method/=' ')then
+                    if(method(1:3)=='STE') then
+                        ixtarg(trgmeth,ntarg) = STEADY
+                        method = ' '
+                    elseif (method(1:3)=='IMP') then
+                        ixtarg(trgmeth,ntarg) = MPLICIT
+                    elseif (method(1:3)=='EXP') then
+                        ixtarg(trgmeth,ntarg) = XPLICIT
+                    else
+                        write(logerr,912) method
+                        ierror = 44
+                        return
+                    endif
+                endif
+
+                ! equation type
+                eqtype = ' '
+                eqtype = lcarray(10)
+                call upperall(eqtype,eqtype)
+                if(eqtype/=' '.and.method/=' ')then
+                    if (eqtype(1:3)=='ODE') then
+                        ixtarg(trgeq,ntarg) = ODE
+                    elseif (eqtype(1:3)=='PDE') then
+                        ixtarg(trgeq,ntarg) = PDE
+                    elseif (eqtype(1:3)=='CYL') then
+                        ixtarg(trgeq,ntarg) = CYLPDE
+                    else
+                        write(logerr,913) eqtype
+                        ierror = 45
+                        return
+                    endif
+                endif
+            else
+                ierror = 41
+                return
+            endif
+        end if
+    end do
+
+    ! Then do fires
+    do ir = 2, inumr
+        label = carray(ir,1)
+        if (label==' ') cycle
+        lrarray = 0.0_eb
+        lcarray = ' '
+        do i = 2, inumc
+            lcarray(i-1) = carray(ir,i)
+            lrarray(i-1) = rarray(ir,i)
+        end do
+
+        ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
+        ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more
+        ! consistent with other keywords
+        ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
+        ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
+        if (label=='FIRE') then
+            if (countargs(lcarray)/=11) then
+                ierror = 32
+                write (3,*) '***Error: Bad FIRE input. 11 arguments required.'
+                return
+            endif
+            if (numobjl>=mxfires) then
+                write(logerr,5300)
+                cycle
+            endif
+            iroom = lrarray(1)
+            if (iroom<1.or.iroom>n-1) then
+                write(logerr,5320)iroom
+                ierror = 33
+                return
+            endif
+            obpnt = numobjl + 1
+            numobjl = obpnt
+
+            ! Only constrained fires
+            objtyp(numobjl) = 2
+            if (objtyp(numobjl)>2) then
+                write(logerr,5321) objtyp(numobjl)
+                ierror = 63
+                return
+            endif
+
+            objpos(1,obpnt) = lrarray(2)
+            objpos(2,obpnt) = lrarray(3)
+            objpos(3,obpnt) = lrarray(4)
+            if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
+                write(logerr,5323) obpnt
+                ierror = 82
+                return
+            endif
+            obj_fpos(obpnt) = 1
+            if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
+                min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+            if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .and. &
+                min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+
+            fplume(numobjl) = lrarray(5)
+            if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
+                write(logerr,5402) fplume(numobjl)
+                ierror = 78
+                return
+            endif
+            objign(obpnt) =   lrarray(6)
+            tmpcond =         lrarray(7)
+            objort(1,obpnt) = lrarray(8)
+            objort(2,obpnt) = lrarray(9)
+            objort(3,obpnt) = lrarray(10)
+
+            ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
+            if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
+                write(logerr,5322)
+                ierror = 216
+                return
+            endif
+
+            objrm(obpnt) = iroom
+            objnin(obpnt) = lcarray(11)
+            objld(obpnt) = .true.
+            objon(obpnt) = .false.
+            ! This is redudant but needed to be compatible with the object database format
+            objpnt(obpnt) = obpnt
+
+            ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
+            ! The critiria for temperature and flux are stored backupwards - this is historical
+            ! See corresponding code in update_fire_objects
+            if (tmpcond>0.0_eb) then
+                if (objign(obpnt)==1) then
+                    objcri(1,obpnt) = tmpcond
+                    objcri(2,obpnt) = 1.0e30_eb
+                    objcri(3,obpnt) = 1.0e30_eb
+                else if (objign(obpnt)==2) then
+                    objcri(1,obpnt) = 1.0e30_eb
+                    objcri(2,obpnt) = 1.0e30_eb
+                    objcri(3,obpnt) = tmpcond
+                else if (objign(obpnt)==3) then
+                    objcri(1,obpnt) = 1.0e30_eb
+                    objcri(2,obpnt) = tmpcond
+                    objcri(3,obpnt) = 1.0e30_eb
+                else
+                    write(logerr,5358) objign(obpnt)
+                    ierror = 13
+                    return
+                endif
+            else
+                objon(obpnt) = .true.
+            endif
+            if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
+                if (stpmax>0.0_eb) then
+                    stpmax = min(stpmax,1.0_eb)
+                else
+                    stpmax = 1.0_eb
+                endif
+            endif
+
+            ! read and set the other stuff for this fire
+            call inputembeddedfire(objnin(obpnt), ir, inumc, obpnt, ierror)
+            if (ierror/=0) return
+        endif
+    end do
+
+    ! Then do everything else
+    do ir = 2, inumr
+
+    label = carray(ir,1)
+    if (label==' ') cycle
     lrarray = 0.0_eb
     lcarray = ' '
-    do i = 2, xnumc
-        lcarray(i-1) = carray(lrowcount,i)
-        lrarray(i-1) = rarray(lrowcount,i)
+    do i = 2, inumc
+        lcarray(i-1) = carray(ir,i)
+        lrarray(i-1) = rarray(ir,i)
     end do
 
     !	Start the case statement for key words
@@ -639,103 +965,13 @@
             return
         endif
 
-    ! MATL short_name conductivity specific_heat density thickness emissivity long_name
-    case ('MATL')
-        if(countargs(lcarray)>=7) then
-            maxct = maxct + 1
-            if (maxct>mxthrmp) then
-                write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
-                    mxthrmp
-                ierror = 203
-                return
-            endif
-            nlist(maxct) = lcarray(1)
-            lnslb(maxct) = 1
-            lfkw(1,maxct) = lrarray(2)
-            lcw(1,maxct) = lrarray(3)
-            lrw(1,maxct) = lrarray(4)
-            lflw(1,maxct) = lrarray(5)
-            lepw(maxct) = lrarray(6)
-        else
-            ierror = 6
-            write (3,*) '***Error: Bad MATL input. At least 7 arguments required.'
-            return
-        endif
-
-    ! COMPA	name(c), width(f), depth(f), height(f), absolute position (f) (3), ceiling_material(c), 
-    ! floor_material(c), wall_material (c) 
-    case ('COMPA')
-        if (countargs(lcarray)>=10) then
-
-            compartment = compartment + 1
-            if (compartment>nr) then
-                write (logerr, 5062) compartment
-                ierror = 9
-                return
-            endif
-
-            ! Name
-            compartmentnames(compartment) = lcarray(1)
-
-            ! Size
-            room_width(compartment) = lrarray(2)
-            room_depth(compartment) = lrarray(3)
-            room_height(compartment) = lrarray(4)
-            cxabs(compartment) = lrarray(5)
-            cyabs(compartment) = lrarray(6)
-            floor_height(compartment) = lrarray(7)
-
-            ! Ceiling
-            tcname = lcarray(8)
-            if (tcname/='OFF') then
-                surface_on_switch(1,compartment) = .true.
-                cname(1,compartment) = tcname
-                ! keep track of the total number of thermal properties used
-                numthrm = numthrm + 1
-            endif
-
-            ! floor
-            tcname = lcarray(9)
-            if (tcname/='OFF') then
-                surface_on_switch(2,compartment) = .true.
-                cname(2,compartment) = tcname
-                ! keep track of the total number of thermal properties used
-                numthrm = numthrm + 1
-            endif
-
-            ! walls
-            tcname = lcarray(10)
-            if (tcname/='OFF') then
-                surface_on_switch(3,compartment) = .true.
-                cname(3,compartment) = tcname
-                surface_on_switch(4,compartment) = .true.
-                cname(4,compartment) = tcname
-                ! keep track of the total number of thermal properties used
-                numthrm = numthrm + 1
-            endif
-
-            ! If there are more than 10 arguments, it's the new format that includes grid spacing
-            if (countargs(lcarray)==13) then
-                cxgrid(compartment) = lrarray(11)
-                cygrid(compartment) = lrarray(12)
-                czgrid(compartment) = lrarray(13)
-            end if
-
-            ! Reset this each time in case this is the last entry
-            n = compartment+1
-        else
-            ierror = 8
-            write (3,*) '***Error: Bad COMPA input. At least 10 arguments required.'
-            return
-        endif
-
-    ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
-    !		    bw = width, hh = soffit, hl = sill, 
-    !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
-    !           floor_height = absolute height of the floor (not set here)
-    !		    compartment offset for the hall command (2 of these)
-    !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
-    !		    initial open fraction
+        ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
+        !		    bw = width, hh = soffit, hl = sill, 
+        !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
+        !           floor_height = absolute height of the floor (not set here)
+        !		    compartment offset for the hall command (2 of these)
+        !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
+        !		    initial open fraction
     case ('HVENT')
         if (countargs(lcarray)<7) then
             ierror = 10
@@ -1055,116 +1291,8 @@
         qcvm(2,mid) = lrarray(13)
         qcvm(4,mid) = lrarray(13)
 
-    ! FIRE room pos(3) plume ignition_type ignition_criterion normal(3) name
-    ! This is almost the same as the older OBJEC keyword (name is moved to the end to make it more 
-    ! consistent with other keywords
-    ! With the FIRE keyword, the rest of the fire definition follows in CHEMI, TIME, HRR, SOOT, CO, and TRACE keywords
-    ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
-    case ('FIRE')
-        if (countargs(lcarray)/=11) then
-            ierror = 32
-            write (3,*) '***Error: Bad FIRE input. 11 arguments required.'
-            return
-        endif
-        if (numobjl>=mxfires) then
-            write(logerr,5300)
-            go to 10
-        endif
-        iroom = lrarray(1)
-        if (iroom<1.or.iroom>n-1) then
-            write(logerr,5320)iroom
-            ierror = 33
-            return
-        endif
-        obpnt = numobjl + 1
-        numobjl = obpnt
-
-        ! Only constrained fires
-        objtyp(numobjl) = 2
-        if (objtyp(numobjl)>2) then
-            write(logerr,5321) objtyp(numobjl)
-            ierror = 63
-            return
-        endif
-
-        objpos(1,obpnt) = lrarray(2)
-        objpos(2,obpnt) = lrarray(3)
-        objpos(3,obpnt) = lrarray(4)
-        if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
-            write(logerr,5323) obpnt
-            ierror = 82
-            return
-        endif
-        obj_fpos(obpnt) = 1
-        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
-            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .and. &
-            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
-
-        fplume(numobjl) = lrarray(5)
-        if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
-            write(logerr,5402) fplume(numobjl)
-            ierror = 78
-            return 
-        endif
-        objign(obpnt) =   lrarray(6)
-        tmpcond =         lrarray(7)
-        objort(1,obpnt) = lrarray(8)
-        objort(2,obpnt) = lrarray(9)
-        objort(3,obpnt) = lrarray(10)
-
-        ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-        if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
-            write(logerr,5322)
-            ierror = 216
-            return
-        endif
-
-        objrm(obpnt) = iroom
-        objnin(obpnt) = lcarray(11)
-        objld(obpnt) = .true.
-        objon(obpnt) = .false.
-        ! This is redudant but needed to be compatible with the object database format
-        objpnt(obpnt) = obpnt
-
-        ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
-        ! The critiria for temperature and flux are stored backupwards - this is historical
-        ! See corresponding code in update_fire_objects
-        if (tmpcond>0.0_eb) then
-            if (objign(obpnt)==1) then
-                objcri(1,obpnt) = tmpcond
-                objcri(2,obpnt) = 1.0e30_eb
-                objcri(3,obpnt) = 1.0e30_eb
-            else if (objign(obpnt)==2) then
-                objcri(1,obpnt) = 1.0e30_eb
-                objcri(2,obpnt) = 1.0e30_eb
-                objcri(3,obpnt) = tmpcond
-            else if (objign(obpnt)==3) then
-                objcri(1,obpnt) = 1.0e30_eb
-                objcri(2,obpnt) = tmpcond
-                objcri(3,obpnt) = 1.0e30_eb
-            else
-                write(logerr,5358) objign(obpnt)
-                ierror = 13
-                return
-            endif
-        else
-            objon(obpnt) = .true.
-        endif
-        if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
-            if (stpmax>0.0_eb) then
-                stpmax = min(stpmax,1.0_eb)
-            else
-                stpmax = 1.0_eb
-            endif
-        endif 
-
-        ! read and set the other stuff for this fire
-        call inputembeddedfire(objnin(obpnt), lrowcount, xnumc, obpnt, ierror)
-        if (ierror/=0) return
-
-    ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
-    ! This is the old format fire object specification
+        ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
+        ! This is the old format fire object specification
     case ('OBJEC')
 
         if (countargs(lcarray)/=11) then
@@ -1174,7 +1302,7 @@
         endif
         if (numobjl>=mxfires) then
             write(logerr,5300)
-            go to 10
+            cycle
         endif
         tcname = lcarray(1)
         iroom = lrarray(2)
@@ -1375,90 +1503,6 @@
             ierror = 39
             return
         endif
- 
-    !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
-    case ('TARGE')
-        if (countargs(lcarray)>=10) then
-            if(ntarg+1>mxtarg)then
-                write(logerr,5002) 
-                ierror = 42
-                return
-            endif
-
-            ! The target can exist, now for the compartment
-            ntarg = ntarg + 1
-            iroom = lrarray(1)
-            if(iroom<1.or.iroom>n)then
-                write(logerr,5003) iroom
-                ierror = 43
-                return
-            endif
-
-            ! position and normal vector
-            ixtarg(trgroom,ntarg)=iroom
-            do i = 0, 2
-                xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
-                xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
-            end do
-            if (countargs(lcarray)>=11) then
-                xxtarg(trginterior,ntarg) = lrarray(11)
-            else
-                xxtarg(trginterior,ntarg) = 0.5
-            endif
-            
-            ! target name
-            if (countargs(lcarray)>=12) then
-                targetnames(ntarg) = lcarray(12)
-            else
-                write (targetnames(ntarg),'(a5,i0)') 'Targ ', ntarg
-            end if
-            
-            ! material type
-            tcname = lcarray(8)
-            if(tcname==' ') tcname='DEFAULT'
-            cxtarg(ntarg) = tcname
-            ixtarg(trgwall,ntarg) = 0
-
-            ! solution method
-            method = ' '
-            method = lcarray(9)
-            call upperall(method,method)
-            if(method/=' ')then
-                if(method(1:3)=='STE') then
-                    ixtarg(trgmeth,ntarg) = STEADY
-                    method = ' '
-                elseif (method(1:3)=='IMP') then
-                    ixtarg(trgmeth,ntarg) = MPLICIT
-                elseif (method(1:3)=='EXP') then
-                    ixtarg(trgmeth,ntarg) = XPLICIT
-                else
-                    write(logerr,912) method
-                    ierror = 44
-                    return
-                endif
-            endif
-
-            ! equation type
-            eqtype = ' '
-            eqtype = lcarray(10)
-            call upperall(eqtype,eqtype)
-            if(eqtype/=' '.and.method/=' ')then
-                if (eqtype(1:3)=='ODE') then
-                    ixtarg(trgeq,ntarg) = ODE
-                elseif (eqtype(1:3)=='PDE') then
-                    ixtarg(trgeq,ntarg) = PDE
-                elseif (eqtype(1:3)=='CYL') then
-                    ixtarg(trgeq,ntarg) = CYLPDE
-                else
-                    write(logerr,913) eqtype
-                    ierror = 45
-                    return
-                endif
-            endif
-        else
-            ierror = 41
-            return
-        endif
         
     ! HALL Compartment Velocity Depth Decay_Distance
     case ('HALL')
@@ -1588,7 +1632,7 @@
 
             if (countargs(lcarray)>=1) then
                 izheat(ifrom) = 1
-                go to 10
+                cycle
             else
                 nto = lrarray(2)
                 if(nto<1.or.nto>n)then
@@ -1778,7 +1822,7 @@
     case default
         write(logerr, 5051) label
     end select
-    go to 10 
+    end do
 
 912 format ('***Error: BAD TARGE input. Invalid method:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
 913 format('***Error: BAD TARGE input. Invalid equation type:',A3,' Valid choices are:ODE, PDE or CYL')
@@ -1829,16 +1873,16 @@
 
 ! --------------------------- inputembeddedfire -------------------------------------------
 
-    subroutine inputembeddedfire(objname, lrowcount, xnumc, iobj, ierror)
+    subroutine inputembeddedfire(objname, lrowcount, inumc, iobj, ierror)
 
     !     routine: inputembeddedfire
     !     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
     !              followed by CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH keywords (read in here)
     !     Arguments: objname: name of this fire object
-    !                iroom: compartment where this fire is located
-    !                lrowcount: current row in the input file.  We begin one row after this one
-    !                xnumr:   number of rows in the input file
-    !                xnumc:   number of columns in the input file
+    !                iroom:   compartment where this fire is located
+    !                ir:      current row in the input file.  We begin one row after this one
+    !                inumr:   number of rows in the input file
+    !                inumc:   number of columns in the input file
     !                iobj:    pointer to the fire object that will contain all the data we read in here
     !                ierror:  error return index
 
@@ -1849,9 +1893,9 @@
     use objects2
     implicit none
 
-    integer, intent(in) :: xnumc, iobj
+    integer, intent(in) :: inumc, iobj, lrowcount
     character(*), intent(in) :: objname
-    integer, intent(out) :: lrowcount, ierror
+    integer, intent(out) :: ierror
     
     character(128) :: lcarray(ncol)
     character(5) :: label
@@ -1862,12 +1906,11 @@
     lrarray = 0.0_eb
     lcarray = ' '
     do ir = 1, 8
-        lrowcount = lrowcount + 1
-        label = carray(lrowcount,1)
+        label = carray(lrowcount+ir,1)
         if (label==' ') cycle
-        do i = 2, xnumc
-            lcarray(i-1) = carray(lrowcount,i)
-            lrarray(i-1) = rarray(lrowcount,i)
+        do i = 2, inumc
+            lcarray(i-1) = carray(lrowcount+ir,i)
+            lrarray(i-1) = rarray(lrowcount+ir,i)
         end do
 
         select case (label)

@@ -1,0 +1,21 @@
+VERSN,7,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,108000,100,100,100
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
+!!
+!!Compartment keywords
+!!
+COMPA,Comp 1,5,5,3,0,0,0,OFF,OFF,OFF,50,50,50
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,0.01,1.505,1.495,2.5,2,1
+MVENT,2,1,1,V,1.5,1,V,1.5,1,0.01,1000000,1100000,1
+GLOBA,10,393.15
+!!
+!!visualizations
+!!
+SLCF,2-D,X,0

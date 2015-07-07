@@ -109,13 +109,8 @@
     interior_density = interior_abs_pressure/interior_temperature/rgas
     exterior_density = exterior_abs_pressure/exterior_temperature/rgas
 
-    ! initialize the targets. add targets for each fire
+    ! initialize the targets. 
     nm1 = n - 1
-    if (numobjl>0) then
-        do i = 1, numobjl 
-            call initfireobject(i,ierror)
-        end do
-    endif
     call inittarg (ierror)
     if (ierror/=0) return
 
@@ -799,26 +794,42 @@
                 ierror = 78
                 return
             endif
-            objign(obpnt) =   lrarray(6)
-            tmpcond =         lrarray(7)
-            objort(1,obpnt) = lrarray(8)
-            objort(2,obpnt) = lrarray(9)
-            objort(3,obpnt) = lrarray(10)
+            if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
+                ! it's a new format fire line that point to an existing target rather than to one created for the fire
+                if (lcarray(6)=='TIME') objign(obpnt) = 1
+                if (lcarray(6)=='TEMP') objign(obpnt) = 2
+                if (lcarray(6)=='FLUX') objign(obpnt) = 3
+                tmpcond = lrarray(7)
+                obtarg(obpnt) = 0
+                do i = 1,ntarg
+                    if (targetnames(i)==lcarray(8)) obtarg(obpnt) = i
+                end do
+                if (obtarg(obpnt)==0) then
+                    write (logerr,5324) obpnt
+                    ierror = 216
+                    return
+                end if
+            else
+                ! it's the old format fire line that creates a target for each fire
+                objign(obpnt) =   lrarray(6)
+                tmpcond =         lrarray(7)
+                objort(1,obpnt) = lrarray(8)
+                objort(2,obpnt) = lrarray(9)
+                objort(3,obpnt) = lrarray(10)
 
-            ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-            if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
-                write(logerr,5322)
-                ierror = 216
-                return
-            endif
-
+                ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
+                if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
+                    write(logerr,5322)
+                    ierror = 216
+                    return
+                endif
+            end if
             objrm(obpnt) = iroom
             objnin(obpnt) = lcarray(11)
             objld(obpnt) = .true.
             objon(obpnt) = .false.
             ! This is redudant but needed to be compatible with the object database format
             objpnt(obpnt) = obpnt
-
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
             ! The critiria for temperature and flux are stored backupwards - this is historical
             ! See corresponding code in update_fire_objects
@@ -853,6 +864,10 @@
 
             ! read and set the other stuff for this fire
             call inputembeddedfire(objnin(obpnt), ir, inumc, obpnt, ierror)
+            
+            ! if it's an old format fire input, create a target for the fire
+            if (lcarray(6)/='TIME' .and. lcarray(6)/='TEMP' .and. lcarray(6)/='FLUX') call initfireobject(obpnt,ierror)
+            
             if (ierror/=0) return
         endif
     end do
@@ -1826,11 +1841,11 @@
 
 912 format ('***Error: BAD TARGE input. Invalid method:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
 913 format('***Error: BAD TARGE input. Invalid equation type:',A3,' Valid choices are:ODE, PDE or CYL')
-5001 format ('***Error: Bad ONEZ input. Referenced compartment is not defined',i3)
+5001 format ('***Error: Bad ONEZ input. Referenced compartment is not defined ',i0)
 5002 format ('***Error: BAD TARGE input. Too many targets are being defined')
-5003 format ('***Error: BAD TARGE input. The compartment specified by TARGET does not exist',i3)
+5003 format ('***Error: BAD TARGE input. The compartment specified by TARGET does not exist ',i0)
 5051 format ('***Error: The key word ',a5,' is not recognized')
-5062 format ('***Error: Bad COMPA input. Compartment number outside of allowable range',i5)
+5062 format ('***Error: Bad COMPA input. Compartment number outside of allowable range ',i0)
 5070 format ('***Error: Bad VENT input. Parameter(s) outside of allowable range',2I4)
 5080 format ('***Error: Bad HVENT input. Too many pairwise horizontal connections',4I5)
 5081 format ('***Error: Too many horizontal connections ',3i5)
@@ -1838,36 +1853,37 @@
 5192 format ('***Error: Bad MVENT input. Exceeded maximum number of nodes/openings in MVENT ',2i3)
 5193 format ('***Error: Bad MVENT input. MVENT(MID) is not consistent and should be a fan ',2i3)
 5194 format ('***Error: Bad MVENT input. Pressure for zero flow must exceed the lower limit',f10.2)
-5195 format ('***Error: Bad MVENT input. Too many fan systems',i3)
-5196 format ('***Error: Bad EVENT input. Fan has not been defined for this filter ',i3)
+5195 format ('***Error: Bad MVENT input. Too many fan systems ',i0)
+5196 format ('***Error: Bad EVENT input. Fan has not been defined for this filter ',i0)
 5300 format ('***Error: Bad FIRE input. Too many objects defined in datafile')
 5310 format ('***Error: Bad FIRE input. Incorrect number of parameters for OBJECT')
-5320 format ('***Error: Bad FIRE input. Object specification error, room ',I4,' out of range')
-5321 format ('***Error: Bad FIRE input. Object specification error, not an allowed fire type',i3)
+5320 format ('***Error: Bad FIRE input. Object specification error, room ',i0,' out of range')
+5321 format ('***Error: Bad FIRE input. Object specification error, not an allowed fire type',i0)
 5322 format ('***Error: Bad FIRE input. Object normal vector must be non-zero')
-5323 format ('***Error: Bad FIRE input. Object ',i3,' is outside its compartment')
+5323 format ('***Error: Bad FIRE input. Object ',i0,' is outside its compartment')
+5324 format ('***Error: Bad FIRE input. Target specified for fire ',i0, ' does not exist')
 5338 format ('***Error: Bad DETEC input. Exceed allowed number of detectors')
-5339 format ('***Error: Bad DETEC input. Detector ',i3,' is outside of compartment ',a)
-5342 format ('***Error: Bad DETEC input. Invalid DETECTOR specification - room ',i3)
-5344 format ('***Error: Bad DETEC input. A referenced compartment is not yet defined ',i3)
+5339 format ('***Error: Bad DETEC input. Detector ',i0,' is outside of compartment ',a)
+5342 format ('***Error: Bad DETEC input. Invalid DETECTOR specification - room ',i0)
+5344 format ('***Error: Bad DETEC input. A referenced compartment is not yet defined ',i0)
 5345 format ('***Error: Bad VHEAT input. A referenced compartment does not exist')
-5346 format ('***Error: Bad HALL input. A referenced compartment does not exist',i3)
-5347 format ('***Error: Bad ROOMA input. Compartment specified by ROOMA does not exist ',i3)
+5346 format ('***Error: Bad HALL input. A referenced compartment does not exist ',i0)
+5347 format ('***Error: Bad ROOMA input. Compartment specified by ROOMA does not exist ',i0)
 5348 format ('***Error: Bad ROOMA or ROOMH input. Data on the ROOMA (or H) line must be positive ',1pg12.3)
-5349 format ('***Error: Bad ROOMH input. Compartment specified by ROOMH is not defined ',i3)
-5350 format ('***Error: Bad ROOMH input. ROOMH error on data line ',i3)
-5354 format ('***Error: Bad HHEAT input. HHEAT to compartment out of bounds or not defined - ',i3)
+5349 format ('***Error: Bad ROOMH input. Compartment specified by ROOMH is not defined ',i0)
+5350 format ('***Error: Bad ROOMH input. ROOMH error on data line ',i0)
+5354 format ('***Error: Bad HHEAT input. HHEAT to compartment out of bounds or not defined - ',i0)
 5355 format ('***Error: Bad HHEAT input. HHEAT fraction pairs are not consistent ',2i3)
 5356 format ('***Error: Bad HHEAT input. HHEAT specification error in compartment pairs: ',2i3)
 5357 format ('***Error: Bad HHEAT input. Error in fraction for HHEAT:',2i3,f6.3)
-5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',I5)
+5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
-5402 format ('***Error: Bad FIRE input. Plume index out of range ',i3)
-5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i3)  
-5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i3)    
+5402 format ('***Error: Bad FIRE input. Plume index out of range ',i0)
+5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)  
+5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)    
 5405 format ('***Error: Invalid keyword in CFAST input file ',a) 
-5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i3,' Flow inputs are no longer used')  
+5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i0,' Flow inputs are no longer used')  
 
     end subroutine keywordcases
 
@@ -2223,6 +2239,7 @@
         xxtarg(trgcenx+i,itarg) = objpos(1+i,iobj)
         xxtarg(trgnormx+i,itarg) = objort(1+i,iobj)
     end do
+    xxtarg(trginterior,ntarg) = 0.5
     ixtarg(trgwall,itarg) = 0
     ixtarg(trgmeth,itarg) = mplicit
     ixtarg(trgeq,itarg) = ode

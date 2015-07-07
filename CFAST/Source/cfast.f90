@@ -700,6 +700,7 @@
         if (ifobj>0.and.tobj<=td) then
             call update_fire_objects (set_detector_state,told,dt,ifobj,tobj,ierror)
             write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb) ! this prevents printing out a negative activation time
+            write(logerr,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb)
 5003        format(/,' Object #',i3,' (',a,') ignited at ', f10.3,' seconds')
             ! check to see if we are backing up objects igniting
             if (option(fbtobj)==on) then

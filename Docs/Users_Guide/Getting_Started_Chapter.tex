@@ -9,7 +9,7 @@ CFAST was designed primarily for a personal computer running Microsoft Windows. 
 \begin{lstlisting}
 http://cfast.nist.gov
 \end{lstlisting}
-The CFAST distribution consists of a self-extracting set-up program for Windows-based personal computers. After downloading the set-up program, double-clicking on the file's icon walks the user through a series of steps for installation of the program.  The most important part of the installation is the creation of a folder (typically {\ct c:$\backslash$Program Files$\backslash$CFAST} by default) in which the CFAST executable files and supplemental data files are installed.  Sample input files are found in the {\ct Examples} folder.
+The CFAST distribution consists of a self-extracting set-up program for Windows-based personal computers. After downloading the set-up program, double-clicking on the file's icon walks you through a series of steps for installation of the program.  The most important part of the installation is the creation of a folder ({\ct C:$\backslash$Program Files$\backslash$CFAST} by default) in which the CFAST executable files and supplemental data files are installed.  Sample input files are found in the {\ct Examples} folder.
 
 CFAST input files are best created and run using a Windows-based input editor called CEdit. Sample input files are provided with the program for new users who are encouraged to first run the sample calculations before attempting to create an input file. To run the model, browse to the location of the CFAST sample input file (default location is in a folder called {\ct Examples} in the installation folder, copy the file named {\ct standard.in} to a location of your choice and then double click on the copied file. This should open the file in the CFAST input editor, CEdit, as shown in Fig.~\ref{primary_screen}.
 \begin{figure}[h!]
@@ -32,7 +32,9 @@ The input parameters are organized via tabs near the top of the CEdit screen, as
 \item[Simulation Environment] includes simulation time, specification of model outputs, and ambient conditions. Also included on the page are a constantly updated list of errors, warnings, and messages about the input file specification or model simulation.
 \item[Thermal Properties] defines the thermal conductivity, specific heat, density, thickness and emissivity values for all materials and fuel sources to be used in a simulation.
 \item[Compartments] defines the size, construction characteristics, and position of the compartments in a simulation.
-\item[Wall Vents, Ceiling/Floor Vents, and Mechanical Ventilation] allows the user to connect compartments with doors and windows, ceiling and floor vents, or forced air ventilation systems.
+\item[Wall Vents] define doors and windows.
+\item[Ceiling/Floor Vents] define holes in the ceiling/floor.
+\item[Mechanical Ventilation] defines forced air ventilation.
 \item[Fires] include user specification of the initial fire source and any additional burning objects in one or more of the compartments of the simulation.
 \item[Targets] provide the ability to calculate the temperature and net heat flux to objects placed and oriented arbitrarily in the structure.
 \item[Detection / Suppression] defines any heat alarms and sprinklers in the compartments of the simulation.

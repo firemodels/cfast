@@ -867,9 +867,6 @@
             ! read and set the other stuff for this fire
             call inputembeddedfire(objnin(obpnt), ir, inumc, obpnt, ierror)
             
-            ! if it's an old format fire input, create a target for the fire
-            if (lcarray(6)/='TIME' .and. lcarray(6)/='TEMP' .and. lcarray(6)/='FLUX') call initfireobject(obpnt,ierror)
-            
             if (ierror/=0) return
         endif
     end do

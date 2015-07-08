@@ -539,43 +539,42 @@
     do i=1,nm1
         write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
 
-        if (ntarg>nm1) then
-            do itarg = 1, ntarg
-                if (ixtarg(trgroom,itarg)==i) then
-                    tg = tgtarg(itarg)
-                    tttemp = xxtarg(idxtempf_trg,itarg)
-                    itctemp = (idxtempf_trg+idx_tempb_trg)/2
-                    if (ixtarg(trgeq,itarg)==cylpde) itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
-                    tctemp = xxtarg(itctemp,itarg)
-                    if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
-                    if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
-                    if (validate.or.netheatflux) then
-                        total = gtflux(itarg,t_total)
-                        ftotal = gtflux(itarg,t_ftotal)
-                        wtotal = gtflux(itarg,t_wtotal)
-                        gtotal = gtflux(itarg,t_gtotal)
-                        ctotal = gtflux(itarg,t_ctotal)
-                    else
-                        total = xxtarg(trgtfluxf,itarg)
-                        ftotal = qtfflux(itarg,1)
-                        wtotal = qtwflux(itarg,1)
-                        gtotal = qtgflux(itarg,1)
-                        ctotal = qtcflux(itarg,1)
-                    endif
-                    if (total<=1.0e-10_eb) total = 0.0_eb
-                    if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
-                    if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
-                    if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
-                    if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
-                    if (total/=0.0_eb) then
-                        write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
-                        tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
-                    else
-                        write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
-                    endif
+        do itarg = 1, ntarg
+            if (ixtarg(trgroom,itarg)==i) then
+                tg = tgtarg(itarg)
+                tttemp = xxtarg(idxtempf_trg,itarg)
+                itctemp = (idxtempf_trg+idx_tempb_trg)/2
+                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
+                tctemp = xxtarg(itctemp,itarg)
+                if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
+                if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
+                if (validate.or.netheatflux) then
+                    total = gtflux(itarg,t_total)
+                    ftotal = gtflux(itarg,t_ftotal)
+                    wtotal = gtflux(itarg,t_wtotal)
+                    gtotal = gtflux(itarg,t_gtotal)
+                    ctotal = gtflux(itarg,t_ctotal)
+                else
+                    total = xxtarg(trgtfluxf,itarg)
+                    ftotal = qtfflux(itarg,1)
+                    wtotal = qtwflux(itarg,1)
+                    gtotal = qtgflux(itarg,1)
+                    ctotal = qtcflux(itarg,1)
                 endif
-            end do
-        endif
+                if (total<=1.0e-10_eb) total = 0.0_eb
+                if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
+                if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
+                if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
+                if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
+                if (total/=0.0_eb) then
+                    write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                        tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
+                else
+                    write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                endif
+            endif
+        end do
+
     end do
     return
 5000 format (//,'SURFACES AND TARGETS',//, &

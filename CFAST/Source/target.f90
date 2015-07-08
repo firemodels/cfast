@@ -151,38 +151,36 @@ contains
     integer :: itarg, methtarg, iroom, niter, iter
 
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
-    if (ntarg>nm1) then
-        do itarg = 1, ntarg
-            methtarg = ixtarg(trgmeth,itarg)
-            if(method==methtarg) then
-                iroom = ixtarg(trgroom,itarg)
-                if(methtarg==steady)then
-                    niter = 10
-                else
-                    niter = 1
+    do itarg = 1, ntarg
+        methtarg = ixtarg(trgmeth,itarg)
+        if(method==methtarg) then
+            iroom = ixtarg(trgroom,itarg)
+            if(methtarg==steady)then
+                niter = 10
+            else
+                niter = 1
+            endif
+            ttarg(1) = xxtarg(idxtempf_trg,itarg)
+            ttarg(2) = xxtarg(idx_tempb_trg,itarg)
+            do iter = 1, niter
+                call targflux(iter,itarg,ttarg,flux,dflux)
+                if(dflux(1)/=0.0_eb.and.methtarg==steady)then
+                    ddif = flux(1)/dflux(1)
+                    ttarg(1) = ttarg(1) - ddif
+                    if(abs(ddif)<=1.0e-5_eb*ttarg(1)) exit
                 endif
-                ttarg(1) = xxtarg(idxtempf_trg,itarg)
-                ttarg(2) = xxtarg(idx_tempb_trg,itarg)
-                do iter = 1, niter
-                    call targflux(iter,itarg,ttarg,flux,dflux)
-                    if(dflux(1)/=0.0_eb.and.methtarg==steady)then
-                        ddif = flux(1)/dflux(1)
-                        ttarg(1) = ttarg(1) - ddif
-                        if(abs(ddif)<=1.0e-5_eb*ttarg(1)) exit
-                    endif
-                end do
-                if(methtarg==steady)then
-                    xxtarg(idxtempf_trg,itarg) = ttarg(1)
-                    xxtarg(idx_tempb_trg,itarg) = ttarg(2)
-                endif
-                xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
-                xxtarg(trgtfluxb,itarg) = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
-                call targflux(niter+1,itarg,ttarg,flux,dflux)
-                xxtarg(trgnfluxf,itarg) = flux(1)
-                xxtarg(trgnfluxb,itarg) = flux(2)
-            end if
-        end do
-    endif
+            end do
+            if(methtarg==steady)then
+                xxtarg(idxtempf_trg,itarg) = ttarg(1)
+                xxtarg(idx_tempb_trg,itarg) = ttarg(2)
+            endif
+            xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
+            xxtarg(trgtfluxb,itarg) = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
+            call targflux(niter+1,itarg,ttarg,flux,dflux)
+            xxtarg(trgnfluxf,itarg) = flux(1)
+            xxtarg(trgnfluxb,itarg) = flux(2)
+        end if
+    end do
 
     return
     end subroutine target_flux

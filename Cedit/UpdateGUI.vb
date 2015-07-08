@@ -123,20 +123,23 @@ Public Class UpdateGUI
                 MainWin.ThermalSummary.Select(index + 1, 0, index + 1, MainWin.ThermalSummary.Cols.Count - 1, True)
             End If
 
-            Dim SaveCompCeiling As String, SaveTargetMaterial As String
+            Dim SaveCompCeiling As String, SaveTargetMaterial As String, SaveFireComp As String
             SaveCompCeiling = MainWin.CompCeiling.Text
             SaveTargetMaterial = MainWin.TargetMaterial.Text
+            SaveFireComp = MainWin.FireComp.Text
             myCompartments.DoChange = False
             myTargets.DoChange = False
+            myFires.DoChange = False
             InitThermalPropertyList(MainWin.CompCeiling)
             InitThermalPropertyList(MainWin.CompWalls)
             InitThermalPropertyList(MainWin.CompFloor)
             InitThermalPropertyList(MainWin.TargetMaterial)
-            InitThermalPropertyList(MainWin.FireMaterial)
             MainWin.CompCeiling.Text = SaveCompCeiling
             MainWin.TargetMaterial.Text = SaveTargetMaterial
+            MainWin.FireComp.Text = SaveFireComp
             myCompartments.DoChange = True
             myTargets.DoChange = True
+            myFires.DoChange = True
         End If
     End Sub
     Public Sub Visuals(ByVal indexVisual As Integer, ByVal indexCompartment As Integer)
@@ -601,6 +604,7 @@ Public Class UpdateGUI
                 Next
                 MainWin.TargetSummary.Select(index + 1, 0, index + 1, MainWin.TargetSummary.Cols.Count - 1, True)
             End If
+            InitTargetList(MainWin.FireTarget)
         End If
     End Sub
     Public Sub Detectors(ByVal index As Integer)
@@ -779,18 +783,23 @@ Public Class UpdateGUI
             MainWin.FireXPosition.Text = aFire.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFire.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireZPosition.Text = aFire.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.FireXNormal.Text = aFire.XNormal.ToString
-            MainWin.FireYNormal.Text = aFire.YNormal.ToString
-            MainWin.FireZNormal.Text = aFire.ZNormal.ToString
             MainWin.FireIgnitionCriteria.SelectedIndex = aFire.IgnitionType
-            If aFire.IgnitionType = Fire.FireIgnitionbyTime Then IgnitionTypeLabel = myUnits.Convert(UnitsNum.Time).Units
-            If aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then IgnitionTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
-            If aFire.IgnitionType = Fire.FireIgnitionbyFlux Then IgnitionTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
+            If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
+                IgnitionTypeLabel = myUnits.Convert(UnitsNum.Time).Units
+                MainWin.FireTarget.Enabled = False
+            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then
+                IgnitionTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
+                MainWin.FireTarget.Enabled = True
+                MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFire.Target)
+            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
+                IgnitionTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
+                MainWin.FireTarget.Enabled = True
+                MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFire.Target)
+            End If
             MainWin.FireIgnitionValue.Text = " "
             If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
             MainWin.FireName.Text = aFire.Name
 
-            MainWin.FireMaterial.Text = myThermalProperties.GetLongName(aFire.Material)
             MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
             MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
             MainWin.FireO.Text = aFire.ChemicalFormula(formula.O).ToString
@@ -891,6 +900,19 @@ Public Class UpdateGUI
             Return LastRow
         End Get
     End Property
+    Public Sub InitTargetList(ByVal obj As ComboBox)
+        Dim i As Integer, current As String
+        current = obj.Text
+        obj.Items.Clear()
+        If myTargets.Count > 0 Then
+            For i = 0 To myTargets.Count - 1
+                obj.Items.Add(myTargets.Item(i).Name)
+                If myTargets.Item(i).Name = current Then
+                    obj.SelectedIndex = i
+                End If
+            Next
+        End If
+    End Sub
     Public Sub InitThermalPropertyList(ByVal obj As ComboBox)
         Dim i As Integer, current As String
         current = obj.Text

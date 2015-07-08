@@ -533,7 +533,19 @@ Public Class TargetCollection
             List.Item(index) = Value
         End Set
     End Property
-
+    Public ReadOnly Property GetIndex(ByVal Name As String) As Integer
+        Get
+            If Count > 0 Then
+                For i = 0 To Me.Count - 1
+                    If Me.Item(i).Name = Name Then
+                        Return i
+                        Exit Property
+                    End If
+                Next
+            End If
+            Return -1
+        End Get
+    End Property
     Public ReadOnly Property NumberofConnections(ByVal index As Integer) As Integer
         Get
             Dim aTarget As Target
@@ -555,6 +567,18 @@ Public Class TargetCollection
                 For i = 0 To Count - 1
                     aTarget = CType(List.Item(i), Target)
                     If aTarget.Changed Then Return True
+                Next
+            End If
+            Return False
+        End Get
+    End Property
+    Public ReadOnly Property ValidTarget(ByVal Name As String) As Boolean
+        Get
+            If Count > 0 Then
+                Dim aTarget As Target
+                For i = 0 To Count - 1
+                    aTarget = CType(List(i), Target)
+                    If aTarget.Name = Name Then Return True
                 Next
             End If
             Return False

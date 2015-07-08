@@ -23,10 +23,9 @@
                 Me.InsertDataSummary(0, InsertFireNum.Soot) = "Soot"
                 Me.InsertDataSummary(0, InsertFireNum.CO) = "CO"
                 Me.InsertDataSummary(0, InsertFireNum.HoC) = "HoC"
-                Me.InsertDataSummary(0, InsertFireNum.Material) = "Material"
 
                 Me.InsertDataSummary.Location = New System.Drawing.Point(12, 12)
-                Me.InsertDataSummary.Size = New System.Drawing.Size(984, 156)
+                Me.InsertDataSummary.Size = New System.Drawing.Size(890, 156)
 
                 Me.SelectedFires.Clear()
                 MainWin.UpdateGUI.InitEditGrid(InsertDataSummary)
@@ -40,7 +39,7 @@
                 Me.InsertDataSummary(0, InsertThermalNum.Thickness) = "Thickness"
                 Me.InsertDataSummary(0, InsertThermalNum.Emissivity) = "Emissivity"
 
-                Me.InsertDataSummary.Location = New System.Drawing.Point(154, 12)
+                Me.InsertDataSummary.Location = New System.Drawing.Point(115, 12)
                 Me.InsertDataSummary.Size = New System.Drawing.Size(700, 156)
 
                 Me.SelectedThermalProperties.Clear()
@@ -77,7 +76,6 @@
                         Me.InsertDataSummary(i, InsertFireNum.Soot) = aFire.Peak(Fire.FireSoot)
                         Me.InsertDataSummary(i, InsertFireNum.CO) = aFire.Peak(Fire.FireCO).ToString
                         Me.InsertDataSummary(i, InsertFireNum.HoC) = aFire.HeatofCombustion.ToString
-                        Me.InsertDataSummary(i, InsertFireNum.Material) = myThermalProperties.GetLongName(aFire.Material)
                     Next
                     NumAdded = TempFires.Count
                 End If

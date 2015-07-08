@@ -6,11 +6,9 @@ Module Copy
         ToFire.XPosition = FromFire.XPosition
         ToFire.YPosition = FromFire.YPosition
         ToFire.ZPosition = FromFire.ZPosition
-        ToFire.XNormal = FromFire.XNormal
-        ToFire.YNormal = FromFire.YNormal
-        ToFire.ZNormal = FromFire.ZNormal
         ToFire.IgnitionType = FromFire.IgnitionType
         ToFire.IgnitionValue = FromFire.IgnitionValue
+        ToFire.Target = FromFire.Target
         ToFire.PlumeType = FromFire.PlumeType
         ToFire.FireObject = FromFire.FireObject
         ToFire.Name = FromFire.Name
@@ -19,7 +17,6 @@ Module Copy
         ToFire.ChemicalFormula(formula.O) = FromFire.ChemicalFormula(formula.O)
         ToFire.ChemicalFormula(formula.N) = FromFire.ChemicalFormula(formula.N)
         ToFire.ChemicalFormula(formula.Cl) = FromFire.ChemicalFormula(formula.Cl)
-        ToFire.Material = FromFire.Material
         ToFire.HeatofCombustion = FromFire.HeatofCombustion
         ToFire.RadiativeFraction = FromFire.RadiativeFraction
         Dim aFireData(12, 0) As Single

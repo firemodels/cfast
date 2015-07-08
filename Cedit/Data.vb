@@ -37,6 +37,7 @@ Friend Module Data
     Friend myFires As New FireCollection                            ' Fires defined for this test case
     Friend TempFires As New FireCollection
     Friend Const IgnitionNames As String = "Time       TemperatureHeat Flux  "
+    Friend Const IgnitionTypes As String = "TIMETEMPFLUX"
     Friend Const FireTypeNames As String = "ConstrainedHeat Source"
     Friend Const CJetNames As String = "OFF    CEILINGWALLS  ALL    "
     Friend firefile() As Integer = {2, 4, 3, 5, 6, 9, 10, 8, 7, 11, 12, 13, 14}
@@ -173,6 +174,7 @@ Friend Module Data
         yNormal
         zNormal
         name
+        ignTarget = 9
     End Enum
 
     Friend Enum formula

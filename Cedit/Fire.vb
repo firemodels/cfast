@@ -48,31 +48,21 @@ Public Class Fire
     Private aCompartment As Integer                 ' COmpartment where the fire is located
     Private aXPosition As Single                    ' X (width) position of the fire in the COmpartment
     Private aYPosition As Single                    ' Y (depth) position of the fire in the COmpartment
-    Private aZPosition As Single                    ' Z (height) position of the fire in the COmpartment
-    Private aXNormal As Single                      ' X Component of normal vector from chosen surface of target
-    Private aYNormal As Single                      ' Y Component of normal vector from chosen surface of target
-    Private aZNormal As Single                      ' Z Component of normal vector from chosen surface of target
+    Private aZPosition As Single                     ' Z Component of normal vector from chosen surface of target
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
     Private Const minValueIgnType As Integer = 0
     Private Const maxValueIgnType As Integer = 2
     Private aIgnitionValue As Single                ' Value at ignition for chosen igntion criterion
+    Private aIgnitionTarget As String                   ' Target assigned for ignition by temperature or flux
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
     Private aFireObject As Integer                  ' index pointer to the selected fire object for this instance
 
-    ' Object Definition for FireType = -1
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
     Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
-    Private aLength As Single                       ' Length of the burning object
-    Private aWidth As Single                        ' Width of the burning object
-    Private aThickness As Single                    ' Thickness of the burning object
     Private aMolarMass As Single                    ' Molecular weight of the fuel
-    Private aTotalMass As Single                    ' Total mass of the fuel
-    Private aMaterial As String                     ' Material from material database
-    Private aHeatofCombustion As Single             ' Heat of Combustion (note overspecification with HRR and Mdot)
-    Private aHeatofGasification As Single           ' Heat of gasification
-    Private aVolitilTemp As Single                  ' Volitilization temperature, default is ambient
+    Private aHeatofCombustion As Single             ' Heat of Combustion
     Private aRadiativeFraction As Single            ' Radiative fraction
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
@@ -82,12 +72,10 @@ Public Class Fire
         aXPosition = -1.0
         aYPosition = -1.0
         aZPosition = -1.0
-        aXNormal = 0.0
-        aYNormal = 0.0
-        aZNormal = 1.0
         aPlumeType = 0
         aIgnitionType = FireIgnitionbyTime
         aIgnitionValue = 0.0
+        aIgnitionTarget = ""
         aFireObject = -1
         aCommentsIndex = -1
         ' New definitions for a fire object
@@ -96,7 +84,6 @@ Public Class Fire
         aHeatofCombustion = 50000000.0
         aRadiativeFraction = 0.35
         aCommentsIndex = -1
-        aMaterial = "METHANE"
     End Sub
     Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Single, ByVal Hoc As Single, ByVal RadiativeFraction As Single)
         ' New to define a fire object with all the details
@@ -196,7 +183,7 @@ Public Class Fire
         Set(ByVal Value As Integer)
             If aCompartment <> Value Then
                 aCompartment = Value
-                aChanged = True
+                If myFires.DoChange Then aChanged = True
             End If
         End Set
     End Property
@@ -264,39 +251,6 @@ Public Class Fire
                     aZPosition = Value
                     aChanged = True
                 End If
-            End If
-        End Set
-    End Property
-    Property XNormal() As Single
-        Get
-            Return aXNormal
-        End Get
-        Set(ByVal Value As Single)
-            If aXNormal <> Value Then
-                aXNormal = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property YNormal() As Single
-        Get
-            Return aYNormal
-        End Get
-        Set(ByVal Value As Single)
-            If aYNormal <> Value Then
-                aYNormal = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Property ZNormal() As Single
-        Get
-            Return aZNormal
-        End Get
-        Set(ByVal Value As Single)
-            If aZNormal <> Value Then
-                aZNormal = Value
-                aChanged = True
             End If
         End Set
     End Property
@@ -413,13 +367,13 @@ Public Class Fire
             Return myUnits.Convert(UnitsNum.Mass).FromSI(MW)
         End Get
     End Property
-    Public Property Material() As String
+    Public Property Target() As String
         Get
-            Return aMaterial
+            Return aIgnitionTarget
         End Get
         Set(ByVal Value As String)
-            If Value <> aMaterial Then
-                Me.aMaterial = myThermalProperties.ValidThermalProperty(Value, "Fire")
+            If Value <> aIgnitionTarget Then
+                aIgnitionTarget = Value
                 aChanged = True
             End If
         End Set
@@ -479,9 +433,6 @@ Public Class Fire
         If index <= myCompartments.Count - 1 Then
             tmpCompartment = myCompartments.Item(index)
             aCompartment = index
-            aXNormal = 0.0
-            aYNormal = 0.0
-            aZNormal = 1.0
         End If
     End Sub
     Public Sub SetPosition(ByVal index As Integer, ByVal XPosition As Single, ByVal YPosition As Single, ByVal ZPosition As Single)
@@ -490,20 +441,6 @@ Public Class Fire
             Me.XPosition = XPosition
             Me.YPosition = YPosition
             Me.ZPosition = ZPosition
-            Me.XNormal = 0.0
-            Me.YNormal = 0.0
-            Me.ZNormal = 1.0
-        End If
-    End Sub
-    Public Sub SetPosition(ByVal index As Integer, ByVal XPosition As Single, ByVal YPosition As Single, ByVal ZPosition As Single, ByVal XNormal As Single, ByVal YNormal As Single, ByVal ZNormal As Single)
-        If index <= myCompartments.Count - 1 Then
-            Me.Compartment = index
-            Me.XPosition = XPosition
-            Me.YPosition = YPosition
-            Me.ZPosition = ZPosition
-            Me.XNormal = XNormal
-            Me.YNormal = YNormal
-            Me.ZNormal = ZNormal
         End If
     End Sub
     Public Sub GetFireData(ByRef FireTimeSeries(,) As Single, ByRef NumDataPoints As Integer)
@@ -685,30 +622,28 @@ Public Class Fire
                         HasErrors += 1
                     End If
                 End If
-                If XNormal ^ 2 + YNormal ^ 2 + ZNormal ^ 2 = 0 Then
-                    myErrors.Add("Fire " + FireNumber.ToString + ". Normal vector cannot be of zero length.", ErrorMessages.TypeFatal)
+            End If
+            If aIgnitionType = FireIgnitionbyTime Then
+                If aIgnitionValue < 0.0 Or aIgnitionValue > myEnvironment.SimulationTime Then
+                    myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 s or greater than simulation time.", ErrorMessages.TypeWarning)
                     HasErrors += 1
                 End If
-                If aIgnitionType = FireIgnitionbyTime Then
-                    If aIgnitionValue < 0.0 Or aIgnitionValue > myEnvironment.SimulationTime Then
-                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 s or greater than simulation time.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
-                ElseIf aIgnitionType = FireIgnitionbyTemperature Then
-                    If aIgnitionValue < MinTemperature Or aIgnitionValue > MaxTemperature Then
-                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than " + (MinTemperature - 273.15).ToString + " °C or greater than " + (MaxTemperature - 273.15).ToString + " °C.", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
-                ElseIf aIgnitionType = FireIgnitionbyFlux Then
-                    If aIgnitionValue < 0.0 Or aIgnitionValue > MaxFlux Then
-                        myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 kW/m² or greater than " + MaxFlux + " kW/m².", ErrorMessages.TypeWarning)
-                        HasErrors += 1
-                    End If
+            ElseIf aIgnitionType = FireIgnitionbyTemperature Then
+                If aIgnitionValue < MinTemperature Or aIgnitionValue > MaxTemperature Then
+                    myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than " + (MinTemperature - 273.15).ToString + " °C or greater than " + (MaxTemperature - 273.15).ToString + " °C.", ErrorMessages.TypeWarning)
+                    HasErrors += 1
+                End If
+            ElseIf aIgnitionType = FireIgnitionbyFlux Then
+                If aIgnitionValue < 0.0 Or aIgnitionValue > MaxFlux Then
+                    myErrors.Add("Fire " + FireNumber.ToString + ". Ignition value is less than 0 kW/m² or greater than " + MaxFlux + " kW/m².", ErrorMessages.TypeWarning)
+                    HasErrors += 1
                 End If
             End If
-            If aMaterial.ToUpper = "OFF" Or myThermalProperties.GetIndex(aMaterial) < 0 Then
-                myErrors.Add("Fire " + FireNumber.ToString + ". Material is not defined.", ErrorMessages.TypeFatal)
-                HasErrors += 1
+            If aIgnitionType <> FireIgnitionbyTime Then
+                If myTargets.ValidTarget(aIgnitionTarget) <> True Then
+                    myErrors.Add("Fire " + FireNumber.ToString + ". Ignition by temperature or flux. No ignition target is specified.", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                End If
             End If
 
             myUnits.SI = False
@@ -720,6 +655,7 @@ Public Class FireCollection
     Inherits System.Collections.CollectionBase
     Private i As Integer, j As Integer, aFireType As Integer
     Private HasErrors As Integer
+    Public DoChange As Boolean = True
     Public Sub Add(ByVal aFire As Fire)
         List.Add(aFire)
     End Sub

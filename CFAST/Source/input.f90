@@ -801,13 +801,15 @@
                 if (lcarray(6)=='FLUX') objign(obpnt) = 3
                 tmpcond = lrarray(7)
                 obtarg(obpnt) = 0
-                do i = 1,ntarg
-                    if (targetnames(i)==lcarray(8)) obtarg(obpnt) = i
-                end do
-                if (obtarg(obpnt)==0) then
-                    write (logerr,5324) obpnt
-                    ierror = 216
-                    return
+                if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
+                    do i = 1,ntarg
+                        if (targetnames(i)==lcarray(8)) obtarg(obpnt) = i
+                    end do
+                    if (obtarg(obpnt)==0) then
+                        write (logerr,5324) obpnt
+                        ierror = 216
+                        return
+                    end if
                 end if
             else
                 ! it's the old format fire line that creates a target for each fire

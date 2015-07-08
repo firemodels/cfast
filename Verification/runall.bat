@@ -27,6 +27,7 @@ cd ..
 
 echo Running Ventilation cases
 cd Ventilation
+..\scripts\background -u 98 ..\..\bin\cfast ventilation_1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast ventilation_2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast ventilation_3 /V
 cd ..

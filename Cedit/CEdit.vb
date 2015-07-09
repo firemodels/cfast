@@ -5534,7 +5534,12 @@ Public Class CeditMain
             If sender Is Me.FireXPosition Then aFire.XPosition = Val(Me.FireXPosition.Text)
             If sender Is Me.FireYPosition Then aFire.YPosition = Val(Me.FireYPosition.Text)
             If sender Is Me.FireZPosition Then aFire.ZPosition = Val(Me.FireZPosition.Text)
-            If sender Is Me.FireIgnitionCriteria Then aFire.IgnitionType = Me.FireIgnitionCriteria.SelectedIndex
+            If sender Is Me.FireIgnitionCriteria Then
+                aFire.IgnitionType = Me.FireIgnitionCriteria.SelectedIndex
+                If aFire.IgnitionType = Fire.FireIgnitionbyTime Then aFire.IgnitionValue = 0.0
+                If aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then aFire.IgnitionValue = myEnvironment.IntAmbTemperature
+                If aFire.IgnitionType = Fire.FireIgnitionbyFlux Then aFire.IgnitionValue = 0.0
+            End If
             If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
             If sender Is Me.FireTarget Then
                 aFire.Target = myTargets.Item(FireTarget.SelectedIndex).Name

@@ -19,7 +19,7 @@
                 Me.InsertDataSummary(0, InsertFireNum.Formula) = "Formula"
                 Me.InsertDataSummary(0, InsertFireNum.Height) = "Height"
                 Me.InsertDataSummary(0, InsertFireNum.Area) = "Area"
-                Me.InsertDataSummary(0, InsertFireNum.QDot) = "QDot"
+                Me.InsertDataSummary(0, InsertFireNum.QDot) = "HRR"
                 Me.InsertDataSummary(0, InsertFireNum.Soot) = "Soot"
                 Me.InsertDataSummary(0, InsertFireNum.CO) = "CO"
                 Me.InsertDataSummary(0, InsertFireNum.HoC) = "HoC"

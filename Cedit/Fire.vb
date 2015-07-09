@@ -29,7 +29,7 @@ Public Class Fire
     Private Const MaxHeatofCombustion As Single = 1000000000.0
     Private Const MaxHRR As Single = 10000000000.0
     Private Const MaxMdot As Single = 1500.0
-    Private Const MinArea As Single = 0.09
+    Private Const MinArea As Single = 0
     Private Const MaxCO As Single = 0.4
     Private Const MaxSoot As Single = 99.0
     Private Const MaxHC As Single = 4.03176 / 12.0107
@@ -535,9 +535,11 @@ Public Class Fire
                                 End If
                             Case FireArea
                                 If aFireTimeSeries(FireArea, ir) < MinArea Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
-                                    aFireTimeSeries(FireArea, ir) = MinArea
+                                    aFireTimeSeries(FireArea, ir) = 0.09
                                     FireCurveErrors(FireArea) = True
                                     HasErrors += 1
+                                ElseIf aFireTimeSeries(FireArea, ir) = MinArea Then
+                                    aFireTimeSeries(FireArea, ir) = 0.09
                                 End If
                             Case FireCO
                                 If aFireTimeSeries(FireCO, ir) < 0.0 Or aFireTimeSeries(FireCO, ir) > MaxCO Then
@@ -583,7 +585,7 @@ Public Class Fire
                     Next
                 Next
                 If FireCurveErrors(FireTime) Then myErrors.Add("Fire " + aName + ". One or more time values are less than 0 s.", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireHRR) Then myErrors.Add("Fire " + aName + ". One or more heat release rate (Qdot) values are less than 0 W, more than " + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireHRR) Then myErrors.Add("Fire " + aName + ". One or more heat release rate (HRR) values are less than 0 W, more than " + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireMdot) Then myErrors.Add("Fire " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than " + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHeight) Then myErrors.Add("Fire " + aName + ". One or more fire height values are less than 0 m or greater than " + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireArea) Then myErrors.Add("Fire " + aName + ". One or more fire area values are less than or equal to " + MinArea.ToString + " m² or greater than " + (CEdit.Compartment.MaxSize ^ 2).ToString + " m². Value reset to minimum area of 0.09 m²", ErrorMessages.TypeWarning)

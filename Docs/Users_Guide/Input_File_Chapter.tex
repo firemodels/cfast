@@ -333,8 +333,8 @@ Fires are added to the simulation by clicking on the {\bf Add New} or {\bf Add t
 \item[Heat of Combustion] (default value: 50000 kJ/kg): The energy released per unit mass of fuel consumed.
 \item[Soot Yield] (default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
 \item[CO Yield] (default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
-\item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate. 
-\item[Radiative Fraction] (default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}. 
+\item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
+\item[Radiative Fraction] (default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
 \item[Ignition Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
 \item[Set Point] The critical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
 \item[Material] To be eliminated. Disregard.
@@ -346,8 +346,8 @@ Fires are added to the simulation by clicking on the {\bf Add New} or {\bf Add t
 Following is a list of fire properties that can be specified as a function of time. The properties are linearly interpolated between specified points. If the simulation time is longer than the total duration of the fire, the final values specified for the fire are continued until the end of the simulation. Normal copy (Ctrl-C), cut (Ctrl-X), and paste (Ctrl-V) keyboard shortcuts work for data editing. In addition, Alt-Insert will insert a complete row above the currently-selected row in the spreadsheet and Alt-Delete will delete the current row in the spreadsheet.
 \begin{description}
 \item[Time] (default units: s, default values: none): Time from ignition.
-\item[Qdot] (default units: kW, default values: none): Heat release rate of the fire.
-\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.  
+\item[HRR] (default units: kW, default values: none): Heat release rate of the fire.
+\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
 \item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
 \item[CO, Soot, TS Yields] (default units: kg/kg): Yields of carbon monoxide, soot, and trace species. The time-dependent values over-rides the constant values given above.
 \end{description}
@@ -360,7 +360,7 @@ Following is a list of fire properties that can be specified as a function of ti
 Use the `Add t$^2$' button to create a new fire with a heat release rate that grows as a function of the time squared~\cite{Schifiliti:2002}:
 \be
    \dQ(t) = \dQ_{\rm peak} \; \left( \frac{t}{t_{\rm peak}} \right)^2
-\ee 
+\ee
 
 \begin{figure}[h!]
 \begin{center}
@@ -372,7 +372,7 @@ Use the `Add t$^2$' button to create a new fire with a heat release rate that gr
 \begin{description}
 \item[Fire Growth Rate] A set of specific t-squared fires labeled slow, medium, fast, or ultra-fast such that the fire reaches 1054~kW (1000~BTU/s) in 600~s, 300~s, 150~s, and 75~s.  A custom selection allows you to define any growth or decay rate desired.
 \item[Time to Peak] (default units: s, default value: 300 s): The time for the fire to reach the peak HRR.
-\item[Peak HRR] (default units: kW, default value: 1054 kW): The peak heat release rate of the t-squared fire.  
+\item[Peak HRR] (default units: kW, default value: 1054 kW): The peak heat release rate of the t-squared fire.
 \item[Steady Burning Period] (default units: s, default value: 300 s): Duration of time that the fire continues burning at the rate specified by the peak HRR.
 \item[Decay Time] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
 \end{description}

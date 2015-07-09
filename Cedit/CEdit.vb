@@ -2956,14 +2956,14 @@ Public Class CeditMain
         'FireTarget
         '
         Me.FireTarget.ItemHeight = 13
-        Me.FireTarget.Location = New System.Drawing.Point(572, 119)
+        Me.FireTarget.Location = New System.Drawing.Point(795, 116)
         Me.FireTarget.Name = "FireTarget"
         Me.FireTarget.Size = New System.Drawing.Size(98, 21)
         Me.FireTarget.TabIndex = 729
         '
         'FireTSYield
         '
-        Me.FireTSYield.Location = New System.Drawing.Point(345, 148)
+        Me.FireTSYield.Location = New System.Drawing.Point(335, 148)
         Me.FireTSYield.Name = "FireTSYield"
         Me.FireTSYield.Size = New System.Drawing.Size(80, 20)
         Me.FireTSYield.TabIndex = 717
@@ -2971,7 +2971,7 @@ Public Class CeditMain
         'Label115
         '
         Me.Label115.AutoSize = True
-        Me.Label115.Location = New System.Drawing.Point(286, 152)
+        Me.Label115.Location = New System.Drawing.Point(276, 152)
         Me.Label115.Name = "Label115"
         Me.Label115.Size = New System.Drawing.Size(50, 13)
         Me.Label115.TabIndex = 159
@@ -3003,14 +3003,14 @@ Public Class CeditMain
         '
         'FireCOYield
         '
-        Me.FireCOYield.Location = New System.Drawing.Point(345, 119)
+        Me.FireCOYield.Location = New System.Drawing.Point(335, 119)
         Me.FireCOYield.Name = "FireCOYield"
         Me.FireCOYield.Size = New System.Drawing.Size(80, 20)
         Me.FireCOYield.TabIndex = 716
         '
         'FireHoC
         '
-        Me.FireHoC.Location = New System.Drawing.Point(345, 56)
+        Me.FireHoC.Location = New System.Drawing.Point(335, 56)
         Me.FireHoC.Name = "FireHoC"
         Me.FireHoC.Size = New System.Drawing.Size(80, 20)
         Me.FireHoC.TabIndex = 714
@@ -3019,7 +3019,7 @@ Public Class CeditMain
         'Label107
         '
         Me.Label107.AutoSize = True
-        Me.Label107.Location = New System.Drawing.Point(488, 124)
+        Me.Label107.Location = New System.Drawing.Point(711, 121)
         Me.Label107.Name = "Label107"
         Me.Label107.Size = New System.Drawing.Size(78, 13)
         Me.Label107.TabIndex = 134
@@ -3029,7 +3029,7 @@ Public Class CeditMain
         'Label71
         '
         Me.Label71.AutoSize = True
-        Me.Label71.Location = New System.Drawing.Point(286, 123)
+        Me.Label71.Location = New System.Drawing.Point(276, 123)
         Me.Label71.Name = "Label71"
         Me.Label71.Size = New System.Drawing.Size(51, 13)
         Me.Label71.TabIndex = 140
@@ -3038,7 +3038,7 @@ Public Class CeditMain
         '
         'Label108
         '
-        Me.Label108.Location = New System.Drawing.Point(265, 52)
+        Me.Label108.Location = New System.Drawing.Point(255, 52)
         Me.Label108.Name = "Label108"
         Me.Label108.Size = New System.Drawing.Size(72, 28)
         Me.Label108.TabIndex = 116
@@ -3047,7 +3047,7 @@ Public Class CeditMain
         '
         'FireCl
         '
-        Me.FireCl.Location = New System.Drawing.Point(120, 180)
+        Me.FireCl.Location = New System.Drawing.Point(110, 180)
         Me.FireCl.Name = "FireCl"
         Me.FireCl.Size = New System.Drawing.Size(80, 20)
         Me.FireCl.TabIndex = 713
@@ -3062,7 +3062,7 @@ Public Class CeditMain
         '
         'FireSootYield
         '
-        Me.FireSootYield.Location = New System.Drawing.Point(345, 88)
+        Me.FireSootYield.Location = New System.Drawing.Point(335, 88)
         Me.FireSootYield.Name = "FireSootYield"
         Me.FireSootYield.Size = New System.Drawing.Size(80, 20)
         Me.FireSootYield.TabIndex = 715
@@ -3070,7 +3070,7 @@ Public Class CeditMain
         'Label106
         '
         Me.Label106.AutoSize = True
-        Me.Label106.Location = New System.Drawing.Point(88, 184)
+        Me.Label106.Location = New System.Drawing.Point(78, 184)
         Me.Label106.Name = "Label106"
         Me.Label106.Size = New System.Drawing.Size(19, 13)
         Me.Label106.TabIndex = 136
@@ -3108,7 +3108,7 @@ Public Class CeditMain
         'Label105
         '
         Me.Label105.AutoSize = True
-        Me.Label105.Location = New System.Drawing.Point(279, 92)
+        Me.Label105.Location = New System.Drawing.Point(269, 92)
         Me.Label105.Name = "Label105"
         Me.Label105.Size = New System.Drawing.Size(58, 13)
         Me.Label105.TabIndex = 138
@@ -3118,7 +3118,7 @@ Public Class CeditMain
         'FireType
         '
         Me.FireType.AutoSize = True
-        Me.FireType.Location = New System.Drawing.Point(800, 152)
+        Me.FireType.Location = New System.Drawing.Point(557, 152)
         Me.FireType.Name = "FireType"
         Me.FireType.Size = New System.Drawing.Size(25, 13)
         Me.FireType.TabIndex = 121
@@ -3127,7 +3127,7 @@ Public Class CeditMain
         '
         'FireN
         '
-        Me.FireN.Location = New System.Drawing.Point(120, 148)
+        Me.FireN.Location = New System.Drawing.Point(110, 148)
         Me.FireN.Name = "FireN"
         Me.FireN.Size = New System.Drawing.Size(80, 20)
         Me.FireN.TabIndex = 712
@@ -3135,7 +3135,7 @@ Public Class CeditMain
         'Label60
         '
         Me.Label60.AutoSize = True
-        Me.Label60.Location = New System.Drawing.Point(736, 123)
+        Me.Label60.Location = New System.Drawing.Point(493, 127)
         Me.Label60.Name = "Label60"
         Me.Label60.Size = New System.Drawing.Size(57, 13)
         Me.Label60.TabIndex = 69
@@ -3144,14 +3144,14 @@ Public Class CeditMain
         '
         'FireH
         '
-        Me.FireH.Location = New System.Drawing.Point(120, 88)
+        Me.FireH.Location = New System.Drawing.Point(110, 88)
         Me.FireH.Name = "FireH"
         Me.FireH.Size = New System.Drawing.Size(80, 20)
         Me.FireH.TabIndex = 710
         '
         'Label113
         '
-        Me.Label113.Location = New System.Drawing.Point(281, 172)
+        Me.Label113.Location = New System.Drawing.Point(271, 172)
         Me.Label113.Name = "Label113"
         Me.Label113.Size = New System.Drawing.Size(56, 31)
         Me.Label113.TabIndex = 124
@@ -3161,7 +3161,7 @@ Public Class CeditMain
         'Label109
         '
         Me.Label109.AutoSize = True
-        Me.Label109.Location = New System.Drawing.Point(90, 60)
+        Me.Label109.Location = New System.Drawing.Point(80, 60)
         Me.Label109.Name = "Label109"
         Me.Label109.Size = New System.Drawing.Size(17, 13)
         Me.Label109.TabIndex = 118
@@ -3170,7 +3170,7 @@ Public Class CeditMain
         '
         'FireYPosition
         '
-        Me.FireYPosition.Location = New System.Drawing.Point(802, 88)
+        Me.FireYPosition.Location = New System.Drawing.Point(559, 92)
         Me.FireYPosition.Name = "FireYPosition"
         Me.FireYPosition.Size = New System.Drawing.Size(80, 20)
         Me.FireYPosition.TabIndex = 723
@@ -3179,7 +3179,7 @@ Public Class CeditMain
         'Label69
         '
         Me.Label69.AutoSize = True
-        Me.Label69.Location = New System.Drawing.Point(738, 92)
+        Me.Label69.Location = New System.Drawing.Point(495, 96)
         Me.Label69.Name = "Label69"
         Me.Label69.Size = New System.Drawing.Size(57, 13)
         Me.Label69.TabIndex = 67
@@ -3188,14 +3188,14 @@ Public Class CeditMain
         '
         'FireC
         '
-        Me.FireC.Location = New System.Drawing.Point(120, 56)
+        Me.FireC.Location = New System.Drawing.Point(110, 56)
         Me.FireC.Name = "FireC"
         Me.FireC.Size = New System.Drawing.Size(80, 20)
         Me.FireC.TabIndex = 709
         '
         'FireRadiativeFraction
         '
-        Me.FireRadiativeFraction.Location = New System.Drawing.Point(345, 177)
+        Me.FireRadiativeFraction.Location = New System.Drawing.Point(335, 177)
         Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
         Me.FireRadiativeFraction.Size = New System.Drawing.Size(80, 20)
         Me.FireRadiativeFraction.TabIndex = 718
@@ -3203,7 +3203,7 @@ Public Class CeditMain
         '
         'FireXPosition
         '
-        Me.FireXPosition.Location = New System.Drawing.Point(803, 56)
+        Me.FireXPosition.Location = New System.Drawing.Point(560, 60)
         Me.FireXPosition.Name = "FireXPosition"
         Me.FireXPosition.Size = New System.Drawing.Size(80, 20)
         Me.FireXPosition.TabIndex = 722
@@ -3211,7 +3211,7 @@ Public Class CeditMain
         '
         'FireO
         '
-        Me.FireO.Location = New System.Drawing.Point(120, 119)
+        Me.FireO.Location = New System.Drawing.Point(110, 119)
         Me.FireO.Name = "FireO"
         Me.FireO.Size = New System.Drawing.Size(80, 20)
         Me.FireO.TabIndex = 711
@@ -3219,7 +3219,7 @@ Public Class CeditMain
         'Label70
         '
         Me.Label70.AutoSize = True
-        Me.Label70.Location = New System.Drawing.Point(736, 60)
+        Me.Label70.Location = New System.Drawing.Point(493, 64)
         Me.Label70.Name = "Label70"
         Me.Label70.Size = New System.Drawing.Size(60, 13)
         Me.Label70.TabIndex = 65
@@ -3229,7 +3229,7 @@ Public Class CeditMain
         'Label110
         '
         Me.Label110.AutoSize = True
-        Me.Label110.Location = New System.Drawing.Point(89, 123)
+        Me.Label110.Location = New System.Drawing.Point(79, 123)
         Me.Label110.Name = "Label110"
         Me.Label110.Size = New System.Drawing.Size(18, 13)
         Me.Label110.TabIndex = 122
@@ -3238,7 +3238,7 @@ Public Class CeditMain
         '
         'FireZPosition
         '
-        Me.FireZPosition.Location = New System.Drawing.Point(803, 119)
+        Me.FireZPosition.Location = New System.Drawing.Point(560, 123)
         Me.FireZPosition.Name = "FireZPosition"
         Me.FireZPosition.Size = New System.Drawing.Size(80, 20)
         Me.FireZPosition.TabIndex = 724
@@ -3256,7 +3256,7 @@ Public Class CeditMain
         'Label111
         '
         Me.Label111.AutoSize = True
-        Me.Label111.Location = New System.Drawing.Point(89, 92)
+        Me.Label111.Location = New System.Drawing.Point(79, 92)
         Me.Label111.Name = "Label111"
         Me.Label111.Size = New System.Drawing.Size(18, 13)
         Me.Label111.TabIndex = 119
@@ -3276,7 +3276,7 @@ Public Class CeditMain
         'Label112
         '
         Me.Label112.AutoSize = True
-        Me.Label112.Location = New System.Drawing.Point(89, 152)
+        Me.Label112.Location = New System.Drawing.Point(79, 152)
         Me.Label112.Name = "Label112"
         Me.Label112.Size = New System.Drawing.Size(18, 13)
         Me.Label112.TabIndex = 116
@@ -3287,7 +3287,7 @@ Public Class CeditMain
         '
         Me.FireIgnitionCriteria.ItemHeight = 13
         Me.FireIgnitionCriteria.Items.AddRange(New Object() {"Time", "Temperature", "Heat Flux"})
-        Me.FireIgnitionCriteria.Location = New System.Drawing.Point(572, 60)
+        Me.FireIgnitionCriteria.Location = New System.Drawing.Point(795, 57)
         Me.FireIgnitionCriteria.Name = "FireIgnitionCriteria"
         Me.FireIgnitionCriteria.Size = New System.Drawing.Size(80, 21)
         Me.FireIgnitionCriteria.TabIndex = 719
@@ -3295,7 +3295,7 @@ Public Class CeditMain
         '
         'FireIgnitionValue
         '
-        Me.FireIgnitionValue.Location = New System.Drawing.Point(572, 91)
+        Me.FireIgnitionValue.Location = New System.Drawing.Point(795, 88)
         Me.FireIgnitionValue.Name = "FireIgnitionValue"
         Me.FireIgnitionValue.Size = New System.Drawing.Size(80, 20)
         Me.FireIgnitionValue.TabIndex = 720
@@ -3304,7 +3304,7 @@ Public Class CeditMain
         'Label63
         '
         Me.Label63.AutoSize = True
-        Me.Label63.Location = New System.Drawing.Point(513, 95)
+        Me.Label63.Location = New System.Drawing.Point(736, 92)
         Me.Label63.Name = "Label63"
         Me.Label63.Size = New System.Drawing.Size(53, 13)
         Me.Label63.TabIndex = 82
@@ -3314,7 +3314,7 @@ Public Class CeditMain
         'Label58
         '
         Me.Label58.AutoSize = True
-        Me.Label58.Location = New System.Drawing.Point(481, 64)
+        Me.Label58.Location = New System.Drawing.Point(704, 61)
         Me.Label58.Name = "Label58"
         Me.Label58.Size = New System.Drawing.Size(85, 13)
         Me.Label58.TabIndex = 79

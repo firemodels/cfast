@@ -10,7 +10,7 @@ Public Class Compartment
     Public Const MinSize As Single = 0.5
     Public Const MaxSize As Single = 100.0
     Public Const MinPosition As Single = 0.0
-    Public Const MaxPosition As Single = 100.0
+    Public Const MaxPosition As Single = 10000.0
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aName As String                 ' One word name for compartment

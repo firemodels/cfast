@@ -764,7 +764,7 @@ Public Class UpdateGUI
 
             MainWin.GroupFire.Enabled = True
             MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
-            MainWin.FireType.Text = "Constrained"
+            MainWin.FireType.Text = ""
             Dim aFire As New Fire
             aFire = myFires(index)
             If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
@@ -775,8 +775,8 @@ Public Class UpdateGUI
                 yFire = aFire.YPosition
                 xRoom = aCompartment.RoomWidth
                 yRoom = aCompartment.RoomDepth
-                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.FireType.Text = "Constrained, Wall Fire"
-                If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.FireType.Text = "Constrained, Corner Fire"
+                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.FireType.Text = "Wall Fire"
+                If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.FireType.Text = "Corner Fire"
 
             End If
 

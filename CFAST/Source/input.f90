@@ -1933,7 +1933,7 @@
             ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula, 
            !  radiative fraction, heat of combustion, and material
         case ('CHEMI')
-            if (countargs(lcarray)>=8) then
+            if (countargs(lcarray)>=7) then
                 ! define chemical formula
                 obj_c(iobj) = lrarray(1)
                 obj_h(iobj) = lrarray(2)

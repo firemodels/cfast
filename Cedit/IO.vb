@@ -1053,9 +1053,13 @@ Module IO
             csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
             csv.str(i, fireNum.ignType) = IgnitionTypes.Substring(aFire.IgnitionType * 4, 4)
             csv.Num(i, fireNum.ignCriterion) = aFire.IgnitionValue
-            csv.str(i, fireNum.ignTarget) = aFire.Target
-            csv.str(i, fireNum.yNormal) = ""
-            csv.str(i, fireNum.zNormal) = ""
+            If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
+                csv.Num(i, fireNum.xNormal) = 0
+            Else
+                csv.str(i, fireNum.ignTarget) = aFire.Target
+            End If
+            csv.Num(i, fireNum.yNormal) = 0
+            csv.Num(i, fireNum.zNormal) = 0
             csv.str(i, fireNum.name) = aFire.Name
             i += 1
             ' CHEMI keyword, chemistry information
@@ -1067,7 +1071,6 @@ Module IO
             csv.Num(i, chemieNum.Cl) = aFire.ChemicalFormula(formula.Cl)
             csv.Num(i, chemieNum.chiR) = aFire.RadiativeFraction
             csv.Num(i, chemieNum.HoC) = aFire.HeatofCombustion
-            csv.str(i, chemieNum.Material) = ""
             i += 1
             ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
             aFire.GetFireData(firedata, numFireDataPoints)

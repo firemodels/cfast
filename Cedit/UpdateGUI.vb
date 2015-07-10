@@ -31,7 +31,6 @@ Public Class UpdateGUI
         FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
         If System.IO.File.Exists(FileName) Then MainWin.MenuViewLog.Enabled = True
 
-        MainWin.MenuDetailedOutput.Checked = DetailedCFASTOutput
         MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
         MainWin.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
         MainWin.MenuShowCFAST.Checked = CommandWindowVisible

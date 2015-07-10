@@ -343,11 +343,6 @@ Module IO
                     Case "TIMES"
                         myEnvironment.SimulationTime = csv.Num(i, timesNum.simTime)
                         myEnvironment.OutputInterval = Math.Abs(csv.Num(i, timesNum.printInterval))
-                        If csv.Num(i, timesNum.printInterval) < 0 Then
-                            DetailedCFASTOutput = True
-                        Else
-                            DetailedCFASTOutput = False
-                        End If
                         If csv.Num(i, 0) = 5 Then
                             myEnvironment.SmokeviewInterval = csv.Num(i, timesNum.smokeviewInterval)
                             myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval)
@@ -794,11 +789,7 @@ Module IO
         'Time line
         csv.str(i, CFASTlnNum.keyWord) = "TIMES"
         csv.Num(i, timesNum.simTime) = myEnvironment.SimulationTime
-        If DetailedCFASTOutput Then
-            csv.Num(i, timesNum.printInterval) = -myEnvironment.OutputInterval
-        Else
-            csv.Num(i, timesNum.printInterval) = myEnvironment.OutputInterval
-        End If
+        csv.Num(i, timesNum.printInterval) = myEnvironment.OutputInterval
         csv.Num(i, timesNum.smokeviewInterval) = myEnvironment.SmokeviewInterval
         csv.Num(i, timesNum.spreadsheetInterval) = myEnvironment.SpreadsheetInterval
         i += 1

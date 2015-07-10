@@ -54,8 +54,7 @@ Friend Module Data
     Friend thermalFileComments As New Collection                    'comments in the thermal file
     Friend fireFilesComments As New Collection                      'comments in the fire file
 
-    Friend CommandWindowVisible As Boolean = False                  ' True if command window output from CFAST is to be visible
-    Friend DetailedCFASTOutput As Boolean = True                    ' True if detailed output file is desired (makes print interval negative)
+    Friend CommandWindowVisible As Boolean = False                  ' True if detailed output file is desired (makes print interval negative)
     Friend TotalMassCFASTOutput As Boolean = False                  ' True if species output is to be in total mass rather than concenration (adds /T option to CFAST execution command)
     Friend NetHeatFluxCFASTOutput As Boolean = True                 ' True if heat flux output is to be net heat flux rather than incident heat flux (adds /N option to CFAST execution command)
     Friend ValidationOutput As Boolean = False                      ' True if heat flux output is to be net heat flux (adds /V option to CFAST execution command)

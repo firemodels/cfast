@@ -132,7 +132,6 @@ Public Class CeditMain
     Friend WithEvents CompThicknessCeiling As System.Windows.Forms.Label
     Friend WithEvents CompConductCeiling As System.Windows.Forms.Label
     Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuDetailedOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuNetHeatFluxOutput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
@@ -464,7 +463,6 @@ Public Class CeditMain
         Me.MenuSMVSimulation = New System.Windows.Forms.MenuItem()
         Me.MenuItem1 = New System.Windows.Forms.MenuItem()
         Me.MenuItem2 = New System.Windows.Forms.MenuItem()
-        Me.MenuDetailedOutput = New System.Windows.Forms.MenuItem()
         Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
         Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
         Me.MenuValidationOutput = New System.Windows.Forms.MenuItem()
@@ -1028,45 +1026,39 @@ Public Class CeditMain
         'MenuItem2
         '
         Me.MenuItem2.Index = 4
-        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuDetailedOutput, Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuValidationOutput, Me.MenuItem4, Me.MenuDebugOutput, Me.MenuShowCFAST})
+        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuValidationOutput, Me.MenuItem4, Me.MenuDebugOutput, Me.MenuShowCFAST})
         Me.MenuItem2.Text = "Output Options"
-        '
-        'MenuDetailedOutput
-        '
-        Me.MenuDetailedOutput.Checked = True
-        Me.MenuDetailedOutput.Index = 0
-        Me.MenuDetailedOutput.Text = "Detailed Output File"
         '
         'MenuTotalMassOutput
         '
-        Me.MenuTotalMassOutput.Index = 1
+        Me.MenuTotalMassOutput.Index = 0
         Me.MenuTotalMassOutput.Text = "Total Mass Output File"
         '
         'MenuNetHeatFluxOutput
         '
         Me.MenuNetHeatFluxOutput.Checked = True
-        Me.MenuNetHeatFluxOutput.Index = 2
+        Me.MenuNetHeatFluxOutput.Index = 1
         Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
         '
         'MenuValidationOutput
         '
-        Me.MenuValidationOutput.Index = 3
+        Me.MenuValidationOutput.Index = 2
         Me.MenuValidationOutput.Text = "CFAST Validation Output"
         '
         'MenuItem4
         '
-        Me.MenuItem4.Index = 4
+        Me.MenuItem4.Index = 3
         Me.MenuItem4.Text = "-"
         '
         'MenuDebugOutput
         '
-        Me.MenuDebugOutput.Index = 5
+        Me.MenuDebugOutput.Index = 4
         Me.MenuDebugOutput.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftD
         Me.MenuDebugOutput.Text = "Debug Output"
         '
         'MenuShowCFAST
         '
-        Me.MenuShowCFAST.Index = 6
+        Me.MenuShowCFAST.Index = 5
         Me.MenuShowCFAST.Text = "Show CFAST Window"
         '
         'MenuView
@@ -4883,8 +4875,6 @@ Public Class CeditMain
                 For iSet = 0 To SettingsSize
                     CSet = CType(RegistryOptions(iSet, 0), String)
                     Select Case CSet
-                        Case "DetailedOutput"
-                            DetailedCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
                         Case "ShowCFASTOutput"
                             CommandWindowVisible = CType(RegistryOptions(iSet, 1), Boolean)
                         Case "MassOutput"
@@ -4915,8 +4905,7 @@ Public Class CeditMain
 
 #Region " Simulation Tab "
     ' This section of code handles events related to the environment tab
-    Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, _
-        EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
+    Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
         If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
         If sender Is Me.EnvSimTime Then myEnvironment.SimulationTime = Val(Me.EnvSimTime.Text)
         If sender Is Me.EnvTextOutInterval Then myEnvironment.OutputInterval = Val(Me.EnvTextOutInterval.Text)
@@ -5516,8 +5505,7 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
-    Private Sub Fire_Changed(sender As Object, e As EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireIgnitionValue.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave, FireName.Leave, _
-        FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireSootYield.Leave, FireCOYield.Leave, FireTSYield.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
+    Private Sub Fire_Changed(sender As Object, e As EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireIgnitionValue.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave, FireName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireSootYield.Leave, FireCOYield.Leave, FireTSYield.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
         Dim aFire As New Fire
         Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
         Dim ir As Integer
@@ -6303,15 +6291,6 @@ Public Class CeditMain
         End If
         SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
     End Sub
-    Private Sub MenuDetailedOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuDetailedOutput.Click
-        If Me.MenuDetailedOutput.Checked Then
-            DetailedCFASTOutput = False
-        Else
-            DetailedCFASTOutput = True
-        End If
-        Me.MenuDetailedOutput.Checked = DetailedCFASTOutput
-        SaveSetting("CFAST", "Options", "DetailedOutput", TotalMassCFASTOutput.ToString)
-    End Sub
     Private Sub MenuTotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTotalMassOutput.Click
         If Me.MenuTotalMassOutput.Checked Then
             TotalMassCFASTOutput = False
@@ -6596,7 +6575,6 @@ Public Class CeditMain
         Me.MenuViewInput.Enabled = False
         Me.MenuViewOutput.Enabled = False
         Me.MenuViewLog.Enabled = False
-        Me.MenuDetailedOutput.Checked = True
         UpdateAll()
     End Sub
 #End Region

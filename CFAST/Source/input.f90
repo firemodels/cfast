@@ -891,7 +891,7 @@
     case ("TIMES")
         if (countargs(lcarray)>=5) then
             nsmax =  lrarray(1)
-            lprint = lrarray(2)
+            lprint = abs(lrarray(2))
             lsmv = lrarray(4)
             lcopyss =  lrarray(5)
         else if (countargs(lcarray)>=4) then

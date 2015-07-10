@@ -1802,17 +1802,10 @@
     integer :: ios
 
     ! first the file for "printed" output
-    if (lprint<0) then
-!        open (unit=iofilo,file=outputfile,status='new',carriagecontrol='fortran')
-        open (unit=iofilo,file=outputfile,status='new')
-        lprint = abs(lprint)
-        if (outputformat==0) outputformat = 2
-    else
-!        open (unit=iofilo,file='con',carriagecontrol='fortran')
-        open (unit=iofilo,file='con')
-        if (outputformat==0) outputformat = 1
-    endif
-    
+    open (unit=iofilo,file=outputfile,status='new')
+    lprint = abs(lprint)
+    if (outputformat==0) outputformat = 2
+
     ! next create the status file
     open (12,file=statusfile,access='append',err=81,iostat=ios)
 

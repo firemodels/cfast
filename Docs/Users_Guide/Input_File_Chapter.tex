@@ -18,7 +18,7 @@ The first thing to do when setting up an input file is to give the simulation a 
 \begin{description}
 \item[Simulation Time] (default units: s, default value, 900 s): The length of time over which the simulation takes place. The maximum value for this input is 86400 s (1 day).
 
-\item[Text Output Interval] (default units: s, default value, 50 s): The time interval between each printing of the output data.  If omitted or less than or equal to zero, no output values will appear.
+\item[Text Output Interval] (default units: s, default value, 50 s): The time interval between each printing of the output data.  If equal to zero, no output values will appear.
 
 \item[Spreadsheet Output Interval] (default units: s, default value, 10 s): CFAST can output the results of the simulation in a comma-delimited spreadsheet file. This parameter defines the time interval between these outputs. A value greater than zero must be used if the spreadsheet file is desired.
 
@@ -335,10 +335,10 @@ Fires are added to the simulation by clicking on the {\bf Add New} or {\bf Add t
 \item[CO Yield] (default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
 \item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
 \item[Radiative Fraction] (default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\item[Position X, Y, Z] (default units: m, default value: compartment center): Position of the center of the base of the fire relative to the front lower left corner of the compartment.
 \item[Ignition Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
 \item[Set Point] The critical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
-\item[Material] To be eliminated. Disregard.
-\item[Position X, Y, Z] (default units: m, default value: compartment center): Position of the center of the base of the fire relative to the front lower left corner of the compartment.
+\item[Ignition Target] User-specified target used to calculate surface temperature or incident heat flux to ignite fire. Target is typically placed at the base of the fire to be ignited.
 \end{description}
 
 \section{Time-Dependent Properties}

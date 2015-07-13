@@ -429,6 +429,9 @@ Public Class CompartmentCollection
         Get
             If index > Count - 1 Or index < 0 Then
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Compartment number not found.")
+                ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
+                Dim aComp As New Compartment
+                Return aComp
             Else
                 Return CType(List.Item(index), Compartment)
             End If

@@ -719,6 +719,11 @@ Public Class VentCollection
         Get
             If index >= 0 And index < Count Then
                 Return CType(List.Item(index), Vent)
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Vent number not found.")
+                ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
+                Dim aVent As New Vent
+                Return aVent
             End If
         End Get
         Set(ByVal Value As Vent)

@@ -739,6 +739,9 @@ Public Class FireCollection
                 Return CType(List.Item(index), Fire)
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Fire number not found.")
+                ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
+                Dim aFire As New Fire
+                Return aFire
             End If
         End Get
         Set(ByVal Value As Fire)

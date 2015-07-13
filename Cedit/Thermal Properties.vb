@@ -297,6 +297,9 @@ Public Class ThermalPropertiesCollection
         Get
             If index > Count - 1 Or index < 0 Then
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Thermal property number not found.")
+                ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
+                Dim aThermalProperty As New ThermalProperty
+                Return aThermalProperty
             Else
                 Return CType(List.Item(index), ThermalProperty)
             End If

@@ -525,6 +525,9 @@ Public Class TargetCollection
         Get
             If index > Count - 1 Or index < 0 Then
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Target number not found.")
+                ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
+                Dim aTarget As New Target
+                Return aTarget
             Else
                 Return CType(List.Item(index), Target)
             End If

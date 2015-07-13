@@ -244,9 +244,9 @@ Public Class About
 #End Region
 
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim Revision As String = "$Revision: 79087f9 $", aRev As String, aVersion As String
-        Dim RevisionDate As String = "$RevisionDate: 2015-07-13 09:31 $"
-        Dim CompileDate As String = "$CompileDate: 2015-07-13 10:17 $"
+        Dim Revision As String = "$Revision: unknown $", aRev As String, aVersion As String
+        Dim RevisionDate As String = "$RevisionDate: unknown $"
+        Dim CompileDate As String = "$CompileDate: unknown $"
         Dim sLen As Integer
         sLen = Len(Application.ProductVersion)
         aVersion = Application.ProductVersion.Substring(0, sLen - 1)

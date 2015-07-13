@@ -38,6 +38,11 @@ Public Class About
     Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
     Friend WithEvents LinkLabel1 As System.Windows.Forms.LinkLabel
     Friend WithEvents AboutRevision As System.Windows.Forms.Label
+    Friend WithEvents AboutRevisionDate As System.Windows.Forms.Label
+    Friend WithEvents AboutCompileDate As System.Windows.Forms.Label
+    Friend WithEvents Label5 As System.Windows.Forms.Label
+    Friend WithEvents Label6 As System.Windows.Forms.Label
+    Friend WithEvents Label7 As System.Windows.Forms.Label
     Friend WithEvents TextBox2 As System.Windows.Forms.TextBox
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(About))
@@ -51,6 +56,11 @@ Public Class About
         Me.LinkLabel1 = New System.Windows.Forms.LinkLabel()
         Me.TextBox2 = New System.Windows.Forms.TextBox()
         Me.AboutRevision = New System.Windows.Forms.Label()
+        Me.AboutRevisionDate = New System.Windows.Forms.Label()
+        Me.AboutCompileDate = New System.Windows.Forms.Label()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.Label7 = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -58,7 +68,7 @@ Public Class About
         '
         Me.TextBox1.BackColor = System.Drawing.SystemColors.Control
         Me.TextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.TextBox1.Location = New System.Drawing.Point(24, 136)
+        Me.TextBox1.Location = New System.Drawing.Point(20, 185)
         Me.TextBox1.Multiline = True
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.ReadOnly = True
@@ -80,7 +90,7 @@ Public Class About
         'AboutVersion
         '
         Me.AboutVersion.AutoSize = True
-        Me.AboutVersion.Location = New System.Drawing.Point(80, 24)
+        Me.AboutVersion.Location = New System.Drawing.Point(68, 24)
         Me.AboutVersion.Name = "AboutVersion"
         Me.AboutVersion.Size = New System.Drawing.Size(31, 13)
         Me.AboutVersion.TabIndex = 2
@@ -90,7 +100,7 @@ Public Class About
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(16, 48)
+        Me.Label2.Location = New System.Drawing.Point(12, 99)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(116, 13)
         Me.Label2.TabIndex = 3
@@ -99,7 +109,7 @@ Public Class About
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(16, 64)
+        Me.Label3.Location = New System.Drawing.Point(12, 115)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(229, 13)
         Me.Label3.TabIndex = 4
@@ -107,7 +117,7 @@ Public Class About
         '
         'Label4
         '
-        Me.Label4.Location = New System.Drawing.Point(16, 80)
+        Me.Label4.Location = New System.Drawing.Point(12, 131)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(224, 16)
         Me.Label4.TabIndex = 5
@@ -125,7 +135,7 @@ Public Class About
         '
         'LinkLabel1
         '
-        Me.LinkLabel1.Location = New System.Drawing.Point(16, 104)
+        Me.LinkLabel1.Location = New System.Drawing.Point(12, 155)
         Me.LinkLabel1.Name = "LinkLabel1"
         Me.LinkLabel1.Size = New System.Drawing.Size(224, 16)
         Me.LinkLabel1.TabIndex = 7
@@ -135,7 +145,7 @@ Public Class About
         'TextBox2
         '
         Me.TextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.TextBox2.Location = New System.Drawing.Point(24, 304)
+        Me.TextBox2.Location = New System.Drawing.Point(20, 353)
         Me.TextBox2.Multiline = True
         Me.TextBox2.Name = "TextBox2"
         Me.TextBox2.ReadOnly = True
@@ -148,17 +158,67 @@ Public Class About
         'AboutRevision
         '
         Me.AboutRevision.AutoSize = True
-        Me.AboutRevision.Location = New System.Drawing.Point(132, 24)
+        Me.AboutRevision.Location = New System.Drawing.Point(215, 24)
         Me.AboutRevision.Name = "AboutRevision"
-        Me.AboutRevision.Size = New System.Drawing.Size(100, 13)
+        Me.AboutRevision.Size = New System.Drawing.Size(53, 13)
         Me.AboutRevision.TabIndex = 9
-        Me.AboutRevision.Text = "Revision: Unknown"
+        Me.AboutRevision.Text = "Unknown"
         Me.AboutRevision.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'AboutRevisionDate
+        '
+        Me.AboutRevisionDate.AutoSize = True
+        Me.AboutRevisionDate.Location = New System.Drawing.Point(215, 44)
+        Me.AboutRevisionDate.Name = "AboutRevisionDate"
+        Me.AboutRevisionDate.Size = New System.Drawing.Size(53, 13)
+        Me.AboutRevisionDate.TabIndex = 10
+        Me.AboutRevisionDate.Text = "Unknown"
+        '
+        'AboutCompileDate
+        '
+        Me.AboutCompileDate.AutoSize = True
+        Me.AboutCompileDate.Location = New System.Drawing.Point(215, 64)
+        Me.AboutCompileDate.Name = "AboutCompileDate"
+        Me.AboutCompileDate.Size = New System.Drawing.Size(53, 13)
+        Me.AboutCompileDate.TabIndex = 11
+        Me.AboutCompileDate.Text = "Unknown"
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(129, 24)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(51, 13)
+        Me.Label5.TabIndex = 12
+        Me.Label5.Text = "Revision:"
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(129, 44)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(80, 13)
+        Me.Label6.TabIndex = 13
+        Me.Label6.Text = "Revision Date: "
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(129, 64)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(62, 13)
+        Me.Label7.TabIndex = 14
+        Me.Label7.Text = "Created on:"
         '
         'About
         '
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.ClientSize = New System.Drawing.Size(552, 352)
+        Me.ClientSize = New System.Drawing.Size(552, 414)
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.Label6)
+        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.AboutCompileDate)
+        Me.Controls.Add(Me.AboutRevisionDate)
         Me.Controls.Add(Me.AboutRevision)
         Me.Controls.Add(Me.TextBox2)
         Me.Controls.Add(Me.LinkLabel1)
@@ -184,17 +244,28 @@ Public Class About
 #End Region
 
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Dim Revision As String = "$Revision: unknown $", aRev As String, aVersion As String
+        Dim Revision As String = "$Revision: 79087f9 $", aRev As String, aVersion As String
+        Dim RevisionDate As String = "$RevisionDate: 2015-07-13 09:31 $"
+        Dim CompileDate As String = "$CompileDate: 2015-07-13 10:17 $"
         Dim sLen As Integer
         sLen = Len(Application.ProductVersion)
         aVersion = Application.ProductVersion.Substring(0, sLen - 1)
         sLen = Len(Revision)
         aRev = Revision.Substring(11, sLen - 13)
-        Me.AboutRevision.Text = "Revision: " + aRev
+        Me.AboutRevision.Text = aRev
+        sLen = Len(RevisionDate)
+        aRev = RevisionDate.Substring(15, sLen - 17)
+        Me.AboutRevisionDate.Text = aRev
+        sLen = Len(CompileDate)
+        aRev = CompileDate.Substring(14, sLen - 15)
+        Me.AboutCompileDate.Text = aRev
     End Sub
 
     Private Sub LinkLabel1_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
         Process.Start(LinkLabel1.Text)
     End Sub
 
+    Private Sub Label5_Click(sender As Object, e As EventArgs)
+
+    End Sub
 End Class

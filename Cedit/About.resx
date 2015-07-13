@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="TextBox1.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="TextBox1.Text" xml:space="preserve">
     <value>The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using this tools.
 
@@ -11165,9 +11162,6 @@ CEdit and the companion program CFAST are intended for use only by those compete
         +Q88bISSosTIJ3mAh1BiZJOp7CRBTBnLtzzyKKisJUMu+UmPwFKXwExjLoNpkIAAADs=
 </value>
   </data>
-  <metadata name="TextBox2.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAA8AEBAQAAAAAAAoAQAA9gAAABAQAAABABgAaAMAAB4CAAAQEAAAAQAgAGgEAACGBQAAICAQAAAA

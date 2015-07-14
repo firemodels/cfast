@@ -1826,7 +1826,7 @@
 
     ! Outdated keywords
     case ('CJET','WIND')                                   ! Just ignore these inputs ... they shouldn't be fatal
-        write (logerr,5405) label
+        write (logerr,5407) label
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
         write (logerr,5405) label
         ierror = 5
@@ -1883,6 +1883,7 @@
 5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)    
 5405 format ('***Error: Invalid keyword in CFAST input file ',a) 
 5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i0,' Flow inputs are no longer used')  
+5407 format ('***Warning: Outdated keyword in CFAST input file ignored ',a) 
 
     end subroutine keywordcases
 

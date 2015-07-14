@@ -514,7 +514,7 @@ As with doors and windows, mass and enthalpy are exchanged between the layers of
   \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \\[.1in]
   \doh_{\rm up} &=& \alpha \; c_p \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; c_p \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl
 \end{eqnarray}
-where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment. 
+where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment.
 
 The weighting factor, $\alpha$, indicates the relative amounts of mass extracted from the upper and lower layers of the lower compartment. If the hot gas layer of the lower compartment is sufficiently deep and/or sufficiently hot, all of the gas passing into the upper compartment is extracted from the upper layer. However, under specific conditions, the lower layer ambient air beneath the hot gas layer is also drawn through the vent, which reduces the amount of smoke that is exhausted from the compartment. This phenomenon is referred to as plug-holing. Milke's chapter on Smoke Management in the {\em SFPE Handbook}~\cite{Milke:SFPE} cites work by Lougheed and Hadjisophocleous that suggests that plug-holing occurs when the volume flow, $\dot{V}$, through the vent reaches the following critical value:
 \be
@@ -843,7 +843,7 @@ Fire suppression by water is predicted using a simple empirical model developed 
 \be
    \dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
 \ee
-where $u_{\rm w}$ is the water spray density, expressed in units of m/s. The product species mass production rates are reduced by the same amount as the heat release rate.
+where $u_{\rm w}$ is the water spray density, expressed in units\footnote{Note the CFAST graphical interface might use other units, but the program does convert the user-specified value into mm/s.} of mm/s.  The product species mass production rates are reduced by the same amount as the heat release rate.
 
 There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers are noted but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how the two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the highest ceiling jet temperature in order to calculate the sprinkler link temperature.
 

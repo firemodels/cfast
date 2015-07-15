@@ -175,6 +175,9 @@ if %nothaveVerification% == 1 (
 :skip_matlabexe
 
 if %usematlab% == 0 goto skip_matlab
+
+::*** looking for matlab
+
 where matlab 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
 set /p nothavematlab=<%OUTDIR%\stage_count0a.txt
 if %nothavematlab% == 0 (
@@ -386,8 +389,8 @@ if %usematlab% == 0 goto matlab_else1
 
 ::*** generating Verification plots
 
-if %usematlab% == 1 goto matlab_end2
   echo             Verification
+if %usematlab% == 1 goto matlab_end2
   echo               SpeciesMassTestCases
   cd %cfastroot%\Utilities\Matlab\scripts
   SpeciesMassTestCases

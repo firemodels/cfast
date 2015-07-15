@@ -1480,8 +1480,10 @@
         do iobj = 1, numobjl
             if (.not.objon(iobj)) then
                 iobtarg = obtarg(iobj)
-                obcond(igntemp,iobj) = xxtarg(idxtempf_trg,iobtarg)
-                obcond(ignflux,iobj) = xxtarg(trgtfluxf,iobtarg)
+                if (ignflg>1) then 
+                    obcond(igntemp,iobj) = xxtarg(idxtempf_trg,iobtarg)
+                    obcond(ignflux,iobj) = xxtarg(trgtfluxf,iobtarg)
+                end if
                 if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then
                     if (tmpob(2,iobj)<=tobj) then
                         objon(iobj) = .true.

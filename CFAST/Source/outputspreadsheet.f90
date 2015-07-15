@@ -439,7 +439,7 @@
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call SSaddtolist(position,zzhlay(i,lower),outarray)
         endif
-        call SSaddtolist(position,zzrelp(i) - interior_rel_pressure(i),outarray)
+        call SSaddtolist(position,zzrelp(i),outarray)
         call SSaddtolist(position,toxict(i,upper,9),outarray)
         if (izshaft(i)==0) then
             call SSaddtolist(position,toxict(i,lower,9),outarray)

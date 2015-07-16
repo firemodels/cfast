@@ -30,6 +30,12 @@ cd Ventilation
 ..\scripts\background -u 98 ..\..\bin\cfast ventilation_1 /V
 ..\scripts\background -u 98 ..\..\bin\cfast ventilation_2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast ventilation_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast ventilation_4 /V
+cd ..
+
+echo Running Sprinkler cases
+cd Sprinkler
+..\scripts\background -u 98 ..\..\bin\cfast sprinkler_1 /V
 cd ..
 
 echo Waiting for all CFAST runs to finish

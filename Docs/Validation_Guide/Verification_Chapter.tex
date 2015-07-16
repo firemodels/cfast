@@ -110,7 +110,7 @@ Figure~\ref{specmass1} shows the resulting product masses.
 \subsection{A Fire in a Compartment Connected to Another via a Door}
 \label{sec:spec2}
 
-The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
+The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the resulting product masses.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_2}
@@ -121,7 +121,7 @@ The same natural gas fire described in Section~\ref{sec:spec1} burns in a compar
 \subsection{A Fire in a Compartment Connected to Another via a Ceiling Vent}
 
 The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
-Figure~\ref{specmass2} shows the calculated mass of both CO$_2$ and H$_2$O.
+Figure~\ref{specmass2} shows the resulting product masses.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_3}
@@ -251,4 +251,41 @@ The same setup that was constructed in Section~\ref{sec:vent2} is used again in 
 \label{ventilation_3TP}
 \end{figure}
 
+\subsection{Determining the Velocity Profile of Air Flowing Through a Doorway}
+A 200~kW natural gas (methane) fire burns in a 5~m by 5~m by 5~m compartment, where the walls are assumed to be adiabatic. The heat release rate ramps up linearly to 200~kW in 30~s, then remains steady for 5.5~min. The compartment contains a 4~m by 1.5~m door that remains completely open throughout the simulation. In order to calculate the mass flow rate of air through the door, the following equation is applied to the lower layer, the neutral plane and the upper layer: 
+\begin{equation} 
+\dot{m} = \int_b^t C \sqrt{2\rho\Delta{P(z)}} \, w\;\mathrm{d}z
+\label{eq:mdot}
+\end{equation}
+where $C$ is the orifice coefficient taken to be 0.7, $\rho$ is the gas density of the upwind compartment, $w$ is the width of the doorway and $\Delta{P(z)}$ is the pressure across the interface at elevation $z$. Finally, $z = b$ and $z = t$ refer to the heights of the bottom and top of the vertical segment in the doorway through which the mass flow rate is being calculated. This equation can be analytically integrated to yield:
+\begin{equation}
+\dot{m} = sign \brackets{\frac{\Delta P_t + \Delta P_b}{2}} \, \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
+\end{equation}
+The equation for the velocity profile of air traveling through the doorway can be produced after rearranging equation~\ref{eq:mdot}:
+\begin{equation}
+v = \frac{\dot{m}}{A\rho} = sign(\Delta{P(z)}) \, C \sqrt{\frac{2|\Delta{P(z)}|}{\rho}}
+\end{equation}
+where $A$ represents the area of the door and $\rho$ corresponds to the density of air at height $z$.
 
+\section{Sprinklers}
+
+\subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
+
+A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40$^\circ$~C and a spray density of 0.07~mm/s . The sprinkler link temperature can be calculated by integrating the following equation:
+\begin{equation}
+\frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}
+\end{equation}
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. After the sprinkler link temperature reaches the activation temperature, $t > t_{\rm act}$, the sprinkler will begin to suppress the fire by diminishing its heat release rate at the exponential rate described by:
+\begin{equation}
+\dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
+\end{equation}
+where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/sprinkler_1_link_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/sprinkler_1_HRR}
+\end{tabular*}
+\caption[Results of the test case {\ct sprinkler\_1.in}]{Expected and CFAST calculated values for the sprinkler link temperature and the heat release rate of the fire for the case {\ct sprinkler\_1.in}.}
+\label{sprinkler1}
+\end{figure}

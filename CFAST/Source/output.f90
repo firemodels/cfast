@@ -1674,20 +1674,18 @@
 
     end subroutine output_debug
 
-    subroutine output_status (T, dT, errorcode)
+    subroutine output_status (T, dT)
 
     !  Write the status information to the "statusfile"
 
     use precision_parameters
     implicit none
     
-    integer, intent(out) :: errorcode
     real(eb), intent(in) :: T, dT
 
     rewind (12)
     write(12,5001) t, dt
     call rsltcmp (12)
-    errorcode = 0
     return
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
@@ -1835,13 +1833,13 @@
 
     !	history file
 10  write (logerr,5030) mod(ios,256), trim(historyfile)
-    stop 105
+    stop
     !	smokeview file
 11  write(logerr,5040) mod(ios,256),trim(smvhead),trim(smvdata)
-    stop 105
+    stop
     !	this one comes from writing to the status file
 81  write(logerr,*) '***Fatal error writing to the status file ',ios
-    stop 106
+    stop
 
 5030 FORMAT ('***Error ',i4,' while accessing history, file = ',A)
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)

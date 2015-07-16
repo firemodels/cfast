@@ -1,9 +1,9 @@
 
-! --------------------------- gettpp -------------------------------------------
+! --------------------------- get_thermal_property -------------------------------------------
 
-    subroutine gettpp (name, tp, errorcode)
+    subroutine get_thermal_property (name, tp)
 
-    !     Routine: gettpp
+    !     Routine: get_thermal_Property
     !     Purpose: check for and return index to a thermal property
     !     Revision: $Revision$
     !     Revision Date: $Date$
@@ -12,21 +12,19 @@
 
     implicit none
     character, intent(in) :: name*(*)
-    integer, intent(out) :: errorcode
     
     character(mxthrmplen) missingtpp
     integer tp, i
 
-    errorcode = 0
     do i = 1, maxct
         tp = i
         if (name==nlist(i)) return
     end do
     missingtpp = name
-    errorcode = 205
-    write(3,'(''A thermal property was not found in the input file. Missing material: '',a)') missingtpp
-    return
-    end
+    write(3,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    stop
+    
+    end subroutine get_thermal_property
 
 ! --------------------------- gres -------------------------------------------
 
@@ -186,14 +184,13 @@
 
 ! --------------------------- hvinit -------------------------------------------
 
-    subroutine hvinit (ierror)
+    subroutine hvinit ()
 
     !     routine: hvinit
     !     purpose: this routine sets up the arrays needed to for hvac
     !                 simulation and initializes temperatures and concentrations
     !     revision: $revision: 352 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: ierror  returns error codes
 
     !     this function has been modified to prevent negative flow.  a max function
     !     was inserted just after the calculation off, the flow to do this.  if
@@ -203,10 +200,9 @@
     use precision_parameters
     use cenviro
     use cfast_main
+    use cshell, only: logerr
     use params
     implicit none
-
-    integer, intent(out) :: ierror
     
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
@@ -262,9 +258,8 @@
     ! check interior nodes
     do i = 1, nnode
         if (ncnode(i)<1.or.ncnode(i)>mxcon) then
-            call xerror('hvinit - interior node has too many or too few connections',0,1,1)
-            ierror = 223
-            return
+            write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
+            stop
         endif
     end do
 
@@ -273,9 +268,8 @@
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (ncnode(j)>1) then
-            call xerror('hvinit - interior node has too many or too few connections',0,1,1)
-            ierror = 223
-            return
+            write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
+            stop
         endif
         hvelxt(ii) = min(room_height(i),max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + floor_height(i)
@@ -1179,11 +1173,10 @@
 
 ! --------------------------- inittarg -------------------------------------------
 
-    subroutine inittarg (ierror)
+    subroutine inittarg ()
 
     !     routine: inittarg
     !     purpose: Initialize target data structures
-    !     Arguments: ierror:  Returns error codes
 
     use precision_parameters
     use cfast_main
@@ -1191,9 +1184,7 @@
     use fltarget
     use thermp
     implicit none
-    
-    integer, intent(out) :: ierror
-    
+       
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: ifail, itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
@@ -1204,9 +1195,8 @@
         ! room number must be between 1 and nm1
         iroom = ixtarg(trgroom,itarg)
         if(iroom<1.or.iroom>nm1)then
-            write(logerr,'(a,i3)') '***Error: Target assigned to non-existent compartment',iroom
-            ierror = 213
-            return
+            write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
+            stop
         endif
         iwall = ixtarg(trgwall,itarg)
         xloc = xxtarg(trgcenx,itarg)
@@ -1279,9 +1269,8 @@
 
         ! center coordinates need to be within room
         if(xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize)then
-            write(logerr,'(a,i3,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
-            ierror = 214
-            return
+            write(logerr,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
+            stop
         endif
     end do
 
@@ -1290,13 +1279,11 @@
 
 ! --------------------------- initialize_walls  -------------------------------------------
 
-    subroutine initialize_walls (tstop,ierror)
+    subroutine initialize_walls (tstop)
 
-    !     routine: initialize_species
     !     purpose: This routine initializes data structures associated
     !             with walls and targets
     !     Arguments: TSTOP
-    !                IERROR  Returns error codes
 
     !        fkw = thermal conductivity
     !        cw = specific heat (j/kg)
@@ -1322,7 +1309,6 @@
     use wnodes
     implicit none
 
-    integer, intent(out) :: ierror
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, icode, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     character(mxthrmplen) off, none, tcname
@@ -1341,8 +1327,7 @@
                 if (cname(i,j)==off.or.cname(i,j)==none) then
                     surface_on_switch(i,j) = .false.
                 else
-                    call gettpp(cname(i,j),tp,ierror)
-                    if (ierror/=0) return
+                    call get_thermal_property(cname(i,j),tp)
                     nslb(i,j) = lnslb(tp)
                     do k = 1, nslb(i,j)
                         fkw(k,i,j) = lfkw(k,tp)
@@ -1444,8 +1429,7 @@
             cxtarg(itarg) = tcname
         endif
         icode = 0
-        call gettpp(tcname,tp,ierror)
-        if (ierror/=0) return
+        call get_thermal_property(tcname,tp)
         xxtarg(trgk,itarg) = lfkw(1,tp)
         xxtarg(trgcp,itarg) = lcw(1,tp)
         xxtarg(trgrho,itarg) = lrw(1,tp)
@@ -1458,14 +1442,12 @@
 
 ! --------------------------- offset -------------------------------------------
 
-    subroutine offset (ierror)
+    subroutine offset ()
 
-    ! routine: initialize_species
     ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.  
     !          thus, the actual pressure array goes from nofp+1 to nofp+nm1.  the total number of equations to be considered
     !          is nequals, and is the last element in the last vector. each physical interface routine is responsible for 
     !          the count of the number of elements in the vector for which it is resonsible.
-    ! arguments:  ierror  returns error codes
 
     ! this set of parameters is set by nputp and is kept in the environment module cenviro.  
     ! to index a variable, the list is something like (for temperature in this case)
@@ -1491,13 +1473,13 @@
     ! beginning of the species (-1) and the end of the array which is presently used by dassl
     
     use cfast_main
+    use cshell, only: logerr
     use fltarget
     use opt
     use params
     use wnodes
     implicit none
     
-    integer, intent(out) :: ierror
     
     integer :: i, j, ib, itarg, nimtarg, noxygen
 
@@ -1507,9 +1489,8 @@
         nnode = max(nnode,na(ib),ne(ib))
     end do
     if (nnode>mxnode) then
-        call xerror('offset - node range exceeded for hvac specification',0,1,1)
-        ierror = 16
-        return
+        write (logerr,*) '***Error: offset - Too many nodes in hvac specification'
+        stop
     endif
 
     ! set the number of compartments and offsets
@@ -1536,7 +1517,8 @@
         end do
         nlspct = nlspct + 1
     else
-        stop ' not an allowed fire type'
+        write (logerr,'(a,i0)') 'Error: Invalid fire type specified: ', lfbt
+        stop
     endif
 
     ! count the number of walls

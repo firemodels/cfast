@@ -2,7 +2,7 @@
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
-    subroutine mechanical_flow (tsec, hvpsolv, hvtsolv, tprime, flwmv, deltpmv, delttmv, prprime, nprod, ierror, hvacflg, filtered)
+    subroutine mechanical_flow (tsec, hvpsolv, hvtsolv, tprime, flwmv, deltpmv, delttmv, prprime, nprod, hvacflg, filtered)
 
     !     routine: mechanical_flow
     !     purpose: physical interface routine to calculate flow through all forced vents (mechanical flow).
@@ -22,7 +22,7 @@
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
 
     real(eb) :: filter, qcifraction, flwmv0(nr,ns+2,2), deltpmv0(mxnode), delttmv0(mxbranch) 
-    integer :: i, ii, j, k, ieqtyp, iroom, isys, ierror, nprod
+    integer :: i, ii, j, k, ieqtyp, iroom, isys, nprod
     logical :: first = .true., doit, hvacflg
     save first,flwmv0,deltpmv0,delttmv0
 
@@ -110,8 +110,7 @@
     endif
 
     call hvfrex (hvpsolv,hvtsolv)
-    call hvmflo (tsec, deltpmv,ierror)
-    if (ierror/=0) return
+    call hvmflo (tsec, deltpmv)
     call hvsflo (tprime,delttmv)
     call hvtoex (prprime,nprod)
     do ii = 1, next
@@ -168,13 +167,12 @@
 
 ! --------------------------- hvmflo -------------------------------------------
 
-    subroutine hvmflo (tsec, deltpmv,ierror)
+    subroutine hvmflo (tsec, deltpmv)
 
     !     routine: hvmflo
     !     purpose: mass flow solution and calculation for mechanical vents
     !     arguments: tsec
     !                deltpmv
-    !                ierror   returns error codes
 
     use precision_parameters
     use cfast_main
@@ -185,11 +183,8 @@
     real(eb), intent(out) :: deltpmv(*)
     
     real(eb) :: pav, xtemp, f, dp, hvfan
-    integer, intent(out) :: ierror
 
     integer :: ib, niter, iter, i, ii, j, k
-
-    ierror = 0
     
     ! calculate average temperatures and densities for each branch
     do ib = 1, nbr

@@ -1,7 +1,7 @@
 
 ! --------------------------- read_input_file -------------------------------------------
 
-    subroutine read_input_file (ierror)
+    subroutine read_input_file ()
 
     !	Read the input file and set up the data for processing
 
@@ -14,14 +14,12 @@
     use params
     use thermp
     implicit none
-
-    integer, intent(out) :: ierror
     
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
-    character :: messg*133, aversion*5
+    character :: aversion*5
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
@@ -48,17 +46,16 @@
     close (iofili)
     open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
     if (ios/=0) then
-        if (logerr>0) write (logerr,5050) mod(ios,256)
-        ierror = 99
-        return
+        if (logerr>0) then
+            write (logerr,5050) mod(ios,256)
+        else
+            write (*,5050) mod(ios,256)
+        end if
+        stop
     endif
 
     ! read in the entire input file as a spreadsheet array of numbers and/or character strings
-    call readcsvformat(iofili, rarray, carray, nrow, ncol, 1, numr, numc, logerr, ierror)
-    if (ierror>0) then
-        write(logerr,5003)
-        return
-    endif
+    call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, logerr)
 
     close (iofili)
 
@@ -77,8 +74,7 @@
         write (logerr,5004) ivers, iversion
     elseif (aversion/=heading.or.ivers/=iversion) then
         write (logerr,5002) aversion,heading,ivers,iversion
-        ierror = 206
-        return
+        stop
     endif
     title = carray(1,3)
 
@@ -89,19 +85,17 @@
     maxct = 0
 
     ! read in data file
-    call keywordcases (numr, numc, ierror)
+    call keywordcases (numr, numc)
 
     !	wait until the input file is parsed before we die on temperature outside reasonable limits
     if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
         write(logerr,5022) exterior_temperature
-        ierror = 218
+        stop
     endif
     if (interior_temperature>373.15_eb.or.interior_temperature<223.15_eb) then
         write(logerr,5022) interior_temperature
-        ierror = 218
+        stop
     endif
-
-    if (ierror/=0) return
 
     ! We now know what output is going to be generated, so create the files
     call openoutputfiles
@@ -111,12 +105,10 @@
 
     ! initialize the targets. 
     nm1 = n - 1
-    call inittarg (ierror)
-    if (ierror/=0) return
+    call inittarg
 
     ! now calculate the offsets - the order is important
-    call offset (ierror)
-    if (ierror/=0) return
+    call offset
 
     ! floor plan dependent parameters
     do i = 1, nm1
@@ -134,7 +126,6 @@
         if ((heatfp(3)<0.0_eb).or.(heatfp(3)>room_height(heatfr))) then
             heatfp(3) = 0.0_eb
         endif
-        write(logerr,5021) heatfr,heatfp
     endif
 
     ! check and/or set position of fire objects
@@ -155,7 +146,8 @@
     ! above
     do itop = 1, nm1
         if (nwv(itop,itop)/=0) then
-            if (logerr>0) write (logerr,*) '***Error: A room can not be connected to itself'
+            write (logerr,*) '***Error: A room can not be connected to itself'
+            stop
             nwv(itop,itop) = 0
         endif
         do ibot = 1, itop - 1
@@ -211,9 +203,9 @@
         ! room numbers must be between 1 and nm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
             ifail = 39
-            write (messg,201)iroom1,iroom2 
-201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',2i3, ' is out of bounds')
-            call xerror(messg,0,1,1)
+            write (logerr,201) iroom1, iroom2 
+201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
+            stop
         endif
 
         ! if room is connected to the outside then ignore it
@@ -243,8 +235,9 @@
             endif
         else
             ifail = 40
-            write (messg,202) iroom1,iroom2 
-202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',2i3, ' are not connectetd')
+            write (logerr,202) iroom1, iroom2 
+202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
+            stop
         endif
 
         ! walls must be turned on, ie surface_on_switch must be set
@@ -252,19 +245,13 @@
         iwall1 = izswal(ii,w_from_wall)
         iwall2 = izswal(ii,w_to_wall)
         if(.not.surface_on_switch(iwall1,iroom1).or..not.surface_on_switch(iwall2,iroom2))then
-            write (messg,203)
-203         format('***Error: Invalid CFCON specification:')
-            call xerror(messg,0,1,1)
             if(.not.surface_on_switch(iwall1,iroom1))then
-                write(messg,204) iwall1,iroom1
-204             format('***Error: Wall ',i2,' of room ',i2,' is not turned on')
-                call xerror(messg,0,1,1)
+                write(logerr,204) iwall1,iroom1
+204             format('***Error: Invalid CFCON specification. Wall ',i0,' of room ',i0,' is adiabatic')
+            else if(.not.surface_on_switch(iwall2,iroom2))then
+                write(logerr,204)iwall2,iroom2
             endif
-            if(.not.surface_on_switch(iwall2,iroom2))then
-                write(messg,204)iwall2,iroom2
-                call xerror(messg,0,1,1)
-            endif
-            ifail = 41
+            stop
         endif
     end do
     nswal = nswall2
@@ -272,11 +259,8 @@
     ! check shafts
     do iroom = nm1 + 1, nr
         if(izshaft(iroom)/=0)then
-            call xerror('***Error: Invalid SHAFT specification:',0,1,1)
-            ifail = 42
-            write (messg,206)iroom,nm1
-206         format('***Error: Room ',i3,' must be less than or equal to ',i3)
-            call xerror(messg,0,1,1)
+            write (logerr,'(a,i0,a,i0)') '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',nm1
+            stop
         endif
     end do
 
@@ -350,38 +334,36 @@
     call initamb(yinter,1)
 
     ! initialize the mechanical ventilation
-    call hvinit (ierror)
-    if (ierror/=0) return
+    call hvinit
 
     ! check detectors
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
         if(iroom<1.or.iroom>nm1)then
-            write (messg,104)iroom 
-104         format('***Error: Invalid DETECTOR specification: room ',i3, ' is not a valid')
-            ifail = 43
-            call xerror(messg,0,1,1)
+            write (logerr,104) iroom 
+104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
+            stop
         endif
         rti = xdtect(i,drti)
         if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
-            write (messg,101)rti 
-101         format('***Error: Invalid DETECTOR specification - rti= ',e11.4, ' is not a valid.')
-            ifail = 44
+            write (logerr,101) rti 
+101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
+            stop
         endif
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
         if(xloc<0.0_eb.or.xloc>room_width(iroom).or.yloc<0.0_eb.or.yloc>room_depth(iroom) &
             .or.zloc<0.0_eb.or.zloc>ceiling_height(iroom))then
-            write(messg,102)xloc,yloc,zloc
-102         format('***Error: Invalid DETECTOR specification - x,y,z,location','x,y,z=',3e11.4,' is out of bounds')
-            ifail = 45
+            write(logerr,102) xloc,yloc,zloc
+102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
+            stop
         endif
         idtype = ixdtect(i,dtype)
         if(idtype<1.or.idtype>3)then
-            write(messg,103)idtype
+            write(logerr,103) idtype
 103         format('***Error: Invalid DETECTOR specification - type= ',i2,' is not a valid')
-            ifail = 46
+            stop
         endif
     end do
 
@@ -447,18 +429,12 @@
     ! set up any specified slice or iso files
     call setup_slice_iso
 
-    if(ifail>0) then
-        call xerror('***Error: Input error in read_input_file',0,1,1)
-        ierror = ifail
-        return
-    endif
     close (iofili)
     return
 
 5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
 5003 format ('***Error: Too many lines in the main data file')
-5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.')     
-5021 format ('The constant heat source (heatf) is in compartment ',i3,' at ',3f12.5)
+5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.') 
 5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
     ! read format list
@@ -468,13 +444,12 @@
 
 ! --------------------------- keywordcases -------------------------------------------
 
-    subroutine keywordcases(inumr,inumc,ierror)
+    subroutine keywordcases(inumr,inumc)
 
     !     routine:  keywordcases (remaned from NPUTQ)
     !     purpose: Handles CFAST datafile keywords
     !     Arguments: inumr    number of rows in input file spreadsheet
     !                inumc    number of columns in input file spreadsheet
-    !                ierror  Returns error codes
 
     use precision_parameters
     use wallptrs
@@ -495,7 +470,6 @@
     integer, parameter :: maxin = 37
     
     integer, intent(in) :: inumr, inumc
-    integer, intent(out) :: ierror
     
     logical :: lfupdat
     integer :: obpnt, compartment, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir, countargs
@@ -515,9 +489,8 @@
             cname(j,i) = 'OFF'
             surface_on_switch(j,i) = .false.
         end do
-        compartment = 0
-        ierror = 0
     end do
+    compartment = 0
 
     ! Read in thermal properties first
     do ir = 2, inumr
@@ -536,8 +509,7 @@
                 if (maxct>mxthrmp) then
                     write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
-                    ierror = 203
-                    return
+                    stop
                 endif
                 nlist(maxct) = lcarray(1)
                 lnslb(maxct) = 1
@@ -547,9 +519,8 @@
                 lflw(1,maxct) = lrarray(5)
                 lepw(maxct) = lrarray(6)
             else
-                ierror = 6
-                write (3,*) '***Error: Bad MATL input. At least 7 arguments required.'
-                return
+                write (logerr,*) '***Error: Bad MATL input. At least 7 arguments required.'
+                stop
             endif
         endif
     end do
@@ -573,8 +544,7 @@
                 compartment = compartment + 1
                 if (compartment>nr) then
                     write (logerr, 5062) compartment
-                    ierror = 9
-                    return
+                    stop
                 endif
 
                 ! Name
@@ -627,9 +597,8 @@
                 ! Reset this each time in case this is the last entry
                 n = compartment+1
             else
-                ierror = 8
-                write (3,*) '***Error: Bad COMPA input. At least 10 arguments required.'
-                return
+                write (logerr,*) '***Error: Bad COMPA input. At least 10 arguments required.'
+                stop
             endif
         endif
     end do
@@ -650,8 +619,7 @@
             if (countargs(lcarray)>=10) then
                 if(ntarg+1>mxtarg)then
                     write(logerr,5002)
-                    ierror = 42
-                    return
+                    stop
                 endif
 
                 ! The target can exist, now for the compartment
@@ -659,8 +627,7 @@
                 iroom = lrarray(1)
                 if(iroom<1.or.iroom>n)then
                     write(logerr,5003) iroom
-                    ierror = 43
-                    return
+                    stop
                 endif
 
                 ! position and normal vector
@@ -702,8 +669,7 @@
                         ixtarg(trgmeth,ntarg) = XPLICIT
                     else
                         write(logerr,912) method
-                        ierror = 44
-                        return
+                        stop
                     endif
                 endif
 
@@ -720,13 +686,12 @@
                         ixtarg(trgeq,ntarg) = CYLPDE
                     else
                         write(logerr,913) eqtype
-                        ierror = 45
-                        return
+                        stop
                     endif
                 endif
             else
-                ierror = 41
-                return
+                write (logerr,*) '***Error: Bad TARGE input. At least 10 arguments required.'
+                stop
             endif
         end if
     end do
@@ -749,19 +714,17 @@
         ! For now, we assume that the input file was written correctly by the GUI and just set an index for the forthcoming keywords
         if (label=='FIRE') then
             if (countargs(lcarray)/=11) then
-                ierror = 32
-                write (3,*) '***Error: Bad FIRE input. 11 arguments required.'
-                return
+                write (logerr,*) '***Error: Bad FIRE input. 11 arguments required.'
+                stop
             endif
             if (numobjl>=mxfires) then
                 write(logerr,5300)
-                cycle
+                stop
             endif
             iroom = lrarray(1)
             if (iroom<1.or.iroom>n-1) then
                 write(logerr,5320)iroom
-                ierror = 33
-                return
+                stop
             endif
             obpnt = numobjl + 1
             numobjl = obpnt
@@ -770,8 +733,7 @@
             objtyp(numobjl) = 2
             if (objtyp(numobjl)>2) then
                 write(logerr,5321) objtyp(numobjl)
-                ierror = 63
-                return
+                stop
             endif
 
             objpos(1,obpnt) = lrarray(2)
@@ -779,8 +741,7 @@
             objpos(3,obpnt) = lrarray(4)
             if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
                 write(logerr,5323) obpnt
-                ierror = 82
-                return
+                stop
             endif
             obj_fpos(obpnt) = 1
             if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
@@ -791,8 +752,7 @@
             fplume(numobjl) = lrarray(5)
             if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
                 write(logerr,5402) fplume(numobjl)
-                ierror = 78
-                return
+                stop
             endif
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
@@ -807,8 +767,7 @@
                     end do
                     if (obtarg(obpnt)==0) then
                         write (logerr,5324) obpnt
-                        ierror = 216
-                        return
+                        stop
                     end if
                 end if
             else
@@ -822,8 +781,7 @@
                 ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
                 if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
                     write(logerr,5322)
-                    ierror = 216
-                    return
+                    stop
                 endif
             end if
             objrm(obpnt) = iroom
@@ -850,8 +808,7 @@
                     objcri(3,obpnt) = 1.0e30_eb
                 else
                     write(logerr,5358) objign(obpnt)
-                    ierror = 13
-                    return
+                    stop
                 endif
             else
                 objon(obpnt) = .true.
@@ -865,9 +822,7 @@
             endif
 
             ! read and set the other stuff for this fire
-            call inputembeddedfire(objnin(obpnt), ir, inumc, obpnt, ierror)
-            
-            if (ierror/=0) return
+            call inputembeddedfire (objnin(obpnt), ir, inumc, obpnt)
         endif
     end do
 
@@ -900,9 +855,8 @@
             lsmv = lrarray(3)
             lcopyss =  lrarray(4)
         else 
-            ierror = 1
-            write (3,*) '***Error: Bad TIMES input. At least 4 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad TIMES input. At least 4 arguments required.'
+            stop
         endif
 
     ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
@@ -916,9 +870,8 @@
             interior_abs_pressure = lrarray(2)
             relhum = lrarray(3)*0.01_eb
         else
-            ierror = 2
-            write (3,*) '***Error: Bad TAMB input. At least 3 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad TAMB input. At least 3 arguments required.'
+            stop
         endif
         if (.not.exset) then
             exterior_temperature = interior_temperature
@@ -929,9 +882,8 @@
     ! EAMB reference external ambient temperature (c), reference external ambient pressure
     case ("EAMB")
         if (countargs(lcarray)/=3) then
-            ierror = 3
-            write (3,*) '***Error: Bad EAMB input. 3 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad EAMB input. 3 arguments required.'
+            stop
         endif
         exterior_temperature = lrarray(1)
         exterior_abs_pressure = lrarray(2)
@@ -942,9 +894,8 @@
         if (countargs(lcarray)>=1) then
             limo2 = lrarray(1)*0.01_eb
         else
-            ierror = 4
-            write (3,*) '***Error: Bad LIMO2 input. 1 argument required.'
-            return
+            write (logerr,*) '***Error: Bad LIMO2 input. 1 argument required.'
+            stop
         endif
 
     ! Rename the thermal data file
@@ -952,9 +903,8 @@
         if (countargs(lcarray)>=1) then
             thrmfile = lcarray(1)
         else
-            ierror = 6
-            write (3,*) '***Error: Bad THRMF input. 1 argument required.'
-            return
+            write (logerr,*) '***Error: Bad THRMF input. 1 argument required.'
+            stop
         endif
 
     ! Set the gaseous ignition temperature - this is a global parameter DJIGN
@@ -962,9 +912,8 @@
         if (countargs(lcarray)>=1) then
             tgignt = lrarray(2)
         else
-            ierror = 4
-            write (3,*) '***Error: Bad DJIGN input. 1 argument required.'
-            return
+            write (logerr,*) '***Error: Bad DJIGN input. 1 argument required.'
+            stop
         endif
 
     ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. 
@@ -974,9 +923,8 @@
             limo2 = lrarray(1)*0.01_eb
             tgignt = lrarray(2)
         else
-            ierror = 4
-            write (3,*) '***Error: Bad GLOBA input. At least 2 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad GLOBA input. At least 2 arguments required.'
+            stop
         endif
 
         ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
@@ -988,9 +936,8 @@
         !		    initial open fraction
     case ('HVENT')
         if (countargs(lcarray)<7) then
-            ierror = 10
-            write (3,*) '***Error: Bad HVENT input. At least 7 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
+            stop
         else
             i = lrarray(1)
             j = lrarray(2)
@@ -999,19 +946,16 @@
             jmax = max(i,j)
             if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
                 write (logerr,5070) i, j
-                ierror = 78
-                return
+                stop
             endif
             if (k>mxccv) then
                 write (logerr,5080) i, j, k, nw(i,j)
-                ierror = 78
-                return
+                stop
             endif
             nventijk = nventijk + 1
             if (nventijk>mxhvents) then
                 write(logerr,5081) i,j,k
-                ierror = 78
-                return
+                stop
             endif
             ijk(i,j,k) = nventijk
             ijk(j,i,k) = ijk(i,j,k)
@@ -1034,8 +978,8 @@
             vface(iijk) = lrarray(8)
             initialopening = lrarray(9)
         else
-            ierror = 10
-            return
+            write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
+            stop
         end if
 
         qcvh(2,iijk) = initialopening
@@ -1078,9 +1022,8 @@
             venttype = lcarray(1)
             
             if(lrarray(6)<0.0_eb.or.lrarray(6)>1.0_eb) then
-                ierror = 11
                 write(3,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
-                return
+                stop
             endif
 
             select case (venttype)
@@ -1110,39 +1053,33 @@
             case ('F')
                 fannumber = lrarray(4)
                 if (fannumber>nfan) then
-                    ierror = 82
                     write(logerr,5196) fannumber
-                    return
+                    stop
                 endif
                 nfilter = nfilter + 1
                 qcvf(1,fannumber) = lrarray(5)
                 qcvf(3,fannumber) = lrarray(5) + lrarray(7)
                 qcvf(4,fannumber) = lrarray(6)
             case default
-                ierror = 11
-                write (3,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
-                return
+                write (logerr,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
+                stop
             end select
         else
-            ierror = 71
-            write (3,*) '***Error: Bad EVENT input. At least 7 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad EVENT input. At least 7 arguments required.'
+            stop
         endif
 
     ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
     case ('RAMP')
         if (countargs(lcarray)<9) then
-            ierror=11
-            write (3,*) '***Error: Bad RAMP input. At least 9 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad RAMP input. At least 9 arguments required.'
+            stop
         else if (lrarray(5)<=1) then
-            ierror=11
-            write (3,*) '***Error: Bad RAMP input. At least 1 time point must be specified.'
-            return
+            write (logerr,*) '***Error: Bad RAMP input. At least 1 time point must be specified.'
+            stop
         else if (countargs(lcarray)/=5+2*lrarray(5)) then
-            ierror=11
-            write (3,*) '***Error: Bad RAMP input. Inputs must be in pairs.'
-            return
+            write (logerr,*) '***Error: Bad RAMP input. Inputs must be in pairs.'
+            stop
         end if
         if (nramps<=mxramps) then
             nramps = nramps + 1
@@ -1166,8 +1103,7 @@
             ! check for outside of compartment space; self pointers are covered in read_input_file
             if (i>nr.or.j>nr) then
                 write (logerr,5070) i, j
-                ierror = 79
-                return
+                stop
             endif
 
             ! read_input_file will verify the orientation (i is on top of j)
@@ -1184,9 +1120,8 @@
             qcvpp(4,i,j) = lrarray(5)
             qcvpp(4,j,i) = lrarray(5)
         else
-            ierror = 23
-            write (3,*) '***Error: Bad VVENT input. At least 5 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'
+            stop
         endif
 
     ! MVENT - simplified mechanical ventilation
@@ -1198,17 +1133,15 @@
     ! (13) Initial fraction of the fan speed
     case ('MVENT')
         if (countargs(lcarray)/=13) then 
-            ierror = 12
-            write (3,*) '***Error: Bad MVENT input. 13 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'
+            stop
         endif
         mid = lrarray(3)
         iecfrom = lrarray(1)
         iecto = lrarray(2)
         if (iecfrom>n.or.iecto>n) then
             write(logerr,5191) iecfrom, iecto
-            ierror = 67
-            return
+            stop
         endif
 
         orientypefrom = lcarray(4)
@@ -1228,8 +1161,7 @@
         nnode = nnode + 1
         if (next>mxext.or.nnode>mxnode) then
             write (logerr,5192) next,nnode
-            ierror = 68
-            return
+            stop
         endif
         if (orientypefrom=='V') then
             hvorien(next) = 1
@@ -1246,8 +1178,7 @@
         nnode = nnode + 1
         if (next>mxext.or.nnode>mxnode) then
             write (logerr,5192) next,nnode
-            ierror = 68
-            return
+            stop
         endif
         if (orientypeto=='V') then
             hvorien(next) = 1
@@ -1263,22 +1194,19 @@
 
         if (minpres>maxpres) then
             write (logerr,5194) minpres,maxpres
-            ierror = 70
-            return
+            stop
         endif
 
         nfan = nfan + 1
         if (mid/=nfan) then
             write(logerr,5193) mid,nfan
-            ierror = 68
-            return
+            stop
         endif
 
         nbr = nbr + 1
         if (nfan>mxfan.or.nbr>mxbranch) then
             write (iofilo,5195) mxfan
-            ierror = 70
-            return
+            stop
         endif
 
         nf(nbr) = nfan
@@ -1311,19 +1239,17 @@
 
         if (countargs(lcarray)/=11) then
             write(logerr,5310)
-            ierror = 32
-            return
+            stop
         endif
         if (numobjl>=mxfires) then
             write(logerr,5300)
-            cycle
+            stop
         endif
         tcname = lcarray(1)
         iroom = lrarray(2)
         if (iroom<1.or.iroom>n-1) then
             write(logerr,5320)iroom
-            ierror = 33
-            return
+            stop
         endif
         obpnt = numobjl + 1
         numobjl = obpnt
@@ -1332,8 +1258,7 @@
         objtyp(numobjl) = 2
         if (objtyp(numobjl)>2) then
             write(logerr,5321) objtyp(numobjl)
-            ierror = 63
-            return
+            stop
         endif
 
         objpos(1,obpnt) = lrarray(3)
@@ -1341,8 +1266,7 @@
         objpos(3,obpnt) = lrarray(5)
         if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
             write(logerr,5323) obpnt
-            ierror = 82
-            return
+            stop
         endif
         obj_fpos(obpnt) = 1
         if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
@@ -1353,8 +1277,7 @@
         fplume(numobjl) = lrarray(6)
         if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
             write(logerr,5402) fplume(numobjl)
-            ierror = 78
-            return 
+            stop 
         endif
         objign(obpnt) =   lrarray(7)
         tmpcond =         lrarray(8)
@@ -1364,8 +1287,7 @@
         ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
         if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
             write(logerr,5322)
-            ierror = 216
-            return
+            stop
         endif
         objrm(obpnt) = iroom
         objnin(obpnt) = tcname
@@ -1392,8 +1314,7 @@
                 objcri(3,obpnt) = 1.0e30_eb
             else
                 write(logerr,5358) objign(obpnt)
-                ierror = 13
-                return
+                stop
             endif
         else
             objon(obpnt) = .true.
@@ -1411,9 +1332,8 @@
         if (countargs(lcarray)>=1) then
             stpmax = lrarray(1)
         else
-            ierror = 35
-            write (3,*) '***Error: Bad STPMA input. At least 1 argument required.'
-            return
+            write (logerr,*) '***Error: Bad STPMA input. At least 1 argument required.'
+            stop
         endif
 
     ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
@@ -1422,8 +1342,7 @@
             ndtect = ndtect + 1
             if (ndtect>mxdtect) then
                 write (logerr, 5338)
-                ierror = 81
-                return
+                stop
             endif
 
             i1 = lrarray(1)
@@ -1435,8 +1354,7 @@
             ixdtect(ndtect,droom) = iroom
             if(iroom<1.or.iroom>nr)then
                 write (logerr,5342) i2
-                ierror = 35
-                return
+                stop
             endif
 
             xdtect(ndtect,dtrig) = lrarray(3)
@@ -1459,8 +1377,7 @@
             endif
             if (compartmentnames(i2)==' ') then
                 write(logerr,5344) i2
-                ierror = 36
-                return
+                stop
             endif
 
             if (debugging) then
@@ -1472,14 +1389,12 @@
             if(xdtect(ndtect,dxloc)>room_width(i2).or.xdtect(ndtect,dyloc)>room_depth(i2) &
                 .or.xdtect(ndtect,dzloc)>room_height(i2)) then
                 write(logerr,5339) ndtect,compartmentnames(i2)
-                ierror = 80
-                return
+                stop
             endif
 
         else
-            ierror = 34
-            write (3,*) '***Error: Bad DETEC input. At least 9 arguments required.'
-            return
+            write (logerr,*) '***Error: Bad DETEC input. At least 9 arguments required.'
+            stop
         endif
 
     !  VHEAT top_compartment bottom_compartment
@@ -1489,8 +1404,7 @@
             i2 = lrarray(2)
             if (i1<1.or.i2<1.or.i1>n.or.i2>n) then
                 write(logerr,5345) i1, i2
-                ierror = 38
-                return
+                stop
             endif
 
             nswal = nswal + 1
@@ -1499,8 +1413,8 @@
             izswal(nswal,w_to_room) = i2
             izswal(nswal,w_to_wall) = 1
         else
-            ierror = 37
-            return
+            write (logerr,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
+            stop
         endif
 
     ! ONEZ compartment number - This turns the compartment into a single zone
@@ -1509,13 +1423,12 @@
             iroom = lrarray(1)
             if(iroom<1.or.iroom>n)then
                 write(logerr, 5001) i1
-                ierror = 40
-                return
+                stop
             endif
             izshaft(iroom) = 1
         else
-            ierror = 39
-            return
+            write (logerr,*) '***Error: Bad ONEZ input. At least 1 compartment must be specified.'
+            stop
         endif
         
     ! HALL Compartment Velocity Depth Decay_Distance
@@ -1526,15 +1439,14 @@
             ! check that specified room is valid
             if(iroom<0.or.iroom>n)then
                 write(logerr,5346) iroom
-                ierror = 63
-                return
+                stop
             endif
 
             izhall(iroom,ishall) = 1
             if (countargs(lcarray)>1) write (logerr,5406) iroom
         else
-            ierror = 46
-            return
+            write (logerr,*) '***Error: Bad HALL input. At least 1 compartment must be specified.'
+            stop
         endif
 
     ! ROOMA Compartment Number_of_Area_Values Area_Values
@@ -1546,16 +1458,14 @@
             ! make sure the room number is valid
             if(iroom<1.or.iroom>n)then
                 write(logerr,5347) iroom
-                ierror = 48
-                return
+                stop
             endif
 
             ! make sure the number of points is valid
             npts = lrarray(2)
             if(npts>mxcross.or.npts<=0.or.npts/=countargs(lcarray)-2) then
                 write (logerr,5347) npts
-                ierror = 49
-                return
+                stop
             endif
             if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
             izrvol(iroom) = npts
@@ -1564,8 +1474,7 @@
             do  i = 1, npts
                 if(lrarray(i+2)<0.0_eb)then
                     write(logerr,5348) lrarray(i+2)
-                    ierror = 50
-                    return
+                    stop
                 endif
             end do
 
@@ -1574,8 +1483,8 @@
                 zzrarea(i,iroom) = lrarray(i+2)
             end do
         else
-            ierror = 47
-            return
+            write (logerr,*) '***Error: Bad ROOMA input. At least 2 arguments must be specified.'
+            stop
         endif
 
     ! ROOMH Compartment Number_of_Height_Values Height_Values
@@ -1587,16 +1496,14 @@
             ! make sure the room number is valid
             if(iroom<1.or.iroom>n)then
                 write(logerr,5349) iroom
-                ierror = 52
-                return
+                stop
             endif
 
             ! make sure the number of points is valid
             npts = lrarray(2)
             if(npts>mxcross.or.npts<0.or.npts/=countargs(lcarray)-2)then
                 write(logerr,5350) npts
-                ierror = 53
-                return
+                stop
             endif
             if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
             izrvol(iroom) = npts
@@ -1605,8 +1512,7 @@
             do i = 1, npts
                 if(lrarray(i+2)<0.0_eb)then
                     write(logerr,5348) lrarray(i+2)
-                    ierror = 54
-                    return
+                    stop
                 endif
             end do
 
@@ -1616,8 +1522,8 @@
             end do
 
         else
-            ierror = 51
-            return
+            write (logerr,*) '***Error: Bad ROOMH input. At least 2 arguments must be specified.'
+            stop
         endif
 
     ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
@@ -1629,8 +1535,8 @@
             if(lrarray(2)<=0)izdtflag = .false.
 
         else
-            ierror = 55
-            return
+            write (logerr,*) '***Error: Bad DTCHE input. At least 2 arguments must be specified.'
+            stop
         endif
 
     ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
@@ -1651,8 +1557,7 @@
                 nto = lrarray(2)
                 if(nto<1.or.nto>n)then
                     write(logerr,5354) nto
-                    ierror = 59
-                    return
+                    stop
                 endif
                 izheat(ifrom) = 2
                 izheat(ifrom) = 2
@@ -1666,24 +1571,21 @@
                     frac = lrarray(i2)
                     if(ito<1.or.ito==ifrom.or.ito>n)then
                         write(logerr, 5356) ifrom,ito
-                        ierror = 61
-                        return
+                        stop
                     endif
                     if(frac<0.0_eb.or.frac>1.0_eb)then
                         write(logerr, 5357) ifrom,ito,frac
-                        ierror = 62
-                        return
+                        stop
                     endif
                     zzhtfrac(ifrom,ito) = frac
                 end do
             else
                 write(logerr,5355) ifrom, nto
-                ierror = 60
-                return
+                stop
             endif
         else
-            ierror = 58
-            return
+            write (logerr,*) '***Error: Bad HHEAT input. At least 1 arguments must be specified.'
+            stop
         endif
         
     ! FURN - no fire, heat walls according to a prescribed time temperature curve
@@ -1703,8 +1605,7 @@
         if (countargs(lcarray)>=5) then
             heatfr = lrarray(1)
             if(heatfr<1.or.heatfr>n-1) then
-                ierror = 66
-                return
+                stop
             endif
             heatfl = .true.
             heatfp(1) = lrarray(2)
@@ -1712,8 +1613,8 @@
             heatfp(3) = lrarray(4)
             heatfplume =  lrarray(5)
         else
-            ierror = 65
-            return
+            write (logerr,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
+            stop
         endif
         
     ! SLCF 2-D and 3-D slice files
@@ -1728,8 +1629,7 @@
                 sliceptr%vtype = 2
             else
                 write (logerr, 5403) nvisualinfo
-                ierror = 83
-                return
+                stop
             end if
             ! 2-D slice file
             if (sliceptr%vtype==1) then
@@ -1744,16 +1644,14 @@
                     end if
                     if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                         write (logerr, 5403) nvisualinfo
-                        ierror = 83
-                        return
+                        stop
                     end if
                     if (lcarray(2) =='X') then
                         sliceptr%axis = 1
                         if (sliceptr%roomnum>0) then
                             if (sliceptr%position>room_width(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
-                                ierror = 83
-                                return
+                                stop
                             end if
                         end if
                     else if (lcarray(2) =='Y') then
@@ -1761,8 +1659,7 @@
                         if (sliceptr%roomnum>0) then
                             if (sliceptr%position>room_depth(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
-                                ierror = 83
-                                return
+                                stop
                             end if
                         end if
                     else if (lcarray(2) =='Z') then
@@ -1770,19 +1667,16 @@
                         if (sliceptr%roomnum>0) then
                             if (sliceptr%position>room_height(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
-                                ierror = 83
-                                return
+                                stop
                             end if
                         end if
                     else
                         write (logerr, 5403) nvisualinfo
-                        ierror = 83
-                        return
+                        stop
                     end if
                 else
                     write (logerr, 5403) nvisualinfo
-                    ierror = 83
-                    return
+                    stop
                 end if
                 ! 3-D slice
             else if (sliceptr%vtype==2) then
@@ -1793,13 +1687,12 @@
                 end if
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                     write (logerr, 5403) nvisualinfo
-                    ierror = 83
-                    return
+                    stop
                 end if
             end if
         else
-            ierror = 83
-            return
+            write (logerr,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
+            stop
         end if
 
     ! ISOF isosurface of specified temperature in one or all compartments
@@ -1816,12 +1709,11 @@
             end if
             if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
                 write (logerr, 5404) nvisualinfo
-                ierror = 84
-                return
+                stop
             end if
         else
-            ierror = 84
-            return
+            write (logerr,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
+            stop
         end if
 
     ! Outdated keywords
@@ -1829,12 +1721,12 @@
         write (logerr,5407) label
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
         write (logerr,5405) label
-        ierror = 5
-        return
+        stop
     case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT','HRR','TIME','CHEMI','FIRE') ! these are already handled above
 
     case default
         write(logerr, 5051) label
+        stop
     end select
     end do
 
@@ -1889,7 +1781,7 @@
 
 ! --------------------------- inputembeddedfire -------------------------------------------
 
-    subroutine inputembeddedfire(objname, lrowcount, inumc, iobj, ierror)
+    subroutine inputembeddedfire(objname, lrowcount, inumc, iobj)
 
     !     routine: inputembeddedfire
     !     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
@@ -1900,7 +1792,6 @@
     !                inumr:   number of rows in the input file
     !                inumc:   number of columns in the input file
     !                iobj:    pointer to the fire object that will contain all the data we read in here
-    !                ierror:  error return index
 
     use precision_parameters
     use cfast_main
@@ -1911,11 +1802,10 @@
 
     integer, intent(in) :: inumc, iobj, lrowcount
     character(*), intent(in) :: objname
-    integer, intent(out) :: ierror
     
     character(128) :: lcarray(ncol)
     character(5) :: label
-    integer :: logerr = 3, midpoint = 1, base = 2, errorcode, ir, i, ii, nret, countargs
+    integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret, countargs
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, flamelength
 
     ! there are eight required inputs for each fire
@@ -1948,13 +1838,12 @@
                 ohcomb = lrarray(7)
                 if (ohcomb<=0.0_eb) then
                     write(logerr,5001) ohcomb
-                    ierror = 32
-                    return
+                    stop
                 endif
                 omatl(iobj) = lcarray(8)
             else
-                ierror = 4
-                return
+                write (logerr,*) '***Error: At least 7 arguments required on CHEMI input'
+                stop
             endif
         case ('TIME')
             nret = countargs(lcarray)
@@ -1993,8 +1882,7 @@
                 ! (from SFPE Handbook chapter)
                 if (lrarray(ii)==0.0_eb) then
                     write (logerr,5002)
-                    ierror = 32
-                    return
+                    stop
                 end if
                 oarea(ii,iobj) = max(lrarray(ii),pio4*0.2_eb**2)
                 max_area = max(max_area,oarea(ii,iobj))
@@ -2016,6 +1904,7 @@
             end do
         case default
             write(logerr, 5000) label
+            stop
         end select
 
     end do
@@ -2024,12 +1913,9 @@
     call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    call positionobject(objpos,1,iobj,objrm(iobj),room_width,midpoint,mx_hsep,errorcode)
-    if (errorcode/=0) return
-    call positionobject(objpos,2,iobj,objrm(iobj),room_depth,midpoint,mx_hsep,errorcode)
-    if (errorcode/=0) return
-    call positionobject(objpos,3,iobj,objrm(iobj),room_height,base,mx_hsep,errorcode)
-    if (errorcode/=0) return
+    call positionobject(objpos,1,iobj,objrm(iobj),room_width,midpoint,mx_hsep)
+    call positionobject(objpos,2,iobj,objrm(iobj),room_depth,midpoint,mx_hsep)
+    call positionobject(objpos,3,iobj,objrm(iobj),room_height,base,mx_hsep)
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -2040,8 +1926,7 @@
     hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
     if (hrrpm3>4.0e6_eb) then
         write (logerr,5106)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
-        errorcode = 221
-        return
+        stop
     else if (hrrpm3>2.0e6_eb) then
         write (logerr,5107)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
     endif
@@ -2051,47 +1936,13 @@
 5002 format ('***Error: Invalid fire area. All input values must be greater than zero')
 5106 format ('***Error: Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
-5000 format ('***Error: The key word ',a5,' is not part of a fire definition')
+5000 format ('***Error: The key word ',a5,' is not part of a fire definition. Fire keyword are likely out of order')
 
     end subroutine inputembeddedfire
 
-! --------------------------- initfireobject -------------------------------------------
-
-    subroutine initfireobject (iobj, ierror)
-
-    !     routine: initfireobject
-    !     purpose: This routine sets default values for new fire object targets created to monitor 
-    !              temperature and flux of the object prior to ignition
-    !     Arguments: iobj: fire object number
-    !                ierror: non zero on output if we exceed the maximum number of targets creating this target.
-
-    use cfast_main
-    use fltarget
-    use objects2
-    use cshell, only : logerr
-    implicit none
-    
-    integer, intent(in) :: iobj
-    integer, intent(out) :: ierror
-
-    ntarg = ntarg + 1
-    if (ntarg>mxtarg) then
-        write(logerr, *) '***Error: Too many targets created for fire objects'
-        ierror = 201
-        return
-    endif
-    obtarg(iobj) = ntarg
-    cxtarg(ntarg) = omatl(iobj)
-    
-
-    ! Initialize object target
-    call set_target_object (ntarg,iobj)
-    return
-    end subroutine initfireobject
-
 ! --------------------------- open_files -------------------------------------------
 
-    subroutine open_files (errorcode)
+    subroutine open_files ()
 
     !     routine: open_files
     !     purpose: get the paths and project base name open the input file for reading (1)
@@ -2103,16 +1954,12 @@
     use iofiles
     use debug
     implicit none
-
-    integer, intent(out) :: errorcode
     
     integer :: lp, ld, ios
     character(256) :: testpath, testproj 
 
     ! get the path and project names
-    errorcode = 0
-    call exehandle (exepath, datapath, project, errorcode)
-    if (errorcode>0) return
+    call exehandle (exepath, datapath, project)
 
     ! form the file names for datafiles: inputfile, outputfile, smvhead, smvdata, smvcsv, ssflow, ssnormal, ssspecies, sswall
     testpath = trim (datapath)
@@ -2164,16 +2011,20 @@
     ! since we have reached this point, the output files are available and stop has been turned off.
     ! open the log file and return the correct project name
     open (unit=3, file=errorlogging, action='write', iostat=ios, status='new')
+    if (ios/=0) then
+        write (*,100) 'Error opening log file, returned status = ', ios, '. Log file may be in use interfaces another application.'
+        stop
+    end if
 
     project = testproj (1:ld)
-    errorcode = ios
-
     return
+    
+100 format (a,i0,a)    
     end subroutine open_files
 
 ! --------------------------- positionobject -------------------------------------------
 
-    subroutine positionobject (xyz,index,opoint,rpoint,criterion,defaultposition,minimumseparation,errorcode)
+    subroutine positionobject (xyz,index,opoint,rpoint,criterion,defaultposition,minimumseparation)
 
     !     routine: positionobject
     !     purpose: Position an object in a compartment
@@ -2186,12 +2037,12 @@
     !		         minimumseparation: the closest the object can be to a wall
 
     use precision_parameters
+    use cshell, only: logerr
     implicit none
     
     integer, intent(in) :: index, defaultposition, opoint,rpoint
     real(eb), intent(in) :: minimumseparation, criterion(*)
     real(eb), intent(inout) :: xyz(3,0:*)
-    integer, intent(out) :: errorcode
     
     if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) then
         select case (defaultposition)
@@ -2200,8 +2051,8 @@
         case (2) 
             xyz(index,opoint) = minimumseparation
         case default
-            errorcode = 222
-            write (3,*) 'Fire objects positioned specified outside compartment bounds.'
+            write (logerr,*) 'Fire objects positioned specified outside compartment bounds.'
+            stop
         end select
     else if (xyz(index,opoint)==0.0_eb) then
         xyz(index,opoint) = minimumseparation
@@ -2221,7 +2072,6 @@
     !     purpose: takes information from objects and sets a target for each.
     !     arguments: itarg
     !                iobj
-    !                ierror  returns error codes
 
     use cfast_main
     use fltarget
@@ -2248,7 +2098,7 @@
 
 ! --------------------------- readcsvformat -------------------------------------------
 
-    subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, logerr, ierror)
+    subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, logerr)
 
     !     routine: readcsvformat
     !     purpose: reads a comma-delimited file as generated by Micorsoft Excel, assuming that all 
@@ -2262,14 +2112,13 @@
     !                maxrow   = actual number of rows read
     !                maxcol   = actual number of columns read
     !                logerr   = logical unit number for writing error messages (if any)
-    !                ierror   = returned error code on error exit; otherwise 0
 
     use precision_parameters
     implicit none
 
     integer, intent(in) :: iunit, numr, numc, nstart, logerr
 
-    integer, intent(out) :: maxrow, maxcol, ierror
+    integer, intent(out) :: maxrow, maxcol
     real(eb), intent(out) :: x(numr,numc)
     character, intent(out) :: c(numr,numc)*(*)
 
@@ -2278,7 +2127,6 @@
 
     maxrow = 0
     maxcol = 0
-    ierror = 0
     do i=1,numr
         do j=1,numc
             x(i,j) = 0.0_eb
@@ -2307,8 +2155,8 @@
 
     ! Cannot exceed work array
     if(maxrow>numr) then
-        ierror = 207
-        return
+        write (logerr,'(a,i0)') 'Too many rows or columns in input file, r,c=', maxrow
+        stop
     endif
 
     nc=0
@@ -2328,9 +2176,8 @@
             read (token,'(f128.0)',iostat=ios) x(nrcurrent,nc)
             if (ios/=0) x(nrcurrent,nc) = 0
         else
-            write (logerr,*) 'Array exceeded (readcsv), r,c=',nrcurrent,nc
-            ierror = 207
-            return
+            write (logerr,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
+            stop
         endif
         go to 30
     endif

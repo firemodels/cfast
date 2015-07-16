@@ -1412,7 +1412,7 @@
 
 ! --------------------------- update_fire_objects -------------------------------------------
 
-    subroutine update_fire_objects(iflag, told, dt, ifobj, tobj, ierror)
+    subroutine update_fire_objects(iflag, told, dt, ifobj, tobj)
 
     !     routine: update_fire_objects
     !     purpose: check for and set object fire ignition
@@ -1421,7 +1421,6 @@
     !                 dt      length of last time step
     !                 ifobj   object number that ignites (return)
     !                 tobj    time object ignites
-    !                 ierror  returns error codes
 
     use precision_parameters
     use cparams
@@ -1433,7 +1432,6 @@
     
     integer, intent(in) :: iflag
     integer, intent(out) :: ifobj
-    integer, intent(out) :: ierror
     real(eb), intent(in) :: told, dt
     real(eb), intent(out) :: tobj
     
@@ -1470,8 +1468,7 @@
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else
                 call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
-                ierror = 20
-                return
+                stop
             endif
         endif
     end do

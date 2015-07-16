@@ -476,7 +476,7 @@
 
 ! --------------------------- exehandle -------------------------------------------
 
-    subroutine exehandle (exepath, datapath, project, errorcode)
+    subroutine exehandle (exepath, datapath, project)
 
     !     routine: exehandle
     !     purpose: get the arguments used to call the main program
@@ -494,7 +494,6 @@
     implicit none
     
     character(*), intent(out) :: exepath, datapath, project
-    integer, intent(out) :: errorcode
     
     integer :: i, loop, status
     integer(2) :: n, ld(2), li(2), ln(2), le(2), lb
@@ -513,11 +512,9 @@
     datapath = ' '
 
     if (n<2) then
-        errorcode = 100
-        return
+        write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
+        stop
     endif
-
-    errorcode = 0
 
     ! get the calling program and arguments
 
@@ -545,9 +542,9 @@
             pathcount = 5 + ln(i) + li(i) +ld(i) + le(i)
 
             if (pathcount>255.or.ln(i)>64) then
-                write (*,*) 'Total file name length including path is more than 256 characters.'
-                errorcode = 103
-                return
+                write (*,'(a,/,a)') 'Total file name length including path must be less than 256 characters.', &
+                    'Individual filenames must be less than 64 characters.'
+                stop
             endif
         endif
     end do
@@ -558,9 +555,8 @@
         if (ext(2)(1:le(2))=='.in') then
             buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
         else
-            errorcode = 104
             write (*,*) ' Input file does not exist: ', trim(buf)
-            return
+            stop
         end if
     else
         buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
@@ -571,16 +567,14 @@
     ! buf(1:lb) is the data file to check
 
     if (DoesTheFileExist(buf(1:lb))) then
-
         !	The project file exists
         exepath = drive(1)(1:ld(1)) // dir(1)(1:li(1))
         datapath = drive(2)(1:ld(2)) // dir(2)(1:li(2))
         project = name(2)(1:ln(2))
         return
     else
-        ! Note that we do not yet have the logerr file open, so write to the console
-        errorcode = 102
         write (*,*) ' Input file does not exist: ', trim(buf)
+        stop
     endif
     return
 
@@ -812,8 +806,7 @@
     character(10) :: big_ben(3)
 
     ! current date
-    !call getdat(year,month,day)
-    call DATE_AND_TIME(big_ben(1),big_ben(2),big_ben(3),values)
+    call date_and_time(big_ben(1),big_ben(2),big_ben(3),values)
     year=values(1)
     month=values(2)
     day = values(3)
@@ -834,7 +827,10 @@
     if (cmdflag('N',iopt)/=0) netheatflux = .true.
     logerr = 3
 
-    if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) stop 107
+    if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
+        write (*,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'
+        stop
+    end if
     if (cmdflag('C',iopt)/=0) outputformat = 1
     if (cmdflag('F',iopt)/=0) outputformat = 2
 

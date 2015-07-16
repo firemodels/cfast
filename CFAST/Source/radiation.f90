@@ -1,7 +1,7 @@
 
 ! --------------------------- radiation -------------------------------------------
 
-    subroutine radiation(flwrad,flxrad,ierror)
+    subroutine radiation(flwrad,flxrad)
 
     !     routine: radiation
     !     purpose: Interface between calculate_residuals and RAD2 or RAD4.  Loops over
@@ -11,7 +11,6 @@
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: flwrad      net enthalphy into each layer
     !                flxrad      net enthalphy flux into surface
-    !                ierror      returns error codes
 
     use precision_parameters
     use cenviro
@@ -23,7 +22,6 @@
 
     real(eb), intent(out), dimension(nr,2) :: flwrad
     real(eb), intent(out), dimension(nr,nwal) :: flxrad
-    integer, intent(out) :: ierror
 
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, ieqtyp, iroom, iwall, ilay, imap, ifire, nrmfire
@@ -121,7 +119,7 @@
                 endif
                 call rad4(twall,tg,emis,zzabsb(1,i),i,room_width(i),room_depth(i),room_height(i),zzhlay(i,lower), &
                     xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                    qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
+                    qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
             else
                 if(.not.black)then
                     if(option(frad)==2.or.option(frad)==4.or.lfbt==1)then
@@ -134,9 +132,8 @@
                 endif
                 call rad2(twall,tg,emis,zzabsb(1,i),room_width(i),room_depth(i),room_height(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
                    xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black,ierror)
+                qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
             endif
-            if(ierror/=0) return
             do j = 1, nwal
                 flxrad(i,j) = qflxw(map(j))
             end do
@@ -179,7 +176,7 @@
 ! --------------------------- rad2 -------------------------------------------
 
     subroutine rad2(twall,tlay,emis,absorb,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,&
-       mxfire,taufl,taufu,firang,qout,black,ierror)
+       mxfire,taufl,taufu,firang,qout,black)
 
     !     routine: rad2
     !     purpose: This routine computes the radiative heat flux to 
@@ -206,15 +203,14 @@
     !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the 
     !                               upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
-    !                ierror (output): returns error codes
 
     use precision_parameters
+    use cshell, only: logerr
     implicit none
 
     integer, intent(in) :: nfire, mxfire
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay,qfire(*), xfire(*), yfire(*), zfire(*)
 
-    integer, intent(out) :: ierror
     real(eb), intent(out) :: qlay(2), qflux(4), qout(4)
 
     integer :: ipvt(2), ifire, i, j, k, info
@@ -346,9 +342,8 @@
     call dgefa(a,2,2,ipvt,info)
     call dgesl(a,2,2,ipvt,rhs,0)
     if(info/=0)then
-        call xerror('RAD2 - singular matrix',0,1,1)
-        ierror = 17
-        return
+        write (logerr,*) '***Error RAD2 - singular matrix'
+        stop
     endif
 
     ! note: each row k of the a matrix as defined by seigal and howell was divided by emis2(k) (in order to insure 
@@ -386,7 +381,7 @@
 ! --------------------------- rad4 -------------------------------------------
 
     subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,&
-       qflux,qlay,mxfire,taufl,taufu,firang,qout,black,ierror)
+       qflux,qlay,mxfire,taufl,taufu,firang,qout,black)
 
     !     routine: rad4
     !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to 
@@ -411,9 +406,9 @@
     !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the 
     !                               upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
-    !                ierror - returns error codes
 
     use precision_parameters
+    use cshell, only: logerr
     implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
@@ -422,7 +417,6 @@
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
     real(eb), intent(out) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
     
-    integer, intent(out) :: ierror
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
 
     real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
@@ -555,8 +549,7 @@
 
     call dgefa(a,4,4,ipvt,info)
     if(info/=0)then
-        call xerror('RAD4 - singular matrix',0,1,1)
-        ierror = 18
+        write (logerr,*) '***Error: RAD4 - singular matrix'
         do k = 1, 4
             rhs(k) = 0.0_eb
         end do

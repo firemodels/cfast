@@ -47,6 +47,7 @@
     if(command_argument_count().eq.0)then
         call output_version(0)
         write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
+        stop
     endif
 
     !     initialize the basic memory configuration
@@ -54,13 +55,7 @@
     call initialize_memory
     call initialize_fire_objects
     call read_command_options     
-    call open_files (errorcode)
-
-    !     initial output
-    if (errorcode>0) then
-        write (*, 5001) errorcode
-        stop 
-    endif
+    call open_files
 
     mpsdat(1) = rundat(1)
     mpsdat(2) = rundat(2)
@@ -90,25 +85,23 @@
         lflw(1,maxct) = 0.0120_eb
         lepw(maxct) = 0.90_eb
 
-        call initialize_walls (tstop,errorcode)
-        if (errorcode<=0) then
+        call initialize_walls (tstop)
 
-            stime = 0.0_eb
-            itmstp = 1
-            xdelt = nsmax/deltat
-            itmmax = xdelt + 1
-            tstop = itmmax - 1
+        stime = 0.0_eb
+        itmstp = 1
+        xdelt = nsmax/deltat
+        itmmax = xdelt + 1
+        tstop = itmmax - 1
 
-            call output_initial_conditions
+        call output_initial_conditions
 
-            call cptime(tbeg)
-            call solve_simulation (tstop,errorcode)
-            call cptime(tend)
+        call cptime(tbeg)
+        call solve_simulation (tstop)
+        call cptime(tend)
 
-            write (logerr,5003) tend - tbeg
-            errorcode = 0
+        write (logerr,5003) tend - tbeg
+        errorcode = 0
 
-        endif
     endif
 
     !     errors
@@ -242,12 +235,11 @@
 
 ! --------------------------- solve_simulation -------------------------------------------
 
-    subroutine solve_simulation (tstop, ierror)
+    subroutine solve_simulation (tstop)
 
     !     Routine: solve_simulaiton
     !     Purpose: main solution loop for the model
-    !     Arguments: TSTOP   The final time to which CFAST should run to
-    !                IERROR  Returns error codes
+    !     Arguments: TSTOP   The final time to which CFAST should run
 
     !     Offset in the following context is the beginning of the vector for
     !     that particular variable minus one.  Thus, the actual pressure array
@@ -303,7 +295,6 @@
     use target_routines
     implicit none
     
-    integer, intent(out) :: ierror
     real(eb), intent(in) :: tstop
 
     integer, parameter :: maxord = 5
@@ -317,7 +308,7 @@
     real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, ismv, ltarg, exists, ispread,firstpassforsmokeview
-    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom, errorcode
+    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
         ostptime, tdtect, tobj
     character(133) :: messg
@@ -327,7 +318,6 @@
     integer :: stopunit, stopiter, ios
 
     call cptime(toff)
-    ierror = 0
     tpaws = tstop + 1.0_eb
     tstart = itmstp - 1
     told = tstart
@@ -488,7 +478,7 @@
     ! Ignore errors from deleting the file. It may not exist
     inquire (file=queryfile, exist = exists)
     if (exists) then
-        call output_status (T, dT, errorcode)
+        call output_status (T, dT)
         call deleteoutputfiles(queryfile)
     endif
     
@@ -537,7 +527,7 @@
 
             itmstp = tprint
             call output_results (t,1)
-            call output_status (t, dt, errorcode)
+            call output_status (t, dt)
             call output_jacobian(t)
             tprint = tprint + dprint
             numjac = 0
@@ -568,7 +558,7 @@
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call output_smokeview_spreadsheet(t)
             tsmv = tsmv + dplot
-            call output_status (t, dt, errorcode)
+            call output_status (t, dt)
             
             call output_slicedata(t,first_time)
             call output_isodata(t,first_time)
@@ -585,9 +575,8 @@
             call output_spreadsheet_species (t)
             call output_spreadsheet_flow (t)
             call output_spreadsheet_flux (t)
-            if (ierror/=0) return
             tspread =tspread + dspread
-            call output_status (t, dt, errorcode)
+            call output_status (t, dt)
         endif
 
         ! diagnostics
@@ -596,7 +585,7 @@
             call output_results (t,1)
             call output_debug (1,t,dt,ieqmax)
             tpaws = tstop + 1.0_eb
-            call output_status (t, dt, errorcode)
+            call output_status (t, dt)
         endif
 
         ! find the interval next discontinuity is in
@@ -643,11 +632,10 @@
 
         if (idid<0) then
             call find_error_component (ieqmax)
-            write (messg,101)idid
-101         format('error, dassl - idid=', i3)
-            call xerror(messg,0,1,1)
-            ierror = idid
-            return
+            write (logerr,101) idid
+101         format('***Error, dassl - idid = ', i0)
+            call cfastexit ('CFAST', idid)
+            stop
         endif
 
         dt = t - told
@@ -656,10 +644,10 @@
                 izdtnum = izdtnum + 1
                 if(izdtnum>izdtmax)then
                     ! model has hung (izdtmax consective time step sizes were below zzdtcrit)
-                    write(messg,103) izdtmax, zzdtcrit, t
-103                 format (i3,' consecutive time steps with size below',e11.4,' at t=',e11.4)
-                    call xerror(messg,0,1,2)
-                    izdtnum = 0
+                    write(logerr,103) izdtmax, zzdtcrit, t
+103                 format (i3,'***Error: Consecutive time steps with size below ',e11.4,' at t = ',e11.4)
+                    call cfastexit ('CFAST',1)
+                    stop
                 endif
             else
                 ! this time step is above the critical size so reset counter
@@ -675,7 +663,7 @@
         idsave = 0
         call detector_temp_and_velocity
         call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
-        call update_fire_objects (check_detector_state,told,dt,ifobj,tobj,ierror)
+        call update_fire_objects (check_detector_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)
 
         ! a detector is the first one that went off
@@ -698,7 +686,7 @@
 
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
-            call update_fire_objects (set_detector_state,told,dt,ifobj,tobj,ierror)
+            call update_fire_objects (set_detector_state,told,dt,ifobj,tobj)
             write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb) ! this prevents printing out a negative activation time
             write(logerr,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb)
 5003        format(/,' Object #',i3,' (',a,') ignited at ', f10.3,' seconds')
@@ -714,7 +702,7 @@
                 ifobj = 0
             endif
         else
-            call update_fire_objects (update_detector_state,told,dt,ifobj,tobj,ierror)
+            call update_fire_objects (update_detector_state,told,dt,ifobj,tobj)
         endif
 
         if (idsave/=0)then
@@ -736,13 +724,10 @@
                 ! make sure dassl is happy (again)
                 if (idid<0) then
                     call find_error_component (ipar(3))
-                    write (messg,101)idid
-                    call xerror(messg,0,1,-2)
-                    write(messg,'(a13,f10.5,1x,a8,f10.5)')'Backing from ',t,'to time ',tdout
-                    call xerror(messg,0,1,1)
-                    call xerror('Error in DASSL while backing up', 0,1,1)
-                    ierror = idid
-                    return
+                    write (logerr,101) idid
+                    write(messg,'(a13,f10.5,1x,a8,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    call cfastexit ('CFAST', idid)
+                    stop
                 endif
 
                 ! reset dassl flags to integrate forward from t=td and
@@ -762,12 +747,9 @@
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
                 ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                write(messg,'(a7,f10.5,a13,f10.5,a22,f10.5)') 'Time = ' ,t,' Last time = ',told,' need to back step to ',td
-                call xerror(messg,0,1,1)
-                call xerror('Back step to large',0,1,1)
-                call xerror(' ',0,1,1)
-                ierror = idid
-                return
+                write(logerr,'(a7,f10.5,a13,f10.5,a22,f10.5)') '***Error: Back step too loarge in DASSL, Time = ' ,t,' Last time = ',told,' need to back step to ',td
+                call cfastexit ('CFAST', idid)
+                stop
             endif
             do  i = 1, mxfires
                 objset(i) = 0
@@ -788,7 +770,7 @@
         if (stopiter>=0.and.total_steps>stopiter) then
            call deleteoutputfiles (stopfile)
            write (logerr, 5000) t, dt
-           return
+           call cfastexit ('CFAST', 0)
         endif
         go to 80
     endif
@@ -1044,7 +1026,7 @@
     real(eb), intent(in) :: tsec, x(*), xpsolve(*), rpar(*) 
     integer, intent(in) :: ipar(*)
 
-    integer, intent(out) :: ires
+    integer, intent(inout) :: ires
     real(eb), intent(out) :: delta(*)
     
     integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
@@ -1074,11 +1056,11 @@
     integer :: update
 
     logical :: vflowflg, hvacflg, djetflg
-    integer :: nprod, nirm, i, iroom, iprod, ip, ierror, j, iwall, nprodsv, iprodu, iprodl
+    integer :: nprod, nirm, i, iroom, iprod, ip, j, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
-    ierror = 0
+    ires = ires ! just to get rid of a warning message
     nprod = nlspct
     dt = tsec - told
     numresd = numresd + 1
@@ -1118,12 +1100,7 @@
     call horizontal_flow (tsec,epsp,nprod,flwnvnt)
     call vertical_flow (tsec,flwhvnt,vflowflg)
     call mechanical_flow (tsec,x(nofpmv+1),x(noftmv+1),xpsolve(noftmv+1),flwmv,delta(nofpmv+1),&
-                delta(noftmv+1),xprime(nofhvpr+1),nprod,ierror,hvacflg,filtered)
-
-    if (ierror/=0) then
-        ires = -2
-        return
-    endif
+                delta(noftmv+1),xprime(nofhvpr+1),nprod,hvacflg,filtered)
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
@@ -1132,11 +1109,7 @@
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
     call convection (flwcv,flxcv)
-    call radiation (flwrad,flxrad,ierror)
-    if (ierror/=0) then
-        ires = -2
-        return
-    endif
+    call radiation (flwrad,flxrad)
 
     ! reset parallel data structures
     do i = 1, nm1

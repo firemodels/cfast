@@ -1,0 +1,30 @@
+VERSN,7,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,5000,50,10,1
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,0
+ADIAB
+!!
+!!Compartment keywords
+!!
+COMPA,Comp 1,4,4,4,0,0,0,OFF,OFF,OFF,50,50,50
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!New Fire
+FIRE,1,2,2,0,1,TIME,0,0,0,0,New Fire
+CHEMI,1,4,0,0,0,0.5,5E+07
+TIME,0,5000
+HRR,10000,10000
+SOOT,0,0
+CO,0,0
+TRACE,0,0
+AREA,0.09,0.09
+HEIGH,0,0
+!!
+!!Target and detector keywords
+!!
+DETECT,2,1,313.15,2,2,3.96,100,1,7E-05

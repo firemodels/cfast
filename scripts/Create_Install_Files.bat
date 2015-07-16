@@ -25,20 +25,33 @@ echo.
 call :COPY  %bindir%\C1.C1Report.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.C1Zip.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.4.dll %DISTDIR%\
+call :COPY  %bindir%\C1.Win.BarCode.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1Document.4.dll %DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1DX.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1FlexGrid.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1Report.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1ReportDesigner.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1Sizer.4.dll %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1Ssrs.4.dll %DISTDIR%\
+call :COPY  %bindir%\C1.Win.ImportServices.4.dll %DISTDIR%\
 call :COPY  %bindir%\NPlot.dll %DISTDIR%\
-
 
 echo.
 echo ***Copying CFAST support files
 echo.
 
 call :COPY  %bindir%\AllFires.in %DISTDIR%\
+call :COPY  %bindir%\thermal.csv %DISTDIR%
+call :COPY  %bindir%\3_panel_workstation.o %DISTDIR%\
+call :COPY  %bindir%\bunkbed.o %DISTDIR%\
+call :COPY  %bindir%\burner.o %DISTDIR%\
+call :COPY  %bindir%\curtains.o %DISTDIR%\
+call :COPY  %bindir%\kiosk.o %DISTDIR%\
+call :COPY  %bindir%\mattress_and_boxspring.o %DISTDIR%\
+call :COPY  %bindir%\sofa.o %DISTDIR%\
+call :COPY  %bindir%\tv_set.o %DISTDIR%\
+call :COPY  %bindir%\upholstered_chair.o %DISTDIR%\
+call :COPY  %bindir%\wardrobe.o %DISTDIR%\
+call :COPY  %bindir%\wood_wall.o %DISTDIR%\
 
 echo.
 echo ***Copying CFAST example files

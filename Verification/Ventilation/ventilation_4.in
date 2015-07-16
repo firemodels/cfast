@@ -1,0 +1,34 @@
+VERSN,7,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,5000,50,10,50
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,0
+ADIAB
+!!
+!!Compartment keywords
+!!
+COMPA,Comp 1,5,5,5,0,0,0,OFF,OFF,OFF,50,50,50
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,1.5,4,0,1,2,1
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!simple
+FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,simple
+CHEMI,1,4,0,0,0,0.33,5E+07
+TIME,0,30,330,360
+HRR,0,200000,200000,200000
+SOOT,0,0,0,0
+CO,0,0,0,0
+TRACE,0,0,0,0
+AREA,0.071,0.071,0.071,0.071
+HEIGH,0,0,0,0
+!!
+!!visualizations
+!!
+SLCF,2-D,X,0

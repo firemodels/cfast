@@ -37,7 +37,6 @@
     use opt, only: total_steps
     implicit none
 
-    integer errorcode
     real(eb) :: xdelt, tstop, tbeg, tend
 
     version = 7000        ! Current CFAST version number

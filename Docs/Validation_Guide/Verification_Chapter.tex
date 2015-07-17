@@ -252,20 +252,21 @@ The same setup that was constructed in Section~\ref{sec:vent2} is used again in 
 \end{figure}
 
 \subsection{Determining the Velocity Profile of Air Flowing Through a Doorway}
-A 200~kW natural gas (methane) fire burns in a 5~m by 5~m by 5~m compartment, where the walls are assumed to be adiabatic. The heat release rate ramps up linearly to 200~kW in 30~s, then remains steady for 5.5~min. The compartment contains a 4~m by 1.5~m door that remains completely open throughout the simulation. In order to calculate the mass flow rate of air through the door, the following equation is applied to the lower layer, the neutral plane and the upper layer: 
-\begin{equation} 
+
+A 200~kW natural gas (methane) fire burns in a 5~m by 5~m by 5~m compartment, where the walls are assumed to be adiabatic. The heat release rate ramps up linearly to 200~kW in 30~s, then remains steady for 5.5~min. The compartment contains a 4~m by 1.5~m door that remains completely open throughout the simulation. The mass flow though each vertical segment of the doorway is given by:
+\begin{equation}
 \dot{m} = \int_b^t C \sqrt{2\rho\Delta{P(z)}} \, w\;\mathrm{d}z
 \label{eq:mdot}
 \end{equation}
 where $C$ is the orifice coefficient taken to be 0.7, $\rho$ is the gas density of the upwind compartment, $w$ is the width of the doorway and $\Delta{P(z)}$ is the pressure across the interface at elevation $z$. Finally, $z = b$ and $z = t$ refer to the heights of the bottom and top of the vertical segment in the doorway through which the mass flow rate is being calculated. This equation can be analytically integrated to yield:
 \begin{equation}
-\dot{m} = sign \brackets{\frac{\Delta P_t + \Delta P_b}{2}} \, \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
+\dot{m} = {\rm sign} \brackets{\frac{\Delta P_t + \Delta P_b}{2}} \, \frac{2}{3} \, C \sqrt{2\rho} \, w \, (t-b)\frac{|\Delta P_t|^{3/2}-|\Delta P_b|^{3/2}}{|\Delta P_t|-|\Delta P_b|}
 \end{equation}
 The equation for the velocity profile of air traveling through the doorway can be produced after rearranging equation~\ref{eq:mdot}:
 \begin{equation}
-v = \frac{\dot{m}}{A\rho} = sign(\Delta{P(z)}) \, C \sqrt{\frac{2|\Delta{P(z)}|}{\rho}}
+v(z) = \frac{\dot{m}}{\delta A \, \rho} = {\rm sign}(\Delta{P(z)}) \, C \sqrt{\frac{2|\Delta{P(z)}|}{\rho}}
 \end{equation}
-where $A$ represents the area of the door and $\rho$ corresponds to the density of air at height $z$. Figure~\ref{fig:vel} shows how the velocity of air flowing through the doorway changes from the floor to the top of the doorway.  
+where $\delta A$ represents the infinitesimal area of the door segment and $\rho$ corresponds to the density of air at height $z$. Figure~\ref{fig:vel} shows how the velocity of air flowing through the doorway changes from the floor to the top of the doorway.
 
 \begin{figure}[!ht]
 \centering
@@ -279,9 +280,9 @@ where $A$ represents the area of the door and $\rho$ corresponds to the density 
 
 \subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
 
-A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40$^\circ$~C and a spray density of 0.07~mm/s . The sprinkler link temperature can be calculated by integrating the following equation:
+A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40~$^\circ$C and a spray density of 0.07~mm/s. The sprinkler link temperature can be calculated by integrating the following equation:
 \begin{equation}
-\frac{d \TL}{dt} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}
+\frac{{\rm d} \TL}{{\rm d} t} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}
 \end{equation}
 where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. After the sprinkler link temperature reaches the activation temperature, $t > t_{\rm act}$, the sprinkler will begin to suppress the fire by diminishing its heat release rate at the exponential rate described by:
 \begin{equation}

@@ -747,7 +747,8 @@
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
                 ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                write(logerr,'(a7,f10.5,a13,f10.5,a22,f10.5)') '***Error: Back step too loarge in DASSL, Time = ' ,t,' Last time = ',told,' need to back step to ',td
+                write(logerr,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too loarge in DASSL, Time = ', &
+                    t,' Last time = ',told,' need to back step to ',td
                 call cfastexit ('CFAST', idid)
                 stop
             endif

@@ -204,7 +204,7 @@ contains
     
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau,&
-       awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
+       awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), fheight, &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
@@ -234,7 +234,14 @@ contains
         do ifire = istart, istart + nfirerm - 1
             svect(1) = xxtarg(trgcenx,itarg) - xfire(ifire,f_fire_xpos)
             svect(2) = xxtarg(trgceny,itarg) - xfire(ifire,f_fire_ypos)
-            svect(3) = xxtarg(trgcenz,itarg) - xfire(ifire,f_fire_zpos)
+            svect(3) = xxtarg(trgcenz,itarg) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
+            ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
+            !call flame_height (xfire(ifire,f_qfr),xfire(ifire,f_obj_area),fheight)
+            !if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
+            !    svect(3) = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/2.0_eb
+            !else
+            !    svect(3) = xfire(ifire,f_fire_zpos) + fheight/2.0_eb
+            !end if
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),objclen(ifire))
             if(s/=0.0_eb)then
@@ -265,7 +272,7 @@ contains
                 qft = 0.0_eb
             endif
 
-            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution  
+            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
             ! if the target is interior to the room
             if(cosang>=0.0_eb)then
                 qtfflux(itarg,1) = qtfflux(itarg,1) + qft

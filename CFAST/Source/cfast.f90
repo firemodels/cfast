@@ -42,8 +42,6 @@
 
     version = 7000        ! Current CFAST version number
 
-    errorcode = 0
-
     if(command_argument_count().eq.0)then
         call output_version(0)
         write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
@@ -64,9 +62,8 @@
     call output_version (logerr)
 
     call read_solver_ini
-    call read_input_file (errorcode)
+    call read_input_file
     
-    if (errorcode<=0) then
 
         call initialize_species
 
@@ -100,14 +97,11 @@
         call cptime(tend)
 
         write (logerr,5003) tend - tbeg
-        errorcode = 0
-
-    endif
 
     !     errors
 
     write (logerr,5004) total_steps
-    call cfastexit ('CFAST', errorcode)
+    call cfastexit ('CFAST', 0)
 
 5001 format ('***Error: Error encountered in opening data files; code = ',i4)
 5003 format ('Total execution time = ',1pg10.3,' seconds')

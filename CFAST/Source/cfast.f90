@@ -63,40 +63,40 @@
 
     call read_solver_ini
     call read_input_file
-    
 
-        call initialize_species
 
-        xdelt = nsmax/deltat
-        itmmax = xdelt + 1
-        tstop = itmmax - 1
+    call initialize_species
 
-        ! add the default thermal property
-        maxct = maxct + 1
+    xdelt = nsmax/deltat
+    itmmax = xdelt + 1
+    tstop = itmmax - 1
 
-        nlist(maxct) = 'DEFAULT'
-        lnslb(maxct) = 1
-        lfkw(1,maxct) = 0.120_eb
-        lcw(1,maxct) = 900.0_eb
-        lrw(1,maxct) = 800.0_eb
-        lflw(1,maxct) = 0.0120_eb
-        lepw(maxct) = 0.90_eb
+    ! add the default thermal property
+    maxct = maxct + 1
 
-        call initialize_walls (tstop)
+    nlist(maxct) = 'DEFAULT'
+    lnslb(maxct) = 1
+    lfkw(1,maxct) = 0.120_eb
+    lcw(1,maxct) = 900.0_eb
+    lrw(1,maxct) = 800.0_eb
+    lflw(1,maxct) = 0.0120_eb
+    lepw(maxct) = 0.90_eb
 
-        stime = 0.0_eb
-        itmstp = 1
-        xdelt = nsmax/deltat
-        itmmax = xdelt + 1
-        tstop = itmmax - 1
+    call initialize_walls (tstop)
 
-        call output_initial_conditions
+    stime = 0.0_eb
+    itmstp = 1
+    xdelt = nsmax/deltat
+    itmmax = xdelt + 1
+    tstop = itmmax - 1
 
-        call cptime(tbeg)
-        call solve_simulation (tstop)
-        call cptime(tend)
+    call output_initial_conditions
 
-        write (logerr,5003) tend - tbeg
+    call cptime(tbeg)
+    call solve_simulation (tstop)
+    call cptime(tend)
+
+    write (logerr,5003) tend - tbeg
 
     !     errors
 

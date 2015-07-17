@@ -30,7 +30,6 @@ call :COPY  %bindir%\C1.Win.C1Document.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1DX.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1FlexGrid.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1Report.4.dll %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1ReportDesigner.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.C1Sizer.4.dll %DISTDIR%\
 call :COPY  %bindir%\C1.Win.ImportServices.4.dll %DISTDIR%\
 call :COPY  %bindir%\NPlot.dll %DISTDIR%\

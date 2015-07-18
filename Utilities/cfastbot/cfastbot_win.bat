@@ -6,8 +6,8 @@ set emailto=%2
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set fdsbasename=FDS-SMVclean
-set cfastbasename=cfastclean
+set fdsbasename=FDS-SMVgitclean
+set cfastbasename=cfastgitclean
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -189,26 +189,28 @@ if %nothavematlab% == 1 (
 )
 :skip_matlab
 
-:: --------------------setup repositories ------------------------------
+:: --------------------setting up repositories ------------------------------
 
 ::*** revert cfast repository
 
-if "%cfastbasename%" == "cfastclean" (
+if "%cfastbasename%" == "cfastgitclean" (
    echo             reverting %cfastbasename% repository
    cd %cfastroot%
-   call :svn_revert 1> Nul 2>&1
+   git clean -dxf 1> Nul 2>&1
+   git add . 1> Nul 2>&1
+   git reset --hard HEAD 1> Nul 2>&1
 )
 
 ::*** update cfast repository
 
 echo             updating %cfastbasename% repository
 cd %cfastroot%
-svn update  1> %OUTDIR%\stage0.txt 2>&1
+git pull  1> %OUTDIR%\stage0.txt 2>&1
 
-svn info | grep Revision > %revisionfilestring%
+git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
 set /p revisionstring=<%revisionfilestring%
 
-svn info | grep Revision | cut -d " " -f 2 > %revisionfilenum%
+git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilenum%
 set /p revisionnum=<%revisionfilenum%
 
 set errorlogpc=%HISTORYDIR%\errors_%revisionnum%.txt
@@ -218,17 +220,19 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
-if "%FDSbasename%" == "FDS-SMVclean" (
+if "%FDSbasename%" == "FDS-SMVgitclean" (
    echo             reverting %FDSbasename% repository
    cd %FDSroot%
-   call :svn_revert 1> Nul 2>&1
+   git clean -dxf 1> Nul 2>&1
+   git add . 1> Nul 2>&1
+   git reset --hard HEAD 1> Nul 2>&1
 )
 
 ::*** update FDS repository
 
 echo             updating %FDSbasename% repository
 cd %FDSroot%
-svn update  1> %OUTDIR%\stage0.txt 2>&1
+git pull  1> %OUTDIR%\stage0.txt 2>&1
 
 :: -------------------------------------------------------------
 ::                           stage 1 - build cfast
@@ -312,22 +316,22 @@ echo             debug
 
 cd %cfastroot%\Validation\scripts
 
-call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
+call Run_CFAST_cases_git 1 1> %OUTDIR%\stage3a.txt 2>&1
 
 call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
 call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
 
-if "%cfastbasename%" == "cfastclean" (
+if "%cfastbasename%" == "cfastgitclean" (
    echo             removing debug output files
    cd %cfastroot%\Validation
-   call :svn_revert 1> Nul 2>&1
+   git clean -dxf 1> Nul 2>&1
 )
 
 echo             release
 
 cd %cfastroot%\Validation\scripts
 
-call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
+call Run_CFAST_cases_git 1> %OUTDIR%\stage3b.txt 2>&1
 
 call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3b-Validation"
 call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3b-Verification"
@@ -385,11 +389,12 @@ if %usematlab% == 0 goto matlab_else1
 
 ::*** generating Verification plots
 
-if %usematlab% == 1 goto matlab_end2
   echo             Verification
+if %usematlab% == 1 goto matlab_end2
   echo               SpeciesMassTestCases
   cd %cfastroot%\Utilities\Matlab\scripts
   SpeciesMassTestCases
+  call :WAIT_RUN SpeciesMassTestCases
 :matlab_end2
 
 echo               Making plots
@@ -637,29 +642,6 @@ if %nwarnings% GTR 0 (
   set havewarnings=1
 )
 exit /b
-
-:: -------------------------------------------------------------
-:svn_revert
-:: -------------------------------------------------------------
-svn cleanup .
-svn revert -R .
-For /f "tokens=1,2" %%A in ('svn status --no-ignore') Do (
-     If [%%A]==[?] ( Call :UniDelete %%B
-     ) Else If [%%A]==[I] Call :UniDelete %%B
-   )
-exit /b
-
-:: -------------------------------------------------------------
-:UniDelete delete file/dir
-:: -------------------------------------------------------------
-if "%1"=="%~nx0" exit /b
-IF EXIST "%1\*" ( 
-    RD /S /Q "%1"
-) Else (
-    If EXIST "%1" DEL /S /F /Q "%1"
-)
-exit /b
-
 
 :: -------------------------------------------------------------
  :build_guide

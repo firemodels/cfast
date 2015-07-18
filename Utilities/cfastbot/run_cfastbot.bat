@@ -1,19 +1,25 @@
 @echo off
-set emailto=%1
+:: usage: 
+::  run_cfastbot -email email_address -repo repo_name -nomatlab
+
+set repobase=cfastgitclean
+set emailto=
 set usematlab=1
 
-set gitrepo=%userprofile%\cfastgitclean
+call getopts %*
+
+set gitrepo=%userprofile%\%repobase%
 set curdir=%CD%
 set running=%curdir%\bot.running
 
 cd %gitrepo%
 git pull
-copy Utilities\cfastbot\cfastbot_win_git.bat %curdir%
+copy Utilities\cfastbot\cfastbot_win.bat %curdir%
 cd %curdir%
 
 if not exist %running% (
   echo 1 > %running%
-  call cfastbot_win_git.bat %usematlab% %emailto%
+  call cfastbot_win.bat %usematlab% %emailto%
   erase %running%
   cd %curdir%
 ) else (

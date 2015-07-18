@@ -1,7 +1,11 @@
 @echo off
-:: for now only support -r, -e and -m
 
+set stopscript=0
 :GETOPTS
+ if /I "%1" EQU "-h" (
+   call :usage
+   set stopscript=1
+ )
  if /I "%1" EQU "-repo" (
    set repobase=%2
    shift
@@ -15,4 +19,12 @@
  )
  shift
 if not (%1)==() goto GETOPTS
+exit /b
+
+:usage  run_cfastbot [options]
+echo 
+echo -h              - display this message
+echo -repo repo_name - specify the git repo name (defaul t: cfastgitclean) 
+echo -email address  - specify the email address to send cfastbot results 
+echo -nomatlab       - do not use matlab
 

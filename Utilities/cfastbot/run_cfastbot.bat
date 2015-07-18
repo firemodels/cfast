@@ -5,8 +5,12 @@
 set repobase=cfastgitclean
 set emailto=
 set usematlab=1
+set stopscript=0
 
 call getopts %*
+if %stopscript% == 1 (
+  exit /b
+)
 
 set gitrepo=%userprofile%\%repobase%
 set curdir=%CD%

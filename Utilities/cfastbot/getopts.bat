@@ -7,11 +7,16 @@ set cfastrepo=cfastgitclean
 set fdsrepo=FDS-SMVgitclean
 set stopscript=0
 
+set /a nargs=0
+for %%a in (%*) do set /a nargs+=1
+
+if %nargs% == 0 (
+  call :usage
+  set stopscript=1
+  exit /b
+)
+
 :GETOPTS
- if /I "%1" EQU "-h" (
-   call :usage
-   set stopscript=1
- )
  if /I "%1" EQU "-cfastrepo" (
    set cfastrepo=%2
    shift
@@ -27,15 +32,18 @@ set stopscript=0
  if /I "%1" EQU "-nomatlab" (
    set usematlab=0
  )
+ if /I "%1" EQU "-runbot" (
+   set stopscript=0
+ )
  shift
 if not (%1)==() goto GETOPTS
 exit /b
 
 :usage  run_cfastbot [options]
 echo 
-echo -h              - display this message
 echo -cfastrepo name - specify the cfast repo name (default: cfastgitclean) 
 echo -fdsrepo name   - specify the FDS repo name (default: FDS-SMVgitclean) 
 echo -email address  - override "to" email addresses specified in repo 
 echo -nomatlab       - do not use matlab
+echo -runbot         - run cfastbot
 

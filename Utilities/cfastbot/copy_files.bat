@@ -1,6 +1,6 @@
 @echo off
 set CURDIR=%CD%
-set repo=cfastgitclean
+set repo=%1
 
 cd %userprofile%\%repo%
 git pull

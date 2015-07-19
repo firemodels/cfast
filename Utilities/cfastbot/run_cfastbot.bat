@@ -8,7 +8,7 @@ if %stopscript% == 1 (
   exit /b
 )
 
-set gitrepo=%userprofile%\%repobase%
+set gitrepo=%userprofile%\%cfastrepo%
 set curdir=%CD%
 set running=%curdir%\bot.running
 

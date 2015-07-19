@@ -26,7 +26,7 @@ if not exist %running% (
   cd %curdir%
   echo 1 > %running%
   echo cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
-  ::call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
   erase %running%
   cd %curdir%
 ) else (

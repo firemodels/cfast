@@ -22,7 +22,7 @@ set bg=%BACKGROUNDEXE% -u 85 -d 0.1
 set CFASTEXE=%SVNROOT%\CFAST\intel_win_64%DEBUG%\cfast7_win_64%DEBUG%
 set CFAST=%bg% %CFASTEXE%
 
-set RUNCFAST_R=call %SCRIPT_DIR%\runcfast_git.bat
+set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat
 set RUNCFAST_M=call %SCRIPT_DIR%\make_stop.bat
 set RUNCFAST_E=call %SCRIPT_DIR%\erase_stop.bat
 

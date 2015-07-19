@@ -1,11 +1,7 @@
 @echo off
 :: usage: 
-::  run_cfastbot -email email_address -repo repo_name -nomatlab
-
-set repobase=cfastgitclean
-set emailto=
-set usematlab=1
-set stopscript=0
+::  run_cfastbot -cfastrepo name -fdsrepo name echo -email address -nomatlab
+::  (all command arguements are optional)
 
 call getopts %*
 if %stopscript% == 1 (
@@ -23,7 +19,7 @@ cd %curdir%
 
 if not exist %running% (
   echo 1 > %running%
-  call cfastbot_win.bat %usematlab% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
   erase %running%
   cd %curdir%
 ) else (

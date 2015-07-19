@@ -1,13 +1,15 @@
 @echo off
-set usematlab=%1
-set emailto=%2
+set cfastrepo=%1
+set fdsrepo=%2
+set usematlab=%3
+set emailto=%4
 
 :: -------------------------------------------------------------
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set fdsbasename=FDS-SMVgitclean
-set cfastbasename=cfastgitclean
+set fdsbasename=%fdsrepo%
+set cfastbasename=%cfastrepo%
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -55,7 +57,17 @@ set /p starttime=<%OUTDIR%\starttime.txt
 
 call "%cfastroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
 call "%cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat" 1> Nul 2>&1
+echo cfast repo=%cfastrepo%
+echo FDS repo=%fdsrepo%
+set usematlab=%3
+if %usematlab% == 1 (
+  echo using matlab scripts
+)
+if %usematlab% == 0 (
+  echo using prebuilt matlab executables
+)
 if NOT "%emailto%" == "" (
+  echo email results to %emailto%
   set mailToCFAST=%emailto%
 )
 

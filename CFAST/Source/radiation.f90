@@ -763,7 +763,7 @@
     rdparfig = 2.0_eb*(f1+f2+f3-f4-f5)/(pi*xx*yy)
     return
     end function rdparfig
-
+    
 ! --------------------------- rdprpfig -------------------------------------------
 
     real(eb) function rdprpfig(x,y,z)

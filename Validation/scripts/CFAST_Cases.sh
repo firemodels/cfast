@@ -343,4 +343,6 @@ $RUNCFAST -d ../Verification/Ventilation ventilation_4.in
 $RUNCFAST -d ../Verification/Sprinkler sprinkler_1.in
 
 
+$RUNCFAST -d ../Verification/Radiation radiation_1
+
 

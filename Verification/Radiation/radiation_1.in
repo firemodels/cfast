@@ -1,0 +1,37 @@
+VERSN,7,CFAST Simulation
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,10000,50,10,10
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
+!!
+!!Material Properties
+!!
+MATL,STEELSHT,48,559,7854,0.0015,0.9,"Steel, Plain Carbon (1/16 in)"
+!!
+!!Compartment keywords
+!!
+COMPA,Comp 1,15,15,15,0,0,0,OFF,OFF,OFF,50,50,50
+!!
+!!Vent keywords
+!!
+VVENT,2,1,20,2,1
+!!
+!!Fire keywords
+!!
+GLOBA,10,393.15
+!!New Fire
+FIRE,1,7.5,7.5,0,1,TIME,0,0,0,0,New Fire
+CHEMI,1,4,0,0,0,0.35,5E+07
+TIME,0,5000
+HRR,10000,10000
+SOOT,0,0
+CO,0,0
+TRACE,0,0
+AREA,0.09,0.09
+HEIGH,0,0
+!!
+!!Target and detector keywords
+!!
+TARGET,1,9.5,7.5,0,-1,0,0,STEELSHT,IMPLICIT,ODE,0.5,Targ 1

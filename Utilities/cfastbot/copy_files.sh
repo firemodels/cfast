@@ -1,5 +1,16 @@
 #!/bin/bash
 CURDIR=`pwd`
 repo=$1
+repodir=~/$repo
 
-cp ~/$repo/Utilities/cfastbot/*.sh .
+if [ -e $repodir ] ; then
+  cd $repodir
+  echo updating $repodir
+  git fetch origin >& /dev/null	
+  git pull >& /dev/null
+  cd $CURDIR
+  echo copying files
+  cp $repodir/Utilities/cfastbot/*.sh .
+else
+  echo ***Error: The directory $repodir does not exist.  Copy aborted.
+fi

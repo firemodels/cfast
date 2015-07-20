@@ -5,7 +5,7 @@ set gitrepo=FDS-SMVgitclean
 set gitrepodir=%userprofile%\%gitrepo%
 set botdir=%userprofile%\cfastbotgit
 
-:: create a clean FDS repository
+:: setup FDS repo
 
 if NOT exist %gitrepodir% (
   cd %userprofile%
@@ -13,14 +13,7 @@ if NOT exist %gitrepodir% (
   git clone git@github.com:firemodels/fds-smv.git %gitrepo%
 )
 
-if NOT exist %botdir% (
-  echo %botdir% does not exist - creating
-  mkdir %botdir%
-  cd %botdir%
-  copy %gitrepodir%\Utilities\Firebot\*.bat
-)
-
-:: create a clean cfast repository
+:: setup cfast repo
 
 set gitrepo=cfastgitclean
 set gitrepodir=%userprofile%\%gitrepo%
@@ -28,6 +21,15 @@ if NOT exist %gitrepodir% (
   cd %userprofile%
   echo %gitrepo% does not exist - creating
   git clone git@github.com:firemodels/cfast.git %gitrepo%
+)
+
+:: setup directory where cfastbot runs
+
+if NOT exist %botdir% (
+  echo %botdir% does not exist - creating
+  mkdir %botdir%
+  cd %botdir%
+  copy %gitrepodir%\Utilities\Firebot\*.bat
 )
 
 

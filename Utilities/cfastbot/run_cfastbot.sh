@@ -7,6 +7,6 @@ fi
 touch $running
 cd ~/cfastbot
 svn update
-./cfastbot_linux_git.sh "$@"
+./cfastbot_linux.sh "$@"
 rm $running
 

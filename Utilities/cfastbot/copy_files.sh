@@ -5,6 +5,7 @@ repodir=~/$repo
 
 if [ -e $repodir ] ; then
   cd $repodir
+  echo updating $repodir
   git fetch origin >& /dev/null	
   git pull >& /dev/null
   cd $CURDIR

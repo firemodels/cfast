@@ -5,8 +5,9 @@ repodir=~/$repo
 
 if [ -e $repodir ] ; then
   cd $repodir
-  git fetch origin
-  git pull
+  git fetch origin >& /dev/null	
+  git pull >& /dev/null
+  echo copying files
   cp $repodir/Utilities/cfastbot/*.sh .
 else
   echo ***Error: The directory $repodir does not exist.  Copy aborted.

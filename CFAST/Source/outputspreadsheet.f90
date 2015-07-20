@@ -41,7 +41,7 @@
             call ssaddtolist (position,zzhlay(i,lower),outarray)
         endif
         call ssaddtolist (position,zzvol(i,upper),outarray)
-        call ssaddtolist (position,zzrelp(i) - interior_rel_pressure(i),outarray)
+        call ssaddtolist (position,zzrelp(i) ,outarray)
     end do
 
     ! Fires

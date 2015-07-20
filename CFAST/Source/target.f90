@@ -204,7 +204,7 @@ contains
     
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau,&
-       awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), fheight, &
+       awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
         ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     

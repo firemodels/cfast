@@ -1031,17 +1031,7 @@
 5070 format (10(1PG10.2),2x,2g10.2)
     end subroutine outfire
 
-! --------------------------- chksum -------------------------------------------
-
-    character(8) function chksum()
-    
-    implicit none
-    
-    chksum = '00000000'
-    return
-    end function chksum
-
-! --------------------------- chksum -------------------------------------------
+! --------------------------- outtarg -------------------------------------------
 
     subroutine outtarg (isw)
 
@@ -1195,62 +1185,6 @@
     return
 
     end subroutine getabstarget
-
-! --------------------------- setdbug -------------------------------------------
-
-    subroutine setdbug
-
-    use cfin
-    use cparams
-    use cshell
-    use opt
-    
-    implicit none
-
-    integer funit, iroom, ilayer, i, iounit
-    character dbugfil*8
-
-    character keyword*7, dbugky(mxdebug)*7, dummy*1, ly*2
-    data dbugky/'MASSFLW','HVACFLW','HORZFLW','VERTFLW','MVNTFLW','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX',&
-       'XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','XXXXXXX','ERRVCTR','PRNTJAC','PRNDPDT','XXXXXXX'/
-
-    close (iofili)
-    open (unit=iofili,file=lbuf)
-    read(iofili,*,end=100) dummy
-10  continue
-    read(iofili,*,end=100,err=10) keyword, iroom, ilayer
-    do i = 1, 15
-        if (keyword==dbugky(i)) then
-            if (ilayer>0.and.ilayer<=2.and.iroom>0.and.iroom<nr) then
-                iounit = funit(70)
-                if (ilayer==upper) then
-                    ly = 'up'
-                else
-                    ly = 'LW'
-                endif
-                if (i/=2) then
-                    write(dbugfil,'(a4,a2,i2.2)')dbugky(i),ly,iroom
-                else
-                    write(dbugfil,'(a4,i2.2,i2.2)')dbugky(i),ilayer,iroom
-                endif
-                call opnotpt(dbugfil,iounit)
-                dbugsw(i,ilayer,iroom) = iounit
-            endif
-        endif
-    end do
-    if (keyword==dbugky(d_jac)) then
-        call opndbg(iroom,ilayer)
-    else if (keyword==dbugky(16)) then
-        iounit = funit(70)
-        call opnotpt('ERRVECTR',iounit)
-        dbugsw(16,1,1) = iounit
-    else
-    endif
-    go to 10
-100 continue
-    close (iofili)
-    return
-    end subroutine setdbug
 
 ! --------------------------- outjac -------------------------------------------
 
@@ -1409,40 +1343,6 @@
 1001 format(1x,1pe9.2,4(1x,i4,1x,i6),1x,1pe9.2,1x,1pe9.2,1x,1pe9.2,1x,1pe9.2)
     return
     end subroutine output_jacobian
-
-! --------------------------- opndbg -------------------------------------------
-
-    subroutine opndbg (jaccnt, jacprn)
-
-    !     Description: opens a file on unit iounit
-
-    use opt
-    
-    implicit none
-
-    integer, intent(in) :: jaccnt, jacprn
-    
-    integer funit, iounit
-    logical :: firstc = .true.
-    character :: cntfil*6 = 'JACCNT', prnfil*6 = 'JACPRN'
-
-    save firstc
-
-    if (firstc) then
-        firstc = .false.
-        if (jaccnt>0) then
-            iounit = funit(70)
-            call opnotpt(cntfil,iounit)
-            dbugsw(d_jac,d_cnt,1) = iounit
-        endif
-        if (jacprn>0) then
-            iounit = funit(70)
-            call opnotpt(prnfil,iounit)
-            dbugsw(d_jac,d_prn,1) = iounit
-        endif
-    endif
-    return
-    end  subroutine opndbg
 
 ! --------------------------- find_error_component -------------------------------------------
 

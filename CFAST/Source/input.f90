@@ -2064,38 +2064,6 @@
 
     end subroutine positionobject
 
-! --------------------------- set_target_object -------------------------------------------
-
-    subroutine set_target_object (itarg,iobj)
-
-    !     routine: setobjtrg
-    !     purpose: takes information from objects and sets a target for each.
-    !     arguments: itarg
-    !                iobj
-
-    use cfast_main
-    use fltarget
-    use objects1, only: objnin
-    use objects2
-    implicit none
-    
-    integer, intent(in) :: itarg, iobj
-
-    integer :: i
-
-    targetnames(itarg) = objnin(iobj)
-    ixtarg(trgroom,itarg) = objrm(iobj)
-    do i = 0,2
-        xxtarg(trgcenx+i,itarg) = objpos(1+i,iobj)
-        xxtarg(trgnormx+i,itarg) = objort(1+i,iobj)
-    end do
-    xxtarg(trginterior,ntarg) = 0.5
-    ixtarg(trgwall,itarg) = 0
-    ixtarg(trgmeth,itarg) = mplicit
-    ixtarg(trgeq,itarg) = ode
-    return
-    end subroutine set_target_object
-
 ! --------------------------- readcsvformat -------------------------------------------
 
     subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, logerr)

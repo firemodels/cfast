@@ -330,8 +330,8 @@ cd %cfastroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
+call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
+call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
 
 if "%cfastbasename%" == "cfastgitclean" (
    echo             removing debug output files
@@ -345,8 +345,8 @@ cd %cfastroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3b-Validation"
-call :find_runcases_warnings "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3b-Verification"
+call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3b-Validation"
+call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3b-Verification"
 
 call :GET_DURATION RUNVV %RUNVV_beg%
 
@@ -616,7 +616,7 @@ if %nwarnings% GTR 0 (
 exit /b
 
 :: -------------------------------------------------------------
-  :find_runcases_warnings
+  :find_runcases_errors
 :: -------------------------------------------------------------
 
 set search_string=%1
@@ -624,14 +624,14 @@ set search_dir=%2
 set stage=%3
 
 cd %search_dir%
-grep -RIiE %search_string% --include *.log --include *.out --include *.err * > %OUTDIR%\stage_warning.txt
-type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
-set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
-if %nwarnings% GTR 0 (
-  echo %stage% warnings >> %warninglog%
-  echo. >> %warninglog%
-  type %OUTDIR%\stage_warning.txt >> %warninglog%
-  set havewarnings=1
+grep -RIiE %search_string% --include *.log --include *.out --include *.err * > %OUTDIR%\stage_error.txt
+type %OUTDIR%\stage_error.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nerror.txt
+set /p nerrors=<%OUTDIR%\stage_nerror.txt
+if %nerrors% GTR 0 (
+  echo %stage% errors >> %errorlog%
+  echo. >> %errorlog%
+  type %OUTDIR%\stage_error.txt >> %errorlog%
+  set haveerrors=1
 )
 exit /b
 

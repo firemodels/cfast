@@ -38,6 +38,11 @@ cd Sprinkler
 ..\scripts\background -u 98 ..\..\bin\cfast sprinkler_1 /V
 cd ..
 
+echo Running Radiation cases
+cd Radiation
+..\scripts\background -u 98 ..\..\bin\cfast radiation_1 /V
+cd ..
+
 echo Waiting for all CFAST runs to finish
 :loop1
 tasklist | find /i /c "CFAST" > temp.out

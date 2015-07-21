@@ -27,11 +27,10 @@
         t = (i-1)*dt
         temp_cable = wtemp(50)
         call get_flux(t,temp_cable,temp_amb,temp_shroud,wfluxin)
-        call CYLCNDUCT(wtemp,nx,wfluxin,dt,wk,wrho,wspec,diam)
+        call cylindrical_conductive_flux(wtemp,nx,wfluxin,dt,wk,wrho,wspec,diam)
         if(mod(i,100).eq.1)then
-          call GETCYLTEMP(X,WTEMP,50,rad,TEMPX)
-          write(12,10)t,tempx-273.0D0,temp_shroud-273.0D0,
-     .                (wtemp(j)-273,j=50,40,-1)
+          call get_cylinder_temperature(X,WTEMP,50,rad,TEMPX)
+          write(12,10)t,tempx-273.0D0,temp_shroud-273.0D0,(wtemp(j)-273,j=50,40,-1)
    10     format(14(e11.4,","))          
         endif
       end do

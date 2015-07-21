@@ -12,7 +12,7 @@ MATL,STEELSHT,48,559,7854,0.0015,0.9,"Steel, Plain Carbon (1/16 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Comp 1,15,15,15,0,0,0,OFF,OFF,OFF,50,50,50
+COMPA,Comp 1,99,99,99,0,0,0,OFF,OFF,OFF,50,50,50
 !!
 !!Vent keywords
 !!

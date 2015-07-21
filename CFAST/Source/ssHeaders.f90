@@ -467,15 +467,15 @@
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+6*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxhvsys
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(23), LabelUnits(23)
+    integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxhvsys
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(25), LabelUnits(25)
     integer position, i, j
 
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'ULOD_', 'LLOD_', &
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
         'HVENT_','HSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_', &
         'VVENT_','VSLAB_','VSLABT_','VSLABF_','VSLABYB_','VSLABYT_'  /
-    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', '1/m', '1/m', &
+    data LabelUnits / 's', 'C', 'C', 'm', 'Pa', 'kg/m^3', 'kg/m^3', '1/m', '1/m', &
         'kW', 'm', 'm', 'm^2', &
         'm^2', ' ', 'C', 'kg/s', 'm', 'm', &
         'm^2', ' ', 'C', 'kg/s', 'm', 'm' /
@@ -488,7 +488,7 @@
 
     ! Compartment variables
     do j = 1, nm1
-        do i = 1, 6
+        do i = 1, 8
             if (i==1.or.i==4.or.i==5.or.izshaft(j)==0) then
                 position = position + 1
                 call toIntString(j,cRoom)

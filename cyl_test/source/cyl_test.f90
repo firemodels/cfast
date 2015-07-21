@@ -26,7 +26,7 @@
       do i = 1, 18001
         t = (i-1)*dt
         temp_cable = wtemp(50)
-        call get_flux(t,temp_cable,temp_amb,temp_shroud,wfluxin)
+        call get_flux(t,temp_cable,temp_shroud,wfluxin)
         call cylindrical_conductive_flux(wtemp,nx,wfluxin,dt,wk,wrho,wspec,diam)
         if(mod(i,100).eq.1)then
           call get_cylinder_temperature(X,WTEMP,50,rad,TEMPX)

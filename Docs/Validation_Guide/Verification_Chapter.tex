@@ -323,3 +323,16 @@ In order to determine what the temperature of the target's surface will be at an
  \frac{{\rm d} T}{{\rm d} t} = \frac{\dqr'' - \dqc'' - \epsilon \sigma (T^4 - T_{\rm g}^4) }{\delta \, \rho \, C_{\rm p}}
 \end{equation}
 where $\delta$ is the thickness of the target, $\rho$ is the density of the target and $C_{\rm p}$ is the specific heat capacity of the target.
+
+
+\subsection{Measuring the Temperature Change of a Cylindrical Target}
+
+A steel rod with a 2.5~cm diameter is located in the center of a 5~m by 5~m by 5~m sealed compartment. The target is heated in the compartment at a temperature of 500~$^\circ$C for the duration of this experiment. In cylindrical coordinates, the heat conduction equation normal to the solid surface is:
+\begin{equation}
+\frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
+\end{equation}
+where $k$, $\rho$ and $c$ are the thermal conductivity, density and specific heat capacity of the target. At the surface, $x = 0$, the boundary condition is:
+\begin{equation}
+\dqr'' = \epsilon \sigma \brackets { T_f^4 - T^4 } = k \frac{\partial T}{\partial r}
+\end{equation}
+where $\dqr''$ is the net radiative heat flux to the target, $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzmann constant, $T_f$ is the temperature of the compartment and $T$ is the temperature of the target's surface.

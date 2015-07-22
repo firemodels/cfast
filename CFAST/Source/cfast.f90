@@ -1366,7 +1366,7 @@
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, xdelt, tstop, zzu, zzl, &
-        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o, ptemp
+        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o, ptemp, epscut
         
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -1751,16 +1751,17 @@
                 roomptr%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
-            ! Test code to fix a bug
-
-            if (abs(zzrelp(iroom)).ge.0.2) then
-                ptemp = zzpabs(iroom)
-            elseif (abs(zzrelp(iroom)).le.0.1) then
-                ptemp = pofset
+            ! Eliminate very small noise in the pressure equation. This was added to correct
+            ! phantom flows with very small pressure differences. This is the same algorithm
+            ! used in hrozontal and vertical flow
+            epscut = 1.0e-5_eb*max(1.0_eb,abs(zzrelp(iroom)))
+            ! test for underflow
+            if (abs(zzrelp(iroom)/epscut)<=130.0_eb) then
+                ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pofset
             else
-                ptemp = abs(zzrelp(iroom))-0.1
-                ptemp = sign(-30*ptemp**3 + 23*ptemp**2,zzrelp(iroom)) + pofset
+                ptemp = zzpabs(iroom)
             endif
+
             do layer = upper, lower
                 zzrho(iroom,layer) = ptemp/rgas/zztemp(iroom,layer)
                 zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)

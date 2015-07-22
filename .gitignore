@@ -3,6 +3,7 @@
 ._*
 
 # visual studio files
+*.suo
 *.u2d
 *.vfproj
 *.vfproj*
@@ -23,6 +24,7 @@ pthread*.dll
 *.pdb
 *.exp
 *.lib
+*_genmod.f90
 
 # executables
 cfast7_intel_*

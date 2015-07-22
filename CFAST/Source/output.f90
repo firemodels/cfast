@@ -542,9 +542,9 @@
         do itarg = 1, ntarg
             if (ixtarg(trgroom,itarg)==i) then
                 tg = tgtarg(itarg)
-                tttemp = xxtarg(idxtempf_trg,itarg)
-                itctemp = (idxtempf_trg+idx_tempb_trg)/2
-                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
+                tttemp = xxtarg(idx_tempf_trg,itarg)
+                itctemp = (idx_tempf_trg+idx_tempb_trg)/2
+                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idx_tempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idx_tempf_trg)
                 tctemp = xxtarg(itctemp,itarg)
                 if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
                 if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
@@ -1543,7 +1543,7 @@
         if(ntarg>0)then
             write(*,6090)
             do itarg = 1, ntarg
-                write(*,6095)itarg,xxtarg(idxtempf_trg,itarg)
+                write(*,6095)itarg,xxtarg(idx_tempf_trg,itarg)
             end do
         endif
     endif

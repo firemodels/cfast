@@ -1461,7 +1461,7 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call check_object_ignition(told,dt,xxtarg(idxtempf_trg,iobtarg),objcri(3,iobj),obcond(igntemp,iobj),&
+                call check_object_ignition(told,dt,xxtarg(idx_tempf_trg,iobtarg),objcri(3,iobj),obcond(igntemp,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
                 call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(ignflux,iobj),&
@@ -1478,7 +1478,7 @@
             if (.not.objon(iobj)) then
                 iobtarg = obtarg(iobj)
                 if (ignflg>1) then 
-                    obcond(igntemp,iobj) = xxtarg(idxtempf_trg,iobtarg)
+                    obcond(igntemp,iobj) = xxtarg(idx_tempf_trg,iobtarg)
                     obcond(ignflux,iobj) = xxtarg(trgtfluxf,iobtarg)
                 end if
                 if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then

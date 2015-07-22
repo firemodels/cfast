@@ -1798,7 +1798,7 @@
         do itarg = 1, ntarg
             if(ixtarg(trgmeth,itarg)==mplicit) then
                 ieq = iztarg(itarg)
-                xxtarg(idxtempf_trg,itarg) = p(ieq+noftt)
+                xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
             endif
         end do
 

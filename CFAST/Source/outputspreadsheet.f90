@@ -272,11 +272,11 @@
         tgtemp = tgtarg(itarg)
         if (ixtarg(trgeq,itarg)==cylpde) then
             tttemp = xxtarg(idx_tempb_trg,itarg)
-            itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
+            itctemp = idx_tempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idx_tempf_trg)
             tctemp = xxtarg(itctemp,itarg)
         else
-            tttemp = xxtarg(idxtempf_trg,itarg)
-            itctemp = (idxtempf_trg+idx_tempb_trg)/2
+            tttemp = xxtarg(idx_tempf_trg,itarg)
+            itctemp = (idx_tempf_trg+idx_tempb_trg)/2
             tctemp = xxtarg(itctemp,itarg)
         endif
         if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp

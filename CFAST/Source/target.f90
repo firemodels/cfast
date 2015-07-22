@@ -87,7 +87,7 @@ contains
             ! compute the pde residual 
             if(iieq==pde.or.iieq==cylpde)then
                 if(iimeth==mplicit)then
-                    tempin = xxtarg(idxtempf_trg,itarg)
+                    tempin = xxtarg(idx_tempf_trg,itarg)
                     iwbound = 3
                 else
                     iwbound = 4
@@ -100,7 +100,7 @@ contains
                         walldx(i) = xl*tmp(i)
                     end do
 
-                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idxtempf_trg,itarg),walldx,nmnode,nslab,&
+                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idx_tempf_trg,itarg),walldx,nmnode,nslab,&
                        wfluxin,wfluxout,iwbound,tgrad,tderv)
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
@@ -110,7 +110,7 @@ contains
                 !  wfluxout is incorrect
                 !    wfluxavg = (wfluxin+wfluxout)/2.0_eb
                     wfluxavg = wfluxin
-                    call cylindrical_conductive_flux (xxtarg(idxtempf_trg,itarg),nmnode(1),wfluxavg,&
+                    call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
 
@@ -122,9 +122,9 @@ contains
                     delta(noftt+ieq) = ddtemp - xpsolve(noftt+ieq) 
                 elseif(iimeth==xplicit)then
                     if(update/=0)then
-                        ttold = xxtarg(idxtempf_trg,itarg)
+                        ttold = xxtarg(idx_tempf_trg,itarg)
                         ttnew = ttold + dt*ddtemp
-                        xxtarg(idxtempf_trg,itarg) = ttnew
+                        xxtarg(idx_tempf_trg,itarg) = ttnew
                     endif
                 endif
 
@@ -162,7 +162,7 @@ contains
             else
                 niter = 1
             endif
-            ttarg(1) = xxtarg(idxtempf_trg,itarg)
+            ttarg(1) = xxtarg(idx_tempf_trg,itarg)
             ttarg(2) = xxtarg(idx_tempb_trg,itarg)
             do iter = 1, niter
                 call targflux(iter,itarg,ttarg,flux,dflux)
@@ -173,7 +173,7 @@ contains
                 endif
             end do
             if(methtarg==steady)then
-                xxtarg(idxtempf_trg,itarg) = ttarg(1)
+                xxtarg(idx_tempf_trg,itarg) = ttarg(1)
                 xxtarg(idx_tempb_trg,itarg) = ttarg(2)
             endif
             xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)

@@ -37,7 +37,8 @@ module cfast_types
     end type fire_type
     
     type target_type
-        real(eb), dimension(2):: flux_net, flux_gauge, flux_fire, flux_gas, flux_surface, flux_target, flux_target_gauge
+        real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_convection, flux_target
+        real(eb), dimension(2) :: flux_net_gauge, flux_convection_gauge, flux_target_gauge
     end type target_type
     
     

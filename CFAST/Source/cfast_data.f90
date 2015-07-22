@@ -233,7 +233,6 @@ module fltarget
 
     real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
     real(eb), dimension(mxtarg) :: tgtarg
-    real(eb), dimension(mxtarg,5)  :: gtflux
     integer, dimension(3) :: neqtarg
     
     type (target_type), dimension(mxtarg), target :: targetinfo

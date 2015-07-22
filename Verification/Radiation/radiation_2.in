@@ -5,11 +5,13 @@ VERSN,7,CFAST Simulation
 TIMES,10000,50,10,10
 EAMB,293.15,101325,0
 TAMB,293.15,101325,0,50
+ADIAB
 FURN,2,0,500,10000,500
 !!
 !!Material Properties
 !!
 MATL,STEELROD,54,465,7833,0.025,0.9,"Steel Rod, 2.5 cm diameter"
+MATL,STEELTHCK,54,465,7833,0.025,0.9,"Steel, Plain Carbon (1 in)"
 !!
 !!Compartment keywords
 !!
@@ -18,4 +20,5 @@ GLOBA,10,393.15
 !!
 !!Target and detector keywords
 !!
-TARGET,1,2.5,2.5,0,0,0,1,STEELROD,EXPLICIT,CYL,0.5,Targ 1
+TARGET,1,2.5,2.5,0,1,0,0,STEELROD,EXPLICIT,CYL,0.5,Targ 1
+TARGET,1,1.5,2.5,0,1,0,0,STEELTHCK,EXPLICIT,PDE,0.5,Targ 2

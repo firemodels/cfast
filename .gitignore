@@ -2,6 +2,19 @@
 .DS_Store
 ._*
 
+# visual studio files
+*.u2d
+*.vfproj
+*.vfproj*
+*.vbproj
+C1*.dll
+C1*.xml
+CEdit.application
+CEdit.exe.manifest
+CEdit.vshost.exe.manifest
+CEdit.xml
+pthread*.dll
+
 # compiler output files
 *.exe
 *.o

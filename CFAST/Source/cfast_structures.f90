@@ -23,7 +23,6 @@ module cfast_types
     end type ramp_type
     
     ! fire data structure
-
     type fire_type
         
         ! These are the fire definitions from the input
@@ -37,8 +36,12 @@ module cfast_types
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
     end type fire_type
     
+    type target_type
+        real(eb), dimension(2):: flux_net, flux_gauge, flux_fire, flux_gas, flux_surface, flux_target, flux_target_gauge
+    end type target_type
+    
+    
     ! vent data structure
-
     type vent_type
         ! These define a wall vent
         real(eb) :: sill, soffit, width
@@ -58,7 +61,6 @@ module cfast_types
     end type vent_type
     
     ! slice file data structure
-
     type slice_type
        character(256) :: filename
        character(64) :: menu_label, colorbar_label, unit_label

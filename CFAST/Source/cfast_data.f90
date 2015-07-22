@@ -187,7 +187,8 @@ end module dervs
 
 module fltarget
     use precision_parameters
-    use cparams
+    use cparams, only: mxthrmplen, mxtarg
+    use  cfast_types, only: target_type
     implicit none
     save
     
@@ -234,6 +235,9 @@ module fltarget
     real(eb), dimension(mxtarg) :: tgtarg
     real(eb), dimension(mxtarg,5)  :: gtflux
     integer, dimension(3) :: neqtarg
+    
+    type (target_type), dimension(mxtarg), target :: targetinfo
+    
 end module fltarget
 
 ! --------------------------- iofiles -------------------------------------------

@@ -1373,7 +1373,8 @@
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
-        qfurnout=sigma*(kelvin_c_offset+wtemp)**4
+        wtemp = wtemp + kelvin_c_offset
+        qfurnout=sigma*wtemp**4
     endif
 
     xwall_center = 2.0_eb
@@ -1701,8 +1702,13 @@
 
             zzrelp(iroom) = pdif(iroom)
             zzpabs(iroom) = pdif(iroom) + pofset
-            zztemp(iroom,upper) = pdif(iroom+noftu)
-            zztemp(iroom,lower) = pdif(iroom+noftl)
+            if(nfurn>0)then
+              zztemp(iroom,upper) = wtemp
+              zztemp(iroom,lower) = wtemp
+            else
+              zztemp(iroom,upper) = pdif(iroom+noftu)
+              zztemp(iroom,lower) = pdif(iroom+noftl)
+            endif
 
             ! there is a problem with how flow is being withdrawn from layers
             ! when the layers are small and the flow is large (for example with
@@ -1808,13 +1814,21 @@
                     ifromw = izwall(ieqfrom,w_from_wall)
                     itor = izwall(ieqfrom,w_to_room)
                     itow = izwall(ieqfrom,w_to_wall)
-                    zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                    if(nfurn.gt.0)then
+                       zzwtemp(iroom,iwall,1) = wtemp
+                    else
+                       zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                    endif
                     iwalleq2 = izwmap2(itow,itor)
                     iinode = numnode(1,iwall,iroom)
-                    if(iwalleq2==0)then
-                        zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
+                    if(nfurn.gt.0)then
+                       zzwtemp(iroom,iwall,2) = wtemp
                     else
-                        zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
+                       if(iwalleq2==0)then
+                           zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
+                       else
+                           zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
+                       endif
                     endif
                 else
 
@@ -1827,7 +1841,11 @@
                     else
                         ilay = lower
                     endif
-                    zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
+                    if(nfurn.gt.0)then
+                      zzwtemp(iroom,iwall,1) = wtemp
+                    else
+                      zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
+                    endif
                 endif
             end do
         end do

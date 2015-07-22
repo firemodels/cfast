@@ -107,7 +107,9 @@ contains
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
-                    wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                !  wfluxout is incorrect
+                !    wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                    wfluxavg = wfluxin
                     call cylindrical_conductive_flux (xxtarg(idxtempf_trg,itarg),nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl)          
                 endif

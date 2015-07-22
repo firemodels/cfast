@@ -30,7 +30,7 @@
     ! work and dummy arrays passed to rad2 and rad4
     
     real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), flxrad0(nr,nwal), flwrad0(nr,2)
-    real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire), fheight
+    real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
     logical roomflg(nr)
     save flxrad0, flwrad0
 

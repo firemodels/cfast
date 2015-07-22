@@ -41,6 +41,7 @@ cd ..
 echo Running Radiation cases
 cd Radiation
 ..\scripts\background -u 98 ..\..\bin\cfast radiation_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast radiation_2 /V
 cd ..
 
 echo Waiting for all CFAST runs to finish

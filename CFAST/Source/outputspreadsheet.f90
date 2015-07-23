@@ -104,9 +104,9 @@
     integer i
     
     if (validate) then
-        write (iounit,"(1024(e19.12,','))" ) (array(i),i=1,ic)
+        write (iounit,"(16384(e19.12,','))" ) (array(i),i=1,ic)
     else
-        write (iounit,"(1024(e13.6,','))" ) (array(i),i=1,ic)
+        write (iounit,"(16384(e13.6,','))" ) (array(i),i=1,ic)
     end if
     return
     
@@ -122,7 +122,7 @@
     
     integer i
   
-    write (iounit,"(1024(e20.13,','))" ) (array(i),i=1,ic)
+    write (iounit,"(16384(e20.13,','))" ) (array(i),i=1,ic)
     return
     
     end subroutine ssprintresid
@@ -239,9 +239,12 @@
     integer, parameter :: maxoutput=4*nr+9*mxtarg
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact, rtotal, ftotal, wtotal, gtotal
-    real(eb) :: ctotal, tttemp, tctemp, tlay, tgtemp,total,cjetmin
-    integer :: iwptr(4), position,i,iw,itarg,itctemp,iroom
+    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
+    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
+    integer :: iwptr(4), position, i, iw, itarg, itctemp, iroom
+    
+    type(target_type), pointer :: targptr
+    
     external length
     data iwptr /1, 3, 4, 2/
     logical :: firstc
@@ -269,6 +272,7 @@
 
     ! now do targets if defined
     do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
         tgtemp = tgtarg(itarg)
         if (ixtarg(trgeq,itarg)==cylpde) then
             tttemp = xxtarg(idx_tempb_trg,itarg)
@@ -281,30 +285,22 @@
         endif
         if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
         if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
-        if (validate.or.netheatflux) then
-            total = gtflux(itarg,t_total) /1000.0_eb
-            ftotal = gtflux(itarg,t_ftotal) /1000.0_eb
-            wtotal = gtflux(itarg,t_wtotal) /1000.0_eb
-            gtotal = gtflux(itarg,t_gtotal) /1000.0_eb
-            ctotal = gtflux(itarg,t_ctotal) /1000.0_eb
-            rtotal = total - ctotal
-        else
-            total = xxtarg(trgtfluxf,itarg)
-            ftotal = qtfflux(itarg,1)
-            wtotal = qtwflux(itarg,1)
-            gtotal = qtgflux(itarg,1)
-            ctotal = qtcflux(itarg,1)
-            rtotal = total - ctotal
-        endif
+            
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
-        call SSaddtolist (position, total, outarray)
-        call SSaddtolist (position, ctotal, outarray)
-        call SSaddtolist (position, rtotal, outarray)
-        call SSaddtolist (position, ftotal, outarray)
-        call SSaddtolist (position, wtotal, outarray)
-        call SSaddtolist (position, gtotal, outarray)
+        call SSaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
+        !call SSaddtolist (position,  xxxx / 1000._eb, outarray)
     end do
 
     ! detectors (including sprinklers)

@@ -5,9 +5,8 @@
 # visual studio files
 *.suo
 *.u2d
-*.vfproj
 *.vfproj*
-*.vbproj
+*.vbproj*
 C1*.dll
 C1*.xml
 CEdit.application

@@ -31,9 +31,9 @@ Public Class UpdateGUI
         FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
         If System.IO.File.Exists(FileName) Then MainWin.MenuViewLog.Enabled = True
 
-        MainWin.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
-        MainWin.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
-        MainWin.MenuShowCFAST.Checked = CommandWindowVisible
+        MainWin.OutputTotalMass.Checked = TotalMassCFASTOutput
+        MainWin.OutputShowCFAST.Checked = CommandWindowVisible
+        MainWin.OutputValidation.Checked = ValidationOutput
     End Sub
     Public Sub General()
         If myEnvironment.InputFileName = Nothing Then
@@ -43,6 +43,18 @@ Public Class UpdateGUI
         End If
         If myEnvironment.FileChanged Then MainWin.Text = MainWin.Text + " *"
         If DoErrorCheck Then UpdateErrorCheck()
+
+        Dim OutputOptions As String
+        If ValidationOutput Or TotalMassCFASTOutput Or DebugOutput Or CommandWindowVisible Then
+            OutputOptions = "Output: "
+            If ValidationOutput Then OutputOptions = OutputOptions + "Validation   "
+            If TotalMassCFASTOutput Then OutputOptions = OutputOptions + "Total Mass   "
+            If DebugOutput Then OutputOptions = OutputOptions + "Debug   "
+            If CommandWindowVisible Then OutputOptions = OutputOptions + "CFAST Window"
+            MainWin.StatusBar.Panels(2).Text = OutputOptions
+        Else
+            MainWin.StatusBar.Panels(2).Text = ""
+        End If
     End Sub
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
@@ -50,7 +62,7 @@ Public Class UpdateGUI
             myTargets.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break()
-            MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages"
+            MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages: "
             MainWin.StatusBar.Panels(1).Text = myErrors.TopError
         Else
             MainWin.StatusBar.Panels(0).Text = "No Errors"
@@ -145,7 +157,7 @@ Public Class UpdateGUI
         Me.General()
         If indexVisual < 0 Or myVisuals.Count = 0 Then
             ClearGrid(MainWin.VisualSummary)
-            ClearGrid(MainWin.VisualResolution)
+            ClearGrid(MainWin.VisualResolutionSummary)
         Else
             ' fill the visualization widgets from the supplied visualization data
             Dim aVisual As Visual
@@ -190,7 +202,7 @@ Public Class UpdateGUI
                 MainWin.VisualSummary.Select(indexVisual + 1, 0, indexVisual + 1, MainWin.VisualSummary.Cols.Count - 1, True)
             End If
             NumCompartments = myCompartments.Count
-            ClearGrid(MainWin.VisualResolution)
+            ClearGrid(MainWin.VisualResolutionSummary)
             Dim aCompartment As New Compartment
             If numVisuals > 0 And NumCompartments > 0 Then
                 aCompartment = myCompartments.Item(indexCompartment)
@@ -199,13 +211,13 @@ Public Class UpdateGUI
                 MainWin.VisualizationZ.Text = aCompartment.zGrid.ToString
                 For i = 1 To NumCompartments
                     aCompartment = myCompartments.Item(i - 1)
-                    MainWin.VisualResolution(i, 0) = aCompartment.Name
-                    MainWin.VisualResolution(i, 1) = i.ToString
-                    MainWin.VisualResolution(i, 2) = aCompartment.xGrid.ToString
-                    MainWin.VisualResolution(i, 3) = aCompartment.yGrid.ToString
-                    MainWin.VisualResolution(i, 4) = aCompartment.zGrid.ToString
+                    MainWin.VisualResolutionSummary(i, 0) = aCompartment.Name
+                    MainWin.VisualResolutionSummary(i, 1) = i.ToString
+                    MainWin.VisualResolutionSummary(i, 2) = aCompartment.xGrid.ToString
+                    MainWin.VisualResolutionSummary(i, 3) = aCompartment.yGrid.ToString
+                    MainWin.VisualResolutionSummary(i, 4) = aCompartment.zGrid.ToString
                 Next
-                MainWin.VisualResolution.Select(indexCompartment + 1, 0, indexCompartment + 1, MainWin.VisualResolution.Cols.Count - 1, True)
+                MainWin.VisualResolutionSummary.Select(indexCompartment + 1, 0, indexCompartment + 1, MainWin.VisualResolutionSummary.Cols.Count - 1, True)
             End If
         End If
     End Sub
@@ -220,7 +232,7 @@ Public Class UpdateGUI
             MainWin.TabDetection.Enabled = False
             MainWin.TabHeatTransfer.Enabled = False
             MainWin.TabFires.Enabled = False
-            MainWin.TabVisuals.Enabled = False
+            MainWin.TabOutput.Enabled = False
             MainWin.GroupCompartments.Enabled = False
         Else
             Dim aCompartment As New Compartment
@@ -233,7 +245,7 @@ Public Class UpdateGUI
             MainWin.TabDetection.Enabled = True
             MainWin.TabHeatTransfer.Enabled = True
             MainWin.TabFires.Enabled = True
-            MainWin.TabVisuals.Enabled = True
+            MainWin.TabOutput.Enabled = True
             MainWin.GroupCompartments.Enabled = True
             MainWin.GroupCompartments.Text = "Compartment " + (index + 1).ToString + " (of " + myCompartments.Count.ToString + ")"
             MainWin.CompName.Text = aCompartment.Name

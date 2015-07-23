@@ -413,11 +413,13 @@ contains
         targptr%flux_surface(i) = temis*qtwflux(itarg,i)
         targptr%flux_convection(i) = qtcflux(itarg,i)
         targptr%flux_target(i) = -temis*sigma*ttarg(i)**4
+        targptr%flux_radiation(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_target(i)
         targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_convection(i) + targptr%flux_target(i)
 
         call convective_flux (iw,tg,interior_temperature,q1g)
         targptr%flux_convection_gauge = q1g
         targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
+        targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_target_gauge(i)
         targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_convection_gauge(i) + targptr%flux_target_gauge(i)
     end do
 

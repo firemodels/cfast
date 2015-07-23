@@ -36,9 +36,10 @@ module cfast_types
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
     end type fire_type
     
+    ! target data structure
     type target_type
-        real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_convection, flux_target
-        real(eb), dimension(2) :: flux_net_gauge, flux_convection_gauge, flux_target_gauge
+        real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
+        real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
     end type target_type
     
     

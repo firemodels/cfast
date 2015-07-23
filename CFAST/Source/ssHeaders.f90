@@ -205,22 +205,24 @@
     implicit none
 
     ! local variables     
-    integer, parameter :: maxhead = 1+9*nr+12*mxtarg+4*mxdtect
-    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(21), LabelsShort(21), LabelUnits(21)
+    integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
+    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     integer position, i, j, itarg, itype
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
         'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
-        'Target Total Flux', 'Target Convective Flux', &
-        'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
-        'Target Radiative Loss Flux', 'Target Total Gauge Flux',  'Target Total Gauge Convective Flux', 'Target Radiative Loss Gauge Flux', &
+        'Target Total Flux', 'Target Radiative Flux', 'Target Convective Flux', 'Target Fire Radiative Flux', &
+        'Target Surface Radiative Flux', 'Target Gas Radiative Flux', 'Target Radiative Loss Flux', &
+        'Target Total Gauge Flux', 'Target Radiative Gauge Flux', 'Target Convective Gauge Flux', &
+        'Target Radiative Loss Gauge Flux',  &
         'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
 
-    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', 'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXT_',&
-       'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXCG', 'TRGFLXREG_', &
+    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
+        'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXT_', 'TRGFLXR_', &
+        'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG', 'TRGFLXREG_',  &
         'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
-    data LabelUnits / 's', 7*'C', 9*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
+    data LabelUnits / 's', 7*'C', 11*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -254,7 +256,7 @@
     ! Targets
     do itarg = 1, ntarg
         call toIntString(itarg,cDet)
-        do j = 1, 12
+        do j = 1, 14
             position = position + 1
             if (validate) then
                 headertext(1,position) = trim(LabelsShort(j+5)) // trim(cDet)
@@ -282,14 +284,14 @@
         do j = 1, 4
             position = position + 1
             if (validate) then
-                headertext(1,position) = trim(LabelsShort(j+17))//trim(cDet)
-                headertext(2,position) = LabelUnits(j+17)
+                headertext(1,position) = trim(LabelsShort(j+19))//trim(cDet)
+                headertext(2,position) = LabelUnits(j+19)
                 headertext(3,position) = ' '
             else
-                headertext(1,position) = Labels(j+17)
+                headertext(1,position) = Labels(j+19)
                 write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
                 headertext(2,position) = cTemp
-                headertext(3,position) = LabelUnits(j+17)
+                headertext(3,position) = LabelUnits(j+19)
             endif
         end do
     end do

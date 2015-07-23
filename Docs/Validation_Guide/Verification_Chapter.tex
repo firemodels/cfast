@@ -327,16 +327,27 @@ where $\delta$ ,$\rho$ and $C_{\rm p}$ are the thickness, density and specific h
 
 \subsection{Measuring the Temperature Change of a Cylindrical Target}
 
-A 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are located in a 5~m by 5~m by 5~m sealed compartment. The rod is located in the center of the room and the plate is located 1~m to the left of the rod. The targets are heated in the compartment at a temperature of 500~$^\circ$C for the duration of this experiment. The heat conduction equations normal to the surface of the plate and rod, respectively, are:
+A 0.15~cm thick steel plate, a 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are located in a 5~m by 5~m by 5~m sealed compartment. The rod is located in the center of the room and the thick plate is located 1~m to the left of the rod, while the thin plate is located 1~m to the right of the rod. The targets are heated in the compartment at a temperature of 500~$^\circ$C for the duration of this experiment. The heat conduction equations normal to the surface of each plate and the rod, respectively, are:
 \begin{equation}
 \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2} \quad ; \quad \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
 \end{equation}
-where $k$, $\rho$ and $c$ are the thermal conductivity, density and specific heat capacity of the target. At the surface of the plate and rod, the respective boundary conditions are:
+where $k$, $\rho$ and $c$ are the thermal conductivity, density and specific heat capacity of the target. At the surface of each plate and the rod, the respective boundary conditions are:
 \begin{equation}
-\dq'' = -k \frac{\partial T}{\partial r} \quad ; \quad \dq'' = k \frac{\partial T}{\partial r}
+\dq'' = -k \frac{\partial T}{\partial x} \quad ; \quad \dq'' = k \frac{\partial T}{\partial r}
 \end{equation}
 where $\dq''$ is the net radiative and convective heat flux given by the sum of the following equations:
 \begin{equation}
 \dqr'' = \epsilon \sigma \brackets{ T_g^4 - T^4 } \quad ; \quad \dqc'' = h \brackets{T_g - T}
 \end{equation}
-where $\dqr''$ is the radiative heat flux to the target, $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzmann constant, $T_g$ is the temperature of the gas surrounding the target, $T$ is the temperature of the target's surface, $\dqc''$ is the convective heat flux to the target and $h$ is the convective heat transfer coefficient in units of ~kW/m$^2$K.
+where $\dqr''$ is the radiative heat flux to the target, $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzmann constant, $T_g$ is the temperature of the gas surrounding the target, $T$ is the temperature of the target's surface, $\dqc''$ is the convective heat flux to the target and $h$ is the convective heat transfer coefficient in units of ~kW/m$^2$K. The heat transfer coefficient is given by:
+\begin{equation}
+ h = \frac{C|T_{\rm g} - T|^{1/3}}{1000}
+\end{equation}
+where $C$ is an empirical coefficient determined to be 1.31 for targets that are oriented parallel to the walls. Figure ~\ref{rad2} shows how the surface temperature for each of the plates and the rod increases with respect to time.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{FIGURES/Verification/radiation_2_temp}
+\caption[Results of the test case {\ct radiation\_2.in}]{Expected and CFAST calculated surface temperature values for three different types of targets for the case {\ct radiation\_2.in}.}
+\label{fig:rad2}
+\end{figure}

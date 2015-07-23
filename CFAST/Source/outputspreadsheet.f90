@@ -104,9 +104,9 @@
     integer i
     
     if (validate) then
-        write (iounit,"(16000(e19.12,','))" ) (array(i),i=1,ic)
+        write (iounit,"(16384(e19.12,','))" ) (array(i),i=1,ic)
     else
-        write (iounit,"(16000(e13.6,','))" ) (array(i),i=1,ic)
+        write (iounit,"(16384(e13.6,','))" ) (array(i),i=1,ic)
     end if
     return
     
@@ -122,7 +122,7 @@
     
     integer i
   
-    write (iounit,"(16000(e20.13,','))" ) (array(i),i=1,ic)
+    write (iounit,"(16384(e20.13,','))" ) (array(i),i=1,ic)
     return
     
     end subroutine ssprintresid

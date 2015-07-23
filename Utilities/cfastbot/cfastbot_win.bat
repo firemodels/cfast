@@ -37,6 +37,8 @@ set emailexe=%userprofile%\bin\mailsend.exe
 
 set errorlog=%OUTDIR%\stage_errors.txt
 set warninglog=%OUTDIR%\stage_warnings.txt
+set matlabverlog=%OUTDIR%\matlab_ver_log.txt
+set matlabvallog=%OUTDIR%\matlab_val_log.txt
 set errorwarninglog=%OUTDIR%\stage_errorswarnings.txt
 set infofile=%OUTDIR%\summary.txt
 set revisionfilestring=%OUTDIR%\revision.txt
@@ -392,7 +394,7 @@ echo               Making plots
 cd %cfastroot%\Utilities\Matlab
 
 if %usematlab% == 0 goto matlab_else1
-  matlab -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_validation_script.m'); catch; end; quit
+  matlab -logfile %matlabvallog% -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_validation_script.m'); catch; end; quit
   goto matlab_end1
 :matlab_else1
   Validation
@@ -412,7 +414,7 @@ if %usematlab% == 1 goto matlab_end2
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
 if %usematlab% == 0 goto matlab_else3
-  matlab -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_verification_script.m'); catch; end; quit
+  matlab -logfile %matlabverlog% -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_verification_script.m'); catch; end; quit
   goto matlab_end3
 :matlab_else3
   Verification

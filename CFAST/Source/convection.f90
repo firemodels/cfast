@@ -154,7 +154,11 @@
         h = 1.31_eb*abs(tg - tw)**onethird
     end if
     
-    qdinl = h * (tg - tw)
+    if(nfurn.gt.0)then
+       qdinl = 0.0_eb
+    else
+      qdinl = h * (tg - tw)
+    endif
     return
     end subroutine convective_flux
     

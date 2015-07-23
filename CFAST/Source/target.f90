@@ -207,10 +207,11 @@ contains
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau,&
        awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
-        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
+        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
     type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
 
     data map10/1,3,3,3,3,4,4,4,4,2/
 
@@ -218,6 +219,7 @@ contains
     absl = 0.01_eb
     iroom = ixtarg(trgroom,itarg)
     roomptr => roominfo(iroom)
+    targptr => targetinfo(itarg)
     
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then
@@ -394,27 +396,7 @@ contains
 
     flux(1) = temis*(qtfflux(itarg,1) + qtwflux(itarg,1) + qtgflux(itarg,1)) + qtcflux(itarg,1) - temis*sigma*ttarg(1)**4
     dflux(1) = -4.0_eb*temis*sigma*ttarg(1)**3 + dqdtarg
-
-    ! this is for "gauge" heat flux output ... it assumes an ambient temperature target
-    gtflux(itarg,t_ftotal) = qtfflux(itarg,1)
-    gtflux(itarg,t_wtotal) = qtwflux(itarg,1)
-    gtflux(itarg,t_gtotal) = qtgflux(itarg,1)
     
-    ! Adjust each one for the ambient losses
-    total_radiation = gtflux(itarg,t_ftotal) + gtflux(itarg,t_wtotal) + gtflux(itarg,t_gtotal)
-    re_radiation = sigma*interior_temperature**4
-    gtflux(itarg,t_ftotal) = gtflux(itarg,t_ftotal) - re_radiation*gtflux(itarg,t_ftotal)/total_radiation
-    gtflux(itarg,t_wtotal) = gtflux(itarg,t_wtotal) - re_radiation*gtflux(itarg,t_wtotal)/total_radiation
-    gtflux(itarg,t_gtotal) = gtflux(itarg,t_gtotal) - re_radiation*gtflux(itarg,t_gtotal)/total_radiation
-    
-    !add in the convection 
-    call convective_flux (iw,tg,interior_temperature,q1g)
-    gtflux(itarg,t_ctotal) = q1g
-    
-    ! and the total is just the sum of these
-    gtflux(itarg,t_total) = gtflux(itarg,t_ftotal) + gtflux(itarg,t_wtotal) + gtflux(itarg,t_gtotal) + gtflux(itarg,t_ctotal)
-
-
     ! convection for the back
     call convective_flux(iwb,tgb,ttargb,q1b)
     call convective_flux(iwb,tgb,ttargb+dttargb,q2b)
@@ -423,6 +405,23 @@ contains
 
     flux(2) = temis*(qtfflux(itarg,2) + qtwflux(itarg,2) + qtgflux(itarg,2)) + qtcflux(itarg,2) - temis*sigma*ttargb**4
     dflux(2) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
+
+    ! store fluxes for printout
+    do i = 1,2
+        targptr%flux_fire(i) = temis*qtfflux(itarg,i)
+        targptr%flux_gas(i) = temis*qtgflux(itarg,i)
+        targptr%flux_surface(i) = temis*qtwflux(itarg,i)
+        targptr%flux_convection(i) = qtcflux(itarg,i)
+        targptr%flux_target(i) = -temis*sigma*ttarg(i)**4
+        targptr%flux_radiation(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_target(i)
+        targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_convection(i) + targptr%flux_target(i)
+
+        call convective_flux (iw,tg,interior_temperature,q1g)
+        targptr%flux_convection_gauge = q1g
+        targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
+        targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_target_gauge(i)
+        targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + targptr%flux_convection_gauge(i) + targptr%flux_target_gauge(i)
+    end do
 
     return
     end subroutine targflux

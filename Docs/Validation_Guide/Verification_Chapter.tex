@@ -299,24 +299,23 @@ where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure
 \label{sprinkler1}
 \end{figure}
 
-\section{Radiation}
+\section{Heat Transfer}
 
 \subsection{Measuring the Temperature Change of a Thermally Thin Target}
 
-A constant 10~kW natural gas (methane) fire burns in the center of a 15~m by 15~m by 15~m compartment. The compartment is sealed, the walls are assumed to be adiabatic and there is a 20~m$^2$ vent located in the center of the ceiling. A 0.0015~m thick sheet of plain carbon steel is placed 2~m to the right of the fire and faces the fire. As the fire burns in the compartment, the target is heated through radiative and convective heat transfer. Once the target acquires enough energy, it can also radiate heat back into the compartment. The net radiative heat transfer to and from a target is given by:
+A constant 10~kW natural gas (methane) fire burns in the center of a 15~m by 15~m by 15~m compartment. Because the purpose of this case is to test the point source radiation model and the heating of a thermally-thin target, there is a 20~m$^2$ vent located in the center of the ceiling to exhaust the smoke from the fire and maintain an ambient temperature lower layer. A 1.5~mm thick sheet of plain carbon steel is placed 2~m to the right of the fire. It is oriented directly at the fire. The target is heated by the thermal radiation from the fire, and it is cooled via convective and radiative loss. The net radiative heat transfer to the target is given by:
 \begin{equation}
 \dqr'' = \epsilon \frac{\chi_{\rm r} \, \dot{Q}}{4\pi \, r^2} + 2\epsilon \sigma ( T_{\rm g}^4 - T_{\rm s}^4)
 \end{equation}
-where $\epsilon$ is the emissivity of the target, $\chi_{\rm r}$ represents the radiative heat fraction of the fire, $\dot{Q}$ is the heat release rate of the fire, $r$ is the distance between the fire and the target and $\sigma$ is the Stefan-Boltzmann constant, which has a value of $5.67 \times 10^{-11}$~kW/(m$^2$K$^4$). Additionally, $T_{\rm g}$ is the temperature of the gas surrounding the target and $T_{\rm s}$ is the temperature of the target's surface. 
-The convective heat flux to a solid surface is governed by the following equations:
+where $\epsilon$ is the emissivity of the target, $\chi_{\rm r}$ represents the radiative heat fraction of the fire, $\dot{Q}$ is the heat release rate of the fire, $r$ is the distance between the fire and the target and $\sigma$ is the Stefan-Boltzmann constant, which has a value of $5.67 \times 10^{-11}$~kW/(m$^2 \cdot$K$^4$). Additionally, $T_{\rm g}$ is the temperature of the gas surrounding the target and $T_{\rm s}$ is the temperature of the target's surface. The convective heat flux to a solid surface is governed by the following equations:
 \begin{equation}
-\dqc'' = h(T_{\rm g}-T_{\rm s}) \quad ; \quad  h = \frac{C|T_{\rm g} - T_{\rm s}|^{1/3}}{1000}
+\dqc'' = h(T_{\rm g}-T_{\rm s}) \quad ; \quad  h = C|T_{\rm g} - T_{\rm s}|^{1/3}
 \end{equation}
-where $h$ is the convective heat transfer coefficient and $C$ is an empirical coefficient determined to be 1.31 for targets that are oriented parallel to the walls. In order to determine what the temperature of the target's surface will be at any given time, the following equation must be integrated:
+where $h$ is the convective heat transfer coefficient and $C$ is an empirical coefficient determined to be 1.31 for vertical targets. In order to determine what the temperature of the target's surface will be at any given time, the following equation must be integrated:
 \begin{equation}
 \frac{{\rm d} T}{{\rm d} t} = \frac{\dqr'' + 2\dqc''}{\delta \, \rho \, C_{\rm p}}
 \end{equation}
-where $\delta$, $\rho$ and $C_{\rm p}$ are the thickness, density and specific heat capacity of the target. Figure~\ref{fig:rad1} shows how the surface temperature of the target changes as the fire burns in the compartment.
+where $\delta$, $\rho$ and $C_{\rm p}$ are the thickness, density and specific heat capacity of the target. The 2 denotes that both sides of the target cool via convection. Figure~\ref{fig:rad1} shows how the surface temperature of the target changes as the fire burns in the compartment.
 
 \begin{figure}[!ht]
 \centering
@@ -327,7 +326,7 @@ where $\delta$, $\rho$ and $C_{\rm p}$ are the thickness, density and specific h
 
 \subsection{Measuring the Temperature Change of a Cylindrical Target}
 
-A 0.15~cm thick steel plate, a 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are located in a 5~m by 5~m by 5~m sealed compartment. The rod is located in the center of the room and the thick plate is located 1~m to the left of the rod, while the thin plate is located 1~m to the right of the rod. The targets are heated in the compartment at a temperature of 500~$^\circ$C for the duration of this experiment. The heat conduction equations normal to the surface of each plate and the rod, respectively, are:
+A 0.15~cm thick steel plate, a 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are placed in a furnace\footnote{CFAST has an option to create a uniform temperature environment for diagnostic purposes. The option must be invoked by adding a special comment to the input file.} with uniform temperature of 500~$^\circ$C. The heat conduction equations normal to the surface of each plate and the rod, respectively, are:
 \begin{equation}
 \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2} \quad ; \quad \frac{\partial T}{\partial t} = \frac{k}{\rho c} \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right)
 \end{equation}
@@ -335,15 +334,11 @@ where $k$, $\rho$ and $c$ are the thermal conductivity, density and specific hea
 \begin{equation}
 \dq'' = -k \frac{\partial T}{\partial x} \quad ; \quad \dq'' = k \frac{\partial T}{\partial r}
 \end{equation}
-where $\dq''$ is the net radiative and convective heat flux given by the sum of the following equations:
+where $\dq''$ is the sum of the net radiative and convective heat fluxes:
 \begin{equation}
-\dqr'' = \epsilon \sigma \brackets{ T_{\rm g}^4 - T_{\rm s}^4 } \quad ; \quad \dqc'' = h \brackets{T_{\rm g} - T_{\rm s}}
+\dqr'' = \epsilon \sigma \brackets{ T_{\rm g}^4 - T_{\rm s}^4 } \quad ; \quad \dqc'' = h \brackets{T_{\rm g} - T_{\rm s}}  \quad ; \quad h = C|T_{\rm g} - T_{\rm s}|^{1/3}
 \end{equation}
-where $\dqr''$ is the radiative heat flux to the target, $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzmann constant, $T_{\rm g}$ is the temperature of the gas surrounding the target, $T_{\rm s}$ is the temperature of the target's surface, $\dqc''$ is the convective heat flux to the target and $h$ is the convective heat transfer coefficient in units of ~kW/(m$^2$K). The heat transfer coefficient is given by:
-\begin{equation}
- h = \frac{C|T_{\rm g} - T_{\rm s}|^{1/3}}{1000}
-\end{equation}
-where $C$ is an empirical coefficient determined to be 1.31 for targets that are oriented parallel to the walls. Figure~\ref{fig:rad2} shows how the surface temperature for each of the plates and the rod increases with respect to time.
+where $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzmann constant, $T_{\rm g}$ is the temperature of the gas surrounding the target, $T_{\rm s}$ is the temperature of the target's surface, $h$ is the convective heat transfer coefficient, and $C$ is 1.31 for vertical targets. Figure~\ref{fig:rad2} shows how the surface temperature for each of the plates and the rod increases with respect to time.
 
 \begin{figure}[!ht]
 \centering

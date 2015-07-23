@@ -220,7 +220,6 @@ module fltarget
     integer, parameter :: trgeq = 5
     integer, parameter :: trgback = 6
     
-    integer, parameter :: ode = 1
     integer, parameter :: pde = 2
     integer, parameter :: cylpde = 3
     integer, parameter :: steady = 1

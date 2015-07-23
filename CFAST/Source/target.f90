@@ -24,7 +24,7 @@ contains
 
 ! --------------------------- target -------------------------------------------
 
-    subroutine target(update,method,dt,xpsolve,delta)
+    subroutine target(update,method,dt,delta)
 
     !     routine: target (main target routine)
     !     purpose: compute dassl residuals associated with targets
@@ -37,13 +37,13 @@ contains
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
     integer, intent(in) :: update, method
-    real(eb), intent(in) :: dt,  xpsolve(*)
+    real(eb), intent(in) :: dt
     
     real(eb), intent(out) :: delta(*)
 
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
-    real(eb) :: tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, wfluxavg, xl
+    real(eb) :: tderv, sum, wfluxin, wfluxout, wfluxavg, xl
     integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
 
@@ -72,7 +72,7 @@ contains
     ! calculate net flux striking each side of target
     call target_flux(method)
 
-    ! for each target calculate ode or pde residual and update target temperature (if update=1 or 1)
+    ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         if(ixtarg(trgmeth,itarg)==method) then
             wfluxin = xxtarg(trgnfluxf,itarg)
@@ -113,21 +113,6 @@ contains
                     call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
-
-                ! compute the ode residual
-            elseif(iieq==ode)then
-                ddtemp = (wfluxin+wfluxout)/(wspec(1)*wrho(1)*xl)
-                if(iimeth==mplicit)then
-                    ieq = iztarg(itarg)
-                    delta(noftt+ieq) = ddtemp - xpsolve(noftt+ieq) 
-                elseif(iimeth==xplicit)then
-                    if(update/=0)then
-                        ttold = xxtarg(idx_tempf_trg,itarg)
-                        ttnew = ttold + dt*ddtemp
-                        xxtarg(idx_tempf_trg,itarg) = ttnew
-                    endif
-                endif
-
                 ! error, the equation type can has to be either pde or ode if the method is not steady
             else
 
@@ -144,7 +129,7 @@ contains
     !     routine: target
     !     purpose: routine to calculate total flux striking a target. this flux is used to calculate a target temperature,
     !              assuming that the sum of incoming and outgoing flux is zero, ie, assuming that the target is at steady state.
-    !     arguments: method  
+    !     arguments: method  (steady or pde
 
 
     integer, intent(in) :: method

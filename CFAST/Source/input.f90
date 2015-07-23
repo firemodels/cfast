@@ -673,18 +673,18 @@
                     endif
                 endif
 
-                ! equation type
+                ! equation type, PDE or CYL.  ODE is outdated and changed to PDE if it's in an input file.
                 eqtype = ' '
                 eqtype = lcarray(10)
                 call upperall(eqtype,eqtype)
                 if(eqtype/=' '.and.method/=' ')then
                     if (eqtype(1:3)=='ODE') then
-                        ixtarg(trgeq,ntarg) = PDE
+                        ixtarg(trgeq,ntarg) = pde
                         write (logerr,913) 'Warning', eqtype
                     elseif (eqtype(1:3)=='PDE') then
-                        ixtarg(trgeq,ntarg) = PDE
+                        ixtarg(trgeq,ntarg) = pde
                     elseif (eqtype(1:3)=='CYL') then
-                        ixtarg(trgeq,ntarg) = CYLPDE
+                        ixtarg(trgeq,ntarg) = cylpde
                     else
                         write(logerr,913) 'Error',eqtype
                         stop

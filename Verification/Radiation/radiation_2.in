@@ -11,8 +11,8 @@ FURN,2,0,500,10000,500
 !!Material Properties
 !!
 MATL,STEELROD,54,465,7833,0.025,0.9,"Steel Rod, 2.5 cm diameter"
-MATL,STEELTHCK,54,465,7833,0.025,0.9,"Steel, Plain Carbon (1 in)"
-MATL,STEELSHT,48,559,7854,0.0015,0.9,"Steel, Plain Carbon (1/16 in)"
+MATL,STEELTHCK,54,465,7833,0.025,0.9,Thick Steel (1 in)
+MATL,STEELSHT,54,465,7833,0.0015,0.9,Thin Steel (1/16 in)
 !!
 !!Compartment keywords
 !!

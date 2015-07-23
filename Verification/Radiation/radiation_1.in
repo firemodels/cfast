@@ -34,4 +34,4 @@ HEIGH,0,0
 !!
 !!Target and detector keywords
 !!
-TARGET,1,9.5,7.5,0,-1,0,0,STEELSHT,IMPLICIT,ODE,0.5,Targ 1
+TARGET,1,9.5,7.5,0,-1,0,0,STEELSHT,IMPLICIT,PDE,0.5,Targ 1

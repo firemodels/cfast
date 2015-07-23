@@ -679,13 +679,14 @@
                 call upperall(eqtype,eqtype)
                 if(eqtype/=' '.and.method/=' ')then
                     if (eqtype(1:3)=='ODE') then
-                        ixtarg(trgeq,ntarg) = ODE
+                        ixtarg(trgeq,ntarg) = PDE
+                        write (logerr,913) 'Warning', eqtype
                     elseif (eqtype(1:3)=='PDE') then
                         ixtarg(trgeq,ntarg) = PDE
                     elseif (eqtype(1:3)=='CYL') then
                         ixtarg(trgeq,ntarg) = CYLPDE
                     else
-                        write(logerr,913) eqtype
+                        write(logerr,913) 'Error',eqtype
                         stop
                     endif
                 endif
@@ -1730,8 +1731,8 @@
     end select
     end do
 
-912 format ('***Error: BAD TARGE input. Invalid method:',A8,'. Valid choices are: ','STEADY, IMPLICIT OR EXPLICIT')
-913 format('***Error: BAD TARGE input. Invalid equation type:',A3,' Valid choices are:ODE, PDE or CYL')
+912 format ('***Error: BAD TARGE input. Invalid method:',A8,'. Valid choices are: STEADY, IMPLICIT OR EXPLICIT')
+913 format('***',a,': BAD TARGE input. Invalid equation type:',A3,' Valid choices are: PDE or CYL')
 5001 format ('***Error: Bad ONEZ input. Referenced compartment is not defined ',i0)
 5002 format ('***Error: BAD TARGE input. Too many targets are being defined')
 5003 format ('***Error: BAD TARGE input. The compartment specified by TARGET does not exist ',i0)

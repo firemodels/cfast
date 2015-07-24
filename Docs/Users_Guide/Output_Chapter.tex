@@ -413,17 +413,21 @@ This file provides information on surface and target temperatures and flux, and 
 \item[Lower Wall Temperature] (\degc): temperature of the  wall surface adjacent to the lower layer in the current compartment
 \item[Floor Temperature] (\degc): temperature of the floor surface in the current compartment
 \end{description}
-The second set of columns pertain to the targets included in the simulation.  User-defined targets are listed first followed by automatically-defined targets, one at the center of each compartment at floor level and one at the location of each fire in the simulation.
+The second set of columns pertain to the user-defined targets included in the simulation. 
 \begin{description}
 \item[Target Surrounding Gas Temperature] (\degc): gas temperature nearby the current target
 \item[Target Surface Temperature] (\degc): temperature of the surface of the current target
 \item[Target Center Temperature] (\degc): interior temperature of the current target
 \item[Target Total Flux] (kW/m$2$): total net heat flux to the front surface of the current target
 \item[Target Convective Flux] (kW/m$^2$): convective heat flux to the  front surface of the current target
-\item[Target Radiative Flux] (kW/m$^2$): radiative heat flux to the front surface of the current target
+\item[Target Radiative Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target
 \item[Target Fire Radiative Flux] (kW/m$^2$): radiative heat flux from fires to the front surface of the current target
 \item[Target Surface Radiative Flux] (kW/m$^2$): radiative heat flux from compartment surfaces to the front surface of the current target
 \item[Target Gas Radiative Flux] (kW/m$^2$):   radiative heat flux from the upper and lower gas layers to the front surface of the current target
+\item[Target Radiative Loss Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings at the calculated temperature of the target
+\item[Target Total Gauge Flux] (kW/m$2$): total net heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature
+\item[Target Radiative Gauge Flux] (kW/m$^2$): total net radiative heat flux to the front surface of the current target assuming the target radiative losses are at ambient temperature
+\item[Target Radiative Loss Gauge Flux] (kW/m$^2$):   radiative heat flux from the current target to surroundings assuming the target radiative losses are at ambient temperature
 \end{description}
 The third set of columns pertain to the detector/sprinkler output.
 \begin{description}

@@ -394,7 +394,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 \begin{description}
 \item[Compartment] The compartment in which the target is located.
-\item[Target Type] Specify Thermally Thick, Thermally Thin, or Cylindrical.  For thermally thin materials, CFAST solves an ordinary differential equation; for thermally thick materials, a partial differential equation, and for cylindrical targets, a partial differential equation in cylindrical coordinates.
+\item[Target Type] Specify Plate, or Cylindrical.  For plate targets, CFAST solves a partial differential equation in cartesian coordinates, and for cylindrical targets, a partial differential equation in cylindrical coordinates.
 \item[Width (X)] (default units: m): Distance from the left wall of the target compartment.
 \item[Depth (Y)] (default units: m): Distance from the front wall of the target compartment.
 \item[Height (Z)] (default units: m): Height of the target above the floor.
@@ -530,4 +530,15 @@ Sample visualizations are included below.
 \caption{Smokeview Visualization of Detector Activation in a Corridor}
 \end{center}
 \end{figure}
+
+\section{Output Options}
+
+By default, CFAST generates a set of output files that includes a formatted readable output and a set of spreadsheet files.  Options are available to modify the output files.  The default output should be appropriate for most simulations.
+
+\begin{description}
+    \item[CFAST Validation Output] If checked, this item directs the CFAST model to output abbreviated headings for spreadsheet columns that are better for automated processing of the data.
+    \item[Total Mass Output] If checked, this item directs the CFAST model to replace the flow output with total mass flow through (mechanical) vents rather than the default flow rate values.
+    \item[Debug Output] If checked, CFAST will create a detailed output spreadsheet that contains values of all the solution variables at each successful solution time step. This file is typically only of use to model developers diagnosing a problem with the model.
+    \item[Show CFAST Window] If checked, this item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
+\end{description}
 

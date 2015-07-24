@@ -536,11 +536,11 @@
 
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
+            call remap_fires (nfires)
             if (firstpassforsmokeview) then
                 firstpassforsmokeview = .false.            
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
-                call remap_fires (nfires)
                 call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
                     floor_height, room_width, room_depth, room_height, n_hvents, n_vvents, nfires, flocal, fxlocal, &
                     fylocal,fzlocal,ntarg,t,itmstp)

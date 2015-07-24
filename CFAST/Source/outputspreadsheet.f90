@@ -449,7 +449,7 @@
             call flame_height (fqf(i),farea(i),fheight)
             call SSaddtolist (position,fqf(i)/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)
-            call SSaddtolist (position,xfire(i,3),outarray)
+            call SSaddtolist (position,fopos(3,i),outarray)
             call SSaddtolist (position,farea(i),outarray)          
         end do
     endif

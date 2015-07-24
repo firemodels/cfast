@@ -124,7 +124,7 @@
             fqupr(nobj) = heatup(iroom)
             farea(nobj) = oareat
             do j = 1,3
-                fopos (j,nobj) = objpos(j,iobj)
+                fopos (j,nobj) = objpos(j,iobj) + ohight
             end do
 
         endif

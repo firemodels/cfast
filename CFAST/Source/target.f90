@@ -203,7 +203,7 @@ contains
        svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
        svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
        svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
-       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<0.0_eb)then
+       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
           target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
        else
           target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
@@ -353,7 +353,7 @@ contains
                 qgas = tu**4*alphau*taul + tl**4*alphal
             endif
             qgt = sigma*qgas
-            if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<0.0_eb)then
+            if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
                 jj = front
             else 
                 jj = back

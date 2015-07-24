@@ -567,13 +567,13 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \end{itemize}
 The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The net radiative heat flux to surface~$k$, $\dq_{{\rm r},k}''$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   -\frac{\dq_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \, \dq_{{\rm r},j}'' \, F_{k-j} \, \tau_{k-j} = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{\sigma T_j^4 \, F_{k-j} \, \tau_{k-j}} - c_k \label{RTE}
+   -\frac{\dq_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dq_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
 \ee
-where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the hot gas layer and the fire is included in the last term:
+where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
-   c_k = \epsilon_{\rm u} \, F_{{\rm u}-k} \, \sigma \, \Tu^4 + \frac{\omega_{{\rm f}-k}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi}  \label{ckeq}
+   c_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, \Tu^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi}  \label{ckeq}
 \ee
-where $\epsilon_{\rm u}$ is the emittance (absorptance) of the upper layer, $F_{{\rm u}-k}$ is the view factor between the upper layer and solid surface, $\omega_{{\rm f}-k}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{{\rm f}-k}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall, the view factor refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
+where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. 
 
 
 
@@ -636,9 +636,9 @@ The effective path length, $L$, is calculated between the center-points of the e
 
 \subsection{Radiation Heat Flux to a Target}
 
-Objects, often referred to as ``targets,'' can be added to any compartment in CFAST to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but the targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the predicted thermal environment. The net radiative heat flux to a target is given by:
+Objects, often referred to as ``targets,'' can be added to any compartment in CFAST to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but the targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is given by:
 \be
-   \dq_{\rm r}'' = \epsilon_{\rm t} \left( \cos \, \theta \; \frac{\chi_{\rm r} \, \dQ}{4 \pi R^2}  + \displaystyle\sum_{j=1}^N \left( \tau_j \, F_j \, \epsilon_j \, \sigma T_j^4 \right) +  \tau_{\rm u} \, F_{\rm u} \, \epsilon_{\rm u} \sigma \, \Tu^4 -\sigma T_{\rm t}^4  \right)  \label{target_rad}
+   \dq_{\rm r}'' = \epsilon_{\rm t} \left( \cos \, \theta \; \frac{\chi_{\rm r} \, \dQ}{4 \pi R^2}  + \displaystyle\sum_{j=1}^{10} \left( \tau_j \, F_j \, \epsilon_j \, \sigma T_j^4 \right) +  \displaystyle\sum_{j=1}^2 \left( \tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
 \ee
 where $\epsilon_{\rm t}$ is the emissivity of the target, $\theta$ is the angle formed by the line of sight segment of length $R$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer, and $T_{\rm t}$ is the temperature of the target.
 

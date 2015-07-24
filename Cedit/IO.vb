@@ -75,8 +75,7 @@ Module IO
                     Else ' IMPLICIT
                         method = 0
                     End If
-                    aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), thickness, _
-                        method)
+                    aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), type, method)
                     If (csv.str(i, targetNum.internalLocation) <> "") Then
                         aDetect.InternalLocation = csv.Num(i, targetNum.internalLocation)
                     Else

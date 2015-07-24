@@ -2,6 +2,19 @@
 .DS_Store
 ._*
 
+# visual studio files
+*.suo
+*.u2d
+*.vfproj*
+*.vbproj*
+C1*.dll
+C1*.xml
+CEdit.application
+CEdit.exe.manifest
+CEdit.vshost.exe.manifest
+CEdit.xml
+pthread*.dll
+
 # compiler output files
 *.exe
 *.o
@@ -10,8 +23,9 @@
 *.pdb
 *.exp
 *.lib
+*_genmod.f90
 
-# fds executables
+# executables
 cfast7_intel_*
 
 # latex output files
@@ -30,17 +44,17 @@ cfast7_intel_*
 *.toc
 
 # cfast output files
-*_n.csv 
-*_s.csv 
-*_f.csv 
-*_w.csv 
-*_zone.csv 
-*.out 
-*.smv 
-*.plt 
-*.status 
-*.log 
-*.sf 
-*_slice.info 
-*.iso 
+*_n.csv
+*_s.csv
+*_f.csv
+*_w.csv
+*_zone.csv
+*.out
+*.smv
+*.plt
+*.status
+*.log
+*.sf
+*_slice.info
+*.iso
 

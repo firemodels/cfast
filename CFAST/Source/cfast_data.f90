@@ -187,7 +187,8 @@ end module dervs
 
 module fltarget
     use precision_parameters
-    use cparams
+    use cparams, only: mxthrmplen, mxtarg
+    use  cfast_types, only: target_type
     implicit none
     save
     
@@ -219,7 +220,6 @@ module fltarget
     integer, parameter :: trgeq = 5
     integer, parameter :: trgback = 6
     
-    integer, parameter :: ode = 1
     integer, parameter :: pde = 2
     integer, parameter :: cylpde = 3
     integer, parameter :: steady = 1
@@ -232,8 +232,10 @@ module fltarget
 
     real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
     real(eb), dimension(mxtarg) :: tgtarg
-    real(eb), dimension(mxtarg,5)  :: gtflux
     integer, dimension(3) :: neqtarg
+    
+    type (target_type), dimension(mxtarg), target :: targetinfo
+    
 end module fltarget
 
 ! --------------------------- iofiles -------------------------------------------

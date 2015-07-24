@@ -29,7 +29,7 @@ Friend Module Data
     Friend myTargets As New TargetCollection
     Friend myDetectors As New TargetCollection
     Friend Const SolutionMethodNames As String = "ImplicitExplicitSteady  "
-    Friend Const SolutionThicknessNames As String = "Thick      Thin       Cylindrical"
+    Friend Const SolutionTypeNames As String = "Plate      Cylindrical"
     Friend Const DetectorTypes As String = "Smoke    Heat     Sprinkler"
     Friend Const NormalPointsTo As String = "User SpecifiedRear Wall     Front Wall    Right Wall    Left Wall     Ceiling       Floor         "
     Friend NormalPointsToData() As Single = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0}

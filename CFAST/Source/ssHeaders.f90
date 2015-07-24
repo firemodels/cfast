@@ -97,9 +97,9 @@
     end do
 
     ! write out header
-    write(21,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(21,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(21,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(21,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(21,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    if (.not.validate) write(21,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersNormal
 
@@ -171,9 +171,9 @@
     end do
 
     ! write out header
-    write(23,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(23,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(23,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(23,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(23,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    if (.not.validate) write(23,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersSpecies
 
@@ -205,20 +205,24 @@
     implicit none
 
     ! local variables     
-    integer, parameter :: maxhead = 1+9*nr+8*mxtarg+4*mxdtect
-    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(18), LabelsShort(18), LabelUnits(18)
+    integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
+    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     integer position, i, j, itarg, itype
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
-       'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
-       'Target Total Flux', 'Target Convective Flux', &
-    'Target Radiative Flux', 'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
-       'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
+        'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
+        'Target Total Flux', 'Target Radiative Flux', 'Target Convective Flux', 'Target Fire Radiative Flux', &
+        'Target Surface Radiative Flux', 'Target Gas Radiative Flux', 'Target Radiative Loss Flux', &
+        'Target Total Gauge Flux', 'Target Radiative Gauge Flux', 'Target Convective Gauge Flux', &
+        'Target Radiative Loss Gauge Flux',  &
+        'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
 
-    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', 'TARGGAST_', 'TARGSURT_', 'TARGCENT_', 'TARGFLUXT_',&
-       'TARGFLUXC_', 'TARGFLUXR_','TARGFLUXF_', 'TARGFLUXS_', 'TARGFLUXG_',  'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
+    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
+        'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXT_', 'TRGFLXR_', &
+        'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG', 'TRGFLXREG_',  &
+        'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
-    data LabelUnits / 's', 7*'C', 6*'W/m^2', 'C', '1=yes', 'C', 'm/s' /
+    data LabelUnits / 's', 7*'C', 11*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -252,11 +256,10 @@
     ! Targets
     do itarg = 1, ntarg
         call toIntString(itarg,cDet)
-        do j = 1, 9
+        do j = 1, 14
             position = position + 1
             if (validate) then
                 headertext(1,position) = trim(LabelsShort(j+5)) // trim(cDet)
-                if (LabelUnits(j+5)=='W') LabelUnits(j+5) = 'kW'
                 headertext(2,position) = LabelUnits(j+5)
                 headertext(3,position) = ' '
             else
@@ -281,22 +284,22 @@
         do j = 1, 4
             position = position + 1
             if (validate) then
-                headertext(1,position) = trim(LabelsShort(j+14))//trim(cDet)
-                headertext(2,position) = LabelUnits(j+14)
+                headertext(1,position) = trim(LabelsShort(j+19))//trim(cDet)
+                headertext(2,position) = LabelUnits(j+19)
                 headertext(3,position) = ' '
             else
-                headertext(1,position) = Labels(j+14)
+                headertext(1,position) = Labels(j+19)
                 write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
                 headertext(2,position) = cTemp
-                headertext(3,position) = LabelUnits(j+14)
+                headertext(3,position) = LabelUnits(j+19)
             endif
         end do
     end do
 
     ! write out header
-    write(24,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(24,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(24,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    if (.not.validate) write(24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     return
     end subroutine ssHeadersFlux
@@ -445,9 +448,9 @@
     endif
 
     ! write out header
-    write(22,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(22,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(22,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(22,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(22,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    if (.not.validate) write(22,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     return
 
@@ -505,8 +508,8 @@
         do i = 1, 4
             position = position + 1
             call toIntString(j,cFire)
-            headertext(1,position) = LabelUnits(i+7)
-            headertext(2,position) = trim(LabelsShort(i+7))//trim(cFire)
+            headertext(1,position) = LabelUnits(i+9)
+            headertext(2,position) = trim(LabelsShort(i+9))//trim(cFire)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -515,30 +518,30 @@
     do j = 1, n_hvents
         position = position + 1
         call toIntString(j,cVent)
-        headertext(1,position) = LabelUnits(12) ! Vent area
-        headertext(2,position) = trim(LabelsShort(12))//trim(cVent)
+        headertext(1,position) = LabelUnits(14) ! Vent area
+        headertext(2,position) = trim(LabelsShort(14))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         position = position + 1
-        headertext(1,position) = LabelUnits(13) ! number of slabs
-        headertext(2,position) = trim(LabelsShort(13))//trim(cVent)
+        headertext(1,position) = LabelUnits(15) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(15))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         do i = 1,mxfslab
             call toIntString(i,cSlab)
             position = position + 1
-            headertext(1,position) = LabelUnits(14) ! slab temperature
-            headertext(2,position) = trim(LabelsShort(14))//trim(cVent)//'_'//trim(cSlab)
-            call smvDeviceTag(headertext(2,position))
-            position = position + 1
-            headertext(1,position) = LabelUnits(15) ! slab flow
-            headertext(2,position) = trim(LabelsShort(15))//trim(cVent)//'_'//trim(cSlab)
-            call smvDeviceTag(headertext(2,position))
-            position = position + 1
-            headertext(1,position) = LabelUnits(16) ! slab bottom
+            headertext(1,position) = LabelUnits(16) ! slab temperature
             headertext(2,position) = trim(LabelsShort(16))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(17) ! slab top
+            headertext(1,position) = LabelUnits(17) ! slab flow
             headertext(2,position) = trim(LabelsShort(17))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(18) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(18))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(19) ! slab top
+            headertext(2,position) = trim(LabelsShort(19))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -547,30 +550,30 @@
     do j = 1, n_vvents
         position = position + 1
         call toIntString(j,cVent)
-        headertext(1,position) = LabelUnits(18)
-        headertext(2,position) = trim(LabelsShort(18))//trim(cVent)
+        headertext(1,position) = LabelUnits(20)
+        headertext(2,position) = trim(LabelsShort(20))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         position = position + 1
-        headertext(1,position) = LabelUnits(19) ! number of slabs
-        headertext(2,position) = trim(LabelsShort(13))//trim(cVent)
+        headertext(1,position) = LabelUnits(21) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(21))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         do i = 1,2
             call toIntString(i,cSlab)
             position = position + 1
-            headertext(1,position) = LabelUnits(20) ! slab temperature
-            headertext(2,position) = trim(LabelsShort(20))//trim(cVent)//'_'//trim(cSlab)
-            call smvDeviceTag(headertext(2,position))
-            position = position + 1
-            headertext(1,position) = LabelUnits(21) ! slab flow
-            headertext(2,position) = trim(LabelsShort(21))//trim(cVent)//'_'//trim(cSlab)
-            call smvDeviceTag(headertext(2,position))
-            position = position + 1
-            headertext(1,position) = LabelUnits(22) ! slab bottom
+            headertext(1,position) = LabelUnits(22) ! slab temperature
             headertext(2,position) = trim(LabelsShort(22))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(23) ! slab top
+            headertext(1,position) = LabelUnits(23) ! slab flow
             headertext(2,position) = trim(LabelsShort(23))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(24) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(24))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(25) ! slab top
+            headertext(2,position) = trim(LabelsShort(25))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -578,8 +581,8 @@
     ! write out header if called from outputspreadsheet 
     ! (this is only one once, but smokeview device tags are done each time)
     if(lMode) then
-        write(15,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-        write(15,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
+        write(15,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+        write(15,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
     endif
 
     end subroutine ssHeadersSMV
@@ -707,9 +710,9 @@
     end do
     
     ! write out header
-    write(ioresid,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(ioresid,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(ioresid,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(ioresid,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(ioresid,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write(ioresid,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
  end subroutine ssHeadersResid
 
@@ -755,9 +758,9 @@
     end do 
     
     ! write out header
-    write(ioslab,"(1024(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(ioslab,"(1024(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(ioslab,"(1024(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(ioslab,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(ioslab,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write(ioslab,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersFSlabs
  

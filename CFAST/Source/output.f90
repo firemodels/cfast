@@ -528,6 +528,8 @@
     
     integer :: length, i, iw, itarg, itctemp
     real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
+    
+    type(target_type), pointer :: targptr
 
     integer :: iwptr(4)
     
@@ -540,26 +542,26 @@
         write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
 
         do itarg = 1, ntarg
+            targptr => targetinfo(itarg)
             if (ixtarg(trgroom,itarg)==i) then
                 tg = tgtarg(itarg)
-                tttemp = xxtarg(idxtempf_trg,itarg)
-                itctemp = (idxtempf_trg+idx_tempb_trg)/2
-                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idxtempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idxtempf_trg)
+                tttemp = xxtarg(idx_tempf_trg,itarg)
+                itctemp = (idx_tempf_trg+idx_tempb_trg)/2
+                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idx_tempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idx_tempf_trg)
                 tctemp = xxtarg(itctemp,itarg)
-                if (ixtarg(trgeq,itarg)==ode) tctemp = tttemp
                 if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then
-                    total = gtflux(itarg,t_total)
-                    ftotal = gtflux(itarg,t_ftotal)
-                    wtotal = gtflux(itarg,t_wtotal)
-                    gtotal = gtflux(itarg,t_gtotal)
-                    ctotal = gtflux(itarg,t_ctotal)
+                    total = targptr%flux_net_gauge(1)
+                    ftotal = targptr%flux_fire(1)
+                    wtotal = targptr%flux_surface(1)
+                    gtotal = targptr%flux_gas(1)
+                    ctotal = targptr%flux_convection_gauge(1)
                 else
-                    total = xxtarg(trgtfluxf,itarg)
-                    ftotal = qtfflux(itarg,1)
-                    wtotal = qtwflux(itarg,1)
-                    gtotal = qtgflux(itarg,1)
-                    ctotal = qtcflux(itarg,1)
+                    total = targptr%flux_net(1)
+                    ftotal = targptr%flux_fire(1)
+                    wtotal = targptr%flux_surface(1)
+                    gtotal = targptr%flux_gas(1)
+                    ctotal = targptr%flux_convection(1)
                 endif
                 if (total<=1.0e-10_eb) total = 0.0_eb
                 if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
@@ -1543,7 +1545,7 @@
         if(ntarg>0)then
             write(*,6090)
             do itarg = 1, ntarg
-                write(*,6095)itarg,xxtarg(idxtempf_trg,itarg)
+                write(*,6095)itarg,xxtarg(idx_tempf_trg,itarg)
             end do
         endif
     endif

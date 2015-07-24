@@ -24,7 +24,7 @@ contains
 
 ! --------------------------- target -------------------------------------------
 
-    subroutine target(update,method,dt,xpsolve,delta)
+    subroutine target(update,method,dt,delta)
 
     !     routine: target (main target routine)
     !     purpose: compute dassl residuals associated with targets
@@ -37,13 +37,13 @@ contains
     !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
     integer, intent(in) :: update, method
-    real(eb), intent(in) :: dt,  xpsolve(*)
+    real(eb), intent(in) :: dt
     
     real(eb), intent(out) :: delta(*)
 
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
-    real(eb) :: tderv, ddtemp, ttold, ttnew, sum, wfluxin, wfluxout, wfluxavg, xl
+    real(eb) :: tderv, sum, wfluxin, wfluxout, wfluxavg, xl
     integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     save first,tmp
 
@@ -72,7 +72,7 @@ contains
     ! calculate net flux striking each side of target
     call target_flux(method)
 
-    ! for each target calculate ode or pde residual and update target temperature (if update=1 or 1)
+    ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         if(ixtarg(trgmeth,itarg)==method) then
             wfluxin = xxtarg(trgnfluxf,itarg)
@@ -87,7 +87,7 @@ contains
             ! compute the pde residual 
             if(iieq==pde.or.iieq==cylpde)then
                 if(iimeth==mplicit)then
-                    tempin = xxtarg(idxtempf_trg,itarg)
+                    tempin = xxtarg(idx_tempf_trg,itarg)
                     iwbound = 3
                 else
                     iwbound = 4
@@ -100,32 +100,19 @@ contains
                         walldx(i) = xl*tmp(i)
                     end do
 
-                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idxtempf_trg,itarg),walldx,nmnode,nslab,&
+                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idx_tempf_trg,itarg),walldx,nmnode,nslab,&
                        wfluxin,wfluxout,iwbound,tgrad,tderv)
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
                         delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
                     endif
                 else if(iieq==cylpde)then
-                    wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    call cylindrical_conductive_flux (xxtarg(idxtempf_trg,itarg),nmnode(1),wfluxavg,&
+                !  wfluxout is incorrect
+                !    wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                    wfluxavg = wfluxin
+                    call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl)          
                 endif
-
-                ! compute the ode residual
-            elseif(iieq==ode)then
-                ddtemp = (wfluxin+wfluxout)/(wspec(1)*wrho(1)*xl)
-                if(iimeth==mplicit)then
-                    ieq = iztarg(itarg)
-                    delta(noftt+ieq) = ddtemp - xpsolve(noftt+ieq) 
-                elseif(iimeth==xplicit)then
-                    if(update/=0)then
-                        ttold = xxtarg(idxtempf_trg,itarg)
-                        ttnew = ttold + dt*ddtemp
-                        xxtarg(idxtempf_trg,itarg) = ttnew
-                    endif
-                endif
-
                 ! error, the equation type can has to be either pde or ode if the method is not steady
             else
 
@@ -142,7 +129,7 @@ contains
     !     routine: target
     !     purpose: routine to calculate total flux striking a target. this flux is used to calculate a target temperature,
     !              assuming that the sum of incoming and outgoing flux is zero, ie, assuming that the target is at steady state.
-    !     arguments: method  
+    !     arguments: method  (steady or pde
 
 
     integer, intent(in) :: method
@@ -160,7 +147,7 @@ contains
             else
                 niter = 1
             endif
-            ttarg(1) = xxtarg(idxtempf_trg,itarg)
+            ttarg(1) = xxtarg(idx_tempf_trg,itarg)
             ttarg(2) = xxtarg(idx_tempb_trg,itarg)
             do iter = 1, niter
                 call targflux(iter,itarg,ttarg,flux,dflux)
@@ -171,7 +158,7 @@ contains
                 endif
             end do
             if(methtarg==steady)then
-                xxtarg(idxtempf_trg,itarg) = ttarg(1)
+                xxtarg(idx_tempf_trg,itarg) = ttarg(1)
                 xxtarg(idx_tempb_trg,itarg) = ttarg(2)
             endif
             xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
@@ -205,10 +192,11 @@ contains
     real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
         xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau,&
        awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
-        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb, total_radiation, re_radiation
+        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     
     type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
 
     data map10/1,3,3,3,3,4,4,4,4,2/
 
@@ -216,6 +204,7 @@ contains
     absl = 0.01_eb
     iroom = ixtarg(trgroom,itarg)
     roomptr => roominfo(iroom)
+    targptr => targetinfo(itarg)
     
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then
@@ -392,27 +381,7 @@ contains
 
     flux(1) = temis*(qtfflux(itarg,1) + qtwflux(itarg,1) + qtgflux(itarg,1)) + qtcflux(itarg,1) - temis*sigma*ttarg(1)**4
     dflux(1) = -4.0_eb*temis*sigma*ttarg(1)**3 + dqdtarg
-
-    ! this is for "gauge" heat flux output ... it assumes an ambient temperature target
-    gtflux(itarg,t_ftotal) = qtfflux(itarg,1)
-    gtflux(itarg,t_wtotal) = qtwflux(itarg,1)
-    gtflux(itarg,t_gtotal) = qtgflux(itarg,1)
     
-    ! Adjust each one for the ambient losses
-    total_radiation = gtflux(itarg,t_ftotal) + gtflux(itarg,t_wtotal) + gtflux(itarg,t_gtotal)
-    re_radiation = sigma*interior_temperature**4
-    gtflux(itarg,t_ftotal) = gtflux(itarg,t_ftotal) - re_radiation*gtflux(itarg,t_ftotal)/total_radiation
-    gtflux(itarg,t_wtotal) = gtflux(itarg,t_wtotal) - re_radiation*gtflux(itarg,t_wtotal)/total_radiation
-    gtflux(itarg,t_gtotal) = gtflux(itarg,t_gtotal) - re_radiation*gtflux(itarg,t_gtotal)/total_radiation
-    
-    !add in the convection 
-    call convective_flux (iw,tg,interior_temperature,q1g)
-    gtflux(itarg,t_ctotal) = q1g
-    
-    ! and the total is just the sum of these
-    gtflux(itarg,t_total) = gtflux(itarg,t_ftotal) + gtflux(itarg,t_wtotal) + gtflux(itarg,t_gtotal) + gtflux(itarg,t_ctotal)
-
-
     ! convection for the back
     call convective_flux(iwb,tgb,ttargb,q1b)
     call convective_flux(iwb,tgb,ttargb+dttargb,q2b)
@@ -421,6 +390,27 @@ contains
 
     flux(2) = temis*(qtfflux(itarg,2) + qtwflux(itarg,2) + qtgflux(itarg,2)) + qtcflux(itarg,2) - temis*sigma*ttargb**4
     dflux(2) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
+
+    ! store fluxes for printout
+    do i = 1,2
+        targptr%flux_fire(i) = temis*qtfflux(itarg,i)
+        targptr%flux_gas(i) = temis*qtgflux(itarg,i)
+        targptr%flux_surface(i) = temis*qtwflux(itarg,i)
+        targptr%flux_convection(i) = qtcflux(itarg,i)
+        targptr%flux_target(i) = -temis*sigma*ttarg(i)**4
+        targptr%flux_radiation(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_target(i)
+        targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_convection(i) + targptr%flux_target(i)
+
+        call convective_flux (iw,tg,interior_temperature,q1g)
+        targptr%flux_convection_gauge = q1g
+        targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
+        targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_target_gauge(i)
+        targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_convection_gauge(i) + targptr%flux_target_gauge(i)
+    end do
 
     return
     end subroutine targflux

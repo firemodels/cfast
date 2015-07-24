@@ -648,7 +648,7 @@
 
         ipar(2) = all
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
+        call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold)
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
@@ -731,7 +731,7 @@
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
+                call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold)
                 call set_info_flags (info,rwork)
             else if (td==t) then
                 call set_info_flags (info,rwork)
@@ -772,7 +772,7 @@
 
 ! --------------------------- update_solution -------------------------------------------
 
-    subroutine update_solution(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold, pdzero)
+    subroutine update_solution(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold)
 
     !     routine: update_solution
     !     purpose: update solution returned by dassl
@@ -783,7 +783,6 @@
     implicit none
 
     integer, intent(in) :: nodes, nequals, nlspct
-    real(eb), intent(in) :: pdzero(*)
     real(eb), intent(in) :: t, told
     
     real(eb), intent(out) :: p(*), pold(*), pdold(*), pdnew(*)
@@ -801,8 +800,8 @@
     end do
 
     ! advance explicit target temperatures and update implicit temperatures
-    call target (1,xplicit,dt,pdzero,pdnew)
-    call target (1,mplicit,dt,pdzero,pdnew)
+    call target (1,xplicit,dt,pdnew)
+    call target (1,mplicit,dt,pdnew)
     if (nlspct>0) call synchronize_species_mass (p,nodes+1)
 
     do i = 1, nequals
@@ -1304,7 +1303,7 @@
     call conduction (update,dt,flxtot,delta)
 
     ! target residual
-    call target (0,mplicit,dt,xpsolve,delta)
+    call target (0,mplicit,dt,delta)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then
@@ -1366,14 +1365,15 @@
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
         itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, xdelt, tstop, zzu, zzl, &
-        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o, ptemp
+        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o, ptemp, epscut
         
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
-        qfurnout=sigma*(kelvin_c_offset+wtemp)**4
+        wtemp = wtemp + kelvin_c_offset
+        qfurnout=sigma*wtemp**4
     endif
 
     xwall_center = 2.0_eb
@@ -1701,8 +1701,13 @@
 
             zzrelp(iroom) = pdif(iroom)
             zzpabs(iroom) = pdif(iroom) + pofset
-            zztemp(iroom,upper) = pdif(iroom+noftu)
-            zztemp(iroom,lower) = pdif(iroom+noftl)
+            if(nfurn>0)then
+              zztemp(iroom,upper) = wtemp
+              zztemp(iroom,lower) = wtemp
+            else
+              zztemp(iroom,upper) = pdif(iroom+noftu)
+              zztemp(iroom,lower) = pdif(iroom+noftl)
+            endif
 
             ! there is a problem with how flow is being withdrawn from layers
             ! when the layers are small and the flow is large (for example with
@@ -1751,16 +1756,17 @@
                 roomptr%wall_center(i+5,3) = ylay/2.0_eb
             end do
 
-            ! Test code to fix a bug
-
-            if (abs(zzrelp(iroom)).ge.0.2) then
-                ptemp = zzpabs(iroom)
-            elseif (abs(zzrelp(iroom)).le.0.1) then
-                ptemp = pofset
+            ! Eliminate very small noise in the pressure equation. This was added to correct
+            ! phantom flows with very small pressure differences. This is the same algorithm
+            ! used in hrozontal and vertical flow
+            epscut = 1.0e-5_eb*max(1.0_eb,abs(zzrelp(iroom)))
+            ! test for underflow
+            if (abs(zzrelp(iroom)/epscut)<=130.0_eb) then
+                ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pofset
             else
-                ptemp = abs(zzrelp(iroom))-0.1
-                ptemp = sign(-30*ptemp**3 + 23*ptemp**2,zzrelp(iroom)) + pofset
+                ptemp = zzpabs(iroom)
             endif
+
             do layer = upper, lower
                 zzrho(iroom,layer) = ptemp/rgas/zztemp(iroom,layer)
                 zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)
@@ -1791,7 +1797,7 @@
         do itarg = 1, ntarg
             if(ixtarg(trgmeth,itarg)==mplicit) then
                 ieq = iztarg(itarg)
-                xxtarg(idxtempf_trg,itarg) = p(ieq+noftt)
+                xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
             endif
         end do
 
@@ -1807,13 +1813,21 @@
                     ifromw = izwall(ieqfrom,w_from_wall)
                     itor = izwall(ieqfrom,w_to_room)
                     itow = izwall(ieqfrom,w_to_wall)
-                    zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                    if(nfurn.gt.0)then
+                       zzwtemp(iroom,iwall,1) = wtemp
+                    else
+                       zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                    endif
                     iwalleq2 = izwmap2(itow,itor)
                     iinode = numnode(1,iwall,iroom)
-                    if(iwalleq2==0)then
-                        zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
+                    if(nfurn.gt.0)then
+                       zzwtemp(iroom,iwall,2) = wtemp
                     else
-                        zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
+                       if(iwalleq2==0)then
+                           zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
+                       else
+                           zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
+                       endif
                     endif
                 else
 
@@ -1826,7 +1840,11 @@
                     else
                         ilay = lower
                     endif
-                    zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
+                    if(nfurn.gt.0)then
+                      zzwtemp(iroom,iwall,1) = wtemp
+                    else
+                      zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
+                    endif
                 endif
             end do
         end do

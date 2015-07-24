@@ -12,8 +12,7 @@ Public Class Target
     Friend Const Explicit As Integer = 1
     Friend Const Steady As Integer = 2
     Friend Const ThermallyThick As Integer = 0
-    Friend Const ThermallyThin As Integer = 1
-    Friend Const Cylindrical As Integer = 2
+    Friend Const Cylindrical As Integer = 1
     Friend Const TypeHeatDetector As Integer = 1                    ' Type 0 is a normal target (type from above), 1 is a heat detector, 2 is a smoke detector and 3 is a sprinkler
     Friend Const TypeSmokeDetector As Integer = 0
     Friend Const TypeSprinkler As Integer = 2
@@ -31,7 +30,7 @@ Public Class Target
     Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
     Private aInternalLocation As Single         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
     Private aMaterial As String                 ' Target material from material database
-    Private aSolutionThickness As Integer       ' 0 for thermally thick which is the PDE option or 1 for thermally thin which is the ODE option
+    Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no loger supported
     Private aSolutionMethod As Integer          ' 0 for implicit solution or 1 for explicit solution or 2 for steady solution
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
     Private aActivationTemperature As Single    ' Activation temperature for all detector types.  Default depends on type
@@ -52,7 +51,7 @@ Public Class Target
         aZNormal = 1.0
         aInternalLocation = 0.5
         aMaterial = "Off"
-        aSolutionThickness = 0
+        aSolutionType = 0
         aSolutionMethod = 0
         aDetectorType = 1
         aActivationTemperature = 10.0 + 273.15
@@ -232,13 +231,13 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property SolutionThickness() As Integer
+    Public Property SolutionType() As Integer
         Get
-            Return aSolutionThickness
+            Return aSolutionType
         End Get
         Set(ByVal Value As Integer)
-            If Value <> aSolutionThickness Then
-                Me.aSolutionThickness = Value
+            If Value <> aSolutionType Then
+                Me.aSolutionType = Value
                 aChanged = True
             End If
         End Set
@@ -308,7 +307,7 @@ Public Class Target
         Me.YNormal = YNormal
         Me.ZNormal = ZNormal
     End Sub
-    Public Sub SetTarget(ByVal index As Integer, ByVal Material As String, ByVal SolutionThickness As Integer, ByVal SolutionMethod As Integer)
+    Public Sub SetTarget(ByVal index As Integer, ByVal Material As String, ByVal SolutionType As Integer, ByVal SolutionMethod As Integer)
         ' This one defines a target
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
@@ -316,12 +315,10 @@ Public Class Target
             Me.Compartment = index
             Me.DetectorType = TypeTarget
             Me.Material = Material
-            If SolutionThickness = Cylindrical Then
-                Me.SolutionThickness = Cylindrical
-            ElseIf SolutionThickness = ThermallyThick Then
-                Me.SolutionThickness = ThermallyThick
+            If SolutionType = Cylindrical Then
+                Me.SolutionType = Cylindrical
             Else
-                Me.SolutionThickness = ThermallyThin
+                Me.SolutionType = ThermallyThick
             End If
             If SolutionMethod = Explicit Then
                 Me.SolutionMethod = Explicit
@@ -470,7 +467,7 @@ Public Class TargetCollection
         ToTarget.YNormal = FromTarget.YNormal
         ToTarget.ZNormal = FromTarget.ZNormal
         ToTarget.Material = FromTarget.Material
-        ToTarget.SolutionThickness = FromTarget.SolutionThickness
+        ToTarget.SolutionType = FromTarget.SolutionType
         ToTarget.SolutionMethod = FromTarget.SolutionMethod
         ToTarget.DetectorType = FromTarget.DetectorType
         ToTarget.ActivationTemperature = FromTarget.ActivationTemperature

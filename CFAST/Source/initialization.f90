@@ -618,7 +618,7 @@
             ieq = iztarg(itarg)
             p(noftt+ieq) = interior_temperature
         endif  
-        do i=idxtempf_trg,idx_tempb_trg
+        do i=idx_tempf_trg,idx_tempb_trg
             xxtarg(i,itarg)=interior_temperature
         end do
         tgtarg(itarg) = interior_temperature

@@ -14,6 +14,11 @@ Public Class CeditMain
     Friend WithEvents TargetName As System.Windows.Forms.TextBox
     Friend WithEvents Label116 As System.Windows.Forms.Label
     Friend WithEvents FireTarget As System.Windows.Forms.ComboBox
+    Friend WithEvents OutputValidation As System.Windows.Forms.CheckBox
+    Friend WithEvents OutputShowCFAST As System.Windows.Forms.CheckBox
+    Friend WithEvents OutputDebug As System.Windows.Forms.CheckBox
+    Friend WithEvents OutputTotalMass As System.Windows.Forms.CheckBox
+    Friend WithEvents Output As System.Windows.Forms.StatusBarPanel
     Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 #Region " Windows Form Designer generated code "
 
@@ -91,14 +96,14 @@ Public Class CeditMain
     Friend WithEvents EnvAdiabatic As System.Windows.Forms.CheckBox
     Friend WithEvents ThermalShortName As System.Windows.Forms.TextBox
     Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
-    Friend WithEvents VisualResolution As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents VisualResolutionSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents Label31 As System.Windows.Forms.Label
     Friend WithEvents VisualizationX As System.Windows.Forms.TextBox
     Friend WithEvents Label35 As System.Windows.Forms.Label
     Friend WithEvents VisualizationZ As System.Windows.Forms.TextBox
     Friend WithEvents Label32 As System.Windows.Forms.Label
     Friend WithEvents VisualizationY As System.Windows.Forms.TextBox
-    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+    Friend WithEvents GroupVisualizations As System.Windows.Forms.GroupBox
     Friend WithEvents Label30 As System.Windows.Forms.Label
     Friend WithEvents EnvIntAmbRH As System.Windows.Forms.TextBox
     Friend WithEvents CompCorridor As System.Windows.Forms.RadioButton
@@ -131,21 +136,14 @@ Public Class CeditMain
     Friend WithEvents CompDensityCeiling As System.Windows.Forms.Label
     Friend WithEvents CompThicknessCeiling As System.Windows.Forms.Label
     Friend WithEvents CompConductCeiling As System.Windows.Forms.Label
-    Friend WithEvents MenuItem2 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuTotalMassOutput As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuNetHeatFluxOutput As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuShowCFAST As System.Windows.Forms.MenuItem
     Friend WithEvents MainOpen As System.Windows.Forms.Button
-    Friend WithEvents MenuValidationOutput As System.Windows.Forms.MenuItem
     Friend WithEvents FireAddt2 As System.Windows.Forms.Button
     Friend WithEvents FireAdd As System.Windows.Forms.Button
     Friend WithEvents FireType As System.Windows.Forms.Label
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
-    Friend WithEvents MenuItem4 As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuDebugOutput As System.Windows.Forms.MenuItem
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents EnvTimeStep As System.Windows.Forms.TextBox
-    Friend WithEvents TabVisuals As System.Windows.Forms.TabPage
+    Friend WithEvents TabOutput As System.Windows.Forms.TabPage
     Friend WithEvents VisualizationValueLabel As System.Windows.Forms.Label
     Friend WithEvents Label29 As System.Windows.Forms.Label
     Friend WithEvents VisualSummary As C1.Win.C1FlexGrid.C1FlexGrid
@@ -365,7 +363,7 @@ Public Class CeditMain
     Friend WithEvents VVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents MVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents TargetSummary As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents TargetSolutionThickness As System.Windows.Forms.ComboBox
+    Friend WithEvents TargetSolutionType As System.Windows.Forms.ComboBox
     Friend WithEvents TargetSolutionMethod As System.Windows.Forms.ComboBox
     Friend WithEvents DetectorSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents HHeatSummary As C1.Win.C1FlexGrid.C1FlexGrid
@@ -390,7 +388,6 @@ Public Class CeditMain
     Friend WithEvents Label25 As System.Windows.Forms.Label
     Friend WithEvents EnvSmokeviewInterval As System.Windows.Forms.TextBox
     Friend WithEvents MenuNew As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuRunCFast As System.Windows.Forms.MenuItem
     Friend WithEvents SaveDataFileDialog As System.Windows.Forms.SaveFileDialog
     Friend WithEvents OpenDataFileDialog As System.Windows.Forms.OpenFileDialog
     Friend WithEvents MenuExit As System.Windows.Forms.MenuItem
@@ -414,7 +411,6 @@ Public Class CeditMain
     Friend WithEvents MenuViewInput As System.Windows.Forms.MenuItem
     Friend WithEvents MenuViewLog As System.Windows.Forms.MenuItem
     Friend WithEvents MenuFile As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuRun As System.Windows.Forms.MenuItem
     Friend WithEvents MenuView As System.Windows.Forms.MenuItem
     Friend WithEvents MenuShowHelp As System.Windows.Forms.MenuItem
     Friend WithEvents MenuHelp As System.Windows.Forms.MenuItem
@@ -445,6 +441,7 @@ Public Class CeditMain
         Me.StatusBar = New System.Windows.Forms.StatusBar()
         Me.Errors = New System.Windows.Forms.StatusBarPanel()
         Me.Message = New System.Windows.Forms.StatusBarPanel()
+        Me.Output = New System.Windows.Forms.StatusBarPanel()
         Me.MainMenu = New System.Windows.Forms.MainMenu(Me.components)
         Me.MenuFile = New System.Windows.Forms.MenuItem()
         Me.MenuNew = New System.Windows.Forms.MenuItem()
@@ -457,18 +454,6 @@ Public Class CeditMain
         Me.MenuRecent2 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent3 = New System.Windows.Forms.MenuItem()
         Me.MenuRecent4 = New System.Windows.Forms.MenuItem()
-        Me.MenuRun = New System.Windows.Forms.MenuItem()
-        Me.MenuSMVGeometry = New System.Windows.Forms.MenuItem()
-        Me.MenuRunCFast = New System.Windows.Forms.MenuItem()
-        Me.MenuSMVSimulation = New System.Windows.Forms.MenuItem()
-        Me.MenuItem1 = New System.Windows.Forms.MenuItem()
-        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
-        Me.MenuTotalMassOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuNetHeatFluxOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuValidationOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuItem4 = New System.Windows.Forms.MenuItem()
-        Me.MenuDebugOutput = New System.Windows.Forms.MenuItem()
-        Me.MenuShowCFAST = New System.Windows.Forms.MenuItem()
         Me.MenuView = New System.Windows.Forms.MenuItem()
         Me.MenuUnits = New System.Windows.Forms.MenuItem()
         Me.MenuItem5 = New System.Windows.Forms.MenuItem()
@@ -742,7 +727,7 @@ Public Class CeditMain
         Me.Label80 = New System.Windows.Forms.Label()
         Me.Label79 = New System.Windows.Forms.Label()
         Me.TargetSolutionMethod = New System.Windows.Forms.ComboBox()
-        Me.TargetSolutionThickness = New System.Windows.Forms.ComboBox()
+        Me.TargetSolutionType = New System.Windows.Forms.ComboBox()
         Me.TargetComp = New System.Windows.Forms.ComboBox()
         Me.Label74 = New System.Windows.Forms.Label()
         Me.GroupBox28 = New System.Windows.Forms.GroupBox()
@@ -811,7 +796,10 @@ Public Class CeditMain
         Me.ThermalEmissivity = New System.Windows.Forms.TextBox()
         Me.Label104 = New System.Windows.Forms.Label()
         Me.ThermalShortName = New System.Windows.Forms.TextBox()
-        Me.TabVisuals = New System.Windows.Forms.TabPage()
+        Me.TabOutput = New System.Windows.Forms.TabPage()
+        Me.OutputTotalMass = New System.Windows.Forms.CheckBox()
+        Me.OutputValidation = New System.Windows.Forms.CheckBox()
+        Me.OutputShowCFAST = New System.Windows.Forms.CheckBox()
         Me.GroupVisualResolution = New System.Windows.Forms.GroupBox()
         Me.Label35 = New System.Windows.Forms.Label()
         Me.VisualizationZ = New System.Windows.Forms.TextBox()
@@ -819,8 +807,9 @@ Public Class CeditMain
         Me.VisualizationY = New System.Windows.Forms.TextBox()
         Me.Label31 = New System.Windows.Forms.Label()
         Me.VisualizationX = New System.Windows.Forms.TextBox()
-        Me.VisualResolution = New C1.Win.C1FlexGrid.C1FlexGrid()
-        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.VisualResolutionSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.OutputDebug = New System.Windows.Forms.CheckBox()
+        Me.GroupVisualizations = New System.Windows.Forms.GroupBox()
         Me.VisualSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.VisualizationAxisLabel = New System.Windows.Forms.Label()
         Me.VisualizationAdd = New System.Windows.Forms.Button()
@@ -845,6 +834,7 @@ Public Class CeditMain
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabEnvironment.SuspendLayout()
         Me.GroupBox8.SuspendLayout()
         Me.GroupBox12.SuspendLayout()
@@ -896,10 +886,10 @@ Public Class CeditMain
         Me.TabMaterials.SuspendLayout()
         CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupThermal.SuspendLayout()
-        Me.TabVisuals.SuspendLayout()
+        Me.TabOutput.SuspendLayout()
         Me.GroupVisualResolution.SuspendLayout()
-        CType(Me.VisualResolution, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox4.SuspendLayout()
+        CType(Me.VisualResolutionSummary, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupVisualizations.SuspendLayout()
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -909,28 +899,35 @@ Public Class CeditMain
         '
         Me.StatusBar.Location = New System.Drawing.Point(0, 684)
         Me.StatusBar.Name = "StatusBar"
-        Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.Errors, Me.Message})
+        Me.StatusBar.Panels.AddRange(New System.Windows.Forms.StatusBarPanel() {Me.Errors, Me.Message, Me.Output})
         Me.StatusBar.ShowPanels = True
         Me.StatusBar.Size = New System.Drawing.Size(1004, 22)
         Me.StatusBar.TabIndex = 2
         '
         'Errors
         '
+        Me.Errors.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents
         Me.Errors.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None
         Me.Errors.Name = "Errors"
         Me.Errors.Text = "No Errors"
-        Me.Errors.Width = 200
+        Me.Errors.Width = 62
         '
         'Message
         '
         Me.Message.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None
         Me.Message.Name = "Message"
         Me.Message.Text = "0"
-        Me.Message.Width = 800
+        Me.Message.Width = 500
+        '
+        'Output
+        '
+        Me.Output.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None
+        Me.Output.Name = "Output"
+        Me.Output.Width = 400
         '
         'MainMenu
         '
-        Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuRun, Me.MenuView, Me.MenuHelp})
+        Me.MainMenu.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuFile, Me.MenuView, Me.MenuHelp})
         '
         'MenuFile
         '
@@ -996,74 +993,9 @@ Public Class CeditMain
         Me.MenuRecent4.Text = "4 File 4"
         Me.MenuRecent4.Visible = False
         '
-        'MenuRun
-        '
-        Me.MenuRun.Index = 1
-        Me.MenuRun.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuSMVGeometry, Me.MenuRunCFast, Me.MenuSMVSimulation, Me.MenuItem1, Me.MenuItem2})
-        Me.MenuRun.Text = "Run!"
-        '
-        'MenuSMVGeometry
-        '
-        Me.MenuSMVGeometry.Index = 0
-        Me.MenuSMVGeometry.Text = "Create Geometry File"
-        '
-        'MenuRunCFast
-        '
-        Me.MenuRunCFast.Index = 1
-        Me.MenuRunCFast.Shortcut = System.Windows.Forms.Shortcut.CtrlR
-        Me.MenuRunCFast.Text = "Model Simulation, CFAST"
-        '
-        'MenuSMVSimulation
-        '
-        Me.MenuSMVSimulation.Index = 2
-        Me.MenuSMVSimulation.Text = "Simulation Visualization, Smokeview"
-        '
-        'MenuItem1
-        '
-        Me.MenuItem1.Index = 3
-        Me.MenuItem1.Text = "-"
-        '
-        'MenuItem2
-        '
-        Me.MenuItem2.Index = 4
-        Me.MenuItem2.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuTotalMassOutput, Me.MenuNetHeatFluxOutput, Me.MenuValidationOutput, Me.MenuItem4, Me.MenuDebugOutput, Me.MenuShowCFAST})
-        Me.MenuItem2.Text = "Output Options"
-        '
-        'MenuTotalMassOutput
-        '
-        Me.MenuTotalMassOutput.Index = 0
-        Me.MenuTotalMassOutput.Text = "Total Mass Output File"
-        '
-        'MenuNetHeatFluxOutput
-        '
-        Me.MenuNetHeatFluxOutput.Checked = True
-        Me.MenuNetHeatFluxOutput.Index = 1
-        Me.MenuNetHeatFluxOutput.Text = "Net Heat Flux"
-        '
-        'MenuValidationOutput
-        '
-        Me.MenuValidationOutput.Index = 2
-        Me.MenuValidationOutput.Text = "CFAST Validation Output"
-        '
-        'MenuItem4
-        '
-        Me.MenuItem4.Index = 3
-        Me.MenuItem4.Text = "-"
-        '
-        'MenuDebugOutput
-        '
-        Me.MenuDebugOutput.Index = 4
-        Me.MenuDebugOutput.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftD
-        Me.MenuDebugOutput.Text = "Debug Output"
-        '
-        'MenuShowCFAST
-        '
-        Me.MenuShowCFAST.Index = 5
-        Me.MenuShowCFAST.Text = "Show CFAST Window"
-        '
         'MenuView
         '
-        Me.MenuView.Index = 2
+        Me.MenuView.Index = 1
         Me.MenuView.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuUnits, Me.MenuItem5, Me.MenuViewInput, Me.MenuViewOutput, Me.MenuViewLog})
         Me.MenuView.Text = "View"
         '
@@ -1094,7 +1026,7 @@ Public Class CeditMain
         '
         'MenuHelp
         '
-        Me.MenuHelp.Index = 3
+        Me.MenuHelp.Index = 2
         Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
         Me.MenuHelp.Text = "Help"
         '
@@ -3624,9 +3556,9 @@ Public Class CeditMain
         Me.GroupTargets.Controls.Add(Me.Label80)
         Me.GroupTargets.Controls.Add(Me.Label79)
         Me.GroupTargets.Controls.Add(Me.TargetSolutionMethod)
-        Me.GroupTargets.Controls.Add(Me.TargetSolutionThickness)
         Me.GroupTargets.Controls.Add(Me.TargetComp)
         Me.GroupTargets.Controls.Add(Me.Label74)
+        Me.GroupTargets.Controls.Add(Me.TargetSolutionType)
         Me.GroupTargets.Controls.Add(Me.GroupBox28)
         Me.GroupTargets.Location = New System.Drawing.Point(61, 275)
         Me.GroupTargets.Name = "GroupTargets"
@@ -3640,7 +3572,7 @@ Public Class CeditMain
         Me.TargetName.Location = New System.Drawing.Point(113, 34)
         Me.TargetName.Name = "TargetName"
         Me.TargetName.Size = New System.Drawing.Size(98, 20)
-        Me.TargetName.TabIndex = 811
+        Me.TargetName.TabIndex = 807
         Me.TargetName.Text = "New Target"
         '
         'Label116
@@ -3675,7 +3607,7 @@ Public Class CeditMain
         Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 140)
         Me.TargetInternalLocation.Name = "TargetInternalLocation"
         Me.TargetInternalLocation.Size = New System.Drawing.Size(96, 20)
-        Me.TargetInternalLocation.TabIndex = 818
+        Me.TargetInternalLocation.TabIndex = 819
         Me.TargetInternalLocation.Text = "0.5"
         '
         'Label59
@@ -3729,7 +3661,7 @@ Public Class CeditMain
         Me.TargetMaterial.Location = New System.Drawing.Point(60, 19)
         Me.TargetMaterial.Name = "TargetMaterial"
         Me.TargetMaterial.Size = New System.Drawing.Size(192, 21)
-        Me.TargetMaterial.TabIndex = 817
+        Me.TargetMaterial.TabIndex = 818
         Me.TargetMaterial.Text = "GYPSUM"
         '
         'Label78
@@ -3745,7 +3677,7 @@ Public Class CeditMain
         'Label80
         '
         Me.Label80.AutoSize = True
-        Me.Label80.Location = New System.Drawing.Point(586, 23)
+        Me.Label80.Location = New System.Drawing.Point(588, 52)
         Me.Label80.Name = "Label80"
         Me.Label80.Size = New System.Drawing.Size(87, 13)
         Me.Label80.TabIndex = 29
@@ -3755,7 +3687,7 @@ Public Class CeditMain
         'Label79
         '
         Me.Label79.AutoSize = True
-        Me.Label79.Location = New System.Drawing.Point(605, 52)
+        Me.Label79.Location = New System.Drawing.Point(607, 23)
         Me.Label79.Name = "Label79"
         Me.Label79.Size = New System.Drawing.Size(68, 13)
         Me.Label79.TabIndex = 40
@@ -3766,21 +3698,21 @@ Public Class CeditMain
         '
         Me.TargetSolutionMethod.ItemHeight = 13
         Me.TargetSolutionMethod.Items.AddRange(New Object() {"Implicit", "Explicit", "Steady"})
-        Me.TargetSolutionMethod.Location = New System.Drawing.Point(682, 19)
+        Me.TargetSolutionMethod.Location = New System.Drawing.Point(684, 48)
         Me.TargetSolutionMethod.Name = "TargetSolutionMethod"
         Me.TargetSolutionMethod.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionMethod.TabIndex = 809
+        Me.TargetSolutionMethod.TabIndex = 810
         Me.TargetSolutionMethod.Text = "Implicit"
         '
-        'TargetSolutionThickness
+        'TargetSolutionType
         '
-        Me.TargetSolutionThickness.ItemHeight = 13
-        Me.TargetSolutionThickness.Items.AddRange(New Object() {"Thermally Thick", "Thermally Thin", "Cylindrical"})
-        Me.TargetSolutionThickness.Location = New System.Drawing.Point(682, 48)
-        Me.TargetSolutionThickness.Name = "TargetSolutionThickness"
-        Me.TargetSolutionThickness.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionThickness.TabIndex = 808
-        Me.TargetSolutionThickness.Text = "Thermally Thick"
+        Me.TargetSolutionType.ItemHeight = 13
+        Me.TargetSolutionType.Items.AddRange(New Object() {"Plate", "Cylinder"})
+        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 19)
+        Me.TargetSolutionType.Name = "TargetSolutionType"
+        Me.TargetSolutionType.Size = New System.Drawing.Size(104, 21)
+        Me.TargetSolutionType.TabIndex = 809
+        Me.TargetSolutionType.Text = "Plate"
         '
         'TargetComp
         '
@@ -3789,7 +3721,7 @@ Public Class CeditMain
         Me.TargetComp.Location = New System.Drawing.Point(343, 33)
         Me.TargetComp.Name = "TargetComp"
         Me.TargetComp.Size = New System.Drawing.Size(208, 21)
-        Me.TargetComp.TabIndex = 807
+        Me.TargetComp.TabIndex = 808
         '
         'Label74
         '
@@ -3849,7 +3781,7 @@ Public Class CeditMain
         Me.TargetNormalCalc.Location = New System.Drawing.Point(203, 41)
         Me.TargetNormalCalc.Name = "TargetNormalCalc"
         Me.TargetNormalCalc.Size = New System.Drawing.Size(157, 21)
-        Me.TargetNormalCalc.TabIndex = 813
+        Me.TargetNormalCalc.TabIndex = 814
         Me.TargetNormalCalc.Text = "User Specified"
         '
         'TargetZPosition
@@ -3857,14 +3789,14 @@ Public Class CeditMain
         Me.TargetZPosition.Location = New System.Drawing.Point(75, 141)
         Me.TargetZPosition.Name = "TargetZPosition"
         Me.TargetZPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetZPosition.TabIndex = 812
+        Me.TargetZPosition.TabIndex = 813
         '
         'TargetZNormal
         '
         Me.TargetZNormal.Location = New System.Drawing.Point(264, 141)
         Me.TargetZNormal.Name = "TargetZNormal"
         Me.TargetZNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetZNormal.TabIndex = 816
+        Me.TargetZNormal.TabIndex = 817
         '
         'Label75
         '
@@ -3891,14 +3823,14 @@ Public Class CeditMain
         Me.TargetYPosition.Location = New System.Drawing.Point(75, 108)
         Me.TargetYPosition.Name = "TargetYPosition"
         Me.TargetYPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetYPosition.TabIndex = 811
+        Me.TargetYPosition.TabIndex = 812
         '
         'TargetYNormal
         '
         Me.TargetYNormal.Location = New System.Drawing.Point(264, 109)
         Me.TargetYNormal.Name = "TargetYNormal"
         Me.TargetYNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetYNormal.TabIndex = 815
+        Me.TargetYNormal.TabIndex = 816
         '
         'Label72
         '
@@ -3925,14 +3857,14 @@ Public Class CeditMain
         Me.TargetXNormal.Location = New System.Drawing.Point(264, 77)
         Me.TargetXNormal.Name = "TargetXNormal"
         Me.TargetXNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetXNormal.TabIndex = 814
+        Me.TargetXNormal.TabIndex = 815
         '
         'TargetXPosition
         '
         Me.TargetXPosition.Location = New System.Drawing.Point(75, 75)
         Me.TargetXPosition.Name = "TargetXPosition"
         Me.TargetXPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetXPosition.TabIndex = 810
+        Me.TargetXPosition.TabIndex = 811
         '
         'Label73
         '
@@ -4245,7 +4177,7 @@ Public Class CeditMain
         Me.TabMain.Controls.Add(Me.TabTargets)
         Me.TabMain.Controls.Add(Me.TabDetection)
         Me.TabMain.Controls.Add(Me.TabHeatTransfer)
-        Me.TabMain.Controls.Add(Me.TabVisuals)
+        Me.TabMain.Controls.Add(Me.TabOutput)
         Me.TabMain.ItemSize = New System.Drawing.Size(122, 18)
         Me.TabMain.Location = New System.Drawing.Point(20, 1)
         Me.TabMain.Name = "TabMain"
@@ -4453,17 +4385,51 @@ Public Class CeditMain
         Me.ThermalShortName.Size = New System.Drawing.Size(80, 20)
         Me.ThermalShortName.TabIndex = 207
         '
-        'TabVisuals
+        'TabOutput
         '
-        Me.TabVisuals.Controls.Add(Me.GroupVisualResolution)
-        Me.TabVisuals.Controls.Add(Me.GroupBox4)
-        Me.TabVisuals.Location = New System.Drawing.Point(4, 22)
-        Me.TabVisuals.Name = "TabVisuals"
-        Me.TabVisuals.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabVisuals.Size = New System.Drawing.Size(976, 592)
-        Me.TabVisuals.TabIndex = 8
-        Me.TabVisuals.Text = "Visualizations"
-        Me.TabVisuals.UseVisualStyleBackColor = True
+        Me.TabOutput.Controls.Add(Me.OutputTotalMass)
+        Me.TabOutput.Controls.Add(Me.OutputValidation)
+        Me.TabOutput.Controls.Add(Me.OutputShowCFAST)
+        Me.TabOutput.Controls.Add(Me.GroupVisualResolution)
+        Me.TabOutput.Controls.Add(Me.OutputDebug)
+        Me.TabOutput.Controls.Add(Me.GroupVisualizations)
+        Me.TabOutput.Location = New System.Drawing.Point(4, 22)
+        Me.TabOutput.Name = "TabOutput"
+        Me.TabOutput.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabOutput.Size = New System.Drawing.Size(976, 592)
+        Me.TabOutput.TabIndex = 8
+        Me.TabOutput.Text = "Output"
+        Me.TabOutput.UseVisualStyleBackColor = True
+        '
+        'OutputTotalMass
+        '
+        Me.OutputTotalMass.AutoSize = True
+        Me.OutputTotalMass.Location = New System.Drawing.Point(818, 272)
+        Me.OutputTotalMass.Name = "OutputTotalMass"
+        Me.OutputTotalMass.Size = New System.Drawing.Size(113, 17)
+        Me.OutputTotalMass.TabIndex = 121
+        Me.OutputTotalMass.Text = "Total Mass Output"
+        Me.OutputTotalMass.UseVisualStyleBackColor = True
+        '
+        'OutputValidation
+        '
+        Me.OutputValidation.AutoSize = True
+        Me.OutputValidation.Location = New System.Drawing.Point(818, 240)
+        Me.OutputValidation.Name = "OutputValidation"
+        Me.OutputValidation.Size = New System.Drawing.Size(107, 17)
+        Me.OutputValidation.TabIndex = 118
+        Me.OutputValidation.Text = "Validation Output"
+        Me.OutputValidation.UseVisualStyleBackColor = True
+        '
+        'OutputShowCFAST
+        '
+        Me.OutputShowCFAST.AutoSize = True
+        Me.OutputShowCFAST.Location = New System.Drawing.Point(818, 336)
+        Me.OutputShowCFAST.Name = "OutputShowCFAST"
+        Me.OutputShowCFAST.Size = New System.Drawing.Size(132, 17)
+        Me.OutputShowCFAST.TabIndex = 120
+        Me.OutputShowCFAST.Text = "Show CFAST Window"
+        Me.OutputShowCFAST.UseVisualStyleBackColor = True
         '
         'GroupVisualResolution
         '
@@ -4473,17 +4439,17 @@ Public Class CeditMain
         Me.GroupVisualResolution.Controls.Add(Me.VisualizationY)
         Me.GroupVisualResolution.Controls.Add(Me.Label31)
         Me.GroupVisualResolution.Controls.Add(Me.VisualizationX)
-        Me.GroupVisualResolution.Controls.Add(Me.VisualResolution)
+        Me.GroupVisualResolution.Controls.Add(Me.VisualResolutionSummary)
         Me.GroupVisualResolution.Location = New System.Drawing.Point(25, 315)
         Me.GroupVisualResolution.Name = "GroupVisualResolution"
-        Me.GroupVisualResolution.Size = New System.Drawing.Size(931, 223)
+        Me.GroupVisualResolution.Size = New System.Drawing.Size(743, 223)
         Me.GroupVisualResolution.TabIndex = 117
         Me.GroupVisualResolution.TabStop = False
         Me.GroupVisualResolution.Text = "Resolution"
         '
         'Label35
         '
-        Me.Label35.Location = New System.Drawing.Point(533, 126)
+        Me.Label35.Location = New System.Drawing.Point(487, 126)
         Me.Label35.Name = "Label35"
         Me.Label35.Size = New System.Drawing.Size(90, 23)
         Me.Label35.TabIndex = 119
@@ -4492,14 +4458,14 @@ Public Class CeditMain
         '
         'VisualizationZ
         '
-        Me.VisualizationZ.Location = New System.Drawing.Point(629, 129)
+        Me.VisualizationZ.Location = New System.Drawing.Point(583, 129)
         Me.VisualizationZ.Name = "VisualizationZ"
         Me.VisualizationZ.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationZ.TabIndex = 1114
         '
         'Label32
         '
-        Me.Label32.Location = New System.Drawing.Point(533, 100)
+        Me.Label32.Location = New System.Drawing.Point(487, 100)
         Me.Label32.Name = "Label32"
         Me.Label32.Size = New System.Drawing.Size(90, 23)
         Me.Label32.TabIndex = 117
@@ -4508,14 +4474,14 @@ Public Class CeditMain
         '
         'VisualizationY
         '
-        Me.VisualizationY.Location = New System.Drawing.Point(629, 103)
+        Me.VisualizationY.Location = New System.Drawing.Point(583, 103)
         Me.VisualizationY.Name = "VisualizationY"
         Me.VisualizationY.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationY.TabIndex = 1113
         '
         'Label31
         '
-        Me.Label31.Location = New System.Drawing.Point(530, 74)
+        Me.Label31.Location = New System.Drawing.Point(484, 74)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(93, 23)
         Me.Label31.TabIndex = 115
@@ -4524,53 +4490,63 @@ Public Class CeditMain
         '
         'VisualizationX
         '
-        Me.VisualizationX.Location = New System.Drawing.Point(629, 77)
+        Me.VisualizationX.Location = New System.Drawing.Point(583, 77)
         Me.VisualizationX.Name = "VisualizationX"
         Me.VisualizationX.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationX.TabIndex = 1111
         '
-        'VisualResolution
+        'VisualResolutionSummary
         '
-        Me.VisualResolution.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
-        Me.VisualResolution.AllowEditing = False
-        Me.VisualResolution.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
-        Me.VisualResolution.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.VisualResolution.AutoGenerateColumns = False
-        Me.VisualResolution.ColumnInfo = resources.GetString("VisualResolution.ColumnInfo")
-        Me.VisualResolution.ExtendLastCol = True
-        Me.VisualResolution.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
-        Me.VisualResolution.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.VisualResolution.Location = New System.Drawing.Point(24, 18)
-        Me.VisualResolution.Name = "VisualResolution"
-        Me.VisualResolution.Rows.DefaultSize = 19
-        Me.VisualResolution.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.VisualResolution.Size = New System.Drawing.Size(417, 187)
-        Me.VisualResolution.StyleInfo = resources.GetString("VisualResolution.StyleInfo")
-        Me.VisualResolution.TabIndex = 1110
-        Me.VisualResolution.TabStop = False
-        Me.VisualResolution.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
+        Me.VisualResolutionSummary.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
+        Me.VisualResolutionSummary.AllowEditing = False
+        Me.VisualResolutionSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.VisualResolutionSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.VisualResolutionSummary.AutoGenerateColumns = False
+        Me.VisualResolutionSummary.ColumnInfo = resources.GetString("VisualResolutionSummary.ColumnInfo")
+        Me.VisualResolutionSummary.ExtendLastCol = True
+        Me.VisualResolutionSummary.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
+        Me.VisualResolutionSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.VisualResolutionSummary.Location = New System.Drawing.Point(24, 18)
+        Me.VisualResolutionSummary.Name = "VisualResolutionSummary"
+        Me.VisualResolutionSummary.Rows.DefaultSize = 19
+        Me.VisualResolutionSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.VisualResolutionSummary.Size = New System.Drawing.Size(417, 187)
+        Me.VisualResolutionSummary.StyleInfo = resources.GetString("VisualResolutionSummary.StyleInfo")
+        Me.VisualResolutionSummary.TabIndex = 1110
+        Me.VisualResolutionSummary.TabStop = False
+        Me.VisualResolutionSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
-        'GroupBox4
+        'OutputDebug
         '
-        Me.GroupBox4.Controls.Add(Me.VisualSummary)
-        Me.GroupBox4.Controls.Add(Me.VisualizationAxisLabel)
-        Me.GroupBox4.Controls.Add(Me.VisualizationAdd)
-        Me.GroupBox4.Controls.Add(Me.VisualizationAxis)
-        Me.GroupBox4.Controls.Add(Me.VisualizationType)
-        Me.GroupBox4.Controls.Add(Me.VisualizationValueLabel)
-        Me.GroupBox4.Controls.Add(Me.VisualizationDup)
-        Me.GroupBox4.Controls.Add(Me.Label29)
-        Me.GroupBox4.Controls.Add(Me.VisualizationComp)
-        Me.GroupBox4.Controls.Add(Me.VisualizationDefaults)
-        Me.GroupBox4.Controls.Add(Me.Label7)
-        Me.GroupBox4.Controls.Add(Me.VisualizationValue)
-        Me.GroupBox4.Controls.Add(Me.VisualizationRemove)
-        Me.GroupBox4.Location = New System.Drawing.Point(25, 15)
-        Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(931, 294)
-        Me.GroupBox4.TabIndex = 116
-        Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Visualizations"
+        Me.OutputDebug.AutoSize = True
+        Me.OutputDebug.Location = New System.Drawing.Point(818, 304)
+        Me.OutputDebug.Name = "OutputDebug"
+        Me.OutputDebug.Size = New System.Drawing.Size(93, 17)
+        Me.OutputDebug.TabIndex = 119
+        Me.OutputDebug.Text = "Debug Output"
+        Me.OutputDebug.UseVisualStyleBackColor = True
+        '
+        'GroupVisualizations
+        '
+        Me.GroupVisualizations.Controls.Add(Me.VisualSummary)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationAxisLabel)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationAdd)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationAxis)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationType)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationValueLabel)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationDup)
+        Me.GroupVisualizations.Controls.Add(Me.Label29)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationComp)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationDefaults)
+        Me.GroupVisualizations.Controls.Add(Me.Label7)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationValue)
+        Me.GroupVisualizations.Controls.Add(Me.VisualizationRemove)
+        Me.GroupVisualizations.Location = New System.Drawing.Point(25, 15)
+        Me.GroupVisualizations.Name = "GroupVisualizations"
+        Me.GroupVisualizations.Size = New System.Drawing.Size(743, 294)
+        Me.GroupVisualizations.TabIndex = 116
+        Me.GroupVisualizations.TabStop = False
+        Me.GroupVisualizations.Text = "Visualizations"
         '
         'VisualSummary
         '
@@ -4595,7 +4571,7 @@ Public Class CeditMain
         '
         'VisualizationAxisLabel
         '
-        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(532, 178)
+        Me.VisualizationAxisLabel.Location = New System.Drawing.Point(486, 178)
         Me.VisualizationAxisLabel.Name = "VisualizationAxisLabel"
         Me.VisualizationAxisLabel.Size = New System.Drawing.Size(91, 23)
         Me.VisualizationAxisLabel.TabIndex = 115
@@ -4614,7 +4590,7 @@ Public Class CeditMain
         '
         Me.VisualizationAxis.ItemHeight = 13
         Me.VisualizationAxis.Items.AddRange(New Object() {"X-axis (Width)", "Y-axis (Depth)", "Z-axis (Height)"})
-        Me.VisualizationAxis.Location = New System.Drawing.Point(629, 180)
+        Me.VisualizationAxis.Location = New System.Drawing.Point(583, 180)
         Me.VisualizationAxis.MaxDropDownItems = 3
         Me.VisualizationAxis.Name = "VisualizationAxis"
         Me.VisualizationAxis.Size = New System.Drawing.Size(140, 21)
@@ -4624,7 +4600,7 @@ Public Class CeditMain
         '
         Me.VisualizationType.ItemHeight = 13
         Me.VisualizationType.Items.AddRange(New Object() {"2-D", "3-D", "Isosurface"})
-        Me.VisualizationType.Location = New System.Drawing.Point(629, 94)
+        Me.VisualizationType.Location = New System.Drawing.Point(583, 94)
         Me.VisualizationType.MaxDropDownItems = 3
         Me.VisualizationType.Name = "VisualizationType"
         Me.VisualizationType.Size = New System.Drawing.Size(140, 21)
@@ -4632,7 +4608,7 @@ Public Class CeditMain
         '
         'VisualizationValueLabel
         '
-        Me.VisualizationValueLabel.Location = New System.Drawing.Point(551, 149)
+        Me.VisualizationValueLabel.Location = New System.Drawing.Point(505, 149)
         Me.VisualizationValueLabel.Name = "VisualizationValueLabel"
         Me.VisualizationValueLabel.Size = New System.Drawing.Size(72, 23)
         Me.VisualizationValueLabel.TabIndex = 113
@@ -4649,7 +4625,7 @@ Public Class CeditMain
         '
         'Label29
         '
-        Me.Label29.Location = New System.Drawing.Point(532, 123)
+        Me.Label29.Location = New System.Drawing.Point(486, 123)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(91, 23)
         Me.Label29.TabIndex = 112
@@ -4659,7 +4635,7 @@ Public Class CeditMain
         'VisualizationComp
         '
         Me.VisualizationComp.ItemHeight = 13
-        Me.VisualizationComp.Location = New System.Drawing.Point(629, 123)
+        Me.VisualizationComp.Location = New System.Drawing.Point(583, 123)
         Me.VisualizationComp.Name = "VisualizationComp"
         Me.VisualizationComp.Size = New System.Drawing.Size(140, 21)
         Me.VisualizationComp.TabIndex = 1107
@@ -4674,7 +4650,7 @@ Public Class CeditMain
         '
         'Label7
         '
-        Me.Label7.Location = New System.Drawing.Point(519, 94)
+        Me.Label7.Location = New System.Drawing.Point(473, 94)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(104, 23)
         Me.Label7.TabIndex = 111
@@ -4683,7 +4659,7 @@ Public Class CeditMain
         '
         'VisualizationValue
         '
-        Me.VisualizationValue.Location = New System.Drawing.Point(629, 152)
+        Me.VisualizationValue.Location = New System.Drawing.Point(583, 152)
         Me.VisualizationValue.Name = "VisualizationValue"
         Me.VisualizationValue.Size = New System.Drawing.Size(140, 20)
         Me.VisualizationValue.TabIndex = 1108
@@ -4772,6 +4748,7 @@ Public Class CeditMain
         Me.Text = "CEdit"
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.Output, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabEnvironment.ResumeLayout(False)
         Me.TabEnvironment.PerformLayout()
         Me.GroupBox8.ResumeLayout(False)
@@ -4847,12 +4824,13 @@ Public Class CeditMain
         CType(Me.ThermalSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupThermal.ResumeLayout(False)
         Me.GroupThermal.PerformLayout()
-        Me.TabVisuals.ResumeLayout(False)
+        Me.TabOutput.ResumeLayout(False)
+        Me.TabOutput.PerformLayout()
         Me.GroupVisualResolution.ResumeLayout(False)
         Me.GroupVisualResolution.PerformLayout()
-        CType(Me.VisualResolution, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox4.ResumeLayout(False)
-        Me.GroupBox4.PerformLayout()
+        CType(Me.VisualResolutionSummary, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupVisualizations.ResumeLayout(False)
+        Me.GroupVisualizations.PerformLayout()
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -5751,7 +5729,7 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
-    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, TargetSolutionThickness.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
+    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
         Dim aTarget As New Target, numFires As Integer, i As Integer
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
@@ -5765,9 +5743,8 @@ Public Class CeditMain
             End If
             If sender Is Me.TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
             If sender Is Me.TargetSolutionMethod Then aTarget.SolutionMethod = Me.TargetSolutionMethod.SelectedIndex
-            If sender Is Me.TargetSolutionThickness Then
-                aTarget.SolutionThickness = Me.TargetSolutionThickness.SelectedIndex
-                If aTarget.SolutionThickness = 2 Then aTarget.SolutionMethod = 1
+            If sender Is Me.TargetSolutionType Then
+                aTarget.SolutionType = Me.TargetSolutionType.SelectedIndex
             End If
             If sender Is Me.TargetInternalLocation Then aTarget.InternalLocation = Val(Me.TargetInternalLocation.Text)
             If sender Is Me.TargetXPosition Then
@@ -6167,7 +6144,7 @@ Public Class CeditMain
             UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         End If
     End Sub
-    Private Sub VisualSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualSummary.Click, VisualSummary.AfterSelChange, VisualResolution.Click, VisualResolution.AfterSelChange
+    Private Sub VisualSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualSummary.Click, VisualSummary.AfterSelChange, VisualResolutionSummary.Click, VisualResolutionSummary.AfterSelChange
         ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
         If sender Is VisualSummary Then
@@ -6176,8 +6153,8 @@ Public Class CeditMain
                 CurrentVisual = index
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
             End If
-        ElseIf sender Is VisualResolution Then
-            index = Me.VisualResolution.RowSel - 1
+        ElseIf sender Is VisualResolutionSummary Then
+            index = Me.VisualResolutionSummary.RowSel - 1
             If index >= 0 And index <= myCompartments.Count - 1 Then
                 CurrentCompartment = index
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
@@ -6272,43 +6249,6 @@ Public Class CeditMain
         UpdateGUI.Menu()
         UpdateGUI.General()
     End Sub
-    Private Sub MenuRunCFast_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuRunCFast.Click
-        RunCFAST()
-    End Sub
-    Private Sub MenuSMVGeometry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVGeometry.Click
-        RunSMVGeometry()
-    End Sub
-    Private Sub MenuSMVSimulation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSMVSimulation.Click
-        RunSmokeView()
-    End Sub
-    Private Sub MenuShowCFAST_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowCFAST.Click
-        If Me.MenuShowCFAST.Checked Then
-            Me.MenuShowCFAST.Checked = False
-            CommandWindowVisible = False
-        Else
-            Me.MenuShowCFAST.Checked = True
-            CommandWindowVisible = True
-        End If
-        SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
-    End Sub
-    Private Sub MenuTotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuTotalMassOutput.Click
-        If Me.MenuTotalMassOutput.Checked Then
-            TotalMassCFASTOutput = False
-        Else
-            TotalMassCFASTOutput = True
-        End If
-        Me.MenuTotalMassOutput.Checked = TotalMassCFASTOutput
-        SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
-    End Sub
-    Private Sub MenuNetHeatFluxOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuNetHeatFluxOutput.Click
-        If Me.MenuNetHeatFluxOutput.Checked Then
-            NetHeatFluxCFASTOutput = False
-        Else
-            NetHeatFluxCFASTOutput = True
-        End If
-        Me.MenuNetHeatFluxOutput.Checked = NetHeatFluxCFASTOutput
-        SaveSetting("CFAST", "Options", "NetHeatFlux", NetHeatFluxCFASTOutput.ToString)
-    End Sub
     Private Sub MenuExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuExit.Click
         Application.Exit()
     End Sub
@@ -6340,22 +6280,40 @@ Public Class CeditMain
             MenuView.Enabled = True
         End If
     End Sub
-    Private Sub MenuValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuValidationOutput.Click
-        If Me.MenuValidationOutput.Checked Then
-            ValidationOutput = False
-        Else
+    Private Sub ValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputValidation.CheckedChanged
+        If Me.OutputValidation.Checked Then
             ValidationOutput = True
-        End If
-        Me.MenuValidationOutput.Checked = ValidationOutput
-        SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
-    End Sub
-    Private Sub MenuDebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles MenuDebugOutput.Click
-        If Me.MenuDebugOutput.Checked Then
-            DebugOutput = False
         Else
-            DebugOutput = True
+            ValidationOutput = False
         End If
-        Me.MenuDebugOutput.Checked = DebugOutput
+        SaveSetting("CFAST", "Options", "Validation", ValidationOutput.ToString)
+        UpdateGUI.General()
+    End Sub
+    Private Sub DebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles OutputDebug.CheckedChanged
+        If Me.OutputDebug.Checked Then
+            DebugOutput = True
+        Else
+            DebugOutput = False
+        End If
+        UpdateGUI.General()
+    End Sub
+    Private Sub ShowCFAST_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputShowCFAST.CheckedChanged
+        If Me.OutputShowCFAST.Checked Then
+            CommandWindowVisible = True
+        Else
+            CommandWindowVisible = False
+        End If
+        SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
+        UpdateGUI.General()
+    End Sub
+    Private Sub TotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputTotalMass.CheckedChanged
+        If Me.OutputTotalMass.Checked Then
+            TotalMassCFASTOutput = True
+        Else
+            TotalMassCFASTOutput = False
+        End If
+        SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
+        UpdateGUI.General()
     End Sub
     Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click
         Dim iReturn As Integer
@@ -6465,7 +6423,7 @@ Public Class CeditMain
             Else
                 CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """" + " /I"
             End If
-            If MenuShowCFAST.Checked Then
+            If OutputShowCFAST.Checked Then
                 ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True, 5000)
             Else
                 ProcessID = Shell(CommandString, AppWinStyle.Hide, True, 5000)

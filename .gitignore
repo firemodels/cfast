@@ -58,3 +58,6 @@ cfast7_intel_*
 *_slice.info
 *.iso
 
+# misc
+fort.3
+

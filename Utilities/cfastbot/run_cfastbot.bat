@@ -21,6 +21,7 @@ set running=%curdir%\bot.running
 
 if not exist %running% (
   cd %gitrepo%
+  git fetch origin
   git pull
   copy Utilities\cfastbot\cfastbot_win.bat %curdir%
   cd %curdir%
@@ -33,6 +34,8 @@ if not exist %running% (
   echo cfastbot is currently running.
   echo If this is not the case, erase the file %running%
 )
+
+goto eof
 
 :getopts
  set valid=0
@@ -71,7 +74,7 @@ if not exist %running% (
    set stopscript=1
    exit /b
  )
-if not (%1)==() goto GETOPTS
+if not (%1)==() goto getopts
 exit /b
 
 :usage  
@@ -83,4 +86,6 @@ echo -fdsrepo name   - specify the FDS repo name (default: FDS-SMVgitclean)
 echo -email address  - override "to" email addresses specified in repo 
 echo -nomatlab       - do not use matlab
 exit /b
+
+:eof
 

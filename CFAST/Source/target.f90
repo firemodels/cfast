@@ -191,7 +191,7 @@ contains
        svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
        svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
        svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
-       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<0.0_eb)then
+       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
           awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
        else
           awall_sum(back) = awall_sum(back) + zzwarea2(iroom,iwall)

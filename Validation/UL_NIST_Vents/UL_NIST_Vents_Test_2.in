@@ -19,7 +19,7 @@ COMPA,Compartment 1,6.1,4.3,2.4,0,0,0,GYPSUM,CONCRETE,GYPSUM
 !!Vent keywords
 !!
 HVENT,1,2,1,0.9,2.1,0,1,4.3,0,1,1
-VVENT,2,1,2.44,2,1
+VVENT,2,1,2.88,2,1
 RAMP,V,2,1,1,5,0,0,569,0,571,0.5,819,0.5,871,1.0
 !!
 !!Fire keywords

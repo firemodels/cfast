@@ -564,8 +564,8 @@ Public Class UpdateGUI
             MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
             MainWin.TargetMaterial.Text = myThermalProperties.GetLongName(aTarget.Material)
             MainWin.TargetSolutionMethod.SelectedIndex = aTarget.SolutionMethod
-            MainWin.TargetSolutionThickness.SelectedIndex = aTarget.SolutionThickness
-            If aTarget.SolutionThickness = 2 Then
+            MainWin.TargetSolutionType.SelectedIndex = aTarget.SolutionType
+            If aTarget.SolutionType = 2 Then
                 MainWin.TargetSolutionMethod.Enabled = False
             Else
                 MainWin.TargetSolutionMethod.Enabled = True
@@ -577,7 +577,7 @@ Public Class UpdateGUI
                 MainWin.TargetConduct.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
                 MainWin.TargetSpecHeat.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
                 MainWin.TargetDensity.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
-                If MainWin.TargetSolutionThickness.SelectedIndex = Target.Cylindrical Then
+                If MainWin.TargetSolutionType.SelectedIndex = Target.Cylindrical Then
                     MainWin.TargetThickness.Text = "Diameter: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
                 Else
                     MainWin.TargetThickness.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
@@ -611,7 +611,7 @@ Public Class UpdateGUI
                     MainWin.TargetSummary(i, 8) = aTarget.ZNormal.ToString
                     MainWin.TargetSummary(i, 9) = aTarget.Material
                     MainWin.TargetSummary(i, 10) = SolutionMethodNames.Substring((aTarget.SolutionMethod) * 8, 8)
-                    MainWin.TargetSummary(i, 11) = SolutionThicknessNames.Substring((aTarget.SolutionThickness) * 11, 11)
+                    MainWin.TargetSummary(i, 11) = SolutionTypeNames.Substring((aTarget.SolutionType) * 11, 11)
                 Next
                 MainWin.TargetSummary.Select(index + 1, 0, index + 1, MainWin.TargetSummary.Cols.Count - 1, True)
             End If

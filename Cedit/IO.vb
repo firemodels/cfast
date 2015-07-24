@@ -59,13 +59,14 @@ Module IO
                     aDetect.SetPosition(csv.Num(i, targetNum.xPosition), csv.Num(i, targetNum.yPosition), _
                         csv.Num(i, targetNum.zPosition), csv.Num(i, targetNum.xNormal), csv.Num(i, targetNum.yNormal), _
                         csv.Num(i, targetNum.zNormal))
-                    Dim thickness, method As Integer
+                    Dim type, method As Integer
                     If csv.str(i, targetNum.equationType) = "CYL" Then
-                        thickness = 2
+                        type = 1
                     ElseIf csv.str(i, targetNum.equationType) = "ODE" Then
-                        thickness = 1
+                        type = 0    ' ODE is only for older files.  Automatically convert it to thermally thick
+                        myErrors.Add("Target " + (myTargets.Count + 1).ToString + " specified no longer supported thermmaly thin calculation. Converted to thermally thick", ErrorMessages.TypeWarning)
                     Else ' PDE
-                        thickness = 0
+                        type = 0
                     End If
                     If csv.str(i, targetNum.method) = "STEADY" Then
                         method = 2
@@ -737,7 +738,7 @@ Module IO
                                 aTarget.Type = Target.TypeTarget
                                 aTarget.Name = "Ign_" + aFireObject.Name
                                 aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.ZPosition, csv.Num(iFire, fireNum.xNormal), csv.Num(iFire, fireNum.yNormal), csv.Num(iFire, fireNum.zNormal))
-                                aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThin, Target.Explicit)
+                                aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThick, Target.Explicit)
                                 myTargets.Add(aTarget)
                                 aFireObject.Target = aTarget.Name
                             End If
@@ -1115,10 +1116,8 @@ Module IO
             csv.Num(i, targetNum.zNormal) = aDetect.ZNormal
             csv.str(i, targetNum.material) = aDetect.Material
             csv.Num(i, targetNum.internalLocation) = aDetect.InternalLocation
-            If aDetect.SolutionThickness = 2 Then
+            If aDetect.SolutionType = 1 Then
                 csv.str(i, targetNum.equationType) = "CYL"
-            ElseIf aDetect.SolutionThickness = 1 Then
-                csv.str(i, targetNum.equationType) = "ODE"
             Else
                 csv.str(i, targetNum.equationType) = "PDE"
             End If

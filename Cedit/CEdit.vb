@@ -363,7 +363,7 @@ Public Class CeditMain
     Friend WithEvents VVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents MVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents TargetSummary As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents TargetSolutionThickness As System.Windows.Forms.ComboBox
+    Friend WithEvents TargetSolutionType As System.Windows.Forms.ComboBox
     Friend WithEvents TargetSolutionMethod As System.Windows.Forms.ComboBox
     Friend WithEvents DetectorSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents HHeatSummary As C1.Win.C1FlexGrid.C1FlexGrid
@@ -727,7 +727,7 @@ Public Class CeditMain
         Me.Label80 = New System.Windows.Forms.Label()
         Me.Label79 = New System.Windows.Forms.Label()
         Me.TargetSolutionMethod = New System.Windows.Forms.ComboBox()
-        Me.TargetSolutionThickness = New System.Windows.Forms.ComboBox()
+        Me.TargetSolutionType = New System.Windows.Forms.ComboBox()
         Me.TargetComp = New System.Windows.Forms.ComboBox()
         Me.Label74 = New System.Windows.Forms.Label()
         Me.GroupBox28 = New System.Windows.Forms.GroupBox()
@@ -3556,9 +3556,9 @@ Public Class CeditMain
         Me.GroupTargets.Controls.Add(Me.Label80)
         Me.GroupTargets.Controls.Add(Me.Label79)
         Me.GroupTargets.Controls.Add(Me.TargetSolutionMethod)
-        Me.GroupTargets.Controls.Add(Me.TargetSolutionThickness)
         Me.GroupTargets.Controls.Add(Me.TargetComp)
         Me.GroupTargets.Controls.Add(Me.Label74)
+        Me.GroupTargets.Controls.Add(Me.TargetSolutionType)
         Me.GroupTargets.Controls.Add(Me.GroupBox28)
         Me.GroupTargets.Location = New System.Drawing.Point(61, 275)
         Me.GroupTargets.Name = "GroupTargets"
@@ -3572,7 +3572,7 @@ Public Class CeditMain
         Me.TargetName.Location = New System.Drawing.Point(113, 34)
         Me.TargetName.Name = "TargetName"
         Me.TargetName.Size = New System.Drawing.Size(98, 20)
-        Me.TargetName.TabIndex = 811
+        Me.TargetName.TabIndex = 807
         Me.TargetName.Text = "New Target"
         '
         'Label116
@@ -3607,7 +3607,7 @@ Public Class CeditMain
         Me.TargetInternalLocation.Location = New System.Drawing.Point(133, 140)
         Me.TargetInternalLocation.Name = "TargetInternalLocation"
         Me.TargetInternalLocation.Size = New System.Drawing.Size(96, 20)
-        Me.TargetInternalLocation.TabIndex = 818
+        Me.TargetInternalLocation.TabIndex = 819
         Me.TargetInternalLocation.Text = "0.5"
         '
         'Label59
@@ -3661,7 +3661,7 @@ Public Class CeditMain
         Me.TargetMaterial.Location = New System.Drawing.Point(60, 19)
         Me.TargetMaterial.Name = "TargetMaterial"
         Me.TargetMaterial.Size = New System.Drawing.Size(192, 21)
-        Me.TargetMaterial.TabIndex = 817
+        Me.TargetMaterial.TabIndex = 818
         Me.TargetMaterial.Text = "GYPSUM"
         '
         'Label78
@@ -3677,7 +3677,7 @@ Public Class CeditMain
         'Label80
         '
         Me.Label80.AutoSize = True
-        Me.Label80.Location = New System.Drawing.Point(586, 23)
+        Me.Label80.Location = New System.Drawing.Point(588, 52)
         Me.Label80.Name = "Label80"
         Me.Label80.Size = New System.Drawing.Size(87, 13)
         Me.Label80.TabIndex = 29
@@ -3687,7 +3687,7 @@ Public Class CeditMain
         'Label79
         '
         Me.Label79.AutoSize = True
-        Me.Label79.Location = New System.Drawing.Point(605, 52)
+        Me.Label79.Location = New System.Drawing.Point(607, 23)
         Me.Label79.Name = "Label79"
         Me.Label79.Size = New System.Drawing.Size(68, 13)
         Me.Label79.TabIndex = 40
@@ -3698,21 +3698,21 @@ Public Class CeditMain
         '
         Me.TargetSolutionMethod.ItemHeight = 13
         Me.TargetSolutionMethod.Items.AddRange(New Object() {"Implicit", "Explicit", "Steady"})
-        Me.TargetSolutionMethod.Location = New System.Drawing.Point(682, 19)
+        Me.TargetSolutionMethod.Location = New System.Drawing.Point(684, 48)
         Me.TargetSolutionMethod.Name = "TargetSolutionMethod"
         Me.TargetSolutionMethod.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionMethod.TabIndex = 809
+        Me.TargetSolutionMethod.TabIndex = 810
         Me.TargetSolutionMethod.Text = "Implicit"
         '
-        'TargetSolutionThickness
+        'TargetSolutionType
         '
-        Me.TargetSolutionThickness.ItemHeight = 13
-        Me.TargetSolutionThickness.Items.AddRange(New Object() {"Thermally Thick", "Thermally Thin", "Cylindrical"})
-        Me.TargetSolutionThickness.Location = New System.Drawing.Point(682, 48)
-        Me.TargetSolutionThickness.Name = "TargetSolutionThickness"
-        Me.TargetSolutionThickness.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionThickness.TabIndex = 808
-        Me.TargetSolutionThickness.Text = "Thermally Thick"
+        Me.TargetSolutionType.ItemHeight = 13
+        Me.TargetSolutionType.Items.AddRange(New Object() {"Plate", "Cylinder"})
+        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 19)
+        Me.TargetSolutionType.Name = "TargetSolutionType"
+        Me.TargetSolutionType.Size = New System.Drawing.Size(104, 21)
+        Me.TargetSolutionType.TabIndex = 809
+        Me.TargetSolutionType.Text = "Plate"
         '
         'TargetComp
         '
@@ -3721,7 +3721,7 @@ Public Class CeditMain
         Me.TargetComp.Location = New System.Drawing.Point(343, 33)
         Me.TargetComp.Name = "TargetComp"
         Me.TargetComp.Size = New System.Drawing.Size(208, 21)
-        Me.TargetComp.TabIndex = 807
+        Me.TargetComp.TabIndex = 808
         '
         'Label74
         '
@@ -3781,7 +3781,7 @@ Public Class CeditMain
         Me.TargetNormalCalc.Location = New System.Drawing.Point(203, 41)
         Me.TargetNormalCalc.Name = "TargetNormalCalc"
         Me.TargetNormalCalc.Size = New System.Drawing.Size(157, 21)
-        Me.TargetNormalCalc.TabIndex = 813
+        Me.TargetNormalCalc.TabIndex = 814
         Me.TargetNormalCalc.Text = "User Specified"
         '
         'TargetZPosition
@@ -3789,14 +3789,14 @@ Public Class CeditMain
         Me.TargetZPosition.Location = New System.Drawing.Point(75, 141)
         Me.TargetZPosition.Name = "TargetZPosition"
         Me.TargetZPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetZPosition.TabIndex = 812
+        Me.TargetZPosition.TabIndex = 813
         '
         'TargetZNormal
         '
         Me.TargetZNormal.Location = New System.Drawing.Point(264, 141)
         Me.TargetZNormal.Name = "TargetZNormal"
         Me.TargetZNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetZNormal.TabIndex = 816
+        Me.TargetZNormal.TabIndex = 817
         '
         'Label75
         '
@@ -3823,14 +3823,14 @@ Public Class CeditMain
         Me.TargetYPosition.Location = New System.Drawing.Point(75, 108)
         Me.TargetYPosition.Name = "TargetYPosition"
         Me.TargetYPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetYPosition.TabIndex = 811
+        Me.TargetYPosition.TabIndex = 812
         '
         'TargetYNormal
         '
         Me.TargetYNormal.Location = New System.Drawing.Point(264, 109)
         Me.TargetYNormal.Name = "TargetYNormal"
         Me.TargetYNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetYNormal.TabIndex = 815
+        Me.TargetYNormal.TabIndex = 816
         '
         'Label72
         '
@@ -3857,14 +3857,14 @@ Public Class CeditMain
         Me.TargetXNormal.Location = New System.Drawing.Point(264, 77)
         Me.TargetXNormal.Name = "TargetXNormal"
         Me.TargetXNormal.Size = New System.Drawing.Size(96, 20)
-        Me.TargetXNormal.TabIndex = 814
+        Me.TargetXNormal.TabIndex = 815
         '
         'TargetXPosition
         '
         Me.TargetXPosition.Location = New System.Drawing.Point(75, 75)
         Me.TargetXPosition.Name = "TargetXPosition"
         Me.TargetXPosition.Size = New System.Drawing.Size(96, 20)
-        Me.TargetXPosition.TabIndex = 810
+        Me.TargetXPosition.TabIndex = 811
         '
         'Label73
         '
@@ -5729,7 +5729,7 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
-    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, TargetSolutionThickness.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
+    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
         Dim aTarget As New Target, numFires As Integer, i As Integer
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
@@ -5743,9 +5743,8 @@ Public Class CeditMain
             End If
             If sender Is Me.TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
             If sender Is Me.TargetSolutionMethod Then aTarget.SolutionMethod = Me.TargetSolutionMethod.SelectedIndex
-            If sender Is Me.TargetSolutionThickness Then
-                aTarget.SolutionThickness = Me.TargetSolutionThickness.SelectedIndex
-                If aTarget.SolutionThickness = 2 Then aTarget.SolutionMethod = 1
+            If sender Is Me.TargetSolutionType Then
+                aTarget.SolutionType = Me.TargetSolutionType.SelectedIndex
             End If
             If sender Is Me.TargetInternalLocation Then aTarget.InternalLocation = Val(Me.TargetInternalLocation.Text)
             If sender Is Me.TargetXPosition Then

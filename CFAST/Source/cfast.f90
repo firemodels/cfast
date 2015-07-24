@@ -648,7 +648,7 @@
 
         ipar(2) = all
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
+        call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold)
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
@@ -731,7 +731,7 @@
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold, pdzero)
+                call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold)
                 call set_info_flags (info,rwork)
             else if (td==t) then
                 call set_info_flags (info,rwork)
@@ -772,7 +772,7 @@
 
 ! --------------------------- update_solution -------------------------------------------
 
-    subroutine update_solution(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold, pdzero)
+    subroutine update_solution(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold)
 
     !     routine: update_solution
     !     purpose: update solution returned by dassl
@@ -783,7 +783,6 @@
     implicit none
 
     integer, intent(in) :: nodes, nequals, nlspct
-    real(eb), intent(in) :: pdzero(*)
     real(eb), intent(in) :: t, told
     
     real(eb), intent(out) :: p(*), pold(*), pdold(*), pdnew(*)
@@ -801,8 +800,8 @@
     end do
 
     ! advance explicit target temperatures and update implicit temperatures
-    call target (1,xplicit,dt,pdzero,pdnew)
-    call target (1,mplicit,dt,pdzero,pdnew)
+    call target (1,xplicit,dt,pdnew)
+    call target (1,mplicit,dt,pdnew)
     if (nlspct>0) call synchronize_species_mass (p,nodes+1)
 
     do i = 1, nequals
@@ -1304,7 +1303,7 @@
     call conduction (update,dt,flxtot,delta)
 
     ! target residual
-    call target (0,mplicit,dt,xpsolve,delta)
+    call target (0,mplicit,dt,delta)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then

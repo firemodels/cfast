@@ -172,6 +172,25 @@ contains
     return
     end subroutine target_flux
     
+! --------------------------- get_target_factors -------------------------------------------
+
+    subroutine get_target_factors(iroom,target_factors)
+    integer, intent(in) :: iroom
+    real(eb), intent(out), dimension(10) :: target_factors
+
+    integer :: iwall
+    real(eb) :: awall_sum
+
+    awall_sum = 0.0_eb
+    do iwall = 1, 10
+       awall_sum = awall_sum + zzwarea2(iroom,iwall)
+    end do
+    if(awall_sum.eq.0.0_eb)awall_sum=1.0_eb
+    do iwall = 1, 10
+       target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum
+    end do
+    end subroutine get_target_factors
+    
 ! --------------------------- targflux -------------------------------------------
 
     subroutine targflux(iter,itarg,ttarg,flux,dflux)
@@ -189,11 +208,13 @@ contains
 
     real(eb) :: flux(2), dflux(2)
     
-    real(eb) :: svect(3), qwtsum(2), awallsum(2), qgassum(2), absu, absl, cosang, cosangt, s, dnrm2, ddot, zfire, &
-        xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau,&
-       awall, qwt, qgas, qgt, zznorm, tg, tgb, vg(4), &
-        ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
+    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, dnrm2, ddot, zfire
+    real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau
+    real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
+    real(eb) :: ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
+    real(eb) :: target_factors(10)
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
+    integer, parameter :: front=1, back=2
     
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -275,11 +296,11 @@ contains
 
         ! compute radiative flux from walls and gas
 
-        do i = 1, 2
-            awallsum(i) = 0.0_eb   
-            qwtsum(i) = 0.0_eb
-            qgassum(i) = 0.0_eb
-        end do
+        qwtsum(front) = 0.0_eb
+        qgassum(front) = 0.0_eb
+        qwtsum(back) = 0.0_eb
+        qgassum(back) = 0.0_eb
+        call get_target_factors(iroom,target_factors)
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout
@@ -289,11 +310,7 @@ contains
             svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
             svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
             svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
-            cosangt = 0.0_eb
             s = dnrm2(3,svect,1)
-            if(s/=0.0_eb)then
-                cosangt = -ddot(3,svect,1,xxtarg(trgnormx,itarg),1)/s
-            endif
             zwall = roomptr%wall_center(iwall,3)
             ztarg = xxtarg(trgcenz,itarg)
             zlay = zzhlay(iroom,lower)
@@ -309,7 +326,6 @@ contains
             tauu = exp(-absu*zu)
             alphau = 1.0_eb - tauu
 
-            awall = zzwarea2(iroom,iwall)
             qwt = qout*taul*tauu
             if(iwall<=5)then
                 qgas = tl**4*alphal*tauu + tu**4*alphau
@@ -317,29 +333,27 @@ contains
                 qgas = tu**4*alphau*taul + tl**4*alphal
             endif
             qgt = sigma*qgas
-            if(cosangt>=0.0_eb)then
-                jj = 1
+            if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<0.0_eb)then
+                jj = front
             else 
-                jj = 2
+                jj = back
             endif
 
             ! calculate flux on the target front.  calculate flux on the target back only if the rear of 
             ! the target is interior to the room.
-            if(jj==1.or.ixtarg(trgback,itarg)==interior)then
-                qwtsum(jj) = qwtsum(jj) + qwt*awall
-                qgassum(jj) = qgassum(jj) + qgt*awall
-                awallsum(jj) = awallsum(jj) + awall
+            if(jj==front.or.ixtarg(trgback,itarg)==interior)then
+                qwtsum(jj) = qwtsum(jj) + qwt*target_factors(iwall)
+                qgassum(jj) = qgassum(jj) + qgt*target_factors(iwall)
             endif
         end do
-        do i = 1, 2
-            if(awallsum(i)==0.0_eb)awallsum(i) = 1.0_eb
-            qtwflux(itarg,i) = qwtsum(i)/awallsum(i)
-            qtgflux(itarg,i) = qgassum(i)/awallsum(i)
-        end do       
+        qtwflux(itarg,front) = qwtsum(front)
+        qtgflux(itarg,front) = qgassum(front)
+        qtwflux(itarg,back) = qwtsum(back)
+        qtgflux(itarg,back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if(ixtarg(trgback,itarg)==exterior.or.qtgflux(itarg,2)==0.0)then
-            qtgflux(itarg,2) = sigma*interior_temperature**4
+        if(ixtarg(trgback,itarg)==exterior.or.qtgflux(itarg,back)==0.0)then
+            qtgflux(itarg,back) = sigma*interior_temperature**4
         endif
     endif
 
@@ -367,32 +381,34 @@ contains
     else
         tgb = interior_temperature
     endif
-    ttargb = ttarg(2)
-    dttarg = 1.0e-7_eb*ttarg(1)
-    dttargb = 1.0e-7_eb*ttarg(2)
+    ttargb = ttarg(back)
+    dttarg = 1.0e-7_eb*ttarg(front)
+    dttargb = 1.0e-7_eb*ttarg(back)
 
     temis = xxtarg(trgemis,itarg)
 
     ! convection for the front
-    call convective_flux (iw,tg,ttarg(1),q1)
-    call convective_flux (iw,tg,ttarg(1)+dttarg,q2)
+    call convective_flux (iw,tg,ttarg(front),q1)
+    call convective_flux (iw,tg,ttarg(front)+dttarg,q2)
     qtcflux(itarg,1) = q1
     dqdtarg = (q2-q1)/dttarg
 
-    flux(1) = temis*(qtfflux(itarg,1) + qtwflux(itarg,1) + qtgflux(itarg,1)) + qtcflux(itarg,1) - temis*sigma*ttarg(1)**4
-    dflux(1) = -4.0_eb*temis*sigma*ttarg(1)**3 + dqdtarg
+    flux(front) = temis*(qtfflux(itarg,front) + qtwflux(itarg,front) + qtgflux(itarg,front)) + &
+                  qtcflux(itarg,front) - temis*sigma*ttarg(front)**4
+    dflux(front) = -4.0_eb*temis*sigma*ttarg(front)**3 + dqdtarg
     
     ! convection for the back
     call convective_flux(iwb,tgb,ttargb,q1b)
     call convective_flux(iwb,tgb,ttargb+dttargb,q2b)
-    qtcflux(itarg,2) = q1b
+    qtcflux(itarg,back) = q1b
     dqdtargb = (q2b-q1b)/dttargb
 
-    flux(2) = temis*(qtfflux(itarg,2) + qtwflux(itarg,2) + qtgflux(itarg,2)) + qtcflux(itarg,2) - temis*sigma*ttargb**4
-    dflux(2) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
+    flux(back) = temis*(qtfflux(itarg,back) + qtwflux(itarg,back) + qtgflux(itarg,back)) + &
+                 qtcflux(itarg,back) - temis*sigma*ttargb**4
+    dflux(back) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
 
     ! store fluxes for printout
-    do i = 1,2
+    do i = front,back
         targptr%flux_fire(i) = temis*qtfflux(itarg,i)
         targptr%flux_gas(i) = temis*qtgflux(itarg,i)
         targptr%flux_surface(i) = temis*qtwflux(itarg,i)

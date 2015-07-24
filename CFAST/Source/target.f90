@@ -174,20 +174,40 @@ contains
     
 ! --------------------------- get_target_factors -------------------------------------------
 
-    subroutine get_target_factors(iroom,target_factors)
-    integer, intent(in) :: iroom
+    subroutine get_target_factors(iroom,itarg,target_factors)
+    integer, intent(in) :: iroom, itarg
     real(eb), intent(out), dimension(10) :: target_factors
 
     integer :: iwall
-    real(eb) :: awall_sum
+    real(eb) :: awall_sum(2), svect(3), ddot
+    type(room_type), pointer :: roomptr
+    integer, parameter :: front=1, back=2
 
-    awall_sum = 0.0_eb
+    
+    roomptr => roominfo(iroom)
+    awall_sum(front) = 0.0_eb
+    awall_sum(back) = 0.0_eb
     do iwall = 1, 10
-       awall_sum = awall_sum + zzwarea2(iroom,iwall)
+       svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
+       svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
+       svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
+       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<0.0_eb)then
+          awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
+       else
+          awall_sum(back) = awall_sum(back) + zzwarea2(iroom,iwall)
+       endif
     end do
-    if(awall_sum.eq.0.0_eb)awall_sum=1.0_eb
+    if(awall_sum(front).eq.0.0_eb)awall_sum(front)=1.0_eb
+    if(awall_sum(back).eq.0.0_eb)awall_sum(back)=1.0_eb
     do iwall = 1, 10
-       target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum
+       svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
+       svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
+       svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
+       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<0.0_eb)then
+          target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
+       else
+          target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
+       endif
     end do
     end subroutine get_target_factors
     
@@ -300,7 +320,7 @@ contains
         qgassum(front) = 0.0_eb
         qwtsum(back) = 0.0_eb
         qgassum(back) = 0.0_eb
-        call get_target_factors(iroom,target_factors)
+        call get_target_factors(iroom,itarg,target_factors)
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout

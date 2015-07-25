@@ -573,7 +573,7 @@ where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted 
 \be
    c_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, \Tu^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi}  \label{ckeq}
 \ee
-where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. 
+where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 
 
 
@@ -640,7 +640,7 @@ Objects, often referred to as ``targets,'' can be added to any compartment in CF
 \be
    \dq_{\rm r}'' = \epsilon_{\rm t} \left( \cos \, \theta \; \frac{\chi_{\rm r} \, \dQ}{4 \pi R^2}  + \displaystyle\sum_{j=1}^{10} \left( \tau_j \, F_j \, \epsilon_j \, \sigma T_j^4 \right) +  \displaystyle\sum_{j=1}^2 \left( \tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
 \ee
-where $\epsilon_{\rm t}$ is the emissivity of the target, $\theta$ is the angle formed by the line of sight segment of length $R$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer, and $T_{\rm t}$ is the temperature of the target.
+where $\epsilon_{\rm t}$ is the emissivity of the target, $\theta$ is the angle formed by the line of sight segment of length $R$ and the normal direction to the target surface, $F_j$ is a view factor for the walls, upper layer, or lower layer, $\tau_j$ is a value of transmittance for the path between the target and the walls, upper layer, or lower layer, and $T_{\rm j}$ and $T_{\rm t}$ are the temperature of the gas layers and target.
 
 
 

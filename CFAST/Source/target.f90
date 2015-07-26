@@ -174,9 +174,9 @@ contains
     
 ! --------------------------- get_target_factors -------------------------------------------
 
-    subroutine get_target_factors(iroom,itarg,target_factors)
+    subroutine get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
     integer, intent(in) :: iroom, itarg
-    real(eb), intent(out), dimension(10) :: target_factors
+    real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
     integer :: iwall
     real(eb) :: awall_sum(2), svect(3), ddot
@@ -199,14 +199,16 @@ contains
     end do
     if(awall_sum(front).eq.0.0_eb)awall_sum(front)=1.0_eb
     if(awall_sum(back).eq.0.0_eb)awall_sum(back)=1.0_eb
+    target_factors_front(1:10)=0.0_eb
+    target_factors_back(1:10)=0.0_eb
     do iwall = 1, 10
        svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
        svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
        svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
        if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
-          target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
+          target_factors_front(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
        else
-          target_factors(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
+          target_factors_back(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
        endif
     end do
     end subroutine get_target_factors
@@ -232,7 +234,7 @@ contains
     real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
-    real(eb) :: target_factors(10)
+    real(eb) :: target_factors_front(10), target_factors_back(10)
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
     integer, parameter :: front=1, back=2
     
@@ -320,7 +322,7 @@ contains
         qgassum(front) = 0.0_eb
         qwtsum(back) = 0.0_eb
         qgassum(back) = 0.0_eb
-        call get_target_factors(iroom,itarg,target_factors)
+        call get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout
@@ -362,8 +364,13 @@ contains
             ! calculate flux on the target front.  calculate flux on the target back only if the rear of 
             ! the target is interior to the room.
             if(jj==front.or.ixtarg(trgback,itarg)==interior)then
-                qwtsum(jj) = qwtsum(jj) + qwt*target_factors(iwall)
-                qgassum(jj) = qgassum(jj) + qgt*target_factors(iwall)
+                if(jj==front)then
+                  qwtsum(jj) = qwtsum(jj) + qwt*target_factors_front(iwall)
+                  qgassum(jj) = qgassum(jj) + qgt*target_factors_front(iwall)
+                else
+                  qwtsum(jj) = qwtsum(jj) + qwt*target_factors_back(iwall)
+                  qgassum(jj) = qgassum(jj) + qgt*target_factors_back(iwall)
+                endif
             endif
         end do
         qtwflux(itarg,front) = qwtsum(front)

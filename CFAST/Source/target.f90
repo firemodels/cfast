@@ -322,7 +322,7 @@ contains
              solid_angle_verts(1:3,nsolid_verts) = (1.0_eb-factor)*v1 + factor*v2
           endif
        end do
-       if(nsolid_verts.gt.3)then
+       if(nsolid_verts.ge.3)then
           ! triangulate polygon, compute solid angle for each triangle and sum
           v1 => solid_angle_verts(1:3,1)
           t1(1:3) = v1(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)

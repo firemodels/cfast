@@ -49,6 +49,7 @@ module cfast_types
         real(eb) :: trgcp           ! target heat capacity (from matching thermal properties input)
         real(eb) :: trgl            ! target thickness (from matching thermal properties input)
         real(eb) :: trgemis         ! target emissivity (from matching thermal properties input)
+        real(eb) :: trginterior     ! depth location for output of internal temperature (from user input with default of 0.5*thickness)
         real(eb) :: trgtfluxf       ! incident heat flux to front surface of target (calculated)
         real(eb) :: trgtfluxb       ! incident heat flux to back surface of target (calculated)
         real(eb) :: trgnfluxf       ! net heat flux to front surface of target (calculated)

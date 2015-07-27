@@ -1205,9 +1205,9 @@
             stop
         endif
         iwall = ixtarg(trgwall,itarg)
-        xloc = xxtarg(trgcenx,itarg)
-        yloc = xxtarg(trgceny,itarg)
-        zloc = xxtarg(trgcenz,itarg)
+        xloc = targptr%trgcenx
+        yloc = targptr%trgceny
+        zloc = targptr%trgcenz
         xxnorm = xxtarg(trgnormx,itarg)
         yynorm = xxtarg(trgnormy,itarg)
         zznorm = xxtarg(trgnormz,itarg)
@@ -1256,9 +1256,9 @@
             zz = 0.0_eb
         endif
         if(iwall/=0)then
-            xxtarg(trgcenx,itarg) = xx
-            xxtarg(trgceny,itarg) = yy
-            xxtarg(trgcenz,itarg) = zz
+            targptr%trgcenx = xx
+            targptr%trgceny = yy
+            targptr%trgcenz = zz
             xxtarg(trgnormx,itarg) = xxnorm
             xxtarg(trgnormy,itarg) = yynorm
             xxtarg(trgnormz,itarg) = zznorm

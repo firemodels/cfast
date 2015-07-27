@@ -630,14 +630,14 @@
                     write(logerr,5003) iroom
                     stop
                 endif
-
                 targptr => targetinfo(ntarg)
-                ! position and normal vector
                 targptr%room = iroom
-                do i = 0, 2
-                    xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
-                    xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
-                end do
+
+                ! position and normal vector
+                targptr%trgcenx = lrarray(2)
+                targptr%trgceny = lrarray(3)
+                targptr%trgcenz = lrarray(4)
+
                 if (countargs(lcarray)>=11) then
                     xxtarg(trginterior,ntarg) = lrarray(11)
                 else

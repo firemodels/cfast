@@ -362,16 +362,19 @@ contains
     integer :: iwall
     real(eb) :: awall_sum(2), svect(3), ddot
     type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
     integer, parameter :: front=1, back=2
 
     
     roomptr => roominfo(iroom)
+    targptr => targetinfo(itarg)
+    
     awall_sum(front) = 0.0_eb
     awall_sum(back) = 0.0_eb
     do iwall = 1, 10
-       svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
-       svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
-       svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
+       svect(1) = targptr%trgcenx - roomptr%wall_center(iwall,1)
+       svect(2) = targptr%trgceny - roomptr%wall_center(iwall,2)
+       svect(3) = targptr%trgcenz - roomptr%wall_center(iwall,3)
        if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
           awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
        else
@@ -383,9 +386,9 @@ contains
     target_factors_front(1:10)=0.0_eb
     target_factors_back(1:10)=0.0_eb
     do iwall = 1, 10
-       svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
-       svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
-       svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
+       svect(1) = targptr%trgcenx - roomptr%wall_center(iwall,1)
+       svect(2) = targptr%trgceny - roomptr%wall_center(iwall,2)
+       svect(3) = targptr%trgcenz - roomptr%wall_center(iwall,3)
        if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
           target_factors_front(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
        else
@@ -446,9 +449,9 @@ contains
 
         ! compute radiative flux from fire
         do ifire = istart, istart + nfirerm - 1
-            svect(1) = xxtarg(trgcenx,itarg) - xfire(ifire,f_fire_xpos)
-            svect(2) = xxtarg(trgceny,itarg) - xfire(ifire,f_fire_ypos)
-            svect(3) = xxtarg(trgcenz,itarg) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
+            svect(1) = targptr%trgcenx - xfire(ifire,f_fire_xpos)
+            svect(2) = targptr%trgceny - xfire(ifire,f_fire_ypos)
+            svect(3) = targptr%trgcenz - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
             ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
             !call flame_height (xfire(ifire,f_qfr),xfire(ifire,f_obj_area),fheight)
             !if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
@@ -511,9 +514,9 @@ contains
             else
                 qout = rdqout(map10(iwall),iroom)
             endif
-            svect(1) = xxtarg(trgcenx,itarg) - roomptr%wall_center(iwall,1)
-            svect(2) = xxtarg(trgceny,itarg) - roomptr%wall_center(iwall,2)
-            svect(3) = xxtarg(trgcenz,itarg) - roomptr%wall_center(iwall,3)
+            svect(1) = targptr%trgcenx - roomptr%wall_center(iwall,1)
+            svect(2) = targptr%trgceny - roomptr%wall_center(iwall,2)
+            svect(3) = targptr%trgcenz - roomptr%wall_center(iwall,3)
             s = dnrm2(3,svect,1)
             zwall = roomptr%wall_center(iwall,3)
             ztarg = xxtarg(trgcenz,itarg)
@@ -580,9 +583,9 @@ contains
         iwb = 3
     endif
 
-    xtarg = xxtarg(trgcenx,itarg)
-    ytarg = xxtarg(trgceny,itarg)
-    ztarg = xxtarg(trgcenz,itarg)
+    xtarg = targptr%trgcenx
+    ytarg = targptr%trgceny
+    ztarg = targptr%trgcenz
     call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
     if(ixtarg(trgback,itarg)==interior)then

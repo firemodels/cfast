@@ -54,7 +54,7 @@ module cfast_types
         real(eb) :: trgnfluxf       ! net heat flux to front surface of target (calculated)
         real(eb) :: trgnfluxb       ! net heat flux to back surface of target (calculated)
         
-        integer :: trgroom          ! compartment where the target is located (user input from the input data file)
+        integer :: room             ! compartment where the target is located (user input from the input data file)
         integer :: trglayer         ! layer (within the compartment) where the target is located (calculated)
         integer :: trgmeth          ! calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)
         integer :: trgeq            ! equation type for calculation (ODE, PDE) (user input from input data file)

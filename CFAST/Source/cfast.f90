@@ -1783,7 +1783,7 @@
         ! record which layer target is in
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
-            iroom = targptr%trgroom
+            iroom = targptr%room
             ylay = zzhlay(iroom,lower)
             ytarg = xxtarg(trgcenz,itarg)
             if(ytarg>=ylay)then

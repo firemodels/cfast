@@ -616,7 +616,7 @@
     ! initialize target temperatures
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        iroom = targptr%trgroom
+        iroom = targptr%room
         if(ixtarg(trgmeth,itarg)==mplicit)then
             ieq = iztarg(itarg)
             p(noftt+ieq) = interior_temperature
@@ -1199,7 +1199,7 @@
 
         ! room number must be between 1 and nm1
         targptr => targetinfo(itarg)
-        iroom = targptr%trgroom
+        iroom = targptr%room
         if(iroom<1.or.iroom>nm1)then
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop

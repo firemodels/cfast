@@ -543,7 +543,7 @@
 
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
-            if (targptr%trgroom==i) then
+            if (targptr%room==i) then
                 tg = tgtarg(itarg)
                 tttemp = xxtarg(idx_tempf_trg,itarg)
                 itctemp = (idx_tempf_trg+idx_tempb_trg)/2
@@ -1067,7 +1067,7 @@
         endif
 5004    format ('Floor, compartment ',I2)
 5005    format (A8,'  Floor, compartment ',I2)
-        write(iofilo,5010) itarg,compartmentnames(targptr%trgroom),(xxtarg(trgcenx+j,itarg),j=0,2),&
+        write(iofilo,5010) itarg,compartmentnames(targptr%room),(xxtarg(trgcenx+j,itarg),j=0,2),&
            (xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
 5010    format(i5,t11,a14,t21,6(f7.2,2x),t76,a8)
     end do
@@ -1186,9 +1186,9 @@
         positionvector(i) = xxtarg(i,itarg)
     end do
 
-    positionvector(1) = positionvector(1) + cxabs(targptr%trgroom)
-    positionvector(2) = positionvector(2) + cyabs(targptr%trgroom)
-    positionvector(3) = positionvector(3) + floor_height(targptr%trgroom)
+    positionvector(1) = positionvector(1) + cxabs(targptr%room)
+    positionvector(2) = positionvector(2) + cyabs(targptr%room)
+    positionvector(3) = positionvector(3) + floor_height(targptr%room)
 
     return
 

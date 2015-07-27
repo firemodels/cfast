@@ -633,7 +633,7 @@
 
                 targptr => targetinfo(ntarg)
                 ! position and normal vector
-                targptr%trgroom = iroom
+                targptr%room = iroom
                 do i = 0, 2
                     xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
                     xxtarg(trgnormx+i,ntarg) = lrarray(5+i)

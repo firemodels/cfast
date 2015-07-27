@@ -144,7 +144,7 @@ contains
         targptr => targetinfo(itarg)
         methtarg = ixtarg(trgmeth,itarg)
         if(method==methtarg) then
-            iroom = targptr%trgroom
+            iroom = targptr%room
             if(methtarg==steady)then
                 niter = 10
             else
@@ -429,7 +429,7 @@ contains
     roomptr => roominfo(iroom)
     targptr => targetinfo(itarg)
     
-    iroom = targptr%trgroom
+    iroom = targptr%room
     
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then

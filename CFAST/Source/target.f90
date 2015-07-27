@@ -174,6 +174,127 @@ contains
     
 ! --------------------------- get_target_factors -------------------------------------------
 
+    subroutine get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
+    integer, intent(in) :: iroom, itarg
+    real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
+
+    integer :: iwall, ivert
+    real(eb) :: svect(3), ddot
+    type(room_type), pointer :: roomptr
+    integer, parameter :: front=1, back=2
+    integer :: i
+    real(eb), dimension(12) :: vert_distance
+    
+    real(eb) :: ylay
+    real(eb), target :: room_verts(3,12)
+    real(eb) :: solid_angle_verts(3,8), factor
+    integer :: nsolid_verts
+    real(eb) :: d1, d2
+    real(eb), pointer, dimension(:) :: v1, v2
+    
+ ! vertices    
+ !       3--------------4        
+ !      /              /
+ !     /              / 
+ !    /              /
+ !   1--------------2    
+ !
+ !       7--------------8        
+ !      /              /
+ !     /              / 
+ !    /              /
+ !   5--------------6    
+
+ !       11------------12        
+ !      /              /
+ !     /              / 
+ !    /              /
+ !   9-------------10  
+
+    integer, dimension(5,10), target :: faces
+    integer, dimension(:), pointer :: facei
+    
+ ! faces   (vertices listed counter clockwise as facing face)
+ !  1: 1  2  4  3 ceiling
+ !  2: 1  5  6  2 upper front
+ !  3: 2  6  8  4 upper right
+ !  4: 3  4  8  7 upper back
+ !  5: 1  3  7  5 upper left
+ !  6: 5  9 10  6 lower front
+ !  7: 6 10 12  8 lower right
+ !  8: 7  8 12 11 lower back
+ !  9: 5  7 11  9 lower left
+ ! 10: 9 11 12 10 floor
+
+    data ((faces(i,iwall),i=1,5),iwall=1,10) /&
+    1,  2,  4,  3, 1,    1,  5,  6,  2, 1, &
+    2,  6,  8,  4, 2,    3,  4,  8,  7, 3, &
+    1,  3,  7,  5, 1,    5,  9, 10,  6, 5, &
+    6, 10, 12,  8, 6,    7,  8, 12, 11, 7, &
+    5,  7, 11,  9, 5,    9, 11, 12, 10, 9  &
+    /
+
+    roomptr => roominfo(iroom)
+
+    !define vertex locations
+    
+    ylay = roomptr%z0 + zzhlay(iroom,lower)
+    room_verts(1:3,1)  = (/roomptr%x0, roomptr%y0,roomptr%z1/)
+    room_verts(1:3,2)  = (/roomptr%x1, roomptr%y0,roomptr%z1/)
+    room_verts(1:3,3)  = (/roomptr%x0, roomptr%y1,roomptr%z1/)
+    room_verts(1:3,4)  = (/roomptr%x1, roomptr%y1,roomptr%z1/)
+    room_verts(1:3,5)  = (/roomptr%x0, roomptr%y0,ylay/)
+    room_verts(1:3,6)  = (/roomptr%x1, roomptr%y0,ylay/)
+    room_verts(1:3,7)  = (/roomptr%x0, roomptr%y1,ylay/)
+    room_verts(1:3,8)  = (/roomptr%x1, roomptr%y1,ylay/)
+    room_verts(1:3,9)  = (/roomptr%x0, roomptr%y0,roomptr%z0/)
+    room_verts(1:3,10) = (/roomptr%x1, roomptr%y0,roomptr%z0/)
+    room_verts(1:3,11) = (/roomptr%x0, roomptr%y1,roomptr%z0/)
+    room_verts(1:3,12) = (/roomptr%x1, roomptr%y1,roomptr%z0/)
+    
+! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
+    
+    do ivert = 1, 12
+       svect(1) = xxtarg(trgcenx,itarg) - room_verts(1,ivert)
+       svect(2) = xxtarg(trgceny,itarg) - room_verts(2,ivert)
+       svect(3) = xxtarg(trgcenz,itarg) - room_verts(3,ivert)
+       vert_distance(ivert) = ddot(3,svect,1,xxtarg(trgnormx,itarg),1)
+    end do
+    
+    target_factors_front(1:10)=0.0_eb
+    target_factors_back(1:10)=0.0_eb
+    do iwall=1, 10
+       facei=>faces(1:5,iwall)
+       nsolid_verts=0
+       do ivert = 1, 4
+          d1 = vert_distance(facei(ivert))
+          d2 = vert_distance(facei(ivert+1))
+          v1(1:3) => room_verts(1:3,facei(ivert))
+          v2(1:3) => room_verts(1:3,facei(ivert+1))
+          if(d1.ge.0)then
+             nsolid_verts=nsolid_verts+1
+             solid_angle_verts(1:3,nsolid_verts) = v1(1:3)
+          endif
+          if(d1*d2.lt.0)then
+             nsolid_verts=nsolid_verts+1
+             !  d1   0    d2
+             !  v1   v0   v2
+             !  solve for v0
+             ! v0 = v1*(1-(-d1)/(d2-d1)) + v2*(-d1/(d2-d1))
+             ! note: d2-d1 can't be 0 since d1*d2<0.0
+             factor = -d1/(d2-d1)
+             solid_angle_verts(1:3,nsolid_verts) = (1.0_eb-factor)*v1 + factor*v2
+          endif
+          if(nsolid_verts.gt.0)then
+             ! triangulate polygon, compute solid angle for each triangle and sum
+          endif
+       end do
+    end do
+
+ end subroutine get_target_factors2
+
+    ! --------------------------- get_target_factors -------------------------------------------
+
     subroutine get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
     integer, intent(in) :: iroom, itarg
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back

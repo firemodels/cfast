@@ -1,7 +1,7 @@
 module cfast_types
     
     use precision_parameters
-    use cparams, only: mxpts, ns, mxfslab
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg
     
     !  room data structure
     type room_type
@@ -38,6 +38,29 @@ module cfast_types
     
     ! target data structure
     type target_type
+        real(eb) :: trgcenx         ! position of target center in X direction (user input from input data file)
+        real(eb) :: trgceny         ! position of target center in Y direction (user input from input data file)
+        real(eb) :: trgcenz         ! position of target center in Z direction (user input from input data file)
+        real(eb) :: trgnormx        ! target normal vector, X component (user input from input data file)
+        real(eb) :: trgnormy        ! target normal vector, Y component (user input from input data file)
+        real(eb) :: trgnormz        ! target normal vector, Z component (user input from input data file)
+        real(eb) :: trgk            ! target thermal conductivity (from matching thermal properties input)
+        real(eb) :: trgrho          ! target density (from matching thermal properties input)
+        real(eb) :: trgcp           ! target heat capacity (from matching thermal properties input)
+        real(eb) :: trgl            ! target thickness (from matching thermal properties input)
+        real(eb) :: trgemis         ! target emissivity (from matching thermal properties input)
+        real(eb) :: trginterior     ! depth location for output of internal temperature (from user input with default of 0.5*thickness)
+        real(eb) :: trgtfluxf       ! incident heat flux to front surface of target (calculated)
+        real(eb) :: trgtfluxb       ! incident heat flux to back surface of target (calculated)
+        real(eb) :: trgnfluxf       ! net heat flux to front surface of target (calculated)
+        real(eb) :: trgnfluxb       ! net heat flux to back surface of target (calculated)
+        
+        integer :: room             ! compartment where the target is located (user input from the input data file)
+        integer :: trglayer         ! layer (within the compartment) where the target is located (calculated)
+        integer :: trgmeth          ! calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)
+        integer :: trgeq            ! equation type for calculation (ODE, PDE) (user input from input data file)
+        
+        real(eb),dimension(nnodes_trg) :: trgtemps  ! temperature profile in target ... front surface ... internal ... back surface
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
     end type target_type

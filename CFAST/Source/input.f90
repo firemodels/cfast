@@ -478,6 +478,7 @@
     real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
+    type(target_type), pointer :: targptr
     type(ramp_type), pointer :: rampptr
     type(visual_type), pointer :: sliceptr
 
@@ -629,13 +630,14 @@
                     write(logerr,5003) iroom
                     stop
                 endif
+                targptr => targetinfo(ntarg)
+                targptr%room = iroom
 
                 ! position and normal vector
-                ixtarg(trgroom,ntarg)=iroom
-                do i = 0, 2
-                    xxtarg(trgcenx+i,ntarg) = lrarray(2+i)
-                    xxtarg(trgnormx+i,ntarg) = lrarray(5+i)
-                end do
+                targptr%trgcenx = lrarray(2)
+                targptr%trgceny = lrarray(3)
+                targptr%trgcenz = lrarray(4)
+
                 if (countargs(lcarray)>=11) then
                     xxtarg(trginterior,ntarg) = lrarray(11)
                 else

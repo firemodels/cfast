@@ -172,7 +172,185 @@ contains
     return
     end subroutine target_flux
     
+    subroutine cross_product(c,a,b)
+
+! c = a x b
+
+    real(eb), intent(in) :: a(3),b(3)
+    real(eb), intent(out) :: c(3)
+
+    c(1) = a(2)*b(3)-a(3)*b(2)
+    c(2) = a(3)*b(1)-a(1)*b(3)
+    c(3) = a(1)*b(2)-a(2)*b(1)
+
+    end subroutine cross_product
+
+! --------------------------- solid_angle_triangle -------------------------------------------
+
+    subroutine solid_angle_triangle(solid_angle,v1,v2,v3)
+    real(eb), intent(in), dimension(3) :: v1, v2, v3
+    real(eb), intent(out) :: solid_angle
+    
+    real(eb) :: vcross(3), num, denom, ddot
+    ! assuming v1, v2 and v3 are unit vectors
+    ! tan(solid_angle/2) = (v1 x v2 . v3)/(1 + v2.v3 + v3.v1 + v1.v2)
+    
+    call cross_product(vcross,v1,v2)
+    num = ddot(3,vcross,1,v3,1)
+    denom = 1.0_eb + ddot(3,v2,1,v3,1) + ddot(3,v3,1,v1,1) + ddot(3,v1,1,v2,1)
+    solid_angle = 2.0_eb*atan(num/denom)
+    
+    end subroutine solid_angle_triangle
+
 ! --------------------------- get_target_factors -------------------------------------------
+
+    subroutine get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
+    integer, intent(in) :: iroom, itarg
+    real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
+
+    integer :: iwall, ivert
+    real(eb) :: rel_room_vert(3)
+    real(eb) :: dnrm2, ddot
+    type(room_type), pointer :: roomi
+    integer, parameter :: front=1, back=2
+    integer :: i
+    real(eb), dimension(12) :: vert_distance
+    
+    real(eb) :: ylay
+    real(eb), target :: room_verts(3,12)
+    real(eb), target :: solid_angle_verts(3,8)
+    real(eb) :: factor
+    integer :: nsolid_verts
+    real(eb) :: d1, d2
+    real(eb), pointer, dimension(:) :: v1, v2, v3
+    real(eb) :: t1(3), t2(3), t3(3)
+    real(eb) :: sum_front, sum_back, solid_angle
+    
+ ! vertices    
+ !       3--------------4        
+ !      /              /
+ !     /              / 
+ !    /              /
+ !   1--------------2    
+ !
+ !       7--------------8        
+ !      /              /
+ !     /              / 
+ !    /              /
+ !   5--------------6    
+
+ !       11------------12        
+ !      /              /
+ !     /              / 
+ !    /              /
+ !   9-------------10  
+
+    integer, dimension(5,10), target :: faces
+    integer, dimension(:), pointer :: facei
+    
+ ! faces   (vertices listed counter clockwise as you are facing the face)
+ !  1: 1  2  4  3 ceiling
+ !  2: 1  5  6  2 upper front
+ !  3: 2  6  8  4 upper right
+ !  4: 3  4  8  7 upper back
+ !  5: 1  3  7  5 upper left
+ !  6: 5  9 10  6 lower front
+ !  7: 6 10 12  8 lower right
+ !  8: 7  8 12 11 lower back
+ !  9: 5  7 11  9 lower left
+ ! 10: 9 11 12 10 floor
+
+    data ((faces(i,iwall),i=1,5),iwall=1,10) /& ! for convenience repeat first and last vertex
+    1,  2,  4,  3, 1,    1,  5,  6,  2, 1, &
+    2,  6,  8,  4, 2,    3,  4,  8,  7, 3, &
+    1,  3,  7,  5, 1,    5,  9, 10,  6, 5, &
+    6, 10, 12,  8, 6,    7,  8, 12, 11, 7, &
+    5,  7, 11,  9, 5,    9, 11, 12, 10, 9  &
+    /
+
+    roomi => roominfo(iroom)
+
+    !define vertex locations
+    
+    ylay = roomi%z0 + zzhlay(iroom,lower)
+    room_verts(1:3,1)  = (/roomi%x0, roomi%y0,roomi%z1/)
+    room_verts(1:3,2)  = (/roomi%x1, roomi%y0,roomi%z1/)
+    room_verts(1:3,3)  = (/roomi%x0, roomi%y1,roomi%z1/)
+    room_verts(1:3,4)  = (/roomi%x1, roomi%y1,roomi%z1/)
+    room_verts(1:3,5)  = (/roomi%x0, roomi%y0,ylay/)
+    room_verts(1:3,6)  = (/roomi%x1, roomi%y0,ylay/)
+    room_verts(1:3,7)  = (/roomi%x0, roomi%y1,ylay/)
+    room_verts(1:3,8)  = (/roomi%x1, roomi%y1,ylay/)
+    room_verts(1:3,9)  = (/roomi%x0, roomi%y0,roomi%z0/)
+    room_verts(1:3,10) = (/roomi%x1, roomi%y0,roomi%z0/)
+    room_verts(1:3,11) = (/roomi%x0, roomi%y1,roomi%z0/)
+    room_verts(1:3,12) = (/roomi%x1, roomi%y1,roomi%z0/)
+    
+! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
+    
+    do ivert = 1, 12
+       rel_room_vert(1:3) = room_verts(1:3,ivert) - xxtarg(trgcenx:trgcenx+2,itarg)  ! check for sign
+       vert_distance(ivert) = ddot(3,rel_room_vert,1,xxtarg(trgnormx,itarg),1)
+    end do
+    
+    target_factors_front(1:10)=0.0_eb
+    target_factors_back(1:10)=0.0_eb
+    do iwall=1, 10
+       facei=>faces(1:5,iwall)
+       nsolid_verts=0
+       do ivert = 1, 4
+          d1 = vert_distance(facei(ivert))
+          d2 = vert_distance(facei(ivert+1))
+          v1(1:3) => room_verts(1:3,facei(ivert))
+          v2(1:3) => room_verts(1:3,facei(ivert+1))
+          if(d1.ge.0)then  ! face vertex is above target plane
+             nsolid_verts=nsolid_verts+1
+             solid_angle_verts(1:3,nsolid_verts) = v1(1:3)
+          endif
+          if(d1*d2.lt.0)then ! two successive face vertices are opposite sides of target plane
+                             ! interpolate to find vertex that lies on target plane
+             !  d1   0    d2
+             !  v1   v0   v2    
+             !
+             !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
+             !  solve for v0
+             ! v0 = v1*(1-(-d1)/(d2-d1)) + v2*(-d1/(d2-d1))
+             ! note: d2-d1 can't be 0 since d1*d2<0.0
+             nsolid_verts=nsolid_verts+1
+
+             factor = -d1/(d2-d1)
+             solid_angle_verts(1:3,nsolid_verts) = (1.0_eb-factor)*v1 + factor*v2
+          endif
+       end do
+       if(nsolid_verts.gt.3)then
+          ! triangulate polygon, compute solid angle for each triangle and sum
+          v1 => solid_angle_verts(1:3,1)
+          t1(1:3) = v1(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+          t1(1:3) = t1(1:3)/dnrm2(3,t1,1)
+          do i = 2, nsolid_verts-1
+             v2 => solid_angle_verts(1:3,i)
+             v3 => solid_angle_verts(1:3,i+1)
+             t2(1:3) = v2(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+             t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
+             t3(1:3) = v3(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+             t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
+             call solid_angle_triangle(solid_angle,t1,t2,t3)
+             target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
+          end do
+       endif
+    end do
+    sum_front = 0.0_eb
+    sum_back = 0.0_eb
+    do iwall=1, 10
+       sum_front = sum_front + target_factors_front(iwall)
+       sum_back = sum_back + target_factors_back(iwall)
+    end do
+    if(sum_front>0.0_eb)target_factors_front(1:10) = target_factors_front(1:10)/sum_front
+    if(sum_back>0.0_eb)target_factors_back(1:10) = target_factors_back(1:10)/sum_back
+
+ end subroutine get_target_factors2
+
+    ! --------------------------- get_target_factors -------------------------------------------
 
     subroutine get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
     integer, intent(in) :: iroom, itarg

@@ -634,9 +634,7 @@
                 targptr%room = iroom
 
                 ! position and normal vector
-                targptr%trgcenx = lrarray(2)
-                targptr%trgceny = lrarray(3)
-                targptr%trgcenz = lrarray(4)
+                targptr%center(1:3) = lrarray(2:4)
 
                 if (countargs(lcarray)>=11) then
                     xxtarg(trginterior,ntarg) = lrarray(11)

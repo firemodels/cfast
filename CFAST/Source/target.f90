@@ -212,6 +212,7 @@ contains
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
     type(room_type), pointer :: roomi
+    type(target_type), pointer :: targptr
 
     real(eb) :: rel_room_vert(3), dnrm2, ddot
     real(eb), dimension(12) :: vert_distance
@@ -267,6 +268,7 @@ contains
     /
 
     roomi => roominfo(iroom)
+    targptr => targetinfo(itarg)
 
     !define vertex locations
     
@@ -287,8 +289,8 @@ contains
 ! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
     
     do ivert = 1, 12
-       rel_room_vert(1:3) = room_verts(1:3,ivert) - xxtarg(trgcenx:trgcenx+2,itarg)  ! check for sign
-       vert_distance(ivert) = ddot(3,rel_room_vert,1,xxtarg(trgnormx,itarg),1)
+       rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%normal(1:3)  ! check for sign
+       vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal(1),1)
     end do
     
     target_factors_front(1:10)=0.0_eb
@@ -390,9 +392,7 @@ contains
     awall_sum(front) = 0.0_eb
     awall_sum(back) = 0.0_eb
     do iwall = 1, 10
-       svect(1) = targptr%trgcenx - roomptr%wall_center(iwall,1)
-       svect(2) = targptr%trgceny - roomptr%wall_center(iwall,2)
-       svect(3) = targptr%trgcenz - roomptr%wall_center(iwall,3)
+       svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
        if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
           awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
        else
@@ -404,10 +404,8 @@ contains
     target_factors_front(1:10)=0.0_eb
     target_factors_back(1:10)=0.0_eb
     do iwall = 1, 10
-       svect(1) = targptr%trgcenx - roomptr%wall_center(iwall,1)
-       svect(2) = targptr%trgceny - roomptr%wall_center(iwall,2)
-       svect(3) = targptr%trgcenz - roomptr%wall_center(iwall,3)
-       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
+       svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
+       if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
           target_factors_front(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
        else
           target_factors_back(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
@@ -467,9 +465,9 @@ contains
 
         ! compute radiative flux from fire
         do ifire = istart, istart + nfirerm - 1
-            svect(1) = targptr%trgcenx - xfire(ifire,f_fire_xpos)
-            svect(2) = targptr%trgceny - xfire(ifire,f_fire_ypos)
-            svect(3) = targptr%trgcenz - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
+            svect(1) = targptr%center(1) - xfire(ifire,f_fire_xpos)
+            svect(2) = targptr%center(2) - xfire(ifire,f_fire_ypos)
+            svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
             ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
             !call flame_height (xfire(ifire,f_qfr),xfire(ifire,f_obj_area),fheight)
             !if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
@@ -480,7 +478,7 @@ contains
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),objclen(ifire))
             if(s/=0.0_eb)then
-                cosang = -ddot(3,svect,1,xxtarg(trgnormx,itarg),1)/s
+                cosang = -ddot(3,svect,1,targptr%normal(1),1)/s
             endif
             zfire = xfire(ifire,f_fire_zpos)
             ztarg = xxtarg(trgcenz,itarg)
@@ -532,11 +530,9 @@ contains
             else
                 qout = rdqout(map10(iwall),iroom)
             endif
-            svect(1) = targptr%trgcenx - roomptr%wall_center(iwall,1)
-            svect(2) = targptr%trgceny - roomptr%wall_center(iwall,2)
-            svect(3) = targptr%trgcenz - roomptr%wall_center(iwall,3)
+            svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
             s = dnrm2(3,svect,1)
-            zwall = roomptr%wall_center(iwall,3)
+            zwall = roomptr%wall_center(3,iwall)
             ztarg = xxtarg(trgcenz,itarg)
             zlay = zzhlay(iroom,lower)
             tl = zztemp(iroom,lower)
@@ -558,7 +554,7 @@ contains
                 qgas = tu**4*alphau*taul + tl**4*alphal
             endif
             qgt = sigma*qgas
-            if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
+            if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
                 jj = front
             else 
                 jj = back
@@ -601,9 +597,9 @@ contains
         iwb = 3
     endif
 
-    xtarg = targptr%trgcenx
-    ytarg = targptr%trgceny
-    ztarg = targptr%trgcenz
+    xtarg = targptr%center(1)
+    ytarg = targptr%center(2)
+    ztarg = targptr%center(3)
     call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
     if(ixtarg(trgback,itarg)==interior)then

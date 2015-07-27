@@ -1410,36 +1410,36 @@
             ywall_center = yy/2.0_eb
             zz = ceiling_height(iroom)
             roomptr%wall_center(1,1) = xwall_center
-            roomptr%wall_center(1,2) = ywall_center
-            roomptr%wall_center(1,3) = zz
+            roomptr%wall_center(2,1) = ywall_center
+            roomptr%wall_center(3,1) = zz
 
-            roomptr%wall_center(2,1) = xwall_center
+            roomptr%wall_center(1,2) = xwall_center
             roomptr%wall_center(2,2) = yy
 
-            roomptr%wall_center(3,1) = xx
-            roomptr%wall_center(3,2) = ywall_center
+            roomptr%wall_center(1,3) = xx
+            roomptr%wall_center(2,3) = ywall_center
 
-            roomptr%wall_center(4,1) = xwall_center
-            roomptr%wall_center(4,2) = 0.0_eb
+            roomptr%wall_center(1,4) = xwall_center
+            roomptr%wall_center(2,4) = 0.0_eb
 
-            roomptr%wall_center(5,1) = 0.0_eb
-            roomptr%wall_center(5,2) = ywall_center
+            roomptr%wall_center(1,5) = 0.0_eb
+            roomptr%wall_center(2,5) = ywall_center
 
-            roomptr%wall_center(6,1) = xwall_center
-            roomptr%wall_center(6,2) = yy
+            roomptr%wall_center(1,6) = xwall_center
+            roomptr%wall_center(2,6) = yy
 
-            roomptr%wall_center(7,1) = xx
-            roomptr%wall_center(7,2) = ywall_center
+            roomptr%wall_center(1,7) = xx
+            roomptr%wall_center(2,7) = ywall_center
 
-            roomptr%wall_center(8,1) = xwall_center
-            roomptr%wall_center(8,2) = 0.0_eb
+            roomptr%wall_center(1,8) = xwall_center
+            roomptr%wall_center(2,8) = 0.0_eb
 
-            roomptr%wall_center(9,1) = 0.0_eb
-            roomptr%wall_center(9,2) = ywall_center
+            roomptr%wall_center(1,9) = 0.0_eb
+            roomptr%wall_center(2,9) = ywall_center
 
-            roomptr%wall_center(10,1) = xwall_center
-            roomptr%wall_center(10,2) = ywall_center
-            roomptr%wall_center(10,3) = 0.0_eb
+            roomptr%wall_center(1,10) = xwall_center
+            roomptr%wall_center(2,10) = ywall_center
+            roomptr%wall_center(3,10) = 0.0_eb
         end do
 
         roomptr=>roominfo(n)
@@ -1753,8 +1753,8 @@
 
             do i = 1, 4
                 ylay = zzhlay(iroom,lower)
-                roomptr%wall_center(i+1,3) =  (roomptr%yceil+ylay)/2.0_eb
-                roomptr%wall_center(i+5,3) = ylay/2.0_eb
+                roomptr%wall_center(3,i+1) =  (roomptr%yceil+ylay)/2.0_eb
+                roomptr%wall_center(3,i+5) = ylay/2.0_eb
             end do
 
             ! Eliminate very small noise in the pressure equation. This was added to correct

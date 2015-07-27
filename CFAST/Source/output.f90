@@ -1067,8 +1067,7 @@
         endif
 5004    format ('Floor, compartment ',I2)
 5005    format (A8,'  Floor, compartment ',I2)
-        write(iofilo,5010) itarg, compartmentnames(targptr%room), targptr%trgcenx, targptr%trgceny, targptr%trgcenz, &
-           (xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
+        write(iofilo,5010) itarg, compartmentnames(targptr%room), (targptr%center(j),j=1,3),(targptr%normal(j),j=1,3),cbuf(1:8)
 5010    format(i5,t11,a14,t21,6(f7.2,2x),t76,a8)
     end do
     return

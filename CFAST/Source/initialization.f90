@@ -501,6 +501,8 @@
     
     real(eb) :: dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
     integer i, ii, iwall, iroom, itarg, ieq
+    
+    type(target_type), pointer :: targptr
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
     ! were calculated using rho*g*h .  but outside pressures were calculated using
@@ -613,7 +615,8 @@
 
     ! initialize target temperatures
     do itarg = 1, ntarg
-        iroom = ixtarg(trgroom,itarg)
+        targptr => targetinfo(itarg)
+        iroom = targptr%trgroom
         if(ixtarg(trgmeth,itarg)==mplicit)then
             ieq = iztarg(itarg)
             p(noftt+ieq) = interior_temperature
@@ -1188,12 +1191,15 @@
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: ifail, itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
+    
+    type(target_type), pointer :: targptr
 
     ifail = 0
     do itarg = 1, ntarg
 
         ! room number must be between 1 and nm1
-        iroom = ixtarg(trgroom,itarg)
+        targptr => targetinfo(itarg)
+        iroom = targptr%trgroom
         if(iroom<1.or.iroom>nm1)then
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop

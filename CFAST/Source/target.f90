@@ -136,12 +136,15 @@ contains
     
     real(eb) :: flux(2), dflux(2), ttarg(2), ddif
     integer :: itarg, methtarg, iroom, niter, iter
+        
+    type(target_type), pointer :: targptr
 
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
         methtarg = ixtarg(trgmeth,itarg)
         if(method==methtarg) then
-            iroom = ixtarg(trgroom,itarg)
+            iroom = targptr%trgroom
             if(methtarg==steady)then
                 niter = 10
             else
@@ -413,7 +416,7 @@ contains
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     real(eb) :: target_factors_front(10), target_factors_back(10)
-    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb, irtarg
+    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb
     integer, parameter :: front=1, back=2
     
     type(room_type), pointer :: roomptr
@@ -423,9 +426,10 @@ contains
 
     absu = 0.50_eb
     absl = 0.01_eb
-    iroom = ixtarg(trgroom,itarg)
     roomptr => roominfo(iroom)
     targptr => targetinfo(itarg)
+    
+    iroom = targptr%trgroom
     
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then
@@ -575,11 +579,11 @@ contains
         iw = 3
         iwb = 3
     endif
-    irtarg = ixtarg(trgroom,itarg)
+
     xtarg = xxtarg(trgcenx,itarg)
     ytarg = xxtarg(trgceny,itarg)
     ztarg = xxtarg(trgcenz,itarg)
-    call get_gas_temp_velocity(irtarg,xtarg,ytarg,ztarg,tg,vg)
+    call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
     if(ixtarg(trgback,itarg)==interior)then
         tgb = tg

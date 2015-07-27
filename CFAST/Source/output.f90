@@ -543,7 +543,7 @@
 
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
-            if (ixtarg(trgroom,itarg)==i) then
+            if (targptr%trgroom==i) then
                 tg = tgtarg(itarg)
                 tttemp = xxtarg(idx_tempf_trg,itarg)
                 itctemp = (idx_tempf_trg+idx_tempb_trg)/2
@@ -1049,12 +1049,15 @@
     integer :: itarg, j
 
     character cbuf*255
+    
+    type(target_type), pointer :: targptr
 
     if(ntarg/=0) write(iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',T9,'Compartment',T24,'Position (x, y, z)',T51,&
          'Direction (x, y, z)',T76,'Material',/,82('-'))
 
     do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
         if (itarg<ntarg-nm1+1) then
             cbuf = cxtarg(itarg)
         else if (itarg>=ntarg-nm1+1.and.isw/=1) then
@@ -1064,7 +1067,7 @@
         endif
 5004    format ('Floor, compartment ',I2)
 5005    format (A8,'  Floor, compartment ',I2)
-        write(iofilo,5010) itarg,compartmentnames(ixtarg(trgroom,itarg)),(xxtarg(trgcenx+j,itarg),j=0,2),&
+        write(iofilo,5010) itarg,compartmentnames(targptr%trgroom),(xxtarg(trgcenx+j,itarg),j=0,2),&
            (xxtarg(trgnormx+j,itarg),j=0,2),cbuf(1:8)
 5010    format(i5,t11,a14,t21,6(f7.2,2x),t76,a8)
     end do
@@ -1161,7 +1164,7 @@
     
 ! --------------------------- getabstarget -------------------------------------------
 
-    subroutine getabstarget(targetnumber, positionvector)
+    subroutine getabstarget(itarg, positionvector)
 
     !	Routine to get the absolute position of a target in the computational space
 
@@ -1172,17 +1175,20 @@
     use fltarget
     implicit none
 
-    integer, intent(in) :: targetnumber
+    integer, intent(in) :: itarg
     real(eb), intent(out) :: positionvector(*)
     integer :: i
+    
+    type(target_type), pointer :: targptr
 
+    targptr => targetinfo(itarg)
     do i = 1, 6
-        positionvector(i) = xxtarg(i,targetnumber)
+        positionvector(i) = xxtarg(i,itarg)
     end do
 
-    positionvector(1) = positionvector(1) + cxabs(ixtarg(trgroom,targetnumber))
-    positionvector(2) = positionvector(2) + cyabs(ixtarg(trgroom,targetnumber))
-    positionvector(3) = positionvector(3) + floor_height(ixtarg(trgroom,targetnumber))
+    positionvector(1) = positionvector(1) + cxabs(targptr%trgroom)
+    positionvector(2) = positionvector(2) + cyabs(targptr%trgroom)
+    positionvector(3) = positionvector(3) + floor_height(targptr%trgroom)
 
     return
 

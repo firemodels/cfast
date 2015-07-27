@@ -1369,6 +1369,7 @@
         
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
 
     if(nfurn>0)then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1781,7 +1782,8 @@
 
         ! record which layer target is in
         do itarg = 1, ntarg
-            iroom = ixtarg(trgroom,itarg)
+            targptr => targetinfo(itarg)
+            iroom = targptr%trgroom
             ylay = zzhlay(iroom,lower)
             ytarg = xxtarg(trgcenz,itarg)
             if(ytarg>=ylay)then

@@ -289,7 +289,7 @@ contains
 ! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
     
     do ivert = 1, 12
-       rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%normal(1:3)  ! check for sign
+       rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%center(1:3)  ! check for sign
        vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal(1),1)
     end do
     

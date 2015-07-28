@@ -1,6 +1,10 @@
 \documentclass[12pt]{book}
 
 \input{../Bibliography/commoncommands}
+\IfFileExists{../Bibliography/gitrevision.tex}
+{\input{../Bibliography/gitrevision}}
+{\newcommand{\gitrevision}{unknown} }
+
 
 \begin{document}
 
@@ -68,8 +72,7 @@ CFAST -- Consolidated Fire \\
 \headerC{
 \flushright{\mydate\today\\
 CFAST Version \cfastversion \\
-\emph{SVN Repository}~$Revision$}}
-% dummy comment to force svn change - Mon Jan  5 21:57:14 EST 2015
+\emph{GIT Revision:}~\gitrevision}}
 
 \vfill
 
@@ -573,7 +576,7 @@ where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted 
 \be
    c_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, \Tu^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi}  \label{ckeq}
 \ee
-where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. 
+where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 
 
 

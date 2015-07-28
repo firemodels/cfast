@@ -408,7 +408,7 @@
         slabs
     logical :: firstc
     integer :: position
-    integer :: i, j, itarg, izzvol, iroom1, iroom2, ik, im, ix
+    integer :: i, j, iroom1, iroom2, ik, im, ix
 
     
     type(vent_type), pointer :: ventptr
@@ -427,8 +427,6 @@
 
     ! compartment information
     do i = 1, nm1
-        itarg = ntarg - nm1 + i
-        izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
         call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (izshaft(i)==0) then
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
@@ -436,11 +434,9 @@
         endif
         call SSaddtolist(position,zzrelp(i),outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)
-        call SSaddtolist(position,zzrho(i,lower),outarray)
+        if (izshaft(i)==0) call SSaddtolist(position,zzrho(i,lower),outarray)
         call SSaddtolist(position,toxict(i,upper,9),outarray)
-        if (izshaft(i)==0) then
-            call SSaddtolist(position,toxict(i,lower,9),outarray)
-        endif
+        if (izshaft(i)==0) call SSaddtolist(position,toxict(i,lower,9),outarray)
     end do
 
     ! fires

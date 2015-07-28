@@ -112,7 +112,7 @@
     use fltarget
     implicit none
 
-    integer :: i, itarg, izzvol
+    integer :: i, izzvol
 
     write (iofilo,5000)
     write (iofilo,5010)
@@ -120,7 +120,6 @@
     write (iofilo,5030)
     write (iofilo,5040)
     do i = 1, nm1
-        itarg = ntarg - nm1 + i
         izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
         if (izshaft(i)==1) then
             write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zzvol(i,upper), &

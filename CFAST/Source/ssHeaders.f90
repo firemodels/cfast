@@ -492,7 +492,7 @@
     ! Compartment variables
     do j = 1, nm1
         do i = 1, 8
-            if (i==1.or.i==4.or.i==5.or.izshaft(j)==0) then
+            if (i==1.or.i==4.or.i==5.or.i==7.or.izshaft(j)==0) then
                 position = position + 1
                 call toIntString(j,cRoom)
                 headertext(1,position) = LabelUnits(i+1)

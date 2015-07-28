@@ -1176,14 +1176,12 @@
 
     integer, intent(in) :: itarg
     real(eb), intent(out) :: positionvector(*)
-    integer :: i
     
     type(target_type), pointer :: targptr
 
     targptr => targetinfo(itarg)
-    do i = 1, 6
-        positionvector(i) = xxtarg(i,itarg)
-    end do
+    positionvector(1:3) = targptr%center(1:3)
+    positionvector(4:6) = targptr%normal(1:3)
 
     positionvector(1) = positionvector(1) + cxabs(targptr%room)
     positionvector(2) = positionvector(2) + cyabs(targptr%room)

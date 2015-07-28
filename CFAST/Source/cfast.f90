@@ -1785,7 +1785,7 @@
             targptr => targetinfo(itarg)
             iroom = targptr%room
             ylay = zzhlay(iroom,lower)
-            ytarg = xxtarg(trgcenz,itarg)
+            ytarg = targptr%center(3)
             if(ytarg>=ylay)then
                 ixtarg(trglayer,itarg) = upper
             else

@@ -332,14 +332,14 @@ contains
        if(nsolid_front_verts.ge.3)then
           ! triangulate polygon, compute solid angle for each triangle and sum
           v1 => solid_angle_front_verts(1:3,1)
-          t1(1:3) = v1(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+          t1(1:3) = v1(1:3) - targptr%center(1:3)
           t1(1:3) = t1(1:3)/dnrm2(3,t1,1)
           do i = 2, nsolid_front_verts-1
              v2 => solid_angle_front_verts(1:3,i)
              v3 => solid_angle_front_verts(1:3,i+1)
-             t2(1:3) = v2(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+             t2(1:3) = v2(1:3) - targptr%center(1:3)
              t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
-             t3(1:3) = v3(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+             t3(1:3) = v3(1:3) - targptr%center(1:3)
              t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
              call solid_angle_triangle(solid_angle,t1,t2,t3)
              target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
@@ -348,14 +348,14 @@ contains
        if(nsolid_back_verts.ge.3)then
           ! triangulate polygon, compute solid angle for each triangle and sum
           v1 => solid_angle_back_verts(1:3,1)
-          t1(1:3) = v1(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+          t1(1:3) = v1(1:3) - targptr%center(1:3)
           t1(1:3) = t1(1:3)/dnrm2(3,t1,1)
           do i = 2, nsolid_back_verts-1
              v2 => solid_angle_back_verts(1:3,i)
              v3 => solid_angle_back_verts(1:3,i+1)
-             t2(1:3) = v2(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+             t2(1:3) = v2(1:3) - targptr%center(1:3)
              t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
-             t3(1:3) = v3(1:3) - xxtarg(trgcenx:trgcenx+2,itarg)
+             t3(1:3) = v3(1:3) - targptr%center(1:3)
              t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
              call solid_angle_triangle(solid_angle,t1,t2,t3)
              target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
@@ -393,7 +393,7 @@ contains
     awall_sum(back) = 0.0_eb
     do iwall = 1, 10
        svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
-       if(ddot(3,svect,1,xxtarg(trgnormx,itarg),1)<=0.0_eb)then
+       if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
           awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
        else
           awall_sum(back) = awall_sum(back) + zzwarea2(iroom,iwall)
@@ -481,7 +481,7 @@ contains
                 cosang = -ddot(3,svect,1,targptr%normal(1),1)/s
             endif
             zfire = xfire(ifire,f_fire_zpos)
-            ztarg = xxtarg(trgcenz,itarg)
+            ztarg = targptr%center(3)
             zlay = zzhlay(iroom,lower)
 
             ! compute portion of path in lower and upper layers
@@ -533,7 +533,7 @@ contains
             svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
             s = dnrm2(3,svect,1)
             zwall = roomptr%wall_center(3,iwall)
-            ztarg = xxtarg(trgcenz,itarg)
+            ztarg = targptr%center(3)
             zlay = zzhlay(iroom,lower)
             tl = zztemp(iroom,lower)
             tu = zztemp(iroom,upper)
@@ -585,7 +585,7 @@ contains
 
     ! compute convective flux
     ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.  
-    zznorm = xxtarg(trgnormz,itarg)
+    zznorm = targptr%normal(3)
     if(zznorm<=1.0_eb.and.zznorm>=cos45)then
         iw = 2
         iwb = 1

@@ -635,6 +635,7 @@
 
                 ! position and normal vector
                 targptr%center(1:3) = lrarray(2:4)
+                targptr%normal(1:3) = lrarray(5:7)
 
                 if (countargs(lcarray)>=11) then
                     xxtarg(trginterior,ntarg) = lrarray(11)

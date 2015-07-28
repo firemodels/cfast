@@ -205,7 +205,7 @@ contains
     call cross_product(vcross,v1,v2)
     num = ddot(3,vcross,1,v3,1)
     denom = 1.0_eb + ddot(3,v2,1,v3,1) + ddot(3,v3,1,v1,1) + ddot(3,v1,1,v2,1)
-    solid_angle = 2.0_eb*atan(num/denom)
+    solid_angle = ABS(2.0_eb*atan(num/denom))
     
     end subroutine solid_angle_triangle
 

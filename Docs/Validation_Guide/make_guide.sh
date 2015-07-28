@@ -7,6 +7,9 @@ clean_build=1
 
 doc=Validation_Guide
 # Build guide
+gitrevision=`git describe --long --dirty`
+echo "\\newcommand{\\gitrevision}{$gitrevision}" > ../Bibliography/gitrevision.tex
+
 pdflatex -interaction nonstopmode $doc &> $doc.err
 bibtex $doc &> $doc.err
 pdflatex -interaction nonstopmode $doc &> $doc.err
@@ -40,3 +43,5 @@ if [[ $clean_build == 0 ]]
    else
       echo "$doc built successfully!"
 fi    
+
+rm -f ../Bibliography/gitrevision.tex

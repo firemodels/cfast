@@ -1321,6 +1321,8 @@
 
     ! tp is the pointer into the data base for each material
     integer tp
+    
+    type(target_type), pointer :: targptr
 
     data off /'OFF'/, none /'NONE'/
 
@@ -1429,6 +1431,7 @@
 
     ! initialize target data structures
     do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
         tcname = cxtarg(itarg)
         if(tcname==' ')then
             tcname = 'DEFAULT'
@@ -1436,11 +1439,11 @@
         endif
         icode = 0
         call get_thermal_property(tcname,tp)
-        xxtarg(trgk,itarg) = lfkw(1,tp)
-        xxtarg(trgcp,itarg) = lcw(1,tp)
-        xxtarg(trgrho,itarg) = lrw(1,tp)
-        xxtarg(trgl,itarg) = lflw(1,tp)
-        xxtarg(trgemis,itarg) = lepw(tp)
+        targptr%k = lfkw(1,tp)
+        targptr%cp = lcw(1,tp)
+        targptr%rho = lrw(1,tp)
+        targptr%thickness = lflw(1,tp)
+        targptr%emissivity = lepw(tp)
     end do
 
     return

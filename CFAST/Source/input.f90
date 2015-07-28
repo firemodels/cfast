@@ -638,9 +638,9 @@
                 targptr%normal(1:3) = lrarray(5:7)
 
                 if (countargs(lcarray)>=11) then
-                    xxtarg(trginterior,ntarg) = lrarray(11)
+                    targptr%depth_loc = lrarray(11)
                 else
-                    xxtarg(trginterior,ntarg) = 0.5
+                    targptr%depth_loc = 0.5
                 endif
 
                 ! target name

@@ -276,7 +276,7 @@
         tgtemp = tgtarg(itarg)
         if (ixtarg(trgeq,itarg)==cylpde) then
             tttemp = xxtarg(idx_tempb_trg,itarg)
-            itctemp = idx_tempf_trg+ xxtarg(trginterior,itarg)*(idx_tempb_trg-idx_tempf_trg)
+            itctemp = idx_tempf_trg+ targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
             tctemp = xxtarg(itctemp,itarg)
         else
             tttemp = xxtarg(idx_tempf_trg,itarg)

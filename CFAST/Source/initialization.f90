@@ -617,7 +617,7 @@
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if(ixtarg(trgmeth,itarg)==mplicit)then
+        if(targptr%trgmeth==mplicit)then
             ieq = iztarg(itarg)
             p(noftt+ieq) = interior_temperature
         endif  
@@ -674,6 +674,7 @@
     
     real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
+    type(target_type), pointer :: targptr
 
     ! set some initialization - simple control stuff
     exset = .false.
@@ -898,7 +899,8 @@
     ntarg = 0
 
     do itarg = 1, mxtarg
-        ixtarg(trgmeth,itarg) = xplicit
+        targptr => targetinfo(itarg)
+        targptr%trgmeth = xplicit
         ixtarg(trgeq,itarg) = pde
         ixtarg(trgback,itarg) = interior
         cxtarg(itarg) = 'DEFAULT'
@@ -1491,6 +1493,7 @@
     
     
     integer :: i, j, ib, itarg, nimtarg, noxygen
+    type(target_type), pointer :: targptr
 
     ! count the of nodes (largest of ns and ne)
     nnode = max(na(1),ne(1))
@@ -1547,12 +1550,13 @@
     neqtarg(steady) = 0
     neqtarg(xplicit) = 0
     do itarg = 1, ntarg
-        if(ixtarg(trgmeth,itarg)==mplicit)then
+        targptr => targetinfo(itarg)
+        if(targptr%trgmeth==mplicit)then
             nimtarg = nimtarg + 1
             neqtarg(mplicit) = neqtarg(mplicit) + 1
-        elseif(ixtarg(trgmeth,itarg)==steady)then
+        elseif(targptr%trgmeth==steady)then
             neqtarg(steady) = neqtarg(steady) + 1
-        elseif(ixtarg(trgmeth,itarg)==xplicit)then
+        elseif(targptr%trgmeth==xplicit)then
             neqtarg(xplicit) = neqtarg(steady) + 1
         endif
     end do

@@ -1642,7 +1642,8 @@
         ! define maps for dassl eqs <--> target data structures
         ieq = 0
         do itarg = 1, ntarg
-            if(ixtarg(trgmeth,itarg)==mplicit)then
+            targptr => targetinfo(itarg)
+            if(targptr%trgmeth==mplicit)then
                 ieq = ieq + 1
                 iztarg(itarg) = ieq
             else
@@ -1796,7 +1797,8 @@
         ! (ie solved by dassl)
 
         do itarg = 1, ntarg
-            if(ixtarg(trgmeth,itarg)==mplicit) then
+            targptr => targetinfo(itarg)
+            if(targptr%trgmeth==mplicit) then
                 ieq = iztarg(itarg)
                 xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
             endif

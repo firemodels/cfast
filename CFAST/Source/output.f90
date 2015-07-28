@@ -542,7 +542,7 @@
                 itctemp = (idx_tempf_trg+idx_tempb_trg)/2
                 if (ixtarg(trgeq,itarg)==cylpde) itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
                 tctemp = xxtarg(itctemp,itarg)
-                if (ixtarg(trgmeth,itarg)==steady) tctemp = tttemp
+                if (targptr%trgmeth==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then
                     total = targptr%flux_net_gauge(1)
                     ftotal = targptr%flux_fire(1)

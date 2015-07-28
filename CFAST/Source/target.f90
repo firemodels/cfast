@@ -78,14 +78,14 @@ contains
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(ixtarg(trgmeth,itarg)==method) then
+        if(targptr%trgmeth==method) then
             wfluxin = targptr%flux_net_front
             wfluxout = targptr%flux_net_back
             wspec(1) = targptr%cp
             wrho(1) =  targptr%rho
             wk(1) =  targptr%k
             xl = targptr%thickness
-            iimeth = ixtarg(trgmeth,itarg)
+            iimeth = targptr%trgmeth
             iieq = ixtarg(trgeq,itarg)
 
             ! compute the pde residual 
@@ -139,17 +139,16 @@ contains
     integer, intent(in) :: method
     
     real(eb) :: flux(2), dflux(2), ttarg(2), ddif
-    integer :: itarg, methtarg, iroom, niter, iter
+    integer :: itarg, iroom, niter, iter
         
     type(target_type), pointer :: targptr
 
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        methtarg = ixtarg(trgmeth,itarg)
-        if(method==methtarg) then
+        if(method==targptr%trgmeth) then
             iroom = targptr%room
-            if(methtarg==steady)then
+            if(method==steady)then
                 niter = 10
             else
                 niter = 1
@@ -158,13 +157,13 @@ contains
             ttarg(2) = xxtarg(idx_tempb_trg,itarg)
             do iter = 1, niter
                 call targflux(iter,itarg,ttarg,flux,dflux)
-                if(dflux(1)/=0.0_eb.and.methtarg==steady)then
+                if(dflux(1)/=0.0_eb.and.method==steady)then
                     ddif = flux(1)/dflux(1)
                     ttarg(1) = ttarg(1) - ddif
                     if(abs(ddif)<=1.0e-5_eb*ttarg(1)) exit
                 endif
             end do
-            if(methtarg==steady)then
+            if(method==steady)then
                 xxtarg(idx_tempf_trg,itarg) = ttarg(1)
                 xxtarg(idx_tempb_trg,itarg) = ttarg(2)
             endif

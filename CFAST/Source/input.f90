@@ -662,12 +662,12 @@
                 call upperall(method,method)
                 if(method/=' ')then
                     if(method(1:3)=='STE') then
-                        ixtarg(trgmeth,ntarg) = STEADY
+                        targptr%trgmeth = STEADY
                         method = ' '
                     elseif (method(1:3)=='IMP') then
-                        ixtarg(trgmeth,ntarg) = MPLICIT
+                        targptr%trgmeth = MPLICIT
                     elseif (method(1:3)=='EXP') then
-                        ixtarg(trgmeth,ntarg) = XPLICIT
+                        targptr%trgmeth = XPLICIT
                     else
                         write(logerr,912) method
                         stop

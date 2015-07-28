@@ -627,8 +627,8 @@
         tgtarg(itarg) = interior_temperature
 
         ! scale normal vectors to have length 1
-        scale = 1.0_eb/dnrm2(3,xxtarg(trgnormx,itarg),1)
-        call dscal(3,scale,xxtarg(trgnormx,itarg),1)
+        scale = 1.0_eb/dnrm2(3,targptr%normal(1),1)
+        call dscal(3,scale,targptr%normal(1),1)
     end do
 
     ! initialize solver oxygen values if required.   (must be initialized
@@ -1205,12 +1205,12 @@
             stop
         endif
         iwall = ixtarg(trgwall,itarg)
-        xloc = targptr%trgcenx
-        yloc = targptr%trgceny
-        zloc = targptr%trgcenz
-        xxnorm = xxtarg(trgnormx,itarg)
-        yynorm = xxtarg(trgnormy,itarg)
-        zznorm = xxtarg(trgnormz,itarg)
+        xloc = targptr%center(1)
+        yloc = targptr%center(2)
+        zloc = targptr%center(3)
+        xxnorm = targptr%normal(1)
+        yynorm = targptr%normal(2)
+        zznorm = targptr%normal(3)
         xsize = room_width(iroom)
         ysize = room_depth(iroom)
         zsize = ceiling_height(iroom)
@@ -1256,12 +1256,12 @@
             zz = 0.0_eb
         endif
         if(iwall/=0)then
-            targptr%trgcenx = xx
-            targptr%trgceny = yy
-            targptr%trgcenz = zz
-            xxtarg(trgnormx,itarg) = xxnorm
-            xxtarg(trgnormy,itarg) = yynorm
-            xxtarg(trgnormz,itarg) = zznorm
+            targptr%center(1) = xx
+            targptr%center(2) = yy
+            targptr%center(3) = zz
+            targptr%normal(1) = xxnorm
+            targptr%normal(2) = yynorm
+            targptr%normal(3) = zznorm
             xloc = xx
             yloc = yy
             zloc = zz

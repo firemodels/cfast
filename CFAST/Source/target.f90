@@ -218,7 +218,7 @@ contains
     real(eb), dimension(12) :: vert_distance
     real(eb), target :: room_verts(3,12), solid_angle_front_verts(3,8), solid_angle_back_verts(3,8)
     real(eb), pointer, dimension(:) :: v1, v2, v3
-    real(eb) :: factor, d1, d2, t1(3), t2(3), t3(3)
+    real(eb) :: factor, d1, d2, t1(3), t2(3), t3(3), v0(3)
     real(eb) :: sum_front, sum_back, solid_angle, ylay
     
     integer :: nsolid_front_verts, nsolid_back_verts
@@ -273,23 +273,23 @@ contains
     !define vertex locations
     
     ylay = roomi%z0 + zzhlay(iroom,lower)
-    room_verts(1:3,1)  = (/roomi%x0, roomi%y0,roomi%z1/)
-    room_verts(1:3,2)  = (/roomi%x1, roomi%y0,roomi%z1/)
-    room_verts(1:3,3)  = (/roomi%x0, roomi%y1,roomi%z1/)
-    room_verts(1:3,4)  = (/roomi%x1, roomi%y1,roomi%z1/)
-    room_verts(1:3,5)  = (/roomi%x0, roomi%y0,ylay/)
-    room_verts(1:3,6)  = (/roomi%x1, roomi%y0,ylay/)
-    room_verts(1:3,7)  = (/roomi%x0, roomi%y1,ylay/)
-    room_verts(1:3,8)  = (/roomi%x1, roomi%y1,ylay/)
-    room_verts(1:3,9)  = (/roomi%x0, roomi%y0,roomi%z0/)
-    room_verts(1:3,10) = (/roomi%x1, roomi%y0,roomi%z0/)
-    room_verts(1:3,11) = (/roomi%x0, roomi%y1,roomi%z0/)
-    room_verts(1:3,12) = (/roomi%x1, roomi%y1,roomi%z0/)
+    room_verts(1:3,1)  = (/roomi%x0, roomi%y0, roomi%z1/)
+    room_verts(1:3,2)  = (/roomi%x1, roomi%y0, roomi%z1/)
+    room_verts(1:3,3)  = (/roomi%x0, roomi%y1, roomi%z1/)
+    room_verts(1:3,4)  = (/roomi%x1, roomi%y1, roomi%z1/)
+    room_verts(1:3,5)  = (/roomi%x0, roomi%y0, ylay/)
+    room_verts(1:3,6)  = (/roomi%x1, roomi%y0, ylay/)
+    room_verts(1:3,7)  = (/roomi%x0, roomi%y1, ylay/)
+    room_verts(1:3,8)  = (/roomi%x1, roomi%y1, ylay/)
+    room_verts(1:3,9)  = (/roomi%x0, roomi%y0, roomi%z0/)
+    room_verts(1:3,10) = (/roomi%x1, roomi%y0, roomi%z0/)
+    room_verts(1:3,11) = (/roomi%x0, roomi%y1, roomi%z0/)
+    room_verts(1:3,12) = (/roomi%x1, roomi%y1, roomi%z0/)
     
 ! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
     
     do ivert = 1, 12
-       rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%center(1:3)  ! check for sign
+       rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%center(1:3)
        vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal(1),1)
     end do
     
@@ -301,32 +301,36 @@ contains
        nsolid_back_verts=0
        do ivert = 1, 4
           d1 = vert_distance(facei(ivert))
-          d2 = vert_distance(facei(ivert+1))
           v1(1:3) => room_verts(1:3,facei(ivert))
+          
+          d2 = vert_distance(facei(ivert+1))
           v2(1:3) => room_verts(1:3,facei(ivert+1))
+          
           if(d1.gt.0)then  ! face vertex is above target plane
              nsolid_front_verts=nsolid_front_verts+1
              solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
           endif
-          if(d1.lt.0)then  ! face vertex is above target plane
+          
+          if(d1.lt.0)then  ! face vertex is below target plane
              nsolid_back_verts=nsolid_back_verts+1
              solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
           endif
-          if(d1*d2.lt.0)then ! two successive face vertices are opposite sides of target plane
+          if(d1*d2.lt.0)then ! two successive face vertices are on opposite sides of target plane
                              ! interpolate to find vertex that lies on target plane
              !  d1   0    d2
              !  v1   v0   v2    
              !
              !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
              !  solve for v0
-             ! v0 = v1*(1-(-d1)/(d2-d1)) + v2*(-d1/(d2-d1))
+             ! v0 = (1-(-d1)/(d2-d1))*v1 + (-d1/(d2-d1))*v2
              ! note: d2-d1 can't be 0 since d1*d2<0.0
              nsolid_front_verts=nsolid_front_verts+1
              nsolid_back_verts=nsolid_back_verts+1
 
              factor = -d1/(d2-d1)
-             solid_angle_front_verts(1:3,nsolid_front_verts) = (1.0_eb-factor)*v1 + factor*v2
-             solid_angle_back_verts(1:3,nsolid_back_verts) =   (1.0_eb-factor)*v1 + factor*v2
+             v0(1:3) = (1.0_eb-factor)*v1 + factor*v2
+             solid_angle_front_verts(1:3,nsolid_front_verts) = v0(1:3)
+             solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
           endif
        end do
        if(nsolid_front_verts.ge.3)then
@@ -337,10 +341,13 @@ contains
           do i = 2, nsolid_front_verts-1
              v2 => solid_angle_front_verts(1:3,i)
              v3 => solid_angle_front_verts(1:3,i+1)
+             
              t2(1:3) = v2(1:3) - targptr%center(1:3)
              t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
+             
              t3(1:3) = v3(1:3) - targptr%center(1:3)
              t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
+             
              call solid_angle_triangle(solid_angle,t1,t2,t3)
              target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
           end do
@@ -353,10 +360,13 @@ contains
           do i = 2, nsolid_back_verts-1
              v2 => solid_angle_back_verts(1:3,i)
              v3 => solid_angle_back_verts(1:3,i+1)
+             
              t2(1:3) = v2(1:3) - targptr%center(1:3)
              t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
+             
              t3(1:3) = v3(1:3) - targptr%center(1:3)
              t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
+             
              call solid_angle_triangle(solid_angle,t1,t2,t3)
              target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
           end do

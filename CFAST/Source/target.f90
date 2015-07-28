@@ -445,10 +445,10 @@ contains
 
     absu = 0.50_eb
     absl = 0.01_eb
-    roomptr => roominfo(iroom)
-    targptr => targetinfo(itarg)
     
+    targptr => targetinfo(itarg)
     iroom = targptr%room
+    roomptr => roominfo(iroom)
     
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then

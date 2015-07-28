@@ -45,6 +45,9 @@ contains
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, sum, wfluxin, wfluxout, wfluxavg, xl
     integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    
+    type(target_type), pointer :: targptr
+    
     save first,tmp
 
     if(method==steady)return
@@ -74,13 +77,14 @@ contains
 
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
         if(ixtarg(trgmeth,itarg)==method) then
-            wfluxin = xxtarg(trgnfluxf,itarg)
-            wfluxout = xxtarg(trgnfluxb,itarg)
-            wspec(1) = xxtarg(trgcp,itarg)
-            wrho(1) =  xxtarg(trgrho,itarg)
-            wk(1) =  xxtarg(trgk,itarg)
-            xl = xxtarg(trgl,itarg)
+            wfluxin = targptr%flux_net_front
+            wfluxout = targptr%flux_net_back
+            wspec(1) = targptr%cp
+            wrho(1) =  targptr%rho
+            wk(1) =  targptr%k
+            xl = targptr%thickness
             iimeth = ixtarg(trgmeth,itarg)
             iieq = ixtarg(trgeq,itarg)
 
@@ -104,7 +108,7 @@ contains
                        wfluxin,wfluxout,iwbound,tgrad,tderv)
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
-                        delta(noftt+ieq) = xxtarg(trgnfluxf,itarg)+wk(1)*tgrad(1)
+                        delta(noftt+ieq) = targptr%flux_net_front + wk(1) * tgrad(1)
                     endif
                 else if(iieq==cylpde)then
                 !  wfluxout is incorrect
@@ -164,11 +168,11 @@ contains
                 xxtarg(idx_tempf_trg,itarg) = ttarg(1)
                 xxtarg(idx_tempb_trg,itarg) = ttarg(2)
             endif
-            xxtarg(trgtfluxf,itarg) = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
-            xxtarg(trgtfluxb,itarg) = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
+            targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
+            targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
             call targflux(niter+1,itarg,ttarg,flux,dflux)
-            xxtarg(trgnfluxf,itarg) = flux(1)
-            xxtarg(trgnfluxb,itarg) = flux(2)
+            targptr%flux_net_front = flux(1)
+            targptr%flux_net_back = flux(2)
         end if
     end do
 
@@ -621,7 +625,7 @@ contains
     dttarg = 1.0e-7_eb*ttarg(front)
     dttargb = 1.0e-7_eb*ttarg(back)
 
-    temis = xxtarg(trgemis,itarg)
+    temis = targptr%emissivity
 
     ! convection for the front
     call convective_flux (iw,tg,ttarg(front),q1)

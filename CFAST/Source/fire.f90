@@ -1437,7 +1437,9 @@
     
     real(eb) :: tmpob(2,mxfires), tnobj
     
-    integer :: iobj, ignflg, iobtarg
+    integer :: iobj, ignflg, itarg
+    
+    type(target_type), pointer :: targptr
 
     ifobj = 0
     tobj = told + 2.0_eb*dt
@@ -1449,7 +1451,7 @@
     do iobj = 1, numobjl
         if (.not.objon(iobj)) then
             ignflg = objign(iobj)
-            iobtarg = obtarg(iobj)
+            itarg = obtarg(iobj)
             if (ignflg==1) then
                 if (objcri(1,iobj)<=tnobj) then
                     tobj = min(objcri(1,iobj),tobj)
@@ -1461,10 +1463,11 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call check_object_ignition(told,dt,xxtarg(idx_tempf_trg,iobtarg),objcri(3,iobj),obcond(igntemp,iobj),&
+                call check_object_ignition(told,dt,xxtarg(idx_tempf_trg,itarg),objcri(3,iobj),obcond(igntemp,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
-                call check_object_ignition(told,dt,xxtarg(trgtfluxf,iobtarg),objcri(2,iobj),obcond(ignflux,iobj),&
+                targptr => targetinfo(itarg)
+                call check_object_ignition(told,dt,targptr%flux_front,objcri(2,iobj),obcond(ignflux,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else
                 call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
@@ -1476,10 +1479,11 @@
     if (iflag/=check_detector_state) then
         do iobj = 1, numobjl
             if (.not.objon(iobj)) then
-                iobtarg = obtarg(iobj)
+                itarg = obtarg(iobj)
                 if (ignflg>1) then 
-                    obcond(igntemp,iobj) = xxtarg(idx_tempf_trg,iobtarg)
-                    obcond(ignflux,iobj) = xxtarg(trgtfluxf,iobtarg)
+                    targptr => targetinfo(itarg)
+                    obcond(igntemp,iobj) = xxtarg(idx_tempf_trg,itarg)
+                    obcond(ignflux,iobj) = targptr%flux_front
                 end if
                 if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then
                     if (tmpob(2,iobj)<=tobj) then

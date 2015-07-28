@@ -17,24 +17,17 @@
     call get_info(revision, revision_date, compile_date)
 
     call splitversion(version,imajor,iminor,iminorrev)
-
-    if (iminorrev>=10) then
-        if (iunit==0) then
-            write (*,10) imajor, iminor, iminorrev, trim(compile_date), trim(revision)
-        else
-            write (iunit,10) imajor, iminor, iminorrev, trim(compile_date), trim(revision)
-        endif
+    
+    write(iunit,'(/A/)')             ' CFAST'
+    if(iminorrev>=10)then
+       write(iunit,'(a,i1,".",i2,".",i1)') ' Version          : CFAST ',imajor, iminor, iminorrev
     else
-        if (iunit==0) then
-            write (*,20) imajor, iminor, iminorrev, trim(compile_date), trim(revision)
-        else
-            write (iunit,20) imajor, iminor, iminorrev, trim(compile_date), trim(revision)
-        endif
+       write(iunit,'(a,i1,".",i1,".",i1)') ' Version          : CFAST ',imajor, iminor, iminorrev
     endif
-    return
-
-10  format ('CFAST Version ',i1,'.',i1,'.',I2,', Created ',a,', Revision ', a)
-20  format ('CFAST Version  ',i1,'.',i1,'.',I1,', Created ',a,', Revision ', a)
+    write(iunit,'(A,A)')                   ' Revision         : ',TRIM(revision)
+    write(iunit,'(A,A)')                   ' Revision Date    : ',TRIM(revision_date)
+    write(iunit,'(A,A/)')                  ' Compilation Date : ',TRIM(compile_date)
+    
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------

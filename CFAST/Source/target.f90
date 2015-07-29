@@ -76,7 +76,7 @@ contains
     call target_flux(method)
 
     ! for each target calculate the residual and update target temperature (if update = 1)
-    do itarg = 1, ntarg
+          do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         if(targptr%trgmeth==method) then
             wfluxin = targptr%flux_net_front
@@ -221,7 +221,7 @@ contains
     real(eb), dimension(12) :: vert_distance
     real(eb), target :: room_verts(3,12), solid_angle_front_verts(3,8), solid_angle_back_verts(3,8)
     real(eb), pointer, dimension(:) :: v1, v2, v3
-    real(eb) :: factor, d1, d2, t1(3), t2(3), t3(3), v0(3)
+    real(eb) :: factor, d1, d2, d3, t1(3), t2(3), t3(3), v0(3)
     real(eb) :: sum_front, sum_back, solid_angle, ylay
     
     integer :: nsolid_front_verts, nsolid_back_verts
@@ -332,42 +332,66 @@ contains
           endif
        end do
        if(nsolid_front_verts.ge.3)then
+
           ! triangulate polygon, compute solid angle for each triangle and sum
+          ! the solid angle is zero whenever a vertex coincides with the target location
+
           v1 => solid_angle_front_verts(1:3,1)
           t1(1:3) = v1(1:3) - targptr%center(1:3)
-          t1(1:3) = t1(1:3)/dnrm2(3,t1,1)
-          do i = 2, nsolid_front_verts-1
-             v2 => solid_angle_front_verts(1:3,i)
-             v3 => solid_angle_front_verts(1:3,i+1)
+          d1 = dnrm2(3,t1,1)
+          
+          if(d1.gt.0.0_eb)then
+             t1(1:3) = t1(1:3)/d1
+             do i = 2, nsolid_front_verts-1
+                v2 => solid_angle_front_verts(1:3,i)
              
-             t2(1:3) = v2(1:3) - targptr%center(1:3)
-             t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
+                t2(1:3) = v2(1:3) - targptr%center(1:3)
+                d2 = dnrm2(3,t2,1)
+                if(d2.eq.0.0_eb)cycle
              
-             t3(1:3) = v3(1:3) - targptr%center(1:3)
-             t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
+                v3 => solid_angle_front_verts(1:3,i+1)
+                t3(1:3) = v3(1:3) - targptr%center(1:3)
+                d3 = dnrm2(3,t3,1)
+                if(d3.eq.0.0_eb)cycle
+
+                t2(1:3) = t2(1:3)/d2
+                t3(1:3) = t3(1:3)/d3
              
-             call solid_angle_triangle(solid_angle,t1,t2,t3)
-             target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
-          end do
+                call solid_angle_triangle(solid_angle,t1,t2,t3)
+                target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
+             end do
+          endif
        endif
        if(nsolid_back_verts.ge.3)then
+
           ! triangulate polygon, compute solid angle for each triangle and sum
+          ! the solid angle is zero whenever a vertex coincides with the target location
+
           v1 => solid_angle_back_verts(1:3,1)
           t1(1:3) = v1(1:3) - targptr%center(1:3)
-          t1(1:3) = t1(1:3)/dnrm2(3,t1,1)
-          do i = 2, nsolid_back_verts-1
-             v2 => solid_angle_back_verts(1:3,i)
-             v3 => solid_angle_back_verts(1:3,i+1)
+          d1 = dnrm2(3,t1,1)
+          
+          if(d1.gt.0.0_eb)then
+             t1(1:3) = t1(1:3)/d1
+             do i = 2, nsolid_back_verts-1
+                v2 => solid_angle_back_verts(1:3,i)
              
-             t2(1:3) = v2(1:3) - targptr%center(1:3)
-             t2(1:3) = t2(1:3)/dnrm2(3,t2,1)
+                t2(1:3) = v2(1:3) - targptr%center(1:3)
+                d2 = dnrm2(3,t2,1)
+                if(d2.eq.0.0_eb)cycle
+                
+                v3 => solid_angle_back_verts(1:3,i+1)
+                t3(1:3) = v3(1:3) - targptr%center(1:3)
+                d3 = dnrm2(3,t3,1)
+                if(d3.eq.0.0_eb)cycle
+
+                t2(1:3) = t2(1:3)/d2
+                t3(1:3) = t3(1:3)/d3
              
-             t3(1:3) = v3(1:3) - targptr%center(1:3)
-             t3(1:3) = t3(1:3)/dnrm2(3,t3,1)
-             
-             call solid_angle_triangle(solid_angle,t1,t2,t3)
-             target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
+                call solid_angle_triangle(solid_angle,t1,t2,t3)
+                target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
           end do
+          endif
        endif
     end do
     sum_front = 0.0_eb

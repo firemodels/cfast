@@ -251,23 +251,18 @@ contains
     integer, dimension(:), pointer :: facei
     
  ! faces   (vertices listed counter clockwise as you are facing the face)
- !  1: 1  2  4  3 ceiling
- !  2: 1  5  6  2 upper front
- !  3: 2  6  8  4 upper right
- !  4: 3  4  8  7 upper back
- !  5: 1  3  7  5 upper left
- !  6: 5  9 10  6 lower front
- !  7: 6 10 12  8 lower right
- !  8: 7  8 12 11 lower back
- !  9: 5  7 11  9 lower left
- ! 10: 9 11 12 10 floor
-
+ ! same convention as used for roomptr%wall_center (see def in cfast.f90 )
     data ((faces(i,iwall),i=1,5),iwall=1,10) /& ! for convenience repeat first and last vertex
-    1,  2,  4,  3, 1,    1,  5,  6,  2, 1, &
-    2,  6,  8,  4, 2,    3,  4,  8,  7, 3, &
-    1,  3,  7,  5, 1,    5,  9, 10,  6, 5, &
-    6, 10, 12,  8, 6,    7,  8, 12, 11, 7, &
-    5,  7, 11,  9, 5,    9, 11, 12, 10, 9  &
+    1,  2,  4,  3, 1, &    ! ceiling
+    3,  4,  8,  7, 3, &    ! upper back
+    2,  6,  8,  4, 2, &    ! upper right
+    1,  5,  6,  2, 1, &    ! upper front
+    1,  3,  7,  5, 1, &    ! upper left
+    7,  8, 12, 11, 7, &    ! lower back
+    6, 10, 12,  8, 6, &    ! lower right
+    5,  9, 10,  6, 5, &    ! lower front
+    5,  7, 11,  9, 5, &    ! lower left
+    9, 11, 12, 10, 9  &    ! floor
     /
 
     roomi => roominfo(iroom)

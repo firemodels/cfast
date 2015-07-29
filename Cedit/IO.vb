@@ -190,7 +190,7 @@ Module IO
                             hvent.FirstOffset = csv.Num(i, hventNum.hall1)
                             hvent.Face = csv.str(i, hventNum.face)
                             hvent.InitialOpening = csv.Num(i, hventNum.initialfraction)
-                            hvent.FinalOpening = csv.Num(i, hventNum.initialfraction)
+                            hvent.FinalOpening = csv.Num(i, hventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
                         End If
                         hvent.Changed = False
                         myHVents.Add(hvent)
@@ -243,7 +243,7 @@ Module IO
                             csv.Num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), csv.Num(i, mventNum.flow), _
                             csv.Num(i, mventNum.beginFlowDrop), csv.Num(i, mventNum.flowZero))
                         mvent.InitialOpening = csv.Num(i, mventNum.initialfraction)
-                        mvent.FinalOpening = csv.Num(i, mventNum.initialfraction)
+                        mvent.FinalOpening = csv.Num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
                         mvent.Changed = False
                         myMVents.Add(mvent)
                     Case "OBJECT"
@@ -380,7 +380,7 @@ Module IO
                         vvent.SetVent(csv.Num(i, vventNum.firstcompartment) - 1, csv.Num(i, vventNum.secondcompartment) - 1, _
                             csv.Num(i, vventNum.area), csv.Num(i, vventNum.shape))
                         vvent.InitialOpening = csv.Num(i, vventNum.intialfraction)
-                        vvent.FinalOpening = csv.Num(i, vventNum.intialfraction)
+                        vvent.FinalOpening = csv.Num(i, vventNum.intialfraction) ' This is the default; it may be changed by an EVENT specification
                         vvent.Changed = False
                         myVVents.Add(vvent)
                     Case "WIND"

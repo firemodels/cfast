@@ -380,7 +380,7 @@ Public Class UpdateGUI
             If aVent.SecondCompartment <= myCompartments.Count - 1 Then
                 MainWin.HVentComp2.SelectedIndex = aVent.SecondCompartment + 1
             End If
-            MainWin.HVentOffset1.Text = aVent.FirstOffset.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.HVentOffset.Text = aVent.FirstOffset.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentSill.Text = aVent.Sill.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentSoffit.Text = aVent.Soffit.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentWidth.Text = aVent.Width.ToString + myUnits.Convert(UnitsNum.Length).Units

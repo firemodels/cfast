@@ -341,7 +341,7 @@ Public Class CeditMain
     Friend WithEvents HVentComp2 As System.Windows.Forms.ComboBox
     Friend WithEvents GroupBox13 As System.Windows.Forms.GroupBox
     Friend WithEvents Label19 As System.Windows.Forms.Label
-    Friend WithEvents HVentOffset1 As System.Windows.Forms.TextBox
+    Friend WithEvents HVentOffset As System.Windows.Forms.TextBox
     Friend WithEvents HVentComp1 As System.Windows.Forms.ComboBox
     Friend WithEvents HVentSoffit As System.Windows.Forms.TextBox
     Friend WithEvents Label34 As System.Windows.Forms.Label
@@ -502,7 +502,7 @@ Public Class CeditMain
         Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.HVentFractionTime = New System.Windows.Forms.TextBox()
-        Me.HVentOffset1 = New System.Windows.Forms.TextBox()
+        Me.HVentOffset = New System.Windows.Forms.TextBox()
         Me.Label82 = New System.Windows.Forms.Label()
         Me.HVentFinalFraction = New System.Windows.Forms.TextBox()
         Me.Label67 = New System.Windows.Forms.Label()
@@ -727,9 +727,9 @@ Public Class CeditMain
         Me.Label80 = New System.Windows.Forms.Label()
         Me.Label79 = New System.Windows.Forms.Label()
         Me.TargetSolutionMethod = New System.Windows.Forms.ComboBox()
-        Me.TargetSolutionType = New System.Windows.Forms.ComboBox()
         Me.TargetComp = New System.Windows.Forms.ComboBox()
         Me.Label74 = New System.Windows.Forms.Label()
+        Me.TargetSolutionType = New System.Windows.Forms.ComboBox()
         Me.GroupBox28 = New System.Windows.Forms.GroupBox()
         Me.Label57 = New System.Windows.Forms.Label()
         Me.Label56 = New System.Windows.Forms.Label()
@@ -1387,14 +1387,14 @@ Public Class CeditMain
         Me.HVentSummary.ExtendLastCol = True
         Me.HVentSummary.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
         Me.HVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.HVentSummary.Location = New System.Drawing.Point(97, 41)
+        Me.HVentSummary.Location = New System.Drawing.Point(157, 41)
         Me.HVentSummary.Name = "HVentSummary"
         Me.HVentSummary.Rows.Count = 101
         Me.HVentSummary.Rows.DefaultSize = 19
         Me.HVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
         Me.HVentSummary.ShowSortPosition = C1.Win.C1FlexGrid.ShowSortPositionEnum.None
-        Me.HVentSummary.Size = New System.Drawing.Size(782, 192)
+        Me.HVentSummary.Size = New System.Drawing.Size(662, 192)
         Me.HVentSummary.StyleInfo = resources.GetString("HVentSummary.StyleInfo")
         Me.HVentSummary.TabIndex = 401
         Me.HVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
@@ -1403,7 +1403,7 @@ Public Class CeditMain
         '
         Me.GroupHVentGeometry.Controls.Add(Me.Label19)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentFractionTime)
-        Me.GroupHVentGeometry.Controls.Add(Me.HVentOffset1)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentOffset)
         Me.GroupHVentGeometry.Controls.Add(Me.Label82)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentFinalFraction)
         Me.GroupHVentGeometry.Controls.Add(Me.Label67)
@@ -1442,13 +1442,13 @@ Public Class CeditMain
         Me.HVentFractionTime.Size = New System.Drawing.Size(96, 20)
         Me.HVentFractionTime.TabIndex = 413
         '
-        'HVentOffset1
+        'HVentOffset
         '
-        Me.HVentOffset1.Location = New System.Drawing.Point(652, 114)
-        Me.HVentOffset1.Name = "HVentOffset1"
-        Me.HVentOffset1.Size = New System.Drawing.Size(96, 20)
-        Me.HVentOffset1.TabIndex = 415
-        Me.HVentOffset1.Text = "0 m"
+        Me.HVentOffset.Location = New System.Drawing.Point(652, 114)
+        Me.HVentOffset.Name = "HVentOffset"
+        Me.HVentOffset.Size = New System.Drawing.Size(96, 20)
+        Me.HVentOffset.TabIndex = 415
+        Me.HVentOffset.Text = "0 m"
         '
         'Label82
         '
@@ -3704,16 +3704,6 @@ Public Class CeditMain
         Me.TargetSolutionMethod.TabIndex = 810
         Me.TargetSolutionMethod.Text = "Implicit"
         '
-        'TargetSolutionType
-        '
-        Me.TargetSolutionType.ItemHeight = 13
-        Me.TargetSolutionType.Items.AddRange(New Object() {"Plate", "Cylinder"})
-        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 19)
-        Me.TargetSolutionType.Name = "TargetSolutionType"
-        Me.TargetSolutionType.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionType.TabIndex = 809
-        Me.TargetSolutionType.Text = "Plate"
-        '
         'TargetComp
         '
         Me.TargetComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -3732,6 +3722,16 @@ Public Class CeditMain
         Me.Label74.TabIndex = 34
         Me.Label74.Text = "Compartment:"
         Me.Label74.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'TargetSolutionType
+        '
+        Me.TargetSolutionType.ItemHeight = 13
+        Me.TargetSolutionType.Items.AddRange(New Object() {"Plate", "Cylinder"})
+        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 19)
+        Me.TargetSolutionType.Name = "TargetSolutionType"
+        Me.TargetSolutionType.Size = New System.Drawing.Size(104, 21)
+        Me.TargetSolutionType.TabIndex = 809
+        Me.TargetSolutionType.Text = "Plate"
         '
         'GroupBox28
         '
@@ -5251,11 +5251,11 @@ Public Class CeditMain
             UpdateGUI.HVents(CurrentHVent)
         End If
     End Sub
-    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset1.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentInitialFraction.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentFinalFraction.Leave, HVentFractionTime.Leave
+    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentInitialFraction.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentFinalFraction.Leave, HVentFractionTime.Leave
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
-            If sender Is Me.HVentOffset1 Then aVent.FirstOffset = Val(Me.HVentOffset1.Text)
+            If sender Is Me.HVentOffset Then aVent.FirstOffset = Val(Me.HVentOffset.Text)
             If sender Is Me.HVentSill Then aVent.Sill = Val(Me.HVentSill.Text)
             If sender Is Me.HVentSoffit Then aVent.Soffit = Val(Me.HVentSoffit.Text)
             If sender Is Me.HVentWidth Then aVent.Width = Val(Me.HVentWidth.Text)

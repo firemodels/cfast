@@ -1361,11 +1361,15 @@
     
     integer frmask(mxccv)
 
-    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii, iwfar, ifromr, ifromw, itor, &
-        itow, ieqfrom, ieqto, itarg, itype, ibeg, iend, npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
-    real(eb) :: wtemp, xwall_center, vminfrac, xx, yy, ywall_center, zz, xdelt, tstop, zzu, zzl, &
-        ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv, xt, xtemp, xh2o, ptemp, epscut
-        
+    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii
+    integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg, itype, ibeg, iend
+    integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
+    real(eb) :: wtemp, vminfrac 
+    real(eb) :: xdelt, tstop, zzu, zzl
+    real(eb) :: ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv
+    real(eb) :: xt, xtemp, xh2o, ptemp, epscut
+    real(eb) :: xmax, xmid, ymax, ymid, zmax
+    
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -1376,7 +1380,6 @@
         qfurnout=sigma*wtemp**4
     endif
 
-    xwall_center = 2.0_eb
     vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
@@ -1403,41 +1406,52 @@
             roomptr%kbar = czgrid(iroom)
             
             ! define wall centers
-            xx = room_width(iroom)
-            xwall_center = xx/2.0_eb
-            yy = room_depth(iroom)
-            ywall_center = yy/2.0_eb
-            zz = ceiling_height(iroom)
-            roomptr%wall_center(1,1) = xwall_center
-            roomptr%wall_center(2,1) = ywall_center
-            roomptr%wall_center(3,1) = zz
+            xmax = room_width(iroom)
+            xmid = xmax/2.0_eb
+            ymax = room_depth(iroom)
+            ymid = ymax/2.0_eb
+            zmax = ceiling_height(iroom)
 
-            roomptr%wall_center(1,2) = xwall_center
-            roomptr%wall_center(2,2) = yy
+            ! ceiling
+            roomptr%wall_center(1,1) = xmid
+            roomptr%wall_center(2,1) = ymid
+            roomptr%wall_center(3,1) = zmax
 
-            roomptr%wall_center(1,3) = xx
-            roomptr%wall_center(2,3) = ywall_center
+            ! upper back
+            roomptr%wall_center(1,2) = xmid
+            roomptr%wall_center(2,2) = ymax
 
-            roomptr%wall_center(1,4) = xwall_center
+            ! upper right
+            roomptr%wall_center(1,3) = xmax
+            roomptr%wall_center(2,3) = ymid
+
+            ! upper front
+            roomptr%wall_center(1,4) = xmid
             roomptr%wall_center(2,4) = 0.0_eb
 
+            ! upper left
             roomptr%wall_center(1,5) = 0.0_eb
-            roomptr%wall_center(2,5) = ywall_center
+            roomptr%wall_center(2,5) = ymid
 
-            roomptr%wall_center(1,6) = xwall_center
-            roomptr%wall_center(2,6) = yy
+            ! lower back
+            roomptr%wall_center(1,6) = xmid
+            roomptr%wall_center(2,6) = ymax
 
-            roomptr%wall_center(1,7) = xx
-            roomptr%wall_center(2,7) = ywall_center
+            ! lower right
+            roomptr%wall_center(1,7) = xmax
+            roomptr%wall_center(2,7) = ymid
 
-            roomptr%wall_center(1,8) = xwall_center
+            ! lower front
+            roomptr%wall_center(1,8) = xmid
             roomptr%wall_center(2,8) = 0.0_eb
 
+            ! lower left
             roomptr%wall_center(1,9) = 0.0_eb
-            roomptr%wall_center(2,9) = ywall_center
+            roomptr%wall_center(2,9) = ymid
 
-            roomptr%wall_center(1,10) = xwall_center
-            roomptr%wall_center(2,10) = ywall_center
+            ! floor
+            roomptr%wall_center(1,10) = xmid
+            roomptr%wall_center(2,10) = ymid
             roomptr%wall_center(3,10) = 0.0_eb
         end do
 
@@ -1727,26 +1741,26 @@
             endif
 
             ! compute area of 10 wall segments
-            xx = room_width(iroom)
-            yy = room_depth(iroom)
+            xmax = room_width(iroom)
+            ymax = room_depth(iroom)
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
             zzwarea2(iroom,1) = room_area(iroom)
-            zzwarea2(iroom,2) = zzu*xx
-            zzwarea2(iroom,3) = zzu*yy
-            zzwarea2(iroom,4) = zzu*xx
-            zzwarea2(iroom,5) = zzu*yy
-            zzwarea2(iroom,6) = zzl*xx
-            zzwarea2(iroom,7) = zzl*yy
-            zzwarea2(iroom,8) = zzl*xx
-            zzwarea2(iroom,9) = zzl*yy
+            zzwarea2(iroom,2) = zzu*xmax
+            zzwarea2(iroom,3) = zzu*ymax
+            zzwarea2(iroom,4) = zzu*xmax
+            zzwarea2(iroom,5) = zzu*ymax
+            zzwarea2(iroom,6) = zzl*xmax
+            zzwarea2(iroom,7) = zzl*ymax
+            zzwarea2(iroom,8) = zzl*xmax
+            zzwarea2(iroom,9) = zzl*ymax
             zzwarea2(iroom,10) = room_area(iroom)
 
             ! compute area of 4 wall segments
             zzwarea(iroom,1) = room_area(iroom)
             zzwarea(iroom,2) = room_area(iroom)
-            zzwarea(iroom,3) = (yy + xx)*zzu*xwall_center
-            zzwarea(iroom,4) = max(0.0_eb,(yy+xx)*zzl*xwall_center)
+            zzwarea(iroom,3) = (ymax + xmax)*zzu*2.0_eb
+            zzwarea(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)

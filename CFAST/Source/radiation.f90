@@ -23,7 +23,7 @@
     real(eb), intent(out), dimension(nr,2) :: flwrad
     real(eb), intent(out), dimension(nr,nwal) :: flxrad
 
-    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb, fheight
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, ieqtyp, iroom, iwall, ilay, imap, ifire, nrmfire
     logical black
 
@@ -98,14 +98,14 @@
             do j = 1, nrmfire
                 xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
                 yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
-                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
-                ! This is fire radiation at the center height of the fire (bounded by the ceiling height)
-                !call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
-                !if(fheight+xfire(ifire+j-1,f_fire_zpos)>room_height(i))then
-                !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (room_height(i)-xfire(ifire+j,f_fire_zpos))/2.0_eb
-                !else
-                !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/2.0_eb
-                !end if
+                !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
+                ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
+                call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
+                if(fheight+xfire(ifire+j-1,f_fire_zpos)>room_height(i))then
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (room_height(i)-xfire(ifire+j,f_fire_zpos))/3.0_eb
+                else
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
+                end if
             end do
             if(nrmfire/=0)then
                 if(.not.black)then

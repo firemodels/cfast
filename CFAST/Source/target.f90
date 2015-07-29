@@ -76,7 +76,7 @@ contains
     call target_flux(method)
 
     ! for each target calculate the residual and update target temperature (if update = 1)
-    do itarg = 1, ntarg
+          do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         if(targptr%trgmeth==method) then
             wfluxin = targptr%flux_net_front
@@ -383,7 +383,7 @@ contains
                 v3 => solid_angle_back_verts(1:3,i+1)
                 t3(1:3) = v3(1:3) - targptr%center(1:3)
                 d3 = dnrm2(3,t3,1)
-                if(t3.eq.0.0_eb)cycle
+                if(d3.eq.0.0_eb)cycle
 
                 t2(1:3) = t2(1:3)/d2
                 t3(1:3) = t3(1:3)/d3

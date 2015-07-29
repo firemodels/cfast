@@ -5,5 +5,5 @@ call ..\scripts\setup_intel_compilers.bat intel64
 
 Title Building cfast for 64 bit Windows
 
-make VPATH="../Source:../Include" SHELL="c:\windows\system32\cmd.exe" INCLUDE="../Include" -f ..\makefile intel_win_64
+make VPATH="../Source:../Include" SHELL="%ComSpec%" INCLUDE="../Include" -f ..\makefile intel_win_64
 pause

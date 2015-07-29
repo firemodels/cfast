@@ -721,14 +721,14 @@
     integer ::i, j, irm, ii, isys
     real(eb) :: filter, qcifraction
 
-    do i = 0, numobjl
+    do i = 1, numobjl
         objmaspy(i) = objmaspy(i) + femp(i)*deltt
         radio(i) = radio(i) + femr(i)*deltt
     end do
 
     ! sum the trace release from all of the fires
     tradio = 0.0_eb
-    do i = 0, numobjl
+    do i = 1, numobjl
         tradio = tradio + radio(i)
     end do
 

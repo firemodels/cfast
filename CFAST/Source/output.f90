@@ -183,7 +183,7 @@
         xqf = 0.0_eb
         xqupr = 0.0_eb
         xqlow = 0.0_eb
-        do i = 0, numobjl
+        do i = 1, numobjl
             if (ir==froom(i)) then
                 xems = xems + fems(i)
                 xemp = xemp + femp(i)
@@ -474,7 +474,7 @@
     do ir = 1, nm1
         xemp = 0.0_eb
         xqf = 0.0_eb
-        do i = 0, numobjl
+        do i = 1, numobjl
             if (ir==froom(i)) then
                 xemp = xemp + femp(i)
                 xqf = xqf + fqf(i)
@@ -1525,7 +1525,7 @@
         write(*,6070)
         do iroom = 1, nm1
             xqf = 0.
-            do iobj = 0, numobjl
+            do iobj = 1, numobjl
                 if (iroom==froom(iobj))xqf = xqf + fqf(iobj)
             end do
             xqf = xqf + fqdj(iroom)

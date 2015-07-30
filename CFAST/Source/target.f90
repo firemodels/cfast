@@ -459,8 +459,7 @@ contains
 
     integer, intent(in) :: iter, itarg
     real(eb), intent(in) :: ttarg(2)
-
-    real(eb) :: flux(2), dflux(2)
+    real(eb), intent(out) :: flux(2), dflux(2)
     
     real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, dnrm2, ddot, zfire, fheight
     real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau

@@ -2,13 +2,12 @@ VERSN,7,Default example fire for user guide
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,2000,-120,10,30
+TIMES,2000,120,10,30
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,0
 !!
 !!Material Properties
 !!
-MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
 !!
 !!Compartment keywords
 !!
@@ -21,10 +20,9 @@ VVENT,2,1,4,2,1
 !!
 !!Fire keywords
 !!
-GLOBA,10,393.15
 !!simple burner
-FIRE,1,4.55,2.5,0,1,1,0,0,0,1,simple burner
-CHEMI,1,4,0,0,0,0.35,5E+07,METHANE
+FIRE,1,4.55,2.5,0,1,TIME,0,0,0,0,simple burner
+CHEMI,1,4,0,0,0,0.35,5E+07
 TIME,0,30,330,360
 HRR,0,1000,1000,0
 SOOT,0,0,0,0
@@ -32,7 +30,3 @@ CO,0,0,0,0
 TRACE,0,0,0,0
 AREA,0.07069,0.07069,0.07069,0.07069
 HEIGH,0,0,0,0
-!!
-!!visualizations
-!!
-

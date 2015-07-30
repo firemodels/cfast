@@ -2,7 +2,7 @@ VERSN,7,Default example fire for user guide
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,1500,-120,10,10
+TIMES,1500,120,10,10
 EAMB,293.15,101300,0
 TAMB,293.15,101300,0,50
 !!
@@ -29,7 +29,6 @@ EVENT,H,3,4,1,700,1,1
 EVENT,V,3,2,1,500,1,1
 EVENT,V,5,4,1,1000,1,1
 EVENT,M,5,1,1,15,0,1
-GLOBA,10,393.15
 !!
 !!visualizations
 !!

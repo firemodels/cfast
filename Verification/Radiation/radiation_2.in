@@ -6,7 +6,6 @@ TIMES,10000,50,10,10
 EAMB,293.15,101325,0
 TAMB,293.15,101325,0,50
 ADIAB
-FURN,2,0,500,10000,500
 !!
 !!Material Properties
 !!
@@ -17,7 +16,6 @@ MATL,STEELSHT,54,465,7833,0.0015,0.9,Thin Steel (1/16 in)
 !!Compartment keywords
 !!
 COMPA,Comp 1,5,5,5,0,0,0,OFF,OFF,OFF,50,50,50
-GLOBA,10,393.15
 !!
 !!Target and detector keywords
 !!

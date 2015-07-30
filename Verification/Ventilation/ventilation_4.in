@@ -17,7 +17,6 @@ HVENT,1,2,1,1.5,4,0,1,2,1
 !!
 !!Fire keywords
 !!
-GLOBA,10,393.15
 !!simple
 FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,simple
 CHEMI,1,4,0,0,0,0.33,5E+07

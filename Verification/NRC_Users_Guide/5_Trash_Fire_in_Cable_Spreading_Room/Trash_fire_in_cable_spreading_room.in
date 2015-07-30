@@ -34,7 +34,6 @@ EVENT,M,1,2,4,280.1,0,1
 !!
 !!Fire keywords
 !!
-GLOBA,10,393.15
 !!Transient Combustibles
 FIRE,1,33,16.3,0.8,1,TIME,0,0,0,0,Transient Combustibles
 CHEMI,4,7,2.5,0,0,0.4,3.04E+07

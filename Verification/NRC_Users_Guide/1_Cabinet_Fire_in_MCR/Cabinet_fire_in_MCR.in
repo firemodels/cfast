@@ -39,7 +39,6 @@ EVENT,M,2,1,8,120,1,1
 !!
 !!Fire keywords
 !!
-GLOBA,10,393.15
 !!XPE_Neoprene 702 kW
 FIRE,1,2,4,2,1,TIME,0,0,0,0,XPE_Neoprene 702 kW
 CHEMI,3,4.5,0,0,0.5,0.53,1.03E+07

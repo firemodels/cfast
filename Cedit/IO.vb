@@ -1023,12 +1023,6 @@ Module IO
         'comment header for fire keywords
         If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "Fire keywords")
 
-        ' GLOBAL fire information
-        csv.str(i, CFASTlnNum.keyWord) = "GLOBA"
-        csv.Num(i, chemieNum.limo2) = myEnvironment.LowerOxygenLimit
-        csv.Num(i, chemieNum.igntemp) = myEnvironment.IgnitionTemp
-        i += 1
-
         Dim aFire As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
         For j = 0 To myFires.Count - 1
             aFire = myFires.Item(j)

@@ -91,7 +91,7 @@ module cfast_main
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)),(noftt,nofsets(9)), (nofwt,nofsets(10)), &
         (nofprd,nofsets(11)), (nofhvpr,nofsets(12)), (nequals,nofsets(13)), (noffsm,nofsets(14))
 
-    real(eb) :: mass(2,nr,ns), minmas, limo2, qf(nr), p(maxteq), objmaspy(0:mxfire),tradio, &
+    real(eb) :: mass(2,nr,ns), minmas, lower_o2_limit, qf(nr), p(maxteq), objmaspy(0:mxfire), tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), oplume(3,mxfires),  &
         qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), room_width(nr), room_depth(nr), room_height(nr), room_area(nr), &

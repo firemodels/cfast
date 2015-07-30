@@ -994,7 +994,7 @@
                 nnv = objlfm(j)
                 write (iofilo,5020) objnin(j)(1:length(objnin(j))), j, fire_geometry(obj_fpos(j))
                 write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), &
-                   objpos(3,j), relhum*100., limo2*100.,radconsplit(j)
+                   objpos(3,j), relhum*100., lower_o2_limit*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)

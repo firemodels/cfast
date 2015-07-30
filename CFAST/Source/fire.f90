@@ -253,7 +253,7 @@
             activated_time = 0
             activated_rate = 0.0
         endif
-        call chemistry (xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),&
+        call chemistry (xemp,mol_mass,xeme,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,lower_o2_limit,idset,iquench(iroom),&
            activated_time,activated_rate,stime,qspray(ifire,lower),xqpyrl,xntfl,xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -315,7 +315,7 @@
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
-        call chemistry (uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,limo2,idset,iquench(iroom),&
+        call chemistry (uplmep,mol_mass,uplmee,iroom,hcombt,y_soot,y_co,n_C,n_H,n_O,n_N,n_Cl,source_o2,lower_o2_limit,idset,iquench(iroom),&
            activated_time,activated_rate,stime,qspray(ifire,upper),xqpyrl,xntfl,xmass)
 
         xqfr = xqpyrl*chirad + xqfr
@@ -942,7 +942,7 @@
         source_o2 = zzcspec(ito,lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
-        call chemistry (xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,limo2,&
+        call chemistry (xxnetfl,xxmol_mass,sas,ito,hcombt,0.0_eb,0.0_eb,1.0_eb,4.0_eb,0.0_eb,0.0_eb,0.0_eb,source_o2,lower_o2_limit,&
            0,0,0.0_eb,0.0_eb,stime,xxqspray,xqpyrl,xntfl,xmass)
         qpyrol = xqpyrl
 

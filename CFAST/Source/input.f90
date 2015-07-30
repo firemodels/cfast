@@ -891,41 +891,12 @@
         exterior_abs_pressure = lrarray(2)
         exset = .true.
 
-    ! Limiting oxygen index
-    case ("LIMO2")
-        if (countargs(lcarray)>=1) then
-            limo2 = lrarray(1)*0.01_eb
-        else
-            write (logerr,*) '***Error: Bad LIMO2 input. 1 argument required.'
-            stop
-        endif
-
     ! Rename the thermal data file
     case ("THRMF")
         if (countargs(lcarray)>=1) then
             thrmfile = lcarray(1)
         else
             write (logerr,*) '***Error: Bad THRMF input. 1 argument required.'
-            stop
-        endif
-
-    ! Set the gaseous ignition temperature - this is a global parameter DJIGN
-    case ('DJIGN')
-        if (countargs(lcarray)>=1) then
-            tgignt = lrarray(2)
-        else
-            write (logerr,*) '***Error: Bad DJIGN input. 1 argument required.'
-            stop
-        endif
-
-    ! Set global chemistry parameters.  With 2 parameters it's redundant with DJIGN and LIMO2. 
-    ! With more, it's part of a fire definition
-    case ('GLOBA')
-        if (countargs(lcarray)>=2) then
-            limo2 = lrarray(1)*0.01_eb
-            tgignt = lrarray(2)
-        else
-            write (logerr,*) '***Error: Bad GLOBA input. At least 2 arguments required.'
             stop
         endif
 
@@ -1719,7 +1690,7 @@
         end if
 
     ! Outdated keywords
-    case ('CJET','WIND')                                   ! Just ignore these inputs ... they shouldn't be fatal
+    case ('CJET','WIND','LIMO2','GLOBA','DJIGN')                                   ! Just ignore these inputs ... they shouldn't be fatal
         write (logerr,5407) label
     case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
         write (logerr,5405) label

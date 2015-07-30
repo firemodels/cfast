@@ -239,9 +239,8 @@ It is assumed that each compartment is divided into two control volumes, a relat
    R = \frac{\gamma-1}{\gamma} \, c_p \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
 \ee
 \begin{figure}[h]
-\begin{center}
-\includegraphics[width=\textwidth]{FIGURES/Theory/Control_Volumes}\\
-\end{center}
+\centering
+\includegraphics[width=\textwidth]{FIGURES/Control_Volumes}
 \caption{Schematic of control volumes in a two-layer zone model.}
  \label{fig:Control_Volumes}
 \end{figure}
@@ -515,24 +514,20 @@ As with doors and windows, mass and enthalpy are exchanged between the layers of
 \end{eqnarray}
 where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment.
 
-The weighting factor, $\alpha$, indicates the relative amounts of mass extracted from the upper and lower layers of the lower compartment. If the hot gas layer of the lower compartment is sufficiently deep and/or sufficiently hot, all of the gas passing into the upper compartment is extracted from the upper layer. However, under specific conditions, the lower layer ambient air beneath the hot gas layer is also drawn through the vent, which reduces the amount of smoke that is exhausted from the compartment. This phenomenon is referred to as plug-holing. Milke's chapter on Smoke Management in the {\em SFPE Handbook}~\cite{Milke:SFPE} cites work by Lougheed and Hadjisophocleous that suggests that plug-holing occurs when the volume flow, $\dot{V}$, through the vent reaches the following critical value:
+The weighting factor, $\alpha$, indicates the relative amounts of mass extracted from the upper and lower layers of the lower compartment. If the hot gas layer of the lower compartment is sufficiently deep, all of the gas passing into the upper compartment is extracted from the upper layer. If the layer is not sufficiently deep, gases from the lower layer are also drawn through the vent, which reduces the amount of smoke that is exhausted from the compartment. This phenomenon is referred to as plug-holing. Cooper~\cite{Cooper:SFPE} suggests that the degree of plug-holing is a function of the following form of the Froude number:
 \be
-   \dot{V} = 1.5 \; \left[ g \, (H-z_{\rm I})^5 \, \left( \frac{\Tu-T_\infty}{\Tu}\right) \left(\frac{T_\infty}{\Tu} \right) \right]^{1/2}
+   {\rm Fr} = \dot{V} \; \left[ g \, (H-z_{\rm I})^5 \, \left( \frac{\Tu-T_\infty}{T_\infty}\right) \right]^{-1/2}
 \ee
-The quantity, $H-z_{\rm I}$, is simply the depth of the hot gas layer. This relation suggests that the relative mass of gas extracted from the upper layer of the lower compartment, $\alpha$, is a function of the Froude number, in this case defined as
-\be
-   {\rm Fr} = \dot{V} \; \left[ g \, (H-z_{\rm I})^5 \, \left( \frac{\Tu-T_\infty}{\Tu}\right) \left(\frac{T_\infty}{\Tu} \right) \right]^{-1/2}
-\ee
-Using the CFD model Fire Dynamics Simulator (FDS), a correlation was developed that defines $\alpha$ as a function of Fr. To determine this correlation, a compartment containing a smoke layer and a ceiling vent was constructed in FDS. The temperature of the smoke layer, the depth of the smoke layer, the height of the ceiling, and the dimensions of the ceiling vent were all varied to produce a total of 81 separate test cases. After analyzing the results of the simulations, the following empirical relationship emerged:
+where $\dot{V}$ is the volume flow through the vent and $(H-z_{\rm I})$ is the depth of the hot gas layer. Using the CFD model Fire Dynamics Simulator (FDS), a correlation was developed that defines $\alpha$ as a function of Fr:
  \begin{equation}
  \label{equation1}
-  \alpha = \left\{ \begin{array}{ll} 1 & \quad \quad {\rm Fr}\le 1.5 \\[.1in] 1.33 \; {\rm Fr}^{-0.7} & \quad \quad {\rm Fr}> 1.5 \end{array}  \right.
+  \alpha =  {\rm e}^{-( {\rm Fr}/2 )^2}
 \end{equation}
-Figure~\ref{correlation} displays the relation and the FDS results.
+Figure~\ref{correlation} displays the FDS results and correlation.
 \begin{figure}[!ht]
 \label{correlation}
 \centering
-\includegraphics[width=3.0in]{FIGURES/Theory/Vent_Mass_Fraction}
+\includegraphics[width=3.0in]{FIGURES/Vent_Mass_Fraction}
 \caption[Relative fraction of upper layer gases extracted via a ceiling vent]{Relative fraction of upper layer gases extracted via a ceiling vent.}
 \end{figure}
 
@@ -584,9 +579,8 @@ The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted b
 \ee
 where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  These terms are illustrated in Fig.~\ref{fig:Rad_Config_Factor}.
 \begin{figure}
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/Theory/Radiation_Config_Factor}\\
-\end{center}
+\centering
+\includegraphics[width=3.0in]{FIGURES/Radiation_Config_Factor}
 \caption{Setup for a configuration factor calculation between two arbitrarily oriented finite areas.}
  \label{fig:Rad_Config_Factor}
 \end{figure}

@@ -835,6 +835,7 @@
     end do
 
     do i = 1, nr
+        fqdj(i) = 0.0_eb
         qcvv(1,i) = 0.0_eb
         qcvv(2,i) = 1.0_eb
         qcvv(3,i) = 0.0_eb

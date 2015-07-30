@@ -555,7 +555,7 @@ contains
         qgassum(front) = 0.0_eb
         qwtsum(back) = 0.0_eb
         qgassum(back) = 0.0_eb
-        call get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
+        call get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout

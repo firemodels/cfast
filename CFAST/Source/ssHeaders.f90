@@ -206,7 +206,7 @@
 
     ! local variables     
     integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
-    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
+    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
@@ -219,10 +219,11 @@
 
     data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
         'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXT_', 'TRGFLXR_', &
-        'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG', 'TRGFLXREG_',  &
+        'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG_', 'TRGFLXREG_',  &
         'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
     data LabelUnits / 's', 7*'C', 11*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
+    data frontorback / 'F_','B_'/
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -256,10 +257,11 @@
     ! Targets
     do itarg = 1, ntarg
         call toIntString(itarg,cDet)
+        ! front surface
         do j = 1, 14
             position = position + 1
             if (validate) then
-                headertext(1,position) = trim(LabelsShort(j+5)) // trim(cDet)
+                headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
                 headertext(2,position) = LabelUnits(j+5)
                 headertext(3,position) = ' '
             else
@@ -268,6 +270,19 @@
                 headertext(3,position) = LabelUnits(j+5)
             endif
         end do
+        ! back surface
+        if (validate) then
+                position = position + 1
+                headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(7)) // trim(cDet)
+                headertext(2,position) = LabelUnits(7)
+                headertext(3,position) = ' '
+            do j = 4, 14
+                position = position + 1
+                headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
+                headertext(2,position) = LabelUnits(j+5)
+                headertext(3,position) = ' '
+            end do
+        end if
     end do
 
     ! Detectors

@@ -467,7 +467,7 @@ contains
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     real(eb) :: target_factors_front(10), target_factors_back(10)
-    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, jj, iw, iwb
+    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
     integer, parameter :: front=1, back=2
     
     type(room_type), pointer :: roomptr
@@ -555,7 +555,7 @@ contains
         qgassum(front) = 0.0_eb
         qwtsum(back) = 0.0_eb
         qgassum(back) = 0.0_eb
-        call get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
+        call get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout
@@ -586,22 +586,12 @@ contains
                 qgas = tu**4*alphau*taul + tl**4*alphal
             endif
             qgt = sigma*qgas
-            if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
-                jj = front
-            else 
-                jj = back
-            endif
 
-            ! calculate flux on the target front.  calculate flux on the target back only if the rear of 
-            ! the target is interior to the room.
-            if(jj==front.or.ixtarg(trgback,itarg)==interior)then
-                if(jj==front)then
-                  qwtsum(jj) = qwtsum(jj) + qwt*target_factors_front(iwall)
-                  qgassum(jj) = qgassum(jj) + qgt*target_factors_front(iwall)
-                else
-                  qwtsum(jj) = qwtsum(jj) + qwt*target_factors_back(iwall)
-                  qgassum(jj) = qgassum(jj) + qgt*target_factors_back(iwall)
-                endif
+            qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
+            qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
+            if(ixtarg(trgback,itarg)==interior)then
+              qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
+              qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
             endif
         end do
         qtwflux(itarg,front) = qwtsum(front)

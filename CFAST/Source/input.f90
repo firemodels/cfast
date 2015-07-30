@@ -1690,9 +1690,9 @@
         end if
 
     ! Outdated keywords
-    case ('CJET','WIND','LIMO2','GLOBA','DJIGN')                                   ! Just ignore these inputs ... they shouldn't be fatal
+    case ('CJET','WIND','LIMO2','GLOBA','DJIGN')            ! Just ignore these inputs ... they shouldn't be fatal
         write (logerr,5407) label
-    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')  ! these are clearly outdated and should produce errors
+    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')   ! these are clearly outdated and should produce errors
         write (logerr,5405) label
         stop
     case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT','HRR','TIME','CHEMI','FIRE') ! these are already handled above

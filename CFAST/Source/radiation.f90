@@ -763,43 +763,6 @@
     rdparfig = 2.0_eb*(f1+f2+f3-f4-f5)/(pi*xx*yy)
     return
     end function rdparfig
-    
-! --------------------------- rdprpfig -------------------------------------------
-
-    real(eb) function rdprpfig(x,y,z)
-
-    !     routine: rdparfig
-    !     purpose: this routine calculates the configuration factor between two perpindular plates with a common edge.
-
-    use precision_parameters
-    implicit none
-
-    real(eb), intent(in) :: x, y, z
-
-    real(eb) :: h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
-
-    rdprpfig = 0.0_eb
-    if(y==0.0_eb.or.x==0.0_eb.or.z==0.0_eb) return
-    h = x/y
-    w = z/y
-    f1 = w*atan(1.0_eb/w)
-    f2 = h*atan(1.0_eb/h)
-
-    hwsum = h**2 + w**2
-    hwnorm = sqrt(hwsum)
-    rhwnorm = 1.0_eb/hwnorm
-    f3 = hwnorm*atan(rhwnorm)
-
-    wsum1 = 1.0_eb + w**2
-    hsum1 = 1.0_eb + h**2
-    hwsum2 = 1.0_eb + hwsum
-    f4a = wsum1*hsum1/hwsum2
-    f4b = (w**2*hwsum2/wsum1/hwsum)
-    f4c = (h**2*hwsum2/hsum1/hwsum)
-    f4 = 0.25_eb*(log(f4a)+log(f4b)*w**2+log(f4c)*h**2) 
-    rdprpfig = (f1+f2-f3+f4)/(pi*w)
-    return
-    end function rdprpfig
 
 ! --------------------------- rdfang -------------------------------------------
 
@@ -1280,11 +1243,13 @@
     implicit none
 
     integer, intent(in) :: xdim, ydim
-    real(eb), intent(inout) :: xval, yval
-    integer, intent(out) :: xerr, yerr
-
     real(eb), intent(in) :: x(xdim), y(ydim), z(xdim,ydim)
-    real(eb) :: zval
+
+    real(eb), intent(inout) :: xval, yval
+
+    integer, intent(out) :: xerr, yerr
+    real(eb), intent(out) :: zval
+    
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
     integer :: count, i, j
 

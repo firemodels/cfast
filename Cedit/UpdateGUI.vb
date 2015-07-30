@@ -770,9 +770,6 @@ Public Class UpdateGUI
             ClearGrid(MainWin.FireSummary)
             MainWin.GroupFire.Enabled = False
         Else
-            MainWin.FireLOL.Text = myEnvironment.LowerOxygenLimit.ToString + " %"
-            MainWin.FireIgnitionTemperature.Text = myEnvironment.IgnitionTemp.ToString + myUnits.Convert(UnitsNum.Temperature).Units
-
             MainWin.GroupFire.Enabled = True
             MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
             MainWin.FireType.Text = ""

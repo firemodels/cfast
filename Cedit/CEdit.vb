@@ -19,6 +19,7 @@ Public Class CeditMain
     Friend WithEvents OutputDebug As System.Windows.Forms.CheckBox
     Friend WithEvents OutputTotalMass As System.Windows.Forms.CheckBox
     Friend WithEvents Output As System.Windows.Forms.StatusBarPanel
+    Friend WithEvents MenuHelpUpdate As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
 #Region " Windows Form Designer generated code "
 
@@ -207,7 +208,6 @@ Public Class CeditMain
     Friend WithEvents Label69 As System.Windows.Forms.Label
     Friend WithEvents Label70 As System.Windows.Forms.Label
     Friend WithEvents Label52 As System.Windows.Forms.Label
-    Friend WithEvents Label55 As System.Windows.Forms.Label
     Friend WithEvents Label61 As System.Windows.Forms.Label
     Friend WithEvents Label72 As System.Windows.Forms.Label
     Friend WithEvents Label73 As System.Windows.Forms.Label
@@ -293,7 +293,6 @@ Public Class CeditMain
     Friend WithEvents FireXPosition As System.Windows.Forms.TextBox
     Friend WithEvents FireRemove As System.Windows.Forms.Button
     Friend WithEvents FireDup As System.Windows.Forms.Button
-    Friend WithEvents FireLOL As System.Windows.Forms.TextBox
     Friend WithEvents DetectorSprayDensity As System.Windows.Forms.TextBox
     Friend WithEvents DetectorRTI As System.Windows.Forms.TextBox
     Friend WithEvents DetectorActivation As System.Windows.Forms.TextBox
@@ -430,8 +429,6 @@ Public Class CeditMain
     Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
     Friend WithEvents ErrorProvider1 As System.Windows.Forms.ErrorProvider
     Friend WithEvents TargetNormalCalc As System.Windows.Forms.ComboBox
-    Friend WithEvents FireIgnitionTemperature As System.Windows.Forms.TextBox
-    Friend WithEvents Label17 As System.Windows.Forms.Label
     Friend WithEvents MainView As System.Windows.Forms.Button
     Friend WithEvents MainSave As System.Windows.Forms.Button
     Friend WithEvents MainRun As System.Windows.Forms.Button
@@ -461,6 +458,7 @@ Public Class CeditMain
         Me.MenuViewOutput = New System.Windows.Forms.MenuItem()
         Me.MenuViewLog = New System.Windows.Forms.MenuItem()
         Me.MenuHelp = New System.Windows.Forms.MenuItem()
+        Me.MenuHelpUpdate = New System.Windows.Forms.MenuItem()
         Me.MenuShowHelp = New System.Windows.Forms.MenuItem()
         Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
         Me.MenuAbout = New System.Windows.Forms.MenuItem()
@@ -638,8 +636,6 @@ Public Class CeditMain
         Me.FireAdd = New System.Windows.Forms.Button()
         Me.FireFromFile = New System.Windows.Forms.Button()
         Me.FireAddt2 = New System.Windows.Forms.Button()
-        Me.FireIgnitionTemperature = New System.Windows.Forms.TextBox()
-        Me.Label17 = New System.Windows.Forms.Label()
         Me.FireSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.FireRemove = New System.Windows.Forms.Button()
         Me.FireDup = New System.Windows.Forms.Button()
@@ -683,8 +679,6 @@ Public Class CeditMain
         Me.FireIgnitionValue = New System.Windows.Forms.TextBox()
         Me.Label63 = New System.Windows.Forms.Label()
         Me.Label58 = New System.Windows.Forms.Label()
-        Me.FireLOL = New System.Windows.Forms.TextBox()
-        Me.Label55 = New System.Windows.Forms.Label()
         Me.TabDetection = New System.Windows.Forms.TabPage()
         Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupDetectors = New System.Windows.Forms.GroupBox()
@@ -1027,22 +1021,27 @@ Public Class CeditMain
         'MenuHelp
         '
         Me.MenuHelp.Index = 2
-        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
+        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
         Me.MenuHelp.Text = "Help"
+        '
+        'MenuHelpUpdate
+        '
+        Me.MenuHelpUpdate.Index = 0
+        Me.MenuHelpUpdate.Text = "Update Input Files"
         '
         'MenuShowHelp
         '
-        Me.MenuShowHelp.Index = 0
+        Me.MenuShowHelp.Index = 1
         Me.MenuShowHelp.Text = "Documentation"
         '
         'MenuCFASTWeb
         '
-        Me.MenuCFASTWeb.Index = 1
+        Me.MenuCFASTWeb.Index = 2
         Me.MenuCFASTWeb.Text = "CFast Web Site"
         '
         'MenuAbout
         '
-        Me.MenuAbout.Index = 2
+        Me.MenuAbout.Index = 3
         Me.MenuAbout.Text = "About"
         '
         'TabEnvironment
@@ -2740,14 +2739,10 @@ Public Class CeditMain
         Me.TabFires.Controls.Add(Me.FireAdd)
         Me.TabFires.Controls.Add(Me.FireFromFile)
         Me.TabFires.Controls.Add(Me.FireAddt2)
-        Me.TabFires.Controls.Add(Me.FireIgnitionTemperature)
-        Me.TabFires.Controls.Add(Me.Label17)
         Me.TabFires.Controls.Add(Me.FireSummary)
         Me.TabFires.Controls.Add(Me.FireRemove)
         Me.TabFires.Controls.Add(Me.FireDup)
         Me.TabFires.Controls.Add(Me.GroupFire)
-        Me.TabFires.Controls.Add(Me.FireLOL)
-        Me.TabFires.Controls.Add(Me.Label55)
         Me.TabFires.Location = New System.Drawing.Point(4, 22)
         Me.TabFires.Name = "TabFires"
         Me.TabFires.Size = New System.Drawing.Size(976, 592)
@@ -2757,7 +2752,7 @@ Public Class CeditMain
         '
         'FireAdd
         '
-        Me.FireAdd.Location = New System.Drawing.Point(81, 103)
+        Me.FireAdd.Location = New System.Drawing.Point(221, 103)
         Me.FireAdd.Name = "FireAdd"
         Me.FireAdd.Size = New System.Drawing.Size(75, 23)
         Me.FireAdd.TabIndex = 702
@@ -2765,7 +2760,7 @@ Public Class CeditMain
         '
         'FireFromFile
         '
-        Me.FireFromFile.Location = New System.Drawing.Point(362, 103)
+        Me.FireFromFile.Location = New System.Drawing.Point(502, 103)
         Me.FireFromFile.Name = "FireFromFile"
         Me.FireFromFile.Size = New System.Drawing.Size(75, 23)
         Me.FireFromFile.TabIndex = 705
@@ -2773,28 +2768,11 @@ Public Class CeditMain
         '
         'FireAddt2
         '
-        Me.FireAddt2.Location = New System.Drawing.Point(165, 103)
+        Me.FireAddt2.Location = New System.Drawing.Point(305, 103)
         Me.FireAddt2.Name = "FireAddt2"
         Me.FireAddt2.Size = New System.Drawing.Size(75, 23)
         Me.FireAddt2.TabIndex = 703
         Me.FireAddt2.Text = "Add t²"
-        '
-        'FireIgnitionTemperature
-        '
-        Me.FireIgnitionTemperature.Location = New System.Drawing.Point(844, 71)
-        Me.FireIgnitionTemperature.Name = "FireIgnitionTemperature"
-        Me.FireIgnitionTemperature.Size = New System.Drawing.Size(80, 20)
-        Me.FireIgnitionTemperature.TabIndex = 730
-        Me.FireIgnitionTemperature.Text = "120 °C"
-        '
-        'Label17
-        '
-        Me.Label17.Location = New System.Drawing.Point(732, 65)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(107, 32)
-        Me.Label17.TabIndex = 71
-        Me.Label17.Text = "Gaseous Ignition Temperature:"
-        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'FireSummary
         '
@@ -2804,7 +2782,7 @@ Public Class CeditMain
         Me.FireSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.FireSummary.ColumnInfo = resources.GetString("FireSummary.ColumnInfo")
         Me.FireSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.FireSummary.Location = New System.Drawing.Point(28, 16)
+        Me.FireSummary.Location = New System.Drawing.Point(168, 16)
         Me.FireSummary.Name = "FireSummary"
         Me.FireSummary.Rows.Count = 101
         Me.FireSummary.Rows.DefaultSize = 19
@@ -2815,7 +2793,7 @@ Public Class CeditMain
         '
         'FireRemove
         '
-        Me.FireRemove.Location = New System.Drawing.Point(538, 103)
+        Me.FireRemove.Location = New System.Drawing.Point(678, 103)
         Me.FireRemove.Name = "FireRemove"
         Me.FireRemove.Size = New System.Drawing.Size(75, 23)
         Me.FireRemove.TabIndex = 706
@@ -2823,7 +2801,7 @@ Public Class CeditMain
         '
         'FireDup
         '
-        Me.FireDup.Location = New System.Drawing.Point(266, 103)
+        Me.FireDup.Location = New System.Drawing.Point(406, 103)
         Me.FireDup.Name = "FireDup"
         Me.FireDup.Size = New System.Drawing.Size(75, 23)
         Me.FireDup.TabIndex = 704
@@ -3244,24 +3222,6 @@ Public Class CeditMain
         Me.Label58.TabIndex = 79
         Me.Label58.Text = "Ignition Criterion:"
         Me.Label58.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireLOL
-        '
-        Me.FireLOL.Location = New System.Drawing.Point(844, 39)
-        Me.FireLOL.Name = "FireLOL"
-        Me.FireLOL.Size = New System.Drawing.Size(80, 20)
-        Me.FireLOL.TabIndex = 729
-        Me.FireLOL.Text = "10 %"
-        '
-        'Label55
-        '
-        Me.Label55.AutoSize = True
-        Me.Label55.Location = New System.Drawing.Point(732, 39)
-        Me.Label55.Name = "Label55"
-        Me.Label55.Size = New System.Drawing.Size(102, 13)
-        Me.Label55.TabIndex = 59
-        Me.Label55.Text = "Lower Oxygen Limit:"
-        Me.Label55.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'TabDetection
         '
@@ -4791,7 +4751,6 @@ Public Class CeditMain
         Me.GroupBox21.ResumeLayout(False)
         Me.GroupBox21.PerformLayout()
         Me.TabFires.ResumeLayout(False)
-        Me.TabFires.PerformLayout()
         CType(Me.FireSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupFire.ResumeLayout(False)
         Me.GroupFire.PerformLayout()
@@ -4877,7 +4836,7 @@ Public Class CeditMain
 
     Private Sub MainExit(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         ' Handle any last minute operations before exiting
-        If myEnvironment.FileChanged Then SaveDataFile(True)
+        If myEnvironment.FileChanged Then SaveDataFile(True, False)
         myRecentFiles.Save()
     End Sub
 
@@ -5483,12 +5442,10 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
-    Private Sub Fire_Changed(sender As Object, e As EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireIgnitionValue.Leave, FireLOL.Leave, FireIgnitionTemperature.Leave, FireName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireSootYield.Leave, FireCOYield.Leave, FireTSYield.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireIgnitionValue.Leave, FireName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireSootYield.Leave, FireCOYield.Leave, FireTSYield.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
         Dim aFire As New Fire
         Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
         Dim ir As Integer
-        If sender Is Me.FireLOL Then myEnvironment.LowerOxygenLimit = Val(Me.FireLOL.Text)
-        If sender Is Me.FireIgnitionTemperature Then myEnvironment.IgnitionTemp = Val(Me.FireIgnitionTemperature.Text)
         If CurrentFire >= 0 And myFires.Count > 0 Then
             aFire = myFires(CurrentFire)
             If sender Is Me.FireComp Then
@@ -6202,7 +6159,7 @@ Public Class CeditMain
         UpdateAll()
     End Sub
     Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click
-        SaveDataFile(False)
+        SaveDataFile(False, False)
     End Sub
     Private Sub MenuUnits_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuUnits.Click
         UserUnits.ShowDialog(Me)
@@ -6225,7 +6182,7 @@ Public Class CeditMain
         UpdateAll()
     End Sub
     Private Sub MenuSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSave.Click
-        SaveDataFile(False)
+        SaveDataFile(False, False)
     End Sub
     Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
         Dim PathName As String
@@ -6263,6 +6220,20 @@ Public Class CeditMain
         If sender Is Me.MenuRecent4 Then i = 3
         OpenDataFile(myRecentFiles.Filenames(i))
         UpdateAll()
+    End Sub
+    Private Sub MenuHelpUpdate_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdate.Click
+        Me.OpenDataFileDialog.FilterIndex = 1
+        Me.OpenDataFileDialog.Multiselect = True
+        Me.OpenDataFileDialog.ShowDialog()
+        If OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim FileName As String
+            For Each FileName In OpenDataFileDialog.FileNames
+                InitNew()
+                OpenDataFile(FileName)
+                SaveDataFile(False, True)
+            Next
+        End If
+        Me.OpenDataFileDialog.Multiselect = False
     End Sub
     Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
         System.Windows.Forms.MessageBox.Show("Documentation on the use of CFAST is available in the CFAST User's Guide installed with the software. Go to Start, All Programs, CFAST7, Documents for all of the CFAST documentation", "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -6373,10 +6344,10 @@ Public Class CeditMain
             MsgBox("Error opening file:" & Chr(13) & FileName & Chr(13) & "File does not exist", MsgBoxStyle.Exclamation)
         End If
     End Sub
-    Private Sub SaveDataFile(ByVal Prompt As Boolean)
+    Private Sub SaveDataFile(ByVal Prompt As Boolean, ByVal ForceWrite As Boolean)
         Dim PathName As String
         myUnits.SI = True
-        If myEnvironment.FileChanged() Then
+        If myEnvironment.FileChanged() Or ForceWrite Then
             If Prompt Or myEnvironment.InputFileName = Nothing Or myEnvironment.InputFileName = "" Then
                 Me.SaveDataFileDialog.Title = "Save"
                 Me.SaveDataFileDialog.OverwritePrompt = True
@@ -6401,7 +6372,7 @@ Public Class CeditMain
         UpdateGUI.General()
     End Sub
     Private Sub RunCFAST()
-        If myEnvironment.FileChanged Then SaveDataFile(True)
+        If myEnvironment.FileChanged Then SaveDataFile(True, False)
         If System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in") Then
             Dim RunSimulation As New RunModel
             CFASTSimulationTime = myEnvironment.SimulationTime
@@ -6415,7 +6386,7 @@ Public Class CeditMain
     End Sub
     Private Sub RunSMVGeometry()
         Dim CommandString As String, found As Integer, ProcessID As Integer
-        If myEnvironment.FileChanged Then SaveDataFile(True)
+        If myEnvironment.FileChanged Then SaveDataFile(True, False)
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
             If found <= 0 Then
@@ -6434,7 +6405,7 @@ Public Class CeditMain
     End Sub
     Private Sub RunSmokeView()
         Dim CommandString As String, found As Integer, ProcessID As Integer
-        If myEnvironment.FileChanged Then SaveDataFile(True)
+        If myEnvironment.FileChanged Then SaveDataFile(True, False)
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
             If found <= 0 Then
@@ -6536,5 +6507,4 @@ Public Class CeditMain
         UpdateAll()
     End Sub
 #End Region
-
 End Class

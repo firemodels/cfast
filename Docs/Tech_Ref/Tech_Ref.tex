@@ -573,19 +573,19 @@ where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ 
 
 \subsection{Configuration Factors}
 
-The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted by surface 1 that is intercepted by  surface 2, and is defined by
+The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted by surface 1 that is intercepted by  surface 2, and is given by
 \be
    F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} \, dA_2 \, dA_1 \label{eq:config_factor}
 \ee
-where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.  
+where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.
 
-For a compartment with four surfaces: ceiling, upper/lower wall and floor, 16 configuration factor computations are required. Only three configuration factors require the use of the analytical formula for configuration factors between parallel plates given by
+Sixteen configuration factor are required for a radiation computation in compartments with four surfaces (ceiling, upper/lower wall and floor). To compute these 16 factors, the formula for configuration factors between parallel plates (see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by
 
 \begin{eqnarray}
 \lefteqn{F_{1-2} = \frac{2}{\pi \, X \, Y} \left\{ \ln \left[ \frac{(1+X^2)(1+Y^2)}{1+X^2+Y^2} \right]^{1/2} + X \sqrt{1+Y^2} \, \tan^{-1} \frac{X}{\sqrt{1+Y^2}} + \right.} \nonumber \\[.1in]
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. This formula is found in Appendix~C of Ref.~\cite{SiegelandHowell:1981}.  The other 13 configuration factors may be computed using simple algebraic formulas derived using symmetry properties such as $A_1F_{1-2}=A_2F_{2-1}$ and $F_{i1}+F_{i2}+F_{i3}+F_{i4}=1$.
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$ is first used to compute three configuration factors: a configuration factor between the floor and ceiling, between the floor and layer interface and between the ceiling and layer interface. These three factors are  then used to compute the 16 factors using using properties such as $A_1F_{1-2}=A_2F_{2-1}$ and $F_{i1}+F_{i2}+F_{i3}+F_{i4}=1$.
 
 \subsection{Normalized Solid Angle between the Fire and the Walls}
 
@@ -620,7 +620,7 @@ The effective path length, $L$, is calculated between the center-points of the e
 
 Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is then given by:
 \be
-   \dq_{\rm r}'' = \epsilon_{\rm t} \left( 
+   \dq_{\rm r}'' = \epsilon_{\rm t} \left(
    \displaystyle\sum_{f=1}^{n_{\rm fires}} \cos \, \theta_f \; \frac{\chi_{\rm r} \, \dQ_f}{4 \pi R_f^2}  + \displaystyle\sum_{j=1}^{10} \tau_j \, F_j \, \epsilon_j \, q''_{{\rm out},j}  +  \displaystyle\sum_{j=1}^2 \left(\tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
 \ee
 where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer and $T_{\rm t}$ is the temperature of the target.  The term $q''_{{\rm out},j}=\sigma T_j^4-\frac{1-\epsilon_j}{\epsilon_j}\dq_{{\rm r},j}''$ is the radiative flux leaving the $j$'th wall surface (See Eq.~(17-15) in Siegel and Howell~\cite{SiegelandHowell:1981})\ where $\dq_{{\rm r},j}''$ is the net radiative flux striking the wall surface found using Eq.~(\ref{RTE}).

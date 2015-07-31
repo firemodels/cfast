@@ -766,15 +766,15 @@
     return
     end function rdparfig
 
-! --------------------------- rdfang2 -------------------------------------------
+! --------------------------- rdfang -------------------------------------------
 
-    subroutine rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+    subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
 
     !     routine: rdfang
     !     purpose: 
 
     use precision_parameters
-    use target_routines
+    use target_routines, only: solid_angle_triangle
     implicit none
 
 
@@ -842,47 +842,7 @@
         endif
     end do
     return
-   end  subroutine rdfang2
-
-   ! --------------------------- rdfang -------------------------------------------
-
-    subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-
-    !     routine: rdfang
-    !     purpose: 
-
-    use precision_parameters
-    implicit none
-
-
-    integer, intent(in) :: mxfire, nfire
-    real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
-    
-    real(eb), intent(out) :: firang(mxfire,*)
-    
-    real(eb) :: arg1, arg2, arg3, arg4, f1, f4, fd, rdsang
-    integer :: i
-
-    do i = 1, nfire
-        arg1 = -xfire(i)
-        arg2 = xroom - xfire(i)
-        arg3 = -yfire(i)
-        arg4 = yroom - yfire(i)
-        f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
-        fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
-        f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
-        firang(i,1) = f1
-        firang(i,4) = f4
-        if(zfire(i)<hlay)then
-            firang(i,2) = fd - f1
-            firang(i,3) = fourpi - fd - f4
-        else
-            firang(i,2) = fourpi - fd - f1
-            firang(i,3) = fd - f4
-        endif
-    end do
-    return
-    end  subroutine rdfang
+   end  subroutine rdfang
 
 ! --------------------------- rdsang -------------------------------------------
 

@@ -332,6 +332,7 @@ cd %cfastroot%\Validation\scripts
 
 call Run_CFAST_cases 1 1> %OUTDIR%\stage3a.txt 2>&1
 
+call :find_runcases_warnings "***Warning" %cfastroot%\Validation   "Stage 3a-Validation"
 call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
 call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
 
@@ -347,6 +348,7 @@ cd %cfastroot%\Validation\scripts
 
 call Run_CFAST_cases 1> %OUTDIR%\stage3b.txt 2>&1
 
+call :find_runcases_warnings "***Warning" %cfastroot%\Validation   "Stage 3b-Validation"
 call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3b-Validation"
 call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3b-Verification"
 
@@ -608,6 +610,26 @@ set stage=%3
 grep -v "commands for target" %search_file% > %OUTDIR%\stage_warning0.txt
 grep -i -A 5 -B 5 %search_string% %OUTDIR%\stage_warning0.txt > %OUTDIR%\stage_warning.txt
 type %OUTDIR%\stage_warning.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
+set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
+if %nwarnings% GTR 0 (
+  echo %stage% warnings >> %warninglog%
+  echo. >> %warninglog%
+  type %OUTDIR%\stage_warning.txt >> %warninglog%
+  set havewarnings=1
+)
+exit /b
+
+:: -------------------------------------------------------------
+  :find_runcases_warnings
+:: -------------------------------------------------------------
+
+set search_string=%1
+set search_dir=%2
+set stage=%3
+
+cd %search_dir%
+grep -RIiE %search_string% --include *.log --include *.out --include *.err * > %OUTDIR%\stage_warning.txt
+type %OUTDIR%\stage_error.txt | find /v /c "kdkwokwdokwd"> %OUTDIR%\stage_nwarning.txt
 set /p nwarnings=<%OUTDIR%\stage_nwarning.txt
 if %nwarnings% GTR 0 (
   echo %stage% warnings >> %warninglog%

@@ -561,7 +561,7 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \end{itemize}
 The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The net radiative heat flux to surface~$k$, $\dq_{{\rm r},k}''$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   \frac{\dq_{{\rm r},k}''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dq_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
+   -\frac{\dq_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dq_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
 \ee
 where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be

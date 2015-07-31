@@ -79,8 +79,10 @@ Partial Class InsertData
         '
         'InsertData
         '
+        Me.AcceptButton = Me.FireObjectsOK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.CancelButton = Me.FireObjectsCancel
         Me.ClientSize = New System.Drawing.Size(914, 241)
         Me.Controls.Add(Me.FireObjectsCancel)
         Me.Controls.Add(Me.FireObjectsOK)
@@ -90,7 +92,7 @@ Partial Class InsertData
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "InsertData"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "InsertData"
+        Me.Text = "Insert Data"
         CType(Me.InsertDataSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 

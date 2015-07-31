@@ -42,7 +42,10 @@ Public Class UpdateGUI
             MainWin.Text = "CEdit (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
         End If
         If myEnvironment.FileChanged Then MainWin.Text = MainWin.Text + " *"
-        If DoErrorCheck Then UpdateErrorCheck()
+        If DoErrorCheck Then
+            myErrors.Queue.Clear()
+            UpdateErrorCheck()
+        End If
 
         Dim OutputOptions As String
         If ValidationOutput Or TotalMassCFASTOutput Or DebugOutput Or CommandWindowVisible Then
@@ -61,7 +64,7 @@ Public Class UpdateGUI
         ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
             myTargets.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
-            myErrors.Break()
+            myErrors.Break(System.IO.Path.GetFileName(myEnvironment.InputFileName))
             MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages: "
             MainWin.StatusBar.Panels(1).Text = myErrors.TopError
         Else

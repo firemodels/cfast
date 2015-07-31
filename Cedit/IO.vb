@@ -8,7 +8,7 @@ Module IO
         Dim i As Integer = 1, j As Integer
         Dim NewFileFormat As Boolean = False
 
-        myErrors.Break()
+        myErrors.Break(Filename)
 
         ' check for new format input file where fire objects and thermal properties are in the input file rather than in separate databases
         i = 1

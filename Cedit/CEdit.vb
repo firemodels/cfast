@@ -6226,14 +6226,24 @@ Public Class CeditMain
         Me.OpenDataFileDialog.Multiselect = True
         Me.OpenDataFileDialog.ShowDialog()
         If OpenDataFileDialog.FileNames.Length > 0 Then
+            Dim myInputFiles As New UpdateInputFiles
             Dim FileName As String
             For Each FileName In OpenDataFileDialog.FileNames
                 InitNew()
                 OpenDataFile(FileName)
                 SaveDataFile(False, True)
+                If myErrors.Count > 0 Then
+                    Dim myEnumerator As System.Collections.IEnumerator = myErrors.Queue.GetEnumerator()
+                    While myEnumerator.MoveNext()
+                        myInputFiles.UpdateErrors.Text = myEnumerator.Current + ControlChars.CrLf + myInputFiles.UpdateErrors.Text
+                    End While
+                End If
+                myInputFiles.Update()
             Next
+            myInputFiles.ShowDialog()
         End If
         Me.OpenDataFileDialog.Multiselect = False
+        InitNew()
     End Sub
     Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
         System.Windows.Forms.MessageBox.Show("Documentation on the use of CFAST is available in the CFAST User's Guide installed with the software. Go to Start, All Programs, CFAST7, Documents for all of the CFAST documentation", "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)

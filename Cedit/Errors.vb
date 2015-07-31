@@ -24,8 +24,9 @@ Public Class ErrorMessages
             Me.Queue.Dequeue()
         End While
     End Sub
-    Friend Sub Break()
-        If Me.Queue.Count > 0 Then Me.Add("-------------------- Input File Syntax Check " + ErrorScans.ToString, TypeNothing)
+    Friend Sub Break(ByVal FileName As String)
+        If FileName = Nothing Or FileName = "" Then FileName = "New File"
+        If Me.Queue.Count > 0 Then Me.Add("-------------------- Input File Syntax Check " + ErrorScans.ToString + " (" + FileName + ")", TypeNothing)
         ErrorScans += 1
     End Sub
     Friend ReadOnly Property TopError() As String

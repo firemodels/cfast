@@ -2,26 +2,24 @@ VERSN,7,HawaiiTest 6
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,500,-50,0,10,10
+TIMES,500,50,10,10
 EAMB,298.15,101325,0
 TAMB,298.15,101325,0,50
 !!
 !!Material Properties
 !!
 MATL,CONCRETE,1.6,750,2400,0.15,0.94,"Concrete, Normal Weight (6 in)"
-MATL,OIL,145,1909,884.1,0.006,0.8,"Oil, Unused (1/4 in)"
 MATL,STEELSHT,60,480,7850,0.0015,0.9,"Steel, Plain Carbon (1/16 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Bay 1,97.6,74,14.8,0,0,0,CONCRETE,CONCRETE,CONCRETE
+COMPA,Bay 1,97.6,74,14.8,0,0,0,CONCRETE,CONCRETE,CONCRETE,50,50,50
 !!
 !!Fire keywords
 !!
-GLOBA,10,393.15
 !!Hawaii_06
-FIRE,1,36.7,39.9,0.2,1,1,0,0,0,1,Hawaii_06
-CHEMI,12,26,0,0,0,0.4,4.41E+07,OIL
+FIRE,1,36.7,39.9,0.2,1,TIME,0,0,0,0,Hawaii_06
+CHEMI,12,26,0,0,0,0.4,4.41E+07
 TIME,0,90,563,564
 HRR,0,7700000,7700000,0
 SOOT,0.04,0.04,0.04,0.04
@@ -32,4 +30,4 @@ HEIGH,0.3,0.3,0.3,0.3
 !!
 !!Target and detector keywords
 !!
-TARGET,1,36.7,39.9,14.7,0,0,-1,STEELSHT,IMPLICIT,PDE,0.5
+TARGET,1,36.7,39.9,14.7,0,0,-1,STEELSHT,IMPLICIT,PDE,0.5,Targ 1

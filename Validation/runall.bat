@@ -272,66 +272,32 @@ if %1==FM_NBS goto end
 cd VTT
 echo VTT Cases 1, 2, 3
 call ..\cleancfast.bat
-cd Case_1
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C3 /V
 cd ..\
-cd Case_2
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C2 /V
-cd ..\
-cd Case_3
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C3 /V
-cd ..\..
 if %1==VTT goto end
 
 :NIST_NRC
 cd NIST_NRC
 call ..\cleancfast.bat
 echo NIST_NRC tests 1-5, 7-10, 13-18
-cd Test_1\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T4 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T5 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T7 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T8 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T9 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T16 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T18 /V
 cd ..\
-cd Test_2\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T2 /V
-cd ..\
-cd Test_3\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T3 /V
-cd ..\
-cd Test_4\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T4 /V
-cd ..\
-cd Test_5\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T5 /V
-cd ..\
-cd Test_7\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T7 /V
-cd ..\
-cd Test_8\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T8 /V
-cd ..\
-cd Test_9\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T9 /V
-cd ..\
-cd Test_10\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T10 /V
-cd ..\
-cd Test_13\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T13 /V
-cd ..\
-cd Test_14\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T14 /V
-cd ..\
-cd Test_15\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T15 /V
-cd ..\
-cd Test_16\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T16 /V
-cd ..\
-cd Test_17\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T17 /V
-cd ..\
-cd Test_18\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T18 /V
-cd ..\..
 if %1==NIST_NRC goto end
 
 :iBMB
@@ -377,15 +343,10 @@ if %1==FM_SNL goto end
 echo NBS Tests MV100A, MV100O, MV100Z
 cd NBS
 call ..\cleancfast.bat
-cd MV100A
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100A /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100A /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100O /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100Z /V
 cd ..\
-cd MV100O
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100O /V
-cd ..\
-cd MV100Z
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100Z /V
-cd ..\..\
 if %1==NBS goto end
 
 :High_Bay

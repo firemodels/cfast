@@ -206,6 +206,7 @@
 
     use precision_parameters
     use cshell, only: logerr
+    use target_routines, only: solid_angle_triangle
     implicit none
 
     integer, intent(in) :: nfire, mxfire
@@ -219,6 +220,8 @@
     real(eb) :: area(2), area4(4), figs(2,2), emis2(2), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2)
     real(eb) :: e(2), c(2), rhs(2), dq(2), dqde(2),  aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig
     real(eb) :: tupper4, tlower4, aij, qllay, qulay
+    real(eb), dimension(3) :: vrel1, vrel2, vrel3, vrel4, v1lay, v2lay, v3lay, v4lay, vfire
+    real(eb) :: solid_angle1, solid_angle2
 
     logical black
     integer, parameter :: u = 1, l = 2
@@ -297,11 +300,24 @@
     end do
 
     ! compute solid angles
-    
+
+    v1lay(1:3) = (/0.0_eb,0.0_eb,hlay/)
+    v2lay(1:3) = (/ xroom,0.0_eb,hlay/)
+    v3lay(1:3) = (/ xroom, yroom,hlay/)
+    v4lay(1:3) = (/0.0_eb, yroom,hlay/)
     do ifire = 1, nfire
         xf = xfire(ifire)
         yf = yfire(ifire)
         zf = zfire(ifire)
+
+        vfire(1:3) = (/xf,yf,zf/)
+        vrel1(1:3) = v1lay(1:3)-vfire(1:3)
+        vrel2(1:3) = v2lay(1:3)-vfire(1:3)
+        vrel3(1:3) = v3lay(1:3)-vfire(1:3)
+        vrel4(1:3) = v4lay(1:3)-vfire(1:3)
+        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       ! firang(ifire,1) = solid_angle1 + solid_angle2
         firang(ifire,1) = rdsang(-xf,xroom-xf,-yf,yroom-yf,hlay-zf)
         firang(ifire,2) = 4.0_eb*pi - firang(ifire,1)
     end do
@@ -409,7 +425,7 @@
 
     use precision_parameters
     use cshell, only: logerr
-    use target_routines
+    use target_routines, only: solid_angle_triangle
     implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
@@ -512,7 +528,6 @@
     ! define solid angles for fires
     if(nfire/=0)then
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-!        call rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
     endif
 
     !     note: we want to solve the linear system

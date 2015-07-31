@@ -409,6 +409,7 @@
 
     use precision_parameters
     use cshell, only: logerr
+    use target_routines
     implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
@@ -511,6 +512,7 @@
     ! define solid angles for fires
     if(nfire/=0)then
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+!        call rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
     endif
 
     !     note: we want to solve the linear system
@@ -764,7 +766,85 @@
     return
     end function rdparfig
 
-! --------------------------- rdfang -------------------------------------------
+! --------------------------- rdfang2 -------------------------------------------
+
+    subroutine rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+
+    !     routine: rdfang
+    !     purpose: 
+
+    use precision_parameters
+    use target_routines
+    implicit none
+
+
+    integer, intent(in) :: mxfire, nfire
+    real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
+    
+    real(eb), intent(out) :: firang(mxfire,*)
+    
+    real(eb), dimension(3) :: v1ceil, v2ceil, v3ceil, v4ceil
+    real(eb), dimension(3) :: v1floor, v2floor, v3floor, v4floor
+    real(eb), dimension(3) :: v1lay, v2lay, v3lay, v4lay
+    real(eb), dimension(3) :: vrel1, vrel2, vrel3, vrel4
+    real(eb), dimension(3) :: vfire
+    real(eb) :: solid_angle1, solid_angle2, solid_angle_layer
+    
+    integer :: i
+
+    v1floor = (/0.0_eb,0.0_eb,0.0_eb/)
+    v2floor = (/ xroom,0.0_eb,0.0_eb/)
+    v3floor = (/ xroom, yroom,0.0_eb/)
+    v4floor = (/0.0_eb, yroom,0.0_eb/)
+
+    v1lay = (/0.0_eb,0.0_eb,hlay/)
+    v2lay = (/ xroom,0.0_eb,hlay/)
+    v3lay = (/ xroom, yroom,hlay/)
+    v4lay = (/0.0_eb, yroom,hlay/)
+
+    v1ceil = (/0.0_eb,0.0_eb,zroom/)
+    v2ceil = (/ xroom,0.0_eb,zroom/)
+    v3ceil = (/ xroom, yroom,zroom/)
+    v4ceil = (/0.0_eb, yroom,zroom/)
+    
+    do i = 1, nfire
+       vfire = (/xfire(i),yfire(i),zfire(i)/)
+       vrel1(1:3) = v1ceil(1:3)-vfire(1:3)
+       vrel2(1:3) = v2ceil(1:3)-vfire(1:3)
+       vrel3(1:3) = v3ceil(1:3)-vfire(1:3)
+       vrel4(1:3) = v4ceil(1:3)-vfire(1:3)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang(i,1) = solid_angle1 + solid_angle2
+       
+       vrel1(1:3) = v1floor(1:3)-vfire(1:3)
+       vrel2(1:3) = v2floor(1:3)-vfire(1:3)
+       vrel3(1:3) = v3floor(1:3)-vfire(1:3)
+       vrel4(1:3) = v4floor(1:3)-vfire(1:3)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang(i,4) = solid_angle1 + solid_angle2
+       
+       vrel1(1:3) = v1lay(1:3)-vfire(1:3)
+       vrel2(1:3) = v2lay(1:3)-vfire(1:3)
+       vrel3(1:3) = v3lay(1:3)-vfire(1:3)
+       vrel4(1:3) = v4lay(1:3)-vfire(1:3)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       solid_angle_layer = solid_angle1 + solid_angle2
+       
+        if(zfire(i)<hlay)then
+            firang(i,2) = solid_angle_layer - firang(i,1)
+            firang(i,3) = fourpi - solid_angle_layer - firang(i,4)
+        else
+            firang(i,2) = fourpi - solid_angle_layer - firang(i,1)
+            firang(i,3) = solid_angle_layer - firang(i,4)
+        endif
+    end do
+    return
+   end  subroutine rdfang2
+
+   ! --------------------------- rdfang -------------------------------------------
 
     subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
 

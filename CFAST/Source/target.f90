@@ -18,7 +18,7 @@ module target_routines
     
 private
 
-public target, target_flux, update_detectors, detector_temp_and_velocity
+public target, target_flux, update_detectors, detector_temp_and_velocity, solid_angle_triangle
 
 contains
 

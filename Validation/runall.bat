@@ -377,15 +377,10 @@ if %1==FM_SNL goto end
 echo NBS Tests MV100A, MV100O, MV100Z
 cd NBS
 call ..\cleancfast.bat
-cd MV100A
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100A /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100A /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100O /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100Z /V
 cd ..\
-cd MV100O
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100O /V
-cd ..\
-cd MV100Z
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe MV100Z /V
-cd ..\..\
 if %1==NBS goto end
 
 :High_Bay

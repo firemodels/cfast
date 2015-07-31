@@ -272,15 +272,10 @@ if %1==FM_NBS goto end
 cd VTT
 echo VTT Cases 1, 2, 3
 call ..\cleancfast.bat
-cd Case_1
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C3 /V
 cd ..\
-cd Case_2
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C2 /V
-cd ..\
-cd Case_3
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe VTT_C3 /V
-cd ..\..
 if %1==VTT goto end
 
 :NIST_NRC

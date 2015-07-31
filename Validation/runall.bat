@@ -287,51 +287,22 @@ if %1==VTT goto end
 cd NIST_NRC
 call ..\cleancfast.bat
 echo NIST_NRC tests 1-5, 7-10, 13-18
-cd Test_1\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T4 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T5 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T7 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T8 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T9 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T16 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_NRC_T18 /V
 cd ..\
-cd Test_2\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T2 /V
-cd ..\
-cd Test_3\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T3 /V
-cd ..\
-cd Test_4\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T4 /V
-cd ..\
-cd Test_5\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T5 /V
-cd ..\
-cd Test_7\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T7 /V
-cd ..\
-cd Test_8\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T8 /V
-cd ..\
-cd Test_9\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T9 /V
-cd ..\
-cd Test_10\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T10 /V
-cd ..\
-cd Test_13\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T13 /V
-cd ..\
-cd Test_14\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T14 /V
-cd ..\
-cd Test_15\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T15 /V
-cd ..\
-cd Test_16\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T16 /V
-cd ..\
-cd Test_17\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T17 /V
-cd ..\
-cd Test_18\
-..\..\scripts\background -u 98 ..\..\..\bin\cfast.exe NIST_NRC_T18 /V
-cd ..\..
 if %1==NIST_NRC goto end
 
 :iBMB

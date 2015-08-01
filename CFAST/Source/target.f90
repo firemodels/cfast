@@ -210,7 +210,7 @@ contains
 
 ! --------------------------- get_target_factors -------------------------------------------
 
-    subroutine get_target_factors (iroom,itarg,target_factors_front,target_factors_back)
+    subroutine get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
     integer, intent(in) :: iroom, itarg
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
@@ -403,8 +403,48 @@ contains
     if(sum_front>0.0_eb)target_factors_front(1:10) = target_factors_front(1:10)/sum_front
     if(sum_back>0.0_eb)target_factors_back(1:10) = target_factors_back(1:10)/sum_back
 
- end subroutine get_target_factors
-  
+ end subroutine get_target_factors2
+
+    ! --------------------------- get_target_factors -------------------------------------------
+
+    subroutine get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
+    integer, intent(in) :: iroom, itarg
+    real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
+
+    integer :: iwall
+    real(eb) :: awall_sum(2), svect(3), ddot
+    type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
+    integer, parameter :: front=1, back=2
+
+    
+    roomptr => roominfo(iroom)
+    targptr => targetinfo(itarg)
+    
+    awall_sum(front) = 0.0_eb
+    awall_sum(back) = 0.0_eb
+    do iwall = 1, 10
+       svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
+       if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
+          awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
+       else
+          awall_sum(back) = awall_sum(back) + zzwarea2(iroom,iwall)
+       endif
+    end do
+    if(awall_sum(front).eq.0.0_eb)awall_sum(front)=1.0_eb
+    if(awall_sum(back).eq.0.0_eb)awall_sum(back)=1.0_eb
+    target_factors_front(1:10)=0.0_eb
+    target_factors_back(1:10)=0.0_eb
+    do iwall = 1, 10
+       svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
+       if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
+          target_factors_front(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
+       else
+          target_factors_back(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
+       endif
+    end do
+    end subroutine get_target_factors
+    
 ! --------------------------- targflux -------------------------------------------
 
     subroutine targflux(iter,itarg,ttarg,flux,dflux)
@@ -514,7 +554,7 @@ contains
         qgassum(front) = 0.0_eb
         qwtsum(back) = 0.0_eb
         qgassum(back) = 0.0_eb
-        call get_target_factors (iroom,itarg,target_factors_front,target_factors_back)
+        call get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
         do iwall = 1, 10
             if(nfurn>0)then
                 qout=qfurnout

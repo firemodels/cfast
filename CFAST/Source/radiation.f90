@@ -781,7 +781,22 @@
     rdparfig = 2.0_eb*(f1+f2+f3-f4-f5)/(pi*xx*yy)
     return
     end function rdparfig
+   
+! --------------------------- getvrel -------------------------------------------
 
+    subroutine getvrel(vrel,v1,vf)
+    use precision_parameters
+    implicit none
+    
+    real(eb), dimension(3), intent(in) :: v1, vf
+    real(eb), dimension(3), intent(out) :: vrel
+    real(eb) :: dnrm2
+    
+    vrel(1:3) = v1(1:3) - vf(1:3)
+    vrel(1:3) = vrel(1:3)/dnrm2(3,vrel,1)
+    return
+    end subroutine getvrel
+   
 ! --------------------------- rdfang2 -------------------------------------------
 
     subroutine rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
@@ -825,26 +840,26 @@
     
     do i = 1, nfire
        vfire = (/xfire(i),yfire(i),zfire(i)/)
-       vrel1(1:3) = v1ceil(1:3)-vfire(1:3)
-       vrel2(1:3) = v2ceil(1:3)-vfire(1:3)
-       vrel3(1:3) = v3ceil(1:3)-vfire(1:3)
-       vrel4(1:3) = v4ceil(1:3)-vfire(1:3)
+       call getvrel(vrel1,v1ceil,vfire)
+       call getvrel(vrel2,v2ceil,vfire)
+       call getvrel(vrel3,v3ceil,vfire)
+       call getvrel(vrel4,v4ceil,vfire)
        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
        firang(i,1) = solid_angle1 + solid_angle2
        
-       vrel1(1:3) = v1floor(1:3)-vfire(1:3)
-       vrel2(1:3) = v2floor(1:3)-vfire(1:3)
-       vrel3(1:3) = v3floor(1:3)-vfire(1:3)
-       vrel4(1:3) = v4floor(1:3)-vfire(1:3)
+       call getvrel(vrel1,v1floor,vfire)
+       call getvrel(vrel2,v2floor,vfire)
+       call getvrel(vrel3,v3floor,vfire)
+       call getvrel(vrel4,v4floor,vfire)
        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
        firang(i,4) = solid_angle1 + solid_angle2
        
-       vrel1(1:3) = v1lay(1:3)-vfire(1:3)
-       vrel2(1:3) = v2lay(1:3)-vfire(1:3)
-       vrel3(1:3) = v3lay(1:3)-vfire(1:3)
-       vrel4(1:3) = v4lay(1:3)-vfire(1:3)
+       call getvrel(vrel1,v1lay,vfire)
+       call getvrel(vrel2,v2lay,vfire)
+       call getvrel(vrel3,v3lay,vfire)
+       call getvrel(vrel4,v4lay,vfire)
        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
        solid_angle_layer = solid_angle1 + solid_angle2

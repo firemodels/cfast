@@ -1,4 +1,5 @@
-
+! #define pp_NEWSOLID
+! #define pp_ALLRAD4   
 ! --------------------------- radiation -------------------------------------------
 
     subroutine radiation(flwrad,flxrad)
@@ -29,7 +30,7 @@
 
     ! work and dummy arrays passed to rad2 and rad4
     
-    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(mxfire,nwal), flxrad0(nr,nwal), flwrad0(nr,2)
+    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire), flxrad0(nr,nwal), flwrad0(nr,2)
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
     logical roomflg(nr)
     save flxrad0, flwrad0
@@ -130,9 +131,15 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
+#if pp_ALLRAD4                
+                call rad4(twall,tg,emis,zzabsb(1,i),room_width(i),room_depth(i),room_height(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
+                   xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
+#else
                 call rad2(twall,tg,emis,zzabsb(1,i),room_width(i),room_depth(i),room_height(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
                    xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                 qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
+#endif
             endif
             do j = 1, nwal
                 flxrad(i,j) = qflxw(map(j))
@@ -215,13 +222,15 @@
     real(eb), intent(out) :: qlay(2), qflux(4), qout(4)
 
     integer :: ipvt(2), ifire, i, j, k, info
-    real(eb) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+    real(eb) :: taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
     real(eb) :: taul(2,2), tauu(2,2), beam(2,2)
     real(eb) :: area(2), area4(4), figs(2,2), emis2(2), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2)
     real(eb) :: e(2), c(2), rhs(2), dq(2), dqde(2),  aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig
     real(eb) :: tupper4, tlower4, aij, qllay, qulay
     real(eb), dimension(3) :: vrel1, vrel2, vrel3, vrel4, v1lay, v2lay, v3lay, v4lay, vfire
+#ifdef pp_NEWSOLID    
     real(eb) :: solid_angle1, solid_angle2
+#endif    
 
     logical black
     integer, parameter :: u = 1, l = 2
@@ -315,11 +324,14 @@
         vrel2(1:3) = v2lay(1:3)-vfire(1:3)
         vrel3(1:3) = v3lay(1:3)-vfire(1:3)
         vrel4(1:3) = v4lay(1:3)-vfire(1:3)
+#ifdef pp_NEWSOLID
         call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
         call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
-       ! firang(ifire,1) = solid_angle1 + solid_angle2
-        firang(ifire,1) = rdsang(-xf,xroom-xf,-yf,yroom-yf,hlay-zf)
-        firang(ifire,2) = 4.0_eb*pi - firang(ifire,1)
+        firang(1,ifire) = solid_angle1 + solid_angle2
+#else
+        firang(1,ifire) = rdsang(-xf,xroom-xf,-yf,yroom-yf,hlay-zf)
+#endif
+        firang(2,ifire) = 4.0_eb*pi - firang(1,ifire)
     end do
     f1d = rdparfig(xroom,yroom,zroom-hlay)
     f2d = rdparfig(xroom,yroom,hlay)
@@ -432,7 +444,7 @@
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfire
     
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
-    real(eb), intent(out) :: taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+    real(eb), intent(out) :: taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
     
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
 
@@ -527,8 +539,11 @@
 
     ! define solid angles for fires
     if(nfire/=0)then
+#ifdef pp_NEWSOLID
+        call rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+#else
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-    !    call rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+#endif
     endif
 
     !     note: we want to solve the linear system
@@ -612,7 +627,7 @@
 
     integer, intent(in) :: mxfire, nzone, nfire, nup
     real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfire)
-    real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(mxfire,*)
+    real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
     
     real(eb), intent(out) :: qulay, qllay, c(*)
     
@@ -648,7 +663,7 @@
 
         ! case: fire to upper layer
         do ifire = 1, nfire
-            qfflux = qfire(ifire)*firang(ifire,k)/(fourpi*area(k))
+            qfflux = qfire(ifire)*firang(k,ifire)/(fourpi*area(k))
             c(k) = c(k) + qfflux*taufl(ifire,k)*taufu(ifire,k)
             if(zfire(ifire)>hlay)then
                 factu = 1.0_eb - taufu(ifire,k)
@@ -687,7 +702,7 @@
         ! case: fire to lower layer
         
         do ifire = 1, nfire
-            qfflux = qfire(ifire)*firang(ifire,k)/(fourpi*area(k))
+            qfflux = qfire(ifire)*firang(k,ifire)/(fourpi*area(k))
             c(k) = c(k) + qfflux*taufl(ifire,k)*taufu(ifire,k)
             if(zfire(ifire)>hlay)then
                 factu = 1.0_eb - taufu(ifire,k)
@@ -812,7 +827,7 @@
     integer, intent(in) :: mxfire, nfire
     real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
     
-    real(eb), intent(out) :: firang(mxfire,*)
+    real(eb), intent(out) :: firang(4,mxfire)
     
     real(eb), dimension(3) :: v1ceil, v2ceil, v3ceil, v4ceil
     real(eb), dimension(3) :: v1floor, v2floor, v3floor, v4floor
@@ -854,7 +869,7 @@
        call getvrel(vrel4,v4floor,vfire)
        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
-       firang(i,4) = solid_angle1 + solid_angle2
+       firang(4,i) = solid_angle1 + solid_angle2
        
        call getvrel(vrel1,v1lay,vfire)
        call getvrel(vrel2,v2lay,vfire)
@@ -865,11 +880,11 @@
        solid_angle_layer = solid_angle1 + solid_angle2
        
         if(zfire(i)<hlay)then
-            firang(i,2) = solid_angle_layer - firang(i,1)
-            firang(i,3) = fourpi - solid_angle_layer - firang(i,4)
+            firang(2,i) = solid_angle_layer - firang(1,i)
+            firang(3,i) = fourpi - solid_angle_layer - firang(4,i)
         else
-            firang(i,2) = fourpi - solid_angle_layer - firang(i,1)
-            firang(i,3) = solid_angle_layer - firang(i,4)
+            firang(2,i) = fourpi - solid_angle_layer - firang(1,i)
+            firang(3,i) = solid_angle_layer - firang(4,i)
         endif
     end do
     return
@@ -889,7 +904,7 @@
     integer, intent(in) :: mxfire, nfire
     real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
     
-    real(eb), intent(out) :: firang(mxfire,*)
+    real(eb), intent(out) :: firang(4,mxfire)
     
     real(eb) :: arg1, arg2, arg3, arg4, f1, f4, fd, rdsang
     integer :: i
@@ -902,14 +917,14 @@
         f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
         fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
         f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
-        firang(i,1) = f1
-        firang(i,4) = f4
+        firang(1,i) = f1
+        firang(4,i) = f4
         if(zfire(i)<hlay)then
-            firang(i,2) = fd - f1
-            firang(i,3) = fourpi - fd - f4
+            firang(2,i) = fd - f1
+            firang(3,i) = fourpi - fd - f4
         else
-            firang(i,2) = fourpi - fd - f1
-            firang(i,3) = fd - f4
+            firang(2,i) = fourpi - fd - f1
+            firang(3,i) = fd - f4
         endif
     end do
     return
@@ -951,17 +966,13 @@
 
     real(eb) :: xr, yr, xy, xyr, f1, f2
 
-    if(x<=0.0_eb.or.y<=1.0_eb)then
-        rdsang1 = 0.0_eb
-    else
-        xr = x*x + r*r
-        xyr = x*x + y*y + r*r
-        xy = x*x + y*y
-        yr = y*y + r*r
-        f1 = min(1.0_eb, y*sqrt(xyr/xy/yr))
-        f2 = min(1.0_eb, x*sqrt(xyr/xy/xr))
-        rdsang1 = (asin(f1)+asin(f2)-pio2)
-    endif
+    xr = x*x + r*r
+    xyr = x*x + y*y + r*r
+    xy = x*x + y*y
+    yr = y*y + r*r
+    f1 = min(1.0_eb, y*sqrt(xyr/xy/yr))
+    f2 = min(1.0_eb, x*sqrt(xyr/xy/xr))
+    rdsang1 = (asin(f1)+asin(f2)-pio2)
     return
     end function rdsang1
 

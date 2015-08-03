@@ -131,10 +131,10 @@
                         zzabsb(lower,i) = absorb(i, lower)
                     endif
                 endif
-#if pp_ALLRAD4                
-                call rad4(twall,tg,emis,zzabsb(1,i),room_width(i),room_depth(i),room_height(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
-                   xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
+#ifdef pp_ALLRAD4                
+                call rad4(twall,tg,emis,zzabsb(1,i),i,room_width(i),room_depth(i),room_height(i),zzhlay(i,lower), &
+                    xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                    qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
 #else
                 call rad2(twall,tg,emis,zzabsb(1,i),room_width(i),room_depth(i),room_height(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
                    xrfirepos,yrfirepos,zrfirepos,nrmfire, &

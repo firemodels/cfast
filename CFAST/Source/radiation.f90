@@ -99,14 +99,14 @@
             do j = 1, nrmfire
                 xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
                 yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
-                !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
+                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
                 call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
-                if(fheight+xfire(ifire+j-1,f_fire_zpos)>room_height(i))then
-                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (room_height(i)-xfire(ifire+j,f_fire_zpos))/3.0_eb
-                else
-                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
-                end if
+                !if(fheight+xfire(ifire+j-1,f_fire_zpos)>room_height(i))then
+                !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (room_height(i)-xfire(ifire+j,f_fire_zpos))/3.0_eb
+                !else
+                !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
+                !end if
             end do
             if(nrmfire/=0)then
                 if(.not.black)then

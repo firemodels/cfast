@@ -498,14 +498,14 @@ contains
         do ifire = istart, istart + nfirerm - 1
             svect(1) = targptr%center(1) - xfire(ifire,f_fire_xpos)
             svect(2) = targptr%center(2) - xfire(ifire,f_fire_ypos)
-            !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
+            svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
             ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
             call flame_height (xfire(ifire,f_qfr),xfire(ifire,f_obj_area),fheight)
-            if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
-                svect(3) = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
-            else
-                svect(3) = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
-            end if
+            !if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
+            !    svect(3) = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
+            !else
+            !    svect(3) = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
+            !end if
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),objclen(ifire))
             if(s/=0.0_eb)then

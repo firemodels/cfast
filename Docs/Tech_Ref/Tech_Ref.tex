@@ -579,24 +579,33 @@ The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted b
 \ee
 where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.
 
-Sixteen configuration factor are required for a radiation computation in compartments with four surfaces (ceiling, upper/lower wall and floor). To compute these 16 factors, the formula for configuration factors between parallel plates (see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by
+\begin{figure}[!ht]
+\label{configfactorsetup}
+\centering
+\includegraphics[width=3.0in]{FIGURES/configfactorsetup}
+\caption{Setup for configuration factor computation.}
+\end{figure}
+
+As illustrated in Figure \ref{configfactorsetup}, a compartment has four wall surfaces, a ceiling, upper wall, lower wall and floor.  There are then sixteen configuration factor required for a radiation exchange computation between these four surfaces.  The formula for configuration factors between parallel plates (see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by
 
 \begin{eqnarray}
 \lefteqn{F_{1-2} = \frac{2}{\pi \, X \, Y} \left\{ \ln \left[ \frac{(1+X^2)(1+Y^2)}{1+X^2+Y^2} \right]^{1/2} + X \sqrt{1+Y^2} \, \tan^{-1} \frac{X}{\sqrt{1+Y^2}} + \right.} \nonumber \\[.1in]
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$ is first used to compute three configuration factors: a configuration factor between the floor and ceiling, between the floor and layer interface and between the ceiling and layer interface. These three factors are  then used to compute the 16 factors using using properties such as $A_1F_{1-2}=A_2F_{2-1}$ and $F_{i1}+F_{i2}+F_{i3}+F_{i4}=1$.
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$ is used to compute configuration factors between the floor and ceiling denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$ and between the floor and layer interface denoted $F_{4-d}$. These three factors are then used to compute the 16 factors as follows.
+
+\begin{eqnarray*}
+\begin{array}{llll}
+  F_{1-1}=0 & F_{1-2}=1-F_{1-d} & F_{1-3}=F_{1-d}-F_{1-4} & F_{1-4} \\
+  F_{2-1}=\frac{A_1}{A_2}F_{1-2} & F_{2-2}=1-2F_{2-1} & \frac{A_3}{A_2}F_{3-2} & F_{2-4}=1-F_{2-1}-F_{2-2}-F_{2-3} \\
+  F_{3-1}=\frac{A_1}{A_3}F_{1-3} & F_{3-2}=1-F_{3-1}-F_{3-3}-F_{3-4} & F_{3-3}=1-2F_{3-4} & F_{3-4}=\frac{A_4}{A_3}F_{4-3} \\
+  F_{4-1} & F_{4-2}=\frac{A_2}{A_4}F_{2-4} & F_{3-4}=\frac{A_4}{A_3}F_{4-3} & F_{4-4}=0 
+\end{array}
+\end{eqnarray*}
 
 \subsection{Normalized Solid Angle between the Fire and the Walls}
 
-Next, the normalized solid angle, $\omega_{\rm f-k}$, in Eq.~(\ref{ckeq}) is computed. First, place a sphere of radius $r$ tangent to a rectangle of dimension $x \times y$ such that the point of tangency is the corner of the rectangle. The normalized solid angle formed by the center of the sphere and the edges of the rectangle is given by:
-\be
-   \omega(x,y;r) = \frac{1}{4\pi} \left[ \sin^{-1} \left( \frac{A \, y}{\sqrt{y^2+r^2}} \right) + \sin^{-1} \left( \frac{A \, x}{\sqrt{x^2+r^2}} \right) - \frac{\pi}{2} \right] \quad ; \quad A=\sqrt{1+\frac{r^2}{x^2+y^2}}
-\ee
-Suppose now that the radiation of a fire is assumed to emanate from a point a distance $r$ above the floor whose dimension is $L \times W$. Suppose also that the floor is divided into four quadrants based on the location of the fire. The dimensions are partitioned $L=L_1+L_2$ and $W=W_1+W_2$. The normalized solid angle between the point source fire, f, and the floor, fl, is:
-\be
-   \omega_{\rm f-fl} = \sum_{j=1}^2 \sum_{i=1}^2 \omega(L_i,W_j;r)
-\ee
+Next, the normalized solid angle, $\omega_{\rm f-k}$, in Eq.~(\ref{ckeq}) is computed. 
 
 \subsection{Transmittance and Absorptance}
 

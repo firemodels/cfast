@@ -659,7 +659,7 @@ The solid angle $\Omega$ of an object is the area of that object projected onto 
 
 To compute a solid angle, consider an origin $v_0$ and a triangle defined by vertices $v_1$, $v_2$ and $v_3$ as illustrated in Figure \ref{solidanglesetup}.  The solid angle of this triangle with respect to the origin $v_0$ may be computed using
 \begin{eqnarray*}
-\tan(\frac{\Omega}{2}) = \frac{|\hat{v}_1\times \hat{v}_2\cdot \hat{v}_3|}{1+\hat{v}_1\cdot \hat{v}_2+\hat{v}_1\cdot \hat{v}_3+\hat{v}_2\cdot \hat{v}_3}
+\tan\frac{\Omega}{2} = \frac{|\hat{v}_1\times \hat{v}_2\cdot \hat{v}_3|}{1+\hat{v}_1\cdot \hat{v}_2+\hat{v}_1\cdot \hat{v}_3+\hat{v}_2\cdot \hat{v}_3}
 \end{eqnarray*}
 where $\hat{v}_i=v_i/||v_i||$ are unit vectors\cite{vanOosterom:1983}. A solid angle for a rectangular wall surface is computed by splitting the surface into two triangles, computing the solid angle for each triangle and summing.
 

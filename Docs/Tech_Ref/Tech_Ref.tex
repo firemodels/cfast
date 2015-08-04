@@ -559,9 +559,9 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. At a solid surface, the emittance, $\epsilon$, absorptance, $\alpha$, and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$. In the gas phase, the emittance, $\epsilon$, absorptance, $\alpha$, and transmittance, $\tau$, are related via $\epsilon = \alpha = 1 - \tau$.
 \item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
-The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The net radiative heat flux to surface~$k$, $\dq_{{\rm r},k}''$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
+The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The net radiative heat flux leaving a surface~$k$, $\dq_{{\rm r},k}''$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   -\frac{\dq_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dq_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
+   \frac{\dq_{{\rm r},k}''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dq_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
 \ee
 where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
@@ -569,15 +569,19 @@ where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted 
 \ee
 where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 
+Note, the net radiative flux entering a surface or $-\dq_{{\rm r},k}''$ is used to compute conduction within a solid.
+
 
 
 \subsection{Configuration Factors}
 
-The configuration factor, $F_{1-2}$, is the fraction of radiant energy emitted by surface 1 that is intercepted by  surface 2, and is given by
+A configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by  surface $j$.  Sixteen configuration factor are required for each compartment since a compartment has four wall surfaces, a ceiling, upper wall, lower wall and floor labeled 1, 2, 3 and 4 as illustrated in Figure \ref{configfactorsetup}.
+
+In general these factors may be computed using 
 \be
-   F_{1-2} = \frac{1}{A_1} \int_{A_1} \int_{A_2} \frac{\cos \theta_1 \, \cos \theta_2}{\pi L^2} \, dA_2 \, dA_1 \label{eq:config_factor}
+   F_{i-j} = \frac{1}{A_i} \int_{A_i} \int_{A_j} \frac{\cos \theta_i \, \cos \theta_j}{\pi L^2} \, dA_j \, dA_i \label{eq:config_factor}
 \ee
-where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta_2$ are the angles for surface 1 and 2 between the respective normal vectors and the line of integration, and $A_1$ and $A_2$ are the areas of the two surfaces.
+where $L$ is the distance along the line of integration,  $\theta_i$ and $\theta_j$ are the angles for surface $i$ and $j$ between the respective normal vectors and the line of integration, and $A_i$ and $A_j$ are the areas of the two surfaces.
 
 \begin{figure}[!ht]
 \label{configfactorsetup}
@@ -586,34 +590,41 @@ where $L$ is the distance along the line of integration,  $\theta_1$ and $\theta
 \caption{Setup for configuration factor computation.}
 \end{figure}
 
-As illustrated in Figure \ref{configfactorsetup}, a compartment has four wall surfaces, a ceiling, upper wall, lower wall and floor.  There are then sixteen configuration factor required for a radiation exchange computation between these four surfaces.  The formula for configuration factors between parallel plates (see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by
+A more efficient procedure is to compute configuration factors between the ceiling and floor denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$, and between the floor and layer interface denoted $F_{4-d}$ using a formula for a configuration factor between parallel plates 
+(see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by:
 
 \begin{eqnarray}
-\lefteqn{F_{1-2} = \frac{2}{\pi \, X \, Y} \left\{ \ln \left[ \frac{(1+X^2)(1+Y^2)}{1+X^2+Y^2} \right]^{1/2} + X \sqrt{1+Y^2} \, \tan^{-1} \frac{X}{\sqrt{1+Y^2}} + \right.} \nonumber \\[.1in]
+\lefteqn{F_{i-j} = \frac{2}{\pi \, X \, Y} \left\{ \ln \left[ \frac{(1+X^2)(1+Y^2)}{1+X^2+Y^2} \right]^{1/2} + X \sqrt{1+Y^2} \, \tan^{-1} \frac{X}{\sqrt{1+Y^2}} + \right.} \nonumber \\[.1in]
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
+\label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$ is used to compute configuration factors between the floor and ceiling denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$ and between the floor and layer interface denoted $F_{4-d}$. These three factors are then used to compute the 16 factors as follows.
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  The symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}). Configuration factors for surfaces forming an enclosure also satisfy
+\begin{eqnarray}
+\label{eq:factorsum}
+\sum_{j=1}^4F_{i-j}=1
+\end{eqnarray}
 
-The 16 configuration factors can be determined in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$. $F_{1-4}$
-does not change during a simulation since its value depends only on the height of the room
-and the area of the
-floor. Therefore, $F_{1-4}$ only needs to be computed once. Configuration
-factors, $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be calculated each
-time the radiation exchange is to be calculated. Configuration factors $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$. $F_{1-4}$
-are determined using equation (13). Since $A_1 = A_4$ it follows that $F_{4-1} = F_{1-4}$. The other
+$F_{1-4}$
+does not change during a simulation since its value depends only on the compartment height and floor/ceiling area. Therefore, $F_{1-4}$ need only be computed once. Configuration
+factors, $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be determined each
+time the radiation exchange is calculated. 
+
+$F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ are determined using equation (\ref{eq:configrect}). Since $A_1 = A_4$ it follows that $F_{4-1} = F_{1-4}$. The other
 14 configuration factors can be calculated using simple algebraic formulas.
 Since the
 floor and the ceiling is assumed to be a
-at rectangular surface it follows that $F_{1-1}=F_{4=4}=0$. 
-Using the fact that configuration factors in an enclosure sum to 1 and that due to symmetery
+flat rectangular surface it follows that $F_{1-1}=F_{4-4}=0$.
+From Eq. (\ref{eq:factorsum}) and that due to symmetery
 $F_{2-1}=F_{2-d}$, it follows that
 
 \begin{eqnarray}
+\label{eq:config1}
 F_{1-2}&+&F_{1-d}=1\\
-F_{2=1}+F_{2-2}&+&F_{2=d}=2F_{2-1}+F_{2-2}=2\frac{A_1}{A_2}F_{1-2}+F_{2-2}=1
+\label{eq:config2}
+F_{2-1}+F_{2-2}&+&F_{2-d}=2F_{2-1}+F_{2-2}=2\frac{A_1}{A_2}F_{1-2}+F_{2-2}=1
 \end{eqnarray}
 
-Equations (x) and (xx) can be solved for $F_{1-2}$ and $F_{2-2}$ to obtain
+Equations (\ref{eq:config1}) and (\ref{eq:config2}) can be solved for $F_{1-2}$ and $F_{2-2}$ to obtain
 \begin{eqnarray*}
 F_{1-2}&=&1-F_{1-d}\\
 F_{2-1}&=&\frac{A_1}{A_2}F_{1-2}\\
@@ -625,7 +636,7 @@ F_{4-3}&=&1-F_{4-d}\\
 F_{3-4}&=&\frac{A_4}{A_3}F_{4-3}\\
 F_{3-3}&=&1-2F_{3-4}
 \end{eqnarray*}
-Using the above configuration factors and Eq. (xxx) it follows that
+Using the above configuration factors and Eq. (\ref{eq:factorsum}) it follows that
 \begin{eqnarray*}
 F_{1-3}&=&1-F_{1-4} - F_{1-2}\\
 F_{3-1}&=&\frac{A_1}{A_3}F_{1-3}\\
@@ -646,7 +657,7 @@ F_{4-2}&=&\frac{A_2}{A_4}F_{2-4}
 
 The solid angle $\Omega$ of an object is the area of that object projected onto a unit sphere. Normalized solid angles, solid angles divided by $4\pi$, the area of a unit sphere, are used for determining the fraction of a fire's radiant heat flux striking each wall surface as in Eq.~(\ref{ckeq}) and determining the fraction of each wall surface's radiant heat flux striking a target as in Eq.~(\ref{target_rad}).
 
-To compute a solid angle, consider an origin $v_0$ and a triangle defined by vertices $v_1$, $v_2$ and $v_3$ as illustrated in Figure \ref{solidanglesetup}.  The solid angle of this triangle may be computed using
+To compute a solid angle, consider an origin $v_0$ and a triangle defined by vertices $v_1$, $v_2$ and $v_3$ as illustrated in Figure \ref{solidanglesetup}.  The solid angle of this triangle with respect to the origin $v_0$ may be computed using
 \begin{eqnarray*}
 \tan(\frac{\Omega}{2}) = \frac{|\hat{v}_1\times \hat{v}_2\cdot \hat{v}_3|}{1+\hat{v}_1\cdot \hat{v}_2+\hat{v}_1\cdot \hat{v}_3+\hat{v}_2\cdot \hat{v}_3}
 \end{eqnarray*}

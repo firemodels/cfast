@@ -1,5 +1,5 @@
-! #define pp_NEWSOLID
-! #define pp_ALLRAD4   
+#define pp_NEWSOLID
+#define pp_ALLRAD4   
 ! --------------------------- radiation -------------------------------------------
 
     subroutine radiation(flwrad,flxrad)

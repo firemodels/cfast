@@ -1,5 +1,3 @@
-#define pp_NEWSOLID
-#define pp_ALLRAD4   
 ! --------------------------- radiation -------------------------------------------
 
     subroutine radiation(flwrad,flxrad)
@@ -108,39 +106,18 @@
                 !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
                 !end if
             end do
-            if(nrmfire/=0)then
-                if(.not.black)then
-                    if(option(frad)==4.or.lfbt==1)then
-                        zzabsb(upper,i) = defabsup
-                        zzabsb(lower,i) = defabslow
-                    else
-                        zzabsb(upper,i) = absorb(i, upper)
-                        zzabsb(lower,i) = absorb(i, lower)
-                    endif
-                endif
-                call rad4(twall,tg,emis,zzabsb(1,i),i,room_width(i),room_depth(i),room_height(i),zzhlay(i,lower), &
-                    xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                    qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
-            else
-                if(.not.black)then
-                    if(option(frad)==2.or.option(frad)==4.or.lfbt==1)then
-                        zzabsb(upper,i) = defabsup
-                        zzabsb(lower,i) = defabslow
-                    else
-                        zzabsb(upper,i) = absorb(i, upper)
-                        zzabsb(lower,i) = absorb(i, lower)
-                    endif
-                endif
-#ifdef pp_ALLRAD4                
-                call rad4(twall,tg,emis,zzabsb(1,i),i,room_width(i),room_depth(i),room_height(i),zzhlay(i,lower), &
-                    xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                    qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
-#else
-                call rad2(twall,tg,emis,zzabsb(1,i),room_width(i),room_depth(i),room_height(i),zzhlay(i,lower),xfire(ifire,f_qfr),&
-                   xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
-#endif
+            if(.not.black)then
+               if(option(frad)==4.or.lfbt==1)then
+                  zzabsb(upper,i) = defabsup
+                  zzabsb(lower,i) = defabslow
+               else
+                  zzabsb(upper,i) = absorb(i, upper)
+                  zzabsb(lower,i) = absorb(i, lower)
+               endif
             endif
+            call rad4(twall,tg,emis,zzabsb(1,i),i,room_width(i),room_depth(i),room_height(i),zzhlay(i,lower), &
+                      xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+                      qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
             do j = 1, nwal
                 flxrad(i,j) = qflxw(map(j))
             end do
@@ -179,232 +156,6 @@
     endif
     return
     end subroutine radiation
-
-! --------------------------- rad2 -------------------------------------------
-
-    subroutine rad2(twall,tlay,emis,absorb,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,qflux,qlay,&
-       mxfire,taufl,taufu,firang,qout,black)
-
-    !     routine: rad2
-    !     purpose: This routine computes the radiative heat flux to 
-    !              the extended ceiling (ceiling + upper wall) and the extended 
-    !              floor (floor + lower wall) due to a point source fire, emitting 
-    !              absorbing gas layers (upper and lower) and heat emitting wall 
-    !              segments.  This routine also computes the heat absorbed by the lower and upper layers.
-    !     input arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
-    !                          i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively.  
-    !                tlay: tlay(i) is the temperature of the i'th layer [k] where i=1,2 denotes the upper, lower layers respectively
-    !                emis: emis(i) is the emisivity of the ceiling (i=1), walls (i=2) and floor (i=3)
-    !                absorb: absorb(i) is the absorbivity [1/m] of the upper (i=1), lower layer (i=2)
-    !                xroom: size of the room [m] in the x'th coordinate direction.
-    !                yroom: size of the room [m] in the y'th coordinate direction.
-    !                zroom: size of the room [m] in the z'th coordinate direction.
-    !                hlay: height of smoke layer interface above the floor [m]
-    !                qfire: array of length nfire, qfire(ifire) is the energy release rate due to radiation of the ifire'th fire [w]
-    !                xfire: x coordinate of fire location [m]
-    !                yfire: y coordinate of fire location [m]
-    !                zfire: z coordinate of fire location [m]
-    !      output arguments qflux (ouptut): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces where i=1,2,3,4 
-    !                                denotes the ceiling, the upper wall, the lower wall and the floor respectively.  
-    !                                note that qflux(1)=qflux(2) and qflux(3)=qflux(4)
-    !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the 
-    !                               upper, lower layers respectively
-    !                qout (output): qout(i) is the output flux from the i'th wall
-
-    use precision_parameters
-    use cshell, only: logerr
-    use target_routines, only: solid_angle_triangle
-    implicit none
-
-    integer, intent(in) :: nfire, mxfire
-    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay,qfire(*), xfire(*), yfire(*), zfire(*)
-
-    real(eb), intent(out) :: qlay(2), qflux(4), qout(4)
-
-    integer :: ipvt(2), ifire, i, j, k, info
-    real(eb) :: taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
-    real(eb) :: taul(2,2), tauu(2,2), beam(2,2)
-    real(eb) :: area(2), area4(4), figs(2,2), emis2(2), qqout(2), xxl(2), xxu(2), a(2,2), b(2,2)
-    real(eb) :: e(2), c(2), rhs(2), dq(2), dqde(2),  aread, fl, fu, xf, yf, zf, rdsang, f1d, f2d, rdparfig
-    real(eb) :: tupper4, tlower4, aij, qllay, qulay
-    real(eb), dimension(3) :: vrel1, vrel2, vrel3, vrel4, v1lay, v2lay, v3lay, v4lay, vfire
-#ifdef pp_NEWSOLID    
-    real(eb) :: solid_angle1, solid_angle2
-#endif    
-
-    logical black
-    integer, parameter :: u = 1, l = 2
-
-
-    ! define local constants first time rad2 is called
-
-    ! define areas of upper and lower plates
-    
-    area4(1) = xroom*yroom
-    area4(2) = 2.0_eb*(zroom-hlay)*(xroom+yroom)
-    area4(3) = 2.0_eb*hlay*(xroom+yroom)
-    area4(4) = area4(1)
-    area(1) = area4(1) + area4(2)
-    area(2) = area4(3) + area4(4)
-    aread = area4(1)
-
-    ! define configuration factors 
-    
-    figs(1,1) = 1.0_eb - aread/area(1)
-    figs(2,2) = 1.0_eb - aread/area(2)
-    figs(1,2) = aread/area(1)
-    figs(2,1) = aread/area(2)
-
-    ! define transmission factors for surfaces with respect to themselves
-
-    beam(1,1) = (6.0_eb*xroom*yroom*(zroom-hlay)/pi)**onethird
-    beam(2,2) = (6.0_eb*xroom*yroom*hlay/pi)**onethird
-    beam(1,2) = zroom
-    beam(2,1) = zroom
-    fl = hlay/zroom
-    fu = 1.0_eb - fl
-    if(.not.black)then
-        tauu(1,1) = exp(-beam(1,1)*absorb(1))
-        taul(2,2) = exp(-beam(2,2)*absorb(2))
-    else
-        tauu(1,1) = 0.0_eb
-        taul(2,2) = 0.0_eb
-    endif
-    tauu(2,2) = 1.0_eb
-    taul(1,1) = 1.0_eb
-
-    if(.not.black)then
-        tauu(1,2) = exp(-fu*beam(1,2)*absorb(1))
-        taul(1,2) = exp(-fl*beam(1,2)*absorb(2))
-    else
-        tauu(1,2) = 0.0_eb
-        taul(1,2) = 0.0_eb
-    endif
-    tauu(2,1) = tauu(1,2)
-    taul(2,1) = taul(1,2)
-
-    ! define tranmission factors for surfaces with respect to fire
-    
-    do ifire = 1, nfire
-        if(zfire(ifire)>hlay)then
-            xxu(1) = zroom - zfire(ifire)
-            xxu(2) = zfire(ifire) - hlay
-            xxl(1) = 0.0_eb
-            xxl(2) = hlay
-        else
-            xxu(1) = zroom - hlay
-            xxu(2) = 0.0_eb
-            xxl(1) = hlay - zfire(ifire)
-            xxl(2) = zfire(ifire)
-        endif
-        do i = 1, 2
-            if(.not.black)then 
-                taufu(ifire,i) = exp(-absorb(1)*xxu(i))
-                taufl(ifire,i) = exp(-absorb(2)*xxl(i))
-            else
-                taufu(ifire,i) = 0.0_eb
-                taufl(ifire,i) = 0.0_eb
-            endif
-        end do
-    end do
-
-    ! compute solid angles
-
-    v1lay(1:3) = (/0.0_eb,0.0_eb,hlay/)
-    v2lay(1:3) = (/ xroom,0.0_eb,hlay/)
-    v3lay(1:3) = (/ xroom, yroom,hlay/)
-    v4lay(1:3) = (/0.0_eb, yroom,hlay/)
-    do ifire = 1, nfire
-        xf = xfire(ifire)
-        yf = yfire(ifire)
-        zf = zfire(ifire)
-
-        vfire(1:3) = (/xf,yf,zf/)
-        vrel1(1:3) = v1lay(1:3)-vfire(1:3)
-        vrel2(1:3) = v2lay(1:3)-vfire(1:3)
-        vrel3(1:3) = v3lay(1:3)-vfire(1:3)
-        vrel4(1:3) = v4lay(1:3)-vfire(1:3)
-#ifdef pp_NEWSOLID
-        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
-        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
-        firang(1,ifire) = solid_angle1 + solid_angle2
-#else
-        firang(1,ifire) = rdsang(-xf,xroom-xf,-yf,yroom-yf,hlay-zf)
-#endif
-        firang(2,ifire) = 4.0_eb*pi - firang(1,ifire)
-    end do
-    f1d = rdparfig(xroom,yroom,zroom-hlay)
-    f2d = rdparfig(xroom,yroom,hlay)
-
-    ! define e vector
-    
-    tupper4 = (twall(1)**4*f1d+twall(2)**4*(1.0_eb-f1d))
-    tlower4 = (twall(4)**4*f2d+twall(3)**4*(1.0_eb-f2d))
-    e(1) = sigma*tupper4
-    e(2) = sigma*tlower4
-
-    ! re-map emissivity vector
-    
-    emis2(1) = (emis(1)*area4(1) + emis(2)*area4(2))/area(1)
-    emis2(2) = (emis(4)*area4(4) + emis(3)*area4(3))/area(2)
-
-    ! define 'a' and 'b' coefficicnt matrix
-    
-    do k = 1, 2
-        do j = 1, 2
-            aij = figs(k,j)*taul(k,j)*tauu(k,j)
-            a(k,j) = -aij*(1.0_eb-emis2(j))
-            b(k,j) = -aij
-        end do
-        a(k,k) = a(k,k) + 1.0_eb
-        b(k,k) = b(k,k) + 1.0_eb
-    end do
-
-    ! define c vector
-    
-    call rdflux(mxfire,2,1,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
-
-    ! construct right hand side (rhs) of linear system to be solved
-    rhs(1) = b(1,1)*e(1) + b(1,2)*e(2) - c(1)
-    rhs(2) = b(2,1)*e(1) + b(2,2)*e(2) - c(2)
-    call dgefa(a,2,2,ipvt,info)
-    call dgesl(a,2,2,ipvt,rhs,0)
-    if(info/=0)then
-        write (logerr,*) '***Error RAD2 - singular matrix'
-        stop
-    endif
-
-    ! note: each row k of the a matrix as defined by seigal and howell was divided by emis2(k) (in order to insure 
-    !       that this new 'a' was diagonally dominant.  now we have to multiply the solution to the modified problem 
-    !       by emis2(i) to get the original answers
-
-    do k = 1, 2
-        dqde(k) = rhs(k)
-        qqout(k) = e(k) - (1.0_eb - emis(k))*dqde(k)
-        dq(k) = rhs(k)*emis2(k)
-    end do
-
-    ! take solution and compute energy gain or loss to each panel and each layer.  also compute fluxes.  change sign so that
-    ! a postive flux means that heat is flowing to the wall
-    qflux(1) = -dq(1)
-    qflux(2) = -dq(1)
-    qflux(3) = -dq(2)
-    qflux(4) = -dq(2)
-
-    qout(1) = qqout(1)
-    qout(2) = qqout(1)
-    qout(3) = qqout(2)
-    qout(4) = qqout(2)
-
-    ! compute radiation absorbed by each layer
-    
-    call rabs(2,1,e,dqde,emis2,area,figs,tauu,taul,qllay,qulay)
-
-    qlay(u) = qulay
-    qlay(l) = qllay
-
-    return
-    end subroutine rad2
 
 ! --------------------------- rad4 -------------------------------------------
 
@@ -539,11 +290,7 @@
 
     ! define solid angles for fires
     if(nfire/=0)then
-#ifdef pp_NEWSOLID
-        call rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-#else
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-#endif
     endif
 
     !     note: we want to solve the linear system
@@ -812,9 +559,9 @@
     return
     end subroutine getvrel
    
-! --------------------------- rdfang2 -------------------------------------------
+! --------------------------- rdfang -------------------------------------------
 
-    subroutine rdfang2(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+    subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
 
     !     routine: rdfang
     !     purpose: 
@@ -888,93 +635,7 @@
         endif
     end do
     return
-   end  subroutine rdfang2
-
-   ! --------------------------- rdfang -------------------------------------------
-
-    subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-
-    !     routine: rdfang
-    !     purpose: 
-
-    use precision_parameters
-    implicit none
-
-
-    integer, intent(in) :: mxfire, nfire
-    real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
-    
-    real(eb), intent(out) :: firang(4,mxfire)
-    
-    real(eb) :: arg1, arg2, arg3, arg4, f1, f4, fd, rdsang
-    integer :: i
-
-    do i = 1, nfire
-        arg1 = -xfire(i)
-        arg2 = xroom - xfire(i)
-        arg3 = -yfire(i)
-        arg4 = yroom - yfire(i)
-        f1 = rdsang(arg1,arg2,arg3,arg4,zroom-zfire(i))
-        fd = rdsang(arg1,arg2,arg3,arg4,hlay-zfire(i))
-        f4 = rdsang(arg1,arg2,arg3,arg4,zfire(i))
-        firang(1,i) = f1
-        firang(4,i) = f4
-        if(zfire(i)<hlay)then
-            firang(2,i) = fd - f1
-            firang(3,i) = fourpi - fd - f4
-        else
-            firang(2,i) = fourpi - fd - f1
-            firang(3,i) = fd - f4
-        endif
-    end do
-    return
-    end  subroutine rdfang
-
-! --------------------------- rdsang -------------------------------------------
-
-    real(eb) function rdsang(x1,x2,y1,y2,r)
-
-    !     routine: rdsang
-    !     purpose: 
-
-    use precision_parameters
-    implicit none
-    
-    real(eb), intent(in) :: x1, x2, y1, y2, r
-
-    real(eb) :: f1, f2, f3, f4, rdsang1
-
-    f1 = sign(rdsang1(abs(x2),abs(y2),r),x2*y2)
-    f2 = sign(rdsang1(abs(x1),abs(y2),r),x1*y2)
-    f3 = sign(rdsang1(abs(x2),abs(y1),r),x2*y1)
-    f4 = sign(rdsang1(abs(x1),abs(y1),r),x1*y1)
-    rdsang = f1 - f2 - f3 + f4
-    return
-    end function rdsang
-
-! --------------------------- rdsang1 -------------------------------------------
-
-    real(eb) function rdsang1(x,y,r)
-
-    !     routine: rdsang1
-    !     purpose: 
-
-    use precision_parameters
-    implicit none
-
-    real(eb), intent(in) :: x, y, r
-
-    real(eb) :: xr, yr, xy, xyr, f1, f2
-
-    xr = x*x + r*r
-    xyr = x*x + y*y + r*r
-    xy = x*x + y*y
-    yr = y*y + r*r
-    f1 = min(1.0_eb, y*sqrt(xyr/xy/yr))
-    f2 = min(1.0_eb, x*sqrt(xyr/xy/xr))
-    rdsang1 = (asin(f1)+asin(f2)-pio2)
-    return
-    end function rdsang1
+   end  subroutine rdfang
 
 ! --------------------------- rdftran -------------------------------------------
 

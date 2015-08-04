@@ -587,7 +587,7 @@ where $L$ is the distance along the line of integration,  $\theta_i$ and $\theta
 \label{configfactorsetup}
 \centering
 \includegraphics[width=3.0in]{FIGURES/configfactorsetup}
-\caption{Setup for configuration factor computation.}
+\caption{Schematic diagram of a compartment showing walls and interface for computing configuration factors.}
 \end{figure}
 
 A more efficient procedure is to compute configuration factors between the ceiling and floor denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$, and between the floor and layer interface denoted $F_{4-d}$ using a formula for a configuration factor between parallel plates 
@@ -598,13 +598,13 @@ A more efficient procedure is to compute configuration factors between the ceili
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  The symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}). Configuration factors for surfaces forming an enclosure also satisfy
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  The symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}). Configuration factors for surfaces forming an enclosure satisfy
 \begin{eqnarray}
 \label{eq:factorsum}
 \sum_{j=1}^4F_{i-j}=1
 \end{eqnarray}
 
-$F_{1-4}$
+\noindent since all radiation must be accounted for within the enclosure.  The configuration factor $F_{1-4}$
 does not change during a simulation since its value depends only on the compartment height and floor/ceiling area. Therefore, $F_{1-4}$ need only be computed once. Configuration
 factors, $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be determined each
 time the radiation exchange is calculated. 
@@ -624,7 +624,7 @@ F_{1-2}&+&F_{1-d}=1\\
 F_{2-1}+F_{2-2}&+&F_{2-d}=2F_{2-1}+F_{2-2}=2\frac{A_1}{A_2}F_{1-2}+F_{2-2}=1
 \end{eqnarray}
 
-Equations (\ref{eq:config1}) and (\ref{eq:config2}) can be solved for $F_{1-2}$ and $F_{2-2}$ to obtain
+\noindent Solving equations (\ref{eq:config1}) and (\ref{eq:config2}) for $F_{1-2}$ and $F_{2-2}$ gives
 \begin{eqnarray*}
 F_{1-2}&=&1-F_{1-d}\\
 F_{2-1}&=&\frac{A_1}{A_2}F_{1-2}\\
@@ -636,7 +636,7 @@ F_{4-3}&=&1-F_{4-d}\\
 F_{3-4}&=&\frac{A_4}{A_3}F_{4-3}\\
 F_{3-3}&=&1-2F_{3-4}
 \end{eqnarray*}
-Using the above configuration factors and Eq. (\ref{eq:factorsum}) it follows that
+Using the above configuration factors and Eq. (\ref{eq:factorsum}), it follows that
 \begin{eqnarray*}
 F_{1-3}&=&1-F_{1-4} - F_{1-2}\\
 F_{3-1}&=&\frac{A_1}{A_3}F_{1-3}\\
@@ -652,14 +652,14 @@ F_{4-2}&=&\frac{A_2}{A_4}F_{2-4}
 \label{solidanglesetup}
 \centering
 \includegraphics[width=3.0in]{FIGURES/solidanglesetup}
-\caption{Setup for configuration factor computation.}
+\caption{Schematic diagram of an origin and a triangle for computing solid angles.}
 \end{figure}
 
 The solid angle $\Omega$ of an object is the area of that object projected onto a unit sphere. Normalized solid angles, solid angles divided by $4\pi$, the area of a unit sphere, are used for determining the fraction of a fire's radiant heat flux striking each wall surface as in Eq.~(\ref{ckeq}) and determining the fraction of each wall surface's radiant heat flux striking a target as in Eq.~(\ref{target_rad}).
 
 To compute a solid angle, consider an origin $v_0$ and a triangle defined by vertices $v_1$, $v_2$ and $v_3$ as illustrated in Figure \ref{solidanglesetup}.  The solid angle of this triangle with respect to the origin $v_0$ may be computed using
 \begin{eqnarray*}
-\tan(\frac{\Omega}{2}) = \frac{|\hat{v}_1\times \hat{v}_2\cdot \hat{v}_3|}{1+\hat{v}_1\cdot \hat{v}_2+\hat{v}_1\cdot \hat{v}_3+\hat{v}_2\cdot \hat{v}_3}
+\tan\frac{\Omega}{2} = \frac{|\hat{v}_1\times \hat{v}_2\cdot \hat{v}_3|}{1+\hat{v}_1\cdot \hat{v}_2+\hat{v}_1\cdot \hat{v}_3+\hat{v}_2\cdot \hat{v}_3}
 \end{eqnarray*}
 where $\hat{v}_i=v_i/||v_i||$ are unit vectors\cite{vanOosterom:1983}. A solid angle for a rectangular wall surface is computed by splitting the surface into two triangles, computing the solid angle for each triangle and summing.
 

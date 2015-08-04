@@ -1165,7 +1165,7 @@
         if(jaccol<=0)then
             xqu = flwtot(iroom,q,upper)
             xmu = flwtot(iroom,m,upper)
-            if(xmu/=0.0_eb)then
+            if(xmu>0.0001_eb)then
                 zzftemp(iroom,upper) = xqu/(cp*xmu)
             else
                 zzftemp(iroom,upper) = interior_temperature

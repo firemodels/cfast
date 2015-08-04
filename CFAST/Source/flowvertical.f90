@@ -22,10 +22,10 @@
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
     
-    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, vollow, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu, volup
+    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu
     real(eb) :: fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
     integer ::  ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
-    real(eb) :: area, vvfraction
+    real(eb) :: area, vvfraction, froude(2), alpha
 
     type(vent_type), pointer :: ventptr
 
@@ -57,7 +57,7 @@
         area = vvfraction * vvarea(itop,ibot)
         ventptr%area = area
         !area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
-        call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay)
+        call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay, froude)
         
         ventptr%n_slabs = 2
 
@@ -78,22 +78,16 @@
                 ito = ibot
             endif
 
-            ! determine mass and enthalpy fractions - first "from," then "to"
+            ! determine mass and enthalpy fractions
             if (ifrm<=nm1) then
-                if (ifrm==ibot) then
-                    volup = volfru(ifrm)*oco
-                    volup = min(volup, 1.0_eb)
-                    vollow = max(1.0_eb - volup, 0.0_eb)
-                else
-                    vollow = volfrl(ifrm)*oco
-                    vollow = min(vollow,1.0_eb)
-                    volup = max(1.0_eb - vollow, 0.0_eb)
-                endif
-                xxmu = volup *xmvent(iflow)
-                xxml = vollow*xmvent(iflow)
+                alpha = exp(-(froude(iflow)/2)**2)
+                fu = min(alpha, 1.0_eb)
+                fl = max(1.0_eb-fu, 0.0_eb)
+                xxmu = fu*xmvent(iflow)
+                xxml = fl*xmvent(iflow)
                 xxqu = cp*xxmu*zztemp(ifrm,upper)
                 xxql = cp*xxml*zztemp(ifrm,lower)
-                xxtmp = volup*zztemp(ifrm,upper) + vollow*zztemp(ifrm,lower)
+                xxtmp = fu*zztemp(ifrm,upper) + fl*zztemp(ifrm,lower)
                 xxtq = xxqu + xxql
             else
                 xxmu = 0.0_eb
@@ -217,7 +211,7 @@
 
 ! --------------------------- ventcf -------------------------------------------
 
-    subroutine ventcf(itop,ibot,avent,nshape,epsp,xmvent,tmvent,ilay)
+    subroutine ventcf(itop, ibot, avent, nshape, epsp, xmvent, tmvent, ilay, froude)
 
     !     routine: ventcf
     !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining 
@@ -242,7 +236,7 @@
 
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp
-    real(eb), intent(out) :: xmvent(2), tmvent(2)
+    real(eb), intent(out) :: xmvent(2), tmvent(2), froude(2)
     
     integer, intent(out) :: ilay(2)
     
@@ -352,29 +346,29 @@
         vex = 0.0_eb
     endif
 
-    ! calculate vvent(i), the volume rate of flow through the vent into space i
-    do i = 1, 2
-        vvent(i) = vst(i) + vex
-    end do
-
-    ! calculate the vent flow properties
+    ! calculate the density of gas flowing through the vent
     denvnt(1) = den(2)
     denvnt(2) = den(1)
 
-    ! calculate the vent mass flow rates
+    ! calculate the vent flow rates, vvent(i), the volume flow rate through the vent into space i
+    !                                xmvent(i), the mass flow rate through the vent into space i
     iroom(1) = ibot
     iroom(2) = itop
     do i = 1, 2
+        vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
         if (iroom(i)<=nm1) then
-
             ! iroom(i) is an inside room so use the environment variable zztemp for temperature 
             tmvent(i) = zztemp(iroom(i),ilay(3-i))
         else
-
             ! iroom(i) is an outside room so use exterior_temperature for temperature
             tmvent(i) = exterior_temperature
         endif
+        if (tmvent(i)-interior_temperature > 0.0_eb) then
+            froude(i) =vvent(i)/sqrt(grav_con*zzhlay(iroom(i),i)**5*(tmvent(i)-interior_temperature)/interior_temperature)
+        else
+            froude(i) = 0.0_eb
+        end if
     end do
     return
     end

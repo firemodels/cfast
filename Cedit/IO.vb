@@ -181,13 +181,13 @@ Module IO
                             csv.Num(i, hventNum.width), csv.Num(i, hventNum.soffit), csv.Num(i, hventNum.sill))
                         If csv.Num(i, 0) = 12 Then
                             ' This is the old format that had wind input (after sill) and second compartment offset (after hall1). This shifts the actually used inputs
-                            hvent.FirstOffset = csv.Num(i, hventNum.hall1 + 1)
+                            hvent.Offset = csv.Num(i, hventNum.hall1 + 1)
                             hvent.Face = csv.str(i, hventNum.face + 2)
                             hvent.InitialOpening = csv.Num(i, hventNum.initialfraction + 2)
                             hvent.FinalOpening = csv.Num(i, hventNum.initialfraction + 2)
                         Else
                             ' This is the new format input without the wind or second offset
-                            hvent.FirstOffset = csv.Num(i, hventNum.hall1)
+                            hvent.Offset = csv.Num(i, hventNum.hall1)
                             hvent.Face = csv.str(i, hventNum.face)
                             hvent.InitialOpening = csv.Num(i, hventNum.initialfraction)
                             hvent.FinalOpening = csv.Num(i, hventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
@@ -618,7 +618,7 @@ Module IO
                                 aFireObject.ChemicalFormula(formula.Cl) = csv.Num(iChemie, chemieNum.Cl)
                                 aFireObject.HeatofCombustion = csv.Num(iChemie, chemieNum.HoC)
                                 index = myThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material))
-                               
+
                                 aFireObject.RadiativeFraction = csv.Num(iChemie, chemieNum.chiR)
                                 aFireObject.Changed = False
                                 TempFires.Add(aFireObject)
@@ -719,7 +719,7 @@ Module IO
                         aFireObject.ChemicalFormula(formula.Cl) = csv.Num(iChemie, chemieNum.Cl)
                         aFireObject.HeatofCombustion = csv.Num(iChemie, chemieNum.HoC)
                         index = myThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material))
-                       
+
                         aFireObject.RadiativeFraction = csv.Num(iChemie, chemieNum.chiR)
                         aFireObject.Name = csv.str(iFire, fireNum.name)
                         aFireObject.SetPosition(csv.Num(iFire, fireNum.compartment) - 1, csv.Num(iFire, fireNum.xPosition), _
@@ -907,7 +907,7 @@ Module IO
             csv.Num(i, hventNum.width) = aVent.Width
             csv.Num(i, hventNum.sill) = aVent.Sill
             csv.Num(i, hventNum.soffit) = aVent.Soffit
-            csv.Num(i, hventNum.hall1) = aVent.FirstOffset
+            csv.Num(i, hventNum.hall1) = aVent.Offset
             csv.str(i, hventNum.face) = aVent.Face
             csv.Num(i, hventNum.initialfraction) = aVent.InitialOpening
             csv.Num(i, hventNum.vent) = myHVents.VentNumber(j)

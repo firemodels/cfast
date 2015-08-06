@@ -5214,7 +5214,7 @@ Public Class CeditMain
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
-            If sender Is Me.HVentOffset Then aVent.FirstOffset = Val(Me.HVentOffset.Text)
+            If sender Is Me.HVentOffset Then aVent.Offset = Val(Me.HVentOffset.Text)
             If sender Is Me.HVentSill Then aVent.Sill = Val(Me.HVentSill.Text)
             If sender Is Me.HVentSoffit Then aVent.Soffit = Val(Me.HVentSoffit.Text)
             If sender Is Me.HVentWidth Then aVent.Width = Val(Me.HVentWidth.Text)

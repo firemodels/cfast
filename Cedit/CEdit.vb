@@ -1095,7 +1095,7 @@ Public Class CeditMain
         Me.GroupBox8.Size = New System.Drawing.Size(392, 227)
         Me.GroupBox8.TabIndex = 11
         Me.GroupBox8.TabStop = False
-        Me.GroupBox8.Text = "Simulaiton Conditions"
+        Me.GroupBox8.Text = "Simulation Conditions"
         '
         'EnvAdiabatic
         '
@@ -2781,6 +2781,7 @@ Public Class CeditMain
         Me.FireSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.FireSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.FireSummary.ColumnInfo = resources.GetString("FireSummary.ColumnInfo")
+        Me.FireSummary.ExtendLastCol = True
         Me.FireSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.FireSummary.Location = New System.Drawing.Point(168, 16)
         Me.FireSummary.Name = "FireSummary"

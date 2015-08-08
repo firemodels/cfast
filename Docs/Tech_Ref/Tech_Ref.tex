@@ -559,9 +559,11 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \item The radiation emitted is assumed to be diffuse and gray.  In other words, the radiant fluxes emitted are independent of direction and wavelength. At a solid surface, the emittance, $\epsilon$, absorptance, $\alpha$, and reflectance, $\rho$, are related via $\epsilon = \alpha = 1 - \rho$. In the gas phase, the emittance, $\epsilon$, absorptance, $\alpha$, and transmittance, $\tau$, are related via $\epsilon = \alpha = 1 - \tau$.
 \item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
-The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The net radiative heat flux leaving a surface~$k$, $\dq_{{\rm r},k}''$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
+
+The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The difference in outgoing and incoming radiative heat flux at a surface~$k$ or net radiative flux,
+$\Delta \dot{q}_{{\rm r},k}''=\dot{q}_{{\rm out},k}-\dot{q}_{{\rm in},k}$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   \frac{\dq_{{\rm r},k}''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dq_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
+   \frac{\Delta \dot{q}_{{\rm r},k}''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \Delta \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
 \ee
 where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
@@ -569,7 +571,7 @@ where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted 
 \ee
 where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 
-Note, the net radiative flux entering a surface or $-\dq_{{\rm r},k}''$ is used to compute conduction within a solid.
+The net radiative flux entering a surface, given by $\dq_{{\rm r},k}''=-\Delta \dot{q}_{{\rm r},k}''$, along with the convective flux discussed in Section \ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls.
 
 
 
@@ -577,7 +579,7 @@ Note, the net radiative flux entering a surface or $-\dq_{{\rm r},k}''$ is used 
 
 A configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by  surface $j$.  Sixteen configuration factor are required for each compartment since a compartment has four wall surfaces, a ceiling, upper wall, lower wall and floor labeled 1, 2, 3 and 4 as illustrated in Figure \ref{configfactorsetup}.
 
-In general these factors may be computed using 
+In general these factors may be computed using
 \be
    F_{i-j} = \frac{1}{A_i} \int_{A_i} \int_{A_j} \frac{\cos \theta_i \, \cos \theta_j}{\pi L^2} \, dA_j \, dA_i \label{eq:config_factor}
 \ee
@@ -590,7 +592,7 @@ where $L$ is the distance along the line of integration,  $\theta_i$ and $\theta
 \caption{Schematic diagram of a compartment showing walls and interface for computing configuration factors.}
 \end{figure}
 
-A more efficient procedure is to compute configuration factors between the ceiling and floor denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$, and between the floor and layer interface denoted $F_{4-d}$ using a formula for a configuration factor between parallel plates 
+A more efficient procedure is to compute configuration factors between the ceiling and floor denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$, and between the floor and layer interface denoted $F_{4-d}$ using a formula for a configuration factor between parallel plates
 (see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by:
 
 \begin{eqnarray}
@@ -607,7 +609,7 @@ where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, 
 \noindent since all radiation must be accounted for within the enclosure.  The configuration factor $F_{1-4}$
 does not change during a simulation since its value depends only on the compartment height and floor/ceiling area. Therefore, $F_{1-4}$ need only be computed once. Configuration
 factors, $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be determined each
-time the radiation exchange is calculated. 
+time the radiation exchange is calculated.
 
 $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ are determined using equation (\ref{eq:configrect}). Since $A_1 = A_4$ it follows that $F_{4-1} = F_{1-4}$. The other
 14 configuration factors can be calculated using simple algebraic formulas.
@@ -694,6 +696,7 @@ where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is 
 
 
 \section{Convection}
+\label{section:convection}
 
 The transfer of heat between the gas and solid surfaces is handled slightly differently at the ceiling, floor and walls, due to the difference in orientation and the presence of a relatively thin hot flow near the ceiling known as the ceiling jet. The following two sections describe how the convective heat transfer is done for these different surfaces.
 

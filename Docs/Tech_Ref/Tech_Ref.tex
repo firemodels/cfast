@@ -560,10 +560,19 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
 
-The compartment lining is divided into four parts: the ceiling, the floor, and the wall sections above and below the layer interface. The difference in outgoing and incoming radiative heat flux at a surface~$k$ or net radiative flux,
-$\Delta \dot{q}_{{\rm r},k}''=\dot{q}_{{\rm out},k}-\dot{q}_{{\rm in},k}$, is found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
+\begin{figure}[!ht]
+\label{radiationwallsetup}
+\centering
+\includegraphics[width=4.0in]{FIGURES/radiationwall}
+\caption{The net radiative flux, $\Delta \dot{q}_{{\rm r},k}''$, at each wall surface $k$ is determined so that the 
+incoming and outgoing radiation balance.}
+\end{figure}
+
+The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface. As illustrated in Figure \ref{radiationwallsetup}, the problem then is to determine the net radiative flux
+$\dot{q}_{{\rm r},k}''$ so that incoming and outgoing radiation balances at each of these four surfaces ($k=1,\cdots,4$).
+These fluxes are found by solving the simplified radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   \frac{\Delta \dot{q}_{{\rm r},k}''}{\epsilon_k} - \displaystyle\sum_{j=1}^N \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \Delta \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^N \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
+   \frac{\Delta \dot{q}_{{\rm r},k}''}{\epsilon_k} - \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \Delta \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
 \ee
 where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
@@ -573,6 +582,38 @@ where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ 
 
 The net radiative flux entering a surface, given by $\dq_{{\rm r},k}''=-\Delta \dot{q}_{{\rm r},k}''$, along with the convective flux discussed in Section \ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls.
 
+\subsection{Solving the Radiation Equations}
+
+Eq. (\ref{RTE}) is solved by noting that it is a system of linear equations of the form 
+\begin{equation}
+Ax=Be-c
+\label{eq:linearsystem}
+\end{equation}
+where $A$ and $B$ are $n\times n$ matrices and $x$ is the unknown $n$-vector of net radiative fluxes.  The $k,j$'th components of $A$ and $B$
+are given by
+\begin{eqnarray*}
+a_{k,j}&=&\frac{\delta_{k,j}}{\epsilon_k}-F_{k-j}\tau_{k-j}\frac{1-\epsilon_j}{\epsilon_j}\\
+b_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}
+\end{eqnarray*}
+The $k$'th component of the $n$-vector $e$ is $e_k=\sigma T^4$, $c_k$ is given by Eq.~\ref{ckeq} and the $k$'th component of the solution vector is $x_k=\Delta\dot{q}_{{\rm r},k}''$.  The term $\delta$ is the usual Kronekar delta function with
+\begin{eqnarray*}
+\delta_{k,j}=\left\{
+\begin{array}{cc}
+1&k=j\\
+0&k\ne j
+\end{array}
+\right.
+\end{eqnarray*}
+
+In order to avoid a division by zero when $\epsilon_k=0$ and ensure that the
+linear system is diagonally dominant, Eq. (\ref{eq:linearsystem}) is tranformed using the substitution
+$\Delta q_k= \Delta \dot{q}_{{\rm r},k}''/\epsilon_k$.  The coefficients $a_{k,j}$ then become
+\begin{eqnarray*}
+a_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}(1-\epsilon_j)
+\end{eqnarray*}
+
+The solution to the original problem is then given by $\Delta \dot{q}_{{\rm r},k}''=\Delta q_k\epsilon_k$
+where $\Delta q_k$ is the solution to the transformed problem.
 
 
 \subsection{Configuration Factors}

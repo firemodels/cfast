@@ -595,7 +595,7 @@ are given by
 a_{k,j}&=&\frac{\delta_{k,j}}{\epsilon_k}-F_{k-j}\tau_{k-j}\frac{1-\epsilon_j}{\epsilon_j}\\
 b_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}
 \end{eqnarray*}
-The $k$'th component of the $n$-vector $e$ is $e_k=\sigma T^4$, $c_k$ is given by Eq.~\ref{ckeq} and the $k$'th component of the solution vector is $x_k=\Delta\dot{q}_{{\rm r},k}''$.  The term $\delta$ is the usual Kronekar delta function with
+The $k$'th component of the $n$-vector $e$ is $e_k=\sigma T_k^4$, $c_k$ is given by Eq.~\ref{ckeq} and the $k$'th component of the solution vector is $x_k=\Delta\dot{q}_{{\rm r},k}''$.  The term $\delta$ is the usual Kronekar delta function with
 \begin{eqnarray*}
 \delta_{k,j}=\left\{
 \begin{array}{cc}
@@ -612,13 +612,13 @@ $\Delta q_k= \Delta \dot{q}_{{\rm r},k}''/\epsilon_k$.  The coefficients $a_{k,j
 a_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}(1-\epsilon_j)
 \end{eqnarray*}
 
-The solution to the original problem is then given by $\Delta \dot{q}_{{\rm r},k}''=\Delta q_k\epsilon_k$
+The solution to the original problem is then $\Delta \dot{q}_{{\rm r},k}''=\Delta q_k\epsilon_k$
 where $\Delta q_k$ is the solution to the transformed problem.
 
 
 \subsection{Configuration Factors}
 
-A configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by  surface $j$.  Sixteen configuration factor are required for each compartment since a compartment has four wall surfaces, a ceiling, upper wall, lower wall and floor labeled 1, 2, 3 and 4 as illustrated in Figure \ref{configfactorsetup}.
+A configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by  surface $j$.  Sixteen configuration factor are required for each compartment since as illustrated in Figure \ref{configfactorsetup} a compartment has four wall surfaces .
 
 In general these factors may be computed using
 \be
@@ -641,7 +641,8 @@ A more efficient procedure is to compute configuration factors between the ceili
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  The symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}). Configuration factors for surfaces forming an enclosure satisfy
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}). 
+Second, configuration factors for surfaces forming an enclosure satisfy
 \begin{eqnarray}
 \label{eq:factorsum}
 \sum_{j=1}^4F_{i-j}=1
@@ -694,7 +695,7 @@ F_{4-2}&=&\frac{A_2}{A_4}F_{2-4}
 \begin{figure}[!ht]
 \label{solidanglesetup}
 \centering
-\includegraphics[width=3.0in]{FIGURES/solidanglesetup}
+\includegraphics[width=3.5in]{FIGURES/solidanglesetup}
 \caption{Schematic diagram of an origin and a triangle for computing solid angles.}
 \end{figure}
 

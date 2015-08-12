@@ -87,7 +87,7 @@ module cfast_types
        character(256) :: filename
        character(64) :: menu_label, colorbar_label, unit_label
        real(eb) :: xb(6)
-       integer :: ijk(6), roomnum
+       integer :: ijk(6), roomnum, skip
     end type slice_type
      
     type iso_type

@@ -2162,6 +2162,7 @@
    type(visual_type), pointer :: vptr
    integer :: ntypes, ir, ibeg, iend
    real(eb) :: position_offset
+   integer skipslice
 
 
    nsliceinfo = 0
@@ -2250,6 +2251,7 @@
            ijkslice(4) = rm%jbar
            ijkslice(5) = 0
            ijkslice(6) = rm%kbar
+           skipslice=0
            if(vptr%vtype.eq.1)then
                position_offset = 0.0_eb
                if(vptr%axis.eq.1)then
@@ -2257,24 +2259,28 @@
                    xb(1) = vptr%position + position_offset
                    xb(2) = vptr%position + position_offset
                    ijkslice(1) = get_igrid(xb(1),rm%xplt,rm%ibar)
+                   if(ijkslice(1)<0)skipslice=1
                    ijkslice(2) = ijkslice(1)
                else if(vptr%axis.eq.2)then
                    if(ir/=0) position_offset = rm%y0
                    xb(3) = vptr%position + position_offset
                    xb(4) = vptr%position + position_offset
                    ijkslice(3) = get_igrid(xb(3),rm%yplt,rm%jbar)
+                   if(ijkslice(3)<0)skipslice=1
                    ijkslice(4) = ijkslice(3)
                else if(vptr%axis.eq.3)then
                    if(ir/=0) position_offset = rm%z0
                    xb(5) = vptr%position + position_offset
                    xb(6) = vptr%position + position_offset
                    ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
+                   if(ijkslice(5)<0)skipslice=1
                    ijkslice(6) = ijkslice(5)
                endif
            endif
            do j = 1, 5
                sliceptr => sliceinfo(islice)
 
+               sliceptr%skip=skipslice
                write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
                if(j.eq.1)then
                    menu_label="Temperature"

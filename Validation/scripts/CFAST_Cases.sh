@@ -323,6 +323,8 @@ $RUNCFAST -d Steckler_Compartment Steckler_622.in
 $RUNCFAST -d Steckler_Compartment Steckler_710.in
 $RUNCFAST -d Steckler_Compartment Steckler_810.in
 
+$RUNCFAST -d PRISME PRS_D1.in
+
 $RUNCFAST -d ../Verification/Energy_Balance sealed_test.in
 $RUNCFAST -d ../Verification/Energy_Balance sealed_test_2_layers.in
 

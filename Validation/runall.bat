@@ -21,10 +21,11 @@ if %1==Dunes_2000 goto Dunes2000
 if %1==SP_AST goto SP_AST
 if %1==UL_NFPRF goto UL_NFPRF
 if %1==UL_NIST_Vents goto UL_NIST_Vents
+if %1==PRISME goto PRISME
 :Help
 echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
-echo        NBS, NBS_1Room, NIST_NRC, Steckler_Compartment, UL_NFPRF, UL_NIST_Vents, 
-echo        Vettori_Flat, VTT, PLAZA, or WTC
+echo        NBS, NBS_1Room, NIST_NRC, PRISME, Steckler_Compartment, UL_NFPRF, 
+echo        UL_NIST_Vents, Vettori_Flat, VTT, PLAZA, or WTC
 goto end
 :ALL
 call cleanall.bat
@@ -468,6 +469,16 @@ call ..\cleancfast.bat
 rem ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
 if %1==PLAZA goto end
+
+
+:PRISME
+echo Running PRISME
+cd PRISME
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D1 /V
+cd ..
+if %1==PRISME goto end
+
 
 :end
 

@@ -131,10 +131,15 @@
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that 
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,upper) = max(0.0_eb,filter*flwmv(i,13,upper))
-        filtered(i,13,lower) = max(0.0_eb,filter*flwmv(i,13,lower))
-        filtered(i,11,upper) = max(0.0_eb,filter*flwmv(i,11,upper))
-        filtered(i,11,lower) = max(0.0_eb,filter*flwmv(i,11,lower))
+        filtered(i,13,upper) = filtered(i,13,upper) + max(0.0_eb,filter*hvexcn(ii,11,upper)*hveflo(upper,ii))
+        filtered(i,13,lower) = filtered(i,13,lower) + max(0.0_eb,filter*hvexcn(ii,11,lower)*hveflo(lower,ii))
+        filtered(i,11,upper) = filtered(i,11,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
+        filtered(i,11,lower) = filtered(i,11,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
+        !   remove filtered smoke mass and energy from the total mass and eneergy added to the system (likely a small effect)
+        filtered(i,m,upper) = filtered(i,m,upper) - max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
+        filtered(i,m,lower) = filtered(i,m,lower) - max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
+        filtered(i,q,upper) = filtered(i,q,upper) - max(0.0_eb,cp*hvextt(ii,upper)*filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
+        filtered(i,q,lower) = filtered(i,q,lower) - max(0.0_eb,cp*hvextt(ii,lower)*filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
     end do
 
     if(option(fmodjac)==on)then

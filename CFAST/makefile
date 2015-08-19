@@ -11,18 +11,19 @@
 
 VPATH = Source
 
-GIT_HASH := $(shell git describe --long --dirty)
-GIT_DATE := $(shell git log -1 --format=%cd)
-GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""
-
 ifeq ($(shell echo "check_quotes"),"check_quotes")
 # windows
+  GIT_HASH := $(shell ..\scripts\githash)
+  GIT_DATE := $(shell ..\scripts\gitlog)
   BUILD_DATE := $(shell date /t) $(shell time /t)
 else
 # linux/osx
+  GIT_HASH := $(shell git describe --long --dirty)
+  GIT_DATE := $(shell git log -1 --format=%cd)
   BUILD_DATE := $(shell date "+%b %d, %Y  %T")
 endif
 
+GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""
 GITINFO=-fpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 

@@ -227,7 +227,7 @@
     integer :: length, i, j, layer, ic, lsp
 
     data lnames /'UPPER', 'LOWER'/
-    data sunits /'(%)', '(%)', '(%)', '(ppm)', '(ppm)', '(ppm)','(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
+    data sunits /8*'(%)', '(1/m)', '(g-min/m3)', ' kg '/
     data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/
     if (nlspct/=0) then
         do i = 1, nwal

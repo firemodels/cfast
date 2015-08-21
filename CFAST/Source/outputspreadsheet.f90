@@ -363,7 +363,7 @@
     logical :: tooutput(ns),  molfrac(ns), firstc
     
     data tooutput /9*.true.,.false.,.true./ 
-    data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
+    data molfrac /8*.true.,3*.false./
     data firstc /.true./
 
     save outarray, firstc

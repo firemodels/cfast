@@ -4,98 +4,31 @@ echo Running CFAST simulations. $Rev$
 if "%1"=="" goto Help
 if %1==ALL goto ALL
 if %1==ATF goto ATF
-if %1==Vettori_Flat goto Vettori_Flat
-if %1==LLNL_Enclosure goto LLNL_Enclosure
-if %1==NBS_1Room goto NBS_1Room
-if %1==FM_NBS goto FM_NBS
-if %1==PLAZA goto PLAZA
-if %1==VTT goto VTT
-if %1==NIST_NRC goto NIST_NRC
-if %1==iBMB goto iBMB
-if %1==FM_SNL goto FM_SNL
-if %1==NBS goto NBS
-if %1==High_Bay goto High_Bay
-if %1==WTC goto WTC
-if %1==Steckler_Compartment goto Steckler
 if %1==Dunes_2000 goto Dunes2000
+if %1==FM_NBS goto FM_NBS
+if %1==FM_SNL goto FM_SNL
+if %1==High_Bay goto High_Bay
+if %1==iBMB goto iBMB
+if %1==LLNL_Enclosure goto LLNL_Enclosure
+if %1==NBS goto NBS
+if %1==NBS_1Room goto NBS_1Room
+if %1==NIST_NRC goto NIST_NRC
+if %1==PLAZA goto PLAZA
+if %1==PRISME goto PRISME
 if %1==SP_AST goto SP_AST
+if %1==Steckler_Compartment goto Steckler
 if %1==UL_NFPRF goto UL_NFPRF
 if %1==UL_NIST_Vents goto UL_NIST_Vents
-if %1==PRISME goto PRISME
+if %1==Vettori_Flat goto Vettori_Flat
+if %1==VTT goto VTT
+if %1==WTC goto WTC
 :Help
 echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
 echo        NBS, NBS_1Room, NIST_NRC, PRISME, Steckler_Compartment, UL_NFPRF, 
-echo        UL_NIST_Vents, Vettori_Flat, VTT, PLAZA, or WTC
+echo        UL_NIST_Vents, Vettori_Flat, VTT, or WTC
 goto end
 :ALL
 call cleanall.bat
-
-:UL_NIST_Vents
-echo Running UL_NIST_Vents
-cd UL_NIST_Vents
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_1 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_2 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_3 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_4 /V
-cd ..
-if %1==UL_NIST_Vents goto end
-
-:UL_NFPRF
-echo Running UL_NFPRF Series I
-cd UL_NFPRF
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_01 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_02 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_03 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_04 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_05 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_06 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_07 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_08 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_09 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_10 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_11 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_12 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_13 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_14 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_15 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_16 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_17 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_18 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_19 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_20 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_21 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_22 /V
-
-echo Running UL_NFPRF Series II
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_01 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_02 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_03 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_04 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_05 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_06 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_07 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_08 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_09 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_10 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_11 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_12 /V
-cd ..
-if %1==UL_NFPRF goto end
-
-:SP_AST
-echo Running SP_AST Tests
-cd SP_AST
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_1 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_2 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_3 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Diesel_1p1 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Diesel_1p9 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Heptane_1p1 /V
-cd ..
-if %1==SP_AST goto end
 
 :ATF
 echo Running ATF Corridor Tests
@@ -110,70 +43,86 @@ call ..\cleancfast.bat
 cd ..
 if %1==ATF goto end
 
-:WTC
-echo Running WTC Spray Burner Tests
-cd WTC
+:FM_NBS
+echo FM NBS 4 room tests 19, 21
+cd fm_nbs
 call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_01 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_02 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_03 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_04 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_05 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_06 /V
-cd ..
-if %1==WTC goto end
+..\scripts\background -u 98 ..\..\bin\cfast.exe fm19 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe fm21 /V
+cd ..\
+if %1==FM_NBS goto end
 
-:Vettori_Flat
-echo Running Vettori Flat Simulations
-cd Vettori_Flat
+:FM_SNL
+echo FM SNL Tests
+cd FM_SNL
 call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_1 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_2 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_3 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_4 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_5 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_6 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_7 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_8 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_9 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_10 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_11 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_12 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_13 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_14 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_15 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_16 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_17 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_18 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_19 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_20 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_21 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_22 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_23 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_24 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_25 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_26 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_27 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_28 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_29 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_30 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_31 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_32 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_33 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_34 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_35 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_36 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_37 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_38 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_39 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_40 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_41 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_42 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_43 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_44 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe Test_45 /V
-cd ..
-if %1==Vettori_Flat goto end
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_4 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_5 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_6 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_7 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_8 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_9 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_12 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_16 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_21 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_22 /V
+cd ..\
+if %1==FM_SNL goto end
+
+:High_Bay
+echo High Bay Tests
+cd High_Bay
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_01 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_03 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_04 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_06 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_07 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_01 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_03 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_04 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_06 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_07 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_09 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_12 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_18 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_19 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_20 /V
+cd ..\
+if %1==High_Bay goto end
+
+:iBMB
+echo iBMB_4 Test 1
+cd iBMB_4\
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe iBMB_4_T1 /V
+cd ..\
+echo iBMB_5 Test 4
+cd iBMB_5\
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe iBMB_5_T4 /V
+cd ..\
+if %1==iBMB goto end
 
 :LLNL_Enclosure
 echo LLNL Tests
@@ -246,6 +195,16 @@ call ..\cleancfast.bat
 cd ..\
 if %1==LLNL_Enclosure goto end
 
+:NBS
+echo NBS Tests MV100A, MV100O, MV100Z
+cd NBS
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100A /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100O /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe MV100Z /V
+cd ..\
+if %1==NBS goto end
+
 :NBS_1Room
 echo NBS 1 room furniture tests 1, 6
 cd 1rfurn
@@ -260,24 +219,29 @@ call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe 1rwall2 /V
 cd ..\
 if %1==NBS_1Room goto end
-:FM_NBS
-echo FM NBS 4 room tests 19, 21
-cd fm_nbs
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe fm19 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe fm21 /V
-cd ..\
-if %1==FM_NBS goto end
 
-:VTT
-cd VTT
-echo VTT Cases 1, 2, 3
+:PLAZA
+echo NBS Plaza Hotel test 7
+cd Multi
 call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C1 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C2 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C3 /V
+rem ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
-if %1==VTT goto end
+if %1==PLAZA goto end
+
+:Dunes2000
+echo NIST Dunes 2000 tests
+cd NIST_Dunes_2000
+call ..\CleanCFAST
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC07 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC33 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC35 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC38 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC39 /V
+cd ..\
+if %1==Dunes_2000 goto end
 
 :NIST_NRC
 cd NIST_NRC
@@ -301,87 +265,26 @@ echo NIST_NRC tests 1-5, 7-10, 13-18
 cd ..\
 if %1==NIST_NRC goto end
 
-:iBMB
-echo iBMB_4 Test 1
-cd iBMB_4\
+:PRISME
+echo Running PRISME
+cd PRISME
 call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe iBMB_4_T1 /V
-cd ..\
-echo iBMB_5 Test 4
-cd iBMB_5\
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe iBMB_5_T4 /V
-cd ..\
-if %1==iBMB goto end
+..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D1 /V
+cd ..
+if %1==PRISME goto end
 
-:FM_SNL
-echo FM SNL Tests
-cd FM_SNL
+:SP_AST
+echo Running SP_AST Tests
+cd SP_AST
 call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_1 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_2 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_3 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_4 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_5 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_6 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_7 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_8 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_9 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_10 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_11 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_12 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_13 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_14 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_15 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_16 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_17 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_21 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe FMSNL_22 /V
-cd ..\
-if %1==FM_SNL goto end
-
-:NBS
-echo NBS Tests MV100A, MV100O, MV100Z
-cd NBS
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe MV100A /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe MV100O /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe MV100Z /V
-cd ..\
-if %1==NBS goto end
-
-:High_Bay
-echo High Bay Tests
-cd High_Bay
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_01 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_02 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_03 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_04 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_05 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_06 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_07 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Hawaii_Test_11 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_01 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_02 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_03 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_04 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_05 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_06 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_07 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_09 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_10 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_11 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_12 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_13 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_14 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_15 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_17 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_18 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_19 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe USN_Iceland_Test_20 /V
-cd ..\
-if %1==High_Bay goto end
+..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Test_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Diesel_1p1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Diesel_1p9 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe SP_AST_Heptane_1p1 /V
+cd ..
+if %1==SP_AST goto end
 
 :Steckler
 echo Steckler Compartment Tests
@@ -445,39 +348,134 @@ call ..\CleanCFAST
 cd ..\
 if %1==Steckler_Compartment goto end
 
-:Dunes2000
-echo NIST Dunes 2000 tests
-cd NIST_Dunes_2000
-call ..\CleanCFAST
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC02 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC05 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC07 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC10 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC33 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC35 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC38 /V
-..\scripts\background -u 98 ..\..\bin\cfast.exe NIST_Dunes_2000_SDC39 /V
-cd ..\
-if %1==Dunes_2000 goto end
-
-if %1==ALL echo NBS Plaza Hotel Test must be run separately
-if %1==ALL goto end
-:PLAZA
-echo NBS Plaza Hotel test 7
-cd Multi
+:UL_NFPRF
+echo Running UL_NFPRF Series I
+cd UL_NFPRF
 call ..\cleancfast.bat
-rem ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
-cd ..\
-if %1==PLAZA goto end
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_01 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_03 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_04 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_06 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_07 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_08 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_09 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_12 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_16 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_18 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_19 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_20 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_21 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_1_22 /V
 
-
-:PRISME
-echo Running PRISME
-cd PRISME
-call ..\cleancfast.bat
-..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D1 /V
+echo Running UL_NFPRF Series II
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_01 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_03 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_04 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_06 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_07 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_08 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_09 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NFPRF_2_12 /V
 cd ..
-if %1==PRISME goto end
+if %1==UL_NFPRF goto end
+
+:UL_NIST_Vents
+echo Running UL_NIST_Vents
+cd UL_NIST_Vents
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe UL_NIST_Vents_Test_4 /V
+cd ..
+if %1==UL_NIST_Vents goto end
+
+:Vettori_Flat
+echo Running Vettori Flat Simulations
+cd Vettori_Flat
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_3 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_4 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_5 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_6 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_7 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_8 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_9 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_10 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_11 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_12 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_13 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_14 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_15 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_16 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_17 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_18 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_19 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_20 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_21 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_22 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_23 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_24 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_25 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_26 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_27 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_28 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_29 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_30 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_31 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_32 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_33 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_34 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_35 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_36 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_37 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_38 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_39 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_40 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_41 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_42 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_43 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_44 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Test_45 /V
+cd ..
+if %1==Vettori_Flat goto end
+
+:VTT
+cd VTT
+echo VTT Cases 1, 2, 3
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe VTT_C3 /V
+cd ..\
+if %1==VTT goto end
+
+:WTC
+echo Running WTC Spray Burner Tests
+cd WTC
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_01 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_02 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_03 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_04 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_05 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe WTC_06 /V
+cd ..
+if %1==WTC goto end
 
 
 :end
